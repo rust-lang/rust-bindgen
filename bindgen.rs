@@ -10,6 +10,11 @@ import io::writer_util;
 import clang::*;
 import clang::bindgen::*;
 
+// workaround
+import clang::{CXType_FunctionProto, CXType_FunctionNoProto,
+               CXType_Record, CXType_Enum,
+               CXType_Unexposed};
+
 type bind_ctx = {
     match: [str],
     link: str,
@@ -102,8 +107,8 @@ fn parse_args(args: [str]) -> result {
              out: out,
              name: map::mk_hashmap(CXCursor_hash, CXCursor_eq),
              visited: map::new_str_hash(),
-             unnamed_ty: 0u,
-             unnamed_field: 0u,
+             mutable unnamed_ty: 0u,
+             mutable unnamed_field: 0u,
              keywords: rust_keywords() });
 }
 
@@ -158,7 +163,7 @@ fn sym_visited(ctx: bind_ctx, sym: str) -> bool {
 }
 
 fn unnamed_name(ctx: bind_ctx) -> str {
-    ctx.unnamed_ty += 1;
+    ctx.unnamed_ty += 1u;
     ret "unnamed" + uint::str(ctx.unnamed_ty);
 }
 
@@ -168,24 +173,19 @@ fn decl_name(ctx: bind_ctx, cursor: CXCursor) -> str {
         option::some(n) { ret n; }
         none {
             let spelling = to_str(clang_getCursorSpelling(cursor));
-            let prefix = alt cursor.kind {
-                CXCursor_StructDecl {
-                    "struct_"
-                }
-                CXCursor_UnionDecl {
-                    "union_"
-                }
-                CXCursor_EnumDecl {
-                    "enum_"
-                }
-                _ {
-                    "other_"
-                }
+            let prefix = if cursor.kind == CXCursor_StructDecl {
+                "struct_"
+            } else if cursor.kind == CXCursor_UnionDecl {
+                "union_"
+            } else if cursor.kind == CXCursor_EnumDecl {
+                "enum_"
+            } else {
+                "other_"
             };
             let ty_name = if str::is_empty(spelling) {
                 prefix + unnamed_name(ctx)
             } else {
-                prefix + spelling;
+                prefix + spelling
             };
 
             ctx.name.insert(cursor, ty_name);
@@ -212,98 +212,107 @@ fn fwd_decl(ctx: bind_ctx, cursor: CXCursor, f: fn()) {
 }
 
 fn rust_id(ctx: bind_ctx, name: str) -> str {
-    if option::is_some(vec::find(ctx.keywords, name)) {
+    if option::is_some(vec::find(ctx.keywords, {|k| k == name})) {
         ret "_" + name;
     }
     ret name;
 }
 
 fn conv_ptr_ty(ctx: bind_ctx, ty: CXType, cursor: CXCursor) -> str {
-    ret alt ty.kind {
-        CXType_Void { "*void" }
-        CXType_Unexposed | CXType_FunctionProto | CXType_FunctionNoProto {
-            let ret_ty = clang_getResultType(ty);
-            let decl = clang_getTypeDeclaration(ty);
-            if ret_ty.kind != CXType_Invalid {
-                "*u8"
-            } else if decl.kind != CXCursor_NoDeclFound {
-                "*" + conv_decl_ty(ctx, decl)
-            } else {
-                #fmt("*void /* unknown %s referenced by %s %s */",
-                     to_str(clang_getTypeKindSpelling(ty.kind)),
-                     to_str(clang_getCursorKindSpelling(cursor.kind)),
-                     to_str(clang_getCursorSpelling(cursor)));
-            }
+    ret if ty.kind == CXType_Void {
+        "*void"
+    } else if ty.kind == CXType_Unexposed ||
+              ty.kind == CXType_FunctionProto ||
+              ty.kind == CXType_FunctionNoProto {
+        let ret_ty = clang_getResultType(ty);
+        let decl = clang_getTypeDeclaration(ty);
+        if ret_ty.kind != CXType_Invalid {
+            "*u8"
+        } else if decl.kind != CXCursor_NoDeclFound {
+            "*" + conv_decl_ty(ctx, decl)
+        } else {
+            #fmt("*void /* unknown %s referenced by %s %s */",
+                 to_str(clang_getTypeKindSpelling(ty.kind)),
+                 to_str(clang_getCursorKindSpelling(cursor.kind)),
+                 to_str(clang_getCursorSpelling(cursor)))
         }
-        CXType_Typedef {
-            let decl = clang_getTypeDeclaration(ty);
-            let def_ty = clang_getTypedefDeclUnderlyingType(decl);
-            if def_ty.kind == CXType_FunctionProto ||
-               def_ty.kind == CXType_FunctionNoProto {
-                conv_ptr_ty(ctx, def_ty, cursor)
-            } else {
-                "*void"
-            }
+    } else if ty.kind == CXType_Typedef {
+        let decl = clang_getTypeDeclaration(ty);
+        let def_ty = clang_getTypedefDeclUnderlyingType(decl);
+        if def_ty.kind == CXType_FunctionProto ||
+           def_ty.kind == CXType_FunctionNoProto {
+            conv_ptr_ty(ctx, def_ty, cursor)
+        } else {
+            "*void"
         }
-        _ {
-            "*" + conv_ty(ctx, ty, cursor)
-        }
+    } else  {
+        "*" + conv_ty(ctx, ty, cursor)
     };
 }
 
 fn conv_decl_ty(ctx: bind_ctx, cursor: CXCursor) -> str {
-    ret alt cursor.kind {
-        CXCursor_StructDecl | CXCursor_UnionDecl | CXCursor_EnumDecl {
-            decl_name(ctx, cursor)
-        }
-        CXCursor_TypedefDecl {
-            rust_id(to_str(clang_getCursorSpelling(cursor)))
-        }
-        _ {
-            #fmt("void /* unknown %s %s */",
-                 to_str(clang_getCursorKindSpelling(
-                            clang_getCursorKind(cursor))),
-                 to_str(clang_getCursorSpelling(cursor)))
-        }
+    ret if cursor.kind == CXCursor_StructDecl ||
+           cursor.kind == CXCursor_UnionDecl ||
+           cursor.kind == CXCursor_EnumDecl {
+        decl_name(ctx, cursor)
+    } else if cursor.kind == CXCursor_TypedefDecl {
+        rust_id(ctx, to_str(clang_getCursorSpelling(cursor)))
+    } else {
+        #fmt("void /* unknown %s %s */",
+             to_str(clang_getCursorKindSpelling(clang_getCursorKind(cursor))),
+             to_str(clang_getCursorSpelling(cursor)))
     };
 }
 
 fn conv_ty(ctx: bind_ctx, ty: CXType, cursor: CXCursor) -> str {
-    ret alt ty.kind {
-        CXType_Bool { "bool" }
-        CXType_SChar | CXType_Char_S { "u8" }
-        CXType_UChar | CXType_Char_U { "u8" }
-        CXType_UShort { "u16" }
-        CXType_UInt { "c_uint" }
-        CXType_ULong { "ulong" }
-        CXType_ULongLong { "ulonglong" }
-        CXType_Short { "i16" }
-        CXType_Int { "c_iint" }
-        CXType_Long { "long" }
-        CXType_LongLong { "longlong" }
-        CXType_Float { "c_float" }
-        CXType_Double { "c_double" }
-        CXType_Pointer {
+    ret if ty.kind == CXType_Bool {
+        "bool"
+    } else if ty.kind == CXType_SChar ||
+              ty.kind == CXType_Char_S {
+        "u8"
+    } else if ty.kind == CXType_UChar ||
+              ty.kind == CXType_Char_U {
+        "u8"
+    } else if ty.kind == CXType_UShort {
+        "u16"
+    } else if ty.kind == CXType_UInt {
+        "c_uint"
+    } else if ty.kind == CXType_ULong {
+        "ulong"
+    } else if ty.kind == CXType_ULongLong {
+        "ulonglong"
+    } else if ty.kind == CXType_Short {
+        "i16"
+    } else if ty.kind == CXType_Int {
+        "c_iint"
+    } else if ty.kind == CXType_Long {
+        "long"
+    } else if ty.kind == CXType_LongLong {
+        "longlong"
+    } else if ty.kind == CXType_Float {
+        "c_float"
+    } else if ty.kind == CXType_Double {
+        "c_double"
+    } else if ty.kind == CXType_Pointer {
             conv_ptr_ty(ctx, clang_getPointeeType(ty), cursor)
+    } else if ty.kind == CXType_Record ||
+              ty.kind == CXType_Typedef  ||
+              ty.kind == CXType_Unexposed ||
+              ty.kind == CXType_Enum {
+        conv_decl_ty(ctx, clang_getTypeDeclaration(ty))
+    } else if ty.kind == CXType_ConstantArray {
+        let a_ty = conv_ty(ctx, clang_getArrayElementType(ty), cursor);
+        let size = clang_getArraySize(ty) as int;
+        let rust_ty = "(";
+        let i = 0;
+        while i < size {
+            rust_ty += a_ty + ","
         }
-        CXType_Record | CXType_Typedef | CXType_Unexposed | CXType_Enum {
-            conv_decl_ty(ctx, clang_getTypeDeclaration(ty), cursor)
-        }
-        CXType_ConstantArray {
-            let a_ty = conv_ty(clang_getArrayElementType(ty), cursor);
-            let size = clang_getArraySize(ty) as int;
-            let rust_ty = "(";
-            let i = 0;
-            while i < size {
-                rust_ty += a_ty + ","
-            }
-            rust_ty += ")";
-            rust_ty
-        }
-        _ {
-            #fmt("/* unknown kind %s */ void",
-                 to_str(clang_getTypeKindSpelling(ty.kind)))
-        }
+        rust_ty += ")";
+        rust_ty
+    } else {
+        #fmt("/* unknown kind %s */ void",
+             to_str(clang_getTypeKindSpelling(ty.kind)))
     };
 }
 
@@ -319,39 +328,34 @@ fn opaque_ty(ctx: bind_ctx, ty: CXType) {
 
 crust fn visit_struct(++cursor: CXCursor,
                       ++parent: CXCursor,
-                      data: CXClientData) -> c_int {
+                      data: CXClientData) -> c_int unsafe {
     let ctx = *(data as *bind_ctx);
-    alt clang_getCursorKind(cursor) {
-        CXCursor_FieldDecl {
-            let ty = clang_getCursorType(cursor);
-            let name = to_str(clang_getCursorSpelling(cursor));
-            if str::is_empty(name) {
-                name = "field_unnamed" + uint::str(ctx.unnamed_field);
-                ctx.unnamed_field += 1u;
-            }
-            ctx.out.write_line(#fmt("    %s: %s,",
-                                    rust_id(ctx, name),
-                                    conv_ty(ctx, ty, cursor)));
+    let kind = clang_getCursorKind(cursor);
+    if kind == CXCursor_FieldDecl {
+        let ty = clang_getCursorType(cursor);
+        let name = to_str(clang_getCursorSpelling(cursor));
+        if str::is_empty(name) {
+            name = "field_unnamed" + uint::str(ctx.unnamed_field);
+            ctx.unnamed_field += 1u;
         }
-        _ { }
+        ctx.out.write_line(#fmt("    %s: %s,",
+                                rust_id(ctx, name),
+                                conv_ty(ctx, ty, cursor)));
     }
     ret CXChildVisit_Continue;
 }
 
 crust fn visit_enum(++cursor: CXCursor,
                     ++parent: CXCursor,
-                    data: CXClientData) -> c_int {
+                    data: CXClientData) -> c_int unsafe {
     let ctx = *(data as *bind_ctx);
-    alt cursor.kind {
-        CXCursor_EnumConstantDecl {
-            ctx.out.write_line(#fmt(
-                "const %s: %s = %s_i32;",
-                clang_getCursorSpelling(cursor),
-                conv_ty(clang_getEnumDeclIntegerType(parent), parent),
-                clang_getEnumConstantDeclValue(cursor)
-            ));
-        }
-        _ { }
+    if cursor.kind == CXCursor_EnumConstantDecl {
+        ctx.out.write_line(#fmt(
+            "const %s: %s = %d_i32;",
+            to_str(clang_getCursorSpelling(cursor)),
+            conv_ty(ctx, clang_getEnumDeclIntegerType(parent), parent),
+            clang_getEnumConstantDeclValue(cursor)
+        ));
     }
     ret CXChildVisit_Continue;
 }
@@ -365,65 +369,57 @@ crust fn visit_ty_top(++cursor: CXCursor,
     }
 
     let kind = clang_getCursorKind(cursor);
-    alt kind {
-        CXCursor_StructDecl {
-            fwd_decl(ctx, cursor, {||
-                ctx.unnamed_field = 0u;
-                ctx.out.write_line(#fmt("type %s = {",
-                                        decl_name(ctx, cursor)));
-                clang_visitChildren(cursor, visit_struct, data);
-                ctx.out.write_line("};\n");
-            });
-            ret CXChildVisit_Recurse;
-        }
-        CXCursor_UnionDecl {
-            fwd_decl(ctx, cursor, {||
-                ctx.out.write_line(#fmt("type %s = void /* FIXME */ ;\n",
-                                        decl_name(ctx, cursor)));
-            });
-            ret CXChildVisit_Recurse;
-        }
-        CXCursor_EnumDecl {
-            fwd_decl(ctx, cursor, {||
-                ctx.out.write_line(#fmt(
-                    "type %s = %s;", decl_name(ctx, cursor),
-                    conv_ty(ctx, clang_getEnumDeclIntegerType(cursor),
-                            cursor)
-                ));
-                clang_visitChildren(cursor, visit_enum, data);
-            });
-            ctx.out.write_line("");
+    if kind == CXCursor_StructDecl {
+        fwd_decl(ctx, cursor, {||
+            ctx.unnamed_field = 0u;
+            ctx.out.write_line(#fmt("type %s = {",
+                                    decl_name(ctx, cursor)));
+            clang_visitChildren(cursor, visit_struct, data);
+            ctx.out.write_line("};\n");
+        });
+        ret CXChildVisit_Recurse;
+    } else if kind == CXCursor_UnionDecl {
+        fwd_decl(ctx, cursor, {||
+            ctx.out.write_line(#fmt("type %s = void /* FIXME */ ;\n",
+                                    decl_name(ctx, cursor)));
+        });
+        ret CXChildVisit_Recurse;
+    } else if kind == CXCursor_EnumDecl {
+        fwd_decl(ctx, cursor, {||
+            ctx.out.write_line(#fmt(
+                "type %s = %s;", decl_name(ctx, cursor),
+                conv_ty(ctx, clang_getEnumDeclIntegerType(cursor),
+                        cursor)
+            ));
+            clang_visitChildren(cursor, visit_enum, data);
+        });
+        ctx.out.write_line("");
+        ret CXChildVisit_Continue;
+    } else if kind == CXCursor_FunctionDecl {
+            ret CXChildVisit_Continue;
+    } else if kind == CXCursor_VarDecl {
+        let name = to_str(clang_getCursorSpelling(cursor));
+        if sym_visited(ctx, name) {
             ret CXChildVisit_Continue;
         }
-        CXCursor_FunctionDecl {
+        ctx.out.write_line(#fmt("/* FIXME: global var %s */", name));
+        ret CXChildVisit_Continue;
+    } else if kind == CXCursor_TypedefDecl {
+        let name = to_str(clang_getCursorSpelling(cursor));
+        if sym_visited(ctx, name) {
             ret CXChildVisit_Continue;
         }
-        CXCursor_VarDecl {
-            let name = to_str(clang_getCursorSpelling(cursor));
-            if sym_visited(ctx, name) {
-                ret CXChildVisit_Continue;
-            }
-            ctx.out.write_line(#fmt("/* FIXME: global var %s */", name));
-            ret CXChildVisit_Continue;
+        let under_ty = clang_getTypedefDeclUnderlyingType(cursor);
+        if under_ty.kind == CXType_Unexposed {
+            under_ty = clang_getCanonicalType(under_ty);
         }
-        CXCursor_TypedefDecl {
-            let name = to_str(clang_getCursorSpelling(cursor));
-            if sym_visited(ctx, name) {
-                ret CXChildVisit_Continue;
-            }
-            let under_ty = clang_getTypedefDeclUnderlyingType(cursor);
-            if under_ty.kind == CXType_Unexposed {
-                under_ty = clang_getCanonicalType(under_ty);
-            }
-            ctx.out.write_line("type %s = %s;\n",
-                               rust_id(name),
-                               conv_ty(ctx, under_ty, cursor));
-            opaque_ty(ctx, under_ty);
-            ret CXChildVisit_Continue;
-        }
-        CXCursor_FieldDecl {
-            ret CXChildVisit_Continue;
-        }
+        ctx.out.write_line(#fmt("type %s = %s;\n",
+                                rust_id(ctx, name),
+                                conv_ty(ctx, under_ty, cursor)));
+        opaque_ty(ctx, under_ty);
+        ret CXChildVisit_Continue;
+    } else if kind == CXCursor_FieldDecl {
+        ret CXChildVisit_Continue;
     }
 
     ret CXChildVisit_Recurse;
@@ -431,19 +427,14 @@ crust fn visit_ty_top(++cursor: CXCursor,
 
 crust fn visit_func_top(++cursor: CXCursor,
                         ++parent: CXCursor,
-                        data: CXClientData) -> c_int {
+                        data: CXClientData) -> c_int unsafe {
     let ctx = *(data as *bind_ctx);
     if !match_pattern(ctx, cursor) {
         ret CXChildVisit_Continue;
     }
 
-    alt clang_getCursorKind(cursor) {
-        CXCursor_FunctionDecl {
-            ret CXChildVisit_Continue;
-        }
-        _ {
-            ret CXChildVisit_Continue;
-        }
+    if clang_getCursorKind(cursor) == CXCursor_FunctionDecl {
+        ret CXChildVisit_Continue;
     }
 
     ret CXChildVisit_Recurse;
