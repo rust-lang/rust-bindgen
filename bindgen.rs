@@ -5,24 +5,20 @@ import ctypes::*;
 import std::io;
 import std::os;
 import std::map;
+import map::hashmap;
 import io::writer_util;
 
 import clang::*;
 import clang::bindgen::*;
 
-// workaround
-import clang::{CXType_FunctionProto, CXType_FunctionNoProto,
-               CXType_Record, CXType_Enum,
-               CXType_Unexposed};
-
 type bind_ctx = {
     match: [str],
     link: str,
     out: io::writer,
-    name: map::map<CXCursor, str>,
-    visited: map::map<str, bool>,
-    mutable unnamed_ty: uint,
-    mutable unnamed_field: uint,
+    name: map::hashmap<CXCursor, str>,
+    visited: map::hashmap<str, bool>,
+    mut unnamed_ty: uint,
+    mut unnamed_field: uint,
     keywords: [str]
 };
 
@@ -107,16 +103,16 @@ fn parse_args(args: [str]) -> result {
              out: out,
              name: map::mk_hashmap(CXCursor_hash, CXCursor_eq),
              visited: map::new_str_hash(),
-             mutable unnamed_ty: 0u,
-             mutable unnamed_field: 0u,
+             mut unnamed_ty: 0u,
+             mut unnamed_field: 0u,
              keywords: rust_keywords() });
 }
 
 fn print_usage(bin: str) {
-    io::print(#fmt("Usage: %s [options] input.h", bin) +
+    io::print(#fmt["Usage: %s [options] input.h", bin] +
 "
 Options:
-    -l <name>       Link name
+    -l <name>       Link name of the library
     -o <output.rs>  Write bindings to <output.rs> (default stdout)
     -match <name>   Only output bindings for definitions from files
                     whose name contains <name>
@@ -146,7 +142,7 @@ fn match_pattern(ctx: bind_ctx, cursor: CXCursor) -> bool {
 
     let name = to_str(clang_getFileName(file));
     for pat in ctx.match {
-        if str::contains(pat, name) {
+        if str::contains(name, pat) {
             ret true;
         }
     }
@@ -197,7 +193,7 @@ fn decl_name(ctx: bind_ctx, cursor: CXCursor) -> str {
 fn opaque_decl(ctx: bind_ctx, decl: CXCursor) {
     let name = decl_name(ctx, decl);
     if !sym_visited(ctx, name) {
-        ctx.out.write_line(#fmt("type %s = void;\n", name));
+        ctx.out.write_line(#fmt["type %s = void;\n", name]);
     }
 }
 
@@ -231,10 +227,10 @@ fn conv_ptr_ty(ctx: bind_ctx, ty: CXType, cursor: CXCursor) -> str {
         } else if decl.kind != CXCursor_NoDeclFound {
             "*" + conv_decl_ty(ctx, decl)
         } else {
-            #fmt("*void /* unknown %s referenced by %s %s */",
+            #fmt["*void /* unknown %s referenced by %s %s */",
                  to_str(clang_getTypeKindSpelling(ty.kind)),
                  to_str(clang_getCursorKindSpelling(cursor.kind)),
-                 to_str(clang_getCursorSpelling(cursor)))
+                 to_str(clang_getCursorSpelling(cursor))]
         }
     } else if ty.kind == CXType_Typedef {
         let decl = clang_getTypeDeclaration(ty);
@@ -258,9 +254,9 @@ fn conv_decl_ty(ctx: bind_ctx, cursor: CXCursor) -> str {
     } else if cursor.kind == CXCursor_TypedefDecl {
         rust_id(ctx, to_str(clang_getCursorSpelling(cursor)))
     } else {
-        #fmt("void /* unknown %s %s */",
+        #fmt["void /* unknown %s %s */",
              to_str(clang_getCursorKindSpelling(clang_getCursorKind(cursor))),
-             to_str(clang_getCursorSpelling(cursor)))
+             to_str(clang_getCursorSpelling(cursor))]
     };
 }
 
@@ -303,16 +299,24 @@ fn conv_ty(ctx: bind_ctx, ty: CXType, cursor: CXCursor) -> str {
     } else if ty.kind == CXType_ConstantArray {
         let a_ty = conv_ty(ctx, clang_getArrayElementType(ty), cursor);
         let size = clang_getArraySize(ty) as int;
-        let rust_ty = "(";
-        let i = 0;
-        while i < size {
-            rust_ty += a_ty + ","
+
+        if size == 0 {
+            #fmt["/* FIXME: zero-sized array */\n"]
+        } else if size == 1 {
+            a_ty
+        } else {
+            let rust_ty = "(";
+            let i = 1;
+            while i < size {
+                rust_ty += a_ty + ",";
+                i += 1;
+            }
+            rust_ty += a_ty + ")";
+            rust_ty
         }
-        rust_ty += ")";
-        rust_ty
     } else {
-        #fmt("/* unknown kind %s */ void",
-             to_str(clang_getTypeKindSpelling(ty.kind)))
+        #fmt["/* unknown kind %s */ void",
+             to_str(clang_getTypeKindSpelling(ty.kind))]
     };
 }
 
@@ -327,7 +331,7 @@ fn opaque_ty(ctx: bind_ctx, ty: CXType) {
 }
 
 crust fn visit_struct(++cursor: CXCursor,
-                      ++parent: CXCursor,
+                      ++_parent: CXCursor,
                       data: CXClientData) -> c_int unsafe {
     let ctx = *(data as *bind_ctx);
     let kind = clang_getCursorKind(cursor);
@@ -338,9 +342,9 @@ crust fn visit_struct(++cursor: CXCursor,
             name = "field_unnamed" + uint::str(ctx.unnamed_field);
             ctx.unnamed_field += 1u;
         }
-        ctx.out.write_line(#fmt("    %s: %s,",
+        ctx.out.write_line(#fmt["    %s: %s,",
                                 rust_id(ctx, name),
-                                conv_ty(ctx, ty, cursor)));
+                                conv_ty(ctx, ty, cursor)]);
     }
     ret CXChildVisit_Continue;
 }
@@ -350,18 +354,18 @@ crust fn visit_enum(++cursor: CXCursor,
                     data: CXClientData) -> c_int unsafe {
     let ctx = *(data as *bind_ctx);
     if cursor.kind == CXCursor_EnumConstantDecl {
-        ctx.out.write_line(#fmt(
+        ctx.out.write_line(#fmt[
             "const %s: %s = %d_i32;",
             to_str(clang_getCursorSpelling(cursor)),
             conv_ty(ctx, clang_getEnumDeclIntegerType(parent), parent),
             clang_getEnumConstantDeclValue(cursor)
-        ));
+        ]);
     }
     ret CXChildVisit_Continue;
 }
 
 crust fn visit_ty_top(++cursor: CXCursor,
-                      ++parent: CXCursor,
+                      ++_parent: CXCursor,
                       data: CXClientData) -> c_int unsafe {
     let ctx = *(data as *bind_ctx);
     if !match_pattern(ctx, cursor) {
@@ -372,25 +376,25 @@ crust fn visit_ty_top(++cursor: CXCursor,
     if kind == CXCursor_StructDecl {
         fwd_decl(ctx, cursor, {||
             ctx.unnamed_field = 0u;
-            ctx.out.write_line(#fmt("type %s = {",
-                                    decl_name(ctx, cursor)));
+            ctx.out.write_line(#fmt["type %s = {",
+                                    decl_name(ctx, cursor)]);
             clang_visitChildren(cursor, visit_struct, data);
             ctx.out.write_line("};\n");
         });
         ret CXChildVisit_Recurse;
     } else if kind == CXCursor_UnionDecl {
         fwd_decl(ctx, cursor, {||
-            ctx.out.write_line(#fmt("type %s = void /* FIXME */ ;\n",
-                                    decl_name(ctx, cursor)));
+            ctx.out.write_line(#fmt["type %s = void /* FIXME: union */;\n",
+                                    decl_name(ctx, cursor)]);
         });
         ret CXChildVisit_Recurse;
     } else if kind == CXCursor_EnumDecl {
         fwd_decl(ctx, cursor, {||
-            ctx.out.write_line(#fmt(
+            ctx.out.write_line(#fmt[
                 "type %s = %s;", decl_name(ctx, cursor),
                 conv_ty(ctx, clang_getEnumDeclIntegerType(cursor),
                         cursor)
-            ));
+            ]);
             clang_visitChildren(cursor, visit_enum, data);
         });
         ctx.out.write_line("");
@@ -402,7 +406,7 @@ crust fn visit_ty_top(++cursor: CXCursor,
         if sym_visited(ctx, name) {
             ret CXChildVisit_Continue;
         }
-        ctx.out.write_line(#fmt("/* FIXME: global var %s */", name));
+        ctx.out.write_line(#fmt["/* FIXME: global var %s */\n", name]);
         ret CXChildVisit_Continue;
     } else if kind == CXCursor_TypedefDecl {
         let name = to_str(clang_getCursorSpelling(cursor));
@@ -413,9 +417,9 @@ crust fn visit_ty_top(++cursor: CXCursor,
         if under_ty.kind == CXType_Unexposed {
             under_ty = clang_getCanonicalType(under_ty);
         }
-        ctx.out.write_line(#fmt("type %s = %s;\n",
+        ctx.out.write_line(#fmt["type %s = %s;\n",
                                 rust_id(ctx, name),
-                                conv_ty(ctx, under_ty, cursor)));
+                                conv_ty(ctx, under_ty, cursor)]);
         opaque_ty(ctx, under_ty);
         ret CXChildVisit_Continue;
     } else if kind == CXCursor_FieldDecl {
@@ -426,7 +430,7 @@ crust fn visit_ty_top(++cursor: CXCursor,
 }
 
 crust fn visit_func_top(++cursor: CXCursor,
-                        ++parent: CXCursor,
+                        ++_parent: CXCursor,
                         data: CXClientData) -> c_int unsafe {
     let ctx = *(data as *bind_ctx);
     if !match_pattern(ctx, cursor) {
@@ -441,9 +445,12 @@ crust fn visit_func_top(++cursor: CXCursor,
 }
 
 fn main(args: [str]) unsafe {
-    alt parse_args(args) {
+    let bind_args = args;
+    let bin = vec::shift(bind_args);
+
+    alt parse_args(bind_args) {
         err(e) { fail e; }
-        usage { print_usage(args[0]); }
+        usage { print_usage(bin); }
         ok(clang_args, ctx) {
             let ix = clang_createIndex(0 as c_int, 1 as c_int);
             if ix as int == 0 {
@@ -469,7 +476,7 @@ fn main(args: [str]) unsafe {
             let diag_num = clang_getNumDiagnostics(unit) as uint;
             while i < diag_num {
                 let diag = clang_getDiagnostic(unit, i as unsigned);
-                io::stderr().write_str(to_str(clang_formatDiagnostic(
+                io::stderr().write_line(to_str(clang_formatDiagnostic(
                     diag, clang_defaultDiagnosticDisplayOptions()
                 )));
 
@@ -492,7 +499,7 @@ fn main(args: [str]) unsafe {
             ctx.out.write_line("import ctypes::*;\n");
             clang_visitChildren(cursor, visit_ty_top,
                                 ptr::addr_of(ctx) as CXClientData);
-            ctx.out.write_line(#fmt("#[link_name=\"%s\"]", ctx.link));
+            ctx.out.write_line(#fmt["#[link_name=\"%s\"]", ctx.link]);
             ctx.out.write_line("native mod bindgen {\n");
             clang_visitChildren(cursor, visit_func_top,
                                 ptr::addr_of(ctx) as CXClientData);
