@@ -1,9 +1,7 @@
 use std;
 
-import ctypes::*;
+import libc::*;
 
-import std::io;
-import std::os;
 import std::map;
 import map::hashmap;
 import io::writer_util;
@@ -48,14 +46,14 @@ fn rust_keywords() -> [str] {
 }
 
 fn parse_args(args: [str]) -> result {
-    let clang_args = [];
+    let mut clang_args = [];
     let args_len = vec::len(args);
 
-    let out = io::stdout();
-    let pat = [];
-    let link = option::none;
+    let mut out = io::stdout();
+    let mut pat = [];
+    let mut link = option::none;
 
-    let ix = 0u;
+    let mut ix = 0u;
     while ix < args_len {
         alt args[ix] {
             "--help" | "-h" {
@@ -101,8 +99,8 @@ fn parse_args(args: [str]) -> result {
            @{ match: pat,
              link: option::get(link),
              out: out,
-             name: map::mk_hashmap(CXCursor_hash, CXCursor_eq),
-             visited: map::new_str_hash(),
+             name: map::hashmap(CXCursor_hash, CXCursor_eq),
+             visited: map::str_hash(),
              mut unnamed_ty: 0u,
              mut unnamed_field: 0u,
              keywords: rust_keywords() });
@@ -122,14 +120,14 @@ Options:
     );
 }
 
-fn to_str(s: CXString) -> str {
-    ret str::from_cstr(clang_getCString(s));
+fn to_str(s: CXString) -> str unsafe {
+    ret str::unsafe::from_c_str(clang_getCString(s));
 }
 
 fn match_pattern(ctx: @bind_ctx, cursor: CXCursor) -> bool {
-    let file = ptr::null();
+    let mut file = ptr::null();
     clang_getSpellingLocation(clang_getCursorLocation(cursor),
-                              ptr::addr_of(file),
+                              ptr::mut_addr_of(file),
                               ptr::null(), ptr::null(), ptr::null());
 
     if file as int == 0 {
@@ -193,7 +191,7 @@ fn decl_name(ctx: @bind_ctx, cursor: CXCursor) -> str {
 fn opaque_decl(ctx: @bind_ctx, decl: CXCursor) {
     let name = decl_name(ctx, decl);
     if !sym_visited(ctx, name) {
-        ctx.out.write_line(#fmt["type %s = void;\n", name]);
+        ctx.out.write_line(#fmt["type %s = c_void;\n", name]);
     }
 }
 
@@ -216,7 +214,7 @@ fn rust_id(ctx: @bind_ctx, name: str) -> str {
 
 fn conv_ptr_ty(ctx: @bind_ctx, ty: CXType, cursor: CXCursor) -> str {
     if ty.kind == CXType_Void {
-        ret "*void"
+        ret "*c_void"
     } else if ty.kind == CXType_Unexposed ||
               ty.kind == CXType_FunctionProto ||
               ty.kind == CXType_FunctionNoProto {
@@ -227,7 +225,7 @@ fn conv_ptr_ty(ctx: @bind_ctx, ty: CXType, cursor: CXCursor) -> str {
         } else if decl.kind != CXCursor_NoDeclFound {
             "*" + conv_decl_ty(ctx, decl)
         } else {
-            #fmt["*void /* unknown %s referenced by %s %s */",
+            #fmt["*c_void /* unknown %s referenced by %s %s */",
                  to_str(clang_getTypeKindSpelling(ty.kind)),
                  to_str(clang_getCursorKindSpelling(cursor.kind)),
                  to_str(clang_getCursorSpelling(cursor))]
@@ -251,7 +249,7 @@ fn conv_decl_ty(ctx: @bind_ctx, cursor: CXCursor) -> str {
     } else if cursor.kind == CXCursor_TypedefDecl {
         rust_id(ctx, to_str(clang_getCursorSpelling(cursor)))
     } else {
-        #fmt["void /* unknown %s %s */",
+        #fmt["c_void /* unknown %s %s */",
              to_str(clang_getCursorKindSpelling(cursor.kind)),
              to_str(clang_getCursorSpelling(cursor))]
     };
@@ -262,26 +260,26 @@ fn conv_ty(ctx: @bind_ctx, ty: CXType, cursor: CXCursor) -> str {
         "bool"
     } else if ty.kind == CXType_SChar ||
               ty.kind == CXType_Char_S {
-        "u8"
+        "c_char"
     } else if ty.kind == CXType_UChar ||
               ty.kind == CXType_Char_U {
-        "u8"
+        "c_uchar"
     } else if ty.kind == CXType_UShort {
-        "u16"
+        "c_ushort"
     } else if ty.kind == CXType_UInt {
         "c_uint"
     } else if ty.kind == CXType_ULong {
-        "ulong"
+        "c_ulong"
     } else if ty.kind == CXType_ULongLong {
-        "ulonglong"
+        "c_ulonglong"
     } else if ty.kind == CXType_Short {
-        "i16"
+        "c_short"
     } else if ty.kind == CXType_Int {
         "c_int"
     } else if ty.kind == CXType_Long {
-        "long"
+        "c_long"
     } else if ty.kind == CXType_LongLong {
-        "longlong"
+        "c_longlong"
     } else if ty.kind == CXType_Float {
         "c_float"
     } else if ty.kind == CXType_Double {
@@ -302,8 +300,8 @@ fn conv_ty(ctx: @bind_ctx, ty: CXType, cursor: CXCursor) -> str {
         } else if size == 1 {
             a_ty
         } else {
-            let rust_ty = "(";
-            let i = 1;
+            let mut rust_ty = "(";
+            let mut i = 1;
             while i < size {
                 rust_ty += a_ty + ",";
                 i += 1;
@@ -312,7 +310,7 @@ fn conv_ty(ctx: @bind_ctx, ty: CXType, cursor: CXCursor) -> str {
             rust_ty
         }
     } else {
-        #fmt["void /* unknown kind %s */",
+        #fmt["c_void /* unknown kind %s */",
              to_str(clang_getTypeKindSpelling(ty.kind))]
     };
 }
@@ -333,7 +331,7 @@ crust fn visit_struct(++cursor: CXCursor,
     let ctx = *(data as *@bind_ctx);
     if cursor.kind == CXCursor_FieldDecl {
         let ty = clang_getCursorType(cursor);
-        let name = to_str(clang_getCursorSpelling(cursor));
+        let mut name = to_str(clang_getCursorSpelling(cursor));
         if str::is_empty(name) {
             name = "field_unnamed" + uint::str(ctx.unnamed_field);
             ctx.unnamed_field += 1u;
@@ -388,7 +386,7 @@ crust fn visit_ty_top(++cursor: CXCursor,
     } else if cursor.kind == CXCursor_UnionDecl {
         fwd_decl(ctx, cursor, {||
             ctx.out.write_line(
-                #fmt["type %s = void /* FIXME: union type */;\n",
+                #fmt["type %s = c_void /* FIXME: union type */;\n",
                      decl_name(ctx, cursor)]
             );
         });
@@ -418,7 +416,7 @@ crust fn visit_ty_top(++cursor: CXCursor,
         if sym_visited(ctx, name) {
             ret CXChildVisit_Continue;
         }
-        let under_ty = clang_getTypedefDeclUnderlyingType(cursor);
+        let mut under_ty = clang_getTypedefDeclUnderlyingType(cursor);
         if under_ty.kind == CXType_Unexposed {
             under_ty = clang_getCanonicalType(under_ty);
         }
@@ -451,12 +449,12 @@ crust fn visit_func_top(++cursor: CXCursor,
         let ty = clang_getCursorType(cursor);
         ctx.out.write_str(#fmt["fn %s(", rust_id(ctx, name)]);
         let arg_n = clang_getNumArgTypes(ty) as int;
-        let i = 0;
+        let mut i = 0;
         while i < arg_n {
             if i > 0 {
                 ctx.out.write_str(", ");
             }
-            let arg_ty = clang_getArgType(ty, i as unsigned);
+            let arg_ty = clang_getArgType(ty, i as c_uint);
             ctx.out.write_str(#fmt["++arg%d: %s",
                                     i, conv_ty(ctx, arg_ty, cursor)]);
             i += 1;
@@ -478,7 +476,7 @@ crust fn visit_func_top(++cursor: CXCursor,
 }
 
 fn main(args: [str]) unsafe {
-    let bind_args = args;
+    let mut bind_args = args;
     let bin = vec::shift(bind_args);
 
     alt parse_args(bind_args) {
@@ -498,17 +496,17 @@ fn main(args: [str]) unsafe {
                 vec::unsafe::to_ptr(c_args),
                 vec::len(c_args) as c_int,
                 ptr::null(),
-                0 as unsigned, 0 as unsigned
+                0 as c_uint, 0 as c_uint
             );
             if unit as int == 0 {
                 fail "No input files given";
             }
 
-            let c_err = false;
-            let i = 0u;
+            let mut c_err = false;
+            let mut i = 0u;
             let diag_num = clang_getNumDiagnostics(unit) as uint;
             while i < diag_num {
-                let diag = clang_getDiagnostic(unit, i as unsigned);
+                let diag = clang_getDiagnostic(unit, i as c_uint);
                 io::stderr().write_line(to_str(clang_formatDiagnostic(
                     diag, clang_defaultDiagnosticDisplayOptions()
                 )));
@@ -529,13 +527,13 @@ fn main(args: [str]) unsafe {
             );
 
             let cursor = clang_getTranslationUnitCursor(unit);
-            ctx.out.write_line("import ctypes::*;\n");
+            ctx.out.write_line("import libc::*;\n");
             clang_visitChildren(cursor, visit_ty_top,
                                 ptr::addr_of(ctx) as CXClientData);
             ctx.out.write_line(#fmt["#[link_name=\"%s\"]", ctx.link]);
             ctx.out.write_line("native mod bindgen {\n");
-            clang_visitChildren(cursor, visit_func_top,
-                                ptr::addr_of(ctx) as CXClientData);
+            //clang_visitChildren(cursor, visit_func_top,
+            //                    ptr::addr_of(ctx) as CXClientData);
             ctx.out.write_line("}");
 
             clang_disposeTranslationUnit(unit);
