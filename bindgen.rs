@@ -125,9 +125,9 @@ fn to_str(s: CXString) -> str unsafe {
 }
 
 fn match_pattern(ctx: @bind_ctx, cursor: CXCursor) -> bool {
-    let mut file = ptr::null();
+    let file = ptr::null();
     clang_getSpellingLocation(clang_getCursorLocation(cursor),
-                              ptr::mut_addr_of(file),
+                              ptr::addr_of(file),
                               ptr::null(), ptr::null(), ptr::null());
 
     if file as int == 0 {
@@ -375,31 +375,31 @@ crust fn visit_ty_top(++cursor: CXCursor,
     }
 
     if cursor.kind == CXCursor_StructDecl {
-        fwd_decl(ctx, cursor, {||
+        fwd_decl(ctx, cursor) {||
             ctx.unnamed_field = 0u;
             ctx.out.write_line(#fmt["type %s = {",
                                     decl_name(ctx, cursor)]);
             clang_visitChildren(cursor, visit_struct, data);
             ctx.out.write_line("};\n");
-        });
+        };
         ret CXChildVisit_Recurse;
     } else if cursor.kind == CXCursor_UnionDecl {
-        fwd_decl(ctx, cursor, {||
+        fwd_decl(ctx, cursor) {||
             ctx.out.write_line(
                 #fmt["type %s = c_void /* FIXME: union type */;\n",
                      decl_name(ctx, cursor)]
             );
-        });
+        };
         ret CXChildVisit_Recurse;
     } else if cursor.kind == CXCursor_EnumDecl {
-        fwd_decl(ctx, cursor, {||
+        fwd_decl(ctx, cursor) {||
             ctx.out.write_line(#fmt[
                 "type %s = %s;", decl_name(ctx, cursor),
                 conv_ty(ctx, clang_getEnumDeclIntegerType(cursor),
                         cursor)
             ]);
             clang_visitChildren(cursor, visit_enum, data);
-        });
+        };
         ctx.out.write_line("");
         ret CXChildVisit_Continue;
     } else if cursor.kind == CXCursor_FunctionDecl {
@@ -489,7 +489,7 @@ fn main(args: [str]) unsafe {
             }
 
             let c_args = vec::map(clang_args, {|s|
-                str::as_buf(s, {|b| b })
+                str::as_c_str(s, {|b| b })
             });
             let unit = clang_parseTranslationUnit(
                 ix, ptr::null(),
@@ -532,8 +532,8 @@ fn main(args: [str]) unsafe {
                                 ptr::addr_of(ctx) as CXClientData);
             ctx.out.write_line(#fmt["#[link_name=\"%s\"]", ctx.link]);
             ctx.out.write_line("native mod bindgen {\n");
-            //clang_visitChildren(cursor, visit_func_top,
-            //                    ptr::addr_of(ctx) as CXClientData);
+            clang_visitChildren(cursor, visit_func_top,
+                                ptr::addr_of(ctx) as CXClientData);
             ctx.out.write_line("}");
 
             clang_disposeTranslationUnit(unit);
