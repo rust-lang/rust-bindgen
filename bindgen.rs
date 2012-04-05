@@ -440,6 +440,11 @@ crust fn visit_func_top(++cursor: CXCursor,
         ret CXChildVisit_Continue;
     }
 
+    let linkage = clang_getCursorLinkage(cursor);
+    if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
+        ret CXChildVisit_Continue;
+    }
+
     if cursor.kind == CXCursor_FunctionDecl {
         let name = to_str(clang_getCursorSpelling(cursor));
         if sym_visited(ctx, name) {
