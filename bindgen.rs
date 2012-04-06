@@ -1,10 +1,13 @@
 use std;
+use rustsyntax;
 
 import libc::*;
 
 import std::map;
 import map::hashmap;
 import io::writer_util;
+
+import rustsyntax::parse::parser::{bad_expr_word_table};
 
 import clang::*;
 import clang::bindgen::*;
@@ -17,7 +20,7 @@ type bind_ctx = {
     visited: map::hashmap<str, bool>,
     mut unnamed_ty: uint,
     mut unnamed_field: uint,
-    keywords: [str]
+    keywords: hashmap<str, ()>
 };
 
 enum result {
@@ -32,17 +35,6 @@ fn CXCursor_hash(&&c: CXCursor) -> uint {
 
 fn CXCursor_eq(&&k1: CXCursor, &&k2: CXCursor) -> bool {
     ret clang_equalCursors(k1, k2) as int == 1;
-}
-
-fn rust_keywords() -> [str] {
-    ret [
-        "alt", "assert", "be", "break", "check", "claim",
-        "class", "const", "cont", "copy", "do", "else", "enum",
-        "export", "fail", "fn", "for", "if",  "iface", "impl",
-        "import", "let", "log", "mod", "mutable", "native", "pure",
-        "resource", "ret", "trait", "type", "unchecked", "unsafe",
-        "while", "crust", "mut"
-    ];
 }
 
 fn parse_args(args: [str]) -> result {
@@ -103,7 +95,7 @@ fn parse_args(args: [str]) -> result {
              visited: map::str_hash(),
              mut unnamed_ty: 0u,
              mut unnamed_field: 0u,
-             keywords: rust_keywords() });
+             keywords: bad_expr_word_table() });
 }
 
 fn print_usage(bin: str) {
@@ -139,7 +131,7 @@ fn match_pattern(ctx: @bind_ctx, cursor: CXCursor) -> bool {
     }
 
     let name = to_str(clang_getFileName(file));
-    for pat in ctx.match {
+    for vec::each(ctx.match) {|pat|
         if str::contains(name, pat) {
             ret true;
         }
@@ -206,7 +198,7 @@ fn fwd_decl(ctx: @bind_ctx, cursor: CXCursor, f: fn()) {
 }
 
 fn rust_id(ctx: @bind_ctx, name: str) -> str {
-    if option::is_some(vec::find(ctx.keywords, {|k| k == name})) {
+    if ctx.keywords.contains_key(name) {
         ret "_" + name;
     }
     ret name;
