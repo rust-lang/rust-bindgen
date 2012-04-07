@@ -187,10 +187,18 @@ fn opaque_decl(ctx: @bind_ctx, decl: CXCursor) {
     }
 }
 
-fn fwd_decl(ctx: @bind_ctx, cursor: CXCursor, f: fn()) {
+fn fwd_decl(ctx: @bind_ctx, cursor: CXCursor,
+            f: fn(ctx: @bind_ctx, c: CXCursor, n: str)) {
     let def = clang_getCursorDefinition(cursor);
     if CXCursor_eq(cursor, def) {
-        f();
+        let name = to_str(clang_getCursorSpelling(cursor));
+        let parent = clang_getCursorLexicalParent(cursor);
+        if !str::is_empty(name) ||
+           parent.kind == CXCursor_StructDecl ||
+           parent.kind == CXCursor_UnionDecl ||
+           parent.kind == CXCursor_EnumDecl {
+            f(ctx, cursor, decl_name(ctx, cursor));
+        }
     } else if def.kind == CXCursor_NoDeclFound ||
               def.kind == CXCursor_InvalidFile {
         opaque_decl(ctx, cursor);
@@ -358,6 +366,29 @@ crust fn visit_enum(++cursor: CXCursor,
     ret CXChildVisit_Continue;
 }
 
+fn def_struct(ctx: @bind_ctx, cursor: CXCursor, name: str) {
+    ctx.unnamed_field = 0u;
+    ctx.out.write_line(#fmt["type %s = {", name]);
+    clang_visitChildren(cursor, visit_struct,
+                        ptr::addr_of(ctx) as CXClientData);
+    ctx.out.write_line("};\n");
+}
+
+fn def_union(ctx: @bind_ctx, _cursor: CXCursor, name: str) {
+    ctx.out.write_line(
+        #fmt["type %s = c_void /* FIXME: union type */;\n", name]
+    );
+}
+
+fn def_enum(ctx: @bind_ctx, cursor: CXCursor, name: str) {
+    ctx.out.write_line(#fmt[
+        "type %s = %s;", name,
+        conv_ty(ctx, clang_getEnumDeclIntegerType(cursor), cursor)
+    ]);
+    clang_visitChildren(cursor, visit_enum,
+                        ptr::addr_of(ctx) as CXClientData);
+}
+
 crust fn visit_ty_top(++cursor: CXCursor,
                       ++_parent: CXCursor,
                       data: CXClientData) -> c_uint unsafe {
@@ -367,31 +398,13 @@ crust fn visit_ty_top(++cursor: CXCursor,
     }
 
     if cursor.kind == CXCursor_StructDecl {
-        fwd_decl(ctx, cursor) {||
-            ctx.unnamed_field = 0u;
-            ctx.out.write_line(#fmt["type %s = {",
-                                    decl_name(ctx, cursor)]);
-            clang_visitChildren(cursor, visit_struct, data);
-            ctx.out.write_line("};\n");
-        };
+        fwd_decl(ctx, cursor, def_struct);
         ret CXChildVisit_Recurse;
     } else if cursor.kind == CXCursor_UnionDecl {
-        fwd_decl(ctx, cursor) {||
-            ctx.out.write_line(
-                #fmt["type %s = c_void /* FIXME: union type */;\n",
-                     decl_name(ctx, cursor)]
-            );
-        };
+        fwd_decl(ctx, cursor, def_union);
         ret CXChildVisit_Recurse;
     } else if cursor.kind == CXCursor_EnumDecl {
-        fwd_decl(ctx, cursor) {||
-            ctx.out.write_line(#fmt[
-                "type %s = %s;", decl_name(ctx, cursor),
-                conv_ty(ctx, clang_getEnumDeclIntegerType(cursor),
-                        cursor)
-            ]);
-            clang_visitChildren(cursor, visit_enum, data);
-        };
+        fwd_decl(ctx, cursor, def_enum);
         ctx.out.write_line("");
         ret CXChildVisit_Continue;
     } else if cursor.kind == CXCursor_FunctionDecl {
@@ -408,12 +421,31 @@ crust fn visit_ty_top(++cursor: CXCursor,
         if sym_visited(ctx, name) {
             ret CXChildVisit_Continue;
         }
+
         let mut under_ty = clang_getTypedefDeclUnderlyingType(cursor);
         if under_ty.kind == CXType_Unexposed {
             under_ty = clang_getCanonicalType(under_ty);
         }
+        let decl = clang_getTypeDeclaration(under_ty);
+        let ty_name = rust_id(ctx, name);
+
+        if clang_isCursorDefinition(decl) as int == 1 &&
+           str::is_empty(to_str(clang_getCursorSpelling(decl))) {
+            if decl.kind == CXCursor_StructDecl {
+                def_struct(ctx, decl, ty_name);
+                ret CXChildVisit_Recurse;
+            } else if decl.kind == CXCursor_UnionDecl {
+                def_union(ctx, decl, ty_name);
+                ret CXChildVisit_Recurse;
+            } else if decl.kind == CXCursor_EnumDecl {
+                def_enum(ctx, decl, ty_name);
+                ctx.out.write_line("");
+                ret CXChildVisit_Continue;
+            }
+        }
+
         ctx.out.write_line(#fmt["type %s = %s;\n",
-                                rust_id(ctx, name),
+                                ty_name,
                                 conv_ty(ctx, under_ty, cursor)]);
         opaque_ty(ctx, under_ty);
         ret CXChildVisit_Continue;

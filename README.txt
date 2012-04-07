@@ -13,4 +13,3 @@ It is ported from clay's bindgen.
 * recursive type
 * global variable
 * variadic arguments
-* eliminate intermediate types

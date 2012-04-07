@@ -24,29 +24,30 @@ const CXAvailability_Deprecated: u32 = 1_u32;
 const CXAvailability_NotAvailable: u32 = 2_u32;
 const CXAvailability_NotAccessible: u32 = 3_u32;
 
-type struct_unnamed1 = {
+type CXString = {
     data: *c_void,
     private_flags: c_uint,
 };
 
-type CXString = struct_unnamed1;
+
+type CXGlobalOptFlags = c_uint;
+const CXGlobalOpt_None: u32 = 0_u32;
+const CXGlobalOpt_ThreadBackgroundPriorityForIndexing: u32 = 1_u32;
+const CXGlobalOpt_ThreadBackgroundPriorityForEditing: u32 = 2_u32;
+const CXGlobalOpt_ThreadBackgroundPriorityForAll: u32 = 3_u32;
 
 type CXFile = *c_void;
 
-type struct_unnamed2 = {
+type CXSourceLocation = {
     ptr_data: (*c_void,*c_void),
     int_data: c_uint,
 };
 
-type CXSourceLocation = struct_unnamed2;
-
-type struct_unnamed3 = {
+type CXSourceRange = {
     ptr_data: (*c_void,*c_void),
     begin_int_data: c_uint,
     end_int_data: c_uint,
 };
-
-type CXSourceRange = struct_unnamed3;
 
 type enum_CXDiagnosticSeverity = c_uint;
 const CXDiagnostic_Ignored: u32 = 0_u32;
@@ -290,13 +291,11 @@ const CXCursor_InclusionDirective: u32 = 503_u32;
 const CXCursor_FirstPreprocessing: u32 = 500_u32;
 const CXCursor_LastPreprocessing: u32 = 503_u32;
 
-type struct_unnamed4 = {
+type CXCursor = {
     kind: enum_CXCursorKind,
     xdata: c_int,
     data: (*c_void,*c_void,*c_void),
 };
-
-type CXCursor = struct_unnamed4;
 
 type enum_CXLinkageKind = c_uint;
 const CXLinkage_Invalid: u32 = 0_u32;
@@ -375,12 +374,10 @@ const CXCallingConv_AAPCS_VFP: u32 = 7_u32;
 const CXCallingConv_Invalid: u32 = 100_u32;
 const CXCallingConv_Unexposed: u32 = 200_u32;
 
-type struct_unnamed5 = {
+type CXType = {
     kind: enum_CXTypeKind,
     data: (*c_void,*c_void),
 };
-
-type CXType = struct_unnamed5;
 
 type enum_CX_CXXAccessSpecifier = c_uint;
 const CX_CXXInvalidAccessSpecifier: u32 = 0_u32;
@@ -409,21 +406,17 @@ const CXToken_Comment: u32 = 4_u32;
 
 type CXTokenKind = enum_CXTokenKind;
 
-type struct_unnamed6 = {
+type CXToken = {
     int_data: (c_uint,c_uint,c_uint,c_uint),
     ptr_data: *c_void,
 };
 
-type CXToken = struct_unnamed6;
-
 type CXCompletionString = *c_void;
 
-type struct_unnamed7 = {
+type CXCompletionResult = {
     CursorKind: enum_CXCursorKind,
     CompletionString: CXCompletionString,
 };
-
-type CXCompletionResult = struct_unnamed7;
 
 type enum_CXCompletionChunkKind = c_uint;
 const CXCompletionChunk_Optional: u32 = 0_u32;
@@ -448,12 +441,10 @@ const CXCompletionChunk_Equal: u32 = 18_u32;
 const CXCompletionChunk_HorizontalSpace: u32 = 19_u32;
 const CXCompletionChunk_VerticalSpace: u32 = 20_u32;
 
-type struct_unnamed8 = {
+type CXCodeCompleteResults = {
     Results: *CXCompletionResult,
     NumResults: c_uint,
 };
-
-type CXCodeCompleteResults = struct_unnamed8;
 
 type enum_CXCodeComplete_Flags = c_uint;
 const CXCodeComplete_IncludeMacros: u32 = 1_u32;
@@ -493,12 +484,10 @@ type enum_CXVisitorResult = c_uint;
 const CXVisit_Break: u32 = 0_u32;
 const CXVisit_Continue: u32 = 1_u32;
 
-type struct_unnamed9 = {
+type CXCursorAndRangeVisitor = {
     context: *c_void,
     visit: *u8,
 };
-
-type CXCursorAndRangeVisitor = struct_unnamed9;
 
 type CXIdxClientFile = *c_void;
 
@@ -508,14 +497,12 @@ type CXIdxClientContainer = *c_void;
 
 type CXIdxClientASTFile = *c_void;
 
-type struct_unnamed10 = {
+type CXIdxLoc = {
     ptr_data: (*c_void,*c_void),
     int_data: c_uint,
 };
 
-type CXIdxLoc = struct_unnamed10;
-
-type struct_unnamed11 = {
+type CXIdxIncludedFileInfo = {
     hashLoc: CXIdxLoc,
     filename: *c_char,
     file: CXFile,
@@ -523,17 +510,14 @@ type struct_unnamed11 = {
     isAngled: c_int,
 };
 
-type CXIdxIncludedFileInfo = struct_unnamed11;
-
-type struct_unnamed12 = {
+type CXIdxImportedASTFileInfo = {
     file: CXFile,
     loc: CXIdxLoc,
     isModule: c_int,
 };
 
-type CXIdxImportedASTFileInfo = struct_unnamed12;
 
-type enum_unnamed13 = c_uint;
+type CXIdxEntityKind = c_uint;
 const CXIdxEntity_Unexposed: u32 = 0_u32;
 const CXIdxEntity_Typedef: u32 = 1_u32;
 const CXIdxEntity_Function: u32 = 2_u32;
@@ -561,41 +545,34 @@ const CXIdxEntity_CXXDestructor: u32 = 23_u32;
 const CXIdxEntity_CXXConversionFunction: u32 = 24_u32;
 const CXIdxEntity_CXXTypeAlias: u32 = 25_u32;
 
-type CXIdxEntityKind = enum_unnamed13;
 
-type enum_unnamed14 = c_uint;
+type CXIdxEntityLanguage = c_uint;
 const CXIdxEntityLang_None: u32 = 0_u32;
 const CXIdxEntityLang_C: u32 = 1_u32;
 const CXIdxEntityLang_ObjC: u32 = 2_u32;
 const CXIdxEntityLang_CXX: u32 = 3_u32;
 
-type CXIdxEntityLanguage = enum_unnamed14;
 
-type enum_unnamed15 = c_uint;
+type CXIdxEntityCXXTemplateKind = c_uint;
 const CXIdxEntity_NonTemplate: u32 = 0_u32;
 const CXIdxEntity_Template: u32 = 1_u32;
 const CXIdxEntity_TemplatePartialSpecialization: u32 = 2_u32;
 const CXIdxEntity_TemplateSpecialization: u32 = 3_u32;
 
-type CXIdxEntityCXXTemplateKind = enum_unnamed15;
 
-type enum_unnamed16 = c_uint;
+type CXIdxAttrKind = c_uint;
 const CXIdxAttr_Unexposed: u32 = 0_u32;
 const CXIdxAttr_IBAction: u32 = 1_u32;
 const CXIdxAttr_IBOutlet: u32 = 2_u32;
 const CXIdxAttr_IBOutletCollection: u32 = 3_u32;
 
-type CXIdxAttrKind = enum_unnamed16;
-
-type struct_unnamed17 = {
+type CXIdxAttrInfo = {
     kind: CXIdxAttrKind,
     cursor: CXCursor,
     loc: CXIdxLoc,
 };
 
-type CXIdxAttrInfo = struct_unnamed17;
-
-type struct_unnamed18 = {
+type CXIdxEntityInfo = {
     kind: CXIdxEntityKind,
     templateKind: CXIdxEntityCXXTemplateKind,
     lang: CXIdxEntityLanguage,
@@ -606,24 +583,18 @@ type struct_unnamed18 = {
     numAttributes: c_uint,
 };
 
-type CXIdxEntityInfo = struct_unnamed18;
-
-type struct_unnamed19 = {
+type CXIdxContainerInfo = {
     cursor: CXCursor,
 };
 
-type CXIdxContainerInfo = struct_unnamed19;
-
-type struct_unnamed20 = {
+type CXIdxIBOutletCollectionAttrInfo = {
     attrInfo: *CXIdxAttrInfo,
     objcClass: *CXIdxEntityInfo,
     classCursor: CXCursor,
     classLoc: CXIdxLoc,
 };
 
-type CXIdxIBOutletCollectionAttrInfo = struct_unnamed20;
-
-type struct_unnamed21 = {
+type CXIdxDeclInfo = {
     entityInfo: *CXIdxEntityInfo,
     cursor: CXCursor,
     loc: CXIdxLoc,
@@ -638,54 +609,41 @@ type struct_unnamed21 = {
     numAttributes: c_uint,
 };
 
-type CXIdxDeclInfo = struct_unnamed21;
 
-type enum_unnamed22 = c_uint;
+type CXIdxObjCContainerKind = c_uint;
 const CXIdxObjCContainer_ForwardRef: u32 = 0_u32;
 const CXIdxObjCContainer_Interface: u32 = 1_u32;
 const CXIdxObjCContainer_Implementation: u32 = 2_u32;
 
-type CXIdxObjCContainerKind = enum_unnamed22;
-
-type struct_unnamed23 = {
+type CXIdxObjCContainerDeclInfo = {
     declInfo: *CXIdxDeclInfo,
     kind: CXIdxObjCContainerKind,
 };
 
-type CXIdxObjCContainerDeclInfo = struct_unnamed23;
-
-type struct_unnamed24 = {
+type CXIdxBaseClassInfo = {
     base: *CXIdxEntityInfo,
     cursor: CXCursor,
     loc: CXIdxLoc,
 };
 
-type CXIdxBaseClassInfo = struct_unnamed24;
-
-type struct_unnamed25 = {
+type CXIdxObjCProtocolRefInfo = {
     protocol: *CXIdxEntityInfo,
     cursor: CXCursor,
     loc: CXIdxLoc,
 };
 
-type CXIdxObjCProtocolRefInfo = struct_unnamed25;
-
-type struct_unnamed26 = {
+type CXIdxObjCProtocolRefListInfo = {
     protocols: **CXIdxObjCProtocolRefInfo,
     numProtocols: c_uint,
 };
 
-type CXIdxObjCProtocolRefListInfo = struct_unnamed26;
-
-type struct_unnamed27 = {
+type CXIdxObjCInterfaceDeclInfo = {
     containerInfo: *CXIdxObjCContainerDeclInfo,
     superInfo: *CXIdxBaseClassInfo,
     protocols: *CXIdxObjCProtocolRefListInfo,
 };
 
-type CXIdxObjCInterfaceDeclInfo = struct_unnamed27;
-
-type struct_unnamed28 = {
+type CXIdxObjCCategoryDeclInfo = {
     containerInfo: *CXIdxObjCContainerDeclInfo,
     objcClass: *CXIdxEntityInfo,
     classCursor: CXCursor,
@@ -693,31 +651,24 @@ type struct_unnamed28 = {
     protocols: *CXIdxObjCProtocolRefListInfo,
 };
 
-type CXIdxObjCCategoryDeclInfo = struct_unnamed28;
-
-type struct_unnamed29 = {
+type CXIdxObjCPropertyDeclInfo = {
     declInfo: *CXIdxDeclInfo,
     getter: *CXIdxEntityInfo,
     setter: *CXIdxEntityInfo,
 };
 
-type CXIdxObjCPropertyDeclInfo = struct_unnamed29;
-
-type struct_unnamed30 = {
+type CXIdxCXXClassDeclInfo = {
     declInfo: *CXIdxDeclInfo,
     bases: **CXIdxBaseClassInfo,
     numBases: c_uint,
 };
 
-type CXIdxCXXClassDeclInfo = struct_unnamed30;
 
-type enum_unnamed31 = c_uint;
+type CXIdxEntityRefKind = c_uint;
 const CXIdxEntityRef_Direct: u32 = 1_u32;
 const CXIdxEntityRef_Implicit: u32 = 2_u32;
 
-type CXIdxEntityRefKind = enum_unnamed31;
-
-type struct_unnamed32 = {
+type CXIdxEntityRefInfo = {
     kind: CXIdxEntityRefKind,
     cursor: CXCursor,
     loc: CXIdxLoc,
@@ -726,9 +677,7 @@ type struct_unnamed32 = {
     container: *CXIdxContainerInfo,
 };
 
-type CXIdxEntityRefInfo = struct_unnamed32;
-
-type struct_unnamed33 = {
+type IndexerCallbacks = {
     abortQuery: *u8,
     diagnostic: *u8,
     enteredMainFile: *u8,
@@ -739,17 +688,15 @@ type struct_unnamed33 = {
     indexEntityReference: *u8,
 };
 
-type IndexerCallbacks = struct_unnamed33;
-
 type CXIndexAction = *c_void;
 
-type enum_unnamed34 = c_uint;
+
+type CXIndexOptFlags = c_uint;
 const CXIndexOpt_None: u32 = 0_u32;
 const CXIndexOpt_SuppressRedundantRefs: u32 = 1_u32;
 const CXIndexOpt_IndexFunctionLocalSymbols: u32 = 2_u32;
 const CXIndexOpt_IndexImplicitTemplateInstantiations: u32 = 4_u32;
-
-type CXIndexOptFlags = enum_unnamed34;
+const CXIndexOpt_SuppressWarnings: u32 = 8_u32;
 
 #[link_name="clang"]
 native mod bindgen {
@@ -761,6 +708,10 @@ fn clang_disposeString(++arg0: CXString);
 fn clang_createIndex(++arg0: c_int, ++arg1: c_int) -> CXIndex;
 
 fn clang_disposeIndex(++arg0: CXIndex);
+
+fn clang_CXIndex_setGlobalOptions(++arg0: CXIndex, ++arg1: c_uint);
+
+fn clang_CXIndex_getGlobalOptions(++arg0: CXIndex) -> c_uint;
 
 fn clang_getFileName(++arg0: CXFile) -> CXString;
 
@@ -1006,6 +957,8 @@ fn clang_constructUSR_ObjCProperty(++arg0: *c_char, ++arg1: CXString) -> CXStrin
 
 fn clang_getCursorSpelling(++arg0: CXCursor) -> CXString;
 
+fn clang_Cursor_getSpellingNameRange(++arg0: CXCursor, ++arg1: c_uint, ++arg2: c_uint) -> CXSourceRange;
+
 fn clang_getCursorDisplayName(++arg0: CXCursor) -> CXString;
 
 fn clang_getCursorReferenced(++arg0: CXCursor) -> CXCursor;
@@ -1015,6 +968,8 @@ fn clang_getCursorDefinition(++arg0: CXCursor) -> CXCursor;
 fn clang_isCursorDefinition(++arg0: CXCursor) -> c_uint;
 
 fn clang_getCanonicalCursor(++arg0: CXCursor) -> CXCursor;
+
+fn clang_Cursor_getObjCSelectorIndex(++arg0: CXCursor) -> c_int;
 
 fn clang_CXXMethod_isStatic(++arg0: CXCursor) -> c_uint;
 
@@ -1063,6 +1018,8 @@ fn clang_getCompletionAvailability(++arg0: CXCompletionString) -> enum_CXAvailab
 fn clang_getCompletionNumAnnotations(++arg0: CXCompletionString) -> c_uint;
 
 fn clang_getCompletionAnnotation(++arg0: CXCompletionString, ++arg1: c_uint) -> CXString;
+
+fn clang_getCompletionParent(++arg0: CXCompletionString, ++arg1: *enum_CXCursorKind) -> CXString;
 
 fn clang_getCursorCompletionString(++arg0: CXCursor) -> CXCompletionString;
 
