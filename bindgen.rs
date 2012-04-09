@@ -17,6 +17,7 @@ type bind_ctx = {
     link: str,
     out: io::writer,
     name: map::hashmap<CXCursor, str>,
+    unnamed_decl: map::hashmap<CXCursor, bool>,
     visited: map::hashmap<str, bool>,
     mut unnamed_ty: uint,
     mut unnamed_field: uint,
@@ -92,6 +93,7 @@ fn parse_args(args: [str]) -> result {
              link: option::get(link),
              out: out,
              name: map::hashmap(CXCursor_hash, CXCursor_eq),
+             unnamed_decl: map::hashmap(CXCursor_hash, CXCursor_eq),
              visited: map::str_hash(),
              mut unnamed_ty: 0u,
              mut unnamed_field: 0u,
@@ -192,12 +194,12 @@ fn fwd_decl(ctx: @bind_ctx, cursor: CXCursor,
     let def = clang_getCursorDefinition(cursor);
     if CXCursor_eq(cursor, def) {
         let name = to_str(clang_getCursorSpelling(cursor));
-        let parent = clang_getCursorLexicalParent(cursor);
-        if !str::is_empty(name) ||
-           parent.kind == CXCursor_StructDecl ||
-           parent.kind == CXCursor_UnionDecl ||
-           parent.kind == CXCursor_EnumDecl {
+        if !str::is_empty(name) {
             f(ctx, cursor, decl_name(ctx, cursor));
+        } else {
+            if !ctx.unnamed_decl.contains_key(cursor) {
+                ctx.unnamed_decl.insert(cursor, true);
+            }
         }
     } else if def.kind == CXCursor_NoDeclFound ||
               def.kind == CXCursor_InvalidFile {
@@ -431,6 +433,8 @@ crust fn visit_ty_top(++cursor: CXCursor,
 
         if clang_isCursorDefinition(decl) as int == 1 &&
            str::is_empty(to_str(clang_getCursorSpelling(decl))) {
+            ctx.unnamed_decl.insert(decl, false);
+
             if decl.kind == CXCursor_StructDecl {
                 def_struct(ctx, decl, ty_name);
                 ret CXChildVisit_Recurse;
@@ -454,6 +458,19 @@ crust fn visit_ty_top(++cursor: CXCursor,
     }
 
     ret CXChildVisit_Recurse;
+}
+
+fn visit_unnamed_decl(ctx: @bind_ctx, cursor: CXCursor) {
+    let name = decl_name(ctx, cursor);
+
+    if cursor.kind == CXCursor_StructDecl {
+        def_struct(ctx, cursor, name);
+    } else if cursor.kind == CXCursor_UnionDecl {
+        def_union(ctx, cursor, name);
+    } else if cursor.kind == CXCursor_EnumDecl {
+        def_enum(ctx, cursor, name);
+        ctx.out.write_line("");
+    }
 }
 
 crust fn visit_func_top(++cursor: CXCursor,
@@ -557,8 +574,13 @@ fn main(args: [str]) unsafe {
 
             let cursor = clang_getTranslationUnitCursor(unit);
             ctx.out.write_line("import libc::*;\n");
+
             clang_visitChildren(cursor, visit_ty_top,
                                 ptr::addr_of(ctx) as CXClientData);
+            ctx.unnamed_decl.items() {|c, b|
+                if b { visit_unnamed_decl(ctx, c) }
+            };
+
             ctx.out.write_line(#fmt["#[link_name=\"%s\"]", ctx.link]);
             ctx.out.write_line("native mod bindgen {\n");
             clang_visitChildren(cursor, visit_func_top,
