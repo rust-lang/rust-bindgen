@@ -44,7 +44,11 @@ fn parse_args(args: [str]) -> result {
 
     let mut out = io::stdout();
     let mut pat = [];
-    let mut link = option::none;
+    let mut link = "";
+
+    if args_len == 0u {
+        ret usage;
+    }
 
     let mut ix = 0u;
     while ix < args_len {
@@ -67,7 +71,7 @@ fn parse_args(args: [str]) -> result {
                 if ix + 1u > args_len {
                     ret err("Missing link name");
                 }
-                link = option::some(args[ix + 1u]);
+                link = args[ix + 1u];
                 ix += 2u;
             }
             "-match" {
@@ -84,13 +88,9 @@ fn parse_args(args: [str]) -> result {
         }
     }
 
-    if option::is_none(link) {
-        ret err("Link name is required");
-    }
-
     ret ok(clang_args,
            @{ match: pat,
-             link: option::get(link),
+             link: link,
              out: out,
              name: map::hashmap(CXCursor_hash, CXCursor_eq),
              unnamed_decl: map::hashmap(CXCursor_hash, CXCursor_eq),
@@ -104,12 +104,15 @@ fn print_usage(bin: str) {
     io::print(#fmt["Usage: %s [options] input.h", bin] +
 "
 Options:
+    -h or --help    Display help message
     -l <name>       Link name of the library
     -o <output.rs>  Write bindings to <output.rs> (default stdout)
     -match <name>   Only output bindings for definitions from files
                     whose name contains <name>
                     If multiple -match options are provided, files
                     matching any rule are bound to.
+
+    Options other than stated above are passed to clang.
 "
     );
 }
@@ -518,7 +521,7 @@ crust fn visit_func_top(++cursor: CXCursor,
             i += 1;
         }
         if clang_isFunctionTypeVariadic(ty) as uint != 0u {
-            ctx.out.write_str("/* FIXME: variadic arguments */");
+            ctx.out.write_str("/* FIXME: variadic function */");
         }
         ctx.out.write_str(")");
         let ret_ty = clang_getCursorResultType(cursor);
