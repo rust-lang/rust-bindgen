@@ -369,6 +369,10 @@ crust fn visit_enum(++cursor: CXCursor,
 }
 
 fn def_struct(ctx: @bind_ctx, cursor: CXCursor, name: str) {
+    if sym_visited(ctx, name) {
+        ret;
+    }
+
     ctx.unnamed_field = 0u;
     ctx.out.write_line(#fmt["type %s = {", name]);
     clang_visitChildren(cursor, visit_struct,
@@ -377,12 +381,20 @@ fn def_struct(ctx: @bind_ctx, cursor: CXCursor, name: str) {
 }
 
 fn def_union(ctx: @bind_ctx, _cursor: CXCursor, name: str) {
+    if sym_visited(ctx, name) {
+        ret;
+    }
+
     ctx.out.write_line(
         #fmt["type %s = c_void /* FIXME: union type */;\n", name]
     );
 }
 
 fn def_enum(ctx: @bind_ctx, cursor: CXCursor, name: str) {
+    if sym_visited(ctx, name) {
+        ret;
+    }
+
     ctx.out.write_line(#fmt[
         "type %s = %s;", name,
         conv_ty(ctx, clang_getEnumDeclIntegerType(cursor), cursor)
@@ -420,10 +432,6 @@ crust fn visit_ty_top(++cursor: CXCursor,
         ret CXChildVisit_Continue;
     } else if cursor.kind == CXCursor_TypedefDecl {
         let name = to_str(clang_getCursorSpelling(cursor));
-        if sym_visited(ctx, name) {
-            ret CXChildVisit_Continue;
-        }
-
         let mut under_ty = clang_getTypedefDeclUnderlyingType(cursor);
         if under_ty.kind == CXType_Unexposed {
             under_ty = clang_getCanonicalType(under_ty);
@@ -446,6 +454,10 @@ crust fn visit_ty_top(++cursor: CXCursor,
                 ctx.out.write_line("");
                 ret CXChildVisit_Continue;
             }
+        }
+
+        if sym_visited(ctx, name) {
+            ret CXChildVisit_Continue;
         }
 
         ctx.out.write_line(#fmt["type %s = %s;\n",
