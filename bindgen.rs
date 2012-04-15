@@ -19,6 +19,7 @@ type bind_ctx = {
     name: map::hashmap<CXCursor, str>,
     unnamed_decl: map::hashmap<CXCursor, bool>,
     visited: map::hashmap<str, bool>,
+    recurse_defs: map::set<str>,
     mut unnamed_ty: uint,
     mut unnamed_field: uint,
     keywords: hashmap<str, ()>
@@ -95,6 +96,7 @@ fn parse_args(args: [str]) -> result {
              name: map::hashmap(CXCursor_hash, CXCursor_eq),
              unnamed_decl: map::hashmap(CXCursor_hash, CXCursor_eq),
              visited: map::str_hash(),
+             recurse_defs: map::str_hash(),
              mut unnamed_ty: 0u,
              mut unnamed_field: 0u,
              keywords: bad_expr_word_table() });
@@ -193,7 +195,8 @@ fn opaque_decl(ctx: @bind_ctx, decl: CXCursor) {
 }
 
 fn fwd_decl(ctx: @bind_ctx, cursor: CXCursor,
-            f: fn(ctx: @bind_ctx, c: CXCursor, n: str)) {
+            f: fn(ctx: @bind_ctx, c: CXCursor, n: str),
+            after: option<fn(ctx: @bind_ctx, c: CXCursor, n:str)>) {
     let def = clang_getCursorDefinition(cursor);
     if CXCursor_eq(cursor, def) {
         let name = to_str(clang_getCursorSpelling(cursor));
@@ -208,6 +211,10 @@ fn fwd_decl(ctx: @bind_ctx, cursor: CXCursor,
               def.kind == CXCursor_InvalidFile {
         opaque_decl(ctx, cursor);
     }
+    alt after {
+        some(f) { f(ctx, cursor, decl_name(ctx, cursor)); }
+        _ {}
+    }
 }
 
 fn rust_id(ctx: @bind_ctx, name: str) -> str {
@@ -217,7 +224,7 @@ fn rust_id(ctx: @bind_ctx, name: str) -> str {
     ret name;
 }
 
-fn conv_ptr_ty(ctx: @bind_ctx, ty: CXType, cursor: CXCursor) -> str {
+fn conv_ptr_ty(ctx: @bind_ctx, ty: CXType, cursor: CXCursor, wrap_recurse: bool) -> str {
     if ty.kind == CXType_Void {
         ret "*c_void"
     } else if ty.kind == CXType_Unexposed ||
@@ -228,7 +235,7 @@ fn conv_ptr_ty(ctx: @bind_ctx, ty: CXType, cursor: CXCursor) -> str {
         ret if ret_ty.kind != CXType_Invalid {
             "*u8"
         } else if decl.kind != CXCursor_NoDeclFound {
-            "*" + conv_decl_ty(ctx, decl)
+            "*" + conv_decl_ty(ctx, decl, wrap_recurse)
         } else {
             #fmt["*c_void /* unknown %s referenced by %s %s */",
                  to_str(clang_getTypeKindSpelling(ty.kind)),
@@ -240,17 +247,22 @@ fn conv_ptr_ty(ctx: @bind_ctx, ty: CXType, cursor: CXCursor) -> str {
         let def_ty = clang_getTypedefDeclUnderlyingType(decl);
         if def_ty.kind == CXType_FunctionProto ||
            def_ty.kind == CXType_FunctionNoProto {
-            ret conv_ptr_ty(ctx, def_ty, cursor)
+            ret conv_ptr_ty(ctx, def_ty, cursor, wrap_recurse)
         }
     }
-    ret "*" + conv_ty(ctx, ty, cursor)
+    ret "*" + conv_ty(ctx, ty, cursor, wrap_recurse)
 }
 
-fn conv_decl_ty(ctx: @bind_ctx, cursor: CXCursor) -> str {
+fn conv_decl_ty(ctx: @bind_ctx, cursor: CXCursor, wrap_recurse: bool) -> str {
     ret if cursor.kind == CXCursor_StructDecl ||
            cursor.kind == CXCursor_UnionDecl ||
            cursor.kind == CXCursor_EnumDecl {
-        decl_name(ctx, cursor)
+        let name = decl_name(ctx, cursor);
+        if wrap_recurse {
+            "enum_recurse_"+name
+        } else {
+            name
+        }
     } else if cursor.kind == CXCursor_TypedefDecl {
         rust_id(ctx, to_str(clang_getCursorSpelling(cursor)))
     } else {
@@ -260,7 +272,7 @@ fn conv_decl_ty(ctx: @bind_ctx, cursor: CXCursor) -> str {
     };
 }
 
-fn conv_ty(ctx: @bind_ctx, ty: CXType, cursor: CXCursor) -> str {
+fn conv_ty(ctx: @bind_ctx, ty: CXType, cursor: CXCursor, wrap_recurse: bool) -> str {
     ret if ty.kind == CXType_Bool {
         "bool"
     } else if ty.kind == CXType_SChar ||
@@ -290,14 +302,15 @@ fn conv_ty(ctx: @bind_ctx, ty: CXType, cursor: CXCursor) -> str {
     } else if ty.kind == CXType_Double {
         "c_double"
     } else if ty.kind == CXType_Pointer {
-            conv_ptr_ty(ctx, clang_getPointeeType(ty), cursor)
+            conv_ptr_ty(ctx, clang_getPointeeType(ty), cursor, wrap_recurse)
     } else if ty.kind == CXType_Record ||
               ty.kind == CXType_Typedef  ||
               ty.kind == CXType_Unexposed ||
               ty.kind == CXType_Enum {
-        conv_decl_ty(ctx, clang_getTypeDeclaration(ty))
+        conv_decl_ty(ctx, clang_getTypeDeclaration(ty), wrap_recurse)
     } else if ty.kind == CXType_ConstantArray {
-        let a_ty = conv_ty(ctx, clang_getArrayElementType(ty), cursor);
+        let a_ty = conv_ty(ctx, clang_getArrayElementType(ty), cursor,
+                wrap_recurse);
         let size = clang_getArraySize(ty) as int;
 
         if size == 0 {
@@ -343,7 +356,7 @@ crust fn visit_struct(++cursor: CXCursor,
         }
         ctx.out.write_line(#fmt["    %s: %s,",
                                 rust_id(ctx, name),
-                                conv_ty(ctx, ty, cursor)]);
+                                conv_ty(ctx, ty, cursor, true)]);
     }
     ret CXChildVisit_Continue;
 }
@@ -369,6 +382,13 @@ crust fn visit_enum(++cursor: CXCursor,
         ]);
     }
     ret CXChildVisit_Continue;
+}
+
+fn def_recurse_enum(ctx: @bind_ctx, cursor: CXCursor, name: str) {
+    if ! ctx.recurse_defs.contains_key(name) {
+        ctx.out.write_line(#fmt["enum enum_recurse_%s {\n    rec_%s(%s),\n    inst_%s\n}\n", name, name, name, name]);
+        map::set_add(ctx.recurse_defs, name);
+    }
 }
 
 fn def_struct(ctx: @bind_ctx, cursor: CXCursor, name: str) {
@@ -400,7 +420,7 @@ fn def_enum(ctx: @bind_ctx, cursor: CXCursor, name: str) {
 
     ctx.out.write_line(#fmt[
         "type %s = %s;", name,
-        conv_ty(ctx, clang_getEnumDeclIntegerType(cursor), cursor)
+        conv_ty(ctx, clang_getEnumDeclIntegerType(cursor), cursor, false)
     ]);
     clang_visitChildren(cursor, visit_enum,
                         ptr::addr_of(ctx) as CXClientData);
@@ -415,13 +435,13 @@ crust fn visit_ty_top(++cursor: CXCursor,
     }
 
     if cursor.kind == CXCursor_StructDecl {
-        fwd_decl(ctx, cursor, def_struct);
+        fwd_decl(ctx, cursor, def_struct, some(def_recurse_enum));
         ret CXChildVisit_Recurse;
     } else if cursor.kind == CXCursor_UnionDecl {
-        fwd_decl(ctx, cursor, def_union);
+        fwd_decl(ctx, cursor, def_union, none);
         ret CXChildVisit_Recurse;
     } else if cursor.kind == CXCursor_EnumDecl {
-        fwd_decl(ctx, cursor, def_enum);
+        fwd_decl(ctx, cursor, def_enum, none);
         ctx.out.write_line("");
         ret CXChildVisit_Continue;
     } else if cursor.kind == CXCursor_FunctionDecl {
@@ -465,7 +485,7 @@ crust fn visit_ty_top(++cursor: CXCursor,
 
         ctx.out.write_line(#fmt["type %s = %s;\n",
                                 ty_name,
-                                conv_ty(ctx, under_ty, cursor)]);
+                                conv_ty(ctx, under_ty, cursor, false)]);
         opaque_ty(ctx, under_ty);
         ret CXChildVisit_Continue;
     } else if cursor.kind == CXCursor_FieldDecl {
@@ -517,7 +537,7 @@ crust fn visit_func_top(++cursor: CXCursor,
             }
             let arg_ty = clang_getArgType(ty, i as c_uint);
             ctx.out.write_str(#fmt["++arg%d: %s",
-                                    i, conv_ty(ctx, arg_ty, cursor)]);
+                                    i, conv_ty(ctx, arg_ty, cursor, false)]);
             i += 1;
         }
         if clang_isFunctionTypeVariadic(ty) as uint != 0u {
@@ -527,7 +547,7 @@ crust fn visit_func_top(++cursor: CXCursor,
         let ret_ty = clang_getCursorResultType(cursor);
         if ret_ty.kind != CXType_Void {
             ctx.out.write_str(#fmt[" -> %s",
-                                    conv_ty(ctx, ret_ty, cursor)]);
+                                    conv_ty(ctx, ret_ty, cursor, false)]);
         }
         ctx.out.write_line(";\n");
         ret CXChildVisit_Continue;
