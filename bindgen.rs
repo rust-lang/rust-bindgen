@@ -350,6 +350,19 @@ fn opaque_ty(ctx: @bind_ctx, ty: CXType) {
     }
 }
 
+crust fn visit_field(++cursor: CXCursor,
+                     ++_parent: CXCursor,
+                     data: CXClientData) -> c_uint unsafe {
+    let ctx = *(data as *@bind_ctx);
+    let suffix = if cursor.kind == CXCursor_IntegerLiteral {
+        " /* FIXME: bit field */"
+    } else {
+        ""
+    };
+    ctx.out.write_line(suffix);
+    ret CXChildVisit_Continue;
+}
+
 crust fn visit_struct(++cursor: CXCursor,
                       ++_parent: CXCursor,
                       data: CXClientData) -> c_uint unsafe {
@@ -361,9 +374,11 @@ crust fn visit_struct(++cursor: CXCursor,
             name = "field_unnamed" + uint::str(ctx.unnamed_field);
             ctx.unnamed_field += 1u;
         }
-        ctx.out.write_line(#fmt["    %s: %s,",
+        ctx.out.write_str(#fmt["    %s: %s,",
                                 rust_id(ctx, name),
                                 conv_ty(ctx, ty, cursor, true)]);
+        clang_visitChildren(cursor, visit_field,
+                            ptr::addr_of(ctx) as CXClientData);
     }
     ret CXChildVisit_Continue;
 }
