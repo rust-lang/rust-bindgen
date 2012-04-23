@@ -7,8 +7,6 @@ import std::map;
 import map::hashmap;
 import io::writer_util;
 
-import rustsyntax::parse::parser::{bad_expr_word_table};
-
 import clang::*;
 import clang::bindgen::*;
 
@@ -28,6 +26,24 @@ enum result {
     usage,
     ok([str], @bind_ctx),
     err(str)
+}
+
+fn keyword_table() -> hashmap<str, ()> {
+    let words = map::str_hash();
+    let keys = ["alt", "assert", "be", "break", "check", "claim",
+                "class", "const", "cont", "copy", "crust", "do", "else",
+                "enum", "export", "fail", "fn", "for", "if",  "iface",
+                "impl", "import", "let", "log", "loop", "mod",
+                "mut", "native", "new", "pure", "resource",
+                "ret", "trait", "type", "unchecked", "unsafe", "while",
+
+                "as", "bind", "else", "false", "implements", "move",
+                "of", "priv", "self", "send", "static", "to", "true",
+                "use", "with"];
+    for keys.each {|word|
+        words.insert(word, ());
+    }
+    ret words
 }
 
 fn CXCursor_hash(&&c: CXCursor) -> uint {
@@ -97,7 +113,7 @@ fn parse_args(args: [str]) -> result {
              visited: map::str_hash(),
              mut unnamed_ty: 0u,
              mut unnamed_field: 0u,
-             keywords: bad_expr_word_table() });
+             keywords: keyword_table() });
 }
 
 fn print_usage(bin: str) {
