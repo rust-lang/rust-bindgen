@@ -641,8 +641,8 @@ fn main(args: [str]) unsafe {
 
             clang_visitChildren(cursor, visit_ty_top,
                                 ptr::addr_of(ctx) as CXClientData);
-            ctx.unnamed_decl.items() {|c, b|
-                if b { visit_unnamed_decl(ctx, c) }
+            for ctx.unnamed_decl.each() {|c, b|
+                if b { visit_unnamed_decl(ctx, c); }
             };
 
             ctx.out.write_line(#fmt["#[link_name=\"%s\"]", ctx.link]);
