@@ -1,4 +1,3 @@
-
 import std::map;
 import map::hashmap;
 import io::WriterUtil;
@@ -12,7 +11,6 @@ type bind_ctx = {
     link: ~str,
     out: io::Writer,
     name: map::hashmap<CXCursor, ~str>,
-    unnamed_decl: map::hashmap<CXCursor, bool>,
     visited: map::hashmap<~str, bool>,
     mut unnamed_ty: uint,
     mut unnamed_field: uint,
@@ -125,7 +123,6 @@ fn parse_args(args: ~[~str]) -> result {
              link: link,
              out: out,
              name: map::hashmap(CXCursor_hash, CXCursor_eq),
-             unnamed_decl: map::hashmap(CXCursor_hash, CXCursor_eq),
              visited: map::str_hash(),
              mut unnamed_ty: 0u,
              mut unnamed_field: 0u,
@@ -224,18 +221,10 @@ fn opaque_decl(ctx: @bind_ctx, decl: CXCursor) {
     }
 }
 
-fn fwd_decl(ctx: @bind_ctx, cursor: CXCursor,
-            f: fn(ctx: @bind_ctx, c: CXCursor, n: ~str)) {
+fn fwd_decl(ctx: @bind_ctx, cursor: CXCursor, f: fn()) {
     let def = clang_getCursorDefinition(cursor);
     if CXCursor_eq(&cursor, &def) {
-        let name = to_str(clang_getCursorSpelling(cursor));
-        if !str::is_empty(name) {
-            f(ctx, cursor, decl_name(ctx, cursor));
-        } else {
-            if !ctx.unnamed_decl.contains_key(cursor) {
-                ctx.unnamed_decl.insert(cursor, true);
-            }
-        }
+        f();
     } else if def.kind == CXCursor_NoDeclFound ||
               def.kind == CXCursor_InvalidFile {
         opaque_decl(ctx, cursor);
@@ -423,41 +412,6 @@ extern fn visit_enum(++cursor: CXCursor,
     return CXChildVisit_Continue;
 }
 
-fn def_struct(ctx: @bind_ctx, cursor: CXCursor, name: ~str) {
-    if sym_visited(ctx, name) {
-        return;
-    }
-
-    ctx.unnamed_field = 0u;
-    ctx.out.write_line(#fmt["type %s = {", name]);
-    clang_visitChildren(cursor, visit_struct,
-                        ptr::addr_of(ctx) as CXClientData);
-    ctx.out.write_line("};\n");
-}
-
-fn def_union(ctx: @bind_ctx, _cursor: CXCursor, name: ~str) {
-    if sym_visited(ctx, name) {
-        return;
-    }
-
-    ctx.out.write_line(
-        #fmt["type %s = c_void /* FIXME: union type */;\n", name]
-    );
-}
-
-fn def_enum(ctx: @bind_ctx, cursor: CXCursor, name: ~str) {
-    if sym_visited(ctx, name) {
-        return;
-    }
-
-    ctx.out.write_line(#fmt[
-        "type %s = %s;", name,
-        conv_ty(ctx, clang_getEnumDeclIntegerType(cursor), cursor, false)
-    ]);
-    clang_visitChildren(cursor, visit_enum,
-                        ptr::addr_of(ctx) as CXClientData);
-}
-
 extern fn visit_ty_top(++cursor: CXCursor,
                       ++_parent: CXCursor,
                       data: CXClientData) -> c_uint unsafe {
@@ -467,14 +421,30 @@ extern fn visit_ty_top(++cursor: CXCursor,
     }
 
     if cursor.kind == CXCursor_StructDecl {
-        fwd_decl(ctx, cursor, def_struct);
+        do fwd_decl(ctx, cursor) || {
+            ctx.unnamed_field = 0u;
+            ctx.out.write_line(#fmt["type %s = {", decl_name(ctx, cursor)]);
+            clang_visitChildren(cursor, visit_struct, data);
+            ctx.out.write_line(~"};\n");
+        }
         return CXChildVisit_Recurse;
     } else if cursor.kind == CXCursor_UnionDecl {
-        fwd_decl(ctx, cursor, def_union);
+        do fwd_decl(ctx, cursor) || {
+            ctx.out.write_line(
+                #fmt["type %s = c_void /* FIXME: union type */;\n",
+                     decl_name(ctx, cursor)]
+            );
+        }
         return CXChildVisit_Recurse;
     } else if cursor.kind == CXCursor_EnumDecl {
-        fwd_decl(ctx, cursor, def_enum);
-        ctx.out.write_line("");
+        do fwd_decl(ctx, cursor) || {
+            ctx.out.write_line(#fmt[
+                "type %s = %s;", decl_name(ctx, cursor),
+                conv_ty(ctx, clang_getEnumDeclIntegerType(cursor), cursor, false)
+            ]);
+            clang_visitChildren(cursor, visit_enum, data);
+        }
+        ctx.out.write_line(~"");
         return CXChildVisit_Continue;
     } else if cursor.kind == CXCursor_FunctionDecl {
             return CXChildVisit_Continue;
@@ -487,36 +457,17 @@ extern fn visit_ty_top(++cursor: CXCursor,
         return CXChildVisit_Continue;
     } else if cursor.kind == CXCursor_TypedefDecl {
         let name = to_str(clang_getCursorSpelling(cursor));
-        let mut under_ty = clang_getTypedefDeclUnderlyingType(cursor);
-        if under_ty.kind == CXType_Unexposed {
-            under_ty = clang_getCanonicalType(under_ty);
-        }
-        let decl = clang_getTypeDeclaration(under_ty);
-        let ty_name = rust_id(ctx, name);
-
-        if clang_isCursorDefinition(decl) as int == 1 &&
-           str::is_empty(to_str(clang_getCursorSpelling(decl))) {
-            ctx.unnamed_decl.insert(decl, false);
-
-            if decl.kind == CXCursor_StructDecl {
-                def_struct(ctx, decl, ty_name);
-                return CXChildVisit_Recurse;
-            } else if decl.kind == CXCursor_UnionDecl {
-                def_union(ctx, decl, ty_name);
-                return CXChildVisit_Recurse;
-            } else if decl.kind == CXCursor_EnumDecl {
-                def_enum(ctx, decl, ty_name);
-                ctx.out.write_line("");
-                return CXChildVisit_Continue;
-            }
-        }
-
         if sym_visited(ctx, name) {
             return CXChildVisit_Continue;
         }
 
+        let mut under_ty = clang_getTypedefDeclUnderlyingType(cursor);
+        if under_ty.kind == CXType_Unexposed {
+            under_ty = clang_getCanonicalType(under_ty);
+        }
+
         ctx.out.write_line(#fmt["type %s = %s;\n",
-                                ty_name,
+                                rust_id(ctx, name),
                                 conv_ty(ctx, under_ty, cursor, false)]);
         opaque_ty(ctx, under_ty);
         return CXChildVisit_Continue;
@@ -525,19 +476,6 @@ extern fn visit_ty_top(++cursor: CXCursor,
     }
 
     return CXChildVisit_Recurse;
-}
-
-fn visit_unnamed_decl(ctx: @bind_ctx, cursor: CXCursor) {
-    let name = decl_name(ctx, cursor);
-
-    if cursor.kind == CXCursor_StructDecl {
-        def_struct(ctx, cursor, name);
-    } else if cursor.kind == CXCursor_UnionDecl {
-        def_union(ctx, cursor, name);
-    } else if cursor.kind == CXCursor_EnumDecl {
-        def_enum(ctx, cursor, name);
-        ctx.out.write_line("");
-    }
 }
 
 extern fn visit_func_top(++cursor: CXCursor,
@@ -657,9 +595,6 @@ fn main(args: ~[~str]) unsafe {
 
             clang_visitChildren(cursor, visit_ty_top,
                                 ptr::addr_of(ctx) as CXClientData);
-            for ctx.unnamed_decl.each() |c, b| {
-                if b { visit_unnamed_decl(ctx, c); }
-            };
 
             ctx.out.write_line(#fmt["#[link_name=\"%s\"]", ctx.link]);
             ctx.out.write_line(~"extern mod bindgen {\n");
