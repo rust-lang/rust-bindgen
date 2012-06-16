@@ -1,5 +1,5 @@
 use std;
-use rustsyntax;
+use syntax;
 
 import libc::*;
 
@@ -397,7 +397,7 @@ crust fn visit_enum(++cursor: CXCursor,
             };
 
         ctx.out.write_line(#fmt[
-            "const %s: %s = %d_%s;",
+            "const %s: %s = %?_%s;",
             to_str(clang_getCursorSpelling(cursor)),
             int_ty,
             clang_getEnumConstantDeclValue(cursor),
