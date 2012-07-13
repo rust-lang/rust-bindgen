@@ -1,17 +1,14 @@
-use std;
-use syntax;
-
-import libc::*;
 
 import std::map;
 import map::hashmap;
 import io::writer_util;
 
+import libc::*;
 import clang::*;
 import clang::bindgen::*;
 
 type bind_ctx = {
-    match: [str],
+    match: ~[str],
     link: str,
     out: io::writer,
     name: map::hashmap<CXCursor, str>,
@@ -24,23 +21,23 @@ type bind_ctx = {
 
 enum result {
     usage,
-    ok([str], @bind_ctx),
+    ok(~[str], @bind_ctx),
     err(str)
 }
 
 fn keyword_table() -> hashmap<str, ()> {
     let words = map::str_hash();
-    let keys = ["alt", "assert", "be", "break", "check", "claim",
+    let keys = ~["alt", "assert", "be", "break", "check", "claim",
                 "class", "const", "cont", "copy", "crust", "do", "else",
                 "enum", "export", "fail", "fn", "for", "if",  "iface",
                 "impl", "import", "let", "log", "loop", "mod",
-                "mut", "native", "new", "pure", "resource",
+                "mut", "extern", "new", "pure", "resource",
                 "ret", "trait", "type", "unchecked", "unsafe", "while",
 
                 "as", "bind", "else", "false", "implements", "move",
                 "of", "priv", "self", "send", "static", "to", "true",
                 "use", "with"];
-    for keys.each {|word|
+    for keys.each |word| {
         words.insert(word, ());
     }
     ret words
@@ -54,12 +51,12 @@ fn CXCursor_eq(&&k1: CXCursor, &&k2: CXCursor) -> bool {
     ret clang_equalCursors(k1, k2) as int == 1;
 }
 
-fn parse_args(args: [str]) -> result {
-    let mut clang_args = [];
+fn parse_args(args: ~[str]) -> result {
+    let mut clang_args = ~[];
     let args_len = vec::len(args);
 
     let mut out = io::stdout();
-    let mut pat = [];
+    let mut pat = ~[];
     let mut link = "";
 
     if args_len == 0u {
@@ -77,7 +74,7 @@ fn parse_args(args: [str]) -> result {
                     ret err("Missing output filename");
                 }
                 alt io::file_writer(args[ix + 1u],
-                                    [io::create, io::truncate]) {
+                                    ~[io::create, io::truncate]) {
                     result::ok(f) { out = f; }
                     result::err(e) { ret err(e); }
                 }
@@ -152,7 +149,7 @@ fn match_pattern(ctx: @bind_ctx, cursor: CXCursor) -> bool {
     }
 
     let name = to_str(clang_getFileName(file));
-    for vec::each(ctx.match) {|pat|
+    for vec::each(ctx.match) |pat| {
         if str::contains(name, pat) {
             ret true;
         }
@@ -366,9 +363,9 @@ fn opaque_ty(ctx: @bind_ctx, ty: CXType) {
     }
 }
 
-crust fn visit_struct(++cursor: CXCursor,
-                      ++_parent: CXCursor,
-                      data: CXClientData) -> c_uint unsafe {
+extern fn visit_struct(++cursor: CXCursor,
+                       ++_parent: CXCursor,
+                       data: CXClientData) -> c_uint unsafe {
     let ctx = *(data as *@bind_ctx);
     if cursor.kind == CXCursor_FieldDecl {
         let ty = clang_getCursorType(cursor);
@@ -384,7 +381,7 @@ crust fn visit_struct(++cursor: CXCursor,
     ret CXChildVisit_Continue;
 }
 
-crust fn visit_enum(++cursor: CXCursor,
+extern fn visit_enum(++cursor: CXCursor,
                     ++parent: CXCursor,
                     data: CXClientData) -> c_uint unsafe {
     let ctx = *(data as *@bind_ctx);
@@ -442,7 +439,7 @@ fn def_enum(ctx: @bind_ctx, cursor: CXCursor, name: str) {
                         ptr::addr_of(ctx) as CXClientData);
 }
 
-crust fn visit_ty_top(++cursor: CXCursor,
+extern fn visit_ty_top(++cursor: CXCursor,
                       ++_parent: CXCursor,
                       data: CXClientData) -> c_uint unsafe {
     let ctx = *(data as *@bind_ctx);
@@ -524,7 +521,7 @@ fn visit_unnamed_decl(ctx: @bind_ctx, cursor: CXCursor) {
     }
 }
 
-crust fn visit_func_top(++cursor: CXCursor,
+extern fn visit_func_top(++cursor: CXCursor,
                         ++_parent: CXCursor,
                         data: CXClientData) -> c_uint unsafe {
     let ctx = *(data as *@bind_ctx);
@@ -585,7 +582,7 @@ crust fn visit_func_top(++cursor: CXCursor,
     ret CXChildVisit_Recurse;
 }
 
-fn main(args: [str]) unsafe {
+fn main(args: ~[str]) unsafe {
     let mut bind_args = args;
     let bin = vec::shift(bind_args);
 
@@ -598,8 +595,8 @@ fn main(args: [str]) unsafe {
                 fail "clang failed to create index";
             }
 
-            let c_args = vec::map(clang_args, {|s|
-                str::as_c_str(s, {|b| b })
+            let c_args = vec::map(clang_args, |s| {
+                str::as_c_str(s, |b| b )
             });
             let unit = clang_parseTranslationUnit(
                 ix, ptr::null(),
@@ -641,12 +638,12 @@ fn main(args: [str]) unsafe {
 
             clang_visitChildren(cursor, visit_ty_top,
                                 ptr::addr_of(ctx) as CXClientData);
-            for ctx.unnamed_decl.each() {|c, b|
+            for ctx.unnamed_decl.each() |c, b| {
                 if b { visit_unnamed_decl(ctx, c); }
             };
 
             ctx.out.write_line(#fmt["#[link_name=\"%s\"]", ctx.link]);
-            ctx.out.write_line("native mod bindgen {\n");
+            ctx.out.write_line("extern mod bindgen {\n");
             clang_visitChildren(cursor, visit_func_top,
                                 ptr::addr_of(ctx) as CXClientData);
             ctx.out.write_line("}");

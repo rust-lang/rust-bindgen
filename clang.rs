@@ -700,7 +700,7 @@ const CXIndexOpt_IndexImplicitTemplateInstantiations: u32 = 4_u32;
 const CXIndexOpt_SuppressWarnings: u32 = 8_u32;
 
 #[link_name="clang"]
-native mod bindgen {
+extern mod bindgen {
 
 fn clang_getCString(++string: CXString) -> *c_char;
 

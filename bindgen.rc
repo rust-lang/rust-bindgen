@@ -1,2 +1,7 @@
 #[crate_type = "bin"];
+
+use std;
+use syntax;
+
 mod clang;
+mod main;
