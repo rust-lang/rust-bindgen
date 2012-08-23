@@ -1,107 +1,126 @@
 
 import std::map;
 import map::hashmap;
-import io::writer_util;
+import io::WriterUtil;
 
 import libc::*;
 import clang::*;
 import clang::bindgen::*;
 
 type bind_ctx = {
-    match: ~[str],
-    link: str,
-    out: io::writer,
-    name: map::hashmap<CXCursor, str>,
+    match: ~[~str],
+    link: ~str,
+    out: io::Writer,
+    name: map::hashmap<CXCursor, ~str>,
     unnamed_decl: map::hashmap<CXCursor, bool>,
-    visited: map::hashmap<str, bool>,
+    visited: map::hashmap<~str, bool>,
     mut unnamed_ty: uint,
     mut unnamed_field: uint,
-    keywords: hashmap<str, ()>
+    keywords: hashmap<~str, ()>
 };
 
 enum result {
     usage,
-    ok(~[str], @bind_ctx),
-    err(str)
+    ok(~[~str], @bind_ctx),
+    err(~str)
 }
 
-fn keyword_table() -> hashmap<str, ()> {
+fn keyword_table() -> hashmap<~str, ()> {
     let words = map::str_hash();
-    let keys = ~["alt", "assert", "be", "break", "check", "claim",
-                "class", "const", "cont", "copy", "crust", "do", "else",
-                "enum", "export", "fail", "fn", "for", "if",  "iface",
-                "impl", "import", "let", "log", "loop", "mod",
-                "mut", "extern", "new", "pure", "resource",
-                "ret", "trait", "type", "unchecked", "unsafe", "while",
+    let keys = ~[
+        ~"as",
+        ~"else",
+        ~"move",
+        ~"of",
+        ~"priv", ~"pub",
+        ~"self", ~"send", ~"static",
+        ~"to",
+        ~"use",
+        ~"with",
 
-                "as", "bind", "else", "false", "implements", "move",
-                "of", "priv", "self", "send", "static", "to", "true",
-                "use", "with"];
+        ~"again", ~"assert",
+        ~"break",
+        ~"check", ~"const", ~"copy",
+        ~"do", ~"drop",
+        ~"else", ~"enum", ~"export", ~"extern",
+        ~"fail", ~"false", ~"fn", ~"for",
+        ~"if", ~"impl", ~"import",
+        ~"let", ~"log", ~"loop",
+        ~"match", ~"mod", ~"module", ~"move", ~"mut",
+        ~"new",
+        ~"owned",
+        ~"pure",
+        ~"ref", ~"return",
+        ~"struct",
+        ~"true", ~"trait", ~"type",
+        ~"unchecked", ~"unsafe",
+        ~"while"
+    ];
     for keys.each |word| {
         words.insert(word, ());
     }
-    ret words
+    return words;
 }
 
-fn CXCursor_hash(&&c: CXCursor) -> uint {
-    ret clang_hashCursor(c) as uint;
+fn CXCursor_hash(c: &CXCursor) -> uint {
+    return clang_hashCursor(*c) as uint;
 }
 
-fn CXCursor_eq(&&k1: CXCursor, &&k2: CXCursor) -> bool {
-    ret clang_equalCursors(k1, k2) as int == 1;
+fn CXCursor_eq(k1: &CXCursor, k2: &CXCursor) -> bool {
+    return clang_equalCursors(*k1, *k2) as int == 1;
 }
 
-fn parse_args(args: ~[str]) -> result {
+fn parse_args(args: ~[~str]) -> result {
     let mut clang_args = ~[];
     let args_len = vec::len(args);
 
     let mut out = io::stdout();
     let mut pat = ~[];
-    let mut link = "";
+    let mut link = ~"";
 
     if args_len == 0u {
-        ret usage;
+        return usage;
     }
 
     let mut ix = 0u;
     while ix < args_len {
-        alt args[ix] {
-            "--help" | "-h" {
-                ret usage;
+        match args[ix] {
+            ~"--help" | ~"-h" => {
+                return usage;
             }
-            "-o" {
+            ~"-o" => {
                 if ix + 1u > args_len {
-                    ret err("Missing output filename");
+                    return err(~"Missing output filename");
                 }
-                alt io::file_writer(args[ix + 1u],
-                                    ~[io::create, io::truncate]) {
-                    result::ok(f) { out = f; }
-                    result::err(e) { ret err(e); }
+                match io::file_writer(args[ix + 1u],
+                                    ~[io::Create, io::Truncate]) {
+                    result::ok(f) => { out = f; }
+                    result::err(e) => { return err(e); }
                 }
                 ix += 2u;
             }
-            "-l" {
+            ~"-l" => {
                 if ix + 1u > args_len {
-                    ret err("Missing link name");
+                    return err(~"Missing link name");
                 }
                 link = args[ix + 1u];
                 ix += 2u;
             }
-            "-match" {
+            ~"-match" => {
                 if ix + 1u > args_len {
-                    ret err("Missing match pattern");
+                    return err(~"Missing match pattern");
                 }
                 vec::push(pat, args[ix + 1u]);
                 ix += 2u;
             }
-            _ {
+            _ => {
                 vec::push(clang_args, args[ix]);
                 ix += 1u;
             }
         }
     }
 
-    ret ok(clang_args,
+    return ok(clang_args,
            @{ match: pat,
              link: link,
              out: out,
@@ -113,7 +132,7 @@ fn parse_args(args: ~[str]) -> result {
              keywords: keyword_table() });
 }
 
-fn print_usage(bin: str) {
+fn print_usage(bin: ~str) {
     io::print(#fmt["Usage: %s [options] input.h", bin] +
 "
 Options:
@@ -130,8 +149,8 @@ Options:
     );
 }
 
-fn to_str(s: CXString) -> str unsafe {
-    ret str::unsafe::from_c_str(clang_getCString(s));
+fn to_str(s: CXString) -> ~str unsafe {
+    return str::unsafe::from_c_str(clang_getCString(s));
 }
 
 fn match_pattern(ctx: @bind_ctx, cursor: CXCursor) -> bool {
@@ -141,50 +160,50 @@ fn match_pattern(ctx: @bind_ctx, cursor: CXCursor) -> bool {
                               ptr::null(), ptr::null(), ptr::null());
 
     if file as int == 0 {
-        ret false;
+        return false;
     }
 
     if vec::is_empty(ctx.match) {
-        ret true;
+        return true;
     }
 
     let name = to_str(clang_getFileName(file));
     for vec::each(ctx.match) |pat| {
         if str::contains(name, pat) {
-            ret true;
+            return true;
         }
     }
 
-    ret false;
+    return false;
 }
 
-fn sym_visited(ctx: @bind_ctx, sym: str) -> bool {
+fn sym_visited(ctx: @bind_ctx, sym: ~str) -> bool {
     if ctx.visited.contains_key(sym) {
-        ret true;
+        return true;
     }
     ctx.visited.insert(sym, true);
-    ret false;
+    return false;
 }
 
-fn unnamed_name(ctx: @bind_ctx) -> str {
+fn unnamed_name(ctx: @bind_ctx) -> ~str {
     ctx.unnamed_ty += 1u;
-    ret "unnamed" + uint::str(ctx.unnamed_ty);
+    return ~"unnamed" + uint::str(ctx.unnamed_ty);
 }
 
-fn decl_name(ctx: @bind_ctx, cursor: CXCursor) -> str {
+fn decl_name(ctx: @bind_ctx, cursor: CXCursor) -> ~str {
     let name = ctx.name.find(cursor);
-    alt name {
-        option::some(n) { ret n; }
-        none {
+    match name {
+        option::some(n) => { return n; }
+        none => {
             let spelling = to_str(clang_getCursorSpelling(cursor));
             let prefix = if cursor.kind == CXCursor_StructDecl {
-                "struct_"
+                ~"struct_"
             } else if cursor.kind == CXCursor_UnionDecl {
-                "union_"
+                ~"union_"
             } else if cursor.kind == CXCursor_EnumDecl {
-                "enum_"
+                ~"enum_"
             } else {
-                "other_"
+                ~"other_"
             };
             let ty_name = if str::is_empty(spelling) {
                 prefix + unnamed_name(ctx)
@@ -193,7 +212,7 @@ fn decl_name(ctx: @bind_ctx, cursor: CXCursor) -> str {
             };
 
             ctx.name.insert(cursor, ty_name);
-            ret ty_name;
+            return ty_name;
         }
     }
 }
@@ -206,9 +225,9 @@ fn opaque_decl(ctx: @bind_ctx, decl: CXCursor) {
 }
 
 fn fwd_decl(ctx: @bind_ctx, cursor: CXCursor,
-            f: fn(ctx: @bind_ctx, c: CXCursor, n: str)) {
+            f: fn(ctx: @bind_ctx, c: CXCursor, n: ~str)) {
     let def = clang_getCursorDefinition(cursor);
-    if CXCursor_eq(cursor, def) {
+    if CXCursor_eq(&cursor, &def) {
         let name = to_str(clang_getCursorSpelling(cursor));
         if !str::is_empty(name) {
             f(ctx, cursor, decl_name(ctx, cursor));
@@ -223,26 +242,26 @@ fn fwd_decl(ctx: @bind_ctx, cursor: CXCursor,
     }
 }
 
-fn rust_id(ctx: @bind_ctx, name: str) -> str {
+fn rust_id(ctx: @bind_ctx, name: ~str) -> ~str {
     if ctx.keywords.contains_key(name) {
-        ret "_" + name;
+        return ~"_" + name;
     }
-    ret name;
+    return name;
 }
 
 fn conv_ptr_ty(ctx: @bind_ctx, ty: CXType, cursor: CXCursor,
-               opaque: bool) -> str {
+               opaque: bool) -> ~str {
     if ty.kind == CXType_Void {
-        ret "*c_void"
+        return ~"*c_void"
     } else if ty.kind == CXType_Unexposed ||
               ty.kind == CXType_FunctionProto ||
               ty.kind == CXType_FunctionNoProto {
         let ret_ty = clang_getResultType(ty);
         let decl = clang_getTypeDeclaration(ty);
-        ret if ret_ty.kind != CXType_Invalid {
-            "*u8"
+        return if ret_ty.kind != CXType_Invalid {
+            ~"*u8"
         } else if decl.kind != CXCursor_NoDeclFound {
-            "*" + conv_decl_ty(ctx, decl, opaque)
+            ~"*" + conv_decl_ty(ctx, decl, opaque)
         } else {
             #fmt["*c_void /* unknown %s referenced by %s %s */",
                  to_str(clang_getTypeKindSpelling(ty.kind)),
@@ -254,14 +273,14 @@ fn conv_ptr_ty(ctx: @bind_ctx, ty: CXType, cursor: CXCursor,
         let def_ty = clang_getTypedefDeclUnderlyingType(decl);
         if def_ty.kind == CXType_FunctionProto ||
            def_ty.kind == CXType_FunctionNoProto {
-            ret conv_ptr_ty(ctx, def_ty, cursor, opaque)
+            return conv_ptr_ty(ctx, def_ty, cursor, opaque)
         }
     }
-    ret "*" + conv_ty(ctx, ty, cursor, opaque)
+    return ~"*" + conv_ty(ctx, ty, cursor, opaque)
 }
 
-fn conv_decl_ty(ctx: @bind_ctx, cursor: CXCursor, opaque: bool) -> str {
-    ret if cursor.kind == CXCursor_StructDecl {
+fn conv_decl_ty(ctx: @bind_ctx, cursor: CXCursor, opaque: bool) -> ~str {
+    return if cursor.kind == CXCursor_StructDecl {
         let name = decl_name(ctx, cursor);
         if opaque {
             #fmt["c_void /* %s */", name]
@@ -291,35 +310,35 @@ fn conv_decl_ty(ctx: @bind_ctx, cursor: CXCursor, opaque: bool) -> str {
 }
 
 fn conv_ty(ctx: @bind_ctx, ty: CXType, cursor: CXCursor,
-           opaque: bool) -> str {
-    ret if ty.kind == CXType_Bool {
-        "bool"
+           opaque: bool) -> ~str {
+    return if ty.kind == CXType_Bool {
+        ~"bool"
     } else if ty.kind == CXType_SChar ||
               ty.kind == CXType_Char_S {
-        "c_char"
+        ~"c_char"
     } else if ty.kind == CXType_UChar ||
               ty.kind == CXType_Char_U {
-        "c_uchar"
+        ~"c_uchar"
     } else if ty.kind == CXType_UShort {
-        "c_ushort"
+        ~"c_ushort"
     } else if ty.kind == CXType_UInt {
-        "c_uint"
+        ~"c_uint"
     } else if ty.kind == CXType_ULong {
-        "c_ulong"
+        ~"c_ulong"
     } else if ty.kind == CXType_ULongLong {
-        "c_ulonglong"
+        ~"c_ulonglong"
     } else if ty.kind == CXType_Short {
-        "c_short"
+        ~"c_short"
     } else if ty.kind == CXType_Int {
-        "c_int"
+        ~"c_int"
     } else if ty.kind == CXType_Long {
-        "c_long"
+        ~"c_long"
     } else if ty.kind == CXType_LongLong {
-        "c_longlong"
+        ~"c_longlong"
     } else if ty.kind == CXType_Float {
-        "c_float"
+        ~"c_float"
     } else if ty.kind == CXType_Double {
-        "c_double"
+        ~"c_double"
     } else if ty.kind == CXType_Pointer {
         conv_ptr_ty(ctx, clang_getPointeeType(ty), cursor, opaque)
     } else if ty.kind == CXType_Record ||
@@ -337,13 +356,13 @@ fn conv_ty(ctx: @bind_ctx, ty: CXType, cursor: CXCursor,
         } else if size == 1 {
             a_ty
         } else {
-            let mut rust_ty = "(";
+            let mut rust_ty = ~"(";
             let mut i = 1;
             while i < size {
-                rust_ty += a_ty + ",";
+                rust_ty += a_ty + ~",";
                 i += 1;
             }
-            rust_ty += a_ty + ")";
+            rust_ty += a_ty + ~")";
             rust_ty
         }
     } else {
@@ -371,14 +390,14 @@ extern fn visit_struct(++cursor: CXCursor,
         let ty = clang_getCursorType(cursor);
         let mut name = to_str(clang_getCursorSpelling(cursor));
         if str::is_empty(name) {
-            name = "field_unnamed" + uint::str(ctx.unnamed_field);
+            name = ~"field_unnamed" + uint::str(ctx.unnamed_field);
             ctx.unnamed_field += 1u;
         }
         ctx.out.write_line(#fmt["    %s: %s,",
                                 rust_id(ctx, name),
                                 conv_ty(ctx, ty, cursor, true)]);
     }
-    ret CXChildVisit_Continue;
+    return CXChildVisit_Continue;
 }
 
 extern fn visit_enum(++cursor: CXCursor,
@@ -388,9 +407,9 @@ extern fn visit_enum(++cursor: CXCursor,
     if cursor.kind == CXCursor_EnumConstantDecl {
         let int_ty =
             if clang_getEnumDeclIntegerType(parent).kind == CXType_Int {
-                "i32"
+                ~"i32"
             } else {
-                "u32"
+                ~"u32"
             };
 
         ctx.out.write_line(#fmt[
@@ -401,12 +420,12 @@ extern fn visit_enum(++cursor: CXCursor,
             int_ty
         ]);
     }
-    ret CXChildVisit_Continue;
+    return CXChildVisit_Continue;
 }
 
-fn def_struct(ctx: @bind_ctx, cursor: CXCursor, name: str) {
+fn def_struct(ctx: @bind_ctx, cursor: CXCursor, name: ~str) {
     if sym_visited(ctx, name) {
-        ret;
+        return;
     }
 
     ctx.unnamed_field = 0u;
@@ -416,9 +435,9 @@ fn def_struct(ctx: @bind_ctx, cursor: CXCursor, name: str) {
     ctx.out.write_line("};\n");
 }
 
-fn def_union(ctx: @bind_ctx, _cursor: CXCursor, name: str) {
+fn def_union(ctx: @bind_ctx, _cursor: CXCursor, name: ~str) {
     if sym_visited(ctx, name) {
-        ret;
+        return;
     }
 
     ctx.out.write_line(
@@ -426,9 +445,9 @@ fn def_union(ctx: @bind_ctx, _cursor: CXCursor, name: str) {
     );
 }
 
-fn def_enum(ctx: @bind_ctx, cursor: CXCursor, name: str) {
+fn def_enum(ctx: @bind_ctx, cursor: CXCursor, name: ~str) {
     if sym_visited(ctx, name) {
-        ret;
+        return;
     }
 
     ctx.out.write_line(#fmt[
@@ -444,28 +463,28 @@ extern fn visit_ty_top(++cursor: CXCursor,
                       data: CXClientData) -> c_uint unsafe {
     let ctx = *(data as *@bind_ctx);
     if !match_pattern(ctx, cursor) {
-        ret CXChildVisit_Continue;
+        return CXChildVisit_Continue;
     }
 
     if cursor.kind == CXCursor_StructDecl {
         fwd_decl(ctx, cursor, def_struct);
-        ret CXChildVisit_Recurse;
+        return CXChildVisit_Recurse;
     } else if cursor.kind == CXCursor_UnionDecl {
         fwd_decl(ctx, cursor, def_union);
-        ret CXChildVisit_Recurse;
+        return CXChildVisit_Recurse;
     } else if cursor.kind == CXCursor_EnumDecl {
         fwd_decl(ctx, cursor, def_enum);
         ctx.out.write_line("");
-        ret CXChildVisit_Continue;
+        return CXChildVisit_Continue;
     } else if cursor.kind == CXCursor_FunctionDecl {
-            ret CXChildVisit_Continue;
+            return CXChildVisit_Continue;
     } else if cursor.kind == CXCursor_VarDecl {
         let name = to_str(clang_getCursorSpelling(cursor));
         if sym_visited(ctx, name) {
-            ret CXChildVisit_Continue;
+            return CXChildVisit_Continue;
         }
         ctx.out.write_line(#fmt["/* FIXME: global variable %s */\n", name]);
-        ret CXChildVisit_Continue;
+        return CXChildVisit_Continue;
     } else if cursor.kind == CXCursor_TypedefDecl {
         let name = to_str(clang_getCursorSpelling(cursor));
         let mut under_ty = clang_getTypedefDeclUnderlyingType(cursor);
@@ -481,31 +500,31 @@ extern fn visit_ty_top(++cursor: CXCursor,
 
             if decl.kind == CXCursor_StructDecl {
                 def_struct(ctx, decl, ty_name);
-                ret CXChildVisit_Recurse;
+                return CXChildVisit_Recurse;
             } else if decl.kind == CXCursor_UnionDecl {
                 def_union(ctx, decl, ty_name);
-                ret CXChildVisit_Recurse;
+                return CXChildVisit_Recurse;
             } else if decl.kind == CXCursor_EnumDecl {
                 def_enum(ctx, decl, ty_name);
                 ctx.out.write_line("");
-                ret CXChildVisit_Continue;
+                return CXChildVisit_Continue;
             }
         }
 
         if sym_visited(ctx, name) {
-            ret CXChildVisit_Continue;
+            return CXChildVisit_Continue;
         }
 
         ctx.out.write_line(#fmt["type %s = %s;\n",
                                 ty_name,
                                 conv_ty(ctx, under_ty, cursor, false)]);
         opaque_ty(ctx, under_ty);
-        ret CXChildVisit_Continue;
+        return CXChildVisit_Continue;
     } else if cursor.kind == CXCursor_FieldDecl {
-        ret CXChildVisit_Continue;
+        return CXChildVisit_Continue;
     }
 
-    ret CXChildVisit_Recurse;
+    return CXChildVisit_Recurse;
 }
 
 fn visit_unnamed_decl(ctx: @bind_ctx, cursor: CXCursor) {
@@ -526,18 +545,18 @@ extern fn visit_func_top(++cursor: CXCursor,
                         data: CXClientData) -> c_uint unsafe {
     let ctx = *(data as *@bind_ctx);
     if !match_pattern(ctx, cursor) {
-        ret CXChildVisit_Continue;
+        return CXChildVisit_Continue;
     }
 
     let linkage = clang_getCursorLinkage(cursor);
     if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
-        ret CXChildVisit_Continue;
+        return CXChildVisit_Continue;
     }
 
     if cursor.kind == CXCursor_FunctionDecl {
         let name = to_str(clang_getCursorSpelling(cursor));
         if sym_visited(ctx, name) {
-            ret CXChildVisit_Continue;
+            return CXChildVisit_Continue;
         }
 
         ctx.out.write_str(#fmt["fn %s(", rust_id(ctx, name)]);
@@ -546,7 +565,7 @@ extern fn visit_func_top(++cursor: CXCursor,
         let mut unnamed = 0;
         while i < arg_n {
             if i > 0 {
-                ctx.out.write_str(", ");
+                ctx.out.write_str(~", ");
             }
 
             let arg = clang_Cursor_getArgument(cursor, i as c_uint);
@@ -567,32 +586,32 @@ extern fn visit_func_top(++cursor: CXCursor,
         }
         let ty = clang_getCursorType(cursor);
         if clang_isFunctionTypeVariadic(ty) as uint != 0u {
-            ctx.out.write_str("/* FIXME: variadic function */");
+            ctx.out.write_str(~"/* FIXME: variadic function */");
         }
-        ctx.out.write_str(")");
+        ctx.out.write_str(~")");
         let ret_ty = clang_getCursorResultType(cursor);
         if ret_ty.kind != CXType_Void {
             ctx.out.write_str(#fmt[" -> %s",
                                    conv_ty(ctx, ret_ty, cursor, false)]);
         }
-        ctx.out.write_line(";\n");
-        ret CXChildVisit_Continue;
+        ctx.out.write_line(~";\n");
+        return CXChildVisit_Continue;
     }
 
-    ret CXChildVisit_Recurse;
+    return CXChildVisit_Recurse;
 }
 
-fn main(args: ~[str]) unsafe {
+fn main(args: ~[~str]) unsafe {
     let mut bind_args = args;
     let bin = vec::shift(bind_args);
 
-    alt parse_args(bind_args) {
-        err(e) { fail e; }
-        usage { print_usage(bin); }
-        ok(clang_args, ctx) {
+    match parse_args(bind_args) {
+        err(e) => { fail e; }
+        usage => { print_usage(bin); }
+        ok(clang_args, ctx) => {
             let ix = clang_createIndex(0 as c_int, 1 as c_int);
             if ix as int == 0 {
-                fail "clang failed to create index";
+                fail ~"clang failed to create index";
             }
 
             let c_args = vec::map(clang_args, |s| {
@@ -606,7 +625,7 @@ fn main(args: ~[str]) unsafe {
                 0 as c_uint, 0 as c_uint
             );
             if unit as int == 0 {
-                fail "No input files given";
+                fail ~"No input files given";
             }
 
             let mut c_err = false;
@@ -626,15 +645,15 @@ fn main(args: ~[str]) unsafe {
             }
 
             if c_err {
-                ret;
+                return;
             }
 
             ctx.out.write_line(
-                "/* automatically generated by rust-bindgen */\n"
+                ~"/* automatically generated by rust-bindgen */\n"
             );
 
             let cursor = clang_getTranslationUnitCursor(unit);
-            ctx.out.write_line("import libc::*;\n");
+            ctx.out.write_line(~"import libc::*;\n");
 
             clang_visitChildren(cursor, visit_ty_top,
                                 ptr::addr_of(ctx) as CXClientData);
@@ -643,10 +662,10 @@ fn main(args: ~[str]) unsafe {
             };
 
             ctx.out.write_line(#fmt["#[link_name=\"%s\"]", ctx.link]);
-            ctx.out.write_line("extern mod bindgen {\n");
+            ctx.out.write_line(~"extern mod bindgen {\n");
             clang_visitChildren(cursor, visit_func_top,
                                 ptr::addr_of(ctx) as CXClientData);
-            ctx.out.write_line("}");
+            ctx.out.write_line(~"}");
 
             clang_disposeTranslationUnit(unit);
             clang_disposeIndex(ix);
