@@ -1,20 +1,19 @@
-import std::map;
-import map::hashmap;
-import io::WriterUtil;
+use std::map;
+use map::HashMap;
+use io::WriterUtil;
 
-import libc::*;
-import clang::*;
-import clang::bindgen::*;
+use libc::*;
+use clang::*;
 
 type bind_ctx = {
-    match: ~[~str],
+    match_pat: ~[~str],
     link: ~str,
     out: io::Writer,
-    name: map::hashmap<CXCursor, ~str>,
-    visited: map::hashmap<~str, bool>,
+    name: map::HashMap<CXCursor, ~str>,
+    visited: map::HashMap<~str, bool>,
     mut unnamed_ty: uint,
     mut unnamed_field: uint,
-    keywords: hashmap<~str, ()>
+    keywords: HashMap<~str, ()>
 };
 
 enum result {
@@ -23,49 +22,38 @@ enum result {
     err(~str)
 }
 
-fn keyword_table() -> hashmap<~str, ()> {
-    let words = map::str_hash();
-    let keys = ~[
-        ~"as",
-        ~"else",
-        ~"move",
-        ~"of",
-        ~"priv", ~"pub",
-        ~"self", ~"send", ~"static",
-        ~"to",
-        ~"use",
-        ~"with",
-
-        ~"again", ~"assert",
-        ~"break",
-        ~"check", ~"const", ~"copy",
-        ~"do", ~"drop",
-        ~"else", ~"enum", ~"export", ~"extern",
-        ~"fail", ~"false", ~"fn", ~"for",
-        ~"if", ~"impl", ~"import",
-        ~"let", ~"log", ~"loop",
-        ~"match", ~"mod", ~"module", ~"move", ~"mut",
-        ~"new",
-        ~"owned",
-        ~"pure",
-        ~"ref", ~"return",
-        ~"struct",
-        ~"true", ~"trait", ~"type",
-        ~"unchecked", ~"unsafe",
-        ~"while"
-    ];
-    for keys.each |word| {
-        words.insert(word, ());
+impl CXCursor: cmp::Eq {
+    pure fn eq(other: &CXCursor) -> bool {
+        let (a1, a2, a3) = self.data;
+        let (b1, b2, b3) = self.data;
+        return (self.kind as int == other.kind as int) &&
+               (self.xdata as int == other.xdata as int) &&
+               (a1 as int == b1 as int) &&
+               (a2 as int == b2 as int) &&
+               (a3 as int == b3 as int);
     }
-    return words;
+
+    pure fn ne(other: &CXCursor) -> bool {
+        return !self.eq(other);
+    }
+}
+
+impl CXCursor: to_bytes::IterBytes {
+    pure fn iter_bytes(++lsb0: bool, f: to_bytes::Cb) {
+        let (f1, f2, f3) = self.data;
+        to_bytes::iter_bytes_5(
+            &(self.kind as int),
+            &(self.xdata as int),
+            &(f1 as int),
+            &(f2 as int),
+            &(f3 as int),
+            lsb0, f
+        );
+    } 
 }
 
 fn CXCursor_hash(c: &CXCursor) -> uint {
     return clang_hashCursor(*c) as uint;
-}
-
-fn CXCursor_eq(k1: &CXCursor, k2: &CXCursor) -> bool {
-    return clang_equalCursors(*k1, *k2) as int == 1;
 }
 
 fn parse_args(args: ~[~str]) -> result {
@@ -90,10 +78,10 @@ fn parse_args(args: ~[~str]) -> result {
                 if ix + 1u > args_len {
                     return err(~"Missing output filename");
                 }
-                match io::file_writer(args[ix + 1u],
+                match io::file_writer(&path::Path(args[ix + 1u]),
                                     ~[io::Create, io::Truncate]) {
-                    result::ok(f) => { out = f; }
-                    result::err(e) => { return err(e); }
+                    result::Ok(f) => { out = f; }
+                    result::Err(e) => { return err(e); }
                 }
                 ix += 2u;
             }
@@ -108,25 +96,25 @@ fn parse_args(args: ~[~str]) -> result {
                 if ix + 1u > args_len {
                     return err(~"Missing match pattern");
                 }
-                vec::push(pat, args[ix + 1u]);
+                vec::push(&mut pat, args[ix + 1u]);
                 ix += 2u;
             }
             _ => {
-                vec::push(clang_args, args[ix]);
+                vec::push(&mut clang_args, args[ix]);
                 ix += 1u;
             }
         }
     }
 
     return ok(clang_args,
-           @{ match: pat,
+           @{ match_pat: pat,
              link: link,
              out: out,
-             name: map::hashmap(CXCursor_hash, CXCursor_eq),
-             visited: map::str_hash(),
+             name: map::HashMap::<CXCursor, ~str>(),
+             visited: map::HashMap::<~str, bool>(),
              mut unnamed_ty: 0u,
              mut unnamed_field: 0u,
-             keywords: keyword_table() });
+             keywords: syntax::parse::token::keyword_table() });
 }
 
 fn print_usage(bin: ~str) {
@@ -147,7 +135,7 @@ Options:
 }
 
 fn to_str(s: CXString) -> ~str unsafe {
-    return str::unsafe::from_c_str(clang_getCString(s));
+    return str::raw::from_c_str(clang_getCString(s));
 }
 
 fn match_pattern(ctx: @bind_ctx, cursor: CXCursor) -> bool {
@@ -160,13 +148,13 @@ fn match_pattern(ctx: @bind_ctx, cursor: CXCursor) -> bool {
         return false;
     }
 
-    if vec::is_empty(ctx.match) {
+    if vec::is_empty(ctx.match_pat) {
         return true;
     }
 
     let name = to_str(clang_getFileName(file));
-    for vec::each(ctx.match) |pat| {
-        if str::contains(name, pat) {
+    for vec::each(ctx.match_pat) |pat| {
+        if str::contains(name, *pat) {
             return true;
         }
     }
@@ -190,8 +178,8 @@ fn unnamed_name(ctx: @bind_ctx) -> ~str {
 fn decl_name(ctx: @bind_ctx, cursor: CXCursor) -> ~str {
     let name = ctx.name.find(cursor);
     match name {
-        option::some(n) => { return n; }
-        none => {
+        option::Some(n) => { return n; }
+        None => {
             let spelling = to_str(clang_getCursorSpelling(cursor));
             let prefix = if cursor.kind == CXCursor_StructDecl {
                 ~"struct_"
@@ -223,7 +211,7 @@ fn opaque_decl(ctx: @bind_ctx, decl: CXCursor) {
 
 fn fwd_decl(ctx: @bind_ctx, cursor: CXCursor, f: fn()) {
     let def = clang_getCursorDefinition(cursor);
-    if CXCursor_eq(&cursor, &def) {
+    if cursor == def {
         f();
     } else if def.kind == CXCursor_NoDeclFound ||
               def.kind == CXCursor_InvalidFile {
@@ -539,9 +527,9 @@ extern fn visit_func_top(++cursor: CXCursor,
     return CXChildVisit_Recurse;
 }
 
-fn main(args: ~[~str]) unsafe {
+fn main(++args: ~[~str]) unsafe {
     let mut bind_args = args;
-    let bin = vec::shift(bind_args);
+    let bin = vec::shift(&mut bind_args);
 
     match parse_args(bind_args) {
         err(e) => { fail e; }
@@ -553,11 +541,11 @@ fn main(args: ~[~str]) unsafe {
             }
 
             let c_args = vec::map(clang_args, |s| {
-                str::as_c_str(s, |b| b )
+                str::as_c_str(*s, |b| b )
             });
             let unit = clang_parseTranslationUnit(
                 ix, ptr::null(),
-                vec::unsafe::to_ptr(c_args),
+                vec::raw::to_ptr(c_args),
                 vec::len(c_args) as c_int,
                 ptr::null(),
                 0 as c_uint, 0 as c_uint
@@ -591,13 +579,13 @@ fn main(args: ~[~str]) unsafe {
             );
 
             let cursor = clang_getTranslationUnitCursor(unit);
-            ctx.out.write_line(~"import libc::*;\n");
+            ctx.out.write_line(~"use libc::*;\n");
 
             clang_visitChildren(cursor, visit_ty_top,
                                 ptr::addr_of(ctx) as CXClientData);
 
-            ctx.out.write_line(#fmt["#[link_name=\"%s\"]", ctx.link]);
-            ctx.out.write_line(~"extern mod bindgen {\n");
+            ctx.out.write_line(#fmt["#[link_args=\"-l%s\"]", ctx.link]);
+            ctx.out.write_line(~"extern {\n");
             clang_visitChildren(cursor, visit_func_top,
                                 ptr::addr_of(ctx) as CXClientData);
             ctx.out.write_line(~"}");
