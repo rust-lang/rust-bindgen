@@ -6,7 +6,7 @@ It is ported from clay's bindgen[1].
 Requirements
 ------------
 
-* clang 3.1svn
+* clang 3.1
 
 Usage
 -----
@@ -38,8 +38,6 @@ or
 TODO
 ----
 
-* array type
-    * currently represented as tuple
 * union type
 * recursive type
 * global variable
