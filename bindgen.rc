@@ -5,3 +5,5 @@ extern mod syntax;
 
 mod clang;
 mod main;
+mod ast;
+mod gen;

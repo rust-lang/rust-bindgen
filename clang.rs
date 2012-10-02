@@ -6,489 +6,490 @@ type time_t = int;
 
 type CXIndex = *c_void;
 
-type struct_CXTranslationUnitImpl = c_void;
+type Struct_CXTranslationUnitImpl = c_void;
 
-type CXTranslationUnit = *struct_CXTranslationUnitImpl;
+type CXTranslationUnit = *Struct_CXTranslationUnitImpl;
 
 type CXClientData = *c_void;
 
-type struct_CXUnsavedFile = {
-    Filename: *c_char,
-    Contents: *c_char,
-    Length: c_ulong,
-};
+struct Struct_CXUnsavedFile {
+    Filename: *c_schar,
+    Contents: *c_schar,
+    Length: c_ulong
+}
 
-type enum_CXAvailabilityKind = c_uint;
-const CXAvailability_Available: u32 = 0_u32;
-const CXAvailability_Deprecated: u32 = 1_u32;
-const CXAvailability_NotAvailable: u32 = 2_u32;
-const CXAvailability_NotAccessible: u32 = 3_u32;
+type Enum_CXAvailabilityKind = c_uint;
+const CXAvailability_Available: c_uint = 0;
+const CXAvailability_Deprecated: c_uint = 1;
+const CXAvailability_NotAvailable: c_uint = 2;
+const CXAvailability_NotAccessible: c_uint = 3;
 
-type CXString = {
+struct CXString {
     data: *c_void,
-    private_flags: c_uint,
-};
-
+    private_flags: c_uint
+}
 
 type CXGlobalOptFlags = c_uint;
-const CXGlobalOpt_None: u32 = 0_u32;
-const CXGlobalOpt_ThreadBackgroundPriorityForIndexing: u32 = 1_u32;
-const CXGlobalOpt_ThreadBackgroundPriorityForEditing: u32 = 2_u32;
-const CXGlobalOpt_ThreadBackgroundPriorityForAll: u32 = 3_u32;
+const CXGlobalOpt_None: c_uint = 0;
+const CXGlobalOpt_ThreadBackgroundPriorityForIndexing: c_uint = 1;
+const CXGlobalOpt_ThreadBackgroundPriorityForEditing: c_uint = 2;
+const CXGlobalOpt_ThreadBackgroundPriorityForAll: c_uint = 3;
 
 type CXFile = *c_void;
 
-type CXSourceLocation = {
-    ptr_data: (*c_void,*c_void),
-    int_data: c_uint,
-};
+struct CXSourceLocation {
+    ptr_data: [*c_void * 2],
+    int_data: c_uint
+}
 
-type CXSourceRange = {
-    ptr_data: (*c_void,*c_void),
+struct CXSourceRange {
+    ptr_data: [*c_void * 2],
     begin_int_data: c_uint,
-    end_int_data: c_uint,
-};
+    end_int_data: c_uint
+}
 
-type enum_CXDiagnosticSeverity = c_uint;
-const CXDiagnostic_Ignored: u32 = 0_u32;
-const CXDiagnostic_Note: u32 = 1_u32;
-const CXDiagnostic_Warning: u32 = 2_u32;
-const CXDiagnostic_Error: u32 = 3_u32;
-const CXDiagnostic_Fatal: u32 = 4_u32;
+type Enum_CXDiagnosticSeverity = c_uint;
+const CXDiagnostic_Ignored: c_uint = 0;
+const CXDiagnostic_Note: c_uint = 1;
+const CXDiagnostic_Warning: c_uint = 2;
+const CXDiagnostic_Error: c_uint = 3;
+const CXDiagnostic_Fatal: c_uint = 4;
 
 type CXDiagnostic = *c_void;
 
 type CXDiagnosticSet = *c_void;
 
-type enum_CXLoadDiag_Error = c_uint;
-const CXLoadDiag_None: u32 = 0_u32;
-const CXLoadDiag_Unknown: u32 = 1_u32;
-const CXLoadDiag_CannotLoad: u32 = 2_u32;
-const CXLoadDiag_InvalidFile: u32 = 3_u32;
+type Enum_CXLoadDiag_Error = c_uint;
+const CXLoadDiag_None: c_uint = 0;
+const CXLoadDiag_Unknown: c_uint = 1;
+const CXLoadDiag_CannotLoad: c_uint = 2;
+const CXLoadDiag_InvalidFile: c_uint = 3;
 
-type enum_CXDiagnosticDisplayOptions = c_uint;
-const CXDiagnostic_DisplaySourceLocation: u32 = 1_u32;
-const CXDiagnostic_DisplayColumn: u32 = 2_u32;
-const CXDiagnostic_DisplaySourceRanges: u32 = 4_u32;
-const CXDiagnostic_DisplayOption: u32 = 8_u32;
-const CXDiagnostic_DisplayCategoryId: u32 = 16_u32;
-const CXDiagnostic_DisplayCategoryName: u32 = 32_u32;
+type Enum_CXDiagnosticDisplayOptions = c_uint;
+const CXDiagnostic_DisplaySourceLocation: c_uint = 1;
+const CXDiagnostic_DisplayColumn: c_uint = 2;
+const CXDiagnostic_DisplaySourceRanges: c_uint = 4;
+const CXDiagnostic_DisplayOption: c_uint = 8;
+const CXDiagnostic_DisplayCategoryId: c_uint = 16;
+const CXDiagnostic_DisplayCategoryName: c_uint = 32;
 
-type enum_CXTranslationUnit_Flags = c_uint;
-const CXTranslationUnit_None: u32 = 0_u32;
-const CXTranslationUnit_DetailedPreprocessingRecord: u32 = 1_u32;
-const CXTranslationUnit_Incomplete: u32 = 2_u32;
-const CXTranslationUnit_PrecompiledPreamble: u32 = 4_u32;
-const CXTranslationUnit_CacheCompletionResults: u32 = 8_u32;
-const CXTranslationUnit_CXXPrecompiledPreamble: u32 = 16_u32;
-const CXTranslationUnit_CXXChainedPCH: u32 = 32_u32;
-const CXTranslationUnit_SkipFunctionBodies: u32 = 64_u32;
+type Enum_CXTranslationUnit_Flags = c_uint;
+const CXTranslationUnit_None: c_uint = 0;
+const CXTranslationUnit_DetailedPreprocessingRecord: c_uint = 1;
+const CXTranslationUnit_Incomplete: c_uint = 2;
+const CXTranslationUnit_PrecompiledPreamble: c_uint = 4;
+const CXTranslationUnit_CacheCompletionResults: c_uint = 8;
+const CXTranslationUnit_CXXPrecompiledPreamble: c_uint = 16;
+const CXTranslationUnit_CXXChainedPCH: c_uint = 32;
+const CXTranslationUnit_SkipFunctionBodies: c_uint = 64;
 
-type enum_CXSaveTranslationUnit_Flags = c_uint;
-const CXSaveTranslationUnit_None: u32 = 0_u32;
+type Enum_CXSaveTranslationUnit_Flags = c_uint;
+const CXSaveTranslationUnit_None: c_uint = 0;
 
-type enum_CXSaveError = c_uint;
-const CXSaveError_None: u32 = 0_u32;
-const CXSaveError_Unknown: u32 = 1_u32;
-const CXSaveError_TranslationErrors: u32 = 2_u32;
-const CXSaveError_InvalidTU: u32 = 3_u32;
+type Enum_CXSaveError = c_uint;
+const CXSaveError_None: c_uint = 0;
+const CXSaveError_Unknown: c_uint = 1;
+const CXSaveError_TranslationErrors: c_uint = 2;
+const CXSaveError_InvalidTU: c_uint = 3;
 
-type enum_CXReparse_Flags = c_uint;
-const CXReparse_None: u32 = 0_u32;
+type Enum_CXReparse_Flags = c_uint;
+const CXReparse_None: c_uint = 0;
 
-type enum_CXTUResourceUsageKind = c_uint;
-const CXTUResourceUsage_AST: u32 = 1_u32;
-const CXTUResourceUsage_Identifiers: u32 = 2_u32;
-const CXTUResourceUsage_Selectors: u32 = 3_u32;
-const CXTUResourceUsage_GlobalCompletionResults: u32 = 4_u32;
-const CXTUResourceUsage_SourceManagerContentCache: u32 = 5_u32;
-const CXTUResourceUsage_AST_SideTables: u32 = 6_u32;
-const CXTUResourceUsage_SourceManager_Membuffer_Malloc: u32 = 7_u32;
-const CXTUResourceUsage_SourceManager_Membuffer_MMap: u32 = 8_u32;
-const CXTUResourceUsage_ExternalASTSource_Membuffer_Malloc: u32 = 9_u32;
-const CXTUResourceUsage_ExternalASTSource_Membuffer_MMap: u32 = 10_u32;
-const CXTUResourceUsage_Preprocessor: u32 = 11_u32;
-const CXTUResourceUsage_PreprocessingRecord: u32 = 12_u32;
-const CXTUResourceUsage_SourceManager_DataStructures: u32 = 13_u32;
-const CXTUResourceUsage_Preprocessor_HeaderSearch: u32 = 14_u32;
-const CXTUResourceUsage_MEMORY_IN_BYTES_BEGIN: u32 = 1_u32;
-const CXTUResourceUsage_MEMORY_IN_BYTES_END: u32 = 14_u32;
-const CXTUResourceUsage_First: u32 = 1_u32;
-const CXTUResourceUsage_Last: u32 = 14_u32;
+type Enum_CXTUResourceUsageKind = c_uint;
+const CXTUResourceUsage_AST: c_uint = 1;
+const CXTUResourceUsage_Identifiers: c_uint = 2;
+const CXTUResourceUsage_Selectors: c_uint = 3;
+const CXTUResourceUsage_GlobalCompletionResults: c_uint = 4;
+const CXTUResourceUsage_SourceManagerContentCache: c_uint = 5;
+const CXTUResourceUsage_AST_SideTables: c_uint = 6;
+const CXTUResourceUsage_SourceManager_Membuffer_Malloc: c_uint = 7;
+const CXTUResourceUsage_SourceManager_Membuffer_MMap: c_uint = 8;
+const CXTUResourceUsage_ExternalASTSource_Membuffer_Malloc: c_uint = 9;
+const CXTUResourceUsage_ExternalASTSource_Membuffer_MMap: c_uint = 10;
+const CXTUResourceUsage_Preprocessor: c_uint = 11;
+const CXTUResourceUsage_PreprocessingRecord: c_uint = 12;
+const CXTUResourceUsage_SourceManager_DataStructures: c_uint = 13;
+const CXTUResourceUsage_Preprocessor_HeaderSearch: c_uint = 14;
+const CXTUResourceUsage_MEMORY_IN_BYTES_BEGIN: c_uint = 1;
+const CXTUResourceUsage_MEMORY_IN_BYTES_END: c_uint = 14;
+const CXTUResourceUsage_First: c_uint = 1;
+const CXTUResourceUsage_Last: c_uint = 14;
 
-type struct_CXTUResourceUsageEntry = {
-    kind: enum_CXTUResourceUsageKind,
-    amount: c_ulong,
-};
+struct Struct_CXTUResourceUsageEntry {
+    kind: Enum_CXTUResourceUsageKind,
+    amount: c_ulong
+}
 
-type CXTUResourceUsageEntry = struct_CXTUResourceUsageEntry;
+type CXTUResourceUsageEntry = Struct_CXTUResourceUsageEntry;
 
-type struct_CXTUResourceUsage = {
+struct Struct_CXTUResourceUsage {
     data: *c_void,
     numEntries: c_uint,
-    entries: *CXTUResourceUsageEntry,
-};
+    entries: *CXTUResourceUsageEntry
+}
 
-type CXTUResourceUsage = struct_CXTUResourceUsage;
+type CXTUResourceUsage = Struct_CXTUResourceUsage;
 
-type enum_CXCursorKind = c_uint;
-const CXCursor_UnexposedDecl: u32 = 1_u32;
-const CXCursor_StructDecl: u32 = 2_u32;
-const CXCursor_UnionDecl: u32 = 3_u32;
-const CXCursor_ClassDecl: u32 = 4_u32;
-const CXCursor_EnumDecl: u32 = 5_u32;
-const CXCursor_FieldDecl: u32 = 6_u32;
-const CXCursor_EnumConstantDecl: u32 = 7_u32;
-const CXCursor_FunctionDecl: u32 = 8_u32;
-const CXCursor_VarDecl: u32 = 9_u32;
-const CXCursor_ParmDecl: u32 = 10_u32;
-const CXCursor_ObjCInterfaceDecl: u32 = 11_u32;
-const CXCursor_ObjCCategoryDecl: u32 = 12_u32;
-const CXCursor_ObjCProtocolDecl: u32 = 13_u32;
-const CXCursor_ObjCPropertyDecl: u32 = 14_u32;
-const CXCursor_ObjCIvarDecl: u32 = 15_u32;
-const CXCursor_ObjCInstanceMethodDecl: u32 = 16_u32;
-const CXCursor_ObjCClassMethodDecl: u32 = 17_u32;
-const CXCursor_ObjCImplementationDecl: u32 = 18_u32;
-const CXCursor_ObjCCategoryImplDecl: u32 = 19_u32;
-const CXCursor_TypedefDecl: u32 = 20_u32;
-const CXCursor_CXXMethod: u32 = 21_u32;
-const CXCursor_Namespace: u32 = 22_u32;
-const CXCursor_LinkageSpec: u32 = 23_u32;
-const CXCursor_Constructor: u32 = 24_u32;
-const CXCursor_Destructor: u32 = 25_u32;
-const CXCursor_ConversionFunction: u32 = 26_u32;
-const CXCursor_TemplateTypeParameter: u32 = 27_u32;
-const CXCursor_NonTypeTemplateParameter: u32 = 28_u32;
-const CXCursor_TemplateTemplateParameter: u32 = 29_u32;
-const CXCursor_FunctionTemplate: u32 = 30_u32;
-const CXCursor_ClassTemplate: u32 = 31_u32;
-const CXCursor_ClassTemplatePartialSpecialization: u32 = 32_u32;
-const CXCursor_NamespaceAlias: u32 = 33_u32;
-const CXCursor_UsingDirective: u32 = 34_u32;
-const CXCursor_UsingDeclaration: u32 = 35_u32;
-const CXCursor_TypeAliasDecl: u32 = 36_u32;
-const CXCursor_ObjCSynthesizeDecl: u32 = 37_u32;
-const CXCursor_ObjCDynamicDecl: u32 = 38_u32;
-const CXCursor_CXXAccessSpecifier: u32 = 39_u32;
-const CXCursor_FirstDecl: u32 = 1_u32;
-const CXCursor_LastDecl: u32 = 39_u32;
-const CXCursor_FirstRef: u32 = 40_u32;
-const CXCursor_ObjCSuperClassRef: u32 = 40_u32;
-const CXCursor_ObjCProtocolRef: u32 = 41_u32;
-const CXCursor_ObjCClassRef: u32 = 42_u32;
-const CXCursor_TypeRef: u32 = 43_u32;
-const CXCursor_CXXBaseSpecifier: u32 = 44_u32;
-const CXCursor_TemplateRef: u32 = 45_u32;
-const CXCursor_NamespaceRef: u32 = 46_u32;
-const CXCursor_MemberRef: u32 = 47_u32;
-const CXCursor_LabelRef: u32 = 48_u32;
-const CXCursor_OverloadedDeclRef: u32 = 49_u32;
-const CXCursor_VariableRef: u32 = 50_u32;
-const CXCursor_LastRef: u32 = 50_u32;
-const CXCursor_FirstInvalid: u32 = 70_u32;
-const CXCursor_InvalidFile: u32 = 70_u32;
-const CXCursor_NoDeclFound: u32 = 71_u32;
-const CXCursor_NotImplemented: u32 = 72_u32;
-const CXCursor_InvalidCode: u32 = 73_u32;
-const CXCursor_LastInvalid: u32 = 73_u32;
-const CXCursor_FirstExpr: u32 = 100_u32;
-const CXCursor_UnexposedExpr: u32 = 100_u32;
-const CXCursor_DeclRefExpr: u32 = 101_u32;
-const CXCursor_MemberRefExpr: u32 = 102_u32;
-const CXCursor_CallExpr: u32 = 103_u32;
-const CXCursor_ObjCMessageExpr: u32 = 104_u32;
-const CXCursor_BlockExpr: u32 = 105_u32;
-const CXCursor_IntegerLiteral: u32 = 106_u32;
-const CXCursor_FloatingLiteral: u32 = 107_u32;
-const CXCursor_ImaginaryLiteral: u32 = 108_u32;
-const CXCursor_StringLiteral: u32 = 109_u32;
-const CXCursor_CharacterLiteral: u32 = 110_u32;
-const CXCursor_ParenExpr: u32 = 111_u32;
-const CXCursor_UnaryOperator: u32 = 112_u32;
-const CXCursor_ArraySubscriptExpr: u32 = 113_u32;
-const CXCursor_BinaryOperator: u32 = 114_u32;
-const CXCursor_CompoundAssignOperator: u32 = 115_u32;
-const CXCursor_ConditionalOperator: u32 = 116_u32;
-const CXCursor_CStyleCastExpr: u32 = 117_u32;
-const CXCursor_CompoundLiteralExpr: u32 = 118_u32;
-const CXCursor_InitListExpr: u32 = 119_u32;
-const CXCursor_AddrLabelExpr: u32 = 120_u32;
-const CXCursor_StmtExpr: u32 = 121_u32;
-const CXCursor_GenericSelectionExpr: u32 = 122_u32;
-const CXCursor_GNUNullExpr: u32 = 123_u32;
-const CXCursor_CXXStaticCastExpr: u32 = 124_u32;
-const CXCursor_CXXDynamicCastExpr: u32 = 125_u32;
-const CXCursor_CXXReinterpretCastExpr: u32 = 126_u32;
-const CXCursor_CXXConstCastExpr: u32 = 127_u32;
-const CXCursor_CXXFunctionalCastExpr: u32 = 128_u32;
-const CXCursor_CXXTypeidExpr: u32 = 129_u32;
-const CXCursor_CXXBoolLiteralExpr: u32 = 130_u32;
-const CXCursor_CXXNullPtrLiteralExpr: u32 = 131_u32;
-const CXCursor_CXXThisExpr: u32 = 132_u32;
-const CXCursor_CXXThrowExpr: u32 = 133_u32;
-const CXCursor_CXXNewExpr: u32 = 134_u32;
-const CXCursor_CXXDeleteExpr: u32 = 135_u32;
-const CXCursor_UnaryExpr: u32 = 136_u32;
-const CXCursor_ObjCStringLiteral: u32 = 137_u32;
-const CXCursor_ObjCEncodeExpr: u32 = 138_u32;
-const CXCursor_ObjCSelectorExpr: u32 = 139_u32;
-const CXCursor_ObjCProtocolExpr: u32 = 140_u32;
-const CXCursor_ObjCBridgedCastExpr: u32 = 141_u32;
-const CXCursor_PackExpansionExpr: u32 = 142_u32;
-const CXCursor_SizeOfPackExpr: u32 = 143_u32;
-const CXCursor_LambdaExpr: u32 = 144_u32;
-const CXCursor_ObjCBoolLiteralExpr: u32 = 145_u32;
-const CXCursor_LastExpr: u32 = 145_u32;
-const CXCursor_FirstStmt: u32 = 200_u32;
-const CXCursor_UnexposedStmt: u32 = 200_u32;
-const CXCursor_LabelStmt: u32 = 201_u32;
-const CXCursor_CompoundStmt: u32 = 202_u32;
-const CXCursor_CaseStmt: u32 = 203_u32;
-const CXCursor_DefaultStmt: u32 = 204_u32;
-const CXCursor_IfStmt: u32 = 205_u32;
-const CXCursor_SwitchStmt: u32 = 206_u32;
-const CXCursor_WhileStmt: u32 = 207_u32;
-const CXCursor_DoStmt: u32 = 208_u32;
-const CXCursor_ForStmt: u32 = 209_u32;
-const CXCursor_GotoStmt: u32 = 210_u32;
-const CXCursor_IndirectGotoStmt: u32 = 211_u32;
-const CXCursor_ContinueStmt: u32 = 212_u32;
-const CXCursor_BreakStmt: u32 = 213_u32;
-const CXCursor_ReturnStmt: u32 = 214_u32;
-const CXCursor_AsmStmt: u32 = 215_u32;
-const CXCursor_ObjCAtTryStmt: u32 = 216_u32;
-const CXCursor_ObjCAtCatchStmt: u32 = 217_u32;
-const CXCursor_ObjCAtFinallyStmt: u32 = 218_u32;
-const CXCursor_ObjCAtThrowStmt: u32 = 219_u32;
-const CXCursor_ObjCAtSynchronizedStmt: u32 = 220_u32;
-const CXCursor_ObjCAutoreleasePoolStmt: u32 = 221_u32;
-const CXCursor_ObjCForCollectionStmt: u32 = 222_u32;
-const CXCursor_CXXCatchStmt: u32 = 223_u32;
-const CXCursor_CXXTryStmt: u32 = 224_u32;
-const CXCursor_CXXForRangeStmt: u32 = 225_u32;
-const CXCursor_SEHTryStmt: u32 = 226_u32;
-const CXCursor_SEHExceptStmt: u32 = 227_u32;
-const CXCursor_SEHFinallyStmt: u32 = 228_u32;
-const CXCursor_NullStmt: u32 = 230_u32;
-const CXCursor_DeclStmt: u32 = 231_u32;
-const CXCursor_LastStmt: u32 = 231_u32;
-const CXCursor_TranslationUnit: u32 = 300_u32;
-const CXCursor_FirstAttr: u32 = 400_u32;
-const CXCursor_UnexposedAttr: u32 = 400_u32;
-const CXCursor_IBActionAttr: u32 = 401_u32;
-const CXCursor_IBOutletAttr: u32 = 402_u32;
-const CXCursor_IBOutletCollectionAttr: u32 = 403_u32;
-const CXCursor_CXXFinalAttr: u32 = 404_u32;
-const CXCursor_CXXOverrideAttr: u32 = 405_u32;
-const CXCursor_AnnotateAttr: u32 = 406_u32;
-const CXCursor_AsmLabelAttr: u32 = 407_u32;
-const CXCursor_LastAttr: u32 = 407_u32;
-const CXCursor_PreprocessingDirective: u32 = 500_u32;
-const CXCursor_MacroDefinition: u32 = 501_u32;
-const CXCursor_MacroExpansion: u32 = 502_u32;
-const CXCursor_MacroInstantiation: u32 = 502_u32;
-const CXCursor_InclusionDirective: u32 = 503_u32;
-const CXCursor_FirstPreprocessing: u32 = 500_u32;
-const CXCursor_LastPreprocessing: u32 = 503_u32;
+type Enum_CXCursorKind = c_uint;
+const CXCursor_UnexposedDecl: c_uint = 1;
+const CXCursor_StructDecl: c_uint = 2;
+const CXCursor_UnionDecl: c_uint = 3;
+const CXCursor_ClassDecl: c_uint = 4;
+const CXCursor_EnumDecl: c_uint = 5;
+const CXCursor_FieldDecl: c_uint = 6;
+const CXCursor_EnumConstantDecl: c_uint = 7;
+const CXCursor_FunctionDecl: c_uint = 8;
+const CXCursor_VarDecl: c_uint = 9;
+const CXCursor_ParmDecl: c_uint = 10;
+const CXCursor_ObjCInterfaceDecl: c_uint = 11;
+const CXCursor_ObjCCategoryDecl: c_uint = 12;
+const CXCursor_ObjCProtocolDecl: c_uint = 13;
+const CXCursor_ObjCPropertyDecl: c_uint = 14;
+const CXCursor_ObjCIvarDecl: c_uint = 15;
+const CXCursor_ObjCInstanceMethodDecl: c_uint = 16;
+const CXCursor_ObjCClassMethodDecl: c_uint = 17;
+const CXCursor_ObjCImplementationDecl: c_uint = 18;
+const CXCursor_ObjCCategoryImplDecl: c_uint = 19;
+const CXCursor_TypedefDecl: c_uint = 20;
+const CXCursor_CXXMethod: c_uint = 21;
+const CXCursor_Namespace: c_uint = 22;
+const CXCursor_LinkageSpec: c_uint = 23;
+const CXCursor_Constructor: c_uint = 24;
+const CXCursor_Destructor: c_uint = 25;
+const CXCursor_ConversionFunction: c_uint = 26;
+const CXCursor_TemplateTypeParameter: c_uint = 27;
+const CXCursor_NonTypeTemplateParameter: c_uint = 28;
+const CXCursor_TemplateTemplateParameter: c_uint = 29;
+const CXCursor_FunctionTemplate: c_uint = 30;
+const CXCursor_ClassTemplate: c_uint = 31;
+const CXCursor_ClassTemplatePartialSpecialization: c_uint = 32;
+const CXCursor_NamespaceAlias: c_uint = 33;
+const CXCursor_UsingDirective: c_uint = 34;
+const CXCursor_UsingDeclaration: c_uint = 35;
+const CXCursor_TypeAliasDecl: c_uint = 36;
+const CXCursor_ObjCSynthesizeDecl: c_uint = 37;
+const CXCursor_ObjCDynamicDecl: c_uint = 38;
+const CXCursor_CXXAccessSpecifier: c_uint = 39;
+const CXCursor_FirstDecl: c_uint = 1;
+const CXCursor_LastDecl: c_uint = 39;
+const CXCursor_FirstRef: c_uint = 40;
+const CXCursor_ObjCSuperClassRef: c_uint = 40;
+const CXCursor_ObjCProtocolRef: c_uint = 41;
+const CXCursor_ObjCClassRef: c_uint = 42;
+const CXCursor_TypeRef: c_uint = 43;
+const CXCursor_CXXBaseSpecifier: c_uint = 44;
+const CXCursor_TemplateRef: c_uint = 45;
+const CXCursor_NamespaceRef: c_uint = 46;
+const CXCursor_MemberRef: c_uint = 47;
+const CXCursor_LabelRef: c_uint = 48;
+const CXCursor_OverloadedDeclRef: c_uint = 49;
+const CXCursor_VariableRef: c_uint = 50;
+const CXCursor_LastRef: c_uint = 50;
+const CXCursor_FirstInvalid: c_uint = 70;
+const CXCursor_InvalidFile: c_uint = 70;
+const CXCursor_NoDeclFound: c_uint = 71;
+const CXCursor_NotImplemented: c_uint = 72;
+const CXCursor_InvalidCode: c_uint = 73;
+const CXCursor_LastInvalid: c_uint = 73;
+const CXCursor_FirstExpr: c_uint = 100;
+const CXCursor_UnexposedExpr: c_uint = 100;
+const CXCursor_DeclRefExpr: c_uint = 101;
+const CXCursor_MemberRefExpr: c_uint = 102;
+const CXCursor_CallExpr: c_uint = 103;
+const CXCursor_ObjCMessageExpr: c_uint = 104;
+const CXCursor_BlockExpr: c_uint = 105;
+const CXCursor_IntegerLiteral: c_uint = 106;
+const CXCursor_FloatingLiteral: c_uint = 107;
+const CXCursor_ImaginaryLiteral: c_uint = 108;
+const CXCursor_StringLiteral: c_uint = 109;
+const CXCursor_CharacterLiteral: c_uint = 110;
+const CXCursor_ParenExpr: c_uint = 111;
+const CXCursor_UnaryOperator: c_uint = 112;
+const CXCursor_ArraySubscriptExpr: c_uint = 113;
+const CXCursor_BinaryOperator: c_uint = 114;
+const CXCursor_CompoundAssignOperator: c_uint = 115;
+const CXCursor_ConditionalOperator: c_uint = 116;
+const CXCursor_CStyleCastExpr: c_uint = 117;
+const CXCursor_CompoundLiteralExpr: c_uint = 118;
+const CXCursor_InitListExpr: c_uint = 119;
+const CXCursor_AddrLabelExpr: c_uint = 120;
+const CXCursor_StmtExpr: c_uint = 121;
+const CXCursor_GenericSelectionExpr: c_uint = 122;
+const CXCursor_GNUNullExpr: c_uint = 123;
+const CXCursor_CXXStaticCastExpr: c_uint = 124;
+const CXCursor_CXXDynamicCastExpr: c_uint = 125;
+const CXCursor_CXXReinterpretCastExpr: c_uint = 126;
+const CXCursor_CXXConstCastExpr: c_uint = 127;
+const CXCursor_CXXFunctionalCastExpr: c_uint = 128;
+const CXCursor_CXXTypeidExpr: c_uint = 129;
+const CXCursor_CXXBoolLiteralExpr: c_uint = 130;
+const CXCursor_CXXNullPtrLiteralExpr: c_uint = 131;
+const CXCursor_CXXThisExpr: c_uint = 132;
+const CXCursor_CXXThrowExpr: c_uint = 133;
+const CXCursor_CXXNewExpr: c_uint = 134;
+const CXCursor_CXXDeleteExpr: c_uint = 135;
+const CXCursor_UnaryExpr: c_uint = 136;
+const CXCursor_ObjCStringLiteral: c_uint = 137;
+const CXCursor_ObjCEncodeExpr: c_uint = 138;
+const CXCursor_ObjCSelectorExpr: c_uint = 139;
+const CXCursor_ObjCProtocolExpr: c_uint = 140;
+const CXCursor_ObjCBridgedCastExpr: c_uint = 141;
+const CXCursor_PackExpansionExpr: c_uint = 142;
+const CXCursor_SizeOfPackExpr: c_uint = 143;
+const CXCursor_LambdaExpr: c_uint = 144;
+const CXCursor_ObjCBoolLiteralExpr: c_uint = 145;
+const CXCursor_LastExpr: c_uint = 145;
+const CXCursor_FirstStmt: c_uint = 200;
+const CXCursor_UnexposedStmt: c_uint = 200;
+const CXCursor_LabelStmt: c_uint = 201;
+const CXCursor_CompoundStmt: c_uint = 202;
+const CXCursor_CaseStmt: c_uint = 203;
+const CXCursor_DefaultStmt: c_uint = 204;
+const CXCursor_IfStmt: c_uint = 205;
+const CXCursor_SwitchStmt: c_uint = 206;
+const CXCursor_WhileStmt: c_uint = 207;
+const CXCursor_DoStmt: c_uint = 208;
+const CXCursor_ForStmt: c_uint = 209;
+const CXCursor_GotoStmt: c_uint = 210;
+const CXCursor_IndirectGotoStmt: c_uint = 211;
+const CXCursor_ContinueStmt: c_uint = 212;
+const CXCursor_BreakStmt: c_uint = 213;
+const CXCursor_ReturnStmt: c_uint = 214;
+const CXCursor_AsmStmt: c_uint = 215;
+const CXCursor_ObjCAtTryStmt: c_uint = 216;
+const CXCursor_ObjCAtCatchStmt: c_uint = 217;
+const CXCursor_ObjCAtFinallyStmt: c_uint = 218;
+const CXCursor_ObjCAtThrowStmt: c_uint = 219;
+const CXCursor_ObjCAtSynchronizedStmt: c_uint = 220;
+const CXCursor_ObjCAutoreleasePoolStmt: c_uint = 221;
+const CXCursor_ObjCForCollectionStmt: c_uint = 222;
+const CXCursor_CXXCatchStmt: c_uint = 223;
+const CXCursor_CXXTryStmt: c_uint = 224;
+const CXCursor_CXXForRangeStmt: c_uint = 225;
+const CXCursor_SEHTryStmt: c_uint = 226;
+const CXCursor_SEHExceptStmt: c_uint = 227;
+const CXCursor_SEHFinallyStmt: c_uint = 228;
+const CXCursor_NullStmt: c_uint = 230;
+const CXCursor_DeclStmt: c_uint = 231;
+const CXCursor_LastStmt: c_uint = 231;
+const CXCursor_TranslationUnit: c_uint = 300;
+const CXCursor_FirstAttr: c_uint = 400;
+const CXCursor_UnexposedAttr: c_uint = 400;
+const CXCursor_IBActionAttr: c_uint = 401;
+const CXCursor_IBOutletAttr: c_uint = 402;
+const CXCursor_IBOutletCollectionAttr: c_uint = 403;
+const CXCursor_CXXFinalAttr: c_uint = 404;
+const CXCursor_CXXOverrideAttr: c_uint = 405;
+const CXCursor_AnnotateAttr: c_uint = 406;
+const CXCursor_AsmLabelAttr: c_uint = 407;
+const CXCursor_LastAttr: c_uint = 407;
+const CXCursor_PreprocessingDirective: c_uint = 500;
+const CXCursor_MacroDefinition: c_uint = 501;
+const CXCursor_MacroExpansion: c_uint = 502;
+const CXCursor_MacroInstantiation: c_uint = 502;
+const CXCursor_InclusionDirective: c_uint = 503;
+const CXCursor_FirstPreprocessing: c_uint = 500;
+const CXCursor_LastPreprocessing: c_uint = 503;
 
-type CXCursor = {
-    kind: enum_CXCursorKind,
+struct CXCursor {
+    kind: Enum_CXCursorKind,
     xdata: c_int,
-    data: (*c_void,*c_void,*c_void),
-};
+    data: [*c_void * 3]
+}
 
-type enum_CXLinkageKind = c_uint;
-const CXLinkage_Invalid: u32 = 0_u32;
-const CXLinkage_NoLinkage: u32 = 1_u32;
-const CXLinkage_Internal: u32 = 2_u32;
-const CXLinkage_UniqueExternal: u32 = 3_u32;
-const CXLinkage_External: u32 = 4_u32;
+type Enum_CXLinkageKind = c_uint;
+const CXLinkage_Invalid: c_uint = 0;
+const CXLinkage_NoLinkage: c_uint = 1;
+const CXLinkage_Internal: c_uint = 2;
+const CXLinkage_UniqueExternal: c_uint = 3;
+const CXLinkage_External: c_uint = 4;
 
-type enum_CXLanguageKind = c_uint;
-const CXLanguage_Invalid: u32 = 0_u32;
-const CXLanguage_C: u32 = 1_u32;
-const CXLanguage_ObjC: u32 = 2_u32;
-const CXLanguage_CPlusPlus: u32 = 3_u32;
+type Enum_CXLanguageKind = c_uint;
+const CXLanguage_Invalid: c_uint = 0;
+const CXLanguage_C: c_uint = 1;
+const CXLanguage_ObjC: c_uint = 2;
+const CXLanguage_CPlusPlus: c_uint = 3;
 
-type struct_CXCursorSetImpl = c_void;
+type Struct_CXCursorSetImpl = c_void;
 
-type CXCursorSet = *struct_CXCursorSetImpl;
+type CXCursorSet = *Struct_CXCursorSetImpl;
 
-type enum_CXTypeKind = c_uint;
-const CXType_Invalid: u32 = 0_u32;
-const CXType_Unexposed: u32 = 1_u32;
-const CXType_Void: u32 = 2_u32;
-const CXType_Bool: u32 = 3_u32;
-const CXType_Char_U: u32 = 4_u32;
-const CXType_UChar: u32 = 5_u32;
-const CXType_Char16: u32 = 6_u32;
-const CXType_Char32: u32 = 7_u32;
-const CXType_UShort: u32 = 8_u32;
-const CXType_UInt: u32 = 9_u32;
-const CXType_ULong: u32 = 10_u32;
-const CXType_ULongLong: u32 = 11_u32;
-const CXType_UInt128: u32 = 12_u32;
-const CXType_Char_S: u32 = 13_u32;
-const CXType_SChar: u32 = 14_u32;
-const CXType_WChar: u32 = 15_u32;
-const CXType_Short: u32 = 16_u32;
-const CXType_Int: u32 = 17_u32;
-const CXType_Long: u32 = 18_u32;
-const CXType_LongLong: u32 = 19_u32;
-const CXType_Int128: u32 = 20_u32;
-const CXType_Float: u32 = 21_u32;
-const CXType_Double: u32 = 22_u32;
-const CXType_LongDouble: u32 = 23_u32;
-const CXType_NullPtr: u32 = 24_u32;
-const CXType_Overload: u32 = 25_u32;
-const CXType_Dependent: u32 = 26_u32;
-const CXType_ObjCId: u32 = 27_u32;
-const CXType_ObjCClass: u32 = 28_u32;
-const CXType_ObjCSel: u32 = 29_u32;
-const CXType_FirstBuiltin: u32 = 2_u32;
-const CXType_LastBuiltin: u32 = 29_u32;
-const CXType_Complex: u32 = 100_u32;
-const CXType_Pointer: u32 = 101_u32;
-const CXType_BlockPointer: u32 = 102_u32;
-const CXType_LValueReference: u32 = 103_u32;
-const CXType_RValueReference: u32 = 104_u32;
-const CXType_Record: u32 = 105_u32;
-const CXType_Enum: u32 = 106_u32;
-const CXType_Typedef: u32 = 107_u32;
-const CXType_ObjCInterface: u32 = 108_u32;
-const CXType_ObjCObjectPointer: u32 = 109_u32;
-const CXType_FunctionNoProto: u32 = 110_u32;
-const CXType_FunctionProto: u32 = 111_u32;
-const CXType_ConstantArray: u32 = 112_u32;
-const CXType_Vector: u32 = 113_u32;
+type Enum_CXTypeKind = c_uint;
+const CXType_Invalid: c_uint = 0;
+const CXType_Unexposed: c_uint = 1;
+const CXType_Void: c_uint = 2;
+const CXType_Bool: c_uint = 3;
+const CXType_Char_U: c_uint = 4;
+const CXType_UChar: c_uint = 5;
+const CXType_Char16: c_uint = 6;
+const CXType_Char32: c_uint = 7;
+const CXType_UShort: c_uint = 8;
+const CXType_UInt: c_uint = 9;
+const CXType_ULong: c_uint = 10;
+const CXType_ULongLong: c_uint = 11;
+const CXType_UInt128: c_uint = 12;
+const CXType_Char_S: c_uint = 13;
+const CXType_SChar: c_uint = 14;
+const CXType_WChar: c_uint = 15;
+const CXType_Short: c_uint = 16;
+const CXType_Int: c_uint = 17;
+const CXType_Long: c_uint = 18;
+const CXType_LongLong: c_uint = 19;
+const CXType_Int128: c_uint = 20;
+const CXType_Float: c_uint = 21;
+const CXType_Double: c_uint = 22;
+const CXType_LongDouble: c_uint = 23;
+const CXType_NullPtr: c_uint = 24;
+const CXType_Overload: c_uint = 25;
+const CXType_Dependent: c_uint = 26;
+const CXType_ObjCId: c_uint = 27;
+const CXType_ObjCClass: c_uint = 28;
+const CXType_ObjCSel: c_uint = 29;
+const CXType_FirstBuiltin: c_uint = 2;
+const CXType_LastBuiltin: c_uint = 29;
+const CXType_Complex: c_uint = 100;
+const CXType_Pointer: c_uint = 101;
+const CXType_BlockPointer: c_uint = 102;
+const CXType_LValueReference: c_uint = 103;
+const CXType_RValueReference: c_uint = 104;
+const CXType_Record: c_uint = 105;
+const CXType_Enum: c_uint = 106;
+const CXType_Typedef: c_uint = 107;
+const CXType_ObjCInterface: c_uint = 108;
+const CXType_ObjCObjectPointer: c_uint = 109;
+const CXType_FunctionNoProto: c_uint = 110;
+const CXType_FunctionProto: c_uint = 111;
+const CXType_ConstantArray: c_uint = 112;
+const CXType_Vector: c_uint = 113;
 
-type enum_CXCallingConv = c_uint;
-const CXCallingConv_Default: u32 = 0_u32;
-const CXCallingConv_C: u32 = 1_u32;
-const CXCallingConv_X86StdCall: u32 = 2_u32;
-const CXCallingConv_X86FastCall: u32 = 3_u32;
-const CXCallingConv_X86ThisCall: u32 = 4_u32;
-const CXCallingConv_X86Pascal: u32 = 5_u32;
-const CXCallingConv_AAPCS: u32 = 6_u32;
-const CXCallingConv_AAPCS_VFP: u32 = 7_u32;
-const CXCallingConv_Invalid: u32 = 100_u32;
-const CXCallingConv_Unexposed: u32 = 200_u32;
+type Enum_CXCallingConv = c_uint;
+const CXCallingConv_Default: c_uint = 0;
+const CXCallingConv_C: c_uint = 1;
+const CXCallingConv_X86StdCall: c_uint = 2;
+const CXCallingConv_X86FastCall: c_uint = 3;
+const CXCallingConv_X86ThisCall: c_uint = 4;
+const CXCallingConv_X86Pascal: c_uint = 5;
+const CXCallingConv_AAPCS: c_uint = 6;
+const CXCallingConv_AAPCS_VFP: c_uint = 7;
+const CXCallingConv_Invalid: c_uint = 100;
+const CXCallingConv_Unexposed: c_uint = 200;
 
-type CXType = {
-    kind: enum_CXTypeKind,
-    data: (*c_void,*c_void),
-};
+struct CXType {
+    kind: Enum_CXTypeKind,
+    data: [*c_void * 2]
+}
 
-type enum_CX_CXXAccessSpecifier = c_uint;
-const CX_CXXInvalidAccessSpecifier: u32 = 0_u32;
-const CX_CXXPublic: u32 = 1_u32;
-const CX_CXXProtected: u32 = 2_u32;
-const CX_CXXPrivate: u32 = 3_u32;
+type Enum_CX_CXXAccessSpecifier = c_uint;
+const CX_CXXInvalidAccessSpecifier: c_uint = 0;
+const CX_CXXPublic: c_uint = 1;
+const CX_CXXProtected: c_uint = 2;
+const CX_CXXPrivate: c_uint = 3;
 
-type enum_CXChildVisitResult = c_uint;
-const CXChildVisit_Break: u32 = 0_u32;
-const CXChildVisit_Continue: u32 = 1_u32;
-const CXChildVisit_Recurse: u32 = 2_u32;
+type Enum_CXChildVisitResult = c_uint;
+const CXChildVisit_Break: c_uint = 0;
+const CXChildVisit_Continue: c_uint = 1;
+const CXChildVisit_Recurse: c_uint = 2;
+
 
 type CXCursorVisitor = *u8;
 
-type enum_CXNameRefFlags = c_uint;
-const CXNameRange_WantQualifier: u32 = 1_u32;
-const CXNameRange_WantTemplateArgs: u32 = 2_u32;
-const CXNameRange_WantSinglePiece: u32 = 4_u32;
+type Enum_CXNameRefFlags = c_uint;
+const CXNameRange_WantQualifier: c_uint = 1;
+const CXNameRange_WantTemplateArgs: c_uint = 2;
+const CXNameRange_WantSinglePiece: c_uint = 4;
 
-type enum_CXTokenKind = c_uint;
-const CXToken_Punctuation: u32 = 0_u32;
-const CXToken_Keyword: u32 = 1_u32;
-const CXToken_Identifier: u32 = 2_u32;
-const CXToken_Literal: u32 = 3_u32;
-const CXToken_Comment: u32 = 4_u32;
 
-type CXTokenKind = enum_CXTokenKind;
+type Enum_CXTokenKind = c_uint;
+const CXToken_Punctuation: c_uint = 0;
+const CXToken_Keyword: c_uint = 1;
+const CXToken_Identifier: c_uint = 2;
+const CXToken_Literal: c_uint = 3;
+const CXToken_Comment: c_uint = 4;
 
-type CXToken = {
-    int_data: (c_uint,c_uint,c_uint,c_uint),
-    ptr_data: *c_void,
-};
+type CXTokenKind = Enum_CXTokenKind;
+
+struct CXToken {
+    int_data: [c_uint * 4],
+    ptr_data: *c_void
+}
 
 type CXCompletionString = *c_void;
 
-type CXCompletionResult = {
-    CursorKind: enum_CXCursorKind,
-    CompletionString: CXCompletionString,
-};
+struct CXCompletionResult {
+    CursorKind: Enum_CXCursorKind,
+    CompletionString: CXCompletionString
+}
 
-type enum_CXCompletionChunkKind = c_uint;
-const CXCompletionChunk_Optional: u32 = 0_u32;
-const CXCompletionChunk_TypedText: u32 = 1_u32;
-const CXCompletionChunk_Text: u32 = 2_u32;
-const CXCompletionChunk_Placeholder: u32 = 3_u32;
-const CXCompletionChunk_Informative: u32 = 4_u32;
-const CXCompletionChunk_CurrentParameter: u32 = 5_u32;
-const CXCompletionChunk_LeftParen: u32 = 6_u32;
-const CXCompletionChunk_RightParen: u32 = 7_u32;
-const CXCompletionChunk_LeftBracket: u32 = 8_u32;
-const CXCompletionChunk_RightBracket: u32 = 9_u32;
-const CXCompletionChunk_LeftBrace: u32 = 10_u32;
-const CXCompletionChunk_RightBrace: u32 = 11_u32;
-const CXCompletionChunk_LeftAngle: u32 = 12_u32;
-const CXCompletionChunk_RightAngle: u32 = 13_u32;
-const CXCompletionChunk_Comma: u32 = 14_u32;
-const CXCompletionChunk_ResultType: u32 = 15_u32;
-const CXCompletionChunk_Colon: u32 = 16_u32;
-const CXCompletionChunk_SemiColon: u32 = 17_u32;
-const CXCompletionChunk_Equal: u32 = 18_u32;
-const CXCompletionChunk_HorizontalSpace: u32 = 19_u32;
-const CXCompletionChunk_VerticalSpace: u32 = 20_u32;
+type Enum_CXCompletionChunkKind = c_uint;
+const CXCompletionChunk_Optional: c_uint = 0;
+const CXCompletionChunk_TypedText: c_uint = 1;
+const CXCompletionChunk_Text: c_uint = 2;
+const CXCompletionChunk_Placeholder: c_uint = 3;
+const CXCompletionChunk_Informative: c_uint = 4;
+const CXCompletionChunk_CurrentParameter: c_uint = 5;
+const CXCompletionChunk_LeftParen: c_uint = 6;
+const CXCompletionChunk_RightParen: c_uint = 7;
+const CXCompletionChunk_LeftBracket: c_uint = 8;
+const CXCompletionChunk_RightBracket: c_uint = 9;
+const CXCompletionChunk_LeftBrace: c_uint = 10;
+const CXCompletionChunk_RightBrace: c_uint = 11;
+const CXCompletionChunk_LeftAngle: c_uint = 12;
+const CXCompletionChunk_RightAngle: c_uint = 13;
+const CXCompletionChunk_Comma: c_uint = 14;
+const CXCompletionChunk_ResultType: c_uint = 15;
+const CXCompletionChunk_Colon: c_uint = 16;
+const CXCompletionChunk_SemiColon: c_uint = 17;
+const CXCompletionChunk_Equal: c_uint = 18;
+const CXCompletionChunk_HorizontalSpace: c_uint = 19;
+const CXCompletionChunk_VerticalSpace: c_uint = 20;
 
-type CXCodeCompleteResults = {
+struct CXCodeCompleteResults {
     Results: *CXCompletionResult,
-    NumResults: c_uint,
-};
+    NumResults: c_uint
+}
 
-type enum_CXCodeComplete_Flags = c_uint;
-const CXCodeComplete_IncludeMacros: u32 = 1_u32;
-const CXCodeComplete_IncludeCodePatterns: u32 = 2_u32;
+type Enum_CXCodeComplete_Flags = c_uint;
+const CXCodeComplete_IncludeMacros: c_uint = 1;
+const CXCodeComplete_IncludeCodePatterns: c_uint = 2;
 
-type enum_CXCompletionContext = c_uint;
-const CXCompletionContext_Unexposed: u32 = 0_u32;
-const CXCompletionContext_AnyType: u32 = 1_u32;
-const CXCompletionContext_AnyValue: u32 = 2_u32;
-const CXCompletionContext_ObjCObjectValue: u32 = 4_u32;
-const CXCompletionContext_ObjCSelectorValue: u32 = 8_u32;
-const CXCompletionContext_CXXClassTypeValue: u32 = 16_u32;
-const CXCompletionContext_DotMemberAccess: u32 = 32_u32;
-const CXCompletionContext_ArrowMemberAccess: u32 = 64_u32;
-const CXCompletionContext_ObjCPropertyAccess: u32 = 128_u32;
-const CXCompletionContext_EnumTag: u32 = 256_u32;
-const CXCompletionContext_UnionTag: u32 = 512_u32;
-const CXCompletionContext_StructTag: u32 = 1024_u32;
-const CXCompletionContext_ClassTag: u32 = 2048_u32;
-const CXCompletionContext_Namespace: u32 = 4096_u32;
-const CXCompletionContext_NestedNameSpecifier: u32 = 8192_u32;
-const CXCompletionContext_ObjCInterface: u32 = 16384_u32;
-const CXCompletionContext_ObjCProtocol: u32 = 32768_u32;
-const CXCompletionContext_ObjCCategory: u32 = 65536_u32;
-const CXCompletionContext_ObjCInstanceMessage: u32 = 131072_u32;
-const CXCompletionContext_ObjCClassMessage: u32 = 262144_u32;
-const CXCompletionContext_ObjCSelectorName: u32 = 524288_u32;
-const CXCompletionContext_MacroName: u32 = 1048576_u32;
-const CXCompletionContext_NaturalLanguage: u32 = 2097152_u32;
-const CXCompletionContext_Unknown: u32 = 4194303_u32;
+type Enum_CXCompletionContext = c_uint;
+const CXCompletionContext_Unexposed: c_uint = 0;
+const CXCompletionContext_AnyType: c_uint = 1;
+const CXCompletionContext_AnyValue: c_uint = 2;
+const CXCompletionContext_ObjCObjectValue: c_uint = 4;
+const CXCompletionContext_ObjCSelectorValue: c_uint = 8;
+const CXCompletionContext_CXXClassTypeValue: c_uint = 16;
+const CXCompletionContext_DotMemberAccess: c_uint = 32;
+const CXCompletionContext_ArrowMemberAccess: c_uint = 64;
+const CXCompletionContext_ObjCPropertyAccess: c_uint = 128;
+const CXCompletionContext_EnumTag: c_uint = 256;
+const CXCompletionContext_UnionTag: c_uint = 512;
+const CXCompletionContext_StructTag: c_uint = 1024;
+const CXCompletionContext_ClassTag: c_uint = 2048;
+const CXCompletionContext_Namespace: c_uint = 4096;
+const CXCompletionContext_NestedNameSpecifier: c_uint = 8192;
+const CXCompletionContext_ObjCInterface: c_uint = 16384;
+const CXCompletionContext_ObjCProtocol: c_uint = 32768;
+const CXCompletionContext_ObjCCategory: c_uint = 65536;
+const CXCompletionContext_ObjCInstanceMessage: c_uint = 131072;
+const CXCompletionContext_ObjCClassMessage: c_uint = 262144;
+const CXCompletionContext_ObjCSelectorName: c_uint = 524288;
+const CXCompletionContext_MacroName: c_uint = 1048576;
+const CXCompletionContext_NaturalLanguage: c_uint = 2097152;
+const CXCompletionContext_Unknown: c_uint = 4194303;
 
 type CXInclusionVisitor = *u8;
 
 type CXRemapping = *c_void;
 
-type enum_CXVisitorResult = c_uint;
-const CXVisit_Break: u32 = 0_u32;
-const CXVisit_Continue: u32 = 1_u32;
+type Enum_CXVisitorResult = c_uint;
+const CXVisit_Break: c_uint = 0;
+const CXVisit_Continue: c_uint = 1;
 
-type CXCursorAndRangeVisitor = {
+struct CXCursorAndRangeVisitor {
     context: *c_void,
-    visit: *u8,
-};
+    visit: *u8
+}
 
 type CXIdxClientFile = *c_void;
 
@@ -498,104 +499,103 @@ type CXIdxClientContainer = *c_void;
 
 type CXIdxClientASTFile = *c_void;
 
-type CXIdxLoc = {
-    ptr_data: (*c_void,*c_void),
-    int_data: c_uint,
-};
+struct CXIdxLoc {
+    ptr_data: [*c_void * 2],
+    int_data: c_uint
+}
 
-type CXIdxIncludedFileInfo = {
+struct CXIdxIncludedFileInfo {
     hashLoc: CXIdxLoc,
-    filename: *c_char,
+    filename: *c_schar,
     file: CXFile,
     isImport: c_int,
-    isAngled: c_int,
-};
+    isAngled: c_int
+}
 
-type CXIdxImportedASTFileInfo = {
+struct CXIdxImportedASTFileInfo {
     file: CXFile,
     loc: CXIdxLoc,
-    isModule: c_int,
-};
-
+    isModule: c_int
+}
 
 type CXIdxEntityKind = c_uint;
-const CXIdxEntity_Unexposed: u32 = 0_u32;
-const CXIdxEntity_Typedef: u32 = 1_u32;
-const CXIdxEntity_Function: u32 = 2_u32;
-const CXIdxEntity_Variable: u32 = 3_u32;
-const CXIdxEntity_Field: u32 = 4_u32;
-const CXIdxEntity_EnumConstant: u32 = 5_u32;
-const CXIdxEntity_ObjCClass: u32 = 6_u32;
-const CXIdxEntity_ObjCProtocol: u32 = 7_u32;
-const CXIdxEntity_ObjCCategory: u32 = 8_u32;
-const CXIdxEntity_ObjCInstanceMethod: u32 = 9_u32;
-const CXIdxEntity_ObjCClassMethod: u32 = 10_u32;
-const CXIdxEntity_ObjCProperty: u32 = 11_u32;
-const CXIdxEntity_ObjCIvar: u32 = 12_u32;
-const CXIdxEntity_Enum: u32 = 13_u32;
-const CXIdxEntity_Struct: u32 = 14_u32;
-const CXIdxEntity_Union: u32 = 15_u32;
-const CXIdxEntity_CXXClass: u32 = 16_u32;
-const CXIdxEntity_CXXNamespace: u32 = 17_u32;
-const CXIdxEntity_CXXNamespaceAlias: u32 = 18_u32;
-const CXIdxEntity_CXXStaticVariable: u32 = 19_u32;
-const CXIdxEntity_CXXStaticMethod: u32 = 20_u32;
-const CXIdxEntity_CXXInstanceMethod: u32 = 21_u32;
-const CXIdxEntity_CXXConstructor: u32 = 22_u32;
-const CXIdxEntity_CXXDestructor: u32 = 23_u32;
-const CXIdxEntity_CXXConversionFunction: u32 = 24_u32;
-const CXIdxEntity_CXXTypeAlias: u32 = 25_u32;
+const CXIdxEntity_Unexposed: c_uint = 0;
+const CXIdxEntity_Typedef: c_uint = 1;
+const CXIdxEntity_Function: c_uint = 2;
+const CXIdxEntity_Variable: c_uint = 3;
+const CXIdxEntity_Field: c_uint = 4;
+const CXIdxEntity_EnumConstant: c_uint = 5;
+const CXIdxEntity_ObjCClass: c_uint = 6;
+const CXIdxEntity_ObjCProtocol: c_uint = 7;
+const CXIdxEntity_ObjCCategory: c_uint = 8;
+const CXIdxEntity_ObjCInstanceMethod: c_uint = 9;
+const CXIdxEntity_ObjCClassMethod: c_uint = 10;
+const CXIdxEntity_ObjCProperty: c_uint = 11;
+const CXIdxEntity_ObjCIvar: c_uint = 12;
+const CXIdxEntity_Enum: c_uint = 13;
+const CXIdxEntity_Struct: c_uint = 14;
+const CXIdxEntity_Union: c_uint = 15;
+const CXIdxEntity_CXXClass: c_uint = 16;
+const CXIdxEntity_CXXNamespace: c_uint = 17;
+const CXIdxEntity_CXXNamespaceAlias: c_uint = 18;
+const CXIdxEntity_CXXStaticVariable: c_uint = 19;
+const CXIdxEntity_CXXStaticMethod: c_uint = 20;
+const CXIdxEntity_CXXInstanceMethod: c_uint = 21;
+const CXIdxEntity_CXXConstructor: c_uint = 22;
+const CXIdxEntity_CXXDestructor: c_uint = 23;
+const CXIdxEntity_CXXConversionFunction: c_uint = 24;
+const CXIdxEntity_CXXTypeAlias: c_uint = 25;
 
 
 type CXIdxEntityLanguage = c_uint;
-const CXIdxEntityLang_None: u32 = 0_u32;
-const CXIdxEntityLang_C: u32 = 1_u32;
-const CXIdxEntityLang_ObjC: u32 = 2_u32;
-const CXIdxEntityLang_CXX: u32 = 3_u32;
+const CXIdxEntityLang_None: c_uint = 0;
+const CXIdxEntityLang_C: c_uint = 1;
+const CXIdxEntityLang_ObjC: c_uint = 2;
+const CXIdxEntityLang_CXX: c_uint = 3;
 
 
 type CXIdxEntityCXXTemplateKind = c_uint;
-const CXIdxEntity_NonTemplate: u32 = 0_u32;
-const CXIdxEntity_Template: u32 = 1_u32;
-const CXIdxEntity_TemplatePartialSpecialization: u32 = 2_u32;
-const CXIdxEntity_TemplateSpecialization: u32 = 3_u32;
+const CXIdxEntity_NonTemplate: c_uint = 0;
+const CXIdxEntity_Template: c_uint = 1;
+const CXIdxEntity_TemplatePartialSpecialization: c_uint = 2;
+const CXIdxEntity_TemplateSpecialization: c_uint = 3;
 
 
 type CXIdxAttrKind = c_uint;
-const CXIdxAttr_Unexposed: u32 = 0_u32;
-const CXIdxAttr_IBAction: u32 = 1_u32;
-const CXIdxAttr_IBOutlet: u32 = 2_u32;
-const CXIdxAttr_IBOutletCollection: u32 = 3_u32;
+const CXIdxAttr_Unexposed: c_uint = 0;
+const CXIdxAttr_IBAction: c_uint = 1;
+const CXIdxAttr_IBOutlet: c_uint = 2;
+const CXIdxAttr_IBOutletCollection: c_uint = 3;
 
-type CXIdxAttrInfo = {
+struct CXIdxAttrInfo {
     kind: CXIdxAttrKind,
     cursor: CXCursor,
-    loc: CXIdxLoc,
-};
+    loc: CXIdxLoc
+}
 
-type CXIdxEntityInfo = {
+struct CXIdxEntityInfo {
     kind: CXIdxEntityKind,
     templateKind: CXIdxEntityCXXTemplateKind,
     lang: CXIdxEntityLanguage,
-    name: *c_char,
-    USR: *c_char,
+    name: *c_schar,
+    USR: *c_schar,
     cursor: CXCursor,
     attributes: **CXIdxAttrInfo,
-    numAttributes: c_uint,
-};
+    numAttributes: c_uint
+}
 
-type CXIdxContainerInfo = {
-    cursor: CXCursor,
-};
+struct CXIdxContainerInfo {
+    cursor: CXCursor
+}
 
-type CXIdxIBOutletCollectionAttrInfo = {
+struct CXIdxIBOutletCollectionAttrInfo {
     attrInfo: *CXIdxAttrInfo,
     objcClass: *CXIdxEntityInfo,
     classCursor: CXCursor,
-    classLoc: CXIdxLoc,
-};
+    classLoc: CXIdxLoc
+}
 
-type CXIdxDeclInfo = {
+struct CXIdxDeclInfo {
     entityInfo: *CXIdxEntityInfo,
     cursor: CXCursor,
     loc: CXIdxLoc,
@@ -607,78 +607,77 @@ type CXIdxDeclInfo = {
     declAsContainer: *CXIdxContainerInfo,
     isImplicit: c_int,
     attributes: **CXIdxAttrInfo,
-    numAttributes: c_uint,
-};
-
+    numAttributes: c_uint
+}
 
 type CXIdxObjCContainerKind = c_uint;
-const CXIdxObjCContainer_ForwardRef: u32 = 0_u32;
-const CXIdxObjCContainer_Interface: u32 = 1_u32;
-const CXIdxObjCContainer_Implementation: u32 = 2_u32;
+const CXIdxObjCContainer_ForwardRef: c_uint = 0;
+const CXIdxObjCContainer_Interface: c_uint = 1;
+const CXIdxObjCContainer_Implementation: c_uint = 2;
 
-type CXIdxObjCContainerDeclInfo = {
+
+struct CXIdxObjCContainerDeclInfo {
     declInfo: *CXIdxDeclInfo,
-    kind: CXIdxObjCContainerKind,
-};
+    kind: CXIdxObjCContainerKind
+}
 
-type CXIdxBaseClassInfo = {
+struct CXIdxBaseClassInfo {
     base: *CXIdxEntityInfo,
     cursor: CXCursor,
-    loc: CXIdxLoc,
-};
+    loc: CXIdxLoc
+}
 
-type CXIdxObjCProtocolRefInfo = {
+struct CXIdxObjCProtocolRefInfo {
     protocol: *CXIdxEntityInfo,
     cursor: CXCursor,
-    loc: CXIdxLoc,
-};
+    loc: CXIdxLoc
+}
 
-type CXIdxObjCProtocolRefListInfo = {
+struct CXIdxObjCProtocolRefListInfo {
     protocols: **CXIdxObjCProtocolRefInfo,
-    numProtocols: c_uint,
-};
+    numProtocols: c_uint
+}
 
-type CXIdxObjCInterfaceDeclInfo = {
+struct CXIdxObjCInterfaceDeclInfo {
     containerInfo: *CXIdxObjCContainerDeclInfo,
     superInfo: *CXIdxBaseClassInfo,
-    protocols: *CXIdxObjCProtocolRefListInfo,
-};
+    protocols: *CXIdxObjCProtocolRefListInfo
+}
 
-type CXIdxObjCCategoryDeclInfo = {
+struct CXIdxObjCCategoryDeclInfo {
     containerInfo: *CXIdxObjCContainerDeclInfo,
     objcClass: *CXIdxEntityInfo,
     classCursor: CXCursor,
     classLoc: CXIdxLoc,
-    protocols: *CXIdxObjCProtocolRefListInfo,
-};
+    protocols: *CXIdxObjCProtocolRefListInfo
+}
 
-type CXIdxObjCPropertyDeclInfo = {
+struct CXIdxObjCPropertyDeclInfo {
     declInfo: *CXIdxDeclInfo,
     getter: *CXIdxEntityInfo,
-    setter: *CXIdxEntityInfo,
-};
+    setter: *CXIdxEntityInfo
+}
 
-type CXIdxCXXClassDeclInfo = {
+struct CXIdxCXXClassDeclInfo {
     declInfo: *CXIdxDeclInfo,
     bases: **CXIdxBaseClassInfo,
-    numBases: c_uint,
-};
-
+    numBases: c_uint
+}
 
 type CXIdxEntityRefKind = c_uint;
-const CXIdxEntityRef_Direct: u32 = 1_u32;
-const CXIdxEntityRef_Implicit: u32 = 2_u32;
+const CXIdxEntityRef_Direct: c_uint = 1;
+const CXIdxEntityRef_Implicit: c_uint = 2;
 
-type CXIdxEntityRefInfo = {
+struct CXIdxEntityRefInfo {
     kind: CXIdxEntityRefKind,
     cursor: CXCursor,
     loc: CXIdxLoc,
     referencedEntity: *CXIdxEntityInfo,
     parentEntity: *CXIdxEntityInfo,
-    container: *CXIdxContainerInfo,
-};
+    container: *CXIdxContainerInfo
+}
 
-type IndexerCallbacks = {
+struct IndexerCallbacks {
     abortQuery: *u8,
     diagnostic: *u8,
     enteredMainFile: *u8,
@@ -686,23 +685,22 @@ type IndexerCallbacks = {
     importedASTFile: *u8,
     startedTranslationUnit: *u8,
     indexDeclaration: *u8,
-    indexEntityReference: *u8,
-};
+    indexEntityReference: *u8
+}
 
 type CXIndexAction = *c_void;
 
-
 type CXIndexOptFlags = c_uint;
-const CXIndexOpt_None: u32 = 0_u32;
-const CXIndexOpt_SuppressRedundantRefs: u32 = 1_u32;
-const CXIndexOpt_IndexFunctionLocalSymbols: u32 = 2_u32;
-const CXIndexOpt_IndexImplicitTemplateInstantiations: u32 = 4_u32;
-const CXIndexOpt_SuppressWarnings: u32 = 8_u32;
+const CXIndexOpt_None: c_uint = 0;
+const CXIndexOpt_SuppressRedundantRefs: c_uint = 1;
+const CXIndexOpt_IndexFunctionLocalSymbols: c_uint = 2;
+const CXIndexOpt_IndexImplicitTemplateInstantiations: c_uint = 4;
+const CXIndexOpt_SuppressWarnings: c_uint = 8;
 
 #[link_args="-lclang"]
 extern {
 
-fn clang_getCString(++string: CXString) -> *c_char;
+fn clang_getCString(++string: CXString) -> *c_schar;
 
 fn clang_disposeString(++string: CXString);
 
@@ -720,7 +718,7 @@ fn clang_getFileTime(++SFile: CXFile) -> time_t;
 
 fn clang_isFileMultipleIncludeGuarded(++tu: CXTranslationUnit, ++file: CXFile) -> c_uint;
 
-fn clang_getFile(++tu: CXTranslationUnit, ++file_name: *c_char) -> CXFile;
+fn clang_getFile(++tu: CXTranslationUnit, ++file_name: *c_schar) -> CXFile;
 
 fn clang_getNullLocation() -> CXSourceLocation;
 
@@ -754,7 +752,7 @@ fn clang_getNumDiagnosticsInSet(++Diags: CXDiagnosticSet) -> c_uint;
 
 fn clang_getDiagnosticInSet(++Diags: CXDiagnosticSet, ++Index: c_uint) -> CXDiagnostic;
 
-fn clang_loadDiagnostics(++file: *c_char, ++error: *enum_CXLoadDiag_Error, ++errorString: *CXString) -> CXDiagnosticSet;
+fn clang_loadDiagnostics(++file: *c_schar, ++error: *Enum_CXLoadDiag_Error, ++errorString: *CXString) -> CXDiagnosticSet;
 
 fn clang_disposeDiagnosticSet(++Diags: CXDiagnosticSet);
 
@@ -772,7 +770,7 @@ fn clang_formatDiagnostic(++Diagnostic: CXDiagnostic, ++Options: c_uint) -> CXSt
 
 fn clang_defaultDiagnosticDisplayOptions() -> c_uint;
 
-fn clang_getDiagnosticSeverity(++arg1: CXDiagnostic) -> enum_CXDiagnosticSeverity;
+fn clang_getDiagnosticSeverity(++arg1: CXDiagnostic) -> Enum_CXDiagnosticSeverity;
 
 fn clang_getDiagnosticLocation(++arg1: CXDiagnostic) -> CXSourceLocation;
 
@@ -796,25 +794,25 @@ fn clang_getDiagnosticFixIt(++Diagnostic: CXDiagnostic, ++FixIt: c_uint, ++Repla
 
 fn clang_getTranslationUnitSpelling(++CTUnit: CXTranslationUnit) -> CXString;
 
-fn clang_createTranslationUnitFromSourceFile(++CIdx: CXIndex, ++source_filename: *c_char, ++num_clang_command_line_args: c_int, ++clang_command_line_args: **c_char, ++num_unsaved_files: c_uint, ++unsaved_files: *struct_CXUnsavedFile) -> CXTranslationUnit;
+fn clang_createTranslationUnitFromSourceFile(++CIdx: CXIndex, ++source_filename: *c_schar, ++num_clang_command_line_args: c_int, ++clang_command_line_args: **c_schar, ++num_unsaved_files: c_uint, ++unsaved_files: *Struct_CXUnsavedFile) -> CXTranslationUnit;
 
-fn clang_createTranslationUnit(++arg1: CXIndex, ++ast_filename: *c_char) -> CXTranslationUnit;
+fn clang_createTranslationUnit(++arg1: CXIndex, ++ast_filename: *c_schar) -> CXTranslationUnit;
 
 fn clang_defaultEditingTranslationUnitOptions() -> c_uint;
 
-fn clang_parseTranslationUnit(++CIdx: CXIndex, ++source_filename: *c_char, ++command_line_args: **c_char, ++num_command_line_args: c_int, ++unsaved_files: *struct_CXUnsavedFile, ++num_unsaved_files: c_uint, ++options: c_uint) -> CXTranslationUnit;
+fn clang_parseTranslationUnit(++CIdx: CXIndex, ++source_filename: *c_schar, ++command_line_args: **c_schar, ++num_command_line_args: c_int, ++unsaved_files: *Struct_CXUnsavedFile, ++num_unsaved_files: c_uint, ++options: c_uint) -> CXTranslationUnit;
 
 fn clang_defaultSaveOptions(++TU: CXTranslationUnit) -> c_uint;
 
-fn clang_saveTranslationUnit(++TU: CXTranslationUnit, ++FileName: *c_char, ++options: c_uint) -> c_int;
+fn clang_saveTranslationUnit(++TU: CXTranslationUnit, ++FileName: *c_schar, ++options: c_uint) -> c_int;
 
 fn clang_disposeTranslationUnit(++arg1: CXTranslationUnit);
 
 fn clang_defaultReparseOptions(++TU: CXTranslationUnit) -> c_uint;
 
-fn clang_reparseTranslationUnit(++TU: CXTranslationUnit, ++num_unsaved_files: c_uint, ++unsaved_files: *struct_CXUnsavedFile, ++options: c_uint) -> c_int;
+fn clang_reparseTranslationUnit(++TU: CXTranslationUnit, ++num_unsaved_files: c_uint, ++unsaved_files: *Struct_CXUnsavedFile, ++options: c_uint) -> c_int;
 
-fn clang_getTUResourceUsageName(++kind: enum_CXTUResourceUsageKind) -> *c_char;
+fn clang_getTUResourceUsageName(++kind: Enum_CXTUResourceUsageKind) -> *c_schar;
 
 fn clang_getCXTUResourceUsage(++TU: CXTranslationUnit) -> CXTUResourceUsage;
 
@@ -830,31 +828,31 @@ fn clang_Cursor_isNull(++arg1: CXCursor) -> c_int;
 
 fn clang_hashCursor(++arg1: CXCursor) -> c_uint;
 
-fn clang_getCursorKind(++arg1: CXCursor) -> enum_CXCursorKind;
+fn clang_getCursorKind(++arg1: CXCursor) -> Enum_CXCursorKind;
 
-fn clang_isDeclaration(++arg1: enum_CXCursorKind) -> c_uint;
+fn clang_isDeclaration(++arg1: Enum_CXCursorKind) -> c_uint;
 
-fn clang_isReference(++arg1: enum_CXCursorKind) -> c_uint;
+fn clang_isReference(++arg1: Enum_CXCursorKind) -> c_uint;
 
-fn clang_isExpression(++arg1: enum_CXCursorKind) -> c_uint;
+fn clang_isExpression(++arg1: Enum_CXCursorKind) -> c_uint;
 
-fn clang_isStatement(++arg1: enum_CXCursorKind) -> c_uint;
+fn clang_isStatement(++arg1: Enum_CXCursorKind) -> c_uint;
 
-fn clang_isAttribute(++arg1: enum_CXCursorKind) -> c_uint;
+fn clang_isAttribute(++arg1: Enum_CXCursorKind) -> c_uint;
 
-fn clang_isInvalid(++arg1: enum_CXCursorKind) -> c_uint;
+fn clang_isInvalid(++arg1: Enum_CXCursorKind) -> c_uint;
 
-fn clang_isTranslationUnit(++arg1: enum_CXCursorKind) -> c_uint;
+fn clang_isTranslationUnit(++arg1: Enum_CXCursorKind) -> c_uint;
 
-fn clang_isPreprocessing(++arg1: enum_CXCursorKind) -> c_uint;
+fn clang_isPreprocessing(++arg1: Enum_CXCursorKind) -> c_uint;
 
-fn clang_isUnexposed(++arg1: enum_CXCursorKind) -> c_uint;
+fn clang_isUnexposed(++arg1: Enum_CXCursorKind) -> c_uint;
 
-fn clang_getCursorLinkage(++cursor: CXCursor) -> enum_CXLinkageKind;
+fn clang_getCursorLinkage(++cursor: CXCursor) -> Enum_CXLinkageKind;
 
-fn clang_getCursorAvailability(++cursor: CXCursor) -> enum_CXAvailabilityKind;
+fn clang_getCursorAvailability(++cursor: CXCursor) -> Enum_CXAvailabilityKind;
 
-fn clang_getCursorLanguage(++cursor: CXCursor) -> enum_CXLanguageKind;
+fn clang_getCursorLanguage(++cursor: CXCursor) -> Enum_CXLanguageKind;
 
 fn clang_Cursor_getTranslationUnit(++arg1: CXCursor) -> CXTranslationUnit;
 
@@ -912,9 +910,9 @@ fn clang_getTypeDeclaration(++T: CXType) -> CXCursor;
 
 fn clang_getDeclObjCTypeEncoding(++C: CXCursor) -> CXString;
 
-fn clang_getTypeKindSpelling(++K: enum_CXTypeKind) -> CXString;
+fn clang_getTypeKindSpelling(++K: Enum_CXTypeKind) -> CXString;
 
-fn clang_getFunctionTypeCallingConv(++T: CXType) -> enum_CXCallingConv;
+fn clang_getFunctionTypeCallingConv(++T: CXType) -> Enum_CXCallingConv;
 
 fn clang_getResultType(++T: CXType) -> CXType;
 
@@ -938,7 +936,7 @@ fn clang_getArraySize(++T: CXType) -> c_longlong;
 
 fn clang_isVirtualBase(++arg1: CXCursor) -> c_uint;
 
-fn clang_getCXXAccessSpecifier(++arg1: CXCursor) -> enum_CX_CXXAccessSpecifier;
+fn clang_getCXXAccessSpecifier(++arg1: CXCursor) -> Enum_CX_CXXAccessSpecifier;
 
 fn clang_getNumOverloadedDecls(++cursor: CXCursor) -> c_uint;
 
@@ -950,17 +948,17 @@ fn clang_visitChildren(++parent: CXCursor, ++visitor: CXCursorVisitor, ++client_
 
 fn clang_getCursorUSR(++arg1: CXCursor) -> CXString;
 
-fn clang_constructUSR_ObjCClass(++class_name: *c_char) -> CXString;
+fn clang_constructUSR_ObjCClass(++class_name: *c_schar) -> CXString;
 
-fn clang_constructUSR_ObjCCategory(++class_name: *c_char, ++category_name: *c_char) -> CXString;
+fn clang_constructUSR_ObjCCategory(++class_name: *c_schar, ++category_name: *c_schar) -> CXString;
 
-fn clang_constructUSR_ObjCProtocol(++protocol_name: *c_char) -> CXString;
+fn clang_constructUSR_ObjCProtocol(++protocol_name: *c_schar) -> CXString;
 
-fn clang_constructUSR_ObjCIvar(++name: *c_char, ++classUSR: CXString) -> CXString;
+fn clang_constructUSR_ObjCIvar(++name: *c_schar, ++classUSR: CXString) -> CXString;
 
-fn clang_constructUSR_ObjCMethod(++name: *c_char, ++isInstanceMethod: c_uint, ++classUSR: CXString) -> CXString;
+fn clang_constructUSR_ObjCMethod(++name: *c_schar, ++isInstanceMethod: c_uint, ++classUSR: CXString) -> CXString;
 
-fn clang_constructUSR_ObjCProperty(++property: *c_char, ++classUSR: CXString) -> CXString;
+fn clang_constructUSR_ObjCProperty(++property: *c_schar, ++classUSR: CXString) -> CXString;
 
 fn clang_getCursorSpelling(++arg1: CXCursor) -> CXString;
 
@@ -982,7 +980,7 @@ fn clang_CXXMethod_isStatic(++C: CXCursor) -> c_uint;
 
 fn clang_CXXMethod_isVirtual(++C: CXCursor) -> c_uint;
 
-fn clang_getTemplateCursorKind(++C: CXCursor) -> enum_CXCursorKind;
+fn clang_getTemplateCursorKind(++C: CXCursor) -> Enum_CXCursorKind;
 
 fn clang_getSpecializedCursorTemplate(++C: CXCursor) -> CXCursor;
 
@@ -1002,15 +1000,15 @@ fn clang_annotateTokens(++TU: CXTranslationUnit, ++Tokens: *CXToken, ++NumTokens
 
 fn clang_disposeTokens(++TU: CXTranslationUnit, ++Tokens: *CXToken, ++NumTokens: c_uint);
 
-fn clang_getCursorKindSpelling(++Kind: enum_CXCursorKind) -> CXString;
+fn clang_getCursorKindSpelling(++Kind: Enum_CXCursorKind) -> CXString;
 
-fn clang_getDefinitionSpellingAndExtent(++arg1: CXCursor, ++startBuf: **c_char, ++endBuf: **c_char, ++startLine: *c_uint, ++startColumn: *c_uint, ++endLine: *c_uint, ++endColumn: *c_uint);
+fn clang_getDefinitionSpellingAndExtent(++arg1: CXCursor, ++startBuf: **c_schar, ++endBuf: **c_schar, ++startLine: *c_uint, ++startColumn: *c_uint, ++endLine: *c_uint, ++endColumn: *c_uint);
 
 fn clang_enableStackTraces();
 
-fn clang_executeOnThread(++_fn: *u8, ++user_data: *c_void, ++stack_size: c_uint);
+fn clang_executeOnThread(++fn_: *u8, ++user_data: *c_void, ++stack_size: c_uint);
 
-fn clang_getCompletionChunkKind(++completion_string: CXCompletionString, ++chunk_number: c_uint) -> enum_CXCompletionChunkKind;
+fn clang_getCompletionChunkKind(++completion_string: CXCompletionString, ++chunk_number: c_uint) -> Enum_CXCompletionChunkKind;
 
 fn clang_getCompletionChunkText(++completion_string: CXCompletionString, ++chunk_number: c_uint) -> CXString;
 
@@ -1020,19 +1018,19 @@ fn clang_getNumCompletionChunks(++completion_string: CXCompletionString) -> c_ui
 
 fn clang_getCompletionPriority(++completion_string: CXCompletionString) -> c_uint;
 
-fn clang_getCompletionAvailability(++completion_string: CXCompletionString) -> enum_CXAvailabilityKind;
+fn clang_getCompletionAvailability(++completion_string: CXCompletionString) -> Enum_CXAvailabilityKind;
 
 fn clang_getCompletionNumAnnotations(++completion_string: CXCompletionString) -> c_uint;
 
 fn clang_getCompletionAnnotation(++completion_string: CXCompletionString, ++annotation_number: c_uint) -> CXString;
 
-fn clang_getCompletionParent(++completion_string: CXCompletionString, ++kind: *enum_CXCursorKind) -> CXString;
+fn clang_getCompletionParent(++completion_string: CXCompletionString, ++kind: *Enum_CXCursorKind) -> CXString;
 
 fn clang_getCursorCompletionString(++cursor: CXCursor) -> CXCompletionString;
 
 fn clang_defaultCodeCompleteOptions() -> c_uint;
 
-fn clang_codeCompleteAt(++TU: CXTranslationUnit, ++complete_filename: *c_char, ++complete_line: c_uint, ++complete_column: c_uint, ++unsaved_files: *struct_CXUnsavedFile, ++num_unsaved_files: c_uint, ++options: c_uint) -> *CXCodeCompleteResults;
+fn clang_codeCompleteAt(++TU: CXTranslationUnit, ++complete_filename: *c_schar, ++complete_line: c_uint, ++complete_column: c_uint, ++unsaved_files: *Struct_CXUnsavedFile, ++num_unsaved_files: c_uint, ++options: c_uint) -> *CXCodeCompleteResults;
 
 fn clang_sortCodeCompletionResults(++Results: *CXCompletionResult, ++NumResults: c_uint);
 
@@ -1044,7 +1042,7 @@ fn clang_codeCompleteGetDiagnostic(++Results: *CXCodeCompleteResults, ++Index: c
 
 fn clang_codeCompleteGetContexts(++Results: *CXCodeCompleteResults) -> c_ulonglong;
 
-fn clang_codeCompleteGetContainerKind(++Results: *CXCodeCompleteResults, ++IsIncomplete: *c_uint) -> enum_CXCursorKind;
+fn clang_codeCompleteGetContainerKind(++Results: *CXCodeCompleteResults, ++IsIncomplete: *c_uint) -> Enum_CXCursorKind;
 
 fn clang_codeCompleteGetContainerUSR(++Results: *CXCodeCompleteResults) -> CXString;
 
@@ -1056,9 +1054,9 @@ fn clang_toggleCrashRecovery(++isEnabled: c_uint);
 
 fn clang_getInclusions(++tu: CXTranslationUnit, ++visitor: CXInclusionVisitor, ++client_data: CXClientData);
 
-fn clang_getRemappings(++path: *c_char) -> CXRemapping;
+fn clang_getRemappings(++path: *c_schar) -> CXRemapping;
 
-fn clang_getRemappingsFromFileList(++filePaths: **c_char, ++numFiles: c_uint) -> CXRemapping;
+fn clang_getRemappingsFromFileList(++filePaths: **c_schar, ++numFiles: c_uint) -> CXRemapping;
 
 fn clang_remap_getNumFiles(++arg1: CXRemapping) -> c_uint;
 
@@ -1096,7 +1094,7 @@ fn clang_IndexAction_create(++CIdx: CXIndex) -> CXIndexAction;
 
 fn clang_IndexAction_dispose(++arg1: CXIndexAction);
 
-fn clang_indexSourceFile(++arg1: CXIndexAction, ++client_data: CXClientData, ++index_callbacks: *IndexerCallbacks, ++index_callbacks_size: c_uint, ++index_options: c_uint, ++source_filename: *c_char, ++command_line_args: **c_char, ++num_command_line_args: c_int, ++unsaved_files: *struct_CXUnsavedFile, ++num_unsaved_files: c_uint, ++out_TU: *CXTranslationUnit, ++TU_options: c_uint) -> c_int;
+fn clang_indexSourceFile(++arg1: CXIndexAction, ++client_data: CXClientData, ++index_callbacks: *IndexerCallbacks, ++index_callbacks_size: c_uint, ++index_options: c_uint, ++source_filename: *c_schar, ++command_line_args: **c_schar, ++num_command_line_args: c_int, ++unsaved_files: *Struct_CXUnsavedFile, ++num_unsaved_files: c_uint, ++out_TU: *CXTranslationUnit, ++TU_options: c_uint) -> c_int;
 
 fn clang_indexTranslationUnit(++arg1: CXIndexAction, ++client_data: CXClientData, ++index_callbacks: *IndexerCallbacks, ++index_callbacks_size: c_uint, ++index_options: c_uint, ++arg2: CXTranslationUnit) -> c_int;
 
