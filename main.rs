@@ -4,7 +4,7 @@ use io::WriterUtil;
 
 use libc::*;
 use clang::*;
-use ast::*;
+use types::*;
 use gen::*;
 
 struct BindGenCtx {
@@ -38,7 +38,7 @@ impl CXCursor: cmp::Eq {
 }
 
 impl CXCursor: to_bytes::IterBytes {
-    pure fn iter_bytes(++lsb0: bool, f: to_bytes::Cb) {
+    pure fn iter_bytes(lsb0: bool, f: to_bytes::Cb) {
         to_bytes::iter_bytes_5(
             &(self.kind as int),
             &(self.xdata as int),
@@ -121,7 +121,7 @@ fn parse_args(args: ~[~str]) -> ParseResult {
 }
 
 fn print_usage(bin: ~str) {
-    io::print(#fmt["Usage: %s [options] input.h", bin] +
+    io::print(fmt!("Usage: %s [options] input.h", bin) +
 "
 Options:
     -h or --help    Display help message
@@ -140,7 +140,7 @@ Options:
 fn match_pattern(ctx: @BindGenCtx, cursor: CXCursor) -> bool {
     let file = ptr::null();
     clang_getSpellingLocation(clang_getCursorLocation(cursor),
-                              ptr::addr_of(file),
+                              ptr::addr_of(&file),
                               ptr::null(), ptr::null(), ptr::null());
 
     if file as int == 0 {
@@ -380,7 +380,7 @@ extern fn visit_enum(++cursor: CXCursor,
 }
 
 extern fn visit_ty_top(++cursor: CXCursor,
-                      ++_parent: CXCursor,
+                       ++_parent: CXCursor,
                       data: CXClientData) -> c_uint unsafe {
     let ctx = *(data as *@BindGenCtx);
     if !match_pattern(ctx, cursor) {
@@ -544,9 +544,9 @@ fn main(++args: ~[~str]) unsafe {
 
             let cursor = clang_getTranslationUnitCursor(unit);
             clang_visitChildren(cursor, visit_ty_top,
-                                ptr::addr_of(ctx) as CXClientData);
+                                ptr::addr_of(&ctx) as CXClientData);
             clang_visitChildren(cursor, visit_func_top,
-                                ptr::addr_of(ctx) as CXClientData);
+                                ptr::addr_of(&ctx) as CXClientData);
             gen_rs(ctx.out, ctx.link, ctx.globals);
 
             clang_disposeTranslationUnit(unit);

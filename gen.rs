@@ -1,10 +1,18 @@
+use io::WriterUtil;
 use std::map;
 use map::HashMap;
-use io::WriterUtil;
 
-use ast::*;
+use syntax::ast;
+use syntax::ast_util;
+use syntax::ext::base;
+use syntax::ext::build;
+use syntax::parse;
+use syntax::print::pprust;
+
+use types::*;
 
 struct GenCtx {
+    ext_cx: base::ext_ctxt,
     mut unnamed_ty: uint,
     keywords: HashMap<~str, ()>
 }
@@ -22,7 +30,8 @@ fn unnamed_name(ctx: &GenCtx) -> ~str {
 }
 
 fn gen_rs(out: io::Writer, link: ~str, globs: ~[Global]) {
-    let ctx = GenCtx { mut unnamed_ty: 0,
+    let ctx = GenCtx { ext_cx: base::mk_ctxt(parse::new_parse_sess(None), ~[]),
+                       mut unnamed_ty: 0,
                        keywords: syntax::parse::token::keyword_table()
                      };
 
@@ -111,8 +120,10 @@ fn remove_redundent_decl(gs: ~[Global]) -> ~[Global] {
 }
 
 fn ctype_to_rsdecl(ctx: &GenCtx, name: ~str, ty: @Type) -> ~str {
+    let rust_name = rust_id(ctx, name);
+
     return match *ty {
-        TNamed(ti) => fmt!("type %s = %s;", name, ti.name),
+        TNamed(ti) => fmt!("type %s = %s;", rust_name, ti.name),
         TComp(ci) => if str::is_empty(ci.name) {
             if ci.cstruct {
                 cstruct_to_rsdecl(ctx, name, ci.fields, true)
@@ -120,14 +131,14 @@ fn ctype_to_rsdecl(ctx: &GenCtx, name: ~str, ty: @Type) -> ~str {
                 cunion_to_rsdecl(ctx, name, ci.fields, true)
             }
         } else {
-            fmt!("type %s = %s;", name, cty_to_rsty(ctx, ty))
+            fmt!("type %s = %s;", rust_name, cty_to_rsty(ctx, ty))
         },
         TEnum(ei) => if str::is_empty(ei.name) {
             cenum_to_rsdecl(ctx, name, ei.items, ei.kind, true)
         } else {
-            fmt!("type %s = %s;", name, cty_to_rsty(ctx, ty))
+            fmt!("type %s = %s;", rust_name, cty_to_rsty(ctx, ty))
         },
-        _ => fmt!("type %s = %s;", name, cty_to_rsty(ctx, ty))
+        _ => fmt!("type %s = %s;", rust_name, cty_to_rsty(ctx, ty))
     }
 }
 
@@ -146,7 +157,7 @@ fn cstruct_to_rsdecl(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo], typedef: b
             unnamed += 1;
             fmt!("unnamed_field%u", unnamed)
         } else {
-            f.name
+            rust_id(ctx, f.name)
         };
 
         let f_ty = cty_to_rsty(ctx, f.typ);
@@ -155,7 +166,7 @@ fn cstruct_to_rsdecl(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo], typedef: b
         fs += fmt!("%s    %s: %s", pre, f_name, f_ty);
     }
 
-    return fmt!("struct %s%s {\n%s\n}", prefix, s_name, fs);
+    return fmt!("struct %s%s {\n%s\n}", prefix, rust_id(ctx, s_name), fs);
 }
 
 fn cunion_to_rsdecl(ctx: &GenCtx, name: ~str, _fields: ~[@FieldInfo], typedef: bool) -> ~str {
@@ -166,7 +177,7 @@ fn cunion_to_rsdecl(ctx: &GenCtx, name: ~str, _fields: ~[@FieldInfo], typedef: b
         name
     };
 
-    return fmt!("type %s%s = c_void; /* FIXME: union type */", prefix, u_name);
+    return fmt!("type %s%s = c_void; /* FIXME: union type */", prefix, rust_id(ctx, u_name));
 }
 
 fn cenum_to_rsdecl(ctx: &GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind, typedef: bool) -> ~str {
@@ -184,10 +195,10 @@ fn cenum_to_rsdecl(ctx: &GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind, t
 
     let mut its = ~"";
     for items.each |it| {
-        its += fmt!("const %s: %s = %d;\n", it.name, ty, it.val);
+        its += fmt!("const %s: %s = %d;\n", rust_id(ctx, it.name), ty, it.val);
     }
 
-    return fmt!("type %s%s = %s;\n%s", prefix, e_name, ty, its);
+    return fmt!("type %s%s = %s;\n%s", prefix, rust_id(ctx, e_name), ty, its);
 }
 
 fn cvar_to_rsdecl(ctx: &GenCtx, name: ~str, _ty: @Type) -> ~str {
@@ -209,7 +220,7 @@ fn cfunc_to_rsfunc(ctx: &GenCtx, name: ~str, rty: @Type, aty: ~[(~str, @Type)], 
             unnamed += 1;
             fmt!("++arg%u", unnamed)
         } else {
-            fmt!("++%s", n)
+            fmt!("++%s", rust_id(ctx, n))
         };
 
         let arg_ty = cty_to_rsty(ctx, t);
@@ -220,7 +231,7 @@ fn cfunc_to_rsfunc(ctx: &GenCtx, name: ~str, rty: @Type, aty: ~[(~str, @Type)], 
 
     let suf = if var { ~" /* FIXME: variadic function */" } else { ~"" };
 
-    return fmt!("fn %s(%s)%s;%s", name, args, ret, suf);
+    return fmt!("fn %s(%s)%s;%s", rust_id(ctx, name), args, ret, suf);
 }
 
 fn cty_to_rsty(ctx: &GenCtx, ty: @Type) -> ~str {
@@ -246,7 +257,7 @@ fn cty_to_rsty(ctx: &GenCtx, ty: @Type) -> ~str {
         TPtr(t) => fmt!("*%s", cty_to_rsty(ctx, t)),
         TArray(t, s) => fmt!("[%s * %d]", cty_to_rsty(ctx, t), s),
         TFunc(_, _, _) => ~"*u8",
-        TNamed(ti) => ti.name,
+        TNamed(ti) => rust_id(ctx, ti.name),
         TComp(ci) => if ci.cstruct {
             fmt!("Struct_%s", ci.name)
         } else {
