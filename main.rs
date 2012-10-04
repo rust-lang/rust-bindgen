@@ -319,7 +319,7 @@ fn conv_ty(ctx: @BindGenCtx, ty: CXType, cursor: CXCursor) -> @Type {
         conv_decl_ty(ctx, clang_getTypeDeclaration(ty))
     } else if ty.kind == CXType_ConstantArray {
         let a_ty = conv_ty(ctx, clang_getArrayElementType(ty), cursor);
-        let size = clang_getArraySize(ty) as int;
+        let size = clang_getArraySize(ty) as uint;
         @TArray(a_ty, size)
     } else {
         @TVoid

@@ -14,7 +14,7 @@ enum Type {
     TInt(IKind),
     TFloat(FKind),
     TPtr(@Type),
-    TArray(@Type, int),
+    TArray(@Type, uint),
     TFunc(@Type, ~[(~str, @Type)], bool),
     TNamed(@TypeInfo),
     TComp(@CompInfo),
@@ -49,7 +49,7 @@ struct CompInfo {
 struct FieldInfo {
     mut comp: @CompInfo,
     mut name: ~str,
-    mut typ: @Type
+    mut ty: @Type
 }
 
 struct EnumInfo {
@@ -66,12 +66,12 @@ struct EnumItem {
 
 struct TypeInfo {
     mut name: ~str,
-    mut typ: @Type
+    mut ty: @Type
 }
 
 struct VarInfo {
     mut name: ~str,
-    mut typ: @Type
+    mut ty: @Type
 }
 
 pure fn mk_compinfo(name: ~str, cstruct: bool) -> @CompInfo {
@@ -81,10 +81,10 @@ pure fn mk_compinfo(name: ~str, cstruct: bool) -> @CompInfo {
                      };
 }
 
-pure fn mk_fieldinfo(name: ~str, typ: @Type, comp: @CompInfo) -> @FieldInfo {
+pure fn mk_fieldinfo(name: ~str, ty: @Type, comp: @CompInfo) -> @FieldInfo {
     return @FieldInfo { comp: comp,
                         name: name,
-                        typ: typ
+                        ty: ty
                       };
 }
 
@@ -102,15 +102,15 @@ pure fn mk_enumitem(name: ~str, val: int, host: @EnumInfo) -> @EnumItem {
                      };
 }
 
-pure fn mk_typeinfo(name: ~str, typ: @Type) -> @TypeInfo {
+pure fn mk_typeinfo(name: ~str, ty: @Type) -> @TypeInfo {
     return @TypeInfo { name: name,
-                       typ: typ
+                       ty: ty
                      };
 }
 
-pure fn mk_varinfo(name: ~str, typ: @Type) -> @VarInfo {
+pure fn mk_varinfo(name: ~str, ty: @Type) -> @VarInfo {
     return @VarInfo { name: name,
-                      typ: typ
+                      ty: ty
                     };
 }
 
