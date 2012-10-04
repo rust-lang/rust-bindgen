@@ -133,7 +133,7 @@ fn mk_extern(ctx: &GenCtx, link: ~str, vars: ~[@ast::foreign_item], funcs: ~[@as
         value: dummy_spanned(
             ast::meta_name_value(
                 ~"link_args",
-                dummy_spanned(ast::lit_str(@link))
+                dummy_spanned(ast::lit_str(@(~"-l"+link)))
             )
         ),
         is_sugared_doc: false
@@ -436,7 +436,15 @@ fn mk_ptrty(ctx: &GenCtx, base: @ast::ty) -> @ast::ty {
 }
 
 fn mk_arrty(ctx: &GenCtx, base: @ast::ty, n: uint) -> @ast::ty {
-    let ty = ast::ty_fixed_length(base, Some(n));
+    let vec = @{
+        id: ctx.ext_cx.next_id(),
+        node: ast::ty_vec({
+            ty: base,
+            mutbl: ast::m_imm
+        }),
+        span: dummy_sp()
+    };
+    let ty = ast::ty_fixed_length(vec, Some(n));
 
     return @{ id: ctx.ext_cx.next_id(),
               node: ty,
