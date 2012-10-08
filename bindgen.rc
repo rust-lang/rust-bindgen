@@ -3,7 +3,7 @@
 extern mod std;
 extern mod syntax;
 
-mod clang;
-mod main;
 mod types;
+mod clang;
 mod gen;
+mod main;

@@ -2,9 +2,9 @@ use std::map;
 use map::HashMap;
 use io::WriterUtil;
 
+use types::*;
 use libc::*;
 use clang::*;
-use types::*;
 use gen::*;
 
 struct BindGenCtx {
@@ -495,8 +495,8 @@ extern fn visit_func_top(++cursor: CXCursor,
     return CXChildVisit_Recurse;
 }
 
-fn main(++args: ~[~str]) unsafe {
-    let mut bind_args = args;
+fn main() unsafe {
+    let mut bind_args = os::args();
     let bin = vec::shift(&mut bind_args);
 
     match parse_args(bind_args) {
