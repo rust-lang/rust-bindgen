@@ -24,9 +24,13 @@ fn rust_id(ctx: &GenCtx, name: ~str) -> ~str {
     return name;
 }
 
-fn unnamed_name(ctx: &GenCtx) -> ~str {
-    ctx.unnamed_ty += 1;
-    return fmt!("Unnamed%u", ctx.unnamed_ty);
+fn unnamed_name(ctx: &GenCtx, name: ~str) -> ~str {
+    return if str::is_empty(name) {
+        ctx.unnamed_ty += 1;
+        fmt!("Unnamed%u", ctx.unnamed_ty)
+    } else {
+        name
+    };
 }
 
 fn gen_rs(out: io::Writer, link: ~str, globs: ~[Global]) {
@@ -52,18 +56,30 @@ fn gen_rs(out: io::Writer, link: ~str, globs: ~[Global]) {
     for gs.each |g| {
         match *g {
             GType(ti) => defs += ctypedef_to_rs(&ctx, ti.name, ti.ty),
-            GCompDecl(ci) => if ci.cstruct {
-                defs += ctypedef_to_rs(&ctx, ~"Struct_" + ci.name, @TVoid)
-            } else {
-                defs += ctypedef_to_rs(&ctx, ~"Union_" + ci.name, @TVoid)
+            GCompDecl(ci) => {
+                ci.name = unnamed_name(&ctx, ci.name);
+                if ci.cstruct {
+                    defs += ctypedef_to_rs(&ctx, ~"Struct_" + ci.name, @TVoid)
+                } else {
+                    defs += ctypedef_to_rs(&ctx, ~"Union_" + ci.name, @TVoid)
+                }
             },
-            GComp(ci) => if ci.cstruct {
-                defs.push(cstruct_to_rs(&ctx, ci.name, ci.fields, false))
-            } else {
-                defs += cunion_to_rs(&ctx, ci.name, ci.fields, false)
+            GComp(ci) => {
+                ci.name = unnamed_name(&ctx, ci.name);
+                if ci.cstruct {
+                    defs.push(cstruct_to_rs(&ctx, ~"Struct_" + ci.name, ci.fields))
+                } else {
+                    defs += cunion_to_rs(&ctx, ~"Union_" + ci.name, ci.fields)
+                }
             },
-            GEnumDecl(ei) => defs += ctypedef_to_rs(&ctx, ~"Enum_" + ei.name, @TVoid),
-            GEnum(ei) => defs += cenum_to_rs(&ctx, ei.name, ei.items, ei.kind, false),
+            GEnumDecl(ei) => {
+                ei.name = unnamed_name(&ctx, ei.name);
+                defs += ctypedef_to_rs(&ctx, ~"Enum_" + ei.name, @TVoid)
+            },
+            GEnum(ei) => {
+                ei.name = unnamed_name(&ctx, ei.name);
+                defs += cenum_to_rs(&ctx, ~"Enum_" + ei.name, ei.items, ei.kind)
+            },
             _ => { }
         }
     }
@@ -155,31 +171,28 @@ fn mk_extern(ctx: &GenCtx, link: ~str, vars: ~[@ast::foreign_item], funcs: ~[@as
 }
 
 fn remove_redundent_decl(gs: ~[Global]) -> ~[Global] {
-    let mut ret = ~[];
-    let mut pre = GOther;
-
-    for gs.each |g| {
-        match (pre, *g) {
-            (GComp(ci1), GType(ti)) => match *ti.ty {
-                TComp(ci2) => if !str::is_empty(ci1.name) {
-                    ret.push(pre)
-                },
-                _ => ret.push(pre)
-            },
-            (GEnum(ei1), GType(ti)) => match *ti.ty {
-                TEnum(ei2) => if !str::is_empty(ei1.name) {
-                    ret.push(pre)
-                },
-                _ => ret.push(pre)
-            },
-            _ => ret.push(pre)
+    let typedefs = do gs.filter |g| {
+        match(*g) {
+            GType(_) => true,
+            _ => false
         }
-        pre = *g;
-    }
+    };
 
-    ret.push(gs.last());
-
-    return ret;
+    return do gs.filter |g| {
+        !do typedefs.any |t| {
+            match (*g, *t) {
+                (GComp(ci1), GType(ti)) => match *ti.ty {
+                    TComp(ci2) => ptr::ref_eq(ci1, ci2) && str::is_empty(ci1.name),
+                    _ => false
+                },
+                (GEnum(ei1), GType(ti)) => match *ti.ty {
+                    TEnum(ei2) => ptr::ref_eq(ei1, ei2) && str::is_empty(ei1.name),
+                    _ => false
+                },
+                _ => false
+            }
+        }
+    };
 }
 
 fn ctypedef_to_rs(ctx: &GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
@@ -205,16 +218,18 @@ fn ctypedef_to_rs(ctx: &GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
 
     return match *ty {
         TComp(ci) => if str::is_empty(ci.name) {
+            ci.name = name;
             if ci.cstruct {
-                ~[cstruct_to_rs(ctx, name, ci.fields, true)]
+                ~[cstruct_to_rs(ctx, name, ci.fields)]
             } else {
-                cunion_to_rs(ctx, name, ci.fields, true)
+                cunion_to_rs(ctx, name, ci.fields)
             }
         } else {
             ~[mk_item(ctx, name, ty)]
         },
         TEnum(ei) => if str::is_empty(ei.name) {
-            cenum_to_rs(ctx, name, ei.items, ei.kind, true)
+            ei.name = name;
+            cenum_to_rs(ctx, name, ei.items, ei.kind)
         } else {
             ~[mk_item(ctx, name, ty)]
         },
@@ -222,14 +237,7 @@ fn ctypedef_to_rs(ctx: &GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
     }
 }
 
-fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo], typedef: bool) -> @ast::item {
-    let prefix = if typedef { ~"" } else { ~"Struct_" };
-    let s_name = if str::is_empty(name) {
-        unnamed_name(ctx)
-    } else {
-        name
-    };
-
+fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item {
     let mut unnamed = 0;
     let fs = do fields.map | f| {
         let f_name = if str::is_empty(f.name) {
@@ -256,13 +264,12 @@ fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo], typedef: bool)
         @{ traits: ~[],
            fields: fs,
            methods: ~[],
-           ctor: None,
            dtor: None
         },
         ~[]
     );
 
-    return @{ ident: ctx.ext_cx.ident_of(rust_id(ctx, prefix + s_name)),
+    return @{ ident: ctx.ext_cx.ident_of(rust_id(ctx, name)),
               attrs: ~[],
               id: ctx.ext_cx.next_id(),
               node: def,
@@ -271,27 +278,13 @@ fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo], typedef: bool)
            };
 }
 
-fn cunion_to_rs(ctx: &GenCtx, name: ~str, _fields: ~[@FieldInfo], typedef: bool) -> ~[@ast::item] {
-    let prefix = if typedef { ~"" } else { ~"Union_" };
-    let u_name = if str::is_empty(name) {
-        unnamed_name(ctx)
-    } else {
-        name
-    };
-
-    return ctypedef_to_rs(ctx, rust_id(ctx, prefix + u_name), @TVoid);
+fn cunion_to_rs(ctx: &GenCtx, name: ~str, _fields: ~[@FieldInfo]) -> ~[@ast::item] {
+    return ctypedef_to_rs(ctx, rust_id(ctx, name), @TVoid);
 }
 
-fn cenum_to_rs(ctx: &GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind, typedef: bool) -> ~[@ast::item] {
-    let prefix = if typedef { ~"" } else { ~"Enum_" };
-    let e_name = if str::is_empty(name) {
-        unnamed_name(ctx)
-    } else {
-        name
-    };
-
+fn cenum_to_rs(ctx: &GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -> ~[@ast::item] {
     let ty = @TInt(kind);
-    let ty_def = ctypedef_to_rs(ctx, rust_id(ctx, prefix + e_name), ty);
+    let ty_def = ctypedef_to_rs(ctx, rust_id(ctx, name), ty);
     let val_ty = cty_to_rs(ctx, ty);
     let mut def = ty_def;
 
@@ -397,12 +390,18 @@ fn cty_to_rs(ctx: &GenCtx, ty: @Type) -> @ast::ty {
         TArray(t, s) => mk_arrty(ctx, cty_to_rs(ctx, t), s),
         TFunc(_, _, _) => mk_fnty(ctx),
         TNamed(ti) => mk_ty(ctx, rust_id(ctx, ti.name)),
-        TComp(ci) => if ci.cstruct {
-            mk_ty(ctx, ~"Struct_" + ci.name)
-        } else {
-            mk_ty(ctx, ~"Union_" + ci.name)
+        TComp(ci) => {
+            ci.name = unnamed_name(ctx, ci.name);
+            if ci.cstruct {
+                mk_ty(ctx, ~"Struct_" + ci.name)
+            } else {
+                mk_ty(ctx, ~"Union_" + ci.name)
+            }
         },
-        TEnum(ei) => mk_ty(ctx, ~"Enum_" + ei.name)
+        TEnum(ei) => {
+            ei.name = unnamed_name(ctx, ei.name);
+            mk_ty(ctx, ~"Enum_" + ei.name)
+        }
     };
 }
 
