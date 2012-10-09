@@ -33,7 +33,7 @@ fn unnamed_name(ctx: &GenCtx, name: ~str) -> ~str {
     };
 }
 
-fn gen_rs(out: io::Writer, link: Option<~str>, globs: ~[Global]) {
+fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
     let ctx = GenCtx { ext_cx: base::mk_ctxt(parse::new_parse_sess(None), ~[]),
                        mut unnamed_ty: 0,
                        keywords: syntax::parse::token::keyword_table()
@@ -103,7 +103,7 @@ fn gen_rs(out: io::Writer, link: Option<~str>, globs: ~[Global]) {
         }
     };
 
-    let views = ~[mk_import(&ctx, ~[~"libc"])];
+    let views = ~[mk_import(&ctx, &[~"libc"])];
     defs.push(mk_extern(&ctx, link, vars, funcs));
 
     let crate = @dummy_spanned({
@@ -121,7 +121,7 @@ fn gen_rs(out: io::Writer, link: Option<~str>, globs: ~[Global]) {
     pprust::print_crate_(ps, crate);
 }
 
-fn mk_import(ctx: &GenCtx, path: ~[~str]) -> @ast::view_item {
+fn mk_import(ctx: &GenCtx, path: &[~str]) -> @ast::view_item {
     let view = ast::view_item_import(~[
         @dummy_spanned(
             ast::view_path_glob(
@@ -143,10 +143,11 @@ fn mk_import(ctx: &GenCtx, path: ~[~str]) -> @ast::view_item {
            };
 }
 
-fn mk_extern(ctx: &GenCtx, link: Option<~str>, vars: ~[@ast::foreign_item],
-             funcs: ~[@ast::foreign_item]) -> @ast::item {
+fn mk_extern(ctx: &GenCtx, link: &Option<~str>,
+                           vars: ~[@ast::foreign_item],
+                           funcs: ~[@ast::foreign_item]) -> @ast::item {
     let attrs;
-    match link {
+    match *link {
         None => attrs = ~[],
         Some(l) => {
             let link_args = dummy_spanned({
@@ -178,7 +179,7 @@ fn mk_extern(ctx: &GenCtx, link: Option<~str>, vars: ~[@ast::foreign_item],
            };
 }
 
-fn remove_redundent_decl(gs: ~[Global]) -> ~[Global] {
+fn remove_redundent_decl(gs: &[Global]) -> ~[Global] {
     let typedefs = do gs.filter |g| {
         match(*g) {
             GType(_) => true,
@@ -247,7 +248,7 @@ fn ctypedef_to_rs(ctx: &GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
 
 fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item {
     let mut unnamed = 0;
-    let fs = do fields.map | f| {
+    let fs = do fields.map |f| {
         let f_name = if str::is_empty(f.name) {
             unnamed += 1;
             fmt!("unnamed_field%u", unnamed)
@@ -327,7 +328,9 @@ fn cvar_to_rs(ctx: &GenCtx, name: ~str, ty: @Type) -> @ast::foreign_item {
            };
 }
 
-fn cfunc_to_rs(ctx: &GenCtx, name: ~str, rty: @Type, aty: ~[(~str, @Type)], var: bool) -> @ast::foreign_item {
+fn cfunc_to_rs(ctx: &GenCtx, name: ~str, rty: @Type,
+                                         aty: ~[(~str, @Type)],
+                                         _var: bool) -> @ast::foreign_item {
     let ret = match *rty {
         TVoid => @{
             id: ctx.ext_cx.next_id(),

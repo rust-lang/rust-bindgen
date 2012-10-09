@@ -57,7 +57,7 @@ impl CXString: to_str::ToStr {
     }
 }
 
-fn parse_args(args: ~[~str]) -> ParseResult {
+fn parse_args(args: &[~str]) -> ParseResult {
     let mut clang_args = ~[];
     let args_len = vec::len(args);
 
@@ -80,9 +80,9 @@ fn parse_args(args: ~[~str]) -> ParseResult {
                     return ParseErr(~"Missing output filename");
                 }
                 match io::file_writer(&path::Path(args[ix + 1u]),
-                                    ~[io::Create, io::Truncate]) {
+                                      ~[io::Create, io::Truncate]) {
                     result::Ok(f) => { out = f; }
-                    result::Err(e) => { return ParseErr(e); }
+                    result::Err(move e) => { return ParseErr(e); }
                 }
                 ix += 2u;
             }
@@ -90,18 +90,18 @@ fn parse_args(args: ~[~str]) -> ParseResult {
                 if ix + 1u > args_len {
                     return ParseErr(~"Missing link name");
                 }
-                link = Some(args[ix + 1u]);
+                link = Some(copy args[ix + 1u]);
                 ix += 2u;
             }
             ~"-match" => {
                 if ix + 1u > args_len {
                     return ParseErr(~"Missing match pattern");
                 }
-                pat.push(args[ix + 1u]);
+                pat.push(copy args[ix + 1u]);
                 ix += 2u;
             }
             _ => {
-                clang_args.push(args[ix]);
+                clang_args.push(copy args[ix]);
                 ix += 1u;
             }
         }
@@ -474,7 +474,7 @@ extern fn visit_top(++cursor: CXCursor,
 
 fn main() unsafe {
     let mut bind_args = os::args();
-    let bin = vec::shift(&mut bind_args);
+    let bin = bind_args.shift();
 
     match parse_args(bind_args) {
         ParseErr(e) => { fail e; }
@@ -519,7 +519,7 @@ fn main() unsafe {
             let cursor = clang_getTranslationUnitCursor(unit);
             clang_visitChildren(cursor, visit_top,
                                 ptr::addr_of(&ctx) as CXClientData);
-            gen_rs(ctx.out, ctx.link, ctx.globals);
+            gen_rs(ctx.out, &ctx.link, ctx.globals);
 
             clang_disposeTranslationUnit(unit);
             clang_disposeIndex(ix);
