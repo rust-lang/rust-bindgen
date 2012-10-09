@@ -137,15 +137,10 @@ pure fn global_typeinfo(glob: Global) -> @TypeInfo {
     }
 }
 
-pure fn global_name(glob: Global) -> ~str {
-    return match glob {
-        GType(i) => i.name,
-        GComp(i) => (if i.cstruct { ~"struct " } else { ~"union " }) + i.name,
-        GCompDecl(i) => (if i.cstruct { ~"struct " } else { ~"union " }) + i.name,
-        GEnum(i) => ~"enum " + i.name,
-        GEnumDecl(i) => ~"enum " + i.name,
-        GVar(i) => i.name,
-        GFunc(i) => i.name,
-        GOther => ~""
-    };
+pure fn global_varinfo(glob: Global) -> @VarInfo {
+    match glob {
+        GVar(i) => i,
+        GFunc(i) => i,
+        _ => fail ~"global_varinfo"
+    }
 }

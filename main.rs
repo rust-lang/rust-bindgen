@@ -12,7 +12,6 @@ struct BindGenCtx {
     link: ~str,
     out: io::Writer,
     name: HashMap<CXCursor, Global>,
-    visited: HashMap<~str, bool>,
     mut globals: ~[Global],
     mut cur_glob: Global
 }
@@ -112,7 +111,6 @@ fn parse_args(args: ~[~str]) -> ParseResult {
                             link: link,
                             out: out,
                             name: HashMap::<CXCursor, Global>(),
-                            visited: HashMap::<~str, bool>(),
                             mut globals: ~[],
                             mut cur_glob: GOther
                           };
@@ -161,14 +159,6 @@ fn match_pattern(ctx: @BindGenCtx, cursor: CXCursor) -> bool {
     return false;
 }
 
-fn sym_visited(ctx: @BindGenCtx, sym: ~str) -> bool {
-    if ctx.visited.contains_key(sym) {
-        return true;
-    }
-    ctx.visited.insert(sym, true);
-    return false;
-}
-
 fn decl_name(ctx: @BindGenCtx, cursor: CXCursor) -> Global {
     let decl_opt = ctx.name.find(cursor);
     match decl_opt {
@@ -193,6 +183,12 @@ fn decl_name(ctx: @BindGenCtx, cursor: CXCursor) -> Global {
             } else if cursor.kind == CXCursor_TypedefDecl {
                 let ti = mk_typeinfo(spelling, @TVoid);
                 GType(ti)
+            } else if cursor.kind == CXCursor_VarDecl {
+                let vi = mk_varinfo(spelling, @TVoid);
+                GVar(vi)
+            } else if cursor.kind == CXCursor_FunctionDecl {
+                let vi = mk_varinfo(spelling, @TVoid);
+                GFunc(vi)
             } else {
                 GOther
             };
@@ -204,8 +200,8 @@ fn decl_name(ctx: @BindGenCtx, cursor: CXCursor) -> Global {
 }
 
 fn opaque_decl(ctx: @BindGenCtx, decl: CXCursor) {
-    let name = decl_name(ctx, decl);
-    if !sym_visited(ctx, global_name(name)) {
+    if !ctx.name.contains_key(decl) {
+        let name = decl_name(ctx, decl);
         ctx.globals.push(name);
     }
 }
@@ -229,15 +225,10 @@ fn conv_ptr_ty(ctx: @BindGenCtx, ty: CXType, cursor: CXCursor) -> @Type {
         let ret_ty = clang_getResultType(ty);
         let decl = clang_getTypeDeclaration(ty);
         return if ret_ty.kind != CXType_Invalid {
-            let arg_n = clang_getNumArgTypes(ty) as int;
-            let mut i = 0;
-            let mut args_lst = ~[];
-
-            while i < arg_n {
-                let arg_ty = conv_ty(ctx, clang_getArgType(ty, i as c_uint), cursor);
-                args_lst.push((~"", arg_ty));
-                i += 1;
-            }
+            let arg_n = clang_getNumArgTypes(ty) as uint;
+            let args_lst = do vec::from_fn(arg_n) |i| {
+                (~"", conv_ty(ctx, clang_getArgType(ty, i as c_uint), cursor))
+            };
 
             let varargs = clang_isFunctionTypeVariadic(ty) as int != 0;
             let ret_ty = conv_ty(ctx, clang_getResultType(ty), cursor);
@@ -379,9 +370,9 @@ extern fn visit_enum(++cursor: CXCursor,
     return CXChildVisit_Continue;
 }
 
-extern fn visit_ty_top(++cursor: CXCursor,
-                       ++_parent: CXCursor,
-                      data: CXClientData) -> c_uint unsafe {
+extern fn visit_top(++cursor: CXCursor,
+                    ++_parent: CXCursor,
+                    data: CXClientData) -> c_uint unsafe {
     let ctx = *(data as *@BindGenCtx);
     if !match_pattern(ctx, cursor) {
         return CXChildVisit_Continue;
@@ -415,21 +406,49 @@ extern fn visit_ty_top(++cursor: CXCursor,
         }
         return CXChildVisit_Continue;
     } else if cursor.kind == CXCursor_FunctionDecl {
+        let linkage = clang_getCursorLinkage(cursor);
+        if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
             return CXChildVisit_Continue;
+        }
+
+        if ctx.name.contains_key(cursor) {
+            return CXChildVisit_Continue;
+        }
+
+        let arg_n = clang_Cursor_getNumArguments(cursor) as uint;
+        let args_lst = do vec::from_fn(arg_n) |i| {
+            let arg = clang_Cursor_getArgument(cursor, i as c_uint);
+            let arg_name = clang_getCursorSpelling(arg).to_str();
+            (arg_name, conv_ty(ctx, clang_getCursorType(arg), cursor))
+        };
+
+        let ty = clang_getCursorType(cursor);
+        let varargs = clang_isFunctionTypeVariadic(ty) as int != 0;
+        let ret_ty = conv_ty(ctx, clang_getCursorResultType(cursor), cursor);
+
+        let func = decl_name(ctx, cursor);
+        global_varinfo(func).ty = @TFunc(ret_ty, args_lst, varargs);
+        ctx.globals.push(func);
+
+        return CXChildVisit_Continue;
     } else if cursor.kind == CXCursor_VarDecl {
-        let name = clang_getCursorSpelling(cursor).to_str();
-        if sym_visited(ctx, name) {
+        let linkage = clang_getCursorLinkage(cursor);
+        if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
+            return CXChildVisit_Continue;
+        }
+
+        if ctx.name.contains_key(cursor) {
             return CXChildVisit_Continue;
         }
 
         let ty = conv_ty(ctx, clang_getCursorType(cursor), cursor);
-        let vi = mk_varinfo(name, ty);
-        ctx.globals.push(GVar(vi));
+        let var = decl_name(ctx, cursor);
+        global_varinfo(var).ty = ty;
+        ctx.globals.push(var);
 
         return CXChildVisit_Continue;
     } else if cursor.kind == CXCursor_TypedefDecl {
-        let name = clang_getCursorSpelling(cursor).to_str();
-        if sym_visited(ctx, name) {
+        if ctx.name.contains_key(cursor) {
             return CXChildVisit_Continue;
         }
 
@@ -439,56 +458,14 @@ extern fn visit_ty_top(++cursor: CXCursor,
         }
 
         let ty = conv_ty(ctx, under_ty, cursor);
-        let vi = mk_typeinfo(name, ty);
-        ctx.globals.push(GType(vi));
+        let typedef = decl_name(ctx, cursor);
+        global_typeinfo(typedef).ty = ty;
+        ctx.globals.push(typedef);
 
         opaque_ty(ctx, under_ty);
+
         return CXChildVisit_Continue;
     } else if cursor.kind == CXCursor_FieldDecl {
-        return CXChildVisit_Continue;
-    }
-
-    return CXChildVisit_Recurse;
-}
-
-extern fn visit_func_top(++cursor: CXCursor,
-                         ++_parent: CXCursor,
-                         data: CXClientData) -> c_uint unsafe {
-    let ctx = *(data as *@BindGenCtx);
-    if !match_pattern(ctx, cursor) {
-        return CXChildVisit_Continue;
-    }
-
-    let linkage = clang_getCursorLinkage(cursor);
-    if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
-        return CXChildVisit_Continue;
-    }
-
-    if cursor.kind == CXCursor_FunctionDecl {
-        let name = clang_getCursorSpelling(cursor).to_str();
-        if sym_visited(ctx, name) {
-            return CXChildVisit_Continue;
-        }
-
-        let arg_n = clang_Cursor_getNumArguments(cursor) as int;
-        let mut i = 0;
-        let mut args_lst = ~[];
-        while i < arg_n {
-            let arg = clang_Cursor_getArgument(cursor, i as c_uint);
-            let arg_name = clang_getCursorSpelling(arg).to_str();
-            let arg_ty = conv_ty(ctx, clang_getCursorType(arg), cursor);
-
-            args_lst.push((arg_name, arg_ty));
-            i += 1;
-        }
-
-        let ty = clang_getCursorType(cursor);
-        let varargs = clang_isFunctionTypeVariadic(ty) as int != 0;
-        let ret_ty = conv_ty(ctx, clang_getCursorResultType(cursor), cursor);
-        let vi = mk_varinfo(name, @TFunc(ret_ty, args_lst, varargs));
-
-        ctx.globals.push(GFunc(vi));
-
         return CXChildVisit_Continue;
     }
 
@@ -523,9 +500,8 @@ fn main() unsafe {
             }
 
             let mut c_err = false;
-            let mut i = 0u;
             let diag_num = clang_getNumDiagnostics(unit) as uint;
-            while i < diag_num {
+            for diag_num.timesi |i| {
                 let diag = clang_getDiagnostic(unit, i as c_uint);
                 io::stderr().write_line(clang_formatDiagnostic(
                     diag, clang_defaultDiagnosticDisplayOptions()
@@ -534,8 +510,6 @@ fn main() unsafe {
                 if clang_getDiagnosticSeverity(diag) >= CXDiagnostic_Error {
                     c_err = true
                 }
-
-                i += 1u;
             }
 
             if c_err {
@@ -543,9 +517,7 @@ fn main() unsafe {
             }
 
             let cursor = clang_getTranslationUnitCursor(unit);
-            clang_visitChildren(cursor, visit_ty_top,
-                                ptr::addr_of(&ctx) as CXClientData);
-            clang_visitChildren(cursor, visit_func_top,
+            clang_visitChildren(cursor, visit_top,
                                 ptr::addr_of(&ctx) as CXClientData);
             gen_rs(ctx.out, ctx.link, ctx.globals);
 

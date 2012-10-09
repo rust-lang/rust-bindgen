@@ -264,6 +264,7 @@ fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item 
         @{ traits: ~[],
            fields: fs,
            methods: ~[],
+           ctor: None,
            dtor: None
         },
         ~[]
