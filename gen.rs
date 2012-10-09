@@ -33,7 +33,7 @@ fn unnamed_name(ctx: &GenCtx, name: ~str) -> ~str {
     };
 }
 
-fn gen_rs(out: io::Writer, link: ~str, globs: ~[Global]) {
+fn gen_rs(out: io::Writer, link: Option<~str>, globs: ~[Global]) {
     let ctx = GenCtx { ext_cx: base::mk_ctxt(parse::new_parse_sess(None), ~[]),
                        mut unnamed_ty: 0,
                        keywords: syntax::parse::token::keyword_table()
@@ -143,17 +143,25 @@ fn mk_import(ctx: &GenCtx, path: ~[~str]) -> @ast::view_item {
            };
 }
 
-fn mk_extern(ctx: &GenCtx, link: ~str, vars: ~[@ast::foreign_item], funcs: ~[@ast::foreign_item]) -> @ast::item {
-    let link_args = dummy_spanned({
-        style: ast::attr_outer,
-        value: dummy_spanned(
-            ast::meta_name_value(
-                ~"link_args",
-                dummy_spanned(ast::lit_str(@(~"-l"+link)))
-            )
-        ),
-        is_sugared_doc: false
-    });
+fn mk_extern(ctx: &GenCtx, link: Option<~str>, vars: ~[@ast::foreign_item],
+             funcs: ~[@ast::foreign_item]) -> @ast::item {
+    let attrs;
+    match link {
+        None => attrs = ~[],
+        Some(l) => {
+            let link_args = dummy_spanned({
+                style: ast::attr_outer,
+                value: dummy_spanned(
+                    ast::meta_name_value(
+                        ~"link_args",
+                        dummy_spanned(ast::lit_str(@(~"-l"+l)))
+                    )
+                ),
+                is_sugared_doc: false
+            });
+            attrs = ~[link_args];
+        }
+    }
 
     let ext = ast::item_foreign_mod({
         sort: ast::anonymous,
@@ -162,7 +170,7 @@ fn mk_extern(ctx: &GenCtx, link: ~str, vars: ~[@ast::foreign_item], funcs: ~[@as
     });
 
     return @{ ident: ctx.ext_cx.ident_of(~""),
-              attrs: ~[link_args],
+              attrs: attrs,
               id: ctx.ext_cx.next_id(),
               node: ext,
               vis: ast::inherited,

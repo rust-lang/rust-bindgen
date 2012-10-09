@@ -9,7 +9,7 @@ use gen::*;
 
 struct BindGenCtx {
     match_pat: ~[~str],
-    link: ~str,
+    link: Option<~str>,
     out: io::Writer,
     name: HashMap<CXCursor, Global>,
     mut globals: ~[Global],
@@ -63,7 +63,7 @@ fn parse_args(args: ~[~str]) -> ParseResult {
 
     let mut out = io::stdout();
     let mut pat = ~[];
-    let mut link = ~"";
+    let mut link = None;
 
     if args_len == 0u {
         return CmdUsage;
@@ -90,7 +90,7 @@ fn parse_args(args: ~[~str]) -> ParseResult {
                 if ix + 1u > args_len {
                     return ParseErr(~"Missing link name");
                 }
-                link = args[ix + 1u];
+                link = Some(args[ix + 1u]);
                 ix += 2u;
             }
             ~"-match" => {
