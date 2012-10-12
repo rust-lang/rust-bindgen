@@ -288,8 +288,90 @@ fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item 
            };
 }
 
-fn cunion_to_rs(ctx: &GenCtx, name: ~str, _fields: ~[@FieldInfo]) -> ~[@ast::item] {
-    return ctypedef_to_rs(ctx, rust_id(ctx, name), @TVoid);
+fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item] {
+    fn mk_item(ctx: &GenCtx, name: ~str, item: ast::item_) -> @ast::item {
+        return @{ ident: ctx.ext_cx.ident_of(name),
+                  attrs: ~[],
+                  id: ctx.ext_cx.next_id(),
+                  node: item,
+                  vis: ast::inherited,
+                  span: dummy_sp()
+               };
+    }
+
+    let ext_cx = &ctx.ext_cx;
+    let ci = mk_compinfo(name, false);
+    ci.fields = fields;
+    let union = @TNamed(mk_typeinfo(name, @TComp(ci)));
+
+    let data = @dummy_spanned({
+        kind: ast::named_field(
+            ext_cx.ident_of(~"data"),
+            ast::class_immutable,
+            ast::inherited
+        ),
+        id: ext_cx.next_id(),
+        ty: cty_to_rs(ctx, @TArray(@TInt(IUChar), type_size(union)))
+    });
+
+    let def = ast::item_class(
+        @{ traits: ~[],
+           fields: ~[data],
+           methods: ~[],
+           ctor: None,
+           dtor: None
+        },
+        ~[]
+    );
+
+    let arg_ty = cty_to_rs(ctx, @TPtr(union));
+    let arg_name = ext_cx.ident_of(~"u");
+    let mut unnamed = 0;
+    let fs = do fields.map |f| {
+        let f_name = if str::is_empty(f.name) {
+            unnamed += 1;
+            fmt!("unnamed_field%u", unnamed)
+        } else {
+            rust_id(ctx, f.name)
+        };
+
+        let arg = { mode: ast::infer(ext_cx.next_id()),
+                    ty: arg_ty,
+                    ident: arg_name,
+                    id: ext_cx.next_id()
+                  };
+        let ret_ty = cty_to_rs(ctx, @TPtr(f.ty));
+        let body = dummy_spanned({
+            view_items: ~[],
+            stmts: ~[],
+            expr: Some(#ast[expr]{cast::reinterpret_cast(&u)}),
+            id: ext_cx.next_id(),
+            rules: ast::unsafe_blk
+        });
+
+        let func = ast::item_fn(
+            { inputs: ~[ arg ],
+              output: ret_ty,
+              cf: ast::return_val
+            },
+            ast::impure_fn,
+            ~[],
+            body
+        );
+
+        mk_item(ctx, f_name, func)
+    };
+
+    let methods = ast::item_mod({
+        view_items: ~[],
+        items: fs
+    });
+
+    let rust_name = rust_id(ctx, name);
+    return ~[
+        mk_item(ctx, rust_name, def),
+        mk_item(ctx, rust_name, methods)
+    ];
 }
 
 fn cenum_to_rs(ctx: &GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -> ~[@ast::item] {

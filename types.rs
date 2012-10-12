@@ -25,10 +25,10 @@ enum IKind {
     IBool,
     ISChar,
     IUChar,
-    IInt,
-    IUInt,
     IShort,
     IUShort,
+    IInt,
+    IUInt,
     ILong,
     IULong,
     ILongLong,
@@ -143,4 +143,129 @@ pure fn global_varinfo(glob: Global) -> @VarInfo {
         GFunc(i) => i,
         _ => fail ~"global_varinfo"
     }
+}
+
+#[cfg(target_arch="x86_64")]
+pure fn type_align(ty: @Type) -> uint {
+    return match *ty {
+        TInt(k) => match k {
+            IBool | ISChar | IUChar => 1,
+            IShort | IUShort => 2,
+            IInt | IUInt => 4,
+            ILong | IULong => 8,
+            ILongLong | IULongLong => 8
+        },
+        TFloat(k) => match k {
+            FFloat => 4,
+            FDouble => 8
+        },
+        TPtr(_) => 8,
+        TArray(t, _) => type_align(t),
+        TNamed(t) => type_align(t.ty),
+        TComp(ci) => {
+            do vec::foldl(0, ci.fields) |a, t| {
+                uint::max(a, type_align(t.ty))
+            }
+        },
+        TEnum(_) => 4,
+        _ => fail ~"ty_align: unhandled type"
+    };
+}
+
+#[cfg(target_arch="x86")]
+pure fn type_align(ty: @Type) -> uint {
+    return match *ty {
+        TInt(k) => match k {
+            IBool | ISChar | IUChar => 1,
+            IShort | IUShort => 2,
+            IInt | IUInt => 4,
+            ILong | IULong => 4,
+            ILongLong | IULongLong => 8
+        },
+        TFloat(k) => match k {
+            FFloat => 4,
+            FDouble => 8
+        },
+        TPtr(_) => 4,
+        TArray(t, _) => type_align(t),
+        TNamed(t) => type_align(t.ty),
+        TComp(ci) => {
+            do vec::foldl(0, ci.fields) |a, t| {
+                uint::max(a, type_align(t.ty))
+            }
+        },
+        TEnum(_) => 4,
+        _ => fail ~"ty_align: unhandled type"
+    };
+}
+
+#[cfg(target_arch="x86_64")]
+pure fn type_size(ty: @Type) -> uint {
+    return match *ty {
+        TInt(k) => match k {
+            IBool | ISChar | IUChar => 1,
+            IShort | IUShort => 2,
+            IInt | IUInt => 4,
+            ILong | IULong => 8,
+            ILongLong | IULongLong => 8
+        },
+        TFloat(k) => match k {
+            FFloat => 4,
+            FDouble => 8
+        },
+        TPtr(_) => 8,
+        TArray(t, s) => type_size(t) * s,
+        TNamed(t) => type_size(t.ty),
+        TComp(ci) => if ci.cstruct {
+            let size = do vec::foldl(0, ci.fields) |s, t| {
+                align(s, t.ty) + type_size(t.ty)
+            };
+            align(size, ty)
+        } else {
+            let size = do vec::foldl(0, ci.fields) |s, t| {
+                uint::max(s, type_size(t.ty))
+            };
+            align(size, ty)
+        },
+        TEnum(_) => 4,
+        _ => fail ~"ty_size: unhandled type"
+    };
+}
+
+#[cfg(target_arch="x86")]
+pure fn type_size(ty: @Type) -> uint {
+    return match *ty {
+        TInt(k) => match k {
+            IBool | ISChar | IUChar => 1,
+            IShort | IUShort => 2,
+            IInt | IUInt => 4,
+            ILong | IULong => 4,
+            ILongLong | IULongLong => 8
+        },
+        TFloat(k) => match k {
+            FFloat => 4,
+            FDouble => 8
+        },
+        TPtr(_) => 4,
+        TArray(t, s) => type_size(t) * s,
+        TNamed(t) => type_size(t.ty),
+        TComp(ci) => if ci.cstruct {
+            let size = do vec::foldl(0, ci.fields) |s, t| {
+                align(s, t.ty) + type_size(t.ty)
+            };
+            align(size, ty)
+        } else {
+            let size = do vec::foldl(0, ci.fields) |s, t| {
+                uint::max(s, type_size(t.ty))
+            };
+            align(size, ty)
+        },
+        TEnum(_) => 4,
+        _ => fail ~"ty_size: unhandled type"
+    };
+}
+
+pure fn align(off: uint, ty: @Type) -> uint {
+    let a = type_align(ty);
+    return (off + a - 1u) / a * a;
 }
