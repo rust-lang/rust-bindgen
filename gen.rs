@@ -273,7 +273,6 @@ fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item 
         @{ traits: ~[],
            fields: fs,
            methods: ~[],
-           ctor: None,
            dtor: None
         },
         ~[]
@@ -318,14 +317,12 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
         @{ traits: ~[],
            fields: ~[data],
            methods: ~[],
-           ctor: None,
            dtor: None
         },
         ~[]
     );
+    let union_def = mk_item(ctx, rust_id(ctx, name), def);
 
-    let arg_ty = cty_to_rs(ctx, @TPtr(union));
-    let arg_name = ext_cx.ident_of(~"u");
     let mut unnamed = 0;
     let fs = do fields.map |f| {
         let f_name = if str::is_empty(f.name) {
@@ -335,42 +332,43 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
             rust_id(ctx, f.name)
         };
 
-        let arg = { mode: ast::infer(ext_cx.next_id()),
-                    ty: arg_ty,
-                    ident: arg_name,
-                    id: ext_cx.next_id()
-                  };
         let ret_ty = cty_to_rs(ctx, @TPtr(f.ty));
         let body = dummy_spanned({
             view_items: ~[],
             stmts: ~[],
-            expr: Some(#ast[expr]{cast::reinterpret_cast(&u)}),
+            expr: Some(#ast[expr]{cast::reinterpret_cast(&ptr::to_unsafe_ptr(&self))}),
             id: ext_cx.next_id(),
             rules: ast::unsafe_blk
         });
 
-        let func = ast::item_fn(
-            { inputs: ~[ arg ],
+        @{ ident: ext_cx.ident_of(f_name),
+           attrs: ~[],
+           tps: ~[],
+           self_ty: dummy_spanned(ast::sty_by_ref),
+           purity: ast::impure_fn,
+           decl: {
+              inputs: ~[],
               output: ret_ty,
               cf: ast::return_val
-            },
-            ast::impure_fn,
-            ~[],
-            body
-        );
-
-        mk_item(ctx, f_name, func)
+           },
+           body: body,
+           id: ext_cx.next_id(),
+           span: dummy_sp(),
+           self_id: union_def.id,
+           vis: ast::inherited
+        }
     };
 
-    let methods = ast::item_mod({
-        view_items: ~[],
-        items: fs
-    });
+    let methods = ast::item_impl(
+        ~[],
+        None,
+        cty_to_rs(ctx, union),
+        fs
+    );
 
-    let rust_name = rust_id(ctx, name);
     return ~[
-        mk_item(ctx, rust_name, def),
-        mk_item(ctx, rust_name, methods)
+        union_def,
+        mk_item(ctx, ~"", methods)
     ];
 }
 

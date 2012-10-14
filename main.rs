@@ -50,7 +50,7 @@ impl CXCursor: to_bytes::IterBytes {
 }
 
 impl CXString: to_str::ToStr {
-    fn to_str() -> ~str {
+    pure fn to_str() -> ~str {
         unsafe {
             return str::raw::from_c_str(clang_getCString(self));
         }
