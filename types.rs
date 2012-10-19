@@ -49,7 +49,8 @@ struct CompInfo {
 struct FieldInfo {
     mut comp: @CompInfo,
     mut name: ~str,
-    mut ty: @Type
+    mut ty: @Type,
+    mut bit: Option<uint>
 }
 
 struct EnumInfo {
@@ -84,7 +85,8 @@ pure fn mk_compinfo(name: ~str, cstruct: bool) -> @CompInfo {
 pure fn mk_fieldinfo(name: ~str, ty: @Type, comp: @CompInfo) -> @FieldInfo {
     return @FieldInfo { comp: comp,
                         name: name,
-                        ty: ty
+                        ty: ty,
+                        bit: None
                       };
 }
 

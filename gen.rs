@@ -458,7 +458,7 @@ fn cfunc_to_rs(ctx: &GenCtx, name: ~str, rty: @Type,
            };
 }
 
-fn cty_to_rs(ctx: &GenCtx, ty: @Type) -> @ast::ty {
+fn cty_to_rs(ctx: &GenCtx, ty: @Type) -> @ast::Ty {
     return match *ty {
         TVoid => mk_ty(ctx, ~"c_void"),
         TInt(i) => match i {
@@ -497,7 +497,7 @@ fn cty_to_rs(ctx: &GenCtx, ty: @Type) -> @ast::ty {
     };
 }
 
-fn mk_ty(ctx: &GenCtx, name: ~str) -> @ast::ty {
+fn mk_ty(ctx: &GenCtx, name: ~str) -> @ast::Ty {
     let ty = ast::ty_path(
         @{ span: dummy_sp(),
            global: false,
@@ -514,7 +514,7 @@ fn mk_ty(ctx: &GenCtx, name: ~str) -> @ast::ty {
            };
 }
 
-fn mk_ptrty(ctx: &GenCtx, base: @ast::ty) -> @ast::ty {
+fn mk_ptrty(ctx: &GenCtx, base: @ast::Ty) -> @ast::Ty {
     let ty = ast::ty_ptr({
         ty: base,
         mutbl: ast::m_imm
@@ -526,7 +526,7 @@ fn mk_ptrty(ctx: &GenCtx, base: @ast::ty) -> @ast::ty {
            };
 }
 
-fn mk_arrty(ctx: &GenCtx, base: @ast::ty, n: uint) -> @ast::ty {
+fn mk_arrty(ctx: &GenCtx, base: @ast::Ty, n: uint) -> @ast::Ty {
     let vec = @{
         id: ctx.ext_cx.next_id(),
         node: ast::ty_vec({
@@ -543,7 +543,7 @@ fn mk_arrty(ctx: &GenCtx, base: @ast::ty, n: uint) -> @ast::ty {
            };
 }
 
-fn mk_fnty(ctx: &GenCtx) -> @ast::ty {
+fn mk_fnty(ctx: &GenCtx) -> @ast::Ty {
     let ty = mk_ptrty(ctx, mk_ty(ctx, ~"u8"));
 
     return @{ id: ctx.ext_cx.next_id(),
