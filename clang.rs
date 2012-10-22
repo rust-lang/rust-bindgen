@@ -32,11 +32,11 @@ const CXGlobalOpt_ThreadBackgroundPriorityForEditing: c_uint = 2;
 const CXGlobalOpt_ThreadBackgroundPriorityForAll: c_uint = 3;
 type CXFile = *c_void;
 struct CXSourceLocation {
-    ptr_data: [*c_void]/2,
+    ptr_data: [*c_void * 2],
     int_data: c_uint,
 }
 struct CXSourceRange {
-    ptr_data: [*c_void]/2,
+    ptr_data: [*c_void * 2],
     begin_int_data: c_uint,
     end_int_data: c_uint,
 }
@@ -274,7 +274,7 @@ const CXCursor_LastPreprocessing: c_uint = 503;
 struct CXCursor {
     kind: Enum_CXCursorKind,
     xdata: c_int,
-    data: [*c_void]/3,
+    data: [*c_void * 3],
 }
 struct CXComment {
     ASTNode: *c_void,
@@ -362,7 +362,7 @@ const CXCallingConv_Invalid: c_uint = 100;
 const CXCallingConv_Unexposed: c_uint = 200;
 struct CXType {
     kind: Enum_CXTypeKind,
-    data: [*c_void]/2,
+    data: [*c_void * 2],
 }
 type Enum_CX_CXXAccessSpecifier = c_uint;
 const CX_CXXInvalidAccessSpecifier: c_uint = 0;
@@ -409,7 +409,7 @@ const CXToken_Literal: c_uint = 3;
 const CXToken_Comment: c_uint = 4;
 type CXTokenKind = Enum_CXTokenKind;
 struct CXToken {
-    int_data: [c_uint]/4,
+    int_data: [c_uint * 4],
     ptr_data: *c_void,
 }
 type CXCompletionString = *c_void;
@@ -486,7 +486,7 @@ type CXIdxClientEntity = *c_void;
 type CXIdxClientContainer = *c_void;
 type CXIdxClientASTFile = *c_void;
 struct CXIdxLoc {
-    ptr_data: [*c_void]/2,
+    ptr_data: [*c_void * 2],
     int_data: c_uint,
 }
 struct CXIdxIncludedFileInfo {
