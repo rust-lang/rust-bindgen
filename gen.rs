@@ -274,7 +274,7 @@ fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item 
            fields: fs,
            methods: ~[],
            dtor: None,
-           ctor_id: ctx.ext_cx.next_id()
+           ctor_id: None
         },
         ~[]
     );
@@ -319,7 +319,7 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
            fields: ~[data],
            methods: ~[],
            dtor: None,
-           ctor_id: ctx.ext_cx.next_id()
+           ctor_id: None
         },
         ~[]
     );
