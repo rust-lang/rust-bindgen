@@ -77,21 +77,21 @@ struct VarInfo {
 
 pure fn mk_compinfo(name: ~str, cstruct: bool) -> @CompInfo {
     return @CompInfo { cstruct: cstruct,
-                       name: name,
+                       name: move name,
                        fields: ~[]
                      };
 }
 
 pure fn mk_fieldinfo(name: ~str, ty: @Type, comp: @CompInfo) -> @FieldInfo {
     return @FieldInfo { comp: comp,
-                        name: name,
+                        name: move name,
                         ty: ty,
                         bit: None
                       };
 }
 
 pure fn mk_enuminfo(name: ~str, kind: IKind) -> @EnumInfo {
-    return @EnumInfo { name: name,
+    return @EnumInfo { name: move name,
                        items: ~[],
                        kind: kind
                      };
@@ -99,19 +99,19 @@ pure fn mk_enuminfo(name: ~str, kind: IKind) -> @EnumInfo {
 
 pure fn mk_enumitem(name: ~str, val: int, host: @EnumInfo) -> @EnumItem {
     return @EnumItem { host: host,
-                       name: name,
+                       name: move name,
                        val: val
                      };
 }
 
 pure fn mk_typeinfo(name: ~str, ty: @Type) -> @TypeInfo {
-    return @TypeInfo { name: name,
+    return @TypeInfo { name: move name,
                        ty: ty
                      };
 }
 
 pure fn mk_varinfo(name: ~str, ty: @Type) -> @VarInfo {
-    return @VarInfo { name: name,
+    return @VarInfo { name: move name,
                       ty: ty
                     };
 }
