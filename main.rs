@@ -501,7 +501,7 @@ fn main() unsafe {
 
             let mut c_err = false;
             let diag_num = clang_getNumDiagnostics(unit) as uint;
-            for diag_num.timesi |i| {
+            for uint::range(0, diag_num) |i| {
                 let diag = clang_getDiagnostic(unit, i as c_uint);
                 io::stderr().write_line(clang_formatDiagnostic(
                     diag, clang_defaultDiagnosticDisplayOptions()
