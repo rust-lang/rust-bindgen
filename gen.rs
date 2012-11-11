@@ -441,7 +441,20 @@ fn cfunc_to_rs(ctx: &GenCtx, name: ~str, rty: @Type,
 
         { mode: ast::expl(ast::by_val),
           ty: arg_ty,
-          ident: ctx.ext_cx.ident_of(arg_name),
+          pat: @{
+              id: ctx.ext_cx.next_id(),
+              node: ast::pat_ident(
+                  ast::bind_by_value,
+                  @{ span: dummy_sp(),
+                     global: false,
+                     idents: ~[ctx.ext_cx.ident_of(arg_name)],
+                     rp: None,
+                     types: ~[]
+                  },
+                  None
+              ),
+              span: dummy_sp()
+          },
           id: ctx.ext_cx.next_id()
         }
     };
@@ -507,7 +520,7 @@ fn mk_ty(ctx: &GenCtx, name: ~str) -> @ast::Ty {
     let ty = ast::ty_path(
         @{ span: dummy_sp(),
            global: false,
-           idents: ~[ ctx.ext_cx.ident_of(name) ],
+           idents: ~[ctx.ext_cx.ident_of(name)],
            rp: None,
            types: ~[]
         },
@@ -533,15 +546,12 @@ fn mk_ptrty(ctx: &GenCtx, base: @ast::Ty) -> @ast::Ty {
 }
 
 fn mk_arrty(ctx: &GenCtx, base: @ast::Ty, n: uint) -> @ast::Ty {
-    let vec = @{
-        id: ctx.ext_cx.next_id(),
-        node: ast::ty_vec({
-            ty: base,
-            mutbl: ast::m_imm
-        }),
-        span: dummy_sp()
-    };
-    let ty = ast::ty_fixed_length(vec, Some(n));
+    let ty = ast::ty_fixed_length_vec(
+        { ty: base,
+          mutbl: ast::m_imm
+        },
+        n
+    );
 
     return @{ id: ctx.ext_cx.next_id(),
               node: move ty,
