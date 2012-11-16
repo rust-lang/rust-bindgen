@@ -178,7 +178,7 @@ fn mk_extern(ctx: &GenCtx, link: &Option<~str>,
               attrs: move attrs,
               id: ctx.ext_cx.next_id(),
               node: move ext,
-              vis: ast::inherited,
+              vis: ast::public,
               span: dummy_sp()
            };
 }
@@ -224,7 +224,7 @@ fn ctypedef_to_rs(ctx: &GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
                   attrs: ~[],
                   id: ctx.ext_cx.next_id(),
                   node: move base,
-                  vis: ast::inherited,
+                  vis: ast::public,
                   span: dummy_sp()
                };
     }
@@ -266,7 +266,7 @@ fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item 
             kind: ast::named_field(
                 ctx.ext_cx.ident_of(f_name),
                 ast::class_immutable,
-                ast::inherited
+                ast::public
             ),
             id: ctx.ext_cx.next_id(),
             ty: f_ty
@@ -287,7 +287,7 @@ fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item 
               attrs: ~[],
               id: ctx.ext_cx.next_id(),
               node: move def,
-              vis: ast::inherited,
+              vis: ast::public,
               span: dummy_sp()
            };
 }
@@ -298,7 +298,7 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
                   attrs: ~[],
                   id: ctx.ext_cx.next_id(),
                   node: move item,
-                  vis: ast::inherited,
+                  vis: ast::public,
                   span: dummy_sp()
                };
     }
@@ -312,7 +312,7 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
         kind: ast::named_field(
             ext_cx.ident_of(~"data"),
             ast::class_immutable,
-            ast::inherited
+            ast::public
         ),
         id: ext_cx.next_id(),
         ty: cty_to_rs(ctx, @TArray(@TInt(IUChar), type_size(union)))
@@ -361,7 +361,7 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
            id: ext_cx.next_id(),
            span: dummy_sp(),
            self_id: union_def.id,
-           vis: ast::inherited
+           vis: ast::public
         }
     };
 
@@ -369,7 +369,7 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
         ~[],
         None,
         cty_to_rs(ctx, union),
-        Some(move fs)
+        fs
     );
 
     return ~[
@@ -394,7 +394,7 @@ fn cenum_to_rs(ctx: &GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -> ~[
                          attrs: ~[],
                          id: ctx.ext_cx.next_id(),
                          node: move cst,
-                         vis: ast::inherited,
+                         vis: ast::public,
                          span: dummy_sp()
                       };
 
@@ -410,7 +410,7 @@ fn cvar_to_rs(ctx: &GenCtx, name: ~str, ty: @Type) -> @ast::foreign_item {
               node: ast::foreign_item_const(cty_to_rs(ctx, ty)),
               id: ctx.ext_cx.next_id(),
               span: dummy_sp(),
-              vis: ast::inherited,
+              vis: ast::public,
            };
 }
 
@@ -473,7 +473,7 @@ fn cfunc_to_rs(ctx: &GenCtx, name: ~str, rty: @Type,
               node: move decl,
               id: ctx.ext_cx.next_id(),
               span: dummy_sp(),
-              vis: ast::inherited,
+              vis: ast::public,
            };
 }
 

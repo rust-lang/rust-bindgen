@@ -138,7 +138,7 @@ Options:
 fn match_pattern(ctx: @BindGenCtx, cursor: CXCursor) -> bool {
     let file = ptr::null();
     clang_getSpellingLocation(clang_getCursorLocation(cursor),
-                              ptr::addr_of(&file),
+                              ptr::to_unsafe_ptr(&file),
                               ptr::null(), ptr::null(), ptr::null());
 
     if file as int == 0 {
@@ -518,7 +518,7 @@ fn main() unsafe {
 
             let cursor = clang_getTranslationUnitCursor(unit);
             clang_visitChildren(cursor, visit_top,
-                                ptr::addr_of(&ctx) as CXClientData);
+                                ptr::to_unsafe_ptr(&ctx) as CXClientData);
             gen_rs(ctx.out, &ctx.link, ctx.globals);
 
             clang_disposeTranslationUnit(unit);
