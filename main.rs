@@ -23,7 +23,7 @@ enum ParseResult {
 }
 
 impl CXCursor: cmp::Eq {
-    pure fn eq(other: &CXCursor) -> bool {
+    pure fn eq(&self, other: &CXCursor) -> bool {
         return (self.kind as int == other.kind as int) &&
                (self.xdata as int == other.xdata as int) &&
                (self.data[0] as int == other.data[0] as int) &&
@@ -31,7 +31,7 @@ impl CXCursor: cmp::Eq {
                (self.data[2] as int == other.data[2] as int)
     }
 
-    pure fn ne(other: &CXCursor) -> bool {
+    pure fn ne(&self, other: &CXCursor) -> bool {
         return !self.eq(other);
     }
 }
