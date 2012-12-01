@@ -37,7 +37,7 @@ impl CXCursor: cmp::Eq {
 }
 
 impl CXCursor: to_bytes::IterBytes {
-    pure fn iter_bytes(lsb0: bool, f: to_bytes::Cb) {
+    pure fn iter_bytes(&self, lsb0: bool, f: to_bytes::Cb) {
         to_bytes::iter_bytes_5(
             &(self.kind as int),
             &(self.xdata as int),

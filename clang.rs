@@ -608,7 +608,7 @@ pub const CXIndexOpt_IndexFunctionLocalSymbols: c_uint = 2;
 pub const CXIndexOpt_IndexImplicitTemplateInstantiations: c_uint = 4;
 pub const CXIndexOpt_SuppressWarnings: c_uint = 8;
 #[link_args = "-lclang"]
-pub extern {
+pub extern "C" {
     fn clang_getCString(++string: CXString) -> *c_schar;
     fn clang_disposeString(++string: CXString);
     fn clang_createIndex(++excludeDeclarationsFromPCH: c_int,

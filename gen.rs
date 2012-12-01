@@ -111,7 +111,6 @@ fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
     defs.push(mk_extern(&ctx, link, move vars, move funcs));
 
     let crate = @dummy_spanned({
-        directives: ~[],
         module: {
             view_items: move views,
             items: move defs,
@@ -170,6 +169,7 @@ fn mk_extern(ctx: &GenCtx, link: &Option<~str>,
 
     let ext = ast::item_foreign_mod({
         sort: ast::anonymous,
+        abi: ctx.ext_cx.ident_of(~"C"),
         view_items: ~[],
         items: vars + funcs
     });
