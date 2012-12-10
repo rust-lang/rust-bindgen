@@ -151,9 +151,9 @@ fn mk_extern(ctx: &GenCtx, link: &Option<~str>,
                            vars: ~[@ast::foreign_item],
                            funcs: ~[@ast::foreign_item]) -> @ast::item {
     let attrs;
-    match *link {
-        None => attrs = ~[],
-        Some(l) => {
+    match &*link {
+        &None => attrs = ~[],
+        &Some(l) => {
             let link_args = dummy_spanned({
                 style: ast::attr_outer,
                 value: dummy_spanned(

@@ -477,7 +477,7 @@ fn main() unsafe {
     let bin = bind_args.shift();
 
     match parse_args(bind_args) {
-        ParseErr(e) => { fail e; }
+        ParseErr(move e) => { fail e; }
         CmdUsage => { print_usage(move bin); }
         ParseOk(clang_args, ctx) => {
             let ix = clang_createIndex(0 as c_int, 1 as c_int);
