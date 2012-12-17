@@ -1,8 +1,8 @@
 use io::WriterUtil;
-use std::map;
-use map::HashMap;
+use std::map::HashMap;
 
 use syntax::ast;
+use syntax::codemap;
 use syntax::ast_util::*;
 use syntax::ext::base;
 use syntax::ext::build;
@@ -39,6 +39,10 @@ fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
                        mut unnamed_ty: 0,
                        keywords: syntax::parse::token::keyword_table()
                      };
+    ctx.ext_cx.bt_push(codemap::ExpandedFrom({
+        call_site: dummy_sp(),
+        callie: {name: ~"top", span: None}
+    }));
 
     let mut fs = ~[];
     let mut vs = ~[];
@@ -99,8 +103,8 @@ fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
         match *f {
             GFunc(vi) => {
                 match *vi.ty {
-                    TFunc(rty, aty, var) => cfunc_to_rs(&ctx, copy vi.name,
-                                                        rty, copy aty, var),
+                    TFunc(rty, ref aty, var) => cfunc_to_rs(&ctx, copy vi.name,
+                                                             rty, copy *aty, var),
                     _ => { fail ~"generate functions" }
                 }
             },
@@ -151,15 +155,15 @@ fn mk_extern(ctx: &GenCtx, link: &Option<~str>,
                            vars: ~[@ast::foreign_item],
                            funcs: ~[@ast::foreign_item]) -> @ast::item {
     let attrs;
-    match &*link {
-        &None => attrs = ~[],
-        &Some(l) => {
+    match *link {
+        None => attrs = ~[],
+        Some(ref l) => {
             let link_args = dummy_spanned({
                 style: ast::attr_outer,
                 value: dummy_spanned(
                     ast::meta_name_value(
                         ~"link_args",
-                        dummy_spanned(ast::lit_str(@(~"-l"+l)))
+                        dummy_spanned(ast::lit_str(@(~"-l" + *l)))
                     )
                 ),
                 is_sugared_doc: false
@@ -266,7 +270,7 @@ fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item 
         @dummy_spanned({
             kind: ast::named_field(
                 ctx.ext_cx.ident_of(f_name),
-                ast::class_immutable,
+                ast::struct_immutable,
                 ast::public
             ),
             id: ctx.ext_cx.next_id(),
@@ -274,10 +278,8 @@ fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item 
         })
     };
 
-    let def = ast::item_class(
-        @{ traits: ~[],
-           fields: move fs,
-           methods: ~[],
+    let def = ast::item_struct(
+        @{ fields: move fs,
            dtor: None,
            ctor_id: None
         },
@@ -312,17 +314,15 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
     let data = @dummy_spanned({
         kind: ast::named_field(
             ext_cx.ident_of(~"data"),
-            ast::class_immutable,
+            ast::struct_immutable,
             ast::public
         ),
         id: ext_cx.next_id(),
         ty: cty_to_rs(ctx, @TArray(@TInt(IUChar), type_size(union)))
     });
 
-    let def = ast::item_class(
-        @{ traits: ~[],
-           fields: ~[data],
-           methods: ~[],
+    let def = ast::item_struct(
+        @{ fields: ~[data],
            dtor: None,
            ctor_id: None
         },
@@ -330,6 +330,7 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
     );
     let union_def = mk_item(ctx, rust_id(ctx, move name).first(), move def);
 
+    let expr = quote_expr!(cast::reinterpret_cast(&ptr::to_unsafe_ptr(&self)));
     let mut unnamed = 0;
     let fs = do fields.map |f| {
         let f_name = if str::is_empty(f.name) {
@@ -343,7 +344,7 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
         let body = dummy_spanned({
             view_items: ~[],
             stmts: ~[],
-            expr: Some(#ast[expr]{cast::reinterpret_cast(&ptr::to_unsafe_ptr(&self))}),
+            expr: Some(expr),
             id: ext_cx.next_id(),
             rules: ast::unsafe_blk
         });
