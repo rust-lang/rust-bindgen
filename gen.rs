@@ -1,4 +1,4 @@
-use io::WriterUtil;
+use core::io::WriterUtil;
 use std::map::HashMap;
 
 use syntax::ast;
@@ -37,7 +37,7 @@ fn unnamed_name(ctx: &GenCtx, name: ~str) -> ~str {
 fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
     let ctx = GenCtx { ext_cx: base::mk_ctxt(parse::new_parse_sess(None), ~[]),
                        mut unnamed_ty: 0,
-                       keywords: syntax::parse::token::keyword_table()
+                       keywords: parse::token::keyword_table()
                      };
     ctx.ext_cx.bt_push(codemap::ExpandedFrom({
         call_site: dummy_sp(),
@@ -112,7 +112,7 @@ fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
         }
     };
 
-    let views = ~[mk_import(&ctx, &[~"libc"])];
+    let views = ~[mk_import(&ctx, &[~"core", ~"libc"])];
     defs.push(mk_extern(&ctx, link, move vars, move funcs));
 
     let crate = @dummy_spanned({
@@ -330,7 +330,7 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
     );
     let union_def = mk_item(ctx, rust_id(ctx, move name).first(), move def);
 
-    let expr = quote_expr!(cast::reinterpret_cast(&ptr::to_unsafe_ptr(&self)));
+    let expr = quote_expr!(cast::reinterpret_cast(&ptr::to_unsafe_ptr(self)));
     let mut unnamed = 0;
     let fs = do fields.map |f| {
         let f_name = if str::is_empty(f.name) {
@@ -352,7 +352,7 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
         @{ ident: ext_cx.ident_of(f_name),
            attrs: ~[],
            tps: ~[],
-           self_ty: dummy_spanned(ast::sty_by_ref),
+           self_ty: dummy_spanned(ast::sty_region(ast::m_imm)),
            purity: ast::impure_fn,
            decl: {
               inputs: ~[],

@@ -1,5 +1,5 @@
 use std::map::HashMap;
-use io::WriterUtil;
+use core::io::WriterUtil;
 
 use types::*;
 use libc::*;
