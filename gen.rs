@@ -135,7 +135,7 @@ fn mk_import(ctx: &GenCtx, path: &[~str]) -> @ast::view_item {
             ast::view_path_glob(
                 @{ span: dummy_sp(),
                    global: false,
-                   idents: path.map(|p| ctx.ext_cx.ident_of(*p)),
+                   idents: path.map(|p| ctx.ext_cx.ident_of(copy *p)),
                    rp: None,
                    types: ~[]
                 },
@@ -189,14 +189,14 @@ fn mk_extern(ctx: &GenCtx, link: &Option<~str>,
 }
 
 fn remove_redundent_decl(gs: &[Global]) -> ~[Global] {
-    let typedefs = do gs.filter |g| {
+    let typedefs = do gs.filtered |g| {
         match(*g) {
             GType(_) => true,
             _ => false
         }
     };
 
-    return do gs.filter |g| {
+    return do gs.filtered |g| {
         !do typedefs.any |t| {
             match (*g, *t) {
                 (GComp(ci1), GType(ti)) => match *ti.ty {
@@ -407,12 +407,11 @@ fn cenum_to_rs(ctx: &GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -> ~[
 }
 
 fn mk_link_name_attr(name: ~str) -> ast::attribute {
-    let lit = {node: ast::lit_str(@(move name)), span: dummy_sp()};
-    let attr_val = {node: ast::meta_name_value(~"link_name", lit),
-                    span: dummy_sp()};
+    let lit = dummy_spanned(ast::lit_str(@(move name)));
+    let attr_val = dummy_spanned(ast::meta_name_value(~"link_name", lit));
     let attr = {style: ast::attr_outer, value: move attr_val,
                 is_sugared_doc: false};
-    move {node: move attr, span: dummy_sp()}
+    move dummy_spanned(move attr)
 }
 
 fn cvar_to_rs(ctx: &GenCtx, name: ~str, ty: @Type) -> @ast::foreign_item {
