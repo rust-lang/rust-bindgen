@@ -115,7 +115,7 @@ fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
     let views = ~[mk_import(&ctx, &[~"core", ~"libc"])];
     defs.push(mk_extern(&ctx, link, move vars, move funcs));
 
-    let crate = @dummy_spanned({
+    let crate = @dummy_spanned(ast::crate_ {
         module: {
             view_items: move views,
             items: move defs,
@@ -133,7 +133,8 @@ fn mk_import(ctx: &GenCtx, path: &[~str]) -> @ast::view_item {
     let view = ast::view_item_import(~[
         @dummy_spanned(
             ast::view_path_glob(
-                @{ span: dummy_sp(),
+                @ast::path {
+                   span: dummy_sp(),
                    global: false,
                    idents: path.map(|p| ctx.ext_cx.ident_of(copy *p)),
                    rp: None,
@@ -144,7 +145,8 @@ fn mk_import(ctx: &GenCtx, path: &[~str]) -> @ast::view_item {
         )
     ]);
 
-    return @{ node: move view,
+    return @ast::view_item {
+              node: move view,
               attrs: ~[],
               vis: ast::inherited,
               span: dummy_sp()
@@ -158,7 +160,7 @@ fn mk_extern(ctx: &GenCtx, link: &Option<~str>,
     match *link {
         None => attrs = ~[],
         Some(ref l) => {
-            let link_args = dummy_spanned({
+            let link_args = dummy_spanned(ast::attribute_ {
                 style: ast::attr_outer,
                 value: dummy_spanned(
                     ast::meta_name_value(
@@ -179,7 +181,8 @@ fn mk_extern(ctx: &GenCtx, link: &Option<~str>,
         items: vars + funcs
     });
 
-    return @{ ident: ctx.ext_cx.ident_of(~""),
+    return @ast::item {
+              ident: ctx.ext_cx.ident_of(~""),
               attrs: move attrs,
               id: ctx.ext_cx.next_id(),
               node: move ext,
@@ -225,7 +228,8 @@ fn ctypedef_to_rs(ctx: &GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
             ~[]
         );
 
-        return @{ ident: ctx.ext_cx.ident_of(rust_name),
+        return @ast::item {
+                  ident: ctx.ext_cx.ident_of(rust_name),
                   attrs: ~[],
                   id: ctx.ext_cx.next_id(),
                   node: move base,
@@ -267,7 +271,7 @@ fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item 
 
         let f_ty = cty_to_rs(ctx, f.ty);
 
-        @dummy_spanned({
+        @dummy_spanned(ast::struct_field_ {
             kind: ast::named_field(
                 ctx.ext_cx.ident_of(f_name),
                 ast::struct_immutable,
@@ -279,14 +283,15 @@ fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item 
     };
 
     let def = ast::item_struct(
-        @{ fields: move fs,
+        @ast::struct_def {
+           fields: move fs,
            dtor: None,
            ctor_id: None
         },
         ~[]
     );
 
-    return @{ ident: ctx.ext_cx.ident_of(rust_id(ctx, move name).first()),
+    return @ast::item { ident: ctx.ext_cx.ident_of(rust_id(ctx, move name).first()),
               attrs: ~[],
               id: ctx.ext_cx.next_id(),
               node: move def,
@@ -297,7 +302,8 @@ fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item 
 
 fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item] {
     fn mk_item(ctx: &GenCtx, name: ~str, item: ast::item_) -> @ast::item {
-        return @{ ident: ctx.ext_cx.ident_of(name),
+        return @ast::item {
+                  ident: ctx.ext_cx.ident_of(name),
                   attrs: ~[],
                   id: ctx.ext_cx.next_id(),
                   node: move item,
@@ -311,7 +317,7 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
     ci.fields = copy fields;
     let union = @TNamed(mk_typeinfo(copy name, @TComp(ci)));
 
-    let data = @dummy_spanned({
+    let data = @dummy_spanned(ast::struct_field_ {
         kind: ast::named_field(
             ext_cx.ident_of(~"data"),
             ast::struct_immutable,
@@ -322,7 +328,8 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
     });
 
     let def = ast::item_struct(
-        @{ fields: ~[data],
+        @ast::struct_def {
+           fields: ~[data],
            dtor: None,
            ctor_id: None
         },
@@ -341,7 +348,7 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
         };
 
         let ret_ty = cty_to_rs(ctx, @TPtr(f.ty));
-        let body = dummy_spanned({
+        let body = dummy_spanned(ast::blk_ {
             view_items: ~[],
             stmts: ~[],
             expr: Some(expr),
@@ -392,7 +399,8 @@ fn cenum_to_rs(ctx: &GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -> ~[
             build::mk_int(ctx.ext_cx, dummy_sp(), it.val)
         );
 
-        let val_def = @{ ident: ctx.ext_cx.ident_of(rust_id(ctx, copy it.name).first()),
+        let val_def = @ast::item {
+                         ident: ctx.ext_cx.ident_of(rust_id(ctx, copy it.name).first()),
                          attrs: ~[],
                          id: ctx.ext_cx.next_id(),
                          node: move cst,
@@ -409,8 +417,11 @@ fn cenum_to_rs(ctx: &GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -> ~[
 fn mk_link_name_attr(name: ~str) -> ast::attribute {
     let lit = dummy_spanned(ast::lit_str(@(move name)));
     let attr_val = dummy_spanned(ast::meta_name_value(~"link_name", lit));
-    let attr = {style: ast::attr_outer, value: move attr_val,
-                is_sugared_doc: false};
+    let attr = ast::attribute_ {
+        style: ast::attr_outer,
+        value: move attr_val,
+        is_sugared_doc: false
+    };
     move dummy_spanned(move attr)
 }
 
@@ -422,7 +433,8 @@ fn cvar_to_rs(ctx: &GenCtx, name: ~str, ty: @Type) -> @ast::foreign_item {
         attrs.push(mk_link_name_attr(move name));
     }
 
-    return @{ ident: ctx.ext_cx.ident_of(move rust_name),
+    return @ast::foreign_item {
+              ident: ctx.ext_cx.ident_of(move rust_name),
               attrs: move attrs,
               node: ast::foreign_item_const(cty_to_rs(ctx, ty)),
               id: ctx.ext_cx.next_id(),
@@ -458,11 +470,12 @@ fn cfunc_to_rs(ctx: &GenCtx, name: ~str, rty: @Type,
 
         { mode: ast::expl(ast::by_val),
           ty: arg_ty,
-          pat: @{
+          pat: @ast::pat {
               id: ctx.ext_cx.next_id(),
               node: ast::pat_ident(
                   ast::bind_by_value,
-                  @{ span: dummy_sp(),
+                  @ast::path {
+                     span: dummy_sp(),
                      global: false,
                      idents: ~[ctx.ext_cx.ident_of(arg_name)],
                      rp: None,
@@ -492,7 +505,8 @@ fn cfunc_to_rs(ctx: &GenCtx, name: ~str, rty: @Type,
         attrs.push(mk_link_name_attr(move name));
     }
 
-    return @{ ident: ctx.ext_cx.ident_of(rust_name),
+    return @ast::foreign_item {
+              ident: ctx.ext_cx.ident_of(rust_name),
               attrs: move attrs,
               node: move decl,
               id: ctx.ext_cx.next_id(),
@@ -542,11 +556,12 @@ fn cty_to_rs(ctx: &GenCtx, ty: @Type) -> @ast::Ty {
 
 fn mk_ty(ctx: &GenCtx, name: ~str) -> @ast::Ty {
     let ty = ast::ty_path(
-        @{ span: dummy_sp(),
-           global: false,
-           idents: ~[ctx.ext_cx.ident_of(name)],
-           rp: None,
-           types: ~[]
+        @ast::path {
+            span: dummy_sp(),
+            global: false,
+            idents: ~[ctx.ext_cx.ident_of(name)],
+            rp: None,
+            types: ~[]
         },
         ctx.ext_cx.next_id()
     );
@@ -558,7 +573,7 @@ fn mk_ty(ctx: &GenCtx, name: ~str) -> @ast::Ty {
 }
 
 fn mk_ptrty(ctx: &GenCtx, base: @ast::Ty) -> @ast::Ty {
-    let ty = ast::ty_ptr({
+    let ty = ast::ty_ptr(ast::mt{
         ty: base,
         mutbl: ast::m_imm
     });
@@ -571,8 +586,9 @@ fn mk_ptrty(ctx: &GenCtx, base: @ast::Ty) -> @ast::Ty {
 
 fn mk_arrty(ctx: &GenCtx, base: @ast::Ty, n: uint) -> @ast::Ty {
     let ty = ast::ty_fixed_length_vec(
-        { ty: base,
-          mutbl: ast::m_imm
+        ast::mt {
+            ty: base,
+             mutbl: ast::m_imm
         },
         n
     );
