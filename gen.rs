@@ -338,7 +338,9 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
     );
     let union_def = mk_item(ctx, rust_id(ctx, move name).first(), move def);
 
-    let expr = quote_expr!(cast::reinterpret_cast(&ptr::to_unsafe_ptr(self)));
+    let expr = quote_expr!(
+        unsafe { cast::reinterpret_cast(&ptr::to_unsafe_ptr(self)) }
+    );
     let mut unnamed = 0;
     let fs = do fields.map |f| {
         let f_name = if str::is_empty(f.name) {
@@ -354,7 +356,7 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
             stmts: ~[],
             expr: Some(expr),
             id: ext_cx.next_id(),
-            rules: ast::unsafe_blk
+            rules: ast::default_blk
         });
 
         @ast::method {

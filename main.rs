@@ -330,199 +330,209 @@ fn opaque_ty(ctx: @BindGenCtx, ty: CXType) {
 
 extern fn visit_struct(++cursor: CXCursor,
                        ++_parent: CXCursor,
-                       data: CXClientData) -> c_uint unsafe {
-    let ctx = *(data as *@BindGenCtx);
-    if cursor.kind == CXCursor_FieldDecl {
-        let ci = global_compinfo(ctx.cur_glob);
-        let ty = conv_ty(ctx, clang_getCursorType(cursor), cursor);
-        let name = clang_getCursorSpelling(cursor).to_str();
-        let field = mk_fieldinfo(move name, ty, ci);
-        ci.fields.push(field);
+                       data: CXClientData) -> c_uint {
+    unsafe {
+        let ctx = *(data as *@BindGenCtx);
+        if cursor.kind == CXCursor_FieldDecl {
+            let ci = global_compinfo(ctx.cur_glob);
+            let ty = conv_ty(ctx, clang_getCursorType(cursor), cursor);
+            let name = clang_getCursorSpelling(cursor).to_str();
+            let field = mk_fieldinfo(move name, ty, ci);
+            ci.fields.push(field);
+        }
+        return CXChildVisit_Continue;
     }
-    return CXChildVisit_Continue;
 }
 
 extern fn visit_union(++cursor: CXCursor,
                       ++_parent: CXCursor,
-                      data: CXClientData) -> c_uint unsafe {
-    let ctx = *(data as *@BindGenCtx);
-    if cursor.kind == CXCursor_FieldDecl {
-        let ci = global_compinfo(ctx.cur_glob);
-        let ty = conv_ty(ctx, clang_getCursorType(cursor), cursor);
-        let name = clang_getCursorSpelling(cursor).to_str();
-        let field = mk_fieldinfo(move name, ty, ci);
-        ci.fields.push(field);
+                      data: CXClientData) -> c_uint {
+    unsafe {
+        let ctx = *(data as *@BindGenCtx);
+        if cursor.kind == CXCursor_FieldDecl {
+            let ci = global_compinfo(ctx.cur_glob);
+            let ty = conv_ty(ctx, clang_getCursorType(cursor), cursor);
+            let name = clang_getCursorSpelling(cursor).to_str();
+            let field = mk_fieldinfo(move name, ty, ci);
+            ci.fields.push(field);
+        }
+        return CXChildVisit_Continue;
     }
-    return CXChildVisit_Continue;
 }
 
 extern fn visit_enum(++cursor: CXCursor,
                      ++_parent: CXCursor,
-                     data: CXClientData) -> c_uint unsafe {
-    let ctx = *(data as *@BindGenCtx);
-    if cursor.kind == CXCursor_EnumConstantDecl {
-        let ei = global_enuminfo(ctx.cur_glob);
-        let name = clang_getCursorSpelling(cursor).to_str();
-        let val = clang_getEnumConstantDeclValue(cursor) as int;
-        let item = mk_enumitem(move name, val, ei);
-        ei.items.push(item);
+                     data: CXClientData) -> c_uint {
+    unsafe {
+        let ctx = *(data as *@BindGenCtx);
+        if cursor.kind == CXCursor_EnumConstantDecl {
+            let ei = global_enuminfo(ctx.cur_glob);
+            let name = clang_getCursorSpelling(cursor).to_str();
+            let val = clang_getEnumConstantDeclValue(cursor) as int;
+            let item = mk_enumitem(move name, val, ei);
+            ei.items.push(item);
+        }
+        return CXChildVisit_Continue;
     }
-    return CXChildVisit_Continue;
 }
 
 extern fn visit_top(++cursor: CXCursor,
                     ++_parent: CXCursor,
-                    data: CXClientData) -> c_uint unsafe {
-    let ctx = *(data as *@BindGenCtx);
-    if !match_pattern(ctx, cursor) {
-        return CXChildVisit_Continue;
-    }
-
-    if cursor.kind == CXCursor_StructDecl {
-        do fwd_decl(ctx, cursor) || {
-            let decl = decl_name(ctx, cursor);
-            let ci = global_compinfo(decl);
-            ctx.cur_glob = GComp(ci);
-            ctx.globals.push(ctx.cur_glob);
-            clang_visitChildren(cursor, visit_struct, data);
+                    data: CXClientData) -> c_uint {
+    unsafe {
+        let ctx = *(data as *@BindGenCtx);
+        if !match_pattern(ctx, cursor) {
+            return CXChildVisit_Continue;
         }
+    
+        if cursor.kind == CXCursor_StructDecl {
+            do fwd_decl(ctx, cursor) || {
+                let decl = decl_name(ctx, cursor);
+                let ci = global_compinfo(decl);
+                ctx.cur_glob = GComp(ci);
+                ctx.globals.push(ctx.cur_glob);
+                clang_visitChildren(cursor, visit_struct, data);
+            }
+            return CXChildVisit_Recurse;
+        } else if cursor.kind == CXCursor_UnionDecl {
+            do fwd_decl(ctx, cursor) || {
+                let decl = decl_name(ctx, cursor);
+                let ci = global_compinfo(decl);
+                ctx.cur_glob = GComp(ci);
+                ctx.globals.push(ctx.cur_glob);
+                clang_visitChildren(cursor, visit_union, data);
+            }
+            return CXChildVisit_Recurse;
+        } else if cursor.kind == CXCursor_EnumDecl {
+            do fwd_decl(ctx, cursor) || {
+                let decl = decl_name(ctx, cursor);
+                let ei = global_enuminfo(decl);
+                ctx.cur_glob = GEnum(ei);
+                ctx.globals.push(ctx.cur_glob);
+                clang_visitChildren(cursor, visit_enum, data);
+            }
+            return CXChildVisit_Continue;
+        } else if cursor.kind == CXCursor_FunctionDecl {
+            let linkage = clang_getCursorLinkage(cursor);
+            if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
+                return CXChildVisit_Continue;
+            }
+    
+            if ctx.name.contains_key(cursor) {
+                return CXChildVisit_Continue;
+            }
+    
+            let arg_n = clang_Cursor_getNumArguments(cursor) as uint;
+            let args_lst = do vec::from_fn(arg_n) |i| {
+                let arg = clang_Cursor_getArgument(cursor, i as c_uint);
+                let arg_name = clang_getCursorSpelling(arg).to_str();
+                (move arg_name, conv_ty(ctx, clang_getCursorType(arg), cursor))
+            };
+    
+            let ty = clang_getCursorType(cursor);
+            let varargs = clang_isFunctionTypeVariadic(ty) as int != 0;
+            let ret_ty = conv_ty(ctx, clang_getCursorResultType(cursor), cursor);
+    
+            let func = decl_name(ctx, cursor);
+            global_varinfo(func).ty = @TFunc(ret_ty, move args_lst, varargs);
+            ctx.globals.push(func);
+    
+            return CXChildVisit_Continue;
+        } else if cursor.kind == CXCursor_VarDecl {
+            let linkage = clang_getCursorLinkage(cursor);
+            if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
+                return CXChildVisit_Continue;
+            }
+    
+            if ctx.name.contains_key(cursor) {
+                return CXChildVisit_Continue;
+            }
+    
+            let ty = conv_ty(ctx, clang_getCursorType(cursor), cursor);
+            let var = decl_name(ctx, cursor);
+            global_varinfo(var).ty = ty;
+            ctx.globals.push(var);
+    
+            return CXChildVisit_Continue;
+        } else if cursor.kind == CXCursor_TypedefDecl {
+            if ctx.name.contains_key(cursor) {
+                return CXChildVisit_Continue;
+            }
+    
+            let mut under_ty = clang_getTypedefDeclUnderlyingType(cursor);
+            if under_ty.kind == CXType_Unexposed {
+                under_ty = clang_getCanonicalType(under_ty);
+            }
+    
+            let ty = conv_ty(ctx, under_ty, cursor);
+            let typedef = decl_name(ctx, cursor);
+            global_typeinfo(typedef).ty = ty;
+            ctx.globals.push(typedef);
+    
+            opaque_ty(ctx, under_ty);
+    
+            return CXChildVisit_Continue;
+        } else if cursor.kind == CXCursor_FieldDecl {
+            return CXChildVisit_Continue;
+        }
+    
         return CXChildVisit_Recurse;
-    } else if cursor.kind == CXCursor_UnionDecl {
-        do fwd_decl(ctx, cursor) || {
-            let decl = decl_name(ctx, cursor);
-            let ci = global_compinfo(decl);
-            ctx.cur_glob = GComp(ci);
-            ctx.globals.push(ctx.cur_glob);
-            clang_visitChildren(cursor, visit_union, data);
-        }
-        return CXChildVisit_Recurse;
-    } else if cursor.kind == CXCursor_EnumDecl {
-        do fwd_decl(ctx, cursor) || {
-            let decl = decl_name(ctx, cursor);
-            let ei = global_enuminfo(decl);
-            ctx.cur_glob = GEnum(ei);
-            ctx.globals.push(ctx.cur_glob);
-            clang_visitChildren(cursor, visit_enum, data);
-        }
-        return CXChildVisit_Continue;
-    } else if cursor.kind == CXCursor_FunctionDecl {
-        let linkage = clang_getCursorLinkage(cursor);
-        if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
-            return CXChildVisit_Continue;
-        }
-
-        if ctx.name.contains_key(cursor) {
-            return CXChildVisit_Continue;
-        }
-
-        let arg_n = clang_Cursor_getNumArguments(cursor) as uint;
-        let args_lst = do vec::from_fn(arg_n) |i| {
-            let arg = clang_Cursor_getArgument(cursor, i as c_uint);
-            let arg_name = clang_getCursorSpelling(arg).to_str();
-            (move arg_name, conv_ty(ctx, clang_getCursorType(arg), cursor))
-        };
-
-        let ty = clang_getCursorType(cursor);
-        let varargs = clang_isFunctionTypeVariadic(ty) as int != 0;
-        let ret_ty = conv_ty(ctx, clang_getCursorResultType(cursor), cursor);
-
-        let func = decl_name(ctx, cursor);
-        global_varinfo(func).ty = @TFunc(ret_ty, move args_lst, varargs);
-        ctx.globals.push(func);
-
-        return CXChildVisit_Continue;
-    } else if cursor.kind == CXCursor_VarDecl {
-        let linkage = clang_getCursorLinkage(cursor);
-        if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
-            return CXChildVisit_Continue;
-        }
-
-        if ctx.name.contains_key(cursor) {
-            return CXChildVisit_Continue;
-        }
-
-        let ty = conv_ty(ctx, clang_getCursorType(cursor), cursor);
-        let var = decl_name(ctx, cursor);
-        global_varinfo(var).ty = ty;
-        ctx.globals.push(var);
-
-        return CXChildVisit_Continue;
-    } else if cursor.kind == CXCursor_TypedefDecl {
-        if ctx.name.contains_key(cursor) {
-            return CXChildVisit_Continue;
-        }
-
-        let mut under_ty = clang_getTypedefDeclUnderlyingType(cursor);
-        if under_ty.kind == CXType_Unexposed {
-            under_ty = clang_getCanonicalType(under_ty);
-        }
-
-        let ty = conv_ty(ctx, under_ty, cursor);
-        let typedef = decl_name(ctx, cursor);
-        global_typeinfo(typedef).ty = ty;
-        ctx.globals.push(typedef);
-
-        opaque_ty(ctx, under_ty);
-
-        return CXChildVisit_Continue;
-    } else if cursor.kind == CXCursor_FieldDecl {
-        return CXChildVisit_Continue;
     }
-
-    return CXChildVisit_Recurse;
 }
 
-fn main() unsafe {
-    let mut bind_args = os::args();
-    let bin = bind_args.shift();
-
-    match parse_args(bind_args) {
-        ParseErr(move e) => { fail e; }
-        CmdUsage => { print_usage(move bin); }
-        ParseOk(clang_args, ctx) => {
-            let ix = clang_createIndex(0 as c_int, 1 as c_int);
-            if ix as int == 0 {
-                fail ~"clang failed to create index";
-            }
-
-            let c_args = do clang_args.map |s| {
-                str::as_c_str(*s, |b| b )
-            };
-            let unit = clang_parseTranslationUnit(
-                ix, ptr::null(),
-                vec::raw::to_ptr(c_args),
-                vec::len(c_args) as c_int,
-                ptr::null(),
-                0 as c_uint, 0 as c_uint
-            );
-            if unit as int == 0 {
-                fail ~"No input files given";
-            }
-
-            let mut c_err = false;
-            let diag_num = clang_getNumDiagnostics(unit) as uint;
-            for uint::range(0, diag_num) |i| {
-                let diag = clang_getDiagnostic(unit, i as c_uint);
-                io::stderr().write_line(clang_formatDiagnostic(
-                    diag, clang_defaultDiagnosticDisplayOptions()
-                ).to_str());
-
-                if clang_getDiagnosticSeverity(diag) >= CXDiagnostic_Error {
-                    c_err = true
+fn main() {
+    unsafe {
+        let mut bind_args = os::args();
+        let bin = bind_args.shift();
+    
+        match parse_args(bind_args) {
+            ParseErr(move e) => { fail e; }
+            CmdUsage => { print_usage(move bin); }
+            ParseOk(clang_args, ctx) => {
+                let ix = clang_createIndex(0 as c_int, 1 as c_int);
+                if ix as int == 0 {
+                    fail ~"clang failed to create index";
                 }
+    
+                let c_args = do clang_args.map |s| {
+                    str::as_c_str(*s, |b| b )
+                };
+                let unit = clang_parseTranslationUnit(
+                    ix, ptr::null(),
+                    vec::raw::to_ptr(c_args),
+                    vec::len(c_args) as c_int,
+                    ptr::null(),
+                    0 as c_uint, 0 as c_uint
+                );
+                if unit as int == 0 {
+                    fail ~"No input files given";
+                }
+    
+                let mut c_err = false;
+                let diag_num = clang_getNumDiagnostics(unit) as uint;
+                for uint::range(0, diag_num) |i| {
+                    let diag = clang_getDiagnostic(unit, i as c_uint);
+                    io::stderr().write_line(clang_formatDiagnostic(
+                        diag, clang_defaultDiagnosticDisplayOptions()
+                    ).to_str());
+    
+                    if clang_getDiagnosticSeverity(diag) >= CXDiagnostic_Error {
+                        c_err = true
+                    }
+                }
+    
+                if c_err {
+                    return;
+                }
+    
+                let cursor = clang_getTranslationUnitCursor(unit);
+                clang_visitChildren(cursor, visit_top,
+                                    ptr::to_unsafe_ptr(&ctx) as CXClientData);
+                gen_rs(ctx.out, &ctx.link, ctx.globals);
+    
+                clang_disposeTranslationUnit(unit);
+                clang_disposeIndex(ix);
             }
-
-            if c_err {
-                return;
-            }
-
-            let cursor = clang_getTranslationUnitCursor(unit);
-            clang_visitChildren(cursor, visit_top,
-                                ptr::to_unsafe_ptr(&ctx) as CXClientData);
-            gen_rs(ctx.out, &ctx.link, ctx.globals);
-
-            clang_disposeTranslationUnit(unit);
-            clang_disposeIndex(ix);
         }
     }
 }
