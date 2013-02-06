@@ -1,4 +1,4 @@
-use std::map::HashMap;
+use std::oldmap::HashMap;
 use core::io::WriterUtil;
 use core::to_bytes;
 
@@ -50,9 +50,9 @@ impl CXCursor: to_bytes::IterBytes {
 }
 
 impl CXString: to_str::ToStr {
-    pure fn to_str() -> ~str {
+    pure fn to_str(&self) -> ~str {
         unsafe {
-            return str::raw::from_c_str(clang_getCString(self));
+            return str::raw::from_c_str(clang_getCString(*self));
         }
     }
 }
@@ -160,7 +160,7 @@ unsafe fn match_pattern(ctx: @BindGenCtx, cursor: CXCursor) -> bool {
 }
 
 unsafe fn decl_name(ctx: @BindGenCtx, cursor: CXCursor) -> Global {
-    let decl_opt = ctx.name.find(cursor);
+    let decl_opt = ctx.name.find(&cursor);
     match decl_opt {
         option::Some(decl) => { return decl; }
         None => {
@@ -200,7 +200,7 @@ unsafe fn decl_name(ctx: @BindGenCtx, cursor: CXCursor) -> Global {
 }
 
 unsafe fn opaque_decl(ctx: @BindGenCtx, decl: CXCursor) {
-    if !ctx.name.contains_key(decl) {
+    if !ctx.name.contains_key_ref(&decl) {
         let name = decl_name(ctx, decl);
         ctx.globals.push(name);
     }
@@ -418,7 +418,7 @@ extern fn visit_top(++cursor: CXCursor,
                 return CXChildVisit_Continue;
             }
     
-            if ctx.name.contains_key(cursor) {
+            if ctx.name.contains_key_ref(&cursor) {
                 return CXChildVisit_Continue;
             }
     
@@ -444,7 +444,7 @@ extern fn visit_top(++cursor: CXCursor,
                 return CXChildVisit_Continue;
             }
     
-            if ctx.name.contains_key(cursor) {
+            if ctx.name.contains_key_ref(&cursor) {
                 return CXChildVisit_Continue;
             }
     
@@ -455,7 +455,7 @@ extern fn visit_top(++cursor: CXCursor,
     
             return CXChildVisit_Continue;
         } else if cursor.kind == CXCursor_TypedefDecl {
-            if ctx.name.contains_key(cursor) {
+            if ctx.name.contains_key_ref(&cursor) {
                 return CXChildVisit_Continue;
             }
     

@@ -1,5 +1,5 @@
 use core::io::WriterUtil;
-use std::map::HashMap;
+use std::oldmap::HashMap;
 
 use syntax::ast;
 use syntax::codemap::{dummy_sp, dummy_spanned};
