@@ -120,7 +120,7 @@ pure fn global_compinfo(glob: Global) -> @CompInfo {
     match glob {
         GComp(i) => return i,
         GCompDecl(i) => return i,
-        _ => fail ~"global_compinfo"
+        _ => fail!(~"global_compinfo")
     }
 }
 
@@ -128,14 +128,14 @@ pure fn global_enuminfo(glob: Global) -> @EnumInfo {
     match glob {
         GEnum(i) => return i,
         GEnumDecl(i) => return i,
-        _ => fail ~"global_enuminfo"
+        _ => fail!(~"global_enuminfo")
     }
 }
 
 pure fn global_typeinfo(glob: Global) -> @TypeInfo {
     match glob {
         GType(i) => return i,
-        _ => fail ~"global_typeinfo"
+        _ => fail!(~"global_typeinfo")
     }
 }
 
@@ -143,7 +143,7 @@ pure fn global_varinfo(glob: Global) -> @VarInfo {
     match glob {
         GVar(i) => i,
         GFunc(i) => i,
-        _ => fail ~"global_varinfo"
+        _ => fail!(~"global_varinfo")
     }
 }
 
@@ -170,7 +170,7 @@ pure fn type_align(ty: @Type) -> uint {
             }
         },
         TEnum(_) => 4,
-        _ => fail ~"ty_align: unhandled type"
+        _ => fail!(~"ty_align: unhandled type")
     };
 }
 
@@ -197,7 +197,7 @@ pure fn type_align(ty: @Type) -> uint {
             }
         },
         TEnum(_) => 4,
-        _ => fail ~"ty_align: unhandled type"
+        _ => fail!(~"ty_align: unhandled type")
     };
 }
 
@@ -230,7 +230,7 @@ pure fn type_size(ty: @Type) -> uint {
             align(size, ty)
         },
         TEnum(_) => 4,
-        _ => fail ~"ty_size: unhandled type"
+        _ => fail!(~"ty_size: unhandled type")
     };
 }
 
@@ -263,7 +263,7 @@ pure fn type_size(ty: @Type) -> uint {
             align(size, ty)
         },
         TEnum(_) => 4,
-        _ => fail ~"ty_size: unhandled type"
+        _ => fail!(~"ty_size: unhandled type")
     };
 }
 

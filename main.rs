@@ -135,7 +135,7 @@ Options:
     );
 }
 
-fn match_pattern(ctx: @BindGenCtx, cursor: CXCursor) -> bool {
+unsafe fn match_pattern(ctx: @BindGenCtx, cursor: CXCursor) -> bool {
     let file = ptr::null();
     clang_getSpellingLocation(clang_getCursorLocation(cursor),
                               ptr::to_unsafe_ptr(&file),
@@ -159,7 +159,7 @@ fn match_pattern(ctx: @BindGenCtx, cursor: CXCursor) -> bool {
     return false;
 }
 
-fn decl_name(ctx: @BindGenCtx, cursor: CXCursor) -> Global {
+unsafe fn decl_name(ctx: @BindGenCtx, cursor: CXCursor) -> Global {
     let decl_opt = ctx.name.find(cursor);
     match decl_opt {
         option::Some(decl) => { return decl; }
@@ -199,14 +199,14 @@ fn decl_name(ctx: @BindGenCtx, cursor: CXCursor) -> Global {
     }
 }
 
-fn opaque_decl(ctx: @BindGenCtx, decl: CXCursor) {
+unsafe fn opaque_decl(ctx: @BindGenCtx, decl: CXCursor) {
     if !ctx.name.contains_key(decl) {
         let name = decl_name(ctx, decl);
         ctx.globals.push(name);
     }
 }
 
-fn fwd_decl(ctx: @BindGenCtx, cursor: CXCursor, f: fn()) {
+unsafe fn fwd_decl(ctx: @BindGenCtx, cursor: CXCursor, f: fn()) {
     let def = clang_getCursorDefinition(cursor);
     if cursor == def {
         f();
@@ -216,7 +216,7 @@ fn fwd_decl(ctx: @BindGenCtx, cursor: CXCursor, f: fn()) {
     }
 }
 
-fn conv_ptr_ty(ctx: @BindGenCtx, ty: CXType, cursor: CXCursor) -> @Type {
+unsafe fn conv_ptr_ty(ctx: @BindGenCtx, ty: CXType, cursor: CXCursor) -> @Type {
     if ty.kind == CXType_Void {
         return @TPtr(@TVoid)
     } else if ty.kind == CXType_Unexposed ||
@@ -250,7 +250,7 @@ fn conv_ptr_ty(ctx: @BindGenCtx, ty: CXType, cursor: CXCursor) -> @Type {
     return @TPtr(conv_ty(ctx, ty, cursor));
 }
 
-fn conv_decl_ty(ctx: @BindGenCtx, cursor: CXCursor) -> @Type {
+unsafe fn conv_decl_ty(ctx: @BindGenCtx, cursor: CXCursor) -> @Type {
     return if cursor.kind == CXCursor_StructDecl {
         let decl = decl_name(ctx, cursor);
         let ci = global_compinfo(decl);
@@ -272,7 +272,7 @@ fn conv_decl_ty(ctx: @BindGenCtx, cursor: CXCursor) -> @Type {
     };
 }
 
-fn conv_ty(ctx: @BindGenCtx, ty: CXType, cursor: CXCursor) -> @Type {
+unsafe fn conv_ty(ctx: @BindGenCtx, ty: CXType, cursor: CXCursor) -> @Type {
     return if ty.kind == CXType_Bool {
         @TInt(IBool)
     } else if ty.kind == CXType_SChar ||
@@ -317,7 +317,7 @@ fn conv_ty(ctx: @BindGenCtx, ty: CXType, cursor: CXCursor) -> @Type {
     };
 }
 
-fn opaque_ty(ctx: @BindGenCtx, ty: CXType) {
+unsafe fn opaque_ty(ctx: @BindGenCtx, ty: CXType) {
     if ty.kind == CXType_Record || ty.kind == CXType_Enum {
         let decl = clang_getTypeDeclaration(ty);
         let def = clang_getCursorDefinition(decl);
@@ -486,12 +486,12 @@ fn main() {
         let bin = bind_args.shift();
     
         match parse_args(bind_args) {
-            ParseErr(move e) => { fail e; }
+            ParseErr(move e) => { fail!(e); }
             CmdUsage => { print_usage(move bin); }
             ParseOk(clang_args, ctx) => {
                 let ix = clang_createIndex(0 as c_int, 1 as c_int);
                 if ix as int == 0 {
-                    fail ~"clang failed to create index";
+                    fail!(~"clang failed to create index");
                 }
     
                 let c_args = do clang_args.map |s| {
@@ -505,7 +505,7 @@ fn main() {
                     0 as c_uint, 0 as c_uint
                 );
                 if unit as int == 0 {
-                    fail ~"No input files given";
+                    fail!(~"No input files given");
                 }
     
                 let mut c_err = false;

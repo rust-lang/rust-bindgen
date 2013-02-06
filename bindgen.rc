@@ -1,5 +1,8 @@
 #[crate_type = "bin"];
 
+// libsyntax still uses records in some places
+#[legacy_records];
+
 extern mod std;
 extern mod syntax;
 

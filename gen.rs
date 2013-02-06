@@ -2,6 +2,7 @@ use core::io::WriterUtil;
 use std::map::HashMap;
 
 use syntax::ast;
+use syntax::codemap::{dummy_sp, dummy_spanned};
 use syntax::codemap;
 use syntax::ast_util::*;
 use syntax::ext::base;
@@ -95,7 +96,7 @@ fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
     let vars = do vs.map |v| {
         match *v {
             GVar(vi) => cvar_to_rs(&ctx, copy vi.name, vi.ty),
-            _ => { fail ~"generate global variables" }
+            _ => { fail!(~"generate global variables") }
         }
     };
 
@@ -105,10 +106,10 @@ fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
                 match *vi.ty {
                     TFunc(rty, ref aty, var) => cfunc_to_rs(&ctx, copy vi.name,
                                                              rty, copy *aty, var),
-                    _ => { fail ~"generate functions" }
+                    _ => { fail!(~"generate functions") }
                 }
             },
-            _ => { fail ~"generate functions" }
+            _ => { fail!(~"generate functions") }
         }
     };
 
@@ -479,7 +480,7 @@ fn cfunc_to_rs(ctx: &GenCtx, name: ~str, rty: @Type,
             pat: @ast::pat {
                  id: ctx.ext_cx.next_id(),
                  node: ast::pat_ident(
-                     ast::bind_by_value,
+                     ast::bind_by_copy,
                      @ast::path {
                          span: dummy_sp(),
                          global: false,
