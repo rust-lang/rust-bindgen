@@ -22,7 +22,7 @@ enum ParseResult {
     ParseErr(~str)
 }
 
-impl CXCursor: cmp::Eq {
+impl Eq for CXCursor {
     pure fn eq(&self, other: &CXCursor) -> bool {
         return (self.kind as int == other.kind as int) &&
                (self.xdata as int == other.xdata as int) &&
@@ -36,7 +36,7 @@ impl CXCursor: cmp::Eq {
     }
 }
 
-impl CXCursor: to_bytes::IterBytes {
+impl IterBytes for CXCursor {
     pure fn iter_bytes(&self, lsb0: bool, f: to_bytes::Cb) {
         to_bytes::iter_bytes_5(
             &(self.kind as int),
@@ -49,7 +49,7 @@ impl CXCursor: to_bytes::IterBytes {
     }
 }
 
-impl CXString: to_str::ToStr {
+impl ToStr for CXString {
     pure fn to_str(&self) -> ~str {
         unsafe {
             return str::raw::from_c_str(clang_getCString(*self));
@@ -82,7 +82,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 match io::file_writer(&path::Path(args[ix + 1u]),
                                       ~[io::Create, io::Truncate]) {
                     result::Ok(f) => { out = f; }
-                    result::Err(move e) => { return ParseErr(move e); }
+                    result::Err(e) => { return ParseErr(e); }
                 }
                 ix += 2u;
             }
@@ -107,15 +107,15 @@ fn parse_args(args: &[~str]) -> ParseResult {
         }
     }
 
-    let ctx = @BindGenCtx { match_pat: move pat,
-                            link: move link,
+    let ctx = @BindGenCtx { match_pat: pat,
+                            link: link,
                             out: out,
                             name: HashMap::<CXCursor, Global>(),
                             mut globals: ~[],
                             mut cur_glob: GOther
                           };
 
-    return ParseOk(move clang_args, ctx);
+    return ParseOk(clang_args, ctx);
 }
 
 fn print_usage(bin: ~str) {
@@ -167,10 +167,10 @@ unsafe fn decl_name(ctx: @BindGenCtx, cursor: CXCursor) -> Global {
             let spelling = clang_getCursorSpelling(cursor).to_str();
 
             let decl = if cursor.kind == CXCursor_StructDecl {
-                let ci = mk_compinfo(move spelling, true);
+                let ci = mk_compinfo(spelling, true);
                 GCompDecl(ci)
             } else if cursor.kind == CXCursor_UnionDecl {
-                let ci = mk_compinfo(move spelling, false);
+                let ci = mk_compinfo(spelling, false);
                 GCompDecl(ci)
             } else if cursor.kind == CXCursor_EnumDecl {
                 let kind = if clang_getEnumDeclIntegerType(cursor).kind == CXType_Int {
@@ -178,16 +178,16 @@ unsafe fn decl_name(ctx: @BindGenCtx, cursor: CXCursor) -> Global {
                 } else {
                     IUInt
                 };
-                let ei = mk_enuminfo(move spelling, kind);
+                let ei = mk_enuminfo(spelling, kind);
                 GEnumDecl(ei)
             } else if cursor.kind == CXCursor_TypedefDecl {
-                let ti = mk_typeinfo(move spelling, @TVoid);
+                let ti = mk_typeinfo(spelling, @TVoid);
                 GType(ti)
             } else if cursor.kind == CXCursor_VarDecl {
-                let vi = mk_varinfo(move spelling, @TVoid);
+                let vi = mk_varinfo(spelling, @TVoid);
                 GVar(vi)
             } else if cursor.kind == CXCursor_FunctionDecl {
-                let vi = mk_varinfo(move spelling, @TVoid);
+                let vi = mk_varinfo(spelling, @TVoid);
                 GFunc(vi)
             } else {
                 GOther
@@ -200,7 +200,7 @@ unsafe fn decl_name(ctx: @BindGenCtx, cursor: CXCursor) -> Global {
 }
 
 unsafe fn opaque_decl(ctx: @BindGenCtx, decl: CXCursor) {
-    if !ctx.name.contains_key_ref(&decl) {
+    if !ctx.name.contains_key(&decl) {
         let name = decl_name(ctx, decl);
         ctx.globals.push(name);
     }
@@ -233,7 +233,7 @@ unsafe fn conv_ptr_ty(ctx: @BindGenCtx, ty: CXType, cursor: CXCursor) -> @Type {
             let varargs = clang_isFunctionTypeVariadic(ty) as int != 0;
             let ret_ty = conv_ty(ctx, clang_getResultType(ty), cursor);
 
-            @TFunc(ret_ty, move args_lst, varargs)
+            @TFunc(ret_ty, args_lst, varargs)
         } else if decl.kind != CXCursor_NoDeclFound {
             @TPtr(conv_decl_ty(ctx, decl))
         } else {
@@ -337,7 +337,7 @@ extern fn visit_struct(++cursor: CXCursor,
             let ci = global_compinfo(ctx.cur_glob);
             let ty = conv_ty(ctx, clang_getCursorType(cursor), cursor);
             let name = clang_getCursorSpelling(cursor).to_str();
-            let field = mk_fieldinfo(move name, ty, ci);
+            let field = mk_fieldinfo(name, ty, ci);
             ci.fields.push(field);
         }
         return CXChildVisit_Continue;
@@ -353,7 +353,7 @@ extern fn visit_union(++cursor: CXCursor,
             let ci = global_compinfo(ctx.cur_glob);
             let ty = conv_ty(ctx, clang_getCursorType(cursor), cursor);
             let name = clang_getCursorSpelling(cursor).to_str();
-            let field = mk_fieldinfo(move name, ty, ci);
+            let field = mk_fieldinfo(name, ty, ci);
             ci.fields.push(field);
         }
         return CXChildVisit_Continue;
@@ -369,7 +369,7 @@ extern fn visit_enum(++cursor: CXCursor,
             let ei = global_enuminfo(ctx.cur_glob);
             let name = clang_getCursorSpelling(cursor).to_str();
             let val = clang_getEnumConstantDeclValue(cursor) as int;
-            let item = mk_enumitem(move name, val, ei);
+            let item = mk_enumitem(name, val, ei);
             ei.items.push(item);
         }
         return CXChildVisit_Continue;
@@ -418,7 +418,7 @@ extern fn visit_top(++cursor: CXCursor,
                 return CXChildVisit_Continue;
             }
     
-            if ctx.name.contains_key_ref(&cursor) {
+            if ctx.name.contains_key(&cursor) {
                 return CXChildVisit_Continue;
             }
     
@@ -426,7 +426,7 @@ extern fn visit_top(++cursor: CXCursor,
             let args_lst = do vec::from_fn(arg_n) |i| {
                 let arg = clang_Cursor_getArgument(cursor, i as c_uint);
                 let arg_name = clang_getCursorSpelling(arg).to_str();
-                (move arg_name, conv_ty(ctx, clang_getCursorType(arg), cursor))
+                (arg_name, conv_ty(ctx, clang_getCursorType(arg), cursor))
             };
     
             let ty = clang_getCursorType(cursor);
@@ -434,7 +434,7 @@ extern fn visit_top(++cursor: CXCursor,
             let ret_ty = conv_ty(ctx, clang_getCursorResultType(cursor), cursor);
     
             let func = decl_name(ctx, cursor);
-            global_varinfo(func).ty = @TFunc(ret_ty, move args_lst, varargs);
+            global_varinfo(func).ty = @TFunc(ret_ty, args_lst, varargs);
             ctx.globals.push(func);
     
             return CXChildVisit_Continue;
@@ -444,7 +444,7 @@ extern fn visit_top(++cursor: CXCursor,
                 return CXChildVisit_Continue;
             }
     
-            if ctx.name.contains_key_ref(&cursor) {
+            if ctx.name.contains_key(&cursor) {
                 return CXChildVisit_Continue;
             }
     
@@ -455,7 +455,7 @@ extern fn visit_top(++cursor: CXCursor,
     
             return CXChildVisit_Continue;
         } else if cursor.kind == CXCursor_TypedefDecl {
-            if ctx.name.contains_key_ref(&cursor) {
+            if ctx.name.contains_key(&cursor) {
                 return CXChildVisit_Continue;
             }
     
@@ -486,8 +486,8 @@ fn main() {
         let bin = bind_args.shift();
     
         match parse_args(bind_args) {
-            ParseErr(move e) => { fail!(e); }
-            CmdUsage => { print_usage(move bin); }
+            ParseErr(e) => { fail!(e); }
+            CmdUsage => { print_usage(bin); }
             ParseOk(clang_args, ctx) => {
                 let ix = clang_createIndex(0 as c_int, 1 as c_int);
                 if ix as int == 0 {
