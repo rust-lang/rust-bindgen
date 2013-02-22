@@ -40,9 +40,9 @@ fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
                        mut unnamed_ty: 0,
                        keywords: parse::token::keyword_table()
                      };
-    ctx.ext_cx.bt_push(codemap::ExpandedFrom({
+    ctx.ext_cx.bt_push(codemap::ExpandedFrom(codemap::CallInfo {
         call_site: dummy_sp(),
-        callie: {name: ~"top", span: None}
+        callee: codemap::NameAndSpan {name: ~"top", span: None}
     }));
 
     let mut fs = ~[];
@@ -131,7 +131,7 @@ fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
 }
 
 fn mk_import(ctx: &GenCtx, path: &[~str]) -> @ast::view_item {
-    let view = ast::view_item_import(~[
+    let view = ast::view_item_use(~[
         @dummy_spanned(
             ast::view_path_glob(
                 @ast::path {
@@ -165,7 +165,7 @@ fn mk_extern(ctx: &GenCtx, link: &Option<~str>,
                 style: ast::attr_outer,
                 value: dummy_spanned(
                     ast::meta_name_value(
-                        ~"link_args",
+                        @~"link_args",
                         dummy_spanned(ast::lit_str(@(~"-l" + *l)))
                     )
                 ),
@@ -421,7 +421,7 @@ fn cenum_to_rs(ctx: &GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -> ~[
 
 fn mk_link_name_attr(name: ~str) -> ast::attribute {
     let lit = dummy_spanned(ast::lit_str(@(name)));
-    let attr_val = dummy_spanned(ast::meta_name_value(~"link_name", lit));
+    let attr_val = dummy_spanned(ast::meta_name_value(@~"link_name", lit));
     let attr = ast::attribute_ {
         style: ast::attr_outer,
         value: attr_val,
