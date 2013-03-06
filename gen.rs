@@ -9,24 +9,33 @@ use syntax::ext::base;
 use syntax::ext::build;
 use syntax::parse;
 use syntax::print::pprust;
+use syntax::opt_vec;
 
 use types::*;
 
 struct GenCtx {
     ext_cx: base::ext_ctxt,
-    mut unnamed_ty: uint,
+    unnamed_ty: uint,
     keywords: HashMap<~str, ()>
 }
 
-fn rust_id(ctx: &GenCtx, name: ~str) -> (~str, bool) {
+fn empty_generics() -> ast::Generics {
+    ast::Generics {
+        lifetimes: opt_vec::Empty,
+        ty_params: opt_vec::Empty
+    }
+}
+
+fn rust_id(ctx: &mut GenCtx, name: ~str) -> (~str, bool) {
     if ctx.keywords.contains_key(&name) {
         (~"_" + name, true)
     } else {
         (name, false)
     }
+
 }
 
-fn unnamed_name(ctx: &GenCtx, name: ~str) -> ~str {
+fn unnamed_name(ctx: &mut GenCtx, name: ~str) -> ~str {
     return if str::is_empty(name) {
         ctx.unnamed_ty += 1;
         fmt!("Unnamed%u", ctx.unnamed_ty)
@@ -35,11 +44,23 @@ fn unnamed_name(ctx: &GenCtx, name: ~str) -> ~str {
     };
 }
 
-fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
-    let ctx = GenCtx { ext_cx: base::mk_ctxt(parse::new_parse_sess(None), ~[]),
-                       mut unnamed_ty: 0,
-                       keywords: parse::token::keyword_table()
-                     };
+pure fn struct_name(name: &str) -> ~str {
+    fmt!("Struct_%s", name)
+}
+
+pure fn union_name(name: &str) -> ~str {
+    fmt!("Union_%s", name)
+}
+
+pure fn enum_name(name: &str) -> ~str {
+    fmt!("Enum_%s", name)
+}
+
+pub fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
+    let mut ctx = GenCtx { ext_cx: base::mk_ctxt(parse::new_parse_sess(None), ~[]),
+                           unnamed_ty: 0,
+                           keywords: parse::token::keyword_table()
+                         };
     ctx.ext_cx.bt_push(codemap::ExpandedFrom(codemap::CallInfo {
         call_site: dummy_sp(),
         callee: codemap::NameAndSpan {name: ~"top", span: None}
@@ -61,32 +82,32 @@ fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
     gs = remove_redundent_decl(gs);
     for gs.each |g| {
         match *g {
-            GType(ti) => defs += ctypedef_to_rs(&ctx, copy ti.name, ti.ty),
+            GType(ti) => defs += ctypedef_to_rs(&mut ctx, copy ti.name, ti.ty),
             GCompDecl(ci) => {
-                ci.name = unnamed_name(&ctx, copy ci.name);
+                ci.name = unnamed_name(&mut ctx, copy ci.name);
                 if ci.cstruct {
-                    defs += ctypedef_to_rs(&ctx, ~"Struct_" + ci.name, @TVoid)
+                    defs += ctypedef_to_rs(&mut ctx, struct_name(ci.name), @mut TVoid)
                 } else {
-                    defs += ctypedef_to_rs(&ctx, ~"Union_" + ci.name, @TVoid)
+                    defs += ctypedef_to_rs(&mut ctx, union_name(ci.name), @mut TVoid)
                 }
             },
             GComp(ci) => {
-                ci.name = unnamed_name(&ctx, copy ci.name);
+                ci.name = unnamed_name(&mut ctx, copy ci.name);
                 if ci.cstruct {
-                    defs.push(cstruct_to_rs(&ctx, ~"Struct_" + ci.name,
+                    defs.push(cstruct_to_rs(&mut ctx, struct_name(ci.name),
                                             copy ci.fields))
                 } else {
-                    defs += cunion_to_rs(&ctx, ~"Union_" + ci.name,
+                    defs += cunion_to_rs(&mut ctx, union_name(ci.name),
                                          copy ci.fields)
                 }
             },
             GEnumDecl(ei) => {
-                ei.name = unnamed_name(&ctx, copy ei.name);
-                defs += ctypedef_to_rs(&ctx, ~"Enum_" + ei.name, @TVoid)
+                ei.name = unnamed_name(&mut ctx, copy ei.name);
+                defs += ctypedef_to_rs(&mut ctx, enum_name(ei.name), @mut TVoid)
             },
             GEnum(ei) => {
-                ei.name = unnamed_name(&ctx, copy ei.name);
-                defs += cenum_to_rs(&ctx, ~"Enum_" + ei.name, copy ei.items,
+                ei.name = unnamed_name(&mut ctx, copy ei.name);
+                defs += cenum_to_rs(&mut ctx, enum_name(ei.name), copy ei.items,
                                     ei.kind)
             },
             _ => { }
@@ -95,7 +116,7 @@ fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
 
     let vars = do vs.map |v| {
         match *v {
-            GVar(vi) => cvar_to_rs(&ctx, copy vi.name, vi.ty),
+            GVar(vi) => cvar_to_rs(&mut ctx, copy vi.name, vi.ty),
             _ => { fail!(~"generate global variables") }
         }
     };
@@ -104,8 +125,8 @@ fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
         match *f {
             GFunc(vi) => {
                 match *vi.ty {
-                    TFunc(rty, ref aty, var) => cfunc_to_rs(&ctx, copy vi.name,
-                                                             rty, copy *aty, var),
+                    TFunc(rty, copy aty, var) => cfunc_to_rs(&mut ctx, copy vi.name,
+                                                             rty, aty, var),
                     _ => { fail!(~"generate functions") }
                 }
             },
@@ -113,8 +134,8 @@ fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
         }
     };
 
-    let views = ~[mk_import(&ctx, &[~"core", ~"libc"])];
-    defs.push(mk_extern(&ctx, link, vars, funcs));
+    let views = ~[mk_import(&mut ctx, &[~"core", ~"libc"])];
+    defs.push(mk_extern(&mut ctx, link, vars, funcs));
 
     let crate = @dummy_spanned(ast::crate_ {
         module: ast::_mod {
@@ -130,7 +151,7 @@ fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
     pprust::print_crate_(ps, crate);
 }
 
-fn mk_import(ctx: &GenCtx, path: &[~str]) -> @ast::view_item {
+fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> @ast::view_item {
     let view = ast::view_item_use(~[
         @dummy_spanned(
             ast::view_path_glob(
@@ -154,7 +175,7 @@ fn mk_import(ctx: &GenCtx, path: &[~str]) -> @ast::view_item {
            };
 }
 
-fn mk_extern(ctx: &GenCtx, link: &Option<~str>,
+fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
                            vars: ~[@ast::foreign_item],
                            funcs: ~[@ast::foreign_item]) -> @ast::item {
     let attrs;
@@ -163,7 +184,7 @@ fn mk_extern(ctx: &GenCtx, link: &Option<~str>,
         Some(ref l) => {
             let link_args = dummy_spanned(ast::attribute_ {
                 style: ast::attr_outer,
-                value: dummy_spanned(
+                value: @dummy_spanned(
                     ast::meta_name_value(
                         @~"link_args",
                         dummy_spanned(ast::lit_str(@(~"-l" + *l)))
@@ -217,8 +238,8 @@ fn remove_redundent_decl(gs: &[Global]) -> ~[Global] {
     };
 }
 
-fn ctypedef_to_rs(ctx: &GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
-    fn mk_item(ctx: &GenCtx, name: ~str, ty: @Type) -> @ast::item {
+fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: @mut Type) -> ~[@ast::item] {
+    fn mk_item(ctx: &mut GenCtx, name: ~str, ty: @mut Type) -> @ast::item {
         let rust_name = rust_id(ctx, name).first();
         let rust_ty = cty_to_rs(ctx, ty);
         let base = ast::item_ty(
@@ -227,7 +248,7 @@ fn ctypedef_to_rs(ctx: &GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
                 node: copy rust_ty.node,
                 span: dummy_sp(),
             },
-            ~[]
+            empty_generics()
         );
 
         return @ast::item {
@@ -261,7 +282,7 @@ fn ctypedef_to_rs(ctx: &GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
     }
 }
 
-fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item {
+fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@mut FieldInfo]) -> @ast::item {
     let mut unnamed = 0;
     let fs = do fields.map |f| {
         let f_name = if str::is_empty(f.name) {
@@ -290,7 +311,7 @@ fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item 
            dtor: None,
            ctor_id: None
         },
-        ~[]
+        empty_generics()
     );
 
     return @ast::item { ident: ctx.ext_cx.ident_of(rust_id(ctx, name).first()),
@@ -302,8 +323,8 @@ fn cstruct_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item 
            };
 }
 
-fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item] {
-    fn mk_item(ctx: &GenCtx, name: ~str, item: ast::item_) -> @ast::item {
+fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@mut FieldInfo]) -> ~[@ast::item] {
+    fn mk_item(ctx: &mut GenCtx, name: ~str, item: ast::item_) -> @ast::item {
         return @ast::item {
                   ident: ctx.ext_cx.ident_of(name),
                   attrs: ~[],
@@ -314,10 +335,10 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
                };
     }
 
-    let ext_cx = &ctx.ext_cx;
+    let ext_cx = ctx.ext_cx;
     let ci = mk_compinfo(copy name, false);
     ci.fields = copy fields;
-    let union = @TNamed(mk_typeinfo(copy name, @TComp(ci)));
+    let union = @mut TNamed(mk_typeinfo(copy name, @mut TComp(ci)));
 
     let data = @dummy_spanned(ast::struct_field_ {
         kind: ast::named_field(
@@ -326,7 +347,7 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
             ast::public
         ),
         id: ext_cx.next_id(),
-        ty: cty_to_rs(ctx, @TArray(@TInt(IUChar), type_size(union)))
+        ty: cty_to_rs(ctx, @mut TArray(@mut TInt(IUChar), type_size(union)))
     });
 
     let def = ast::item_struct(
@@ -335,9 +356,10 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
            dtor: None,
            ctor_id: None
         },
-        ~[]
+        empty_generics()
     );
-    let union_def = mk_item(ctx, rust_id(ctx, name).first(), def);
+    let union_id = rust_id(ctx, name).first();
+    let union_def = mk_item(ctx, union_id, def);
 
     let expr = quote_expr!(
         unsafe { cast::reinterpret_cast(&ptr::to_unsafe_ptr(self)) }
@@ -351,7 +373,7 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
             rust_id(ctx, copy f.name).first()
         };
 
-        let ret_ty = cty_to_rs(ctx, @TPtr(f.ty));
+        let ret_ty = cty_to_rs(ctx, @mut TPtr(f.ty));
         let body = dummy_spanned(ast::blk_ {
             view_items: ~[],
             stmts: ~[],
@@ -363,7 +385,7 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
         @ast::method {
             ident: ext_cx.ident_of(f_name),
             attrs: ~[],
-            tps: ~[],
+            generics: empty_generics(),
             self_ty: dummy_spanned(ast::sty_region(ast::m_imm)),
             purity: ast::impure_fn,
             decl: ast::fn_decl {
@@ -380,7 +402,7 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
     };
 
     let methods = ast::item_impl(
-        ~[],
+        empty_generics(),
         None,
         cty_to_rs(ctx, union),
         fs
@@ -392,9 +414,10 @@ fn cunion_to_rs(ctx: &GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item
     ];
 }
 
-fn cenum_to_rs(ctx: &GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -> ~[@ast::item] {
-    let ty = @TInt(kind);
-    let ty_def = ctypedef_to_rs(ctx, rust_id(ctx, name).first(), ty);
+fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@mut EnumItem], kind: IKind) -> ~[@ast::item] {
+    let ty = @mut TInt(kind);
+    let ty_id = rust_id(ctx, name).first();
+    let ty_def = ctypedef_to_rs(ctx, ty_id, ty);
     let val_ty = cty_to_rs(ctx, ty);
     let mut def = ty_def;
 
@@ -420,8 +443,8 @@ fn cenum_to_rs(ctx: &GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -> ~[
 }
 
 fn mk_link_name_attr(name: ~str) -> ast::attribute {
-    let lit = dummy_spanned(ast::lit_str(@(name)));
-    let attr_val = dummy_spanned(ast::meta_name_value(@~"link_name", lit));
+    let lit = dummy_spanned(ast::lit_str(@name));
+    let attr_val = @dummy_spanned(ast::meta_name_value(@~"link_name", lit));
     let attr = ast::attribute_ {
         style: ast::attr_outer,
         value: attr_val,
@@ -430,7 +453,7 @@ fn mk_link_name_attr(name: ~str) -> ast::attribute {
     dummy_spanned(attr)
 }
 
-fn cvar_to_rs(ctx: &GenCtx, name: ~str, ty: @Type) -> @ast::foreign_item {
+fn cvar_to_rs(ctx: &mut GenCtx, name: ~str, ty: @mut Type) -> @ast::foreign_item {
     let (rust_name, was_mangled) = rust_id(ctx, copy name);
 
     let mut attrs = ~[];
@@ -448,8 +471,8 @@ fn cvar_to_rs(ctx: &GenCtx, name: ~str, ty: @Type) -> @ast::foreign_item {
            };
 }
 
-fn cfunc_to_rs(ctx: &GenCtx, name: ~str, rty: @Type,
-                                         aty: ~[(~str, @Type)],
+fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @mut Type,
+                                         aty: ~[(~str, @mut Type)],
                                          _var: bool) -> @ast::foreign_item {
     let ret = match *rty {
         TVoid => @ast::Ty {
@@ -503,7 +526,7 @@ fn cfunc_to_rs(ctx: &GenCtx, name: ~str, rty: @Type,
             cf: ast::return_val
         },
         ast::impure_fn,
-        ~[]
+        empty_generics()
     );
 
     let (rust_name, was_mangled) = rust_id(ctx, copy name);
@@ -523,7 +546,7 @@ fn cfunc_to_rs(ctx: &GenCtx, name: ~str, rty: @Type,
            };
 }
 
-fn cty_to_rs(ctx: &GenCtx, ty: @Type) -> @ast::Ty {
+fn cty_to_rs(ctx: &mut GenCtx, ty: @mut Type) -> @ast::Ty {
     return match *ty {
         TVoid => mk_ty(ctx, ~"c_void"),
         TInt(i) => match i {
@@ -543,26 +566,35 @@ fn cty_to_rs(ctx: &GenCtx, ty: @Type) -> @ast::Ty {
             FFloat => mk_ty(ctx, ~"c_float"),
             FDouble => mk_ty(ctx, ~"c_double")
         },
-        TPtr(t) => mk_ptrty(ctx, cty_to_rs(ctx, t)),
-        TArray(t, s) => mk_arrty(ctx, cty_to_rs(ctx, t), s),
+        TPtr(t) => {
+            let id = cty_to_rs(ctx, t);
+            mk_ptrty(ctx, id)
+        },
+        TArray(t, s) => {
+            let ty = cty_to_rs(ctx, t);
+            mk_arrty(ctx, ty, s)
+        },
         TFunc(_, _, _) => mk_fnty(ctx),
-        TNamed(ti) => mk_ty(ctx, rust_id(ctx, copy ti.name).first()),
+        TNamed(ti) => {
+            let id = rust_id(ctx, copy ti.name).first();
+            mk_ty(ctx, id)
+        },
         TComp(ci) => {
             ci.name = unnamed_name(ctx, copy ci.name);
             if ci.cstruct {
-                mk_ty(ctx, ~"Struct_" + ci.name)
+                mk_ty(ctx, struct_name(ci.name))
             } else {
-                mk_ty(ctx, ~"Union_" + ci.name)
+                mk_ty(ctx, union_name(ci.name))
             }
         },
         TEnum(ei) => {
             ei.name = unnamed_name(ctx, copy ei.name);
-            mk_ty(ctx, ~"Enum_" + ei.name)
+            mk_ty(ctx, enum_name(ei.name))
         }
     };
 }
 
-fn mk_ty(ctx: &GenCtx, name: ~str) -> @ast::Ty {
+fn mk_ty(ctx: &mut GenCtx, name: ~str) -> @ast::Ty {
     let ty = ast::ty_path(
         @ast::path {
             span: dummy_sp(),
@@ -581,7 +613,7 @@ fn mk_ty(ctx: &GenCtx, name: ~str) -> @ast::Ty {
     };
 }
 
-fn mk_ptrty(ctx: &GenCtx, base: @ast::Ty) -> @ast::Ty {
+fn mk_ptrty(ctx: &mut GenCtx, base: @ast::Ty) -> @ast::Ty {
     let ty = ast::ty_ptr(ast::mt{
         ty: base,
         mutbl: ast::m_imm
@@ -594,7 +626,7 @@ fn mk_ptrty(ctx: &GenCtx, base: @ast::Ty) -> @ast::Ty {
     };
 }
 
-fn mk_arrty(ctx: &GenCtx, base: @ast::Ty, n: uint) -> @ast::Ty {
+fn mk_arrty(ctx: &mut GenCtx, base: @ast::Ty, n: uint) -> @ast::Ty {
     let ty = ast::ty_fixed_length_vec(
         ast::mt {
             ty: base,
@@ -610,8 +642,9 @@ fn mk_arrty(ctx: &GenCtx, base: @ast::Ty, n: uint) -> @ast::Ty {
     };
 }
 
-fn mk_fnty(ctx: &GenCtx) -> @ast::Ty {
-    let @ast::Ty{node: node, _} = mk_ptrty(ctx, mk_ty(ctx, ~"u8"));
+fn mk_fnty(ctx: &mut GenCtx) -> @ast::Ty {
+    let ty = mk_ty(ctx, ~"u8");
+    let @ast::Ty{node: node, _} = mk_ptrty(ctx, ty);
 
     return @ast::Ty {
         id: ctx.ext_cx.next_id(),

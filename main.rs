@@ -1,9 +1,9 @@
 use std::oldmap::HashMap;
 use core::io::WriterUtil;
 use core::to_bytes;
+use core::libc::*;
 
 use types::*;
-use libc::*;
 use clang::*;
 use gen::*;
 
@@ -12,13 +12,13 @@ struct BindGenCtx {
     link: Option<~str>,
     out: io::Writer,
     name: HashMap<CXCursor, Global>,
-    mut globals: ~[Global],
-    mut cur_glob: Global
+    globals: ~[Global],
+    cur_glob: Global
 }
 
 enum ParseResult {
     CmdUsage,
-    ParseOk(~[~str], @BindGenCtx),
+    ParseOk(~[~str], @mut BindGenCtx),
     ParseErr(~str)
 }
 
@@ -107,13 +107,13 @@ fn parse_args(args: &[~str]) -> ParseResult {
         }
     }
 
-    let ctx = @BindGenCtx { match_pat: pat,
-                            link: link,
-                            out: out,
-                            name: HashMap::<CXCursor, Global>(),
-                            mut globals: ~[],
-                            mut cur_glob: GOther
-                          };
+    let ctx = @mut BindGenCtx { match_pat: pat,
+                                link: link,
+                                out: out,
+                                name: HashMap::<CXCursor, Global>(),
+                                globals: ~[],
+                                cur_glob: GOther
+                              };
 
     return ParseOk(clang_args, ctx);
 }
@@ -135,7 +135,7 @@ Options:
     );
 }
 
-unsafe fn match_pattern(ctx: @BindGenCtx, cursor: CXCursor) -> bool {
+unsafe fn match_pattern(ctx: @mut BindGenCtx, cursor: CXCursor) -> bool {
     let file = ptr::null();
     clang_getSpellingLocation(clang_getCursorLocation(cursor),
                               ptr::to_unsafe_ptr(&file),
@@ -159,7 +159,7 @@ unsafe fn match_pattern(ctx: @BindGenCtx, cursor: CXCursor) -> bool {
     return false;
 }
 
-unsafe fn decl_name(ctx: @BindGenCtx, cursor: CXCursor) -> Global {
+unsafe fn decl_name(ctx: @mut BindGenCtx, cursor: CXCursor) -> Global {
     let decl_opt = ctx.name.find(&cursor);
     match decl_opt {
         option::Some(decl) => { return decl; }
@@ -181,13 +181,13 @@ unsafe fn decl_name(ctx: @BindGenCtx, cursor: CXCursor) -> Global {
                 let ei = mk_enuminfo(spelling, kind);
                 GEnumDecl(ei)
             } else if cursor.kind == CXCursor_TypedefDecl {
-                let ti = mk_typeinfo(spelling, @TVoid);
+                let ti = mk_typeinfo(spelling, @mut TVoid);
                 GType(ti)
             } else if cursor.kind == CXCursor_VarDecl {
-                let vi = mk_varinfo(spelling, @TVoid);
+                let vi = mk_varinfo(spelling, @mut TVoid);
                 GVar(vi)
             } else if cursor.kind == CXCursor_FunctionDecl {
-                let vi = mk_varinfo(spelling, @TVoid);
+                let vi = mk_varinfo(spelling, @mut TVoid);
                 GFunc(vi)
             } else {
                 GOther
@@ -199,14 +199,14 @@ unsafe fn decl_name(ctx: @BindGenCtx, cursor: CXCursor) -> Global {
     }
 }
 
-unsafe fn opaque_decl(ctx: @BindGenCtx, decl: CXCursor) {
+unsafe fn opaque_decl(ctx: @mut BindGenCtx, decl: CXCursor) {
     if !ctx.name.contains_key(&decl) {
         let name = decl_name(ctx, decl);
         ctx.globals.push(name);
     }
 }
 
-unsafe fn fwd_decl(ctx: @BindGenCtx, cursor: CXCursor, f: fn()) {
+unsafe fn fwd_decl(ctx: @mut BindGenCtx, cursor: CXCursor, f: fn()) {
     let def = clang_getCursorDefinition(cursor);
     if cursor == def {
         f();
@@ -216,9 +216,9 @@ unsafe fn fwd_decl(ctx: @BindGenCtx, cursor: CXCursor, f: fn()) {
     }
 }
 
-unsafe fn conv_ptr_ty(ctx: @BindGenCtx, ty: CXType, cursor: CXCursor) -> @Type {
+unsafe fn conv_ptr_ty(ctx: @mut BindGenCtx, ty: CXType, cursor: CXCursor) -> @mut Type {
     if ty.kind == CXType_Void {
-        return @TPtr(@TVoid)
+        return @mut TPtr(@mut TVoid)
     } else if ty.kind == CXType_Unexposed ||
               ty.kind == CXType_FunctionProto ||
               ty.kind == CXType_FunctionNoProto {
@@ -233,74 +233,74 @@ unsafe fn conv_ptr_ty(ctx: @BindGenCtx, ty: CXType, cursor: CXCursor) -> @Type {
             let varargs = clang_isFunctionTypeVariadic(ty) as int != 0;
             let ret_ty = conv_ty(ctx, clang_getResultType(ty), cursor);
 
-            @TFunc(ret_ty, args_lst, varargs)
+            @mut TFunc(ret_ty, args_lst, varargs)
         } else if decl.kind != CXCursor_NoDeclFound {
-            @TPtr(conv_decl_ty(ctx, decl))
+            @mut TPtr(conv_decl_ty(ctx, decl))
         } else {
-            @TPtr(@TVoid)
+            @mut TPtr(@mut TVoid)
         };
     } else if ty.kind == CXType_Typedef {
         let decl = clang_getTypeDeclaration(ty);
         let def_ty = clang_getTypedefDeclUnderlyingType(decl);
         if def_ty.kind == CXType_FunctionProto ||
            def_ty.kind == CXType_FunctionNoProto {
-            return @TPtr(conv_ptr_ty(ctx, def_ty, cursor));
+            return @mut TPtr(conv_ptr_ty(ctx, def_ty, cursor));
         }
     }
-    return @TPtr(conv_ty(ctx, ty, cursor));
+    return @mut TPtr(conv_ty(ctx, ty, cursor));
 }
 
-unsafe fn conv_decl_ty(ctx: @BindGenCtx, cursor: CXCursor) -> @Type {
+unsafe fn conv_decl_ty(ctx: @mut BindGenCtx, cursor: CXCursor) -> @mut Type {
     return if cursor.kind == CXCursor_StructDecl {
         let decl = decl_name(ctx, cursor);
         let ci = global_compinfo(decl);
-        @TComp(ci)
+        @mut TComp(ci)
     } else if cursor.kind == CXCursor_UnionDecl {
         let decl = decl_name(ctx, cursor);
         let ci = global_compinfo(decl);
-        @TComp(ci)
+        @mut TComp(ci)
     } else if cursor.kind == CXCursor_EnumDecl {
         let decl = decl_name(ctx, cursor);
         let ei = global_enuminfo(decl);
-        @TEnum(ei)
+        @mut TEnum(ei)
     } else if cursor.kind == CXCursor_TypedefDecl {
         let decl = decl_name(ctx, cursor);
         let ti = global_typeinfo(decl);
-        @TNamed(ti)
+        @mut TNamed(ti)
     } else {
-        @TVoid
+        @mut TVoid
     };
 }
 
-unsafe fn conv_ty(ctx: @BindGenCtx, ty: CXType, cursor: CXCursor) -> @Type {
+unsafe fn conv_ty(ctx: @mut BindGenCtx, ty: CXType, cursor: CXCursor) -> @mut Type {
     return if ty.kind == CXType_Bool {
-        @TInt(IBool)
+        @mut TInt(IBool)
     } else if ty.kind == CXType_SChar ||
               ty.kind == CXType_Char_S {
-        @TInt(ISChar)
+        @mut TInt(ISChar)
     } else if ty.kind == CXType_UChar ||
               ty.kind == CXType_Char_U {
-        @TInt(IUChar)
+        @mut TInt(IUChar)
     } else if ty.kind == CXType_UShort {
-        @TInt(IUShort)
+        @mut TInt(IUShort)
     } else if ty.kind == CXType_UInt {
-        @TInt(IUInt)
+        @mut TInt(IUInt)
     } else if ty.kind == CXType_ULong {
-        @TInt(IULong)
+        @mut TInt(IULong)
     } else if ty.kind == CXType_ULongLong {
-        @TInt(IULongLong)
+        @mut TInt(IULongLong)
     } else if ty.kind == CXType_Short {
-        @TInt(IShort)
+        @mut TInt(IShort)
     } else if ty.kind == CXType_Int {
-        @TInt(IInt)
+        @mut TInt(IInt)
     } else if ty.kind == CXType_Long {
-        @TInt(ILong)
+        @mut TInt(ILong)
     } else if ty.kind == CXType_LongLong {
-        @TInt(ILongLong)
+        @mut TInt(ILongLong)
     } else if ty.kind == CXType_Float {
-        @TFloat(FFloat)
+        @mut TFloat(FFloat)
     } else if ty.kind == CXType_Double {
-        @TFloat(FDouble)
+        @mut TFloat(FDouble)
     } else if ty.kind == CXType_Pointer {
         conv_ptr_ty(ctx, clang_getPointeeType(ty), cursor)
     } else if ty.kind == CXType_Record ||
@@ -311,13 +311,13 @@ unsafe fn conv_ty(ctx: @BindGenCtx, ty: CXType, cursor: CXCursor) -> @Type {
     } else if ty.kind == CXType_ConstantArray {
         let a_ty = conv_ty(ctx, clang_getArrayElementType(ty), cursor);
         let size = clang_getArraySize(ty) as uint;
-        @TArray(a_ty, size)
+        @mut TArray(a_ty, size)
     } else {
-        @TVoid
+        @mut TVoid
     };
 }
 
-unsafe fn opaque_ty(ctx: @BindGenCtx, ty: CXType) {
+unsafe fn opaque_ty(ctx: @mut BindGenCtx, ty: CXType) {
     if ty.kind == CXType_Record || ty.kind == CXType_Enum {
         let decl = clang_getTypeDeclaration(ty);
         let def = clang_getCursorDefinition(decl);
@@ -332,7 +332,7 @@ extern fn visit_struct(++cursor: CXCursor,
                        ++_parent: CXCursor,
                        data: CXClientData) -> c_uint {
     unsafe {
-        let ctx = *(data as *@BindGenCtx);
+        let ctx = *(data as *@mut BindGenCtx);
         if cursor.kind == CXCursor_FieldDecl {
             let ci = global_compinfo(ctx.cur_glob);
             let ty = conv_ty(ctx, clang_getCursorType(cursor), cursor);
@@ -348,7 +348,7 @@ extern fn visit_union(++cursor: CXCursor,
                       ++_parent: CXCursor,
                       data: CXClientData) -> c_uint {
     unsafe {
-        let ctx = *(data as *@BindGenCtx);
+        let ctx = *(data as *@mut BindGenCtx);
         if cursor.kind == CXCursor_FieldDecl {
             let ci = global_compinfo(ctx.cur_glob);
             let ty = conv_ty(ctx, clang_getCursorType(cursor), cursor);
@@ -364,7 +364,7 @@ extern fn visit_enum(++cursor: CXCursor,
                      ++_parent: CXCursor,
                      data: CXClientData) -> c_uint {
     unsafe {
-        let ctx = *(data as *@BindGenCtx);
+        let ctx = *(data as *@mut BindGenCtx);
         if cursor.kind == CXCursor_EnumConstantDecl {
             let ei = global_enuminfo(ctx.cur_glob);
             let name = clang_getCursorSpelling(cursor).to_str();
@@ -380,7 +380,7 @@ extern fn visit_top(++cursor: CXCursor,
                     ++_parent: CXCursor,
                     data: CXClientData) -> c_uint {
     unsafe {
-        let ctx = *(data as *@BindGenCtx);
+        let ctx = *(data as *@mut BindGenCtx);
         if !match_pattern(ctx, cursor) {
             return CXChildVisit_Continue;
         }
@@ -434,7 +434,7 @@ extern fn visit_top(++cursor: CXCursor,
             let ret_ty = conv_ty(ctx, clang_getCursorResultType(cursor), cursor);
     
             let func = decl_name(ctx, cursor);
-            global_varinfo(func).ty = @TFunc(ret_ty, args_lst, varargs);
+            global_varinfo(func).ty = @mut TFunc(ret_ty, args_lst, varargs);
             ctx.globals.push(func);
     
             return CXChildVisit_Continue;

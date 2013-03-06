@@ -1,27 +1,27 @@
-enum Global {
-    GType(@TypeInfo),
-    GComp(@CompInfo),
-    GCompDecl(@CompInfo),
-    GEnum(@EnumInfo),
-    GEnumDecl(@EnumInfo),
-    GVar(@VarInfo),
-    GFunc(@VarInfo),
+pub enum Global {
+    GType(@mut TypeInfo),
+    GComp(@mut CompInfo),
+    GCompDecl(@mut CompInfo),
+    GEnum(@mut EnumInfo),
+    GEnumDecl(@mut EnumInfo),
+    GVar(@mut VarInfo),
+    GFunc(@mut VarInfo),
     GOther
 }
 
-enum Type {
+pub enum Type {
     TVoid,
     TInt(IKind),
     TFloat(FKind),
-    TPtr(@Type),
-    TArray(@Type, uint),
-    TFunc(@Type, ~[(~str, @Type)], bool),
-    TNamed(@TypeInfo),
-    TComp(@CompInfo),
-    TEnum(@EnumInfo)
+    TPtr(@mut Type),
+    TArray(@mut Type, uint),
+    TFunc(@mut Type, ~[(~str, @mut Type)], bool),
+    TNamed(@mut TypeInfo),
+    TComp(@mut CompInfo),
+    TEnum(@mut EnumInfo)
 }
 
-enum IKind {
+pub enum IKind {
     IBool,
     ISChar,
     IUChar,
@@ -35,88 +35,88 @@ enum IKind {
     IULongLong
 }
 
-enum FKind {
+pub enum FKind {
     FFloat,
     FDouble
 }
 
-struct CompInfo {
-    mut cstruct: bool,
-    mut name: ~str,
-    mut fields: ~[@FieldInfo]
+pub struct CompInfo {
+    cstruct: bool,
+    name: ~str,
+    fields: ~[@mut FieldInfo]
 }
 
-struct FieldInfo {
-    mut comp: @CompInfo,
-    mut name: ~str,
-    mut ty: @Type,
-    mut bit: Option<uint>
+pub struct FieldInfo {
+    comp: @mut CompInfo,
+    name: ~str,
+    ty: @mut Type,
+    bit: Option<uint>
 }
 
-struct EnumInfo {
-    mut name: ~str,
-    mut items: ~[@EnumItem],
-    mut kind: IKind
+pub struct EnumInfo {
+    name: ~str,
+    items: ~[@mut EnumItem],
+    kind: IKind
 }
 
-struct EnumItem {
-    mut host: @EnumInfo,
-    mut name: ~str,
-    mut val: int
+pub struct EnumItem {
+    host: @mut EnumInfo,
+    name: ~str,
+    val: int
 }
 
-struct TypeInfo {
-    mut name: ~str,
-    mut ty: @Type
+pub struct TypeInfo {
+    name: ~str,
+    ty: @mut Type
 }
 
-struct VarInfo {
-    mut name: ~str,
-    mut ty: @Type
+pub struct VarInfo {
+    name: ~str,
+    ty: @mut Type
 }
 
-pure fn mk_compinfo(name: ~str, cstruct: bool) -> @CompInfo {
-    return @CompInfo { cstruct: cstruct,
-                       name: name,
-                       fields: ~[]
-                     };
+pub pure fn mk_compinfo(name: ~str, cstruct: bool) -> @mut CompInfo {
+    return @mut CompInfo { cstruct: cstruct,
+                           name: name,
+                           fields: ~[]
+                         };
 }
 
-pure fn mk_fieldinfo(name: ~str, ty: @Type, comp: @CompInfo) -> @FieldInfo {
-    return @FieldInfo { comp: comp,
-                        name: name,
-                        ty: ty,
-                        bit: None
-                      };
+pub pure fn mk_fieldinfo(name: ~str, ty: @mut Type, comp: @mut CompInfo) -> @mut FieldInfo {
+    return @mut FieldInfo { comp: comp,
+                            name: name,
+                            ty: ty,
+                            bit: None
+                          };
 }
 
-pure fn mk_enuminfo(name: ~str, kind: IKind) -> @EnumInfo {
-    return @EnumInfo { name: name,
-                       items: ~[],
-                       kind: kind
-                     };
+pub pure fn mk_enuminfo(name: ~str, kind: IKind) -> @mut EnumInfo {
+    return @mut EnumInfo { name: name,
+                           items: ~[],
+                           kind: kind
+                         };
 }
 
-pure fn mk_enumitem(name: ~str, val: int, host: @EnumInfo) -> @EnumItem {
-    return @EnumItem { host: host,
-                       name: name,
-                       val: val
-                     };
+pub pure fn mk_enumitem(name: ~str, val: int, host: @mut EnumInfo) -> @mut EnumItem {
+    return @mut EnumItem { host: host,
+                           name: name,
+                           val: val
+                         };
 }
 
-pure fn mk_typeinfo(name: ~str, ty: @Type) -> @TypeInfo {
-    return @TypeInfo { name: name,
-                       ty: ty
-                     };
+pub pure fn mk_typeinfo(name: ~str, ty: @mut Type) -> @mut TypeInfo {
+    return @mut TypeInfo { name: name,
+                           ty: ty
+                         };
 }
 
-pure fn mk_varinfo(name: ~str, ty: @Type) -> @VarInfo {
-    return @VarInfo { name: name,
-                      ty: ty
-                    };
+pub pure fn mk_varinfo(name: ~str, ty: @mut Type) -> @mut VarInfo {
+    return @mut VarInfo { name: name,
+                          ty: ty
+                        };
 }
 
-pure fn global_compinfo(glob: Global) -> @CompInfo {
+pub pure fn global_compinfo(glob: Global) -> @mut CompInfo {
     match glob {
         GComp(i) => return i,
         GCompDecl(i) => return i,
@@ -124,7 +124,7 @@ pure fn global_compinfo(glob: Global) -> @CompInfo {
     }
 }
 
-pure fn global_enuminfo(glob: Global) -> @EnumInfo {
+pub pure fn global_enuminfo(glob: Global) -> @mut EnumInfo {
     match glob {
         GEnum(i) => return i,
         GEnumDecl(i) => return i,
@@ -132,14 +132,14 @@ pure fn global_enuminfo(glob: Global) -> @EnumInfo {
     }
 }
 
-pure fn global_typeinfo(glob: Global) -> @TypeInfo {
+pub pure fn global_typeinfo(glob: Global) -> @mut TypeInfo {
     match glob {
         GType(i) => return i,
         _ => fail!(~"global_typeinfo")
     }
 }
 
-pure fn global_varinfo(glob: Global) -> @VarInfo {
+pub pure fn global_varinfo(glob: Global) -> @mut VarInfo {
     match glob {
         GVar(i) => i,
         GFunc(i) => i,
@@ -148,7 +148,7 @@ pure fn global_varinfo(glob: Global) -> @VarInfo {
 }
 
 #[cfg(target_arch="x86_64")]
-pure fn type_align(ty: @Type) -> uint {
+pub pure fn type_align(ty: @mut Type) -> uint {
     return match *ty {
         TInt(k) => match k {
             IBool | ISChar | IUChar => 1,
@@ -175,7 +175,7 @@ pure fn type_align(ty: @Type) -> uint {
 }
 
 #[cfg(target_arch="x86")]
-pure fn type_align(ty: @Type) -> uint {
+pub pure fn type_align(ty: @mut Type) -> uint {
     return match *ty {
         TInt(k) => match k {
             IBool | ISChar | IUChar => 1,
@@ -202,7 +202,7 @@ pure fn type_align(ty: @Type) -> uint {
 }
 
 #[cfg(target_arch="x86_64")]
-pure fn type_size(ty: @Type) -> uint {
+pub pure fn type_size(ty: @mut Type) -> uint {
     return match *ty {
         TInt(k) => match k {
             IBool | ISChar | IUChar => 1,
@@ -235,7 +235,7 @@ pure fn type_size(ty: @Type) -> uint {
 }
 
 #[cfg(target_arch="x86")]
-pure fn type_size(ty: @Type) -> uint {
+pub pure fn type_size(ty: @mut Type) -> uint {
     return match *ty {
         TInt(k) => match k {
             IBool | ISChar | IUChar => 1,
@@ -267,7 +267,7 @@ pure fn type_size(ty: @Type) -> uint {
     };
 }
 
-pure fn align(off: uint, ty: @Type) -> uint {
+pub pure fn align(off: uint, ty: @mut Type) -> uint {
     let a = type_align(ty);
     return (off + a - 1u) / a * a;
 }
