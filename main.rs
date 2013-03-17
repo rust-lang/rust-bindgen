@@ -10,7 +10,7 @@ use gen::*;
 struct BindGenCtx {
     match_pat: ~[~str],
     link: Option<~str>,
-    out: io::Writer,
+    out: @io::Writer,
     name: HashMap<CXCursor, Global>,
     globals: ~[Global],
     cur_glob: Global
@@ -206,7 +206,7 @@ unsafe fn opaque_decl(ctx: @mut BindGenCtx, decl: CXCursor) {
     }
 }
 
-unsafe fn fwd_decl(ctx: @mut BindGenCtx, cursor: CXCursor, f: fn()) {
+unsafe fn fwd_decl(ctx: @mut BindGenCtx, cursor: CXCursor, f: &fn()) {
     let def = clang_getCursorDefinition(cursor);
     if cursor == def {
         f();
@@ -328,8 +328,8 @@ unsafe fn opaque_ty(ctx: @mut BindGenCtx, ty: CXType) {
     }
 }
 
-extern fn visit_struct(++cursor: CXCursor,
-                       ++_parent: CXCursor,
+extern fn visit_struct(+cursor: CXCursor,
+                       +_parent: CXCursor,
                        data: CXClientData) -> c_uint {
     unsafe {
         let ctx = *(data as *@mut BindGenCtx);
@@ -344,8 +344,8 @@ extern fn visit_struct(++cursor: CXCursor,
     }
 }
 
-extern fn visit_union(++cursor: CXCursor,
-                      ++_parent: CXCursor,
+extern fn visit_union(+cursor: CXCursor,
+                      +_parent: CXCursor,
                       data: CXClientData) -> c_uint {
     unsafe {
         let ctx = *(data as *@mut BindGenCtx);
@@ -360,8 +360,8 @@ extern fn visit_union(++cursor: CXCursor,
     }
 }
 
-extern fn visit_enum(++cursor: CXCursor,
-                     ++_parent: CXCursor,
+extern fn visit_enum(+cursor: CXCursor,
+                     +_parent: CXCursor,
                      data: CXClientData) -> c_uint {
     unsafe {
         let ctx = *(data as *@mut BindGenCtx);
@@ -376,8 +376,8 @@ extern fn visit_enum(++cursor: CXCursor,
     }
 }
 
-extern fn visit_top(++cursor: CXCursor,
-                    ++_parent: CXCursor,
+extern fn visit_top(+cursor: CXCursor,
+                    +_parent: CXCursor,
                     data: CXClientData) -> c_uint {
     unsafe {
         let ctx = *(data as *@mut BindGenCtx);

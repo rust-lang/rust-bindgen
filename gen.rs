@@ -14,7 +14,7 @@ use syntax::opt_vec;
 use types::*;
 
 struct GenCtx {
-    ext_cx: base::ext_ctxt,
+    ext_cx: @base::ext_ctxt,
     unnamed_ty: uint,
     keywords: HashMap<~str, ()>
 }
@@ -56,7 +56,7 @@ pure fn enum_name(name: &str) -> ~str {
     fmt!("Enum_%s", name)
 }
 
-pub fn gen_rs(out: io::Writer, link: &Option<~str>, globs: &[Global]) {
+pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
     let mut ctx = GenCtx { ext_cx: base::mk_ctxt(parse::new_parse_sess(None), ~[]),
                            unnamed_ty: 0,
                            keywords: parse::token::keyword_table()
@@ -497,7 +497,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @mut Type,
         let arg_ty = cty_to_rs(ctx, t);
 
         ast::arg {
-            mode: ast::expl(ast::by_val),
+            mode: ast::expl(ast::by_copy),
             is_mutbl: false,
             ty: arg_ty,
             pat: @ast::pat {
