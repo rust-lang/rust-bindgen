@@ -75,14 +75,14 @@ pub struct VarInfo {
     ty: @mut Type
 }
 
-pub pure fn mk_compinfo(name: ~str, cstruct: bool) -> @mut CompInfo {
+pub fn mk_compinfo(name: ~str, cstruct: bool) -> @mut CompInfo {
     return @mut CompInfo { cstruct: cstruct,
                            name: name,
                            fields: ~[]
                          };
 }
 
-pub pure fn mk_fieldinfo(name: ~str, ty: @mut Type, comp: @mut CompInfo) -> @mut FieldInfo {
+pub fn mk_fieldinfo(name: ~str, ty: @mut Type, comp: @mut CompInfo) -> @mut FieldInfo {
     return @mut FieldInfo { comp: comp,
                             name: name,
                             ty: ty,
@@ -90,33 +90,33 @@ pub pure fn mk_fieldinfo(name: ~str, ty: @mut Type, comp: @mut CompInfo) -> @mut
                           };
 }
 
-pub pure fn mk_enuminfo(name: ~str, kind: IKind) -> @mut EnumInfo {
+pub fn mk_enuminfo(name: ~str, kind: IKind) -> @mut EnumInfo {
     return @mut EnumInfo { name: name,
                            items: ~[],
                            kind: kind
                          };
 }
 
-pub pure fn mk_enumitem(name: ~str, val: int, host: @mut EnumInfo) -> @mut EnumItem {
+pub fn mk_enumitem(name: ~str, val: int, host: @mut EnumInfo) -> @mut EnumItem {
     return @mut EnumItem { host: host,
                            name: name,
                            val: val
                          };
 }
 
-pub pure fn mk_typeinfo(name: ~str, ty: @mut Type) -> @mut TypeInfo {
+pub fn mk_typeinfo(name: ~str, ty: @mut Type) -> @mut TypeInfo {
     return @mut TypeInfo { name: name,
                            ty: ty
                          };
 }
 
-pub pure fn mk_varinfo(name: ~str, ty: @mut Type) -> @mut VarInfo {
+pub fn mk_varinfo(name: ~str, ty: @mut Type) -> @mut VarInfo {
     return @mut VarInfo { name: name,
                           ty: ty
                         };
 }
 
-pub pure fn global_compinfo(glob: Global) -> @mut CompInfo {
+pub fn global_compinfo(glob: Global) -> @mut CompInfo {
     match glob {
         GComp(i) => return i,
         GCompDecl(i) => return i,
@@ -124,7 +124,7 @@ pub pure fn global_compinfo(glob: Global) -> @mut CompInfo {
     }
 }
 
-pub pure fn global_enuminfo(glob: Global) -> @mut EnumInfo {
+pub fn global_enuminfo(glob: Global) -> @mut EnumInfo {
     match glob {
         GEnum(i) => return i,
         GEnumDecl(i) => return i,
@@ -132,14 +132,14 @@ pub pure fn global_enuminfo(glob: Global) -> @mut EnumInfo {
     }
 }
 
-pub pure fn global_typeinfo(glob: Global) -> @mut TypeInfo {
+pub fn global_typeinfo(glob: Global) -> @mut TypeInfo {
     match glob {
         GType(i) => return i,
         _ => fail!(~"global_typeinfo")
     }
 }
 
-pub pure fn global_varinfo(glob: Global) -> @mut VarInfo {
+pub fn global_varinfo(glob: Global) -> @mut VarInfo {
     match glob {
         GVar(i) => i,
         GFunc(i) => i,
@@ -148,7 +148,7 @@ pub pure fn global_varinfo(glob: Global) -> @mut VarInfo {
 }
 
 #[cfg(target_arch="x86_64")]
-pub pure fn type_align(ty: @mut Type) -> uint {
+pub fn type_align(ty: @mut Type) -> uint {
     return match *ty {
         TInt(k) => match k {
             IBool | ISChar | IUChar => 1,
@@ -165,8 +165,9 @@ pub pure fn type_align(ty: @mut Type) -> uint {
         TArray(t, _) => type_align(t),
         TNamed(t) => type_align(t.ty),
         TComp(ci) => {
-            do vec::foldl(0, ci.fields) |a, t| {
-                uint::max(a, type_align(t.ty))
+            let fs = copy ci.fields;
+            do fs.foldl(0) |a, t| {
+                uint::max(*a, type_align(t.ty))
             }
         },
         TEnum(_) => 4,
@@ -175,7 +176,7 @@ pub pure fn type_align(ty: @mut Type) -> uint {
 }
 
 #[cfg(target_arch="x86")]
-pub pure fn type_align(ty: @mut Type) -> uint {
+pub fn type_align(ty: @mut Type) -> uint {
     return match *ty {
         TInt(k) => match k {
             IBool | ISChar | IUChar => 1,
@@ -192,8 +193,9 @@ pub pure fn type_align(ty: @mut Type) -> uint {
         TArray(t, _) => type_align(t),
         TNamed(t) => type_align(t.ty),
         TComp(ci) => {
-            do vec::foldl(0, ci.fields) |a, t| {
-                uint::max(a, type_align(t.ty))
+            let fs = copy ci.fields;
+            do fs.foldl(0) |a, t| {
+                uint::max(*a, type_align(t.ty))
             }
         },
         TEnum(_) => 4,
@@ -202,7 +204,7 @@ pub pure fn type_align(ty: @mut Type) -> uint {
 }
 
 #[cfg(target_arch="x86_64")]
-pub pure fn type_size(ty: @mut Type) -> uint {
+pub fn type_size(ty: @mut Type) -> uint {
     return match *ty {
         TInt(k) => match k {
             IBool | ISChar | IUChar => 1,
@@ -219,13 +221,15 @@ pub pure fn type_size(ty: @mut Type) -> uint {
         TArray(t, s) => type_size(t) * s,
         TNamed(t) => type_size(t.ty),
         TComp(ci) => if ci.cstruct {
-            let size = do vec::foldl(0, ci.fields) |s, t| {
-                align(s, t.ty) + type_size(t.ty)
+            let fs = copy ci.fields;
+            let size = do fs.foldl(0) |s, t| {
+                align(*s, t.ty) + type_size(t.ty)
             };
             align(size, ty)
         } else {
-            let size = do vec::foldl(0, ci.fields) |s, t| {
-                uint::max(s, type_size(t.ty))
+            let fs = copy ci.fields;
+            let size = do fs.foldl(0) |s, t| {
+                uint::max(*s, type_size(t.ty))
             };
             align(size, ty)
         },
@@ -235,7 +239,7 @@ pub pure fn type_size(ty: @mut Type) -> uint {
 }
 
 #[cfg(target_arch="x86")]
-pub pure fn type_size(ty: @mut Type) -> uint {
+pub fn type_size(ty: @mut Type) -> uint {
     return match *ty {
         TInt(k) => match k {
             IBool | ISChar | IUChar => 1,
@@ -252,13 +256,15 @@ pub pure fn type_size(ty: @mut Type) -> uint {
         TArray(t, s) => type_size(t) * s,
         TNamed(t) => type_size(t.ty),
         TComp(ci) => if ci.cstruct {
-            let size = do vec::foldl(0, ci.fields) |s, t| {
-                align(s, t.ty) + type_size(t.ty)
+            let fs = copy ci.fields;
+            let size = do fs.foldl(0) |s, t| {
+                align(*s, t.ty) + type_size(t.ty)
             };
             align(size, ty)
         } else {
-            let size = do vec::foldl(0, ci.fields) |s, t| {
-                uint::max(s, type_size(t.ty))
+            let fs = copy ci.fields;
+            let size = do fs.foldl(0) |s, t| {
+                uint::max(*s, type_size(t.ty))
             };
             align(size, ty)
         },
@@ -267,7 +273,7 @@ pub pure fn type_size(ty: @mut Type) -> uint {
     };
 }
 
-pub pure fn align(off: uint, ty: @mut Type) -> uint {
+pub fn align(off: uint, ty: @mut Type) -> uint {
     let a = type_align(ty);
     return (off + a - 1u) / a * a;
 }
