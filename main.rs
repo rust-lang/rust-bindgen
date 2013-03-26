@@ -23,7 +23,7 @@ enum ParseResult {
 }
 
 impl Eq for CXCursor {
-    pure fn eq(&self, other: &CXCursor) -> bool {
+    fn eq(&self, other: &CXCursor) -> bool {
         return (self.kind as int == other.kind as int) &&
                (self.xdata as int == other.xdata as int) &&
                (self.data[0] as int == other.data[0] as int) &&
@@ -31,13 +31,13 @@ impl Eq for CXCursor {
                (self.data[2] as int == other.data[2] as int)
     }
 
-    pure fn ne(&self, other: &CXCursor) -> bool {
+    fn ne(&self, other: &CXCursor) -> bool {
         return !self.eq(other);
     }
 }
 
 impl IterBytes for CXCursor {
-    pure fn iter_bytes(&self, lsb0: bool, f: to_bytes::Cb) {
+    fn iter_bytes(&self, lsb0: bool, f: to_bytes::Cb) {
         to_bytes::iter_bytes_5(
             &(self.kind as int),
             &(self.xdata as int),
@@ -50,7 +50,7 @@ impl IterBytes for CXCursor {
 }
 
 impl ToStr for CXString {
-    pure fn to_str(&self) -> ~str {
+    fn to_str(&self) -> ~str {
         unsafe {
             return str::raw::from_c_str(clang_getCString(*self));
         }
@@ -300,6 +300,8 @@ unsafe fn conv_ty(ctx: @mut BindGenCtx, ty: CXType, cursor: CXCursor) -> @mut Ty
     } else if ty.kind == CXType_Float {
         @mut TFloat(FFloat)
     } else if ty.kind == CXType_Double {
+        @mut TFloat(FDouble)
+    } else if ty.kind == CXType_LongDouble {
         @mut TFloat(FDouble)
     } else if ty.kind == CXType_Pointer {
         conv_ptr_ty(ctx, clang_getPointeeType(ty), cursor)
