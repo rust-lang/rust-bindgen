@@ -171,6 +171,7 @@ pub fn type_align(ty: @mut Type) -> uint {
             }
         },
         TEnum(_) => 4,
+        TVoid => 0,
         _ => fail!(~"ty_align: unhandled type")
     };
 }
@@ -199,6 +200,7 @@ pub fn type_align(ty: @mut Type) -> uint {
             }
         },
         TEnum(_) => 4,
+        TVoid => 0,
         _ => fail!(~"ty_align: unhandled type")
     };
 }
@@ -234,6 +236,7 @@ pub fn type_size(ty: @mut Type) -> uint {
             align(size, ty)
         },
         TEnum(_) => 4,
+        TVoid => 0,
         _ => fail!(~"ty_size: unhandled type")
     };
 }
@@ -269,11 +272,16 @@ pub fn type_size(ty: @mut Type) -> uint {
             align(size, ty)
         },
         TEnum(_) => 4,
+        TVoid => 0,
         _ => fail!(~"ty_size: unhandled type")
     };
 }
 
 pub fn align(off: uint, ty: @mut Type) -> uint {
     let a = type_align(ty);
-    return (off + a - 1u) / a * a;
+    if a == 0 {
+        return 0;
+    } else {
+        return (off + a - 1u) / a * a;
+    }
 }
