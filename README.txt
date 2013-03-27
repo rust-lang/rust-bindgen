@@ -6,7 +6,7 @@ It is ported from clay's bindgen[1].
 Requirements
 ------------
 
-* clang 3.1
+* clang 3.1 and up
 
 Usage
 -----
