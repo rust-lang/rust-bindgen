@@ -172,7 +172,7 @@ pub fn type_align(ty: @mut Type) -> uint {
         },
         TEnum(_) => 4,
         TVoid => 0,
-        _ => fail!(~"ty_align: unhandled type")
+        TFunc(_, _, _) => 0
     };
 }
 
@@ -201,7 +201,7 @@ pub fn type_align(ty: @mut Type) -> uint {
         },
         TEnum(_) => 4,
         TVoid => 0,
-        _ => fail!(~"ty_align: unhandled type")
+        TFunc(_, _, _) => 0
     };
 }
 
@@ -237,7 +237,7 @@ pub fn type_size(ty: @mut Type) -> uint {
         },
         TEnum(_) => 4,
         TVoid => 0,
-        _ => fail!(~"ty_size: unhandled type")
+        TFunc(_, _, _) => 0
     };
 }
 
@@ -273,7 +273,7 @@ pub fn type_size(ty: @mut Type) -> uint {
         },
         TEnum(_) => 4,
         TVoid => 0,
-        _ => fail!(~"ty_size: unhandled type")
+        TFunc(_, _, _) => 0
     };
 }
 

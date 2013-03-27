@@ -1,5 +1,5 @@
 use core::io::WriterUtil;
-use std::oldmap::HashMap;
+use core::hashmap::linear::LinearSet;
 
 use syntax::ast;
 use syntax::codemap::{dummy_sp, dummy_spanned};
@@ -16,7 +16,7 @@ use types::*;
 struct GenCtx {
     ext_cx: @base::ext_ctxt,
     unnamed_ty: uint,
-    keywords: HashMap<~str, ()>
+    keywords: LinearSet<~str>
 }
 
 fn empty_generics() -> ast::Generics {
@@ -27,7 +27,7 @@ fn empty_generics() -> ast::Generics {
 }
 
 fn rust_id(ctx: &mut GenCtx, name: ~str) -> (~str, bool) {
-    if ctx.keywords.contains_key(&name) {
+    if ctx.keywords.contains(&name) {
         (~"_" + name, true)
     } else {
         (name, false)

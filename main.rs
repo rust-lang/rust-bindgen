@@ -1,4 +1,4 @@
-use std::oldmap::HashMap;
+use core::hashmap::linear::LinearMap;
 use core::io::WriterUtil;
 use core::to_bytes;
 use core::libc::*;
@@ -11,7 +11,7 @@ struct BindGenCtx {
     match_pat: ~[~str],
     link: Option<~str>,
     out: @io::Writer,
-    name: HashMap<CXCursor, Global>,
+    name: LinearMap<CXCursor, Global>,
     globals: ~[Global],
     cur_glob: Global
 }
@@ -110,7 +110,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
     let ctx = @mut BindGenCtx { match_pat: pat,
                                 link: link,
                                 out: out,
-                                name: HashMap::<CXCursor, Global>(),
+                                name: LinearMap::new(),
                                 globals: ~[],
                                 cur_glob: GOther
                               };
@@ -162,7 +162,7 @@ unsafe fn match_pattern(ctx: @mut BindGenCtx, cursor: CXCursor) -> bool {
 unsafe fn decl_name(ctx: @mut BindGenCtx, cursor: CXCursor) -> Global {
     let decl_opt = ctx.name.find(&cursor);
     match decl_opt {
-        option::Some(decl) => { return decl; }
+        option::Some(decl) => { return *decl; }
         None => {
             let spelling = clang_getCursorSpelling(cursor).to_str();
 
