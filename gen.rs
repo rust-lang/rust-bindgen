@@ -1,6 +1,7 @@
 use core::io::WriterUtil;
 use core::hashmap::linear::LinearSet;
 
+use syntax::abi;
 use syntax::ast;
 use syntax::codemap::{dummy_sp, dummy_spanned};
 use syntax::codemap;
@@ -198,7 +199,7 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
 
     let ext = ast::item_foreign_mod(ast::foreign_mod {
         sort: ast::anonymous,
-        abi: ctx.ext_cx.ident_of(~"C"),
+        abis: abi::AbiSet::from(abi::C),
         view_items: ~[],
         items: vars + funcs
     });
