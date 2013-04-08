@@ -1,4 +1,4 @@
-use core::hashmap::linear::LinearMap;
+use core::hashmap::HashMap;
 use core::io::WriterUtil;
 use core::to_bytes;
 use core::libc::*;
@@ -9,9 +9,10 @@ use gen::*;
 
 struct BindGenCtx {
     match_pat: ~[~str],
+    builtins: bool,
     link: Option<~str>,
     out: @io::Writer,
-    name: LinearMap<CXCursor, Global>,
+    name: HashMap<CXCursor, Global>,
     globals: ~[Global],
     cur_glob: Global
 }
@@ -64,6 +65,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
     let mut out = io::stdout();
     let mut pat = ~[];
     let mut link = None;
+    let mut builtins = false;
 
     if args_len == 0u {
         return CmdUsage;
@@ -100,6 +102,10 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 pat.push(copy args[ix + 1u]);
                 ix += 2u;
             }
+            ~"-builtins" => {
+                builtins = true;
+                ix += 1u;
+            }
             _ => {
                 clang_args.push(copy args[ix]);
                 ix += 1u;
@@ -108,9 +114,10 @@ fn parse_args(args: &[~str]) -> ParseResult {
     }
 
     let ctx = @mut BindGenCtx { match_pat: pat,
+                                builtins: builtins,
                                 link: link,
                                 out: out,
-                                name: LinearMap::new(),
+                                name: HashMap::new(),
                                 globals: ~[],
                                 cur_glob: GOther
                               };
@@ -129,6 +136,8 @@ Options:
                     whose name contains <name>
                     If multiple -match options are provided, files
                     matching any rule are bound to.
+    -builtins       Output bindings for builtin definitions
+                    (for example __builtin_va_list)
 
     Options other than stated above are passed to clang.
 "
@@ -142,7 +151,7 @@ unsafe fn match_pattern(ctx: @mut BindGenCtx, cursor: CXCursor) -> bool {
                               ptr::null(), ptr::null(), ptr::null());
 
     if file as int == 0 {
-        return false;
+        return ctx.builtins;
     }
 
     if vec::is_empty(ctx.match_pat) {

@@ -20,6 +20,8 @@ Options:
                     whose name contains <name>
                     If multiple -match options are provided, files
                     matching any rule are bound to.
+    -builtins       Output bindings for builtin definitions
+                    (for example __builtin_va_list)
 
     Options other than stated above are passed to clang.
 

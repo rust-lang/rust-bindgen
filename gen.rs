@@ -1,5 +1,5 @@
 use core::io::WriterUtil;
-use core::hashmap::linear::LinearSet;
+use core::hashmap::HashSet;
 
 use syntax::abi;
 use syntax::ast;
@@ -17,7 +17,7 @@ use types::*;
 struct GenCtx {
     ext_cx: @base::ext_ctxt,
     unnamed_ty: uint,
-    keywords: LinearSet<~str>
+    keywords: HashSet<~str>
 }
 
 fn empty_generics() -> ast::Generics {
@@ -199,7 +199,7 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
 
     let ext = ast::item_foreign_mod(ast::foreign_mod {
         sort: ast::anonymous,
-        abis: abi::AbiSet::from(abi::C),
+        abis: abi::AbiSet::C(),
         view_items: ~[],
         items: vars + funcs
     });
