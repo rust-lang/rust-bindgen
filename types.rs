@@ -75,6 +75,51 @@ pub struct VarInfo {
     ty: @mut Type
 }
 
+impl ToStr for Global {
+    fn to_str(&self) -> ~str {
+      match *self {
+        GType(ti) => ti.to_str(),
+        GComp(ci) => ci.to_str(),
+        GCompDecl(ci) => ci.to_str(),
+        GEnum(ei) => ei.to_str(),
+        GEnumDecl(ei) => ei.to_str(),
+        GVar(vi) => vi.to_str(),
+        GFunc(vi) => vi.to_str(),
+        GOther => ~"*"
+      }
+    }
+}
+
+impl Clone for Global {
+    fn clone(&self) -> Global {
+        *self
+    }
+}
+
+impl ToStr for CompInfo {
+    fn to_str(&self) -> ~str {
+        copy self.name
+    }
+}
+
+impl ToStr for EnumInfo {
+    fn to_str(&self) -> ~str {
+        copy self.name
+    }
+}
+
+impl ToStr for TypeInfo {
+    fn to_str(&self) -> ~str {
+        copy self.name
+    }
+}
+
+impl ToStr for VarInfo {
+    fn to_str(&self) -> ~str {
+        copy self.name
+    }
+}
+
 pub fn mk_compinfo(name: ~str, cstruct: bool) -> @mut CompInfo {
     return @mut CompInfo { cstruct: cstruct,
                            name: name,

@@ -66,11 +66,12 @@ pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
         call_site: dummy_sp(),
         callee: codemap::NameAndSpan {name: ~"top", span: None}
     }));
+    let uniq_globs = tag_dup_decl(globs);
 
     let mut fs = ~[];
     let mut vs = ~[];
     let mut gs = ~[];
-    for globs.each |g| {
+    for uniq_globs.each |g| {
         match *g {
             GOther => {}
             GFunc(_) => fs.push(*g),
@@ -81,6 +82,7 @@ pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
 
     let mut defs = ~[];
     gs = remove_redundent_decl(gs);
+
     for gs.each |g| {
         match *g {
             GType(ti) => defs += ctypedef_to_rs(&mut ctx, copy ti.name, ti.ty),
@@ -243,6 +245,45 @@ fn remove_redundent_decl(gs: &[Global]) -> ~[Global] {
             }
         }
     };
+}
+
+fn tag_dup_decl(gs: &[Global]) -> ~[Global] {
+    fn check(g1: Global, g2: Global) -> Global {
+        if !g1.to_str().is_empty() && g1.to_str() == g2.to_str() {
+            GOther
+        } else {
+            g2
+        }
+    }
+
+    fn check_dup(g1: Global, g2: Global) -> Global {
+        match (g1, g2) {
+          (GType(_), GType(_)) => check(g1, g2),
+          (GComp(_), GComp(_)) => check(g1, g2),
+          (GCompDecl(_), GCompDecl(_)) => check(g1, g2),
+          (GEnum(_), GEnum(_)) => check(g1, g2),
+          (GEnumDecl(_), GEnumDecl(_)) => check(g1, g2),
+          (GVar(_), GVar(_)) => check(g1, g2),
+          (GFunc(_), GFunc(_)) => check(g1, g2),
+          _ => g2
+        }
+    }
+
+    let mut res = gs.map(|g| *g);
+    let len = res.len();
+    let mut i = 0;
+
+    while i < len {
+        let mut j = i + 1;
+
+        while j < len {
+            let g2 = check_dup(res[i], res[j]);
+            res[j] = g2;
+            j += 1;
+        }
+        i += 1;
+    }
+    return res;
 }
 
 fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: @mut Type) -> ~[@ast::item] {
