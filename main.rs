@@ -209,10 +209,8 @@ unsafe fn decl_name(ctx: @mut BindGenCtx, cursor: CXCursor) -> Global {
 }
 
 unsafe fn opaque_decl(ctx: @mut BindGenCtx, decl: CXCursor) {
-    if !ctx.name.contains_key(&decl) {
-        let name = decl_name(ctx, decl);
-        ctx.globals.push(name);
-    }
+    let name = decl_name(ctx, decl);
+    ctx.globals.push(name);
 }
 
 unsafe fn fwd_decl(ctx: @mut BindGenCtx, cursor: CXCursor, f: &fn()) {
