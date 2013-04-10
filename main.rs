@@ -337,8 +337,8 @@ unsafe fn opaque_ty(ctx: @mut BindGenCtx, ty: CXType) {
     }
 }
 
-extern fn visit_struct(+cursor: CXCursor,
-                       +_parent: CXCursor,
+extern fn visit_struct(cursor: CXCursor,
+                       _parent: CXCursor,
                        data: CXClientData) -> c_uint {
     unsafe {
         let ctx = *(data as *@mut BindGenCtx);
@@ -353,8 +353,8 @@ extern fn visit_struct(+cursor: CXCursor,
     }
 }
 
-extern fn visit_union(+cursor: CXCursor,
-                      +_parent: CXCursor,
+extern fn visit_union(cursor: CXCursor,
+                      _parent: CXCursor,
                       data: CXClientData) -> c_uint {
     unsafe {
         let ctx = *(data as *@mut BindGenCtx);
@@ -369,8 +369,8 @@ extern fn visit_union(+cursor: CXCursor,
     }
 }
 
-extern fn visit_enum(+cursor: CXCursor,
-                     +_parent: CXCursor,
+extern fn visit_enum(cursor: CXCursor,
+                     _parent: CXCursor,
                      data: CXClientData) -> c_uint {
     unsafe {
         let ctx = *(data as *@mut BindGenCtx);
@@ -385,8 +385,8 @@ extern fn visit_enum(+cursor: CXCursor,
     }
 }
 
-extern fn visit_top(+cursor: CXCursor,
-                    +_parent: CXCursor,
+extern fn visit_top(cursor: CXCursor,
+                    _parent: CXCursor,
                     data: CXClientData) -> c_uint {
     unsafe {
         let ctx = *(data as *@mut BindGenCtx);
