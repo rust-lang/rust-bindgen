@@ -158,7 +158,7 @@ fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> @ast::view_item {
     let view = ast::view_item_use(~[
         @dummy_spanned(
             ast::view_path_glob(
-                @ast::path {
+                @ast::Path {
                    span: dummy_sp(),
                    global: false,
                    idents: path.map(|p| ctx.ext_cx.ident_of(copy *p)),
@@ -560,7 +560,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @mut Type,
                  id: ctx.ext_cx.next_id(),
                  node: ast::pat_ident(
                      ast::bind_infer,
-                     @ast::path {
+                     @ast::Path {
                          span: dummy_sp(),
                          global: false,
                          idents: ~[ctx.ext_cx.ident_of(arg_name)],
@@ -652,7 +652,7 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: @mut Type) -> @ast::Ty {
 
 fn mk_ty(ctx: &mut GenCtx, name: ~str) -> @ast::Ty {
     let ty = ast::ty_path(
-        @ast::path {
+        @ast::Path {
             span: dummy_sp(),
             global: false,
             idents: ~[ctx.ext_cx.ident_of(name)],
