@@ -1,4 +1,4 @@
-use core::hashmap::HashMap;
+use core::hashmap::{HashMap, HashSet};
 use core::io::WriterUtil;
 use core::to_bytes;
 use core::libc::*;
@@ -14,7 +14,9 @@ struct BindGenCtx {
     out: @io::Writer,
     name: HashMap<CXCursor, Global>,
     globals: ~[Global],
-    cur_glob: Global
+    cur_glob: Global,
+    builtin_defs: ~[CXCursor],
+    builtin_names: HashSet<~str>
 }
 
 enum ParseResult {
@@ -119,10 +121,25 @@ fn parse_args(args: &[~str]) -> ParseResult {
                                 out: out,
                                 name: HashMap::new(),
                                 globals: ~[],
-                                cur_glob: GOther
+                                cur_glob: GOther,
+                                builtin_defs: ~[],
+                                builtin_names: builtin_names()
                               };
 
     return ParseOk(clang_args, ctx);
+}
+
+fn builtin_names() -> HashSet<~str> {
+    let mut names = HashSet::new();
+    let keys = ~[
+        ~"__va_list_tag"
+    ];
+
+    do vec::consume(keys) |_, s| {
+        names.insert(s);
+    }
+
+    return names;
 }
 
 fn print_usage(bin: ~str) {
@@ -174,6 +191,9 @@ unsafe fn decl_name(ctx: @mut BindGenCtx, cursor: CXCursor) -> Global {
         option::Some(decl) => { return *decl; }
         None => {
             let spelling = clang_getCursorSpelling(cursor).to_str();
+            if ctx.builtin_names.contains(&spelling) {
+                ctx.builtin_defs.push(cursor);
+            }
 
             let decl = if cursor.kind == CXCursor_StructDecl {
                 let ci = mk_compinfo(spelling, true);
@@ -385,11 +405,18 @@ extern fn visit_enum(cursor: CXCursor,
     }
 }
 
-extern fn visit_top(cursor: CXCursor,
-                    _parent: CXCursor,
+extern fn visit_top(cur: CXCursor,
+                    parent: CXCursor,
                     data: CXClientData) -> c_uint {
     unsafe {
         let ctx = *(data as *@mut BindGenCtx);
+        let parent_name = clang_getCursorSpelling(parent).to_str();
+        let cursor = if ctx.builtin_names.contains(&parent_name) {
+            parent
+        } else {
+            cur
+        };
+
         if !match_pattern(ctx, cursor) {
             return CXChildVisit_Continue;
         }
@@ -402,7 +429,11 @@ extern fn visit_top(cursor: CXCursor,
                 ctx.globals.push(ctx.cur_glob);
                 clang_visitChildren(cursor, visit_struct, data);
             }
-            return CXChildVisit_Recurse;
+            return if cur.kind == CXCursor_FieldDecl {
+                CXChildVisit_Break
+            } else {
+                CXChildVisit_Recurse
+            };
         } else if cursor.kind == CXCursor_UnionDecl {
             do fwd_decl(ctx, cursor) || {
                 let decl = decl_name(ctx, cursor);
@@ -424,10 +455,6 @@ extern fn visit_top(cursor: CXCursor,
         } else if cursor.kind == CXCursor_FunctionDecl {
             let linkage = clang_getCursorLinkage(cursor);
             if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
-                return CXChildVisit_Continue;
-            }
-    
-            if ctx.name.contains_key(&cursor) {
                 return CXChildVisit_Continue;
             }
     
@@ -453,10 +480,6 @@ extern fn visit_top(cursor: CXCursor,
                 return CXChildVisit_Continue;
             }
     
-            if ctx.name.contains_key(&cursor) {
-                return CXChildVisit_Continue;
-            }
-    
             let ty = conv_ty(ctx, clang_getCursorType(cursor), cursor);
             let var = decl_name(ctx, cursor);
             global_varinfo(var).ty = ty;
@@ -464,10 +487,6 @@ extern fn visit_top(cursor: CXCursor,
     
             return CXChildVisit_Continue;
         } else if cursor.kind == CXCursor_TypedefDecl {
-            if ctx.name.contains_key(&cursor) {
-                return CXChildVisit_Continue;
-            }
-    
             let mut under_ty = clang_getTypedefDeclUnderlyingType(cursor);
             if under_ty.kind == CXType_Unexposed {
                 under_ty = clang_getCanonicalType(under_ty);
@@ -537,6 +556,11 @@ fn main() {
                 let cursor = clang_getTranslationUnitCursor(unit);
                 clang_visitChildren(cursor, visit_top,
                                     ptr::to_unsafe_ptr(&ctx) as CXClientData);
+                while !ctx.builtin_defs.is_empty() {
+                    let c = ctx.builtin_defs.shift();
+                    clang_visitChildren(c, visit_top, ptr::to_unsafe_ptr(&ctx) as CXClientData);
+                }
+
                 gen_rs(ctx.out, &ctx.link, ctx.globals);
     
                 clang_disposeTranslationUnit(unit);
