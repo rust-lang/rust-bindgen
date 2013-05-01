@@ -553,7 +553,6 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @mut Type,
         let arg_ty = cty_to_rs(ctx, t);
 
         ast::arg {
-            mode: ast::infer(ctx.ext_cx.next_id()),
             is_mutbl: false,
             ty: arg_ty,
             pat: @ast::pat {
