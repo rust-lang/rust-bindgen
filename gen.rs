@@ -356,14 +356,14 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@mut FieldInfo]) -> @as
                 ast::public
             ),
             id: ctx.ext_cx.next_id(),
-            ty: f_ty
+            ty: f_ty,
+            attrs: ~[]
         })
     };
 
     let def = ast::item_struct(
         @ast::struct_def {
            fields: fs,
-           dtor: None,
            ctor_id: None
         },
         empty_generics()
@@ -402,13 +402,13 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@mut FieldInfo]) -> ~[@a
             ast::public
         ),
         id: ext_cx.next_id(),
-        ty: cty_to_rs(ctx, @mut TArray(@mut TInt(IUChar), type_size(union)))
+        ty: cty_to_rs(ctx, @mut TArray(@mut TInt(IUChar), type_size(union))),
+        attrs: ~[]
     });
 
     let def = ast::item_struct(
         @ast::struct_def {
            fields: ~[data],
-           dtor: None,
            ctor_id: None
         },
         empty_generics()
