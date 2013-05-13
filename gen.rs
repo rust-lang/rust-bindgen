@@ -89,9 +89,9 @@ pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
             GCompDecl(ci) => {
                 ci.name = unnamed_name(&mut ctx, copy ci.name);
                 if ci.cstruct {
-                    defs += ctypedef_to_rs(&mut ctx, struct_name(copy ci.name), @mut TVoid)
+                    defs += ctypedef_to_rs(&mut ctx, struct_name(copy ci.name), @TVoid)
                 } else {
-                    defs += ctypedef_to_rs(&mut ctx, union_name(copy ci.name), @mut TVoid)
+                    defs += ctypedef_to_rs(&mut ctx, union_name(copy ci.name), @TVoid)
                 }
             },
             GComp(ci) => {
@@ -106,7 +106,7 @@ pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
             },
             GEnumDecl(ei) => {
                 ei.name = unnamed_name(&mut ctx, copy ei.name);
-                defs += ctypedef_to_rs(&mut ctx, enum_name(copy ei.name), @mut TVoid)
+                defs += ctypedef_to_rs(&mut ctx, enum_name(copy ei.name), @TVoid)
             },
             GEnum(ei) => {
                 ei.name = unnamed_name(&mut ctx, copy ei.name);
@@ -286,8 +286,8 @@ fn tag_dup_decl(gs: &[Global]) -> ~[Global] {
     return res;
 }
 
-fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: @mut Type) -> ~[@ast::item] {
-    fn mk_item(ctx: &mut GenCtx, name: ~str, ty: @mut Type) -> @ast::item {
+fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
+    fn mk_item(ctx: &mut GenCtx, name: ~str, ty: @Type) -> @ast::item {
         let rust_name = rust_id(ctx, name).first();
         let rust_ty = cty_to_rs(ctx, ty);
         let base = ast::item_ty(
@@ -336,7 +336,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: @mut Type) -> ~[@ast::item] 
     }
 }
 
-fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@mut FieldInfo]) -> @ast::item {
+fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item {
     let mut unnamed = 0;
     let fs = do fields.map |f| {
         let n = copy f.name;
@@ -352,7 +352,6 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@mut FieldInfo]) -> @as
         @dummy_spanned(ast::struct_field_ {
             kind: ast::named_field(
                 ctx.ext_cx.ident_of(f_name),
-                ast::struct_immutable,
                 ast::public
             ),
             id: ctx.ext_cx.next_id(),
@@ -369,7 +368,8 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@mut FieldInfo]) -> @as
         empty_generics()
     );
 
-    return @ast::item { ident: ctx.ext_cx.ident_of(rust_id(ctx, name).first()),
+    let id = rust_id(ctx, name).first();
+    return @ast::item { ident: ctx.ext_cx.ident_of(id),
               attrs: ~[],
               id: ctx.ext_cx.next_id(),
               node: def,
@@ -378,7 +378,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@mut FieldInfo]) -> @as
            };
 }
 
-fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@mut FieldInfo]) -> ~[@ast::item] {
+fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item] {
     fn mk_item(ctx: &mut GenCtx, name: ~str, item: ast::item_) -> @ast::item {
         return @ast::item {
                   ident: ctx.ext_cx.ident_of(name),
@@ -391,18 +391,17 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@mut FieldInfo]) -> ~[@a
     }
 
     let ext_cx = ctx.ext_cx;
-    let ci = mk_compinfo(copy name, false);
+    let ci = mk_compinfo(copy name, false, ~[]);
     ci.fields = copy fields;
-    let union = @mut TNamed(mk_typeinfo(copy name, @mut TComp(ci)));
+    let union = @TNamed(mk_typeinfo(copy name, @TComp(ci)));
 
     let data = @dummy_spanned(ast::struct_field_ {
         kind: ast::named_field(
             ext_cx.ident_of(~"data"),
-            ast::struct_immutable,
             ast::public
         ),
         id: ext_cx.next_id(),
-        ty: cty_to_rs(ctx, @mut TArray(@mut TInt(IUChar), type_size(union))),
+        ty: cty_to_rs(ctx, @TArray(@TInt(IUChar), type_size(union))),
         attrs: ~[]
     });
 
@@ -429,7 +428,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@mut FieldInfo]) -> ~[@a
             rust_id(ctx, copy f.name).first()
         };
 
-        let ret_ty = cty_to_rs(ctx, @mut TPtr(f.ty));
+        let ret_ty = cty_to_rs(ctx, @TPtr(f.ty, false));
         let body = dummy_spanned(ast::blk_ {
             view_items: ~[],
             stmts: ~[],
@@ -470,8 +469,8 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@mut FieldInfo]) -> ~[@a
     ];
 }
 
-fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@mut EnumItem], kind: IKind) -> ~[@ast::item] {
-    let ty = @mut TInt(kind);
+fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -> ~[@ast::item] {
+    let ty = @TInt(kind);
     let ty_id = rust_id(ctx, name).first();
     let ty_def = ctypedef_to_rs(ctx, ty_id, ty);
     let val_ty = cty_to_rs(ctx, ty);
@@ -483,8 +482,9 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@mut EnumItem], kind: IKin
             build::mk_int(ctx.ext_cx, dummy_sp(), it.val)
         );
 
+        let id = rust_id(ctx, copy it.name).first();
         let val_def = @ast::item {
-                         ident: ctx.ext_cx.ident_of(rust_id(ctx, copy it.name).first()),
+                         ident: ctx.ext_cx.ident_of(id),
                          attrs: ~[],
                          id: ctx.ext_cx.next_id(),
                          node: cst,
@@ -509,7 +509,7 @@ fn mk_link_name_attr(name: ~str) -> ast::attribute {
     dummy_spanned(attr)
 }
 
-fn cvar_to_rs(ctx: &mut GenCtx, name: ~str, ty: @mut Type) -> @ast::foreign_item {
+fn cvar_to_rs(ctx: &mut GenCtx, name: ~str, ty: @Type) -> @ast::foreign_item {
     let (rust_name, was_mangled) = rust_id(ctx, copy name);
 
     let mut attrs = ~[];
@@ -527,8 +527,8 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: ~str, ty: @mut Type) -> @ast::foreign_item
            };
 }
 
-fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @mut Type,
-                                         aty: ~[(~str, @mut Type)],
+fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @Type,
+                                         aty: ~[(~str, @Type)],
                                          _var: bool) -> @ast::foreign_item {
     let ret = match *rty {
         TVoid => @ast::Ty {
@@ -601,7 +601,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @mut Type,
            };
 }
 
-fn cty_to_rs(ctx: &mut GenCtx, ty: @mut Type) -> @ast::Ty {
+fn cty_to_rs(ctx: &mut GenCtx, ty: @Type) -> @ast::Ty {
     return match *ty {
         TVoid => mk_ty(ctx, ~"c_void"),
         TInt(i) => match i {
@@ -621,9 +621,9 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: @mut Type) -> @ast::Ty {
             FFloat => mk_ty(ctx, ~"c_float"),
             FDouble => mk_ty(ctx, ~"c_double")
         },
-        TPtr(t) => {
+        TPtr(t, is_const) => {
             let id = cty_to_rs(ctx, t);
-            mk_ptrty(ctx, id)
+            mk_ptrty(ctx, id, is_const)
         },
         TArray(t, s) => {
             let ty = cty_to_rs(ctx, t);
@@ -668,10 +668,10 @@ fn mk_ty(ctx: &mut GenCtx, name: ~str) -> @ast::Ty {
     };
 }
 
-fn mk_ptrty(ctx: &mut GenCtx, base: @ast::Ty) -> @ast::Ty {
+fn mk_ptrty(ctx: &mut GenCtx, base: @ast::Ty, is_const: bool) -> @ast::Ty {
     let ty = ast::ty_ptr(ast::mt{
         ty: base,
-        mutbl: ast::m_imm
+        mutbl: if is_const { ast::m_imm } else { ast::m_mutbl }
     });
 
     return @ast::Ty {
@@ -705,7 +705,7 @@ fn mk_arrty(ctx: &mut GenCtx, base: @ast::Ty, n: uint) -> @ast::Ty {
 
 fn mk_fnty(ctx: &mut GenCtx) -> @ast::Ty {
     let ty = mk_ty(ctx, ~"u8");
-    let @ast::Ty{node: node, _} = mk_ptrty(ctx, ty);
+    let @ast::Ty{node: node, _} = mk_ptrty(ctx, ty, true);
 
     return @ast::Ty {
         id: ctx.ext_cx.next_id(),

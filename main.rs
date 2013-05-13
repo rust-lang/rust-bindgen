@@ -1,10 +1,11 @@
 use core::hashmap::{HashMap, HashSet};
 use core::io::WriterUtil;
-use core::to_bytes;
-use core::libc::*;
 
+use il = types;
 use types::*;
+use cx = clang;
 use clang::*;
+use clang::ll::*;
 use gen::*;
 
 struct BindGenCtx {
@@ -12,10 +13,9 @@ struct BindGenCtx {
     builtins: bool,
     link: Option<~str>,
     out: @io::Writer,
-    name: HashMap<CXCursor, Global>,
+    name: HashMap<Cursor, Global>,
     globals: ~[Global],
-    cur_glob: Global,
-    builtin_defs: ~[CXCursor],
+    builtin_defs: ~[Cursor],
     builtin_names: HashSet<~str>
 }
 
@@ -23,41 +23,6 @@ enum ParseResult {
     CmdUsage,
     ParseOk(~[~str], @mut BindGenCtx),
     ParseErr(~str)
-}
-
-impl Eq for CXCursor {
-    fn eq(&self, other: &CXCursor) -> bool {
-        return (self.kind as int == other.kind as int) &&
-               (self.xdata as int == other.xdata as int) &&
-               (self.data[0] as int == other.data[0] as int) &&
-               (self.data[1] as int == other.data[1] as int) &&
-               (self.data[2] as int == other.data[2] as int)
-    }
-
-    fn ne(&self, other: &CXCursor) -> bool {
-        return !self.eq(other);
-    }
-}
-
-impl IterBytes for CXCursor {
-    fn iter_bytes(&self, lsb0: bool, f: to_bytes::Cb) {
-        to_bytes::iter_bytes_5(
-            &(self.kind as int),
-            &(self.xdata as int),
-            &(self.data[0] as int),
-            &(self.data[1] as int),
-            &(self.data[2] as int),
-            lsb0, f
-        );
-    }
-}
-
-impl ToStr for CXString {
-    fn to_str(&self) -> ~str {
-        unsafe {
-            return str::raw::from_c_str(clang_getCString(*self));
-        }
-    }
 }
 
 fn parse_args(args: &[~str]) -> ParseResult {
@@ -85,8 +50,8 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 }
                 match io::file_writer(&path::Path(args[ix + 1u]),
                                       ~[io::Create, io::Truncate]) {
-                    result::Ok(f) => { out = f; }
-                    result::Err(e) => { return ParseErr(e); }
+                  Ok(f) => { out = f; }
+                  Err(e) => { return ParseErr(e); }
                 }
                 ix += 2u;
             }
@@ -121,7 +86,6 @@ fn parse_args(args: &[~str]) -> ParseResult {
                                 out: out,
                                 name: HashMap::new(),
                                 globals: ~[],
-                                cur_glob: GOther,
                                 builtin_defs: ~[],
                                 builtin_names: builtin_names()
                               };
@@ -161,21 +125,18 @@ Options:
     );
 }
 
-unsafe fn match_pattern(ctx: @mut BindGenCtx, cursor: CXCursor) -> bool {
-    let file = ptr::null();
-    clang_getSpellingLocation(clang_getCursorLocation(cursor),
-                              ptr::to_unsafe_ptr(&file),
-                              ptr::null(), ptr::null(), ptr::null());
+fn match_pattern(ctx: @mut BindGenCtx, cursor: &Cursor) -> bool {
+    let (file, _, _, _) = cursor.location().location();
 
-    if file as int == 0 {
+    if file.is_null() {
         return ctx.builtins;
     }
 
-    if vec::is_empty(ctx.match_pat) {
+    if ctx.match_pat.is_empty() {
         return true;
     }
 
-    let name = clang_getFileName(file).to_str();
+    let name = file.name();
     for ctx.match_pat.each |pat| {
         if str::contains(name, *pat) {
             return true;
@@ -185,387 +146,355 @@ unsafe fn match_pattern(ctx: @mut BindGenCtx, cursor: CXCursor) -> bool {
     return false;
 }
 
-unsafe fn decl_name(ctx: @mut BindGenCtx, cursor: CXCursor) -> Global {
-    let decl_opt = ctx.name.find(&cursor);
-    match decl_opt {
-        option::Some(decl) => { return *decl; }
-        None => {
-            let spelling = clang_getCursorSpelling(cursor).to_str();
-            if ctx.builtin_names.contains(&spelling) {
-                ctx.builtin_defs.push(cursor);
-            }
-
-            let decl = if cursor.kind == CXCursor_StructDecl {
-                let ci = mk_compinfo(spelling, true);
+fn decl_name(ctx: @mut BindGenCtx, cursor: &Cursor) -> Global {
+    let mut new_decl = false;
+    let decl = {
+        *do ctx.name.find_or_insert_with(*cursor) |_| {
+            new_decl = true;
+            let spelling = cursor.spelling();
+    
+            let decl = match cursor.kind() {
+              CXCursor_StructDecl => {
+                let ci = mk_compinfo(spelling, true, ~[]);
                 GCompDecl(ci)
-            } else if cursor.kind == CXCursor_UnionDecl {
-                let ci = mk_compinfo(spelling, false);
+              }
+              CXCursor_UnionDecl => {
+                let ci = mk_compinfo(spelling, false, ~[]);
                 GCompDecl(ci)
-            } else if cursor.kind == CXCursor_EnumDecl {
-                let kind = if clang_getEnumDeclIntegerType(cursor).kind == CXType_Int {
+              }
+              CXCursor_EnumDecl => {
+                let kind = if cursor.enum_type().kind() == CXType_Int {
                     IInt
                 } else {
                     IUInt
                 };
-                let ei = mk_enuminfo(spelling, kind);
+                let ei = mk_enuminfo(spelling, kind, ~[]);
                 GEnumDecl(ei)
-            } else if cursor.kind == CXCursor_TypedefDecl {
-                let ti = mk_typeinfo(spelling, @mut TVoid);
+              }
+              CXCursor_TypedefDecl => {
+                let ti = mk_typeinfo(spelling, @TVoid);
                 GType(ti)
-            } else if cursor.kind == CXCursor_VarDecl {
-                let vi = mk_varinfo(spelling, @mut TVoid);
+              }
+              CXCursor_VarDecl => {
+                let vi = mk_varinfo(spelling, @TVoid);
                 GVar(vi)
-            } else if cursor.kind == CXCursor_FunctionDecl {
-                let vi = mk_varinfo(spelling, @mut TVoid);
+              }
+              CXCursor_FunctionDecl => {
+                let vi = mk_varinfo(spelling, @TVoid);
                 GFunc(vi)
-            } else {
-                GOther
+              }
+              _ => GOther
             };
+    
+            decl
+        }
+    };
 
-            ctx.name.insert(cursor, decl);
-            return decl;
+    if (new_decl) {
+        if ctx.builtin_names.contains(&cursor.spelling()) {
+            ctx.builtin_defs.push(*cursor);
         }
     }
+
+    return decl;
 }
 
-unsafe fn opaque_decl(ctx: @mut BindGenCtx, decl: CXCursor) {
+fn opaque_decl(ctx: @mut BindGenCtx, decl: &Cursor) {
     let name = decl_name(ctx, decl);
     ctx.globals.push(name);
 }
 
-unsafe fn fwd_decl(ctx: @mut BindGenCtx, cursor: CXCursor, f: &fn()) {
-    let def = clang_getCursorDefinition(cursor);
+fn fwd_decl(ctx: @mut BindGenCtx, cursor: &Cursor, f: &fn()) {
+    let def = &cursor.definition();
     if cursor == def {
         f();
-    } else if def.kind == CXCursor_NoDeclFound ||
-              def.kind == CXCursor_InvalidFile {
+    } else if def.kind() == CXCursor_NoDeclFound ||
+              def.kind() == CXCursor_InvalidFile {
         opaque_decl(ctx, cursor);
     }
 }
 
-unsafe fn conv_ptr_ty(ctx: @mut BindGenCtx, ty: CXType, cursor: CXCursor) -> @mut Type {
-    if ty.kind == CXType_Void {
-        return @mut TPtr(@mut TVoid)
-    } else if ty.kind == CXType_Unexposed ||
-              ty.kind == CXType_FunctionProto ||
-              ty.kind == CXType_FunctionNoProto {
-        let ret_ty = clang_getResultType(ty);
-        let decl = clang_getTypeDeclaration(ty);
-        return if ret_ty.kind != CXType_Invalid {
-            let arg_n = clang_getNumArgTypes(ty) as uint;
-            let args_lst = do vec::from_fn(arg_n) |i| {
-                (~"", conv_ty(ctx, clang_getArgType(ty, i as c_uint), cursor))
+fn conv_ptr_ty(ctx: @mut BindGenCtx, ty: &cx::Type, cursor: &Cursor) -> @il::Type {
+    let is_const = ty.is_const();
+    match ty.kind() {
+      CXType_Void => {
+        return @TPtr(@TVoid, is_const)
+      }
+      CXType_Unexposed |
+      CXType_FunctionProto |
+      CXType_FunctionNoProto => {
+        let ret_ty = ty.ret_type();
+        let decl = ty.declaration();
+        return if ret_ty.kind() != CXType_Invalid {
+            let args_lst = do ty.arg_types().map |arg| {
+                (~"", conv_ty(ctx, arg, cursor))
             };
+            let ret_ty = conv_ty(ctx, &ret_ty, cursor);
 
-            let varargs = clang_isFunctionTypeVariadic(ty) as int != 0;
-            let ret_ty = conv_ty(ctx, clang_getResultType(ty), cursor);
-
-            @mut TFunc(ret_ty, args_lst, varargs)
-        } else if decl.kind != CXCursor_NoDeclFound {
-            @mut TPtr(conv_decl_ty(ctx, decl))
+            @TFunc(ret_ty, args_lst, ty.is_variadic())
+        } else if decl.kind() != CXCursor_NoDeclFound {
+            @TPtr(conv_decl_ty(ctx, &decl), is_const)
         } else {
-            @mut TPtr(@mut TVoid)
+            @TPtr(@TVoid, is_const)
         };
-    } else if ty.kind == CXType_Typedef {
-        let decl = clang_getTypeDeclaration(ty);
-        let def_ty = clang_getTypedefDeclUnderlyingType(decl);
-        if def_ty.kind == CXType_FunctionProto ||
-           def_ty.kind == CXType_FunctionNoProto {
-            return @mut TPtr(conv_ptr_ty(ctx, def_ty, cursor));
+      }
+      CXType_Typedef => {
+        let decl = ty.declaration();
+        let def_ty = decl.typedef_type();
+        if def_ty.kind() == CXType_FunctionProto ||
+           def_ty.kind() == CXType_FunctionNoProto {
+            return @TPtr(conv_ptr_ty(ctx, &def_ty, cursor), is_const);
+        } else {
+            return @TPtr(conv_ty(ctx, ty, cursor), is_const);
         }
+      }
+      _ => return @TPtr(conv_ty(ctx, ty, cursor), is_const),
     }
-    return @mut TPtr(conv_ty(ctx, ty, cursor));
 }
 
-unsafe fn conv_decl_ty(ctx: @mut BindGenCtx, cursor: CXCursor) -> @mut Type {
-    return if cursor.kind == CXCursor_StructDecl {
+fn conv_decl_ty(ctx: @mut BindGenCtx, cursor: &Cursor) -> @il::Type {
+    return match cursor.kind() {
+      CXCursor_StructDecl => {
         let decl = decl_name(ctx, cursor);
         let ci = global_compinfo(decl);
-        @mut TComp(ci)
-    } else if cursor.kind == CXCursor_UnionDecl {
+        @TComp(ci)
+      }
+      CXCursor_UnionDecl => {
         let decl = decl_name(ctx, cursor);
         let ci = global_compinfo(decl);
-        @mut TComp(ci)
-    } else if cursor.kind == CXCursor_EnumDecl {
+        @TComp(ci)
+      }
+      CXCursor_EnumDecl => {
         let decl = decl_name(ctx, cursor);
         let ei = global_enuminfo(decl);
-        @mut TEnum(ei)
-    } else if cursor.kind == CXCursor_TypedefDecl {
+        @TEnum(ei)
+      }
+      CXCursor_TypedefDecl => {
         let decl = decl_name(ctx, cursor);
         let ti = global_typeinfo(decl);
-        @mut TNamed(ti)
-    } else {
-        @mut TVoid
+        @TNamed(ti)
+      }
+      _ => @TVoid
     };
 }
 
-unsafe fn conv_ty(ctx: @mut BindGenCtx, ty: CXType, cursor: CXCursor) -> @mut Type {
-    return if ty.kind == CXType_Bool {
-        @mut TInt(IBool)
-    } else if ty.kind == CXType_SChar ||
-              ty.kind == CXType_Char_S {
-        @mut TInt(ISChar)
-    } else if ty.kind == CXType_UChar ||
-              ty.kind == CXType_Char_U {
-        @mut TInt(IUChar)
-    } else if ty.kind == CXType_UShort {
-        @mut TInt(IUShort)
-    } else if ty.kind == CXType_UInt {
-        @mut TInt(IUInt)
-    } else if ty.kind == CXType_ULong {
-        @mut TInt(IULong)
-    } else if ty.kind == CXType_ULongLong {
-        @mut TInt(IULongLong)
-    } else if ty.kind == CXType_Short {
-        @mut TInt(IShort)
-    } else if ty.kind == CXType_Int {
-        @mut TInt(IInt)
-    } else if ty.kind == CXType_Long {
-        @mut TInt(ILong)
-    } else if ty.kind == CXType_LongLong {
-        @mut TInt(ILongLong)
-    } else if ty.kind == CXType_Float {
-        @mut TFloat(FFloat)
-    } else if ty.kind == CXType_Double {
-        @mut TFloat(FDouble)
-    } else if ty.kind == CXType_LongDouble {
-        @mut TFloat(FDouble)
-    } else if ty.kind == CXType_Pointer {
-        conv_ptr_ty(ctx, clang_getPointeeType(ty), cursor)
-    } else if ty.kind == CXType_Record ||
-              ty.kind == CXType_Typedef  ||
-              ty.kind == CXType_Unexposed ||
-              ty.kind == CXType_Enum {
-        conv_decl_ty(ctx, clang_getTypeDeclaration(ty))
-    } else if ty.kind == CXType_ConstantArray {
-        let a_ty = conv_ty(ctx, clang_getArrayElementType(ty), cursor);
-        let size = clang_getArraySize(ty) as uint;
-        @mut TArray(a_ty, size)
-    } else {
-        @mut TVoid
+fn conv_ty(ctx: @mut BindGenCtx, ty: &cx::Type, cursor: &Cursor) -> @il::Type {
+    return match ty.kind() {
+      CXType_Bool => @TInt(IBool),
+      CXType_SChar |
+      CXType_Char_S => @TInt(ISChar),
+      CXType_UChar |
+      CXType_Char_U => @TInt(IUChar),
+      CXType_UShort => @TInt(IUShort),
+      CXType_UInt => @TInt(IUInt),
+      CXType_ULong => @TInt(IULong),
+      CXType_ULongLong => @TInt(IULongLong),
+      CXType_Short => @TInt(IShort),
+      CXType_Int => @TInt(IInt),
+      CXType_Long => @TInt(ILong),
+      CXType_LongLong => @TInt(ILongLong),
+      CXType_Float => @TFloat(FFloat),
+      CXType_Double => @TFloat(FDouble),
+      CXType_LongDouble => @TFloat(FDouble),
+      CXType_Pointer => conv_ptr_ty(ctx, &ty.pointee_type(), cursor),
+      CXType_Record |
+      CXType_Typedef  |
+      CXType_Unexposed |
+      CXType_Enum => conv_decl_ty(ctx, &ty.declaration()),
+      CXType_ConstantArray => @TArray(conv_ty(ctx, &ty.elem_type(), cursor), ty.array_size()),
+      _ => @TVoid
     };
 }
 
-unsafe fn opaque_ty(ctx: @mut BindGenCtx, ty: CXType) {
-    if ty.kind == CXType_Record || ty.kind == CXType_Enum {
-        let decl = clang_getTypeDeclaration(ty);
-        let def = clang_getCursorDefinition(decl);
-        if def.kind == CXCursor_NoDeclFound ||
-           def.kind == CXCursor_InvalidFile {
-            opaque_decl(ctx, decl);
+fn opaque_ty(ctx: @mut BindGenCtx, ty: &cx::Type) {
+    if ty.kind() == CXType_Record || ty.kind() == CXType_Enum {
+        let decl = ty.declaration();
+        let def = decl.definition();
+        if def.kind() == CXCursor_NoDeclFound ||
+           def.kind() == CXCursor_InvalidFile {
+            opaque_decl(ctx, &decl);
         }
     }
 }
 
-extern fn visit_struct(cursor: CXCursor,
-                       _parent: CXCursor,
-                       data: CXClientData) -> c_uint {
-    unsafe {
-        let ctx = *(data as *@mut BindGenCtx);
-        if cursor.kind == CXCursor_FieldDecl {
-            let ci = global_compinfo(ctx.cur_glob);
-            let ty = conv_ty(ctx, clang_getCursorType(cursor), cursor);
-            let name = clang_getCursorSpelling(cursor).to_str();
-            let field = mk_fieldinfo(name, ty, ci);
-            ci.fields.push(field);
-        }
+fn visit_struct(cursor: &Cursor,
+                ctx: @mut BindGenCtx,
+                fields: &mut ~[@FieldInfo]) -> Enum_CXVisitorResult {
+    if cursor.kind() == CXCursor_FieldDecl {
+        let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
+        let name = cursor.spelling();
+        let field = mk_fieldinfo(name, ty, None);
+        fields.push(field);
+    }
+    return CXChildVisit_Continue;
+}
+
+fn visit_union(cursor: &Cursor,
+               ctx: @mut BindGenCtx,
+               fields: &mut ~[@FieldInfo]) -> Enum_CXVisitorResult {
+    if cursor.kind() == CXCursor_FieldDecl {
+        let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
+        let name = cursor.spelling();
+        let field = mk_fieldinfo(name, ty, None);
+        fields.push(field);
+    }
+    return CXChildVisit_Continue;
+}
+
+fn visit_enum(cursor: &Cursor,
+              items: &mut ~[@EnumItem]) -> Enum_CXVisitorResult {
+    if cursor.kind() == CXCursor_EnumConstantDecl {
+        let name = cursor.spelling();
+        let val = cursor.enum_val();
+        let item = mk_enumitem(name, val);
+        items.push(item);
+    }
+    return CXChildVisit_Continue;
+}
+
+fn visit_top<'r>(cur: &'r Cursor,
+                 parent: &'r Cursor,
+                 ctx: @mut BindGenCtx) -> Enum_CXVisitorResult {
+    let cursor = if ctx.builtin_names.contains(&parent.spelling()) {
+        parent
+    } else {
+        cur
+    };
+
+    if !match_pattern(ctx, cursor) {
         return CXChildVisit_Continue;
     }
-}
 
-extern fn visit_union(cursor: CXCursor,
-                      _parent: CXCursor,
-                      data: CXClientData) -> c_uint {
-    unsafe {
-        let ctx = *(data as *@mut BindGenCtx);
-        if cursor.kind == CXCursor_FieldDecl {
-            let ci = global_compinfo(ctx.cur_glob);
-            let ty = conv_ty(ctx, clang_getCursorType(cursor), cursor);
-            let name = clang_getCursorSpelling(cursor).to_str();
-            let field = mk_fieldinfo(name, ty, ci);
-            ci.fields.push(field);
+    match cursor.kind() {
+      CXCursor_StructDecl => {
+        do fwd_decl(ctx, cursor) || {
+            let decl = decl_name(ctx, cursor);
+            let ci = global_compinfo(decl);
+            cursor.visit(|c, _| visit_struct(c, ctx, &mut ci.fields));
+            ctx.globals.push(GComp(ci));
         }
-        return CXChildVisit_Continue;
-    }
-}
-
-extern fn visit_enum(cursor: CXCursor,
-                     _parent: CXCursor,
-                     data: CXClientData) -> c_uint {
-    unsafe {
-        let ctx = *(data as *@mut BindGenCtx);
-        if cursor.kind == CXCursor_EnumConstantDecl {
-            let ei = global_enuminfo(ctx.cur_glob);
-            let name = clang_getCursorSpelling(cursor).to_str();
-            let val = clang_getEnumConstantDeclValue(cursor) as int;
-            let item = mk_enumitem(name, val, ei);
-            ei.items.push(item);
-        }
-        return CXChildVisit_Continue;
-    }
-}
-
-extern fn visit_top(cur: CXCursor,
-                    parent: CXCursor,
-                    data: CXClientData) -> c_uint {
-    unsafe {
-        let ctx = *(data as *@mut BindGenCtx);
-        let parent_name = clang_getCursorSpelling(parent).to_str();
-        let cursor = if ctx.builtin_names.contains(&parent_name) {
-            parent
+        return if cur.kind() == CXCursor_FieldDecl {
+            CXChildVisit_Break
         } else {
-            cur
+            CXChildVisit_Recurse
+        };
+      }
+      CXCursor_UnionDecl => {
+        do fwd_decl(ctx, cursor) || {
+            let decl = decl_name(ctx, cursor);
+            let ci = global_compinfo(decl);
+            cursor.visit(|c, _| visit_union(c, ctx, &mut ci.fields));
+            ctx.globals.push(GComp(ci));
+        }
+        return CXChildVisit_Recurse;
+      }
+      CXCursor_EnumDecl => {
+        do fwd_decl(ctx, cursor) || {
+            let decl = decl_name(ctx, cursor);
+            let ei = global_enuminfo(decl);
+            cursor.visit(|c, _| visit_enum(c, &mut ei.items));
+            ctx.globals.push(GEnum(ei));
+        }
+        return CXChildVisit_Continue;
+      }
+      CXCursor_FunctionDecl => {
+        let linkage = cursor.linkage();
+        if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
+            return CXChildVisit_Continue;
+        }
+
+        let args_lst = do cursor.args().map |arg| {
+            let arg_name = arg.spelling();
+            (arg_name, conv_ty(ctx, &arg.cur_type(), cursor))
         };
 
-        if !match_pattern(ctx, cursor) {
+        let ty = cursor.cur_type();
+        let ret_ty = conv_ty(ctx, &cursor.ret_type(), cursor);
+
+        let func = decl_name(ctx, cursor);
+        global_varinfo(func).ty = @TFunc(ret_ty, args_lst, ty.is_variadic());
+        ctx.globals.push(func);
+
+        return CXChildVisit_Continue;
+      }
+      CXCursor_VarDecl => {
+        let linkage = cursor.linkage();
+        if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
             return CXChildVisit_Continue;
         }
-    
-        if cursor.kind == CXCursor_StructDecl {
-            do fwd_decl(ctx, cursor) || {
-                let decl = decl_name(ctx, cursor);
-                let ci = global_compinfo(decl);
-                ctx.cur_glob = GComp(ci);
-                ctx.globals.push(ctx.cur_glob);
-                clang_visitChildren(cursor, visit_struct, data);
-            }
-            return if cur.kind == CXCursor_FieldDecl {
-                CXChildVisit_Break
-            } else {
-                CXChildVisit_Recurse
-            };
-        } else if cursor.kind == CXCursor_UnionDecl {
-            do fwd_decl(ctx, cursor) || {
-                let decl = decl_name(ctx, cursor);
-                let ci = global_compinfo(decl);
-                ctx.cur_glob = GComp(ci);
-                ctx.globals.push(ctx.cur_glob);
-                clang_visitChildren(cursor, visit_union, data);
-            }
-            return CXChildVisit_Recurse;
-        } else if cursor.kind == CXCursor_EnumDecl {
-            do fwd_decl(ctx, cursor) || {
-                let decl = decl_name(ctx, cursor);
-                let ei = global_enuminfo(decl);
-                ctx.cur_glob = GEnum(ei);
-                ctx.globals.push(ctx.cur_glob);
-                clang_visitChildren(cursor, visit_enum, data);
-            }
-            return CXChildVisit_Continue;
-        } else if cursor.kind == CXCursor_FunctionDecl {
-            let linkage = clang_getCursorLinkage(cursor);
-            if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
-                return CXChildVisit_Continue;
-            }
-    
-            let arg_n = clang_Cursor_getNumArguments(cursor) as uint;
-            let args_lst = do vec::from_fn(arg_n) |i| {
-                let arg = clang_Cursor_getArgument(cursor, i as c_uint);
-                let arg_name = clang_getCursorSpelling(arg).to_str();
-                (arg_name, conv_ty(ctx, clang_getCursorType(arg), cursor))
-            };
-    
-            let ty = clang_getCursorType(cursor);
-            let varargs = clang_isFunctionTypeVariadic(ty) as int != 0;
-            let ret_ty = conv_ty(ctx, clang_getCursorResultType(cursor), cursor);
-    
-            let func = decl_name(ctx, cursor);
-            global_varinfo(func).ty = @mut TFunc(ret_ty, args_lst, varargs);
-            ctx.globals.push(func);
-    
-            return CXChildVisit_Continue;
-        } else if cursor.kind == CXCursor_VarDecl {
-            let linkage = clang_getCursorLinkage(cursor);
-            if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
-                return CXChildVisit_Continue;
-            }
-    
-            let ty = conv_ty(ctx, clang_getCursorType(cursor), cursor);
-            let var = decl_name(ctx, cursor);
-            global_varinfo(var).ty = ty;
-            ctx.globals.push(var);
-    
-            return CXChildVisit_Continue;
-        } else if cursor.kind == CXCursor_TypedefDecl {
-            let mut under_ty = clang_getTypedefDeclUnderlyingType(cursor);
-            if under_ty.kind == CXType_Unexposed {
-                under_ty = clang_getCanonicalType(under_ty);
-            }
-    
-            let ty = conv_ty(ctx, under_ty, cursor);
-            let typedef = decl_name(ctx, cursor);
-            global_typeinfo(typedef).ty = ty;
-            ctx.globals.push(typedef);
-    
-            opaque_ty(ctx, under_ty);
-    
-            return CXChildVisit_Continue;
-        } else if cursor.kind == CXCursor_FieldDecl {
-            return CXChildVisit_Continue;
+
+        let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
+        let var = decl_name(ctx, cursor);
+        global_varinfo(var).ty = ty;
+        ctx.globals.push(var);
+
+        return CXChildVisit_Continue;
+      }
+      CXCursor_TypedefDecl => {
+        let mut under_ty = cursor.typedef_type();
+        if under_ty.kind() == CXType_Unexposed {
+            under_ty = under_ty.canonical_type();
         }
-    
-        return CXChildVisit_Recurse;
+
+        let ty = conv_ty(ctx, &under_ty, cursor);
+        let typedef = decl_name(ctx, cursor);
+        global_typeinfo(typedef).ty = ty;
+        ctx.globals.push(typedef);
+
+        opaque_ty(ctx, &under_ty);
+
+        return CXChildVisit_Continue;
+      }
+      CXCursor_FieldDecl => {
+        return CXChildVisit_Continue;
+      }
+      _ => return CXChildVisit_Recurse,
     }
 }
 
+#[main]
 fn main() {
-    unsafe {
-        let mut bind_args = os::args();
-        let bin = bind_args.shift();
-    
-        match parse_args(bind_args) {
-            ParseErr(e) => { fail!(e); }
-            CmdUsage => { print_usage(bin); }
-            ParseOk(clang_args, ctx) => {
-                let ix = clang_createIndex(0 as c_int, 1 as c_int);
-                if ix as int == 0 {
-                    fail!(~"clang failed to create index");
-                }
-    
-                let c_args = do clang_args.map |s| {
-                    str::as_c_str(*s, |b| b )
-                };
-                let unit = clang_parseTranslationUnit(
-                    ix, ptr::null(),
-                    vec::raw::to_ptr(c_args),
-                    vec::len(c_args) as c_int,
-                    ptr::null(),
-                    0 as c_uint, 0 as c_uint
-                );
-                if unit as int == 0 {
-                    fail!(~"No input files given");
-                }
-    
-                let mut c_err = false;
-                let diag_num = clang_getNumDiagnostics(unit) as uint;
-                for uint::range(0, diag_num) |i| {
-                    let diag = clang_getDiagnostic(unit, i as c_uint);
-                    io::stderr().write_line(clang_formatDiagnostic(
-                        diag, clang_defaultDiagnosticDisplayOptions()
-                    ).to_str());
-    
-                    if clang_getDiagnosticSeverity(diag) >= CXDiagnostic_Error {
-                        c_err = true
-                    }
-                }
-    
-                if c_err {
-                    return;
-                }
-    
-                let cursor = clang_getTranslationUnitCursor(unit);
-                clang_visitChildren(cursor, visit_top,
-                                    ptr::to_unsafe_ptr(&ctx) as CXClientData);
-                while !ctx.builtin_defs.is_empty() {
-                    let c = ctx.builtin_defs.shift();
-                    clang_visitChildren(c, visit_top, ptr::to_unsafe_ptr(&ctx) as CXClientData);
-                }
+    let mut bind_args = os::args();
+    let bin = bind_args.shift();
 
-                gen_rs(ctx.out, &ctx.link, ctx.globals);
-    
-                clang_disposeTranslationUnit(unit);
-                clang_disposeIndex(ix);
+    match parse_args(bind_args) {
+        ParseErr(e) => fail!(e),
+        CmdUsage => print_usage(bin),
+        ParseOk(clang_args, ctx) => {
+            let ix = cx::Index::create(false, true);
+            if ix.is_null() {
+                fail!(~"clang failed to create index");
             }
+
+            let unit = TranslationUnit::parse(&ix, "", clang_args, ~[], 0);
+            if unit.is_null() {
+                fail!(~"No input files given");
+            }
+
+            let mut c_err = false;
+            for unit.diags().each |d: &Diagnostic| {
+                io::stderr().write_line(d.format(Diagnostic::default_opts()));
+                if d.severity() >= CXDiagnostic_Error {
+                    c_err = true;
+                }
+            }
+
+            if c_err {
+                return;
+            }
+
+            let cursor = unit.cursor();
+            cursor.visit(|cur, parent| visit_top(cur, parent, ctx));
+                
+            while !ctx.builtin_defs.is_empty() {
+                let c = ctx.builtin_defs.shift();
+                c.visit(|cur, parent| visit_top(cur, parent, ctx));
+            }
+
+            gen_rs(ctx.out, &ctx.link, ctx.globals);
+
+            unit.dispose();
+            ix.dispose();
         }
     }
 }
