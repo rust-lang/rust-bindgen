@@ -416,7 +416,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
     let union_def = mk_item(ctx, union_id, def);
 
     let expr = quote_expr!(
-        unsafe { cast::reinterpret_cast(&ptr::to_unsafe_ptr(self)) }
+        unsafe { cast::transmute(&ptr::to_unsafe_ptr(self)) }
     );
     let mut unnamed = 0;
     let fs = do fields.map |f| {
