@@ -441,7 +441,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
             ident: ext_cx.ident_of(f_name),
             attrs: ~[],
             generics: empty_generics(),
-            self_ty: dummy_spanned(ast::sty_region(None, ast::m_imm)),
+            explicit_self: dummy_spanned(ast::sty_region(None, ast::m_imm)),
             purity: ast::impure_fn,
             decl: ast::fn_decl {
                 inputs: ~[],
