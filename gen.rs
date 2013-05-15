@@ -28,12 +28,33 @@ fn empty_generics() -> ast::Generics {
 }
 
 fn rust_id(ctx: &mut GenCtx, name: ~str) -> (~str, bool) {
-    if ctx.keywords.contains(&name) {
+    if ctx.keywords.contains(&name) || "bool" == name {
         (~"_" + name, true)
     } else {
         (name, false)
     }
 
+}
+
+fn rust_type_id(ctx: &mut GenCtx, name: ~str) -> ~str {
+    if "bool" == name ||
+        "uint" == name ||
+        "u8" == name ||
+        "u16" == name ||
+        "u32" == name ||
+        "f32" == name ||
+        "f64" == name ||
+        "i8" == name ||
+        "i16" == name ||
+        "i32" == name ||
+        "i64" == name ||
+        "Self" == name ||
+        "str" == name {
+        ~"_" + name
+    } else {
+        let (n, _) = rust_id(ctx, name);
+        n
+    }
 }
 
 fn unnamed_name(ctx: &mut GenCtx, name: ~str) -> ~str {
@@ -288,7 +309,7 @@ fn tag_dup_decl(gs: &[Global]) -> ~[Global] {
 
 fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
     fn mk_item(ctx: &mut GenCtx, name: ~str, ty: @Type) -> @ast::item {
-        let rust_name = rust_id(ctx, name).first();
+        let rust_name = rust_type_id(ctx, name);
         let rust_ty = cty_to_rs(ctx, ty);
         let base = ast::item_ty(
             @ast::Ty {
@@ -344,7 +365,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::i
             unnamed += 1;
             fmt!("unnamed_field%u", unnamed)
         } else {
-            rust_id(ctx, copy f.name).first()
+            rust_type_id(ctx, copy f.name)
         };
 
         let f_ty = cty_to_rs(ctx, f.ty);
@@ -368,7 +389,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::i
         empty_generics()
     );
 
-    let id = rust_id(ctx, name).first();
+    let id = rust_type_id(ctx, name);
     return @ast::item { ident: ctx.ext_cx.ident_of(id),
               attrs: ~[],
               id: ctx.ext_cx.next_id(),
@@ -412,7 +433,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
         },
         empty_generics()
     );
-    let union_id = rust_id(ctx, name).first();
+    let union_id = rust_type_id(ctx, name);
     let union_def = mk_item(ctx, union_id, def);
 
     let expr = quote_expr!(
@@ -471,7 +492,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
 
 fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -> ~[@ast::item] {
     let ty = @TInt(kind);
-    let ty_id = rust_id(ctx, name).first();
+    let ty_id = rust_type_id(ctx, name);
     let ty_def = ctypedef_to_rs(ctx, ty_id, ty);
     let val_ty = cty_to_rs(ctx, ty);
     let mut def = ty_def;
@@ -631,7 +652,7 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: @Type) -> @ast::Ty {
         },
         TFunc(_, _, _) => mk_fnty(ctx),
         TNamed(ti) => {
-            let id = rust_id(ctx, copy ti.name).first();
+            let id = rust_type_id(ctx, copy ti.name);
             mk_ty(ctx, id)
         },
         TComp(ci) => {
