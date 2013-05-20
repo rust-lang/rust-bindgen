@@ -45,7 +45,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 return CmdUsage;
             }
             ~"-o" => {
-                if ix + 1u > args_len {
+                if ix + 1u >= args_len {
                     return ParseErr(~"Missing output filename");
                 }
                 match io::file_writer(&path::Path(args[ix + 1u]),
@@ -56,14 +56,14 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 ix += 2u;
             }
             ~"-l" => {
-                if ix + 1u > args_len {
+                if ix + 1u >= args_len {
                     return ParseErr(~"Missing link name");
                 }
                 link = Some(copy args[ix + 1u]);
                 ix += 2u;
             }
             ~"-match" => {
-                if ix + 1u > args_len {
+                if ix + 1u >= args_len {
                     return ParseErr(~"Missing match pattern");
                 }
                 pat.push(copy args[ix + 1u]);
