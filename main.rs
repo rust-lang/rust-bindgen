@@ -49,7 +49,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
                     return ParseErr(~"Missing output filename");
                 }
                 match io::file_writer(&path::Path(args[ix + 1u]),
-                                      ~[io::Create, io::Truncate]) {
+                                      [io::Create, io::Truncate]) {
                   Ok(f) => { out = f; }
                   Err(e) => { return ParseErr(e); }
                 }
@@ -466,7 +466,7 @@ fn main() {
                 fail!(~"clang failed to create index");
             }
 
-            let unit = TranslationUnit::parse(&ix, "", clang_args, ~[], 0);
+            let unit = TranslationUnit::parse(&ix, "", clang_args, [], 0);
             if unit.is_null() {
                 fail!(~"No input files given");
             }
