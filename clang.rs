@@ -1,5 +1,5 @@
-use core::libc::*;
-use core::to_bytes;
+use std::libc::*;
+use std::to_bytes;
 
 pub use ll = clangll;
 use clangll::*;
@@ -116,14 +116,12 @@ impl Eq for Cursor {
 
 impl IterBytes for Cursor {
     fn iter_bytes(&self, lsb0: bool, f: to_bytes::Cb) -> bool {
-        to_bytes::iter_bytes_5(
-            &(self.kind as int),
-            &(self.xdata as int),
-            &(self.data[0] as int),
-            &(self.data[1] as int),
-            &(self.data[2] as int),
-            lsb0, f
-        )
+        [(self.kind as int),
+         (self.xdata as int),
+         (self.data[0] as int),
+         (self.data[1] as int),
+         (self.data[2] as int)
+        ].iter_bytes(lsb0, f)
     }
 }
 

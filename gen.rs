@@ -1,5 +1,5 @@
-use core::io::WriterUtil;
-use core::hashmap::HashSet;
+use std::io::WriterUtil;
+use std::hashmap::HashSet;
 
 use syntax::abi;
 use syntax::ast;
@@ -158,7 +158,7 @@ pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
         }
     };
 
-    let views = ~[mk_import(&mut ctx, &[~"core", ~"libc"])];
+    let views = ~[mk_import(&mut ctx, &[~"std", ~"libc"])];
     defs.push(mk_extern(&mut ctx, link, vars, funcs));
 
     let crate = @dummy_spanned(ast::crate_ {

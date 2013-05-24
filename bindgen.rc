@@ -1,6 +1,5 @@
 #[crate_type = "bin"];
 
-extern mod std;
 extern mod syntax;
 
 pub mod types;
