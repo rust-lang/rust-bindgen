@@ -1,5 +1,4 @@
 use std::io::WriterUtil;
-use std::hashmap::HashSet;
 
 use syntax::abi;
 use syntax::ast;
@@ -16,8 +15,7 @@ use types::*;
 
 struct GenCtx {
     ext_cx: @base::ExtCtxt,
-    unnamed_ty: uint,
-    keywords: HashSet<~str>
+    unnamed_ty: uint
 }
 
 fn empty_generics() -> ast::Generics {
@@ -28,7 +26,8 @@ fn empty_generics() -> ast::Generics {
 }
 
 fn rust_id(ctx: &mut GenCtx, name: ~str) -> (~str, bool) {
-    if ctx.keywords.contains(&name) || "bool" == name {
+    let token = parse::token::IDENT(ctx.ext_cx.ident_of(name), false);
+    if parse::token::is_any_keyword(&token) || "bool" == name {
         (~"_" + name, true)
     } else {
         (name, false)
@@ -80,8 +79,7 @@ fn enum_name(name: ~str) -> ~str {
 
 pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
     let mut ctx = GenCtx { ext_cx: base::ExtCtxt::new(parse::new_parse_sess(None), ~[]),
-                           unnamed_ty: 0,
-                           keywords: parse::token::keyword_table()
+                           unnamed_ty: 0
                          };
     ctx.ext_cx.bt_push(codemap::ExpandedFrom(codemap::CallInfo {
         call_site: dummy_sp(),
