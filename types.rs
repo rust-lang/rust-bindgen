@@ -1,3 +1,5 @@
+use std::uint;
+
 pub enum Global {
     GType(@mut TypeInfo),
     GComp(@mut CompInfo),

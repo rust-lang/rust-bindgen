@@ -1,4 +1,4 @@
-use std::io::WriterUtil;
+use std::{io, ptr};
 
 use syntax::abi;
 use syntax::ast;

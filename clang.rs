@@ -1,5 +1,5 @@
 use std::libc::*;
-use std::to_bytes;
+use std::{cast, ptr, str, to_bytes, uint, vec};
 
 pub use ll = clangll;
 use clangll::*;
@@ -234,7 +234,7 @@ pub struct String(CXString);
 impl ToStr for String {
     fn to_str(&self) -> ~str {
         unsafe {
-            let c_str = clang_getCString(**self) as *libc::c_char;
+            let c_str = clang_getCString(**self) as *c_char;
             str::raw::from_c_str(c_str)
         }
     }
