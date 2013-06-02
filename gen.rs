@@ -147,8 +147,8 @@ pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
         match *f {
             GFunc(vi) => {
                 match *vi.ty {
-                    TFunc(rty, copy aty, var) => cfunc_to_rs(&mut ctx, copy vi.name,
-                                                             rty, aty, var),
+                    TFunc(rty, ref aty, var) => cfunc_to_rs(&mut ctx, copy vi.name,
+                                                             rty, copy *aty, var),
                     _ => { fail!(~"generate functions") }
                 }
             },
@@ -709,7 +709,6 @@ fn mk_arrty(ctx: &mut GenCtx, base: @ast::Ty, n: uint) -> @ast::Ty {
         },
         @ast::expr {
             id: ctx.ext_cx.next_id(),
-            callee_id: ctx.ext_cx.next_id(),
             node: sz,
             span: dummy_sp()
         }
