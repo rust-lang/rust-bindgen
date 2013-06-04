@@ -1,4 +1,4 @@
-use std::{io, ptr};
+use std::{borrow, io};
 
 use syntax::abi;
 use syntax::ast;
@@ -249,14 +249,14 @@ fn remove_redundent_decl(gs: &[Global]) -> ~[Global] {
                 (GComp(ci1), GType(ti)) => match *ti.ty {
                     TComp(ci2) => {
                         let n = copy ci1.name;
-                        ptr::ref_eq(ci1, ci2) && n.is_empty()
+                        borrow::ref_eq(ci1, ci2) && n.is_empty()
                     },
                     _ => false
                 },
                 (GEnum(ei1), GType(ti)) => match *ti.ty {
                     TEnum(ei2) => {
                         let n = copy ei1.name;
-                        ptr::ref_eq(ei1, ei2) && n.is_empty()
+                        borrow::ref_eq(ei1, ei2) && n.is_empty()
                     },
                     _ => false
                 },
@@ -435,7 +435,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
     let union_def = mk_item(ctx, union_id, def);
 
     let expr = quote_expr!(
-        unsafe { cast::transmute(&ptr::to_unsafe_ptr(self)) }
+        unsafe { std::cast::transmute(&std::ptr::to_mut_unsafe_ptr(self)) }
     );
     let mut unnamed = 0;
     let fs = do fields.map |f| {
@@ -460,7 +460,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
             ident: ext_cx.ident_of(f_name),
             attrs: ~[],
             generics: empty_generics(),
-            explicit_self: dummy_spanned(ast::sty_region(None, ast::m_imm)),
+            explicit_self: dummy_spanned(ast::sty_region(None, ast::m_mutbl)),
             purity: ast::impure_fn,
             decl: ast::fn_decl {
                 inputs: ~[],
