@@ -27,7 +27,7 @@ enum ParseResult {
 
 fn parse_args(args: &[~str]) -> ParseResult {
     let mut clang_args = ~[];
-    let args_len = vec::len(args);
+    let args_len = args.len();
 
     let mut out = io::stdout();
     let mut pat = ~[];
