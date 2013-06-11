@@ -1,5 +1,5 @@
 use std::hashmap::{HashMap, HashSet};
-use std::{io, os, path, str, vec};
+use std::{io, os, path, vec};
 
 use il = types;
 use types::*;
@@ -138,7 +138,7 @@ fn match_pattern(ctx: @mut BindGenCtx, cursor: &Cursor) -> bool {
 
     let name = file.name();
     for ctx.match_pat.each |pat| {
-        if str::contains(name, *pat) {
+        if name.contains(*pat) {
             return true;
         }
     }
