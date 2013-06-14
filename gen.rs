@@ -83,7 +83,7 @@ pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
                          };
     ctx.ext_cx.bt_push(codemap::ExpandedFrom(codemap::CallInfo {
         call_site: dummy_sp(),
-        callee: codemap::NameAndSpan {name: ~"top", span: None}
+        callee: codemap::NameAndSpan {name: @"top", span: None}
     }));
     let uniq_globs = tag_dup_decl(globs);
 
@@ -208,8 +208,8 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
                 style: ast::attr_outer,
                 value: @dummy_spanned(
                     ast::meta_name_value(
-                        @~"link_args",
-                        dummy_spanned(ast::lit_str(@(~"-l" + *l)))
+                        @"link_args",
+                        dummy_spanned(ast::lit_str((~"-l" + *l).to_managed()))
                     )
                 ),
                 is_sugared_doc: false
@@ -518,8 +518,8 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -
 }
 
 fn mk_link_name_attr(name: ~str) -> ast::attribute {
-    let lit = dummy_spanned(ast::lit_str(@name));
-    let attr_val = @dummy_spanned(ast::meta_name_value(@~"link_name", lit));
+    let lit = dummy_spanned(ast::lit_str(name.to_managed()));
+    let attr_val = @dummy_spanned(ast::meta_name_value(@"link_name", lit));
     let attr = ast::attribute_ {
         style: ast::attr_outer,
         value: attr_val,
