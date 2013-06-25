@@ -1,4 +1,4 @@
-use std::{borrow, io};
+use std::{borrow, io, vec};
 
 use syntax::abi;
 use syntax::ast;
@@ -90,7 +90,7 @@ pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
     let mut fs = ~[];
     let mut vs = ~[];
     let mut gs = ~[];
-    for uniq_globs.each |g| {
+    for vec::each(uniq_globs) |g| {
         match *g {
             GOther => {}
             GFunc(_) => fs.push(*g),
@@ -102,7 +102,7 @@ pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
     let mut defs = ~[];
     gs = remove_redundent_decl(gs);
 
-    for gs.each |g| {
+    for vec::each(gs) |g| {
         match *g {
             GType(ti) => defs += ctypedef_to_rs(&mut ctx, copy ti.name, ti.ty),
             GCompDecl(ci) => {
@@ -244,7 +244,7 @@ fn remove_redundent_decl(gs: &[Global]) -> ~[Global] {
     };
 
     return do gs.filtered |g| {
-        !do typedefs.any |t| {
+        !do typedefs.iter().any_ |t| {
             match (*g, *t) {
                 (GComp(ci1), GType(ti)) => match *ti.ty {
                     TComp(ci2) => {
@@ -495,7 +495,7 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -
     let val_ty = cty_to_rs(ctx, ty);
     let mut def = ty_def;
 
-    for items.each |it| {
+    for vec::each(items) |it| {
         let cst = ast::item_const(
             val_ty,
             ctx.ext_cx.expr_int(dummy_sp(), it.val)
@@ -677,6 +677,7 @@ fn mk_ty(ctx: &mut GenCtx, name: ~str) -> @ast::Ty {
             rp: None,
             types: ~[]
         },
+        @opt_vec::Empty,
         ctx.ext_cx.next_id()
     );
 

@@ -203,8 +203,8 @@ pub fn type_align(ty: @Type) -> uint {
         TNamed(t) => type_align(t.ty),
         TComp(ci) => {
             let fs = copy ci.fields;
-            do fs.foldl(0) |a, t| {
-                uint::max(*a, type_align(t.ty))
+            do fs.iter().fold(0) |a, t| {
+                uint::max(a, type_align(t.ty))
             }
         },
         TEnum(_) => 4,
@@ -232,8 +232,8 @@ pub fn type_align(ty: @Type) -> uint {
         TNamed(t) => type_align(t.ty),
         TComp(ci) => {
             let fs = copy ci.fields;
-            do fs.foldl(0) |a, t| {
-                uint::max(*a, type_align(t.ty))
+            do fs.iter().fold(0) |a, t| {
+                uint::max(a, type_align(t.ty))
             }
         },
         TEnum(_) => 4,
@@ -261,14 +261,14 @@ pub fn type_size(ty: @Type) -> uint {
         TNamed(t) => type_size(t.ty),
         TComp(ci) => if ci.cstruct {
             let fs = copy ci.fields;
-            let size = do fs.foldl(0) |s, t| {
-                align(*s, t.ty) + type_size(t.ty)
+            let size = do fs.iter().fold(0) |s, t| {
+                align(s, t.ty) + type_size(t.ty)
             };
             align(size, ty)
         } else {
             let fs = copy ci.fields;
-            let size = do fs.foldl(0) |s, t| {
-                uint::max(*s, type_size(t.ty))
+            let size = do fs.iter().fold(0) |s, t| {
+                uint::max(s, type_size(t.ty))
             };
             align(size, ty)
         },
@@ -297,14 +297,14 @@ pub fn type_size(ty: @Type) -> uint {
         TNamed(t) => type_size(t.ty),
         TComp(ci) => if ci.cstruct {
             let fs = copy ci.fields;
-            let size = do fs.foldl(0) |s, t| {
-                align(*s, t.ty) + type_size(t.ty)
+            let size = do fs.iter().fold(0) |s, t| {
+                align(s, t.ty) + type_size(t.ty)
             };
             align(size, ty)
         } else {
             let fs = copy ci.fields;
-            let size = do fs.foldl(0) |s, t| {
-                uint::max(*s, type_size(t.ty))
+            let size = do fs.iter().fold(0) |s, t| {
+                uint::max(s, type_size(t.ty))
             };
             align(size, ty)
         },
