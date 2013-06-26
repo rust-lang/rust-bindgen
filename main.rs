@@ -137,7 +137,7 @@ fn match_pattern(ctx: @mut BindGenCtx, cursor: &Cursor) -> bool {
     }
 
     let name = file.name();
-    for vec::each(ctx.match_pat) |pat| {
+    for ctx.match_pat.iter().advance |pat| {
         if name.contains(*pat) {
             return true;
         }
@@ -472,7 +472,8 @@ fn main() {
             }
 
             let mut c_err = false;
-            for vec::each(unit.diags()) |d: &Diagnostic| {
+            let diags = unit.diags();
+            for diags.iter().advance |d: &Diagnostic| {
                 io::stderr().write_line(d.format(Diagnostic::default_opts()));
                 if d.severity() >= CXDiagnostic_Error {
                     c_err = true;

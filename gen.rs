@@ -1,4 +1,4 @@
-use std::{borrow, io, vec};
+use std::{borrow, io};
 
 use syntax::abi;
 use syntax::ast;
@@ -90,7 +90,7 @@ pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
     let mut fs = ~[];
     let mut vs = ~[];
     let mut gs = ~[];
-    for vec::each(uniq_globs) |g| {
+    for uniq_globs.iter().advance |g| {
         match *g {
             GOther => {}
             GFunc(_) => fs.push(*g),
@@ -102,7 +102,7 @@ pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
     let mut defs = ~[];
     gs = remove_redundent_decl(gs);
 
-    for vec::each(gs) |g| {
+    for gs.iter().advance |g| {
         match *g {
             GType(ti) => defs += ctypedef_to_rs(&mut ctx, copy ti.name, ti.ty),
             GCompDecl(ci) => {
@@ -495,9 +495,10 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -
     let val_ty = cty_to_rs(ctx, ty);
     let mut def = ty_def;
 
-    for vec::each(items) |it| {
-        let cst = ast::item_const(
+    for items.iter().advance |it| {
+        let cst = ast::item_static(
             val_ty,
+            ast::m_imm,
             ctx.ext_cx.expr_int(dummy_sp(), it.val)
         );
 
@@ -539,7 +540,7 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: ~str, ty: @Type) -> @ast::foreign_item {
     return @ast::foreign_item {
               ident: ctx.ext_cx.ident_of(rust_name),
               attrs: attrs,
-              node: ast::foreign_item_const(cty_to_rs(ctx, ty)),
+              node: ast::foreign_item_static(cty_to_rs(ctx, ty), false),
               id: ctx.ext_cx.next_id(),
               span: dummy_sp(),
               vis: ast::public,
