@@ -1,5 +1,5 @@
 use std::hashmap::{HashMap, HashSet};
-use std::{io, os, path, vec};
+use std::{io, os, path};
 
 use il = types;
 use types::*;
@@ -99,7 +99,7 @@ fn builtin_names() -> HashSet<~str> {
         ~"__va_list_tag"
     ];
 
-    do vec::consume(keys) |_, s| {
+    for keys.consume_iter().advance |s| {
         names.insert(s);
     }
 
