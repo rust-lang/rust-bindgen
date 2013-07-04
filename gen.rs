@@ -1,4 +1,4 @@
-use std::{borrow, io};
+use std::{borrow, io, option};
 
 use syntax::abi;
 use syntax::ast;
@@ -104,13 +104,13 @@ pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
 
     for gs.iter().advance |g| {
         match *g {
-            GType(ti) => defs += ctypedef_to_rs(&mut ctx, copy ti.name, ti.ty),
+            GType(ti) => defs.push_all(ctypedef_to_rs(&mut ctx, copy ti.name, ti.ty)),
             GCompDecl(ci) => {
                 ci.name = unnamed_name(&mut ctx, copy ci.name);
                 if ci.cstruct {
-                    defs += ctypedef_to_rs(&mut ctx, struct_name(copy ci.name), @TVoid)
+                    defs.push_all(ctypedef_to_rs(&mut ctx, struct_name(copy ci.name), @TVoid))
                 } else {
-                    defs += ctypedef_to_rs(&mut ctx, union_name(copy ci.name), @TVoid)
+                    defs.push_all(ctypedef_to_rs(&mut ctx, union_name(copy ci.name), @TVoid))
                 }
             },
             GComp(ci) => {
@@ -119,18 +119,18 @@ pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
                     defs.push(cstruct_to_rs(&mut ctx, struct_name(copy ci.name),
                                             copy ci.fields))
                 } else {
-                    defs += cunion_to_rs(&mut ctx, union_name(copy ci.name),
-                                         copy ci.fields)
+                    defs.push_all(cunion_to_rs(&mut ctx, union_name(copy ci.name),
+                                               copy ci.fields))
                 }
             },
             GEnumDecl(ei) => {
                 ei.name = unnamed_name(&mut ctx, copy ei.name);
-                defs += ctypedef_to_rs(&mut ctx, enum_name(copy ei.name), @TVoid)
+                defs.push_all(ctypedef_to_rs(&mut ctx, enum_name(copy ei.name), @TVoid))
             },
             GEnum(ei) => {
                 ei.name = unnamed_name(&mut ctx, copy ei.name);
-                defs += cenum_to_rs(&mut ctx, enum_name(copy ei.name), copy ei.items,
-                                    ei.kind)
+                defs.push_all(cenum_to_rs(&mut ctx, enum_name(copy ei.name), copy ei.items,
+                                          ei.kind))
             },
             _ => { }
         }
@@ -236,34 +236,41 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
 }
 
 fn remove_redundent_decl(gs: &[Global]) -> ~[Global] {
-    let typedefs = do gs.filtered |g| {
-        match(*g) {
-            GType(_) => true,
-            _ => false
+    fn check_decl(a: Global, b: Global) -> bool {
+        match (a, b) {
+          (GComp(ci1), GType(ti)) => match *ti.ty {
+              TComp(ci2) => {
+                  let n = copy ci1.name;
+                  borrow::ref_eq(ci1, ci2) && n.is_empty()
+              },
+              _ => false
+          },
+          (GEnum(ei1), GType(ti)) => match *ti.ty {
+              TEnum(ei2) => {
+                  let n = copy ei1.name;
+                  borrow::ref_eq(ei1, ei2) && n.is_empty()
+              },
+              _ => false
+          },
+          _ => false
         }
-    };
+    }
 
-    return do gs.filtered |g| {
-        !do typedefs.iter().any_ |t| {
-            match (*g, *t) {
-                (GComp(ci1), GType(ti)) => match *ti.ty {
-                    TComp(ci2) => {
-                        let n = copy ci1.name;
-                        borrow::ref_eq(ci1, ci2) && n.is_empty()
-                    },
-                    _ => false
-                },
-                (GEnum(ei1), GType(ti)) => match *ti.ty {
-                    TEnum(ei2) => {
-                        let n = copy ei1.name;
-                        borrow::ref_eq(ei1, ei2) && n.is_empty()
-                    },
-                    _ => false
-                },
-                _ => false
-            }
+    let gsit = gs.iter();
+    let typedefs: ~[Global] = gsit.filter_map(|g|
+        match(*g) {
+            GType(_) => Some(*g),
+            _ => None
         }
-    };
+    ).collect();
+
+    return gsit.filter_map(|g|
+        if typedefs.iter().any_(|t| check_decl(*g, *t)) {
+            None
+        } else {
+            Some(*g)
+        }
+    ).collect();
 }
 
 fn tag_dup_decl(gs: &[Global]) -> ~[Global] {
@@ -678,7 +685,7 @@ fn mk_ty(ctx: &mut GenCtx, name: ~str) -> @ast::Ty {
             rp: None,
             types: ~[]
         },
-        @opt_vec::Empty,
+        @option::None,
         ctx.ext_cx.next_id()
     );
 

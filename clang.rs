@@ -9,7 +9,7 @@ pub struct Cursor(CXCursor);
 
 pub type CursorVisitor<'self> = &'self fn(c: &Cursor, p: &Cursor) -> Enum_CXChildVisitResult;
 
-impl<'self> Cursor {
+impl Cursor {
     // common
     pub fn spelling(&self) -> ~str {
         unsafe {
@@ -43,8 +43,8 @@ impl<'self> Cursor {
 
     pub fn visit(&self, func: CursorVisitor) {
         unsafe {
-            clang_visitChildren(**self, visit_children,
-                                ptr::to_unsafe_ptr(&func) as CXClientData);
+            let data = cast::transmute::<&CursorVisitor, CXClientData>(&func);
+            clang_visitChildren(**self, visit_children, data);
         };
     }
 
@@ -97,8 +97,8 @@ impl<'self> Cursor {
 extern fn visit_children(cur: CXCursor, parent: ll::CXCursor,
                          data: CXClientData) -> ll::Enum_CXChildVisitResult {
     unsafe {
-        let func: CursorVisitor = cast::transmute(*(data as *CursorVisitor));
-        return func(&Cursor(cur), &Cursor(parent));
+        let func = cast::transmute::<CXClientData, &CursorVisitor>(data);
+        return (*func)(&Cursor(cur), &Cursor(parent));
     }
 }
 
