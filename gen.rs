@@ -3,7 +3,6 @@ use std::{borrow, io, option};
 use syntax::abi;
 use syntax::ast;
 use syntax::codemap::{dummy_sp, dummy_spanned};
-use syntax::codemap;
 use syntax::ast_util::*;
 use syntax::ext::base;
 use syntax::ext::build::AstBuilder;
@@ -81,10 +80,6 @@ pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
     let mut ctx = GenCtx { ext_cx: base::ExtCtxt::new(parse::new_parse_sess(None), ~[]),
                            unnamed_ty: 0
                          };
-    ctx.ext_cx.bt_push(codemap::ExpandedFrom(codemap::CallInfo {
-        call_site: dummy_sp(),
-        callee: codemap::NameAndSpan {name: @"top", span: None}
-    }));
     let uniq_globs = tag_dup_decl(globs);
 
     let mut fs = ~[];
@@ -173,11 +168,11 @@ pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
     pprust::print_crate_(ps, crate);
 }
 
-fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> @ast::view_item {
+fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::view_item {
     let view = ast::view_item_use(~[
         @dummy_spanned(
             ast::view_path_glob(
-                @ast::Path {
+                ast::Path {
                    span: dummy_sp(),
                    global: false,
                    idents: path.map(|p| ctx.ext_cx.ident_of(copy *p)),
@@ -189,7 +184,7 @@ fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> @ast::view_item {
         )
     ]);
 
-    return @ast::view_item {
+    return ast::view_item {
               node: view,
               attrs: ~[],
               vis: ast::inherited,
@@ -317,7 +312,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
         let rust_name = rust_type_id(ctx, name);
         let rust_ty = cty_to_rs(ctx, ty);
         let base = ast::item_ty(
-            @ast::Ty {
+            ast::Ty {
                 id: ctx.ext_cx.next_id(),
                 node: copy rust_ty.node,
                 span: dummy_sp(),
@@ -504,7 +499,7 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -
 
     for items.iter().advance |it| {
         let cst = ast::item_static(
-            val_ty,
+            copy val_ty,
             ast::m_imm,
             ctx.ext_cx.expr_int(dummy_sp(), it.val)
         );
@@ -558,7 +553,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @Type,
                                          aty: ~[(~str, @Type)],
                                          _var: bool) -> @ast::foreign_item {
     let ret = match *rty {
-        TVoid => @ast::Ty {
+        TVoid => ast::Ty {
             id: ctx.ext_cx.next_id(),
             node: ast::ty_nil,
             span: dummy_sp()
@@ -586,7 +581,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @Type,
                  id: ctx.ext_cx.next_id(),
                  node: ast::pat_ident(
                      ast::bind_infer,
-                     @ast::Path {
+                     ast::Path {
                          span: dummy_sp(),
                          global: false,
                          idents: ~[ctx.ext_cx.ident_of(arg_name)],
@@ -628,7 +623,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @Type,
            };
 }
 
-fn cty_to_rs(ctx: &mut GenCtx, ty: @Type) -> @ast::Ty {
+fn cty_to_rs(ctx: &mut GenCtx, ty: @Type) -> ast::Ty {
     return match *ty {
         TVoid => mk_ty(ctx, ~"c_void"),
         TInt(i) => match i {
@@ -650,11 +645,11 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: @Type) -> @ast::Ty {
         },
         TPtr(t, is_const) => {
             let id = cty_to_rs(ctx, t);
-            mk_ptrty(ctx, id, is_const)
+            mk_ptrty(ctx, &id, is_const)
         },
         TArray(t, s) => {
             let ty = cty_to_rs(ctx, t);
-            mk_arrty(ctx, ty, s)
+            mk_arrty(ctx, &ty, s)
         },
         TFunc(_, _, _) => mk_fnty(ctx),
         TNamed(ti) => {
@@ -676,44 +671,44 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: @Type) -> @ast::Ty {
     };
 }
 
-fn mk_ty(ctx: &mut GenCtx, name: ~str) -> @ast::Ty {
+fn mk_ty(ctx: &mut GenCtx, name: ~str) -> ast::Ty {
     let ty = ast::ty_path(
-        @ast::Path {
+        ast::Path {
             span: dummy_sp(),
             global: false,
             idents: ~[ctx.ext_cx.ident_of(name)],
             rp: None,
             types: ~[]
         },
-        @option::None,
+        option::None,
         ctx.ext_cx.next_id()
     );
 
-    return @ast::Ty {
+    return ast::Ty {
         id: ctx.ext_cx.next_id(),
         node: ty,
         span: dummy_sp()
     };
 }
 
-fn mk_ptrty(ctx: &mut GenCtx, base: @ast::Ty, is_const: bool) -> @ast::Ty {
+fn mk_ptrty(ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
     let ty = ast::ty_ptr(ast::mt{
-        ty: base,
+        ty: ~copy *base,
         mutbl: if is_const { ast::m_imm } else { ast::m_mutbl }
     });
 
-    return @ast::Ty {
+    return ast::Ty {
         id: ctx.ext_cx.next_id(),
         node: ty,
         span: dummy_sp()
     };
 }
 
-fn mk_arrty(ctx: &mut GenCtx, base: @ast::Ty, n: uint) -> @ast::Ty {
+fn mk_arrty(ctx: &mut GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
     let sz = ast::expr_lit(@dummy_spanned(ast::lit_uint(n as u64, ast::ty_u)));
     let ty = ast::ty_fixed_length_vec(
         ast::mt {
-            ty: base,
+            ty: ~copy *base,
             mutbl: ast::m_imm
         },
         @ast::expr {
@@ -723,18 +718,18 @@ fn mk_arrty(ctx: &mut GenCtx, base: @ast::Ty, n: uint) -> @ast::Ty {
         }
     );
 
-    return @ast::Ty {
+    return ast::Ty {
         id: ctx.ext_cx.next_id(),
         node: ty,
         span: dummy_sp()
     };
 }
 
-fn mk_fnty(ctx: &mut GenCtx) -> @ast::Ty {
+fn mk_fnty(ctx: &mut GenCtx) -> ast::Ty {
     let ty = mk_ty(ctx, ~"u8");
-    let @ast::Ty{node: node, _} = mk_ptrty(ctx, ty, true);
+    let ast::Ty{node: node, _} = mk_ptrty(ctx, &ty, true);
 
-    return @ast::Ty {
+    return ast::Ty {
         id: ctx.ext_cx.next_id(),
         node: node,
         span: dummy_sp()
