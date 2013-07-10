@@ -260,7 +260,7 @@ fn remove_redundent_decl(gs: &[Global]) -> ~[Global] {
     ).collect();
 
     return gsit.filter_map(|g|
-        if typedefs.iter().any_(|t| check_decl(*g, *t)) {
+        if typedefs.iter().any(|t| check_decl(*g, *t)) {
             None
         } else {
             Some(*g)
