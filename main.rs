@@ -17,7 +17,8 @@ struct BindGenCtx {
     name: HashMap<Cursor, Global>,
     globals: ~[Global],
     builtin_defs: ~[Cursor],
-    builtin_names: HashSet<~str>
+    builtin_names: HashSet<~str>,
+    emit_ast: bool
 }
 
 enum ParseResult {
@@ -35,6 +36,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
     let mut link = None;
     let mut abi = ~"C";
     let mut builtins = false;
+    let mut emit_ast = false;
 
     if args_len == 0u {
         return CmdUsage;
@@ -45,6 +47,10 @@ fn parse_args(args: &[~str]) -> ParseResult {
         match args[ix] {
             ~"--help" | ~"-h" => {
                 return CmdUsage;
+            }
+            ~"-emit-clang-ast" => {
+              emit_ast=true;
+              ix+=1u;
             }
             ~"-o" => {
                 if ix + 1u >= args_len {
@@ -94,7 +100,8 @@ fn parse_args(args: &[~str]) -> ParseResult {
                                 name: HashMap::new(),
                                 globals: ~[],
                                 builtin_defs: ~[],
-                                builtin_names: builtin_names()
+                                builtin_names: builtin_names(),
+                                emit_ast: emit_ast
                               };
 
     return ParseOk(clang_args, ctx);
@@ -128,6 +135,7 @@ Options:
     -builtins       Output bindings for builtin definitions
                     (for example __builtin_va_list)
     -abi <abi>      Indicate abi of extern functions (default C)
+    -emit-clang-ast Output the ast (for debugging purposes)
 
     Options other than stated above are passed to clang.
 "
@@ -498,6 +506,11 @@ fn main() {
             }
 
             let cursor = unit.cursor();
+
+            if ctx.emit_ast {
+              cursor.visit(|cur, parent| ast_dump(cur, 0));
+            }			
+
             cursor.visit(|cur, parent| visit_top(cur, parent, ctx));
                 
             while !ctx.builtin_defs.is_empty() {
