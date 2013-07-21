@@ -92,25 +92,25 @@ impl ToStr for Global {
 
 impl ToStr for CompInfo {
     fn to_str(&self) -> ~str {
-        copy self.name
+        self.name.clone()
     }
 }
 
 impl ToStr for EnumInfo {
     fn to_str(&self) -> ~str {
-        copy self.name
+        self.name.clone()
     }
 }
 
 impl ToStr for TypeInfo {
     fn to_str(&self) -> ~str {
-        copy self.name
+        self.name.clone()
     }
 }
 
 impl ToStr for VarInfo {
     fn to_str(&self) -> ~str {
-        copy self.name
+        self.name.clone()
     }
 }
 
@@ -202,7 +202,7 @@ pub fn type_align(ty: @Type) -> uint {
         TArray(t, _) => type_align(t),
         TNamed(t) => type_align(t.ty),
         TComp(ci) => {
-            let fs = copy ci.fields;
+            let fs = ci.fields.clone();
             do fs.iter().fold(0) |a, t| {
                 uint::max(a, type_align(t.ty))
             }
@@ -231,7 +231,7 @@ pub fn type_align(ty: @Type) -> uint {
         TArray(t, _) => type_align(t),
         TNamed(t) => type_align(t.ty),
         TComp(ci) => {
-            let fs = copy ci.fields;
+            let fs = ci.fields.clone();
             do fs.iter().fold(0) |a, t| {
                 uint::max(a, type_align(t.ty))
             }
@@ -260,13 +260,13 @@ pub fn type_size(ty: @Type) -> uint {
         TArray(t, s) => type_size(t) * s,
         TNamed(t) => type_size(t.ty),
         TComp(ci) => if ci.cstruct {
-            let fs = copy ci.fields;
+            let fs = ci.fields.clone();
             let size = do fs.iter().fold(0) |s, t| {
                 align(s, t.ty) + type_size(t.ty)
             };
             align(size, ty)
         } else {
-            let fs = copy ci.fields;
+            let fs = ci.fields.clone();
             let size = do fs.iter().fold(0) |s, t| {
                 uint::max(s, type_size(t.ty))
             };
@@ -296,13 +296,13 @@ pub fn type_size(ty: @Type) -> uint {
         TArray(t, s) => type_size(t) * s,
         TNamed(t) => type_size(t.ty),
         TComp(ci) => if ci.cstruct {
-            let fs = copy ci.fields;
+            let fs = ci.fields.clone();
             let size = do fs.iter().fold(0) |s, t| {
                 align(s, t.ty) + type_size(t.ty)
             };
             align(size, ty)
         } else {
-            let fs = copy ci.fields;
+            let fs = ci.fields.clone();
             let size = do fs.iter().fold(0) |s, t| {
                 uint::max(s, type_size(t.ty))
             };

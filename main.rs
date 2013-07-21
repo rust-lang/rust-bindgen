@@ -59,14 +59,14 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 if ix + 1u >= args_len {
                     return ParseErr(~"Missing link name");
                 }
-                link = Some(copy args[ix + 1u]);
+                link = Some(args[ix + 1u].clone());
                 ix += 2u;
             }
             ~"-match" => {
                 if ix + 1u >= args_len {
                     return ParseErr(~"Missing match pattern");
                 }
-                pat.push(copy args[ix + 1u]);
+                pat.push(args[ix + 1u].clone());
                 ix += 2u;
             }
             ~"-builtins" => {
@@ -74,7 +74,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 ix += 1u;
             }
             _ => {
-                clang_args.push(copy args[ix]);
+                clang_args.push(args[ix].clone());
                 ix += 1u;
             }
         }

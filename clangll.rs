@@ -610,342 +610,382 @@ pub static CXIndexOpt_IndexFunctionLocalSymbols: c_uint = 2;
 pub static CXIndexOpt_IndexImplicitTemplateInstantiations: c_uint = 4;
 pub static CXIndexOpt_SuppressWarnings: c_uint = 8;
 #[link_args = "-lclang"]
-pub extern "C" {
-    fn clang_getCString(string: CXString) -> *c_schar;
-    fn clang_disposeString(string: CXString);
-    fn clang_createIndex(excludeDeclarationsFromPCH: c_int,
-                         displayDiagnostics: c_int) -> CXIndex;
-    fn clang_disposeIndex(index: CXIndex);
-    fn clang_CXIndex_setGlobalOptions(arg1: CXIndex, options: c_uint);
-    fn clang_CXIndex_getGlobalOptions(arg1: CXIndex) -> c_uint;
-    fn clang_getFileName(SFile: CXFile) -> CXString;
-    fn clang_getFileTime(SFile: CXFile) -> time_t;
-    fn clang_isFileMultipleIncludeGuarded(tu: CXTranslationUnit, file: CXFile)
-     -> c_uint;
-    fn clang_getFile(tu: CXTranslationUnit, file_name: *c_schar) -> CXFile;
-    fn clang_getNullLocation() -> CXSourceLocation;
-    fn clang_equalLocations(loc1: CXSourceLocation, loc2: CXSourceLocation) ->
-     c_uint;
-    fn clang_getLocation(tu: CXTranslationUnit, file: CXFile, line: c_uint,
-                         column: c_uint) -> CXSourceLocation;
-    fn clang_getLocationForOffset(tu: CXTranslationUnit, file: CXFile,
-                                  offset: c_uint) -> CXSourceLocation;
-    fn clang_getNullRange() -> CXSourceRange;
-    fn clang_getRange(begin: CXSourceLocation, end: CXSourceLocation) ->
-     CXSourceRange;
-    fn clang_equalRanges(range1: CXSourceRange, range2: CXSourceRange) ->
-     c_uint;
-    fn clang_Range_isNull(range: CXSourceRange) -> c_int;
-    fn clang_getExpansionLocation(location: CXSourceLocation,
-                                  file: *mut CXFile, line: *mut c_uint,
-                                  column: *mut c_uint, offset: *mut c_uint);
-    fn clang_getPresumedLocation(location: CXSourceLocation,
-                                 filename: *mut CXString, line: *mut c_uint,
-                                 column: *mut c_uint);
-    fn clang_getInstantiationLocation(location: CXSourceLocation,
-                                      file: *mut CXFile, line: *mut c_uint,
-                                      column: *mut c_uint,
-                                      offset: *mut c_uint);
-    fn clang_getSpellingLocation(location: CXSourceLocation,
-                                 file: *mut CXFile, line: *mut c_uint,
-                                 column: *mut c_uint, offset: *mut c_uint);
-    fn clang_getRangeStart(range: CXSourceRange) -> CXSourceLocation;
-    fn clang_getRangeEnd(range: CXSourceRange) -> CXSourceLocation;
-    fn clang_getNumDiagnosticsInSet(Diags: CXDiagnosticSet) -> c_uint;
-    fn clang_getDiagnosticInSet(Diags: CXDiagnosticSet, Index: c_uint) ->
-     CXDiagnostic;
-    fn clang_loadDiagnostics(file: *c_schar,
-                             error: *mut Enum_CXLoadDiag_Error,
-                             errorString: *mut CXString) -> CXDiagnosticSet;
-    fn clang_disposeDiagnosticSet(Diags: CXDiagnosticSet);
-    fn clang_getChildDiagnostics(D: CXDiagnostic) -> CXDiagnosticSet;
-    fn clang_getNumDiagnostics(Unit: CXTranslationUnit) -> c_uint;
-    fn clang_getDiagnostic(Unit: CXTranslationUnit, Index: c_uint) ->
-     CXDiagnostic;
-    fn clang_getDiagnosticSetFromTU(Unit: CXTranslationUnit) ->
-     CXDiagnosticSet;
-    fn clang_disposeDiagnostic(Diagnostic: CXDiagnostic);
-    fn clang_formatDiagnostic(Diagnostic: CXDiagnostic, Options: c_uint) ->
-     CXString;
-    fn clang_defaultDiagnosticDisplayOptions() -> c_uint;
-    fn clang_getDiagnosticSeverity(arg1: CXDiagnostic) ->
-     Enum_CXDiagnosticSeverity;
-    fn clang_getDiagnosticLocation(arg1: CXDiagnostic) -> CXSourceLocation;
-    fn clang_getDiagnosticSpelling(arg1: CXDiagnostic) -> CXString;
-    fn clang_getDiagnosticOption(Diag: CXDiagnostic, Disable: *mut CXString)
-     -> CXString;
-    fn clang_getDiagnosticCategory(arg1: CXDiagnostic) -> c_uint;
-    fn clang_getDiagnosticCategoryName(Category: c_uint) -> CXString;
-    fn clang_getDiagnosticCategoryText(arg1: CXDiagnostic) -> CXString;
-    fn clang_getDiagnosticNumRanges(arg1: CXDiagnostic) -> c_uint;
-    fn clang_getDiagnosticRange(Diagnostic: CXDiagnostic, Range: c_uint) ->
-     CXSourceRange;
-    fn clang_getDiagnosticNumFixIts(Diagnostic: CXDiagnostic) -> c_uint;
-    fn clang_getDiagnosticFixIt(Diagnostic: CXDiagnostic, FixIt: c_uint,
-                                ReplacementRange: *mut CXSourceRange) ->
-     CXString;
-    fn clang_getTranslationUnitSpelling(CTUnit: CXTranslationUnit) ->
-     CXString;
-    fn clang_createTranslationUnitFromSourceFile(CIdx: CXIndex,
-                                                 source_filename: *c_schar,
-                                                 num_clang_command_line_args:
-                                                     c_int,
-                                                 clang_command_line_args:
-                                                     **c_schar,
-                                                 num_unsaved_files: c_uint,
-                                                 unsaved_files:
-                                                     *mut Struct_CXUnsavedFile)
-     -> CXTranslationUnit;
-    fn clang_createTranslationUnit(arg1: CXIndex, ast_filename: *c_schar) ->
-     CXTranslationUnit;
-    fn clang_defaultEditingTranslationUnitOptions() -> c_uint;
-    fn clang_parseTranslationUnit(CIdx: CXIndex, source_filename: *c_schar,
-                                  command_line_args: **c_schar,
-                                  num_command_line_args: c_int,
-                                  unsaved_files: *mut Struct_CXUnsavedFile,
-                                  num_unsaved_files: c_uint, options: c_uint)
-     -> CXTranslationUnit;
-    fn clang_defaultSaveOptions(TU: CXTranslationUnit) -> c_uint;
-    fn clang_saveTranslationUnit(TU: CXTranslationUnit, FileName: *c_schar,
-                                 options: c_uint) -> c_int;
-    fn clang_disposeTranslationUnit(arg1: CXTranslationUnit);
-    fn clang_defaultReparseOptions(TU: CXTranslationUnit) -> c_uint;
-    fn clang_reparseTranslationUnit(TU: CXTranslationUnit,
-                                    num_unsaved_files: c_uint,
-                                    unsaved_files: *mut Struct_CXUnsavedFile,
-                                    options: c_uint) -> c_int;
-    fn clang_getTUResourceUsageName(kind: Enum_CXTUResourceUsageKind) ->
-     *c_schar;
-    fn clang_getCXTUResourceUsage(TU: CXTranslationUnit) -> CXTUResourceUsage;
-    fn clang_disposeCXTUResourceUsage(usage: CXTUResourceUsage);
-    fn clang_getNullCursor() -> CXCursor;
-    fn clang_getTranslationUnitCursor(arg1: CXTranslationUnit) -> CXCursor;
-    fn clang_equalCursors(arg1: CXCursor, arg2: CXCursor) -> c_uint;
-    fn clang_Cursor_isNull(arg1: CXCursor) -> c_int;
-    fn clang_hashCursor(arg1: CXCursor) -> c_uint;
-    fn clang_getCursorKind(arg1: CXCursor) -> Enum_CXCursorKind;
-    fn clang_isDeclaration(arg1: Enum_CXCursorKind) -> c_uint;
-    fn clang_isReference(arg1: Enum_CXCursorKind) -> c_uint;
-    fn clang_isExpression(arg1: Enum_CXCursorKind) -> c_uint;
-    fn clang_isStatement(arg1: Enum_CXCursorKind) -> c_uint;
-    fn clang_isAttribute(arg1: Enum_CXCursorKind) -> c_uint;
-    fn clang_isInvalid(arg1: Enum_CXCursorKind) -> c_uint;
-    fn clang_isTranslationUnit(arg1: Enum_CXCursorKind) -> c_uint;
-    fn clang_isPreprocessing(arg1: Enum_CXCursorKind) -> c_uint;
-    fn clang_isUnexposed(arg1: Enum_CXCursorKind) -> c_uint;
-    fn clang_getCursorLinkage(cursor: CXCursor) -> Enum_CXLinkageKind;
-    fn clang_getCursorAvailability(cursor: CXCursor) ->
-     Enum_CXAvailabilityKind;
-    fn clang_getCursorLanguage(cursor: CXCursor) -> Enum_CXLanguageKind;
-    fn clang_Cursor_getTranslationUnit(arg1: CXCursor) -> CXTranslationUnit;
-    fn clang_createCXCursorSet() -> CXCursorSet;
-    fn clang_disposeCXCursorSet(cset: CXCursorSet);
-    fn clang_CXCursorSet_contains(cset: CXCursorSet, cursor: CXCursor) ->
-     c_uint;
-    fn clang_CXCursorSet_insert(cset: CXCursorSet, cursor: CXCursor) ->
-     c_uint;
-    fn clang_getCursorSemanticParent(cursor: CXCursor) -> CXCursor;
-    fn clang_getCursorLexicalParent(cursor: CXCursor) -> CXCursor;
-    fn clang_getOverriddenCursors(cursor: CXCursor,
-                                  overridden: *mut *mut CXCursor,
-                                  num_overridden: *mut c_uint);
-    fn clang_disposeOverriddenCursors(overridden: *mut CXCursor);
-    fn clang_getIncludedFile(cursor: CXCursor) -> CXFile;
-    fn clang_getCursor(arg1: CXTranslationUnit, arg2: CXSourceLocation) ->
-     CXCursor;
-    fn clang_getCursorLocation(arg1: CXCursor) -> CXSourceLocation;
-    fn clang_getCursorExtent(arg1: CXCursor) -> CXSourceRange;
-    fn clang_getCursorType(C: CXCursor) -> CXType;
-    fn clang_getTypedefDeclUnderlyingType(C: CXCursor) -> CXType;
-    fn clang_getEnumDeclIntegerType(C: CXCursor) -> CXType;
-    fn clang_getEnumConstantDeclValue(C: CXCursor) -> c_longlong;
-    fn clang_getEnumConstantDeclUnsignedValue(C: CXCursor) -> c_ulonglong;
-    fn clang_Cursor_getNumArguments(C: CXCursor) -> c_int;
-    fn clang_Cursor_getArgument(C: CXCursor, i: c_uint) -> CXCursor;
-    fn clang_equalTypes(A: CXType, B: CXType) -> c_uint;
-    fn clang_getCanonicalType(T: CXType) -> CXType;
-    fn clang_isConstQualifiedType(T: CXType) -> c_uint;
-    fn clang_isVolatileQualifiedType(T: CXType) -> c_uint;
-    fn clang_isRestrictQualifiedType(T: CXType) -> c_uint;
-    fn clang_getPointeeType(T: CXType) -> CXType;
-    fn clang_getTypeDeclaration(T: CXType) -> CXCursor;
-    fn clang_getDeclObjCTypeEncoding(C: CXCursor) -> CXString;
-    fn clang_getTypeKindSpelling(K: Enum_CXTypeKind) -> CXString;
-    fn clang_getFunctionTypeCallingConv(T: CXType) -> Enum_CXCallingConv;
-    fn clang_getResultType(T: CXType) -> CXType;
-    fn clang_getNumArgTypes(T: CXType) -> c_int;
-    fn clang_getArgType(T: CXType, i: c_uint) -> CXType;
-    fn clang_isFunctionTypeVariadic(T: CXType) -> c_uint;
-    fn clang_getCursorResultType(C: CXCursor) -> CXType;
-    fn clang_isPODType(T: CXType) -> c_uint;
-    fn clang_getElementType(T: CXType) -> CXType;
-    fn clang_getNumElements(T: CXType) -> c_longlong;
-    fn clang_getArrayElementType(T: CXType) -> CXType;
-    fn clang_getArraySize(T: CXType) -> c_longlong;
-    fn clang_isVirtualBase(arg1: CXCursor) -> c_uint;
-    fn clang_getCXXAccessSpecifier(arg1: CXCursor) ->
-     Enum_CX_CXXAccessSpecifier;
-    fn clang_getNumOverloadedDecls(cursor: CXCursor) -> c_uint;
-    fn clang_getOverloadedDecl(cursor: CXCursor, index: c_uint) -> CXCursor;
-    fn clang_getIBOutletCollectionType(arg1: CXCursor) -> CXType;
-    fn clang_visitChildren(parent: CXCursor, visitor: CXCursorVisitor,
-                           client_data: CXClientData) -> c_uint;
-    fn clang_getCursorUSR(arg1: CXCursor) -> CXString;
-    fn clang_constructUSR_ObjCClass(class_name: *c_schar) -> CXString;
-    fn clang_constructUSR_ObjCCategory(class_name: *c_schar,
-                                       category_name: *c_schar) -> CXString;
-    fn clang_constructUSR_ObjCProtocol(protocol_name: *c_schar) -> CXString;
-    fn clang_constructUSR_ObjCIvar(name: *c_schar, classUSR: CXString) ->
-     CXString;
-    fn clang_constructUSR_ObjCMethod(name: *c_schar, isInstanceMethod: c_uint,
-                                     classUSR: CXString) -> CXString;
-    fn clang_constructUSR_ObjCProperty(property: *c_schar, classUSR: CXString)
-     -> CXString;
-    fn clang_getCursorSpelling(arg1: CXCursor) -> CXString;
-    fn clang_Cursor_getSpellingNameRange(arg1: CXCursor, pieceIndex: c_uint,
-                                         options: c_uint) -> CXSourceRange;
-    fn clang_getCursorDisplayName(arg1: CXCursor) -> CXString;
-    fn clang_getCursorReferenced(arg1: CXCursor) -> CXCursor;
-    fn clang_getCursorDefinition(arg1: CXCursor) -> CXCursor;
-    fn clang_isCursorDefinition(arg1: CXCursor) -> c_uint;
-    fn clang_getCanonicalCursor(arg1: CXCursor) -> CXCursor;
-    fn clang_Cursor_getObjCSelectorIndex(arg1: CXCursor) -> c_int;
-    fn clang_CXXMethod_isStatic(C: CXCursor) -> c_uint;
-    fn clang_CXXMethod_isVirtual(C: CXCursor) -> c_uint;
-    fn clang_getTemplateCursorKind(C: CXCursor) -> Enum_CXCursorKind;
-    fn clang_getSpecializedCursorTemplate(C: CXCursor) -> CXCursor;
-    fn clang_getCursorReferenceNameRange(C: CXCursor, NameFlags: c_uint,
-                                         PieceIndex: c_uint) -> CXSourceRange;
-    fn clang_getTokenKind(arg1: CXToken) -> CXTokenKind;
-    fn clang_getTokenSpelling(arg1: CXTranslationUnit, arg2: CXToken) ->
-     CXString;
-    fn clang_getTokenLocation(arg1: CXTranslationUnit, arg2: CXToken) ->
+extern "C" {
+    pub fn clang_getCString(string: CXString) -> *c_schar;
+    pub fn clang_disposeString(string: CXString);
+    pub fn clang_createIndex(excludeDeclarationsFromPCH: c_int,
+                             displayDiagnostics: c_int) -> CXIndex;
+    pub fn clang_disposeIndex(index: CXIndex);
+    pub fn clang_CXIndex_setGlobalOptions(arg1: CXIndex, options: c_uint);
+    pub fn clang_CXIndex_getGlobalOptions(arg1: CXIndex) -> c_uint;
+    pub fn clang_getFileName(SFile: CXFile) -> CXString;
+    pub fn clang_getFileTime(SFile: CXFile) -> time_t;
+    pub fn clang_isFileMultipleIncludeGuarded(tu: CXTranslationUnit,
+                                              file: CXFile) -> c_uint;
+    pub fn clang_getFile(tu: CXTranslationUnit, file_name: *c_schar) ->
+     CXFile;
+    pub fn clang_getNullLocation() -> CXSourceLocation;
+    pub fn clang_equalLocations(loc1: CXSourceLocation,
+                                loc2: CXSourceLocation) -> c_uint;
+    pub fn clang_getLocation(tu: CXTranslationUnit, file: CXFile,
+                             line: c_uint, column: c_uint) ->
      CXSourceLocation;
-    fn clang_getTokenExtent(arg1: CXTranslationUnit, arg2: CXToken) ->
+    pub fn clang_getLocationForOffset(tu: CXTranslationUnit, file: CXFile,
+                                      offset: c_uint) -> CXSourceLocation;
+    pub fn clang_getNullRange() -> CXSourceRange;
+    pub fn clang_getRange(begin: CXSourceLocation, end: CXSourceLocation) ->
      CXSourceRange;
-    fn clang_tokenize(TU: CXTranslationUnit, Range: CXSourceRange,
-                      Tokens: *mut *mut CXToken, NumTokens: *mut c_uint);
-    fn clang_annotateTokens(TU: CXTranslationUnit, Tokens: *mut CXToken,
-                            NumTokens: c_uint, Cursors: *mut CXCursor);
-    fn clang_disposeTokens(TU: CXTranslationUnit, Tokens: *mut CXToken,
-                           NumTokens: c_uint);
-    fn clang_getCursorKindSpelling(Kind: Enum_CXCursorKind) -> CXString;
-    fn clang_getDefinitionSpellingAndExtent(arg1: CXCursor,
-                                            startBuf: *mut *c_schar,
-                                            endBuf: *mut *c_schar,
-                                            startLine: *mut c_uint,
-                                            startColumn: *mut c_uint,
-                                            endLine: *mut c_uint,
-                                            endColumn: *mut c_uint);
-    fn clang_enableStackTraces();
-    fn clang_executeOnThread(_fn: *u8, user_data: *mut c_void,
-                             stack_size: c_uint);
-    fn clang_getCompletionChunkKind(completion_string: CXCompletionString,
-                                    chunk_number: c_uint) ->
-     Enum_CXCompletionChunkKind;
-    fn clang_getCompletionChunkText(completion_string: CXCompletionString,
-                                    chunk_number: c_uint) -> CXString;
-    fn clang_getCompletionChunkCompletionString(completion_string:
-                                                    CXCompletionString,
-                                                chunk_number: c_uint) ->
-     CXCompletionString;
-    fn clang_getNumCompletionChunks(completion_string: CXCompletionString) ->
+    pub fn clang_equalRanges(range1: CXSourceRange, range2: CXSourceRange) ->
      c_uint;
-    fn clang_getCompletionPriority(completion_string: CXCompletionString) ->
-     c_uint;
-    fn clang_getCompletionAvailability(completion_string: CXCompletionString)
-     -> Enum_CXAvailabilityKind;
-    fn clang_getCompletionNumAnnotations(completion_string:
-                                             CXCompletionString) -> c_uint;
-    fn clang_getCompletionAnnotation(completion_string: CXCompletionString,
-                                     annotation_number: c_uint) -> CXString;
-    fn clang_getCompletionParent(completion_string: CXCompletionString,
-                                 kind: *mut Enum_CXCursorKind) -> CXString;
-    fn clang_getCursorCompletionString(cursor: CXCursor) ->
-     CXCompletionString;
-    fn clang_defaultCodeCompleteOptions() -> c_uint;
-    fn clang_codeCompleteAt(TU: CXTranslationUnit,
-                            complete_filename: *c_schar,
-                            complete_line: c_uint, complete_column: c_uint,
-                            unsaved_files: *mut Struct_CXUnsavedFile,
-                            num_unsaved_files: c_uint, options: c_uint) ->
-     *mut CXCodeCompleteResults;
-    fn clang_sortCodeCompletionResults(Results: *mut CXCompletionResult,
-                                       NumResults: c_uint);
-    fn clang_disposeCodeCompleteResults(Results: *mut CXCodeCompleteResults);
-    fn clang_codeCompleteGetNumDiagnostics(Results:
-                                               *mut CXCodeCompleteResults) ->
-     c_uint;
-    fn clang_codeCompleteGetDiagnostic(Results: *mut CXCodeCompleteResults,
-                                       Index: c_uint) -> CXDiagnostic;
-    fn clang_codeCompleteGetContexts(Results: *mut CXCodeCompleteResults) ->
-     c_ulonglong;
-    fn clang_codeCompleteGetContainerKind(Results: *mut CXCodeCompleteResults,
-                                          IsIncomplete: *mut c_uint) ->
-     Enum_CXCursorKind;
-    fn clang_codeCompleteGetContainerUSR(Results: *mut CXCodeCompleteResults)
-     -> CXString;
-    fn clang_codeCompleteGetObjCSelector(Results: *mut CXCodeCompleteResults)
-     -> CXString;
-    fn clang_getClangVersion() -> CXString;
-    fn clang_toggleCrashRecovery(isEnabled: c_uint);
-    fn clang_getInclusions(tu: CXTranslationUnit, visitor: CXInclusionVisitor,
-                           client_data: CXClientData);
-    fn clang_getRemappings(path: *c_schar) -> CXRemapping;
-    fn clang_getRemappingsFromFileList(filePaths: *mut *c_schar,
-                                       numFiles: c_uint) -> CXRemapping;
-    fn clang_remap_getNumFiles(arg1: CXRemapping) -> c_uint;
-    fn clang_remap_getFilenames(arg1: CXRemapping, index: c_uint,
-                                original: *mut CXString,
-                                transformed: *mut CXString);
-    fn clang_remap_dispose(arg1: CXRemapping);
-    fn clang_findReferencesInFile(cursor: CXCursor, file: CXFile,
-                                  visitor: CXCursorAndRangeVisitor);
-    fn clang_index_isEntityObjCContainerKind(arg1: CXIdxEntityKind) -> c_int;
-    fn clang_index_getObjCContainerDeclInfo(arg1: *CXIdxDeclInfo) ->
-     *CXIdxObjCContainerDeclInfo;
-    fn clang_index_getObjCInterfaceDeclInfo(arg1: *CXIdxDeclInfo) ->
-     *CXIdxObjCInterfaceDeclInfo;
-    fn clang_index_getObjCCategoryDeclInfo(arg1: *CXIdxDeclInfo) ->
-     *CXIdxObjCCategoryDeclInfo;
-    fn clang_index_getObjCProtocolRefListInfo(arg1: *CXIdxDeclInfo) ->
-     *CXIdxObjCProtocolRefListInfo;
-    fn clang_index_getObjCPropertyDeclInfo(arg1: *CXIdxDeclInfo) ->
-     *CXIdxObjCPropertyDeclInfo;
-    fn clang_index_getIBOutletCollectionAttrInfo(arg1: *CXIdxAttrInfo) ->
-     *CXIdxIBOutletCollectionAttrInfo;
-    fn clang_index_getCXXClassDeclInfo(arg1: *CXIdxDeclInfo) ->
-     *CXIdxCXXClassDeclInfo;
-    fn clang_index_getClientContainer(arg1: *CXIdxContainerInfo) ->
-     CXIdxClientContainer;
-    fn clang_index_setClientContainer(arg1: *CXIdxContainerInfo,
-                                      arg2: CXIdxClientContainer);
-    fn clang_index_getClientEntity(arg1: *CXIdxEntityInfo) ->
-     CXIdxClientEntity;
-    fn clang_index_setClientEntity(arg1: *CXIdxEntityInfo,
-                                   arg2: CXIdxClientEntity);
-    fn clang_IndexAction_create(CIdx: CXIndex) -> CXIndexAction;
-    fn clang_IndexAction_dispose(arg1: CXIndexAction);
-    fn clang_indexSourceFile(arg1: CXIndexAction, client_data: CXClientData,
-                             index_callbacks: *mut IndexerCallbacks,
-                             index_callbacks_size: c_uint,
-                             index_options: c_uint, source_filename: *c_schar,
-                             command_line_args: **c_schar,
-                             num_command_line_args: c_int,
-                             unsaved_files: *mut Struct_CXUnsavedFile,
-                             num_unsaved_files: c_uint,
-                             out_TU: *mut CXTranslationUnit,
-                             TU_options: c_uint) -> c_int;
-    fn clang_indexTranslationUnit(arg1: CXIndexAction,
-                                  client_data: CXClientData,
-                                  index_callbacks: *mut IndexerCallbacks,
-                                  index_callbacks_size: c_uint,
-                                  index_options: c_uint,
-                                  arg2: CXTranslationUnit) -> c_int;
-    fn clang_indexLoc_getFileLocation(loc: CXIdxLoc,
-                                      indexFile: *mut CXIdxClientFile,
+    pub fn clang_Range_isNull(range: CXSourceRange) -> c_int;
+    pub fn clang_getExpansionLocation(location: CXSourceLocation,
                                       file: *mut CXFile, line: *mut c_uint,
                                       column: *mut c_uint,
                                       offset: *mut c_uint);
-    fn clang_indexLoc_getCXSourceLocation(loc: CXIdxLoc) -> CXSourceLocation;
+    pub fn clang_getPresumedLocation(location: CXSourceLocation,
+                                     filename: *mut CXString,
+                                     line: *mut c_uint, column: *mut c_uint);
+    pub fn clang_getInstantiationLocation(location: CXSourceLocation,
+                                          file: *mut CXFile,
+                                          line: *mut c_uint,
+                                          column: *mut c_uint,
+                                          offset: *mut c_uint);
+    pub fn clang_getSpellingLocation(location: CXSourceLocation,
+                                     file: *mut CXFile, line: *mut c_uint,
+                                     column: *mut c_uint,
+                                     offset: *mut c_uint);
+    pub fn clang_getRangeStart(range: CXSourceRange) -> CXSourceLocation;
+    pub fn clang_getRangeEnd(range: CXSourceRange) -> CXSourceLocation;
+    pub fn clang_getNumDiagnosticsInSet(Diags: CXDiagnosticSet) -> c_uint;
+    pub fn clang_getDiagnosticInSet(Diags: CXDiagnosticSet, Index: c_uint) ->
+     CXDiagnostic;
+    pub fn clang_loadDiagnostics(file: *c_schar,
+                                 error: *mut Enum_CXLoadDiag_Error,
+                                 errorString: *mut CXString) ->
+     CXDiagnosticSet;
+    pub fn clang_disposeDiagnosticSet(Diags: CXDiagnosticSet);
+    pub fn clang_getChildDiagnostics(D: CXDiagnostic) -> CXDiagnosticSet;
+    pub fn clang_getNumDiagnostics(Unit: CXTranslationUnit) -> c_uint;
+    pub fn clang_getDiagnostic(Unit: CXTranslationUnit, Index: c_uint) ->
+     CXDiagnostic;
+    pub fn clang_getDiagnosticSetFromTU(Unit: CXTranslationUnit) ->
+     CXDiagnosticSet;
+    pub fn clang_disposeDiagnostic(Diagnostic: CXDiagnostic);
+    pub fn clang_formatDiagnostic(Diagnostic: CXDiagnostic, Options: c_uint)
+     -> CXString;
+    pub fn clang_defaultDiagnosticDisplayOptions() -> c_uint;
+    pub fn clang_getDiagnosticSeverity(arg1: CXDiagnostic) ->
+     Enum_CXDiagnosticSeverity;
+    pub fn clang_getDiagnosticLocation(arg1: CXDiagnostic) ->
+     CXSourceLocation;
+    pub fn clang_getDiagnosticSpelling(arg1: CXDiagnostic) -> CXString;
+    pub fn clang_getDiagnosticOption(Diag: CXDiagnostic,
+                                     Disable: *mut CXString) -> CXString;
+    pub fn clang_getDiagnosticCategory(arg1: CXDiagnostic) -> c_uint;
+    pub fn clang_getDiagnosticCategoryName(Category: c_uint) -> CXString;
+    pub fn clang_getDiagnosticCategoryText(arg1: CXDiagnostic) -> CXString;
+    pub fn clang_getDiagnosticNumRanges(arg1: CXDiagnostic) -> c_uint;
+    pub fn clang_getDiagnosticRange(Diagnostic: CXDiagnostic, Range: c_uint)
+     -> CXSourceRange;
+    pub fn clang_getDiagnosticNumFixIts(Diagnostic: CXDiagnostic) -> c_uint;
+    pub fn clang_getDiagnosticFixIt(Diagnostic: CXDiagnostic, FixIt: c_uint,
+                                    ReplacementRange: *mut CXSourceRange) ->
+     CXString;
+    pub fn clang_getTranslationUnitSpelling(CTUnit: CXTranslationUnit) ->
+     CXString;
+    pub fn clang_createTranslationUnitFromSourceFile(CIdx: CXIndex,
+                                                     source_filename:
+                                                         *c_schar,
+                                                     num_clang_command_line_args:
+                                                         c_int,
+                                                     clang_command_line_args:
+                                                         **c_schar,
+                                                     num_unsaved_files:
+                                                         c_uint,
+                                                     unsaved_files:
+                                                         *mut Struct_CXUnsavedFile)
+     -> CXTranslationUnit;
+    pub fn clang_createTranslationUnit(arg1: CXIndex, ast_filename: *c_schar)
+     -> CXTranslationUnit;
+    pub fn clang_defaultEditingTranslationUnitOptions() -> c_uint;
+    pub fn clang_parseTranslationUnit(CIdx: CXIndex,
+                                      source_filename: *c_schar,
+                                      command_line_args: **c_schar,
+                                      num_command_line_args: c_int,
+                                      unsaved_files:
+                                          *mut Struct_CXUnsavedFile,
+                                      num_unsaved_files: c_uint,
+                                      options: c_uint) -> CXTranslationUnit;
+    pub fn clang_defaultSaveOptions(TU: CXTranslationUnit) -> c_uint;
+    pub fn clang_saveTranslationUnit(TU: CXTranslationUnit,
+                                     FileName: *c_schar, options: c_uint) ->
+     c_int;
+    pub fn clang_disposeTranslationUnit(arg1: CXTranslationUnit);
+    pub fn clang_defaultReparseOptions(TU: CXTranslationUnit) -> c_uint;
+    pub fn clang_reparseTranslationUnit(TU: CXTranslationUnit,
+                                        num_unsaved_files: c_uint,
+                                        unsaved_files:
+                                            *mut Struct_CXUnsavedFile,
+                                        options: c_uint) -> c_int;
+    pub fn clang_getTUResourceUsageName(kind: Enum_CXTUResourceUsageKind) ->
+     *c_schar;
+    pub fn clang_getCXTUResourceUsage(TU: CXTranslationUnit) ->
+     CXTUResourceUsage;
+    pub fn clang_disposeCXTUResourceUsage(usage: CXTUResourceUsage);
+    pub fn clang_getNullCursor() -> CXCursor;
+    pub fn clang_getTranslationUnitCursor(arg1: CXTranslationUnit) ->
+     CXCursor;
+    pub fn clang_equalCursors(arg1: CXCursor, arg2: CXCursor) -> c_uint;
+    pub fn clang_Cursor_isNull(arg1: CXCursor) -> c_int;
+    pub fn clang_hashCursor(arg1: CXCursor) -> c_uint;
+    pub fn clang_getCursorKind(arg1: CXCursor) -> Enum_CXCursorKind;
+    pub fn clang_isDeclaration(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_isReference(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_isExpression(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_isStatement(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_isAttribute(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_isInvalid(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_isTranslationUnit(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_isPreprocessing(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_isUnexposed(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_getCursorLinkage(cursor: CXCursor) -> Enum_CXLinkageKind;
+    pub fn clang_getCursorAvailability(cursor: CXCursor) ->
+     Enum_CXAvailabilityKind;
+    pub fn clang_getCursorLanguage(cursor: CXCursor) -> Enum_CXLanguageKind;
+    pub fn clang_Cursor_getTranslationUnit(arg1: CXCursor) ->
+     CXTranslationUnit;
+    pub fn clang_createCXCursorSet() -> CXCursorSet;
+    pub fn clang_disposeCXCursorSet(cset: CXCursorSet);
+    pub fn clang_CXCursorSet_contains(cset: CXCursorSet, cursor: CXCursor) ->
+     c_uint;
+    pub fn clang_CXCursorSet_insert(cset: CXCursorSet, cursor: CXCursor) ->
+     c_uint;
+    pub fn clang_getCursorSemanticParent(cursor: CXCursor) -> CXCursor;
+    pub fn clang_getCursorLexicalParent(cursor: CXCursor) -> CXCursor;
+    pub fn clang_getOverriddenCursors(cursor: CXCursor,
+                                      overridden: *mut *mut CXCursor,
+                                      num_overridden: *mut c_uint);
+    pub fn clang_disposeOverriddenCursors(overridden: *mut CXCursor);
+    pub fn clang_getIncludedFile(cursor: CXCursor) -> CXFile;
+    pub fn clang_getCursor(arg1: CXTranslationUnit, arg2: CXSourceLocation) ->
+     CXCursor;
+    pub fn clang_getCursorLocation(arg1: CXCursor) -> CXSourceLocation;
+    pub fn clang_getCursorExtent(arg1: CXCursor) -> CXSourceRange;
+    pub fn clang_getCursorType(C: CXCursor) -> CXType;
+    pub fn clang_getTypedefDeclUnderlyingType(C: CXCursor) -> CXType;
+    pub fn clang_getEnumDeclIntegerType(C: CXCursor) -> CXType;
+    pub fn clang_getEnumConstantDeclValue(C: CXCursor) -> c_longlong;
+    pub fn clang_getEnumConstantDeclUnsignedValue(C: CXCursor) -> c_ulonglong;
+    pub fn clang_Cursor_getNumArguments(C: CXCursor) -> c_int;
+    pub fn clang_Cursor_getArgument(C: CXCursor, i: c_uint) -> CXCursor;
+    pub fn clang_equalTypes(A: CXType, B: CXType) -> c_uint;
+    pub fn clang_getCanonicalType(T: CXType) -> CXType;
+    pub fn clang_isConstQualifiedType(T: CXType) -> c_uint;
+    pub fn clang_isVolatileQualifiedType(T: CXType) -> c_uint;
+    pub fn clang_isRestrictQualifiedType(T: CXType) -> c_uint;
+    pub fn clang_getPointeeType(T: CXType) -> CXType;
+    pub fn clang_getTypeDeclaration(T: CXType) -> CXCursor;
+    pub fn clang_getDeclObjCTypeEncoding(C: CXCursor) -> CXString;
+    pub fn clang_getTypeKindSpelling(K: Enum_CXTypeKind) -> CXString;
+    pub fn clang_getFunctionTypeCallingConv(T: CXType) -> Enum_CXCallingConv;
+    pub fn clang_getResultType(T: CXType) -> CXType;
+    pub fn clang_getNumArgTypes(T: CXType) -> c_int;
+    pub fn clang_getArgType(T: CXType, i: c_uint) -> CXType;
+    pub fn clang_isFunctionTypeVariadic(T: CXType) -> c_uint;
+    pub fn clang_getCursorResultType(C: CXCursor) -> CXType;
+    pub fn clang_isPODType(T: CXType) -> c_uint;
+    pub fn clang_getElementType(T: CXType) -> CXType;
+    pub fn clang_getNumElements(T: CXType) -> c_longlong;
+    pub fn clang_getArrayElementType(T: CXType) -> CXType;
+    pub fn clang_getArraySize(T: CXType) -> c_longlong;
+    pub fn clang_isVirtualBase(arg1: CXCursor) -> c_uint;
+    pub fn clang_getCXXAccessSpecifier(arg1: CXCursor) ->
+     Enum_CX_CXXAccessSpecifier;
+    pub fn clang_getNumOverloadedDecls(cursor: CXCursor) -> c_uint;
+    pub fn clang_getOverloadedDecl(cursor: CXCursor, index: c_uint) ->
+     CXCursor;
+    pub fn clang_getIBOutletCollectionType(arg1: CXCursor) -> CXType;
+    pub fn clang_visitChildren(parent: CXCursor, visitor: CXCursorVisitor,
+                               client_data: CXClientData) -> c_uint;
+    pub fn clang_getCursorUSR(arg1: CXCursor) -> CXString;
+    pub fn clang_constructUSR_ObjCClass(class_name: *c_schar) -> CXString;
+    pub fn clang_constructUSR_ObjCCategory(class_name: *c_schar,
+                                           category_name: *c_schar) ->
+     CXString;
+    pub fn clang_constructUSR_ObjCProtocol(protocol_name: *c_schar) ->
+     CXString;
+    pub fn clang_constructUSR_ObjCIvar(name: *c_schar, classUSR: CXString) ->
+     CXString;
+    pub fn clang_constructUSR_ObjCMethod(name: *c_schar,
+                                         isInstanceMethod: c_uint,
+                                         classUSR: CXString) -> CXString;
+    pub fn clang_constructUSR_ObjCProperty(property: *c_schar,
+                                           classUSR: CXString) -> CXString;
+    pub fn clang_getCursorSpelling(arg1: CXCursor) -> CXString;
+    pub fn clang_Cursor_getSpellingNameRange(arg1: CXCursor,
+                                             pieceIndex: c_uint,
+                                             options: c_uint) ->
+     CXSourceRange;
+    pub fn clang_getCursorDisplayName(arg1: CXCursor) -> CXString;
+    pub fn clang_getCursorReferenced(arg1: CXCursor) -> CXCursor;
+    pub fn clang_getCursorDefinition(arg1: CXCursor) -> CXCursor;
+    pub fn clang_isCursorDefinition(arg1: CXCursor) -> c_uint;
+    pub fn clang_getCanonicalCursor(arg1: CXCursor) -> CXCursor;
+    pub fn clang_Cursor_getObjCSelectorIndex(arg1: CXCursor) -> c_int;
+    pub fn clang_CXXMethod_isStatic(C: CXCursor) -> c_uint;
+    pub fn clang_CXXMethod_isVirtual(C: CXCursor) -> c_uint;
+    pub fn clang_getTemplateCursorKind(C: CXCursor) -> Enum_CXCursorKind;
+    pub fn clang_getSpecializedCursorTemplate(C: CXCursor) -> CXCursor;
+    pub fn clang_getCursorReferenceNameRange(C: CXCursor, NameFlags: c_uint,
+                                             PieceIndex: c_uint) ->
+     CXSourceRange;
+    pub fn clang_getTokenKind(arg1: CXToken) -> CXTokenKind;
+    pub fn clang_getTokenSpelling(arg1: CXTranslationUnit, arg2: CXToken) ->
+     CXString;
+    pub fn clang_getTokenLocation(arg1: CXTranslationUnit, arg2: CXToken) ->
+     CXSourceLocation;
+    pub fn clang_getTokenExtent(arg1: CXTranslationUnit, arg2: CXToken) ->
+     CXSourceRange;
+    pub fn clang_tokenize(TU: CXTranslationUnit, Range: CXSourceRange,
+                          Tokens: *mut *mut CXToken, NumTokens: *mut c_uint);
+    pub fn clang_annotateTokens(TU: CXTranslationUnit, Tokens: *mut CXToken,
+                                NumTokens: c_uint, Cursors: *mut CXCursor);
+    pub fn clang_disposeTokens(TU: CXTranslationUnit, Tokens: *mut CXToken,
+                               NumTokens: c_uint);
+    pub fn clang_getCursorKindSpelling(Kind: Enum_CXCursorKind) -> CXString;
+    pub fn clang_getDefinitionSpellingAndExtent(arg1: CXCursor,
+                                                startBuf: *mut *c_schar,
+                                                endBuf: *mut *c_schar,
+                                                startLine: *mut c_uint,
+                                                startColumn: *mut c_uint,
+                                                endLine: *mut c_uint,
+                                                endColumn: *mut c_uint);
+    pub fn clang_enableStackTraces();
+    pub fn clang_executeOnThread(_fn: *u8, user_data: *mut c_void,
+                                 stack_size: c_uint);
+    pub fn clang_getCompletionChunkKind(completion_string: CXCompletionString,
+                                        chunk_number: c_uint) ->
+     Enum_CXCompletionChunkKind;
+    pub fn clang_getCompletionChunkText(completion_string: CXCompletionString,
+                                        chunk_number: c_uint) -> CXString;
+    pub fn clang_getCompletionChunkCompletionString(completion_string:
+                                                        CXCompletionString,
+                                                    chunk_number: c_uint) ->
+     CXCompletionString;
+    pub fn clang_getNumCompletionChunks(completion_string: CXCompletionString)
+     -> c_uint;
+    pub fn clang_getCompletionPriority(completion_string: CXCompletionString)
+     -> c_uint;
+    pub fn clang_getCompletionAvailability(completion_string:
+                                               CXCompletionString) ->
+     Enum_CXAvailabilityKind;
+    pub fn clang_getCompletionNumAnnotations(completion_string:
+                                                 CXCompletionString) ->
+     c_uint;
+    pub fn clang_getCompletionAnnotation(completion_string:
+                                             CXCompletionString,
+                                         annotation_number: c_uint) ->
+     CXString;
+    pub fn clang_getCompletionParent(completion_string: CXCompletionString,
+                                     kind: *mut Enum_CXCursorKind) ->
+     CXString;
+    pub fn clang_getCursorCompletionString(cursor: CXCursor) ->
+     CXCompletionString;
+    pub fn clang_defaultCodeCompleteOptions() -> c_uint;
+    pub fn clang_codeCompleteAt(TU: CXTranslationUnit,
+                                complete_filename: *c_schar,
+                                complete_line: c_uint,
+                                complete_column: c_uint,
+                                unsaved_files: *mut Struct_CXUnsavedFile,
+                                num_unsaved_files: c_uint, options: c_uint) ->
+     *mut CXCodeCompleteResults;
+    pub fn clang_sortCodeCompletionResults(Results: *mut CXCompletionResult,
+                                           NumResults: c_uint);
+    pub fn clang_disposeCodeCompleteResults(Results:
+                                                *mut CXCodeCompleteResults);
+    pub fn clang_codeCompleteGetNumDiagnostics(Results:
+                                                   *mut CXCodeCompleteResults)
+     -> c_uint;
+    pub fn clang_codeCompleteGetDiagnostic(Results:
+                                               *mut CXCodeCompleteResults,
+                                           Index: c_uint) -> CXDiagnostic;
+    pub fn clang_codeCompleteGetContexts(Results: *mut CXCodeCompleteResults)
+     -> c_ulonglong;
+    pub fn clang_codeCompleteGetContainerKind(Results:
+                                                  *mut CXCodeCompleteResults,
+                                              IsIncomplete: *mut c_uint) ->
+     Enum_CXCursorKind;
+    pub fn clang_codeCompleteGetContainerUSR(Results:
+                                                 *mut CXCodeCompleteResults)
+     -> CXString;
+    pub fn clang_codeCompleteGetObjCSelector(Results:
+                                                 *mut CXCodeCompleteResults)
+     -> CXString;
+    pub fn clang_getClangVersion() -> CXString;
+    pub fn clang_toggleCrashRecovery(isEnabled: c_uint);
+    pub fn clang_getInclusions(tu: CXTranslationUnit,
+                               visitor: CXInclusionVisitor,
+                               client_data: CXClientData);
+    pub fn clang_getRemappings(path: *c_schar) -> CXRemapping;
+    pub fn clang_getRemappingsFromFileList(filePaths: *mut *c_schar,
+                                           numFiles: c_uint) -> CXRemapping;
+    pub fn clang_remap_getNumFiles(arg1: CXRemapping) -> c_uint;
+    pub fn clang_remap_getFilenames(arg1: CXRemapping, index: c_uint,
+                                    original: *mut CXString,
+                                    transformed: *mut CXString);
+    pub fn clang_remap_dispose(arg1: CXRemapping);
+    pub fn clang_findReferencesInFile(cursor: CXCursor, file: CXFile,
+                                      visitor: CXCursorAndRangeVisitor);
+    pub fn clang_index_isEntityObjCContainerKind(arg1: CXIdxEntityKind) ->
+     c_int;
+    pub fn clang_index_getObjCContainerDeclInfo(arg1: *CXIdxDeclInfo) ->
+     *CXIdxObjCContainerDeclInfo;
+    pub fn clang_index_getObjCInterfaceDeclInfo(arg1: *CXIdxDeclInfo) ->
+     *CXIdxObjCInterfaceDeclInfo;
+    pub fn clang_index_getObjCCategoryDeclInfo(arg1: *CXIdxDeclInfo) ->
+     *CXIdxObjCCategoryDeclInfo;
+    pub fn clang_index_getObjCProtocolRefListInfo(arg1: *CXIdxDeclInfo) ->
+     *CXIdxObjCProtocolRefListInfo;
+    pub fn clang_index_getObjCPropertyDeclInfo(arg1: *CXIdxDeclInfo) ->
+     *CXIdxObjCPropertyDeclInfo;
+    pub fn clang_index_getIBOutletCollectionAttrInfo(arg1: *CXIdxAttrInfo) ->
+     *CXIdxIBOutletCollectionAttrInfo;
+    pub fn clang_index_getCXXClassDeclInfo(arg1: *CXIdxDeclInfo) ->
+     *CXIdxCXXClassDeclInfo;
+    pub fn clang_index_getClientContainer(arg1: *CXIdxContainerInfo) ->
+     CXIdxClientContainer;
+    pub fn clang_index_setClientContainer(arg1: *CXIdxContainerInfo,
+                                          arg2: CXIdxClientContainer);
+    pub fn clang_index_getClientEntity(arg1: *CXIdxEntityInfo) ->
+     CXIdxClientEntity;
+    pub fn clang_index_setClientEntity(arg1: *CXIdxEntityInfo,
+                                       arg2: CXIdxClientEntity);
+    pub fn clang_IndexAction_create(CIdx: CXIndex) -> CXIndexAction;
+    pub fn clang_IndexAction_dispose(arg1: CXIndexAction);
+    pub fn clang_indexSourceFile(arg1: CXIndexAction,
+                                 client_data: CXClientData,
+                                 index_callbacks: *mut IndexerCallbacks,
+                                 index_callbacks_size: c_uint,
+                                 index_options: c_uint,
+                                 source_filename: *c_schar,
+                                 command_line_args: **c_schar,
+                                 num_command_line_args: c_int,
+                                 unsaved_files: *mut Struct_CXUnsavedFile,
+                                 num_unsaved_files: c_uint,
+                                 out_TU: *mut CXTranslationUnit,
+                                 TU_options: c_uint) -> c_int;
+    pub fn clang_indexTranslationUnit(arg1: CXIndexAction,
+                                      client_data: CXClientData,
+                                      index_callbacks: *mut IndexerCallbacks,
+                                      index_callbacks_size: c_uint,
+                                      index_options: c_uint,
+                                      arg2: CXTranslationUnit) -> c_int;
+    pub fn clang_indexLoc_getFileLocation(loc: CXIdxLoc,
+                                          indexFile: *mut CXIdxClientFile,
+                                          file: *mut CXFile,
+                                          line: *mut c_uint,
+                                          column: *mut c_uint,
+                                          offset: *mut c_uint);
+    pub fn clang_indexLoc_getCXSourceLocation(loc: CXIdxLoc) ->
+     CXSourceLocation;
 }
