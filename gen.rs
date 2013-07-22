@@ -203,10 +203,10 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
     match *link {
         None => attrs = ~[],
         Some(ref l) => {
-            let link_args = dummy_spanned(ast::attribute_ {
-                style: ast::attr_outer,
+            let link_args = dummy_spanned(ast::Attribute_ {
+                style: ast::AttrOuter,
                 value: @dummy_spanned(
-                    ast::meta_name_value(
+                    ast::MetaNameValue(
                         @"link_args",
                         dummy_spanned(ast::lit_str((~"-l" + *l).to_managed()))
                     )
@@ -525,11 +525,11 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -
     return def;
 }
 
-fn mk_link_name_attr(name: ~str) -> ast::attribute {
+fn mk_link_name_attr(name: ~str) -> ast::Attribute {
     let lit = dummy_spanned(ast::lit_str(name.to_managed()));
-    let attr_val = @dummy_spanned(ast::meta_name_value(@"link_name", lit));
-    let attr = ast::attribute_ {
-        style: ast::attr_outer,
+    let attr_val = @dummy_spanned(ast::MetaNameValue(@"link_name", lit));
+    let attr = ast::Attribute_ {
+        style: ast::AttrOuter,
         value: attr_val,
         is_sugared_doc: false
     };
