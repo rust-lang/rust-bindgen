@@ -76,7 +76,7 @@ fn enum_name(name: ~str) -> ~str {
     fmt!("Enum_%s", name)
 }
 
-pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
+pub fn gen_rs(out: @io::Writer, abi: ~str, link: &Option<~str>, globs: &[Global]) {
     let mut ctx = GenCtx { ext_cx: base::ExtCtxt::new(parse::new_parse_sess(None), ~[]),
                            unnamed_ty: 0
                          };
@@ -156,7 +156,7 @@ pub fn gen_rs(out: @io::Writer, link: &Option<~str>, globs: &[Global]) {
     };
 
     let views = ~[mk_import(&mut ctx, &[~"std", ~"libc"])];
-    defs.push(mk_extern(&mut ctx, link, vars, funcs));
+    defs.push(mk_extern(&mut ctx, abi, link, vars, funcs));
 
     let crate = ast::Crate {
         module: ast::_mod {
@@ -197,7 +197,7 @@ fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::view_item {
            };
 }
 
-fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
+fn mk_extern(ctx: &mut GenCtx, abi: ~str, link: &Option<~str>,
                            vars: ~[@ast::foreign_item],
                            funcs: ~[@ast::foreign_item]) -> @ast::item {
     let attrs;
@@ -218,9 +218,19 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
         }
     }
 
+    let abis = match abi {
+        ~"cdecl" => abi::AbiSet::from(abi::Cdecl),
+        ~"stdcall" => abi::AbiSet::from(abi::Stdcall),
+        ~"fastcall" => abi::AbiSet::from(abi::Fastcall),
+        ~"aapcs" => abi::AbiSet::from(abi::Aapcs),
+        ~"Rust" => abi::AbiSet::Rust(),
+        ~"rust-intrinsic" => abi::AbiSet::Intrinsic(),
+        _ => abi::AbiSet::C()
+    };
+
     let ext = ast::item_foreign_mod(ast::foreign_mod {
         sort: ast::anonymous,
-        abis: abi::AbiSet::C(),
+        abis: abis,
         view_items: ~[],
         items: vars + funcs
     });
