@@ -470,7 +470,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
             stmts: ~[],
             expr: Some(expr),
             id: ext_cx.next_id(),
-            rules: ast::default_blk,
+            rules: ast::DefaultBlock,
             span: dummy_sp()
         };
 
