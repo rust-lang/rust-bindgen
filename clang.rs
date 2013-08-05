@@ -1,5 +1,5 @@
 use std::libc::*;
-use std::{cast, ptr, str, to_bytes, uint, vec};
+use std::{cast, ptr, str, to_bytes, vec};
 
 pub use ll = clangll;
 use clangll::*;
@@ -80,7 +80,7 @@ impl Cursor {
         unsafe {
             let num = clang_Cursor_getNumArguments(**self) as uint;
             let mut args = ~[];
-            for uint::range(0, num) |i| {
+            for i in range(0, num) {
                 args.push(Cursor(clang_Cursor_getArgument(**self, i as c_uint)));
             }
             return args;
@@ -184,7 +184,7 @@ impl Type {
         unsafe {
             let num = clang_getNumArgTypes(**self) as uint;
             let mut args = ~[];
-            for uint::range(0, num) |i| {
+            for i in range(0, num) {
                 args.push(Type(clang_getArgType(**self, i as c_uint)));
             }
             return args;
@@ -281,7 +281,7 @@ impl TranslationUnit {
         unsafe {
             let num = clang_getNumDiagnostics(**self) as uint;
             let mut diags = ~[];
-            for uint::range(0, num) |i| {
+            for i in range(0, num) {
                 diags.push(Diagnostic(clang_getDiagnostic(**self, i as c_uint)));
             }
             return diags;

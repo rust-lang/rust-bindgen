@@ -106,9 +106,10 @@ fn builtin_names() -> HashSet<~str> {
         ~"__va_list_tag"
     ];
 
-    for keys.consume_iter().advance |s| {
+    keys.consume_iter().advance(|s| {
         names.insert(s);
-    }
+        true
+    });
 
     return names;
 }
@@ -145,13 +146,15 @@ fn match_pattern(ctx: @mut BindGenCtx, cursor: &Cursor) -> bool {
     }
 
     let name = file.name();
-    for ctx.match_pat.iter().advance |pat| {
+    let mut found = false;
+    ctx.match_pat.iter().advance(|pat| {
         if name.contains(*pat) {
-            return true;
+            found = true;
         }
-    }
+        true
+    });
 
-    return false;
+    return found;
 }
 
 fn decl_name(ctx: @mut BindGenCtx, cursor: &Cursor) -> Global {
@@ -481,12 +484,13 @@ fn main() {
 
             let mut c_err = false;
             let diags = unit.diags();
-            for diags.iter().advance |d: &Diagnostic| {
+            diags.iter().advance(|d| {
                 io::stderr().write_line(d.format(Diagnostic::default_opts()));
                 if d.severity() >= CXDiagnostic_Error {
                     c_err = true;
                 }
-            }
+                true
+            });
 
             if c_err {
                 return;

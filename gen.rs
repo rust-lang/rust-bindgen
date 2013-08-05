@@ -89,19 +89,20 @@ pub fn gen_rs(out: @io::Writer, abi: ~str, link: &Option<~str>, globs: &[Global]
     let mut fs = ~[];
     let mut vs = ~[];
     let mut gs = ~[];
-    for uniq_globs.iter().advance |g| {
+    uniq_globs.iter().advance(|g| {
         match *g {
             GOther => {}
             GFunc(_) => fs.push(*g),
             GVar(_) => vs.push(*g),
             _ => gs.push(*g)
         }
-    }
+        true
+    });
 
     let mut defs = ~[];
     gs = remove_redundent_decl(gs);
 
-    for gs.iter().advance |g| {
+    gs.iter().advance(|g| {
         match *g {
             GType(ti) => defs.push_all(ctypedef_to_rs(&mut ctx, ti.name.clone(), ti.ty)),
             GCompDecl(ci) => {
@@ -133,7 +134,8 @@ pub fn gen_rs(out: @io::Writer, abi: ~str, link: &Option<~str>, globs: &[Global]
             },
             _ => { }
         }
-    }
+        true
+    });
 
     let vars = do vs.map |v| {
         match *v {
@@ -513,7 +515,7 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -
     let val_ty = cty_to_rs(ctx, ty);
     let mut def = ty_def;
 
-    for items.iter().advance |it| {
+    items.iter().advance(|it| {
         let cst = ast::item_static(
             val_ty.clone(),
             ast::m_imm,
@@ -531,7 +533,8 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -
                       };
 
         def.push(val_def);
-    }
+        true
+    });
 
     return def;
 }
@@ -618,7 +621,6 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @Type,
             output: ret,
             cf: ast::return_val
         },
-        ast::impure_fn,
         empty_generics()
     );
 
