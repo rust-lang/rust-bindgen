@@ -263,8 +263,10 @@ pub struct TranslationUnit(CXTranslationUnit);
 impl TranslationUnit {
     pub fn parse(ix: &Index, file: &str, cmd_args: &[~str],
                  unsaved: &[UnsavedFile], opts: uint) -> TranslationUnit {
-        let fname = file.as_c_str(|f| f);
-        let c_args = cmd_args.map(|s| (*s).as_c_str(|cs| cs));
+        let _fname = file.to_c_str();
+        let fname = _fname.with_ref(|f| f);
+        let _c_args = cmd_args.map(|s| (*s).to_c_str());
+        let c_args = _c_args.map(|s| (*s).with_ref(|cs| cs));
         let mut c_unsaved = unsaved.map(|f| **f);
         let tu = unsafe {
             clang_parseTranslationUnit(**ix, fname,

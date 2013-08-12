@@ -106,7 +106,7 @@ fn builtin_names() -> HashSet<~str> {
         ~"__va_list_tag"
     ];
 
-    keys.consume_iter().advance(|s| {
+    keys.move_iter().advance(|s| {
         names.insert(s);
         true
     });
