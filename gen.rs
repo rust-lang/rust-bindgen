@@ -454,6 +454,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
     let union_def = mk_item(ctx, union_id, def);
 
     let expr = quote_expr!(
+        ext_cx,
         unsafe { std::cast::transmute(&std::ptr::to_mut_unsafe_ptr(self)) }
     );
     let mut unnamed = 0;
