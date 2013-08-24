@@ -14,7 +14,8 @@ use types::*;
 
 struct GenCtx {
     ext_cx: @base::ExtCtxt,
-    unnamed_ty: uint
+    unnamed_ty: uint,
+    abis: abi::AbiSet
 }
 
 fn empty_generics() -> ast::Generics {
@@ -77,8 +78,19 @@ fn enum_name(name: ~str) -> ~str {
 }
 
 pub fn gen_rs(out: @io::Writer, abi: ~str, link: &Option<~str>, globs: &[Global]) {
+    let abis = match abi {
+        ~"cdecl" => abi::AbiSet::from(abi::Cdecl),
+        ~"stdcall" => abi::AbiSet::from(abi::Stdcall),
+        ~"fastcall" => abi::AbiSet::from(abi::Fastcall),
+        ~"aapcs" => abi::AbiSet::from(abi::Aapcs),
+        ~"Rust" => abi::AbiSet::Rust(),
+        ~"rust-intrinsic" => abi::AbiSet::Intrinsic(),
+        _ => abi::AbiSet::C()
+    };
+
     let mut ctx = GenCtx { ext_cx: base::ExtCtxt::new(parse::new_parse_sess(None), ~[]),
-                           unnamed_ty: 0
+                           unnamed_ty: 0,
+                           abis: abis
                          };
     ctx.ext_cx.bt_push(ExpnInfo {
         call_site: dummy_sp(),
@@ -158,7 +170,7 @@ pub fn gen_rs(out: @io::Writer, abi: ~str, link: &Option<~str>, globs: &[Global]
     };
 
     let views = ~[mk_import(&mut ctx, &[~"std", ~"libc"])];
-    defs.push(mk_extern(&mut ctx, abi, link, vars, funcs));
+    defs.push(mk_extern(&mut ctx, link, vars, funcs));
 
     let crate = ast::Crate {
         module: ast::_mod {
@@ -199,7 +211,7 @@ fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::view_item {
            };
 }
 
-fn mk_extern(ctx: &mut GenCtx, abi: ~str, link: &Option<~str>,
+fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
                            vars: ~[@ast::foreign_item],
                            funcs: ~[@ast::foreign_item]) -> @ast::item {
     let attrs;
@@ -220,19 +232,9 @@ fn mk_extern(ctx: &mut GenCtx, abi: ~str, link: &Option<~str>,
         }
     }
 
-    let abis = match abi {
-        ~"cdecl" => abi::AbiSet::from(abi::Cdecl),
-        ~"stdcall" => abi::AbiSet::from(abi::Stdcall),
-        ~"fastcall" => abi::AbiSet::from(abi::Fastcall),
-        ~"aapcs" => abi::AbiSet::from(abi::Aapcs),
-        ~"Rust" => abi::AbiSet::Rust(),
-        ~"rust-intrinsic" => abi::AbiSet::Intrinsic(),
-        _ => abi::AbiSet::C()
-    };
-
     let ext = ast::item_foreign_mod(ast::foreign_mod {
         sort: ast::anonymous,
-        abis: abis,
+        abis: ctx.abis,
         view_items: ~[],
         items: vars + funcs
     });
@@ -569,9 +571,10 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: ~str, ty: @Type) -> @ast::foreign_item {
            };
 }
 
-fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @Type,
-                                         aty: ~[(~str, @Type)],
-                                         _var: bool) -> @ast::foreign_item {
+fn cfuncty_to_rs(ctx: &mut GenCtx, rty: @Type,
+                                    aty: ~[(~str, @Type)],
+                                    _var: bool) -> ast::fn_decl {
+
     let ret = match *rty {
         TVoid => ast::Ty {
             id: ctx.ext_cx.next_id(),
@@ -616,12 +619,18 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @Type,
         }
     };
 
+    return ast::fn_decl {
+        inputs: args,
+        output: ret,
+        cf: ast::return_val
+    };
+}
+
+fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @Type,
+                                         aty: ~[(~str, @Type)],
+                                         var: bool) -> @ast::foreign_item {
     let decl = ast::foreign_item_fn(
-        ast::fn_decl {
-            inputs: args,
-            output: ret,
-            cf: ast::return_val
-        },
+        cfuncty_to_rs(ctx, rty, aty, var),
         empty_generics()
     );
 
@@ -670,7 +679,10 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: @Type) -> ast::Ty {
             let ty = cty_to_rs(ctx, t);
             mk_arrty(ctx, &ty, s)
         },
-        TFunc(_, _, _) => mk_fnty(ctx),
+        TFunc(rty, ref atys, var) => {
+            let decl = cfuncty_to_rs(ctx, rty, (*atys).clone(), var);
+            mk_fnty(ctx, &decl)
+        },
         TNamed(ti) => {
             let id = rust_type_id(ctx, ti.name.clone());
             mk_ty(ctx, id)
@@ -744,13 +756,17 @@ fn mk_arrty(ctx: &mut GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
     };
 }
 
-fn mk_fnty(ctx: &mut GenCtx) -> ast::Ty {
-    let ty = mk_ty(ctx, ~"u8");
-    let ast::Ty{node: node, _} = mk_ptrty(ctx, &ty, true);
+fn mk_fnty(ctx: &mut GenCtx, decl: &ast::fn_decl) -> ast::Ty {
+    let fnty = ast::ty_bare_fn(@ast::TyBareFn {
+        purity: ast::impure_fn,
+        abis: ctx.abis,
+        lifetimes: opt_vec::Empty,
+        decl: (*decl).clone()
+    });
 
     return ast::Ty {
         id: ctx.ext_cx.next_id(),
-        node: node,
+        node: fnty,
         span: dummy_sp()
     };
 }
