@@ -72,7 +72,8 @@ pub struct TypeInfo {
 
 pub struct VarInfo {
     name: ~str,
-    ty: @Type
+    ty: @Type,
+    is_const: bool
 }
 
 impl ToStr for Global {
@@ -149,7 +150,8 @@ pub fn mk_typeinfo(name: ~str, ty: @Type) -> @mut TypeInfo {
 
 pub fn mk_varinfo(name: ~str, ty: @Type) -> @mut VarInfo {
     return @mut VarInfo { name: name,
-                          ty: ty
+                          ty: ty,
+                          is_const: false
                         };
 }
 

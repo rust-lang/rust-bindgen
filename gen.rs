@@ -151,7 +151,7 @@ pub fn gen_rs(out: @io::Writer, abi: ~str, link: &Option<~str>, globs: &[Global]
 
     let vars = do vs.map |v| {
         match *v {
-            GVar(vi) => cvar_to_rs(&mut ctx, vi.name.clone(), vi.ty),
+            GVar(vi) => cvar_to_rs(&mut ctx, vi.name.clone(), vi.ty, vi.is_const),
             _ => { fail!(~"generate global variables") }
         }
     };
@@ -553,7 +553,9 @@ fn mk_link_name_attr(name: ~str) -> ast::Attribute {
     dummy_spanned(attr)
 }
 
-fn cvar_to_rs(ctx: &mut GenCtx, name: ~str, ty: @Type) -> @ast::foreign_item {
+fn cvar_to_rs(ctx: &mut GenCtx, name: ~str,
+                                ty: @Type,
+                                is_const: bool) -> @ast::foreign_item {
     let (rust_name, was_mangled) = rust_id(ctx, name.clone());
 
     let mut attrs = ~[];
@@ -564,7 +566,7 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: ~str, ty: @Type) -> @ast::foreign_item {
     return @ast::foreign_item {
               ident: ctx.ext_cx.ident_of(rust_name),
               attrs: attrs,
-              node: ast::foreign_item_static(cty_to_rs(ctx, ty), false),
+              node: ast::foreign_item_static(cty_to_rs(ctx, ty), !is_const),
               id: ctx.ext_cx.next_id(),
               span: dummy_sp(),
               vis: ast::public,

@@ -437,6 +437,7 @@ fn visit_top<'r>(cur: &'r Cursor,
         let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
         let var = decl_name(ctx, cursor);
         global_varinfo(var).ty = ty;
+        global_varinfo(var).is_const = cursor.cur_type().is_const();
         ctx.globals.push(var);
 
         return CXChildVisit_Continue;
