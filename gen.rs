@@ -192,11 +192,15 @@ fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::view_item {
         @dummy_spanned(
             ast::view_path_glob(
                 ast::Path {
-                   span: dummy_sp(),
-                   global: false,
-                   idents: path.map(|p| ctx.ext_cx.ident_of((*p).clone())),
-                   rp: None,
-                   types: ~[]
+                    span: dummy_sp(),
+                    global: false,
+                    segments: path.map(|p|
+                        ast::PathSegment {
+                            identifier: ctx.ext_cx.ident_of((*p).clone()),
+                            lifetime: None,
+                            types: opt_vec::Empty
+                        }
+                    )
                 },
                 ctx.ext_cx.next_id()
             )
@@ -609,9 +613,13 @@ fn cfuncty_to_rs(ctx: &mut GenCtx, rty: @Type,
                      ast::Path {
                          span: dummy_sp(),
                          global: false,
-                         idents: ~[ctx.ext_cx.ident_of(arg_name)],
-                         rp: None,
-                         types: ~[]
+                         segments: ~[
+                            ast::PathSegment {
+                                identifier: ctx.ext_cx.ident_of(arg_name),
+                                lifetime: None,
+                                types: opt_vec::Empty
+                            }
+                        ]
                      },
                      None
                  ),
@@ -709,9 +717,13 @@ fn mk_ty(ctx: &mut GenCtx, name: ~str) -> ast::Ty {
         ast::Path {
             span: dummy_sp(),
             global: false,
-            idents: ~[ctx.ext_cx.ident_of(name)],
-            rp: None,
-            types: ~[]
+            segments: ~[
+                ast::PathSegment {
+                    identifier: ctx.ext_cx.ident_of(name),
+                    lifetime: None,
+                    types: opt_vec::Empty
+                }
+            ]
         },
         option::None,
         ctx.ext_cx.next_id()
