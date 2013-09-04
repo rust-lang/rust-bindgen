@@ -423,13 +423,13 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::i
 }
 
 fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item] {
-    fn mk_item(ctx: &mut GenCtx, name: ~str, item: ast::item_) -> @ast::item {
+    fn mk_item(ctx: &mut GenCtx, name: ~str, item: ast::item_, vis: ast::visibility) -> @ast::item {
         return @ast::item {
                   ident: ctx.ext_cx.ident_of(name),
                   attrs: ~[],
                   id: ctx.ext_cx.next_id(),
                   node: item,
-                  vis: ast::public,
+                  vis: vis,
                   span: dummy_sp()
                };
     }
@@ -457,7 +457,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
         empty_generics()
     );
     let union_id = rust_type_id(ctx, name);
-    let union_def = mk_item(ctx, union_id, def);
+    let union_def = mk_item(ctx, union_id, def, ast::public);
 
     let expr = quote_expr!(
         ext_cx,
@@ -511,7 +511,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
 
     return ~[
         union_def,
-        mk_item(ctx, ~"", methods)
+        mk_item(ctx, ~"", methods, ast::inherited)
     ];
 }
 
