@@ -487,7 +487,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
             ident: ext_cx.ident_of(f_name),
             attrs: ~[],
             generics: empty_generics(),
-            explicit_self: dummy_spanned(ast::sty_region(None, ast::m_mutbl)),
+            explicit_self: dummy_spanned(ast::sty_region(None, ast::MutMutable)),
             purity: ast::impure_fn,
             decl: ast::fn_decl {
                 inputs: ~[],
@@ -525,7 +525,7 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -
     items.iter().advance(|it| {
         let cst = ast::item_static(
             val_ty.clone(),
-            ast::m_imm,
+            ast::MutImmutable,
             ctx.ext_cx.expr_int(dummy_sp(), it.val)
         );
 
@@ -606,10 +606,10 @@ fn cfuncty_to_rs(ctx: &mut GenCtx, rty: @Type,
         ast::arg {
             is_mutbl: false,
             ty: arg_ty,
-            pat: @ast::pat {
+            pat: @ast::Pat {
                  id: ctx.ext_cx.next_id(),
-                 node: ast::pat_ident(
-                     ast::bind_infer,
+                 node: ast::PatIdent(
+                     ast::BindInfer,
                      ast::Path {
                          span: dummy_sp(),
                          global: false,
@@ -739,7 +739,7 @@ fn mk_ty(ctx: &mut GenCtx, name: ~str) -> ast::Ty {
 fn mk_ptrty(ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
     let ty = ast::ty_ptr(ast::mt{
         ty: ~(*base).clone(),
-        mutbl: if is_const { ast::m_imm } else { ast::m_mutbl }
+        mutbl: if is_const { ast::MutImmutable } else { ast::MutMutable }
     });
 
     return ast::Ty {
@@ -750,13 +750,13 @@ fn mk_ptrty(ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
 }
 
 fn mk_arrty(ctx: &mut GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
-    let sz = ast::expr_lit(@dummy_spanned(ast::lit_uint(n as u64, ast::ty_u)));
+    let sz = ast::ExprLit(@dummy_spanned(ast::lit_uint(n as u64, ast::ty_u)));
     let ty = ast::ty_fixed_length_vec(
         ast::mt {
             ty: ~(*base).clone(),
-            mutbl: ast::m_imm
+            mutbl: ast::MutImmutable
         },
-        @ast::expr {
+        @ast::Expr {
             id: ctx.ext_cx.next_id(),
             node: sz,
             span: dummy_sp()
