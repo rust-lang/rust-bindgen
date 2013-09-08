@@ -56,9 +56,14 @@ impl Cursor {
 
     // bitfield
     #[fixed_stack_segment]
-    pub fn bit_width(&self) -> i32 {
+    pub fn bit_width(&self) -> Option<uint> {
         unsafe {
-            clang_getFieldDeclBitWidth(**self)
+            let w = clang_getFieldDeclBitWidth(**self);
+            if (w == -1) {
+                None
+            } else {
+                Some(w as uint)
+            }
         }
     }
 

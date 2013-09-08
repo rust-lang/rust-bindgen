@@ -342,7 +342,8 @@ fn visit_struct(cursor: &Cursor,
     if cursor.kind() == CXCursor_FieldDecl {
         let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
         let name = cursor.spelling();
-        let field = mk_fieldinfo(name, ty, None);
+        let bit = cursor.bit_width();
+        let field = mk_fieldinfo(name, ty, bit);
         fields.push(field);
     }
     return CXChildVisit_Continue;
