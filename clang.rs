@@ -54,6 +54,14 @@ impl Cursor {
         };
     }
 
+    // bitfield
+    #[fixed_stack_segment]
+    pub fn bit_width(&self) -> i32 {
+        unsafe {
+            clang_getFieldDeclBitWidth(**self)
+        }
+    }
+
     // enum
     #[fixed_stack_segment]
     pub fn enum_type(&self) -> Type {

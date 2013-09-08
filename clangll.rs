@@ -791,6 +791,7 @@ extern "C" {
     pub fn clang_getCursorExtent(arg1: CXCursor) -> CXSourceRange;
     pub fn clang_getCursorType(C: CXCursor) -> CXType;
     pub fn clang_getTypedefDeclUnderlyingType(C: CXCursor) -> CXType;
+    pub fn clang_getFieldDeclBitWidth(C: CXCursor) -> c_int;
     pub fn clang_getEnumDeclIntegerType(C: CXCursor) -> CXType;
     pub fn clang_getEnumConstantDeclValue(C: CXCursor) -> c_longlong;
     pub fn clang_getEnumConstantDeclUnsignedValue(C: CXCursor) -> c_ulonglong;
