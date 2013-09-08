@@ -508,7 +508,7 @@ fn main() {
             let cursor = unit.cursor();
 
             if ctx.emit_ast {
-              cursor.visit(|cur, parent| ast_dump(cur, 0));
+              cursor.visit(|cur, _| ast_dump(cur, 0));
             }			
 
             cursor.visit(|cur, parent| visit_top(cur, parent, ctx));
