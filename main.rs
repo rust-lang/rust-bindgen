@@ -49,8 +49,8 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 return CmdUsage;
             }
             ~"-emit-clang-ast" => {
-              emit_ast=true;
-              ix+=1u;
+              emit_ast = true;
+              ix += 1u;
             }
             ~"-o" => {
                 if ix + 1u >= args_len {
@@ -509,7 +509,7 @@ fn main() {
             let cursor = unit.cursor();
 
             if ctx.emit_ast {
-              cursor.visit(|cur, _| ast_dump(cur, 0));
+                cursor.visit(|cur, _| ast_dump(cur, 0));
             }			
 
             cursor.visit(|cur, parent| visit_top(cur, parent, ctx));
