@@ -202,7 +202,7 @@ fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::view_item {
                         }
                     )
                 },
-                ctx.ext_cx.next_id()
+                ast::DUMMY_NODE_ID
             )
         )
     ]);
@@ -246,7 +246,7 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
     return @ast::item {
               ident: ctx.ext_cx.ident_of(""),
               attrs: attrs,
-              id: ctx.ext_cx.next_id(),
+              id: ast::DUMMY_NODE_ID,
               node: ext,
               vis: ast::public,
               span: dummy_sp()
@@ -336,7 +336,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
         let rust_ty = cty_to_rs(ctx, ty);
         let base = ast::item_ty(
             ast::Ty {
-                id: ctx.ext_cx.next_id(),
+                id: ast::DUMMY_NODE_ID,
                 node: rust_ty.node.clone(),
                 span: dummy_sp(),
             },
@@ -346,7 +346,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
         return @ast::item {
                   ident: ctx.ext_cx.ident_of(rust_name),
                   attrs: ~[],
-                  id: ctx.ext_cx.next_id(),
+                  id: ast::DUMMY_NODE_ID,
                   node: base,
                   vis: ast::public,
                   span: dummy_sp()
@@ -398,7 +398,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::i
                 ctx.ext_cx.ident_of(f_name),
                 ast::inherited
             ),
-            id: ctx.ext_cx.next_id(),
+            id: ast::DUMMY_NODE_ID,
             ty: f_ty,
             attrs: ~[]
         })
@@ -415,7 +415,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::i
     let id = rust_type_id(ctx, name);
     return @ast::item { ident: ctx.ext_cx.ident_of(id),
               attrs: ~[],
-              id: ctx.ext_cx.next_id(),
+              id: ast::DUMMY_NODE_ID,
               node: def,
               vis: ast::public,
               span: dummy_sp()
@@ -427,7 +427,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
         return @ast::item {
                   ident: ctx.ext_cx.ident_of(name),
                   attrs: ~[],
-                  id: ctx.ext_cx.next_id(),
+                  id: ast::DUMMY_NODE_ID,
                   node: item,
                   vis: vis,
                   span: dummy_sp()
@@ -444,7 +444,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
             ext_cx.ident_of("data"),
             ast::inherited
         ),
-        id: ext_cx.next_id(),
+        id: ast::DUMMY_NODE_ID,
         ty: cty_to_rs(ctx, @TArray(@TInt(IUChar), type_size(union))),
         attrs: ~[]
     });
@@ -478,7 +478,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
             view_items: ~[],
             stmts: ~[],
             expr: Some(expr),
-            id: ext_cx.next_id(),
+            id: ast::DUMMY_NODE_ID,
             rules: ast::DefaultBlock,
             span: dummy_sp()
         };
@@ -495,7 +495,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
                 cf: ast::return_val
             },
             body: body,
-            id: ext_cx.next_id(),
+            id: ast::DUMMY_NODE_ID,
             span: dummy_sp(),
             self_id: union_def.id,
             vis: ast::public
@@ -533,7 +533,7 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -
         let val_def = @ast::item {
                          ident: ctx.ext_cx.ident_of(id),
                          attrs: ~[],
-                         id: ctx.ext_cx.next_id(),
+                         id: ast::DUMMY_NODE_ID,
                          node: cst,
                          vis: ast::public,
                          span: dummy_sp()
@@ -571,7 +571,7 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: ~str,
               ident: ctx.ext_cx.ident_of(rust_name),
               attrs: attrs,
               node: ast::foreign_item_static(cty_to_rs(ctx, ty), !is_const),
-              id: ctx.ext_cx.next_id(),
+              id: ast::DUMMY_NODE_ID,
               span: dummy_sp(),
               vis: ast::public,
            };
@@ -583,7 +583,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx, rty: @Type,
 
     let ret = match *rty {
         TVoid => ast::Ty {
-            id: ctx.ext_cx.next_id(),
+            id: ast::DUMMY_NODE_ID,
             node: ast::ty_nil,
             span: dummy_sp()
         },
@@ -607,7 +607,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx, rty: @Type,
             is_mutbl: false,
             ty: arg_ty,
             pat: @ast::Pat {
-                 id: ctx.ext_cx.next_id(),
+                 id: ast::DUMMY_NODE_ID,
                  node: ast::PatIdent(
                      ast::BindInfer,
                      ast::Path {
@@ -625,7 +625,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx, rty: @Type,
                  ),
                  span: dummy_sp()
             },
-            id: ctx.ext_cx.next_id()
+            id: ast::DUMMY_NODE_ID,
         }
     };
 
@@ -655,7 +655,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @Type,
               ident: ctx.ext_cx.ident_of(rust_name),
               attrs: attrs,
               node: decl,
-              id: ctx.ext_cx.next_id(),
+              id: ast::DUMMY_NODE_ID,
               span: dummy_sp(),
               vis: ast::public,
            };
@@ -726,11 +726,11 @@ fn mk_ty(ctx: &mut GenCtx, name: ~str) -> ast::Ty {
             ]
         },
         option::None,
-        ctx.ext_cx.next_id()
+        ast::DUMMY_NODE_ID
     );
 
     return ast::Ty {
-        id: ctx.ext_cx.next_id(),
+        id: ast::DUMMY_NODE_ID,
         node: ty,
         span: dummy_sp()
     };
@@ -743,7 +743,7 @@ fn mk_ptrty(ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
     });
 
     return ast::Ty {
-        id: ctx.ext_cx.next_id(),
+        id: ast::DUMMY_NODE_ID,
         node: ty,
         span: dummy_sp()
     };
@@ -757,14 +757,14 @@ fn mk_arrty(ctx: &mut GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
             mutbl: ast::MutImmutable
         },
         @ast::Expr {
-            id: ctx.ext_cx.next_id(),
+            id: ast::DUMMY_NODE_ID,
             node: sz,
             span: dummy_sp()
         }
     );
 
     return ast::Ty {
-        id: ctx.ext_cx.next_id(),
+        id: ast::DUMMY_NODE_ID,
         node: ty,
         span: dummy_sp()
     };
@@ -779,7 +779,7 @@ fn mk_fnty(ctx: &mut GenCtx, decl: &ast::fn_decl) -> ast::Ty {
     });
 
     return ast::Ty {
-        id: ctx.ext_cx.next_id(),
+        id: ast::DUMMY_NODE_ID,
         node: fnty,
         span: dummy_sp()
     };
