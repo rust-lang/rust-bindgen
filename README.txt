@@ -8,6 +8,11 @@ Requirements
 
 * clang 3.3 and up
 
+Building
+--------
+
+	$ rustc bindgen.rs
+
 Usage
 -----
 
