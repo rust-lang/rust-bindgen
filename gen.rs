@@ -736,7 +736,7 @@ fn mk_ty(ctx: &mut GenCtx, name: ~str) -> ast::Ty {
     };
 }
 
-fn mk_ptrty(ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
+fn mk_ptrty(_ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
     let ty = ast::ty_ptr(ast::mt{
         ty: ~(*base).clone(),
         mutbl: if is_const { ast::MutImmutable } else { ast::MutMutable }
@@ -749,7 +749,7 @@ fn mk_ptrty(ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
     };
 }
 
-fn mk_arrty(ctx: &mut GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
+fn mk_arrty(_ctx: &mut GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
     let sz = ast::ExprLit(@dummy_spanned(ast::lit_uint(n as u64, ast::ty_u)));
     let ty = ast::ty_fixed_length_vec(
         ast::mt {

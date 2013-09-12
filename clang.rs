@@ -613,8 +613,8 @@ pub fn ast_dump(c: &Cursor, depth: int)-> Enum_CXVisitorResult {
     }
     let ct = c.cur_type().kind();
     print_indent(depth, fmt!("(%s %s %s", kind_to_str(c.kind()), c.spelling(), type_to_str(ct)));
-    do c.visit |s,_| {
-        ast_dump(s,depth + 1)
+    do c.visit |s, _| {
+        ast_dump(s, depth + 1)
     }
     print_indent(depth, ")");
     return CXChildVisit_Continue;
