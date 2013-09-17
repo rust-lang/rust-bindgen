@@ -18,7 +18,8 @@ struct BindGenCtx {
     globals: ~[Global],
     builtin_defs: ~[Cursor],
     builtin_names: HashSet<~str>,
-    emit_ast: bool
+    emit_ast: bool,
+    fail_on_bitfield: bool
 }
 
 enum ParseResult {
@@ -37,6 +38,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
     let mut abi = ~"C";
     let mut builtins = false;
     let mut emit_ast = false;
+    let mut fail_on_bitfield = true;
 
     if args_len == 0u {
         return CmdUsage;
@@ -85,6 +87,10 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 abi = args[ix + 1u].clone();
                 ix += 2u;
             }
+            ~"-allow-bitfields" => {
+              fail_on_bitfield = false;
+              ix += 1u;
+            }
             _ => {
                 clang_args.push(args[ix].clone());
                 ix += 1u;
@@ -101,7 +107,8 @@ fn parse_args(args: &[~str]) -> ParseResult {
                                 globals: ~[],
                                 builtin_defs: ~[],
                                 builtin_names: builtin_names(),
-                                emit_ast: emit_ast
+                                emit_ast: emit_ast,
+                                fail_on_bitfield: fail_on_bitfield
                               };
 
     return ParseOk(clang_args, ctx);
@@ -125,17 +132,19 @@ fn print_usage(bin: ~str) {
     io::print(fmt!("Usage: %s [options] input.h", bin) +
 "
 Options:
-    -h or --help    Display help message
-    -l <name>       Link name of the library
-    -o <output.rs>  Write bindings to <output.rs> (default stdout)
-    -match <name>   Only output bindings for definitions from files
-                    whose name contains <name>
-                    If multiple -match options are provided, files
-                    matching any rule are bound to.
-    -builtins       Output bindings for builtin definitions
-                    (for example __builtin_va_list)
-    -abi <abi>      Indicate abi of extern functions (default C)
-    -emit-clang-ast Output the ast (for debugging purposes)
+    -h or --help     Display help message
+    -l <name>        Link name of the library
+    -o <output.rs>   Write bindings to <output.rs> (default stdout)
+    -match <name>    Only output bindings for definitions from files
+                     whose name contains <name>
+                     If multiple -match options are provided, files
+                     matching any rule are bound to.
+    -builtins        Output bindings for builtin definitions
+                     (for example __builtin_va_list)
+    -abi <abi>       Indicate abi of extern functions (default C)
+    -allow-bitfields Don't fail if we encounter a bitfield
+                     (default is false, since rust does not support bitfields)
+    -emit-clang-ast  Output the ast (for debugging purposes)
 
     Options other than stated above are passed to clang.
 "
@@ -337,12 +346,19 @@ fn opaque_ty(ctx: @mut BindGenCtx, ty: &cx::Type) {
 }
 
 fn visit_struct(cursor: &Cursor,
+                parent: &Cursor,
                 ctx: @mut BindGenCtx,
                 fields: &mut ~[@FieldInfo]) -> Enum_CXVisitorResult {
     if cursor.kind() == CXCursor_FieldDecl {
         let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
         let name = cursor.spelling();
         let bit = cursor.bit_width();
+        // If we encounter a bitfield, and fail_on_bitfield is set, throw an
+        // error and exit entirely.
+        if (bit != None && ctx.fail_on_bitfield) {
+            fail!("Cannot handle bitfield `%s` in struct `%s`",
+                  name, parent.spelling());
+        }
         let field = mk_fieldinfo(name, ty, bit);
         fields.push(field);
     }
@@ -390,7 +406,7 @@ fn visit_top<'r>(cur: &'r Cursor,
         do fwd_decl(ctx, cursor) || {
             let decl = decl_name(ctx, cursor);
             let ci = global_compinfo(decl);
-            cursor.visit(|c, _| visit_struct(c, ctx, &mut ci.fields));
+            cursor.visit(|c, p| visit_struct(c, p, ctx, &mut ci.fields));
             ctx.globals.push(GComp(ci));
         }
         return if cur.kind() == CXCursor_FieldDecl {
