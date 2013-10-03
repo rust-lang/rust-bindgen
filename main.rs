@@ -1,3 +1,5 @@
+#[allow(non_uppercase_pattern_statics)];
+
 use std::hashmap::{HashMap, HashSet};
 use std::{io, os, path};
 

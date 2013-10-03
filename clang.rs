@@ -1,3 +1,5 @@
+#[allow(non_uppercase_pattern_statics)];
+
 use std::libc::*;
 use std::{cast, ptr, str, to_bytes, vec};
 
