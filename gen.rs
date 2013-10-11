@@ -227,7 +227,7 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
                 value: @dummy_spanned(
                     ast::MetaNameValue(
                         @"link_args",
-                        dummy_spanned(ast::lit_str((~"-l" + *l).to_managed()))
+                        dummy_spanned(ast::lit_str((~"-l" + *l).to_managed(), ast::CookedStr))
                     )
                 ),
                 is_sugared_doc: false
@@ -547,7 +547,7 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -
 }
 
 fn mk_link_name_attr(name: ~str) -> ast::Attribute {
-    let lit = dummy_spanned(ast::lit_str(name.to_managed()));
+    let lit = dummy_spanned(ast::lit_str(name.to_managed(), ast::CookedStr));
     let attr_val = @dummy_spanned(ast::MetaNameValue(@"link_name", lit));
     let attr = ast::Attribute_ {
         style: ast::AttrOuter,
