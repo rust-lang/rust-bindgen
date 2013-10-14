@@ -237,7 +237,6 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
     }
 
     let ext = ast::item_foreign_mod(ast::foreign_mod {
-        sort: ast::anonymous,
         abis: ctx.abis,
         view_items: ~[],
         items: vars + funcs
