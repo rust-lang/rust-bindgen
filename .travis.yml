@@ -5,4 +5,4 @@ before_install:
 install:
   - sudo apt-get install rust-nightly libclang1-3.3
 script:
-  - rustc bindgen.rs
+  - rustc bindgen.rs -L /usr/lib/llvm-3.3/lib
