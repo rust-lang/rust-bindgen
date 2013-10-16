@@ -3,6 +3,6 @@ before_install:
   - yes | sudo add-apt-repository ppa:xorg-edgers/ppa
   - sudo apt-get update
 install:
-  - sudo apt-get install rust-nightly libclang1-3.3
+  - sudo apt-get install rust-nightly libclang-3.3-dev
 script:
   - rustc bindgen.rs -L /usr/lib/llvm-3.3/lib
