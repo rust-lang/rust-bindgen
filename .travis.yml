@@ -1,5 +1,6 @@
 before_install:
   - yes | sudo add-apt-repository ppa:hansjorg/rust
+  - yes | sudo add-apt-repository ppa:xorg-edgers/ppa
   - sudo apt-get update
 install:
   - sudo apt-get install rust-nightly libclang1-3.3
