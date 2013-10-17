@@ -60,7 +60,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 if ix + 1u >= args_len {
                     return ParseErr(~"Missing output filename");
                 }
-                match io::file_writer(&path::Path(args[ix + 1u]),
+                match io::file_writer(&path::Path::new(args[ix + 1u].clone()),
                                       [io::Create, io::Truncate]) {
                   Ok(f) => { out = f; }
                   Err(e) => { return ParseErr(e); }
