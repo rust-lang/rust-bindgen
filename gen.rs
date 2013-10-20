@@ -59,22 +59,22 @@ fn rust_type_id(ctx: &mut GenCtx, name: ~str) -> ~str {
 fn unnamed_name(ctx: &mut GenCtx, name: ~str) -> ~str {
     return if name.is_empty() {
         ctx.unnamed_ty += 1;
-        fmt!("Unnamed%u", ctx.unnamed_ty)
+        format!("Unnamed{}", ctx.unnamed_ty)
     } else {
         name
     };
 }
 
 fn struct_name(name: ~str) -> ~str {
-    fmt!("Struct_%s", name)
+    format!("Struct_{}", name)
 }
 
 fn union_name(name: ~str) -> ~str {
-    fmt!("Union_%s", name)
+    format!("Union_{}", name)
 }
 
 fn enum_name(name: ~str) -> ~str {
-    fmt!("Enum_%s", name)
+    format!("Enum_{}", name)
 }
 
 pub fn gen_rs(out: @io::Writer, abi: ~str, link: &Option<~str>, globs: &[Global]) {
@@ -385,7 +385,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::i
         let n = f.name.clone();
         let f_name = if n.is_empty() {
             unnamed += 1;
-            fmt!("unnamed_field%u", unnamed)
+            format!("unnamed_field{}", unnamed)
         } else {
             rust_type_id(ctx, f.name.clone())
         };
@@ -467,7 +467,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
         let n = f.name.clone();
         let f_name = if n.is_empty() {
             unnamed += 1;
-            fmt!("unnamed_field%u", unnamed)
+            format!("unnamed_field{}", unnamed)
         } else {
             rust_id(ctx, f.name.clone()).first()
         };
@@ -595,7 +595,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx, rty: @Type,
 
         let arg_name = if n.is_empty() {
             unnamed += 1;
-            fmt!("arg%u", unnamed)
+            format!("arg{}", unnamed)
         } else {
             rust_id(ctx, n).first()
         };

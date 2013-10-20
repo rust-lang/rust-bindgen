@@ -131,7 +131,7 @@ fn builtin_names() -> HashSet<~str> {
 }
 
 fn print_usage(bin: ~str) {
-    io::print(fmt!("Usage: %s [options] input.h", bin) +
+    io::print(format!("Usage: {} [options] input.h", bin) +
 "
 Options:
     -h or --help     Display help message
@@ -358,7 +358,7 @@ fn visit_struct(cursor: &Cursor,
         // If we encounter a bitfield, and fail_on_bitfield is set, throw an
         // error and exit entirely.
         if (bit != None && ctx.fail_on_bitfield) {
-            fail!("Cannot handle bitfield `%s` in struct `%s`",
+            fail!("Cannot handle bitfield `{}` in struct `{}`",
                   name, parent.spelling());
         }
         let field = mk_fieldinfo(name, ty, bit);
