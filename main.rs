@@ -1,7 +1,9 @@
 #[allow(non_uppercase_pattern_statics)];
 
 use std::hashmap::{HashMap, HashSet};
-use std::{io, os, path};
+use std::{os, path};
+use std::rt::io;
+use std::rt::io::file::FileInfo;
 
 use il = types;
 use types::*;
@@ -15,7 +17,7 @@ struct BindGenCtx {
     abi: ~str,
     builtins: bool,
     link: Option<~str>,
-    out: @io::Writer,
+    out: @mut io::Writer,
     name: HashMap<Cursor, Global>,
     globals: ~[Global],
     builtin_defs: ~[Cursor],
@@ -34,7 +36,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
     let mut clang_args = ~[];
     let args_len = args.len();
 
-    let mut out = io::stdout();
+    let mut out = @mut io::stdout() as @mut io::Writer;
     let mut pat = ~[];
     let mut link = None;
     let mut abi = ~"C";
@@ -60,10 +62,10 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 if ix + 1u >= args_len {
                     return ParseErr(~"Missing output filename");
                 }
-                match io::file_writer(&path::Path::new(args[ix + 1u].clone()),
-                                      [io::Create, io::Truncate]) {
-                  Ok(f) => { out = f; }
-                  Err(e) => { return ParseErr(e); }
+                let file = path::Path::new(args[ix + 1].clone());
+                match file.open_writer(io::CreateOrTruncate) {
+                  Some(f) => { out = @mut f as @mut io::Writer; }
+                  None => { return ParseErr(format!("Open {} failed", args[ix + 1])); }
                 }
                 ix += 2u;
             }
@@ -131,7 +133,7 @@ fn builtin_names() -> HashSet<~str> {
 }
 
 fn print_usage(bin: ~str) {
-    io::print(format!("Usage: {} [options] input.h", bin) +
+    io::stdio::print(format!("Usage: {} [options] input.h", bin) +
 "
 Options:
     -h or --help     Display help message
@@ -512,8 +514,11 @@ fn main() {
 
             let mut c_err = false;
             let diags = unit.diags();
+            let stderr = (&mut io::stderr() as &mut io::Writer);
             diags.iter().advance(|d| {
-                io::stderr().write_line(d.format(Diagnostic::default_opts()));
+                let msg = d.format(Diagnostic::default_opts());
+                stderr.write(msg.as_bytes());
+                stderr.write(['\n' as u8]);
                 if d.severity() >= CXDiagnostic_Error {
                     c_err = true;
                 }
