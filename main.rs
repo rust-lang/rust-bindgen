@@ -3,7 +3,7 @@
 use std::hashmap::{HashMap, HashSet};
 use std::{os, path};
 use std::rt::io;
-use std::rt::io::file::FileInfo;
+use std::rt::io::fs;
 
 use il = types;
 use types::*;
@@ -62,8 +62,8 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 if ix + 1u >= args_len {
                     return ParseErr(~"Missing output filename");
                 }
-                let file = path::Path::new(args[ix + 1].clone());
-                match file.open_writer(io::CreateOrTruncate) {
+                let path = path::Path::new(args[ix + 1].clone());
+                match fs::File::create(&path) {
                   Some(f) => { out = @mut f as @mut io::Writer; }
                   None => { return ParseErr(format!("Open {} failed", args[ix + 1])); }
                 }
