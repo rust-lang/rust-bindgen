@@ -492,7 +492,8 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
             decl: ast::fn_decl {
                 inputs: ~[],
                 output: ret_ty,
-                cf: ast::return_val
+                cf: ast::return_val,
+                variadic: false
             },
             body: body,
             id: ast::DUMMY_NODE_ID,
@@ -579,7 +580,7 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: ~str,
 
 fn cfuncty_to_rs(ctx: &mut GenCtx, rty: @Type,
                                     aty: ~[(~str, @Type)],
-                                    _var: bool) -> ast::fn_decl {
+                                    var: bool) -> ast::fn_decl {
 
     let ret = match *rty {
         TVoid => ast::Ty {
@@ -631,7 +632,8 @@ fn cfuncty_to_rs(ctx: &mut GenCtx, rty: @Type,
     return ast::fn_decl {
         inputs: args,
         output: ret,
-        cf: ast::return_val
+        cf: ast::return_val,
+        variadic: var
     };
 }
 
