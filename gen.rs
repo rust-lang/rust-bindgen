@@ -456,12 +456,18 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
         if a > falign { (a, ty) } else { (falign, fty.ty) }
     };
     let data = mk_field(ctx, "data", max_align_ty);
-    let padding_ty = @TArray(@TInt(IUChar), type_size(union) - type_size(max_align_ty));
-    let padding = mk_field(ctx, "padding", padding_ty);
+    let padding_sz = type_size(union) - type_size(max_align_ty);
+    let union_fields = if padding_sz > 0 {
+        let padding_ty = @TArray(@TInt(IUChar), padding_sz);
+        let padding = mk_field(ctx, "padding", padding_ty);
+        ~[data, padding]
+    } else {
+        ~[data]
+    };
 
     let def = ast::item_struct(
         @ast::struct_def {
-           fields: ~[data, padding],
+           fields: union_fields,
            ctor_id: None
         },
         empty_generics()
