@@ -434,24 +434,34 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
                };
     }
 
+    fn mk_field(ctx: &mut GenCtx, name: &str, ty: @Type) -> @ast::struct_field {
+        return @dummy_spanned(ast::struct_field_ {
+            kind: ast::named_field(
+                ctx.ext_cx.ident_of(name),
+                ast::inherited
+            ),
+            id: ast::DUMMY_NODE_ID,
+            ty: cty_to_rs(ctx, ty),
+            attrs: ~[]
+        });
+    }
+
     let ext_cx = ctx.ext_cx;
     let ci = mk_compinfo(name.clone(), false, ~[]);
     ci.fields = fields.clone();
     let union = @TNamed(mk_typeinfo(name.clone(), @TComp(ci)));
 
-    let data = @dummy_spanned(ast::struct_field_ {
-        kind: ast::named_field(
-            ext_cx.ident_of("data"),
-            ast::inherited
-        ),
-        id: ast::DUMMY_NODE_ID,
-        ty: cty_to_rs(ctx, @TArray(@TInt(IUChar), type_size(union))),
-        attrs: ~[]
-    });
+    let (_, max_align_ty) = do fields.iter().fold((0, @TVoid)) |(a, ty), fty| {
+        let falign = type_align(fty.ty);
+        if a > falign { (a, ty) } else { (falign, fty.ty) }
+    };
+    let data = mk_field(ctx, "data", max_align_ty);
+    let padding_ty = @TArray(@TInt(IUChar), type_size(union) - type_size(max_align_ty));
+    let padding = mk_field(ctx, "padding", padding_ty);
 
     let def = ast::item_struct(
         @ast::struct_def {
-           fields: ~[data],
+           fields: ~[data, padding],
            ctor_id: None
         },
         empty_generics()
