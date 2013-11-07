@@ -197,10 +197,18 @@ fn decl_name(ctx: @mut BindGenCtx, cursor: &Cursor) -> Global {
                 GCompDecl(ci)
               }
               CXCursor_EnumDecl => {
-                let kind = if cursor.enum_type().kind() == CXType_Int {
-                    IInt
-                } else {
-                    IUInt
+                let kind = match cursor.enum_type().kind() {
+                    CXType_SChar | CXType_Char_S => ISChar,
+                    CXType_UChar | CXType_Char_U => IUChar,
+                    CXType_UShort => IUShort,
+                    CXType_UInt => IUInt,
+                    CXType_ULong => IULong,
+                    CXType_ULongLong => IULongLong,
+                    CXType_Short => IShort,
+                    CXType_Int => IInt,
+                    CXType_Long => ILong,
+                    CXType_LongLong => ILongLong,
+                    _ => IInt,
                 };
                 let ei = EnumInfo::new(spelling, kind, ~[], layout);
                 GEnumDecl(ei)
