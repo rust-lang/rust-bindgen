@@ -183,6 +183,22 @@ impl Type {
         }
     }
 
+    #[fixed_stack_segment]
+    pub fn size(&self) -> uint {
+        unsafe {
+            let val = clang_Type_getSizeOf(**self);
+            if val < 0 { 0 } else { val as uint }
+        }
+    }
+
+    #[fixed_stack_segment]
+    pub fn align(&self) -> uint {
+        unsafe {
+            let val = clang_Type_getAlignOf(**self);
+            if val < 0 { 0 } else { val as uint }
+        }
+    }
+
     // pointer
     #[fixed_stack_segment]
     pub fn pointee_type(&self) -> Type {

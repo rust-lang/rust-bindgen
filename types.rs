@@ -1,5 +1,3 @@
-use std::uint;
-
 pub enum Global {
     GType(@mut TypeInfo),
     GComp(@mut CompInfo),
@@ -11,16 +9,109 @@ pub enum Global {
     GOther
 }
 
+impl Global {
+    pub fn compinfo(&self) -> @mut CompInfo {
+        match *self {
+            GComp(i) => return i,
+            GCompDecl(i) => return i,
+            _ => fail!(~"global_compinfo")
+        }
+    }
+
+    pub fn enuminfo(&self) -> @mut EnumInfo {
+        match *self {
+            GEnum(i) => return i,
+            GEnumDecl(i) => return i,
+            _ => fail!(~"global_enuminfo")
+        }
+    }
+
+    pub fn typeinfo(&self) -> @mut TypeInfo {
+        match *self {
+            GType(i) => return i,
+            _ => fail!(~"global_typeinfo")
+        }
+    }
+
+    pub fn varinfo(&self) -> @mut VarInfo {
+        match *self {
+            GVar(i) => i,
+            GFunc(i) => i,
+            _ => fail!(~"global_varinfo")
+        }
+    }
+}
+
+impl ToStr for Global {
+    fn to_str(&self) -> ~str {
+      match *self {
+        GType(ti) => ti.to_str(),
+        GComp(ci) => ci.to_str(),
+        GCompDecl(ci) => ci.to_str(),
+        GEnum(ei) => ei.to_str(),
+        GEnumDecl(ei) => ei.to_str(),
+        GVar(vi) => vi.to_str(),
+        GFunc(vi) => vi.to_str(),
+        GOther => ~"*"
+      }
+    }
+}
+
 pub enum Type {
     TVoid,
-    TInt(IKind),
-    TFloat(FKind),
-    TPtr(@Type, bool),
-    TArray(@Type, uint),
+    TInt(IKind, Layout),
+    TFloat(FKind, Layout),
+    TPtr(@Type, bool, Layout),
+    TArray(@Type, uint, Layout),
     TFunc(@Type, ~[(~str, @Type)], bool),
     TNamed(@mut TypeInfo),
     TComp(@mut CompInfo),
     TEnum(@mut EnumInfo)
+}
+
+impl Type {
+    pub fn size(&self) -> uint {
+        match *self {
+          TInt(_, l) => l.size,
+          TFloat(_, l) => l.size,
+          TPtr(_, _, l) => l.size,
+          TArray(_, _, l) => l.size,
+          TNamed(t) => t.ty.size(),
+          TComp(ci) => ci.layout.size,
+          TEnum(ei) => ei.layout.size,
+          TVoid => 0,
+          TFunc(*) => 0,
+        }
+    }
+
+    pub fn align(&self) -> uint {
+        match *self {
+          TInt(_, l) => l.align,
+          TFloat(_, l) => l.align,
+          TPtr(_, _, l) => l.align,
+          TArray(_, _, l) => l.align,
+          TNamed(t) => t.ty.align(),
+          TComp(ci) => ci.layout.align,
+          TEnum(ei) => ei.layout.align,
+          TVoid => 0,
+          TFunc(*) => 0,
+        }
+    }
+}
+
+pub struct Layout {
+    size: uint,
+    align: uint,
+}
+
+impl Layout {
+    pub fn new(size: uint, align: uint) -> Layout {
+        Layout { size: size, align: align }
+    }
+
+    pub fn zero() -> Layout {
+        Layout { size: 0, align: 0 }
+    }
 }
 
 pub enum IKind {
@@ -45,49 +136,17 @@ pub enum FKind {
 pub struct CompInfo {
     cstruct: bool,
     name: ~str,
-    fields: ~[@FieldInfo]
+    fields: ~[@FieldInfo],
+    layout: Layout,
 }
 
-pub struct FieldInfo {
-    name: ~str,
-    ty: @Type,
-    bit: Option<uint>
-}
-
-pub struct EnumInfo {
-    name: ~str,
-    items: ~[@EnumItem],
-    kind: IKind
-}
-
-pub struct EnumItem {
-    name: ~str,
-    val: int
-}
-
-pub struct TypeInfo {
-    name: ~str,
-    ty: @Type
-}
-
-pub struct VarInfo {
-    name: ~str,
-    ty: @Type,
-    is_const: bool
-}
-
-impl ToStr for Global {
-    fn to_str(&self) -> ~str {
-      match *self {
-        GType(ti) => ti.to_str(),
-        GComp(ci) => ci.to_str(),
-        GCompDecl(ci) => ci.to_str(),
-        GEnum(ei) => ei.to_str(),
-        GEnumDecl(ei) => ei.to_str(),
-        GVar(vi) => vi.to_str(),
-        GFunc(vi) => vi.to_str(),
-        GOther => ~"*"
-      }
+impl CompInfo {
+    pub fn new(name: ~str, cstruct: bool, fields: ~[@FieldInfo], layout: Layout) -> @mut CompInfo {
+        @mut CompInfo { cstruct: cstruct,
+                        name: name,
+                        fields: fields,
+                        layout: layout,
+                      }
     }
 }
 
@@ -97,9 +156,67 @@ impl ToStr for CompInfo {
     }
 }
 
+pub struct FieldInfo {
+    name: ~str,
+    ty: @Type,
+    bit: Option<uint>,
+}
+
+impl FieldInfo {
+    pub fn new(name: ~str, ty: @Type, bit: Option<uint>) -> @FieldInfo {
+        @FieldInfo { name: name,
+                     ty: ty,
+                     bit: bit,
+                   }
+    }
+}
+
+pub struct EnumInfo {
+    name: ~str,
+    items: ~[@EnumItem],
+    kind: IKind,
+    layout: Layout,
+}
+
+impl EnumInfo {
+    pub fn new(name: ~str, kind: IKind, items: ~[@EnumItem], layout: Layout) -> @mut EnumInfo {
+        @mut EnumInfo { name: name,
+                        items: items,
+                        kind: kind,
+                        layout: layout,
+                      }
+    }
+}
+
 impl ToStr for EnumInfo {
     fn to_str(&self) -> ~str {
         self.name.clone()
+    }
+}
+
+pub struct EnumItem {
+    name: ~str,
+    val: int
+}
+
+impl EnumItem {
+    pub fn new(name: ~str, val: int) -> @EnumItem {
+        @EnumItem { name: name,
+                    val: val
+                  }
+    }
+}
+
+pub struct TypeInfo {
+    name: ~str,
+    ty: @Type
+}
+
+impl TypeInfo {
+    pub fn new(name: ~str, ty: @Type) -> @mut TypeInfo {
+        @mut TypeInfo { name: name,
+                        ty: ty
+                      }
     }
 }
 
@@ -109,218 +226,23 @@ impl ToStr for TypeInfo {
     }
 }
 
+pub struct VarInfo {
+    name: ~str,
+    ty: @Type,
+    is_const: bool
+}
+
+impl VarInfo {
+    pub fn new(name: ~str, ty: @Type) -> @mut VarInfo {
+        @mut VarInfo { name: name,
+                       ty: ty,
+                       is_const: false
+                     }
+    }
+}
+
 impl ToStr for VarInfo {
     fn to_str(&self) -> ~str {
         self.name.clone()
-    }
-}
-
-pub fn mk_compinfo(name: ~str, cstruct: bool, fields: ~[@FieldInfo]) -> @mut CompInfo {
-    return @mut CompInfo { cstruct: cstruct,
-                           name: name,
-                           fields: fields
-                         };
-}
-
-pub fn mk_fieldinfo(name: ~str, ty: @Type, bit: Option<uint>) -> @FieldInfo {
-    return @FieldInfo { name: name,
-                        ty: ty,
-                        bit: bit
-                      };
-}
-
-pub fn mk_enuminfo(name: ~str, kind: IKind, items: ~[@EnumItem]) -> @mut EnumInfo {
-    return @mut EnumInfo { name: name,
-                           items: items,
-                           kind: kind
-                         };
-}
-
-pub fn mk_enumitem(name: ~str, val: int) -> @EnumItem {
-    return @EnumItem { name: name,
-                       val: val
-                     };
-}
-
-pub fn mk_typeinfo(name: ~str, ty: @Type) -> @mut TypeInfo {
-    return @mut TypeInfo { name: name,
-                           ty: ty
-                         };
-}
-
-pub fn mk_varinfo(name: ~str, ty: @Type) -> @mut VarInfo {
-    return @mut VarInfo { name: name,
-                          ty: ty,
-                          is_const: false
-                        };
-}
-
-pub fn global_compinfo(glob: Global) -> @mut CompInfo {
-    match glob {
-        GComp(i) => return i,
-        GCompDecl(i) => return i,
-        _ => fail!(~"global_compinfo")
-    }
-}
-
-pub fn global_enuminfo(glob: Global) -> @mut EnumInfo {
-    match glob {
-        GEnum(i) => return i,
-        GEnumDecl(i) => return i,
-        _ => fail!(~"global_enuminfo")
-    }
-}
-
-pub fn global_typeinfo(glob: Global) -> @mut TypeInfo {
-    match glob {
-        GType(i) => return i,
-        _ => fail!(~"global_typeinfo")
-    }
-}
-
-pub fn global_varinfo(glob: Global) -> @mut VarInfo {
-    match glob {
-        GVar(i) => i,
-        GFunc(i) => i,
-        _ => fail!(~"global_varinfo")
-    }
-}
-
-#[cfg(target_arch="x86_64")]
-pub fn type_align(ty: @Type) -> uint {
-    return match *ty {
-        TInt(k) => match k {
-            IBool | ISChar | IUChar => 1,
-            IShort | IUShort => 2,
-            IInt | IUInt => 4,
-            ILong | IULong => 8,
-            ILongLong | IULongLong => 8
-        },
-        TFloat(k) => match k {
-            FFloat => 4,
-            FDouble => 8
-        },
-        TPtr(*) => 8,
-        TArray(t, _) => type_align(t),
-        TNamed(t) => type_align(t.ty),
-        TComp(ci) => {
-            let fs = ci.fields.clone();
-            do fs.iter().fold(0) |a, t| {
-                uint::max(a, type_align(t.ty))
-            }
-        },
-        TEnum(_) => 4,
-        TVoid => 0,
-        TFunc(_, _, _) => 0
-    };
-}
-
-#[cfg(target_arch="x86")]
-pub fn type_align(ty: @Type) -> uint {
-    return match *ty {
-        TInt(k) => match k {
-            IBool | ISChar | IUChar => 1,
-            IShort | IUShort => 2,
-            IInt | IUInt => 4,
-            ILong | IULong => 4,
-            ILongLong | IULongLong => 8
-        },
-        TFloat(k) => match k {
-            FFloat => 4,
-            FDouble => 8
-        },
-        TPtr(*) => 4,
-        TArray(t, _) => type_align(t),
-        TNamed(t) => type_align(t.ty),
-        TComp(ci) => {
-            let fs = ci.fields.clone();
-            do fs.iter().fold(0) |a, t| {
-                uint::max(a, type_align(t.ty))
-            }
-        },
-        TEnum(_) => 4,
-        TVoid => 0,
-        TFunc(_, _, _) => 0
-    };
-}
-
-#[cfg(target_arch="x86_64")]
-pub fn type_size(ty: @Type) -> uint {
-    return match *ty {
-        TInt(k) => match k {
-            IBool | ISChar | IUChar => 1,
-            IShort | IUShort => 2,
-            IInt | IUInt => 4,
-            ILong | IULong => 8,
-            ILongLong | IULongLong => 8
-        },
-        TFloat(k) => match k {
-            FFloat => 4,
-            FDouble => 8
-        },
-        TPtr(*) => 8,
-        TArray(t, s) => type_size(t) * s,
-        TNamed(t) => type_size(t.ty),
-        TComp(ci) => if ci.cstruct {
-            let fs = ci.fields.clone();
-            let size = do fs.iter().fold(0) |s, t| {
-                align(s, t.ty) + type_size(t.ty)
-            };
-            align(size, ty)
-        } else {
-            let fs = ci.fields.clone();
-            let size = do fs.iter().fold(0) |s, t| {
-                uint::max(s, type_size(t.ty))
-            };
-            align(size, ty)
-        },
-        TEnum(_) => 4,
-        TVoid => 0,
-        TFunc(_, _, _) => 0
-    };
-}
-
-#[cfg(target_arch="x86")]
-pub fn type_size(ty: @Type) -> uint {
-    return match *ty {
-        TInt(k) => match k {
-            IBool | ISChar | IUChar => 1,
-            IShort | IUShort => 2,
-            IInt | IUInt => 4,
-            ILong | IULong => 4,
-            ILongLong | IULongLong => 8
-        },
-        TFloat(k) => match k {
-            FFloat => 4,
-            FDouble => 8
-        },
-        TPtr(*) => 4,
-        TArray(t, s) => type_size(t) * s,
-        TNamed(t) => type_size(t.ty),
-        TComp(ci) => if ci.cstruct {
-            let fs = ci.fields.clone();
-            let size = do fs.iter().fold(0) |s, t| {
-                align(s, t.ty) + type_size(t.ty)
-            };
-            align(size, ty)
-        } else {
-            let fs = ci.fields.clone();
-            let size = do fs.iter().fold(0) |s, t| {
-                uint::max(s, type_size(t.ty))
-            };
-            align(size, ty)
-        },
-        TEnum(_) => 4,
-        TVoid => 0,
-        TFunc(_, _, _) => 0
-    };
-}
-
-pub fn align(off: uint, ty: @Type) -> uint {
-    let a = type_align(ty);
-    if a == 0 {
-        return 0;
-    } else {
-        return (off + a - 1u) / a * a;
     }
 }

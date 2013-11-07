@@ -133,7 +133,7 @@ pub fn gen_rs(out: @mut io::Writer, abi: ~str, link: &Option<~str>, globs: &[Glo
                                             ci.fields.clone()))
                 } else {
                     defs.push_all(cunion_to_rs(&mut ctx, union_name(ci.name.clone()),
-                                               ci.fields.clone()))
+                                               ci.fields.clone(), ci.layout))
                 }
             },
             GEnumDecl(ei) => {
@@ -361,7 +361,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
                 if ci.cstruct {
                     ~[cstruct_to_rs(ctx, name, ci.fields.clone())]
                 } else {
-                    cunion_to_rs(ctx, name, ci.fields.clone())
+                    cunion_to_rs(ctx, name, ci.fields.clone(), ci.layout)
                 }
             } else {
                 ~[mk_item(ctx, name, ty)]
@@ -422,7 +422,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::i
            };
 }
 
-fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::item] {
+fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo], layout: Layout) -> ~[@ast::item] {
     fn mk_item(ctx: &mut GenCtx, name: ~str, item: ast::item_, vis: ast::visibility) -> @ast::item {
         return @ast::item {
                   ident: ctx.ext_cx.ident_of(name),
@@ -447,18 +447,17 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
     }
 
     let ext_cx = ctx.ext_cx;
-    let ci = mk_compinfo(name.clone(), false, ~[]);
-    ci.fields = fields.clone();
-    let union = @TNamed(mk_typeinfo(name.clone(), @TComp(ci)));
+    let ci = CompInfo::new(name.clone(), false, fields.clone(), layout);
+    let union = @TNamed(TypeInfo::new(name.clone(), @TComp(ci)));
 
     let (_, max_align_ty) = do fields.iter().fold((0, @TVoid)) |(a, ty), fty| {
-        let falign = type_align(fty.ty);
+        let falign = fty.ty.align();
         if a > falign { (a, ty) } else { (falign, fty.ty) }
     };
     let data = mk_field(ctx, "data", max_align_ty);
-    let padding_sz = type_size(union) - type_size(max_align_ty);
+    let padding_sz = layout.size - max_align_ty.size();
     let union_fields = if padding_sz > 0 {
-        let padding_ty = @TArray(@TInt(IUChar), padding_sz);
+        let padding_ty = @TArray(@TInt(IUChar, Layout::zero()), padding_sz, Layout::zero());
         let padding = mk_field(ctx, "padding", padding_ty);
         ~[data, padding]
     } else {
@@ -489,7 +488,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
             rust_id(ctx, f.name.clone()).first()
         };
 
-        let ret_ty = cty_to_rs(ctx, @TPtr(f.ty, false));
+        let ret_ty = cty_to_rs(ctx, @TPtr(f.ty, false, Layout::zero()));
         let body = ast::Block {
             view_items: ~[],
             stmts: ~[],
@@ -533,7 +532,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> ~[@ast::
 }
 
 fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -> ~[@ast::item] {
-    let ty = @TInt(kind);
+    let ty = @TInt(kind, Layout::zero());
     let ty_id = rust_type_id(ctx, name);
     let ty_def = ctypedef_to_rs(ctx, ty_id, ty);
     let val_ty = cty_to_rs(ctx, ty);
@@ -681,7 +680,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @Type,
 fn cty_to_rs(ctx: &mut GenCtx, ty: @Type) -> ast::Ty {
     return match *ty {
         TVoid => mk_ty(ctx, ~"c_void"),
-        TInt(i) => match i {
+        TInt(i, _) => match i {
             IBool => mk_ty(ctx, ~"c_int"),
             ISChar => mk_ty(ctx, ~"c_schar"),
             IUChar => mk_ty(ctx, ~"c_uchar"),
@@ -694,15 +693,15 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: @Type) -> ast::Ty {
             ILongLong => mk_ty(ctx, ~"c_longlong"),
             IULongLong => mk_ty(ctx, ~"c_ulonglong")
         },
-        TFloat(f) => match f {
+        TFloat(f, _) => match f {
             FFloat => mk_ty(ctx, ~"c_float"),
             FDouble => mk_ty(ctx, ~"c_double")
         },
-        TPtr(t, is_const) => {
+        TPtr(t, is_const, _) => {
             let id = cty_to_rs(ctx, t);
             mk_ptrty(ctx, &id, is_const)
         },
-        TArray(t, s) => {
+        TArray(t, s, _) => {
             let ty = cty_to_rs(ctx, t);
             mk_arrty(ctx, &ty, s)
         },
