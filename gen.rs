@@ -434,39 +434,33 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo], layout: Lay
                };
     }
 
-    fn mk_field(ctx: &mut GenCtx, name: &str, ty: @Type) -> @ast::struct_field {
-        return @dummy_spanned(ast::struct_field_ {
-            kind: ast::named_field(
-                ctx.ext_cx.ident_of(name),
-                ast::inherited
-            ),
-            id: ast::DUMMY_NODE_ID,
-            ty: cty_to_rs(ctx, ty),
-            attrs: ~[]
-        });
-    }
-
     let ext_cx = ctx.ext_cx;
     let ci = CompInfo::new(name.clone(), false, fields.clone(), layout);
     let union = @TNamed(TypeInfo::new(name.clone(), @TComp(ci)));
 
-    let (_, max_align_ty) = do fields.iter().fold((0, @TVoid)) |(a, ty), fty| {
-        let falign = fty.ty.align();
-        if a > falign { (a, ty) } else { (falign, fty.ty) }
+    let ty_name = match layout.align {
+        1 => "u8",
+        2 => "u16",
+        4 => "u32",
+        8 => "u64",
+        _ => "u8",
     };
-    let data = mk_field(ctx, "data", max_align_ty);
-    let padding_sz = layout.size - max_align_ty.size();
-    let union_fields = if padding_sz > 0 {
-        let padding_ty = @TArray(@TInt(IUChar, Layout::zero()), padding_sz, Layout::zero());
-        let padding = mk_field(ctx, "padding", padding_ty);
-        ~[data, padding]
-    } else {
-        ~[data]
-    };
+    let data_len = if ty_name == "u8" { layout.size } else { layout.size / layout.align };
+    let base_ty = mk_ty(ctx, ty_name.to_owned());
+    let data_ty = mk_arrty(ctx, &base_ty, data_len);
+    let data = @dummy_spanned(ast::struct_field_ {
+        kind: ast::named_field(
+            ctx.ext_cx.ident_of("data"),
+            ast::inherited
+        ),
+        id: ast::DUMMY_NODE_ID,
+        ty: data_ty,
+        attrs: ~[]
+    });
 
     let def = ast::item_struct(
         @ast::struct_def {
-           fields: union_fields,
+           fields: ~[data],
            ctor_id: None
         },
         empty_generics()
