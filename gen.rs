@@ -198,7 +198,7 @@ fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::view_item {
                     segments: path.map(|p|
                         ast::PathSegment {
                             identifier: ctx.ext_cx.ident_of((*p).clone()),
-                            lifetime: None,
+                            lifetimes: opt_vec::Empty,
                             types: opt_vec::Empty
                         }
                     )
@@ -625,7 +625,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx, rty: @Type,
                          segments: ~[
                             ast::PathSegment {
                                 identifier: ctx.ext_cx.ident_of(arg_name),
-                                lifetime: None,
+                                lifetimes: opt_vec::Empty,
                                 types: opt_vec::Empty
                             }
                         ]
@@ -730,7 +730,7 @@ fn mk_ty(ctx: &mut GenCtx, name: ~str) -> ast::Ty {
             segments: ~[
                 ast::PathSegment {
                     identifier: ctx.ext_cx.ident_of(name),
-                    lifetime: None,
+                    lifetimes: opt_vec::Empty,
                     types: opt_vec::Empty
                 }
             ]
