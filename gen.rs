@@ -1,5 +1,5 @@
 use std::{borrow, option};
-use std::rt::io;
+use std::io;
 
 use syntax::abi;
 use syntax::ast;
