@@ -13,42 +13,36 @@ pub type CursorVisitor<'self> = &'self fn(c: &Cursor, p: &Cursor) -> Enum_CXChil
 
 impl Cursor {
     // common
-    #[fixed_stack_segment]
     pub fn spelling(&self) -> ~str {
         unsafe {
             String(clang_getCursorSpelling(**self)).to_str()
         }
     }
 
-    #[fixed_stack_segment]
     pub fn kind(&self) -> Enum_CXCursorKind {
         unsafe {
             clang_getCursorKind(**self)
         }
     }
 
-    #[fixed_stack_segment]
     pub fn location(&self) -> SourceLocation {
         unsafe {
             SourceLocation(clang_getCursorLocation(**self))
         }
     }
 
-    #[fixed_stack_segment]
     pub fn cur_type(&self) -> Type {
         unsafe {
             Type(clang_getCursorType(**self))
         }
     }
 
-    #[fixed_stack_segment]
     pub fn definition(&self) -> Cursor {
         unsafe {
             Cursor(clang_getCursorDefinition(**self))
         }
     }
 
-    #[fixed_stack_segment]
     pub fn visit(&self, func: CursorVisitor) {
         unsafe {
             let data = cast::transmute::<&CursorVisitor, CXClientData>(&func);
@@ -57,7 +51,6 @@ impl Cursor {
     }
 
     // bitfield
-    #[fixed_stack_segment]
     pub fn bit_width(&self) -> Option<uint> {
         unsafe {
             let w = clang_getFieldDeclBitWidth(**self);
@@ -70,14 +63,12 @@ impl Cursor {
     }
 
     // enum
-    #[fixed_stack_segment]
     pub fn enum_type(&self) -> Type {
         unsafe {
             Type(clang_getEnumDeclIntegerType(**self))
         }
     }
 
-    #[fixed_stack_segment]
     pub fn enum_val(&self) -> int {
         unsafe {
             clang_getEnumConstantDeclValue(**self) as int
@@ -85,7 +76,6 @@ impl Cursor {
     }
 
     // typedef
-    #[fixed_stack_segment]
     pub fn typedef_type(&self) -> Type {
         unsafe {
             Type(clang_getTypedefDeclUnderlyingType(**self))
@@ -93,7 +83,6 @@ impl Cursor {
     }
 
     // function, variable
-    #[fixed_stack_segment]
     pub fn linkage(&self) -> Enum_CXLinkageKind {
         unsafe {
             clang_getCursorLinkage(**self)
@@ -101,7 +90,6 @@ impl Cursor {
     }
 
     // function
-    #[fixed_stack_segment]
     pub fn args(&self) -> ~[Cursor] {
         unsafe {
             let num = self.num_args() as uint;
@@ -113,14 +101,12 @@ impl Cursor {
         }
     }
 
-    #[fixed_stack_segment]
     pub fn ret_type(&self) -> Type {
         unsafe {
             Type(clang_getCursorResultType(**self))
         }
     }
 
-    #[fixed_stack_segment]
     pub fn num_args(&self) -> i32 {
         unsafe {
             clang_Cursor_getNumArguments(**self)
@@ -137,7 +123,6 @@ extern fn visit_children(cur: CXCursor, parent: ll::CXCursor,
 }
 
 impl Eq for Cursor {
-    #[fixed_stack_segment]
     fn eq(&self, other: &Cursor) -> bool {
         unsafe {
             clang_equalCursors(**self, **other) == 1
@@ -169,21 +154,18 @@ impl Type {
         return (*self).kind;
     }
 
-    #[fixed_stack_segment]
     pub fn declaration(&self) -> Cursor {
         unsafe {
             Cursor(clang_getTypeDeclaration(**self))
         }
     }
 
-    #[fixed_stack_segment]
     pub fn is_const(&self) -> bool {
         unsafe {
             clang_isConstQualifiedType(**self) == 1
         }
     }
 
-    #[fixed_stack_segment]
     pub fn size(&self) -> uint {
         unsafe {
             let val = clang_Type_getSizeOf(**self);
@@ -191,7 +173,6 @@ impl Type {
         }
     }
 
-    #[fixed_stack_segment]
     pub fn align(&self) -> uint {
         unsafe {
             let val = clang_Type_getAlignOf(**self);
@@ -200,7 +181,6 @@ impl Type {
     }
 
     // pointer
-    #[fixed_stack_segment]
     pub fn pointee_type(&self) -> Type {
         unsafe {
             Type(clang_getPointeeType(**self))
@@ -208,14 +188,12 @@ impl Type {
     }
 
     // array
-    #[fixed_stack_segment]
     pub fn elem_type(&self) -> Type {
         unsafe {
             Type(clang_getArrayElementType(**self))
         }
     }
 
-    #[fixed_stack_segment]
     pub fn array_size(&self) -> uint {
         unsafe {
             clang_getArraySize(**self) as uint
@@ -223,7 +201,6 @@ impl Type {
     }
 
     // typedef
-    #[fixed_stack_segment]
     pub fn canonical_type(&self) -> Type {
         unsafe {
             Type(clang_getCanonicalType(**self))
@@ -231,14 +208,12 @@ impl Type {
     }
 
     // function
-    #[fixed_stack_segment]
     pub fn is_variadic(&self) -> bool {
         unsafe {
             clang_isFunctionTypeVariadic(**self) == 1
         }
     }
 
-    #[fixed_stack_segment]
     pub fn arg_types(&self) -> ~[Type] {
         unsafe {
             let num = clang_getNumArgTypes(**self) as uint;
@@ -250,7 +225,6 @@ impl Type {
         }
     }
 
-    #[fixed_stack_segment]
     pub fn ret_type(&self) -> Type {
         unsafe {
             Type(clang_getResultType(**self))
@@ -262,7 +236,6 @@ impl Type {
 pub struct SourceLocation(CXSourceLocation);
 
 impl SourceLocation {
-    #[fixed_stack_segment]
     pub fn location(&self) -> (File, uint, uint, uint) {
         unsafe {
             let mut file = ptr::mut_null();
@@ -282,7 +255,6 @@ impl SourceLocation {
 pub struct File(CXFile);
 
 impl File {
-    #[fixed_stack_segment]
     pub fn name(&self) -> ~str {
         unsafe {
             String(clang_getFileName(**self)).to_str()
@@ -294,7 +266,6 @@ impl File {
 pub struct String(CXString);
 
 impl ToStr for String {
-    #[fixed_stack_segment]
     fn to_str(&self) -> ~str {
         unsafe {
             let c_str = clang_getCString(**self) as *c_char;
@@ -307,14 +278,12 @@ impl ToStr for String {
 pub struct Index(CXIndex);
 
 impl Index {
-    #[fixed_stack_segment]
     pub fn create(pch: bool, diag: bool) -> Index {
         unsafe {
             Index(clang_createIndex(pch as c_int, diag as c_int))
         }
     }
 
-    #[fixed_stack_segment]
     pub fn dispose(&self) {
         unsafe {
             clang_disposeIndex(**self);
@@ -326,7 +295,6 @@ impl Index {
 pub struct TranslationUnit(CXTranslationUnit);
 
 impl TranslationUnit {
-    #[fixed_stack_segment]
     pub fn parse(ix: &Index, file: &str, cmd_args: &[~str],
                  unsaved: &[UnsavedFile], opts: uint) -> TranslationUnit {
         let _fname = file.to_c_str();
@@ -345,7 +313,6 @@ impl TranslationUnit {
         TranslationUnit(tu)
     }
 
-    #[fixed_stack_segment]
     pub fn diags(&self) -> ~[Diagnostic] {
         unsafe {
             let num = clang_getNumDiagnostics(**self) as uint;
@@ -357,14 +324,12 @@ impl TranslationUnit {
         }
     }
 
-    #[fixed_stack_segment]
     pub fn cursor(&self) -> Cursor {
         unsafe {
             Cursor(clang_getTranslationUnitCursor(**self))
         }
     }
 
-    #[fixed_stack_segment]
     pub fn dispose(&self) {
         unsafe {
             clang_disposeTranslationUnit(**self);
@@ -376,21 +341,18 @@ impl TranslationUnit {
 pub struct Diagnostic(CXDiagnostic);
 
 impl Diagnostic {
-    #[fixed_stack_segment]
     pub fn default_opts() -> uint {
         unsafe {
             clang_defaultDiagnosticDisplayOptions() as uint
         }
     }
 
-    #[fixed_stack_segment]
     pub fn format(&self, opts: uint) -> ~str {
         unsafe {
             String(clang_formatDiagnostic(**self, opts as c_uint)).to_str()
         }
     }
 
-    #[fixed_stack_segment]
     pub fn severity(&self) -> Enum_CXDiagnosticSeverity {
         unsafe {
             clang_getDiagnosticSeverity(**self)
