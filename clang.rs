@@ -9,7 +9,7 @@ use clangll::*;
 // Cursor
 pub struct Cursor(CXCursor);
 
-pub type CursorVisitor<'self> = &'self fn(c: &Cursor, p: &Cursor) -> Enum_CXChildVisitResult;
+pub type CursorVisitor<'self> = 'self |c: &Cursor, p: &Cursor| -> Enum_CXChildVisitResult;
 
 impl Cursor {
     // common
@@ -593,9 +593,9 @@ pub fn ast_dump(c: &Cursor, depth: int)-> Enum_CXVisitorResult {
     }
     let ct = c.cur_type().kind();
     print_indent(depth, format!("({} {} {}", kind_to_str(c.kind()), c.spelling(), type_to_str(ct)));
-    do c.visit |s, _| {
+    c.visit(|s, _| {
         ast_dump(s, depth + 1)
-    }
+    });
     print_indent(depth, ")");
     return CXChildVisit_Continue;
 }

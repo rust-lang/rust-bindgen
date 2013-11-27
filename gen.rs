@@ -150,14 +150,14 @@ pub fn gen_rs(out: @mut io::Writer, abi: ~str, link: &Option<~str>, globs: &[Glo
         true
     });
 
-    let vars = do vs.map |v| {
+    let vars = vs.map(|v| {
         match *v {
             GVar(vi) => cvar_to_rs(&mut ctx, vi.name.clone(), vi.ty, vi.is_const),
             _ => { fail!(~"generate global variables") }
         }
-    };
+    });
 
-    let funcs = do fs.map |f| {
+    let funcs = fs.map(|f| {
         match *f {
             GFunc(vi) => {
                 match *vi.ty {
@@ -168,7 +168,7 @@ pub fn gen_rs(out: @mut io::Writer, abi: ~str, link: &Option<~str>, globs: &[Glo
             },
             _ => { fail!(~"generate functions") }
         }
-    };
+    });
 
     let views = ~[mk_import(&mut ctx, &[~"std", ~"libc"])];
     defs.push(mk_extern(&mut ctx, link, vars, funcs));
@@ -382,7 +382,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
 
 fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item {
     let mut unnamed = 0;
-    let fs = do fields.map |f| {
+    let fs = fields.map(|f| {
         let n = f.name.clone();
         let f_name = if n.is_empty() {
             unnamed += 1;
@@ -402,7 +402,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::i
             ty: f_ty,
             attrs: ~[]
         })
-    };
+    });
 
     let def = ast::item_struct(
         @ast::struct_def {
@@ -473,7 +473,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo], layout: Lay
         unsafe { std::cast::transmute(std::ptr::to_mut_unsafe_ptr(self)) }
     );
     let mut unnamed = 0;
-    let fs = do fields.map |f| {
+    let fs = fields.map(|f| {
         let n = f.name.clone();
         let f_name = if n.is_empty() {
             unnamed += 1;
@@ -510,7 +510,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo], layout: Lay
             self_id: union_def.id,
             vis: ast::public
         }
-    };
+    });
 
     let methods = ast::item_impl(
         empty_generics(),
@@ -601,7 +601,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx, rty: @Type,
     };
 
     let mut unnamed = 0;
-    let args = do aty.map |arg| {
+    let args = aty.map(|arg| {
         let (n, t) = (*arg).clone();
 
         let arg_name = if n.is_empty() {
@@ -636,7 +636,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx, rty: @Type,
             },
             id: ast::DUMMY_NODE_ID,
         }
-    };
+    });
 
     return ast::fn_decl {
         inputs: args,

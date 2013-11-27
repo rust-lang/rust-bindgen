@@ -181,7 +181,7 @@ fn match_pattern(ctx: @mut BindGenCtx, cursor: &Cursor) -> bool {
 fn decl_name(ctx: @mut BindGenCtx, cursor: &Cursor) -> Global {
     let mut new_decl = false;
     let decl = {
-        *do ctx.name.find_or_insert_with(*cursor) |_| {
+        *ctx.name.find_or_insert_with(*cursor, |_| {
             new_decl = true;
             let spelling = cursor.spelling();
             let ty = cursor.cur_type();
@@ -229,7 +229,7 @@ fn decl_name(ctx: @mut BindGenCtx, cursor: &Cursor) -> Global {
             };
     
             decl
-        }
+        })
     };
 
     if (new_decl) {
@@ -246,7 +246,7 @@ fn opaque_decl(ctx: @mut BindGenCtx, decl: &Cursor) {
     ctx.globals.push(name);
 }
 
-fn fwd_decl(ctx: @mut BindGenCtx, cursor: &Cursor, f: &fn()) {
+fn fwd_decl(ctx: @mut BindGenCtx, cursor: &Cursor, f: ||) {
     let def = &cursor.definition();
     if cursor == def {
         f();
@@ -268,9 +268,9 @@ fn conv_ptr_ty(ctx: @mut BindGenCtx, ty: &cx::Type, cursor: &Cursor, layout: Lay
         let ret_ty = ty.ret_type();
         let decl = ty.declaration();
         return if ret_ty.kind() != CXType_Invalid {
-            let args_lst = do ty.arg_types().map |arg| {
+            let args_lst = ty.arg_types().map(|arg| {
                 (~"", conv_ty(ctx, arg, cursor))
-            };
+            });
             let ret_ty = conv_ty(ctx, &ret_ty, cursor);
 
             @TFunc(ret_ty, args_lst, ty.is_variadic())
@@ -418,12 +418,12 @@ fn visit_top<'r>(cur: &'r Cursor,
 
     match cursor.kind() {
       CXCursor_StructDecl => {
-        do fwd_decl(ctx, cursor) || {
+        fwd_decl(ctx, cursor, || {
             let decl = decl_name(ctx, cursor);
             let ci = decl.compinfo();
             cursor.visit(|c, p| visit_struct(c, p, ctx, &mut ci.fields));
             ctx.globals.push(GComp(ci));
-        }
+        });
         return if cur.kind() == CXCursor_FieldDecl {
             CXChildVisit_Break
         } else {
@@ -431,21 +431,21 @@ fn visit_top<'r>(cur: &'r Cursor,
         };
       }
       CXCursor_UnionDecl => {
-        do fwd_decl(ctx, cursor) || {
+        fwd_decl(ctx, cursor, || {
             let decl = decl_name(ctx, cursor);
             let ci = decl.compinfo();
             cursor.visit(|c, _| visit_union(c, ctx, &mut ci.fields));
             ctx.globals.push(GComp(ci));
-        }
+        });
         return CXChildVisit_Recurse;
       }
       CXCursor_EnumDecl => {
-        do fwd_decl(ctx, cursor) || {
+        fwd_decl(ctx, cursor, || {
             let decl = decl_name(ctx, cursor);
             let ei = decl.enuminfo();
             cursor.visit(|c, _| visit_enum(c, &mut ei.items));
             ctx.globals.push(GEnum(ei));
-        }
+        });
         return CXChildVisit_Continue;
       }
       CXCursor_FunctionDecl => {
@@ -454,10 +454,10 @@ fn visit_top<'r>(cur: &'r Cursor,
             return CXChildVisit_Continue;
         }
 
-        let args_lst = do cursor.args().map |arg| {
+        let args_lst = cursor.args().map(|arg| {
             let arg_name = arg.spelling();
             (arg_name, conv_ty(ctx, &arg.cur_type(), cursor))
-        };
+        });
 
         let ty = cursor.cur_type();
         let ret_ty = conv_ty(ctx, &cursor.ret_type(), cursor);
