@@ -537,6 +537,7 @@ fn main() {
             });
 
             if c_err {
+                os::set_exit_status(1);
                 return;
             }
 
