@@ -62,7 +62,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 if ix + 1u >= args_len {
                     return ParseErr(~"Missing output filename");
                 }
-                let path = path::Path::new(args[ix + 1].clone());
+                let path = path::Path::init(args[ix + 1].clone());
                 match fs::File::create(&path) {
                   Some(f) => { out = @mut f as @mut io::Writer; }
                   None => { return ParseErr(format!("Open {} failed", args[ix + 1])); }

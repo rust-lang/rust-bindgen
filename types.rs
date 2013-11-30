@@ -80,7 +80,7 @@ impl Type {
           TComp(ci) => ci.layout.size,
           TEnum(ei) => ei.layout.size,
           TVoid => 0,
-          TFunc(*) => 0,
+          TFunc(..) => 0,
         }
     }
 
@@ -94,7 +94,7 @@ impl Type {
           TComp(ci) => ci.layout.align,
           TEnum(ei) => ei.layout.align,
           TVoid => 0,
-          TFunc(*) => 0,
+          TFunc(..) => 0,
         }
     }
 }
