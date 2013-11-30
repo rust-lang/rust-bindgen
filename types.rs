@@ -1,3 +1,4 @@
+#[deriving(Clone)]
 pub enum Global {
     GType(@mut TypeInfo),
     GComp(@mut CompInfo),
@@ -57,13 +58,14 @@ impl ToStr for Global {
     }
 }
 
+#[deriving(Clone, Eq)]
 pub enum Type {
     TVoid,
     TInt(IKind, Layout),
     TFloat(FKind, Layout),
-    TPtr(@Type, bool, Layout),
-    TArray(@Type, uint, Layout),
-    TFunc(@Type, ~[(~str, @Type)], bool),
+    TPtr(~Type, bool, Layout),
+    TArray(~Type, uint, Layout),
+    TFunc(~Type, ~[(~str, Type)], bool),
     TNamed(@mut TypeInfo),
     TComp(@mut CompInfo),
     TEnum(@mut EnumInfo)
@@ -76,9 +78,9 @@ impl Type {
           TFloat(_, l) => l.size,
           TPtr(_, _, l) => l.size,
           TArray(_, _, l) => l.size,
-          TNamed(t) => t.ty.size(),
-          TComp(ci) => ci.layout.size,
-          TEnum(ei) => ei.layout.size,
+          TNamed(ref t) => t.ty.size(),
+          TComp(ref ci) => ci.layout.size,
+          TEnum(ref ei) => ei.layout.size,
           TVoid => 0,
           TFunc(..) => 0,
         }
@@ -90,15 +92,16 @@ impl Type {
           TFloat(_, l) => l.align,
           TPtr(_, _, l) => l.align,
           TArray(_, _, l) => l.align,
-          TNamed(t) => t.ty.align(),
-          TComp(ci) => ci.layout.align,
-          TEnum(ei) => ei.layout.align,
+          TNamed(ref t) => t.ty.align(),
+          TComp(ref ci) => ci.layout.align,
+          TEnum(ref ei) => ei.layout.align,
           TVoid => 0,
           TFunc(..) => 0,
         }
     }
 }
 
+#[deriving(Clone, Eq)]
 pub struct Layout {
     size: uint,
     align: uint,
@@ -114,6 +117,7 @@ impl Layout {
     }
 }
 
+#[deriving(Clone, Eq)]
 pub enum IKind {
     IBool,
     ISChar,
@@ -128,25 +132,28 @@ pub enum IKind {
     IULongLong
 }
 
+#[deriving(Clone, Eq)]
 pub enum FKind {
     FFloat,
     FDouble
 }
 
+#[deriving(Clone, Eq)]
 pub struct CompInfo {
     cstruct: bool,
     name: ~str,
-    fields: ~[@FieldInfo],
+    fields: ~[FieldInfo],
     layout: Layout,
 }
 
 impl CompInfo {
-    pub fn new(name: ~str, cstruct: bool, fields: ~[@FieldInfo], layout: Layout) -> @mut CompInfo {
-        @mut CompInfo { cstruct: cstruct,
-                        name: name,
-                        fields: fields,
-                        layout: layout,
-                      }
+    pub fn new(name: ~str, cstruct: bool, fields: ~[FieldInfo], layout: Layout) -> CompInfo {
+        CompInfo {
+            cstruct: cstruct,
+            name: name,
+            fields: fields,
+            layout: layout,
+        }
     }
 }
 
@@ -156,35 +163,39 @@ impl ToStr for CompInfo {
     }
 }
 
+#[deriving(Clone, Eq)]
 pub struct FieldInfo {
     name: ~str,
-    ty: @Type,
+    ty: Type,
     bit: Option<uint>,
 }
 
 impl FieldInfo {
-    pub fn new(name: ~str, ty: @Type, bit: Option<uint>) -> @FieldInfo {
-        @FieldInfo { name: name,
-                     ty: ty,
-                     bit: bit,
-                   }
+    pub fn new(name: ~str, ty: Type, bit: Option<uint>) -> FieldInfo {
+        FieldInfo {
+            name: name,
+            ty: ty,
+            bit: bit,
+        }
     }
 }
 
+#[deriving(Clone, Eq)]
 pub struct EnumInfo {
     name: ~str,
-    items: ~[@EnumItem],
+    items: ~[EnumItem],
     kind: IKind,
     layout: Layout,
 }
 
 impl EnumInfo {
-    pub fn new(name: ~str, kind: IKind, items: ~[@EnumItem], layout: Layout) -> @mut EnumInfo {
-        @mut EnumInfo { name: name,
-                        items: items,
-                        kind: kind,
-                        layout: layout,
-                      }
+    pub fn new(name: ~str, kind: IKind, items: ~[EnumItem], layout: Layout) -> EnumInfo {
+        EnumInfo {
+            name: name,
+            items: items,
+            kind: kind,
+            layout: layout,
+        }
     }
 }
 
@@ -194,29 +205,33 @@ impl ToStr for EnumInfo {
     }
 }
 
+#[deriving(Clone, Eq)]
 pub struct EnumItem {
     name: ~str,
     val: int
 }
 
 impl EnumItem {
-    pub fn new(name: ~str, val: int) -> @EnumItem {
-        @EnumItem { name: name,
-                    val: val
-                  }
+    pub fn new(name: ~str, val: int) -> EnumItem {
+        EnumItem {
+            name: name,
+            val: val
+        }
     }
 }
 
+#[deriving(Clone, Eq)]
 pub struct TypeInfo {
     name: ~str,
-    ty: @Type
+    ty: Type
 }
 
 impl TypeInfo {
-    pub fn new(name: ~str, ty: @Type) -> @mut TypeInfo {
-        @mut TypeInfo { name: name,
-                        ty: ty
-                      }
+    pub fn new(name: ~str, ty: Type) -> TypeInfo {
+        TypeInfo {
+            name: name,
+            ty: ty
+        }
     }
 }
 
@@ -226,18 +241,20 @@ impl ToStr for TypeInfo {
     }
 }
 
+#[deriving(Clone)]
 pub struct VarInfo {
     name: ~str,
-    ty: @Type,
+    ty: Type,
     is_const: bool
 }
 
 impl VarInfo {
-    pub fn new(name: ~str, ty: @Type) -> @mut VarInfo {
-        @mut VarInfo { name: name,
-                       ty: ty,
-                       is_const: false
-                     }
+    pub fn new(name: ~str, ty: Type) -> VarInfo {
+        VarInfo {
+            name: name,
+            ty: ty,
+            is_const: false
+        }
     }
 }
 

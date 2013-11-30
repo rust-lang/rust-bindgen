@@ -1,5 +1,7 @@
-use std::{borrow, option};
+use std::borrow;
+use std::option;
 use std::io;
+use std::iter;
 
 use syntax::abi;
 use syntax::ast;
@@ -78,7 +80,7 @@ fn enum_name(name: ~str) -> ~str {
     format!("Enum_{}", name)
 }
 
-pub fn gen_rs(out: @mut io::Writer, abi: ~str, link: &Option<~str>, globs: &[Global]) {
+pub fn gen_rs(out: @mut io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]) {
     let abis = match abi {
         ~"cdecl" => abi::AbiSet::from(abi::Cdecl),
         ~"stdcall" => abi::AbiSet::from(abi::Stdcall),
@@ -102,73 +104,73 @@ pub fn gen_rs(out: @mut io::Writer, abi: ~str, link: &Option<~str>, globs: &[Glo
     let mut fs = ~[];
     let mut vs = ~[];
     let mut gs = ~[];
-    uniq_globs.iter().advance(|g| {
-        match *g {
+    for g in uniq_globs.move_iter() {
+        match g {
             GOther => {}
-            GFunc(_) => fs.push(*g),
-            GVar(_) => vs.push(*g),
-            _ => gs.push(*g)
+            GFunc(_) => fs.push(g),
+            GVar(_) => vs.push(g),
+            _ => gs.push(g)
         }
-        true
-    });
+    }
 
     let mut defs = ~[];
-    gs = remove_redundent_decl(gs);
+    gs = remove_redundant_decl(gs);
 
-    gs.iter().advance(|g| {
-        match *g {
-            GType(ti) => defs.push_all(ctypedef_to_rs(&mut ctx, ti.name.clone(), ti.ty)),
+    for g in gs.move_iter() {
+        match g {
+            GType(ti) => defs.push_all(ctypedef_to_rs(&mut ctx, ti.name.clone(), &ti.ty)),
             GCompDecl(ci) => {
                 ci.name = unnamed_name(&mut ctx, ci.name.clone());
                 if ci.cstruct {
-                    defs.push_all(ctypedef_to_rs(&mut ctx, struct_name(ci.name.clone()), @TVoid))
+                    defs.push_all(ctypedef_to_rs(&mut ctx, struct_name(ci.name.clone()), &TVoid))
                 } else {
-                    defs.push_all(ctypedef_to_rs(&mut ctx, union_name(ci.name.clone()), @TVoid))
+                    defs.push_all(ctypedef_to_rs(&mut ctx, union_name(ci.name.clone()), &TVoid))
                 }
             },
             GComp(ci) => {
                 ci.name = unnamed_name(&mut ctx, ci.name.clone());
                 if ci.cstruct {
                     defs.push(cstruct_to_rs(&mut ctx, struct_name(ci.name.clone()),
+                                            // this clone is necessary to prevent dynamic borrow
+                                            // check errors.
+                                            // FIXME: remove the @mut in types.rs to fix this
                                             ci.fields.clone()))
                 } else {
                     defs.push_all(cunion_to_rs(&mut ctx, union_name(ci.name.clone()),
-                                               ci.fields.clone(), ci.layout))
+                                               ci.fields, ci.layout))
                 }
             },
             GEnumDecl(ei) => {
                 ei.name = unnamed_name(&mut ctx, ei.name.clone());
-                defs.push_all(ctypedef_to_rs(&mut ctx, enum_name(ei.name.clone()), @TVoid))
+                defs.push_all(ctypedef_to_rs(&mut ctx, enum_name(ei.name.clone()), &TVoid))
             },
             GEnum(ei) => {
                 ei.name = unnamed_name(&mut ctx, ei.name.clone());
-                defs.push_all(cenum_to_rs(&mut ctx, enum_name(ei.name.clone()), ei.items.clone(),
-                                          ei.kind))
+                defs.push_all(cenum_to_rs(&mut ctx, enum_name(ei.name.clone()), ei.items, ei.kind))
             },
             _ => { }
         }
-        true
-    });
+    }
 
-    let vars = vs.map(|v| {
-        match *v {
-            GVar(vi) => cvar_to_rs(&mut ctx, vi.name.clone(), vi.ty, vi.is_const),
+    let vars = vs.move_iter().map(|v| {
+        match v {
+            GVar(vi) => cvar_to_rs(&mut ctx, vi.name.clone(), &vi.ty, vi.is_const),
             _ => { fail!(~"generate global variables") }
         }
-    });
+    }).collect();
 
-    let funcs = fs.map(|f| {
-        match *f {
+    let funcs = fs.move_iter().map(|f| {
+        match f {
             GFunc(vi) => {
-                match *vi.ty {
-                    TFunc(rty, ref aty, var) => cfunc_to_rs(&mut ctx, vi.name.clone(),
-                                                             rty, (*aty).clone(), var),
+                match vi.ty {
+                    TFunc(ref rty, ref aty, var) => cfunc_to_rs(&mut ctx, vi.name.clone(),
+                                                                *rty, *aty, var),
                     _ => { fail!(~"generate functions") }
                 }
             },
             _ => { fail!(~"generate functions") }
         }
-    });
+    }).collect();
 
     let views = ~[mk_import(&mut ctx, &[~"std", ~"libc"])];
     defs.push(mk_extern(&mut ctx, link, vars, funcs));
@@ -253,20 +255,18 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
            };
 }
 
-fn remove_redundent_decl(gs: &[Global]) -> ~[Global] {
-    fn check_decl(a: Global, b: Global) -> bool {
-        match (a, b) {
-          (GComp(ci1), GType(ti)) => match *ti.ty {
+fn remove_redundant_decl(gs: ~[Global]) -> ~[Global] {
+    fn check_decl(a: &Global, ty: &Type) -> bool {
+        match *a {
+          GComp(ci1) => match *ty {
               TComp(ci2) => {
-                  let n = ci1.name.clone();
-                  borrow::ref_eq(ci1, ci2) && n.is_empty()
+                  borrow::ref_eq(ci1, ci2) && ci1.name.is_empty()
               },
               _ => false
           },
-          (GEnum(ei1), GType(ti)) => match *ti.ty {
+          GEnum(ei1) => match *ty {
               TEnum(ei2) => {
-                  let n = ei1.name.clone();
-                  borrow::ref_eq(ei1, ei2) && n.is_empty()
+                  borrow::ref_eq(ei1, ei2) && ei1.name.is_empty()
               },
               _ => false
           },
@@ -274,70 +274,64 @@ fn remove_redundent_decl(gs: &[Global]) -> ~[Global] {
         }
     }
 
-    let gsit = gs.iter();
-    let typedefs: ~[Global] = gsit.filter_map(|g|
-        match(*g) {
-            GType(_) => Some(*g),
+    let typedefs: ~[Type] = gs.iter().filter_map(|g|
+        match *g {
+            GType(ref ti) => Some(ti.ty.clone()),
             _ => None
         }
     ).collect();
 
-    return gsit.filter_map(|g|
-        if typedefs.iter().any(|t| check_decl(*g, *t)) {
-            None
-        } else {
-            Some(*g)
-        }
+    return gs.move_iter().filter(|g|
+        !typedefs.iter().any(|t| check_decl(g, t))
     ).collect();
 }
 
-fn tag_dup_decl(gs: &[Global]) -> ~[Global] {
-    fn check(g1: Global, g2: Global) -> Global {
-        if !g1.to_str().is_empty() && g1.to_str() == g2.to_str() {
-            GOther
-        } else {
-            g2
-        }
+fn tag_dup_decl(gs: ~[Global]) -> ~[Global] {
+    fn check(name1: &str, name2: &str) -> bool {
+        !name1.is_empty() && name1 == name2
     }
 
-    fn check_dup(g1: Global, g2: Global) -> Global {
+    fn check_dup(g1: &Global, g2: &Global) -> bool {
         match (g1, g2) {
-          (GType(_), GType(_)) => check(g1, g2),
-          (GComp(_), GComp(_)) => check(g1, g2),
-          (GCompDecl(_), GCompDecl(_)) => check(g1, g2),
-          (GEnum(_), GEnum(_)) => check(g1, g2),
-          (GEnumDecl(_), GEnumDecl(_)) => check(g1, g2),
-          (GVar(_), GVar(_)) => check(g1, g2),
-          (GFunc(_), GFunc(_)) => check(g1, g2),
-          _ => g2
+          (&GType(ti1), &GType(ti2)) => check(ti1.name, ti2.name),
+          (&GComp(ci1), &GComp(ci2)) => check(ci1.name, ci2.name),
+          (&GCompDecl(ci1), &GCompDecl(ci2)) => check(ci1.name, ci2.name),
+          (&GEnum(ei1), &GEnum(ei2)) => check(ei1.name, ei2.name),
+          (&GEnumDecl(ei1), &GEnumDecl(ei2)) => check(ei1.name, ei2.name),
+          (&GVar(vi1), &GVar(vi2)) => check(vi1.name, vi2.name),
+          (&GFunc(vi1), &GFunc(vi2)) => check(vi1.name, vi2.name),
+          _ => false
         }
     }
 
-    let mut res = gs.map(|g| *g);
-    let len = res.len();
-    let mut i = 0;
+    let len = gs.len();
+    let mut res = ~[];
+    res.push(gs[0]);
 
-    while i < len {
-        let mut j = i + 1;
-
-        while j < len {
-            let g2 = check_dup(res[i], res[j]);
-            res[j] = g2;
-            j += 1;
+    for i in iter::range(1, len) {
+        let mut dup = false;
+        for j in iter::range(0, i-1) {
+            if check_dup(&gs[i], &gs[j]) {
+                dup = true;
+                break;
+            }
         }
-        i += 1;
+        if !dup {
+            res.push(gs[i]);
+        }
     }
+
     return res;
 }
 
-fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
-    fn mk_item(ctx: &mut GenCtx, name: ~str, ty: @Type) -> @ast::item {
+fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::item] {
+    fn mk_item(ctx: &mut GenCtx, name: ~str, ty: &Type) -> @ast::item {
         let rust_name = rust_type_id(ctx, name);
         let rust_ty = cty_to_rs(ctx, ty);
         let base = ast::item_ty(
             ast::Ty {
                 id: ast::DUMMY_NODE_ID,
-                node: rust_ty.node.clone(),
+                node: rust_ty.node,
                 span: dummy_sp(),
             },
             empty_generics()
@@ -355,23 +349,21 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
 
     return match *ty {
         TComp(ci) => {
-            let n = ci.name.clone();
-            if n.is_empty() {
+            if ci.name.is_empty() {
                 ci.name = name.clone();
                 if ci.cstruct {
-                    ~[cstruct_to_rs(ctx, name, ci.fields.clone())]
+                    ~[cstruct_to_rs(ctx, name, ci.fields)]
                 } else {
-                    cunion_to_rs(ctx, name, ci.fields.clone(), ci.layout)
+                    cunion_to_rs(ctx, name, ci.fields, ci.layout)
                 }
             } else {
                 ~[mk_item(ctx, name, ty)]
             }
         },
         TEnum(ei) => {
-            let n = ei.name.clone();
-            if n.is_empty() {
+            if ei.name.is_empty() {
                 ei.name = name.clone();
-                cenum_to_rs(ctx, name, ei.items.clone(), ei.kind)
+                cenum_to_rs(ctx, name, ei.items, ei.kind)
             } else {
                 ~[mk_item(ctx, name, ty)]
             }
@@ -380,20 +372,19 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: @Type) -> ~[@ast::item] {
     }
 }
 
-fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::item {
+fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo]) -> @ast::item {
     let mut unnamed = 0;
     let fs = fields.map(|f| {
-        let n = f.name.clone();
-        let f_name = if n.is_empty() {
+        let f_name = if f.name.is_empty() {
             unnamed += 1;
             format!("unnamed_field{}", unnamed)
         } else {
             rust_type_id(ctx, f.name.clone())
         };
 
-        let f_ty = cty_to_rs(ctx, f.ty);
+        let f_ty = cty_to_rs(ctx, &f.ty);
 
-        @dummy_spanned(ast::struct_field_ {
+        dummy_spanned(ast::struct_field_ {
             kind: ast::named_field(
                 ctx.ext_cx.ident_of(f_name),
                 ast::inherited
@@ -422,7 +413,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo]) -> @ast::i
            };
 }
 
-fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo], layout: Layout) -> ~[@ast::item] {
+fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layout) -> ~[@ast::item] {
     fn mk_item(ctx: &mut GenCtx, name: ~str, item: ast::item_, vis: ast::visibility) -> @ast::item {
         return @ast::item {
                   ident: ctx.ext_cx.ident_of(name),
@@ -435,8 +426,8 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo], layout: Lay
     }
 
     let ext_cx = ctx.ext_cx;
-    let ci = CompInfo::new(name.clone(), false, fields.clone(), layout);
-    let union = @TNamed(TypeInfo::new(name.clone(), @TComp(ci)));
+    let ci = @mut CompInfo::new(name.clone(), false, fields.to_owned(), layout);
+    let union = TNamed(@mut TypeInfo::new(name.clone(), TComp(ci)));
 
     let ty_name = match layout.align {
         1 => "u8",
@@ -448,7 +439,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo], layout: Lay
     let data_len = if ty_name == "u8" { layout.size } else { layout.size / layout.align };
     let base_ty = mk_ty(ctx, ty_name.to_owned());
     let data_ty = mk_arrty(ctx, &base_ty, data_len);
-    let data = @dummy_spanned(ast::struct_field_ {
+    let data = dummy_spanned(ast::struct_field_ {
         kind: ast::named_field(
             ctx.ext_cx.ident_of("data"),
             ast::inherited
@@ -474,15 +465,14 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo], layout: Lay
     );
     let mut unnamed = 0;
     let fs = fields.map(|f| {
-        let n = f.name.clone();
-        let f_name = if n.is_empty() {
+        let f_name = if f.name.is_empty() {
             unnamed += 1;
             format!("unnamed_field{}", unnamed)
         } else {
             rust_id(ctx, f.name.clone()).first()
         };
 
-        let ret_ty = cty_to_rs(ctx, @TPtr(f.ty, false, Layout::zero()));
+        let ret_ty = cty_to_rs(ctx, &TPtr(~f.ty.clone(), false, Layout::zero()));
         let body = ast::Block {
             view_items: ~[],
             stmts: ~[],
@@ -515,7 +505,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo], layout: Lay
     let methods = ast::item_impl(
         empty_generics(),
         None,
-        cty_to_rs(ctx, union),
+        cty_to_rs(ctx, &union),
         fs
     );
 
@@ -525,14 +515,14 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: ~[@FieldInfo], layout: Lay
     ];
 }
 
-fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -> ~[@ast::item] {
-    let ty = @TInt(kind, Layout::zero());
+fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: &[EnumItem], kind: IKind) -> ~[@ast::item] {
+    let ty = TInt(kind, Layout::zero());
     let ty_id = rust_type_id(ctx, name);
-    let ty_def = ctypedef_to_rs(ctx, ty_id, ty);
-    let val_ty = cty_to_rs(ctx, ty);
+    let ty_def = ctypedef_to_rs(ctx, ty_id, &ty);
+    let val_ty = cty_to_rs(ctx, &ty);
     let mut def = ty_def;
 
-    items.iter().advance(|it| {
+    for it in items.iter() {
         let cst = ast::item_static(
             val_ty.clone(),
             ast::MutImmutable,
@@ -550,8 +540,7 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: ~[@EnumItem], kind: IKind) -
                       };
 
         def.push(val_def);
-        true
-    });
+    }
 
     return def;
 }
@@ -568,7 +557,7 @@ fn mk_link_name_attr(name: ~str) -> ast::Attribute {
 }
 
 fn cvar_to_rs(ctx: &mut GenCtx, name: ~str,
-                                ty: @Type,
+                                ty: &Type,
                                 is_const: bool) -> @ast::foreign_item {
     let (rust_name, was_mangled) = rust_id(ctx, name.clone());
 
@@ -587,9 +576,10 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: ~str,
            };
 }
 
-fn cfuncty_to_rs(ctx: &mut GenCtx, rty: @Type,
-                                    aty: ~[(~str, @Type)],
-                                    var: bool) -> ast::fn_decl {
+fn cfuncty_to_rs(ctx: &mut GenCtx,
+                 rty: &Type,
+                 aty: &[(~str, Type)],
+                 var: bool) -> ast::fn_decl {
 
     let ret = match *rty {
         TVoid => ast::Ty {
@@ -601,14 +591,14 @@ fn cfuncty_to_rs(ctx: &mut GenCtx, rty: @Type,
     };
 
     let mut unnamed = 0;
-    let args = aty.map(|arg| {
-        let (n, t) = (*arg).clone();
+    let args = aty.iter().map(|arg| {
+        let (ref n, ref t) = *arg;
 
         let arg_name = if n.is_empty() {
             unnamed += 1;
             format!("arg{}", unnamed)
         } else {
-            rust_id(ctx, n).first()
+            rust_id(ctx, n.clone()).first()
         };
 
         let arg_ty = cty_to_rs(ctx, t);
@@ -636,7 +626,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx, rty: @Type,
             },
             id: ast::DUMMY_NODE_ID,
         }
-    });
+    }).collect();
 
     return ast::fn_decl {
         inputs: args,
@@ -646,9 +636,9 @@ fn cfuncty_to_rs(ctx: &mut GenCtx, rty: @Type,
     };
 }
 
-fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @Type,
-                                         aty: ~[(~str, @Type)],
-                                         var: bool) -> @ast::foreign_item {
+fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: &Type,
+               aty: &[(~str, Type)],
+               var: bool) -> @ast::foreign_item {
     let decl = ast::foreign_item_fn(
         cfuncty_to_rs(ctx, rty, aty, var),
         empty_generics()
@@ -671,7 +661,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: @Type,
            };
 }
 
-fn cty_to_rs(ctx: &mut GenCtx, ty: @Type) -> ast::Ty {
+fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
     return match *ty {
         TVoid => mk_ty(ctx, ~"c_void"),
         TInt(i, _) => match i {
@@ -691,16 +681,16 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: @Type) -> ast::Ty {
             FFloat => mk_ty(ctx, ~"c_float"),
             FDouble => mk_ty(ctx, ~"c_double")
         },
-        TPtr(t, is_const, _) => {
-            let id = cty_to_rs(ctx, t);
+        TPtr(ref t, is_const, _) => {
+            let id = cty_to_rs(ctx, *t);
             mk_ptrty(ctx, &id, is_const)
         },
-        TArray(t, s, _) => {
-            let ty = cty_to_rs(ctx, t);
+        TArray(ref t, s, _) => {
+            let ty = cty_to_rs(ctx, *t);
             mk_arrty(ctx, &ty, s)
         },
-        TFunc(rty, ref atys, var) => {
-            let decl = cfuncty_to_rs(ctx, rty, (*atys).clone(), var);
+        TFunc(ref rty, ref atys, var) => {
+            let decl = cfuncty_to_rs(ctx, *rty, *atys, var);
             mk_fnty(ctx, &decl)
         },
         TNamed(ti) => {
