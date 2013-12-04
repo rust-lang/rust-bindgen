@@ -225,14 +225,12 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
     match *link {
         None => attrs = ~[],
         Some(ref l) => {
+            let link_name = @dummy_spanned(ast::MetaNameValue(
+                @"name", dummy_spanned(ast::lit_str(l.to_managed(), ast::CookedStr))
+            ));
             let link_args = dummy_spanned(ast::Attribute_ {
                 style: ast::AttrOuter,
-                value: @dummy_spanned(
-                    ast::MetaNameValue(
-                        @"link_args",
-                        dummy_spanned(ast::lit_str((~"-l" + *l).to_managed(), ast::CookedStr))
-                    )
-                ),
+                value: @dummy_spanned(ast::MetaList(@"link", ~[link_name])),
                 is_sugared_doc: false
             });
             attrs = ~[link_args];

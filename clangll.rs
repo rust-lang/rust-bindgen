@@ -723,7 +723,7 @@ pub static CXIndexOpt_IndexFunctionLocalSymbols: c_uint = 2;
 pub static CXIndexOpt_IndexImplicitTemplateInstantiations: c_uint = 4;
 pub static CXIndexOpt_SuppressWarnings: c_uint = 8;
 pub static CXIndexOpt_SkipParsedBodiesInSession: c_uint = 16;
-#[link_args = "-lclang"]
+#[link(name = "clang")]
 extern "C" {
     pub fn clang_getCString(string: CXString) -> *c_schar;
     pub fn clang_disposeString(string: CXString);
