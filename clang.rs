@@ -369,6 +369,12 @@ impl Diagnostic {
             clang_getDiagnosticSeverity(**self)
         }
     }
+
+    pub fn dispose(&self) {
+        unsafe {
+            clang_disposeDiagnostic(**self);
+        }
+    }
 }
 
 // UnsavedFile
