@@ -313,6 +313,17 @@ impl TranslationUnit {
         TranslationUnit(tu)
     }
 
+    pub fn reparse(&self, unsaved: &[UnsavedFile], opts: uint) -> bool {
+        let mut c_unsaved = unsaved.map(|f| **f);
+
+        unsafe {
+            clang_reparseTranslationUnit(**self,
+                                         c_unsaved.len() as c_uint,
+                                         vec::raw::to_mut_ptr(c_unsaved),
+                                         opts as c_uint) == 0
+        }
+    }
+
     pub fn diags(&self) -> ~[Diagnostic] {
         unsafe {
             let num = clang_getNumDiagnostics(**self) as uint;
