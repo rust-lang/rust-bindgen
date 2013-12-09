@@ -5,7 +5,7 @@ use std::iter;
 
 use syntax::abi;
 use syntax::ast;
-use syntax::codemap::{dummy_sp, dummy_spanned, ExpnInfo, NameAndSpan};
+use syntax::codemap::{dummy_sp, dummy_spanned, ExpnInfo, NameAndSpan, MacroBang};
 use syntax::ast_util::*;
 use syntax::ext::base;
 use syntax::ext::build::AstBuilder;
@@ -97,7 +97,7 @@ pub fn gen_rs(out: @mut io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Glo
                          };
     ctx.ext_cx.bt_push(ExpnInfo {
         call_site: dummy_sp(),
-        callee: NameAndSpan { name: @"", span: None }
+        callee: NameAndSpan { name: @"", format: MacroBang, span: None }
     });
     let uniq_globs = tag_dup_decl(globs);
 
