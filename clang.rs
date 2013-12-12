@@ -9,7 +9,7 @@ use clangll::*;
 // Cursor
 pub struct Cursor(CXCursor);
 
-pub type CursorVisitor<'self> = 'self |c: &Cursor, p: &Cursor| -> Enum_CXChildVisitResult;
+pub type CursorVisitor<'s> = 's |c: &Cursor, p: &Cursor| -> Enum_CXChildVisitResult;
 
 impl Cursor {
     // common
