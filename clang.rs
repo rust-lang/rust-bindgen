@@ -1,7 +1,7 @@
 #[allow(non_uppercase_pattern_statics)];
 
 use std::libc::*;
-use std::{cast, ptr, str, to_bytes, vec};
+use std::{cast, ptr, str, to_bytes};
 
 pub use ll = clangll;
 use clangll::*;
@@ -304,9 +304,9 @@ impl TranslationUnit {
         let mut c_unsaved = unsaved.map(|f| **f);
         let tu = unsafe {
             clang_parseTranslationUnit(**ix, fname,
-                                       vec::raw::to_ptr(c_args),
+                                       c_args.as_ptr(),
                                        c_args.len() as c_int,
-                                       vec::raw::to_mut_ptr(c_unsaved),
+                                       c_unsaved.as_mut_ptr(),
                                        c_unsaved.len() as c_uint,
                                        opts as c_uint)
         };
@@ -319,7 +319,7 @@ impl TranslationUnit {
         unsafe {
             clang_reparseTranslationUnit(**self,
                                          c_unsaved.len() as c_uint,
-                                         vec::raw::to_mut_ptr(c_unsaved),
+                                         c_unsaved.as_mut_ptr(),
                                          opts as c_uint) == 0
         }
     }
