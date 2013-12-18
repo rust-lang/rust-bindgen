@@ -750,10 +750,7 @@ fn mk_ptrty(_ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
 fn mk_arrty(_ctx: &mut GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
     let sz = ast::ExprLit(@dummy_spanned(ast::lit_uint(n as u64, ast::ty_u)));
     let ty = ast::ty_fixed_length_vec(
-        ast::mt {
-            ty: @base.clone(),
-            mutbl: ast::MutImmutable
-        },
+        @base.clone(),
         @ast::Expr {
             id: ast::DUMMY_NODE_ID,
             node: sz,
