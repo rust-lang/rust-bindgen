@@ -593,7 +593,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
     };
 
     let mut unnamed = 0;
-    let args = aty.iter().map(|arg| {
+    let args: ~[ast::arg] = aty.iter().map(|arg| {
         let (ref n, ref t) = *arg;
 
         let arg_name = if n.is_empty() {
@@ -630,6 +630,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
         }
     }).collect();
 
+    let var = !args.is_empty() && var;
     return ast::fn_decl {
         inputs: args,
         output: ret,
@@ -641,6 +642,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
 fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: &Type,
                aty: &[(~str, Type)],
                var: bool) -> @ast::foreign_item {
+    let var = !aty.is_empty() && var;
     let decl = ast::foreign_item_fn(
         @cfuncty_to_rs(ctx, rty, aty, var),
         empty_generics()
