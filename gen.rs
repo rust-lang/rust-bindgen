@@ -302,6 +302,10 @@ fn tag_dup_decl(gs: ~[Global]) -> ~[Global] {
         }
     }
 
+    if gs.is_empty() {
+        return gs;
+    }
+
     let len = gs.len();
     let mut res = ~[];
     res.push(gs[0]);
