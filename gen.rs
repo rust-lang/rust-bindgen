@@ -15,8 +15,8 @@ use syntax::opt_vec;
 
 use types::*;
 
-struct GenCtx<'a> {
-    ext_cx: &'a mut base::ExtCtxt,
+struct GenCtx {
+    ext_cx: base::ExtCtxt,
     unnamed_ty: uint,
     abis: abi::AbiSet
 }
@@ -91,7 +91,7 @@ pub fn gen_rs(out: @mut io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Glo
         _ => abi::AbiSet::C()
     };
 
-    let mut ctx = GenCtx { ext_cx: &mut base::ExtCtxt::new(parse::new_parse_sess(None), ~[]),
+    let mut ctx = GenCtx { ext_cx: base::ExtCtxt::new(parse::new_parse_sess(None), ~[]),
                            unnamed_ty: 0,
                            abis: abis
                          };
