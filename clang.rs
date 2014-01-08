@@ -7,7 +7,9 @@ pub use ll = clangll;
 use clangll::*;
 
 // Cursor
-pub struct Cursor(CXCursor);
+pub struct Cursor {
+    priv x: CXCursor
+}
 
 pub type CursorVisitor<'s> = 's |c: &Cursor, p: &Cursor| -> Enum_CXChildVisitResult;
 
@@ -15,45 +17,45 @@ impl Cursor {
     // common
     pub fn spelling(&self) -> ~str {
         unsafe {
-            String(clang_getCursorSpelling(**self)).to_str()
+            String { x: clang_getCursorSpelling(self.x) }.to_str()
         }
     }
 
     pub fn kind(&self) -> Enum_CXCursorKind {
         unsafe {
-            clang_getCursorKind(**self)
+            clang_getCursorKind(self.x)
         }
     }
 
     pub fn location(&self) -> SourceLocation {
         unsafe {
-            SourceLocation(clang_getCursorLocation(**self))
+            SourceLocation { x: clang_getCursorLocation(self.x) }
         }
     }
 
     pub fn cur_type(&self) -> Type {
         unsafe {
-            Type(clang_getCursorType(**self))
+            Type { x: clang_getCursorType(self.x) }
         }
     }
 
     pub fn definition(&self) -> Cursor {
         unsafe {
-            Cursor(clang_getCursorDefinition(**self))
+            Cursor { x: clang_getCursorDefinition(self.x) }
         }
     }
 
     pub fn visit(&self, func: CursorVisitor) {
         unsafe {
             let data = cast::transmute::<&CursorVisitor, CXClientData>(&func);
-            clang_visitChildren(**self, visit_children, data);
+            clang_visitChildren(self.x, visit_children, data);
         };
     }
 
     // bitfield
     pub fn bit_width(&self) -> Option<uint> {
         unsafe {
-            let w = clang_getFieldDeclBitWidth(**self);
+            let w = clang_getFieldDeclBitWidth(self.x);
             if (w == -1) {
                 None
             } else {
@@ -65,27 +67,27 @@ impl Cursor {
     // enum
     pub fn enum_type(&self) -> Type {
         unsafe {
-            Type(clang_getEnumDeclIntegerType(**self))
+            Type { x: clang_getEnumDeclIntegerType(self.x) }
         }
     }
 
     pub fn enum_val(&self) -> int {
         unsafe {
-            clang_getEnumConstantDeclValue(**self) as int
+            clang_getEnumConstantDeclValue(self.x) as int
         }
     }
 
     // typedef
     pub fn typedef_type(&self) -> Type {
         unsafe {
-            Type(clang_getTypedefDeclUnderlyingType(**self))
+            Type { x: clang_getTypedefDeclUnderlyingType(self.x) }
         }
     }
 
     // function, variable
     pub fn linkage(&self) -> Enum_CXLinkageKind {
         unsafe {
-            clang_getCursorLinkage(**self)
+            clang_getCursorLinkage(self.x)
         }
     }
 
@@ -95,7 +97,7 @@ impl Cursor {
             let num = self.num_args() as uint;
             let mut args = ~[];
             for i in range(0, num) {
-                args.push(Cursor(clang_Cursor_getArgument(**self, i as c_uint)));
+                args.push(Cursor { x: clang_Cursor_getArgument(self.x, i as c_uint) });
             }
             return args;
         }
@@ -103,13 +105,13 @@ impl Cursor {
 
     pub fn ret_type(&self) -> Type {
         unsafe {
-            Type(clang_getCursorResultType(**self))
+            Type { x: clang_getCursorResultType(self.x) }
         }
     }
 
     pub fn num_args(&self) -> i32 {
         unsafe {
-            clang_Cursor_getNumArguments(**self)
+            clang_Cursor_getNumArguments(self.x)
         }
     }
 }
@@ -118,14 +120,14 @@ extern fn visit_children(cur: CXCursor, parent: ll::CXCursor,
                          data: CXClientData) -> ll::Enum_CXChildVisitResult {
     unsafe {
         let func = cast::transmute::<CXClientData, &CursorVisitor>(data);
-        return (*func)(&Cursor(cur), &Cursor(parent));
+        return (*func)(&Cursor { x: cur }, &Cursor { x: parent });
     }
 }
 
 impl Eq for Cursor {
     fn eq(&self, other: &Cursor) -> bool {
         unsafe {
-            clang_equalCursors(**self, **other) == 1
+            clang_equalCursors(self.x, other.x) == 1
         }
     }
 
@@ -136,46 +138,48 @@ impl Eq for Cursor {
 
 impl IterBytes for Cursor {
     fn iter_bytes(&self, lsb0: bool, f: to_bytes::Cb) -> bool {
-        [(self.kind as int),
-         (self.xdata as int),
-         (self.data[0] as int),
-         (self.data[1] as int),
-         (self.data[2] as int)
+        [(self.x.kind as int),
+         (self.x.xdata as int),
+         (self.x.data[0] as int),
+         (self.x.data[1] as int),
+         (self.x.data[2] as int)
         ].iter_bytes(lsb0, f)
     }
 }
 
 // type
-pub struct Type(CXType);
+pub struct Type {
+    priv x: CXType
+}
 
 impl Type {
     // common
     pub fn kind(&self) -> Enum_CXTypeKind {
-        return (*self).kind;
+        return self.x.kind;
     }
 
     pub fn declaration(&self) -> Cursor {
         unsafe {
-            Cursor(clang_getTypeDeclaration(**self))
+            Cursor { x: clang_getTypeDeclaration(self.x) }
         }
     }
 
     pub fn is_const(&self) -> bool {
         unsafe {
-            clang_isConstQualifiedType(**self) == 1
+            clang_isConstQualifiedType(self.x) == 1
         }
     }
 
     pub fn size(&self) -> uint {
         unsafe {
-            let val = clang_Type_getSizeOf(**self);
+            let val = clang_Type_getSizeOf(self.x);
             if val < 0 { 0 } else { val as uint }
         }
     }
 
     pub fn align(&self) -> uint {
         unsafe {
-            let val = clang_Type_getAlignOf(**self);
+            let val = clang_Type_getAlignOf(self.x);
             if val < 0 { 0 } else { val as uint }
         }
     }
@@ -183,43 +187,43 @@ impl Type {
     // pointer
     pub fn pointee_type(&self) -> Type {
         unsafe {
-            Type(clang_getPointeeType(**self))
+            Type { x: clang_getPointeeType(self.x) }
         }
     }
 
     // array
     pub fn elem_type(&self) -> Type {
         unsafe {
-            Type(clang_getArrayElementType(**self))
+            Type { x: clang_getArrayElementType(self.x) }
         }
     }
 
     pub fn array_size(&self) -> uint {
         unsafe {
-            clang_getArraySize(**self) as uint
+            clang_getArraySize(self.x) as uint
         }
     }
 
     // typedef
     pub fn canonical_type(&self) -> Type {
         unsafe {
-            Type(clang_getCanonicalType(**self))
+            Type { x: clang_getCanonicalType(self.x) }
         }
     }
 
     // function
     pub fn is_variadic(&self) -> bool {
         unsafe {
-            clang_isFunctionTypeVariadic(**self) == 1
+            clang_isFunctionTypeVariadic(self.x) == 1
         }
     }
 
     pub fn arg_types(&self) -> ~[Type] {
         unsafe {
-            let num = clang_getNumArgTypes(**self) as uint;
+            let num = clang_getNumArgTypes(self.x) as uint;
             let mut args = ~[];
             for i in range(0, num) {
-                args.push(Type(clang_getArgType(**self, i as c_uint)));
+                args.push(Type { x: clang_getArgType(self.x, i as c_uint) });
             }
             return args;
         }
@@ -227,13 +231,15 @@ impl Type {
 
     pub fn ret_type(&self) -> Type {
         unsafe {
-            Type(clang_getResultType(**self))
+            Type { x: clang_getResultType(self.x) }
         }
     }
 }
 
 // SourceLocation
-pub struct SourceLocation(CXSourceLocation);
+pub struct SourceLocation {
+    priv x: CXSourceLocation
+}
 
 impl SourceLocation {
     pub fn location(&self) -> (File, uint, uint, uint) {
@@ -242,57 +248,73 @@ impl SourceLocation {
             let mut line = 0;
             let mut col = 0;
             let mut off = 0;
-            clang_getSpellingLocation(**self, ptr::to_mut_unsafe_ptr(&mut file),
+            clang_getSpellingLocation(self.x, ptr::to_mut_unsafe_ptr(&mut file),
                                           ptr::to_mut_unsafe_ptr(&mut line),
                                           ptr::to_mut_unsafe_ptr(&mut col),
                                           ptr::to_mut_unsafe_ptr(&mut off));
-            return (File(file), line as uint, col as uint, off as uint);
+            return (File { x: file }, line as uint, col as uint, off as uint);
         }
     }
 }
 
 // File
-pub struct File(CXFile);
+pub struct File {
+    priv x: CXFile
+}
 
 impl File {
     pub fn name(&self) -> ~str {
         unsafe {
-            String(clang_getFileName(**self)).to_str()
+            String { x: clang_getFileName(self.x) }.to_str()
         }
+    }
+
+    pub fn is_null(&self) -> bool {
+        self.x.is_null()
     }
 }
 
 // String
-pub struct String(CXString);
+pub struct String {
+    priv x: CXString
+}
 
 impl ToStr for String {
     fn to_str(&self) -> ~str {
         unsafe {
-            let c_str = clang_getCString(**self) as *c_char;
+            let c_str = clang_getCString(self.x) as *c_char;
             str::raw::from_c_str(c_str)
         }
     }
 }
 
 // Index
-pub struct Index(CXIndex);
+pub struct Index {
+    priv x: CXIndex
+}
 
 impl Index {
     pub fn create(pch: bool, diag: bool) -> Index {
         unsafe {
-            Index(clang_createIndex(pch as c_int, diag as c_int))
+            Index { x: clang_createIndex(pch as c_int, diag as c_int) }
         }
     }
 
     pub fn dispose(&self) {
         unsafe {
-            clang_disposeIndex(**self);
+            clang_disposeIndex(self.x);
         }
+    }
+
+    pub fn is_null(&self) -> bool {
+        self.x.is_null()
     }
 }
 
 // TranslationUnit
-pub struct TranslationUnit(CXTranslationUnit);
+pub struct TranslationUnit {
+    priv x: CXTranslationUnit
+}
 
 impl TranslationUnit {
     pub fn parse(ix: &Index, file: &str, cmd_args: &[~str],
@@ -301,23 +323,23 @@ impl TranslationUnit {
         let fname = _fname.with_ref(|f| f);
         let _c_args = cmd_args.map(|s| (*s).to_c_str());
         let c_args = _c_args.map(|s| (*s).with_ref(|cs| cs));
-        let mut c_unsaved = unsaved.map(|f| **f);
+        let mut c_unsaved = unsaved.map(|f| f.x);
         let tu = unsafe {
-            clang_parseTranslationUnit(**ix, fname,
+            clang_parseTranslationUnit(ix.x, fname,
                                        c_args.as_ptr(),
                                        c_args.len() as c_int,
                                        c_unsaved.as_mut_ptr(),
                                        c_unsaved.len() as c_uint,
                                        opts as c_uint)
         };
-        TranslationUnit(tu)
+        TranslationUnit { x: tu }
     }
 
     pub fn reparse(&self, unsaved: &[UnsavedFile], opts: uint) -> bool {
-        let mut c_unsaved = unsaved.map(|f| **f);
+        let mut c_unsaved = unsaved.map(|f| f.x);
 
         unsafe {
-            clang_reparseTranslationUnit(**self,
+            clang_reparseTranslationUnit(self.x,
                                          c_unsaved.len() as c_uint,
                                          c_unsaved.as_mut_ptr(),
                                          opts as c_uint) == 0
@@ -326,10 +348,10 @@ impl TranslationUnit {
 
     pub fn diags(&self) -> ~[Diagnostic] {
         unsafe {
-            let num = clang_getNumDiagnostics(**self) as uint;
+            let num = clang_getNumDiagnostics(self.x) as uint;
             let mut diags = ~[];
             for i in range(0, num) {
-                diags.push(Diagnostic(clang_getDiagnostic(**self, i as c_uint)));
+                diags.push(Diagnostic { x: clang_getDiagnostic(self.x, i as c_uint) });
             }
             return diags;
         }
@@ -337,19 +359,25 @@ impl TranslationUnit {
 
     pub fn cursor(&self) -> Cursor {
         unsafe {
-            Cursor(clang_getTranslationUnitCursor(**self))
+            Cursor { x: clang_getTranslationUnitCursor(self.x) }
         }
     }
 
     pub fn dispose(&self) {
         unsafe {
-            clang_disposeTranslationUnit(**self);
+            clang_disposeTranslationUnit(self.x);
         }
+    }
+
+    pub fn is_null(&self) -> bool {
+        self.x.is_null()
     }
 }
 
 // Diagnostic
-pub struct Diagnostic(CXDiagnostic);
+pub struct Diagnostic {
+    priv x: CXDiagnostic
+}
 
 impl Diagnostic {
     pub fn default_opts() -> uint {
@@ -360,25 +388,27 @@ impl Diagnostic {
 
     pub fn format(&self, opts: uint) -> ~str {
         unsafe {
-            String(clang_formatDiagnostic(**self, opts as c_uint)).to_str()
+            String { x: clang_formatDiagnostic(self.x, opts as c_uint) }.to_str()
         }
     }
 
     pub fn severity(&self) -> Enum_CXDiagnosticSeverity {
         unsafe {
-            clang_getDiagnosticSeverity(**self)
+            clang_getDiagnosticSeverity(self.x)
         }
     }
 
     pub fn dispose(&self) {
         unsafe {
-            clang_disposeDiagnostic(**self);
+            clang_disposeDiagnostic(self.x);
         }
     }
 }
 
 // UnsavedFile
-pub struct UnsavedFile(Struct_CXUnsavedFile);
+pub struct UnsavedFile {
+    priv x: Struct_CXUnsavedFile
+}
 
 pub fn kind_to_str(x: Enum_CXCursorKind) -> &str {
     match x {

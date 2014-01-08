@@ -1,17 +1,19 @@
+use std::cell::RefCell;
+
 #[deriving(Clone)]
 pub enum Global {
-    GType(@mut TypeInfo),
-    GComp(@mut CompInfo),
-    GCompDecl(@mut CompInfo),
-    GEnum(@mut EnumInfo),
-    GEnumDecl(@mut EnumInfo),
-    GVar(@mut VarInfo),
-    GFunc(@mut VarInfo),
+    GType(@RefCell<TypeInfo>),
+    GComp(@RefCell<CompInfo>),
+    GCompDecl(@RefCell<CompInfo>),
+    GEnum(@RefCell<EnumInfo>),
+    GEnumDecl(@RefCell<EnumInfo>),
+    GVar(@RefCell<VarInfo>),
+    GFunc(@RefCell<VarInfo>),
     GOther
 }
 
 impl Global {
-    pub fn compinfo(&self) -> @mut CompInfo {
+    pub fn compinfo(&self) -> @RefCell<CompInfo> {
         match *self {
             GComp(i) => return i,
             GCompDecl(i) => return i,
@@ -19,7 +21,7 @@ impl Global {
         }
     }
 
-    pub fn enuminfo(&self) -> @mut EnumInfo {
+    pub fn enuminfo(&self) -> @RefCell<EnumInfo> {
         match *self {
             GEnum(i) => return i,
             GEnumDecl(i) => return i,
@@ -27,14 +29,14 @@ impl Global {
         }
     }
 
-    pub fn typeinfo(&self) -> @mut TypeInfo {
+    pub fn typeinfo(&self) -> @RefCell<TypeInfo> {
         match *self {
             GType(i) => return i,
             _ => fail!(~"global_typeinfo")
         }
     }
 
-    pub fn varinfo(&self) -> @mut VarInfo {
+    pub fn varinfo(&self) -> @RefCell<VarInfo> {
         match *self {
             GVar(i) => i,
             GFunc(i) => i,
@@ -46,13 +48,13 @@ impl Global {
 impl ToStr for Global {
     fn to_str(&self) -> ~str {
       match *self {
-        GType(ti) => ti.to_str(),
-        GComp(ci) => ci.to_str(),
-        GCompDecl(ci) => ci.to_str(),
-        GEnum(ei) => ei.to_str(),
-        GEnumDecl(ei) => ei.to_str(),
-        GVar(vi) => vi.to_str(),
-        GFunc(vi) => vi.to_str(),
+        GType(ti) => ti.with(|t| t.to_str()),
+        GComp(ci) => ci.with(|c| c.to_str()),
+        GCompDecl(ci) => ci.with(|c| c.to_str()),
+        GEnum(ei) => ei.with(|e| e.to_str()),
+        GEnumDecl(ei) => ei.with(|e| e.to_str()),
+        GVar(vi) => vi.with(|v| v.to_str()),
+        GFunc(vi) => vi.with(|v| v.to_str()),
         GOther => ~"*"
       }
     }
@@ -66,9 +68,9 @@ pub enum Type {
     TPtr(~Type, bool, Layout),
     TArray(~Type, uint, Layout),
     TFunc(~Type, ~[(~str, Type)], bool),
-    TNamed(@mut TypeInfo),
-    TComp(@mut CompInfo),
-    TEnum(@mut EnumInfo)
+    TNamed(@RefCell<TypeInfo>),
+    TComp(@RefCell<CompInfo>),
+    TEnum(@RefCell<EnumInfo>)
 }
 
 impl Type {
@@ -78,9 +80,9 @@ impl Type {
           TFloat(_, l) => l.size,
           TPtr(_, _, l) => l.size,
           TArray(_, _, l) => l.size,
-          TNamed(ref t) => t.ty.size(),
-          TComp(ref ci) => ci.layout.size,
-          TEnum(ref ei) => ei.layout.size,
+          TNamed(ref ti) => ti.with(|t| t.ty.size()),
+          TComp(ref ci) => ci.with(|c| c.layout.size),
+          TEnum(ref ei) => ei.with(|e| e.layout.size),
           TVoid => 0,
           TFunc(..) => 0,
         }
@@ -92,9 +94,9 @@ impl Type {
           TFloat(_, l) => l.align,
           TPtr(_, _, l) => l.align,
           TArray(_, _, l) => l.align,
-          TNamed(ref t) => t.ty.align(),
-          TComp(ref ci) => ci.layout.align,
-          TEnum(ref ei) => ei.layout.align,
+          TNamed(ref ti) => ti.with(|t| t.ty.align()),
+          TComp(ref ci) => ci.with(|c| c.layout.align),
+          TEnum(ref ei) => ei.with(|e| e.layout.align),
           TVoid => 0,
           TFunc(..) => 0,
         }

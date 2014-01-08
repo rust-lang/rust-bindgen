@@ -1,3 +1,4 @@
+use std::cell::RefCell;
 use std::borrow;
 use std::option;
 use std::io;
@@ -6,7 +7,6 @@ use std::iter;
 use syntax::abi;
 use syntax::ast;
 use syntax::codemap::{DUMMY_SP, dummy_spanned, ExpnInfo, NameAndSpan, MacroBang};
-use syntax::ast_util::*;
 use syntax::ext::base;
 use syntax::ext::build::AstBuilder;
 use syntax::parse;
@@ -18,7 +18,7 @@ use types::*;
 struct GenCtx {
     ext_cx: base::ExtCtxt,
     unnamed_ty: uint,
-    abis: abi::AbiSet
+    abis: abi::AbiSet,
 }
 
 fn empty_generics() -> ast::Generics {
@@ -80,7 +80,7 @@ fn enum_name(name: ~str) -> ~str {
     format!("Enum_{}", name)
 }
 
-pub fn gen_rs(out: @mut io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]) {
+pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]) {
     let abis = match abi {
         ~"cdecl" => abi::AbiSet::from(abi::Cdecl),
         ~"stdcall" => abi::AbiSet::from(abi::Stdcall),
@@ -93,7 +93,7 @@ pub fn gen_rs(out: @mut io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Glo
 
     let mut ctx = GenCtx { ext_cx: base::ExtCtxt::new(parse::new_parse_sess(None), ~[]),
                            unnamed_ty: 0,
-                           abis: abis
+                           abis: abis,
                          };
     ctx.ext_cx.bt_push(ExpnInfo {
         call_site: DUMMY_SP,
@@ -118,35 +118,42 @@ pub fn gen_rs(out: @mut io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Glo
 
     for g in gs.move_iter() {
         match g {
-            GType(ti) => defs.push_all(ctypedef_to_rs(&mut ctx, ti.name.clone(), &ti.ty)),
+            GType(ti) => {
+                let t = ti.get();
+                defs.push_all(ctypedef_to_rs(&mut ctx, t.name.clone(), &t.ty))
+            },
             GCompDecl(ci) => {
-                ci.name = unnamed_name(&mut ctx, ci.name.clone());
-                if ci.cstruct {
-                    defs.push_all(ctypedef_to_rs(&mut ctx, struct_name(ci.name.clone()), &TVoid))
+                ci.with_mut(|c| c.name = unnamed_name(&mut ctx, c.name.clone()));
+                let c = ci.get();
+                if c.cstruct {
+                    defs.push_all(ctypedef_to_rs(&mut ctx, struct_name(c.name), &TVoid))
                 } else {
-                    defs.push_all(ctypedef_to_rs(&mut ctx, union_name(ci.name.clone()), &TVoid))
+                    defs.push_all(ctypedef_to_rs(&mut ctx, union_name(c.name), &TVoid))
                 }
             },
             GComp(ci) => {
-                ci.name = unnamed_name(&mut ctx, ci.name.clone());
-                if ci.cstruct {
-                    defs.push(cstruct_to_rs(&mut ctx, struct_name(ci.name.clone()),
+                ci.with_mut(|c| c.name = unnamed_name(&mut ctx, c.name.clone()));
+                let c = ci.get();
+                if c.cstruct {
+                    defs.push(cstruct_to_rs(&mut ctx, struct_name(c.name.clone()),
                                             // this clone is necessary to prevent dynamic borrow
                                             // check errors.
                                             // FIXME: remove the @mut in types.rs to fix this
-                                            ci.fields.clone()))
+                                            c.fields.clone()))
                 } else {
-                    defs.push_all(cunion_to_rs(&mut ctx, union_name(ci.name.clone()),
-                                               ci.fields, ci.layout))
+                    defs.push_all(cunion_to_rs(&mut ctx, union_name(c.name.clone()),
+                                               c.fields, c.layout))
                 }
             },
             GEnumDecl(ei) => {
-                ei.name = unnamed_name(&mut ctx, ei.name.clone());
-                defs.push_all(ctypedef_to_rs(&mut ctx, enum_name(ei.name.clone()), &TVoid))
+                ei.with_mut(|e| e.name = unnamed_name(&mut ctx, e.name.clone()));
+                let e = ei.get();
+                defs.push_all(ctypedef_to_rs(&mut ctx, enum_name(e.name.clone()), &TVoid))
             },
             GEnum(ei) => {
-                ei.name = unnamed_name(&mut ctx, ei.name.clone());
-                defs.push_all(cenum_to_rs(&mut ctx, enum_name(ei.name.clone()), ei.items, ei.kind))
+                ei.with_mut(|e| e.name = unnamed_name(&mut ctx, e.name.clone()));
+                let e = ei.get();
+                defs.push_all(cenum_to_rs(&mut ctx, enum_name(e.name.clone()), e.items, e.kind))
             },
             _ => { }
         }
@@ -154,20 +161,22 @@ pub fn gen_rs(out: @mut io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Glo
 
     let vars = vs.move_iter().map(|v| {
         match v {
-            GVar(vi) => cvar_to_rs(&mut ctx, vi.name.clone(), &vi.ty, vi.is_const),
+            GVar(vi) => vi.with(|v|
+                cvar_to_rs(&mut ctx, v.name.clone(), &v.ty, v.is_const)
+            ),
             _ => { fail!(~"generate global variables") }
         }
     }).collect();
 
     let funcs = fs.move_iter().map(|f| {
         match f {
-            GFunc(vi) => {
-                match vi.ty {
-                    TFunc(ref rty, ref aty, var) => cfunc_to_rs(&mut ctx, vi.name.clone(),
+            GFunc(vi) => vi.with(|v| {
+                match v.ty {
+                    TFunc(ref rty, ref aty, var) => cfunc_to_rs(&mut ctx, v.name.clone(),
                                                                 *rty, *aty, var),
                     _ => { fail!(~"generate functions") }
                 }
-            },
+            }),
             _ => { fail!(~"generate functions") }
         }
     }).collect();
@@ -185,9 +194,10 @@ pub fn gen_rs(out: @mut io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Glo
         span: DUMMY_SP
     };
 
-    let ps = pprust::rust_printer(out, parse::token::get_ident_interner());
-    out.write("/* automatically generated by rust-bindgen */\n\n".as_bytes());
-    pprust::print_crate_(ps, &crate);
+    let mut ps = pprust::rust_printer(out, parse::token::get_ident_interner());
+    ps.s.out.write("/* automatically generated by rust-bindgen */\n\n".as_bytes());
+    pprust::print_crate_(&mut ps, &crate);
+    ps.s.out.flush();
 }
 
 fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::view_item {
@@ -258,13 +268,13 @@ fn remove_redundant_decl(gs: ~[Global]) -> ~[Global] {
         match *a {
           GComp(ci1) => match *ty {
               TComp(ci2) => {
-                  borrow::ref_eq(ci1, ci2) && ci1.name.is_empty()
+                  borrow::ref_eq(ci1, ci2) && ci1.with(|c| c.name.is_empty())
               },
               _ => false
           },
           GEnum(ei1) => match *ty {
               TEnum(ei2) => {
-                  borrow::ref_eq(ei1, ei2) && ei1.name.is_empty()
+                  borrow::ref_eq(ei1, ei2) && ei1.with(|c| c.name.is_empty())
               },
               _ => false
           },
@@ -274,7 +284,7 @@ fn remove_redundant_decl(gs: ~[Global]) -> ~[Global] {
 
     let typedefs: ~[Type] = gs.iter().filter_map(|g|
         match *g {
-            GType(ref ti) => Some(ti.ty.clone()),
+            GType(ref ti) => Some(ti.with(|t| t.ty.clone())),
             _ => None
         }
     ).collect();
@@ -291,13 +301,13 @@ fn tag_dup_decl(gs: ~[Global]) -> ~[Global] {
 
     fn check_dup(g1: &Global, g2: &Global) -> bool {
         match (g1, g2) {
-          (&GType(ti1), &GType(ti2)) => check(ti1.name, ti2.name),
-          (&GComp(ci1), &GComp(ci2)) => check(ci1.name, ci2.name),
-          (&GCompDecl(ci1), &GCompDecl(ci2)) => check(ci1.name, ci2.name),
-          (&GEnum(ei1), &GEnum(ei2)) => check(ei1.name, ei2.name),
-          (&GEnumDecl(ei1), &GEnumDecl(ei2)) => check(ei1.name, ei2.name),
-          (&GVar(vi1), &GVar(vi2)) => check(vi1.name, vi2.name),
-          (&GFunc(vi1), &GFunc(vi2)) => check(vi1.name, vi2.name),
+          (&GType(ti1), &GType(ti2)) => ti1.with(|a| ti2.with(|b| check(a.name, b.name))),
+          (&GComp(ci1), &GComp(ci2)) => ci1.with(|a| ci2.with(|b| check(a.name, b.name))),
+          (&GCompDecl(ci1), &GCompDecl(ci2)) => ci1.with(|a| ci2.with(|b| check(a.name, b.name))),
+          (&GEnum(ei1), &GEnum(ei2)) => ei1.with(|a| ei2.with(|b| check(a.name, b.name))),
+          (&GEnumDecl(ei1), &GEnumDecl(ei2)) => ei1.with(|a| ei2.with(|b| check(a.name, b.name))),
+          (&GVar(vi1), &GVar(vi2)) => vi1.with(|a| vi2.with(|b| check(a.name, b.name))),
+          (&GFunc(vi1), &GFunc(vi2)) => vi1.with(|a| vi2.with(|b| check(a.name, b.name))),
           _ => false
         }
     }
@@ -351,21 +361,23 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::item] {
 
     return match *ty {
         TComp(ci) => {
-            if ci.name.is_empty() {
-                ci.name = name.clone();
-                if ci.cstruct {
-                    ~[cstruct_to_rs(ctx, name, ci.fields)]
+            if ci.with(|c| c.name.is_empty()) {
+                ci.with_mut(|c| c.name = name.clone());
+                let c = ci.get();
+                if c.cstruct {
+                    ~[cstruct_to_rs(ctx, name, c.fields)]
                 } else {
-                    cunion_to_rs(ctx, name, ci.fields, ci.layout)
+                    cunion_to_rs(ctx, name, c.fields, c.layout)
                 }
             } else {
                 ~[mk_item(ctx, name, ty)]
             }
         },
         TEnum(ei) => {
-            if ei.name.is_empty() {
-                ei.name = name.clone();
-                cenum_to_rs(ctx, name, ei.items, ei.kind)
+            if ei.with(|e| e.name.is_empty()) {
+                ei.with_mut(|e| e.name = name.clone());
+                let e = ei.get();
+                cenum_to_rs(ctx, name, e.items, e.kind)
             } else {
                 ~[mk_item(ctx, name, ty)]
             }
@@ -427,8 +439,8 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
                };
     }
 
-    let ci = @mut CompInfo::new(name.clone(), false, fields.to_owned(), layout);
-    let union = TNamed(@mut TypeInfo::new(name.clone(), TComp(ci)));
+    let ci = @RefCell::new(CompInfo::new(name.clone(), false, fields.to_owned(), layout));
+    let union = TNamed(@RefCell::new(TypeInfo::new(name.clone(), TComp(ci))));
 
     let ty_name = match layout.align {
         1 => "u8",
@@ -697,21 +709,21 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
             mk_fnty(ctx, &decl)
         },
         TNamed(ti) => {
-            let id = rust_type_id(ctx, ti.name.clone());
+            let id = rust_type_id(ctx, ti.with(|t| t.name.clone()));
             mk_ty(ctx, id)
         },
-        TComp(ci) => {
-            ci.name = unnamed_name(ctx, ci.name.clone());
-            if ci.cstruct {
-                mk_ty(ctx, struct_name(ci.name.clone()))
+        TComp(ci) => ci.with_mut(|c| {
+            c.name = unnamed_name(ctx, c.name.clone());
+            if c.cstruct {
+                mk_ty(ctx, struct_name(c.name.clone()))
             } else {
-                mk_ty(ctx, union_name(ci.name.clone()))
+                mk_ty(ctx, union_name(c.name.clone()))
             }
-        },
-        TEnum(ei) => {
-            ei.name = unnamed_name(ctx, ei.name.clone());
-            mk_ty(ctx, enum_name(ei.name.clone()))
-        }
+        }),
+        TEnum(ei) => ei.with_mut(|e| {
+            e.name = unnamed_name(ctx, e.name.clone());
+            mk_ty(ctx, enum_name(e.name.clone()))
+        })
     };
 }
 

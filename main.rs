@@ -1,5 +1,6 @@
 #[allow(non_uppercase_pattern_statics)];
 
+use std::cell::RefCell;
 use std::hashmap::{HashMap, HashSet};
 use std::{os, path};
 use std::io;
@@ -17,7 +18,6 @@ struct BindGenCtx {
     abi: ~str,
     builtins: bool,
     link: Option<~str>,
-    out: @mut io::Writer,
     name: HashMap<Cursor, Global>,
     globals: ~[Global],
     builtin_defs: ~[Cursor],
@@ -28,7 +28,7 @@ struct BindGenCtx {
 
 enum ParseResult {
     CmdUsage,
-    ParseOk(~[~str], @mut BindGenCtx),
+    ParseOk(~[~str], ~BindGenCtx, ~io::Writer),
     ParseErr(~str)
 }
 
@@ -36,7 +36,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
     let mut clang_args = ~[];
     let args_len = args.len();
 
-    let mut out = @mut io::buffered::BufferedWriter::new(io::stdout()) as @mut io::Writer;
+    let mut out = ~io::buffered::BufferedWriter::new(io::stdout()) as ~io::Writer;
     let mut pat = ~[];
     let mut link = None;
     let mut abi = ~"C";
@@ -64,7 +64,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 }
                 let path = path::Path::new(args[ix + 1].clone());
                 match fs::File::create(&path) {
-                  Some(f) => { out = @mut io::buffered::BufferedWriter::new(f) as @mut io::Writer; }
+                  Some(f) => { out = ~io::buffered::BufferedWriter::new(f) as ~io::Writer; }
                   None => { return ParseErr(format!("Open {} failed", args[ix + 1])); }
                 }
                 ix += 2u;
@@ -102,20 +102,20 @@ fn parse_args(args: &[~str]) -> ParseResult {
         }
     }
 
-    let ctx = @mut BindGenCtx { match_pat: pat,
-                                abi: abi,
-                                builtins: builtins,
-                                link: link,
-                                out: out,
-                                name: HashMap::new(),
-                                globals: ~[],
-                                builtin_defs: ~[],
-                                builtin_names: builtin_names(),
-                                emit_ast: emit_ast,
-                                fail_on_bitfield: fail_on_bitfield
-                              };
+    let ctx = ~BindGenCtx {
+        match_pat: pat,
+        abi: abi,
+        builtins: builtins,
+        link: link,
+        name: HashMap::new(),
+        globals: ~[],
+        builtin_defs: ~[],
+        builtin_names: builtin_names(),
+        emit_ast: emit_ast,
+        fail_on_bitfield: fail_on_bitfield
+    };
 
-    return ParseOk(clang_args, ctx);
+    return ParseOk(clang_args, ctx, out);
 }
 
 fn builtin_names() -> HashSet<~str> {
@@ -155,7 +155,7 @@ Options:
     );
 }
 
-fn match_pattern(ctx: @mut BindGenCtx, cursor: &Cursor) -> bool {
+fn match_pattern(ctx: &mut BindGenCtx, cursor: &Cursor) -> bool {
     let (file, _, _, _) = cursor.location().location();
 
     if file.is_null() {
@@ -178,7 +178,7 @@ fn match_pattern(ctx: @mut BindGenCtx, cursor: &Cursor) -> bool {
     return found;
 }
 
-fn decl_name(ctx: @mut BindGenCtx, cursor: &Cursor) -> Global {
+fn decl_name(ctx: &mut BindGenCtx, cursor: &Cursor) -> Global {
     let mut new_decl = false;
     let decl = {
         *ctx.name.find_or_insert_with(*cursor, |_| {
@@ -189,11 +189,11 @@ fn decl_name(ctx: @mut BindGenCtx, cursor: &Cursor) -> Global {
 
             match cursor.kind() {
               CXCursor_StructDecl => {
-                let ci = @mut CompInfo::new(spelling, true, ~[], layout);
+                let ci = @RefCell::new(CompInfo::new(spelling, true, ~[], layout));
                 GCompDecl(ci)
               }
               CXCursor_UnionDecl => {
-                let ci = @mut CompInfo::new(spelling, false, ~[], layout);
+                let ci = @RefCell::new(CompInfo::new(spelling, false, ~[], layout));
                 GCompDecl(ci)
               }
               CXCursor_EnumDecl => {
@@ -210,19 +210,19 @@ fn decl_name(ctx: @mut BindGenCtx, cursor: &Cursor) -> Global {
                     CXType_LongLong => ILongLong,
                     _ => IInt,
                 };
-                let ei = @mut EnumInfo::new(spelling, kind, ~[], layout);
+                let ei = @RefCell::new(EnumInfo::new(spelling, kind, ~[], layout));
                 GEnumDecl(ei)
               }
               CXCursor_TypedefDecl => {
-                let ti = @mut TypeInfo::new(spelling, TVoid);
+                let ti = @RefCell::new(TypeInfo::new(spelling, TVoid));
                 GType(ti)
               }
               CXCursor_VarDecl => {
-                let vi = @mut VarInfo::new(spelling, TVoid);
+                let vi = @RefCell::new(VarInfo::new(spelling, TVoid));
                 GVar(vi)
               }
               CXCursor_FunctionDecl => {
-                let vi = @mut VarInfo::new(spelling, TVoid);
+                let vi = @RefCell::new(VarInfo::new(spelling, TVoid));
                 GFunc(vi)
               }
               _ => GOther
@@ -239,22 +239,22 @@ fn decl_name(ctx: @mut BindGenCtx, cursor: &Cursor) -> Global {
     return decl;
 }
 
-fn opaque_decl(ctx: @mut BindGenCtx, decl: &Cursor) {
+fn opaque_decl(ctx: &mut BindGenCtx, decl: &Cursor) {
     let name = decl_name(ctx, decl);
     ctx.globals.push(name);
 }
 
-fn fwd_decl(ctx: @mut BindGenCtx, cursor: &Cursor, f: ||) {
+fn fwd_decl(ctx: &mut BindGenCtx, cursor: &Cursor, f: |ctx: &mut BindGenCtx|) {
     let def = &cursor.definition();
     if cursor == def {
-        f();
+        f(ctx);
     } else if def.kind() == CXCursor_NoDeclFound ||
               def.kind() == CXCursor_InvalidFile {
         opaque_decl(ctx, cursor);
     }
 }
 
-fn conv_ptr_ty(ctx: @mut BindGenCtx, ty: &cx::Type, cursor: &Cursor, layout: Layout) -> il::Type {
+fn conv_ptr_ty(ctx: &mut BindGenCtx, ty: &cx::Type, cursor: &Cursor, layout: Layout) -> il::Type {
     let is_const = ty.is_const();
     match ty.kind() {
       CXType_Void => {
@@ -292,7 +292,7 @@ fn conv_ptr_ty(ctx: @mut BindGenCtx, ty: &cx::Type, cursor: &Cursor, layout: Lay
     }
 }
 
-fn conv_decl_ty(ctx: @mut BindGenCtx, cursor: &Cursor) -> il::Type {
+fn conv_decl_ty(ctx: &mut BindGenCtx, cursor: &Cursor) -> il::Type {
     return match cursor.kind() {
       CXCursor_StructDecl => {
         let decl = decl_name(ctx, cursor);
@@ -318,7 +318,7 @@ fn conv_decl_ty(ctx: @mut BindGenCtx, cursor: &Cursor) -> il::Type {
     };
 }
 
-fn conv_ty(ctx: @mut BindGenCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type {
+fn conv_ty(ctx: &mut BindGenCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type {
     let layout = Layout::new(ty.size(), ty.align());
     return match ty.kind() {
       CXType_Bool => TInt(IBool, layout),
@@ -347,7 +347,7 @@ fn conv_ty(ctx: @mut BindGenCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type {
     };
 }
 
-fn opaque_ty(ctx: @mut BindGenCtx, ty: &cx::Type) {
+fn opaque_ty(ctx: &mut BindGenCtx, ty: &cx::Type) {
     if ty.kind() == CXType_Record || ty.kind() == CXType_Enum {
         let decl = ty.declaration();
         let def = decl.definition();
@@ -360,7 +360,7 @@ fn opaque_ty(ctx: @mut BindGenCtx, ty: &cx::Type) {
 
 fn visit_struct(cursor: &Cursor,
                 parent: &Cursor,
-                ctx: @mut BindGenCtx,
+                ctx: &mut BindGenCtx,
                 fields: &mut ~[FieldInfo]) -> Enum_CXVisitorResult {
     if cursor.kind() == CXCursor_FieldDecl {
         let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
@@ -379,7 +379,7 @@ fn visit_struct(cursor: &Cursor,
 }
 
 fn visit_union(cursor: &Cursor,
-               ctx: @mut BindGenCtx,
+               ctx: &mut BindGenCtx,
                fields: &mut ~[FieldInfo]) -> Enum_CXVisitorResult {
     if cursor.kind() == CXCursor_FieldDecl {
         let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
@@ -403,7 +403,7 @@ fn visit_enum(cursor: &Cursor,
 
 fn visit_top<'r>(cur: &'r Cursor,
                  parent: &'r Cursor,
-                 ctx: @mut BindGenCtx) -> Enum_CXVisitorResult {
+                 ctx: &mut BindGenCtx) -> Enum_CXVisitorResult {
     let cursor = if ctx.builtin_names.contains(&parent.spelling()) {
         parent
     } else {
@@ -416,11 +416,11 @@ fn visit_top<'r>(cur: &'r Cursor,
 
     match cursor.kind() {
       CXCursor_StructDecl => {
-        fwd_decl(ctx, cursor, || {
-            let decl = decl_name(ctx, cursor);
+        fwd_decl(ctx, cursor, |ctx_| {
+            let decl = decl_name(ctx_, cursor);
             let ci = decl.compinfo();
-            cursor.visit(|c, p| visit_struct(c, p, ctx, &mut ci.fields));
-            ctx.globals.push(GComp(ci));
+            cursor.visit(|c, p| ci.with_mut(|ci_| visit_struct(c, p, ctx_, &mut ci_.fields)));
+            ctx_.globals.push(GComp(ci));
         });
         return if cur.kind() == CXCursor_FieldDecl {
             CXChildVisit_Break
@@ -429,20 +429,20 @@ fn visit_top<'r>(cur: &'r Cursor,
         };
       }
       CXCursor_UnionDecl => {
-        fwd_decl(ctx, cursor, || {
-            let decl = decl_name(ctx, cursor);
+        fwd_decl(ctx, cursor, |ctx_| {
+            let decl = decl_name(ctx_, cursor);
             let ci = decl.compinfo();
-            cursor.visit(|c, _| visit_union(c, ctx, &mut ci.fields));
-            ctx.globals.push(GComp(ci));
+            cursor.visit(|c, _| ci.with_mut(|ci_| visit_union(c, ctx_, &mut ci_.fields)));
+            ctx_.globals.push(GComp(ci));
         });
         return CXChildVisit_Recurse;
       }
       CXCursor_EnumDecl => {
-        fwd_decl(ctx, cursor, || {
-            let decl = decl_name(ctx, cursor);
+        fwd_decl(ctx, cursor, |ctx_| {
+            let decl = decl_name(ctx_, cursor);
             let ei = decl.enuminfo();
-            cursor.visit(|c, _| visit_enum(c, &mut ei.items));
-            ctx.globals.push(GEnum(ei));
+            cursor.visit(|c, _| ei.with_mut(|ei_| visit_enum(c, &mut ei_.items)));
+            ctx_.globals.push(GEnum(ei));
         });
         return CXChildVisit_Continue;
       }
@@ -461,7 +461,7 @@ fn visit_top<'r>(cur: &'r Cursor,
         let ret_ty = ~conv_ty(ctx, &cursor.ret_type(), cursor);
 
         let func = decl_name(ctx, cursor);
-        func.varinfo().ty = TFunc(ret_ty, args_lst, ty.is_variadic());
+        func.varinfo().with_mut(|vi| vi.ty = TFunc(ret_ty.clone(), args_lst.clone(), ty.is_variadic()));
         ctx.globals.push(func);
 
         return CXChildVisit_Continue;
@@ -474,8 +474,10 @@ fn visit_top<'r>(cur: &'r Cursor,
 
         let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
         let var = decl_name(ctx, cursor);
-        var.varinfo().ty = ty;
-        var.varinfo().is_const = cursor.cur_type().is_const();
+        var.varinfo().with_mut(|vi| {
+            vi.ty = ty.clone();
+            vi.is_const = cursor.cur_type().is_const();
+        });
         ctx.globals.push(var);
 
         return CXChildVisit_Continue;
@@ -488,7 +490,7 @@ fn visit_top<'r>(cur: &'r Cursor,
 
         let ty = conv_ty(ctx, &under_ty, cursor);
         let typedef = decl_name(ctx, cursor);
-        typedef.typeinfo().ty = ty;
+        typedef.typeinfo().with_mut(|ti| ti.ty = ty.clone());
         ctx.globals.push(typedef);
 
         opaque_ty(ctx, &under_ty);
@@ -510,7 +512,7 @@ fn main() {
     match parse_args(bind_args) {
         ParseErr(e) => fail!(e),
         CmdUsage => print_usage(bin),
-        ParseOk(clang_args, ctx) => {
+        ParseOk(clang_args, mut ctx, out) => {
             let ix = cx::Index::create(false, true);
             if ix.is_null() {
                 fail!(~"clang failed to create index");
@@ -552,8 +554,7 @@ fn main() {
                 c.visit(|cur, parent| visit_top(cur, parent, ctx));
             }
 
-            gen_rs(ctx.out, ctx.abi.clone(), &ctx.link, ctx.globals.clone());
-            ctx.out.flush();
+            gen_rs(out, ctx.abi.clone(), &ctx.link, ctx.globals.clone());
 
             unit.dispose();
             ix.dispose();
