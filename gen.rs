@@ -185,7 +185,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
     defs.push(mk_extern(&mut ctx, link, vars, funcs));
 
     let crate = ast::Crate {
-        module: ast::_mod {
+        module: ast::Mod {
             view_items: views,
             items: defs,
         },
@@ -200,10 +200,10 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
     ps.s.out.flush();
 }
 
-fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::view_item {
-    let view = ast::view_item_use(~[
+fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::ViewItem {
+    let view = ast::ViewItemUse(~[
         @dummy_spanned(
-            ast::view_path_glob(
+            ast::ViewPathGlob(
                 ast::Path {
                     span: DUMMY_SP,
                     global: false,
@@ -220,23 +220,23 @@ fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::view_item {
         )
     ]);
 
-    return ast::view_item {
+    return ast::ViewItem {
               node: view,
               attrs: ~[],
-              vis: ast::inherited,
+              vis: ast::Inherited,
               span: DUMMY_SP
            };
 }
 
 fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
-                           vars: ~[@ast::foreign_item],
-                           funcs: ~[@ast::foreign_item]) -> @ast::item {
+                           vars: ~[@ast::ForeignItem],
+                           funcs: ~[@ast::ForeignItem]) -> @ast::Item {
     let attrs;
     match *link {
         None => attrs = ~[],
         Some(ref l) => {
             let link_name = @dummy_spanned(ast::MetaNameValue(
-                @"name", dummy_spanned(ast::lit_str(l.to_managed(), ast::CookedStr))
+                @"name", dummy_spanned(ast::LitStr(l.to_managed(), ast::CookedStr))
             ));
             let link_args = dummy_spanned(ast::Attribute_ {
                 style: ast::AttrOuter,
@@ -247,18 +247,18 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
         }
     }
 
-    let ext = ast::item_foreign_mod(ast::foreign_mod {
+    let ext = ast::ItemForeignMod(ast::ForeignMod {
         abis: ctx.abis,
         view_items: ~[],
         items: vars + funcs
     });
 
-    return @ast::item {
+    return @ast::Item {
               ident: ctx.ext_cx.ident_of(""),
               attrs: attrs,
               id: ast::DUMMY_NODE_ID,
               node: ext,
-              vis: ast::public,
+              vis: ast::Public,
               span: DUMMY_SP
            };
 }
@@ -336,11 +336,11 @@ fn tag_dup_decl(gs: ~[Global]) -> ~[Global] {
     return res;
 }
 
-fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::item] {
-    fn mk_item(ctx: &mut GenCtx, name: ~str, ty: &Type) -> @ast::item {
+fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::Item] {
+    fn mk_item(ctx: &mut GenCtx, name: ~str, ty: &Type) -> @ast::Item {
         let rust_name = rust_type_id(ctx, name);
         let rust_ty = cty_to_rs(ctx, ty);
-        let base = ast::item_ty(
+        let base = ast::ItemTy(
             @ast::Ty {
                 id: ast::DUMMY_NODE_ID,
                 node: rust_ty.node,
@@ -349,12 +349,12 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::item] {
             empty_generics()
         );
 
-        return @ast::item {
+        return @ast::Item {
                   ident: ctx.ext_cx.ident_of(rust_name),
                   attrs: ~[],
                   id: ast::DUMMY_NODE_ID,
                   node: base,
-                  vis: ast::public,
+                  vis: ast::Public,
                   span: DUMMY_SP
                };
     }
@@ -386,7 +386,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::item] {
     }
 }
 
-fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo]) -> @ast::item {
+fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo]) -> @ast::Item {
     let mut unnamed = 0;
     let fs = fields.map(|f| {
         let f_name = if f.name.is_empty() {
@@ -398,10 +398,10 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo]) -> @ast::it
 
         let f_ty = @cty_to_rs(ctx, &f.ty);
 
-        dummy_spanned(ast::struct_field_ {
-            kind: ast::named_field(
+        dummy_spanned(ast::StructField_ {
+            kind: ast::NamedField(
                 ctx.ext_cx.ident_of(f_name),
-                ast::inherited
+                ast::Inherited
             ),
             id: ast::DUMMY_NODE_ID,
             ty: f_ty,
@@ -409,8 +409,8 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo]) -> @ast::it
         })
     });
 
-    let def = ast::item_struct(
-        @ast::struct_def {
+    let def = ast::ItemStruct(
+        @ast::StructDef {
            fields: fs,
            ctor_id: None
         },
@@ -418,18 +418,18 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo]) -> @ast::it
     );
 
     let id = rust_type_id(ctx, name);
-    return @ast::item { ident: ctx.ext_cx.ident_of(id),
+    return @ast::Item { ident: ctx.ext_cx.ident_of(id),
               attrs: ~[],
               id: ast::DUMMY_NODE_ID,
               node: def,
-              vis: ast::public,
+              vis: ast::Public,
               span: DUMMY_SP
            };
 }
 
-fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layout) -> ~[@ast::item] {
-    fn mk_item(ctx: &mut GenCtx, name: ~str, item: ast::item_, vis: ast::visibility) -> @ast::item {
-        return @ast::item {
+fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layout) -> ~[@ast::Item] {
+    fn mk_item(ctx: &mut GenCtx, name: ~str, item: ast::Item_, vis: ast::Visibility) -> @ast::Item {
+        return @ast::Item {
                   ident: ctx.ext_cx.ident_of(name),
                   attrs: ~[],
                   id: ast::DUMMY_NODE_ID,
@@ -452,25 +452,25 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
     let data_len = if ty_name == "u8" { layout.size } else { layout.size / layout.align };
     let base_ty = mk_ty(ctx, ty_name.to_owned());
     let data_ty = @mk_arrty(ctx, &base_ty, data_len);
-    let data = dummy_spanned(ast::struct_field_ {
-        kind: ast::named_field(
+    let data = dummy_spanned(ast::StructField_ {
+        kind: ast::NamedField(
             ctx.ext_cx.ident_of("data"),
-            ast::inherited
+            ast::Inherited
         ),
         id: ast::DUMMY_NODE_ID,
         ty: data_ty,
         attrs: ~[]
     });
 
-    let def = ast::item_struct(
-        @ast::struct_def {
+    let def = ast::ItemStruct(
+        @ast::StructDef {
            fields: ~[data],
            ctor_id: None
         },
         empty_generics()
     );
     let union_id = rust_type_id(ctx, name);
-    let union_def = mk_item(ctx, union_id, def, ast::public);
+    let union_def = mk_item(ctx, union_id, def, ast::Public);
 
     let expr = quote_expr!(
         &ctx.ext_cx,
@@ -495,27 +495,27 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
             span: DUMMY_SP
         };
 
-        @ast::method {
+        @ast::Method {
             ident: ctx.ext_cx.ident_of(f_name),
             attrs: ~[],
             generics: empty_generics(),
-            explicit_self: dummy_spanned(ast::sty_region(None, ast::MutMutable)),
-            purity: ast::impure_fn,
-            decl: @ast::fn_decl {
+            explicit_self: dummy_spanned(ast::SelfRegion(None, ast::MutMutable)),
+            purity: ast::ImpureFn,
+            decl: @ast::FnDecl {
                 inputs: ~[],
                 output: ret_ty,
-                cf: ast::return_val,
+                cf: ast::Return,
                 variadic: false
             },
             body: body,
             id: ast::DUMMY_NODE_ID,
             span: DUMMY_SP,
             self_id: union_def.id,
-            vis: ast::public
+            vis: ast::Public
         }
     });
 
-    let methods = ast::item_impl(
+    let methods = ast::ItemImpl(
         empty_generics(),
         None,
         @cty_to_rs(ctx, &union),
@@ -524,11 +524,11 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
 
     return ~[
         union_def,
-        mk_item(ctx, ~"", methods, ast::inherited)
+        mk_item(ctx, ~"", methods, ast::Inherited)
     ];
 }
 
-fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: &[EnumItem], kind: IKind) -> ~[@ast::item] {
+fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: &[EnumItem], kind: IKind) -> ~[@ast::Item] {
     let ty = TInt(kind, Layout::zero());
     let ty_id = rust_type_id(ctx, name);
     let ty_def = ctypedef_to_rs(ctx, ty_id, &ty);
@@ -536,19 +536,19 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: &[EnumItem], kind: IKind) ->
     let mut def = ty_def;
 
     for it in items.iter() {
-        let cst = ast::item_static(
+        let cst = ast::ItemStatic(
             @val_ty.clone(),
             ast::MutImmutable,
             ctx.ext_cx.expr_int(DUMMY_SP, it.val)
         );
 
         let id = rust_id(ctx, it.name.clone()).first();
-        let val_def = @ast::item {
+        let val_def = @ast::Item {
                          ident: ctx.ext_cx.ident_of(id),
                          attrs: ~[],
                          id: ast::DUMMY_NODE_ID,
                          node: cst,
-                         vis: ast::public,
+                         vis: ast::Public,
                          span: DUMMY_SP
                       };
 
@@ -559,7 +559,7 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: &[EnumItem], kind: IKind) ->
 }
 
 fn mk_link_name_attr(name: ~str) -> ast::Attribute {
-    let lit = dummy_spanned(ast::lit_str(name.to_managed(), ast::CookedStr));
+    let lit = dummy_spanned(ast::LitStr(name.to_managed(), ast::CookedStr));
     let attr_val = @dummy_spanned(ast::MetaNameValue(@"link_name", lit));
     let attr = ast::Attribute_ {
         style: ast::AttrOuter,
@@ -571,7 +571,7 @@ fn mk_link_name_attr(name: ~str) -> ast::Attribute {
 
 fn cvar_to_rs(ctx: &mut GenCtx, name: ~str,
                                 ty: &Type,
-                                is_const: bool) -> @ast::foreign_item {
+                                is_const: bool) -> @ast::ForeignItem {
     let (rust_name, was_mangled) = rust_id(ctx, name.clone());
 
     let mut attrs = ~[];
@@ -579,32 +579,32 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: ~str,
         attrs.push(mk_link_name_attr(name));
     }
 
-    return @ast::foreign_item {
+    return @ast::ForeignItem {
               ident: ctx.ext_cx.ident_of(rust_name),
               attrs: attrs,
-              node: ast::foreign_item_static(@cty_to_rs(ctx, ty), !is_const),
+              node: ast::ForeignItemStatic(@cty_to_rs(ctx, ty), !is_const),
               id: ast::DUMMY_NODE_ID,
               span: DUMMY_SP,
-              vis: ast::public,
+              vis: ast::Public,
            };
 }
 
 fn cfuncty_to_rs(ctx: &mut GenCtx,
                  rty: &Type,
                  aty: &[(~str, Type)],
-                 var: bool) -> ast::fn_decl {
+                 var: bool) -> ast::FnDecl {
 
     let ret = @match *rty {
         TVoid => ast::Ty {
             id: ast::DUMMY_NODE_ID,
-            node: ast::ty_nil,
+            node: ast::TyNil,
             span: DUMMY_SP
         },
         _ => cty_to_rs(ctx, rty)
     };
 
     let mut unnamed = 0;
-    let args: ~[ast::arg] = aty.iter().map(|arg| {
+    let args: ~[ast::Arg] = aty.iter().map(|arg| {
         let (ref n, ref t) = *arg;
 
         let arg_name = if n.is_empty() {
@@ -616,7 +616,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
 
         let arg_ty = @cty_to_rs(ctx, t);
 
-        ast::arg {
+        ast::Arg {
             ty: arg_ty,
             pat: @ast::Pat {
                  id: ast::DUMMY_NODE_ID,
@@ -642,19 +642,19 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
     }).collect();
 
     let var = !args.is_empty() && var;
-    return ast::fn_decl {
+    return ast::FnDecl {
         inputs: args,
         output: ret,
-        cf: ast::return_val,
+        cf: ast::Return,
         variadic: var
     };
 }
 
 fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: &Type,
                aty: &[(~str, Type)],
-               var: bool) -> @ast::foreign_item {
+               var: bool) -> @ast::ForeignItem {
     let var = !aty.is_empty() && var;
-    let decl = ast::foreign_item_fn(
+    let decl = ast::ForeignItemFn(
         @cfuncty_to_rs(ctx, rty, aty, var),
         empty_generics()
     );
@@ -666,13 +666,13 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: &Type,
         attrs.push(mk_link_name_attr(name));
     }
 
-    return @ast::foreign_item {
+    return @ast::ForeignItem {
               ident: ctx.ext_cx.ident_of(rust_name),
               attrs: attrs,
               node: decl,
               id: ast::DUMMY_NODE_ID,
               span: DUMMY_SP,
-              vis: ast::public,
+              vis: ast::Public,
            };
 }
 
@@ -728,7 +728,7 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
 }
 
 fn mk_ty(ctx: &mut GenCtx, name: ~str) -> ast::Ty {
-    let ty = ast::ty_path(
+    let ty = ast::TyPath(
         ast::Path {
             span: DUMMY_SP,
             global: false,
@@ -752,7 +752,7 @@ fn mk_ty(ctx: &mut GenCtx, name: ~str) -> ast::Ty {
 }
 
 fn mk_ptrty(_ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
-    let ty = ast::ty_ptr(ast::mt{
+    let ty = ast::TyPtr(ast::MutTy {
         ty: @base.clone(),
         mutbl: if is_const { ast::MutImmutable } else { ast::MutMutable }
     });
@@ -765,8 +765,8 @@ fn mk_ptrty(_ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
 }
 
 fn mk_arrty(_ctx: &mut GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
-    let sz = ast::ExprLit(@dummy_spanned(ast::lit_uint(n as u64, ast::ty_u)));
-    let ty = ast::ty_fixed_length_vec(
+    let sz = ast::ExprLit(@dummy_spanned(ast::LitUint(n as u64, ast::TyU)));
+    let ty = ast::TyFixedLengthVec(
         @base.clone(),
         @ast::Expr {
             id: ast::DUMMY_NODE_ID,
@@ -782,9 +782,9 @@ fn mk_arrty(_ctx: &mut GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
     };
 }
 
-fn mk_fnty(ctx: &mut GenCtx, decl: &ast::fn_decl) -> ast::Ty {
-    let fnty = ast::ty_bare_fn(@ast::TyBareFn {
-        purity: ast::impure_fn,
+fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl) -> ast::Ty {
+    let fnty = ast::TyBareFn(@ast::BareFnTy {
+        purity: ast::ImpureFn,
         abis: ctx.abis,
         lifetimes: opt_vec::Empty,
         decl: @decl.clone()
