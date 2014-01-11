@@ -1,8 +1,8 @@
 before_install:
   - yes | sudo add-apt-repository ppa:hansjorg/rust
-  - yes | sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ precise-proposed main restricted universe multiverse"
+  - yes | sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ precise-updates main restricted universe multiverse"
   - sudo apt-get update
 install:
-  - sudo apt-get install rust-nightly libclang-3.3-dev/precise-proposed
+  - sudo apt-get install rust-nightly libclang-3.3-dev
 script:
   - rustc bindgen.rs -L /usr/lib/llvm-3.3/lib

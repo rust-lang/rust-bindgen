@@ -1,7 +1,7 @@
 #[allow(non_uppercase_pattern_statics)];
 
 use std::libc::*;
-use std::{cast, ptr, str, to_bytes};
+use std::{cast, io, ptr, str, to_bytes};
 
 pub use ll = clangll;
 use clangll::*;
@@ -633,10 +633,10 @@ pub fn ast_dump(c: &Cursor, depth: int)-> Enum_CXVisitorResult {
     fn print_indent(depth: int, s: &str) {
         let mut i = 0;
         while i < depth {
-            print("\t");
+            io::print("\t");
             i += 1;
         }
-        println(s);
+        io::println(s);
     }
     let ct = c.cur_type().kind();
     print_indent(depth, format!("({} {} {}", kind_to_str(c.kind()), c.spelling(), type_to_str(ct)));
