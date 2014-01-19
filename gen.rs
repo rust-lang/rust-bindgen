@@ -15,10 +15,26 @@ use syntax::opt_vec;
 
 use types::*;
 
-struct GenCtx {
-    ext_cx: base::ExtCtxt,
+struct GenCtx<'r> {
+    ext_cx: base::ExtCtxt<'r>,
     unnamed_ty: uint,
     abis: abi::AbiSet,
+}
+
+struct ErrLoader;
+
+impl base::CrateLoader for ErrLoader {
+    fn load_crate(&mut self, _: &ast::ViewItem) -> base::MacroCrate {
+        fail!("lolwut")
+    }
+
+    fn get_exported_macros(&mut self, _: ast::CrateNum) -> ~[@ast::Item] {
+        fail!("lolwut")
+    }
+
+    fn get_registrar_symbol(&mut self, _: ast::CrateNum) -> Option<~str> {
+        fail!("lolwut")
+    }
 }
 
 fn empty_generics() -> ast::Generics {
@@ -91,7 +107,8 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
         _ => abi::AbiSet::C()
     };
 
-    let mut ctx = GenCtx { ext_cx: base::ExtCtxt::new(parse::new_parse_sess(None), ~[]),
+    let mut loader = ErrLoader;
+    let mut ctx = GenCtx { ext_cx: base::ExtCtxt::new(parse::new_parse_sess(None), ~[], &mut loader),
                            unnamed_ty: 0,
                            abis: abis,
                          };

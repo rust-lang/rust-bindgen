@@ -36,7 +36,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
     let mut clang_args = ~[];
     let args_len = args.len();
 
-    let mut out = ~io::buffered::BufferedWriter::new(io::stdout()) as ~io::Writer;
+    let mut out = ~io::BufferedWriter::new(io::stdout()) as ~io::Writer;
     let mut pat = ~[];
     let mut link = None;
     let mut abi = ~"C";
@@ -64,7 +64,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 }
                 let path = path::Path::new(args[ix + 1].clone());
                 match fs::File::create(&path) {
-                  Some(f) => { out = ~io::buffered::BufferedWriter::new(f) as ~io::Writer; }
+                  Some(f) => { out = ~io::BufferedWriter::new(f) as ~io::Writer; }
                   None => { return ParseErr(format!("Open {} failed", args[ix + 1])); }
                 }
                 ix += 2u;
@@ -121,7 +121,8 @@ fn parse_args(args: &[~str]) -> ParseResult {
 fn builtin_names() -> HashSet<~str> {
     let mut names = HashSet::new();
     let keys = ~[
-        ~"__va_list_tag"
+        ~"__va_list_tag",
+        ~"__va_list",
     ];
 
     keys.move_iter().advance(|s| {
