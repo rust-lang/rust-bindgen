@@ -369,7 +369,7 @@ fn visit_struct(cursor: &Cursor,
         let bit = cursor.bit_width();
         // If we encounter a bitfield, and fail_on_bitfield is set, throw an
         // error and exit entirely.
-        if (bit != None && ctx.fail_on_bitfield) {
+        if bit != None && ctx.fail_on_bitfield {
             fail!("Cannot handle bitfield `{}` in struct `{}`",
                   name, parent.spelling());
         }
@@ -508,7 +508,7 @@ fn visit_top<'r>(cur: &'r Cursor,
 #[main]
 fn main() {
     let mut bind_args = os::args();
-    let bin = bind_args.shift();
+    let bin = bind_args.shift().unwrap();
 
     match parse_args(bind_args) {
         ParseErr(e) => fail!(e),
@@ -549,9 +549,9 @@ fn main() {
             }			
 
             cursor.visit(|cur, parent| visit_top(cur, parent, ctx));
-                
+
             while !ctx.builtin_defs.is_empty() {
-                let c = ctx.builtin_defs.shift();
+                let c = ctx.builtin_defs.shift().unwrap();
                 c.visit(|cur, parent| visit_top(cur, parent, ctx));
             }
 

@@ -56,7 +56,7 @@ impl Cursor {
     pub fn bit_width(&self) -> Option<uint> {
         unsafe {
             let w = clang_getFieldDeclBitWidth(self.x);
-            if (w == -1) {
+            if w == -1 {
                 None
             } else {
                 Some(w as uint)
