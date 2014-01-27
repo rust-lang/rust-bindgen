@@ -28,7 +28,7 @@ impl base::CrateLoader for ErrLoader {
         fail!("lolwut")
     }
 
-    fn get_exported_macros(&mut self, _: ast::CrateNum) -> ~[@ast::Item] {
+    fn get_exported_macros(&mut self, _: ast::CrateNum) -> ~[~str] {
         fail!("lolwut")
     }
 
