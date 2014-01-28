@@ -527,7 +527,6 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
             body: body,
             id: ast::DUMMY_NODE_ID,
             span: DUMMY_SP,
-            self_id: union_def.id,
             vis: ast::Public
         }
     });
