@@ -1,5 +1,4 @@
 use std::cell::RefCell;
-use std::borrow;
 use std::option;
 use std::io;
 use std::iter;
@@ -9,9 +8,9 @@ use syntax::ast;
 use syntax::codemap::{DUMMY_SP, dummy_spanned, ExpnInfo, NameAndSpan, MacroBang};
 use syntax::ext::base;
 use syntax::ext::build::AstBuilder;
+use syntax::opt_vec;
 use syntax::parse;
 use syntax::print::pprust;
-use syntax::opt_vec;
 
 use types::*;
 
@@ -35,6 +34,15 @@ impl base::CrateLoader for ErrLoader {
     fn get_registrar_symbol(&mut self, _: ast::CrateNum) -> Option<~str> {
         fail!("lolwut")
     }
+}
+
+fn ref_eq<'a, 'b, T>(thing: &'a T, other: &'b T) -> bool {
+    (thing as *T) == (other as *T)
+}
+
+fn to_intern_str(ctx: &mut GenCtx, s: ~str) -> parse::token::InternedString {
+    let id = ctx.ext_cx.ident_of(s);
+    parse::token::get_ident(id.name)
 }
 
 fn empty_generics() -> ast::Generics {
@@ -114,7 +122,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
                          };
     ctx.ext_cx.bt_push(ExpnInfo {
         call_site: DUMMY_SP,
-        callee: NameAndSpan { name: @"", format: MacroBang, span: None }
+        callee: NameAndSpan { name: ~"", format: MacroBang, span: None }
     });
     let uniq_globs = tag_dup_decl(globs);
 
@@ -253,11 +261,18 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
         None => attrs = ~[],
         Some(ref l) => {
             let link_name = @dummy_spanned(ast::MetaNameValue(
-                @"name", dummy_spanned(ast::LitStr(l.to_managed(), ast::CookedStr))
+                to_intern_str(ctx, ~"name"),
+                dummy_spanned(ast::LitStr(
+                    to_intern_str(ctx, l.to_owned()),
+                    ast::CookedStr
+                ))
             ));
             let link_args = dummy_spanned(ast::Attribute_ {
                 style: ast::AttrOuter,
-                value: @dummy_spanned(ast::MetaList(@"link", ~[link_name])),
+                value: @dummy_spanned(ast::MetaList(
+                    to_intern_str(ctx, ~"link"),
+                    ~[link_name])
+                ),
                 is_sugared_doc: false
             });
             attrs = ~[link_args];
@@ -285,13 +300,13 @@ fn remove_redundant_decl(gs: ~[Global]) -> ~[Global] {
         match *a {
           GComp(ci1) => match *ty {
               TComp(ci2) => {
-                  borrow::ref_eq(ci1, ci2) && ci1.with(|c| c.name.is_empty())
+                  ref_eq(ci1, ci2) && ci1.with(|c| c.name.is_empty())
               },
               _ => false
           },
           GEnum(ei1) => match *ty {
               TEnum(ei2) => {
-                  borrow::ref_eq(ei1, ei2) && ei1.with(|c| c.name.is_empty())
+                  ref_eq(ei1, ei2) && ei1.with(|c| c.name.is_empty())
               },
               _ => false
           },
@@ -574,9 +589,14 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: &[EnumItem], kind: IKind) ->
     return def;
 }
 
-fn mk_link_name_attr(name: ~str) -> ast::Attribute {
-    let lit = dummy_spanned(ast::LitStr(name.to_managed(), ast::CookedStr));
-    let attr_val = @dummy_spanned(ast::MetaNameValue(@"link_name", lit));
+fn mk_link_name_attr(ctx: &mut GenCtx, name: ~str) -> ast::Attribute {
+    let lit = dummy_spanned(ast::LitStr(
+        to_intern_str(ctx, name),
+        ast::CookedStr
+    ));
+    let attr_val = @dummy_spanned(ast::MetaNameValue(
+        to_intern_str(ctx, ~"link_name"), lit
+    ));
     let attr = ast::Attribute_ {
         style: ast::AttrOuter,
         value: attr_val,
@@ -592,7 +612,7 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: ~str,
 
     let mut attrs = ~[];
     if was_mangled {
-        attrs.push(mk_link_name_attr(name));
+        attrs.push(mk_link_name_attr(ctx, name));
     }
 
     return @ast::ForeignItem {
@@ -679,7 +699,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: &Type,
 
     let mut attrs = ~[];
     if was_mangled {
-        attrs.push(mk_link_name_attr(name));
+        attrs.push(mk_link_name_attr(ctx, name));
     }
 
     return @ast::ForeignItem {
