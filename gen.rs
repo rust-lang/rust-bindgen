@@ -534,7 +534,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
             explicit_self: dummy_spanned(ast::SelfRegion(None, ast::MutMutable)),
             purity: ast::ImpureFn,
             decl: @ast::FnDecl {
-                inputs: ~[],
+                inputs: ~[ast::Arg::new_self(DUMMY_SP, ast::MutImmutable)],
                 output: ret_ty,
                 cf: ast::Return,
                 variadic: false
