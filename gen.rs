@@ -1,3 +1,5 @@
+#[allow(unused_must_use)];
+
 use std::cell::RefCell;
 use std::option;
 use std::io;

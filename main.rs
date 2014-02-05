@@ -1,4 +1,5 @@
 #[allow(non_uppercase_pattern_statics)];
+#[allow(unused_must_use)];
 
 use std::cell::RefCell;
 use std::hashmap::{HashMap, HashSet};
@@ -64,8 +65,8 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 }
                 let path = path::Path::new(args[ix + 1].clone());
                 match fs::File::create(&path) {
-                  Some(f) => { out = ~io::BufferedWriter::new(f) as ~io::Writer; }
-                  None => { return ParseErr(format!("Open {} failed", args[ix + 1])); }
+                  Ok(f) => { out = ~io::BufferedWriter::new(f) as ~io::Writer; }
+                  Err(_) => { return ParseErr(format!("Open {} failed", args[ix + 1])); }
                 }
                 ix += 2u;
             }
