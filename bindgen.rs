@@ -1,5 +1,5 @@
 #[crate_type = "bin"];
-#[feature(globs, managed_boxes)];
+#[feature(globs, managed_boxes, quote)];
 
 extern mod syntax;
 
