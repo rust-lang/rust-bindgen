@@ -118,7 +118,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
     };
 
     let mut loader = ErrLoader;
-    let mut ctx = GenCtx { ext_cx: base::ExtCtxt::new(parse::new_parse_sess(None), ~[], &mut loader),
+    let mut ctx = GenCtx { ext_cx: base::ExtCtxt::new(parse::new_parse_sess(), ~[], &mut loader),
                            unnamed_ty: 0,
                            abis: abis,
                          };
