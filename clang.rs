@@ -248,10 +248,7 @@ impl SourceLocation {
             let mut line = 0;
             let mut col = 0;
             let mut off = 0;
-            clang_getSpellingLocation(self.x, ptr::to_mut_unsafe_ptr(&mut file),
-                                          ptr::to_mut_unsafe_ptr(&mut line),
-                                          ptr::to_mut_unsafe_ptr(&mut col),
-                                          ptr::to_mut_unsafe_ptr(&mut off));
+            clang_getSpellingLocation(self.x, &mut file, &mut line, &mut col, &mut off);
             return (File { x: file }, line as uint, col as uint, off as uint);
         }
     }

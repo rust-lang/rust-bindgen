@@ -1,7 +1,7 @@
 #[crate_type = "bin"];
 #[feature(globs, managed_boxes, quote)];
 
-extern mod syntax;
+extern crate syntax;
 
 pub mod types;
 pub mod clangll;
