@@ -512,7 +512,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
 
     let expr = quote_expr!(
         &ctx.ext_cx,
-        unsafe { ::std::cast::transmute(::std::ptr::to_mut_unsafe_ptr(self)) }
+        unsafe { ::std::cast::transmute(self) }
     );
     let mut unnamed = 0;
     let fs = fields.map(|f| {
