@@ -1,7 +1,9 @@
 #[allow(non_uppercase_pattern_statics)];
 
 use std::libc::*;
-use std::{cast, io, ptr, str, to_bytes};
+use std::{cast, io, ptr, str};
+use std::hash::Hash;
+use std::hash::sip::SipState;
 
 pub use ll = clangll;
 use clangll::*;
@@ -136,14 +138,13 @@ impl Eq for Cursor {
     }
 }
 
-impl IterBytes for Cursor {
-    fn iter_bytes(&self, lsb0: bool, f: to_bytes::Cb) -> bool {
-        [(self.x.kind as int),
-         (self.x.xdata as int),
-         (self.x.data[0] as int),
-         (self.x.data[1] as int),
-         (self.x.data[2] as int)
-        ].iter_bytes(lsb0, f)
+impl Hash for Cursor {
+    fn hash(&self, state: &mut SipState) {
+        self.x.kind.hash(state);
+        self.x.xdata.hash(state);
+        self.x.data[0].hash(state);
+        self.x.data[1].hash(state);
+        self.x.data[2].hash(state);
     }
 }
 

@@ -2,7 +2,7 @@
 #[allow(unused_must_use)];
 
 use std::cell::RefCell;
-use std::hashmap::{HashMap, HashSet};
+use collections::{HashMap, HashSet};
 use std::{os, path};
 use std::io;
 use std::io::fs;

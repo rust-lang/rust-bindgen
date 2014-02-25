@@ -1,6 +1,7 @@
 #[crate_type = "bin"];
 #[feature(globs, managed_boxes, quote)];
 
+extern crate collections;
 extern crate syntax;
 
 pub mod types;
