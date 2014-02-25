@@ -527,7 +527,7 @@ fn main() {
 
             let mut c_err = false;
             let diags = unit.diags();
-            let stderr = (&mut io::stderr() as &mut io::Writer);
+            let stderr = &mut io::stderr() as &mut io::Writer;
             diags.iter().advance(|d| {
                 let msg = d.format(Diagnostic::default_opts());
                 stderr.write(msg.as_bytes());

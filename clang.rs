@@ -2,6 +2,7 @@
 
 use std::libc::*;
 use std::{cast, io, ptr, str};
+use std::fmt;
 use std::hash::Hash;
 use std::hash::sip::SipState;
 
@@ -277,11 +278,11 @@ pub struct String {
     priv x: CXString
 }
 
-impl ToStr for String {
-    fn to_str(&self) -> ~str {
+impl fmt::Show for String {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         unsafe {
             let c_str = clang_getCString(self.x) as *c_char;
-            str::raw::from_c_str(c_str)
+            str::raw::from_c_str(c_str).fmt(f)
         }
     }
 }

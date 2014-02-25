@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::fmt;
 
 #[deriving(Clone)]
 pub enum Global {
@@ -45,17 +46,17 @@ impl Global {
     }
 }
 
-impl ToStr for Global {
-    fn to_str(&self) -> ~str {
+impl fmt::Show for Global {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
       match *self {
-        GType(ti) => ti.with(|t| t.to_str()),
-        GComp(ci) => ci.with(|c| c.to_str()),
-        GCompDecl(ci) => ci.with(|c| c.to_str()),
-        GEnum(ei) => ei.with(|e| e.to_str()),
-        GEnumDecl(ei) => ei.with(|e| e.to_str()),
-        GVar(vi) => vi.with(|v| v.to_str()),
-        GFunc(vi) => vi.with(|v| v.to_str()),
-        GOther => ~"*"
+        GType(ti) => ti.with(|t| t.fmt(f)),
+        GComp(ci) => ci.with(|c| c.fmt(f)),
+        GCompDecl(ci) => ci.with(|c| c.fmt(f)),
+        GEnum(ei) => ei.with(|e| e.fmt(f)),
+        GEnumDecl(ei) => ei.with(|e| e.fmt(f)),
+        GVar(vi) => vi.with(|v| v.fmt(f)),
+        GFunc(vi) => vi.with(|v| v.fmt(f)),
+        GOther => write!(f.buf, "*"),
       }
     }
 }
@@ -159,9 +160,9 @@ impl CompInfo {
     }
 }
 
-impl ToStr for CompInfo {
-    fn to_str(&self) -> ~str {
-        self.name.clone()
+impl fmt::Show for CompInfo {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        self.name.fmt(f)
     }
 }
 
@@ -201,9 +202,9 @@ impl EnumInfo {
     }
 }
 
-impl ToStr for EnumInfo {
-    fn to_str(&self) -> ~str {
-        self.name.clone()
+impl fmt::Show for EnumInfo {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        self.name.fmt(f)
     }
 }
 
@@ -237,9 +238,9 @@ impl TypeInfo {
     }
 }
 
-impl ToStr for TypeInfo {
-    fn to_str(&self) -> ~str {
-        self.name.clone()
+impl fmt::Show for TypeInfo {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        self.name.fmt(f)
     }
 }
 
@@ -260,8 +261,8 @@ impl VarInfo {
     }
 }
 
-impl ToStr for VarInfo {
-    fn to_str(&self) -> ~str {
-        self.name.clone()
+impl fmt::Show for VarInfo {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        self.name.fmt(f)
     }
 }
