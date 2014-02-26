@@ -834,7 +834,37 @@ fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl) -> ast::Ty {
 
     return ast::Ty {
         id: ast::DUMMY_NODE_ID,
-        node: fnty,
+        node: ast::TyPath(
+            ast::Path {
+                span: DUMMY_SP,
+                global: true,
+                segments: ~[
+                    ast::PathSegment {
+                        identifier: ctx.ext_cx.ident_of("std"),
+                        lifetimes: opt_vec::Empty,
+                        types: opt_vec::Empty
+                    },
+                    ast::PathSegment {
+                        identifier: ctx.ext_cx.ident_of("option"),
+                        lifetimes: opt_vec::Empty,
+                        types: opt_vec::Empty
+                    },
+                    ast::PathSegment {
+                        identifier: ctx.ext_cx.ident_of("Option"),
+                        lifetimes: opt_vec::Empty,
+                        types: opt_vec::from(~[
+                            @ast::Ty {
+                                id: ast::DUMMY_NODE_ID,
+                                node: fnty,
+                                span: DUMMY_SP
+                            }
+                        ])
+                    }
+                ]
+            },
+            None,
+            ast::DUMMY_NODE_ID
+        ),
         span: DUMMY_SP
     };
 }
