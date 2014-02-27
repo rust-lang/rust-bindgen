@@ -392,8 +392,10 @@ pub static CXChildVisit_Break: c_uint = 0;
 pub static CXChildVisit_Continue: c_uint = 1;
 pub static CXChildVisit_Recurse: c_uint = 2;
 pub type CXCursorVisitor =
-    extern "C" fn(arg1: CXCursor, arg2: CXCursor, arg3: CXClientData)
-        -> Enum_CXChildVisitResult;
+    ::std::option::Option<extern "C" fn
+                              (arg1: CXCursor, arg2: CXCursor,
+                               arg3: CXClientData)
+                              -> Enum_CXChildVisitResult>;
 pub type CXObjCPropertyAttrKind = c_uint;
 pub static CXObjCPropertyAttr_noattr: c_uint = 0;
 pub static CXObjCPropertyAttr_readonly: c_uint = 1;
@@ -516,18 +518,19 @@ pub static CXCompletionContext_MacroName: c_uint = 1048576;
 pub static CXCompletionContext_NaturalLanguage: c_uint = 2097152;
 pub static CXCompletionContext_Unknown: c_uint = 4194303;
 pub type CXInclusionVisitor =
-    extern "C" fn
-        (arg1: CXFile, arg2: *mut CXSourceLocation, arg3: c_uint,
-         arg4: CXClientData);
+    ::std::option::Option<extern "C" fn
+                              (arg1: CXFile, arg2: *mut CXSourceLocation,
+                               arg3: c_uint, arg4: CXClientData)>;
 pub type CXRemapping = *mut c_void;
 pub type Enum_CXVisitorResult = c_uint;
 pub static CXVisit_Break: c_uint = 0;
 pub static CXVisit_Continue: c_uint = 1;
 pub struct CXCursorAndRangeVisitor {
     context: *mut c_void,
-    visit: extern "C" fn
-               (arg1: *mut c_void, arg2: CXCursor, arg3: CXSourceRange)
-               -> Enum_CXVisitorResult,
+    visit: ::std::option::Option<extern "C" fn
+                                     (arg1: *mut c_void, arg2: CXCursor,
+                                      arg3: CXSourceRange)
+                                     -> Enum_CXVisitorResult>,
 }
 pub type CXResult = c_uint;
 pub static CXResult_Success: c_uint = 0;
@@ -695,25 +698,39 @@ pub struct CXIdxEntityRefInfo {
     container: *CXIdxContainerInfo,
 }
 pub struct IndexerCallbacks {
-    abortQuery: extern "C" fn(arg1: CXClientData, arg2: *mut c_void) -> c_int,
-    diagnostic: extern "C" fn
-                    (arg1: CXClientData, arg2: CXDiagnosticSet,
-                     arg3: *mut c_void),
-    enteredMainFile: extern "C" fn
-                         (arg1: CXClientData, arg2: CXFile, arg3: *mut c_void)
-                         -> CXIdxClientFile,
-    ppIncludedFile: extern "C" fn
-                        (arg1: CXClientData, arg2: *CXIdxIncludedFileInfo)
-                        -> CXIdxClientFile,
-    importedASTFile: extern "C" fn
-                         (arg1: CXClientData, arg2: *CXIdxImportedASTFileInfo)
-                         -> CXIdxClientASTFile,
-    startedTranslationUnit: extern "C" fn
-                                (arg1: CXClientData, arg2: *mut c_void)
-                                -> CXIdxClientContainer,
-    indexDeclaration: extern "C" fn(arg1: CXClientData, arg2: *CXIdxDeclInfo),
-    indexEntityReference: extern "C" fn
-                              (arg1: CXClientData, arg2: *CXIdxEntityRefInfo),
+    abortQuery: ::std::option::Option<extern "C" fn
+                                          (arg1: CXClientData,
+                                           arg2: *mut c_void) -> c_int>,
+    diagnostic: ::std::option::Option<extern "C" fn
+                                          (arg1: CXClientData,
+                                           arg2: CXDiagnosticSet,
+                                           arg3: *mut c_void)>,
+    enteredMainFile: ::std::option::Option<extern "C" fn
+                                               (arg1: CXClientData,
+                                                arg2: CXFile,
+                                                arg3: *mut c_void)
+                                               -> CXIdxClientFile>,
+    ppIncludedFile: ::std::option::Option<extern "C" fn
+                                              (arg1: CXClientData,
+                                               arg2: *CXIdxIncludedFileInfo)
+                                              -> CXIdxClientFile>,
+    importedASTFile: ::std::option::Option<extern "C" fn
+                                               (arg1: CXClientData,
+                                                arg2:
+                                                    *CXIdxImportedASTFileInfo)
+                                               -> CXIdxClientASTFile>,
+    startedTranslationUnit: ::std::option::Option<extern "C" fn
+                                                      (arg1: CXClientData,
+                                                       arg2: *mut c_void)
+                                                      ->
+                                                          CXIdxClientContainer>,
+    indexDeclaration: ::std::option::Option<extern "C" fn
+                                                (arg1: CXClientData,
+                                                 arg2: *CXIdxDeclInfo)>,
+    indexEntityReference: ::std::option::Option<extern "C" fn
+                                                    (arg1: CXClientData,
+                                                     arg2:
+                                                         *CXIdxEntityRefInfo)>,
 }
 pub type CXIndexAction = *mut c_void;
 pub type CXIndexOptFlags = c_uint;
@@ -1075,7 +1092,10 @@ extern "C" {
                                                 endLine: *mut c_uint,
                                                 endColumn: *mut c_uint);
     pub fn clang_enableStackTraces();
-    pub fn clang_executeOnThread(_fn: extern "C" fn(arg1: *mut c_void),
+    pub fn clang_executeOnThread(_fn:
+                                     ::std::option::Option<extern "C" fn
+                                                               (arg1:
+                                                                    *mut c_void)>,
                                  user_data: *mut c_void, stack_size: c_uint);
     pub fn clang_getCompletionChunkKind(completion_string: CXCompletionString,
                                         chunk_number: c_uint) ->

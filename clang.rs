@@ -51,7 +51,7 @@ impl Cursor {
     pub fn visit(&self, func: CursorVisitor) {
         unsafe {
             let data = cast::transmute::<&CursorVisitor, CXClientData>(&func);
-            clang_visitChildren(self.x, visit_children, data);
+            clang_visitChildren(self.x, Some(visit_children), data);
         };
     }
 
