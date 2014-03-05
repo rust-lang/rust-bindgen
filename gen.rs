@@ -4,6 +4,7 @@ use std::cell::RefCell;
 use std::option;
 use std::io;
 use std::iter;
+use std::vec_ng::Vec;
 
 use syntax::abi;
 use syntax::ast;
@@ -29,7 +30,7 @@ impl base::CrateLoader for ErrLoader {
         fail!("lolwut")
     }
 
-    fn get_exported_macros(&mut self, _: ast::CrateNum) -> ~[~str] {
+    fn get_exported_macros(&mut self, _: ast::CrateNum) -> Vec<~str> {
         fail!("lolwut")
     }
 
@@ -122,10 +123,15 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
     };
 
     let mut loader = ErrLoader;
-    let mut ctx = GenCtx { ext_cx: base::ExtCtxt::new(parse::new_parse_sess(), ~[], &mut loader),
-                           unnamed_ty: 0,
-                           abis: abis,
-                         };
+    let mut ctx = GenCtx {
+        ext_cx: base::ExtCtxt::new(
+            parse::new_parse_sess(),
+            Vec::new(),
+            &mut loader
+        ),
+        unnamed_ty: 0,
+        abis: abis,
+    };
     ctx.ext_cx.bt_push(ExpnInfo {
         call_site: DUMMY_SP,
         callee: NameAndSpan { name: ~"", format: MacroBang, span: None }
@@ -144,7 +150,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
         }
     }
 
-    let mut defs = ~[];
+    let mut defs = Vec::new();
     gs = remove_redundant_decl(gs);
 
     for g in gs.move_iter() {
@@ -212,7 +218,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
         }
     }).collect();
 
-    let views = ~[mk_import(&mut ctx, &[~"std", ~"libc"])];
+    let views = Vec::from_elem(1, mk_import(&mut ctx, &[~"std", ~"libc"]));
     defs.push(mk_extern(&mut ctx, link, vars, funcs));
 
     let crate_ = ast::Crate {
@@ -220,8 +226,8 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
             view_items: views,
             items: defs,
         },
-        attrs: ~[],
-        config: ~[],
+        attrs: Vec::new(),
+        config: Vec::new(),
         span: DUMMY_SP
     };
 
@@ -232,39 +238,39 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
 }
 
 fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::ViewItem {
-    let view = ast::ViewItemUse(~[
+    let view = ast::ViewItemUse(Vec::from_elem(1,
         @dummy_spanned(
             ast::ViewPathGlob(
                 ast::Path {
                     span: DUMMY_SP,
                     global: false,
-                    segments: path.map(|p|
+                    segments: path.iter().map(|p|
                         ast::PathSegment {
                             identifier: ctx.ext_cx.ident_of((*p).clone()),
                             lifetimes: opt_vec::Empty,
                             types: opt_vec::Empty
                         }
-                    )
+                    ).collect()
                 },
                 ast::DUMMY_NODE_ID
             )
         )
-    ]);
+    ));
 
     return ast::ViewItem {
               node: view,
-              attrs: ~[],
+              attrs: Vec::new(),
               vis: ast::Inherited,
               span: DUMMY_SP
            };
 }
 
 fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
-                           vars: ~[@ast::ForeignItem],
-                           funcs: ~[@ast::ForeignItem]) -> @ast::Item {
+             vars: Vec<@ast::ForeignItem>,
+             funcs: Vec<@ast::ForeignItem>) -> @ast::Item {
     let attrs;
     match *link {
-        None => attrs = ~[],
+        None => attrs = Vec::new(),
         Some(ref l) => {
             let link_name = @dummy_spanned(ast::MetaNameValue(
                 to_intern_str(ctx, ~"name"),
@@ -277,18 +283,21 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
                 style: ast::AttrOuter,
                 value: @dummy_spanned(ast::MetaList(
                     to_intern_str(ctx, ~"link"),
-                    ~[link_name])
+                    Vec::from_elem(1, link_name))
                 ),
                 is_sugared_doc: false
             });
-            attrs = ~[link_args];
+            attrs = Vec::from_elem(1, link_args);
         }
     }
 
+    let mut items = Vec::new();
+    items.push_all_move(vars);
+    items.push_all_move(funcs);
     let ext = ast::ItemForeignMod(ast::ForeignMod {
         abis: ctx.abis,
-        view_items: ~[],
-        items: vars + funcs
+        view_items: Vec::new(),
+        items: items
     });
 
     return @ast::Item {
@@ -389,7 +398,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::Item] {
 
         return @ast::Item {
                   ident: ctx.ext_cx.ident_of(rust_name),
-                  attrs: ~[],
+                  attrs: Vec::new(),
                   id: ast::DUMMY_NODE_ID,
                   node: base,
                   vis: ast::Public,
@@ -426,7 +435,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::Item] {
 
 fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo]) -> @ast::Item {
     let mut unnamed = 0;
-    let fs = fields.map(|f| {
+    let fs = fields.iter().map(|f| {
         let f_name = if f.name.is_empty() {
             unnamed += 1;
             format!("unnamed_field{}", unnamed)
@@ -443,9 +452,9 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo]) -> @ast::It
             ),
             id: ast::DUMMY_NODE_ID,
             ty: f_ty,
-            attrs: ~[]
+            attrs: Vec::new()
         })
-    });
+    }).collect();
 
     let def = ast::ItemStruct(
         @ast::StructDef {
@@ -457,7 +466,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo]) -> @ast::It
 
     let id = rust_type_id(ctx, name);
     return @ast::Item { ident: ctx.ext_cx.ident_of(id),
-              attrs: ~[],
+              attrs: Vec::new(),
               id: ast::DUMMY_NODE_ID,
               node: def,
               vis: ast::Public,
@@ -469,7 +478,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
     fn mk_item(ctx: &mut GenCtx, name: ~str, item: ast::Item_, vis: ast::Visibility) -> @ast::Item {
         return @ast::Item {
                   ident: ctx.ext_cx.ident_of(name),
-                  attrs: ~[],
+                  attrs: Vec::new(),
                   id: ast::DUMMY_NODE_ID,
                   node: item,
                   vis: vis,
@@ -497,12 +506,12 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
         ),
         id: ast::DUMMY_NODE_ID,
         ty: data_ty,
-        attrs: ~[]
+        attrs: Vec::new()
     });
 
     let def = ast::ItemStruct(
         @ast::StructDef {
-           fields: ~[data],
+           fields: Vec::from_elem(1, data),
            ctor_id: None
         },
         empty_generics()
@@ -515,7 +524,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
         unsafe { ::std::cast::transmute(self) }
     );
     let mut unnamed = 0;
-    let fs = fields.map(|f| {
+    let fs = fields.iter().map(|f| {
         let f_name = if f.name.is_empty() {
             unnamed += 1;
             format!("unnamed_field{}", unnamed)
@@ -525,8 +534,8 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
 
         let ret_ty = @cty_to_rs(ctx, &TPtr(~f.ty.clone(), false, Layout::zero()));
         let body = @ast::Block {
-            view_items: ~[],
-            stmts: ~[],
+            view_items: Vec::new(),
+            stmts: Vec::new(),
             expr: Some(expr),
             id: ast::DUMMY_NODE_ID,
             rules: ast::DefaultBlock,
@@ -535,12 +544,12 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
 
         @ast::Method {
             ident: ctx.ext_cx.ident_of(f_name),
-            attrs: ~[],
+            attrs: Vec::new(),
             generics: empty_generics(),
             explicit_self: dummy_spanned(ast::SelfRegion(None, ast::MutMutable)),
             purity: ast::ImpureFn,
             decl: @ast::FnDecl {
-                inputs: ~[ast::Arg::new_self(DUMMY_SP, ast::MutImmutable)],
+                inputs: Vec::from_elem(1, ast::Arg::new_self(DUMMY_SP, ast::MutImmutable)),
                 output: ret_ty,
                 cf: ast::Return,
                 variadic: false
@@ -550,7 +559,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
             span: DUMMY_SP,
             vis: ast::Public
         }
-    });
+    }).collect();
 
     let methods = ast::ItemImpl(
         empty_generics(),
@@ -582,7 +591,7 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: &[EnumItem], kind: IKind) ->
         let id = first(rust_id(ctx, it.name.clone()));
         let val_def = @ast::Item {
                          ident: ctx.ext_cx.ident_of(id),
-                         attrs: ~[],
+                         attrs: Vec::new(),
                          id: ast::DUMMY_NODE_ID,
                          node: cst,
                          vis: ast::Public,
@@ -616,7 +625,7 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: ~str,
                                 is_const: bool) -> @ast::ForeignItem {
     let (rust_name, was_mangled) = rust_id(ctx, name.clone());
 
-    let mut attrs = ~[];
+    let mut attrs = Vec::new();
     if was_mangled {
         attrs.push(mk_link_name_attr(ctx, name));
     }
@@ -646,7 +655,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
     };
 
     let mut unnamed = 0;
-    let args: ~[ast::Arg] = aty.iter().map(|arg| {
+    let args: Vec<ast::Arg> = aty.iter().map(|arg| {
         let (ref n, ref t) = *arg;
 
         let arg_name = if n.is_empty() {
@@ -667,13 +676,13 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
                      ast::Path {
                          span: DUMMY_SP,
                          global: false,
-                         segments: ~[
+                         segments: Vec::from_elem(1,
                             ast::PathSegment {
                                 identifier: ctx.ext_cx.ident_of(arg_name),
                                 lifetimes: opt_vec::Empty,
                                 types: opt_vec::Empty
                             }
-                        ]
+                        )
                      },
                      None
                  ),
@@ -703,7 +712,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: &Type,
 
     let (rust_name, was_mangled) = rust_id(ctx, name.clone());
 
-    let mut attrs = ~[];
+    let mut attrs = Vec::new();
     if was_mangled {
         attrs.push(mk_link_name_attr(ctx, name));
     }
@@ -774,13 +783,13 @@ fn mk_ty(ctx: &mut GenCtx, name: ~str) -> ast::Ty {
         ast::Path {
             span: DUMMY_SP,
             global: false,
-            segments: ~[
+            segments: Vec::from_elem(1,
                 ast::PathSegment {
                     identifier: ctx.ext_cx.ident_of(name),
                     lifetimes: opt_vec::Empty,
                     types: opt_vec::Empty
                 }
-            ]
+            )
         },
         option::None,
         ast::DUMMY_NODE_ID
@@ -832,35 +841,38 @@ fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl) -> ast::Ty {
         decl: @decl.clone()
     });
 
+    let mut segs = Vec::new();
+    segs.push_all([
+        ast::PathSegment {
+            identifier: ctx.ext_cx.ident_of("std"),
+            lifetimes: opt_vec::Empty,
+            types: opt_vec::Empty
+        },
+        ast::PathSegment {
+            identifier: ctx.ext_cx.ident_of("option"),
+            lifetimes: opt_vec::Empty,
+            types: opt_vec::Empty
+        },
+        ast::PathSegment {
+            identifier: ctx.ext_cx.ident_of("Option"),
+            lifetimes: opt_vec::Empty,
+            types: opt_vec::from(Vec::from_elem(1,
+                @ast::Ty {
+                    id: ast::DUMMY_NODE_ID,
+                    node: fnty,
+                    span: DUMMY_SP
+                }
+            ))
+        }
+    ]);
+
     return ast::Ty {
         id: ast::DUMMY_NODE_ID,
         node: ast::TyPath(
             ast::Path {
                 span: DUMMY_SP,
                 global: true,
-                segments: ~[
-                    ast::PathSegment {
-                        identifier: ctx.ext_cx.ident_of("std"),
-                        lifetimes: opt_vec::Empty,
-                        types: opt_vec::Empty
-                    },
-                    ast::PathSegment {
-                        identifier: ctx.ext_cx.ident_of("option"),
-                        lifetimes: opt_vec::Empty,
-                        types: opt_vec::Empty
-                    },
-                    ast::PathSegment {
-                        identifier: ctx.ext_cx.ident_of("Option"),
-                        lifetimes: opt_vec::Empty,
-                        types: opt_vec::from(~[
-                            @ast::Ty {
-                                id: ast::DUMMY_NODE_ID,
-                                node: fnty,
-                                span: DUMMY_SP
-                            }
-                        ])
-                    }
-                ]
+                segments: segs
             },
             None,
             ast::DUMMY_NODE_ID
