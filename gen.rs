@@ -11,6 +11,7 @@ use syntax::ast;
 use syntax::codemap::{DUMMY_SP, dummy_spanned, ExpnInfo, NameAndSpan, MacroBang};
 use syntax::ext::base;
 use syntax::ext::build::AstBuilder;
+use syntax::ext::expand::ExpansionConfig;
 use syntax::opt_vec;
 use syntax::parse;
 use syntax::print::pprust;
@@ -123,11 +124,15 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
     };
 
     let mut loader = ErrLoader;
+    let cfg = ExpansionConfig {
+        loader: &mut loader,
+        deriving_hash_type_parameter: false,
+    };
     let mut ctx = GenCtx {
         ext_cx: base::ExtCtxt::new(
             parse::new_parse_sess(),
             Vec::new(),
-            &mut loader
+            cfg,
         ),
         unnamed_ty: 0,
         abis: abis,
