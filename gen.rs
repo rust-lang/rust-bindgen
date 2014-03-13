@@ -55,7 +55,7 @@ fn to_intern_str(ctx: &mut GenCtx, s: ~str) -> parse::token::InternedString {
 
 fn empty_generics() -> ast::Generics {
     ast::Generics {
-        lifetimes: opt_vec::Empty,
+        lifetimes: Vec::new(),
         ty_params: opt_vec::Empty
     }
 }
@@ -252,7 +252,7 @@ fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::ViewItem {
                     segments: path.iter().map(|p|
                         ast::PathSegment {
                             identifier: ctx.ext_cx.ident_of((*p).clone()),
-                            lifetimes: opt_vec::Empty,
+                            lifetimes: Vec::new(),
                             types: opt_vec::Empty
                         }
                     ).collect()
@@ -684,7 +684,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
                          segments: Vec::from_elem(1,
                             ast::PathSegment {
                                 identifier: ctx.ext_cx.ident_of(arg_name),
-                                lifetimes: opt_vec::Empty,
+                                lifetimes: Vec::new(),
                                 types: opt_vec::Empty
                             }
                         )
@@ -791,7 +791,7 @@ fn mk_ty(ctx: &mut GenCtx, name: ~str) -> ast::Ty {
             segments: Vec::from_elem(1,
                 ast::PathSegment {
                     identifier: ctx.ext_cx.ident_of(name),
-                    lifetimes: opt_vec::Empty,
+                    lifetimes: Vec::new(),
                     types: opt_vec::Empty
                 }
             )
@@ -842,7 +842,7 @@ fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl) -> ast::Ty {
     let fnty = ast::TyBareFn(@ast::BareFnTy {
         purity: ast::ImpureFn,
         abis: ctx.abis,
-        lifetimes: opt_vec::Empty,
+        lifetimes: Vec::new(),
         decl: @decl.clone()
     });
 
@@ -850,17 +850,17 @@ fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl) -> ast::Ty {
     segs.push_all([
         ast::PathSegment {
             identifier: ctx.ext_cx.ident_of("std"),
-            lifetimes: opt_vec::Empty,
+            lifetimes: Vec::new(),
             types: opt_vec::Empty
         },
         ast::PathSegment {
             identifier: ctx.ext_cx.ident_of("option"),
-            lifetimes: opt_vec::Empty,
+            lifetimes: Vec::new(),
             types: opt_vec::Empty
         },
         ast::PathSegment {
             identifier: ctx.ext_cx.ident_of("Option"),
-            lifetimes: opt_vec::Empty,
+            lifetimes: Vec::new(),
             types: opt_vec::from(Vec::from_elem(1,
                 @ast::Ty {
                     id: ast::DUMMY_NODE_ID,
