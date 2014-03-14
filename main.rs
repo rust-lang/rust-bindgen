@@ -51,15 +51,15 @@ fn parse_args(args: &[~str]) -> ParseResult {
 
     let mut ix = 0u;
     while ix < args_len {
-        match args[ix] {
-            ~"--help" | ~"-h" => {
+        match args[ix].as_slice() {
+            "--help" | "-h" => {
                 return CmdUsage;
             }
-            ~"-emit-clang-ast" => {
+            "-emit-clang-ast" => {
               emit_ast = true;
               ix += 1u;
             }
-            ~"-o" => {
+            "-o" => {
                 if ix + 1u >= args_len {
                     return ParseErr(~"Missing output filename");
                 }
@@ -70,29 +70,29 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 }
                 ix += 2u;
             }
-            ~"-l" => {
+            "-l" => {
                 if ix + 1u >= args_len {
                     return ParseErr(~"Missing link name");
                 }
                 link = Some(args[ix + 1u].clone());
                 ix += 2u;
             }
-            ~"-match" => {
+            "-match" => {
                 if ix + 1u >= args_len {
                     return ParseErr(~"Missing match pattern");
                 }
                 pat.push(args[ix + 1u].clone());
                 ix += 2u;
             }
-            ~"-builtins" => {
+            "-builtins" => {
                 builtins = true;
                 ix += 1u;
             }
-            ~"-abi" => {
+            "-abi" => {
                 abi = args[ix + 1u].clone();
                 ix += 2u;
             }
-            ~"-allow-bitfields" => {
+            "-allow-bitfields" => {
               fail_on_bitfield = false;
               ix += 1u;
             }

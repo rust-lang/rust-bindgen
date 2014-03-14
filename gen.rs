@@ -113,13 +113,13 @@ fn enum_name(name: ~str) -> ~str {
 }
 
 pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]) {
-    let abis = match abi {
-        ~"cdecl" => abi::AbiSet::from(abi::Cdecl),
-        ~"stdcall" => abi::AbiSet::from(abi::Stdcall),
-        ~"fastcall" => abi::AbiSet::from(abi::Fastcall),
-        ~"aapcs" => abi::AbiSet::from(abi::Aapcs),
-        ~"Rust" => abi::AbiSet::Rust(),
-        ~"rust-intrinsic" => abi::AbiSet::Intrinsic(),
+    let abis = match abi.as_slice() {
+        "cdecl" => abi::AbiSet::from(abi::Cdecl),
+        "stdcall" => abi::AbiSet::from(abi::Stdcall),
+        "fastcall" => abi::AbiSet::from(abi::Fastcall),
+        "aapcs" => abi::AbiSet::from(abi::Aapcs),
+        "Rust" => abi::AbiSet::Rust(),
+        "rust-intrinsic" => abi::AbiSet::Intrinsic(),
         _ => abi::AbiSet::C()
     };
 
