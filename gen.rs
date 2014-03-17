@@ -127,6 +127,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
     let cfg = ExpansionConfig {
         loader: &mut loader,
         deriving_hash_type_parameter: false,
+        crate_id: from_str("xxx").unwrap(),
     };
     let mut ctx = GenCtx {
         ext_cx: base::ExtCtxt::new(
