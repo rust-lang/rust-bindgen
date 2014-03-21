@@ -4,7 +4,7 @@ use std::cell::RefCell;
 use std::option;
 use std::io;
 use std::iter;
-use std::vec_ng::Vec;
+use std::vec::Vec;
 use syntax::print::pp::eof;
 
 use syntax::abi;
@@ -130,7 +130,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
         deriving_hash_type_parameter: false,
         crate_id: from_str("xxx").unwrap(),
     };
-    let mut sess = &parse::new_parse_sess();
+    let sess = &parse::new_parse_sess();
     let mut ctx = GenCtx {
         ext_cx: base::ExtCtxt::new(
             sess,
