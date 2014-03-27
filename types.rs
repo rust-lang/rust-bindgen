@@ -49,13 +49,13 @@ impl Global {
 impl fmt::Show for Global {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
       match *self {
-        GType(ti) => ti.with(|t| t.fmt(f)),
-        GComp(ci) => ci.with(|c| c.fmt(f)),
-        GCompDecl(ci) => ci.with(|c| c.fmt(f)),
-        GEnum(ei) => ei.with(|e| e.fmt(f)),
-        GEnumDecl(ei) => ei.with(|e| e.fmt(f)),
-        GVar(vi) => vi.with(|v| v.fmt(f)),
-        GFunc(vi) => vi.with(|v| v.fmt(f)),
+        GType(ti) => ti.borrow().fmt(f),
+        GComp(ci) => ci.borrow().fmt(f),
+        GCompDecl(ci) => ci.borrow().fmt(f),
+        GEnum(ei) => ei.borrow().fmt(f),
+        GEnumDecl(ei) => ei.borrow().fmt(f),
+        GVar(vi) => vi.borrow().fmt(f),
+        GFunc(vi) => vi.borrow().fmt(f),
         GOther => write!(f.buf, "*"),
       }
     }
@@ -81,9 +81,9 @@ impl Type {
           TFloat(_, l) => l.size,
           TPtr(_, _, l) => l.size,
           TArray(_, _, l) => l.size,
-          TNamed(ref ti) => ti.with(|t| t.ty.size()),
-          TComp(ref ci) => ci.with(|c| c.layout.size),
-          TEnum(ref ei) => ei.with(|e| e.layout.size),
+          TNamed(ref ti) => ti.borrow().ty.size(),
+          TComp(ref ci) => ci.borrow().layout.size,
+          TEnum(ref ei) => ei.borrow().layout.size,
           TVoid => 0,
           TFunc(..) => 0,
         }
@@ -95,9 +95,9 @@ impl Type {
           TFloat(_, l) => l.align,
           TPtr(_, _, l) => l.align,
           TArray(_, _, l) => l.align,
-          TNamed(ref ti) => ti.with(|t| t.ty.align()),
-          TComp(ref ci) => ci.with(|c| c.layout.align),
-          TEnum(ref ei) => ei.with(|e| e.layout.align),
+          TNamed(ref ti) => ti.borrow().ty.align(),
+          TComp(ref ci) => ci.borrow().layout.align,
+          TEnum(ref ei) => ei.borrow().layout.align,
           TVoid => 0,
           TFunc(..) => 0,
         }

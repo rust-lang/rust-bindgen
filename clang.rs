@@ -139,6 +139,8 @@ impl Eq for Cursor {
     }
 }
 
+impl TotalEq for Cursor {}
+
 impl Hash for Cursor {
     fn hash(&self, state: &mut SipState) {
         self.x.kind.hash(state);

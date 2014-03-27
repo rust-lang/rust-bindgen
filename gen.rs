@@ -13,7 +13,7 @@ use syntax::codemap::{DUMMY_SP, dummy_spanned, ExpnInfo, NameAndSpan, MacroBang}
 use syntax::ext::base;
 use syntax::ext::build::AstBuilder;
 use syntax::ext::expand::ExpansionConfig;
-use syntax::opt_vec;
+use syntax::owned_slice::OwnedSlice;
 use syntax::parse;
 use syntax::print::pprust;
 
@@ -57,7 +57,7 @@ fn to_intern_str(ctx: &mut GenCtx, s: ~str) -> parse::token::InternedString {
 fn empty_generics() -> ast::Generics {
     ast::Generics {
         lifetimes: Vec::new(),
-        ty_params: opt_vec::Empty
+        ty_params: OwnedSlice::empty(),
     }
 }
 
@@ -168,7 +168,10 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
                 defs.push_all(ctypedef_to_rs(&mut ctx, t.name.clone(), &t.ty))
             },
             GCompDecl(ci) => {
-                ci.with_mut(|c| c.name = unnamed_name(&mut ctx, c.name.clone()));
+                {
+                    let mut c = ci.borrow_mut();
+                    c.name = unnamed_name(&mut ctx, c.name.clone());
+                }
                 let c = ci.get();
                 if c.cstruct {
                     defs.push_all(ctypedef_to_rs(&mut ctx, struct_name(c.name), &TVoid))
@@ -177,7 +180,10 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
                 }
             },
             GComp(ci) => {
-                ci.with_mut(|c| c.name = unnamed_name(&mut ctx, c.name.clone()));
+                {
+                    let mut c = ci.borrow_mut();
+                    c.name = unnamed_name(&mut ctx, c.name.clone());
+                }
                 let c = ci.get();
                 if c.cstruct {
                     defs.push(cstruct_to_rs(&mut ctx, struct_name(c.name.clone()),
@@ -191,12 +197,18 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
                 }
             },
             GEnumDecl(ei) => {
-                ei.with_mut(|e| e.name = unnamed_name(&mut ctx, e.name.clone()));
+                {
+                    let mut e = ei.borrow_mut();
+                    e.name = unnamed_name(&mut ctx, e.name.clone());
+                }
                 let e = ei.get();
                 defs.push_all(ctypedef_to_rs(&mut ctx, enum_name(e.name.clone()), &TVoid))
             },
             GEnum(ei) => {
-                ei.with_mut(|e| e.name = unnamed_name(&mut ctx, e.name.clone()));
+                {
+                    let mut e = ei.borrow_mut();
+                    e.name = unnamed_name(&mut ctx, e.name.clone());
+                }
                 let e = ei.get();
                 defs.push_all(cenum_to_rs(&mut ctx, enum_name(e.name.clone()), e.items, e.kind))
             },
@@ -206,22 +218,24 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
 
     let vars = vs.move_iter().map(|v| {
         match v {
-            GVar(vi) => vi.with(|v|
+            GVar(vi) => {
+                let v = vi.borrow();
                 cvar_to_rs(&mut ctx, v.name.clone(), &v.ty, v.is_const)
-            ),
+            },
             _ => { fail!(~"generate global variables") }
         }
     }).collect();
 
     let funcs = fs.move_iter().map(|f| {
         match f {
-            GFunc(vi) => vi.with(|v| {
+            GFunc(vi) => {
+                let v = vi.borrow();
                 match v.ty {
                     TFunc(ref rty, ref aty, var) => cfunc_to_rs(&mut ctx, v.name.clone(),
                                                                 *rty, *aty, var),
                     _ => { fail!(~"generate functions") }
                 }
-            }),
+            },
             _ => { fail!(~"generate functions") }
         }
     }).collect();
@@ -260,7 +274,7 @@ fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::ViewItem {
                         ast::PathSegment {
                             identifier: ctx.ext_cx.ident_of((*p).clone()),
                             lifetimes: Vec::new(),
-                            types: opt_vec::Empty
+                            types: OwnedSlice::empty(),
                         }
                     ).collect()
                 },
@@ -327,13 +341,13 @@ fn remove_redundant_decl(gs: ~[Global]) -> ~[Global] {
         match *a {
           GComp(ci1) => match *ty {
               TComp(ci2) => {
-                  ref_eq(ci1, ci2) && ci1.with(|c| c.name.is_empty())
+                  ref_eq(ci1, ci2) && ci1.borrow().name.is_empty()
               },
               _ => false
           },
           GEnum(ei1) => match *ty {
               TEnum(ei2) => {
-                  ref_eq(ei1, ei2) && ei1.with(|c| c.name.is_empty())
+                  ref_eq(ei1, ei2) && ei1.borrow().name.is_empty()
               },
               _ => false
           },
@@ -343,7 +357,7 @@ fn remove_redundant_decl(gs: ~[Global]) -> ~[Global] {
 
     let typedefs: ~[Type] = gs.iter().filter_map(|g|
         match *g {
-            GType(ref ti) => Some(ti.with(|t| t.ty.clone())),
+            GType(ref ti) => Some(ti.borrow().ty.clone()),
             _ => None
         }
     ).collect();
@@ -360,13 +374,41 @@ fn tag_dup_decl(gs: ~[Global]) -> ~[Global] {
 
     fn check_dup(g1: &Global, g2: &Global) -> bool {
         match (g1, g2) {
-          (&GType(ti1), &GType(ti2)) => ti1.with(|a| ti2.with(|b| check(a.name, b.name))),
-          (&GComp(ci1), &GComp(ci2)) => ci1.with(|a| ci2.with(|b| check(a.name, b.name))),
-          (&GCompDecl(ci1), &GCompDecl(ci2)) => ci1.with(|a| ci2.with(|b| check(a.name, b.name))),
-          (&GEnum(ei1), &GEnum(ei2)) => ei1.with(|a| ei2.with(|b| check(a.name, b.name))),
-          (&GEnumDecl(ei1), &GEnumDecl(ei2)) => ei1.with(|a| ei2.with(|b| check(a.name, b.name))),
-          (&GVar(vi1), &GVar(vi2)) => vi1.with(|a| vi2.with(|b| check(a.name, b.name))),
-          (&GFunc(vi1), &GFunc(vi2)) => vi1.with(|a| vi2.with(|b| check(a.name, b.name))),
+          (&GType(ti1), &GType(ti2)) => {
+              let a = ti1.borrow();
+              let b = ti2.borrow();
+              check(a.name, b.name)
+          },
+          (&GComp(ci1), &GComp(ci2)) => {
+              let a = ci1.borrow();
+              let b = ci2.borrow();
+              check(a.name, b.name)
+          },
+          (&GCompDecl(ci1), &GCompDecl(ci2)) => {
+              let a = ci1.borrow();
+              let b = ci2.borrow();
+              check(a.name, b.name)
+          },
+          (&GEnum(ei1), &GEnum(ei2)) => {
+              let a = ei1.borrow();
+              let b = ei2.borrow();
+              check(a.name, b.name)
+          },
+          (&GEnumDecl(ei1), &GEnumDecl(ei2)) => {
+              let a = ei1.borrow();
+              let b = ei2.borrow();
+              check(a.name, b.name)
+          },
+          (&GVar(vi1), &GVar(vi2)) => {
+              let a = vi1.borrow();
+              let b = vi2.borrow();
+              check(a.name, b.name)
+          },
+          (&GFunc(vi1), &GFunc(vi2)) => {
+              let a = vi1.borrow();
+              let b = vi2.borrow();
+              check(a.name, b.name)
+          },
           _ => false
         }
     }
@@ -420,8 +462,9 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::Item] {
 
     return match *ty {
         TComp(ci) => {
-            if ci.with(|c| c.name.is_empty()) {
-                ci.with_mut(|c| c.name = name.clone());
+            let is_empty = { ci.borrow().name.is_empty() };
+            if is_empty {
+                ci.borrow_mut().name = name.clone();
                 let c = ci.get();
                 if c.cstruct {
                     ~[cstruct_to_rs(ctx, name, c.fields)]
@@ -433,8 +476,9 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::Item] {
             }
         },
         TEnum(ei) => {
-            if ei.with(|e| e.name.is_empty()) {
-                ei.with_mut(|e| e.name = name.clone());
+            let is_empty = { ei.borrow().name.is_empty() };
+            if is_empty {
+                ei.borrow_mut().name = name.clone();
                 let e = ei.get();
                 cenum_to_rs(ctx, name, e.items, e.kind)
             } else {
@@ -692,7 +736,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
                             ast::PathSegment {
                                 identifier: ctx.ext_cx.ident_of(arg_name),
                                 lifetimes: Vec::new(),
-                                types: opt_vec::Empty
+                                types: OwnedSlice::empty(),
                             }
                         )
                      },
@@ -772,21 +816,23 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
             mk_fnty(ctx, &decl)
         },
         TNamed(ti) => {
-            let id = rust_type_id(ctx, ti.with(|t| t.name.clone()));
+            let id = rust_type_id(ctx, ti.borrow().name.clone());
             mk_ty(ctx, id)
         },
-        TComp(ci) => ci.with_mut(|c| {
+        TComp(ci) => {
+            let mut c = ci.borrow_mut();
             c.name = unnamed_name(ctx, c.name.clone());
             if c.cstruct {
                 mk_ty(ctx, struct_name(c.name.clone()))
             } else {
                 mk_ty(ctx, union_name(c.name.clone()))
             }
-        }),
-        TEnum(ei) => ei.with_mut(|e| {
+        },
+        TEnum(ei) => {
+            let mut e = ei.borrow_mut();
             e.name = unnamed_name(ctx, e.name.clone());
             mk_ty(ctx, enum_name(e.name.clone()))
-        })
+        }
     };
 }
 
@@ -799,7 +845,7 @@ fn mk_ty(ctx: &mut GenCtx, name: ~str) -> ast::Ty {
                 ast::PathSegment {
                     identifier: ctx.ext_cx.ident_of(name),
                     lifetimes: Vec::new(),
-                    types: opt_vec::Empty
+                    types: OwnedSlice::empty(),
                 }
             )
         },
@@ -858,17 +904,17 @@ fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl) -> ast::Ty {
         ast::PathSegment {
             identifier: ctx.ext_cx.ident_of("std"),
             lifetimes: Vec::new(),
-            types: opt_vec::Empty
+            types: OwnedSlice::empty(),
         },
         ast::PathSegment {
             identifier: ctx.ext_cx.ident_of("option"),
             lifetimes: Vec::new(),
-            types: opt_vec::Empty
+            types: OwnedSlice::empty(),
         },
         ast::PathSegment {
             identifier: ctx.ext_cx.ident_of("Option"),
             lifetimes: Vec::new(),
-            types: opt_vec::from(Vec::from_elem(1,
+            types: OwnedSlice::from_vec(Vec::from_elem(1,
                 @ast::Ty {
                     id: ast::DUMMY_NODE_ID,
                     node: fnty,

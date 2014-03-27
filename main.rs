@@ -421,7 +421,10 @@ fn visit_top<'r>(cur: &'r Cursor,
         fwd_decl(ctx, cursor, |ctx_| {
             let decl = decl_name(ctx_, cursor);
             let ci = decl.compinfo();
-            cursor.visit(|c, p| ci.with_mut(|ci_| visit_struct(c, p, ctx_, &mut ci_.fields)));
+            cursor.visit(|c, p| {
+                let mut ci_ = ci.borrow_mut();
+                visit_struct(c, p, ctx_, &mut ci_.fields)
+            });
             ctx_.globals.push(GComp(ci));
         });
         return if cur.kind() == CXCursor_FieldDecl {
@@ -434,7 +437,10 @@ fn visit_top<'r>(cur: &'r Cursor,
         fwd_decl(ctx, cursor, |ctx_| {
             let decl = decl_name(ctx_, cursor);
             let ci = decl.compinfo();
-            cursor.visit(|c, _| ci.with_mut(|ci_| visit_union(c, ctx_, &mut ci_.fields)));
+            cursor.visit(|c, _| {
+                let mut ci_ = ci.borrow_mut();
+                visit_union(c, ctx_, &mut ci_.fields)
+            });
             ctx_.globals.push(GComp(ci));
         });
         return CXChildVisit_Recurse;
@@ -443,7 +449,10 @@ fn visit_top<'r>(cur: &'r Cursor,
         fwd_decl(ctx, cursor, |ctx_| {
             let decl = decl_name(ctx_, cursor);
             let ei = decl.enuminfo();
-            cursor.visit(|c, _| ei.with_mut(|ei_| visit_enum(c, &mut ei_.items)));
+            cursor.visit(|c, _| {
+                let mut ei_ = ei.borrow_mut();
+                visit_enum(c, &mut ei_.items)
+            });
             ctx_.globals.push(GEnum(ei));
         });
         return CXChildVisit_Continue;
@@ -463,7 +472,8 @@ fn visit_top<'r>(cur: &'r Cursor,
         let ret_ty = ~conv_ty(ctx, &cursor.ret_type(), cursor);
 
         let func = decl_name(ctx, cursor);
-        func.varinfo().with_mut(|vi| vi.ty = TFunc(ret_ty.clone(), args_lst.clone(), ty.is_variadic()));
+        let mut vi = func.varinfo().borrow_mut();
+        vi.ty = TFunc(ret_ty.clone(), args_lst.clone(), ty.is_variadic());
         ctx.globals.push(func);
 
         return CXChildVisit_Continue;
@@ -476,10 +486,9 @@ fn visit_top<'r>(cur: &'r Cursor,
 
         let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
         let var = decl_name(ctx, cursor);
-        var.varinfo().with_mut(|vi| {
-            vi.ty = ty.clone();
-            vi.is_const = cursor.cur_type().is_const();
-        });
+        let mut vi = var.varinfo().borrow_mut();
+        vi.ty = ty.clone();
+        vi.is_const = cursor.cur_type().is_const();
         ctx.globals.push(var);
 
         return CXChildVisit_Continue;
@@ -492,7 +501,8 @@ fn visit_top<'r>(cur: &'r Cursor,
 
         let ty = conv_ty(ctx, &under_ty, cursor);
         let typedef = decl_name(ctx, cursor);
-        typedef.typeinfo().with_mut(|ti| ti.ty = ty.clone());
+        let mut ti = typedef.typeinfo().borrow_mut();
+        ti.ty = ty.clone();
         ctx.globals.push(typedef);
 
         opaque_ty(ctx, &under_ty);
