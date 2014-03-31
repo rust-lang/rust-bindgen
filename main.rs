@@ -1,5 +1,5 @@
-#[allow(non_uppercase_pattern_statics)];
-#[allow(unused_must_use)];
+#![allow(non_uppercase_pattern_statics)]
+#![allow(unused_must_use)]
 
 use std::cell::RefCell;
 use collections::{HashMap, HashSet};
@@ -268,9 +268,9 @@ fn conv_ptr_ty(ctx: &mut BindGenCtx, ty: &cx::Type, cursor: &Cursor, layout: Lay
         let ret_ty = ty.ret_type();
         let decl = ty.declaration();
         return if ret_ty.kind() != CXType_Invalid {
-            let args_lst = ty.arg_types().map(|arg| {
+            let args_lst = ty.arg_types().iter().map(|arg| {
                 (~"", conv_ty(ctx, arg, cursor))
-            });
+            }).collect();
             let ret_ty = ~conv_ty(ctx, &ret_ty, cursor);
 
             TFunc(ret_ty, args_lst, ty.is_variadic())
@@ -463,10 +463,10 @@ fn visit_top<'r>(cur: &'r Cursor,
             return CXChildVisit_Continue;
         }
 
-        let args_lst = cursor.args().map(|arg| {
+        let args_lst: ~[(~str, il::Type)] = cursor.args().iter().map(|arg| {
             let arg_name = arg.spelling();
             (arg_name, conv_ty(ctx, &arg.cur_type(), cursor))
-        });
+        }).collect();
 
         let ty = cursor.cur_type();
         let ret_ty = ~conv_ty(ctx, &cursor.ret_type(), cursor);

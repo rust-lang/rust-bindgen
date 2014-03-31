@@ -1,10 +1,11 @@
-#[allow(non_uppercase_pattern_statics)];
+#![allow(non_uppercase_pattern_statics)]
 
 use std::libc::*;
 use std::{cast, io, ptr, str};
 use std::fmt;
 use std::hash::Hash;
 use std::hash::sip::SipState;
+use std::c_str::CString;
 
 pub use ll = clangll;
 use clangll::*;
@@ -322,9 +323,9 @@ impl TranslationUnit {
                  unsaved: &[UnsavedFile], opts: uint) -> TranslationUnit {
         let _fname = file.to_c_str();
         let fname = _fname.with_ref(|f| f);
-        let _c_args = cmd_args.map(|s| (*s).to_c_str());
-        let c_args = _c_args.map(|s| (*s).with_ref(|cs| cs));
-        let mut c_unsaved = unsaved.map(|f| f.x);
+        let _c_args: ~[CString] = cmd_args.iter().map(|s| s.to_c_str()).collect();
+        let c_args: ~[*c_char] = _c_args.iter().map(|s| s.with_ref(|cs| cs)).collect();
+        let mut c_unsaved: ~[Struct_CXUnsavedFile] = unsaved.iter().map(|f| f.x).collect();
         let tu = unsafe {
             clang_parseTranslationUnit(ix.x, fname,
                                        c_args.as_ptr(),
@@ -337,7 +338,7 @@ impl TranslationUnit {
     }
 
     pub fn reparse(&self, unsaved: &[UnsavedFile], opts: uint) -> bool {
-        let mut c_unsaved = unsaved.map(|f| f.x);
+        let mut c_unsaved: ~[Struct_CXUnsavedFile] = unsaved.iter().map(|f| f.x).collect();
 
         unsafe {
             clang_reparseTranslationUnit(self.x,

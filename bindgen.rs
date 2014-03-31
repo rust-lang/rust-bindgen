@@ -1,5 +1,5 @@
-#[crate_type = "bin"];
-#[feature(globs, managed_boxes, quote)];
+#![crate_type = "bin"]
+#![feature(globs, managed_boxes, quote)]
 
 extern crate collections;
 extern crate syntax;

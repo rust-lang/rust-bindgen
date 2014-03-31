@@ -1,4 +1,4 @@
-#[allow(unused_must_use)];
+#![allow(unused_must_use)]
 
 use std::cell::RefCell;
 use std::option;
@@ -462,7 +462,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::Item] {
 
     return match *ty {
         TComp(ci) => {
-            let is_empty = { ci.borrow().name.is_empty() };
+            let is_empty = ci.borrow().name.is_empty();
             if is_empty {
                 ci.borrow_mut().name = name.clone();
                 let c = ci.get();
@@ -476,7 +476,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::Item] {
             }
         },
         TEnum(ei) => {
-            let is_empty = { ei.borrow().name.is_empty() };
+            let is_empty = ei.borrow().name.is_empty();
             if is_empty {
                 ei.borrow_mut().name = name.clone();
                 let e = ei.get();
