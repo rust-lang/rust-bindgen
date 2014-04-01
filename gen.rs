@@ -504,7 +504,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo]) -> @ast::It
         dummy_spanned(ast::StructField_ {
             kind: ast::NamedField(
                 ctx.ext_cx.ident_of(f_name),
-                ast::Inherited
+                ast::Public,
             ),
             id: ast::DUMMY_NODE_ID,
             ty: f_ty,
@@ -558,7 +558,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
     let data = dummy_spanned(ast::StructField_ {
         kind: ast::NamedField(
             ctx.ext_cx.ident_of("data"),
-            ast::Inherited
+            ast::Public,
         ),
         id: ast::DUMMY_NODE_ID,
         ty: data_ty,

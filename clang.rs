@@ -12,7 +12,7 @@ use clangll::*;
 
 // Cursor
 pub struct Cursor {
-    priv x: CXCursor
+    x: CXCursor
 }
 
 pub type CursorVisitor<'s> = 's |c: &Cursor, p: &Cursor| -> Enum_CXChildVisitResult;
@@ -154,7 +154,7 @@ impl Hash for Cursor {
 
 // type
 pub struct Type {
-    priv x: CXType
+    x: CXType
 }
 
 impl Type {
@@ -243,7 +243,7 @@ impl Type {
 
 // SourceLocation
 pub struct SourceLocation {
-    priv x: CXSourceLocation
+    x: CXSourceLocation
 }
 
 impl SourceLocation {
@@ -261,7 +261,7 @@ impl SourceLocation {
 
 // File
 pub struct File {
-    priv x: CXFile
+    x: CXFile
 }
 
 impl File {
@@ -278,7 +278,7 @@ impl File {
 
 // String
 pub struct String {
-    priv x: CXString
+    x: CXString
 }
 
 impl fmt::Show for String {
@@ -292,7 +292,7 @@ impl fmt::Show for String {
 
 // Index
 pub struct Index {
-    priv x: CXIndex
+    x: CXIndex
 }
 
 impl Index {
@@ -315,7 +315,7 @@ impl Index {
 
 // TranslationUnit
 pub struct TranslationUnit {
-    priv x: CXTranslationUnit
+    x: CXTranslationUnit
 }
 
 impl TranslationUnit {
@@ -378,7 +378,7 @@ impl TranslationUnit {
 
 // Diagnostic
 pub struct Diagnostic {
-    priv x: CXDiagnostic
+    x: CXDiagnostic
 }
 
 impl Diagnostic {
@@ -409,7 +409,7 @@ impl Diagnostic {
 
 // UnsavedFile
 pub struct UnsavedFile {
-    priv x: Struct_CXUnsavedFile
+    x: Struct_CXUnsavedFile
 }
 
 pub fn kind_to_str(x: Enum_CXCursorKind) -> &str {

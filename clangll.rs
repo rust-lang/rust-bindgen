@@ -5,17 +5,17 @@
 
 use std::libc::*;
 pub struct CXString {
-    data: *c_void,
-    private_flags: c_uint,
+    pub data: *c_void,
+    pub private_flags: c_uint,
 }
 pub type CXIndex = *mut c_void;
 pub type Struct_CXTranslationUnitImpl = c_void;
 pub type CXTranslationUnit = *mut Struct_CXTranslationUnitImpl;
 pub type CXClientData = *mut c_void;
 pub struct Struct_CXUnsavedFile {
-    Filename: *c_schar,
-    Contents: *c_schar,
-    Length: c_ulong,
+    pub Filename: *c_schar,
+    pub Contents: *c_schar,
+    pub Length: c_ulong,
 }
 pub type Enum_CXAvailabilityKind = c_uint;
 pub static CXAvailability_Available: c_uint = 0;
@@ -23,9 +23,9 @@ pub static CXAvailability_Deprecated: c_uint = 1;
 pub static CXAvailability_NotAvailable: c_uint = 2;
 pub static CXAvailability_NotAccessible: c_uint = 3;
 pub struct Struct_CXVersion {
-    Major: c_int,
-    Minor: c_int,
-    Subminor: c_int,
+    pub Major: c_int,
+    pub Minor: c_int,
+    pub Subminor: c_int,
 }
 pub type CXVersion = Struct_CXVersion;
 pub type CXGlobalOptFlags = c_uint;
@@ -35,16 +35,16 @@ pub static CXGlobalOpt_ThreadBackgroundPriorityForEditing: c_uint = 2;
 pub static CXGlobalOpt_ThreadBackgroundPriorityForAll: c_uint = 3;
 pub type CXFile = *mut c_void;
 pub struct CXFileUniqueID {
-    data: [c_ulonglong, ..3u],
+    pub data: [c_ulonglong, ..3u],
 }
 pub struct CXSourceLocation {
-    ptr_data: [*c_void, ..2u],
-    int_data: c_uint,
+    pub ptr_data: [*c_void, ..2u],
+    pub int_data: c_uint,
 }
 pub struct CXSourceRange {
-    ptr_data: [*c_void, ..2u],
-    begin_int_data: c_uint,
-    end_int_data: c_uint,
+    pub ptr_data: [*c_void, ..2u],
+    pub begin_int_data: c_uint,
+    pub end_int_data: c_uint,
 }
 pub type Enum_CXDiagnosticSeverity = c_uint;
 pub static CXDiagnostic_Ignored: c_uint = 0;
@@ -106,14 +106,14 @@ pub static CXTUResourceUsage_MEMORY_IN_BYTES_END: c_uint = 14;
 pub static CXTUResourceUsage_First: c_uint = 1;
 pub static CXTUResourceUsage_Last: c_uint = 14;
 pub struct Struct_CXTUResourceUsageEntry {
-    kind: Enum_CXTUResourceUsageKind,
-    amount: c_ulong,
+    pub kind: Enum_CXTUResourceUsageKind,
+    pub amount: c_ulong,
 }
 pub type CXTUResourceUsageEntry = Struct_CXTUResourceUsageEntry;
 pub struct Struct_CXTUResourceUsage {
-    data: *mut c_void,
-    numEntries: c_uint,
-    entries: *mut CXTUResourceUsageEntry,
+    pub data: *mut c_void,
+    pub numEntries: c_uint,
+    pub entries: *mut CXTUResourceUsageEntry,
 }
 pub type CXTUResourceUsage = Struct_CXTUResourceUsage;
 pub type Enum_CXCursorKind = c_uint;
@@ -283,13 +283,13 @@ pub static CXCursor_ModuleImportDecl: c_uint = 600;
 pub static CXCursor_FirstExtraDecl: c_uint = 600;
 pub static CXCursor_LastExtraDecl: c_uint = 600;
 pub struct CXCursor {
-    kind: Enum_CXCursorKind,
-    xdata: c_int,
-    data: [*c_void, ..3u],
+    pub kind: Enum_CXCursorKind,
+    pub xdata: c_int,
+    pub data: [*c_void, ..3u],
 }
 pub struct CXComment {
-    ASTNode: *c_void,
-    TranslationUnit: CXTranslationUnit,
+    pub ASTNode: *c_void,
+    pub TranslationUnit: CXTranslationUnit,
 }
 pub type Enum_CXLinkageKind = c_uint;
 pub static CXLinkage_Invalid: c_uint = 0;
@@ -298,12 +298,12 @@ pub static CXLinkage_Internal: c_uint = 2;
 pub static CXLinkage_UniqueExternal: c_uint = 3;
 pub static CXLinkage_External: c_uint = 4;
 pub struct Struct_CXPlatformAvailability {
-    Platform: CXString,
-    Introduced: CXVersion,
-    Deprecated: CXVersion,
-    Obsoleted: CXVersion,
-    Unavailable: c_int,
-    Message: CXString,
+    pub Platform: CXString,
+    pub Introduced: CXVersion,
+    pub Deprecated: CXVersion,
+    pub Obsoleted: CXVersion,
+    pub Unavailable: c_int,
+    pub Message: CXString,
 }
 pub type CXPlatformAvailability = Struct_CXPlatformAvailability;
 pub type Enum_CXLanguageKind = c_uint;
@@ -374,8 +374,8 @@ pub static CXCallingConv_IntelOclBicc: c_uint = 9;
 pub static CXCallingConv_Invalid: c_uint = 100;
 pub static CXCallingConv_Unexposed: c_uint = 200;
 pub struct CXType {
-    kind: Enum_CXTypeKind,
-    data: [*mut c_void, ..2u],
+    pub kind: Enum_CXTypeKind,
+    pub data: [*mut c_void, ..2u],
 }
 pub type Enum_CXTypeLayoutError = c_int;
 pub static CXTypeLayoutError_Invalid: c_int = -1;
@@ -455,13 +455,13 @@ pub static CXToken_Literal: c_uint = 3;
 pub static CXToken_Comment: c_uint = 4;
 pub type CXTokenKind = Enum_CXTokenKind;
 pub struct CXToken {
-    int_data: [c_uint, ..4u],
-    ptr_data: *mut c_void,
+    pub int_data: [c_uint, ..4u],
+    pub ptr_data: *mut c_void,
 }
 pub type CXCompletionString = *mut c_void;
 pub struct CXCompletionResult {
-    CursorKind: Enum_CXCursorKind,
-    CompletionString: CXCompletionString,
+    pub CursorKind: Enum_CXCursorKind,
+    pub CompletionString: CXCompletionString,
 }
 pub type Enum_CXCompletionChunkKind = c_uint;
 pub static CXCompletionChunk_Optional: c_uint = 0;
@@ -486,8 +486,8 @@ pub static CXCompletionChunk_Equal: c_uint = 18;
 pub static CXCompletionChunk_HorizontalSpace: c_uint = 19;
 pub static CXCompletionChunk_VerticalSpace: c_uint = 20;
 pub struct CXCodeCompleteResults {
-    Results: *mut CXCompletionResult,
-    NumResults: c_uint,
+    pub Results: *mut CXCompletionResult,
+    pub NumResults: c_uint,
 }
 pub type Enum_CXCodeComplete_Flags = c_uint;
 pub static CXCodeComplete_IncludeMacros: c_uint = 1;
@@ -527,11 +527,11 @@ pub type Enum_CXVisitorResult = c_uint;
 pub static CXVisit_Break: c_uint = 0;
 pub static CXVisit_Continue: c_uint = 1;
 pub struct CXCursorAndRangeVisitor {
-    context: *mut c_void,
-    visit: ::std::option::Option<extern "C" fn
-                                     (arg1: *mut c_void, arg2: CXCursor,
-                                      arg3: CXSourceRange)
-                                     -> Enum_CXVisitorResult>,
+    pub context: *mut c_void,
+    pub visit: ::std::option::Option<extern "C" fn
+                                         (arg1: *mut c_void, arg2: CXCursor,
+                                          arg3: CXSourceRange)
+                                         -> Enum_CXVisitorResult>,
 }
 pub type CXResult = c_uint;
 pub static CXResult_Success: c_uint = 0;
@@ -542,22 +542,22 @@ pub type CXIdxClientEntity = *mut c_void;
 pub type CXIdxClientContainer = *mut c_void;
 pub type CXIdxClientASTFile = *mut c_void;
 pub struct CXIdxLoc {
-    ptr_data: [*mut c_void, ..2u],
-    int_data: c_uint,
+    pub ptr_data: [*mut c_void, ..2u],
+    pub int_data: c_uint,
 }
 pub struct CXIdxIncludedFileInfo {
-    hashLoc: CXIdxLoc,
-    filename: *c_schar,
-    file: CXFile,
-    isImport: c_int,
-    isAngled: c_int,
-    isModuleImport: c_int,
+    pub hashLoc: CXIdxLoc,
+    pub filename: *c_schar,
+    pub file: CXFile,
+    pub isImport: c_int,
+    pub isAngled: c_int,
+    pub isModuleImport: c_int,
 }
 pub struct CXIdxImportedASTFileInfo {
-    file: CXFile,
-    module: CXModule,
-    loc: CXIdxLoc,
-    isImplicit: c_int,
+    pub file: CXFile,
+    pub module: CXModule,
+    pub loc: CXIdxLoc,
+    pub isImplicit: c_int,
 }
 pub type CXIdxEntityKind = c_uint;
 pub static CXIdxEntity_Unexposed: c_uint = 0;
@@ -603,135 +603,136 @@ pub static CXIdxAttr_IBAction: c_uint = 1;
 pub static CXIdxAttr_IBOutlet: c_uint = 2;
 pub static CXIdxAttr_IBOutletCollection: c_uint = 3;
 pub struct CXIdxAttrInfo {
-    kind: CXIdxAttrKind,
-    cursor: CXCursor,
-    loc: CXIdxLoc,
+    pub kind: CXIdxAttrKind,
+    pub cursor: CXCursor,
+    pub loc: CXIdxLoc,
 }
 pub struct CXIdxEntityInfo {
-    kind: CXIdxEntityKind,
-    templateKind: CXIdxEntityCXXTemplateKind,
-    lang: CXIdxEntityLanguage,
-    name: *c_schar,
-    USR: *c_schar,
-    cursor: CXCursor,
-    attributes: **CXIdxAttrInfo,
-    numAttributes: c_uint,
+    pub kind: CXIdxEntityKind,
+    pub templateKind: CXIdxEntityCXXTemplateKind,
+    pub lang: CXIdxEntityLanguage,
+    pub name: *c_schar,
+    pub USR: *c_schar,
+    pub cursor: CXCursor,
+    pub attributes: **CXIdxAttrInfo,
+    pub numAttributes: c_uint,
 }
 pub struct CXIdxContainerInfo {
-    cursor: CXCursor,
+    pub cursor: CXCursor,
 }
 pub struct CXIdxIBOutletCollectionAttrInfo {
-    attrInfo: *CXIdxAttrInfo,
-    objcClass: *CXIdxEntityInfo,
-    classCursor: CXCursor,
-    classLoc: CXIdxLoc,
+    pub attrInfo: *CXIdxAttrInfo,
+    pub objcClass: *CXIdxEntityInfo,
+    pub classCursor: CXCursor,
+    pub classLoc: CXIdxLoc,
 }
 pub type CXIdxDeclInfoFlags = c_uint;
 pub static CXIdxDeclFlag_Skipped: c_uint = 1;
 pub struct CXIdxDeclInfo {
-    entityInfo: *CXIdxEntityInfo,
-    cursor: CXCursor,
-    loc: CXIdxLoc,
-    semanticContainer: *CXIdxContainerInfo,
-    lexicalContainer: *CXIdxContainerInfo,
-    isRedeclaration: c_int,
-    isDefinition: c_int,
-    isContainer: c_int,
-    declAsContainer: *CXIdxContainerInfo,
-    isImplicit: c_int,
-    attributes: **CXIdxAttrInfo,
-    numAttributes: c_uint,
-    flags: c_uint,
+    pub entityInfo: *CXIdxEntityInfo,
+    pub cursor: CXCursor,
+    pub loc: CXIdxLoc,
+    pub semanticContainer: *CXIdxContainerInfo,
+    pub lexicalContainer: *CXIdxContainerInfo,
+    pub isRedeclaration: c_int,
+    pub isDefinition: c_int,
+    pub isContainer: c_int,
+    pub declAsContainer: *CXIdxContainerInfo,
+    pub isImplicit: c_int,
+    pub attributes: **CXIdxAttrInfo,
+    pub numAttributes: c_uint,
+    pub flags: c_uint,
 }
 pub type CXIdxObjCContainerKind = c_uint;
 pub static CXIdxObjCContainer_ForwardRef: c_uint = 0;
 pub static CXIdxObjCContainer_Interface: c_uint = 1;
 pub static CXIdxObjCContainer_Implementation: c_uint = 2;
 pub struct CXIdxObjCContainerDeclInfo {
-    declInfo: *CXIdxDeclInfo,
-    kind: CXIdxObjCContainerKind,
+    pub declInfo: *CXIdxDeclInfo,
+    pub kind: CXIdxObjCContainerKind,
 }
 pub struct CXIdxBaseClassInfo {
-    base: *CXIdxEntityInfo,
-    cursor: CXCursor,
-    loc: CXIdxLoc,
+    pub base: *CXIdxEntityInfo,
+    pub cursor: CXCursor,
+    pub loc: CXIdxLoc,
 }
 pub struct CXIdxObjCProtocolRefInfo {
-    protocol: *CXIdxEntityInfo,
-    cursor: CXCursor,
-    loc: CXIdxLoc,
+    pub protocol: *CXIdxEntityInfo,
+    pub cursor: CXCursor,
+    pub loc: CXIdxLoc,
 }
 pub struct CXIdxObjCProtocolRefListInfo {
-    protocols: **CXIdxObjCProtocolRefInfo,
-    numProtocols: c_uint,
+    pub protocols: **CXIdxObjCProtocolRefInfo,
+    pub numProtocols: c_uint,
 }
 pub struct CXIdxObjCInterfaceDeclInfo {
-    containerInfo: *CXIdxObjCContainerDeclInfo,
-    superInfo: *CXIdxBaseClassInfo,
-    protocols: *CXIdxObjCProtocolRefListInfo,
+    pub containerInfo: *CXIdxObjCContainerDeclInfo,
+    pub superInfo: *CXIdxBaseClassInfo,
+    pub protocols: *CXIdxObjCProtocolRefListInfo,
 }
 pub struct CXIdxObjCCategoryDeclInfo {
-    containerInfo: *CXIdxObjCContainerDeclInfo,
-    objcClass: *CXIdxEntityInfo,
-    classCursor: CXCursor,
-    classLoc: CXIdxLoc,
-    protocols: *CXIdxObjCProtocolRefListInfo,
+    pub containerInfo: *CXIdxObjCContainerDeclInfo,
+    pub objcClass: *CXIdxEntityInfo,
+    pub classCursor: CXCursor,
+    pub classLoc: CXIdxLoc,
+    pub protocols: *CXIdxObjCProtocolRefListInfo,
 }
 pub struct CXIdxObjCPropertyDeclInfo {
-    declInfo: *CXIdxDeclInfo,
-    getter: *CXIdxEntityInfo,
-    setter: *CXIdxEntityInfo,
+    pub declInfo: *CXIdxDeclInfo,
+    pub getter: *CXIdxEntityInfo,
+    pub setter: *CXIdxEntityInfo,
 }
 pub struct CXIdxCXXClassDeclInfo {
-    declInfo: *CXIdxDeclInfo,
-    bases: **CXIdxBaseClassInfo,
-    numBases: c_uint,
+    pub declInfo: *CXIdxDeclInfo,
+    pub bases: **CXIdxBaseClassInfo,
+    pub numBases: c_uint,
 }
 pub type CXIdxEntityRefKind = c_uint;
 pub static CXIdxEntityRef_Direct: c_uint = 1;
 pub static CXIdxEntityRef_Implicit: c_uint = 2;
 pub struct CXIdxEntityRefInfo {
-    kind: CXIdxEntityRefKind,
-    cursor: CXCursor,
-    loc: CXIdxLoc,
-    referencedEntity: *CXIdxEntityInfo,
-    parentEntity: *CXIdxEntityInfo,
-    container: *CXIdxContainerInfo,
+    pub kind: CXIdxEntityRefKind,
+    pub cursor: CXCursor,
+    pub loc: CXIdxLoc,
+    pub referencedEntity: *CXIdxEntityInfo,
+    pub parentEntity: *CXIdxEntityInfo,
+    pub container: *CXIdxContainerInfo,
 }
 pub struct IndexerCallbacks {
-    abortQuery: ::std::option::Option<extern "C" fn
-                                          (arg1: CXClientData,
-                                           arg2: *mut c_void) -> c_int>,
-    diagnostic: ::std::option::Option<extern "C" fn
-                                          (arg1: CXClientData,
-                                           arg2: CXDiagnosticSet,
-                                           arg3: *mut c_void)>,
-    enteredMainFile: ::std::option::Option<extern "C" fn
-                                               (arg1: CXClientData,
-                                                arg2: CXFile,
-                                                arg3: *mut c_void)
-                                               -> CXIdxClientFile>,
-    ppIncludedFile: ::std::option::Option<extern "C" fn
+    pub abortQuery: ::std::option::Option<extern "C" fn
                                               (arg1: CXClientData,
-                                               arg2: *CXIdxIncludedFileInfo)
-                                              -> CXIdxClientFile>,
-    importedASTFile: ::std::option::Option<extern "C" fn
-                                               (arg1: CXClientData,
-                                                arg2:
-                                                    *CXIdxImportedASTFileInfo)
-                                               -> CXIdxClientASTFile>,
-    startedTranslationUnit: ::std::option::Option<extern "C" fn
-                                                      (arg1: CXClientData,
-                                                       arg2: *mut c_void)
-                                                      ->
-                                                          CXIdxClientContainer>,
-    indexDeclaration: ::std::option::Option<extern "C" fn
-                                                (arg1: CXClientData,
-                                                 arg2: *CXIdxDeclInfo)>,
-    indexEntityReference: ::std::option::Option<extern "C" fn
+                                               arg2: *mut c_void) -> c_int>,
+    pub diagnostic: ::std::option::Option<extern "C" fn
+                                              (arg1: CXClientData,
+                                               arg2: CXDiagnosticSet,
+                                               arg3: *mut c_void)>,
+    pub enteredMainFile: ::std::option::Option<extern "C" fn
+                                                   (arg1: CXClientData,
+                                                    arg2: CXFile,
+                                                    arg3: *mut c_void)
+                                                   -> CXIdxClientFile>,
+    pub ppIncludedFile: ::std::option::Option<extern "C" fn
+                                                  (arg1: CXClientData,
+                                                   arg2:
+                                                       *CXIdxIncludedFileInfo)
+                                                  -> CXIdxClientFile>,
+    pub importedASTFile: ::std::option::Option<extern "C" fn
+                                                   (arg1: CXClientData,
+                                                    arg2:
+                                                        *CXIdxImportedASTFileInfo)
+                                                   -> CXIdxClientASTFile>,
+    pub startedTranslationUnit: ::std::option::Option<extern "C" fn
+                                                          (arg1: CXClientData,
+                                                           arg2: *mut c_void)
+                                                          ->
+                                                              CXIdxClientContainer>,
+    pub indexDeclaration: ::std::option::Option<extern "C" fn
                                                     (arg1: CXClientData,
-                                                     arg2:
-                                                         *CXIdxEntityRefInfo)>,
+                                                     arg2: *CXIdxDeclInfo)>,
+    pub indexEntityReference: ::std::option::Option<extern "C" fn
+                                                        (arg1: CXClientData,
+                                                         arg2:
+                                                             *CXIdxEntityRefInfo)>,
 }
 pub type CXIndexAction = *mut c_void;
 pub type CXIndexOptFlags = c_uint;

@@ -106,8 +106,8 @@ impl Type {
 
 #[deriving(Clone, Eq)]
 pub struct Layout {
-    size: uint,
-    align: uint,
+    pub size: uint,
+    pub align: uint,
 }
 
 impl Layout {
@@ -143,10 +143,10 @@ pub enum FKind {
 
 #[deriving(Clone, Eq)]
 pub struct CompInfo {
-    cstruct: bool,
-    name: ~str,
-    fields: ~[FieldInfo],
-    layout: Layout,
+    pub cstruct: bool,
+    pub name: ~str,
+    pub fields: ~[FieldInfo],
+    pub layout: Layout,
 }
 
 impl CompInfo {
@@ -168,9 +168,9 @@ impl fmt::Show for CompInfo {
 
 #[deriving(Clone, Eq)]
 pub struct FieldInfo {
-    name: ~str,
-    ty: Type,
-    bit: Option<uint>,
+    pub name: ~str,
+    pub ty: Type,
+    pub bit: Option<uint>,
 }
 
 impl FieldInfo {
@@ -185,10 +185,10 @@ impl FieldInfo {
 
 #[deriving(Clone, Eq)]
 pub struct EnumInfo {
-    name: ~str,
-    items: ~[EnumItem],
-    kind: IKind,
-    layout: Layout,
+    pub name: ~str,
+    pub items: ~[EnumItem],
+    pub kind: IKind,
+    pub layout: Layout,
 }
 
 impl EnumInfo {
@@ -210,8 +210,8 @@ impl fmt::Show for EnumInfo {
 
 #[deriving(Clone, Eq)]
 pub struct EnumItem {
-    name: ~str,
-    val: int
+    pub name: ~str,
+    pub val: int
 }
 
 impl EnumItem {
@@ -225,8 +225,8 @@ impl EnumItem {
 
 #[deriving(Clone, Eq)]
 pub struct TypeInfo {
-    name: ~str,
-    ty: Type
+    pub name: ~str,
+    pub ty: Type
 }
 
 impl TypeInfo {
@@ -246,9 +246,9 @@ impl fmt::Show for TypeInfo {
 
 #[deriving(Clone)]
 pub struct VarInfo {
-    name: ~str,
-    ty: Type,
-    is_const: bool
+    pub name: ~str,
+    pub ty: Type,
+    pub is_const: bool
 }
 
 impl VarInfo {
