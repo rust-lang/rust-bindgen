@@ -22,7 +22,7 @@ use types::*;
 struct GenCtx<'r> {
     ext_cx: base::ExtCtxt<'r>,
     unnamed_ty: uint,
-    abis: abi::AbiSet,
+    abi: abi::Abi,
 }
 
 struct ErrLoader;
@@ -114,14 +114,14 @@ fn enum_name(name: ~str) -> ~str {
 }
 
 pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]) {
-    let abis = match abi.as_slice() {
-        "cdecl" => abi::AbiSet::from(abi::Cdecl),
-        "stdcall" => abi::AbiSet::from(abi::Stdcall),
-        "fastcall" => abi::AbiSet::from(abi::Fastcall),
-        "aapcs" => abi::AbiSet::from(abi::Aapcs),
-        "Rust" => abi::AbiSet::Rust(),
-        "rust-intrinsic" => abi::AbiSet::Intrinsic(),
-        _ => abi::AbiSet::C()
+    let abi = match abi.as_slice() {
+        "cdecl" => abi::Cdecl,
+        "stdcall" => abi::Stdcall,
+        "fastcall" => abi::Fastcall,
+        "aapcs" => abi::Aapcs,
+        "Rust" => abi::Rust,
+        "rust-intrinsic" => abi::RustIntrinsic,
+        _ => abi::C
     };
 
     let mut loader = ErrLoader;
@@ -138,7 +138,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
             cfg,
         ),
         unnamed_ty: 0,
-        abis: abis,
+        abi: abi,
     };
     ctx.ext_cx.bt_push(ExpnInfo {
         call_site: DUMMY_SP,
@@ -164,7 +164,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
     for g in gs.move_iter() {
         match g {
             GType(ti) => {
-                let t = ti.get();
+                let t = ti.borrow().clone();
                 defs.push_all(ctypedef_to_rs(&mut ctx, t.name.clone(), &t.ty))
             },
             GCompDecl(ci) => {
@@ -172,7 +172,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
                     let mut c = ci.borrow_mut();
                     c.name = unnamed_name(&mut ctx, c.name.clone());
                 }
-                let c = ci.get();
+                let c = ci.borrow().clone();
                 if c.cstruct {
                     defs.push_all(ctypedef_to_rs(&mut ctx, struct_name(c.name), &TVoid))
                 } else {
@@ -184,7 +184,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
                     let mut c = ci.borrow_mut();
                     c.name = unnamed_name(&mut ctx, c.name.clone());
                 }
-                let c = ci.get();
+                let c = ci.borrow().clone();
                 if c.cstruct {
                     defs.push(cstruct_to_rs(&mut ctx, struct_name(c.name.clone()),
                                             // this clone is necessary to prevent dynamic borrow
@@ -201,7 +201,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
                     let mut e = ei.borrow_mut();
                     e.name = unnamed_name(&mut ctx, e.name.clone());
                 }
-                let e = ei.get();
+                let e = ei.borrow().clone();
                 defs.push_all(ctypedef_to_rs(&mut ctx, enum_name(e.name.clone()), &TVoid))
             },
             GEnum(ei) => {
@@ -209,7 +209,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
                     let mut e = ei.borrow_mut();
                     e.name = unnamed_name(&mut ctx, e.name.clone());
                 }
-                let e = ei.get();
+                let e = ei.borrow().clone();
                 defs.push_all(cenum_to_rs(&mut ctx, enum_name(e.name.clone()), e.items, e.kind))
             },
             _ => { }
@@ -321,7 +321,7 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
     items.push_all_move(vars);
     items.push_all_move(funcs);
     let ext = ast::ItemForeignMod(ast::ForeignMod {
-        abis: ctx.abis,
+        abi: ctx.abi,
         view_items: Vec::new(),
         items: items
     });
@@ -465,7 +465,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::Item] {
             let is_empty = ci.borrow().name.is_empty();
             if is_empty {
                 ci.borrow_mut().name = name.clone();
-                let c = ci.get();
+                let c = ci.borrow().clone();
                 if c.cstruct {
                     ~[cstruct_to_rs(ctx, name, c.fields)]
                 } else {
@@ -479,7 +479,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::Item] {
             let is_empty = ei.borrow().name.is_empty();
             if is_empty {
                 ei.borrow_mut().name = name.clone();
-                let e = ei.get();
+                let e = ei.borrow().clone();
                 cenum_to_rs(ctx, name, e.items, e.kind)
             } else {
                 ~[mk_item(ctx, name, ty)]
@@ -894,7 +894,7 @@ fn mk_arrty(_ctx: &mut GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
 fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl) -> ast::Ty {
     let fnty = ast::TyBareFn(@ast::BareFnTy {
         purity: ast::ImpureFn,
-        abis: ctx.abis,
+        abi: ctx.abi,
         lifetimes: Vec::new(),
         decl: @decl.clone()
     });
