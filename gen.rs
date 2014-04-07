@@ -240,7 +240,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
         }
     }).collect();
 
-    let views = Vec::from_elem(1, mk_import(&mut ctx, &[~"std", ~"libc"]));
+    let views = Vec::from_elem(1, mk_import(&mut ctx, &[~"libc"]));
     defs.push(mk_extern(&mut ctx, link, vars, funcs));
 
     let crate_ = ast::Crate {
