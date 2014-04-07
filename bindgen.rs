@@ -3,6 +3,7 @@
 
 extern crate collections;
 extern crate syntax;
+extern crate libc;
 
 pub mod types;
 pub mod clangll;

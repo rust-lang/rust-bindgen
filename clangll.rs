@@ -3,7 +3,7 @@
 #![allow(non_camel_case_types)]
 #![allow(uppercase_variables)]
 
-use std::libc::*;
+use libc::*;
 pub struct CXString {
     pub data: *c_void,
     pub private_flags: c_uint,

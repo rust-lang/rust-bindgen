@@ -1,6 +1,6 @@
 #![allow(non_uppercase_pattern_statics)]
 
-use std::libc::*;
+use libc::{c_uint, c_char, c_int};
 use std::{cast, io, ptr, str};
 use std::fmt;
 use std::hash::Hash;
