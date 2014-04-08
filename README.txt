@@ -46,5 +46,3 @@ TODO
 ----
 
 * bit field
-* union type
-* global variable
