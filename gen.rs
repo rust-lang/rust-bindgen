@@ -31,14 +31,6 @@ impl base::CrateLoader for ErrLoader {
     fn load_crate(&mut self, _: &ast::ViewItem) -> base::MacroCrate {
         fail!("lolwut")
     }
-
-    fn get_exported_macros(&mut self, _: ast::CrateNum) -> Vec<~str> {
-        fail!("lolwut")
-    }
-
-    fn get_registrar_symbol(&mut self, _: ast::CrateNum) -> Option<~str> {
-        fail!("lolwut")
-    }
 }
 
 fn first<A, B>((val, _): (A, B)) -> A {

@@ -15,7 +15,7 @@ pub struct Cursor {
     x: CXCursor
 }
 
-pub type CursorVisitor<'s> = 's |c: &Cursor, p: &Cursor| -> Enum_CXChildVisitResult;
+pub type CursorVisitor<'s> = |c: &Cursor, p: &Cursor|: 's -> Enum_CXChildVisitResult;
 
 impl Cursor {
     // common
