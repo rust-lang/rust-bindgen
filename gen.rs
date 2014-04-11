@@ -595,7 +595,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
             attrs: Vec::new(),
             generics: empty_generics(),
             explicit_self: dummy_spanned(ast::SelfRegion(None, ast::MutMutable)),
-            purity: ast::ImpureFn,
+            fn_style: ast::NormalFn,
             decl: @ast::FnDecl {
                 inputs: Vec::from_elem(1, ast::Arg::new_self(DUMMY_SP, ast::MutImmutable)),
                 output: ret_ty,
@@ -885,7 +885,7 @@ fn mk_arrty(_ctx: &mut GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
 
 fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl) -> ast::Ty {
     let fnty = ast::TyBareFn(@ast::BareFnTy {
-        purity: ast::ImpureFn,
+        fn_style: ast::NormalFn,
         abi: ctx.abi,
         lifetimes: Vec::new(),
         decl: @decl.clone()
