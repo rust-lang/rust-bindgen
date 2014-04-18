@@ -780,7 +780,7 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
         TVoid => mk_ty(ctx, ~"c_void"),
         TInt(i, _) => match i {
             IBool => mk_ty(ctx, ~"c_int"),
-            ISChar => mk_ty(ctx, ~"c_schar"),
+            ISChar => mk_ty(ctx, ~"c_char"),
             IUChar => mk_ty(ctx, ~"c_uchar"),
             IInt => mk_ty(ctx, ~"c_int"),
             IUInt => mk_ty(ctx, ~"c_uint"),
