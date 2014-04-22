@@ -96,10 +96,10 @@ impl Cursor {
     }
 
     // function
-    pub fn args(&self) -> ~[Cursor] {
+    pub fn args(&self) -> Vec<Cursor> {
         unsafe {
             let num = self.num_args() as uint;
-            let mut args = ~[];
+            let mut args = vec!();
             for i in range(0, num) {
                 args.push(Cursor { x: clang_Cursor_getArgument(self.x, i as c_uint) });
             }
@@ -223,10 +223,10 @@ impl Type {
         }
     }
 
-    pub fn arg_types(&self) -> ~[Type] {
+    pub fn arg_types(&self) -> Vec<Type> {
         unsafe {
             let num = clang_getNumArgTypes(self.x) as uint;
-            let mut args = ~[];
+            let mut args = vec!();
             for i in range(0, num) {
                 args.push(Type { x: clang_getArgType(self.x, i as c_uint) });
             }
@@ -319,7 +319,7 @@ pub struct TranslationUnit {
 }
 
 impl TranslationUnit {
-    pub fn parse(ix: &Index, file: &str, cmd_args: &[~str],
+    pub fn parse(ix: &Index, file: &str, cmd_args: Vec<~str>,
                  unsaved: &[UnsavedFile], opts: uint) -> TranslationUnit {
         let _fname = file.to_c_str();
         let fname = _fname.with_ref(|f| f);
@@ -348,10 +348,10 @@ impl TranslationUnit {
         }
     }
 
-    pub fn diags(&self) -> ~[Diagnostic] {
+    pub fn diags(&self) -> Vec<Diagnostic> {
         unsafe {
             let num = clang_getNumDiagnostics(self.x) as uint;
-            let mut diags = ~[];
+            let mut diags = vec!();
             for i in range(0, num) {
                 diags.push(Diagnostic { x: clang_getDiagnostic(self.x, i as c_uint) });
             }

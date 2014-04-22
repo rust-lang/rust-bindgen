@@ -145,12 +145,12 @@ pub enum FKind {
 pub struct CompInfo {
     pub cstruct: bool,
     pub name: ~str,
-    pub fields: ~[FieldInfo],
+    pub fields: Vec<FieldInfo>,
     pub layout: Layout,
 }
 
 impl CompInfo {
-    pub fn new(name: ~str, cstruct: bool, fields: ~[FieldInfo], layout: Layout) -> CompInfo {
+    pub fn new(name: ~str, cstruct: bool, fields: Vec<FieldInfo>, layout: Layout) -> CompInfo {
         CompInfo {
             cstruct: cstruct,
             name: name,
@@ -186,13 +186,13 @@ impl FieldInfo {
 #[deriving(Clone, Eq)]
 pub struct EnumInfo {
     pub name: ~str,
-    pub items: ~[EnumItem],
+    pub items: Vec<EnumItem>,
     pub kind: IKind,
     pub layout: Layout,
 }
 
 impl EnumInfo {
-    pub fn new(name: ~str, kind: IKind, items: ~[EnumItem], layout: Layout) -> EnumInfo {
+    pub fn new(name: ~str, kind: IKind, items: Vec<EnumItem>, layout: Layout) -> EnumInfo {
         EnumInfo {
             name: name,
             items: items,

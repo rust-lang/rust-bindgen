@@ -15,13 +15,13 @@ use clang::ll::*;
 use gen::*;
 
 struct BindGenCtx {
-    match_pat: ~[~str],
+    match_pat: Vec<~str>,
     abi: ~str,
     builtins: bool,
     link: Option<~str>,
     name: HashMap<Cursor, Global>,
-    globals: ~[Global],
-    builtin_defs: ~[Cursor],
+    globals: Vec<Global>,
+    builtin_defs: Vec<Cursor>,
     builtin_names: HashSet<~str>,
     emit_ast: bool,
     fail_on_bitfield: bool
@@ -29,16 +29,16 @@ struct BindGenCtx {
 
 enum ParseResult {
     CmdUsage,
-    ParseOk(~[~str], ~BindGenCtx, ~io::Writer),
+    ParseOk(Vec<~str>, ~BindGenCtx, ~io::Writer),
     ParseErr(~str)
 }
 
 fn parse_args(args: &[~str]) -> ParseResult {
-    let mut clang_args = ~[];
+    let mut clang_args = vec!();
     let args_len = args.len();
 
     let mut out = ~io::BufferedWriter::new(io::stdout()) as ~io::Writer;
-    let mut pat = ~[];
+    let mut pat = vec!();
     let mut link = None;
     let mut abi = ~"C";
     let mut builtins = false;
@@ -109,8 +109,8 @@ fn parse_args(args: &[~str]) -> ParseResult {
         builtins: builtins,
         link: link,
         name: HashMap::new(),
-        globals: ~[],
-        builtin_defs: ~[],
+        globals: vec!(),
+        builtin_defs: vec!(),
         builtin_names: builtin_names(),
         emit_ast: emit_ast,
         fail_on_bitfield: fail_on_bitfield
@@ -191,11 +191,11 @@ fn decl_name(ctx: &mut BindGenCtx, cursor: &Cursor) -> Global {
 
             match cursor.kind() {
               CXCursor_StructDecl => {
-                let ci = @RefCell::new(CompInfo::new(spelling, true, ~[], layout));
+                let ci = @RefCell::new(CompInfo::new(spelling, true, vec!(), layout));
                 GCompDecl(ci)
               }
               CXCursor_UnionDecl => {
-                let ci = @RefCell::new(CompInfo::new(spelling, false, ~[], layout));
+                let ci = @RefCell::new(CompInfo::new(spelling, false, vec!(), layout));
                 GCompDecl(ci)
               }
               CXCursor_EnumDecl => {
@@ -212,7 +212,7 @@ fn decl_name(ctx: &mut BindGenCtx, cursor: &Cursor) -> Global {
                     CXType_LongLong => ILongLong,
                     _ => IInt,
                 };
-                let ei = @RefCell::new(EnumInfo::new(spelling, kind, ~[], layout));
+                let ei = @RefCell::new(EnumInfo::new(spelling, kind, vec!(), layout));
                 GEnumDecl(ei)
               }
               CXCursor_TypedefDecl => {
@@ -363,7 +363,7 @@ fn opaque_ty(ctx: &mut BindGenCtx, ty: &cx::Type) {
 fn visit_struct(cursor: &Cursor,
                 parent: &Cursor,
                 ctx: &mut BindGenCtx,
-                fields: &mut ~[FieldInfo]) -> Enum_CXVisitorResult {
+                fields: &mut Vec<FieldInfo>) -> Enum_CXVisitorResult {
     if cursor.kind() == CXCursor_FieldDecl {
         let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
         let name = cursor.spelling();
@@ -382,7 +382,7 @@ fn visit_struct(cursor: &Cursor,
 
 fn visit_union(cursor: &Cursor,
                ctx: &mut BindGenCtx,
-               fields: &mut ~[FieldInfo]) -> Enum_CXVisitorResult {
+               fields: &mut Vec<FieldInfo>) -> Enum_CXVisitorResult {
     if cursor.kind() == CXCursor_FieldDecl {
         let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
         let name = cursor.spelling();
@@ -393,7 +393,7 @@ fn visit_union(cursor: &Cursor,
 }
 
 fn visit_enum(cursor: &Cursor,
-              items: &mut ~[EnumItem]) -> Enum_CXVisitorResult {
+              items: &mut Vec<EnumItem>) -> Enum_CXVisitorResult {
     if cursor.kind() == CXCursor_EnumConstantDecl {
         let name = cursor.spelling();
         let val = cursor.enum_val();
@@ -518,8 +518,8 @@ fn visit_top<'r>(cur: &'r Cursor,
 
 #[main]
 fn main() {
-    let mut bind_args = os::args();
-    let bin = bind_args.shift().unwrap();
+    let bind_args = os::args();
+    let bin = Vec::from_slice(bind_args).shift().unwrap();
 
     match parse_args(bind_args) {
         ParseErr(e) => fail!(e),

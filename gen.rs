@@ -105,7 +105,7 @@ fn enum_name(name: ~str) -> ~str {
     format!("Enum_{}", name)
 }
 
-pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]) {
+pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: Vec<Global>) {
     let abi = match abi.as_slice() {
         "cdecl" => abi::Cdecl,
         "stdcall" => abi::Stdcall,
@@ -138,9 +138,9 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
     });
     let uniq_globs = tag_dup_decl(globs);
 
-    let mut fs = ~[];
-    let mut vs = ~[];
-    let mut gs = ~[];
+    let mut fs = vec!();
+    let mut vs = vec!();
+    let mut gs = vec!();
     for g in uniq_globs.move_iter() {
         match g {
             GOther => {}
@@ -150,14 +150,14 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
         }
     }
 
-    let mut defs = Vec::new();
+    let mut defs = vec!();
     gs = remove_redundant_decl(gs);
 
     for g in gs.move_iter() {
         match g {
             GType(ti) => {
                 let t = ti.borrow().clone();
-                defs.push_all(ctypedef_to_rs(&mut ctx, t.name.clone(), &t.ty))
+                defs.push_all_move(ctypedef_to_rs(&mut ctx, t.name.clone(), &t.ty))
             },
             GCompDecl(ci) => {
                 {
@@ -166,9 +166,9 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
                 }
                 let c = ci.borrow().clone();
                 if c.cstruct {
-                    defs.push_all(ctypedef_to_rs(&mut ctx, struct_name(c.name), &TVoid))
+                    defs.push_all_move(ctypedef_to_rs(&mut ctx, struct_name(c.name), &TVoid))
                 } else {
-                    defs.push_all(ctypedef_to_rs(&mut ctx, union_name(c.name), &TVoid))
+                    defs.push_all_move(ctypedef_to_rs(&mut ctx, union_name(c.name), &TVoid))
                 }
             },
             GComp(ci) => {
@@ -184,8 +184,8 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
                                             // FIXME: remove the @mut in types.rs to fix this
                                             c.fields.clone()))
                 } else {
-                    defs.push_all(cunion_to_rs(&mut ctx, union_name(c.name.clone()),
-                                               c.fields, c.layout))
+                    defs.push_all_move(cunion_to_rs(&mut ctx, union_name(c.name.clone()),
+                                               c.fields.clone(), c.layout))
                 }
             },
             GEnumDecl(ei) => {
@@ -194,7 +194,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
                     e.name = unnamed_name(&mut ctx, e.name.clone());
                 }
                 let e = ei.borrow().clone();
-                defs.push_all(ctypedef_to_rs(&mut ctx, enum_name(e.name.clone()), &TVoid))
+                defs.push_all_move(ctypedef_to_rs(&mut ctx, enum_name(e.name.clone()), &TVoid))
             },
             GEnum(ei) => {
                 {
@@ -202,7 +202,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: ~[Global]
                     e.name = unnamed_name(&mut ctx, e.name.clone());
                 }
                 let e = ei.borrow().clone();
-                defs.push_all(cenum_to_rs(&mut ctx, enum_name(e.name.clone()), e.items, e.kind))
+                defs.push_all_move(cenum_to_rs(&mut ctx, enum_name(e.name.clone()), e.items.clone(), e.kind))
             },
             _ => { }
         }
@@ -328,7 +328,7 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
            };
 }
 
-fn remove_redundant_decl(gs: ~[Global]) -> ~[Global] {
+fn remove_redundant_decl(gs: Vec<Global>) -> Vec<Global> {
     fn check_decl(a: &Global, ty: &Type) -> bool {
         match *a {
           GComp(ci1) => match *ty {
@@ -359,7 +359,7 @@ fn remove_redundant_decl(gs: ~[Global]) -> ~[Global] {
     ).collect();
 }
 
-fn tag_dup_decl(gs: ~[Global]) -> ~[Global] {
+fn tag_dup_decl(gs: Vec<Global>) -> Vec<Global> {
     fn check(name1: &str, name2: &str) -> bool {
         !name1.is_empty() && name1 == name2
     }
@@ -410,26 +410,26 @@ fn tag_dup_decl(gs: ~[Global]) -> ~[Global] {
     }
 
     let len = gs.len();
-    let mut res = ~[];
-    res.push(gs[0]);
+    let mut res: Vec<Global> = vec!();
+    res.push(*gs.get(0));
 
     for i in iter::range(1, len) {
         let mut dup = false;
         for j in iter::range(0, i-1) {
-            if check_dup(&gs[i], &gs[j]) {
+            if check_dup(gs.get(i), gs.get(j)) {
                 dup = true;
                 break;
             }
         }
         if !dup {
-            res.push(gs[i]);
+            res.push(*gs.get(i));
         }
     }
 
     return res;
 }
 
-fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::Item] {
+fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> Vec<@ast::Item> {
     fn mk_item(ctx: &mut GenCtx, name: ~str, ty: &Type) -> @ast::Item {
         let rust_name = rust_type_id(ctx, name);
         let rust_ty = cty_to_rs(ctx, ty);
@@ -459,12 +459,12 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::Item] {
                 ci.borrow_mut().name = name.clone();
                 let c = ci.borrow().clone();
                 if c.cstruct {
-                    ~[cstruct_to_rs(ctx, name, c.fields)]
+                    vec!(cstruct_to_rs(ctx, name, c.fields))
                 } else {
-                    cunion_to_rs(ctx, name, c.fields, c.layout)
+                    cunion_to_rs(ctx, name, c.fields.clone(), c.layout)
                 }
             } else {
-                ~[mk_item(ctx, name, ty)]
+                vec!(mk_item(ctx, name, ty))
             }
         },
         TEnum(ei) => {
@@ -472,16 +472,16 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::Item] {
             if is_empty {
                 ei.borrow_mut().name = name.clone();
                 let e = ei.borrow().clone();
-                cenum_to_rs(ctx, name, e.items, e.kind)
+                cenum_to_rs(ctx, name, e.items.clone(), e.kind)
             } else {
-                ~[mk_item(ctx, name, ty)]
+                vec!(mk_item(ctx, name, ty))
             }
         },
-        _ => ~[mk_item(ctx, name, ty)]
+        _ => vec!(mk_item(ctx, name, ty))
     }
 }
 
-fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo]) -> @ast::Item {
+fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: Vec<FieldInfo>) -> @ast::Item {
     let mut unnamed = 0;
     let fs = fields.iter().map(|f| {
         let f_name = if f.name.is_empty() {
@@ -507,7 +507,9 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo]) -> @ast::It
     let def = ast::ItemStruct(
         @ast::StructDef {
            fields: fs,
-           ctor_id: None
+           ctor_id: None,
+           super_struct: None,
+           is_virtual: false
         },
         empty_generics()
     );
@@ -522,7 +524,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo]) -> @ast::It
            };
 }
 
-fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layout) -> ~[@ast::Item] {
+fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: Vec<FieldInfo>, layout: Layout) -> Vec<@ast::Item> {
     fn mk_item(ctx: &mut GenCtx, name: ~str, item: ast::Item_, vis: ast::Visibility) -> @ast::Item {
         return @ast::Item {
                   ident: ctx.ext_cx.ident_of(name),
@@ -534,7 +536,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
                };
     }
 
-    let ci = @RefCell::new(CompInfo::new(name.clone(), false, fields.to_owned(), layout));
+    let ci = @RefCell::new(CompInfo::new(name.clone(), false, fields.clone(), layout));
     let union = TNamed(@RefCell::new(TypeInfo::new(name.clone(), TComp(ci))));
 
     let ty_name = match layout.align {
@@ -560,7 +562,9 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
     let def = ast::ItemStruct(
         @ast::StructDef {
            fields: Vec::from_elem(1, data),
-           ctor_id: None
+           ctor_id: None,
+           super_struct: None,
+           is_virtual: false
         },
         empty_generics()
     );
@@ -616,13 +620,13 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
         fs
     );
 
-    return ~[
+    return vec!( 
         union_def,
         mk_item(ctx, ~"", methods, ast::Inherited)
-    ];
+    );
 }
 
-fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: &[EnumItem], kind: IKind) -> ~[@ast::Item] {
+fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: Vec<EnumItem>, kind: IKind) -> Vec<@ast::Item> {
     let ty = TInt(kind, Layout::zero());
     let ty_id = rust_type_id(ctx, name);
     let ty_def = ctypedef_to_rs(ctx, ty_id, &ty);
