@@ -185,7 +185,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: Vec<Globa
                                             c.fields.clone()))
                 } else {
                     defs.push_all_move(cunion_to_rs(&mut ctx, union_name(c.name.clone()),
-                                               c.fields.clone(), c.layout))
+                                               c.layout, c.fields))
                 }
             },
             GEnumDecl(ei) => {
@@ -202,7 +202,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: Vec<Globa
                     e.name = unnamed_name(&mut ctx, e.name.clone());
                 }
                 let e = ei.borrow().clone();
-                defs.push_all_move(cenum_to_rs(&mut ctx, enum_name(e.name.clone()), e.items.clone(), e.kind))
+                defs.push_all_move(cenum_to_rs(&mut ctx, enum_name(e.name.clone()), e.kind, e.items))
             },
             _ => { }
         }
@@ -461,7 +461,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> Vec<@ast::Item> {
                 if c.cstruct {
                     vec!(cstruct_to_rs(ctx, name, c.fields))
                 } else {
-                    cunion_to_rs(ctx, name, c.fields.clone(), c.layout)
+                    cunion_to_rs(ctx, name, c.layout, c.fields)
                 }
             } else {
                 vec!(mk_item(ctx, name, ty))
@@ -472,7 +472,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> Vec<@ast::Item> {
             if is_empty {
                 ei.borrow_mut().name = name.clone();
                 let e = ei.borrow().clone();
-                cenum_to_rs(ctx, name, e.items.clone(), e.kind)
+                cenum_to_rs(ctx, name, e.kind, e.items)
             } else {
                 vec!(mk_item(ctx, name, ty))
             }
@@ -524,7 +524,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: Vec<FieldInfo>) -> @ast::
            };
 }
 
-fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: Vec<FieldInfo>, layout: Layout) -> Vec<@ast::Item> {
+fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, layout: Layout, fields: Vec<FieldInfo>) -> Vec<@ast::Item> {
     fn mk_item(ctx: &mut GenCtx, name: ~str, item: ast::Item_, vis: ast::Visibility) -> @ast::Item {
         return @ast::Item {
                   ident: ctx.ext_cx.ident_of(name),
@@ -626,7 +626,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: Vec<FieldInfo>, layout: La
     );
 }
 
-fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, items: Vec<EnumItem>, kind: IKind) -> Vec<@ast::Item> {
+fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, kind: IKind, items: Vec<EnumItem>) -> Vec<@ast::Item> {
     let ty = TInt(kind, Layout::zero());
     let ty_id = rust_type_id(ctx, name);
     let ty_def = ctypedef_to_rs(ctx, ty_id, &ty);
