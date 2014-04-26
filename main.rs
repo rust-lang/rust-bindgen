@@ -472,7 +472,8 @@ fn visit_top<'r>(cur: &'r Cursor,
         let ret_ty = ~conv_ty(ctx, &cursor.ret_type(), cursor);
 
         let func = decl_name(ctx, cursor);
-        let mut vi = func.varinfo().borrow_mut();
+        let vi = func.varinfo();
+        let mut vi = vi.borrow_mut();
         vi.ty = TFunc(ret_ty.clone(), args_lst.clone(), ty.is_variadic());
         ctx.globals.push(func);
 
@@ -486,7 +487,8 @@ fn visit_top<'r>(cur: &'r Cursor,
 
         let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
         let var = decl_name(ctx, cursor);
-        let mut vi = var.varinfo().borrow_mut();
+        let vi = var.varinfo();
+        let mut vi = vi.borrow_mut();
         vi.ty = ty.clone();
         vi.is_const = cursor.cur_type().is_const();
         ctx.globals.push(var);
@@ -501,7 +503,8 @@ fn visit_top<'r>(cur: &'r Cursor,
 
         let ty = conv_ty(ctx, &under_ty, cursor);
         let typedef = decl_name(ctx, cursor);
-        let mut ti = typedef.typeinfo().borrow_mut();
+        let ti = typedef.typeinfo();
+        let mut ti = ti.borrow_mut();
         ti.ty = ty.clone();
         ctx.globals.push(typedef);
 

@@ -123,7 +123,7 @@ impl Cursor {
 extern fn visit_children(cur: CXCursor, parent: ll::CXCursor,
                          data: CXClientData) -> ll::Enum_CXChildVisitResult {
     unsafe {
-        let func = cast::transmute::<CXClientData, &CursorVisitor>(data);
+        let func = cast::transmute::<CXClientData, &mut CursorVisitor>(data);
         return (*func)(&Cursor { x: cur }, &Cursor { x: parent });
     }
 }
