@@ -321,8 +321,10 @@ fn conv_decl_ty(ctx: &mut BindGenCtx, cursor: &Cursor) -> il::Type {
 }
 
 fn conv_ty(ctx: &mut BindGenCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type {
+    debug!("conv_ty: ty=`{}`", type_to_str(ty.kind()));
     let layout = Layout::new(ty.size(), ty.align());
     return match ty.kind() {
+      CXType_Void | CXType_Invalid => TVoid,
       CXType_Bool => TInt(IBool, layout),
       CXType_SChar |
       CXType_Char_S => TInt(ISChar, layout),
@@ -340,12 +342,15 @@ fn conv_ty(ctx: &mut BindGenCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type {
       CXType_Double => TFloat(FDouble, layout),
       CXType_LongDouble => TFloat(FDouble, layout),
       CXType_Pointer => conv_ptr_ty(ctx, &ty.pointee_type(), cursor, layout),
+      CXType_VariableArray | CXType_DependentSizedArray => {
+          conv_ptr_ty(ctx, &ty.elem_type(), cursor, layout)
+      }
       CXType_Record |
       CXType_Typedef  |
       CXType_Unexposed |
       CXType_Enum => conv_decl_ty(ctx, &ty.declaration()),
       CXType_ConstantArray => TArray(~conv_ty(ctx, &ty.elem_type(), cursor), ty.array_size(), layout),
-      _ => TVoid
+      _ => fail!("unhandled type kind: `{}`", type_to_str(ty.kind())),
     };
 }
 
