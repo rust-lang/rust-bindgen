@@ -256,7 +256,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: Vec<Globa
 }
 
 fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::ViewItem {
-    let view = ast::ViewItemUse(Vec::from_elem(1,
+    let view = ast::ViewItemUse(
         @dummy_spanned(
             ast::ViewPathGlob(
                 ast::Path {
@@ -273,7 +273,7 @@ fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::ViewItem {
                 ast::DUMMY_NODE_ID
             )
         )
-    ));
+    );
 
     return ast::ViewItem {
               node: view,

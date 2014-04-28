@@ -260,7 +260,8 @@ pub static CXCursor_SEHFinallyStmt: c_uint = 228;
 pub static CXCursor_MSAsmStmt: c_uint = 229;
 pub static CXCursor_NullStmt: c_uint = 230;
 pub static CXCursor_DeclStmt: c_uint = 231;
-pub static CXCursor_LastStmt: c_uint = 231;
+pub static CXCursor_OMPParallelDirective: c_uint = 232;
+pub static CXCursor_LastStmt: c_uint = 232;
 pub static CXCursor_TranslationUnit: c_uint = 300;
 pub static CXCursor_FirstAttr: c_uint = 400;
 pub static CXCursor_UnexposedAttr: c_uint = 400;
@@ -271,7 +272,8 @@ pub static CXCursor_CXXFinalAttr: c_uint = 404;
 pub static CXCursor_CXXOverrideAttr: c_uint = 405;
 pub static CXCursor_AnnotateAttr: c_uint = 406;
 pub static CXCursor_AsmLabelAttr: c_uint = 407;
-pub static CXCursor_LastAttr: c_uint = 407;
+pub static CXCursor_PackedAttr: c_uint = 408;
+pub static CXCursor_LastAttr: c_uint = 408;
 pub static CXCursor_PreprocessingDirective: c_uint = 500;
 pub static CXCursor_MacroDefinition: c_uint = 501;
 pub static CXCursor_MacroExpansion: c_uint = 502;
@@ -360,8 +362,10 @@ pub static CXType_FunctionNoProto: c_uint = 110;
 pub static CXType_FunctionProto: c_uint = 111;
 pub static CXType_ConstantArray: c_uint = 112;
 pub static CXType_Vector: c_uint = 113;
-pub static CXType_VariableArray: c_uint = 114;
-pub static CXType_DependentSizedArray: c_uint = 115;
+pub static CXType_IncompleteArray: c_uint = 114;
+pub static CXType_VariableArray: c_uint = 115;
+pub static CXType_DependentSizedArray: c_uint = 116;
+pub static CXType_MemberPointer: c_uint = 117;
 pub type Enum_CXCallingConv = c_uint;
 pub static CXCallingConv_Default: c_uint = 0;
 pub static CXCallingConv_C: c_uint = 1;
@@ -373,6 +377,8 @@ pub static CXCallingConv_AAPCS: c_uint = 6;
 pub static CXCallingConv_AAPCS_VFP: c_uint = 7;
 pub static CXCallingConv_PnaclCall: c_uint = 8;
 pub static CXCallingConv_IntelOclBicc: c_uint = 9;
+pub static CXCallingConv_X86_64Win64: c_uint = 10;
+pub static CXCallingConv_X86_64SysV: c_uint = 11;
 pub static CXCallingConv_Invalid: c_uint = 100;
 pub static CXCallingConv_Unexposed: c_uint = 200;
 pub struct CXType {
@@ -385,6 +391,10 @@ pub static CXTypeLayoutError_Incomplete: c_int = -2;
 pub static CXTypeLayoutError_Dependent: c_int = -3;
 pub static CXTypeLayoutError_NotConstantSize: c_int = -4;
 pub static CXTypeLayoutError_InvalidFieldName: c_int = -5;
+pub type Enum_CXRefQualifierKind = c_uint;
+pub static CXRefQualifier_None: c_uint = 0;
+pub static CXRefQualifier_LValue: c_uint = 1;
+pub static CXRefQualifier_RValue: c_uint = 2;
 pub type Enum_CX_CXXAccessSpecifier = c_uint;
 pub static CX_CXXInvalidAccessSpecifier: c_uint = 0;
 pub static CX_CXXPublic: c_uint = 1;
@@ -759,8 +769,7 @@ extern "C" {
      c_int;
     pub fn clang_isFileMultipleIncludeGuarded(tu: CXTranslationUnit,
                                               file: CXFile) -> c_uint;
-    pub fn clang_getFile(tu: CXTranslationUnit, file_name: *c_char) ->
-     CXFile;
+    pub fn clang_getFile(tu: CXTranslationUnit, file_name: *c_char) -> CXFile;
     pub fn clang_getNullLocation() -> CXSourceLocation;
     pub fn clang_equalLocations(loc1: CXSourceLocation,
                                 loc2: CXSourceLocation) -> c_uint;
@@ -771,6 +780,7 @@ extern "C" {
                                       offset: c_uint) -> CXSourceLocation;
     pub fn clang_Location_isInSystemHeader(location: CXSourceLocation) ->
      c_int;
+    pub fn clang_Location_isFromMainFile(location: CXSourceLocation) -> c_int;
     pub fn clang_getNullRange() -> CXSourceRange;
     pub fn clang_getRange(begin: CXSourceLocation, end: CXSourceLocation) ->
      CXSourceRange;
@@ -836,8 +846,7 @@ extern "C" {
     pub fn clang_getTranslationUnitSpelling(CTUnit: CXTranslationUnit) ->
      CXString;
     pub fn clang_createTranslationUnitFromSourceFile(CIdx: CXIndex,
-                                                     source_filename:
-                                                         *c_char,
+                                                     source_filename: *c_char,
                                                      num_clang_command_line_args:
                                                          c_int,
                                                      clang_command_line_args:
@@ -850,8 +859,7 @@ extern "C" {
     pub fn clang_createTranslationUnit(arg1: CXIndex, ast_filename: *c_char)
      -> CXTranslationUnit;
     pub fn clang_defaultEditingTranslationUnitOptions() -> c_uint;
-    pub fn clang_parseTranslationUnit(CIdx: CXIndex,
-                                      source_filename: *c_char,
+    pub fn clang_parseTranslationUnit(CIdx: CXIndex, source_filename: *c_char,
                                       command_line_args: **c_char,
                                       num_command_line_args: c_int,
                                       unsaved_files:
@@ -859,9 +867,8 @@ extern "C" {
                                       num_unsaved_files: c_uint,
                                       options: c_uint) -> CXTranslationUnit;
     pub fn clang_defaultSaveOptions(TU: CXTranslationUnit) -> c_uint;
-    pub fn clang_saveTranslationUnit(TU: CXTranslationUnit,
-                                     FileName: *c_char, options: c_uint) ->
-     c_int;
+    pub fn clang_saveTranslationUnit(TU: CXTranslationUnit, FileName: *c_char,
+                                     options: c_uint) -> c_int;
     pub fn clang_disposeTranslationUnit(arg1: CXTranslationUnit);
     pub fn clang_defaultReparseOptions(TU: CXTranslationUnit) -> c_uint;
     pub fn clang_reparseTranslationUnit(TU: CXTranslationUnit,
@@ -956,8 +963,11 @@ extern "C" {
     pub fn clang_getArrayElementType(T: CXType) -> CXType;
     pub fn clang_getArraySize(T: CXType) -> c_longlong;
     pub fn clang_Type_getAlignOf(T: CXType) -> c_longlong;
+    pub fn clang_Type_getClassType(T: CXType) -> CXType;
     pub fn clang_Type_getSizeOf(T: CXType) -> c_longlong;
     pub fn clang_Type_getOffsetOf(T: CXType, S: *c_char) -> c_longlong;
+    pub fn clang_Type_getCXXRefQualifier(T: CXType) ->
+     Enum_CXRefQualifierKind;
     pub fn clang_Cursor_isBitField(C: CXCursor) -> c_uint;
     pub fn clang_isVirtualBase(arg1: CXCursor) -> c_uint;
     pub fn clang_getCXXAccessSpecifier(arg1: CXCursor) ->
@@ -998,6 +1008,7 @@ extern "C" {
     pub fn clang_Cursor_getObjCPropertyAttributes(C: CXCursor,
                                                   reserved: c_uint) -> c_uint;
     pub fn clang_Cursor_getObjCDeclQualifiers(C: CXCursor) -> c_uint;
+    pub fn clang_Cursor_isObjCOptional(C: CXCursor) -> c_uint;
     pub fn clang_Cursor_isVariadic(C: CXCursor) -> c_uint;
     pub fn clang_Cursor_getCommentRange(C: CXCursor) -> CXSourceRange;
     pub fn clang_Cursor_getRawCommentText(C: CXCursor) -> CXString;
@@ -1067,6 +1078,7 @@ extern "C" {
     pub fn clang_HTMLTagComment_getAsString(Comment: CXComment) -> CXString;
     pub fn clang_FullComment_getAsHTML(Comment: CXComment) -> CXString;
     pub fn clang_FullComment_getAsXML(Comment: CXComment) -> CXString;
+    pub fn clang_CXXMethod_isPureVirtual(C: CXCursor) -> c_uint;
     pub fn clang_CXXMethod_isStatic(C: CXCursor) -> c_uint;
     pub fn clang_CXXMethod_isVirtual(C: CXCursor) -> c_uint;
     pub fn clang_getTemplateCursorKind(C: CXCursor) -> Enum_CXCursorKind;
