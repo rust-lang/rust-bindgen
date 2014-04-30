@@ -237,6 +237,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: Vec<Globa
 
     let crate_ = ast::Crate {
         module: ast::Mod {
+            inner: DUMMY_SP,
             view_items: views,
             items: defs,
         },
