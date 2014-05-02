@@ -56,7 +56,7 @@ fn empty_generics() -> ast::Generics {
 fn rust_id(ctx: &mut GenCtx, name: ~str) -> (~str, bool) {
     let token = parse::token::IDENT(ctx.ext_cx.ident_of(name), false);
     if parse::token::is_any_keyword(&token) || "bool" == name {
-        (~"_" + name, true)
+        ("_".to_owned() + name, true)
     } else {
         (name, false)
     }
@@ -77,7 +77,7 @@ fn rust_type_id(ctx: &mut GenCtx, name: ~str) -> ~str {
         "i64" == name ||
         "Self" == name ||
         "str" == name {
-        ~"_" + name
+        "_".to_owned() + name
     } else {
         let (n, _) = rust_id(ctx, name);
         n
@@ -134,7 +134,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: Vec<Globa
     };
     ctx.ext_cx.bt_push(ExpnInfo {
         call_site: DUMMY_SP,
-        callee: NameAndSpan { name: ~"", format: MacroBang, span: None }
+        callee: NameAndSpan { name: "".to_owned(), format: MacroBang, span: None }
     });
     let uniq_globs = tag_dup_decl(globs);
 
@@ -214,7 +214,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: Vec<Globa
                 let v = vi.borrow();
                 cvar_to_rs(&mut ctx, v.name.clone(), &v.ty, v.is_const)
             },
-            _ => { fail!(~"generate global variables") }
+            _ => { fail!("generate global variables".to_owned()) }
         }
     }).collect();
 
@@ -225,14 +225,14 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: Vec<Globa
                 match v.ty {
                     TFunc(ref rty, ref aty, var) => cfunc_to_rs(&mut ctx, v.name.clone(),
                                                                 *rty, *aty, var),
-                    _ => { fail!(~"generate functions") }
+                    _ => { fail!("generate functions".to_owned()) }
                 }
             },
-            _ => { fail!(~"generate functions") }
+            _ => { fail!("generate functions".to_owned()) }
         }
     }).collect();
 
-    let views = Vec::from_elem(1, mk_import(&mut ctx, &[~"libc"]));
+    let views = Vec::from_elem(1, mk_import(&mut ctx, &["libc".to_owned()]));
     defs.push(mk_extern(&mut ctx, link, vars, funcs));
 
     let crate_ = ast::Crate {
@@ -292,7 +292,7 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
         None => attrs = Vec::new(),
         Some(ref l) => {
             let link_name = @dummy_spanned(ast::MetaNameValue(
-                to_intern_str(ctx, ~"name"),
+                to_intern_str(ctx, "name".to_owned()),
                 dummy_spanned(ast::LitStr(
                     to_intern_str(ctx, l.to_owned()),
                     ast::CookedStr
@@ -301,7 +301,7 @@ fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
             let link_args = dummy_spanned(ast::Attribute_ {
                 style: ast::AttrOuter,
                 value: @dummy_spanned(ast::MetaList(
-                    to_intern_str(ctx, ~"link"),
+                    to_intern_str(ctx, "link".to_owned()),
                     Vec::from_elem(1, link_name))
                 ),
                 is_sugared_doc: false
@@ -623,7 +623,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, layout: Layout, fields: Vec<FieldI
 
     return vec!( 
         union_def,
-        mk_item(ctx, ~"", methods, ast::Inherited)
+        mk_item(ctx, "".to_owned(), methods, ast::Inherited)
     );
 }
 
@@ -663,7 +663,7 @@ fn mk_link_name_attr(ctx: &mut GenCtx, name: ~str) -> ast::Attribute {
         ast::CookedStr
     ));
     let attr_val = @dummy_spanned(ast::MetaNameValue(
-        to_intern_str(ctx, ~"link_name"), lit
+        to_intern_str(ctx, "link_name".to_owned()), lit
     ));
     let attr = ast::Attribute_ {
         style: ast::AttrOuter,
@@ -782,23 +782,23 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: &Type,
 
 fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
     return match *ty {
-        TVoid => mk_ty(ctx, ~"c_void"),
+        TVoid => mk_ty(ctx, "c_void".to_owned()),
         TInt(i, _) => match i {
-            IBool => mk_ty(ctx, ~"c_int"),
-            ISChar => mk_ty(ctx, ~"c_char"),
-            IUChar => mk_ty(ctx, ~"c_uchar"),
-            IInt => mk_ty(ctx, ~"c_int"),
-            IUInt => mk_ty(ctx, ~"c_uint"),
-            IShort => mk_ty(ctx, ~"c_short"),
-            IUShort => mk_ty(ctx, ~"c_ushort"),
-            ILong => mk_ty(ctx, ~"c_long"),
-            IULong => mk_ty(ctx, ~"c_ulong"),
-            ILongLong => mk_ty(ctx, ~"c_longlong"),
-            IULongLong => mk_ty(ctx, ~"c_ulonglong")
+            IBool => mk_ty(ctx, "c_int".to_owned()),
+            ISChar => mk_ty(ctx, "c_char".to_owned()),
+            IUChar => mk_ty(ctx, "c_uchar".to_owned()),
+            IInt => mk_ty(ctx, "c_int".to_owned()),
+            IUInt => mk_ty(ctx, "c_uint".to_owned()),
+            IShort => mk_ty(ctx, "c_short".to_owned()),
+            IUShort => mk_ty(ctx, "c_ushort".to_owned()),
+            ILong => mk_ty(ctx, "c_long".to_owned()),
+            IULong => mk_ty(ctx, "c_ulong".to_owned()),
+            ILongLong => mk_ty(ctx, "c_longlong".to_owned()),
+            IULongLong => mk_ty(ctx, "c_ulonglong".to_owned())
         },
         TFloat(f, _) => match f {
-            FFloat => mk_ty(ctx, ~"c_float"),
-            FDouble => mk_ty(ctx, ~"c_double")
+            FFloat => mk_ty(ctx, "c_float".to_owned()),
+            FDouble => mk_ty(ctx, "c_double".to_owned())
         },
         TPtr(ref t, is_const, _) => {
             let id = cty_to_rs(ctx, *t);

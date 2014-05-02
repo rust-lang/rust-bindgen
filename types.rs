@@ -18,7 +18,7 @@ impl Global {
         match *self {
             GComp(i) => return i,
             GCompDecl(i) => return i,
-            _ => fail!(~"global_compinfo")
+            _ => fail!("global_compinfo".to_owned())
         }
     }
 
@@ -26,14 +26,14 @@ impl Global {
         match *self {
             GEnum(i) => return i,
             GEnumDecl(i) => return i,
-            _ => fail!(~"global_enuminfo")
+            _ => fail!("global_enuminfo".to_owned())
         }
     }
 
     pub fn typeinfo(&self) -> @RefCell<TypeInfo> {
         match *self {
             GType(i) => return i,
-            _ => fail!(~"global_typeinfo")
+            _ => fail!("global_typeinfo".to_owned())
         }
     }
 
@@ -41,7 +41,7 @@ impl Global {
         match *self {
             GVar(i) => i,
             GFunc(i) => i,
-            _ => fail!(~"global_varinfo")
+            _ => fail!("global_varinfo".to_owned())
         }
     }
 }

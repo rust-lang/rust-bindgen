@@ -40,7 +40,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
     let mut out = ~io::BufferedWriter::new(io::stdout()) as ~io::Writer;
     let mut pat = vec!();
     let mut link = None;
-    let mut abi = ~"C";
+    let mut abi = "C".to_owned();
     let mut builtins = false;
     let mut emit_ast = false;
     let mut fail_on_bitfield = true;
@@ -61,7 +61,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
             }
             "-o" => {
                 if ix + 1u >= args_len {
-                    return ParseErr(~"Missing output filename");
+                    return ParseErr("Missing output filename".to_owned());
                 }
                 let path = path::Path::new(args[ix + 1].clone());
                 match fs::File::create(&path) {
@@ -72,14 +72,14 @@ fn parse_args(args: &[~str]) -> ParseResult {
             }
             "-l" => {
                 if ix + 1u >= args_len {
-                    return ParseErr(~"Missing link name");
+                    return ParseErr("Missing link name".to_owned());
                 }
                 link = Some(args[ix + 1u].clone());
                 ix += 2u;
             }
             "-match" => {
                 if ix + 1u >= args_len {
-                    return ParseErr(~"Missing match pattern");
+                    return ParseErr("Missing match pattern".to_owned());
                 }
                 pat.push(args[ix + 1u].clone());
                 ix += 2u;
@@ -122,8 +122,8 @@ fn parse_args(args: &[~str]) -> ParseResult {
 fn builtin_names() -> HashSet<~str> {
     let mut names = HashSet::new();
     let keys = ~[
-        ~"__va_list_tag",
-        ~"__va_list",
+        "__va_list_tag".to_owned(),
+        "__va_list".to_owned(),
     ];
 
     keys.move_iter().advance(|s| {
@@ -269,7 +269,7 @@ fn conv_ptr_ty(ctx: &mut BindGenCtx, ty: &cx::Type, cursor: &Cursor, layout: Lay
         let decl = ty.declaration();
         return if ret_ty.kind() != CXType_Invalid {
             let args_lst = ty.arg_types().iter().map(|arg| {
-                (~"", conv_ty(ctx, arg, cursor))
+                ("".to_owned(), conv_ty(ctx, arg, cursor))
             }).collect();
             let ret_ty = ~conv_ty(ctx, &ret_ty, cursor);
 
@@ -535,12 +535,12 @@ fn main() {
         ParseOk(clang_args, mut ctx, out) => {
             let ix = cx::Index::create(false, true);
             if ix.is_null() {
-                fail!(~"clang failed to create index");
+                fail!("clang failed to create index".to_owned());
             }
 
             let unit = TranslationUnit::parse(&ix, "", clang_args, [], 0);
             if unit.is_null() {
-                fail!(~"No input files given");
+                fail!("No input files given".to_owned());
             }
 
             let mut c_err = false;
