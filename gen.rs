@@ -485,7 +485,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> Vec<@ast::Item> {
 fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: Vec<FieldInfo>) -> @ast::Item {
     let mut unnamed = 0;
     let fs = fields.iter().map(|f| {
-        let f_name = if f.name.is_empty() {
+        let f_name = if f.name.is_empty() || "_" == f.name {
             unnamed += 1;
             format!("unnamed_field{}", unnamed)
         } else {
@@ -578,7 +578,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, layout: Layout, fields: Vec<FieldI
     );
     let mut unnamed = 0;
     let fs = fields.iter().map(|f| {
-        let f_name = if f.name.is_empty() {
+        let f_name = if f.name.is_empty() || "_" == f.name {
             unnamed += 1;
             format!("unnamed_field{}", unnamed)
         } else {
