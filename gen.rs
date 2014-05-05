@@ -492,7 +492,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> ~[@ast::Item] {
 fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo]) -> @ast::Item {
     let mut unnamed = 0;
     let fs = fields.iter().map(|f| {
-        let f_name = if f.name.is_empty() {
+        let f_name = if f.name.is_empty() || "_" == f.name {
             unnamed += 1;
             format!("unnamed_field{}", unnamed)
         } else {
@@ -581,7 +581,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, fields: &[FieldInfo], layout: Layo
     );
     let mut unnamed = 0;
     let fs = fields.iter().map(|f| {
-        let f_name = if f.name.is_empty() {
+        let f_name = if f.name.is_empty() || "_" == f.name {
             unnamed += 1;
             format!("unnamed_field{}", unnamed)
         } else {
