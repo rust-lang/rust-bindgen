@@ -18,15 +18,20 @@ Usage
 
 Usage: ./bindgen [options] input.h
 Options:
-    -h or --help    Display help message
-    -l <name>       Link name of the library
-    -o <output.rs>  Write bindings to <output.rs> (default stdout)
-    -match <name>   Only output bindings for definitions from files
-                    whose name contains <name>
-                    If multiple -match options are provided, files
-                    matching any rule are bound to.
-    -builtins       Output bindings for builtin definitions
-                    (for example __builtin_va_list)
+    -h or --help     Display help message
+    -l <name>        Name of a library to link to, can be proivded multiple
+                     times
+    -o <output.rs>   Write bindings to <output.rs> (default stdout)
+    -match <name>    Only output bindings for definitions from files
+                     whose name contains <name>
+                     If multiple -match options are provided, files
+                     matching any rule are bound to.
+    -builtins        Output bindings for builtin definitions
+                     (for example __builtin_va_list)
+    -abi <abi>       Indicate abi of extern functions (default C)
+    -allow-bitfields Don't fail if we encounter a bitfield
+                     (default is false, since rust does not support bitfields)
+    -emit-clang-ast  Output the ast (for debugging purposes)
 
     Options other than stated above are passed to clang.
 
