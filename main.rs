@@ -51,54 +51,59 @@ fn parse_args(args: &[~str]) -> ParseResult {
 
     let mut ix = 0u;
     while ix < args_len {
-        match args[ix].as_slice() {
-            "--help" | "-h" => {
-                return CmdUsage;
-            }
-            "-emit-clang-ast" => {
-              emit_ast = true;
-              ix += 1u;
-            }
-            "-o" => {
-                if ix + 1u >= args_len {
-                    return ParseErr("Missing output filename".to_owned());
+        if args[ix].len() > 2 && args[ix].slice_to(2) == "-l" {
+            links.push(args[ix].slice_from(2).to_owned());
+            ix += 1u;
+        } else {
+            match args[ix].as_slice() {
+                "--help" | "-h" => {
+                    return CmdUsage;
                 }
-                let path = path::Path::new(args[ix + 1].clone());
-                match fs::File::create(&path) {
-                  Ok(f) => { out = ~io::BufferedWriter::new(f) as ~io::Writer; }
-                  Err(_) => { return ParseErr(format!("Open {} failed", args[ix + 1])); }
+                "-emit-clang-ast" => {
+                  emit_ast = true;
+                  ix += 1u;
                 }
-                ix += 2u;
-            }
-            "-l" => {
-                if ix + 1u >= args_len {
-                    return ParseErr("Missing link name".to_owned());
+                "-o" => {
+                    if ix + 1u >= args_len {
+                        return ParseErr("Missing output filename".to_owned());
+                    }
+                    let path = path::Path::new(args[ix + 1].clone());
+                    match fs::File::create(&path) {
+                      Ok(f) => { out = ~io::BufferedWriter::new(f) as ~io::Writer; }
+                      Err(_) => { return ParseErr(format!("Open {} failed", args[ix + 1])); }
+                    }
+                    ix += 2u;
                 }
-                links.push(args[ix + 1u].clone());
-                ix += 2u;
-            }
-            "-match" => {
-                if ix + 1u >= args_len {
-                    return ParseErr("Missing match pattern".to_owned());
+                "-l" => {
+                    if ix + 1u >= args_len {
+                        return ParseErr("Missing link name".to_owned());
+                    }
+                    links.push(args[ix + 1u].clone());
+                    ix += 2u;
                 }
-                pat.push(args[ix + 1u].clone());
-                ix += 2u;
-            }
-            "-builtins" => {
-                builtins = true;
-                ix += 1u;
-            }
-            "-abi" => {
-                abi = args[ix + 1u].clone();
-                ix += 2u;
-            }
-            "-allow-bitfields" => {
-              fail_on_bitfield = false;
-              ix += 1u;
-            }
-            _ => {
-                clang_args.push(args[ix].clone());
-                ix += 1u;
+                "-match" => {
+                    if ix + 1u >= args_len {
+                        return ParseErr("Missing match pattern".to_owned());
+                    }
+                    pat.push(args[ix + 1u].clone());
+                    ix += 2u;
+                }
+                "-builtins" => {
+                    builtins = true;
+                    ix += 1u;
+                }
+                "-abi" => {
+                    abi = args[ix + 1u].clone();
+                    ix += 2u;
+                }
+                "-allow-bitfields" => {
+                  fail_on_bitfield = false;
+                  ix += 1u;
+                }
+                _ => {
+                    clang_args.push(args[ix].clone());
+                    ix += 1u;
+                }
             }
         }
     }
@@ -138,20 +143,20 @@ fn print_usage(bin: ~str) {
     io::stdio::print(format!("Usage: {} [options] input.h", bin) +
 "
 Options:
-    -h or --help     Display help message
-    -l <name>        Name of a library to link to, can be proivded multiple
-                     times
-    -o <output.rs>   Write bindings to <output.rs> (default stdout)
-    -match <name>    Only output bindings for definitions from files
-                     whose name contains <name>
-                     If multiple -match options are provided, files
-                     matching any rule are bound to.
-    -builtins        Output bindings for builtin definitions
-                     (for example __builtin_va_list)
-    -abi <abi>       Indicate abi of extern functions (default C)
-    -allow-bitfields Don't fail if we encounter a bitfield
-                     (default is false, since rust does not support bitfields)
-    -emit-clang-ast  Output the ast (for debugging purposes)
+    -h or --help          Display help message
+    -l <name> or -l<name> Name of a library to link to, can be proivded
+                          multiple times
+    -o <output.rs>        Write bindings to <output.rs> (default stdout)
+    -match <name>         Only output bindings for definitions from files
+                          whose name contains <name>
+                          If multiple -match options are provided, files
+                          matching any rule are bound to.
+    -builtins             Output bindings for builtin definitions
+                          (for example __builtin_va_list)
+    -abi <abi>            Indicate abi of extern functions (default C)
+    -allow-bitfields      Don't fail if we encounter a bitfield
+                          (default is false, as rust doesn't support bitfields)
+    -emit-clang-ast       Output the ast (for debugging purposes)
 
     Options other than stated above are passed to clang.
 "
