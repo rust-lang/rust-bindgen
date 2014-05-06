@@ -105,7 +105,7 @@ fn enum_name(name: ~str) -> ~str {
     format!("Enum_{}", name)
 }
 
-pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: Vec<Global>) {
+pub fn gen_rs(out: ~io::Writer, abi: ~str, links: &[~str], globs: Vec<Global>) {
     let abi = match abi.as_slice() {
         "cdecl" => abi::Cdecl,
         "stdcall" => abi::Stdcall,
@@ -232,8 +232,13 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, link: &Option<~str>, globs: Vec<Globa
         }
     }).collect();
 
+    defs.push(mk_extern(&mut ctx, None, vars, funcs));
+
+    for link in links.iter() {
+        defs.push(mk_extern(&mut ctx, Some(link), vec!(), vec!()));
+    }
+
     let views = Vec::from_elem(1, mk_import(&mut ctx, &["libc".to_owned()]));
-    defs.push(mk_extern(&mut ctx, link, vars, funcs));
 
     let crate_ = ast::Crate {
         module: ast::Mod {
@@ -284,11 +289,11 @@ fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::ViewItem {
            };
 }
 
-fn mk_extern(ctx: &mut GenCtx, link: &Option<~str>,
+fn mk_extern(ctx: &mut GenCtx, link: Option<&~str>,
              vars: Vec<@ast::ForeignItem>,
              funcs: Vec<@ast::ForeignItem>) -> @ast::Item {
     let attrs;
-    match *link {
+    match link {
         None => attrs = Vec::new(),
         Some(ref l) => {
             let link_name = @dummy_spanned(ast::MetaNameValue(

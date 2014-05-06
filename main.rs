@@ -18,7 +18,7 @@ struct BindGenCtx {
     match_pat: Vec<~str>,
     abi: ~str,
     builtins: bool,
-    link: Option<~str>,
+    links: Vec<~str>,
     name: HashMap<Cursor, Global>,
     globals: Vec<Global>,
     builtin_defs: Vec<Cursor>,
@@ -39,7 +39,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
 
     let mut out = ~io::BufferedWriter::new(io::stdout()) as ~io::Writer;
     let mut pat = vec!();
-    let mut link = None;
+    let mut links = vec!();
     let mut abi = "C".to_owned();
     let mut builtins = false;
     let mut emit_ast = false;
@@ -74,7 +74,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
                 if ix + 1u >= args_len {
                     return ParseErr("Missing link name".to_owned());
                 }
-                link = Some(args[ix + 1u].clone());
+                links.push(args[ix + 1u].clone());
                 ix += 2u;
             }
             "-match" => {
@@ -107,7 +107,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
         match_pat: pat,
         abi: abi,
         builtins: builtins,
-        link: link,
+        links: links,
         name: HashMap::new(),
         globals: vec!(),
         builtin_defs: vec!(),
@@ -139,7 +139,8 @@ fn print_usage(bin: ~str) {
 "
 Options:
     -h or --help     Display help message
-    -l <name>        Link name of the library
+    -l <name>        Name of a library to link to, can be proivded multiple
+                     times
     -o <output.rs>   Write bindings to <output.rs> (default stdout)
     -match <name>    Only output bindings for definitions from files
                      whose name contains <name>
@@ -574,7 +575,7 @@ fn main() {
                 c.visit(|cur, parent| visit_top(cur, parent, ctx));
             }
 
-            gen_rs(out, ctx.abi.clone(), &ctx.link, ctx.globals.clone());
+            gen_rs(out, ctx.abi.clone(), ctx.links.as_slice(), ctx.globals.clone());
 
             unit.dispose();
             ix.dispose();
