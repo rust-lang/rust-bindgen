@@ -232,11 +232,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, links: &[~str], globs: Vec<Global>) {
         }
     }).collect();
 
-    defs.push(mk_extern(&mut ctx, None, vars, funcs));
-
-    for link in links.iter() {
-        defs.push(mk_extern(&mut ctx, Some(link), vec!(), vec!()));
-    }
+    defs.push(mk_extern(&mut ctx, links, vars, funcs));
 
     let views = Vec::from_elem(1, mk_import(&mut ctx, &["libc".to_owned()]));
 
@@ -289,13 +285,13 @@ fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::ViewItem {
            };
 }
 
-fn mk_extern(ctx: &mut GenCtx, link: Option<&~str>,
+fn mk_extern(ctx: &mut GenCtx, links: &[~str],
              vars: Vec<@ast::ForeignItem>,
              funcs: Vec<@ast::ForeignItem>) -> @ast::Item {
-    let attrs;
-    match link {
-        None => attrs = Vec::new(),
-        Some(ref l) => {
+    let attrs = if links.is_empty() {
+        Vec::new()
+    } else {
+        links.iter().map(|ref l| {
             let link_name = @dummy_spanned(ast::MetaNameValue(
                 to_intern_str(ctx, "name".to_owned()),
                 dummy_spanned(ast::LitStr(
@@ -311,9 +307,9 @@ fn mk_extern(ctx: &mut GenCtx, link: Option<&~str>,
                 ),
                 is_sugared_doc: false
             });
-            attrs = Vec::from_elem(1, link_args);
-        }
-    }
+            link_args
+        }).collect()
+    };
 
     let mut items = Vec::new();
     items.push_all_move(vars);
