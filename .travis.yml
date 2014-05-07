@@ -1,8 +1,9 @@
 before_install:
-  - yes | sudo add-apt-repository ppa:hansjorg/rust
-  - yes | sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ precise-updates main restricted universe multiverse"
+  - yes | sudo add-apt-repository "deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.4 main"
+  - yes | sudo add-apt-repository "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu precise main"
   - sudo apt-get update
 install:
-  - sudo apt-get install rust-nightly libclang-3.3-dev
+  - sudo apt-get install libclang-3.4-dev
+  - wget http://static.rust-lang.org/dist/rust-nightly-x86_64-unknown-linux-gnu.tar.gz -O - | sudo tar zxf - --strip-components 1 -C /usr/local
 script:
-  - rustc bindgen.rs -L /usr/lib/llvm-3.3/lib
+  - rustc bindgen.rs -L /usr/lib/llvm-3.4/lib
