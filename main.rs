@@ -29,7 +29,7 @@ struct BindGenCtx {
 
 enum ParseResult {
     CmdUsage,
-    ParseOk(Vec<~str>, ~BindGenCtx, ~io::Writer),
+    ParseOk(Vec<~str>, Box<BindGenCtx>, Box<io::Writer>),
     ParseErr(~str)
 }
 
@@ -37,7 +37,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
     let mut clang_args = vec!();
     let args_len = args.len();
 
-    let mut out = ~io::BufferedWriter::new(io::stdout()) as ~io::Writer;
+    let mut out = box io::BufferedWriter::new(io::stdout()) as Box<io::Writer>;
     let mut pat = vec!();
     let mut links = vec!();
     let mut abi = "C".to_owned();
@@ -69,7 +69,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
                     }
                     let path = path::Path::new(args[ix + 1].clone());
                     match fs::File::create(&path) {
-                      Ok(f) => { out = ~io::BufferedWriter::new(f) as ~io::Writer; }
+                      Ok(f) => { out = box io::BufferedWriter::new(f) as Box<io::Writer>; }
                       Err(_) => { return ParseErr(format!("Open {} failed", args[ix + 1])); }
                     }
                     ix += 2u;
@@ -108,7 +108,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
         }
     }
 
-    let ctx = ~BindGenCtx {
+    let ctx = box BindGenCtx {
         match_pat: pat,
         abi: abi,
         builtins: builtins,
@@ -266,7 +266,7 @@ fn conv_ptr_ty(ctx: &mut BindGenCtx, ty: &cx::Type, cursor: &Cursor, layout: Lay
     let is_const = ty.is_const();
     match ty.kind() {
       CXType_Void => {
-        return TPtr(~TVoid, is_const, layout)
+        return TPtr(box TVoid, is_const, layout)
       }
       CXType_Unexposed |
       CXType_FunctionProto |
@@ -277,13 +277,13 @@ fn conv_ptr_ty(ctx: &mut BindGenCtx, ty: &cx::Type, cursor: &Cursor, layout: Lay
             let args_lst = ty.arg_types().iter().map(|arg| {
                 ("".to_owned(), conv_ty(ctx, arg, cursor))
             }).collect();
-            let ret_ty = ~conv_ty(ctx, &ret_ty, cursor);
+            let ret_ty = box conv_ty(ctx, &ret_ty, cursor);
 
             TFunc(ret_ty, args_lst, ty.is_variadic())
         } else if decl.kind() != CXCursor_NoDeclFound {
-            TPtr(~conv_decl_ty(ctx, &decl), is_const, layout)
+            TPtr(box conv_decl_ty(ctx, &decl), is_const, layout)
         } else {
-            TPtr(~TVoid, is_const, layout)
+            TPtr(box TVoid, is_const, layout)
         };
       }
       CXType_Typedef => {
@@ -291,12 +291,12 @@ fn conv_ptr_ty(ctx: &mut BindGenCtx, ty: &cx::Type, cursor: &Cursor, layout: Lay
         let def_ty = decl.typedef_type();
         if def_ty.kind() == CXType_FunctionProto ||
            def_ty.kind() == CXType_FunctionNoProto {
-            return TPtr(~conv_ptr_ty(ctx, &def_ty, cursor, layout), is_const, layout);
+            return TPtr(box conv_ptr_ty(ctx, &def_ty, cursor, layout), is_const, layout);
         } else {
-            return TPtr(~conv_ty(ctx, ty, cursor), is_const, layout);
+            return TPtr(box conv_ty(ctx, ty, cursor), is_const, layout);
         }
       }
-      _ => return TPtr(~conv_ty(ctx, ty, cursor), is_const, layout),
+      _ => return TPtr(box conv_ty(ctx, ty, cursor), is_const, layout),
     }
 }
 
@@ -355,7 +355,7 @@ fn conv_ty(ctx: &mut BindGenCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type {
       CXType_Typedef  |
       CXType_Unexposed |
       CXType_Enum => conv_decl_ty(ctx, &ty.declaration()),
-      CXType_ConstantArray => TArray(~conv_ty(ctx, &ty.elem_type(), cursor), ty.array_size(), layout),
+      CXType_ConstantArray => TArray(box conv_ty(ctx, &ty.elem_type(), cursor), ty.array_size(), layout),
       _ => fail!("unhandled type kind: `{}`", type_to_str(ty.kind())),
     };
 }
@@ -480,7 +480,7 @@ fn visit_top<'r>(cur: &'r Cursor,
         }).collect();
 
         let ty = cursor.cur_type();
-        let ret_ty = ~conv_ty(ctx, &cursor.ret_type(), cursor);
+        let ret_ty = box conv_ty(ctx, &cursor.ret_type(), cursor);
 
         let func = decl_name(ctx, cursor);
         let vi = func.varinfo();

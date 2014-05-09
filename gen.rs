@@ -105,7 +105,7 @@ fn enum_name(name: ~str) -> ~str {
     format!("Enum_{}", name)
 }
 
-pub fn gen_rs(out: ~io::Writer, abi: ~str, links: &[~str], globs: Vec<Global>) {
+pub fn gen_rs(out: Box<io::Writer>, abi: ~str, links: &[~str], globs: Vec<Global>) {
     let abi = match abi.as_slice() {
         "cdecl" => abi::Cdecl,
         "stdcall" => abi::Stdcall,
@@ -134,7 +134,7 @@ pub fn gen_rs(out: ~io::Writer, abi: ~str, links: &[~str], globs: Vec<Global>) {
     };
     ctx.ext_cx.bt_push(ExpnInfo {
         call_site: DUMMY_SP,
-        callee: NameAndSpan { name: "".to_owned(), format: MacroBang, span: None }
+        callee: NameAndSpan { name: StrBuf::new(), format: MacroBang, span: None }
     });
     let uniq_globs = tag_dup_decl(globs);
 
@@ -586,7 +586,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, layout: Layout, fields: Vec<FieldI
             first(rust_id(ctx, f.name.clone()))
         };
 
-        let ret_ty = @cty_to_rs(ctx, &TPtr(~f.ty.clone(), false, Layout::zero()));
+        let ret_ty = @cty_to_rs(ctx, &TPtr(box f.ty.clone(), false, Layout::zero()));
         let body = @ast::Block {
             view_items: Vec::new(),
             stmts: Vec::new(),
