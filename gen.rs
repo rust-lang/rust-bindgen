@@ -223,8 +223,9 @@ pub fn gen_rs(out: Box<io::Writer>, abi: ~str, links: &[~str], globs: Vec<Global
             GFunc(vi) => {
                 let v = vi.borrow();
                 match v.ty {
-                    TFunc(ref rty, ref aty, var) => cfunc_to_rs(&mut ctx, v.name.clone(),
-                                                                *rty, *aty, var),
+                    TFunc(ref rty, ref aty, var) =>
+                        cfunc_to_rs(&mut ctx, v.name.clone(),
+                                    *rty, aty.as_slice(), var),
                     _ => { fail!("generate functions".to_owned()) }
                 }
             },
@@ -349,7 +350,7 @@ fn remove_redundant_decl(gs: Vec<Global>) -> Vec<Global> {
         }
     }
 
-    let typedefs: ~[Type] = gs.iter().filter_map(|g|
+    let typedefs: Vec<Type> = gs.iter().filter_map(|g|
         match *g {
             GType(ref ti) => Some(ti.borrow().ty.clone()),
             _ => None
@@ -810,7 +811,7 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
             mk_arrty(ctx, &ty, s)
         },
         TFunc(ref rty, ref atys, var) => {
-            let decl = cfuncty_to_rs(ctx, *rty, *atys, var);
+            let decl = cfuncty_to_rs(ctx, *rty, atys.as_slice(), var);
             mk_fnty(ctx, &decl)
         },
         TNamed(ti) => {

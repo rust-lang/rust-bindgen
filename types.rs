@@ -68,7 +68,7 @@ pub enum Type {
     TFloat(FKind, Layout),
     TPtr(Box<Type>, bool, Layout),
     TArray(Box<Type>, uint, Layout),
-    TFunc(Box<Type>, ~[(~str, Type)], bool),
+    TFunc(Box<Type>, Vec<(~str, Type)>, bool),
     TNamed(@RefCell<TypeInfo>),
     TComp(@RefCell<CompInfo>),
     TEnum(@RefCell<EnumInfo>)

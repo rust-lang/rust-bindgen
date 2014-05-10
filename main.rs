@@ -474,7 +474,7 @@ fn visit_top<'r>(cur: &'r Cursor,
             return CXChildVisit_Continue;
         }
 
-        let args_lst: ~[(~str, il::Type)] = cursor.args().iter().map(|arg| {
+        let args_lst: Vec<(~str, il::Type)> = cursor.args().iter().map(|arg| {
             let arg_name = arg.spelling();
             (arg_name, conv_ty(ctx, &arg.cur_type(), cursor))
         }).collect();
@@ -532,10 +532,10 @@ fn visit_top<'r>(cur: &'r Cursor,
 
 #[main]
 fn main() {
-    let bind_args = os::args();
-    let bin = Vec::from_slice(bind_args).shift().unwrap();
+    let mut bind_args = os::args();
+    let bin = bind_args.shift().unwrap();
 
-    match parse_args(bind_args) {
+    match parse_args(bind_args.as_slice()) {
         ParseErr(e) => fail!(e),
         CmdUsage => print_usage(bin),
         ParseOk(clang_args, mut ctx, out) => {
