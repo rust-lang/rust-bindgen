@@ -1,7 +1,7 @@
 #![allow(non_uppercase_pattern_statics)]
 
 use libc::{c_uint, c_char, c_int};
-use std::{cast, io, ptr, str};
+use std::{mem, io, ptr, str};
 use std::fmt;
 use std::hash::Hash;
 use std::hash::sip::SipState;
@@ -51,7 +51,7 @@ impl Cursor {
 
     pub fn visit(&self, func: CursorVisitor) {
         unsafe {
-            let data = cast::transmute::<&CursorVisitor, CXClientData>(&func);
+            let data = mem::transmute::<&CursorVisitor, CXClientData>(&func);
             clang_visitChildren(self.x, Some(visit_children), data);
         };
     }
@@ -123,7 +123,7 @@ impl Cursor {
 extern fn visit_children(cur: CXCursor, parent: ll::CXCursor,
                          data: CXClientData) -> ll::Enum_CXChildVisitResult {
     unsafe {
-        let func = cast::transmute::<CXClientData, &mut CursorVisitor>(data);
+        let func = mem::transmute::<CXClientData, &mut CursorVisitor>(data);
         return (*func)(&Cursor { x: cur }, &Cursor { x: parent });
     }
 }

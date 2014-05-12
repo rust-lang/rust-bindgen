@@ -576,7 +576,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, layout: Layout, fields: Vec<FieldI
 
     let expr = quote_expr!(
         &ctx.ext_cx,
-        unsafe { ::std::cast::transmute(self) }
+        unsafe { ::std::mem::transmute(self) }
     );
     let mut unnamed = 0;
     let fs = fields.iter().map(|f| {
