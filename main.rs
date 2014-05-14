@@ -24,7 +24,8 @@ struct BindGenCtx {
     builtin_defs: Vec<Cursor>,
     builtin_names: HashSet<~str>,
     emit_ast: bool,
-    fail_on_bitfield: bool
+    fail_on_bitfield: bool,
+    fail_on_unknown_type: bool,
 }
 
 enum ParseResult {
@@ -44,6 +45,7 @@ fn parse_args(args: &[~str]) -> ParseResult {
     let mut builtins = false;
     let mut emit_ast = false;
     let mut fail_on_bitfield = true;
+    let mut fail_on_unknown_type = true;
 
     if args_len == 0u {
         return CmdUsage;
@@ -100,6 +102,10 @@ fn parse_args(args: &[~str]) -> ParseResult {
                   fail_on_bitfield = false;
                   ix += 1u;
                 }
+                "-allow-unknown-types" => {
+                  fail_on_unknown_type = false;
+                  ix += 1u;
+                }
                 _ => {
                     clang_args.push(args[ix].clone());
                     ix += 1u;
@@ -118,7 +124,8 @@ fn parse_args(args: &[~str]) -> ParseResult {
         builtin_defs: vec!(),
         builtin_names: builtin_names(),
         emit_ast: emit_ast,
-        fail_on_bitfield: fail_on_bitfield
+        fail_on_bitfield: fail_on_bitfield,
+        fail_on_unknown_type: fail_on_unknown_type
     };
 
     return ParseOk(clang_args, ctx, out);
@@ -156,6 +163,8 @@ Options:
     -abi <abi>            Indicate abi of extern functions (default C)
     -allow-bitfields      Don't fail if we encounter a bitfield
                           (default is false, as rust doesn't support bitfields)
+    -allow-unknown-types  Don't fail if we encounter types we do not support,
+                          instead treat them as void
     -emit-clang-ast       Output the ast (for debugging purposes)
 
     Options other than stated above are passed to clang.
@@ -356,7 +365,17 @@ fn conv_ty(ctx: &mut BindGenCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type {
       CXType_Unexposed |
       CXType_Enum => conv_decl_ty(ctx, &ty.declaration()),
       CXType_ConstantArray => TArray(box conv_ty(ctx, &ty.elem_type(), cursor), ty.array_size(), layout),
-      _ => fail!("unhandled type kind: `{}`", type_to_str(ty.kind())),
+      _ => {
+        let msg = format!("unhandled type kind: `{}`", type_to_str(ty.kind()));
+        if ctx.fail_on_unknown_type {
+            fail!(msg)
+        } else {
+            let mut stderr = io::stderr();
+            stderr.write_str("warning: ");
+            stderr.write_line(msg);
+            TVoid
+        }
+      },
     };
 }
 
