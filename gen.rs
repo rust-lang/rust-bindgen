@@ -105,8 +105,8 @@ fn enum_name(name: ~str) -> ~str {
     format!("Enum_{}", name)
 }
 
-pub fn gen_rs(out: Box<io::Writer>, abi: ~str, links: &[~str], globs: Vec<Global>) {
-    let abi = match abi.as_slice() {
+pub fn gen_rs(out: Box<io::Writer>, abi: &str, links: &[~str], globs: Vec<Global>) {
+    let abi = match abi {
         "cdecl" => abi::Cdecl,
         "stdcall" => abi::Stdcall,
         "fastcall" => abi::Fastcall,

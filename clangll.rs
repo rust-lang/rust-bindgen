@@ -2,6 +2,7 @@
 
 #![allow(non_camel_case_types)]
 #![allow(uppercase_variables)]
+#![allow(dead_code)]
 
 use libc::*;
 pub struct CXString {

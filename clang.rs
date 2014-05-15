@@ -319,7 +319,7 @@ pub struct TranslationUnit {
 }
 
 impl TranslationUnit {
-    pub fn parse(ix: &Index, file: &str, cmd_args: Vec<~str>,
+    pub fn parse(ix: &Index, file: &str, cmd_args: &[~str],
                  unsaved: &[UnsavedFile], opts: uint) -> TranslationUnit {
         let _fname = file.to_c_str();
         let fname = _fname.with_ref(|f| f);
