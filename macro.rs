@@ -1,3 +1,4 @@
+use std::cell::RefCell;
 use std::default::Default;
 use std::os;
 use syntax::ast;
@@ -7,16 +8,20 @@ use syntax::ext::base;
 use syntax::parse;
 use syntax::parse::token;
 use syntax::print::pprust;
+use syntax::util::small_vector::SmallVector;
 
 use super::{generate_bindings, BindgenOptions, Logger};
 
 pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::TokenTree]) -> Box<base::MacResult> {
-    let mut visit = BindgenArgsVisitor::new();
+    let mut visit = BindgenArgsVisitor {
+        options: Default::default(),
+        seen_named: false
+    };
+
     visit.options.builtins = true;
     if !parse_macro_opts(cx, tts, &mut visit) {
         return base::DummyResult::any(sp);
     }
-    let mod_name = visit.mod_name.clone();
 
     // Set the working dir to the directory containing the invoking rs file so
     // that clang searches for headers relative to it rather than the crate root
@@ -30,17 +35,10 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
     log_span.hi = log_span.lo + codemap::BytePos(8);
     let logger = MacroLogger { sp: log_span, cx: cx };
 
+//    /*let attrs = vec!(mk_attr_list(&mut ctx, "allow", ["dead_code", "non_camel_case_types", "uppercase_variables"]));*/
     let ret = match generate_bindings(visit.options, Some(&logger as &Logger)) {
-        Ok((module, attrs)) => {
-            let item = @ast::Item {
-                ident: cx.ident_of(mod_name),
-                attrs: attrs,
-                id: ast::DUMMY_NODE_ID,
-                node: ast::ItemMod(module),
-                vis: ast::Inherited,
-                span: DUMMY_SP
-            };
-            base::MacItem::new(item)
+        Ok(items) => {
+            box BindgenResult { items: RefCell::new(Some(SmallVector::many(items))) } as Box<base::MacResult>
         }
         Err(_) => base::DummyResult::any(sp)
     };
@@ -48,6 +46,16 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
     os::change_dir(&Path::new(cwd));
 
     ret
+}
+
+struct BindgenResult {
+    items: RefCell<Option<SmallVector<@ast::Item>>>
+}
+
+impl base::MacResult for BindgenResult {
+    fn make_items(&self) -> Option<SmallVector<@ast::Item>> {
+        self.items.borrow_mut().take()
+    }
 }
 
 struct MacroLogger<'a, 'b> {
@@ -73,33 +81,19 @@ trait MacroArgsVisitor {
 }
 
 struct BindgenArgsVisitor {
-    pub mod_name: ~str,
     pub options: BindgenOptions,
-    idx: int,
-    named: bool
-}
-
-impl BindgenArgsVisitor {
-    fn new() -> BindgenArgsVisitor {
-        BindgenArgsVisitor {
-            mod_name: "bindings".to_owned(),
-            options: Default::default(),
-            idx: 0
-        }
-    }
+    seen_named: bool
 }
 
 impl MacroArgsVisitor for BindgenArgsVisitor {
     fn visit_str(&mut self, mut name: Option<&str>, val: &str) -> bool {
-        self.idx += 1;
-        if self.idx > 1 && name.is_none() {
-            name = Some("header")
-        }
+        if name.is_some() { self.seen_named = true; }
+        else if !self.seen_named { name = Some("clang_args") }
         match name {
             Some("link") => self.options.links.push(val.to_owned()),
             Some("abi") => self.options.abi = val.to_owned(),
             Some("match") => self.options.match_pat.push(val.to_owned()),
-            Some("header") | Some("clang_args") => self.options.clang_args.push(val.to_owned()),
+            Some("clang_args") => self.options.clang_args.push(val.to_owned()),
             _ => return false
         }
         true
@@ -107,12 +101,12 @@ impl MacroArgsVisitor for BindgenArgsVisitor {
 
     #[allow(unused_variable)]
     fn visit_int(&mut self, name: Option<&str>, val: i64) -> bool {
-        self.idx += 1;
+        if name.is_some() { self.seen_named = true; }
         false
     }
 
     fn visit_bool(&mut self, name: Option<&str>, val: bool) -> bool {
-        self.idx += 1;
+        if name.is_some() { self.seen_named = true; }
         match name {
             Some("allow_bitfields") => self.options.fail_on_bitfield = !val,
             Some("allow_unknown_types") => self.options.fail_on_unknown_type = !val,
@@ -122,12 +116,9 @@ impl MacroArgsVisitor for BindgenArgsVisitor {
         true
     }
 
+    #[allow(unused_variable)]
     fn visit_ident(&mut self, name: Option<&str>, val: &str) -> bool {
-        self.idx += 1;
-        if self.idx == 1 {
-            self.mod_name = val.to_owned();
-            return true
-        }
+        if name.is_some() { self.seen_named = true; }
         false
     }
 }
@@ -151,12 +142,12 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
         let mut span = parser.span;
 
         // Check for [ident=]value and if found save ident to name
-        if parser.look_ahead(1, |t| t == &token::EQ || t == &token::COLON) {
+        if parser.look_ahead(1, |t| t == &token::EQ) {
             match parser.bump_and_get() {
                 token::IDENT(ident, _) => {
                     let ident = parser.id_to_interned_str(ident);
                     name = Some(ident.get().to_owned());
-                    parser.expect_one_of(&[token::EQ, token::COLON], &[]);
+                    parser.expect(&token::EQ);
                 },
                 _ => {
                     cx.span_err(span, "invalid argument format");

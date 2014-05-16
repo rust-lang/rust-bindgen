@@ -102,7 +102,7 @@ fn enum_name(name: ~str) -> ~str {
     format!("Enum_{}", name)
 }
 
-pub fn gen_mod(abi: &str, links: &[~str], globs: Vec<Global>) -> (ast::Mod, Vec<ast::Attribute>) {
+pub fn gen_mod(abi: &str, links: &[~str], globs: Vec<Global>) -> Vec<@ast::Item> {
     let abi = match abi {
         "cdecl" => abi::Cdecl,
         "stdcall" => abi::Stdcall,
@@ -233,17 +233,7 @@ pub fn gen_mod(abi: &str, links: &[~str], globs: Vec<Global>) -> (ast::Mod, Vec<
 
     defs.push(mk_extern(&mut ctx, links, vars, funcs));
 
-    let views = Vec::from_elem(1, mk_import(&mut ctx, &["libc".to_owned()]));
-
-    let module = ast::Mod {
-        inner: DUMMY_SP,
-        view_items: views,
-        items: defs,
-    };
-
-    let attrs = vec!(mk_attr_list(&mut ctx, "allow", ["dead_code", "non_camel_case_types", "uppercase_variables"]));
-
-    (module, attrs)
+    defs
 }
 
 fn mk_attr_list(ctx: &mut GenCtx, attr_name: &str, items: &[&str]) -> ast::Attribute {
@@ -252,9 +242,7 @@ fn mk_attr_list(ctx: &mut GenCtx, attr_name: &str, items: &[&str]) -> ast::Attri
         ctx.ext_cx.meta_word(DUMMY_SP, interned)
     }).collect();
     let interned = to_intern_str(ctx, attr_name.to_owned());
-    let mut attr = ctx.ext_cx.attribute(DUMMY_SP, ctx.ext_cx.meta_list(DUMMY_SP, interned, items));
-    attr.node.style = ast::AttrInner;
-    attr
+    ctx.ext_cx.attribute(DUMMY_SP, ctx.ext_cx.meta_list(DUMMY_SP, interned, items))
 }
 
 fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::ViewItem {
@@ -549,7 +537,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, layout: Layout, fields: Vec<FieldI
         _ => "u8",
     };
     let data_len = if ty_name == "u8" { layout.size } else { layout.size / layout.align };
-    let base_ty = mk_ty(ctx, ty_name.to_owned());
+    let base_ty = mk_ty(ctx, false, vec!(ty_name.to_owned()));
     let data_ty = @mk_arrty(ctx, &base_ty, data_len);
     let data = dummy_spanned(ast::StructField_ {
         kind: ast::NamedField(
@@ -783,23 +771,23 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: &Type,
 
 fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
     return match *ty {
-        TVoid => mk_ty(ctx, "c_void".to_owned()),
+        TVoid => mk_ty(ctx, true, vec!("libc".to_owned(), "c_void".to_owned())),
         TInt(i, _) => match i {
-            IBool => mk_ty(ctx, "c_int".to_owned()),
-            ISChar => mk_ty(ctx, "c_char".to_owned()),
-            IUChar => mk_ty(ctx, "c_uchar".to_owned()),
-            IInt => mk_ty(ctx, "c_int".to_owned()),
-            IUInt => mk_ty(ctx, "c_uint".to_owned()),
-            IShort => mk_ty(ctx, "c_short".to_owned()),
-            IUShort => mk_ty(ctx, "c_ushort".to_owned()),
-            ILong => mk_ty(ctx, "c_long".to_owned()),
-            IULong => mk_ty(ctx, "c_ulong".to_owned()),
-            ILongLong => mk_ty(ctx, "c_longlong".to_owned()),
-            IULongLong => mk_ty(ctx, "c_ulonglong".to_owned())
+            IBool => mk_ty(ctx, true, vec!("libc".to_owned(), "c_int".to_owned())),
+            ISChar => mk_ty(ctx, true, vec!("libc".to_owned(), "c_char".to_owned())),
+            IUChar => mk_ty(ctx, true, vec!("libc".to_owned(), "c_uchar".to_owned())),
+            IInt => mk_ty(ctx, true, vec!("libc".to_owned(), "c_int".to_owned())),
+            IUInt => mk_ty(ctx, true, vec!("libc".to_owned(), "c_uint".to_owned())),
+            IShort => mk_ty(ctx, true, vec!("libc".to_owned(), "c_short".to_owned())),
+            IUShort => mk_ty(ctx, true, vec!("libc".to_owned(), "c_ushort".to_owned())),
+            ILong => mk_ty(ctx, true, vec!("libc".to_owned(), "c_long".to_owned())),
+            IULong => mk_ty(ctx, true, vec!("libc".to_owned(), "c_ulong".to_owned())),
+            ILongLong => mk_ty(ctx, true, vec!("libc".to_owned(), "c_longlong".to_owned())),
+            IULongLong => mk_ty(ctx, true, vec!("libc".to_owned(), "c_ulonglong".to_owned()))
         },
         TFloat(f, _) => match f {
-            FFloat => mk_ty(ctx, "c_float".to_owned()),
-            FDouble => mk_ty(ctx, "c_double".to_owned())
+            FFloat => mk_ty(ctx, true, vec!("libc".to_owned(), "c_float".to_owned())),
+            FDouble => mk_ty(ctx, true, vec!("libc".to_owned(), "c_double".to_owned()))
         },
         TPtr(ref t, is_const, _) => {
             let id = cty_to_rs(ctx, *t);
@@ -815,37 +803,37 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
         },
         TNamed(ti) => {
             let id = rust_type_id(ctx, ti.borrow().name.clone());
-            mk_ty(ctx, id)
+            mk_ty(ctx, false, vec!(id))
         },
         TComp(ci) => {
             let mut c = ci.borrow_mut();
             c.name = unnamed_name(ctx, c.name.clone());
             if c.cstruct {
-                mk_ty(ctx, struct_name(c.name.clone()))
+                mk_ty(ctx, false, vec!(struct_name(c.name.clone())))
             } else {
-                mk_ty(ctx, union_name(c.name.clone()))
+                mk_ty(ctx, false, vec!(union_name(c.name.clone())))
             }
         },
         TEnum(ei) => {
             let mut e = ei.borrow_mut();
             e.name = unnamed_name(ctx, e.name.clone());
-            mk_ty(ctx, enum_name(e.name.clone()))
+            mk_ty(ctx, false, vec!(enum_name(e.name.clone())))
         }
     };
 }
 
-fn mk_ty(ctx: &mut GenCtx, name: ~str) -> ast::Ty {
+fn mk_ty(ctx: &mut GenCtx, global: bool, segments: Vec<~str>) -> ast::Ty {
     let ty = ast::TyPath(
         ast::Path {
             span: DUMMY_SP,
-            global: false,
-            segments: Vec::from_elem(1,
+            global: global,
+            segments: segments.iter().map(|s| {
                 ast::PathSegment {
-                    identifier: ctx.ext_cx.ident_of(name),
+                    identifier: ctx.ext_cx.ident_of(s.as_slice()),
                     lifetimes: Vec::new(),
                     types: OwnedSlice::empty(),
                 }
-            )
+            }).collect()
         },
         option::None,
         ast::DUMMY_NODE_ID

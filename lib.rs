@@ -59,7 +59,7 @@ pub trait Logger {
     fn warn(&self, msg: &str);
 }
 
-pub fn generate_bindings(options: BindgenOptions, logger: Option<&Logger>) -> Result<(ast::Mod, Vec<ast::Attribute>), ()> {
+pub fn generate_bindings(options: BindgenOptions, logger: Option<&Logger>) -> Result<Vec<@ast::Item>, ()> {
     let l = DummyLogger;
     let logger = match logger {
         Some(l) => l,
