@@ -56,7 +56,7 @@ impl fmt::Show for Global {
             GEnumDecl(ei) => ei.borrow().fmt(f),
             GVar(vi) => vi.borrow().fmt(f),
             GFunc(vi) => vi.borrow().fmt(f),
-            GOther => write!(f.buf, "*"),
+            GOther => "*".fmt(f),
         }
     }
 }
