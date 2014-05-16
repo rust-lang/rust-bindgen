@@ -48,16 +48,16 @@ impl Global {
 
 impl fmt::Show for Global {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-      match *self {
-        GType(ti) => ti.borrow().fmt(f),
-        GComp(ci) => ci.borrow().fmt(f),
-        GCompDecl(ci) => ci.borrow().fmt(f),
-        GEnum(ei) => ei.borrow().fmt(f),
-        GEnumDecl(ei) => ei.borrow().fmt(f),
-        GVar(vi) => vi.borrow().fmt(f),
-        GFunc(vi) => vi.borrow().fmt(f),
-        GOther => write!(f.buf, "*"),
-      }
+        match *self {
+            GType(ti) => ti.borrow().fmt(f),
+            GComp(ci) => ci.borrow().fmt(f),
+            GCompDecl(ci) => ci.borrow().fmt(f),
+            GEnum(ei) => ei.borrow().fmt(f),
+            GEnumDecl(ei) => ei.borrow().fmt(f),
+            GVar(vi) => vi.borrow().fmt(f),
+            GFunc(vi) => vi.borrow().fmt(f),
+            GOther => write!(f.buf, "*"),
+        }
     }
 }
 
@@ -77,29 +77,29 @@ pub enum Type {
 impl Type {
     pub fn size(&self) -> uint {
         match *self {
-          TInt(_, l) => l.size,
-          TFloat(_, l) => l.size,
-          TPtr(_, _, l) => l.size,
-          TArray(_, _, l) => l.size,
-          TNamed(ref ti) => ti.borrow().ty.size(),
-          TComp(ref ci) => ci.borrow().layout.size,
-          TEnum(ref ei) => ei.borrow().layout.size,
-          TVoid => 0,
-          TFunc(..) => 0,
+            TInt(_, l) => l.size,
+            TFloat(_, l) => l.size,
+            TPtr(_, _, l) => l.size,
+            TArray(_, _, l) => l.size,
+            TNamed(ref ti) => ti.borrow().ty.size(),
+            TComp(ref ci) => ci.borrow().layout.size,
+            TEnum(ref ei) => ei.borrow().layout.size,
+            TVoid => 0,
+            TFunc(..) => 0,
         }
     }
 
     pub fn align(&self) -> uint {
         match *self {
-          TInt(_, l) => l.align,
-          TFloat(_, l) => l.align,
-          TPtr(_, _, l) => l.align,
-          TArray(_, _, l) => l.align,
-          TNamed(ref ti) => ti.borrow().ty.align(),
-          TComp(ref ci) => ci.borrow().layout.align,
-          TEnum(ref ei) => ei.borrow().layout.align,
-          TVoid => 0,
-          TFunc(..) => 0,
+            TInt(_, l) => l.align,
+            TFloat(_, l) => l.align,
+            TPtr(_, _, l) => l.align,
+            TArray(_, _, l) => l.align,
+            TNamed(ref ti) => ti.borrow().ty.align(),
+            TComp(ref ci) => ci.borrow().layout.align,
+            TEnum(ref ei) => ei.borrow().layout.align,
+            TVoid => 0,
+            TFunc(..) => 0,
         }
     }
 }
@@ -211,11 +211,11 @@ impl fmt::Show for EnumInfo {
 #[deriving(Clone, Eq)]
 pub struct EnumItem {
     pub name: ~str,
-    pub val: int
+    pub val: i64
 }
 
 impl EnumItem {
-    pub fn new(name: ~str, val: int) -> EnumItem {
+    pub fn new(name: ~str, val: i64) -> EnumItem {
         EnumItem {
             name: name,
             val: val

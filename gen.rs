@@ -7,18 +7,27 @@ use std::vec::Vec;
 
 use syntax::abi;
 use syntax::ast;
-use syntax::codemap::{DUMMY_SP, dummy_spanned};
+use syntax::codemap::{DUMMY_SP, dummy_spanned, ExpnInfo, NameAndSpan, MacroBang};
 use syntax::ext::base;
 use syntax::ext::build::AstBuilder;
+use syntax::ext::expand::ExpansionConfig;
 use syntax::owned_slice::OwnedSlice;
 use syntax::parse;
 
 use types::*;
 
-struct GenCtx<'a, 'r> {
-    ext_cx: &'a mut base::ExtCtxt<'r>,
+struct GenCtx<'r> {
+    ext_cx: base::ExtCtxt<'r>,
     unnamed_ty: uint,
     abi: abi::Abi,
+}
+
+struct ErrLoader;
+
+impl base::CrateLoader for ErrLoader {
+    fn load_crate(&mut self, _: &ast::ViewItem) -> base::MacroCrate {
+        fail!("lolwut")
+    }
 }
 
 fn first<A, B>((val, _): (A, B)) -> A {
@@ -93,7 +102,7 @@ fn enum_name(name: ~str) -> ~str {
     format!("Enum_{}", name)
 }
 
-pub fn gen_mod(ext_cx: &mut base::ExtCtxt, abi: &str, links: &[~str], globs: Vec<Global>) -> (ast::Mod, Vec<ast::Attribute>) {
+pub fn gen_mod(abi: &str, links: &[~str], globs: Vec<Global>) -> (ast::Mod, Vec<ast::Attribute>) {
     let abi = match abi {
         "cdecl" => abi::Cdecl,
         "stdcall" => abi::Stdcall,
@@ -104,12 +113,27 @@ pub fn gen_mod(ext_cx: &mut base::ExtCtxt, abi: &str, links: &[~str], globs: Vec
         _ => abi::C
     };
 
+    // Create a dummy ExtCtxt. We only need this for string interning and that uses TLS.
+    let mut loader = ErrLoader;
+    let cfg = ExpansionConfig {
+        loader: &mut loader,
+        deriving_hash_type_parameter: false,
+        crate_id: from_str("xxx").unwrap(),
+    };
+    let sess = &parse::new_parse_sess();
     let mut ctx = GenCtx {
-        ext_cx: ext_cx,
+        ext_cx: base::ExtCtxt::new(
+            sess,
+            Vec::new(),
+            cfg,
+        ),
         unnamed_ty: 0,
         abi: abi,
     };
-
+    ctx.ext_cx.bt_push(ExpnInfo {
+        call_site: DUMMY_SP,
+        callee: NameAndSpan { name: StrBuf::new(), format: MacroBang, span: None }
+    });
     let uniq_globs = tag_dup_decl(globs);
 
     let mut fs = vec!();
@@ -188,7 +212,7 @@ pub fn gen_mod(ext_cx: &mut base::ExtCtxt, abi: &str, links: &[~str], globs: Vec
                 let v = vi.borrow();
                 cvar_to_rs(&mut ctx, v.name.clone(), &v.ty, v.is_const)
             },
-            _ => { fail!("generate global variables".to_owned()) }
+            _ => unreachable!()
         }
     }).collect();
 
@@ -200,10 +224,10 @@ pub fn gen_mod(ext_cx: &mut base::ExtCtxt, abi: &str, links: &[~str], globs: Vec
                     TFunc(ref rty, ref aty, var) =>
                         cfunc_to_rs(&mut ctx, v.name.clone(),
                                     *rty, aty.as_slice(), var),
-                    _ => { fail!("generate functions".to_owned()) }
+                    _ => unreachable!()
                 }
             },
-            _ => { fail!("generate functions".to_owned()) }
+            _ => unreachable!()
         }
     }).collect();
 
@@ -301,7 +325,7 @@ fn mk_extern(ctx: &mut GenCtx, links: &[~str],
               attrs: attrs,
               id: ast::DUMMY_NODE_ID,
               node: ext,
-              vis: ast::Public,
+              vis: ast::Inherited,
               span: DUMMY_SP
            };
 }
@@ -615,7 +639,7 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, kind: IKind, items: Vec<EnumItem>) 
         let cst = ast::ItemStatic(
             @val_ty.clone(),
             ast::MutImmutable,
-            ctx.ext_cx.expr_int(DUMMY_SP, it.val)
+            ctx.ext_cx.expr_lit(DUMMY_SP, ast::LitIntUnsuffixed(it.val))
         );
 
         let id = first(rust_id(ctx, it.name.clone()));

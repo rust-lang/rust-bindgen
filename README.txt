@@ -11,7 +11,8 @@ Requirements
 Building
 --------
 
-	$ rustc bindgen.rs
+	$ rustc lib.rs
+    $ rustc -L . bindgen.rs
 
 Usage
 -----
