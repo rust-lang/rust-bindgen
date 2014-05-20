@@ -10,6 +10,7 @@ extern crate libc;
 use collections::HashSet;
 use std::default::Default;
 use syntax::ast;
+use syntax::codemap::Span;
 use syntax::ext::base;
 use syntax::parse::token;
 
@@ -59,7 +60,7 @@ pub trait Logger {
     fn warn(&self, msg: &str);
 }
 
-pub fn generate_bindings(options: BindgenOptions, logger: Option<&Logger>) -> Result<Vec<@ast::Item>, ()> {
+pub fn generate_bindings(options: BindgenOptions, logger: Option<&Logger>, span: Span) -> Result<Vec<@ast::Item>, ()> {
     let l = DummyLogger;
     let logger = match logger {
         Some(l) => l,
@@ -68,7 +69,7 @@ pub fn generate_bindings(options: BindgenOptions, logger: Option<&Logger>) -> Re
         }
     };
     let globals = try!(parse_headers(&options, logger));
-    Ok(gen::gen_mod(options.abi.as_slice(), options.links.as_slice(), globals))
+    Ok(gen::gen_mod(options.abi.as_slice(), options.links.as_slice(), globals, span))
 }
 
 struct DummyLogger;

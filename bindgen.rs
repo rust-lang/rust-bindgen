@@ -79,14 +79,14 @@ fn parse_args(args: &[~str]) -> ParseResult {
                     if ix + 1u >= args_len {
                         return ParseErr("Missing link name".to_owned());
                     }
-                    options.links.push((args[ix + 1u].clone(), Some("static")));
+                    options.links.push((args[ix + 1u].clone(), Some("static".to_owned())));
                     ix += 2u;
                 }
                 "-framework-link" => {
                     if ix + 1u >= args_len {
                         return ParseErr("Missing link name".to_owned());
                     }
-                    options.links.push((args[ix + 1u].clone(), Some("framework")));
+                    options.links.push((args[ix + 1u].clone(), Some("framework".to_owned())));
                     ix += 2u;
                 }
                 "-match" => {
@@ -172,7 +172,7 @@ pub fn main() {
         CmdUsage => print_usage(bin),
         ParseOk(options, out) => {
             let logger = StdLogger;
-            match generate_bindings(options, Some(&logger as &Logger)) {
+            match generate_bindings(options, Some(&logger as &Logger), DUMMY_SP) {
                 Ok(items) => {
                     let module = ast::Mod {
                         inner: DUMMY_SP,

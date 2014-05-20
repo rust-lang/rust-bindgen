@@ -31,13 +31,14 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
     let cwd = os::getcwd();
     os::change_dir(&Path::new(mod_dir));
     
-    // We want the span for the logger to just match the bindgen! symbol
+    // We want the span for errors to just match the bindgen! symbol
     // instead of the whole invocation which can span multiple lines
-    let mut log_span = sp;
-    log_span.hi = log_span.lo + codemap::BytePos(8);
-    let logger = MacroLogger { sp: log_span, cx: cx };
+    let mut short_span = sp;
+    short_span.hi = short_span.lo + codemap::BytePos(8);
 
-    let ret = match generate_bindings(visit.options, Some(&logger as &Logger)) {
+    let logger = MacroLogger { sp: short_span, cx: cx };
+
+    let ret = match generate_bindings(visit.options, Some(&logger as &Logger), short_span) {
         Ok(items) => {
             box BindgenResult { items: RefCell::new(Some(SmallVector::many(items))) } as Box<base::MacResult>
         }
