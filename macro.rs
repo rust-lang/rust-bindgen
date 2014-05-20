@@ -22,7 +22,7 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
     }
 
     // Reparse clang_args as it is passed in string form
-    let clang_args = visit.options.clang_args.iter().fold("".to_owned(), |a, s| format!("{} {}", a, s));
+    let clang_args = visit.options.clang_args.connect(" ");
     visit.options.clang_args = parse_process_args(clang_args.as_slice());
 
     // Set the working dir to the directory containing the invoking rs file so
@@ -50,31 +50,6 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
     ret
 }
 
-struct BindgenResult {
-    items: RefCell<Option<SmallVector<@ast::Item>>>
-}
-
-impl base::MacResult for BindgenResult {
-    fn make_items(&self) -> Option<SmallVector<@ast::Item>> {
-        self.items.borrow_mut().take()
-    }
-}
-
-struct MacroLogger<'a, 'b> {
-    sp: codemap::Span,
-    cx: &'a base::ExtCtxt<'b>
-}
-
-impl<'a, 'b> Logger for MacroLogger<'a, 'b> {
-    fn error(&self, msg: &str) {
-        self.cx.span_err(self.sp, msg)
-    }
-
-    fn warn(&self, msg: &str) {
-        self.cx.span_warn(self.sp, msg)
-    }
-}
-
 trait MacroArgsVisitor {
     fn visit_str(&mut self, name: Option<&str>, val: &str) -> bool;
     fn visit_int(&mut self, name: Option<&str>, val: i64) -> bool;
@@ -85,41 +60,6 @@ trait MacroArgsVisitor {
 struct BindgenArgsVisitor {
     pub options: BindgenOptions,
     seen_named: bool
-}
-
-fn parse_process_args(s: &str) -> Vec<~str> {
-    // 1: Parse into blocks
-    // 2: For blocks with quoted quotes remove those quoted quotes
-    let mut parts = Vec::new();
-    let mut in_quotes = false;
-    let mut has_escaped_quotes = false;
-    let mut start_idx = 0;
-    let mut last = ' ';
-    for (i, c) in s.chars().chain(" ".chars()).enumerate() {
-        match (last, c) {
-            // Match \" set has_escaped and skip
-            ('\\', '\"') => has_escaped_quotes = true,
-            // Match <any>"
-            (_, '\"') => in_quotes = !in_quotes,
-            // Match <any><space>
-            (_, ' ') => {
-                if !in_quotes {
-                    let mut part = s.slice(start_idx, i).to_owned();
-                    if has_escaped_quotes {
-                        part = part.replace("\\\"", "\"");
-                        has_escaped_quotes = false;
-                    }
-                    if part.len() > 0 {
-                        parts.push(part);
-                    }
-                    start_idx = i + 1;
-                }
-            },
-            (_, _) => ()
-        }
-        last = c;
-    }
-    parts
 }
 
 impl MacroArgsVisitor for BindgenArgsVisitor {
@@ -159,14 +99,6 @@ impl MacroArgsVisitor for BindgenArgsVisitor {
     fn visit_ident(&mut self, name: Option<&str>, val: &str) -> bool {
         if name.is_some() { self.seen_named = true; }
         false
-    }
-}
-
-// I'm sure there's a nicer way of doing it
-fn as_str<'a>(owned: &'a Option<~str>) -> Option<&'a str> {
-    match owned {
-        &Some(ref s) => Some(s.as_slice()),
-        &None => None
     }
 }
 
@@ -254,3 +186,131 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
     }
 }
 
+// I'm sure there's a nicer way of doing it
+fn as_str<'a>(owned: &'a Option<~str>) -> Option<&'a str> {
+    match owned {
+        &Some(ref s) => Some(s.as_slice()),
+        &None => None
+    }
+}
+
+#[deriving(Eq)]
+enum QuoteState {
+    InNone,
+    InSingleQuotes,
+    InDoubleQuotes
+}
+
+fn parse_process_args(s: &str) -> Vec<~str> {
+    let s = s.trim();
+    let mut parts = Vec::new();
+    let mut quote_state = InNone;
+    let mut positions = vec!(0);
+    let mut last = ' ';
+    for (i, c) in s.chars().chain(" ".chars()).enumerate() {
+        match (last, c) {
+            // Match \" set has_escaped and skip
+            ('\\', '\"') => (),
+            // Match \'
+            ('\\', '\'') => (),
+            // Match \<space>
+            ('\\', ' ') => (),
+            // Match \\
+            ('\\', '\\') => (),
+            // Match <any>"
+            (_, '\"') => {
+                match quote_state {
+                    InNone => {
+                        quote_state = InDoubleQuotes;
+                        positions.push(i);
+                        positions.push(i + 1);
+                    },
+                    InDoubleQuotes => {
+                        quote_state = InNone;
+                        positions.push(i);
+                        positions.push(i + 1);
+                    }
+                    InSingleQuotes => ()
+                }
+            },
+            // Match <any>'
+            (_, '\'') =>  {
+                match quote_state {
+                    InNone => {
+                        quote_state = InSingleQuotes;
+                        positions.push(i);
+                        positions.push(i + 1);
+                    },
+                    InSingleQuotes => {
+                        quote_state = InNone;
+                        positions.push(i);
+                        positions.push(i + 1);
+                    }
+                    InDoubleQuotes => ()
+                }
+            }
+            // Match <any><space>
+            (_, ' ') => {
+                // If we are at the end of the string close any open quotes
+                if i >= s.len() {
+                    quote_state = InNone;
+                }
+
+                if quote_state == InNone {
+                    {
+                        positions.push(i);
+
+                        let starts = positions.iter().enumerate().filter(|&(i, _)| i % 2 == 0);
+                        let ends = positions.iter().enumerate().filter(|&(i, _)| i % 2 == 1);
+
+                        let part: Vec<~str> = starts.zip(ends).map(|((_, start), (_, end))| s.slice(*start, *end).to_owned()).collect();
+                        let part = part.connect("");
+
+                        if part.len() > 0 {
+                            // Remove any extra whitespace outside the quotes
+                            let part = part.trim();
+                            // Replace quoted characters
+                            let part = part.replace("\\\"", "\"");
+                            let part = part.replace("\\\'", "\'");
+                            let part = part.replace("\\ ", " ");
+                            let part = part.replace("\\\\", "\\");
+                            error!("part: {}", part);
+                            parts.push(part);
+                        }
+                    }
+
+                    positions.clear();
+                    positions.push(i + 1);
+                }
+            },
+            (_, _) => ()
+        }
+        last = c;
+    }
+    parts
+}
+
+struct MacroLogger<'a, 'b> {
+    sp: codemap::Span,
+    cx: &'a base::ExtCtxt<'b>
+}
+
+impl<'a, 'b> Logger for MacroLogger<'a, 'b> {
+    fn error(&self, msg: &str) {
+        self.cx.span_err(self.sp, msg)
+    }
+
+    fn warn(&self, msg: &str) {
+        self.cx.span_warn(self.sp, msg)
+    }
+}
+
+struct BindgenResult {
+    items: RefCell<Option<SmallVector<@ast::Item>>>
+}
+
+impl base::MacResult for BindgenResult {
+    fn make_items(&self) -> Option<SmallVector<@ast::Item>> {
+        self.items.borrow_mut().take()
+    }
+}
