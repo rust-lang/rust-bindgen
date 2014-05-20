@@ -1,6 +1,6 @@
 #![allow(non_uppercase_pattern_statics)]
 
-use libc::{c_uint, c_char, c_int};
+use libc::{c_uint, c_char, c_int, c_ulong};
 use std::{mem, io, ptr, str};
 use std::fmt;
 use std::hash::Hash;
@@ -431,7 +431,26 @@ impl Diagnostic {
 
 // UnsavedFile
 pub struct UnsavedFile {
-    x: Struct_CXUnsavedFile
+    x: Struct_CXUnsavedFile,
+    name: CString,
+    contents: CString
+}
+
+impl UnsavedFile {
+    pub fn new(name: &str, contents: &str) -> UnsavedFile {
+        let name = name.to_c_str();
+        let contents = contents.to_c_str();
+        let x = Struct_CXUnsavedFile {
+            Filename: name.with_ref(|cs| cs),
+            Contents: contents.with_ref(|cs| cs),
+            Length: contents.len() as c_ulong,
+        };
+        UnsavedFile {
+            x: x,
+            name: name,
+            contents: contents
+        }
+    }
 }
 
 pub fn kind_to_str(x: Enum_CXCursorKind) -> &str {
