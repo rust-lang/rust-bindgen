@@ -32,7 +32,7 @@ pub struct BindgenOptions {
     pub match_pat: Vec<~str>,
     pub abi: ~str,
     pub builtins: bool,
-    pub links: Vec<~str>,
+    pub links: Vec<(~str, Option<~str>)>,
     pub emit_ast: bool,
     pub fail_on_bitfield: bool,
     pub fail_on_unknown_type: bool,

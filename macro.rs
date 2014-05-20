@@ -3,11 +3,9 @@ use std::default::Default;
 use std::os;
 use syntax::ast;
 use syntax::codemap;
-use syntax::codemap::DUMMY_SP;
 use syntax::ext::base;
 use syntax::parse;
 use syntax::parse::token;
-use syntax::print::pprust;
 use syntax::util::small_vector::SmallVector;
 
 use super::{generate_bindings, BindgenOptions, Logger};
@@ -35,7 +33,6 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
     log_span.hi = log_span.lo + codemap::BytePos(8);
     let logger = MacroLogger { sp: log_span, cx: cx };
 
-//    /*let attrs = vec!(mk_attr_list(&mut ctx, "allow", ["dead_code", "non_camel_case_types", "uppercase_variables"]));*/
     let ret = match generate_bindings(visit.options, Some(&logger as &Logger)) {
         Ok(items) => {
             box BindgenResult { items: RefCell::new(Some(SmallVector::many(items))) } as Box<base::MacResult>
@@ -90,7 +87,9 @@ impl MacroArgsVisitor for BindgenArgsVisitor {
         if name.is_some() { self.seen_named = true; }
         else if !self.seen_named { name = Some("clang_args") }
         match name {
-            Some("link") => self.options.links.push(val.to_owned()),
+            Some("link") => self.options.links.push((val.to_owned(), None)),
+            Some("link_static") => self.options.links.push((val.to_owned(), Some("static".to_owned()))),
+            Some("link_framework") => self.options.links.push((val.to_owned(), Some("framework".to_owned()))),
             Some("abi") => self.options.abi = val.to_owned(),
             Some("match") => self.options.match_pat.push(val.to_owned()),
             Some("clang_args") => self.options.clang_args.push(val.to_owned()),

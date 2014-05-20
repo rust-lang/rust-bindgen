@@ -102,7 +102,7 @@ fn enum_name(name: ~str) -> ~str {
     format!("Enum_{}", name)
 }
 
-pub fn gen_mod(abi: &str, links: &[~str], globs: Vec<Global>) -> Vec<@ast::Item> {
+pub fn gen_mod(abi: &str, links: &[(~str, Option<~str>)], globs: Vec<Global>) -> Vec<@ast::Item> {
     let abi = match abi {
         "cdecl" => abi::Cdecl,
         "stdcall" => abi::Stdcall,
@@ -232,7 +232,9 @@ pub fn gen_mod(abi: &str, links: &[~str], globs: Vec<Global>) -> Vec<@ast::Item>
     }).collect();
 
     defs.push(mk_extern(&mut ctx, links, vars, funcs));
-
+    
+    //let attrs = vec!(mk_attr_list(&mut ctx, "allow", ["dead_code", "non_camel_case_types", "uppercase_variables"]));
+    
     defs
 }
 
@@ -273,13 +275,13 @@ fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::ViewItem {
            };
 }
 
-fn mk_extern(ctx: &mut GenCtx, links: &[~str],
+fn mk_extern(ctx: &mut GenCtx, links: &[(~str, Option<~str>)],
              vars: Vec<@ast::ForeignItem>,
              funcs: Vec<@ast::ForeignItem>) -> @ast::Item {
     let attrs = if links.is_empty() {
         Vec::new()
     } else {
-        links.iter().map(|ref l| {
+        links.iter().map(|&(ref l, ref k)| {
             let link_name = @dummy_spanned(ast::MetaNameValue(
                 to_intern_str(ctx, "name".to_owned()),
                 dummy_spanned(ast::LitStr(
@@ -287,15 +289,24 @@ fn mk_extern(ctx: &mut GenCtx, links: &[~str],
                     ast::CookedStr
                 ))
             ));
-            let link_args = dummy_spanned(ast::Attribute_ {
+            let link_args = match k {
+                &None => vec!(link_name),
+                &Some(ref k) => vec!(link_name, @dummy_spanned(ast::MetaNameValue(
+                    to_intern_str(ctx, "kind".to_owned()),
+                    dummy_spanned(ast::LitStr(
+                        to_intern_str(ctx, k.to_owned()),
+                        ast::CookedStr
+                    ))
+                )))
+            };
+            dummy_spanned(ast::Attribute_ {
                 style: ast::AttrOuter,
                 value: @dummy_spanned(ast::MetaList(
                     to_intern_str(ctx, "link".to_owned()),
-                    Vec::from_elem(1, link_name))
+                    link_args)
                 ),
                 is_sugared_doc: false
-            });
-            link_args
+            })
         }).collect()
     };
 
