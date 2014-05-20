@@ -21,6 +21,10 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
         return base::DummyResult::any(sp);
     }
 
+    // Reparse clang_args as it is passed in string form
+    let clang_args = visit.options.clang_args.iter().fold("".to_owned(), |a, s| format!("{} {}", a, s));
+    visit.options.clang_args = parse_process_args(clang_args.as_slice());
+
     // Set the working dir to the directory containing the invoking rs file so
     // that clang searches for headers relative to it rather than the crate root
     let mod_dir = Vec::from_slice(Path::new(cx.codemap().span_to_filename(sp)).dirname());
@@ -80,6 +84,41 @@ trait MacroArgsVisitor {
 struct BindgenArgsVisitor {
     pub options: BindgenOptions,
     seen_named: bool
+}
+
+fn parse_process_args(s: &str) -> Vec<~str> {
+    // 1: Parse into blocks
+    // 2: For blocks with quoted quotes remove those quoted quotes
+    let mut parts = Vec::new();
+    let mut in_quotes = false;
+    let mut has_escaped_quotes = false;
+    let mut start_idx = 0;
+    let mut last = ' ';
+    for (i, c) in s.chars().chain(" ".chars()).enumerate() {
+        match (last, c) {
+            // Match \" set has_escaped and skip
+            ('\\', '\"') => has_escaped_quotes = true,
+            // Match <any>"
+            (_, '\"') => in_quotes = !in_quotes,
+            // Match <any><space>
+            (_, ' ') => {
+                if !in_quotes {
+                    let mut part = s.slice(start_idx, i).to_owned();
+                    if has_escaped_quotes {
+                        part = part.replace("\\\"", "\"");
+                        has_escaped_quotes = false;
+                    }
+                    if part.len() > 0 {
+                        parts.push(part);
+                    }
+                    start_idx = i + 1;
+                }
+            },
+            (_, _) => ()
+        }
+        last = c;
+    }
+    parts
 }
 
 impl MacroArgsVisitor for BindgenArgsVisitor {
