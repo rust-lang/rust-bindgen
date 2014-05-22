@@ -216,7 +216,7 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
         CXType_Double => TFloat(FDouble, layout),
         CXType_LongDouble => TFloat(FDouble, layout),
         CXType_Pointer => conv_ptr_ty(ctx, &ty.pointee_type(), cursor, layout),
-        CXType_VariableArray | CXType_DependentSizedArray => {
+        CXType_VariableArray | CXType_DependentSizedArray | CXType_IncompleteArray => {
             conv_ptr_ty(ctx, &ty.elem_type(), cursor, layout)
         }
         CXType_Record |

@@ -667,6 +667,7 @@ pub fn type_to_str(x: Enum_CXTypeKind) -> &str {
         CXType_FunctionProto => "FunctionProto",
         CXType_ConstantArray => "ConstantArray",
         CXType_Vector => "Vector",
+        CXType_IncompleteArray => "IncompleteArray",
         CXType_VariableArray => "VariableArray",
         CXType_DependentSizedArray => "DependentSizedArray",
         _ => "?"
