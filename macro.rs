@@ -109,7 +109,7 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
     let mut args_good = true;
 
     loop {
-        let mut name: Option<~str> = None;
+        let mut name: Option<StrBuf> = None;
         let mut span = parser.span;
 
         // Check for [ident=]value and if found save ident to name
@@ -187,7 +187,7 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
 }
 
 // I'm sure there's a nicer way of doing it
-fn as_str<'a>(owned: &'a Option<~str>) -> Option<&'a str> {
+fn as_str<'a>(owned: &'a Option<StrBuf>) -> Option<&'a str> {
     match owned {
         &Some(ref s) => Some(s.as_slice()),
         &None => None
@@ -201,7 +201,7 @@ enum QuoteState {
     InDoubleQuotes
 }
 
-fn parse_process_args(s: &str) -> Vec<~str> {
+fn parse_process_args(s: &str) -> Vec<StrBuf> {
     let s = s.trim();
     let mut parts = Vec::new();
     let mut quote_state = InNone;
@@ -263,12 +263,12 @@ fn parse_process_args(s: &str) -> Vec<~str> {
                         let starts = positions.iter().enumerate().filter(|&(i, _)| i % 2 == 0);
                         let ends = positions.iter().enumerate().filter(|&(i, _)| i % 2 == 1);
 
-                        let part: Vec<~str> = starts.zip(ends).map(|((_, start), (_, end))| s.slice(*start, *end).to_owned()).collect();
+                        let part: Vec<StrBuf> = starts.zip(ends).map(|((_, start), (_, end))| s.slice(*start, *end).to_owned()).collect();
                         let part = part.connect("");
 
                         if part.len() > 0 {
                             // Remove any extra whitespace outside the quotes
-                            let part = part.trim();
+                            let part = part.as_slice().trim();
                             // Replace quoted characters
                             let part = part.replace("\\\"", "\"");
                             let part = part.replace("\\\'", "\'");

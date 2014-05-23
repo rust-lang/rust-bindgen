@@ -30,10 +30,10 @@ impl Logger for StdLogger {
 enum ParseResult {
     CmdUsage,
     ParseOk(BindgenOptions, Box<io::Writer>),
-    ParseErr(~str)
+    ParseErr(StrBuf)
 }
 
-fn parse_args(args: &[~str]) -> ParseResult {
+fn parse_args(args: &[StrBuf]) -> ParseResult {
     let args_len = args.len();
 
     let mut options: BindgenOptions = Default::default();
@@ -45,8 +45,8 @@ fn parse_args(args: &[~str]) -> ParseResult {
 
     let mut ix = 0u;
     while ix < args_len {
-        if args[ix].len() > 2 && args[ix].slice_to(2) == "-l" {
-            options.links.push((args[ix].slice_from(2).to_owned(), None));
+        if args[ix].len() > 2 && args[ix].as_slice().slice_to(2) == "-l" {
+            options.links.push((args[ix].as_slice().slice_from(2).to_owned(), None));
             ix += 1u;
         } else {
             match args[ix].as_slice() {
@@ -123,8 +123,8 @@ fn parse_args(args: &[~str]) -> ParseResult {
     return ParseOk(options, out);
 }
 
-fn print_usage(bin: ~str) {
-    io::stdio::print(format!("Usage: {} [options] input.h", bin) +
+fn print_usage(bin: StrBuf) {
+    io::stdio::print(format!("Usage: {} [options] input.h", bin.as_slice()).append(
 "
 Options:
     -h or --help           Display help message
@@ -148,7 +148,7 @@ Options:
 
     Options other than stated above are passed to clang.
 "
-    );
+    ).as_slice());
 }
 
 fn try_pprint(module: &ast::Mod, out: Box<io::Writer>) -> IoResult<()> {
@@ -181,7 +181,7 @@ pub fn main() {
                     };
 
                     match try_pprint(&module, out) {
-                        Err(e) => logger.error(format!("Unable to write bindings to file. {}", e)),
+                        Err(e) => logger.error(format!("Unable to write bindings to file. {}", e).as_slice()),
                         _ => ()
                     }
                 }

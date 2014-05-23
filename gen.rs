@@ -39,8 +39,8 @@ fn ref_eq<'a, 'b, T>(thing: &'a T, other: &'b T) -> bool {
     (thing as *T) == (other as *T)
 }
 
-fn to_intern_str(ctx: &mut GenCtx, s: ~str) -> parse::token::InternedString {
-    let id = ctx.ext_cx.ident_of(s);
+fn to_intern_str(ctx: &mut GenCtx, s: StrBuf) -> parse::token::InternedString {
+    let id = ctx.ext_cx.ident_of(s.as_slice());
     parse::token::get_ident(id)
 }
 
@@ -51,38 +51,38 @@ fn empty_generics() -> ast::Generics {
     }
 }
 
-fn rust_id(ctx: &mut GenCtx, name: ~str) -> (~str, bool) {
-    let token = parse::token::IDENT(ctx.ext_cx.ident_of(name), false);
-    if parse::token::is_any_keyword(&token) || "bool" == name {
-        ("_".to_owned() + name, true)
+fn rust_id(ctx: &mut GenCtx, name: StrBuf) -> (StrBuf, bool) {
+    let token = parse::token::IDENT(ctx.ext_cx.ident_of(name.as_slice()), false);
+    if parse::token::is_any_keyword(&token) || "bool" == name.as_slice() {
+        ("_".to_owned().append(name.as_slice()), true)
     } else {
         (name, false)
     }
 
 }
 
-fn rust_type_id(ctx: &mut GenCtx, name: ~str) -> ~str {
-    if "bool" == name ||
-        "uint" == name ||
-        "u8" == name ||
-        "u16" == name ||
-        "u32" == name ||
-        "f32" == name ||
-        "f64" == name ||
-        "i8" == name ||
-        "i16" == name ||
-        "i32" == name ||
-        "i64" == name ||
-        "Self" == name ||
-        "str" == name {
-        "_".to_owned() + name
+fn rust_type_id(ctx: &mut GenCtx, name: StrBuf) -> StrBuf {
+    if "bool" == name.as_slice() ||
+        "uint" == name.as_slice() ||
+        "u8" == name.as_slice() ||
+        "u16" == name.as_slice() ||
+        "u32" == name.as_slice() ||
+        "f32" == name.as_slice() ||
+        "f64" == name.as_slice() ||
+        "i8" == name.as_slice() ||
+        "i16" == name.as_slice() ||
+        "i32" == name.as_slice() ||
+        "i64" == name.as_slice() ||
+        "Self" == name.as_slice() ||
+        "str" == name.as_slice() {
+        "_".to_owned().append(name.as_slice())
     } else {
         let (n, _) = rust_id(ctx, name);
         n
     }
 }
 
-fn unnamed_name(ctx: &mut GenCtx, name: ~str) -> ~str {
+fn unnamed_name(ctx: &mut GenCtx, name: StrBuf) -> StrBuf {
     return if name.is_empty() {
         ctx.unnamed_ty += 1;
         format!("Unnamed{}", ctx.unnamed_ty)
@@ -91,19 +91,19 @@ fn unnamed_name(ctx: &mut GenCtx, name: ~str) -> ~str {
     };
 }
 
-fn struct_name(name: ~str) -> ~str {
+fn struct_name(name: StrBuf) -> StrBuf {
     format!("Struct_{}", name)
 }
 
-fn union_name(name: ~str) -> ~str {
+fn union_name(name: StrBuf) -> StrBuf {
     format!("Union_{}", name)
 }
 
-fn enum_name(name: ~str) -> ~str {
+fn enum_name(name: StrBuf) -> StrBuf {
     format!("Enum_{}", name)
 }
 
-pub fn gen_mod(abi: &str, links: &[(~str, Option<~str>)], globs: Vec<Global>, span: Span) -> Vec<@ast::Item> {
+pub fn gen_mod(abi: &str, links: &[(StrBuf, Option<StrBuf>)], globs: Vec<Global>, span: Span) -> Vec<@ast::Item> {
     let abi = match abi {
         "cdecl" => abi::Cdecl,
         "stdcall" => abi::Stdcall,
@@ -249,7 +249,7 @@ fn mk_attr_list(ctx: &mut GenCtx, attr_name: &str, items: &[&str]) -> ast::Attri
     ctx.ext_cx.attribute(ctx.span, ctx.ext_cx.meta_list(ctx.span, interned, items))
 }
 
-fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::ViewItem {
+fn mk_import(ctx: &mut GenCtx, path: &[StrBuf]) -> ast::ViewItem {
     let view = ast::ViewItemUse(
         @respan(ctx.span,
             ast::ViewPathGlob(
@@ -258,7 +258,7 @@ fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::ViewItem {
                     global: false,
                     segments: path.iter().map(|p|
                         ast::PathSegment {
-                            identifier: ctx.ext_cx.ident_of((*p).clone()),
+                            identifier: ctx.ext_cx.ident_of((*p).as_slice()),
                             lifetimes: Vec::new(),
                             types: OwnedSlice::empty(),
                         }
@@ -277,7 +277,7 @@ fn mk_import(ctx: &mut GenCtx, path: &[~str]) -> ast::ViewItem {
            };
 }
 
-fn mk_extern(ctx: &mut GenCtx, links: &[(~str, Option<~str>)],
+fn mk_extern(ctx: &mut GenCtx, links: &[(StrBuf, Option<StrBuf>)],
              vars: Vec<@ast::ForeignItem>,
              funcs: Vec<@ast::ForeignItem>) -> @ast::Item {
     let attrs = if links.is_empty() {
@@ -372,37 +372,37 @@ fn tag_dup_decl(gs: Vec<Global>) -> Vec<Global> {
           (&GType(ti1), &GType(ti2)) => {
               let a = ti1.borrow();
               let b = ti2.borrow();
-              check(a.name, b.name)
+              check(a.name.as_slice(), b.name.as_slice())
           },
           (&GComp(ci1), &GComp(ci2)) => {
               let a = ci1.borrow();
               let b = ci2.borrow();
-              check(a.name, b.name)
+              check(a.name.as_slice(), b.name.as_slice())
           },
           (&GCompDecl(ci1), &GCompDecl(ci2)) => {
               let a = ci1.borrow();
               let b = ci2.borrow();
-              check(a.name, b.name)
+              check(a.name.as_slice(), b.name.as_slice())
           },
           (&GEnum(ei1), &GEnum(ei2)) => {
               let a = ei1.borrow();
               let b = ei2.borrow();
-              check(a.name, b.name)
+              check(a.name.as_slice(), b.name.as_slice())
           },
           (&GEnumDecl(ei1), &GEnumDecl(ei2)) => {
               let a = ei1.borrow();
               let b = ei2.borrow();
-              check(a.name, b.name)
+              check(a.name.as_slice(), b.name.as_slice())
           },
           (&GVar(vi1), &GVar(vi2)) => {
               let a = vi1.borrow();
               let b = vi2.borrow();
-              check(a.name, b.name)
+              check(a.name.as_slice(), b.name.as_slice())
           },
           (&GFunc(vi1), &GFunc(vi2)) => {
               let a = vi1.borrow();
               let b = vi2.borrow();
-              check(a.name, b.name)
+              check(a.name.as_slice(), b.name.as_slice())
           },
           _ => false
         }
@@ -432,8 +432,8 @@ fn tag_dup_decl(gs: Vec<Global>) -> Vec<Global> {
     return res;
 }
 
-fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> Vec<@ast::Item> {
-    fn mk_item(ctx: &mut GenCtx, name: ~str, ty: &Type) -> @ast::Item {
+fn ctypedef_to_rs(ctx: &mut GenCtx, name: StrBuf, ty: &Type) -> Vec<@ast::Item> {
+    fn mk_item(ctx: &mut GenCtx, name: StrBuf, ty: &Type) -> @ast::Item {
         let rust_name = rust_type_id(ctx, name);
         let rust_ty = cty_to_rs(ctx, ty);
         let base = ast::ItemTy(
@@ -446,7 +446,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> Vec<@ast::Item> {
         );
 
         return @ast::Item {
-                  ident: ctx.ext_cx.ident_of(rust_name),
+                  ident: ctx.ext_cx.ident_of(rust_name.as_slice()),
                   attrs: Vec::new(),
                   id: ast::DUMMY_NODE_ID,
                   node: base,
@@ -484,10 +484,10 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: ~str, ty: &Type) -> Vec<@ast::Item> {
     }
 }
 
-fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: Vec<FieldInfo>) -> @ast::Item {
+fn cstruct_to_rs(ctx: &mut GenCtx, name: StrBuf, fields: Vec<FieldInfo>) -> @ast::Item {
     let mut unnamed = 0;
     let fs = fields.iter().map(|f| {
-        let f_name = if f.name.is_empty() || "_" == f.name {
+        let f_name = if f.name.is_empty() || "_" == f.name.as_slice() {
             unnamed += 1;
             format!("unnamed_field{}", unnamed)
         } else {
@@ -498,7 +498,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: Vec<FieldInfo>) -> @ast::
 
         respan(ctx.span, ast::StructField_ {
             kind: ast::NamedField(
-                ctx.ext_cx.ident_of(f_name),
+                ctx.ext_cx.ident_of(f_name.as_slice()),
                 ast::Public,
             ),
             id: ast::DUMMY_NODE_ID,
@@ -518,7 +518,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: Vec<FieldInfo>) -> @ast::
     );
 
     let id = rust_type_id(ctx, name);
-    return @ast::Item { ident: ctx.ext_cx.ident_of(id),
+    return @ast::Item { ident: ctx.ext_cx.ident_of(id.as_slice()),
               attrs: Vec::new(),
               id: ast::DUMMY_NODE_ID,
               node: def,
@@ -527,10 +527,10 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: ~str, fields: Vec<FieldInfo>) -> @ast::
            };
 }
 
-fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, layout: Layout, fields: Vec<FieldInfo>) -> Vec<@ast::Item> {
-    fn mk_item(ctx: &mut GenCtx, name: ~str, item: ast::Item_, vis: ast::Visibility) -> @ast::Item {
+fn cunion_to_rs(ctx: &mut GenCtx, name: StrBuf, layout: Layout, fields: Vec<FieldInfo>) -> Vec<@ast::Item> {
+    fn mk_item(ctx: &mut GenCtx, name: StrBuf, item: ast::Item_, vis: ast::Visibility) -> @ast::Item {
         return @ast::Item {
-                  ident: ctx.ext_cx.ident_of(name),
+                  ident: ctx.ext_cx.ident_of(name.as_slice()),
                   attrs: Vec::new(),
                   id: ast::DUMMY_NODE_ID,
                   node: item,
@@ -580,7 +580,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, layout: Layout, fields: Vec<FieldI
     );
     let mut unnamed = 0;
     let fs = fields.iter().map(|f| {
-        let f_name = if f.name.is_empty() || "_" == f.name {
+        let f_name = if f.name.is_empty() || "_" == f.name.as_slice() {
             unnamed += 1;
             format!("unnamed_field{}", unnamed)
         } else {
@@ -598,7 +598,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, layout: Layout, fields: Vec<FieldI
         };
 
         @ast::Method {
-            ident: ctx.ext_cx.ident_of(f_name),
+            ident: ctx.ext_cx.ident_of(f_name.as_slice()),
             attrs: Vec::new(),
             generics: empty_generics(),
             explicit_self: respan(ctx.span, ast::SelfRegion(None, ast::MutMutable)),
@@ -629,7 +629,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: ~str, layout: Layout, fields: Vec<FieldI
     );
 }
 
-fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, kind: IKind, items: Vec<EnumItem>) -> Vec<@ast::Item> {
+fn cenum_to_rs(ctx: &mut GenCtx, name: StrBuf, kind: IKind, items: Vec<EnumItem>) -> Vec<@ast::Item> {
     let ty = TInt(kind, Layout::zero());
     let ty_id = rust_type_id(ctx, name);
     let ty_def = ctypedef_to_rs(ctx, ty_id, &ty);
@@ -645,7 +645,7 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, kind: IKind, items: Vec<EnumItem>) 
 
         let id = first(rust_id(ctx, it.name.clone()));
         let val_def = @ast::Item {
-                         ident: ctx.ext_cx.ident_of(id),
+                         ident: ctx.ext_cx.ident_of(id.as_slice()),
                          attrs: Vec::new(),
                          id: ast::DUMMY_NODE_ID,
                          node: cst,
@@ -659,7 +659,7 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: ~str, kind: IKind, items: Vec<EnumItem>) 
     return def;
 }
 
-fn mk_link_name_attr(ctx: &mut GenCtx, name: ~str) -> ast::Attribute {
+fn mk_link_name_attr(ctx: &mut GenCtx, name: StrBuf) -> ast::Attribute {
     let lit = respan(ctx.span, ast::LitStr(
         to_intern_str(ctx, name),
         ast::CookedStr
@@ -675,7 +675,7 @@ fn mk_link_name_attr(ctx: &mut GenCtx, name: ~str) -> ast::Attribute {
     respan(ctx.span, attr)
 }
 
-fn cvar_to_rs(ctx: &mut GenCtx, name: ~str,
+fn cvar_to_rs(ctx: &mut GenCtx, name: StrBuf,
                                 ty: &Type,
                                 is_const: bool) -> @ast::ForeignItem {
     let (rust_name, was_mangled) = rust_id(ctx, name.clone());
@@ -686,7 +686,7 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: ~str,
     }
 
     return @ast::ForeignItem {
-              ident: ctx.ext_cx.ident_of(rust_name),
+              ident: ctx.ext_cx.ident_of(rust_name.as_slice()),
               attrs: attrs,
               node: ast::ForeignItemStatic(@cty_to_rs(ctx, ty), !is_const),
               id: ast::DUMMY_NODE_ID,
@@ -697,7 +697,7 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: ~str,
 
 fn cfuncty_to_rs(ctx: &mut GenCtx,
                  rty: &Type,
-                 aty: &[(~str, Type)],
+                 aty: &[(StrBuf, Type)],
                  var: bool) -> ast::FnDecl {
 
     let ret = @match *rty {
@@ -733,7 +733,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
                          global: false,
                          segments: Vec::from_elem(1,
                             ast::PathSegment {
-                                identifier: ctx.ext_cx.ident_of(arg_name),
+                                identifier: ctx.ext_cx.ident_of(arg_name.as_slice()),
                                 lifetimes: Vec::new(),
                                 types: OwnedSlice::empty(),
                             }
@@ -756,8 +756,8 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
     };
 }
 
-fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: &Type,
-               aty: &[(~str, Type)],
+fn cfunc_to_rs(ctx: &mut GenCtx, name: StrBuf, rty: &Type,
+               aty: &[(StrBuf, Type)],
                var: bool) -> @ast::ForeignItem {
     let var = !aty.is_empty() && var;
     let decl = ast::ForeignItemFn(
@@ -773,7 +773,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: ~str, rty: &Type,
     }
 
     return @ast::ForeignItem {
-              ident: ctx.ext_cx.ident_of(rust_name),
+              ident: ctx.ext_cx.ident_of(rust_name.as_slice()),
               attrs: attrs,
               node: decl,
               id: ast::DUMMY_NODE_ID,
@@ -835,7 +835,7 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
     };
 }
 
-fn mk_ty(ctx: &mut GenCtx, global: bool, segments: Vec<~str>) -> ast::Ty {
+fn mk_ty(ctx: &mut GenCtx, global: bool, segments: Vec<StrBuf>) -> ast::Ty {
     let ty = ast::TyPath(
         ast::Path {
             span: ctx.span,

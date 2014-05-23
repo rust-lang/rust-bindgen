@@ -13,13 +13,13 @@ use clang::ll::*;
 use super::Logger;
 
 pub struct ClangParserOptions {
-    pub builtin_names: HashSet<~str>,
+    pub builtin_names: HashSet<StrBuf>,
     pub builtins: bool,
-    pub match_pat: Vec<~str>,
+    pub match_pat: Vec<StrBuf>,
     pub emit_ast: bool,
     pub fail_on_bitfield: bool,
     pub fail_on_unknown_type: bool,
-    pub clang_args: Vec<~str>,
+    pub clang_args: Vec<StrBuf>,
 }
 
 struct ClangParserCtx<'a> {
@@ -45,7 +45,7 @@ fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {
     let name = file.name();
     let mut found = false;
     ctx.options.match_pat.iter().advance(|pat| {
-        if name.contains(*pat) {
+        if name.as_slice().contains((*pat).as_slice()) {
             found = true;
         }
         true
@@ -225,8 +225,12 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
         CXType_Enum => conv_decl_ty(ctx, &ty.declaration()),
         CXType_ConstantArray => TArray(box conv_ty(ctx, &ty.elem_type(), cursor), ty.array_size(), layout),
         _ => {
-            log_err_warn(ctx, format!("unsupported type `{}` ({})",
-                type_to_str(ty.kind()), cursor.location()), ctx.options.fail_on_unknown_type);
+            log_err_warn(ctx,
+                format!("unsupported type `{}` ({})",
+                    type_to_str(ty.kind()), cursor.location()
+                ).as_slice(),
+                ctx.options.fail_on_unknown_type
+            );
             TVoid
         },
     };
@@ -254,8 +258,12 @@ fn visit_struct(cursor: &Cursor,
         // If we encounter a bitfield, and fail_on_bitfield is set, throw an
         // error and exit entirely.
         if bit != None {
-            log_err_warn(ctx, format!("unsupported bitfield `{}` in struct `{}` ({})",
-                name, parent.spelling(), cursor.location()), ctx.options.fail_on_bitfield);
+            log_err_warn(ctx,
+                format!("unsupported bitfield `{}` in struct `{}` ({})",
+                    name.as_slice(), parent.spelling().as_slice(), cursor.location()
+                ).as_slice(),
+                ctx.options.fail_on_bitfield
+            );
         }
         let field = FieldInfo::new(name, ty, bit);
         fields.push(field);
@@ -346,7 +354,7 @@ fn visit_top<'r>(cur: &'r Cursor,
               return CXChildVisit_Continue;
           }
 
-          let args_lst: Vec<(~str, il::Type)> = cursor.args().iter().map(|arg| {
+          let args_lst: Vec<(StrBuf, il::Type)> = cursor.args().iter().map(|arg| {
               let arg_name = arg.spelling();
               (arg_name, conv_ty(ctx, &arg.cur_type(), cursor))
           }).collect();
@@ -438,7 +446,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
     for d in diags.iter() {
         let msg = d.format(Diagnostic::default_opts());
         let is_err = d.severity() >= CXDiagnostic_Error;
-        log_err_warn(&mut ctx, msg, is_err);
+        log_err_warn(&mut ctx, msg.as_slice(), is_err);
     }
 
     if ctx.err_count > 0 {

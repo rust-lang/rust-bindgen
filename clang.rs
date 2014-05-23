@@ -19,7 +19,7 @@ pub type CursorVisitor<'s> = |c: &Cursor, p: &Cursor|: 's -> Enum_CXChildVisitRe
 
 impl Cursor {
     // common
-    pub fn spelling(&self) -> ~str {
+    pub fn spelling(&self) -> StrBuf {
         unsafe {
             String { x: clang_getCursorSpelling(self.x) }.to_str()
         }
@@ -281,7 +281,7 @@ pub struct File {
 }
 
 impl File {
-    pub fn name(&self) -> ~str {
+    pub fn name(&self) -> StrBuf {
         if self.is_null() {
             return "".to_owned();
         }
@@ -341,7 +341,7 @@ pub struct TranslationUnit {
 }
 
 impl TranslationUnit {
-    pub fn parse(ix: &Index, file: &str, cmd_args: &[~str],
+    pub fn parse(ix: &Index, file: &str, cmd_args: &[StrBuf],
                  unsaved: &[UnsavedFile], opts: uint) -> TranslationUnit {
         let _fname = file.to_c_str();
         let fname = _fname.with_ref(|f| f);
@@ -410,7 +410,7 @@ impl Diagnostic {
         }
     }
 
-    pub fn format(&self, opts: uint) -> ~str {
+    pub fn format(&self, opts: uint) -> StrBuf {
         unsafe {
             String { x: clang_formatDiagnostic(self.x, opts as c_uint) }.to_str()
         }
@@ -685,7 +685,11 @@ pub fn ast_dump(c: &Cursor, depth: int)-> Enum_CXVisitorResult {
         io::println(s);
     }
     let ct = c.cur_type().kind();
-    print_indent(depth, format!("({} {} {}", kind_to_str(c.kind()), c.spelling(), type_to_str(ct)));
+    print_indent(depth, format!("({} {} {}",
+        kind_to_str(c.kind()).as_slice(),
+        c.spelling().as_slice(),
+        type_to_str(ct)).as_slice()
+    );
     c.visit(|s, _| {
         ast_dump(s, depth + 1)
     });
