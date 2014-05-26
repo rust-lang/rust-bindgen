@@ -19,9 +19,9 @@ pub type CursorVisitor<'s> = |c: &Cursor, p: &Cursor|: 's -> Enum_CXChildVisitRe
 
 impl Cursor {
     // common
-    pub fn spelling(&self) -> StrBuf {
+    pub fn spelling(&self) -> String {
         unsafe {
-            String { x: clang_getCursorSpelling(self.x) }.to_str()
+            String_ { x: clang_getCursorSpelling(self.x) }.to_str()
         }
     }
 
@@ -281,12 +281,12 @@ pub struct File {
 }
 
 impl File {
-    pub fn name(&self) -> StrBuf {
+    pub fn name(&self) -> String {
         if self.is_null() {
             return "".to_owned();
         }
         unsafe {
-            String { x: clang_getFileName(self.x) }.to_str()
+            String_ { x: clang_getFileName(self.x) }.to_str()
         }
     }
 
@@ -296,11 +296,11 @@ impl File {
 }
 
 // String
-pub struct String {
+pub struct String_ {
     x: CXString
 }
 
-impl fmt::Show for String {
+impl fmt::Show for String_ {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if self.x.data.is_null() {
             return "".fmt(f);
@@ -341,7 +341,7 @@ pub struct TranslationUnit {
 }
 
 impl TranslationUnit {
-    pub fn parse(ix: &Index, file: &str, cmd_args: &[StrBuf],
+    pub fn parse(ix: &Index, file: &str, cmd_args: &[String],
                  unsaved: &[UnsavedFile], opts: uint) -> TranslationUnit {
         let _fname = file.to_c_str();
         let fname = _fname.with_ref(|f| f);
@@ -410,9 +410,9 @@ impl Diagnostic {
         }
     }
 
-    pub fn format(&self, opts: uint) -> StrBuf {
+    pub fn format(&self, opts: uint) -> String {
         unsafe {
-            String { x: clang_formatDiagnostic(self.x, opts as c_uint) }.to_str()
+            String_ { x: clang_formatDiagnostic(self.x, opts as c_uint) }.to_str()
         }
     }
 

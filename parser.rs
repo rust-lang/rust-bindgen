@@ -13,13 +13,13 @@ use clang::ll::*;
 use super::Logger;
 
 pub struct ClangParserOptions {
-    pub builtin_names: HashSet<StrBuf>,
+    pub builtin_names: HashSet<String>,
     pub builtins: bool,
-    pub match_pat: Vec<StrBuf>,
+    pub match_pat: Vec<String>,
     pub emit_ast: bool,
     pub fail_on_bitfield: bool,
     pub fail_on_unknown_type: bool,
-    pub clang_args: Vec<StrBuf>,
+    pub clang_args: Vec<String>,
 }
 
 struct ClangParserCtx<'a> {
@@ -354,7 +354,7 @@ fn visit_top<'r>(cur: &'r Cursor,
               return CXChildVisit_Continue;
           }
 
-          let args_lst: Vec<(StrBuf, il::Type)> = cursor.args().iter().map(|arg| {
+          let args_lst: Vec<(String, il::Type)> = cursor.args().iter().map(|arg| {
               let arg_name = arg.spelling();
               (arg_name, conv_ty(ctx, &arg.cur_type(), cursor))
           }).collect();

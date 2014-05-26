@@ -30,10 +30,10 @@ impl Logger for StdLogger {
 enum ParseResult {
     CmdUsage,
     ParseOk(BindgenOptions, Box<io::Writer>),
-    ParseErr(StrBuf)
+    ParseErr(String)
 }
 
-fn parse_args(args: &[StrBuf]) -> ParseResult {
+fn parse_args(args: &[String]) -> ParseResult {
     let args_len = args.len();
 
     let mut options: BindgenOptions = Default::default();
@@ -123,7 +123,7 @@ fn parse_args(args: &[StrBuf]) -> ParseResult {
     return ParseOk(options, out);
 }
 
-fn print_usage(bin: StrBuf) {
+fn print_usage(bin: String) {
     io::stdio::print(format!("Usage: {} [options] input.h", bin.as_slice()).append(
 "
 Options:

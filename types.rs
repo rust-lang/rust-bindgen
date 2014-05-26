@@ -68,7 +68,7 @@ pub enum Type {
     TFloat(FKind, Layout),
     TPtr(Box<Type>, bool, Layout),
     TArray(Box<Type>, uint, Layout),
-    TFunc(Box<Type>, Vec<(StrBuf, Type)>, bool),
+    TFunc(Box<Type>, Vec<(String, Type)>, bool),
     TNamed(@RefCell<TypeInfo>),
     TComp(@RefCell<CompInfo>),
     TEnum(@RefCell<EnumInfo>)
@@ -144,13 +144,13 @@ pub enum FKind {
 #[deriving(Clone, Eq)]
 pub struct CompInfo {
     pub cstruct: bool,
-    pub name: StrBuf,
+    pub name: String,
     pub fields: Vec<FieldInfo>,
     pub layout: Layout,
 }
 
 impl CompInfo {
-    pub fn new(name: StrBuf, cstruct: bool, fields: Vec<FieldInfo>, layout: Layout) -> CompInfo {
+    pub fn new(name: String, cstruct: bool, fields: Vec<FieldInfo>, layout: Layout) -> CompInfo {
         CompInfo {
             cstruct: cstruct,
             name: name,
@@ -168,13 +168,13 @@ impl fmt::Show for CompInfo {
 
 #[deriving(Clone, Eq)]
 pub struct FieldInfo {
-    pub name: StrBuf,
+    pub name: String,
     pub ty: Type,
     pub bit: Option<uint>,
 }
 
 impl FieldInfo {
-    pub fn new(name: StrBuf, ty: Type, bit: Option<uint>) -> FieldInfo {
+    pub fn new(name: String, ty: Type, bit: Option<uint>) -> FieldInfo {
         FieldInfo {
             name: name,
             ty: ty,
@@ -185,14 +185,14 @@ impl FieldInfo {
 
 #[deriving(Clone, Eq)]
 pub struct EnumInfo {
-    pub name: StrBuf,
+    pub name: String,
     pub items: Vec<EnumItem>,
     pub kind: IKind,
     pub layout: Layout,
 }
 
 impl EnumInfo {
-    pub fn new(name: StrBuf, kind: IKind, items: Vec<EnumItem>, layout: Layout) -> EnumInfo {
+    pub fn new(name: String, kind: IKind, items: Vec<EnumItem>, layout: Layout) -> EnumInfo {
         EnumInfo {
             name: name,
             items: items,
@@ -210,12 +210,12 @@ impl fmt::Show for EnumInfo {
 
 #[deriving(Clone, Eq)]
 pub struct EnumItem {
-    pub name: StrBuf,
+    pub name: String,
     pub val: i64
 }
 
 impl EnumItem {
-    pub fn new(name: StrBuf, val: i64) -> EnumItem {
+    pub fn new(name: String, val: i64) -> EnumItem {
         EnumItem {
             name: name,
             val: val
@@ -225,12 +225,12 @@ impl EnumItem {
 
 #[deriving(Clone, Eq)]
 pub struct TypeInfo {
-    pub name: StrBuf,
+    pub name: String,
     pub ty: Type
 }
 
 impl TypeInfo {
-    pub fn new(name: StrBuf, ty: Type) -> TypeInfo {
+    pub fn new(name: String, ty: Type) -> TypeInfo {
         TypeInfo {
             name: name,
             ty: ty
@@ -246,13 +246,13 @@ impl fmt::Show for TypeInfo {
 
 #[deriving(Clone)]
 pub struct VarInfo {
-    pub name: StrBuf,
+    pub name: String,
     pub ty: Type,
     pub is_const: bool
 }
 
 impl VarInfo {
-    pub fn new(name: StrBuf, ty: Type) -> VarInfo {
+    pub fn new(name: String, ty: Type) -> VarInfo {
         VarInfo {
             name: name,
             ty: ty,

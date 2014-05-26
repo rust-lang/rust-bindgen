@@ -30,14 +30,14 @@ pub fn macro_registrar(register: |ast::Name, base::SyntaxExtension|) {
 }
 
 pub struct BindgenOptions {
-    pub match_pat: Vec<StrBuf>,
-    pub abi: StrBuf,
+    pub match_pat: Vec<String>,
+    pub abi: String,
     pub builtins: bool,
-    pub links: Vec<(StrBuf, Option<StrBuf>)>,
+    pub links: Vec<(String, Option<String>)>,
     pub emit_ast: bool,
     pub fail_on_bitfield: bool,
     pub fail_on_unknown_type: bool,
-    pub clang_args: Vec<StrBuf>,
+    pub clang_args: Vec<String>,
 }
 
 impl Default for BindgenOptions {
@@ -94,7 +94,7 @@ fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<Vec<Global
     parser::parse(clang_opts, logger)
 }
 
-fn builtin_names() -> HashSet<StrBuf> {
+fn builtin_names() -> HashSet<String> {
     let mut names = HashSet::new();
     let keys = ~[
         "__va_list_tag".to_owned(),
