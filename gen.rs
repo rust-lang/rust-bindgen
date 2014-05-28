@@ -55,7 +55,7 @@ fn empty_generics() -> ast::Generics {
 fn rust_id(ctx: &mut GenCtx, name: String) -> (String, bool) {
     let token = parse::token::IDENT(ctx.ext_cx.ident_of(name.as_slice()), false);
     if parse::token::is_any_keyword(&token) || "bool" == name.as_slice() {
-        ("_".to_owned().append(name.as_slice()), true)
+        ("_".to_string().append(name.as_slice()), true)
     } else {
         (name, false)
     }
@@ -76,7 +76,7 @@ fn rust_type_id(ctx: &mut GenCtx, name: String) -> String {
         "i64" == name.as_slice() ||
         "Self" == name.as_slice() ||
         "str" == name.as_slice() {
-        "_".to_owned().append(name.as_slice())
+        "_".to_string().append(name.as_slice())
     } else {
         let (n, _) = rust_id(ctx, name);
         n
@@ -243,10 +243,10 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
 
 fn mk_attr_list(ctx: &mut GenCtx, attr_name: &str, items: &[&str]) -> ast::Attribute {
     let items: Vec<_> = items.iter().map(|item| {
-        let interned = to_intern_str(ctx, item.to_owned());
+        let interned = to_intern_str(ctx, item.to_string());
         ctx.ext_cx.meta_word(ctx.span, interned)
     }).collect();
-    let interned = to_intern_str(ctx, attr_name.to_owned());
+    let interned = to_intern_str(ctx, attr_name.to_string());
     ctx.ext_cx.attribute(ctx.span, ctx.ext_cx.meta_list(ctx.span, interned, items))
 }
 
@@ -286,18 +286,18 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, Option<String>)],
     } else {
         links.iter().map(|&(ref l, ref k)| {
             let link_name = @respan(ctx.span, ast::MetaNameValue(
-                to_intern_str(ctx, "name".to_owned()),
+                to_intern_str(ctx, "name".to_string()),
                 respan(ctx.span, ast::LitStr(
-                    to_intern_str(ctx, l.to_owned()),
+                    to_intern_str(ctx, l.to_string()),
                     ast::CookedStr
                 ))
             ));
             let link_args = match k {
                 &None => vec!(link_name),
                 &Some(ref k) => vec!(link_name, @respan(ctx.span, ast::MetaNameValue(
-                    to_intern_str(ctx, "kind".to_owned()),
+                    to_intern_str(ctx, "kind".to_string()),
                     respan(ctx.span, ast::LitStr(
-                        to_intern_str(ctx, k.to_owned()),
+                        to_intern_str(ctx, k.to_string()),
                         ast::CookedStr
                     ))
                 )))
@@ -306,7 +306,7 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, Option<String>)],
                 id: mk_attr_id(),
                 style: ast::AttrOuter,
                 value: @respan(ctx.span, ast::MetaList(
-                    to_intern_str(ctx, "link".to_owned()),
+                    to_intern_str(ctx, "link".to_string()),
                     link_args)
                 ),
                 is_sugared_doc: false
@@ -552,7 +552,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, fields: Vec<Fiel
         _ => "u8",
     };
     let data_len = if ty_name == "u8" { layout.size } else { layout.size / layout.align };
-    let base_ty = mk_ty(ctx, false, vec!(ty_name.to_owned()));
+    let base_ty = mk_ty(ctx, false, vec!(ty_name.to_string()));
     let data_ty = @mk_arrty(ctx, &base_ty, data_len);
     let data = respan(ctx.span, ast::StructField_ {
         kind: ast::NamedField(
@@ -627,7 +627,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, fields: Vec<Fiel
 
     return vec!( 
         union_def,
-        mk_item(ctx, "".to_owned(), methods, ast::Inherited)
+        mk_item(ctx, "".to_string(), methods, ast::Inherited)
     );
 }
 
@@ -667,7 +667,7 @@ fn mk_link_name_attr(ctx: &mut GenCtx, name: String) -> ast::Attribute {
         ast::CookedStr
     ));
     let attr_val = @respan(ctx.span, ast::MetaNameValue(
-        to_intern_str(ctx, "link_name".to_owned()), lit
+        to_intern_str(ctx, "link_name".to_string()), lit
     ));
     let attr = ast::Attribute_ {
         id: mk_attr_id(),
@@ -787,23 +787,23 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: String, rty: &Type,
 
 fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
     return match *ty {
-        TVoid => mk_ty(ctx, true, vec!("libc".to_owned(), "c_void".to_owned())),
+        TVoid => mk_ty(ctx, true, vec!("libc".to_string(), "c_void".to_string())),
         TInt(i, _) => match i {
-            IBool => mk_ty(ctx, true, vec!("libc".to_owned(), "c_int".to_owned())),
-            ISChar => mk_ty(ctx, true, vec!("libc".to_owned(), "c_char".to_owned())),
-            IUChar => mk_ty(ctx, true, vec!("libc".to_owned(), "c_uchar".to_owned())),
-            IInt => mk_ty(ctx, true, vec!("libc".to_owned(), "c_int".to_owned())),
-            IUInt => mk_ty(ctx, true, vec!("libc".to_owned(), "c_uint".to_owned())),
-            IShort => mk_ty(ctx, true, vec!("libc".to_owned(), "c_short".to_owned())),
-            IUShort => mk_ty(ctx, true, vec!("libc".to_owned(), "c_ushort".to_owned())),
-            ILong => mk_ty(ctx, true, vec!("libc".to_owned(), "c_long".to_owned())),
-            IULong => mk_ty(ctx, true, vec!("libc".to_owned(), "c_ulong".to_owned())),
-            ILongLong => mk_ty(ctx, true, vec!("libc".to_owned(), "c_longlong".to_owned())),
-            IULongLong => mk_ty(ctx, true, vec!("libc".to_owned(), "c_ulonglong".to_owned()))
+            IBool => mk_ty(ctx, true, vec!("libc".to_string(), "c_int".to_string())),
+            ISChar => mk_ty(ctx, true, vec!("libc".to_string(), "c_char".to_string())),
+            IUChar => mk_ty(ctx, true, vec!("libc".to_string(), "c_uchar".to_string())),
+            IInt => mk_ty(ctx, true, vec!("libc".to_string(), "c_int".to_string())),
+            IUInt => mk_ty(ctx, true, vec!("libc".to_string(), "c_uint".to_string())),
+            IShort => mk_ty(ctx, true, vec!("libc".to_string(), "c_short".to_string())),
+            IUShort => mk_ty(ctx, true, vec!("libc".to_string(), "c_ushort".to_string())),
+            ILong => mk_ty(ctx, true, vec!("libc".to_string(), "c_long".to_string())),
+            IULong => mk_ty(ctx, true, vec!("libc".to_string(), "c_ulong".to_string())),
+            ILongLong => mk_ty(ctx, true, vec!("libc".to_string(), "c_longlong".to_string())),
+            IULongLong => mk_ty(ctx, true, vec!("libc".to_string(), "c_ulonglong".to_string()))
         },
         TFloat(f, _) => match f {
-            FFloat => mk_ty(ctx, true, vec!("libc".to_owned(), "c_float".to_owned())),
-            FDouble => mk_ty(ctx, true, vec!("libc".to_owned(), "c_double".to_owned()))
+            FFloat => mk_ty(ctx, true, vec!("libc".to_string(), "c_float".to_string())),
+            FDouble => mk_ty(ctx, true, vec!("libc".to_string(), "c_double".to_string()))
         },
         TPtr(ref t, is_const, _) => {
             let id = cty_to_rs(ctx, *t);

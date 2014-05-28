@@ -67,12 +67,12 @@ impl MacroArgsVisitor for BindgenArgsVisitor {
         if name.is_some() { self.seen_named = true; }
         else if !self.seen_named { name = Some("clang_args") }
         match name {
-            Some("link") => self.options.links.push((val.to_owned(), None)),
-            Some("link_static") => self.options.links.push((val.to_owned(), Some("static".to_owned()))),
-            Some("link_framework") => self.options.links.push((val.to_owned(), Some("framework".to_owned()))),
-            Some("abi") => self.options.abi = val.to_owned(),
-            Some("match") => self.options.match_pat.push(val.to_owned()),
-            Some("clang_args") => self.options.clang_args.push(val.to_owned()),
+            Some("link") => self.options.links.push((val.to_string(), None)),
+            Some("link_static") => self.options.links.push((val.to_string(), Some("static".to_string()))),
+            Some("link_framework") => self.options.links.push((val.to_string(), Some("framework".to_string()))),
+            Some("abi") => self.options.abi = val.to_string(),
+            Some("match") => self.options.match_pat.push(val.to_string()),
+            Some("clang_args") => self.options.clang_args.push(val.to_string()),
             _ => return false
         }
         true
@@ -117,7 +117,7 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
             match parser.bump_and_get() {
                 token::IDENT(ident, _) => {
                     let ident = parser.id_to_interned_str(ident);
-                    name = Some(ident.get().to_owned());
+                    name = Some(ident.get().to_string());
                     parser.expect(&token::EQ);
                 },
                 _ => {
@@ -263,7 +263,7 @@ fn parse_process_args(s: &str) -> Vec<String> {
                         let starts = positions.iter().enumerate().filter(|&(i, _)| i % 2 == 0);
                         let ends = positions.iter().enumerate().filter(|&(i, _)| i % 2 == 1);
 
-                        let part: Vec<String> = starts.zip(ends).map(|((_, start), (_, end))| s.slice(*start, *end).to_owned()).collect();
+                        let part: Vec<String> = starts.zip(ends).map(|((_, start), (_, end))| s.slice(*start, *end).to_string()).collect();
                         let part = part.connect("");
 
                         if part.len() > 0 {

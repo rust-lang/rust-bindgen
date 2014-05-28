@@ -143,7 +143,7 @@ fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, layout:
             let decl = ty.declaration();
             return if ret_ty.kind() != CXType_Invalid {
                 let args_lst = ty.arg_types().iter().map(|arg| {
-                    ("".to_owned(), conv_ty(ctx, arg, cursor))
+                    ("".to_string(), conv_ty(ctx, arg, cursor))
                 }).collect();
                 let ret_ty = box conv_ty(ctx, &ret_ty, cursor);
 

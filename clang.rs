@@ -283,7 +283,7 @@ pub struct File {
 impl File {
     pub fn name(&self) -> String {
         if self.is_null() {
-            return "".to_owned();
+            return "".to_string();
         }
         unsafe {
             String_ { x: clang_getFileName(self.x) }.to_str()

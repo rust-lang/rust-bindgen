@@ -46,7 +46,7 @@ fn parse_args(args: &[String]) -> ParseResult {
     let mut ix = 0u;
     while ix < args_len {
         if args[ix].len() > 2 && args[ix].as_slice().slice_to(2) == "-l" {
-            options.links.push((args[ix].as_slice().slice_from(2).to_owned(), None));
+            options.links.push((args[ix].as_slice().slice_from(2).to_string(), None));
             ix += 1u;
         } else {
             match args[ix].as_slice() {
@@ -59,7 +59,7 @@ fn parse_args(args: &[String]) -> ParseResult {
                 }
                 "-o" => {
                     if ix + 1u >= args_len {
-                        return ParseErr("Missing output filename".to_owned());
+                        return ParseErr("Missing output filename".to_string());
                     }
                     let path = path::Path::new(args[ix + 1].clone());
                     match fs::File::create(&path) {
@@ -70,28 +70,28 @@ fn parse_args(args: &[String]) -> ParseResult {
                 }
                 "-l" => {
                     if ix + 1u >= args_len {
-                        return ParseErr("Missing link name".to_owned());
+                        return ParseErr("Missing link name".to_string());
                     }
                     options.links.push((args[ix + 1u].clone(), None));
                     ix += 2u;
                 }
                 "-static-link" => {
                     if ix + 1u >= args_len {
-                        return ParseErr("Missing link name".to_owned());
+                        return ParseErr("Missing link name".to_string());
                     }
-                    options.links.push((args[ix + 1u].clone(), Some("static".to_owned())));
+                    options.links.push((args[ix + 1u].clone(), Some("static".to_string())));
                     ix += 2u;
                 }
                 "-framework-link" => {
                     if ix + 1u >= args_len {
-                        return ParseErr("Missing link name".to_owned());
+                        return ParseErr("Missing link name".to_string());
                     }
-                    options.links.push((args[ix + 1u].clone(), Some("framework".to_owned())));
+                    options.links.push((args[ix + 1u].clone(), Some("framework".to_string())));
                     ix += 2u;
                 }
                 "-match" => {
                     if ix + 1u >= args_len {
-                        return ParseErr("Missing match pattern".to_owned());
+                        return ParseErr("Missing match pattern".to_string());
                     }
                     options.match_pat.push(args[ix + 1u].clone());
                     ix += 2u;

@@ -44,7 +44,7 @@ impl Default for BindgenOptions {
     fn default() -> BindgenOptions {
         BindgenOptions {
             match_pat: Vec::new(),
-            abi: "C".to_owned(),
+            abi: "C".to_string(),
             builtins: false,
             links: Vec::new(),
             emit_ast: false,
@@ -97,8 +97,8 @@ fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<Vec<Global
 fn builtin_names() -> HashSet<String> {
     let mut names = HashSet::new();
     let keys = ~[
-        "__va_list_tag".to_owned(),
-        "__va_list".to_owned(),
+        "__va_list_tag".to_string(),
+        "__va_list".to_string(),
     ];
 
     keys.move_iter().advance(|s| {
