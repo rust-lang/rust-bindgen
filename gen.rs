@@ -167,9 +167,9 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
                 }
                 let c = ci.borrow().clone();
                 if c.cstruct {
-                    defs.push_all_move(ctypedef_to_rs(&mut ctx, struct_name(c.name), &TVoid))
+                    defs.push(opaque_to_rs(&mut ctx, struct_name(c.name)));
                 } else {
-                    defs.push_all_move(ctypedef_to_rs(&mut ctx, union_name(c.name), &TVoid))
+                    defs.push(opaque_to_rs(&mut ctx, union_name(c.name)));
                 }
             },
             GComp(ci) => {
@@ -195,7 +195,7 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
                     e.name = unnamed_name(&mut ctx, e.name.clone());
                 }
                 let e = ei.borrow().clone();
-                defs.push_all_move(ctypedef_to_rs(&mut ctx, enum_name(e.name.clone()), &TVoid))
+                defs.push(opaque_to_rs(&mut ctx, enum_name(e.name)));
             },
             GEnum(ei) => {
                 {
@@ -515,6 +515,24 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String, fields: Vec<FieldInfo>) -> @ast
            ctor_id: None,
            super_struct: None,
            is_virtual: false
+        },
+        empty_generics()
+    );
+
+    let id = rust_type_id(ctx, name);
+    return @ast::Item { ident: ctx.ext_cx.ident_of(id.as_slice()),
+              attrs: Vec::new(),
+              id: ast::DUMMY_NODE_ID,
+              node: def,
+              vis: ast::Public,
+              span: ctx.span
+           };
+}
+
+fn opaque_to_rs(ctx: &mut GenCtx, name: String) -> @ast::Item {
+    let def = ast::ItemEnum(
+        ast::EnumDef {
+           variants: vec!()
         },
         empty_generics()
     );
