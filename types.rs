@@ -61,7 +61,7 @@ impl fmt::Show for Global {
     }
 }
 
-#[deriving(Clone, Eq)]
+#[deriving(Clone, PartialEq)]
 pub enum Type {
     TVoid,
     TInt(IKind, Layout),
@@ -104,7 +104,7 @@ impl Type {
     }
 }
 
-#[deriving(Clone, Eq)]
+#[deriving(Clone, PartialEq)]
 pub struct Layout {
     pub size: uint,
     pub align: uint,
@@ -120,7 +120,7 @@ impl Layout {
     }
 }
 
-#[deriving(Clone, Eq)]
+#[deriving(Clone, PartialEq)]
 pub enum IKind {
     IBool,
     ISChar,
@@ -135,13 +135,13 @@ pub enum IKind {
     IULongLong
 }
 
-#[deriving(Clone, Eq)]
+#[deriving(Clone, PartialEq)]
 pub enum FKind {
     FFloat,
     FDouble
 }
 
-#[deriving(Clone, Eq)]
+#[deriving(Clone, PartialEq)]
 pub struct CompInfo {
     pub cstruct: bool,
     pub name: String,
@@ -166,7 +166,7 @@ impl fmt::Show for CompInfo {
     }
 }
 
-#[deriving(Clone, Eq)]
+#[deriving(Clone, PartialEq)]
 pub struct FieldInfo {
     pub name: String,
     pub ty: Type,
@@ -183,7 +183,7 @@ impl FieldInfo {
     }
 }
 
-#[deriving(Clone, Eq)]
+#[deriving(Clone, PartialEq)]
 pub struct EnumInfo {
     pub name: String,
     pub items: Vec<EnumItem>,
@@ -208,7 +208,7 @@ impl fmt::Show for EnumInfo {
     }
 }
 
-#[deriving(Clone, Eq)]
+#[deriving(Clone, PartialEq)]
 pub struct EnumItem {
     pub name: String,
     pub val: i64
@@ -223,7 +223,7 @@ impl EnumItem {
     }
 }
 
-#[deriving(Clone, Eq)]
+#[deriving(Clone, PartialEq)]
 pub struct TypeInfo {
     pub name: String,
     pub ty: Type

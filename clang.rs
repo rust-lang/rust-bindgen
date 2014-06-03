@@ -128,7 +128,7 @@ extern fn visit_children(cur: CXCursor, parent: ll::CXCursor,
     }
 }
 
-impl Eq for Cursor {
+impl PartialEq for Cursor {
     fn eq(&self, other: &Cursor) -> bool {
         unsafe {
             clang_equalCursors(self.x, other.x) == 1
@@ -140,7 +140,7 @@ impl Eq for Cursor {
     }
 }
 
-impl TotalEq for Cursor {}
+impl Eq for Cursor {}
 
 impl Hash for Cursor {
     fn hash(&self, state: &mut SipState) {
