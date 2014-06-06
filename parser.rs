@@ -1,7 +1,7 @@
 #![allow(non_uppercase_pattern_statics)]
 #![allow(unused_must_use)]
 
-use collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet};
 use std::cell::RefCell;
 
 use il = types;

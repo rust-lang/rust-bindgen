@@ -2,12 +2,11 @@
 #![crate_type = "dylib"]
 #![feature(globs, managed_boxes, quote, phase, macro_registrar)]
 
-extern crate collections;
 extern crate syntax;
 extern crate libc;
 #[phase(syntax, link)] extern crate log;
 
-use collections::HashSet;
+use std::collections::HashSet;
 use std::default::Default;
 use syntax::ast;
 use syntax::codemap::Span;
