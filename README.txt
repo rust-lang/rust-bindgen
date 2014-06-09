@@ -14,13 +14,13 @@ Building
     $ rustc lib.rs
     $ rustc -L . bindgen.rs
 
-Usage
------
+Command Line Usage
+------------------
 
 Usage: ./bindgen [options] input.h
 Options:
     -h or --help           Display help message
-    -l <name> or -l<name>  Link to a dynamic library, can be proivded
+    -l <name> or -l<name>  Link to a dynamic library, can be provided
                            multiple times
     -static-link <name>    Link to a static library
     -framework-link <name> Link to a framework
@@ -28,7 +28,7 @@ Options:
     -match <name>          Only output bindings for definitions from files
                            whose name contains <name>
                            If multiple -match options are provided, files
-                           matching any rule are bound to.
+                           matching any rule are bound to
     -builtins              Output bindings for builtin definitions
                            (for example __builtin_va_list)
     -abi <abi>             Indicate abi of extern functions (default C)
@@ -38,19 +38,49 @@ Options:
                            instead treat them as void
     -emit-clang-ast        Output the ast (for debugging purposes)
 
-    Options other than stated above are passed to clang.
+    Options other than stated above are passed to clang
 
-Example
--------
+Macro Usage
+-----------
+
+Usage: bindgen!([headers], [named options])
+Options:
+
+    Option Name          Type              Default
+    ----------------------------------------------
+    link                 multiple strings
+    link_static          multiple strings
+    link_framework       multiple strings
+    match                multiple strings
+    emit_builtins        bool              true
+    abi                  string            "C"
+    allow_bitfields      bool              false
+    allow_unknown_types  bool              false
+    clang_args           string
+
+    See "Command Line Usage" section for option descriptions
+
+Examples
+--------
 
 Generate MySQL client bindings
 
-    bindgen -l mysql -match mysql.h -o mysql.rs /usr/local/include/mysql/mysql.h
+    bindgen -l mysql -match mysql.h -o mysql.rs /usr/include/mysql/mysql.h
 
 or
 
     echo '#include <mysql.h>' > gen.h
     bindgen `mysql_config --cflags` -l mysql -match mysql.h -o mysql.rs gen.h
+
+or
+
+    #![feature(phase)]
+    #[phase(syntax)] extern crate bindgen
+
+    #[allow(dead_code, uppercase_variables, non_camel_case_types)]
+    mod mysql_bindings {
+        bindgen!("/usr/include/mysql/mysql.h", match="mysql.h", link="mysql")
+    }
 
 TODO
 ----
