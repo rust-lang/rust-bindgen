@@ -214,74 +214,59 @@ fn parse_process_args(s: &str) -> Vec<String> {
             // Match \'
             ('\\', '\'') => (),
             // Match \<space>
-            ('\\', ' ') => (),
+            // Check we don't escape the final added space
+            ('\\', ' ') if i < s.len() => (),
             // Match \\
             ('\\', '\\') => (),
             // Match <any>"
-            (_, '\"') => {
-                match quote_state {
-                    InNone => {
-                        quote_state = InDoubleQuotes;
-                        positions.push(i);
-                        positions.push(i + 1);
-                    },
-                    InDoubleQuotes => {
-                        quote_state = InNone;
-                        positions.push(i);
-                        positions.push(i + 1);
-                    }
-                    InSingleQuotes => ()
-                }
+            (_, '\"') if quote_state == InNone => {
+                quote_state = InDoubleQuotes;
+                positions.push(i);
+                positions.push(i + 1);
+            },
+            (_, '\"') if quote_state == InDoubleQuotes => {
+                quote_state = InNone;
+                positions.push(i);
+                positions.push(i + 1);
             },
             // Match <any>'
-            (_, '\'') =>  {
-                match quote_state {
-                    InNone => {
-                        quote_state = InSingleQuotes;
-                        positions.push(i);
-                        positions.push(i + 1);
-                    },
-                    InSingleQuotes => {
-                        quote_state = InNone;
-                        positions.push(i);
-                        positions.push(i + 1);
-                    }
-                    InDoubleQuotes => ()
-                }
-            }
+            (_, '\'') if quote_state == InNone => {
+                quote_state = InSingleQuotes;
+                positions.push(i);
+                positions.push(i + 1);
+            },
+            (_, '\'') if quote_state == InSingleQuotes => {
+                quote_state = InNone;
+                positions.push(i);
+                positions.push(i + 1);
+            },
             // Match <any><space>
-            (_, ' ') => {
-                // If we are at the end of the string close any open quotes
-                if i >= s.len() {
-                    quote_state = InNone;
-                }
+            // If we are at the end of the string close any open quotes
+            (_, ' ') if quote_state == InNone || i >= s.len() => {
+                {
+                    positions.push(i);
 
-                if quote_state == InNone {
-                    {
-                        positions.push(i);
+                    let starts = positions.iter().enumerate().filter(|&(i, _)| i % 2 == 0);
+                    let ends = positions.iter().enumerate().filter(|&(i, _)| i % 2 == 1);
 
-                        let starts = positions.iter().enumerate().filter(|&(i, _)| i % 2 == 0);
-                        let ends = positions.iter().enumerate().filter(|&(i, _)| i % 2 == 1);
+                    let part: Vec<String> = starts.zip(ends).map(|((_, start), (_, end))| s.slice(*start, *end).to_string()).collect();
 
-                        let part: Vec<String> = starts.zip(ends).map(|((_, start), (_, end))| s.slice(*start, *end).to_string()).collect();
-                        let part = part.connect("");
+                    let part = part.connect("");
 
-                        if part.len() > 0 {
-                            // Remove any extra whitespace outside the quotes
-                            let part = part.as_slice().trim();
-                            // Replace quoted characters
-                            let part = part.replace("\\\"", "\"");
-                            let part = part.replace("\\\'", "\'");
-                            let part = part.replace("\\ ", " ");
-                            let part = part.replace("\\\\", "\\");
-                            error!("part: {}", part);
-                            parts.push(part);
-                        }
+                    if part.len() > 0 {
+                        // Remove any extra whitespace outside the quotes
+                        let part = part.as_slice().trim();
+                        // Replace quoted characters
+                        let part = part.replace("\\\"", "\"");
+                        let part = part.replace("\\\'", "\'");
+                        let part = part.replace("\\ ", " ");
+                        let part = part.replace("\\\\", "\\");
+                        parts.push(part);
                     }
-
-                    positions.clear();
-                    positions.push(i + 1);
                 }
+
+                positions.clear();
+                positions.push(i + 1);
             },
             (_, _) => ()
         }
@@ -313,4 +298,20 @@ impl base::MacResult for BindgenResult {
     fn make_items(&self) -> Option<SmallVector<@ast::Item>> {
         self.items.borrow_mut().take()
     }
+}
+
+#[cfg(test)]
+fn make_string_vec(parts: &[&str]) -> Vec<String> {
+    parts.iter().map(|p| p.to_string()).collect()
+}
+
+#[test]
+fn test_parse_process_args() {
+    assert_eq!(parse_process_args("a b c"), make_string_vec(["a", "b", "c"]));
+    assert_eq!(parse_process_args("a \"b\" c"), make_string_vec(["a", "b", "c"]));
+    assert_eq!(parse_process_args("a \'b\' c"), make_string_vec(["a", "b", "c"]));
+    assert_eq!(parse_process_args("a \"b c\""), make_string_vec(["a", "b c"]));
+    assert_eq!(parse_process_args("a \'\"b\"\' c"), make_string_vec(["a", "\"b\"", "c"]));
+    assert_eq!(parse_process_args("a b\\ c"), make_string_vec(["a", "b c"]));
+    assert_eq!(parse_process_args("a b c\\"), make_string_vec(["a", "b", "c\\"]));
 }
