@@ -24,14 +24,6 @@ struct GenCtx<'r> {
     span: Span
 }
 
-struct ErrLoader;
-
-impl base::CrateLoader for ErrLoader {
-    fn load_crate(&mut self, _: &ast::ViewItem) -> base::MacroCrate {
-        fail!("lolwut")
-    }
-}
-
 fn first<A, B>((val, _): (A, B)) -> A {
     return val;
 }
@@ -116,9 +108,7 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
     };
 
     // Create a dummy ExtCtxt. We only need this for string interning and that uses TLS.
-    let mut loader = ErrLoader;
     let cfg = ExpansionConfig {
-        loader: &mut loader,
         deriving_hash_type_parameter: false,
         crate_id: from_str("xxx").unwrap(),
     };

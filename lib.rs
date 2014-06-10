@@ -1,17 +1,17 @@
 #![crate_id = "bindgen"]
 #![crate_type = "dylib"]
-#![feature(globs, managed_boxes, quote, phase, macro_registrar)]
+#![feature(globs, managed_boxes, quote, phase, plugin_registrar)]
 
 extern crate syntax;
+extern crate rustc;
 extern crate libc;
-#[phase(syntax, link)] extern crate log;
+#[phase(plugin, link)] extern crate log;
 
 use std::collections::HashSet;
 use std::default::Default;
 use syntax::ast;
 use syntax::codemap::Span;
-use syntax::ext::base;
-use syntax::parse::token;
+use rustc::plugin::Registry;
 
 use types::Global;
 
@@ -22,10 +22,9 @@ mod gen;
 mod parser;
 mod macro;
 
-#[macro_registrar]
-pub fn macro_registrar(register: |ast::Name, base::SyntaxExtension|) {
-    let expander = box base::BasicMacroExpander { expander: macro::bindgen_macro, span: None };
-    register(token::intern("bindgen"), base::NormalTT(expander, None))
+#[plugin_registrar]
+pub fn plugin_registrar(reg: &mut Registry) {
+    reg.register_macro("bindgen", macro::bindgen_macro);
 }
 
 pub struct BindgenOptions {

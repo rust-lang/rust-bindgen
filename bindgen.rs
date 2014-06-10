@@ -3,7 +3,7 @@
 #![feature(phase)]
 
 extern crate bindgen;
-#[phase(syntax, link)] extern crate log;
+#[phase(plugin, link)] extern crate log;
 extern crate syntax;
 
 use bindgen::{Logger, generate_bindings, BindgenOptions};
