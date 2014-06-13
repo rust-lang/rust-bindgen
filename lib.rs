@@ -94,13 +94,13 @@ fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<Vec<Global
 
 fn builtin_names() -> HashSet<String> {
     let mut names = HashSet::new();
-    let keys = ~[
-        "__va_list_tag".to_string(),
-        "__va_list".to_string(),
+    let keys = [
+        "__va_list_tag",
+        "__va_list",
     ];
 
-    keys.move_iter().advance(|s| {
-        names.insert(s);
+    keys.iter().advance(|s| {
+        names.insert(s.to_string());
         true
     });
 
