@@ -1,6 +1,8 @@
 use std::cell::RefCell;
 use std::default::Default;
 use std::os;
+use std::gc::Gc;
+
 use syntax::ast;
 use syntax::codemap;
 use syntax::ext::base;
@@ -291,11 +293,11 @@ impl<'a, 'b> Logger for MacroLogger<'a, 'b> {
 }
 
 struct BindgenResult {
-    items: RefCell<Option<SmallVector<@ast::Item>>>
+    items: RefCell<Option<SmallVector<Gc<ast::Item>>>>
 }
 
 impl base::MacResult for BindgenResult {
-    fn make_items(&self) -> Option<SmallVector<@ast::Item>> {
+    fn make_items(&self) -> Option<SmallVector<Gc<ast::Item>>> {
         self.items.borrow_mut().take()
     }
 }

@@ -261,7 +261,7 @@ impl SourceLocation {
 
 impl fmt::Show for SourceLocation {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let (file, line, col, off) = self.location();
+        let (file, line, col, _) = self.location();
         match file.is_null() {
             false => {
                 try!(file.name().fmt(f));

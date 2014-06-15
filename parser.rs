@@ -3,6 +3,7 @@
 
 use std::collections::{HashMap, HashSet};
 use std::cell::RefCell;
+use std::gc::GC;
 
 use il = types;
 use types::*;
@@ -65,11 +66,11 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
 
             match cursor.kind() {
                 CXCursor_StructDecl => {
-                    let ci = @RefCell::new(CompInfo::new(spelling, true, vec!(), layout));
+                    let ci = box(GC) RefCell::new(CompInfo::new(spelling, true, vec!(), layout));
                     GCompDecl(ci)
                 }
                 CXCursor_UnionDecl => {
-                    let ci = @RefCell::new(CompInfo::new(spelling, false, vec!(), layout));
+                    let ci = box(GC) RefCell::new(CompInfo::new(spelling, false, vec!(), layout));
                     GCompDecl(ci)
                 }
                 CXCursor_EnumDecl => {
@@ -86,19 +87,19 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                         CXType_LongLong => ILongLong,
                         _ => IInt,
                     };
-                    let ei = @RefCell::new(EnumInfo::new(spelling, kind, vec!(), layout));
+                    let ei = box(GC) RefCell::new(EnumInfo::new(spelling, kind, vec!(), layout));
                     GEnumDecl(ei)
                 }
                 CXCursor_TypedefDecl => {
-                    let ti = @RefCell::new(TypeInfo::new(spelling, TVoid));
+                    let ti = box(GC) RefCell::new(TypeInfo::new(spelling, TVoid));
                     GType(ti)
                 }
                 CXCursor_VarDecl => {
-                    let vi = @RefCell::new(VarInfo::new(spelling, TVoid));
+                    let vi = box(GC) RefCell::new(VarInfo::new(spelling, TVoid));
                     GVar(vi)
                 }
                 CXCursor_FunctionDecl => {
-                    let vi = @RefCell::new(VarInfo::new(spelling, TVoid));
+                    let vi = box(GC) RefCell::new(VarInfo::new(spelling, TVoid));
                     GFunc(vi)
                 }
                 _ => GOther
@@ -225,11 +226,12 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
         CXType_Enum => conv_decl_ty(ctx, &ty.declaration()),
         CXType_ConstantArray => TArray(box conv_ty(ctx, &ty.elem_type(), cursor), ty.array_size(), layout),
         _ => {
+            let fail = ctx.options.fail_on_unknown_type;
             log_err_warn(ctx,
                 format!("unsupported type `{}` ({})",
                     type_to_str(ty.kind()), cursor.location()
                 ).as_slice(),
-                ctx.options.fail_on_unknown_type
+                fail
             );
             TVoid
         },
@@ -258,11 +260,12 @@ fn visit_struct(cursor: &Cursor,
         // If we encounter a bitfield, and fail_on_bitfield is set, throw an
         // error and exit entirely.
         if bit != None {
+            let fail = ctx.options.fail_on_bitfield;
             log_err_warn(ctx,
                 format!("unsupported bitfield `{}` in struct `{}` ({})",
                     name.as_slice(), parent.spelling().as_slice(), cursor.location()
                 ).as_slice(),
-                ctx.options.fail_on_bitfield
+                fail
             );
         }
         let field = FieldInfo::new(name, ty, bit);

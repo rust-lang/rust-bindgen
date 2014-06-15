@@ -1,20 +1,21 @@
 use std::cell::RefCell;
 use std::fmt;
+use std::gc::Gc;
 
 #[deriving(Clone)]
 pub enum Global {
-    GType(@RefCell<TypeInfo>),
-    GComp(@RefCell<CompInfo>),
-    GCompDecl(@RefCell<CompInfo>),
-    GEnum(@RefCell<EnumInfo>),
-    GEnumDecl(@RefCell<EnumInfo>),
-    GVar(@RefCell<VarInfo>),
-    GFunc(@RefCell<VarInfo>),
+    GType(Gc<RefCell<TypeInfo>>),
+    GComp(Gc<RefCell<CompInfo>>),
+    GCompDecl(Gc<RefCell<CompInfo>>),
+    GEnum(Gc<RefCell<EnumInfo>>),
+    GEnumDecl(Gc<RefCell<EnumInfo>>),
+    GVar(Gc<RefCell<VarInfo>>),
+    GFunc(Gc<RefCell<VarInfo>>),
     GOther
 }
 
 impl Global {
-    pub fn compinfo(&self) -> @RefCell<CompInfo> {
+    pub fn compinfo(&self) -> Gc<RefCell<CompInfo>> {
         match *self {
             GComp(i) => return i,
             GCompDecl(i) => return i,
@@ -22,7 +23,7 @@ impl Global {
         }
     }
 
-    pub fn enuminfo(&self) -> @RefCell<EnumInfo> {
+    pub fn enuminfo(&self) -> Gc<RefCell<EnumInfo>> {
         match *self {
             GEnum(i) => return i,
             GEnumDecl(i) => return i,
@@ -30,14 +31,14 @@ impl Global {
         }
     }
 
-    pub fn typeinfo(&self) -> @RefCell<TypeInfo> {
+    pub fn typeinfo(&self) -> Gc<RefCell<TypeInfo>> {
         match *self {
             GType(i) => return i,
             _ => fail!("global_typeinfo".to_string())
         }
     }
 
-    pub fn varinfo(&self) -> @RefCell<VarInfo> {
+    pub fn varinfo(&self) -> Gc<RefCell<VarInfo>> {
         match *self {
             GVar(i) => i,
             GFunc(i) => i,
@@ -69,9 +70,9 @@ pub enum Type {
     TPtr(Box<Type>, bool, Layout),
     TArray(Box<Type>, uint, Layout),
     TFunc(Box<Type>, Vec<(String, Type)>, bool),
-    TNamed(@RefCell<TypeInfo>),
-    TComp(@RefCell<CompInfo>),
-    TEnum(@RefCell<EnumInfo>)
+    TNamed(Gc<RefCell<TypeInfo>>),
+    TComp(Gc<RefCell<CompInfo>>),
+    TEnum(Gc<RefCell<EnumInfo>>)
 }
 
 impl Type {
