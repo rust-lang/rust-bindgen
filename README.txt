@@ -9,7 +9,7 @@ Requirements
 * clang 3.4 and up
 
 Note: The libclang.so have to be statically linked with LLVM
-      or you will encounter #89
+      or you will encounter https://github.com/crabtw/rust-bindgen/issues/89
 
 Building
 --------
