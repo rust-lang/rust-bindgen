@@ -8,6 +8,9 @@ Requirements
 
 * clang 3.4 and up
 
+Note: The libclang.so have to be statically linked with LLVM
+      or you will encounter #89
+
 Building
 --------
 
