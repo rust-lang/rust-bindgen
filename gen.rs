@@ -441,7 +441,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: String, ty: &Type) -> Vec<Gc<ast::Item
 }
 
 fn cstruct_to_rs(ctx: &mut GenCtx, name: String, fields: Vec<FieldInfo>) -> Gc<ast::Item> {
-    let mut unnamed = 0;
+    let mut unnamed: uint = 0;
     let fs = fields.iter().map(|f| {
         let f_name = if f.name.is_empty() || "_" == f.name.as_slice() {
             unnamed += 1;
@@ -554,7 +554,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, fields: Vec<Fiel
         &ctx.ext_cx,
         unsafe { ::std::mem::transmute(self) }
     );
-    let mut unnamed = 0;
+    let mut unnamed: uint = 0;
     let fs = fields.iter().map(|f| {
         let f_name = if f.name.is_empty() || "_" == f.name.as_slice() {
             unnamed += 1;
@@ -700,7 +700,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
         _ => cty_to_rs(ctx, rty)
     };
 
-    let mut unnamed = 0;
+    let mut unnamed: uint = 0;
     let args: Vec<ast::Arg> = aty.iter().map(|arg| {
         let (ref n, ref t) = *arg;
 
