@@ -30,7 +30,7 @@ fn first<A, B>((val, _): (A, B)) -> A {
 }
 
 fn ref_eq<'a, 'b, T>(thing: &'a T, other: &'b T) -> bool {
-    (thing as *T) == (other as *T)
+    (thing as *const T) == (other as *const T)
 }
 
 fn to_intern_str(ctx: &mut GenCtx, s: String) -> parse::token::InternedString {

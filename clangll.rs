@@ -10,7 +10,7 @@ pub type size_t = ::libc::c_ulong;
 pub type wchar_t = ::libc::c_int;
 #[repr(C)]
 pub struct CXString {
-    pub data: *::libc::c_void,
+    pub data: *const ::libc::c_void,
     pub private_flags: ::libc::c_uint,
 }
 pub type CXIndex = *mut ::libc::c_void;
@@ -19,8 +19,8 @@ pub type CXTranslationUnit = *mut Struct_CXTranslationUnitImpl;
 pub type CXClientData = *mut ::libc::c_void;
 #[repr(C)]
 pub struct Struct_CXUnsavedFile {
-    pub Filename: *::libc::c_char,
-    pub Contents: *::libc::c_char,
+    pub Filename: *const ::libc::c_char,
+    pub Contents: *const ::libc::c_char,
     pub Length: ::libc::c_ulong,
 }
 pub type Enum_CXAvailabilityKind = ::libc::c_uint;
@@ -48,12 +48,12 @@ pub struct CXFileUniqueID {
 }
 #[repr(C)]
 pub struct CXSourceLocation {
-    pub ptr_data: [*::libc::c_void, ..2u],
+    pub ptr_data: [*const ::libc::c_void, ..2u],
     pub int_data: ::libc::c_uint,
 }
 #[repr(C)]
 pub struct CXSourceRange {
-    pub ptr_data: [*::libc::c_void, ..2u],
+    pub ptr_data: [*const ::libc::c_void, ..2u],
     pub begin_int_data: ::libc::c_uint,
     pub end_int_data: ::libc::c_uint,
 }
@@ -308,11 +308,11 @@ pub static CXCursor_LastExtraDecl: ::libc::c_uint = 600;
 pub struct CXCursor {
     pub kind: Enum_CXCursorKind,
     pub xdata: ::libc::c_int,
-    pub data: [*::libc::c_void, ..3u],
+    pub data: [*const ::libc::c_void, ..3u],
 }
 #[repr(C)]
 pub struct CXComment {
-    pub ASTNode: *::libc::c_void,
+    pub ASTNode: *const ::libc::c_void,
     pub TranslationUnit: CXTranslationUnit,
 }
 pub type Enum_CXLinkageKind = ::libc::c_uint;
@@ -589,7 +589,7 @@ pub struct CXIdxLoc {
 #[repr(C)]
 pub struct CXIdxIncludedFileInfo {
     pub hashLoc: CXIdxLoc,
-    pub filename: *::libc::c_char,
+    pub filename: *const ::libc::c_char,
     pub file: CXFile,
     pub isImport: ::libc::c_int,
     pub isAngled: ::libc::c_int,
@@ -656,10 +656,10 @@ pub struct CXIdxEntityInfo {
     pub kind: CXIdxEntityKind,
     pub templateKind: CXIdxEntityCXXTemplateKind,
     pub lang: CXIdxEntityLanguage,
-    pub name: *::libc::c_char,
-    pub USR: *::libc::c_char,
+    pub name: *const ::libc::c_char,
+    pub USR: *const ::libc::c_char,
     pub cursor: CXCursor,
-    pub attributes: **CXIdxAttrInfo,
+    pub attributes: *const *const CXIdxAttrInfo,
     pub numAttributes: ::libc::c_uint,
 }
 #[repr(C)]
@@ -668,8 +668,8 @@ pub struct CXIdxContainerInfo {
 }
 #[repr(C)]
 pub struct CXIdxIBOutletCollectionAttrInfo {
-    pub attrInfo: *CXIdxAttrInfo,
-    pub objcClass: *CXIdxEntityInfo,
+    pub attrInfo: *const CXIdxAttrInfo,
+    pub objcClass: *const CXIdxEntityInfo,
     pub classCursor: CXCursor,
     pub classLoc: CXIdxLoc,
 }
@@ -677,17 +677,17 @@ pub type CXIdxDeclInfoFlags = ::libc::c_uint;
 pub static CXIdxDeclFlag_Skipped: ::libc::c_uint = 1;
 #[repr(C)]
 pub struct CXIdxDeclInfo {
-    pub entityInfo: *CXIdxEntityInfo,
+    pub entityInfo: *const CXIdxEntityInfo,
     pub cursor: CXCursor,
     pub loc: CXIdxLoc,
-    pub semanticContainer: *CXIdxContainerInfo,
-    pub lexicalContainer: *CXIdxContainerInfo,
+    pub semanticContainer: *const CXIdxContainerInfo,
+    pub lexicalContainer: *const CXIdxContainerInfo,
     pub isRedeclaration: ::libc::c_int,
     pub isDefinition: ::libc::c_int,
     pub isContainer: ::libc::c_int,
-    pub declAsContainer: *CXIdxContainerInfo,
+    pub declAsContainer: *const CXIdxContainerInfo,
     pub isImplicit: ::libc::c_int,
-    pub attributes: **CXIdxAttrInfo,
+    pub attributes: *const *const CXIdxAttrInfo,
     pub numAttributes: ::libc::c_uint,
     pub flags: ::libc::c_uint,
 }
@@ -697,50 +697,50 @@ pub static CXIdxObjCContainer_Interface: ::libc::c_uint = 1;
 pub static CXIdxObjCContainer_Implementation: ::libc::c_uint = 2;
 #[repr(C)]
 pub struct CXIdxObjCContainerDeclInfo {
-    pub declInfo: *CXIdxDeclInfo,
+    pub declInfo: *const CXIdxDeclInfo,
     pub kind: CXIdxObjCContainerKind,
 }
 #[repr(C)]
 pub struct CXIdxBaseClassInfo {
-    pub base: *CXIdxEntityInfo,
+    pub base: *const CXIdxEntityInfo,
     pub cursor: CXCursor,
     pub loc: CXIdxLoc,
 }
 #[repr(C)]
 pub struct CXIdxObjCProtocolRefInfo {
-    pub protocol: *CXIdxEntityInfo,
+    pub protocol: *const CXIdxEntityInfo,
     pub cursor: CXCursor,
     pub loc: CXIdxLoc,
 }
 #[repr(C)]
 pub struct CXIdxObjCProtocolRefListInfo {
-    pub protocols: **CXIdxObjCProtocolRefInfo,
+    pub protocols: *const *const CXIdxObjCProtocolRefInfo,
     pub numProtocols: ::libc::c_uint,
 }
 #[repr(C)]
 pub struct CXIdxObjCInterfaceDeclInfo {
-    pub containerInfo: *CXIdxObjCContainerDeclInfo,
-    pub superInfo: *CXIdxBaseClassInfo,
-    pub protocols: *CXIdxObjCProtocolRefListInfo,
+    pub containerInfo: *const CXIdxObjCContainerDeclInfo,
+    pub superInfo: *const CXIdxBaseClassInfo,
+    pub protocols: *const CXIdxObjCProtocolRefListInfo,
 }
 #[repr(C)]
 pub struct CXIdxObjCCategoryDeclInfo {
-    pub containerInfo: *CXIdxObjCContainerDeclInfo,
-    pub objcClass: *CXIdxEntityInfo,
+    pub containerInfo: *const CXIdxObjCContainerDeclInfo,
+    pub objcClass: *const CXIdxEntityInfo,
     pub classCursor: CXCursor,
     pub classLoc: CXIdxLoc,
-    pub protocols: *CXIdxObjCProtocolRefListInfo,
+    pub protocols: *const CXIdxObjCProtocolRefListInfo,
 }
 #[repr(C)]
 pub struct CXIdxObjCPropertyDeclInfo {
-    pub declInfo: *CXIdxDeclInfo,
-    pub getter: *CXIdxEntityInfo,
-    pub setter: *CXIdxEntityInfo,
+    pub declInfo: *const CXIdxDeclInfo,
+    pub getter: *const CXIdxEntityInfo,
+    pub setter: *const CXIdxEntityInfo,
 }
 #[repr(C)]
 pub struct CXIdxCXXClassDeclInfo {
-    pub declInfo: *CXIdxDeclInfo,
-    pub bases: **CXIdxBaseClassInfo,
+    pub declInfo: *const CXIdxDeclInfo,
+    pub bases: *const *const CXIdxBaseClassInfo,
     pub numBases: ::libc::c_uint,
 }
 pub type CXIdxEntityRefKind = ::libc::c_uint;
@@ -751,9 +751,9 @@ pub struct CXIdxEntityRefInfo {
     pub kind: CXIdxEntityRefKind,
     pub cursor: CXCursor,
     pub loc: CXIdxLoc,
-    pub referencedEntity: *CXIdxEntityInfo,
-    pub parentEntity: *CXIdxEntityInfo,
-    pub container: *CXIdxContainerInfo,
+    pub referencedEntity: *const CXIdxEntityInfo,
+    pub parentEntity: *const CXIdxEntityInfo,
+    pub container: *const CXIdxContainerInfo,
 }
 #[repr(C)]
 pub struct IndexerCallbacks {
@@ -773,12 +773,12 @@ pub struct IndexerCallbacks {
     pub ppIncludedFile: ::std::option::Option<extern "C" fn
                                                   (arg1: CXClientData,
                                                    arg2:
-                                                       *CXIdxIncludedFileInfo)
+                                                       *const CXIdxIncludedFileInfo)
                                                   -> CXIdxClientFile>,
     pub importedASTFile: ::std::option::Option<extern "C" fn
                                                    (arg1: CXClientData,
                                                     arg2:
-                                                        *CXIdxImportedASTFileInfo)
+                                                        *const CXIdxImportedASTFileInfo)
                                                    -> CXIdxClientASTFile>,
     pub startedTranslationUnit: ::std::option::Option<extern "C" fn
                                                           (arg1: CXClientData,
@@ -788,11 +788,12 @@ pub struct IndexerCallbacks {
                                                               CXIdxClientContainer>,
     pub indexDeclaration: ::std::option::Option<extern "C" fn
                                                     (arg1: CXClientData,
-                                                     arg2: *CXIdxDeclInfo)>,
+                                                     arg2:
+                                                         *const CXIdxDeclInfo)>,
     pub indexEntityReference: ::std::option::Option<extern "C" fn
                                                         (arg1: CXClientData,
                                                          arg2:
-                                                             *CXIdxEntityRefInfo)>,
+                                                             *const CXIdxEntityRefInfo)>,
 }
 pub type CXIndexAction = *mut ::libc::c_void;
 pub type CXIndexOptFlags = ::libc::c_uint;
@@ -804,7 +805,7 @@ pub static CXIndexOpt_SuppressWarnings: ::libc::c_uint = 8;
 pub static CXIndexOpt_SkipParsedBodiesInSession: ::libc::c_uint = 16;
 #[link(name = "clang")]
 extern "C" {
-    pub fn clang_getCString(string: CXString) -> *::libc::c_char;
+    pub fn clang_getCString(string: CXString) -> *const ::libc::c_char;
     pub fn clang_disposeString(string: CXString);
     pub fn clang_createIndex(excludeDeclarationsFromPCH: ::libc::c_int,
                              displayDiagnostics: ::libc::c_int) -> CXIndex;
@@ -818,8 +819,8 @@ extern "C" {
      ::libc::c_int;
     pub fn clang_isFileMultipleIncludeGuarded(tu: CXTranslationUnit,
                                               file: CXFile) -> ::libc::c_uint;
-    pub fn clang_getFile(tu: CXTranslationUnit, file_name: *::libc::c_char) ->
-     CXFile;
+    pub fn clang_getFile(tu: CXTranslationUnit,
+                         file_name: *const ::libc::c_char) -> CXFile;
     pub fn clang_getNullLocation() -> CXSourceLocation;
     pub fn clang_equalLocations(loc1: CXSourceLocation,
                                 loc2: CXSourceLocation) -> ::libc::c_uint;
@@ -868,7 +869,7 @@ extern "C" {
      ::libc::c_uint;
     pub fn clang_getDiagnosticInSet(Diags: CXDiagnosticSet,
                                     Index: ::libc::c_uint) -> CXDiagnostic;
-    pub fn clang_loadDiagnostics(file: *::libc::c_char,
+    pub fn clang_loadDiagnostics(file: *const ::libc::c_char,
                                  error: *mut Enum_CXLoadDiag_Error,
                                  errorString: *mut CXString) ->
      CXDiagnosticSet;
@@ -907,23 +908,24 @@ extern "C" {
      CXString;
     pub fn clang_createTranslationUnitFromSourceFile(CIdx: CXIndex,
                                                      source_filename:
-                                                         *::libc::c_char,
+                                                         *const ::libc::c_char,
                                                      num_clang_command_line_args:
                                                          ::libc::c_int,
                                                      clang_command_line_args:
-                                                         **::libc::c_char,
+                                                         *const *const ::libc::c_char,
                                                      num_unsaved_files:
                                                          ::libc::c_uint,
                                                      unsaved_files:
                                                          *mut Struct_CXUnsavedFile)
      -> CXTranslationUnit;
     pub fn clang_createTranslationUnit(arg1: CXIndex,
-                                       ast_filename: *::libc::c_char) ->
+                                       ast_filename: *const ::libc::c_char) ->
      CXTranslationUnit;
     pub fn clang_defaultEditingTranslationUnitOptions() -> ::libc::c_uint;
     pub fn clang_parseTranslationUnit(CIdx: CXIndex,
-                                      source_filename: *::libc::c_char,
-                                      command_line_args: **::libc::c_char,
+                                      source_filename: *const ::libc::c_char,
+                                      command_line_args:
+                                          *const *const ::libc::c_char,
                                       num_command_line_args: ::libc::c_int,
                                       unsaved_files:
                                           *mut Struct_CXUnsavedFile,
@@ -932,7 +934,7 @@ extern "C" {
      CXTranslationUnit;
     pub fn clang_defaultSaveOptions(TU: CXTranslationUnit) -> ::libc::c_uint;
     pub fn clang_saveTranslationUnit(TU: CXTranslationUnit,
-                                     FileName: *::libc::c_char,
+                                     FileName: *const ::libc::c_char,
                                      options: ::libc::c_uint) ->
      ::libc::c_int;
     pub fn clang_disposeTranslationUnit(arg1: CXTranslationUnit);
@@ -945,7 +947,7 @@ extern "C" {
                                         options: ::libc::c_uint) ->
      ::libc::c_int;
     pub fn clang_getTUResourceUsageName(kind: Enum_CXTUResourceUsageKind) ->
-     *::libc::c_char;
+     *const ::libc::c_char;
     pub fn clang_getCXTUResourceUsage(TU: CXTranslationUnit) ->
      CXTUResourceUsage;
     pub fn clang_disposeCXTUResourceUsage(usage: CXTUResourceUsage);
@@ -1039,7 +1041,7 @@ extern "C" {
     pub fn clang_Type_getAlignOf(T: CXType) -> ::libc::c_longlong;
     pub fn clang_Type_getClassType(T: CXType) -> CXType;
     pub fn clang_Type_getSizeOf(T: CXType) -> ::libc::c_longlong;
-    pub fn clang_Type_getOffsetOf(T: CXType, S: *::libc::c_char) ->
+    pub fn clang_Type_getOffsetOf(T: CXType, S: *const ::libc::c_char) ->
      ::libc::c_longlong;
     pub fn clang_Type_getCXXRefQualifier(T: CXType) ->
      Enum_CXRefQualifierKind;
@@ -1054,19 +1056,21 @@ extern "C" {
     pub fn clang_visitChildren(parent: CXCursor, visitor: CXCursorVisitor,
                                client_data: CXClientData) -> ::libc::c_uint;
     pub fn clang_getCursorUSR(arg1: CXCursor) -> CXString;
-    pub fn clang_constructUSR_ObjCClass(class_name: *::libc::c_char) ->
+    pub fn clang_constructUSR_ObjCClass(class_name: *const ::libc::c_char) ->
      CXString;
-    pub fn clang_constructUSR_ObjCCategory(class_name: *::libc::c_char,
-                                           category_name: *::libc::c_char) ->
+    pub fn clang_constructUSR_ObjCCategory(class_name: *const ::libc::c_char,
+                                           category_name:
+                                               *const ::libc::c_char) ->
      CXString;
-    pub fn clang_constructUSR_ObjCProtocol(protocol_name: *::libc::c_char) ->
+    pub fn clang_constructUSR_ObjCProtocol(protocol_name:
+                                               *const ::libc::c_char) ->
      CXString;
-    pub fn clang_constructUSR_ObjCIvar(name: *::libc::c_char,
+    pub fn clang_constructUSR_ObjCIvar(name: *const ::libc::c_char,
                                        classUSR: CXString) -> CXString;
-    pub fn clang_constructUSR_ObjCMethod(name: *::libc::c_char,
+    pub fn clang_constructUSR_ObjCMethod(name: *const ::libc::c_char,
                                          isInstanceMethod: ::libc::c_uint,
                                          classUSR: CXString) -> CXString;
-    pub fn clang_constructUSR_ObjCProperty(property: *::libc::c_char,
+    pub fn clang_constructUSR_ObjCProperty(property: *const ::libc::c_char,
                                            classUSR: CXString) -> CXString;
     pub fn clang_getCursorSpelling(arg1: CXCursor) -> CXString;
     pub fn clang_Cursor_getSpellingNameRange(arg1: CXCursor,
@@ -1191,8 +1195,9 @@ extern "C" {
     pub fn clang_getCursorKindSpelling(Kind: Enum_CXCursorKind) -> CXString;
     pub fn clang_getDefinitionSpellingAndExtent(arg1: CXCursor,
                                                 startBuf:
-                                                    *mut *::libc::c_char,
-                                                endBuf: *mut *::libc::c_char,
+                                                    *mut *const ::libc::c_char,
+                                                endBuf:
+                                                    *mut *const ::libc::c_char,
                                                 startLine:
                                                     *mut ::libc::c_uint,
                                                 startColumn:
@@ -1242,7 +1247,7 @@ extern "C" {
      CXCompletionString;
     pub fn clang_defaultCodeCompleteOptions() -> ::libc::c_uint;
     pub fn clang_codeCompleteAt(TU: CXTranslationUnit,
-                                complete_filename: *::libc::c_char,
+                                complete_filename: *const ::libc::c_char,
                                 complete_line: ::libc::c_uint,
                                 complete_column: ::libc::c_uint,
                                 unsaved_files: *mut Struct_CXUnsavedFile,
@@ -1278,8 +1283,9 @@ extern "C" {
     pub fn clang_getInclusions(tu: CXTranslationUnit,
                                visitor: CXInclusionVisitor,
                                client_data: CXClientData);
-    pub fn clang_getRemappings(path: *::libc::c_char) -> CXRemapping;
-    pub fn clang_getRemappingsFromFileList(filePaths: *mut *::libc::c_char,
+    pub fn clang_getRemappings(path: *const ::libc::c_char) -> CXRemapping;
+    pub fn clang_getRemappingsFromFileList(filePaths:
+                                               *mut *const ::libc::c_char,
                                            numFiles: ::libc::c_uint) ->
      CXRemapping;
     pub fn clang_remap_getNumFiles(arg1: CXRemapping) -> ::libc::c_uint;
@@ -1295,27 +1301,28 @@ extern "C" {
      CXResult;
     pub fn clang_index_isEntityObjCContainerKind(arg1: CXIdxEntityKind) ->
      ::libc::c_int;
-    pub fn clang_index_getObjCContainerDeclInfo(arg1: *CXIdxDeclInfo) ->
-     *CXIdxObjCContainerDeclInfo;
-    pub fn clang_index_getObjCInterfaceDeclInfo(arg1: *CXIdxDeclInfo) ->
-     *CXIdxObjCInterfaceDeclInfo;
-    pub fn clang_index_getObjCCategoryDeclInfo(arg1: *CXIdxDeclInfo) ->
-     *CXIdxObjCCategoryDeclInfo;
-    pub fn clang_index_getObjCProtocolRefListInfo(arg1: *CXIdxDeclInfo) ->
-     *CXIdxObjCProtocolRefListInfo;
-    pub fn clang_index_getObjCPropertyDeclInfo(arg1: *CXIdxDeclInfo) ->
-     *CXIdxObjCPropertyDeclInfo;
-    pub fn clang_index_getIBOutletCollectionAttrInfo(arg1: *CXIdxAttrInfo) ->
-     *CXIdxIBOutletCollectionAttrInfo;
-    pub fn clang_index_getCXXClassDeclInfo(arg1: *CXIdxDeclInfo) ->
-     *CXIdxCXXClassDeclInfo;
-    pub fn clang_index_getClientContainer(arg1: *CXIdxContainerInfo) ->
+    pub fn clang_index_getObjCContainerDeclInfo(arg1: *const CXIdxDeclInfo) ->
+     *const CXIdxObjCContainerDeclInfo;
+    pub fn clang_index_getObjCInterfaceDeclInfo(arg1: *const CXIdxDeclInfo) ->
+     *const CXIdxObjCInterfaceDeclInfo;
+    pub fn clang_index_getObjCCategoryDeclInfo(arg1: *const CXIdxDeclInfo) ->
+     *const CXIdxObjCCategoryDeclInfo;
+    pub fn clang_index_getObjCProtocolRefListInfo(arg1: *const CXIdxDeclInfo)
+     -> *const CXIdxObjCProtocolRefListInfo;
+    pub fn clang_index_getObjCPropertyDeclInfo(arg1: *const CXIdxDeclInfo) ->
+     *const CXIdxObjCPropertyDeclInfo;
+    pub fn clang_index_getIBOutletCollectionAttrInfo(arg1:
+                                                         *const CXIdxAttrInfo)
+     -> *const CXIdxIBOutletCollectionAttrInfo;
+    pub fn clang_index_getCXXClassDeclInfo(arg1: *const CXIdxDeclInfo) ->
+     *const CXIdxCXXClassDeclInfo;
+    pub fn clang_index_getClientContainer(arg1: *const CXIdxContainerInfo) ->
      CXIdxClientContainer;
-    pub fn clang_index_setClientContainer(arg1: *CXIdxContainerInfo,
+    pub fn clang_index_setClientContainer(arg1: *const CXIdxContainerInfo,
                                           arg2: CXIdxClientContainer);
-    pub fn clang_index_getClientEntity(arg1: *CXIdxEntityInfo) ->
+    pub fn clang_index_getClientEntity(arg1: *const CXIdxEntityInfo) ->
      CXIdxClientEntity;
-    pub fn clang_index_setClientEntity(arg1: *CXIdxEntityInfo,
+    pub fn clang_index_setClientEntity(arg1: *const CXIdxEntityInfo,
                                        arg2: CXIdxClientEntity);
     pub fn clang_IndexAction_create(CIdx: CXIndex) -> CXIndexAction;
     pub fn clang_IndexAction_dispose(arg1: CXIndexAction);
@@ -1324,8 +1331,9 @@ extern "C" {
                                  index_callbacks: *mut IndexerCallbacks,
                                  index_callbacks_size: ::libc::c_uint,
                                  index_options: ::libc::c_uint,
-                                 source_filename: *::libc::c_char,
-                                 command_line_args: **::libc::c_char,
+                                 source_filename: *const ::libc::c_char,
+                                 command_line_args:
+                                     *const *const ::libc::c_char,
                                  num_command_line_args: ::libc::c_int,
                                  unsaved_files: *mut Struct_CXUnsavedFile,
                                  num_unsaved_files: ::libc::c_uint,
