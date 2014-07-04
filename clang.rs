@@ -344,9 +344,9 @@ impl TranslationUnit {
     pub fn parse(ix: &Index, file: &str, cmd_args: &[String],
                  unsaved: &[UnsavedFile], opts: uint) -> TranslationUnit {
         let _fname = file.to_c_str();
-        let fname = _fname.with_ref(|f| f);
+        let fname = _fname.as_ptr();
         let _c_args: Vec<CString> = cmd_args.iter().map(|s| s.to_c_str()).collect();
-        let c_args: Vec<*const c_char> = _c_args.iter().map(|s| s.with_ref(|cs| cs)).collect();
+        let c_args: Vec<*const c_char> = _c_args.iter().map(|s| s.as_ptr()).collect();
         let mut c_unsaved: Vec<Struct_CXUnsavedFile> = unsaved.iter().map(|f| f.x).collect();
         let tu = unsafe {
             clang_parseTranslationUnit(ix.x, fname,
@@ -441,8 +441,8 @@ impl UnsavedFile {
         let name = name.to_c_str();
         let contents = contents.to_c_str();
         let x = Struct_CXUnsavedFile {
-            Filename: name.with_ref(|cs| cs),
-            Contents: contents.with_ref(|cs| cs),
+            Filename: name.as_ptr(),
+            Contents: contents.as_ptr(),
             Length: contents.len() as c_ulong,
         };
         UnsavedFile {

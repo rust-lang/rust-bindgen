@@ -719,17 +719,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
                  id: ast::DUMMY_NODE_ID,
                  node: ast::PatIdent(
                      ast::BindByValue(ast::MutImmutable),
-                     ast::Path {
-                         span: ctx.span,
-                         global: false,
-                         segments: Vec::from_elem(1,
-                            ast::PathSegment {
-                                identifier: ctx.ext_cx.ident_of(arg_name.as_slice()),
-                                lifetimes: Vec::new(),
-                                types: OwnedSlice::empty(),
-                            }
-                        )
-                     },
+                     respan(ctx.span, ctx.ext_cx.ident_of(arg_name.as_slice())),
                      None
                  ),
                  span: ctx.span
