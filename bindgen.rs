@@ -1,4 +1,4 @@
-#![crate_id = "bindgen"]
+#![crate_name = "bindgen"]
 #![crate_type = "bin"]
 #![feature(phase)]
 

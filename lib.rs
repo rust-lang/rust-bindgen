@@ -1,4 +1,4 @@
-#![crate_id = "bindgen"]
+#![crate_name = "bindgen"]
 #![crate_type = "dylib"]
 #![feature(globs, managed_boxes, quote, phase, plugin_registrar)]
 
