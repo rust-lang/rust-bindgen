@@ -17,6 +17,15 @@ Building
     $ rustc lib.rs
     $ rustc -L . bindgen.rs
 
+Note: If you want to use Apple's version of libclang on OS X, you will need
+to add this to both commands:
+
+  -C link-args="-L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/"
+
+You will also need to append this path to your DYLD_LIBRARY_PATH environment
+variable, which you might already have set if you have installed the Rust
+compiler outside of standard /usr/local path.
+
 Command Line Usage
 ------------------
 
