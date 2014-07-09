@@ -111,7 +111,7 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
     // Create a dummy ExtCtxt. We only need this for string interning and that uses TLS.
     let cfg = ExpansionConfig {
         deriving_hash_type_parameter: false,
-        crate_name: "xxx".to_str(),
+        crate_name: "xxx".to_string(),
     };
     let sess = &parse::new_parse_sess();
     let mut ctx = GenCtx {

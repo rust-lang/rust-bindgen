@@ -21,7 +21,7 @@ impl Cursor {
     // common
     pub fn spelling(&self) -> String {
         unsafe {
-            String_ { x: clang_getCursorSpelling(self.x) }.to_str()
+            String_ { x: clang_getCursorSpelling(self.x) }.to_string()
         }
     }
 
@@ -286,7 +286,7 @@ impl File {
             return "".to_string();
         }
         unsafe {
-            String_ { x: clang_getFileName(self.x) }.to_str()
+            String_ { x: clang_getFileName(self.x) }.to_string()
         }
     }
 
@@ -412,7 +412,7 @@ impl Diagnostic {
 
     pub fn format(&self, opts: uint) -> String {
         unsafe {
-            String_ { x: clang_formatDiagnostic(self.x, opts as c_uint) }.to_str()
+            String_ { x: clang_formatDiagnostic(self.x, opts as c_uint) }.to_string()
         }
     }
 
