@@ -577,10 +577,18 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, fields: Vec<Fiel
             ident: ctx.ext_cx.ident_of(f_name.as_slice()),
             attrs: Vec::new(),
             generics: empty_generics(),
-            explicit_self: respan(ctx.span, ast::SelfRegion(None, ast::MutMutable)),
+            explicit_self: respan(
+                ctx.span,
+                ast::SelfRegion(None, ast::MutMutable, ctx.ext_cx.ident_of("self"))
+            ),
             fn_style: ast::NormalFn,
             decl: box(GC) ast::FnDecl {
-                inputs: Vec::from_elem(1, ast::Arg::new_self(ctx.span, ast::MutImmutable)),
+                inputs: Vec::from_elem(
+                    1, ast::Arg::new_self(
+                        ctx.span,
+                        ast::MutImmutable,
+                        ctx.ext_cx.ident_of("self")
+                )),
                 output: ret_ty,
                 cf: ast::Return,
                 variadic: false
