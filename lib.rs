@@ -101,7 +101,7 @@ fn builtin_names() -> HashSet<String> {
         "__va_list",
     ];
 
-    keys.iter().advance(|s| {
+    keys.iter().all(|s| {
         names.insert(s.to_string());
         true
     });

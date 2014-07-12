@@ -45,7 +45,7 @@ fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {
 
     let name = file.name();
     let mut found = false;
-    ctx.options.match_pat.iter().advance(|pat| {
+    ctx.options.match_pat.iter().all(|pat| {
         if name.as_slice().contains((*pat).as_slice()) {
             found = true;
         }
