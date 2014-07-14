@@ -31,24 +31,35 @@ Command Line Usage
 
 Usage: ./bindgen [options] input.h
 Options:
-    -h or --help           Display help message
-    -l <name> or -l<name>  Link to a dynamic library, can be provided
-                           multiple times
-    -static-link <name>    Link to a static library
-    -framework-link <name> Link to a framework
-    -o <output.rs>         Write bindings to <output.rs> (default stdout)
-    -match <name>          Only output bindings for definitions from files
-                           whose name contains <name>
-                           If multiple -match options are provided, files
-                           matching any rule are bound to
-    -builtins              Output bindings for builtin definitions
-                           (for example __builtin_va_list)
-    -abi <abi>             Indicate abi of extern functions (default C)
-    -allow-bitfields       Don't fail if we encounter a bitfield
-                           (note that bindgen does not support bitfields)
-    -allow-unknown-types   Don't fail if we encounter types we do not support,
-                           instead treat them as void
-    -emit-clang-ast        Output the ast (for debugging purposes)
+    -h or --help               Display help message
+    -l <name> or -l<name>      Link to a dynamic library, can be provided
+                               multiple times
+    -static-link <name>        Link to a static library
+    -framework-link <name>     Link to a framework
+    -o <output.rs>             Write bindings to <output.rs> (default stdout)
+    -match <name>              Only output bindings for definitions from files
+                               whose name contains <name>
+                               If multiple -match options are provided, files
+                               matching any rule are bound to
+    -builtins                  Output bindings for builtin definitions
+                               (for example __builtin_va_list)
+    -abi <abi>                 Indicate abi of extern functions (default C)
+    -allow-bitfields           Don't fail if we encounter a bitfield
+                               (note that bindgen does not support bitfields)
+    -allow-unknown-types       Don't fail if we encounter types we do not support,
+                               instead treat them as void
+    -emit-clang-ast            Output the ast (for debugging purposes)
+    -override-enum-type <type> Override enum type, type name could be
+                                 uchar
+                                 schar
+                                 ushort
+                                 sshort
+                                 uint
+                                 sint
+                                 ulong
+                                 slong
+                                 ulonglong
+                                 slonglong
 
     Options other than stated above are passed to clang
 
