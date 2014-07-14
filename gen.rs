@@ -573,16 +573,15 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, fields: Vec<Fiel
             span: ctx.span
         };
 
-        box(GC) ast::Method {
-            ident: ctx.ext_cx.ident_of(f_name.as_slice()),
-            attrs: Vec::new(),
-            generics: empty_generics(),
-            explicit_self: respan(
+        let decl = ast::MethDecl(
+            ctx.ext_cx.ident_of(f_name.as_slice()),
+            empty_generics(),
+            respan(
                 ctx.span,
                 ast::SelfRegion(None, ast::MutMutable, ctx.ext_cx.ident_of("self"))
             ),
-            fn_style: ast::NormalFn,
-            decl: box(GC) ast::FnDecl {
+            ast::NormalFn,
+            box(GC) ast::FnDecl {
                 inputs: Vec::from_elem(
                     1, ast::Arg::new_self(
                         ctx.span,
@@ -593,10 +592,15 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, fields: Vec<Fiel
                 cf: ast::Return,
                 variadic: false
             },
-            body: body,
+            body,
+            ast::Public
+        );
+
+        box(GC) ast::Method {
+            attrs: Vec::new(),
             id: ast::DUMMY_NODE_ID,
             span: ctx.span,
-            vis: ast::Public
+            node: decl,
         }
     }).collect();
 
