@@ -20,6 +20,7 @@ pub struct ClangParserOptions {
     pub emit_ast: bool,
     pub fail_on_bitfield: bool,
     pub fail_on_unknown_type: bool,
+    pub override_enum_ty: Option<il::IKind>,
     pub clang_args: Vec<String>,
 }
 
@@ -57,6 +58,7 @@ fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {
 
 fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
     let mut new_decl = false;
+    let override_enum_ty = ctx.options.override_enum_ty;
     let decl = {
         *ctx.name.find_or_insert_with(*cursor, |_| {
             new_decl = true;
@@ -74,18 +76,21 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                     GCompDecl(ci)
                 }
                 CXCursor_EnumDecl => {
-                    let kind = match cursor.enum_type().kind() {
-                        CXType_SChar | CXType_Char_S => ISChar,
-                        CXType_UChar | CXType_Char_U => IUChar,
-                        CXType_UShort => IUShort,
-                        CXType_UInt => IUInt,
-                        CXType_ULong => IULong,
-                        CXType_ULongLong => IULongLong,
-                        CXType_Short => IShort,
-                        CXType_Int => IInt,
-                        CXType_Long => ILong,
-                        CXType_LongLong => ILongLong,
-                        _ => IInt,
+                    let kind = match override_enum_ty {
+                        Some(t) => t,
+                        None => match cursor.enum_type().kind() {
+                            CXType_SChar | CXType_Char_S => ISChar,
+                            CXType_UChar | CXType_Char_U => IUChar,
+                            CXType_UShort => IUShort,
+                            CXType_UInt => IUInt,
+                            CXType_ULong => IULong,
+                            CXType_ULongLong => IULongLong,
+                            CXType_Short => IShort,
+                            CXType_Int => IInt,
+                            CXType_Long => ILong,
+                            CXType_LongLong => ILongLong,
+                            _ => IInt,
+                        }
                     };
                     let ei = box(GC) RefCell::new(EnumInfo::new(spelling, kind, vec!(), layout));
                     GEnumDecl(ei)

@@ -37,6 +37,7 @@ pub struct BindgenOptions {
     pub emit_ast: bool,
     pub fail_on_bitfield: bool,
     pub fail_on_unknown_type: bool,
+    pub override_enum_ty: String,
     pub clang_args: Vec<String>,
 }
 
@@ -50,6 +51,7 @@ impl Default for BindgenOptions {
             emit_ast: false,
             fail_on_bitfield: false,
             fail_on_unknown_type: false,
+            override_enum_ty: "".to_string(),
             clang_args: Vec::new()
         }
     }
@@ -81,6 +83,22 @@ impl Logger for DummyLogger {
 }
 
 fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<Vec<Global>, ()> {
+    fn str_to_ikind(s: &str) -> Option<types::IKind> {
+        match s {
+            "uchar"     => Some(types::IUChar),
+            "schar"     => Some(types::ISChar),
+            "ushort"    => Some(types::IUShort),
+            "sshort"    => Some(types::IShort),
+            "uint"      => Some(types::IUInt),
+            "sint"      => Some(types::IInt),
+            "ulong"     => Some(types::IULong),
+            "slong"     => Some(types::ILong),
+            "ulonglong" => Some(types::IULongLong),
+            "slonglong" => Some(types::ILongLong),
+            _           => None,
+        }
+    }
+
     let clang_opts = parser::ClangParserOptions {
         builtin_names: builtin_names(),
         builtins: options.builtins,
@@ -88,6 +106,7 @@ fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<Vec<Global
         emit_ast: options.emit_ast,
         fail_on_bitfield: options.fail_on_bitfield,
         fail_on_unknown_type: options.fail_on_unknown_type,
+        override_enum_ty: str_to_ikind(options.override_enum_ty.as_slice()),
         clang_args: options.clang_args.clone(),
     };
 
