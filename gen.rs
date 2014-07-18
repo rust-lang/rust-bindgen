@@ -217,7 +217,7 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
                 match v.ty {
                     TFunc(ref rty, ref aty, var) =>
                         cfunc_to_rs(&mut ctx, v.name.clone(),
-                                    *rty, aty.as_slice(), var),
+                                    &**rty, aty.as_slice(), var),
                     _ => unreachable!()
                 }
             },
@@ -292,13 +292,13 @@ fn remove_redundant_decl(gs: Vec<Global>) -> Vec<Global> {
         match *a {
           GComp(ci1) => match *ty {
               TComp(ci2) => {
-                  ref_eq(ci1, ci2) && ci1.borrow().name.is_empty()
+                  ref_eq(&*ci1, &*ci2) && ci1.borrow().name.is_empty()
               },
               _ => false
           },
           GEnum(ei1) => match *ty {
               TEnum(ei2) => {
-                  ref_eq(ei1, ei2) && ei1.borrow().name.is_empty()
+                  ref_eq(&*ei1, &*ei2) && ei1.borrow().name.is_empty()
               },
               _ => false
           },
@@ -370,18 +370,18 @@ fn tag_dup_decl(gs: Vec<Global>) -> Vec<Global> {
 
     let len = gs.len();
     let mut res: Vec<Global> = vec!();
-    res.push(*gs.get(0));
+    res.push(gs[0]);
 
     for i in iter::range(1, len) {
         let mut dup = false;
         for j in iter::range(0, i-1) {
-            if check_dup(gs.get(i), gs.get(j)) {
+            if check_dup(&gs[i], &gs[j]) {
                 dup = true;
                 break;
             }
         }
         if !dup {
-            res.push(*gs.get(i));
+            res.push(gs[i]);
         }
     }
 
@@ -796,15 +796,15 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
             FDouble => mk_ty(ctx, true, vec!("libc".to_string(), "c_double".to_string()))
         },
         TPtr(ref t, is_const, _) => {
-            let id = cty_to_rs(ctx, *t);
+            let id = cty_to_rs(ctx, &**t);
             mk_ptrty(ctx, &id, is_const)
         },
         TArray(ref t, s, _) => {
-            let ty = cty_to_rs(ctx, *t);
+            let ty = cty_to_rs(ctx, &**t);
             mk_arrty(ctx, &ty, s)
         },
         TFunc(ref rty, ref atys, var) => {
-            let decl = cfuncty_to_rs(ctx, *rty, atys.as_slice(), var);
+            let decl = cfuncty_to_rs(ctx, &**rty, atys.as_slice(), var);
             mk_fnty(ctx, &decl)
         },
         TNamed(ti) => {
