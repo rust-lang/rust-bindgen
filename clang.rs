@@ -453,7 +453,7 @@ impl UnsavedFile {
     }
 }
 
-pub fn kind_to_str(x: Enum_CXCursorKind) -> &str {
+pub fn kind_to_str(x: Enum_CXCursorKind) -> &'static str {
     match x {
         CXCursor_UnexposedDecl => "UnexposedDecl",
         CXCursor_StructDecl => "StructDecl",
@@ -619,7 +619,7 @@ pub fn kind_to_str(x: Enum_CXCursorKind) -> &str {
     }
 }
 
-pub fn type_to_str(x: Enum_CXTypeKind) -> &str {
+pub fn type_to_str(x: Enum_CXTypeKind) -> &'static str {
     match x {
         CXType_Invalid => "Invalid",
         CXType_Unexposed => "Unexposed",

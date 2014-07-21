@@ -576,6 +576,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, fields: Vec<Fiel
         let decl = ast::MethDecl(
             ctx.ext_cx.ident_of(f_name.as_slice()),
             empty_generics(),
+            abi::Rust,
             respan(
                 ctx.span,
                 ast::SelfRegion(None, ast::MutMutable, ctx.ext_cx.ident_of("self"))
