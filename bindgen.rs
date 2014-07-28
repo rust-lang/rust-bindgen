@@ -183,7 +183,7 @@ fn try_pprint(module: &ast::Mod, out: Box<io::Writer>) -> IoResult<()> {
 #[main]
 pub fn main() {
     let mut bind_args = os::args();
-    let bin = bind_args.shift().unwrap();
+    let bin = bind_args.remove(0).unwrap();
 
     match parse_args(bind_args.as_slice()) {
         ParseErr(e) => fail!(e),

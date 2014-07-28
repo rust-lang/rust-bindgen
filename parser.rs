@@ -470,7 +470,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
     cursor.visit(|cur, parent| visit_top(cur, parent, &mut ctx));
 
     while !ctx.builtin_defs.is_empty() {
-        let c = ctx.builtin_defs.shift().unwrap();
+        let c = ctx.builtin_defs.remove(0).unwrap();
         c.visit(|cur, parent| visit_top(cur, parent, &mut ctx));
     }
 

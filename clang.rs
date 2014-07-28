@@ -1,7 +1,7 @@
 #![allow(non_uppercase_pattern_statics)]
 
 use libc::{c_uint, c_char, c_int, c_ulong};
-use std::{mem, io, ptr, str};
+use std::{mem, io, ptr, string};
 use std::fmt;
 use std::hash::Hash;
 use std::hash::sip::SipState;
@@ -307,7 +307,7 @@ impl fmt::Show for String_ {
         }
         unsafe {
             let c_str = clang_getCString(self.x) as *const c_char;
-            str::raw::from_c_str(c_str).fmt(f)
+            string::raw::from_buf(c_str as *const u8).fmt(f)
         }
     }
 }
