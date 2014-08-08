@@ -52,7 +52,6 @@ fn rust_id(ctx: &mut GenCtx, name: String) -> (String, bool) {
     } else {
         (name, false)
     }
-
 }
 
 fn rust_type_id(ctx: &mut GenCtx, name: String) -> String {
@@ -784,8 +783,17 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: String, rty: &Type,
 fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
     return match *ty {
         TVoid => mk_ty(ctx, true, vec!("libc".to_string(), "c_void".to_string())),
-        TInt(i, _) => match i {
-            IBool => mk_ty(ctx, true, vec!("libc".to_string(), "c_int".to_string())),
+        TInt(i, layout) => match i {
+            IBool => {
+                let ty_name = match layout.size {
+                    1 => "u8",
+                    2 => "u16",
+                    4 => "u32",
+                    8 => "u64",
+                    _ => "u8",
+                };
+                mk_ty(ctx, false, vec!(ty_name.to_string()))
+            },
             ISChar => mk_ty(ctx, true, vec!("libc".to_string(), "c_char".to_string())),
             IUChar => mk_ty(ctx, true, vec!("libc".to_string(), "c_uchar".to_string())),
             IInt => mk_ty(ctx, true, vec!("libc".to_string(), "c_int".to_string())),
