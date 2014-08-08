@@ -156,9 +156,13 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
                         let ret = match lit.node {
                             ast::LitStr(ref s, _) => visit.visit_str(as_str(&name), s.get()),
                             ast::LitBool(b) => visit.visit_bool(as_str(&name), b),
-                            ast::LitIntUnsuffixed(i) |
-                            ast::LitInt(i, _) => visit.visit_int(as_str(&name), i),
-                            ast::LitUint(i, _) => visit.visit_int(as_str(&name), i as i64),
+                            ast::LitInt(i, ast::SignedIntLit(_, sign)) |
+                            ast::LitInt(i, ast::UnsuffixedIntLit(sign)) => {
+                                let i = i as i64;
+                                let i = if sign == ast::Minus { -i } else { i };
+                                visit.visit_int(as_str(&name), i)
+                            },
+                            ast::LitInt(i, ast::UnsignedIntLit(_)) => visit.visit_int(as_str(&name), i as i64),
                             _ => {
                                 cx.span_err(span, "invalid argument format");
                                 return false

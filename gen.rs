@@ -626,10 +626,15 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, items: Vec<EnumItem>
     let mut def = ty_def;
 
     for it in items.iter() {
+        let int_lit = ast::LitInt(
+            it.val.abs() as u64,
+            ast::UnsuffixedIntLit(if it.val < 0 { ast::Minus } else { ast::Plus })
+        );
+
         let cst = ast::ItemStatic(
             box(GC) val_ty.clone(),
             ast::MutImmutable,
-            ctx.ext_cx.expr_lit(ctx.span, ast::LitIntUnsuffixed(it.val))
+            ctx.ext_cx.expr_lit(ctx.span, int_lit)
         );
 
         let id = first(rust_id(ctx, it.name.clone()));
@@ -867,7 +872,8 @@ fn mk_ptrty(ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
 }
 
 fn mk_arrty(ctx: &mut GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
-    let sz = ast::ExprLit(box(GC) respan(ctx.span, ast::LitUint(n as u64, ast::TyU)));
+    let int_lit = ast::LitInt(n as u64, ast::UnsignedIntLit(ast::TyU));
+    let sz = ast::ExprLit(box(GC) respan(ctx.span, int_lit));
     let ty = ast::TyFixedLengthVec(
         box(GC) base.clone(),
         box(GC) ast::Expr {
