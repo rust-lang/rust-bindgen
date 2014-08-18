@@ -42,6 +42,10 @@ fn empty_generics() -> ast::Generics {
     ast::Generics {
         lifetimes: Vec::new(),
         ty_params: OwnedSlice::empty(),
+        where_clause: ast::WhereClause {
+            id: ast::DUMMY_NODE_ID,
+            predicates: Vec::new()
+        }
     }
 }
 
@@ -596,12 +600,12 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, fields: Vec<Fiel
             ast::Public
         );
 
-        box(GC) ast::Method {
+        ast::MethodImplItem(box(GC) ast::Method {
             attrs: Vec::new(),
             id: ast::DUMMY_NODE_ID,
             span: ctx.span,
             node: decl,
-        }
+        })
     }).collect();
 
     let methods = ast::ItemImpl(
