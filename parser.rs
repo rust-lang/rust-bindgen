@@ -5,9 +5,9 @@ use std::collections::{HashMap, HashSet};
 use std::cell::RefCell;
 use std::gc::GC;
 
-use il = types;
+use types as il;
 use types::*;
-use cx = clang;
+use clang as cx;
 use clang::*;
 use clang::ll::*;
 

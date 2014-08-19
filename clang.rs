@@ -7,7 +7,7 @@ use std::hash::Hash;
 use std::hash::sip::SipState;
 use std::c_str::CString;
 
-pub use ll = clangll;
+pub use clangll as ll;
 use clangll::*;
 
 // Cursor
