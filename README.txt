@@ -10,6 +10,7 @@ Requirements
 
 Note: The libclang.so has to be statically linked with LLVM
       or you will encounter https://github.com/crabtw/rust-bindgen/issues/89
+      You can also use LD_PRELOAD=/path/to/libclang.so to workaround the problem
 
 Building
 --------

@@ -29,7 +29,7 @@ struct ClangParserCtx<'a> {
     name: HashMap<Cursor, Global>,
     globals: Vec<Global>,
     builtin_defs: Vec<Cursor>,
-    logger: &'a Logger,
+    logger: &'a (Logger+'a),
     err_count: int
 }
 

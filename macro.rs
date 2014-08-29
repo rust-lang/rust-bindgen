@@ -12,7 +12,7 @@ use syntax::util::small_vector::SmallVector;
 
 use super::{generate_bindings, BindgenOptions, Logger};
 
-pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::TokenTree]) -> Box<base::MacResult> {
+pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::TokenTree]) -> Box<base::MacResult+'static> {
     let mut visit = BindgenArgsVisitor {
         options: Default::default(),
         seen_named: false
@@ -281,7 +281,7 @@ fn parse_process_args(s: &str) -> Vec<String> {
     parts
 }
 
-struct MacroLogger<'a, 'b> {
+struct MacroLogger<'a, 'b:'a> {
     sp: codemap::Span,
     cx: &'a base::ExtCtxt<'b>
 }
