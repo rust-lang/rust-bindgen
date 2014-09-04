@@ -1,11 +1,17 @@
 [package]
-name = "rust-bindgen"
-version = "0.0.0"
-authors = [ "crabtw" ]
 
-[[lib]]
+name = "rust-bindgen"
+version = "0.12.0"
+authors = ["Jyun-Yan You <jyyou.tw@gmail.com>"]
+
+build = ["make -e -C build"]
+
+[lib]
+
 name = "bindgen"
 path = "src/lib.rs"
+plugin = true
 
 [[bin]]
+
 name = "bindgen"

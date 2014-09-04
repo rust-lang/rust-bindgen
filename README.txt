@@ -15,8 +15,7 @@ Note: The libclang.so has to be statically linked with LLVM
 Building
 --------
 
-    $ rustc lib.rs
-    $ rustc -L . bindgen.rs
+    $ cargo build
 
 Note: If you want to use Apple's version of libclang on OS X, you will need
 to add this to both commands:
