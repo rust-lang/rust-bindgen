@@ -1,0 +1,11 @@
+[package]
+name = "rust-bindgen"
+version = "0.0.0"
+authors = [ "crabtw" ]
+
+[[lib]]
+name = "bindgen"
+path = "src/lib.rs"
+
+[[bin]]
+name = "bindgen"

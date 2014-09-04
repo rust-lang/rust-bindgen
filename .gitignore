@@ -1,2 +1,5 @@
 bindgen
 libbindgen*
+
+# Cargo
+target/
