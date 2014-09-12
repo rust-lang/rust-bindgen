@@ -1,5 +1,3 @@
-#![allow(non_uppercase_pattern_statics)]
-
 use libc::{c_uint, c_char, c_int, c_ulong};
 use std::{mem, io, ptr, string};
 use std::fmt;
