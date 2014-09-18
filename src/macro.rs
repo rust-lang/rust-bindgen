@@ -1,11 +1,10 @@
-use std::cell::RefCell;
 use std::default::Default;
 use std::os;
 
 use syntax::ast;
 use syntax::codemap;
 use syntax::ext::base;
-use syntax::parse;
+use syntax::fold::Folder;
 use syntax::parse::token;
 use syntax::ptr::P;
 use syntax::util::small_vector::SmallVector;
@@ -107,7 +106,7 @@ impl MacroArgsVisitor for BindgenArgsVisitor {
 // Parses macro invocations in the form [ident=|:]value where value is an ident or literal
 // e.g. bindgen!(module_name, "header.h", emit_builtins=false, clang_args:"-I /usr/local/include")
 fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut MacroArgsVisitor) -> bool {
-    let mut parser = parse::new_parser_from_tts(cx.parse_sess(), cx.cfg(), Vec::from_slice(tts));
+    let mut parser = cx.new_parser_from_tts(tts);
     let mut args_good = true;
 
     loop {
@@ -149,7 +148,7 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
             }
             // Match [literal] and parse as an expression so we can expand macros
             _ => {
-                let expr = cx.expand_expr(parser.parse_expr());
+                let expr = cx.expander().fold_expr(parser.parse_expr());
                 span.hi = expr.span.hi;
                 match expr.node {
                     ast::ExprLit(ref lit) => {

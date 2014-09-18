@@ -4,7 +4,7 @@ use std::cell::RefCell;
 use std::option;
 use std::iter;
 use std::vec::Vec;
-use std::gc::{Gc, GC};
+use std::gc::GC;
 
 use syntax::abi;
 use syntax::ast;
@@ -137,7 +137,7 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
     let mut fs = vec!();
     let mut vs = vec!();
     let mut gs = vec!();
-    for g in uniq_globs.move_iter() {
+    for g in uniq_globs.into_iter() {
         match g {
             GOther => {}
             GFunc(_) => fs.push(g),
@@ -149,7 +149,7 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
     let mut defs = vec!();
     gs = remove_redundant_decl(gs);
 
-    for g in gs.move_iter() {
+    for g in gs.into_iter() {
         match g {
             GType(ti) => {
                 let t = ti.borrow().clone();
@@ -204,7 +204,7 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
         }
     }
 
-    let vars = vs.move_iter().map(|v| {
+    let vars = vs.into_iter().map(|v| {
         match v {
             GVar(vi) => {
                 let v = vi.borrow();
@@ -214,7 +214,7 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
         }
     }).collect();
 
-    let funcs = fs.move_iter().map(|f| {
+    let funcs = fs.into_iter().map(|f| {
         match f {
             GFunc(vi) => {
                 let v = vi.borrow();
@@ -317,7 +317,7 @@ fn remove_redundant_decl(gs: Vec<Global>) -> Vec<Global> {
         }
     ).collect();
 
-    return gs.move_iter().filter(|g|
+    return gs.into_iter().filter(|g|
         !typedefs.iter().any(|t| check_decl(g, t))
     ).collect();
 }

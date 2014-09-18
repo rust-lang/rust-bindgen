@@ -247,7 +247,7 @@ pub struct SourceLocation {
 impl SourceLocation {
     pub fn location(&self) -> (File, uint, uint, uint) {
         unsafe {
-            let mut file = ptr::mut_null();
+            let mut file = ptr::null_mut();
             let mut line = 0;
             let mut col = 0;
             let mut off = 0;
