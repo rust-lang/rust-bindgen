@@ -9,10 +9,10 @@ extern crate libc;
 
 use std::collections::HashSet;
 use std::default::Default;
-use std::gc::Gc;
 
 use syntax::ast;
 use syntax::codemap::Span;
+use syntax::ptr::P;
 use rustc::plugin::Registry;
 
 use types::Global;
@@ -62,7 +62,7 @@ pub trait Logger {
     fn warn(&self, msg: &str);
 }
 
-pub fn generate_bindings(options: BindgenOptions, logger: Option<&Logger>, span: Span) -> Result<Vec<Gc<ast::Item>>, ()> {
+pub fn generate_bindings(options: BindgenOptions, logger: Option<&Logger>, span: Span) -> Result<Vec<P<ast::Item>>, ()> {
     let l = DummyLogger;
     let logger = match logger {
         Some(l) => l,

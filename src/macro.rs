@@ -1,13 +1,13 @@
 use std::cell::RefCell;
 use std::default::Default;
 use std::os;
-use std::gc::Gc;
 
 use syntax::ast;
 use syntax::codemap;
 use syntax::ext::base;
 use syntax::parse;
 use syntax::parse::token;
+use syntax::ptr::P;
 use syntax::util::small_vector::SmallVector;
 
 use super::{generate_bindings, BindgenOptions, Logger};
@@ -42,7 +42,7 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
 
     let ret = match generate_bindings(visit.options, Some(&logger as &Logger), short_span) {
         Ok(items) => {
-            box BindgenResult { items: RefCell::new(Some(SmallVector::many(items))) } as Box<base::MacResult>
+            box BindgenResult { items: Some(SmallVector::many(items)) } as Box<base::MacResult>
         }
         Err(_) => base::DummyResult::any(sp)
     };
@@ -152,7 +152,7 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
                 let expr = cx.expand_expr(parser.parse_expr());
                 span.hi = expr.span.hi;
                 match expr.node {
-                    ast::ExprLit(lit) => {
+                    ast::ExprLit(ref lit) => {
                         let ret = match lit.node {
                             ast::LitStr(ref s, _) => visit.visit_str(as_str(&name), s.get()),
                             ast::LitBool(b) => visit.visit_bool(as_str(&name), b),
@@ -297,12 +297,12 @@ impl<'a, 'b> Logger for MacroLogger<'a, 'b> {
 }
 
 struct BindgenResult {
-    items: RefCell<Option<SmallVector<Gc<ast::Item>>>>
+    items: Option<SmallVector<P<ast::Item>>>
 }
 
 impl base::MacResult for BindgenResult {
-    fn make_items(&self) -> Option<SmallVector<Gc<ast::Item>>> {
-        self.items.borrow_mut().take()
+    fn make_items(mut self: Box<BindgenResult>) -> Option<SmallVector<P<ast::Item>>> {
+        self.items.take()
     }
 }
 
