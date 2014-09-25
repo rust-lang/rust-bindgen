@@ -28,7 +28,7 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
 
     // Set the working dir to the directory containing the invoking rs file so
     // that clang searches for headers relative to it rather than the crate root
-    let mod_dir = Vec::from_slice(Path::new(cx.codemap().span_to_filename(sp)).dirname());
+    let mod_dir = Path::new(cx.codemap().span_to_filename(sp)).dirname().to_vec();
     let cwd = os::getcwd();
     os::change_dir(&Path::new(mod_dir));
     

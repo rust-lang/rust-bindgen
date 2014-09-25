@@ -153,7 +153,7 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
         match g {
             GType(ti) => {
                 let t = ti.borrow().clone();
-                defs.push_all_move(ctypedef_to_rs(&mut ctx, t.name.clone(), &t.ty))
+                defs.extend(ctypedef_to_rs(&mut ctx, t.name.clone(), &t.ty).into_iter())
             },
             GCompDecl(ci) => {
                 {
@@ -180,8 +180,8 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
                                             // FIXME: remove the @mut in types.rs to fix this
                                             c.fields.clone()))
                 } else {
-                    defs.push_all_move(cunion_to_rs(&mut ctx, union_name(c.name.clone()),
-                                               c.layout, c.fields))
+                    defs.extend(cunion_to_rs(&mut ctx, union_name(c.name.clone()),
+                                               c.layout, c.fields).into_iter())
                 }
             },
             GEnumDecl(ei) => {
@@ -198,7 +198,7 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
                     e.name = unnamed_name(&mut ctx, e.name.clone());
                 }
                 let e = ei.borrow().clone();
-                defs.push_all_move(cenum_to_rs(&mut ctx, enum_name(e.name.clone()), e.kind, e.items))
+                defs.extend(cenum_to_rs(&mut ctx, enum_name(e.name.clone()), e.kind, e.items).into_iter())
             },
             _ => { }
         }
@@ -273,8 +273,8 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, Option<String>)],
     };
 
     let mut items = Vec::new();
-    items.push_all_move(vars);
-    items.push_all_move(funcs);
+    items.extend(vars.into_iter());
+    items.extend(funcs.into_iter());
     let ext = ast::ItemForeignMod(ast::ForeignMod {
         abi: ctx.abi,
         view_items: Vec::new(),
