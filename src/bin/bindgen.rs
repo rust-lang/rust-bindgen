@@ -131,7 +131,8 @@ fn parse_args(args: &[String]) -> ParseResult {
 }
 
 fn print_usage(bin: String) {
-    io::stdio::print(format!("Usage: {} [options] input.h", bin.as_slice()).append(
+    let mut s = format!("Usage: {} [options] input.h", bin.as_slice());
+    s.push_str(
 "
 Options:
     -h or --help               Display help message
@@ -166,7 +167,8 @@ Options:
 
     Options other than stated above are passed to clang.
 "
-    ).as_slice());
+    );
+    io::stdio::print(s.as_slice());
 }
 
 fn try_pprint(module: &ast::Mod, out: Box<io::Writer+'static>) -> IoResult<()> {

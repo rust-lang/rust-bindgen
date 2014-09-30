@@ -53,7 +53,9 @@ fn empty_generics() -> ast::Generics {
 fn rust_id(ctx: &mut GenCtx, name: String) -> (String, bool) {
     let token = parse::token::IDENT(ctx.ext_cx.ident_of(name.as_slice()), false);
     if parse::token::is_any_keyword(&token) || "bool" == name.as_slice() {
-        ("_".to_string().append(name.as_slice()), true)
+        let mut s = "_".to_string();
+        s.push_str(name.as_slice());
+        (s, true)
     } else {
         (name, false)
     }
@@ -73,7 +75,9 @@ fn rust_type_id(ctx: &mut GenCtx, name: String) -> String {
         "i64" == name.as_slice() ||
         "Self" == name.as_slice() ||
         "str" == name.as_slice() {
-        "_".to_string().append(name.as_slice())
+        let mut s = "_".to_string();
+        s.push_str(name.as_slice());
+        s
     } else {
         let (n, _) = rust_id(ctx, name);
         n
@@ -116,6 +120,7 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
     let cfg = ExpansionConfig {
         deriving_hash_type_parameter: false,
         crate_name: "xxx".to_string(),
+        enable_quotes: true,
     };
     let sess = &parse::new_parse_sess();
     let mut ctx = GenCtx {
