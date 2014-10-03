@@ -1,6 +1,7 @@
 #![allow(unused_must_use)]
 
 use std::collections::{HashMap, HashSet};
+use std::collections::hashmap;
 use std::cell::RefCell;
 use std::gc::GC;
 
@@ -58,14 +59,15 @@ fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {
 fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
     let mut new_decl = false;
     let override_enum_ty = ctx.options.override_enum_ty;
-    let decl = {
-        *ctx.name.find_or_insert_with(*cursor, |_| {
+    let decl = match ctx.name.entry(*cursor) {
+        hashmap::Occupied(ref e) => *e.get(),
+        hashmap::Vacant(e) => {
             new_decl = true;
             let spelling = cursor.spelling();
             let ty = cursor.cur_type();
             let layout = Layout::new(ty.size(), ty.align());
 
-            match cursor.kind() {
+            let glob_decl = match cursor.kind() {
                 CXCursor_StructDecl => {
                     let ci = box(GC) RefCell::new(CompInfo::new(spelling, true, vec!(), layout));
                     GCompDecl(ci)
@@ -106,9 +108,11 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                     let vi = box(GC) RefCell::new(VarInfo::new(spelling, TVoid));
                     GFunc(vi)
                 }
-                _ => GOther
-            }
-        })
+                _ => GOther,
+            };
+
+            *e.set(glob_decl)
+        },
     };
 
     if new_decl {

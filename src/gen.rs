@@ -121,6 +121,7 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
         deriving_hash_type_parameter: false,
         crate_name: "xxx".to_string(),
         enable_quotes: true,
+        recursion_limit: 64,
     };
     let sess = &parse::new_parse_sess();
     let mut ctx = GenCtx {
