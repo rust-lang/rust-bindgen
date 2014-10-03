@@ -1,47 +1,47 @@
 use std::cell::RefCell;
 use std::fmt;
-use std::gc::Gc;
+use std::rc::Rc;
 
 #[deriving(Clone)]
 pub enum Global {
-    GType(Gc<RefCell<TypeInfo>>),
-    GComp(Gc<RefCell<CompInfo>>),
-    GCompDecl(Gc<RefCell<CompInfo>>),
-    GEnum(Gc<RefCell<EnumInfo>>),
-    GEnumDecl(Gc<RefCell<EnumInfo>>),
-    GVar(Gc<RefCell<VarInfo>>),
-    GFunc(Gc<RefCell<VarInfo>>),
+    GType(Rc<RefCell<TypeInfo>>),
+    GComp(Rc<RefCell<CompInfo>>),
+    GCompDecl(Rc<RefCell<CompInfo>>),
+    GEnum(Rc<RefCell<EnumInfo>>),
+    GEnumDecl(Rc<RefCell<EnumInfo>>),
+    GVar(Rc<RefCell<VarInfo>>),
+    GFunc(Rc<RefCell<VarInfo>>),
     GOther
 }
 
 impl Global {
-    pub fn compinfo(&self) -> Gc<RefCell<CompInfo>> {
+    pub fn compinfo(&self) -> Rc<RefCell<CompInfo>> {
         match *self {
-            GComp(i) => return i,
-            GCompDecl(i) => return i,
+            GComp(ref i) => return i.clone(),
+            GCompDecl(ref i) => return i.clone(),
             _ => fail!("global_compinfo".to_string())
         }
     }
 
-    pub fn enuminfo(&self) -> Gc<RefCell<EnumInfo>> {
+    pub fn enuminfo(&self) -> Rc<RefCell<EnumInfo>> {
         match *self {
-            GEnum(i) => return i,
-            GEnumDecl(i) => return i,
+            GEnum(ref i) => return i.clone(),
+            GEnumDecl(ref i) => return i.clone(),
             _ => fail!("global_enuminfo".to_string())
         }
     }
 
-    pub fn typeinfo(&self) -> Gc<RefCell<TypeInfo>> {
+    pub fn typeinfo(&self) -> Rc<RefCell<TypeInfo>> {
         match *self {
-            GType(i) => return i,
+            GType(ref i) => return i.clone(),
             _ => fail!("global_typeinfo".to_string())
         }
     }
 
-    pub fn varinfo(&self) -> Gc<RefCell<VarInfo>> {
+    pub fn varinfo(&self) -> Rc<RefCell<VarInfo>> {
         match *self {
-            GVar(i) => i,
-            GFunc(i) => i,
+            GVar(ref i) => i.clone(),
+            GFunc(ref i) => i.clone(),
             _ => fail!("global_varinfo".to_string())
         }
     }
@@ -50,13 +50,13 @@ impl Global {
 impl fmt::Show for Global {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            GType(ti) => ti.borrow().fmt(f),
-            GComp(ci) => ci.borrow().fmt(f),
-            GCompDecl(ci) => ci.borrow().fmt(f),
-            GEnum(ei) => ei.borrow().fmt(f),
-            GEnumDecl(ei) => ei.borrow().fmt(f),
-            GVar(vi) => vi.borrow().fmt(f),
-            GFunc(vi) => vi.borrow().fmt(f),
+            GType(ref ti) => ti.borrow().fmt(f),
+            GComp(ref ci) => ci.borrow().fmt(f),
+            GCompDecl(ref ci) => ci.borrow().fmt(f),
+            GEnum(ref ei) => ei.borrow().fmt(f),
+            GEnumDecl(ref ei) => ei.borrow().fmt(f),
+            GVar(ref vi) => vi.borrow().fmt(f),
+            GFunc(ref vi) => vi.borrow().fmt(f),
             GOther => "*".fmt(f),
         }
     }
@@ -70,9 +70,9 @@ pub enum Type {
     TPtr(Box<Type>, bool, Layout),
     TArray(Box<Type>, uint, Layout),
     TFunc(Box<Type>, Vec<(String, Type)>, bool),
-    TNamed(Gc<RefCell<TypeInfo>>),
-    TComp(Gc<RefCell<CompInfo>>),
-    TEnum(Gc<RefCell<EnumInfo>>)
+    TNamed(Rc<RefCell<TypeInfo>>),
+    TComp(Rc<RefCell<CompInfo>>),
+    TEnum(Rc<RefCell<EnumInfo>>)
 }
 
 impl Type {

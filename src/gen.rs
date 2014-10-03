@@ -4,7 +4,7 @@ use std::cell::RefCell;
 use std::option;
 use std::iter;
 use std::vec::Vec;
-use std::gc::GC;
+use std::rc::Rc;
 
 use syntax::abi;
 use syntax::ast;
@@ -236,9 +236,9 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
     }).collect();
 
     defs.push(mk_extern(&mut ctx, links, vars, funcs));
-    
+
     //let attrs = vec!(mk_attr_list(&mut ctx, "allow", ["dead_code", "non_camel_case_types", "uppercase_variables"]));
-    
+
     defs
 }
 
@@ -300,15 +300,15 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, Option<String>)],
 fn remove_redundant_decl(gs: Vec<Global>) -> Vec<Global> {
     fn check_decl(a: &Global, ty: &Type) -> bool {
         match *a {
-          GComp(ci1) => match *ty {
-              TComp(ci2) => {
-                  ref_eq(&*ci1, &*ci2) && ci1.borrow().name.is_empty()
+          GComp(ref ci1) => match *ty {
+              TComp(ref ci2) => {
+                  ref_eq(ci1, ci2) && ci1.borrow().name.is_empty()
               },
               _ => false
           },
-          GEnum(ei1) => match *ty {
-              TEnum(ei2) => {
-                  ref_eq(&*ei1, &*ei2) && ei1.borrow().name.is_empty()
+          GEnum(ref ei1) => match *ty {
+              TEnum(ref ei2) => {
+                  ref_eq(ei1, ei2) && ei1.borrow().name.is_empty()
               },
               _ => false
           },
@@ -335,37 +335,37 @@ fn tag_dup_decl(gs: Vec<Global>) -> Vec<Global> {
 
     fn check_dup(g1: &Global, g2: &Global) -> bool {
         match (g1, g2) {
-          (&GType(ti1), &GType(ti2)) => {
+          (&GType(ref ti1), &GType(ref ti2)) => {
               let a = ti1.borrow();
               let b = ti2.borrow();
               check(a.name.as_slice(), b.name.as_slice())
           },
-          (&GComp(ci1), &GComp(ci2)) => {
+          (&GComp(ref ci1), &GComp(ref ci2)) => {
               let a = ci1.borrow();
               let b = ci2.borrow();
               check(a.name.as_slice(), b.name.as_slice())
           },
-          (&GCompDecl(ci1), &GCompDecl(ci2)) => {
+          (&GCompDecl(ref ci1), &GCompDecl(ref ci2)) => {
               let a = ci1.borrow();
               let b = ci2.borrow();
               check(a.name.as_slice(), b.name.as_slice())
           },
-          (&GEnum(ei1), &GEnum(ei2)) => {
+          (&GEnum(ref ei1), &GEnum(ref ei2)) => {
               let a = ei1.borrow();
               let b = ei2.borrow();
               check(a.name.as_slice(), b.name.as_slice())
           },
-          (&GEnumDecl(ei1), &GEnumDecl(ei2)) => {
+          (&GEnumDecl(ref ei1), &GEnumDecl(ref ei2)) => {
               let a = ei1.borrow();
               let b = ei2.borrow();
               check(a.name.as_slice(), b.name.as_slice())
           },
-          (&GVar(vi1), &GVar(vi2)) => {
+          (&GVar(ref vi1), &GVar(ref vi2)) => {
               let a = vi1.borrow();
               let b = vi2.borrow();
               check(a.name.as_slice(), b.name.as_slice())
           },
-          (&GFunc(vi1), &GFunc(vi2)) => {
+          (&GFunc(ref vi1), &GFunc(ref vi2)) => {
               let a = vi1.borrow();
               let b = vi2.borrow();
               check(a.name.as_slice(), b.name.as_slice())
@@ -380,7 +380,7 @@ fn tag_dup_decl(gs: Vec<Global>) -> Vec<Global> {
 
     let len = gs.len();
     let mut res: Vec<Global> = vec!();
-    res.push(gs[0]);
+    res.push(gs[0].clone());
 
     for i in iter::range(1, len) {
         let mut dup = false;
@@ -391,7 +391,7 @@ fn tag_dup_decl(gs: Vec<Global>) -> Vec<Global> {
             }
         }
         if !dup {
-            res.push(gs[i]);
+            res.push(gs[i].clone());
         }
     }
 
@@ -422,7 +422,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: String, ty: &Type) -> Vec<P<ast::Item>
     }
 
     return match *ty {
-        TComp(ci) => {
+        TComp(ref ci) => {
             let is_empty = ci.borrow().name.is_empty();
             if is_empty {
                 ci.borrow_mut().name = name.clone();
@@ -436,7 +436,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: String, ty: &Type) -> Vec<P<ast::Item>
                 vec!(mk_item(ctx, name, ty))
             }
         },
-        TEnum(ei) => {
+        TEnum(ref ei) => {
             let is_empty = ei.borrow().name.is_empty();
             if is_empty {
                 ei.borrow_mut().name = name.clone();
@@ -524,8 +524,8 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, fields: Vec<Fiel
         });
     }
 
-    let ci = box(GC) RefCell::new(CompInfo::new(name.clone(), false, fields.clone(), layout));
-    let union = TNamed(box(GC) RefCell::new(TypeInfo::new(name.clone(), TComp(ci))));
+    let ci = Rc::new(RefCell::new(CompInfo::new(name.clone(), false, fields.clone(), layout)));
+    let union = TNamed(Rc::new(RefCell::new(TypeInfo::new(name.clone(), TComp(ci)))));
 
     let ty_name = match layout.align {
         1 => "u8",
@@ -622,7 +622,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, fields: Vec<Fiel
         fs
     );
 
-    return vec!( 
+    return vec!(
         union_def,
         mk_item(ctx, "".to_string(), methods, ast::Inherited, Vec::new())
     );
@@ -794,7 +794,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: String, rty: &Type,
 fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
     return match *ty {
         TVoid => mk_ty(ctx, true, vec!("libc".to_string(), "c_void".to_string())),
-        TInt(i, layout) => match i {
+        TInt(i, ref layout) => match i {
             IBool => {
                 let ty_name = match layout.size {
                     1 => "u8",
@@ -832,11 +832,11 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
             let decl = cfuncty_to_rs(ctx, &**rty, atys.as_slice(), var);
             mk_fnty(ctx, &decl)
         },
-        TNamed(ti) => {
+        TNamed(ref ti) => {
             let id = rust_type_id(ctx, ti.borrow().name.clone());
             mk_ty(ctx, false, vec!(id))
         },
-        TComp(ci) => {
+        TComp(ref ci) => {
             let mut c = ci.borrow_mut();
             c.name = unnamed_name(ctx, c.name.clone());
             if c.cstruct {
@@ -845,7 +845,7 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
                 mk_ty(ctx, false, vec!(union_name(c.name.clone())))
             }
         },
-        TEnum(ei) => {
+        TEnum(ref ei) => {
             let mut e = ei.borrow_mut();
             e.name = unnamed_name(ctx, e.name.clone());
             mk_ty(ctx, false, vec!(enum_name(e.name.clone())))

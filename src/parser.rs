@@ -3,7 +3,7 @@
 use std::collections::{HashMap, HashSet};
 use std::collections::hashmap;
 use std::cell::RefCell;
-use std::gc::GC;
+use std::rc::Rc;
 
 use types as il;
 use types::*;
@@ -60,7 +60,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
     let mut new_decl = false;
     let override_enum_ty = ctx.options.override_enum_ty;
     let decl = match ctx.name.entry(*cursor) {
-        hashmap::Occupied(ref e) => *e.get(),
+        hashmap::Occupied(ref e) => e.get().clone(),
         hashmap::Vacant(e) => {
             new_decl = true;
             let spelling = cursor.spelling();
@@ -69,11 +69,11 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
 
             let glob_decl = match cursor.kind() {
                 CXCursor_StructDecl => {
-                    let ci = box(GC) RefCell::new(CompInfo::new(spelling, true, vec!(), layout));
+                    let ci = Rc::new(RefCell::new(CompInfo::new(spelling, true, vec!(), layout)));
                     GCompDecl(ci)
                 }
                 CXCursor_UnionDecl => {
-                    let ci = box(GC) RefCell::new(CompInfo::new(spelling, false, vec!(), layout));
+                    let ci = Rc::new(RefCell::new(CompInfo::new(spelling, false, vec!(), layout)));
                     GCompDecl(ci)
                 }
                 CXCursor_EnumDecl => {
@@ -93,25 +93,26 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                             _ => IInt,
                         }
                     };
-                    let ei = box(GC) RefCell::new(EnumInfo::new(spelling, kind, vec!(), layout));
+                    let ei = Rc::new(RefCell::new(EnumInfo::new(spelling, kind, vec!(), layout)));
                     GEnumDecl(ei)
                 }
                 CXCursor_TypedefDecl => {
-                    let ti = box(GC) RefCell::new(TypeInfo::new(spelling, TVoid));
+                    let ti = Rc::new(RefCell::new(TypeInfo::new(spelling, TVoid)));
                     GType(ti)
                 }
                 CXCursor_VarDecl => {
-                    let vi = box(GC) RefCell::new(VarInfo::new(spelling, TVoid));
+                    let vi = Rc::new(RefCell::new(VarInfo::new(spelling, TVoid)));
                     GVar(vi)
                 }
                 CXCursor_FunctionDecl => {
-                    let vi = box(GC) RefCell::new(VarInfo::new(spelling, TVoid));
+                    let vi = Rc::new(RefCell::new(VarInfo::new(spelling, TVoid)));
                     GFunc(vi)
                 }
                 _ => GOther,
             };
 
-            *e.set(glob_decl)
+            e.set(glob_decl.clone());
+            glob_decl
         },
     };
 
@@ -468,7 +469,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
 
     if ctx.options.emit_ast {
         cursor.visit(|cur, _| ast_dump(cur, 0));
-    }     
+    }
 
     cursor.visit(|cur, parent| visit_top(cur, parent, &mut ctx));
 
