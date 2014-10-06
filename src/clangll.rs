@@ -4,6 +4,7 @@
 #![allow(dead_code)]
 #![allow(unused_attribute)]
 #![allow(non_snake_case)]
+#![allow(non_uppercase_statics)]
 
 pub type ptrdiff_t = ::libc::c_long;
 pub type size_t = ::libc::c_ulong;

@@ -1,4 +1,5 @@
 #![allow(unused_must_use)]
+#![allow(non_uppercase_statics)]
 
 use std::collections::{HashMap, HashSet};
 use std::collections::hashmap;
