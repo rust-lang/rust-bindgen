@@ -641,9 +641,8 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, items: Vec<EnumItem>
             ast::UnsuffixedIntLit(if it.val < 0 { ast::Minus } else { ast::Plus })
         );
 
-        let cst = ast::ItemStatic(
+        let cst = ast::ItemConst(
             P(val_ty.clone()),
-            ast::MutImmutable,
             ctx.ext_cx.expr_lit(ctx.span, int_lit)
         );
 
