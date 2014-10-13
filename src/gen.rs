@@ -477,8 +477,6 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String, fields: Vec<FieldInfo>) -> P<as
         P(ast::StructDef {
            fields: fs,
            ctor_id: None,
-           super_struct: None,
-           is_virtual: false
         }),
         empty_generics()
     );
@@ -551,8 +549,6 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, fields: Vec<Fiel
         P(ast::StructDef {
            fields: Vec::from_elem(1, data),
            ctor_id: None,
-           super_struct: None,
-           is_virtual: false
         }),
         empty_generics()
     );
