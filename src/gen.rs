@@ -51,8 +51,8 @@ fn empty_generics() -> ast::Generics {
 }
 
 fn rust_id(ctx: &mut GenCtx, name: String) -> (String, bool) {
-    let token = parse::token::IDENT(ctx.ext_cx.ident_of(name.as_slice()), false);
-    if parse::token::is_any_keyword(&token) || "bool" == name.as_slice() {
+    let token = parse::token::Ident(ctx.ext_cx.ident_of(name.as_slice()), parse::token::Plain);
+    if token.is_any_keyword() || "bool" == name.as_slice() {
         let mut s = "_".to_string();
         s.push_str(name.as_slice());
         (s, true)
