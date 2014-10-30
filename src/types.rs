@@ -19,7 +19,7 @@ impl Global {
         match *self {
             GComp(ref i) => return i.clone(),
             GCompDecl(ref i) => return i.clone(),
-            _ => fail!("global_compinfo".to_string())
+            _ => panic!("global_compinfo".to_string())
         }
     }
 
@@ -27,14 +27,14 @@ impl Global {
         match *self {
             GEnum(ref i) => return i.clone(),
             GEnumDecl(ref i) => return i.clone(),
-            _ => fail!("global_enuminfo".to_string())
+            _ => panic!("global_enuminfo".to_string())
         }
     }
 
     pub fn typeinfo(&self) -> Rc<RefCell<TypeInfo>> {
         match *self {
             GType(ref i) => return i.clone(),
-            _ => fail!("global_typeinfo".to_string())
+            _ => panic!("global_typeinfo".to_string())
         }
     }
 
@@ -42,7 +42,7 @@ impl Global {
         match *self {
             GVar(ref i) => i.clone(),
             GFunc(ref i) => i.clone(),
-            _ => fail!("global_varinfo".to_string())
+            _ => panic!("global_varinfo".to_string())
         }
     }
 }
