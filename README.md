@@ -45,7 +45,6 @@ Options:
                                matching any rule are bound to
     -builtins                  Output bindings for builtin definitions
                                (for example __builtin_va_list)
-    -abi <abi>                 Indicate abi of extern functions (default C)
     -allow-bitfields           Don't fail if we encounter a bitfield
                                (note that bindgen does not support bitfields)
     -allow-unknown-types       Don't fail if we encounter types we do not support,
@@ -80,7 +79,6 @@ Options:
     link_framework       multiple strings
     match                multiple strings
     emit_builtins        bool              true
-    abi                  string            "C"
     allow_bitfields      bool              false
     allow_unknown_types  bool              false
     clang_args           string

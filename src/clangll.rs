@@ -2,9 +2,9 @@
 
 #![allow(non_camel_case_types)]
 #![allow(dead_code)]
-#![allow(unused_attribute)]
+#![allow(unused_attributes)]
 #![allow(non_snake_case)]
-#![allow(non_uppercase_statics)]
+#![allow(non_upper_case_globals)]
 
 pub type ptrdiff_t = ::libc::c_long;
 pub type size_t = ::libc::c_ulong;

@@ -1,10 +1,12 @@
 #![allow(unused_must_use)]
-#![allow(non_uppercase_statics)]
+#![allow(non_upper_case_globals)]
 
 use std::collections::{HashMap, HashSet};
 use std::collections::hashmap;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+use syntax::abi;
 
 use types as il;
 use types::*;
@@ -141,6 +143,18 @@ fn fwd_decl(ctx: &mut ClangParserCtx, cursor: &Cursor, f: |ctx: &mut ClangParser
     }
 }
 
+fn get_abi(cc: Enum_CXCallingConv) -> abi::Abi {
+    match cc {
+        CXCallingConv_Default => abi::C,
+        CXCallingConv_C => abi::C,
+        CXCallingConv_X86StdCall => abi::Stdcall,
+        CXCallingConv_X86FastCall => abi::Fastcall,
+        CXCallingConv_AAPCS => abi::Aapcs,
+        CXCallingConv_X86_64Win64 => abi::Win64,
+        _other => panic!("unsupported calling convention: {}", _other),
+    }
+}
+
 fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, layout: Layout) -> il::Type {
     let is_const = ty.is_const();
     match ty.kind() {
@@ -157,8 +171,9 @@ fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, layout:
                     ("".to_string(), conv_ty(ctx, arg, cursor))
                 }).collect();
                 let ret_ty = box conv_ty(ctx, &ret_ty, cursor);
+                let abi = get_abi(ty.call_conv());
 
-                TFunc(ret_ty, args_lst, ty.is_variadic())
+                TFunc(ret_ty, args_lst, ty.is_variadic(), abi)
             } else if decl.kind() != CXCursor_NoDeclFound {
                 TPtr(box conv_decl_ty(ctx, &decl), is_const, layout)
             } else {
@@ -374,11 +389,12 @@ fn visit_top<'r>(cur: &'r Cursor,
 
           let ty = cursor.cur_type();
           let ret_ty = box conv_ty(ctx, &cursor.ret_type(), cursor);
+          let abi = get_abi(ty.call_conv());
 
           let func = decl_name(ctx, cursor);
           let vi = func.varinfo();
           let mut vi = vi.borrow_mut();
-          vi.ty = TFunc(ret_ty.clone(), args_lst.clone(), ty.is_variadic());
+          vi.ty = TFunc(ret_ty.clone(), args_lst.clone(), ty.is_variadic(), abi);
           ctx.globals.push(func);
 
           return CXChildVisit_Continue;

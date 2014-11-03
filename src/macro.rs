@@ -71,7 +71,6 @@ impl MacroArgsVisitor for BindgenArgsVisitor {
             Some("link") => self.options.links.push((val.to_string(), None)),
             Some("link_static") => self.options.links.push((val.to_string(), Some("static".to_string()))),
             Some("link_framework") => self.options.links.push((val.to_string(), Some("framework".to_string()))),
-            Some("abi") => self.options.abi = val.to_string(),
             Some("match") => self.options.match_pat.push(val.to_string()),
             Some("clang_args") => self.options.clang_args.push(val.to_string()),
             _ => return false
@@ -79,8 +78,7 @@ impl MacroArgsVisitor for BindgenArgsVisitor {
         true
     }
 
-    #[allow(unused_variable)]
-    fn visit_int(&mut self, name: Option<&str>, val: i64) -> bool {
+    fn visit_int(&mut self, name: Option<&str>, _val: i64) -> bool {
         if name.is_some() { self.seen_named = true; }
         false
     }
@@ -96,8 +94,7 @@ impl MacroArgsVisitor for BindgenArgsVisitor {
         true
     }
 
-    #[allow(unused_variable)]
-    fn visit_ident(&mut self, name: Option<&str>, val: &str) -> bool {
+    fn visit_ident(&mut self, name: Option<&str>, _val: &str) -> bool {
         if name.is_some() { self.seen_named = true; }
         false
     }

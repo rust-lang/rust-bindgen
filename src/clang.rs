@@ -1,4 +1,4 @@
-#![allow(non_uppercase_statics)]
+#![allow(non_upper_case_globals)]
 
 use libc::{c_uint, c_char, c_int, c_ulong};
 use std::{mem, io, ptr, string};
@@ -237,6 +237,12 @@ impl Type {
     pub fn ret_type(&self) -> Type {
         unsafe {
             Type { x: clang_getResultType(self.x) }
+        }
+    }
+
+    pub fn call_conv(&self) -> Enum_CXCallingConv {
+        unsafe {
+            clang_getFunctionTypeCallingConv(self.x)
         }
     }
 }
