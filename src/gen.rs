@@ -5,6 +5,8 @@ use std::option;
 use std::iter;
 use std::vec::Vec;
 use std::rc::Rc;
+use std::collections::HashMap;
+use std::collections::hashmap::{Occupied, Vacant};
 
 use syntax::abi;
 use syntax::ast;
@@ -22,7 +24,6 @@ use types::*;
 struct GenCtx<'r> {
     ext_cx: base::ExtCtxt<'r>,
     unnamed_ty: uint,
-    abi: abi::Abi,
     span: Span
 }
 
@@ -105,17 +106,7 @@ fn enum_name(name: String) -> String {
     format!("Enum_{}", name)
 }
 
-pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>, span: Span) -> Vec<P<ast::Item>> {
-    let abi = match abi {
-        "cdecl" => abi::Cdecl,
-        "stdcall" => abi::Stdcall,
-        "fastcall" => abi::Fastcall,
-        "aapcs" => abi::Aapcs,
-        "Rust" => abi::Rust,
-        "rust-intrinsic" => abi::RustIntrinsic,
-        _ => abi::C
-    };
-
+pub fn gen_mod(links: &[(String, Option<String>)], globs: Vec<Global>, span: Span) -> Vec<P<ast::Item>> {
     // Create a dummy ExtCtxt. We only need this for string interning and that uses TLS.
     let cfg = ExpansionConfig {
         deriving_hash_type_parameter: false,
@@ -131,7 +122,6 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
             cfg,
         ),
         unnamed_ty: 0,
-        abi: abi,
         span: span
     };
     ctx.ext_cx.bt_push(ExpnInfo {
@@ -220,22 +210,43 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
         }
     }).collect();
 
-    let funcs = fs.into_iter().map(|f| {
-        match f {
-            GFunc(vi) => {
-                let v = vi.borrow();
-                match v.ty {
-                    TFunc(ref rty, ref aty, var) =>
-                        cfunc_to_rs(&mut ctx, v.name.clone(),
-                                    &**rty, aty.as_slice(), var),
-                    _ => unreachable!()
-                }
-            },
-            _ => unreachable!()
-        }
-    }).collect();
+    let funcs = {
+        let mut func_list = fs.into_iter().map(|f| {
+            match f {
+                GFunc(vi) => {
+                    let v = vi.borrow();
+                    match v.ty {
+                        TFunc(ref rty, ref aty, var, abi) => {
+                            let decl = cfunc_to_rs(&mut ctx, v.name.clone(),
+                                                   &**rty, aty.as_slice(), var);
+                            (abi, decl)
+                        }
+                        _ => unreachable!()
+                    }
+                },
+                _ => unreachable!()
+            }
+        });
 
-    defs.push(mk_extern(&mut ctx, links, vars, funcs));
+        let mut map: HashMap<abi::Abi, Vec<_>> = HashMap::new();
+        for (abi, func) in func_list {
+            match map.entry(abi) {
+                Occupied(mut occ) => {
+                    occ.get_mut().push(func);
+                }
+                Vacant(vac) => {
+                    vac.set(vec!(func));
+                }
+            }
+        }
+        map
+    };
+
+    defs.push(mk_extern(&mut ctx, links, vars, abi::C));
+
+    for (abi, funcs) in funcs.into_iter() {
+        defs.push(mk_extern(&mut ctx, links, funcs, abi));
+    }
 
     //let attrs = vec!(mk_attr_list(&mut ctx, "allow", ["dead_code", "non_camel_case_types", "uppercase_variables"]));
 
@@ -243,8 +254,8 @@ pub fn gen_mod(abi: &str, links: &[(String, Option<String>)], globs: Vec<Global>
 }
 
 fn mk_extern(ctx: &mut GenCtx, links: &[(String, Option<String>)],
-             vars: Vec<P<ast::ForeignItem>>,
-             funcs: Vec<P<ast::ForeignItem>>) -> P<ast::Item> {
+             foreign_items: Vec<P<ast::ForeignItem>>,
+             abi: abi::Abi) -> P<ast::Item> {
     let attrs = if links.is_empty() {
         Vec::new()
     } else {
@@ -279,10 +290,9 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, Option<String>)],
     };
 
     let mut items = Vec::new();
-    items.extend(vars.into_iter());
-    items.extend(funcs.into_iter());
+    items.extend(foreign_items.into_iter());
     let ext = ast::ItemForeignMod(ast::ForeignMod {
-        abi: ctx.abi,
+        abi: abi,
         view_items: Vec::new(),
         items: items
     });
@@ -823,9 +833,9 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
             let ty = cty_to_rs(ctx, &**t);
             mk_arrty(ctx, &ty, s)
         },
-        TFunc(ref rty, ref atys, var) => {
+        TFunc(ref rty, ref atys, var, abi) => {
             let decl = cfuncty_to_rs(ctx, &**rty, atys.as_slice(), var);
-            mk_fnty(ctx, &decl)
+            mk_fnty(ctx, &decl, abi)
         },
         TNamed(ref ti) => {
             let id = rust_type_id(ctx, ti.borrow().name.clone());
@@ -904,10 +914,10 @@ fn mk_arrty(ctx: &mut GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
     };
 }
 
-fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl) -> ast::Ty {
+fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: abi::Abi) -> ast::Ty {
     let fnty = ast::TyBareFn(P(ast::BareFnTy {
         fn_style: ast::NormalFn,
-        abi: ctx.abi,
+        abi: abi,
         lifetimes: Vec::new(),
         decl: P(decl.clone())
     }));

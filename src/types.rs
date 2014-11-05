@@ -2,6 +2,8 @@ use std::cell::RefCell;
 use std::fmt;
 use std::rc::Rc;
 
+use syntax::abi;
+
 #[deriving(Clone)]
 pub enum Global {
     GType(Rc<RefCell<TypeInfo>>),
@@ -69,7 +71,7 @@ pub enum Type {
     TFloat(FKind, Layout),
     TPtr(Box<Type>, bool, Layout),
     TArray(Box<Type>, uint, Layout),
-    TFunc(Box<Type>, Vec<(String, Type)>, bool),
+    TFunc(Box<Type>, Vec<(String, Type)>, bool, abi::Abi),
     TNamed(Rc<RefCell<TypeInfo>>),
     TComp(Rc<RefCell<CompInfo>>),
     TEnum(Rc<RefCell<EnumInfo>>)

@@ -31,7 +31,6 @@ pub fn plugin_registrar(reg: &mut Registry) {
 
 pub struct BindgenOptions {
     pub match_pat: Vec<String>,
-    pub abi: String,
     pub builtins: bool,
     pub links: Vec<(String, Option<String>)>,
     pub emit_ast: bool,
@@ -45,7 +44,6 @@ impl Default for BindgenOptions {
     fn default() -> BindgenOptions {
         BindgenOptions {
             match_pat: Vec::new(),
-            abi: "C".to_string(),
             builtins: false,
             links: Vec::new(),
             emit_ast: false,
@@ -71,15 +69,14 @@ pub fn generate_bindings(options: BindgenOptions, logger: Option<&Logger>, span:
         }
     };
     let globals = try!(parse_headers(&options, logger));
-    Ok(gen::gen_mod(options.abi.as_slice(), options.links.as_slice(), globals, span))
+    Ok(gen::gen_mod(options.links.as_slice(), globals, span))
 }
 
 struct DummyLogger;
 
-#[allow(unused_variable)]
 impl Logger for DummyLogger {
-    fn error(&self, msg: &str) { }
-    fn warn(&self, msg: &str) { }
+    fn error(&self, _msg: &str) { }
+    fn warn(&self, _msg: &str) { }
 }
 
 fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<Vec<Global>, ()> {
