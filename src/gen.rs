@@ -6,7 +6,7 @@ use std::iter;
 use std::vec::Vec;
 use std::rc::Rc;
 use std::collections::HashMap;
-use std::collections::hashmap::{Occupied, Vacant};
+use std::collections::hash_map::{Occupied, Vacant};
 
 use syntax::abi;
 use syntax::ast;
@@ -866,8 +866,10 @@ fn mk_ty(ctx: &mut GenCtx, global: bool, segments: Vec<String>) -> ast::Ty {
             segments: segments.iter().map(|s| {
                 ast::PathSegment {
                     identifier: ctx.ext_cx.ident_of(s.as_slice()),
-                    lifetimes: Vec::new(),
-                    types: OwnedSlice::empty(),
+                    parameters: ast::AngleBracketedParameters(ast::AngleBracketedParameterData {
+                        lifetimes: Vec::new(),
+                        types: OwnedSlice::empty(),
+                    }),
                 }
             }).collect()
         },
@@ -926,24 +928,30 @@ fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: abi::Abi) -> ast::Ty {
     segs.push_all([
         ast::PathSegment {
             identifier: ctx.ext_cx.ident_of("std"),
-            lifetimes: Vec::new(),
-            types: OwnedSlice::empty(),
+            parameters: ast::AngleBracketedParameters(ast::AngleBracketedParameterData {
+                lifetimes: Vec::new(),
+                types: OwnedSlice::empty(),
+            }),
         },
         ast::PathSegment {
             identifier: ctx.ext_cx.ident_of("option"),
-            lifetimes: Vec::new(),
-            types: OwnedSlice::empty(),
+            parameters: ast::AngleBracketedParameters(ast::AngleBracketedParameterData {
+                lifetimes: Vec::new(),
+                types: OwnedSlice::empty(),
+            }),
         },
         ast::PathSegment {
             identifier: ctx.ext_cx.ident_of("Option"),
-            lifetimes: Vec::new(),
-            types: OwnedSlice::from_vec(Vec::from_elem(1,
-                P(ast::Ty {
-                    id: ast::DUMMY_NODE_ID,
-                    node: fnty,
-                    span: ctx.span
-                })
-            ))
+            parameters: ast::AngleBracketedParameters(ast::AngleBracketedParameterData {
+                lifetimes: Vec::new(),
+                types: OwnedSlice::from_vec(Vec::from_elem(1,
+                    P(ast::Ty {
+                        id: ast::DUMMY_NODE_ID,
+                        node: fnty,
+                        span: ctx.span
+                    })
+                )),
+            }),
         }
     ]);
 

@@ -2,7 +2,7 @@
 #![allow(non_upper_case_globals)]
 
 use std::collections::{HashMap, HashSet};
-use std::collections::hashmap;
+use std::collections::hash_map;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -63,8 +63,8 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
     let mut new_decl = false;
     let override_enum_ty = ctx.options.override_enum_ty;
     let decl = match ctx.name.entry(*cursor) {
-        hashmap::Occupied(ref e) => e.get().clone(),
-        hashmap::Vacant(e) => {
+        hash_map::Occupied(ref e) => e.get().clone(),
+        hash_map::Vacant(e) => {
             new_decl = true;
             let spelling = cursor.spelling();
             let ty = cursor.cur_type();
