@@ -605,8 +605,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, fields: Vec<Fiel
                         ast::MutImmutable,
                         ctx.ext_cx.ident_of("self")
                 )),
-                output: ret_ty,
-                cf: ast::Return,
+                output: ast::Return(ret_ty),
                 variadic: false
             }),
             body,
@@ -729,7 +728,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
     let ret = P(match *rty {
         TVoid => ast::Ty {
             id: ast::DUMMY_NODE_ID,
-            node: ast::TyNil,
+            node: ast::TyTup(vec![]),
             span: ctx.span
         },
         _ => cty_to_rs(ctx, rty)
@@ -766,8 +765,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
     let var = !args.is_empty() && var;
     return ast::FnDecl {
         inputs: args,
-        output: ret,
-        cf: ast::Return,
+        output: ast::Return(ret),
         variadic: var
     };
 }
