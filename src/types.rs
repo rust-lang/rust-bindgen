@@ -4,6 +4,11 @@ use std::rc::Rc;
 
 use syntax::abi;
 
+pub use self::Global::*;
+pub use self::Type::*;
+pub use self::IKind::*;
+pub use self::FKind::*;
+
 #[deriving(Clone)]
 pub enum Global {
     GType(Rc<RefCell<TypeInfo>>),

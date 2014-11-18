@@ -40,7 +40,7 @@ fn parse_args(args: &[String]) -> ParseResult {
     let mut out = box io::BufferedWriter::new(io::stdout()) as Box<io::Writer>;
 
     if args_len == 0u {
-        return CmdUsage;
+        return ParseResult::CmdUsage;
     }
 
     let mut ix = 0u;
@@ -51,7 +51,7 @@ fn parse_args(args: &[String]) -> ParseResult {
         } else {
             match args[ix].as_slice() {
                 "--help" | "-h" => {
-                    return CmdUsage;
+                    return ParseResult::CmdUsage;
                 }
                 "-emit-clang-ast" => {
                     options.emit_ast = true;
@@ -59,39 +59,39 @@ fn parse_args(args: &[String]) -> ParseResult {
                 }
                 "-o" => {
                     if ix + 1u >= args_len {
-                        return ParseErr("Missing output filename".to_string());
+                        return ParseResult::ParseErr("Missing output filename".to_string());
                     }
                     let path = path::Path::new(args[ix + 1].clone());
                     match fs::File::create(&path) {
                         Ok(f) => { out = box io::BufferedWriter::new(f) as Box<io::Writer>; }
-                        Err(_) => { return ParseErr(format!("Open {} failed", args[ix + 1])); }
+                        Err(_) => { return ParseResult::ParseErr(format!("Open {} failed", args[ix + 1])); }
                     }
                     ix += 2u;
                 }
                 "-l" => {
                     if ix + 1u >= args_len {
-                        return ParseErr("Missing link name".to_string());
+                        return ParseResult::ParseErr("Missing link name".to_string());
                     }
                     options.links.push((args[ix + 1u].clone(), None));
                     ix += 2u;
                 }
                 "-static-link" => {
                     if ix + 1u >= args_len {
-                        return ParseErr("Missing link name".to_string());
+                        return ParseResult::ParseErr("Missing link name".to_string());
                     }
                     options.links.push((args[ix + 1u].clone(), Some("static".to_string())));
                     ix += 2u;
                 }
                 "-framework-link" => {
                     if ix + 1u >= args_len {
-                        return ParseErr("Missing link name".to_string());
+                        return ParseResult::ParseErr("Missing link name".to_string());
                     }
                     options.links.push((args[ix + 1u].clone(), Some("framework".to_string())));
                     ix += 2u;
                 }
                 "-match" => {
                     if ix + 1u >= args_len {
-                        return ParseErr("Missing match pattern".to_string());
+                        return ParseResult::ParseErr("Missing match pattern".to_string());
                     }
                     options.match_pat.push(args[ix + 1u].clone());
                     ix += 2u;
@@ -110,7 +110,7 @@ fn parse_args(args: &[String]) -> ParseResult {
                 }
                 "-override-enum-type" => {
                     if ix + 1u >= args_len {
-                        return ParseErr("Missing enum type".to_string());
+                        return ParseResult::ParseErr("Missing enum type".to_string());
                     }
                     options.override_enum_ty = args[ix + 1u].clone();
                     ix += 2u;
@@ -123,7 +123,7 @@ fn parse_args(args: &[String]) -> ParseResult {
         }
     }
 
-    return ParseOk(options, out);
+    return ParseResult::ParseOk(options, out);
 }
 
 fn print_usage(bin: String) {
@@ -183,9 +183,9 @@ pub fn main() {
     let bin = bind_args.remove(0).unwrap();
 
     match parse_args(bind_args.as_slice()) {
-        ParseErr(e) => panic!(e),
-        CmdUsage => print_usage(bin),
-        ParseOk(options, out) => {
+        ParseResult::ParseErr(e) => panic!(e),
+        ParseResult::CmdUsage => print_usage(bin),
+        ParseResult::ParseOk(options, out) => {
             let logger = StdLogger;
             match generate_bindings(options, Some(&logger as &Logger), DUMMY_SP) {
                 Ok(items) => {

@@ -206,7 +206,7 @@ enum QuoteState {
 fn parse_process_args(s: &str) -> Vec<String> {
     let s = s.trim();
     let mut parts = Vec::new();
-    let mut quote_state = InNone;
+    let mut quote_state = QuoteState::InNone;
     let mut positions = vec!(0);
     let mut last = ' ';
     for (i, c) in s.chars().chain(" ".chars()).enumerate() {
@@ -221,30 +221,30 @@ fn parse_process_args(s: &str) -> Vec<String> {
             // Match \\
             ('\\', '\\') => (),
             // Match <any>"
-            (_, '\"') if quote_state == InNone => {
-                quote_state = InDoubleQuotes;
+            (_, '\"') if quote_state == QuoteState::InNone => {
+                quote_state = QuoteState::InDoubleQuotes;
                 positions.push(i);
                 positions.push(i + 1);
             },
-            (_, '\"') if quote_state == InDoubleQuotes => {
-                quote_state = InNone;
+            (_, '\"') if quote_state == QuoteState::InDoubleQuotes => {
+                quote_state = QuoteState::InNone;
                 positions.push(i);
                 positions.push(i + 1);
             },
             // Match <any>'
-            (_, '\'') if quote_state == InNone => {
-                quote_state = InSingleQuotes;
+            (_, '\'') if quote_state == QuoteState::InNone => {
+                quote_state = QuoteState::InSingleQuotes;
                 positions.push(i);
                 positions.push(i + 1);
             },
-            (_, '\'') if quote_state == InSingleQuotes => {
-                quote_state = InNone;
+            (_, '\'') if quote_state == QuoteState::InSingleQuotes => {
+                quote_state = QuoteState::InNone;
                 positions.push(i);
                 positions.push(i + 1);
             },
             // Match <any><space>
             // If we are at the end of the string close any open quotes
-            (_, ' ') if quote_state == InNone || i >= s.len() => {
+            (_, ' ') if quote_state == QuoteState::InNone || i >= s.len() => {
                 {
                     positions.push(i);
 
