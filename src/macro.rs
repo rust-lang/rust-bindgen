@@ -29,8 +29,14 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
     // Set the working dir to the directory containing the invoking rs file so
     // that clang searches for headers relative to it rather than the crate root
     let mod_dir = Path::new(cx.codemap().span_to_filename(sp)).dirname().to_vec();
-    let cwd = os::getcwd();
-    os::change_dir(&Path::new(mod_dir));
+    let cwd = match os::getcwd() {
+      Ok(d)   => d,
+      Err(e)  => panic!("Invalid current working directory: {}", e),
+    };
+    let p = Path::new(mod_dir);
+    if let Err(e) = os::change_dir(&p) {
+      panic!("Failed to change to directory {}: {}", p.display(), e);
+    };
     
     // We want the span for errors to just match the bindgen! symbol
     // instead of the whole invocation which can span multiple lines
@@ -46,7 +52,10 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
         Err(_) => base::DummyResult::any(sp)
     };
 
-    os::change_dir(&Path::new(cwd));
+    let p = Path::new(cwd);
+    if let Err(e) = os::change_dir(&p) {
+      panic!("Failed to return to directory {}: {}", p.display(), e);
+    }
 
     ret
 }

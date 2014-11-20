@@ -465,7 +465,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
         return Err(())
     }
 
-    let unit = TranslationUnit::parse(&ix, "", ctx.options.clang_args.as_slice(), [], 0);
+    let unit = TranslationUnit::parse(&ix, "", ctx.options.clang_args.as_slice(), &[], 0);
     if unit.is_null() {
         ctx.logger.error("No input files given");
         return Err(())

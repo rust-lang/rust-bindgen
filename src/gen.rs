@@ -925,7 +925,7 @@ fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: abi::Abi) -> ast::Ty {
     }));
 
     let mut segs = Vec::new();
-    segs.push_all([
+    segs.push_all(&[
         ast::PathSegment {
             identifier: ctx.ext_cx.ident_of("std"),
             parameters: ast::AngleBracketedParameters(ast::AngleBracketedParameterData {
