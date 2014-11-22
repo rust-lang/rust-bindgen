@@ -1,8 +1,9 @@
 [package]
 
 name = "rust-bindgen"
-version = "0.12.0"
+version = "0.13.0"
 authors = ["Jyun-Yan You <jyyou.tw@gmail.com>"]
+license = "BSD3"
 
 build = ["make -e -C build"]
 
