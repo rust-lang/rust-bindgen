@@ -873,7 +873,6 @@ fn mk_ty(ctx: &mut GenCtx, global: bool, segments: Vec<String>) -> ast::Ty {
                 }
             }).collect()
         },
-        option::None,
         ast::DUMMY_NODE_ID
     );
 
@@ -963,7 +962,6 @@ fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: abi::Abi) -> ast::Ty {
                 global: true,
                 segments: segs
             },
-            None,
             ast::DUMMY_NODE_ID
         ),
         span: ctx.span
