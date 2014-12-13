@@ -84,35 +84,35 @@ pub enum Type {
 
 impl Type {
     pub fn size(&self) -> uint {
-        match *self {
-            TInt(_, l) => l.size,
-            TFloat(_, l) => l.size,
-            TPtr(_, _, l) => l.size,
-            TArray(_, _, l) => l.size,
-            TNamed(ref ti) => ti.borrow().ty.size(),
-            TComp(ref ci) => ci.borrow().layout.size,
-            TEnum(ref ei) => ei.borrow().layout.size,
-            TVoid => 0,
-            TFunc(..) => 0,
+        match self {
+            &TInt(_, l) => l.size,
+            &TFloat(_, l) => l.size,
+            &TPtr(_, _, l) => l.size,
+            &TArray(_, _, l) => l.size,
+            &TNamed(ref ti) => ti.borrow().ty.size(),
+            &TComp(ref ci) => ci.borrow().layout.size,
+            &TEnum(ref ei) => ei.borrow().layout.size,
+            &TVoid => 0,
+            &TFunc(..) => 0,
         }
     }
 
     pub fn align(&self) -> uint {
-        match *self {
-            TInt(_, l) => l.align,
-            TFloat(_, l) => l.align,
-            TPtr(_, _, l) => l.align,
-            TArray(_, _, l) => l.align,
-            TNamed(ref ti) => ti.borrow().ty.align(),
-            TComp(ref ci) => ci.borrow().layout.align,
-            TEnum(ref ei) => ei.borrow().layout.align,
-            TVoid => 0,
-            TFunc(..) => 0,
+        match self {
+            &TInt(_, l) => l.align,
+            &TFloat(_, l) => l.align,
+            &TPtr(_, _, l) => l.align,
+            &TArray(_, _, l) => l.align,
+            &TNamed(ref ti) => ti.borrow().ty.align(),
+            &TComp(ref ci) => ci.borrow().layout.align,
+            &TEnum(ref ei) => ei.borrow().layout.align,
+            &TVoid => 0,
+            &TFunc(..) => 0,
         }
     }
 }
 
-#[deriving(Clone, PartialEq)]
+#[deriving(Copy, Clone, PartialEq)]
 pub struct Layout {
     pub size: uint,
     pub align: uint,
@@ -128,7 +128,7 @@ impl Layout {
     }
 }
 
-#[deriving(Clone, PartialEq)]
+#[deriving(Copy, Clone, PartialEq)]
 pub enum IKind {
     IBool,
     ISChar,
@@ -143,7 +143,7 @@ pub enum IKind {
     IULongLong
 }
 
-#[deriving(Clone, PartialEq)]
+#[deriving(Copy, Clone, PartialEq)]
 pub enum FKind {
     FFloat,
     FDouble

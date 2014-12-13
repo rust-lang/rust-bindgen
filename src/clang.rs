@@ -11,6 +11,7 @@ pub use clangll as ll;
 use clangll::*;
 
 // Cursor
+#[deriving(Copy)]
 pub struct Cursor {
     x: CXCursor
 }
@@ -313,7 +314,7 @@ impl fmt::Show for String_ {
         }
         unsafe {
             let c_str = clang_getCString(self.x) as *const c_char;
-            string::raw::from_buf(c_str as *const u8).fmt(f)
+            String::from_raw_buf(c_str as *const u8).fmt(f)
         }
     }
 }

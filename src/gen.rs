@@ -1,7 +1,6 @@
 #![allow(unused_must_use)]
 
 use std::cell::RefCell;
-use std::option;
 use std::iter;
 use std::vec::Vec;
 use std::rc::Rc;
@@ -797,9 +796,9 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: String, rty: &Type,
 }
 
 fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
-    return match *ty {
-        TVoid => mk_ty(ctx, true, vec!("libc".to_string(), "c_void".to_string())),
-        TInt(i, ref layout) => match i {
+    return match ty {
+        &TVoid => mk_ty(ctx, true, vec!("libc".to_string(), "c_void".to_string())),
+        &TInt(i, ref layout) => match i {
             IBool => {
                 let ty_name = match layout.size {
                     1 => "u8",
@@ -821,27 +820,27 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
             ILongLong => mk_ty(ctx, true, vec!("libc".to_string(), "c_longlong".to_string())),
             IULongLong => mk_ty(ctx, true, vec!("libc".to_string(), "c_ulonglong".to_string()))
         },
-        TFloat(f, _) => match f {
+        &TFloat(f, _) => match f {
             FFloat => mk_ty(ctx, true, vec!("libc".to_string(), "c_float".to_string())),
             FDouble => mk_ty(ctx, true, vec!("libc".to_string(), "c_double".to_string()))
         },
-        TPtr(ref t, is_const, _) => {
+        &TPtr(ref t, is_const, _) => {
             let id = cty_to_rs(ctx, &**t);
             mk_ptrty(ctx, &id, is_const)
         },
-        TArray(ref t, s, _) => {
+        &TArray(ref t, s, _) => {
             let ty = cty_to_rs(ctx, &**t);
             mk_arrty(ctx, &ty, s)
         },
-        TFunc(ref rty, ref atys, var, abi) => {
+        &TFunc(ref rty, ref atys, var, abi) => {
             let decl = cfuncty_to_rs(ctx, &**rty, atys.as_slice(), var);
             mk_fnty(ctx, &decl, abi)
         },
-        TNamed(ref ti) => {
+        &TNamed(ref ti) => {
             let id = rust_type_id(ctx, ti.borrow().name.clone());
             mk_ty(ctx, false, vec!(id))
         },
-        TComp(ref ci) => {
+        &TComp(ref ci) => {
             let mut c = ci.borrow_mut();
             c.name = unnamed_name(ctx, c.name.clone());
             if c.cstruct {
@@ -850,7 +849,7 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
                 mk_ty(ctx, false, vec!(union_name(c.name.clone())))
             }
         },
-        TEnum(ref ei) => {
+        &TEnum(ref ei) => {
             let mut e = ei.borrow_mut();
             e.name = unnamed_name(ctx, e.name.clone());
             mk_ty(ctx, false, vec!(enum_name(e.name.clone())))
@@ -869,6 +868,7 @@ fn mk_ty(ctx: &mut GenCtx, global: bool, segments: Vec<String>) -> ast::Ty {
                     parameters: ast::AngleBracketedParameters(ast::AngleBracketedParameterData {
                         lifetimes: Vec::new(),
                         types: OwnedSlice::empty(),
+                        bindings: OwnedSlice::empty(),
                     }),
                 }
             }).collect()
@@ -930,6 +930,7 @@ fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: abi::Abi) -> ast::Ty {
             parameters: ast::AngleBracketedParameters(ast::AngleBracketedParameterData {
                 lifetimes: Vec::new(),
                 types: OwnedSlice::empty(),
+                bindings: OwnedSlice::empty(),
             }),
         },
         ast::PathSegment {
@@ -937,6 +938,7 @@ fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: abi::Abi) -> ast::Ty {
             parameters: ast::AngleBracketedParameters(ast::AngleBracketedParameterData {
                 lifetimes: Vec::new(),
                 types: OwnedSlice::empty(),
+                bindings: OwnedSlice::empty(),
             }),
         },
         ast::PathSegment {
@@ -950,6 +952,7 @@ fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: abi::Abi) -> ast::Ty {
                         span: ctx.span
                     })
                 )),
+                bindings: OwnedSlice::empty(),
             }),
         }
     ]);
