@@ -492,7 +492,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String, fields: Vec<FieldInfo>) -> P<as
 
     let id = rust_type_id(ctx, name);
     return P(ast::Item { ident: ctx.ext_cx.ident_of(id.as_slice()),
-        attrs: vec!(mk_repr_attr(ctx)),
+        attrs: vec!(mk_repr_attr(ctx), mk_deriving_copy_attr(ctx)),
         id: ast::DUMMY_NODE_ID,
         node: def,
         vis: ast::Public,
@@ -562,7 +562,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, fields: Vec<Fiel
         empty_generics()
     );
     let union_id = rust_type_id(ctx, name);
-    let union_attrs = vec!(mk_repr_attr(ctx));
+    let union_attrs = vec!(mk_repr_attr(ctx), mk_deriving_copy_attr(ctx));
     let union_def = mk_item(ctx, union_id, def, ast::Public, union_attrs);
 
     let expr = quote_expr!(
@@ -689,6 +689,20 @@ fn mk_repr_attr(ctx: &mut GenCtx) -> ast::Attribute {
     let attr_val = P(respan(ctx.span, ast::MetaList(
         to_intern_str(ctx, "repr".to_string()),
         vec!(P(respan(ctx.span, ast::MetaWord(to_intern_str(ctx, "C".to_string())))))
+    )));
+
+    respan(ctx.span, ast::Attribute_ {
+        id: mk_attr_id(),
+        style: ast::AttrOuter,
+        value: attr_val,
+        is_sugared_doc: false
+    })
+}
+
+fn mk_deriving_copy_attr(ctx: &mut GenCtx) -> ast::Attribute {
+    let attr_val = P(respan(ctx.span, ast::MetaList(
+        to_intern_str(ctx, "deriving".to_string()),
+        vec!(P(respan(ctx.span, ast::MetaWord(to_intern_str(ctx, "Copy".to_string())))))
     )));
 
     respan(ctx.span, ast::Attribute_ {
