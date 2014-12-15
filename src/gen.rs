@@ -596,7 +596,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, fields: Vec<Fiel
                 ctx.span,
                 ast::SelfRegion(None, ast::MutMutable, ctx.ext_cx.ident_of("self"))
             ),
-            ast::NormalFn,
+            ast::Unsafety::Normal,
             P(ast::FnDecl {
                 inputs: Vec::from_elem(
                     1, ast::Arg::new_self(
@@ -620,6 +620,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, fields: Vec<Fiel
     }).collect();
 
     let methods = ast::ItemImpl(
+        ast::Unsafety::Normal,
         empty_generics(),
         None,
         P(cty_to_rs(ctx, &union)),
@@ -931,7 +932,7 @@ fn mk_arrty(ctx: &mut GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
 
 fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: abi::Abi) -> ast::Ty {
     let fnty = ast::TyBareFn(P(ast::BareFnTy {
-        fn_style: ast::NormalFn,
+        unsafety: ast::Unsafety::Normal,
         abi: abi,
         lifetimes: Vec::new(),
         decl: P(decl.clone())
