@@ -461,7 +461,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: String, ty: &Type) -> Vec<P<ast::Item>
 
 fn cstruct_to_rs(ctx: &mut GenCtx, name: String, fields: Vec<FieldInfo>) -> P<ast::Item> {
     let mut unnamed: uint = 0;
-    let fs = fields.iter().map(|f| {
+    let fs: Vec<ast::StructField> = fields.iter().map(|f| {
         let f_name = if f.name.is_empty() || "_" == f.name.as_slice() {
             unnamed += 1;
             format!("unnamed_field{}", unnamed)
@@ -482,10 +482,11 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String, fields: Vec<FieldInfo>) -> P<as
         })
     }).collect();
 
+    let ctor_id = if fs.is_empty() { Some(ast::DUMMY_NODE_ID) } else { None };
     let def = ast::ItemStruct(
         P(ast::StructDef {
            fields: fs,
-           ctor_id: None,
+           ctor_id: ctor_id,
         }),
         empty_generics()
     );
