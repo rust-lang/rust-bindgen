@@ -311,18 +311,13 @@ impl base::MacResult for BindgenResult {
     }
 }
 
-#[cfg(test)]
-fn make_string_vec(parts: &[&str]) -> Vec<String> {
-    parts.iter().map(|p| p.to_string()).collect()
-}
-
 #[test]
 fn test_parse_process_args() {
-    assert_eq!(parse_process_args("a b c"), make_string_vec(["a", "b", "c"]));
-    assert_eq!(parse_process_args("a \"b\" c"), make_string_vec(["a", "b", "c"]));
-    assert_eq!(parse_process_args("a \'b\' c"), make_string_vec(["a", "b", "c"]));
-    assert_eq!(parse_process_args("a \"b c\""), make_string_vec(["a", "b c"]));
-    assert_eq!(parse_process_args("a \'\"b\"\' c"), make_string_vec(["a", "\"b\"", "c"]));
-    assert_eq!(parse_process_args("a b\\ c"), make_string_vec(["a", "b c"]));
-    assert_eq!(parse_process_args("a b c\\"), make_string_vec(["a", "b", "c\\"]));
+    assert_eq!(parse_process_args("a b c"),         vec!("a", "b", "c"));
+    assert_eq!(parse_process_args("a \"b\" c"),     vec!("a", "b", "c"));
+    assert_eq!(parse_process_args("a \'b\' c"),     vec!("a", "b", "c"));
+    assert_eq!(parse_process_args("a \"b c\""),     vec!("a", "b c"));
+    assert_eq!(parse_process_args("a \'\"b\"\' c"), vec!("a", "\"b\"", "c"));
+    assert_eq!(parse_process_args("a b\\ c"),       vec!("a", "b c"));
+    assert_eq!(parse_process_args("a b c\\"),       vec!("a", "b", "c\\"));
 }
