@@ -167,9 +167,14 @@ fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, layout:
             let ret_ty = ty.ret_type();
             let decl = ty.declaration();
             return if ret_ty.kind() != CXType_Invalid {
-                let args_lst = ty.arg_types().iter().map(|arg| {
-                    ("".to_string(), conv_ty(ctx, arg, cursor))
-                }).collect();
+                let mut args_lst = vec!();
+                cursor.visit(|c, _| {
+                    if c.kind() == CXCursor_ParmDecl {
+                        args_lst.push((c.spelling(), conv_ty(ctx, &c.cur_type(), c)));
+                    }
+                    CXChildVisit_Continue
+                });
+
                 let ret_ty = box conv_ty(ctx, &ret_ty, cursor);
                 let abi = get_abi(ty.call_conv());
 
