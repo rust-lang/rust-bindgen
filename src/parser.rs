@@ -72,11 +72,11 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
 
             let glob_decl = match cursor.kind() {
                 CXCursor_StructDecl => {
-                    let ci = Rc::new(RefCell::new(CompInfo::new(spelling, true, vec!(), layout)));
+                    let ci = Rc::new(RefCell::new(CompInfo::new(spelling, CompKind::Struct, vec!(), layout)));
                     GCompDecl(ci)
                 }
                 CXCursor_UnionDecl => {
-                    let ci = Rc::new(RefCell::new(CompInfo::new(spelling, false, vec!(), layout)));
+                    let ci = Rc::new(RefCell::new(CompInfo::new(spelling, CompKind::Union, vec!(), layout)));
                     GCompDecl(ci)
                 }
                 CXCursor_EnumDecl => {
@@ -279,41 +279,83 @@ fn opaque_ty(ctx: &mut ClangParserCtx, ty: &cx::Type) {
     }
 }
 
-fn visit_struct(cursor: &Cursor,
-                parent: &Cursor,
-                ctx: &mut ClangParserCtx,
-                fields: &mut Vec<FieldInfo>) -> Enum_CXVisitorResult {
-    if cursor.kind() == CXCursor_FieldDecl {
-        let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
-        let name = cursor.spelling();
-        let bit = cursor.bit_width();
-        // If we encounter a bitfield, and fail_on_bitfield is set, throw an
-        // error and exit entirely.
-        if bit != None {
-            let fail = ctx.options.fail_on_bitfield;
-            log_err_warn(ctx,
-                format!("unsupported bitfield `{}` in struct `{}` ({})",
-                    name.as_slice(), parent.spelling().as_slice(), cursor.location()
-                ).as_slice(),
-                fail
-            );
-        }
-        let field = FieldInfo::new(name, ty, bit);
-        fields.push(field);
-    }
-    return CXChildVisit_Continue;
-}
+/// Recursively visits a cursor that represents a composite (struct or union)
+/// type and fills members with CompMember instances representing the fields and
+/// nested composites that make up the visited composite.
+fn visit_composite(cursor: &Cursor, parent: &Cursor,
+                   ctx: &mut ClangParserCtx,
+                   members: &mut Vec<CompMember>) -> Enum_CXVisitorResult {
+    match cursor.kind() {
+        CXCursor_FieldDecl => {
+            let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
+            let name = cursor.spelling();
+            let bit = cursor.bit_width();
+            // If we encounter a bitfield, and fail_on_bitfield is set, throw an
+            // error and exit entirely.
+            if bit != None {
+                let fail = ctx.options.fail_on_bitfield;
+                log_err_warn(ctx,
+                    format!("unsupported bitfield `{}` in `{}` ({})",
+                        name, parent.spelling(), cursor.location()
+                    ).as_slice(),
+                    fail
+                );
+            }
 
-fn visit_union(cursor: &Cursor,
-               ctx: &mut ClangParserCtx,
-               fields: &mut Vec<FieldInfo>) -> Enum_CXVisitorResult {
-    if cursor.kind() == CXCursor_FieldDecl {
-        let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
-        let name = cursor.spelling();
-        let field = FieldInfo::new(name, ty, None);
-        fields.push(field);
+            // The Clang C api does not fully expose composite fields, but it
+            // does expose them in a way that can be detected.  When the current
+            // field kind is CXType_Unexposed and the previous member is a
+            // composite type--the same type as this field-- then this is a
+            // composite field.  e.g.:
+            //
+            //     struct foo {
+            //         union {
+            //             int a;
+            //             char b;
+            //         } bar;
+            //     };
+            let is_composite = if cursor.cur_type().kind() == CXType_Unexposed {
+                if let TComp(ref ty_compinfo) = ty {
+                    match members.last() {
+                        Some(&CompMember::Comp(ref c)) => c == ty_compinfo,
+                        _ => false
+                    }
+                } else { false }
+            } else { false };
+
+
+            let field = FieldInfo::new(name, ty.clone(), bit);
+            if is_composite {
+                if let Some(CompMember::Comp(c)) = members.pop() {
+                    members.push(CompMember::CompField(c, field));
+                } else {
+                    panic!(); // Checks in is_composite make this unreachable.
+                }
+            } else {
+                members.push(CompMember::Field(field));
+            }
+        }
+        CXCursor_StructDecl | CXCursor_UnionDecl => {
+            let decl = decl_name(ctx, cursor);
+            let ci = decl.compinfo();
+            cursor.visit(|c, p| {
+                let mut ci_ = ci.borrow_mut();
+                visit_composite(c, p, ctx, &mut ci_.members)
+            });
+            members.push(CompMember::Comp(ci));
+        }
+        _ => {
+            // XXX: Some kind of warning would be nice, but this produces far
+            //      too many.
+            //log_err_warn(ctx,
+            //    format!("unhandled composite member `{}` (kind {}) in `{}` ({})",
+            //        cursor.spelling(), cursor.kind(), parent.spelling(), cursor.location()
+            //    ).as_slice(),
+            //    false
+            //);
+        }
     }
-    return CXChildVisit_Continue;
+    CXChildVisit_Continue
 }
 
 fn visit_enum(cursor: &Cursor,
@@ -347,27 +389,32 @@ fn visit_top<'r>(cur: &'r Cursor,
               let ci = decl.compinfo();
               cursor.visit(|c, p| {
                   let mut ci_ = ci.borrow_mut();
-                  visit_struct(c, p, ctx_, &mut ci_.fields)
+                  visit_composite(c, p, ctx_, &mut ci_.members)
               });
               ctx_.globals.push(GComp(ci));
           });
-          return if cur.kind() == CXCursor_FieldDecl {
-              CXChildVisit_Break
-          } else {
-              CXChildVisit_Recurse
-          };
+
+          // XXX: Review this condition.  I think it is no longer necessary.
+          //      @chris-chambers
+          //return if cur.kind() == CXCursor_FieldDecl {
+          //    CXChildVisit_Break
+          //} else {
+          //    CXChildVisit_Continue
+          //};
+
+          CXChildVisit_Continue
       }
       CXCursor_UnionDecl => {
           fwd_decl(ctx, cursor, |ctx_| {
               let decl = decl_name(ctx_, cursor);
               let ci = decl.compinfo();
-              cursor.visit(|c, _| {
+              cursor.visit(|c, p| {
                   let mut ci_ = ci.borrow_mut();
-                  visit_union(c, ctx_, &mut ci_.fields)
+                  visit_composite(c, p, ctx_, &mut ci_.members)
               });
               ctx_.globals.push(GComp(ci));
           });
-          return CXChildVisit_Recurse;
+          return CXChildVisit_Continue;
       }
       CXCursor_EnumDecl => {
           fwd_decl(ctx, cursor, |ctx_| {
@@ -440,7 +487,7 @@ fn visit_top<'r>(cur: &'r Cursor,
       CXCursor_FieldDecl => {
           return CXChildVisit_Continue;
       }
-      _ => return CXChildVisit_Recurse,
+      _ => return CXChildVisit_Continue,
     }
 }
 

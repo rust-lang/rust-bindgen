@@ -150,19 +150,32 @@ pub enum FKind {
 }
 
 #[deriving(Clone, PartialEq)]
+pub enum CompMember {
+    Field(FieldInfo),
+    Comp(Rc<RefCell<CompInfo>>),
+    CompField(Rc<RefCell<CompInfo>>, FieldInfo),
+}
+
+#[deriving(Copy, Clone, PartialEq)]
+pub enum CompKind {
+    Struct,
+    Union,
+}
+
+#[deriving(Clone, PartialEq)]
 pub struct CompInfo {
-    pub cstruct: bool,
+    pub kind: CompKind,
     pub name: String,
-    pub fields: Vec<FieldInfo>,
+    pub members: Vec<CompMember>,
     pub layout: Layout,
 }
 
 impl CompInfo {
-    pub fn new(name: String, cstruct: bool, fields: Vec<FieldInfo>, layout: Layout) -> CompInfo {
+    pub fn new(name: String, kind: CompKind, members: Vec<CompMember>, layout: Layout) -> CompInfo {
         CompInfo {
-            cstruct: cstruct,
+            kind: kind,
             name: name,
-            fields: fields,
+            members: members,
             layout: layout,
         }
     }
