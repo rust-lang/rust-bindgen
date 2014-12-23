@@ -7,4 +7,4 @@ before_install:
 install:
   - sudo apt-get install --force-yes libclang-3.4-dev
 script:
-  - LIBCLANG_PATH=/usr/lib/llvm-3.4/lib cargo build --verbose
+  - LIBCLANG_PATH=/usr/lib/llvm-3.4/lib cargo test --verbose
