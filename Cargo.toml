@@ -5,7 +5,7 @@ version = "0.13.0"
 authors = ["Jyun-Yan You <jyyou.tw@gmail.com>"]
 license = "BSD-3-Clause"
 
-build = ["make -e -C build"]
+build = "build.rs"
 
 [lib]
 

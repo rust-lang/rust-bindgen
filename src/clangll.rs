@@ -839,7 +839,6 @@ pub const CXIndexOpt_IndexFunctionLocalSymbols: ::libc::c_uint = 2;
 pub const CXIndexOpt_IndexImplicitTemplateInstantiations: ::libc::c_uint = 4;
 pub const CXIndexOpt_SuppressWarnings: ::libc::c_uint = 8;
 pub const CXIndexOpt_SkipParsedBodiesInSession: ::libc::c_uint = 16;
-#[link(name = "clang")]
 extern "C" {
     pub fn clang_getCString(string: CXString) -> *const ::libc::c_char;
     pub fn clang_disposeString(string: CXString);
