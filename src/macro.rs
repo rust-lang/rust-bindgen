@@ -9,7 +9,7 @@ use syntax::parse::token;
 use syntax::ptr::P;
 use syntax::util::small_vector::SmallVector;
 
-use super::{generate_bindings, BindgenOptions, Logger};
+use super::{Bindings, BindgenOptions, LinkType, Logger};
 
 pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::TokenTree]) -> Box<base::MacResult+'static> {
     let mut visit = BindgenArgsVisitor {
@@ -45,9 +45,9 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
 
     let logger = MacroLogger { sp: short_span, cx: cx };
 
-    let ret = match generate_bindings(visit.options, Some(&logger as &Logger), short_span) {
-        Ok(items) => {
-            box BindgenResult { items: Some(SmallVector::many(items)) } as Box<base::MacResult>
+    let ret = match Bindings::generate(&visit.options, Some(&logger as &Logger), Some(short_span)) {
+        Ok(bindings) => {
+            box BindgenResult { items: Some(SmallVector::many(bindings.into_ast())) } as Box<base::MacResult>
         }
         Err(_) => base::DummyResult::any(sp)
     };
@@ -77,9 +77,9 @@ impl MacroArgsVisitor for BindgenArgsVisitor {
         if name.is_some() { self.seen_named = true; }
         else if !self.seen_named { name = Some("clang_args") }
         match name {
-            Some("link") => self.options.links.push((val.to_string(), None)),
-            Some("link_static") => self.options.links.push((val.to_string(), Some("static".to_string()))),
-            Some("link_framework") => self.options.links.push((val.to_string(), Some("framework".to_string()))),
+            Some("link") => self.options.links.push((val.to_string(), LinkType::Default)),
+            Some("link_static") => self.options.links.push((val.to_string(), LinkType::Static)),
+            Some("link_framework") => self.options.links.push((val.to_string(), LinkType::Framework)),
             Some("match") => self.options.match_pat.push(val.to_string()),
             Some("clang_args") => self.options.clang_args.push(val.to_string()),
             _ => return false

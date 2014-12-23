@@ -28,7 +28,7 @@ pub fn generate_bindings(filename: &str) -> Result<Vec<P<ast::Item>>, ()> {
     options.clang_args.push(filename.to_string());
 
     let logger = TestLogger;
-    bindgen::generate_bindings(options, Some(&logger as &Logger), DUMMY_SP)
+    Ok(try!(bindgen::Bindings::generate(&options, Some(&logger as &Logger), None)).into_ast())
 }
 
 pub fn generate_unpretty_output(filename: &str) -> String {

@@ -18,6 +18,7 @@ use syntax::parse;
 use syntax::attr::mk_attr_id;
 use syntax::ptr::P;
 
+use super::LinkType;
 use types::*;
 
 struct GenCtx<'r> {
@@ -112,7 +113,7 @@ fn enum_name(name: &String) -> String {
     format!("Enum_{}", name)
 }
 
-pub fn gen_mod(links: &[(String, Option<String>)], globs: Vec<Global>, span: Span) -> Vec<P<ast::Item>> {
+pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> Vec<P<ast::Item>> {
     // Create a dummy ExtCtxt. We only need this for string interning and that uses TLS.
     let cfg = ExpansionConfig {
         deriving_hash_type_parameter: false,
@@ -247,13 +248,18 @@ pub fn gen_mod(links: &[(String, Option<String>)], globs: Vec<Global>, span: Spa
     defs
 }
 
-fn mk_extern(ctx: &mut GenCtx, links: &[(String, Option<String>)],
+fn mk_extern(ctx: &mut GenCtx, links: &[(String, LinkType)],
              foreign_items: Vec<P<ast::ForeignItem>>,
              abi: abi::Abi) -> P<ast::Item> {
     let attrs = if links.is_empty() {
         Vec::new()
     } else {
         links.iter().map(|&(ref l, ref k)| {
+            let k = match k {
+                &LinkType::Default => None,
+                &LinkType::Static => Some("static"),
+                &LinkType::Framework => Some("framework")
+            };
             let link_name = P(respan(ctx.span, ast::MetaNameValue(
                 to_intern_str(ctx, "name".to_string()),
                 respan(ctx.span, ast::LitStr(
@@ -262,8 +268,8 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, Option<String>)],
                 ))
             )));
             let link_args = match k {
-                &None => vec!(link_name),
-                &Some(ref k) => vec!(link_name, P(respan(ctx.span, ast::MetaNameValue(
+                None => vec!(link_name),
+                Some(ref k) => vec!(link_name, P(respan(ctx.span, ast::MetaNameValue(
                     to_intern_str(ctx, "kind".to_string()),
                     respan(ctx.span, ast::LitStr(
                         to_intern_str(ctx, k.to_string()),
