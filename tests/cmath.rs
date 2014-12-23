@@ -10,7 +10,7 @@ extern crate libc;
 #[allow(non_camel_case_types)]
 #[allow(non_upper_case_globals)]
 pub mod ffi {
-    bindgen!("/usr/include/math.h", link = "m")
+    bindgen!("/usr/include/math.h", link = "m");
 }
 
 #[test]

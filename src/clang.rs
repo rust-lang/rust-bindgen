@@ -1,7 +1,7 @@
 #![allow(non_upper_case_globals)]
 
 use libc::{c_uint, c_char, c_int, c_ulong};
-use std::{mem, io, ptr, string};
+use std::{mem, io, ptr};
 use std::fmt;
 use std::hash::Hash;
 use std::hash::sip::SipState;
@@ -53,7 +53,8 @@ impl Cursor {
     pub fn visit(&self, func: CursorVisitor) {
         unsafe {
             let data = mem::transmute::<&CursorVisitor, CXClientData>(&func);
-            clang_visitChildren(self.x, Some(visit_children), data);
+            let opt_visit = Some(visit_children as extern "C" fn(CXCursor, CXCursor, CXClientData) -> Enum_CXChildVisitResult);
+            clang_visitChildren(self.x, opt_visit, data);
         };
     }
 

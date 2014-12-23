@@ -63,8 +63,8 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
     let mut new_decl = false;
     let override_enum_ty = ctx.options.override_enum_ty;
     let decl = match ctx.name.entry(*cursor) {
-        hash_map::Occupied(ref e) => e.get().clone(),
-        hash_map::Vacant(e) => {
+        hash_map::Entry::Occupied(ref e) => e.get().clone(),
+        hash_map::Entry::Vacant(e) => {
             new_decl = true;
             let spelling = cursor.spelling();
             let ty = cursor.cur_type();

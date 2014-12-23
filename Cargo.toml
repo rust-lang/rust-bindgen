@@ -16,3 +16,4 @@ plugin = true
 [[bin]]
 
 name = "bindgen"
+doc = false

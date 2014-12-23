@@ -5,7 +5,7 @@ use std::iter;
 use std::vec::Vec;
 use std::rc::Rc;
 use std::collections::HashMap;
-use std::collections::hash_map::{Occupied, Vacant};
+use std::collections::hash_map::Entry;
 
 use syntax::abi;
 use syntax::ast;
@@ -225,10 +225,10 @@ pub fn gen_mod(links: &[(String, Option<String>)], globs: Vec<Global>, span: Spa
         let mut map: HashMap<abi::Abi, Vec<_>> = HashMap::new();
         for (abi, func) in func_list {
             match map.entry(abi) {
-                Occupied(mut occ) => {
+                Entry::Occupied(mut occ) => {
                     occ.get_mut().push(func);
                 }
-                Vacant(vac) => {
+                Entry::Vacant(vac) => {
                     vac.set(vec!(func));
                 }
             }
