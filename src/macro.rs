@@ -82,6 +82,7 @@ impl MacroArgsVisitor for BindgenArgsVisitor {
             Some("link_framework") => self.options.links.push((val.to_string(), LinkType::Framework)),
             Some("match") => self.options.match_pat.push(val.to_string()),
             Some("clang_args") => self.options.clang_args.push(val.to_string()),
+            Some("enum_type") => self.options.override_enum_ty = val.to_string(),
             _ => return false
         }
         true
