@@ -473,6 +473,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String, members: Vec<CompMember>) -> Ve
     // they are encountered.  The declarations end up in 'extra' and are emitted
     // after the current struct.
     let mut extra = vec!();
+    let mut unnamed: u32 = 0;
 
     for m in members.iter() {
         let (opt_rc_c, opt_f) = match m {
@@ -482,7 +483,15 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String, members: Vec<CompMember>) -> Ve
         };
 
         if let Some(f) = opt_f {
-            let f_name = rust_type_id(ctx, f.name.clone());
+            // Needed so bitfields with unnamed members still parse
+            // They're still wrong though
+            let f_name = if f.name.is_empty() || "_" == f.name.as_slice() {
+                unnamed += 1;
+                format!("unnamed_field{}", unnamed)
+            } else {
+                rust_type_id(ctx, f.name.clone())
+            };
+            
             let f_ty = P(cty_to_rs(ctx, &f.ty));
 
             fields.push(respan(ctx.span, ast::StructField_ {
