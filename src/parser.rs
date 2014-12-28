@@ -317,7 +317,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             let is_composite = if cursor.cur_type().kind() == CXType_Unexposed {
                 if let TComp(ref ty_compinfo) = ty {
                     match members.last() {
-                        Some(&CompMember::Comp(ref c)) => c == ty_compinfo,
+                        Some(&CompMember::Comp(ref c)) => c.borrow().deref() as *const _ == ty_compinfo.borrow().deref() as *const _,
                         _ => false
                     }
                 } else { false }
