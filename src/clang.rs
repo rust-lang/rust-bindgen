@@ -50,6 +50,12 @@ impl Cursor {
         }
     }
 
+    pub fn canonical(&self) -> Cursor {
+        unsafe {
+            Cursor { x: clang_getCanonicalCursor(self.x) }
+        }
+    }
+
     pub fn visit(&self, func: CursorVisitor) {
         unsafe {
             let data = mem::transmute::<&CursorVisitor, CXClientData>(&func);

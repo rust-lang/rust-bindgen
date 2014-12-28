@@ -336,6 +336,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             }
         }
         CXCursor_StructDecl | CXCursor_UnionDecl => {
+            let cursor = &cursor.canonical();
             let decl = decl_name(ctx, cursor);
             let ci = decl.compinfo();
             cursor.visit(|c, p| {
@@ -382,8 +383,10 @@ fn visit_top<'r>(cur: &'r Cursor,
         return CXChildVisit_Continue;
     }
 
+    let cursor = &cursor.canonical();
+
     match cursor.kind() {
-        CXCursor_StructDecl => {
+        CXCursor_StructDecl | CXCursor_UnionDecl => {
           fwd_decl(ctx, cursor, |ctx_| {
               let decl = decl_name(ctx_, cursor);
               let ci = decl.compinfo();
@@ -393,28 +396,8 @@ fn visit_top<'r>(cur: &'r Cursor,
               });
               ctx_.globals.push(GComp(ci));
           });
-
-          // XXX: Review this condition.  I think it is no longer necessary.
-          //      @chris-chambers
-          //return if cur.kind() == CXCursor_FieldDecl {
-          //    CXChildVisit_Break
-          //} else {
-          //    CXChildVisit_Continue
-          //};
-
+          
           CXChildVisit_Continue
-      }
-      CXCursor_UnionDecl => {
-          fwd_decl(ctx, cursor, |ctx_| {
-              let decl = decl_name(ctx_, cursor);
-              let ci = decl.compinfo();
-              cursor.visit(|c, p| {
-                  let mut ci_ = ci.borrow_mut();
-                  visit_composite(c, p, ctx_, &mut ci_.members)
-              });
-              ctx_.globals.push(GComp(ci));
-          });
-          return CXChildVisit_Continue;
       }
       CXCursor_EnumDecl => {
           fwd_decl(ctx, cursor, |ctx_| {
