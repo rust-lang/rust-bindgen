@@ -18,6 +18,39 @@ fn test_struct_with_anon_struct() {
 }
 
 #[test]
+fn test_struct_with_anon_struct_array() {
+    mod ffi { bindgen!("headers/struct_with_anon_struct_array.h"); }
+    let mut x = ffi::Struct_foo { bar: [
+        ffi::Struct_Unnamed1 { a: 0, b: 0 },
+        ffi::Struct_Unnamed1 { a: 1, b: 1 } ]
+    };
+
+    x.bar[1].a = 1;
+    x.bar[1].b = 2;
+
+    assert_eq!(x.bar[1].a, 1);
+    assert_eq!(x.bar[1].b, 2);
+}
+
+#[test]
+fn test_struct_with_anon_struct_pointer() {
+    mod ffi { bindgen!("headers/struct_with_anon_struct_pointer.h"); }
+    let mut unnamed = box ffi::Struct_Unnamed1 { a: 0, b: 0 };
+
+    unsafe {
+        let mut x = ffi::Struct_foo { bar: ::std::mem::transmute(unnamed) };
+
+        (*x.bar).a = 1;
+        (*x.bar).b = 2;
+
+        assert_eq!((*x.bar).a, 1);
+        assert_eq!((*x.bar).b, 2);
+
+        ::std::ptr::read(x.bar);
+    }
+}
+
+#[test]
 fn test_struct_with_anon_union() {
     mod ffi { bindgen!("headers/struct_with_anon_union.h"); }
     let mut x = ffi::Struct_foo { bar: ffi::Union_Unnamed1 { _bindgen_data_: [0] } };

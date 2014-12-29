@@ -304,8 +304,9 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             }
 
             // The Clang C api does not fully expose composite fields, but it
-            // does expose them in a way that can be detected.  When the current
-            // field kind is CXType_Unexposed and the previous member is a
+            // does expose them in a way that can be detected. When the current
+            // field kind is CXType_Unexposed, CXType_Pointer or
+            // CXType_ConstantArray and the previous member is a
             // composite type--the same type as this field-- then this is a
             // composite field.  e.g.:
             //
@@ -315,15 +316,33 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             //             char b;
             //         } bar;
             //     };
-            let is_composite = if cursor.cur_type().kind() == CXType_Unexposed {
-                if let TComp(ref ty_compinfo) = ty {
-                    match members.last() {
-                        Some(&CompMember::Comp(ref c)) => c.borrow().deref() as *const _ == ty_compinfo.borrow().deref() as *const _,
-                        _ => false
+            //
+            //     struct foo {
+            //         union {
+            //             int a;
+            //             char b;
+            //         } *bar;
+            //     };
+            //
+            //     struct foo {
+            //         union {
+            //             int a;
+            //             char b;
+            //         } bar[3];
+            //     };
+            //
+            let is_composite = match (cursor.cur_type().kind(), &ty) {
+                (CXType_Unexposed, &TComp(ref ty_compinfo)) |
+                (CXType_Pointer, &TPtr(box TComp(ref ty_compinfo), _, _)) |
+                (CXType_ConstantArray, &TArray(box TComp(ref ty_compinfo), _, _)) => {
+                    if let Some(&CompMember::Comp(ref c)) = members.last() {
+                        c.borrow().deref() as *const _ == ty_compinfo.borrow().deref() as *const _
+                    } else {
+                        false
                     }
-                } else { false }
-            } else { false };
-
+                },
+                _ => false
+            };
 
             let field = FieldInfo::new(name, ty.clone(), bit);
             if is_composite {
