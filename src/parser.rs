@@ -337,7 +337,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             }
         }
         CXCursor_StructDecl | CXCursor_UnionDecl => {
-            let decl = fwd_decl(ctx, cursor, |ctx_| {
+            fwd_decl(ctx, cursor, |ctx_| {
                 // If the struct is anonymous (i.e. declared here) then it
                 // cannot be used elsewhere and so does not need to be added
                 // to globals otherwise it will be declared later and a global.
@@ -390,90 +390,89 @@ fn visit_top<'r>(cur: &'r Cursor,
 
     match cursor.kind() {
         CXCursor_StructDecl | CXCursor_UnionDecl => {
-          fwd_decl(ctx, cursor, |ctx_| {
-              let decl = decl_name(ctx_, cursor);
-              let ci = decl.compinfo();
-              cursor.visit(|c, p| {
-                  let mut ci_ = ci.borrow_mut();
-                  visit_composite(c, p, ctx_, &mut ci_.members)
-              });
-              ctx_.globals.push(GComp(ci));
-          });
-          
-          CXChildVisit_Continue
-      }
-      CXCursor_EnumDecl => {
-          fwd_decl(ctx, cursor, |ctx_| {
-              let decl = decl_name(ctx_, cursor);
-              let ei = decl.enuminfo();
-              cursor.visit(|c, _| {
-                  let mut ei_ = ei.borrow_mut();
-                  visit_enum(c, &mut ei_.items)
-              });
-              ctx_.globals.push(GEnum(ei));
-          });
-          return CXChildVisit_Continue;
-      }
-      CXCursor_FunctionDecl => {
-          let linkage = cursor.linkage();
-          if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
-              return CXChildVisit_Continue;
-          }
+            fwd_decl(ctx, cursor, |ctx_| {
+                let decl = decl_name(ctx_, cursor);
+                let ci = decl.compinfo();
+                cursor.visit(|c, p| {
+                    let mut ci_ = ci.borrow_mut();
+                    visit_composite(c, p, ctx_, &mut ci_.members)
+                });
+                ctx_.globals.push(GComp(ci));
+            });
+            return CXChildVisit_Continue;
+        }
+        CXCursor_EnumDecl => {
+            fwd_decl(ctx, cursor, |ctx_| {
+                let decl = decl_name(ctx_, cursor);
+                let ei = decl.enuminfo();
+                cursor.visit(|c, _| {
+                    let mut ei_ = ei.borrow_mut();
+                    visit_enum(c, &mut ei_.items)
+                });
+                ctx_.globals.push(GEnum(ei));
+            });
+            return CXChildVisit_Continue;
+        }
+        CXCursor_FunctionDecl => {
+            let linkage = cursor.linkage();
+            if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
+                return CXChildVisit_Continue;
+            }
 
-          let args_lst: Vec<(String, il::Type)> = cursor.args().iter().map(|arg| {
-              let arg_name = arg.spelling();
-              (arg_name, conv_ty(ctx, &arg.cur_type(), cursor))
-          }).collect();
+            let args_lst: Vec<(String, il::Type)> = cursor.args().iter().map(|arg| {
+                let arg_name = arg.spelling();
+                (arg_name, conv_ty(ctx, &arg.cur_type(), cursor))
+            }).collect();
 
-          let ty = cursor.cur_type();
-          let ret_ty = box conv_ty(ctx, &cursor.ret_type(), cursor);
-          let abi = get_abi(ty.call_conv());
+            let ty = cursor.cur_type();
+            let ret_ty = box conv_ty(ctx, &cursor.ret_type(), cursor);
+            let abi = get_abi(ty.call_conv());
 
-          let func = decl_name(ctx, cursor);
-          let vi = func.varinfo();
-          let mut vi = vi.borrow_mut();
-          vi.ty = TFunc(ret_ty.clone(), args_lst.clone(), ty.is_variadic(), abi);
-          ctx.globals.push(func);
+            let func = decl_name(ctx, cursor);
+            let vi = func.varinfo();
+            let mut vi = vi.borrow_mut();
+            vi.ty = TFunc(ret_ty.clone(), args_lst.clone(), ty.is_variadic(), abi);
+            ctx.globals.push(func);
 
-          return CXChildVisit_Continue;
-      }
-      CXCursor_VarDecl => {
-          let linkage = cursor.linkage();
-          if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
-              return CXChildVisit_Continue;
-          }
+            return CXChildVisit_Continue;
+        }
+        CXCursor_VarDecl => {
+            let linkage = cursor.linkage();
+            if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
+                return CXChildVisit_Continue;
+            }
 
-          let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
-          let var = decl_name(ctx, cursor);
-          let vi = var.varinfo();
-          let mut vi = vi.borrow_mut();
-          vi.ty = ty.clone();
-          vi.is_const = cursor.cur_type().is_const();
-          ctx.globals.push(var);
+            let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
+            let var = decl_name(ctx, cursor);
+            let vi = var.varinfo();
+            let mut vi = vi.borrow_mut();
+            vi.ty = ty.clone();
+            vi.is_const = cursor.cur_type().is_const();
+            ctx.globals.push(var);
 
-          return CXChildVisit_Continue;
-      }
-      CXCursor_TypedefDecl => {
-          let mut under_ty = cursor.typedef_type();
-          if under_ty.kind() == CXType_Unexposed {
-              under_ty = under_ty.canonical_type();
-          }
+            return CXChildVisit_Continue;
+        }
+        CXCursor_TypedefDecl => {
+            let mut under_ty = cursor.typedef_type();
+            if under_ty.kind() == CXType_Unexposed {
+                under_ty = under_ty.canonical_type();
+            }
 
-          let ty = conv_ty(ctx, &under_ty, cursor);
-          let typedef = decl_name(ctx, cursor);
-          let ti = typedef.typeinfo();
-          let mut ti = ti.borrow_mut();
-          ti.ty = ty.clone();
-          ctx.globals.push(typedef);
+            let ty = conv_ty(ctx, &under_ty, cursor);
+            let typedef = decl_name(ctx, cursor);
+            let ti = typedef.typeinfo();
+            let mut ti = ti.borrow_mut();
+            ti.ty = ty.clone();
+            ctx.globals.push(typedef);
 
-          opaque_ty(ctx, &under_ty);
+            opaque_ty(ctx, &under_ty);
 
-          return CXChildVisit_Continue;
-      }
-      CXCursor_FieldDecl => {
-          return CXChildVisit_Continue;
-      }
-      _ => return CXChildVisit_Continue,
+            return CXChildVisit_Continue;
+        }
+        CXCursor_FieldDecl => {
+            return CXChildVisit_Continue;
+        }
+        _ => return CXChildVisit_Continue,
     }
 }
 

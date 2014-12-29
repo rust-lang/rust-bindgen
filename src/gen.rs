@@ -465,8 +465,6 @@ fn comp_to_rs(ctx: &mut GenCtx, kind: CompKind, name: String,
 }
 
 fn cstruct_to_rs(ctx: &mut GenCtx, name: String, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
-    let mut unnamed: uint = 0;
-
     let mut fields = vec!();
     let mut methods = vec!();
     // Nested composites may need to emit declarations and implementations as
