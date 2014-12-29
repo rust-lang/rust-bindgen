@@ -167,22 +167,14 @@ fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, layout:
             let ret_ty = ty.ret_type();
             let decl = ty.declaration();
             return if ret_ty.kind() != CXType_Invalid {
-                let mut args_lst = vec!();
-                cursor.visit(|c, _| {
-                    if c.kind() == CXCursor_ParmDecl {
-                        args_lst.push((c.spelling(), conv_ty(ctx, &c.cur_type(), c)));
-                    }
-                    CXChildVisit_Continue
-                });
-
-                let ret_ty = box conv_ty(ctx, &ret_ty, cursor);
-                let abi = get_abi(ty.call_conv());
-
-                TFunc(ret_ty, args_lst, ty.is_variadic(), abi)
+                TFuncPtr(mk_fn_sig(ctx, ty, cursor))
             } else if decl.kind() != CXCursor_NoDeclFound {
-                TPtr(box conv_decl_ty(ctx, &decl), is_const, layout)
+                TPtr(box conv_decl_ty(ctx, &decl), ty.is_const(), layout)
+            } else if cursor.kind() == CXCursor_VarDecl {
+                let can_ty = ty.canonical_type();
+                conv_ty(ctx, &can_ty, cursor)
             } else {
-                TPtr(box TVoid, is_const, layout)
+                TPtr(box TVoid, ty.is_const(), layout)
             };
         }
         CXType_Typedef => {
@@ -196,6 +188,41 @@ fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, layout:
             }
         }
         _ => return TPtr(box conv_ty(ctx, ty, cursor), is_const, layout),
+    }
+}
+
+fn mk_fn_sig(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::FuncSig {
+    let args_lst: Vec<(String, il::Type)> = match cursor.kind() {
+        CXCursor_FunctionDecl => {
+            // For CXCursor_FunctionDecl, cursor.args() is the reliable way to
+            // get parameter names and types.
+            cursor.args().iter().map(|arg| {
+                let arg_name = arg.spelling();
+                (arg_name, conv_ty(ctx, &arg.cur_type(), arg))
+            }).collect()
+        }
+        _ => {
+            // For non-CXCursor_FunctionDecl, visiting the cursor's children is
+            // the only reliable way to get parameter names.
+            let mut args_lst = vec!();
+            cursor.visit(|c, _| {
+                if c.kind() == CXCursor_ParmDecl {
+                    args_lst.push((c.spelling(), conv_ty(ctx, &c.cur_type(), c)));
+                }
+                CXChildVisit_Continue
+            });
+            args_lst
+        }
+    };
+
+    let ret_ty = box conv_ty(ctx, &ty.ret_type(), cursor);
+    let abi = get_abi(ty.call_conv());
+
+    il::FuncSig {
+        ret_ty: ret_ty,
+        args: args_lst,
+        is_variadic: ty.is_variadic(),
+        abi: abi,
     }
 }
 
@@ -226,7 +253,7 @@ fn conv_decl_ty(ctx: &mut ClangParserCtx, cursor: &Cursor) -> il::Type {
 }
 
 fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type {
-    debug!("conv_ty: ty=`{}`", type_to_str(ty.kind()));
+    debug!("conv_ty: ty=`{}` sp=`{}` loc=`{}`", type_to_str(ty.kind()), cursor.spelling(), cursor.location());
     let layout = Layout::new(ty.size(), ty.align());
     return match ty.kind() {
         CXType_Void | CXType_Invalid => TVoid,
@@ -250,6 +277,7 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
         CXType_VariableArray | CXType_DependentSizedArray | CXType_IncompleteArray => {
             conv_ptr_ty(ctx, &ty.elem_type(), cursor, layout)
         }
+        CXType_FunctionProto => TFuncProto(mk_fn_sig(ctx, ty, cursor)),
         CXType_Record |
         CXType_Typedef  |
         CXType_Unexposed |
@@ -329,7 +357,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 if let Some(CompMember::Comp(c)) = members.pop() {
                     members.push(CompMember::CompField(c, field));
                 } else {
-                    panic!(); // Checks in is_composite make this unreachable.
+                    unreachable!(); // Checks in is_composite make this unreachable.
                 }
             } else {
                 members.push(CompMember::Field(field));
@@ -396,7 +424,7 @@ fn visit_top<'r>(cur: &'r Cursor,
               });
               ctx_.globals.push(GComp(ci));
           });
-          
+
           CXChildVisit_Continue
       }
       CXCursor_EnumDecl => {
@@ -417,19 +445,11 @@ fn visit_top<'r>(cur: &'r Cursor,
               return CXChildVisit_Continue;
           }
 
-          let args_lst: Vec<(String, il::Type)> = cursor.args().iter().map(|arg| {
-              let arg_name = arg.spelling();
-              (arg_name, conv_ty(ctx, &arg.cur_type(), cursor))
-          }).collect();
-
-          let ty = cursor.cur_type();
-          let ret_ty = box conv_ty(ctx, &cursor.ret_type(), cursor);
-          let abi = get_abi(ty.call_conv());
-
           let func = decl_name(ctx, cursor);
           let vi = func.varinfo();
           let mut vi = vi.borrow_mut();
-          vi.ty = TFunc(ret_ty.clone(), args_lst.clone(), ty.is_variadic(), abi);
+
+          vi.ty = TFuncPtr(mk_fn_sig(ctx, &cursor.cur_type(), cursor));
           ctx.globals.push(func);
 
           return CXChildVisit_Continue;

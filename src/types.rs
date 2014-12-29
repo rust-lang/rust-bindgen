@@ -70,18 +70,28 @@ impl fmt::Show for Global {
 }
 
 #[deriving(Clone, PartialEq)]
+pub struct FuncSig {
+    pub ret_ty: Box<Type>,
+    pub args: Vec<(String, Type)>,
+    pub is_variadic: bool,
+    pub abi: abi::Abi,
+}
+
+#[deriving(Clone, PartialEq)]
 pub enum Type {
     TVoid,
     TInt(IKind, Layout),
     TFloat(FKind, Layout),
     TPtr(Box<Type>, bool, Layout),
     TArray(Box<Type>, uint, Layout),
-    TFunc(Box<Type>, Vec<(String, Type)>, bool, abi::Abi),
+    TFuncProto(FuncSig),
+    TFuncPtr(FuncSig),
     TNamed(Rc<RefCell<TypeInfo>>),
     TComp(Rc<RefCell<CompInfo>>),
     TEnum(Rc<RefCell<EnumInfo>>)
 }
 
+#[allow(dead_code)]
 impl Type {
     pub fn size(&self) -> uint {
         match self {
@@ -93,7 +103,8 @@ impl Type {
             &TComp(ref ci) => ci.borrow().layout.size,
             &TEnum(ref ei) => ei.borrow().layout.size,
             &TVoid => 0,
-            &TFunc(..) => 0,
+            &TFuncProto(..) => 0,
+            &TFuncPtr(..) => 0,
         }
     }
 
@@ -107,7 +118,8 @@ impl Type {
             &TComp(ref ci) => ci.borrow().layout.align,
             &TEnum(ref ei) => ei.borrow().layout.align,
             &TVoid => 0,
-            &TFunc(..) => 0,
+            &TFuncProto(..) => 0,
+            &TFuncPtr(..) => 0,
         }
     }
 }

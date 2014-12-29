@@ -211,10 +211,11 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
                 GFunc(vi) => {
                     let v = vi.borrow();
                     match v.ty {
-                        TFunc(ref rty, ref aty, var, abi) => {
+                        TFuncPtr(ref sig) => {
                             let decl = cfunc_to_rs(&mut ctx, v.name.clone(),
-                                                   &**rty, aty.as_slice(), var);
-                            (abi, decl)
+                                                   &*sig.ret_ty, sig.args.as_slice(),
+                                                   sig.is_variadic);
+                            (sig.abi, decl)
                         }
                         _ => unreachable!()
                     }
@@ -237,7 +238,9 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
         map
     };
 
-    defs.push(mk_extern(&mut ctx, links, vars, abi::C));
+    if !Vec::is_empty(&vars) {
+        defs.push(mk_extern(&mut ctx, links, vars, abi::C));
+    }
 
     for (abi, funcs) in funcs.into_iter() {
         defs.push(mk_extern(&mut ctx, links, funcs, abi));
@@ -465,8 +468,6 @@ fn comp_to_rs(ctx: &mut GenCtx, kind: CompKind, name: String,
 }
 
 fn cstruct_to_rs(ctx: &mut GenCtx, name: String, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
-    let mut unnamed: uint = 0;
-
     let mut fields = vec!();
     let mut methods = vec!();
     // Nested composites may need to emit declarations and implementations as
@@ -491,7 +492,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String, members: Vec<CompMember>) -> Ve
             } else {
                 rust_type_id(ctx, f.name.clone())
             };
-            
+
             let f_ty = P(cty_to_rs(ctx, &f.ty));
 
             fields.push(respan(ctx.span, ast::StructField_ {
@@ -928,9 +929,13 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
             let ty = cty_to_rs(ctx, &**t);
             mk_arrty(ctx, &ty, s)
         },
-        &TFunc(ref rty, ref atys, var, abi) => {
-            let decl = cfuncty_to_rs(ctx, &**rty, atys.as_slice(), var);
-            mk_fnty(ctx, &decl, abi)
+        &TFuncPtr(ref sig) => {
+            let decl = cfuncty_to_rs(ctx, &*sig.ret_ty, sig.args.as_slice(), sig.is_variadic);
+            mk_fnty(ctx, &decl, sig.abi)
+        },
+        &TFuncProto(ref sig) => {
+            let decl = cfuncty_to_rs(ctx, &*sig.ret_ty, sig.args.as_slice(), sig.is_variadic);
+            mk_fn_proto_ty(ctx, &decl, sig.abi)
         },
         &TNamed(ref ti) => {
             let id = rust_type_id(ctx, ti.borrow().name.clone());
@@ -1005,6 +1010,21 @@ fn mk_arrty(ctx: &GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
         node: ty,
         span: ctx.span
     };
+}
+
+fn mk_fn_proto_ty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: abi::Abi) -> ast::Ty {
+    let fnty = ast::TyBareFn(P(ast::BareFnTy {
+        unsafety: ast::Unsafety::Normal,
+        abi: abi,
+        lifetimes: Vec::new(),
+        decl: P(decl.clone())
+    }));
+
+    ast::Ty {
+        id: ast::DUMMY_NODE_ID,
+        node: fnty,
+        span: ctx.span,
+    }
 }
 
 fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: abi::Abi) -> ast::Ty {
