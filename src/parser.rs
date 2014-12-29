@@ -60,6 +60,7 @@ fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {
 }
 
 fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
+    let cursor = &cursor.canonical();
     let mut new_decl = false;
     let override_enum_ty = ctx.options.override_enum_ty;
     let decl = match ctx.name.entry(*cursor) {
@@ -336,14 +337,18 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             }
         }
         CXCursor_StructDecl | CXCursor_UnionDecl => {
-            let cursor = &cursor.canonical();
-            let decl = decl_name(ctx, cursor);
-            let ci = decl.compinfo();
-            cursor.visit(|c, p| {
-                let mut ci_ = ci.borrow_mut();
-                visit_composite(c, p, ctx, &mut ci_.members)
+            let decl = fwd_decl(ctx, cursor, |ctx_| {
+                // If the struct is anonymous (i.e. declared here) then it
+                // cannot be used elsewhere and so does not need to be added
+                // to globals otherwise it will be declared later and a global.
+                let decl = decl_name(ctx_, cursor);
+                let ci = decl.compinfo();
+                cursor.visit(|c, p| {
+                    let mut ci_ = ci.borrow_mut();
+                    visit_composite(c, p, ctx_, &mut ci_.members)
+                });
+                members.push(CompMember::Comp(decl.compinfo()));
             });
-            members.push(CompMember::Comp(ci));
         }
         _ => {
             // XXX: Some kind of warning would be nice, but this produces far
@@ -382,8 +387,6 @@ fn visit_top<'r>(cur: &'r Cursor,
     if !match_pattern(ctx, cursor) {
         return CXChildVisit_Continue;
     }
-
-    let cursor = &cursor.canonical();
 
     match cursor.kind() {
         CXCursor_StructDecl | CXCursor_UnionDecl => {
