@@ -173,6 +173,7 @@ fn builtin_names() -> HashSet<String> {
     let keys = [
         "__va_list_tag",
         "__va_list",
+        "__builtin_va_list",
     ];
 
     keys.iter().all(|s| {

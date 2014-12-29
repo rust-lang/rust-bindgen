@@ -394,15 +394,8 @@ fn visit_enum(cursor: &Cursor,
     return CXChildVisit_Continue;
 }
 
-fn visit_top<'r>(cur: &'r Cursor,
-                 parent: &'r Cursor,
+fn visit_top<'r>(cursor: &Cursor,
                  ctx: &mut ClangParserCtx) -> Enum_CXVisitorResult {
-    let cursor = if ctx.options.builtin_names.contains(&parent.spelling()) {
-        parent
-    } else {
-        cur
-    };
-
     if !match_pattern(ctx, cursor) {
         return CXChildVisit_Continue;
     }
@@ -544,11 +537,11 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
         cursor.visit(|cur, _| ast_dump(cur, 0));
     }
 
-    cursor.visit(|cur, parent| visit_top(cur, parent, &mut ctx));
+    cursor.visit(|cur, _| visit_top(cur, &mut ctx));
 
     while !ctx.builtin_defs.is_empty() {
         let c = ctx.builtin_defs.remove(0).unwrap();
-        c.visit(|cur, parent| visit_top(cur, parent, &mut ctx));
+        visit_top(&c.definition(), &mut ctx);
     }
 
     unit.dispose();
