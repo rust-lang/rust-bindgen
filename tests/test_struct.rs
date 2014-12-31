@@ -101,7 +101,7 @@ fn with_nesting() {
 }
 
 #[test]
-fn with_contain_fwd_decl_struct() {
+fn containing_fwd_decl_struct() {
     assert_bind_eq!("headers/struct_containing_forward_declared_struct.h", cx,
         quote_item!(cx,
             #[repr(C)]
@@ -113,7 +113,9 @@ fn with_contain_fwd_decl_struct() {
         quote_item!(cx,
             #[repr(C)]
             #[deriving(Copy)]
-            pub struct Struct_b;
+            pub struct Struct_b {
+                pub val_b: ::libc::c_int,
+            }
         ));
 }
 
