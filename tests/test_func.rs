@@ -22,6 +22,11 @@ fn func_ptr_in_struct() {
                     extern "C" fn(x: ::libc::c_int,
                                   y: ::libc::c_int) -> Enum_baz>,
             }
+        ),
+        quote_item!(cx,
+            impl ::std::default::Default for Struct_Foo {
+                fn default() -> Struct_Foo { unsafe { ::std::mem::zeroed() } }
+            }
         )
     );
 }

@@ -1,9 +1,11 @@
+use std::default::Default;
+
 #[test]
 fn with_anon_struct() {
     // XXX: Rustc thinks that the anonymous struct, bar, is unused.
     #[allow(dead_code)]
     mod ffi { bindgen!("headers/union_with_anon_struct.h"); }
-    let mut x = ffi::Union_foo { _bindgen_data_: [0, 0] };
+    let mut x: ffi::Union_foo = Default::default();
 
     unsafe {
         (*x.bar()).a = 0x12345678;
@@ -17,7 +19,7 @@ fn with_anon_struct() {
 #[test]
 fn with_anon_union() {
     mod ffi { bindgen!("headers/union_with_anon_union.h"); }
-    let mut x = ffi::Union_foo { _bindgen_data_: [0] };
+    let mut x: ffi::Union_foo = Default::default();
 
     unsafe {
         *(*x.bar()).a() = 0x12345678;
@@ -30,7 +32,7 @@ fn with_anon_union() {
 #[test]
 fn with_anon_unnamed_struct() {
     mod ffi { bindgen!("headers/union_with_anon_unnamed_struct.h"); }
-    let mut x = ffi::Union_pixel { _bindgen_data_: [0] };
+    let mut x: ffi::Union_pixel = Default::default();
 
     unsafe {
         *x.r() = 0xca;
@@ -49,7 +51,7 @@ fn with_anon_unnamed_struct() {
 #[test]
 fn with_anon_unnamed_union() {
     mod ffi { bindgen!("headers/union_with_anon_unnamed_union.h"); }
-    let mut x = ffi::Union_foo { _bindgen_data_: [0] };
+    let mut x: ffi::Union_foo = Default::default();
 
     unsafe {
         *x.a() = 0x12345678;
@@ -63,7 +65,7 @@ fn with_anon_unnamed_union() {
 #[test]
 fn with_nesting() {
     mod ffi { bindgen!("headers/union_with_nesting.h"); }
-    let mut x = ffi::Union_foo { _bindgen_data_: [0] };
+    let mut x: ffi::Union_foo = Default::default();
 
     unsafe {
         *x.a() = 0x12345678;
@@ -73,5 +75,20 @@ fn with_nesting() {
         assert_eq!(*x.b2(), 0x5678);
         assert_eq!(*x.c1(), 0x1234);
         assert_eq!(*x.c2(), 0x1234);
+    }
+}
+
+#[test]
+fn default_impl() {
+    mod ffi { bindgen!("headers/Union_with_nesting.h"); }
+
+    let mut x: ffi::Union_foo = Default::default();
+
+    unsafe {
+        assert_eq!(*x.a(), 0);
+        assert_eq!(*x.b1(), 0);
+        assert_eq!(*x.b2(), 0);
+        assert_eq!(*x.c1(), 0);
+        assert_eq!(*x.c2(), 0);
     }
 }

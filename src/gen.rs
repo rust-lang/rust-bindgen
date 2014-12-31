@@ -556,6 +556,8 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String, members: Vec<CompMember>) -> Ve
                 vis: ast::Inherited,
                 span: ctx.span}));
     }
+
+    items.push(mk_default_impl(ctx, name.as_slice()));
     items.extend(extra.into_iter());
     items
 }
@@ -609,7 +611,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, members: Vec<Com
         }),
         empty_generics()
     );
-    let union_id = rust_type_id(ctx, name);
+    let union_id = rust_type_id(ctx, name.clone());
     let union_attrs = vec!(mk_repr_attr(ctx), mk_deriving_copy_attr(ctx));
     let union_def = mk_item(ctx, union_id, def, ast::Public, union_attrs);
 
@@ -625,6 +627,8 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, members: Vec<Com
         union_def,
         mk_item(ctx, "".to_string(), union_impl, ast::Inherited, Vec::new())
     );
+
+    items.push(mk_default_impl(ctx, name.as_slice()));
     items.extend(extra.into_iter());
     items
 }
@@ -727,6 +731,16 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: uint,
         }
     }
     methods
+}
+
+// Implements std::default::Default using std::mem::zeroed.
+fn mk_default_impl(ctx: &GenCtx, ty_name: &str) -> P<ast::Item> {
+    let name_ident = ctx.ext_cx.ident_of(ty_name);
+    quote_item!(&ctx.ext_cx,
+        impl ::std::default::Default for $name_ident {
+            fn default() -> $name_ident { unsafe { ::std::mem::zeroed() } }
+        }
+    ).unwrap()
 }
 
 fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout) -> Spanned<ast::StructField_> {

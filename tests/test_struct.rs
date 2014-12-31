@@ -1,7 +1,9 @@
+use std::default::Default;
+
 #[test]
 fn with_anon_struct() {
     mod ffi { bindgen!("headers/struct_with_anon_struct.h"); }
-    let mut x = ffi::Struct_foo { bar: ffi::Struct_Unnamed1 { a: 0, b: 0 } };
+    let mut x: ffi::Struct_foo = Default::default();
 
     x.bar.a = 1;
     x.bar.b = 2;
@@ -13,10 +15,7 @@ fn with_anon_struct() {
 #[test]
 fn with_anon_struct_array() {
     mod ffi { bindgen!("headers/struct_with_anon_struct_array.h"); }
-    let mut x = ffi::Struct_foo { bar: [
-        ffi::Struct_Unnamed1 { a: 0, b: 0 },
-        ffi::Struct_Unnamed1 { a: 1, b: 1 } ]
-    };
+    let mut x: ffi::Struct_foo = Default::default();
 
     x.bar[1].a = 1;
     x.bar[1].b = 2;
@@ -27,11 +26,13 @@ fn with_anon_struct_array() {
 
 #[test]
 fn with_anon_struct_pointer() {
+    #[allow(raw_pointer_deriving)]
     mod ffi { bindgen!("headers/struct_with_anon_struct_pointer.h"); }
-    let mut unnamed = box ffi::Struct_Unnamed1 { a: 0, b: 0 };
+    let mut x: ffi::Struct_foo = Default::default();
+    let mut unnamed: ffi::Struct_Unnamed1 = Default::default();
 
     unsafe {
-        let mut x = ffi::Struct_foo { bar: ::std::mem::transmute(unnamed) };
+        x.bar = &mut unnamed;
 
         (*x.bar).a = 1;
         (*x.bar).b = 2;
@@ -46,7 +47,7 @@ fn with_anon_struct_pointer() {
 #[test]
 fn with_anon_union() {
     mod ffi { bindgen!("headers/struct_with_anon_union.h"); }
-    let mut x = ffi::Struct_foo { bar: ffi::Union_Unnamed1 { _bindgen_data_: [0] } };
+    let mut x: ffi::Struct_foo = Default::default();
 
     unsafe {
         *x.bar.a() = 0x12345678;
@@ -58,7 +59,7 @@ fn with_anon_union() {
 #[test]
 fn with_anon_unnamed_struct() {
     mod ffi { bindgen!("headers/struct_with_anon_unnamed_struct.h"); }
-    let mut x = ffi::Struct_foo { _bindgen_data_1_: [0, 0] };
+    let mut x: ffi::Struct_foo = Default::default();
 
     unsafe {
         *x.a() = 0x12345678;
@@ -71,7 +72,7 @@ fn with_anon_unnamed_struct() {
 #[test]
 fn with_anon_unnamed_union() {
     mod ffi { bindgen!("headers/struct_with_anon_unnamed_union.h"); }
-    let mut x = ffi::Struct_foo { _bindgen_data_1_: [0] };
+    let mut x: ffi::Struct_foo = Default::default();
 
     unsafe {
         *x.a() = 0x12345678;
@@ -83,7 +84,7 @@ fn with_anon_unnamed_union() {
 #[test]
 fn with_nesting() {
     mod ffi { bindgen!("headers/struct_with_nesting.h"); }
-    let mut x = ffi::Struct_foo { a: 0, _bindgen_data_1_: [0] };
+    let mut x: ffi::Struct_foo = Default::default();
 
     unsafe {
         x.a = 0x12345678;
@@ -111,12 +112,23 @@ fn containing_fwd_decl_struct() {
             }
         ),
         quote_item!(cx,
+            impl ::std::default::Default for Struct_a {
+                fn default() -> Struct_a { unsafe { ::std::mem::zeroed() } }
+            }
+        ),
+        quote_item!(cx,
             #[repr(C)]
             #[deriving(Copy)]
             pub struct Struct_b {
                 pub val_b: ::libc::c_int,
             }
-        ));
+        ),
+        quote_item!(cx,
+            impl ::std::default::Default for Struct_b {
+                fn default() -> Struct_b { unsafe { ::std::mem::zeroed() } }
+            }
+        )
+    );
 }
 
 #[test]
@@ -133,7 +145,13 @@ fn with_unnamed_bitfields() {
                 pub unnamed_field2: ::libc::c_ushort,
                 pub d: ::libc::c_ushort,
             }
-        ));
+        ),
+        quote_item!(cx,
+            impl ::std::default::Default for Struct_bitfield {
+                fn default() -> Struct_bitfield { unsafe { ::std::mem::zeroed() } }
+            }
+        )
+    );
 }
 
 #[test]
@@ -143,6 +161,24 @@ fn with_fwd_decl_struct() {
     let a = ffi::Struct_a { b: 1 };
     let c = ffi::Struct_c { d: 1 };
 
-    a.b;
-    c.d;
+    assert_eq!(a.b, 1);
+    assert_eq!(c.d, 1);
+}
+
+#[test]
+fn default_impl() {
+    mod ffi { bindgen!("headers/struct_with_nesting.h"); }
+
+    let mut x: ffi::Struct_foo = Default::default();
+
+    unsafe {
+        assert_eq!(x.a, 0);
+        assert_eq!(*x.b(), 0);
+        assert_eq!(*x.c1(), 0);
+        assert_eq!(*x.c2(), 0);
+        assert_eq!(*x.d1(), 0);
+        assert_eq!(*x.d2(), 0);
+        assert_eq!(*x.d3(), 0);
+        assert_eq!(*x.d4(), 0);
+    }
 }
