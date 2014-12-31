@@ -17,3 +17,6 @@ plugin = true
 
 name = "bindgen"
 doc = false
+
+[[test]]
+name = "tests"

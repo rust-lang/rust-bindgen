@@ -1,12 +1,5 @@
-#![feature(phase)]
-
-#[phase(plugin)]
-extern crate bindgen;
-
-extern crate libc;
-
 #[test]
-fn test_union_with_anon_struct() {
+fn with_anon_struct() {
     // XXX: Rustc thinks that the anonymous struct, bar, is unused.
     #[allow(dead_code)]
     mod ffi { bindgen!("headers/union_with_anon_struct.h"); }
@@ -22,7 +15,7 @@ fn test_union_with_anon_struct() {
 }
 
 #[test]
-fn test_union_with_anon_union() {
+fn with_anon_union() {
     mod ffi { bindgen!("headers/union_with_anon_union.h"); }
     let mut x = ffi::Union_foo { _bindgen_data_: [0] };
 
@@ -35,7 +28,7 @@ fn test_union_with_anon_union() {
 }
 
 #[test]
-fn test_union_with_anon_unnamed_struct() {
+fn with_anon_unnamed_struct() {
     mod ffi { bindgen!("headers/union_with_anon_unnamed_struct.h"); }
     let mut x = ffi::Union_pixel { _bindgen_data_: [0] };
 
@@ -54,7 +47,7 @@ fn test_union_with_anon_unnamed_struct() {
 }
 
 #[test]
-fn test_union_with_anon_unnamed_union() {
+fn with_anon_unnamed_union() {
     mod ffi { bindgen!("headers/union_with_anon_unnamed_union.h"); }
     let mut x = ffi::Union_foo { _bindgen_data_: [0] };
 
@@ -68,7 +61,7 @@ fn test_union_with_anon_unnamed_union() {
 }
 
 #[test]
-fn test_union_with_nesting() {
+fn with_nesting() {
     mod ffi { bindgen!("headers/union_with_nesting.h"); }
     let mut x = ffi::Union_foo { _bindgen_data_: [0] };
 
