@@ -65,13 +65,13 @@ impl Cursor {
     }
 
     // bitfield
-    pub fn bit_width(&self) -> Option<uint> {
+    pub fn bit_width(&self) -> Option<u32> {
         unsafe {
             let w = clang_getFieldDeclBitWidth(self.x);
             if w == -1 {
                 None
             } else {
-                Some(w as uint)
+                Some(w as u32)
             }
         }
     }

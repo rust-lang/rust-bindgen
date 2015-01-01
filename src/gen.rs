@@ -475,6 +475,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String, members: Vec<CompMember>) -> Ve
     // after the current struct.
     let mut extra = vec!();
     let mut unnamed: u32 = 0;
+    let mut bitfields: u32 = 0;
 
     for m in members.iter() {
         let (opt_rc_c, opt_f) = match m {
@@ -484,13 +485,12 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String, members: Vec<CompMember>) -> Ve
         };
 
         if let Some(f) = opt_f {
-            // Needed so bitfields with unnamed members still parse
-            // They're still wrong though
-            let f_name = if f.name.is_empty() || "_" == f.name.as_slice() {
-                unnamed += 1;
-                format!("unnamed_field{}", unnamed)
-            } else {
-                rust_type_id(ctx, f.name.clone())
+            let f_name = match f.bitfields {
+                Some(_) => {
+                    bitfields += 1;
+                    format!("_bindgen_bitfield_{}_", bitfields)
+                }
+                None => rust_type_id(ctx, f.name.clone())
             };
 
             let f_ty = P(cty_to_rs(ctx, &f.ty));

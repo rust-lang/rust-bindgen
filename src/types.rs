@@ -203,15 +203,15 @@ impl fmt::Show for CompInfo {
 pub struct FieldInfo {
     pub name: String,
     pub ty: Type,
-    pub bit: Option<uint>,
+    pub bitfields: Option<Vec<(String, u32)>>,
 }
 
 impl FieldInfo {
-    pub fn new(name: String, ty: Type, bit: Option<uint>) -> FieldInfo {
+    pub fn new(name: String, ty: Type, bitfields: Option<Vec<(String, u32)>>) -> FieldInfo {
         FieldInfo {
             name: name,
             ty: ty,
-            bit: bit,
+            bitfields: bitfields,
         }
     }
 }

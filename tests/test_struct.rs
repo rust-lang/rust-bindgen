@@ -132,18 +132,16 @@ fn containing_fwd_decl_struct() {
 }
 
 #[test]
-fn with_unnamed_bitfields() {
-    assert_bind_eq!("headers/unnamed_bitfields.h", cx,
+fn with_bitfields() {
+    assert_bind_eq!("headers/struct_with_bitfields.h", cx,
         quote_item!(cx,
             #[repr(C)]
             #[deriving(Copy)]
             pub struct Struct_bitfield {
-                pub a: ::libc::c_ushort,
-                pub b: ::libc::c_ushort,
-                pub c: ::libc::c_ushort,
-                pub unnamed_field1: ::libc::c_ushort,
-                pub unnamed_field2: ::libc::c_ushort,
-                pub d: ::libc::c_ushort,
+                pub _bindgen_bitfield_1_: ::libc::c_ushort,
+                pub e: ::libc::c_int,
+                pub _bindgen_bitfield_2_: ::libc::c_uint,
+                pub _bindgen_bitfield_3_: ::libc::c_uint,
             }
         ),
         quote_item!(cx,

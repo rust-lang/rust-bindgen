@@ -96,10 +96,6 @@ fn parse_args(args: &[String]) -> ParseResult {
                     options.builtins = true;
                     ix += 1u;
                 }
-                "-allow-bitfields" => {
-                    options.fail_on_bitfield = false;
-                    ix += 1u;
-                }
                 "-allow-unknown-types" => {
                     options.fail_on_unknown_type = false;
                     ix += 1u;
@@ -139,8 +135,6 @@ Options:
                                matching any rule are bound to.
     -builtins                  Output bindings for builtin definitions
                                (for example __builtin_va_list)
-    -allow-bitfields           Don't fail if we encounter a bitfield
-                               (note that bindgen does not support bitfields)
     -allow-unknown-types       Don't fail if we encounter types we do not support,
                                instead treat them as void
     -emit-clang-ast            Output the ast (for debugging purposes)

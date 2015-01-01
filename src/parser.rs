@@ -4,6 +4,7 @@
 use std::collections::{HashMap, HashSet};
 use std::collections::hash_map;
 use std::cell::RefCell;
+use std::iter::AdditiveIterator;
 use std::rc::Rc;
 
 use syntax::abi;
@@ -21,7 +22,6 @@ pub struct ClangParserOptions {
     pub builtins: bool,
     pub match_pat: Vec<String>,
     pub emit_ast: bool,
-    pub fail_on_bitfield: bool,
     pub fail_on_unknown_type: bool,
     pub override_enum_ty: Option<il::IKind>,
     pub clang_args: Vec<String>,
@@ -314,22 +314,47 @@ fn opaque_ty(ctx: &mut ClangParserCtx, ty: &cx::Type) {
 fn visit_composite(cursor: &Cursor, parent: &Cursor,
                    ctx: &mut ClangParserCtx,
                    members: &mut Vec<CompMember>) -> Enum_CXVisitorResult {
+
+    fn is_bitfield_continuation(field: &il::FieldInfo, ty: &il::Type, width: u32) -> bool {
+        match (&field.bitfields, ty) {
+            (&Some(ref bitfields), &il::TInt(_, layout)) if *ty == field.ty => {
+                bitfields.iter().map(|&(_, w)| w).sum() + width <= (layout.size * 8) as u32
+            },
+            _ => false
+        }
+    }
+
     match cursor.kind() {
         CXCursor_FieldDecl => {
             let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
-            let name = cursor.spelling();
-            let bit = cursor.bit_width();
-            // If we encounter a bitfield, and fail_on_bitfield is set, throw an
-            // error and exit entirely.
-            if bit != None {
-                let fail = ctx.options.fail_on_bitfield;
-                log_err_warn(ctx,
-                    format!("unsupported bitfield `{}` in `{}` ({})",
-                        name, parent.spelling(), cursor.location()
-                    ).as_slice(),
-                    fail
-                );
-            }
+
+            let (name, bitfields) = match (cursor.bit_width(), members.last_mut()) {
+                // The field is a continuation of an exising bitfield
+                (Some(width), Some(&il::CompMember::Field(ref mut field)))
+                    if is_bitfield_continuation(field, &ty, width) => {
+                    
+                    if let Some(ref mut bitfields) = field.bitfields {
+                        bitfields.push((cursor.spelling(), width));
+                    } else { unreachable!() }
+                    return CXChildVisit_Continue;
+                },
+                // The field is the start of a new bitfield
+                (Some(width), _) => {
+                    // Bitfields containing enums are not supported by the c standard
+                    // https://stackoverflow.com/questions/11983231/is-it-safe-to-use-an-enum-in-a-bit-field
+                    match &ty {
+                        &il::TInt(_, _) => (),
+                        _ => {
+                            let msg = format!("Enums in bitfields are not supported ({}.{}).",
+                                cursor.spelling(), parent.spelling());
+                            ctx.logger.warn(msg.as_slice());
+                        }
+                    }
+                    ("".to_string(), Some(vec!((cursor.spelling(), width))))
+                },
+                // The field is not a bitfield
+                (None, _) => (cursor.spelling(), None)
+            };
 
             // The Clang C api does not fully expose composite fields, but it
             // does expose them in a way that can be detected. When the current
@@ -372,7 +397,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 _ => false
             };
 
-            let field = FieldInfo::new(name, ty.clone(), bit);
+            let field = FieldInfo::new(name, ty.clone(), bitfields);
             if is_composite {
                 if let Some(CompMember::Comp(c)) = members.pop() {
                     members.push(CompMember::CompField(c, field));
