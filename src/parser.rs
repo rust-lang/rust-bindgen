@@ -12,7 +12,7 @@ use syntax::abi;
 use types as il;
 use types::*;
 use clang as cx;
-use clang::*;
+use clang::{ast_dump, Cursor, Diagnostic, TranslationUnit, type_to_str};
 use clang::ll::*;
 
 use super::Logger;
@@ -585,7 +585,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
     cursor.visit(|cur, _| visit_top(cur, &mut ctx));
 
     while !ctx.builtin_defs.is_empty() {
-        let c = ctx.builtin_defs.remove(0).unwrap();
+        let c = ctx.builtin_defs.remove(0);
         visit_top(&c.definition(), &mut ctx);
     }
 

@@ -159,7 +159,7 @@ Options:
 #[main]
 pub fn main() {
     let mut bind_args = os::args();
-    let bin = bind_args.remove(0).unwrap();
+    let bin = bind_args.remove(0);
 
     match parse_args(bind_args.as_slice()) {
         ParseResult::ParseErr(e) => panic!(e),

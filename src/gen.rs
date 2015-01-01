@@ -1079,7 +1079,7 @@ fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: abi::Abi) -> ast::Ty {
             identifier: ctx.ext_cx.ident_of("Option"),
             parameters: ast::AngleBracketedParameters(ast::AngleBracketedParameterData {
                 lifetimes: Vec::new(),
-                types: OwnedSlice::from_vec(Vec::from_elem(1,
+                types: OwnedSlice::from_vec(vec!(
                     P(ast::Ty {
                         id: ast::DUMMY_NODE_ID,
                         node: fnty,
