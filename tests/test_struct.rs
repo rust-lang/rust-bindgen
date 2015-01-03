@@ -14,14 +14,47 @@ fn with_anon_struct() {
 
 #[test]
 fn with_anon_struct_array() {
-    mod ffi { bindgen!("headers/struct_with_anon_struct_array.h"); }
-    let mut x: ffi::Struct_foo = Default::default();
-
-    x.bar[1].a = 1;
-    x.bar[1].b = 2;
-
-    assert_eq!(x.bar[1].a, 1);
-    assert_eq!(x.bar[1].b, 2);
+    assert_bind_eq!("headers/struct_with_anon_struct_array.h", cx,
+        quote_item!(cx,
+            #[repr(C)]
+            #[deriving(Copy)]
+            pub struct Struct_foo {
+                pub bar: [Struct_Unnamed1; 2u],
+                pub baz: [[[Struct_Unnamed2; 4u]; 3u]; 2u],
+            }
+        ),
+        quote_item!(cx,
+            impl ::std::default::Default for Struct_foo {
+                fn default() -> Struct_foo { unsafe { ::std::mem::zeroed() } }
+            }
+        ),
+        quote_item!(cx,
+            #[repr(C)]
+            #[deriving(Copy)]
+            pub struct Struct_Unnamed1 {
+                pub a: ::libc::c_int,
+                pub b: ::libc::c_int,
+            }
+        ),
+        quote_item!(cx,
+            impl ::std::default::Default for Struct_Unnamed1 {
+                fn default() -> Struct_Unnamed1 { unsafe { ::std::mem::zeroed() } }
+            }
+        ),
+        quote_item!(cx,
+            #[repr(C)]
+            #[deriving(Copy)]
+            pub struct Struct_Unnamed2 {
+                pub a: ::libc::c_int,
+                pub b: ::libc::c_int,
+            }
+        ),
+        quote_item!(cx,
+            impl ::std::default::Default for Struct_Unnamed2 {
+                fn default() -> Struct_Unnamed2 { unsafe { ::std::mem::zeroed() } }
+            }
+        )
+    );
 }
 
 #[test]

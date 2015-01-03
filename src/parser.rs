@@ -358,9 +358,8 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
 
             // The Clang C api does not fully expose composite fields, but it
             // does expose them in a way that can be detected. When the current
-            // field kind is CXType_Unexposed, CXType_Pointer or
-            // CXType_ConstantArray and the previous member is a
-            // composite type--the same type as this field-- then this is a
+            // field kind is TComp, TPtr or TArray and the previous member is a
+            // composite type - the same type as this field - then this is a
             // composite field.  e.g.:
             //
             //     struct foo {
@@ -374,25 +373,31 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             //         union {
             //             int a;
             //             char b;
-            //         } *bar;
+            //         } **bar;
             //     };
             //
             //     struct foo {
             //         union {
             //             int a;
             //             char b;
-            //         } bar[3];
+            //         } bar[3][2];
             //     };
             //
-            let is_composite = match (cursor.cur_type().kind(), &ty) {
-                (CXType_Unexposed, &TComp(ref ty_compinfo)) |
-                (CXType_Pointer, &TPtr(box TComp(ref ty_compinfo), _, _)) |
-                (CXType_ConstantArray, &TArray(box TComp(ref ty_compinfo), _, _)) => {
-                    if let Some(&CompMember::Comp(ref c)) = members.last() {
-                        c.borrow().deref() as *const _ == ty_compinfo.borrow().deref() as *const _
-                    } else {
-                        false
+
+            fn inner_composite(mut ty: &il::Type) -> Option<&Rc<RefCell<CompInfo>>> {
+                loop {
+                    match ty {
+                        &TComp(ref comp_ty) => return Some(comp_ty),
+                        &TPtr(ref ptr_ty, _, _) => ty = &**ptr_ty,
+                        &TArray(ref array_ty, _, _) => ty = &**array_ty,
+                        _ => return None
                     }
+                }
+            }
+
+            let is_composite = match (inner_composite(&ty), members.last()) {
+                (Some(ty_compinfo), Some(&CompMember::Comp(ref c))) => {
+                    c.borrow().deref() as *const _ == ty_compinfo.borrow().deref() as *const _
                 },
                 _ => false
             };
