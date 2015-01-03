@@ -679,6 +679,9 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: uint,
     let data_ident = ctx.ext_cx.ident_of(data_field);
 
     let mk_field_method = |ctx: &mut GenCtx, f: &FieldInfo, offset: uint| {
+        // TODO: Implement bitfield accessors
+        if f.bitfields.is_some() { return None; }
+
         let (f_name, _) = rust_id(ctx, f.name.clone());
         let f_name_ident = ctx.ext_cx.ident_of(f_name.as_slice());
         let ret_ty = P(cty_to_rs(ctx, &TPtr(box f.ty.clone(), false, Layout::zero())));
@@ -699,7 +702,7 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: uint,
                 }
             )
         };
-        ast::MethodImplItem(method)
+        Some(ast::MethodImplItem(method))
     };
 
     let mut offset = data_offset;
@@ -707,7 +710,7 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: uint,
     for m in members.iter() {
         let advance_by = match m {
             &CompMember::Field(ref f) => {
-                methods.push(mk_field_method(ctx, f, offset));
+                methods.extend(mk_field_method(ctx, f, offset).into_iter());
                 f.ty.size()
             }
             &CompMember::Comp(ref rc_c) => {
@@ -717,7 +720,7 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: uint,
                 c.layout.size
             }
             &CompMember::CompField(ref rc_c, ref f) => {
-                methods.push(mk_field_method(ctx, f, offset));
+                methods.extend(mk_field_method(ctx, f, offset).into_iter());
 
                 let c = rc_c.borrow();
                 extra.extend(comp_to_rs(ctx, c.kind, comp_name(c.kind, &c.name),

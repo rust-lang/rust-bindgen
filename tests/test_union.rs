@@ -17,6 +17,31 @@ fn with_anon_struct() {
 }
 
 #[test]
+fn with_anon_struct_bitfield() {
+    assert_bind_eq!("headers/union_with_anon_struct_bitfield.h", cx,
+        quote_item!(cx,
+            #[repr(C)]
+            #[deriving(Copy)]
+            pub struct Union_foo {
+                pub _bindgen_data_: [u32; 1u],
+            }
+        ),
+        quote_item!(cx,
+            impl Union_foo {
+                pub unsafe fn a(&self) -> *mut ::libc::c_int {
+                    ::std::mem::transmute(&self._bindgen_data_)
+                }
+            }
+        ),
+        quote_item!(cx,
+            impl ::std::default::Default for Union_foo {
+                fn default() -> Union_foo { unsafe { ::std::mem::zeroed() } }
+            }
+        )
+    );
+}
+
+#[test]
 fn with_anon_union() {
     mod ffi { bindgen!("headers/union_with_anon_union.h"); }
     let mut x: ffi::Union_foo = Default::default();
