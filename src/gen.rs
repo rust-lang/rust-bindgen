@@ -694,7 +694,7 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: uint,
                 }
             )
         } else {
-            let offset_expr = &ctx.ext_cx.expr_int(ctx.span, offset.to_int().unwrap());
+            let offset_expr = &ctx.ext_cx.expr_int(ctx.span, offset as int);
             quote_method!(&ctx.ext_cx,
                 pub unsafe fn $f_name_ident(&mut self) -> $ret_ty {
                     let raw: *mut u8 = ::std::mem::transmute(&self.$data_ident);
@@ -801,7 +801,7 @@ fn mk_repr_attr(ctx: &mut GenCtx) -> ast::Attribute {
 
 fn mk_deriving_copy_attr(ctx: &mut GenCtx) -> ast::Attribute {
     let attr_val = P(respan(ctx.span, ast::MetaList(
-        to_intern_str(ctx, "deriving".to_string()),
+        to_intern_str(ctx, "derive".to_string()),
         vec!(P(respan(ctx.span, ast::MetaWord(to_intern_str(ctx, "Copy".to_string())))))
     )));
 

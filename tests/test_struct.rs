@@ -17,7 +17,7 @@ fn with_anon_struct_array() {
     assert_bind_eq!("headers/struct_with_anon_struct_array.h", cx,
         quote_item!(cx,
             #[repr(C)]
-            #[deriving(Copy)]
+            #[derive(Copy)]
             pub struct Struct_foo {
                 pub bar: [Struct_Unnamed1; 2u],
                 pub baz: [[[Struct_Unnamed2; 4u]; 3u]; 2u],
@@ -30,7 +30,7 @@ fn with_anon_struct_array() {
         ),
         quote_item!(cx,
             #[repr(C)]
-            #[deriving(Copy)]
+            #[derive(Copy)]
             pub struct Struct_Unnamed1 {
                 pub a: ::libc::c_int,
                 pub b: ::libc::c_int,
@@ -43,7 +43,7 @@ fn with_anon_struct_array() {
         ),
         quote_item!(cx,
             #[repr(C)]
-            #[deriving(Copy)]
+            #[derive(Copy)]
             pub struct Struct_Unnamed2 {
                 pub a: ::libc::c_int,
                 pub b: ::libc::c_int,
@@ -139,7 +139,7 @@ fn containing_fwd_decl_struct() {
     assert_bind_eq!("headers/struct_containing_forward_declared_struct.h", cx,
         quote_item!(cx,
             #[repr(C)]
-            #[deriving(Copy)]
+            #[derive(Copy)]
             pub struct Struct_a {
                 pub val_a: *mut Struct_b,
             }
@@ -151,7 +151,7 @@ fn containing_fwd_decl_struct() {
         ),
         quote_item!(cx,
             #[repr(C)]
-            #[deriving(Copy)]
+            #[derive(Copy)]
             pub struct Struct_b {
                 pub val_b: ::libc::c_int,
             }
@@ -169,7 +169,7 @@ fn with_bitfields() {
     assert_bind_eq!("headers/struct_with_bitfields.h", cx,
         quote_item!(cx,
             #[repr(C)]
-            #[deriving(Copy)]
+            #[derive(Copy)]
             pub struct Struct_bitfield {
                 pub _bindgen_bitfield_1_: ::libc::c_ushort,
                 pub e: ::libc::c_int,

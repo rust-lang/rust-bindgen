@@ -5,7 +5,7 @@ use std::{mem, io, ptr};
 use std::fmt;
 use std::hash::Hash;
 use std::hash::sip::SipState;
-use std::c_str::CString;
+use std::c_str::{CString, ToCStr};
 
 pub use clangll as ll;
 use clangll::*;

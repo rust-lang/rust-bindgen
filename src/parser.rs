@@ -5,6 +5,7 @@ use std::collections::{HashMap, HashSet};
 use std::collections::hash_map;
 use std::cell::RefCell;
 use std::iter::AdditiveIterator;
+use std::ops::Deref;
 use std::rc::Rc;
 
 use syntax::abi;

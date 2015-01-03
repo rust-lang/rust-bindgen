@@ -21,14 +21,14 @@ fn with_anon_struct_bitfield() {
     assert_bind_eq!("headers/union_with_anon_struct_bitfield.h", cx,
         quote_item!(cx,
             #[repr(C)]
-            #[deriving(Copy)]
+            #[derive(Copy)]
             pub struct Union_foo {
                 pub _bindgen_data_: [u32; 1u],
             }
         ),
         quote_item!(cx,
             impl Union_foo {
-                pub unsafe fn a(&self) -> *mut ::libc::c_int {
+                pub unsafe fn a(&mut self) -> *mut ::libc::c_int {
                     ::std::mem::transmute(&self._bindgen_data_)
                 }
             }
