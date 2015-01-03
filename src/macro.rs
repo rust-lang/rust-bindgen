@@ -205,7 +205,7 @@ fn as_str<'a>(owned: &'a Option<String>) -> Option<&'a str> {
     }
 }
 
-#[deriving(PartialEq, Eq)]
+#[derive(PartialEq, Eq)]
 enum QuoteState {
     InNone,
     InSingleQuotes,

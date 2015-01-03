@@ -11,7 +11,7 @@ pub use clangll as ll;
 use clangll::*;
 
 // Cursor
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct Cursor {
     x: CXCursor
 }

@@ -9,7 +9,7 @@ pub use self::Type::*;
 pub use self::IKind::*;
 pub use self::FKind::*;
 
-#[deriving(Clone)]
+#[derive(Clone)]
 pub enum Global {
     GType(Rc<RefCell<TypeInfo>>),
     GComp(Rc<RefCell<CompInfo>>),
@@ -69,7 +69,7 @@ impl fmt::Show for Global {
     }
 }
 
-#[deriving(Clone, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct FuncSig {
     pub ret_ty: Box<Type>,
     pub args: Vec<(String, Type)>,
@@ -77,7 +77,7 @@ pub struct FuncSig {
     pub abi: abi::Abi,
 }
 
-#[deriving(Clone, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub enum Type {
     TVoid,
     TInt(IKind, Layout),
@@ -124,7 +124,7 @@ impl Type {
     }
 }
 
-#[deriving(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 pub struct Layout {
     pub size: uint,
     pub align: uint,
@@ -140,7 +140,7 @@ impl Layout {
     }
 }
 
-#[deriving(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum IKind {
     IBool,
     ISChar,
@@ -155,26 +155,26 @@ pub enum IKind {
     IULongLong
 }
 
-#[deriving(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum FKind {
     FFloat,
     FDouble
 }
 
-#[deriving(Clone, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub enum CompMember {
     Field(FieldInfo),
     Comp(Rc<RefCell<CompInfo>>),
     CompField(Rc<RefCell<CompInfo>>, FieldInfo),
 }
 
-#[deriving(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum CompKind {
     Struct,
     Union,
 }
 
-#[deriving(Clone, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct CompInfo {
     pub kind: CompKind,
     pub name: String,
@@ -199,7 +199,7 @@ impl fmt::Show for CompInfo {
     }
 }
 
-#[deriving(Clone, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct FieldInfo {
     pub name: String,
     pub ty: Type,
@@ -216,7 +216,7 @@ impl FieldInfo {
     }
 }
 
-#[deriving(Clone, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct EnumInfo {
     pub name: String,
     pub items: Vec<EnumItem>,
@@ -241,7 +241,7 @@ impl fmt::Show for EnumInfo {
     }
 }
 
-#[deriving(Clone, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct EnumItem {
     pub name: String,
     pub val: i64
@@ -256,7 +256,7 @@ impl EnumItem {
     }
 }
 
-#[deriving(Clone, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct TypeInfo {
     pub name: String,
     pub ty: Type
@@ -277,7 +277,7 @@ impl fmt::Show for TypeInfo {
     }
 }
 
-#[deriving(Clone)]
+#[derive(Clone)]
 pub struct VarInfo {
     pub name: String,
     pub ty: Type,
