@@ -64,7 +64,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
     let cursor = &cursor.canonical();
     let mut new_decl = false;
     let override_enum_ty = ctx.options.override_enum_ty;
-    let decl = match ctx.name.entry(*cursor) {
+    let decl = match ctx.name.entry(cursor) {
         hash_map::Entry::Occupied(ref e) => e.get().clone(),
         hash_map::Entry::Vacant(e) => {
             new_decl = true;
@@ -116,7 +116,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                 _ => GOther,
             };
 
-            e.set(glob_decl.clone());
+            e.insert(glob_decl.clone());
             glob_decl
         },
     };
@@ -333,7 +333,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 // The field is a continuation of an exising bitfield
                 (Some(width), Some(&il::CompMember::Field(ref mut field)))
                     if is_bitfield_continuation(field, &ty, width) => {
-                    
+
                     if let Some(ref mut bitfields) = field.bitfields {
                         bitfields.push((cursor.spelling(), width));
                     } else { unreachable!() }

@@ -226,12 +226,12 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
 
         let mut map: HashMap<abi::Abi, Vec<_>> = HashMap::new();
         for (abi, func) in func_list {
-            match map.entry(abi) {
+            match map.entry(&abi) {
                 Entry::Occupied(mut occ) => {
                     occ.get_mut().push(func);
                 }
                 Entry::Vacant(vac) => {
-                    vac.set(vec!(func));
+                    vac.insert(vec!(func));
                 }
             }
         }
