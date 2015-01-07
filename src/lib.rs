@@ -26,12 +26,12 @@ mod clangll;
 mod clang;
 mod gen;
 mod parser;
-mod macro;
+mod bgmacro;
 
 #[doc(hidden)]
 #[plugin_registrar]
 pub fn plugin_registrar(reg: &mut Registry) {
-    reg.register_macro("bindgen", macro::bindgen_macro);
+    reg.register_macro("bindgen", bgmacro::bindgen_macro);
 }
 
 pub struct BindgenOptions {
