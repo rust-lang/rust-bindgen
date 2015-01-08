@@ -5,7 +5,7 @@
 #![allow(unused_attributes)]
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
-#![allow(raw_pointer_deriving)]
+#![allow(raw_pointer_derive)]
 
 pub type ptrdiff_t = ::libc::c_long;
 pub type size_t = ::libc::c_ulong;

@@ -1,9 +1,8 @@
 #![crate_name = "bindgen"]
 #![crate_type = "bin"]
-#![feature(phase)]
 
 extern crate bindgen;
-#[phase(plugin, link)] extern crate log;
+#[macro_use] extern crate log;
 extern crate syntax;
 
 use bindgen::{Bindings, BindgenOptions, LinkType, Logger};

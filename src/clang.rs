@@ -3,9 +3,11 @@
 use libc::{c_uint, c_char, c_int, c_ulong};
 use std::{mem, io, ptr};
 use std::fmt;
+use std::str;
+use std::ffi;
 use std::hash::Hash;
 use std::hash::sip::SipState;
-use std::c_str::{CString, ToCStr};
+use std::ffi::CString;
 
 pub use clangll as ll;
 use clangll::*;
@@ -16,7 +18,7 @@ pub struct Cursor {
     x: CXCursor
 }
 
-pub type CursorVisitor<'s> = |c: &Cursor, p: &Cursor|: 's -> Enum_CXChildVisitResult;
+pub type CursorVisitor<'s> = FnMut<(&'s Cursor, &'s Cursor), Enum_CXChildVisitResult> + 's;
 
 impl Cursor {
     // common
@@ -56,9 +58,12 @@ impl Cursor {
         }
     }
 
-    pub fn visit(&self, func: CursorVisitor) {
+    pub fn visit<'a, F>(&self, func: F)
+        where F: FnMut(&'a Cursor, &'a Cursor) -> Enum_CXChildVisitResult + 'a
+    {
         unsafe {
-            let data = mem::transmute::<&CursorVisitor, CXClientData>(&func);
+            let mut mfunc: Box<CursorVisitor> = box func;
+            let data = mem::transmute::<&mut Box<CursorVisitor>, CXClientData>(&mut mfunc);
             let opt_visit = Some(visit_children as extern "C" fn(CXCursor, CXCursor, CXClientData) -> Enum_CXChildVisitResult);
             clang_visitChildren(self.x, opt_visit, data);
         };
@@ -131,8 +136,9 @@ impl Cursor {
 extern fn visit_children(cur: CXCursor, parent: ll::CXCursor,
                          data: CXClientData) -> ll::Enum_CXChildVisitResult {
     unsafe {
-        let func = mem::transmute::<CXClientData, &mut CursorVisitor>(data);
-        return (*func)(&Cursor { x: cur }, &Cursor { x: parent });
+        let func = mem::transmute::<CXClientData, &mut Box<CursorVisitor>>(data);
+        let (cur_a, cur_b) = (Cursor { x: cur }, Cursor { x: parent });
+        return (*func)(&cur_a, &cur_b);
     }
 }
 
@@ -321,7 +327,8 @@ impl fmt::Show for String_ {
         }
         unsafe {
             let c_str = clang_getCString(self.x) as *const c_char;
-            String::from_raw_buf(c_str as *const u8).fmt(f)
+            let p = c_str as *const _;
+            str::from_utf8(ffi::c_str_to_bytes(&p)).unwrap().to_string().fmt(f)
         }
     }
 }
@@ -357,9 +364,9 @@ pub struct TranslationUnit {
 impl TranslationUnit {
     pub fn parse(ix: &Index, file: &str, cmd_args: &[String],
                  unsaved: &[UnsavedFile], opts: uint) -> TranslationUnit {
-        let _fname = file.to_c_str();
+        let _fname = CString::from_slice(file.as_bytes());
         let fname = _fname.as_ptr();
-        let _c_args: Vec<CString> = cmd_args.iter().map(|s| s.to_c_str()).collect();
+        let _c_args: Vec<CString> = cmd_args.iter().map(|s| CString::from_slice(s.as_bytes())).collect();
         let c_args: Vec<*const c_char> = _c_args.iter().map(|s| s.as_ptr()).collect();
         let mut c_unsaved: Vec<Struct_CXUnsavedFile> = unsaved.iter().map(|f| f.x).collect();
         let tu = unsafe {
@@ -452,8 +459,8 @@ pub struct UnsavedFile {
 
 impl UnsavedFile {
     pub fn new(name: &str, contents: &str) -> UnsavedFile {
-        let name = name.to_c_str();
-        let contents = contents.to_c_str();
+        let name = CString::from_slice(name.as_bytes());
+        let contents = CString::from_slice(contents.as_bytes());
         let x = Struct_CXUnsavedFile {
             Filename: name.as_ptr(),
             Contents: contents.as_ptr(),
@@ -704,7 +711,7 @@ pub fn ast_dump(c: &Cursor, depth: int)-> Enum_CXVisitorResult {
         c.spelling().as_slice(),
         type_to_str(ct)).as_slice()
     );
-    c.visit(|s, _| {
+    c.visit(|&: s, _: &Cursor| {
         ast_dump(s, depth + 1)
     });
     print_indent(depth, ")");

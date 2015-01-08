@@ -116,7 +116,6 @@ fn enum_name(name: &String) -> String {
 pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> Vec<P<ast::Item>> {
     // Create a dummy ExtCtxt. We only need this for string interning and that uses TLS.
     let cfg = ExpansionConfig {
-        deriving_hash_type_parameter: false,
         crate_name: "xxx".to_string(),
         enable_quotes: true,
         recursion_limit: 64,
@@ -542,6 +541,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String, members: Vec<CompMember>) -> Ve
     if !methods.is_empty() {
         let impl_ = ast::ItemImpl(
             ast::Unsafety::Normal,
+            ast::ImplPolarity::Positive,
             empty_generics(),
             None,
             P(mk_ty(ctx, false, vec!(id))),
@@ -617,6 +617,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, members: Vec<Com
 
     let union_impl = ast::ItemImpl(
         ast::Unsafety::Normal,
+        ast::ImplPolarity::Positive,
         empty_generics(),
         None,
         P(cty_to_rs(ctx, &union)),
@@ -678,7 +679,7 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: uint,
                     extra: &mut Vec<P<ast::Item>>) -> Vec<ast::ImplItem> {
     let data_ident = ctx.ext_cx.ident_of(data_field);
 
-    let mk_field_method = |ctx: &mut GenCtx, f: &FieldInfo, offset: uint| {
+    let mk_field_method = |&: ctx: &mut GenCtx, f: &FieldInfo, offset: uint| {
         // TODO: Implement bitfield accessors
         if f.bitfields.is_some() { return None; }
 

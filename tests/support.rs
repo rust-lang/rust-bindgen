@@ -31,7 +31,9 @@ pub fn generate_bindings(filename: &str) -> Result<Vec<P<ast::Item>>, ()> {
     Ok(try!(bindgen::Bindings::generate(&options, Some(&logger as &Logger), None)).into_ast())
 }
 
-pub fn test_bind_eq(filename: &str, f:|ext_cx: DummyExtCtxt| -> Vec<Option<P<ast::Item>>>) {
+pub fn test_bind_eq<F>(filename: &str, f:F)
+    where F: Fn(DummyExtCtxt) -> Vec<Option<P<ast::Item>>>
+{
     let ext_cx = mk_dummy_ext_ctxt();
     let items = generate_bindings(filename).unwrap();
     let quoted =f(ext_cx).into_iter().map(|x| x.unwrap()).collect();

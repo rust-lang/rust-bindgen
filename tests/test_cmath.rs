@@ -1,8 +1,4 @@
-#[allow(dead_code)]
-#[allow(non_snake_case)]
-#[allow(non_camel_case_types)]
-#[allow(non_upper_case_globals)]
-#[allow(raw_pointer_deriving)]
+#[allow(dead_code, non_camel_case_types, non_upper_case_globals, raw_pointer_derive)]
 pub mod ffi { bindgen!("/usr/include/math.h", link = "m"); }
 
 #[test]

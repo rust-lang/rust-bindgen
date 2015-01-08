@@ -1,16 +1,14 @@
-#![feature(globs)]
-#![feature(macro_rules)]
-#![feature(phase)]
 #![feature(quote)]
+#![feature(plugin)]
 
-#[phase(plugin)]
+#[plugin] #[no_link]
 extern crate bindgen;
 
 extern crate bindgen;
 extern crate libc;
 extern crate syntax;
 
-#[macro_escape]
+#[macro_use]
 mod support;
 
 mod test_cmath;
