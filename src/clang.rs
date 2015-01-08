@@ -18,7 +18,7 @@ pub struct Cursor {
     x: CXCursor
 }
 
-pub type CursorVisitor<'s> = FnMut<(&'s Cursor, &'s Cursor), Enum_CXChildVisitResult> + 's;
+pub type CursorVisitor<'s> = for<'a, 'b> FnMut<(&'a Cursor, &'b Cursor), Enum_CXChildVisitResult> + 's;
 
 impl Cursor {
     // common
@@ -58,15 +58,14 @@ impl Cursor {
         }
     }
 
-    pub fn visit<'a, F>(&self, func: F)
-        where F: FnMut(&'a Cursor, &'a Cursor) -> Enum_CXChildVisitResult + 'a
+    pub fn visit<F>(&self, func:F)
+        where F: for<'a, 'b> FnMut<(&'a Cursor, &'b Cursor), Enum_CXChildVisitResult>
     {
+        let mut data: Box<CursorVisitor> = box func;
+        let opt_visit = Some(visit_children as extern "C" fn(CXCursor, CXCursor, CXClientData) -> Enum_CXChildVisitResult);
         unsafe {
-            let mut mfunc: Box<CursorVisitor> = box func;
-            let data = mem::transmute::<&mut Box<CursorVisitor>, CXClientData>(&mut mfunc);
-            let opt_visit = Some(visit_children as extern "C" fn(CXCursor, CXCursor, CXClientData) -> Enum_CXChildVisitResult);
-            clang_visitChildren(self.x, opt_visit, data);
-        };
+            clang_visitChildren(self.x, opt_visit, mem::transmute(&mut data));
+        }
     }
 
     // bitfield
@@ -135,11 +134,8 @@ impl Cursor {
 
 extern fn visit_children(cur: CXCursor, parent: ll::CXCursor,
                          data: CXClientData) -> ll::Enum_CXChildVisitResult {
-    unsafe {
-        let func = mem::transmute::<CXClientData, &mut Box<CursorVisitor>>(data);
-        let (cur_a, cur_b) = (Cursor { x: cur }, Cursor { x: parent });
-        return (*func)(&cur_a, &cur_b);
-    }
+    let func: &mut Box<CursorVisitor> = unsafe { mem::transmute(data) };
+    return (*func)(&Cursor { x : cur }, &Cursor { x: parent });
 }
 
 impl PartialEq for Cursor {

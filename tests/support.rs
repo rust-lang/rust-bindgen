@@ -32,7 +32,7 @@ pub fn generate_bindings(filename: &str) -> Result<Vec<P<ast::Item>>, ()> {
 }
 
 pub fn test_bind_eq<F>(filename: &str, f:F)
-    where F: Fn(DummyExtCtxt) -> Vec<Option<P<ast::Item>>>
+    where F: FnOnce(DummyExtCtxt) -> Vec<Option<P<ast::Item>>>
 {
     let ext_cx = mk_dummy_ext_ctxt();
     let items = generate_bindings(filename).unwrap();
