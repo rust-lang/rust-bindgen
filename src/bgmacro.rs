@@ -37,7 +37,7 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
     if let Err(e) = os::change_dir(&p) {
       panic!("Failed to change to directory {}: {}", p.display(), e);
     };
-    
+
     // We want the span for errors to just match the bindgen! symbol
     // instead of the whole invocation which can span multiple lines
     let mut short_span = sp;
@@ -47,7 +47,7 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
 
     let ret = match Bindings::generate(&visit.options, Some(&logger as &Logger), Some(short_span)) {
         Ok(bindings) => {
-            box BindgenResult { items: Some(SmallVector::many(bindings.into_ast())) } as Box<base::MacResult>
+            Box::new(BindgenResult { items: Some(SmallVector::many(bindings.into_ast())) }) as Box<base::MacResult>
         }
         Err(_) => base::DummyResult::any(sp)
     };

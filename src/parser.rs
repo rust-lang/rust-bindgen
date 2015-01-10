@@ -61,7 +61,7 @@ fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {
 }
 
 fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
-    let cursor = &cursor.canonical();
+    let cursor = cursor.canonical();
     let mut new_decl = false;
     let override_enum_ty = ctx.options.override_enum_ty;
     let decl = match ctx.name.entry(cursor) {
@@ -123,7 +123,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
 
     if new_decl {
         if ctx.options.builtin_names.contains(&cursor.spelling()) {
-            ctx.builtin_defs.push(*cursor);
+            ctx.builtin_defs.push(cursor);
         }
     }
 
@@ -161,7 +161,7 @@ fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, layout:
     let is_const = ty.is_const();
     match ty.kind() {
         CXType_Void => {
-            return TPtr(box TVoid, is_const, layout)
+            return TPtr(Box::new(TVoid), is_const, layout)
         }
         CXType_Unexposed |
         CXType_FunctionProto |
@@ -171,12 +171,12 @@ fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, layout:
             return if ret_ty.kind() != CXType_Invalid {
                 TFuncPtr(mk_fn_sig(ctx, ty, cursor))
             } else if decl.kind() != CXCursor_NoDeclFound {
-                TPtr(box conv_decl_ty(ctx, &decl), ty.is_const(), layout)
+                TPtr(Box::new(conv_decl_ty(ctx, &decl)), ty.is_const(), layout)
             } else if cursor.kind() == CXCursor_VarDecl {
                 let can_ty = ty.canonical_type();
                 conv_ty(ctx, &can_ty, cursor)
             } else {
-                TPtr(box TVoid, ty.is_const(), layout)
+                TPtr(Box::new(TVoid), ty.is_const(), layout)
             };
         }
         CXType_Typedef => {
@@ -184,12 +184,12 @@ fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, layout:
             let def_ty = decl.typedef_type();
             if def_ty.kind() == CXType_FunctionProto ||
                def_ty.kind() == CXType_FunctionNoProto {
-                return TPtr(box conv_ptr_ty(ctx, &def_ty, cursor, layout), is_const, layout);
+                return TPtr(Box::new(conv_ptr_ty(ctx, &def_ty, cursor, layout)), is_const, layout);
             } else {
-                return TPtr(box conv_ty(ctx, ty, cursor), is_const, layout);
+                return TPtr(Box::new(conv_ty(ctx, ty, cursor)), is_const, layout);
             }
         }
-        _ => return TPtr(box conv_ty(ctx, ty, cursor), is_const, layout),
+        _ => return TPtr(Box::new(conv_ty(ctx, ty, cursor)), is_const, layout),
     }
 }
 
@@ -217,7 +217,7 @@ fn mk_fn_sig(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Fu
         }
     };
 
-    let ret_ty = box conv_ty(ctx, &ty.ret_type(), cursor);
+    let ret_ty = Box::new(conv_ty(ctx, &ty.ret_type(), cursor));
     let abi = get_abi(ty.call_conv());
 
     il::FuncSig {
@@ -284,7 +284,7 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
         CXType_Typedef  |
         CXType_Unexposed |
         CXType_Enum => conv_decl_ty(ctx, &ty.declaration()),
-        CXType_ConstantArray => TArray(box conv_ty(ctx, &ty.elem_type(), cursor), ty.array_size(), layout),
+        CXType_ConstantArray => TArray(Box::new(conv_ty(ctx, &ty.elem_type(), cursor)), ty.array_size(), layout),
         _ => {
             let fail = ctx.options.fail_on_unknown_type;
             log_err_warn(ctx,
@@ -331,7 +331,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
 
             let (name, bitfields) = match (cursor.bit_width(), members.last_mut()) {
                 // The field is a continuation of an exising bitfield
-                (Some(width), Some(&il::CompMember::Field(ref mut field)))
+                (Some(width), Some(&mut il::CompMember::Field(ref mut field)))
                     if is_bitfield_continuation(field, &ty, width) => {
 
                     if let Some(ref mut bitfields) = field.bitfields {

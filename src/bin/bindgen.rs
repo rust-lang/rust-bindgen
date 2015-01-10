@@ -32,7 +32,7 @@ fn parse_args(args: &[String]) -> ParseResult {
     let args_len = args.len();
 
     let mut options: BindgenOptions = Default::default();
-    let mut out = box io::BufferedWriter::new(io::stdout()) as Box<io::Writer>;
+    let mut out = Box::new(io::BufferedWriter::new(io::stdout())) as Box<io::Writer>;
 
     if args_len == 0u {
         return ParseResult::CmdUsage;
@@ -58,7 +58,7 @@ fn parse_args(args: &[String]) -> ParseResult {
                     }
                     let path = path::Path::new(args[ix + 1].clone());
                     match fs::File::create(&path) {
-                        Ok(f) => { out = box io::BufferedWriter::new(f) as Box<io::Writer>; }
+                        Ok(f) => { out = Box::new(io::BufferedWriter::new(f)) as Box<io::Writer>; }
                         Err(_) => { return ParseResult::ParseErr(format!("Open {} failed", args[ix + 1])); }
                     }
                     ix += 2u;

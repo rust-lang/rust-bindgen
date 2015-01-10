@@ -108,7 +108,7 @@ impl Bindings
 
     pub fn to_string(&self) -> String {
         pprust::to_string(|s| {
-            s.s = pp::mk_printer(box Vec::new(), 80);
+            s.s = pp::mk_printer(Box::new(Vec::new()), 80);
 
             try!(s.print_mod(&self.module, &[]));
             s.print_remaining_comments()

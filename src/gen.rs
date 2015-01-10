@@ -225,7 +225,7 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
 
         let mut map: HashMap<abi::Abi, Vec<_>> = HashMap::new();
         for (abi, func) in func_list {
-            match map.entry(&abi) {
+            match map.entry(abi) {
                 Entry::Occupied(mut occ) => {
                     occ.get_mut().push(func);
                 }
@@ -685,7 +685,7 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: uint,
 
         let (f_name, _) = rust_id(ctx, f.name.clone());
         let f_name_ident = ctx.ext_cx.ident_of(f_name.as_slice());
-        let ret_ty = P(cty_to_rs(ctx, &TPtr(box f.ty.clone(), false, Layout::zero())));
+        let ret_ty = P(cty_to_rs(ctx, &TPtr(Box::new(f.ty.clone()), false, Layout::zero())));
 
         // When the offset is zero, generate slightly prettier code.
         let method = if offset == 0 {
@@ -1020,7 +1020,7 @@ fn mk_ptrty(ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
 }
 
 fn mk_arrty(ctx: &GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
-    let int_lit = ast::LitInt(n as u64, ast::UnsignedIntLit(ast::TyU));
+    let int_lit = ast::LitInt(n as u64, ast::UnsignedIntLit(ast::TyUs(true)));
     let sz = ast::ExprLit(P(respan(ctx.span, int_lit)));
     let ty = ast::TyFixedLengthVec(
         P(base.clone()),

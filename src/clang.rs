@@ -6,7 +6,8 @@ use std::fmt;
 use std::str;
 use std::ffi;
 use std::hash::Hash;
-use std::hash::sip::SipState;
+use std::hash::Hasher;
+use std::hash::Writer;
 use std::ffi::CString;
 
 pub use clangll as ll;
@@ -61,7 +62,7 @@ impl Cursor {
     pub fn visit<F>(&self, func:F)
         where F: for<'a, 'b> FnMut<(&'a Cursor, &'b Cursor), Enum_CXChildVisitResult>
     {
-        let mut data: Box<CursorVisitor> = box func;
+        let mut data: Box<CursorVisitor> = Box::new(func);
         let opt_visit = Some(visit_children as extern "C" fn(CXCursor, CXCursor, CXClientData) -> Enum_CXChildVisitResult);
         unsafe {
             clang_visitChildren(self.x, opt_visit, mem::transmute(&mut data));
@@ -152,8 +153,8 @@ impl PartialEq for Cursor {
 
 impl Eq for Cursor {}
 
-impl Hash for Cursor {
-    fn hash(&self, state: &mut SipState) {
+impl<S: Writer + Hasher> Hash<S> for Cursor {
+    fn hash(&self, state: &mut S) {
         self.x.kind.hash(state);
         self.x.xdata.hash(state);
         self.x.data[0].hash(state);
@@ -275,7 +276,7 @@ impl SourceLocation {
     }
 }
 
-impl fmt::Show for SourceLocation {
+impl fmt::String for SourceLocation {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let (file, line, col, _) = self.location();
         match file.is_null() {
@@ -316,7 +317,7 @@ pub struct String_ {
     x: CXString
 }
 
-impl fmt::Show for String_ {
+impl fmt::String for String_ {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if self.x.data.is_null() {
             return "".fmt(f);
