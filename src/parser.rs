@@ -34,7 +34,7 @@ struct ClangParserCtx<'a> {
     globals: Vec<Global>,
     builtin_defs: Vec<Cursor>,
     logger: &'a (Logger+'a),
-    err_count: int
+    err_count: i32
 }
 
 fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {

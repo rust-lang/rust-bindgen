@@ -83,7 +83,7 @@ pub enum Type {
     TInt(IKind, Layout),
     TFloat(FKind, Layout),
     TPtr(Box<Type>, bool, Layout),
-    TArray(Box<Type>, uint, Layout),
+    TArray(Box<Type>, usize, Layout),
     TFuncProto(FuncSig),
     TFuncPtr(FuncSig),
     TNamed(Rc<RefCell<TypeInfo>>),
@@ -93,7 +93,7 @@ pub enum Type {
 
 #[allow(dead_code)]
 impl Type {
-    pub fn size(&self) -> uint {
+    pub fn size(&self) -> usize {
         match self {
             &TInt(_, l) => l.size,
             &TFloat(_, l) => l.size,
@@ -108,7 +108,7 @@ impl Type {
         }
     }
 
-    pub fn align(&self) -> uint {
+    pub fn align(&self) -> usize {
         match self {
             &TInt(_, l) => l.align,
             &TFloat(_, l) => l.align,
@@ -126,12 +126,12 @@ impl Type {
 
 #[derive(Copy, Clone, PartialEq)]
 pub struct Layout {
-    pub size: uint,
-    pub align: uint,
+    pub size: usize,
+    pub align: usize,
 }
 
 impl Layout {
-    pub fn new(size: uint, align: uint) -> Layout {
+    pub fn new(size: usize, align: usize) -> Layout {
         Layout { size: size, align: align }
     }
 

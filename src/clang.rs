@@ -111,7 +111,7 @@ impl Cursor {
     // function
     pub fn args(&self) -> Vec<Cursor> {
         unsafe {
-            let num = self.num_args() as uint;
+            let num = self.num_args() as usize;
             let mut args = vec!();
             for i in range(0, num) {
                 args.push(Cursor { x: clang_Cursor_getArgument(self.x, i as c_uint) });
@@ -186,17 +186,17 @@ impl Type {
         }
     }
 
-    pub fn size(&self) -> uint {
+    pub fn size(&self) -> usize {
         unsafe {
             let val = clang_Type_getSizeOf(self.x);
-            if val < 0 { 0 } else { val as uint }
+            if val < 0 { 0 } else { val as usize }
         }
     }
 
-    pub fn align(&self) -> uint {
+    pub fn align(&self) -> usize {
         unsafe {
             let val = clang_Type_getAlignOf(self.x);
-            if val < 0 { 0 } else { val as uint }
+            if val < 0 { 0 } else { val as usize }
         }
     }
 
@@ -214,9 +214,9 @@ impl Type {
         }
     }
 
-    pub fn array_size(&self) -> uint {
+    pub fn array_size(&self) -> usize {
         unsafe {
-            clang_getArraySize(self.x) as uint
+            clang_getArraySize(self.x) as usize
         }
     }
 
@@ -236,7 +236,7 @@ impl Type {
 
     pub fn arg_types(&self) -> Vec<Type> {
         unsafe {
-            let num = clang_getNumArgTypes(self.x) as uint;
+            let num = clang_getNumArgTypes(self.x) as usize;
             let mut args = vec!();
             for i in range(0, num) {
                 args.push(Type { x: clang_getArgType(self.x, i as c_uint) });
@@ -264,14 +264,14 @@ pub struct SourceLocation {
 }
 
 impl SourceLocation {
-    pub fn location(&self) -> (File, uint, uint, uint) {
+    pub fn location(&self) -> (File, usize, usize, usize) {
         unsafe {
             let mut file = ptr::null_mut();
             let mut line = 0;
             let mut col = 0;
             let mut off = 0;
             clang_getSpellingLocation(self.x, &mut file, &mut line, &mut col, &mut off);
-            return (File { x: file }, line as uint, col as uint, off as uint);
+            return (File { x: file }, line as usize, col as usize, off as usize);
         }
     }
 }
@@ -360,7 +360,7 @@ pub struct TranslationUnit {
 
 impl TranslationUnit {
     pub fn parse(ix: &Index, file: &str, cmd_args: &[String],
-                 unsaved: &[UnsavedFile], opts: uint) -> TranslationUnit {
+                 unsaved: &[UnsavedFile], opts: usize) -> TranslationUnit {
         let _fname = CString::from_slice(file.as_bytes());
         let fname = _fname.as_ptr();
         let _c_args: Vec<CString> = cmd_args.iter().map(|s| CString::from_slice(s.as_bytes())).collect();
@@ -377,7 +377,7 @@ impl TranslationUnit {
         TranslationUnit { x: tu }
     }
 
-    pub fn reparse(&self, unsaved: &[UnsavedFile], opts: uint) -> bool {
+    pub fn reparse(&self, unsaved: &[UnsavedFile], opts: usize) -> bool {
         let mut c_unsaved: Vec<Struct_CXUnsavedFile> = unsaved.iter().map(|f| f.x).collect();
 
         unsafe {
@@ -390,7 +390,7 @@ impl TranslationUnit {
 
     pub fn diags(&self) -> Vec<Diagnostic> {
         unsafe {
-            let num = clang_getNumDiagnostics(self.x) as uint;
+            let num = clang_getNumDiagnostics(self.x) as usize;
             let mut diags = vec!();
             for i in range(0, num) {
                 diags.push(Diagnostic { x: clang_getDiagnostic(self.x, i as c_uint) });
@@ -422,13 +422,13 @@ pub struct Diagnostic {
 }
 
 impl Diagnostic {
-    pub fn default_opts() -> uint {
+    pub fn default_opts() -> usize {
         unsafe {
-            clang_defaultDiagnosticDisplayOptions() as uint
+            clang_defaultDiagnosticDisplayOptions() as usize
         }
     }
 
-    pub fn format(&self, opts: uint) -> String {
+    pub fn format(&self, opts: usize) -> String {
         unsafe {
             String_ { x: clang_formatDiagnostic(self.x, opts as c_uint) }.to_string()
         }
@@ -693,8 +693,8 @@ pub fn type_to_str(x: Enum_CXTypeKind) -> &'static str {
 }
 
 // Debug
-pub fn ast_dump(c: &Cursor, depth: int)-> Enum_CXVisitorResult {
-    fn print_indent(depth: int, s: &str) {
+pub fn ast_dump(c: &Cursor, depth: isize)-> Enum_CXVisitorResult {
+    fn print_indent(depth: isize, s: &str) {
         let mut i = 0;
         while i < depth {
             io::print("\t");

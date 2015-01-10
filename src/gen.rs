@@ -23,7 +23,7 @@ use types::*;
 
 struct GenCtx<'r> {
     ext_cx: base::ExtCtxt<'r>,
-    unnamed_ty: uint,
+    unnamed_ty: usize,
     span: Span
 }
 
@@ -674,12 +674,12 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, items: Vec<EnumItem>
 /// represented in Rust as an untyped array.  This process may generate
 /// declarations and implementations that must be placed at the root level.
 /// These are emitted into `extra`.
-fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: uint,
+fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
                     kind: CompKind, members: &Vec<CompMember>,
                     extra: &mut Vec<P<ast::Item>>) -> Vec<ast::ImplItem> {
     let data_ident = ctx.ext_cx.ident_of(data_field);
 
-    let mk_field_method = |&: ctx: &mut GenCtx, f: &FieldInfo, offset: uint| {
+    let mk_field_method = |&: ctx: &mut GenCtx, f: &FieldInfo, offset: usize| {
         // TODO: Implement bitfield accessors
         if f.bitfields.is_some() { return None; }
 
@@ -695,7 +695,7 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: uint,
                 }
             )
         } else {
-            let offset_expr = &ctx.ext_cx.expr_int(ctx.span, offset as int);
+            let offset_expr = &ctx.ext_cx.expr_int(ctx.span, offset as isize);
             quote_method!(&ctx.ext_cx,
                 pub unsafe fn $f_name_ident(&mut self) -> $ret_ty {
                     let raw: *mut u8 = ::std::mem::transmute(&self.$data_ident);
@@ -848,7 +848,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
         _ => cty_to_rs(ctx, rty)
     });
 
-    let mut unnamed: uint = 0;
+    let mut unnamed: usize = 0;
     let args: Vec<ast::Arg> = aty.iter().map(|arg| {
         let (ref n, ref t) = *arg;
 
@@ -1019,7 +1019,7 @@ fn mk_ptrty(ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
     };
 }
 
-fn mk_arrty(ctx: &GenCtx, base: &ast::Ty, n: uint) -> ast::Ty {
+fn mk_arrty(ctx: &GenCtx, base: &ast::Ty, n: usize) -> ast::Ty {
     let int_lit = ast::LitInt(n as u64, ast::UnsignedIntLit(ast::TyUs(true)));
     let sz = ast::ExprLit(P(respan(ctx.span, int_lit)));
     let ty = ast::TyFixedLengthVec(

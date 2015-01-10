@@ -34,15 +34,15 @@ fn parse_args(args: &[String]) -> ParseResult {
     let mut options: BindgenOptions = Default::default();
     let mut out = Box::new(io::BufferedWriter::new(io::stdout())) as Box<io::Writer>;
 
-    if args_len == 0u {
+    if args_len == 0 {
         return ParseResult::CmdUsage;
     }
 
-    let mut ix = 0u;
+    let mut ix = 0us;
     while ix < args_len {
         if args[ix].len() > 2 && args[ix].as_slice().slice_to(2) == "-l" {
             options.links.push((args[ix].as_slice().slice_from(2).to_string(), LinkType::Default));
-            ix += 1u;
+            ix += 1;
         } else {
             match args[ix].as_slice() {
                 "--help" | "-h" => {
@@ -50,10 +50,10 @@ fn parse_args(args: &[String]) -> ParseResult {
                 }
                 "-emit-clang-ast" => {
                     options.emit_ast = true;
-                    ix += 1u;
+                    ix += 1;
                 }
                 "-o" => {
-                    if ix + 1u >= args_len {
+                    if ix + 1 >= args_len {
                         return ParseResult::ParseErr("Missing output filename".to_string());
                     }
                     let path = path::Path::new(args[ix + 1].clone());
@@ -61,54 +61,54 @@ fn parse_args(args: &[String]) -> ParseResult {
                         Ok(f) => { out = Box::new(io::BufferedWriter::new(f)) as Box<io::Writer>; }
                         Err(_) => { return ParseResult::ParseErr(format!("Open {} failed", args[ix + 1])); }
                     }
-                    ix += 2u;
+                    ix += 2;
                 }
                 "-l" => {
-                    if ix + 1u >= args_len {
+                    if ix + 1 >= args_len {
                         return ParseResult::ParseErr("Missing link name".to_string());
                     }
-                    options.links.push((args[ix + 1u].clone(), LinkType::Default));
-                    ix += 2u;
+                    options.links.push((args[ix + 1].clone(), LinkType::Default));
+                    ix += 2;
                 }
                 "-static-link" => {
-                    if ix + 1u >= args_len {
+                    if ix + 1 >= args_len {
                         return ParseResult::ParseErr("Missing link name".to_string());
                     }
-                    options.links.push((args[ix + 1u].clone(), LinkType::Static));
-                    ix += 2u;
+                    options.links.push((args[ix + 1].clone(), LinkType::Static));
+                    ix += 2;
                 }
                 "-framework-link" => {
-                    if ix + 1u >= args_len {
+                    if ix + 1 >= args_len {
                         return ParseResult::ParseErr("Missing link name".to_string());
                     }
-                    options.links.push((args[ix + 1u].clone(), LinkType::Framework));
-                    ix += 2u;
+                    options.links.push((args[ix + 1].clone(), LinkType::Framework));
+                    ix += 2;
                 }
                 "-match" => {
-                    if ix + 1u >= args_len {
+                    if ix + 1 >= args_len {
                         return ParseResult::ParseErr("Missing match pattern".to_string());
                     }
-                    options.match_pat.push(args[ix + 1u].clone());
-                    ix += 2u;
+                    options.match_pat.push(args[ix + 1].clone());
+                    ix += 2;
                 }
                 "-builtins" => {
                     options.builtins = true;
-                    ix += 1u;
+                    ix += 1;
                 }
                 "-allow-unknown-types" => {
                     options.fail_on_unknown_type = false;
-                    ix += 1u;
+                    ix += 1;
                 }
                 "-override-enum-type" => {
-                    if ix + 1u >= args_len {
+                    if ix + 1 >= args_len {
                         return ParseResult::ParseErr("Missing enum type".to_string());
                     }
-                    options.override_enum_ty = args[ix + 1u].clone();
-                    ix += 2u;
+                    options.override_enum_ty = args[ix + 1].clone();
+                    ix += 2;
                 }
                 _ => {
                     options.clang_args.push(args[ix].clone());
-                    ix += 1u;
+                    ix += 1;
                 }
             }
         }
