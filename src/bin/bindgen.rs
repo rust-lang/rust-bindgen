@@ -168,9 +168,12 @@ pub fn main() {
             match Bindings::generate(&options, Some(&logger as &Logger), None) {
                 Ok(bindings) => match bindings.write(&mut out) {
                     Ok(()) => (),
-                    Err(e) => logger.error(format!("Unable to write bindings to file. {}", e).as_slice())
+                    Err(e) => {
+                        logger.error(format!("Unable to write bindings to file. {}", e).as_slice());
+                        os::set_exit_status(-1);
+                    }
                 },
-                Err(()) => ()
+                Err(()) => os::set_exit_status(-1)
             }
         }
     }
