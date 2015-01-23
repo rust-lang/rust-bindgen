@@ -276,7 +276,7 @@ impl SourceLocation {
     }
 }
 
-impl fmt::String for SourceLocation {
+impl fmt::Display for SourceLocation {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let (file, line, col, _) = self.location();
         match file.is_null() {
@@ -317,7 +317,7 @@ pub struct String_ {
     x: CXString
 }
 
-impl fmt::String for String_ {
+impl fmt::Display for String_ {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if self.x.data.is_null() {
             return "".fmt(f);

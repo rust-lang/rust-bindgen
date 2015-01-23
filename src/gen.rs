@@ -295,7 +295,6 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, LinkType)],
     items.extend(foreign_items.into_iter());
     let ext = ast::ItemForeignMod(ast::ForeignMod {
         abi: abi,
-        view_items: Vec::new(),
         items: items
     });
 

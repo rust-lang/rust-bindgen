@@ -93,7 +93,6 @@ impl Bindings
 
         let module = ast::Mod {
             inner: span,
-            view_items: Vec::new(),
             items: gen::gen_mod(options.links.as_slice(), globals, span)
         };
 

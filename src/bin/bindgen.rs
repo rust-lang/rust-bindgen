@@ -155,7 +155,6 @@ Options:
     io::stdio::print(s.as_slice());
 }
 
-#[main]
 pub fn main() {
     let mut bind_args = os::args();
     let bin = bind_args.remove(0);

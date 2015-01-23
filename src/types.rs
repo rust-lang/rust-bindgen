@@ -54,7 +54,7 @@ impl Global {
     }
 }
 
-impl fmt::Show for Global {
+impl fmt::Debug for Global {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             GType(ref ti) => ti.borrow().fmt(f),
@@ -193,7 +193,7 @@ impl CompInfo {
     }
 }
 
-impl fmt::Show for CompInfo {
+impl fmt::Debug for CompInfo {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.name.fmt(f)
     }
@@ -235,7 +235,7 @@ impl EnumInfo {
     }
 }
 
-impl fmt::Show for EnumInfo {
+impl fmt::Debug for EnumInfo {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.name.fmt(f)
     }
@@ -271,7 +271,7 @@ impl TypeInfo {
     }
 }
 
-impl fmt::Show for TypeInfo {
+impl fmt::Debug for TypeInfo {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.name.fmt(f)
     }
@@ -294,7 +294,7 @@ impl VarInfo {
     }
 }
 
-impl fmt::Show for VarInfo {
+impl fmt::Debug for VarInfo {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.name.fmt(f)
     }
