@@ -6,9 +6,10 @@ extern crate bindgen;
 extern crate syntax;
 
 use bindgen::{Bindings, BindgenOptions, LinkType, Logger};
-use std::{io, os, path};
+use std::old_io as io;
+use std::{os, path};
 use std::default::Default;
-use std::io::fs;
+use std::old_io::fs;
 
 struct StdLogger;
 
