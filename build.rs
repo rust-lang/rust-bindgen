@@ -1,5 +1,5 @@
 use std::os;
-use std::io::fs::PathExtensions;
+use std::old_io::fs::PathExtensions;
 
 fn main() {
     let clang_dir = if let Some(dir) = os::getenv("LIBCLANG_PATH") {

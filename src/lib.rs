@@ -9,7 +9,7 @@ extern crate libc;
 
 use std::collections::HashSet;
 use std::default::Default;
-use std::io::IoResult;
+use std::old_io::IoResult;
 
 use syntax::ast;
 use syntax::codemap::{DUMMY_SP, Span};

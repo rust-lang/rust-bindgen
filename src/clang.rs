@@ -1,7 +1,8 @@
 #![allow(non_upper_case_globals)]
 
 use libc::{c_uint, c_char, c_int, c_ulong};
-use std::{mem, io, ptr};
+use std::{mem, ptr};
+use std::old_io as io;
 use std::fmt;
 use std::str;
 use std::ffi;
