@@ -20,7 +20,7 @@ pub struct Cursor {
     x: CXCursor
 }
 
-pub type CursorVisitor<'s> = for<'a, 'b> FnMut<(&'a Cursor, &'b Cursor), Enum_CXChildVisitResult> + 's;
+pub type CursorVisitor<'s> = for<'a, 'b> FnMut(&'a Cursor, &'b Cursor) -> Enum_CXChildVisitResult + 's;
 
 impl Cursor {
     // common
@@ -61,7 +61,7 @@ impl Cursor {
     }
 
     pub fn visit<F>(&self, func:F)
-        where F: for<'a, 'b> FnMut<(&'a Cursor, &'b Cursor), Enum_CXChildVisitResult>
+        where F: for<'a, 'b> FnMut(&'a Cursor, &'b Cursor) -> Enum_CXChildVisitResult
     {
         let mut data: Box<CursorVisitor> = Box::new(func);
         let opt_visit = Some(visit_children as extern "C" fn(CXCursor, CXCursor, CXClientData) -> Enum_CXChildVisitResult);
