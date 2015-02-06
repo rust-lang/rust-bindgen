@@ -7,7 +7,8 @@ extern crate syntax;
 
 use bindgen::{Bindings, BindgenOptions, LinkType, Logger};
 use std::old_io as io;
-use std::{os, path};
+use std::os;
+use std::old_path as path;
 use std::default::Default;
 use std::old_io::fs;
 
@@ -57,7 +58,7 @@ fn parse_args(args: &[String]) -> ParseResult {
                     if ix + 1 >= args_len {
                         return ParseResult::ParseErr("Missing output filename".to_string());
                     }
-                    let path = path::Path::new(args[ix + 1].clone());
+                    let path = path::Path::new(&args[ix + 1].clone());
                     match fs::File::create(&path) {
                         Ok(f) => { out = Box::new(io::BufferedWriter::new(f)) as Box<io::Writer>; }
                         Err(_) => { return ParseResult::ParseErr(format!("Open {} failed", args[ix + 1])); }
