@@ -124,7 +124,7 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
             match parser.bump_and_get() {
                 token::Ident(ident, _) => {
                     let ident = parser.id_to_interned_str(ident);
-                    name = Some(ident.get().to_string());
+                    name = Some((*ident).to_string());
                     parser.expect(&token::Eq);
                 },
                 _ => {
@@ -142,7 +142,7 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
                 parser.bump();
                 
                 // Bools are simply encoded as idents
-                let ret = match val.get() {
+                let ret = match (*val).as_slice() {
                     "true" => visit.visit_bool(as_str(&name), true),
                     "false" => visit.visit_bool(as_str(&name), false),
                     val => visit.visit_ident(as_str(&name), val)
@@ -159,7 +159,7 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
                 match expr.node {
                     ast::ExprLit(ref lit) => {
                         let ret = match lit.node {
-                            ast::LitStr(ref s, _) => visit.visit_str(as_str(&name), s.get()),
+                            ast::LitStr(ref s, _) => visit.visit_str(as_str(&name), (*s).as_slice()),
                             ast::LitBool(b) => visit.visit_bool(as_str(&name), b),
                             ast::LitInt(i, ast::SignedIntLit(_, sign)) |
                             ast::LitInt(i, ast::UnsuffixedIntLit(sign)) => {

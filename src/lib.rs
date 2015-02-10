@@ -1,6 +1,6 @@
 #![crate_name = "bindgen"]
 #![crate_type = "dylib"]
-#![feature(quote, plugin_registrar, unboxed_closures)]
+#![feature(quote, plugin_registrar, unboxed_closures, rustc_private, libc)]
 
 extern crate syntax;
 extern crate rustc;

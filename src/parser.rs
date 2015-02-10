@@ -207,7 +207,7 @@ fn mk_fn_sig(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Fu
             // For non-CXCursor_FunctionDecl, visiting the cursor's children is
             // the only reliable way to get parameter names.
             let mut args_lst = vec!();
-            cursor.visit(|&mut: c: &Cursor, _: &Cursor| {
+            cursor.visit(|c: &Cursor, _: &Cursor| {
                 if c.kind() == CXCursor_ParmDecl {
                     args_lst.push((c.spelling(), conv_ty(ctx, &c.cur_type(), c)));
                 }
@@ -415,13 +415,13 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             }
         }
         CXCursor_StructDecl | CXCursor_UnionDecl => {
-            fwd_decl(ctx, cursor, |: ctx_| {
+            fwd_decl(ctx, cursor, |ctx_| {
                 // If the struct is anonymous (i.e. declared here) then it
                 // cannot be used elsewhere and so does not need to be added
                 // to globals otherwise it will be declared later and a global.
                 let decl = decl_name(ctx_, cursor);
                 let ci = decl.compinfo();
-                cursor.visit(|&mut: c, p| {
+                cursor.visit(|c, p| {
                     let mut ci_ = ci.borrow_mut();
                     visit_composite(c, p, ctx_, &mut ci_.members)
                 });
@@ -461,10 +461,10 @@ fn visit_top<'r>(cursor: &Cursor,
 
     match cursor.kind() {
         CXCursor_StructDecl | CXCursor_UnionDecl => {
-            fwd_decl(ctx, cursor, |: ctx_| {
+            fwd_decl(ctx, cursor, |ctx_| {
                 let decl = decl_name(ctx_, cursor);
                 let ci = decl.compinfo();
-                cursor.visit(|&mut: c, p| {
+                cursor.visit(|c, p| {
                     let mut ci_ = ci.borrow_mut();
                     visit_composite(c, p, ctx_, &mut ci_.members)
                 });
@@ -473,10 +473,10 @@ fn visit_top<'r>(cursor: &Cursor,
             return CXChildVisit_Continue;
         }
         CXCursor_EnumDecl => {
-            fwd_decl(ctx, cursor, |: ctx_| {
+            fwd_decl(ctx, cursor, |ctx_| {
                 let decl = decl_name(ctx_, cursor);
                 let ei = decl.enuminfo();
-                cursor.visit(|&mut: c, _: &Cursor| {
+                cursor.visit(|c, _: &Cursor| {
                     let mut ei_ = ei.borrow_mut();
                     visit_enum(c, &mut ei_.items)
                 });
@@ -585,10 +585,10 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
     let cursor = unit.cursor();
 
     if ctx.options.emit_ast {
-        cursor.visit(|&mut: cur, _: &Cursor| ast_dump(cur, 0));
+        cursor.visit(|cur, _: &Cursor| ast_dump(cur, 0));
     }
 
-    cursor.visit(|&mut: cur, _: &Cursor| visit_top(cur, &mut ctx));
+    cursor.visit(|cur, _: &Cursor| visit_top(cur, &mut ctx));
 
     while !ctx.builtin_defs.is_empty() {
         let c = ctx.builtin_defs.remove(0);
