@@ -1,25 +1,37 @@
 use std::os;
 use std::old_io::fs::PathExtensions;
 
+const LINUX_CLANG_DIRS: &'static [&'static str] = &["/usr/lib", "/usr/lib/llvm", "/usr/lib64/llvm"];
+const MAC_CLANG_DIR: &'static str = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib";
+
 fn main() {
-    let clang_dir = if let Some(dir) = os::getenv("LIBCLANG_PATH") {
-        dir
+    let possible_clang_dirs = if let Some(dir) = os::getenv("LIBCLANG_PATH") {
+        vec![dir]
     } else if cfg!(any(target_os = "linux", target_os = "freebsd")) {
-        "/usr/lib".to_string()
+        LINUX_CLANG_DIRS.iter().map(ToString::to_string).collect()
     } else if cfg!(target_os = "macos") {
-        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib".to_string()
+        vec![MAC_CLANG_DIR.to_string()]
     } else {
         panic!("Platform not supported");
     };
 
-    let clang_dir = Path::new(clang_dir);
-
     let clang_lib = os::dll_filename("clang");
 
-    let clang_path = clang_dir.join(clang_lib.clone());
-    if !clang_path.exists() {
+    let maybe_clang_dir = possible_clang_dirs.into_iter().filter_map(|candidate_dir| {
+        let clang_dir = Path::new(candidate_dir);
+        let clang_path = clang_dir.join(clang_lib.clone());
+
+        if clang_path.exists() {
+            Some(clang_dir)
+        } else {
+            None
+        }
+    }).next();
+
+
+    if let Some(clang_dir) = maybe_clang_dir {
+        println!("cargo:rustc-flags=-l clang -L {}", clang_dir.as_str().unwrap());
+    } else {
         panic!("Unable to find {}", clang_lib);
     }
-
-    println!("cargo:rustc-flags=-l clang -L {}", clang_dir.as_str().unwrap());
 }
