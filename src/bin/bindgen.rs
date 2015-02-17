@@ -7,8 +7,8 @@ extern crate syntax;
 
 use bindgen::{Bindings, BindgenOptions, LinkType, Logger};
 use std::old_io as io;
-use std::os;
 use std::old_path as path;
+use std::env;
 use std::default::Default;
 use std::old_io::fs;
 
@@ -42,11 +42,11 @@ fn parse_args(args: &[String]) -> ParseResult {
 
     let mut ix = 0us;
     while ix < args_len {
-        if args[ix].len() > 2 && args[ix].as_slice().slice_to(2) == "-l" {
-            options.links.push((args[ix].as_slice().slice_from(2).to_string(), LinkType::Default));
+        if args[ix].len() > 2 && &args[ix][..2] == "-l" {
+            options.links.push((args[ix][2..].to_string(), LinkType::Default));
             ix += 1;
         } else {
-            match args[ix].as_slice() {
+            match &args[ix][] {
                 "--help" | "-h" => {
                     return ParseResult::CmdUsage;
                 }
@@ -120,7 +120,7 @@ fn parse_args(args: &[String]) -> ParseResult {
 }
 
 fn print_usage(bin: String) {
-    let mut s = format!("Usage: {} [options] input.h", bin.as_slice());
+    let mut s = format!("Usage: {} [options] input.h", &bin[]);
     s.push_str(
 "
 Options:
@@ -154,14 +154,14 @@ Options:
     Options other than stated above are passed to clang.
 "
     );
-    io::stdio::print(s.as_slice());
+    io::stdio::print(&s[]);
 }
 
 pub fn main() {
-    let mut bind_args = os::args();
+    let mut bind_args: Vec<_> = env::args().collect();
     let bin = bind_args.remove(0);
 
-    match parse_args(bind_args.as_slice()) {
+    match parse_args(&bind_args[]) {
         ParseResult::ParseErr(e) => panic!(e),
         ParseResult::CmdUsage => print_usage(bin),
         ParseResult::ParseOk(options, mut out) => {
@@ -170,11 +170,11 @@ pub fn main() {
                 Ok(bindings) => match bindings.write(&mut out) {
                     Ok(()) => (),
                     Err(e) => {
-                        logger.error(format!("Unable to write bindings to file. {}", e).as_slice());
-                        os::set_exit_status(-1);
+                        logger.error(&format!("Unable to write bindings to file. {}", e)[]);
+                        env::set_exit_status(-1);
                     }
                 },
-                Err(()) => os::set_exit_status(-1)
+                Err(()) => env::set_exit_status(-1)
             }
         }
     }

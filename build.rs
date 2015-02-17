@@ -7,7 +7,7 @@ const LINUX_CLANG_DIRS: &'static [&'static str] = &["/usr/lib", "/usr/lib/llvm",
 const MAC_CLANG_DIR: &'static str = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib";
 
 fn main() {
-    let possible_clang_dirs = if let Ok(dir) = env::var_string("LIBCLANG_PATH") {
+    let possible_clang_dirs = if let Ok(dir) = env::var("LIBCLANG_PATH") {
         vec![dir]
     } else if cfg!(any(target_os = "linux", target_os = "freebsd")) {
         LINUX_CLANG_DIRS.iter().map(ToString::to_string).collect()

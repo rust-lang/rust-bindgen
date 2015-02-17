@@ -1,5 +1,5 @@
 use std::default::Default;
-use std::os;
+use std::env;
 
 use syntax::ast;
 use syntax::codemap;
@@ -29,12 +29,12 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
     // Set the working dir to the directory containing the invoking rs file so
     // that clang searches for headers relative to it rather than the crate root
     let mod_dir = Path::new(cx.codemap().span_to_filename(sp)).dirname().to_vec();
-    let cwd = match os::getcwd() {
+    let cwd = match env::current_dir() {
       Ok(d)   => d,
       Err(e)  => panic!("Invalid current working directory: {}", e),
     };
     let p = Path::new(mod_dir);
-    if let Err(e) = os::change_dir(&p) {
+    if let Err(e) = env::set_current_dir(&p) {
       panic!("Failed to change to directory {}: {}", p.display(), e);
     };
 
@@ -53,7 +53,7 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
     };
 
     let p = Path::new(cwd);
-    if let Err(e) = os::change_dir(&p) {
+    if let Err(e) = env::set_current_dir(&p) {
       panic!("Failed to return to directory {}: {}", p.display(), e);
     }
 
@@ -124,7 +124,7 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
             match parser.bump_and_get() {
                 token::Ident(ident, _) => {
                     let ident = parser.id_to_interned_str(ident);
-                    name = Some((*ident).to_string());
+                    name = Some(ident.to_string());
                     parser.expect(&token::Eq);
                 },
                 _ => {
@@ -140,9 +140,9 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
                 let val = parser.id_to_interned_str(val);
                 span.hi = parser.span.hi;
                 parser.bump();
-                
+
                 // Bools are simply encoded as idents
-                let ret = match (*val).as_slice() {
+                let ret = match &*val {
                     "true" => visit.visit_bool(as_str(&name), true),
                     "false" => visit.visit_bool(as_str(&name), false),
                     val => visit.visit_ident(as_str(&name), val)
@@ -159,7 +159,7 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
                 match expr.node {
                     ast::ExprLit(ref lit) => {
                         let ret = match lit.node {
-                            ast::LitStr(ref s, _) => visit.visit_str(as_str(&name), (*s).as_slice()),
+                            ast::LitStr(ref s, _) => visit.visit_str(as_str(&name), &*s),
                             ast::LitBool(b) => visit.visit_bool(as_str(&name), b),
                             ast::LitInt(i, ast::SignedIntLit(_, sign)) |
                             ast::LitInt(i, ast::UnsuffixedIntLit(sign)) => {
