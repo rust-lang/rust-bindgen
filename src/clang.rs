@@ -8,7 +8,6 @@ use std::str;
 use std::ffi;
 use std::hash::Hash;
 use std::hash::Hasher;
-use std::hash::Writer;
 use std::ffi::CString;
 
 pub use clangll as ll;
@@ -154,8 +153,8 @@ impl PartialEq for Cursor {
 
 impl Eq for Cursor {}
 
-impl<S: Writer + Hasher> Hash<S> for Cursor {
-    fn hash(&self, state: &mut S) {
+impl Hash for Cursor {
+    fn hash<H: Hasher>(&self, state: &mut H) {
         self.x.kind.hash(state);
         self.x.xdata.hash(state);
         self.x.data[0].hash(state);
@@ -462,7 +461,7 @@ impl UnsavedFile {
         let x = Struct_CXUnsavedFile {
             Filename: name.as_ptr(),
             Contents: contents.as_ptr(),
-            Length: contents.len() as c_ulong,
+            Length: contents.as_bytes().len() as c_ulong,
         };
         UnsavedFile {
             x: x,
