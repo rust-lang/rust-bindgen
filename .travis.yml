@@ -7,7 +7,7 @@ before_install:
   - yes | sudo add-apt-repository "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu precise main"
   - sudo apt-get update
 install:
-  - sudo apt-get install --force-yes libclang-${LLVM_VERSION}-dev
+  - sudo apt-get install --force-yes libclang-${LLVM_VERSION}-dev llvm-${LLVM_VERSION}-dev
 script:
   - export LIBCLANG_PATH=/usr/lib/llvm-${LLVM_VERSION}/lib
   - cargo build --verbose
