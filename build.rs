@@ -7,6 +7,8 @@ const LINUX_CLANG_DIRS: &'static [&'static str] = &["/usr/lib", "/usr/lib/llvm",
 const MAC_CLANG_DIR: &'static str = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib";
 
 fn main() {
+    let use_static_lib = env::var_os("LIBCLANG_STATIC").is_some();
+
     let possible_clang_dirs = if let Ok(dir) = env::var("LIBCLANG_PATH") {
         vec![dir]
     } else if cfg!(any(target_os = "linux", target_os = "freebsd")) {
@@ -35,52 +37,56 @@ fn main() {
     }
 
     if let Some(clang_dir) = maybe_clang_dir {
-        let libs = qw![
-            LLVMAnalysis
-            LLVMBitReader
-            LLVMCore
-            LLVMLTO
-            LLVMLinker
-            LLVMMC
-            LLVMMCParser
-            LLVMObjCARCOpts
-            LLVMObject
-            LLVMOption
-            LLVMScalarOpts
-            LLVMSupport
-            LLVMTarget
-            LLVMTransformUtils
-            LLVMVectorize
-            LLVMipa
-            LLVMipo
-            clang
-            clangARCMigrate
-            clangAST
-            clangASTMatchers
-            clangAnalysis
-            clangBasic
-            clangDriver
-            clangEdit
-            clangFormat
-            clangFrontend
-            clangIndex
-            clangLex
-            clangParse
-            clangRewrite
-            clangRewriteFrontend
-            clangSema
-            clangSerialization
-            clangStaticAnalyzerCheckers
-            clangStaticAnalyzerCore
-            clangStaticAnalyzerFrontend
-            clangTooling
-        ];
+        if use_static_lib {
+            let libs = qw![
+                LLVMAnalysis
+                LLVMBitReader
+                LLVMCore
+                LLVMLTO
+                LLVMLinker
+                LLVMMC
+                LLVMMCParser
+                LLVMObjCARCOpts
+                LLVMObject
+                LLVMOption
+                LLVMScalarOpts
+                LLVMSupport
+                LLVMTarget
+                LLVMTransformUtils
+                LLVMVectorize
+                LLVMipa
+                LLVMipo
+                clang
+                clangARCMigrate
+                clangAST
+                clangASTMatchers
+                clangAnalysis
+                clangBasic
+                clangDriver
+                clangEdit
+                clangFormat
+                clangFrontend
+                clangIndex
+                clangLex
+                clangParse
+                clangRewrite
+                clangRewriteFrontend
+                clangSema
+                clangSerialization
+                clangStaticAnalyzerCheckers
+                clangStaticAnalyzerCore
+                clangStaticAnalyzerFrontend
+                clangTooling
+            ];
 
-        print!("cargo:rustc-flags=");
-        for lib in libs {
-            print!("-l static={} ", lib);
+            print!("cargo:rustc-flags=");
+            for lib in libs {
+                print!("-l static={} ", lib);
+            }
+            println!("-L {} -l ncursesw -l z -l stdc++", clang_dir.as_str().unwrap());
+        } else{
+            println!("cargo:rustc-flags=-l clang -L {}", clang_dir.as_str().unwrap());
         }
-        println!("-L {} -l ncursesw -l z -l stdc++", clang_dir.as_str().unwrap());
     } else {
         panic!("Unable to find {}", clang_lib);
     }
