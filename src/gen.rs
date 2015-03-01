@@ -681,7 +681,7 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
                     extra: &mut Vec<P<ast::Item>>) -> Vec<ast::ImplItem> {
     let data_ident = ctx.ext_cx.ident_of(data_field);
 
-    let mk_field_method = |&: ctx: &mut GenCtx, f: &FieldInfo, offset: usize| {
+    let mk_field_method = |ctx: &mut GenCtx, f: &FieldInfo, offset: usize| {
         // TODO: Implement bitfield accessors
         if f.bitfields.is_some() { return None; }
 
@@ -984,6 +984,7 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
 
 fn mk_ty(ctx: &GenCtx, global: bool, segments: Vec<String>) -> ast::Ty {
     let ty = ast::TyPath(
+        None,
         ast::Path {
             span: ctx.span,
             global: global,
@@ -998,7 +999,6 @@ fn mk_ty(ctx: &GenCtx, global: bool, segments: Vec<String>) -> ast::Ty {
                 }
             }).collect()
         },
-        ast::DUMMY_NODE_ID
     );
 
     return ast::Ty {
@@ -1100,12 +1100,12 @@ fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: abi::Abi) -> ast::Ty {
     return ast::Ty {
         id: ast::DUMMY_NODE_ID,
         node: ast::TyPath(
+            None,
             ast::Path {
                 span: ctx.span,
                 global: true,
                 segments: segs
             },
-            ast::DUMMY_NODE_ID
         ),
         span: ctx.span
     };

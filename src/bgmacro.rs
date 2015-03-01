@@ -1,5 +1,6 @@
 use std::default::Default;
 use std::env;
+use std::path::Path;
 
 use syntax::ast;
 use syntax::codemap;
@@ -28,7 +29,8 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
 
     // Set the working dir to the directory containing the invoking rs file so
     // that clang searches for headers relative to it rather than the crate root
-    let mod_dir = Path::new(cx.codemap().span_to_filename(sp)).dirname().to_vec();
+    let filename = cx.codemap().span_to_filename(sp);
+    let mod_dir = Path::new(&filename).parent().unwrap();
     let cwd = match env::current_dir() {
       Ok(d)   => d,
       Err(e)  => panic!("Invalid current working directory: {}", e),
@@ -52,7 +54,7 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
         Err(_) => base::DummyResult::any(sp)
     };
 
-    let p = Path::new(cwd);
+    let p = Path::new(&cwd);
     if let Err(e) = env::set_current_dir(&p) {
       panic!("Failed to return to directory {}: {}", p.display(), e);
     }

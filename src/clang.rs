@@ -708,7 +708,7 @@ pub fn ast_dump(c: &Cursor, depth: isize)-> Enum_CXVisitorResult {
         c.spelling().as_slice(),
         type_to_str(ct)).as_slice()
     );
-    c.visit(|&: s, _: &Cursor| {
+    c.visit(| s, _: &Cursor| {
         ast_dump(s, depth + 1)
     });
     print_indent(depth, ")");
