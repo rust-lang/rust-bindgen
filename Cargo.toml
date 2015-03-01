@@ -7,6 +7,9 @@ license = "BSD-3-Clause"
 
 build = "build.rs"
 
+[features]
+static = []
+
 [lib]
 
 name = "bindgen"
