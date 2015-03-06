@@ -6,11 +6,12 @@ extern crate bindgen;
 extern crate syntax;
 
 use bindgen::{Bindings, BindgenOptions, LinkType, Logger};
-use std::old_io as io;
-use std::old_path as path;
+use std::io;
+use std::path;
 use std::env;
 use std::default::Default;
-use std::old_io::fs;
+use std::old_io;
+use std::fs;
 
 struct StdLogger;
 
@@ -26,7 +27,7 @@ impl Logger for StdLogger {
 
 enum ParseResult {
     CmdUsage,
-    ParseOk(BindgenOptions, Box<io::Writer+'static>),
+    ParseOk(BindgenOptions, Box<io::Write+'static>),
     ParseErr(String)
 }
 
@@ -34,7 +35,7 @@ fn parse_args(args: &[String]) -> ParseResult {
     let args_len = args.len();
 
     let mut options: BindgenOptions = Default::default();
-    let mut out = Box::new(io::BufferedWriter::new(io::stdout())) as Box<io::Writer>;
+    let mut out = Box::new(io::BufWriter::new(io::stdout())) as Box<io::Write>;
 
     if args_len == 0 {
         return ParseResult::CmdUsage;
@@ -58,9 +59,9 @@ fn parse_args(args: &[String]) -> ParseResult {
                     if ix + 1 >= args_len {
                         return ParseResult::ParseErr("Missing output filename".to_string());
                     }
-                    let path = path::Path::new(&args[ix + 1].clone());
+                    let path = path::Path::new(&args[ix + 1]);
                     match fs::File::create(&path) {
-                        Ok(f) => { out = Box::new(io::BufferedWriter::new(f)) as Box<io::Writer>; }
+                        Ok(f) => { out = Box::new(io::BufWriter::new(f)) as Box<io::Write>; }
                         Err(_) => { return ParseResult::ParseErr(format!("Open {} failed", args[ix + 1])); }
                     }
                     ix += 2;
@@ -154,7 +155,7 @@ Options:
     Options other than stated above are passed to clang.
 "
     );
-    io::stdio::print(&s[]);
+    old_io::stdio::print(&s[]);
 }
 
 pub fn main() {
