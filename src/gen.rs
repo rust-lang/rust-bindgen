@@ -135,7 +135,12 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
     };
     ctx.ext_cx.bt_push(ExpnInfo {
         call_site: ctx.span,
-        callee: NameAndSpan { name: String::new(), format: MacroBang, span: None }
+        callee: NameAndSpan {
+            name: String::new(),
+            format: MacroBang,
+            allow_internal_unstable: false,
+            span: None
+        }
     });
     let uniq_globs = tag_dup_decl(globs);
 
