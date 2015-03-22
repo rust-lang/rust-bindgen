@@ -91,7 +91,6 @@ pub enum Type {
     TEnum(Rc<RefCell<EnumInfo>>)
 }
 
-#[allow(dead_code)]
 impl Type {
     pub fn size(&self) -> usize {
         match self {
@@ -108,6 +107,7 @@ impl Type {
         }
     }
 
+    #[allow(dead_code)]
     pub fn align(&self) -> usize {
         match self {
             &TInt(_, l) => l.align,

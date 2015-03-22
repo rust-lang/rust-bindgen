@@ -22,7 +22,6 @@ use types::Global;
 
 mod types;
 mod clangll;
-#[allow(dead_code)]
 mod clang;
 mod gen;
 mod parser;

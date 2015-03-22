@@ -2,8 +2,6 @@ use std::default::Default;
 
 #[test]
 fn with_anon_struct() {
-    // XXX: Rustc thinks that the anonymous struct, bar, is unused.
-    #[allow(dead_code)]
     mod ffi { bindgen!("headers/union_with_anon_struct.h"); }
     let mut x: ffi::Union_foo = Default::default();
 

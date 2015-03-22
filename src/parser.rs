@@ -1,4 +1,3 @@
-#![allow(unused_must_use)]
 #![allow(non_upper_case_globals)]
 
 use std::collections::{HashMap, HashSet};

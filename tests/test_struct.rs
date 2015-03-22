@@ -59,7 +59,6 @@ fn with_anon_struct_array() {
 
 #[test]
 fn with_anon_struct_pointer() {
-    #[allow(raw_pointer_derive)]
     mod ffi { bindgen!("headers/struct_with_anon_struct_pointer.h"); }
     let mut x: ffi::Struct_foo = Default::default();
     let mut unnamed: ffi::Struct_Unnamed1 = Default::default();

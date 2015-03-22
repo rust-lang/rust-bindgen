@@ -1,4 +1,4 @@
-#![allow(non_upper_case_globals)]
+#![allow(non_upper_case_globals, dead_code)]
 
 use libc::{c_uint, c_char, c_int, c_ulong};
 use std::{mem, ptr};
