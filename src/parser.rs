@@ -51,7 +51,7 @@ fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {
     let name = file.name();
     let mut found = false;
     ctx.options.match_pat.iter().all(|pat| {
-        if name.as_slice().contains((*pat).as_slice()) {
+        if (&name[..]).contains(pat) {
             found = true;
         }
         true
@@ -288,9 +288,9 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
         _ => {
             let fail = ctx.options.fail_on_unknown_type;
             log_err_warn(ctx,
-                format!("unsupported type `{}` ({})",
+                &format!("unsupported type `{}` ({})",
                     type_to_str(ty.kind()), cursor.location()
-                ).as_slice(),
+                )[..],
                 fail
             );
             TVoid
@@ -348,7 +348,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                         _ => {
                             let msg = format!("Enums in bitfields are not supported ({}.{}).",
                                 cursor.spelling(), parent.spelling());
-                            ctx.logger.warn(msg.as_slice());
+                            ctx.logger.warn(&msg[..]);
                         }
                     }
                     ("".to_string(), Some(vec!((cursor.spelling(), width))))
@@ -432,9 +432,9 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             // XXX: Some kind of warning would be nice, but this produces far
             //      too many.
             //log_err_warn(ctx,
-            //    format!("unhandled composite member `{}` (kind {}) in `{}` ({})",
+            //    &format!("unhandled composite member `{}` (kind {}) in `{}` ({})",
             //        cursor.spelling(), cursor.kind(), parent.spelling(), cursor.location()
-            //    ).as_slice(),
+            //    )[..],
             //    false
             //);
         }
@@ -565,7 +565,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
         return Err(())
     }
 
-    let unit = TranslationUnit::parse(&ix, "", ctx.options.clang_args.as_slice(), &[], 0);
+    let unit = TranslationUnit::parse(&ix, "", &ctx.options.clang_args[..], &[], 0);
     if unit.is_null() {
         ctx.logger.error("No input files given");
         return Err(())
@@ -575,7 +575,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
     for d in diags.iter() {
         let msg = d.format(Diagnostic::default_opts());
         let is_err = d.severity() >= CXDiagnostic_Error;
-        log_err_warn(&mut ctx, msg.as_slice(), is_err);
+        log_err_warn(&mut ctx, &msg[..], is_err);
     }
 
     if ctx.err_count > 0 {

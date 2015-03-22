@@ -1,6 +1,6 @@
 #![crate_name = "bindgen"]
 #![crate_type = "dylib"]
-#![feature(quote, plugin_registrar, unboxed_closures, rustc_private, libc)]
+#![feature(quote, plugin_registrar, unboxed_closures, rustc_private, libc, std_misc, old_io, core)]
 
 extern crate syntax;
 extern crate rustc;
@@ -9,7 +9,6 @@ extern crate libc;
 
 use std::collections::HashSet;
 use std::default::Default;
-use std::old_io::IoResult;
 use std::io::{Write, self};
 
 use syntax::ast;
@@ -94,7 +93,7 @@ impl Bindings
 
         let module = ast::Mod {
             inner: span,
-            items: gen::gen_mod(options.links.as_slice(), globals, span)
+            items: gen::gen_mod(&options.links[..], globals, span)
         };
 
         Ok(Bindings {
@@ -160,7 +159,7 @@ fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<Vec<Global
         match_pat: options.match_pat.clone(),
         emit_ast: options.emit_ast,
         fail_on_unknown_type: options.fail_on_unknown_type,
-        override_enum_ty: str_to_ikind(options.override_enum_ty.as_slice()),
+        override_enum_ty: str_to_ikind(&options.override_enum_ty[..]),
         clang_args: options.clang_args.clone(),
     };
 

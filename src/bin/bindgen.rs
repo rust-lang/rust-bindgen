@@ -1,3 +1,5 @@
+#![feature(rustc_private, old_io, exit_status)]
+
 #![crate_name = "bindgen"]
 #![crate_type = "bin"]
 
@@ -41,13 +43,13 @@ fn parse_args(args: &[String]) -> ParseResult {
         return ParseResult::CmdUsage;
     }
 
-    let mut ix = 0us;
+    let mut ix: usize = 0;
     while ix < args_len {
         if args[ix].len() > 2 && &args[ix][..2] == "-l" {
             options.links.push((args[ix][2..].to_string(), LinkType::Default));
             ix += 1;
         } else {
-            match &args[ix][] {
+            match &args[ix][..] {
                 "--help" | "-h" => {
                     return ParseResult::CmdUsage;
                 }
@@ -121,7 +123,7 @@ fn parse_args(args: &[String]) -> ParseResult {
 }
 
 fn print_usage(bin: String) {
-    let mut s = format!("Usage: {} [options] input.h", &bin[]);
+    let mut s = format!("Usage: {} [options] input.h", &bin[..]);
     s.push_str(
 "
 Options:
@@ -155,14 +157,14 @@ Options:
     Options other than stated above are passed to clang.
 "
     );
-    old_io::stdio::print(&s[]);
+    old_io::stdio::print(&s[..]);
 }
 
 pub fn main() {
     let mut bind_args: Vec<_> = env::args().collect();
     let bin = bind_args.remove(0);
 
-    match parse_args(&bind_args[]) {
+    match parse_args(&bind_args[..]) {
         ParseResult::ParseErr(e) => panic!(e),
         ParseResult::CmdUsage => print_usage(bin),
         ParseResult::ParseOk(options, mut out) => {
@@ -171,7 +173,7 @@ pub fn main() {
                 Ok(bindings) => match bindings.write(&mut out) {
                     Ok(()) => (),
                     Err(e) => {
-                        logger.error(&format!("Unable to write bindings to file. {}", e)[]);
+                        logger.error(&format!("Unable to write bindings to file. {}", e)[..]);
                         env::set_exit_status(-1);
                     }
                 },

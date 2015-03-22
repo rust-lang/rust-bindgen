@@ -25,7 +25,7 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
 
     // Reparse clang_args as it is passed in string form
     let clang_args = visit.options.clang_args.connect(" ");
-    visit.options.clang_args = parse_process_args(clang_args.as_slice());
+    visit.options.clang_args = parse_process_args(&clang_args[..]);
 
     // Set the working dir to the directory containing the invoking rs file so
     // that clang searches for headers relative to it rather than the crate root
@@ -202,7 +202,7 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
 // I'm sure there's a nicer way of doing it
 fn as_str<'a>(owned: &'a Option<String>) -> Option<&'a str> {
     match owned {
-        &Some(ref s) => Some(s.as_slice()),
+        &Some(ref s) => Some(&s[..]),
         &None => None
     }
 }
@@ -262,13 +262,13 @@ fn parse_process_args(s: &str) -> Vec<String> {
                     let starts = positions.iter().enumerate().filter(|&(i, _)| i % 2 == 0);
                     let ends = positions.iter().enumerate().filter(|&(i, _)| i % 2 == 1);
 
-                    let part: Vec<String> = starts.zip(ends).map(|((_, start), (_, end))| s.slice(*start, *end).to_string()).collect();
+                    let part: Vec<String> = starts.zip(ends).map(|((_, start), (_, end))| s[*start..*end].to_string()).collect();
 
                     let part = part.connect("");
 
                     if part.len() > 0 {
                         // Remove any extra whitespace outside the quotes
-                        let part = part.as_slice().trim();
+                        let part = &part[..].trim();
                         // Replace quoted characters
                         let part = part.replace("\\\"", "\"");
                         let part = part.replace("\\\'", "\'");

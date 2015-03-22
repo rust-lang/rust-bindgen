@@ -1,4 +1,4 @@
-#![feature(quote, plugin)]
+#![feature(quote, plugin, libc, rustc_private)]
 #![plugin(bindgen)]
 
 extern crate bindgen;
