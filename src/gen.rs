@@ -867,9 +867,9 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
         };
 
         // From the C90 standard (http://c0x.coding-guidelines.com/6.7.5.3.html)
-        // 1598 - A declaration of a parameter as “array of type” shall be 
-        // adjusted to “qualified pointer to type”, where the type qualifiers 
-        // (if any) are those specified within the [ and ] of the array type 
+        // 1598 - A declaration of a parameter as “array of type” shall be
+        // adjusted to “qualified pointer to type”, where the type qualifiers
+        // (if any) are those specified within the [ and ] of the array type
         // derivation.
         let arg_ty = P(match t {
             &TArray(ref typ, _, ref l) => cty_to_rs(ctx, &TPtr(typ.clone(), false, l.clone())),
