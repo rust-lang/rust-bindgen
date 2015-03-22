@@ -44,7 +44,7 @@ fn with_func_ptr_arg() {
     assert_bind_eq!("headers/func_with_func_ptr_arg.h", cx,
         quote_item!(cx,
             extern "C" {
-                pub fn foo(bar: ::std::option::Option<extern "C" fn()>);
+                pub fn foo(bar: ::std::option::Option<extern "C" fn() -> () >) -> ();
             }
         ));
 }
@@ -54,7 +54,7 @@ fn with_array_arg() {
     assert_bind_eq!("headers/func_with_array_arg.h", cx,
         quote_item!(cx,
             extern "C" {
-                pub fn f(x: *mut ::libc::c_int);
+                pub fn f(x: *mut ::libc::c_int) -> ();
             }
         )
     );

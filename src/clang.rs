@@ -10,7 +10,6 @@ use std::hash::Hash;
 use std::hash::Hasher;
 use std::ffi::CString;
 
-pub use clangll as ll;
 use clangll::*;
 
 // Cursor
@@ -113,7 +112,7 @@ impl Cursor {
         unsafe {
             let num = self.num_args() as usize;
             let mut args = vec!();
-            for i in range(0, num) {
+            for i in 0..num {
                 args.push(Cursor { x: clang_Cursor_getArgument(self.x, i as c_uint) });
             }
             return args;
@@ -133,8 +132,8 @@ impl Cursor {
     }
 }
 
-extern fn visit_children(cur: CXCursor, parent: ll::CXCursor,
-                         data: CXClientData) -> ll::Enum_CXChildVisitResult {
+extern fn visit_children(cur: CXCursor, parent: CXCursor,
+                         data: CXClientData) -> Enum_CXChildVisitResult {
     let func: &mut Box<CursorVisitor> = unsafe { mem::transmute(data) };
     return (*func)(&Cursor { x : cur }, &Cursor { x: parent });
 }
@@ -238,7 +237,7 @@ impl Type {
         unsafe {
             let num = clang_getNumArgTypes(self.x) as usize;
             let mut args = vec!();
-            for i in range(0, num) {
+            for i in 0..num {
                 args.push(Type { x: clang_getArgType(self.x, i as c_uint) });
             }
             return args;
@@ -392,7 +391,7 @@ impl TranslationUnit {
         unsafe {
             let num = clang_getNumDiagnostics(self.x) as usize;
             let mut diags = vec!();
-            for i in range(0, num) {
+            for i in 0..num {
                 diags.push(Diagnostic { x: clang_getDiagnostic(self.x, i as c_uint) });
             }
             return diags;

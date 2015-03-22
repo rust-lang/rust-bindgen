@@ -14,7 +14,7 @@ use types as il;
 use types::*;
 use clang as cx;
 use clang::{ast_dump, Cursor, Diagnostic, TranslationUnit, type_to_str};
-use clang::ll::*;
+use clangll::*;
 
 use super::Logger;
 

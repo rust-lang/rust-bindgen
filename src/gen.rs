@@ -683,7 +683,7 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, items: Vec<EnumItem>
 /// These are emitted into `extra`.
 fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
                     kind: CompKind, members: &Vec<CompMember>,
-                    extra: &mut Vec<P<ast::Item>>) -> Vec<ast::ImplItem> {
+                    extra: &mut Vec<P<ast::Item>>) -> Vec<P<ast::ImplItem>> {
     let data_ident = ctx.ext_cx.ident_of(data_field);
 
     let mk_field_method = |ctx: &mut GenCtx, f: &FieldInfo, offset: usize| {
@@ -696,21 +696,33 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
 
         // When the offset is zero, generate slightly prettier code.
         let method = if offset == 0 {
-            quote_method!(&ctx.ext_cx,
-                pub unsafe fn $f_name_ident(&mut self) -> $ret_ty {
-                    ::std::mem::transmute(&self.$data_ident)
+            quote_item!(&ctx.ext_cx,
+                impl X {
+                    pub unsafe fn $f_name_ident(&mut self) -> $ret_ty {
+                        ::std::mem::transmute(&self.$data_ident)
+                    }
                 }
             )
         } else {
             let offset_expr = &ctx.ext_cx.expr_int(ctx.span, offset as isize);
-            quote_method!(&ctx.ext_cx,
-                pub unsafe fn $f_name_ident(&mut self) -> $ret_ty {
-                    let raw: *mut u8 = ::std::mem::transmute(&self.$data_ident);
-                    ::std::mem::transmute(raw.offset($offset_expr))
+            quote_item!(&ctx.ext_cx,
+                impl X {
+                    pub unsafe fn $f_name_ident(&mut self) -> $ret_ty {
+                        let raw: *mut u8 = ::std::mem::transmute(&self.$data_ident);
+                        ::std::mem::transmute(raw.offset($offset_expr))
+                    }
                 }
             )
         };
-        Some(ast::MethodImplItem(method))
+
+        method.unwrap().and_then(|i| {
+            match i.node {
+                ast::ItemImpl(_, _, _, _, _, mut items) => {
+                    items.pop()
+                }
+                _ => unreachable!("impl parsed to something other than impl")
+            }
+        })
     };
 
     let mut offset = data_offset;

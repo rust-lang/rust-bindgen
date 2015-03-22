@@ -57,7 +57,6 @@ fn render_items(items: &Vec<P<ast::Item>>) -> String {
     pprust::to_string(|s| {
         let module = ast::Mod {
             inner: DUMMY_SP,
-            view_items: Vec::new(),
             items: items.clone(),
         };
         s.print_mod(&module, &[])

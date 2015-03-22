@@ -1,6 +1,6 @@
 #![feature(quote, plugin)]
+#![plugin(bindgen)]
 
-#[plugin]
 extern crate bindgen;
 extern crate libc;
 extern crate syntax;
