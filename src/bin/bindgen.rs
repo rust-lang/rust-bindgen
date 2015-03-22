@@ -1,4 +1,4 @@
-#![feature(rustc_private, old_io, exit_status)]
+#![feature(rustc_private, exit_status)]
 
 #![crate_name = "bindgen"]
 #![crate_type = "bin"]
@@ -12,7 +12,6 @@ use std::io;
 use std::path;
 use std::env;
 use std::default::Default;
-use std::old_io;
 use std::fs;
 
 struct StdLogger;
@@ -157,7 +156,7 @@ Options:
     Options other than stated above are passed to clang.
 "
     );
-    old_io::stdio::print(&s[..]);
+    print!("{}", &s[..]);
 }
 
 pub fn main() {

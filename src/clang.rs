@@ -2,7 +2,6 @@
 
 use libc::{c_uint, c_char, c_int, c_ulong};
 use std::{mem, ptr};
-use std::old_io as io;
 use std::fmt;
 use std::str;
 use std::ffi::CStr;
@@ -696,10 +695,10 @@ pub fn ast_dump(c: &Cursor, depth: isize)-> Enum_CXVisitorResult {
     fn print_indent(depth: isize, s: &str) {
         let mut i = 0;
         while i < depth {
-            io::print("\t");
+            print!("\t");
             i += 1;
         }
-        io::println(s);
+        println!("{}", s);
     }
     let ct = c.cur_type().kind();
     print_indent(depth, &format!("({} {} {}",
