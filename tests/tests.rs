@@ -9,6 +9,7 @@ mod support;
 // Unused until we can generate code for tests
 //mod test_cmath;
 mod test_decl;
+mod test_extern;
 mod test_func;
 mod test_struct;
 mod test_union;
