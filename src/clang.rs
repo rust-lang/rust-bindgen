@@ -3,11 +3,9 @@
 use std::os::raw::{c_uint, c_char, c_int, c_ulong};
 use std::{mem, ptr};
 use std::fmt;
-use std::str;
-use std::ffi::CStr;
 use std::hash::Hash;
 use std::hash::Hasher;
-use std::ffi::CString;
+use std::ffi::{CString, CStr};
 
 use clangll::*;
 
@@ -27,9 +25,37 @@ impl Cursor {
         }
     }
 
+    pub fn mangling(&self) -> String {
+        let mut mangling = unsafe {
+            String_ { x: clang_Cursor_getMangling(self.x) }.to_string()
+        };
+
+        // Try to undo backend mangling
+        if cfg!(target_os = "macos") || cfg!(target_os = "windows") {
+            mangling.remove(0);
+        }
+        mangling
+    }
+
+    pub fn semantic_parent(&self) -> Cursor {
+        unsafe {
+            Cursor { x: clang_getCursorSemanticParent(self.x) }
+        }
+    }
+
     pub fn kind(&self) -> Enum_CXCursorKind {
         unsafe {
             clang_getCursorKind(self.x)
+        }
+    }
+
+    pub fn is_template(&self) -> bool {
+        self.specialized().is_valid()
+    }
+
+    pub fn is_valid(&self) -> bool {
+        unsafe {
+            clang_isInvalid(self.kind()) == 0
         }
     }
 
@@ -42,6 +68,18 @@ impl Cursor {
     pub fn extent(&self) -> CXSourceRange {
         unsafe {
             clang_getCursorExtent(self.x)
+        }
+    }
+
+    pub fn raw_comment(&self) -> String {
+        unsafe {
+            String_ { x: clang_Cursor_getRawCommentText(self.x) }.to_string()
+        }
+    }
+
+    pub fn comment(&self) -> Comment {
+        unsafe {
+            Comment { x: clang_Cursor_getParsedComment(self.x) }
         }
     }
 
@@ -60,6 +98,12 @@ impl Cursor {
     pub fn canonical(&self) -> Cursor {
         unsafe {
             Cursor { x: clang_getCanonicalCursor(self.x) }
+        }
+    }
+
+    pub fn specialized(&self) -> Cursor {
+        unsafe {
+           Cursor { x: clang_getSpecializedCursorTemplate(self.x) }
         }
     }
 
@@ -112,6 +156,12 @@ impl Cursor {
         }
     }
 
+    pub fn visibility(&self) -> Enum_CXVisibilityKind {
+        unsafe {
+            clang_getCursorVisibility(self.x)
+        }
+    }
+
     // function
     pub fn args(&self) -> Vec<Cursor> {
         unsafe {
@@ -133,6 +183,33 @@ impl Cursor {
     pub fn num_args(&self) -> i32 {
         unsafe {
             clang_Cursor_getNumArguments(self.x)
+        }
+    }
+
+    // CXX member
+    pub fn access_specifier(&self) -> Enum_CX_CXXAccessSpecifier {
+        unsafe {
+            clang_getCXXAccessSpecifier(self.x)
+        }
+    }
+
+    // CXX method
+    pub fn method_is_static(&self) -> bool {
+        unsafe {
+            clang_CXXMethod_isStatic(self.x) != 0
+        }
+    }
+
+    pub fn method_is_virtual(&self) -> bool {
+        unsafe {
+            clang_CXXMethod_isVirtual(self.x) != 0
+        }
+    }
+
+    // CXX base
+    pub fn is_virtual_base(&self) -> bool {
+        unsafe {
+            clang_isVirtualBase(self.x) != 0
         }
     }
 }
@@ -184,6 +261,12 @@ impl Type {
         }
     }
 
+    pub fn spelling(&self) -> String {
+        unsafe {
+            String_ { x: clang_getTypeSpelling(self.x) }.to_string()
+        }
+    }
+
     pub fn is_const(&self) -> bool {
         unsafe {
             clang_isConstQualifiedType(self.x) == 1
@@ -201,6 +284,18 @@ impl Type {
         unsafe {
             let val = clang_Type_getAlignOf(self.x);
             if val < 0 { 0 } else { val as usize }
+        }
+    }
+
+    pub fn num_template_args(&self) -> c_int {
+        unsafe {
+            clang_Type_getNumTemplateArguments(self.x)
+        }
+    }
+
+    pub fn template_arg_type(&self, i: c_int) -> Type {
+        unsafe {
+            Type { x: clang_Type_getTemplateArgumentAsType(self.x, i) }
         }
     }
 
@@ -291,6 +386,56 @@ impl fmt::Display for SourceLocation {
     }
 }
 
+// Comment
+pub struct Comment {
+    x: CXComment
+}
+
+impl Comment {
+    pub fn kind(&self) -> Enum_CXCommentKind {
+        unsafe {
+            clang_Comment_getKind(self.x)
+        }
+    }
+
+    pub fn num_children(&self) -> c_uint {
+        unsafe {
+            clang_Comment_getNumChildren(self.x)
+        }
+    }
+
+    pub fn get_child(&self, idx: c_uint) -> Comment {
+        unsafe {
+            Comment { x: clang_Comment_getChild(self.x, idx) }
+        }
+    }
+
+    // HTML
+    pub fn get_tag_name(&self) -> String {
+        unsafe {
+            String_ { x: clang_HTMLTagComment_getTagName(self.x) }.to_string()
+        }
+    }
+
+    pub fn get_num_tag_attrs(&self) -> c_uint {
+        unsafe {
+            clang_HTMLStartTag_getNumAttrs(self.x)
+        }
+    }
+
+    pub fn get_tag_attr_name(&self, idx: c_uint) -> String {
+        unsafe {
+            String_ { x: clang_HTMLStartTag_getAttrName(self.x, idx) }.to_string()
+        }
+    }
+
+    pub fn get_tag_attr_value(&self, idx: c_uint) -> String {
+        unsafe {
+            String_ { x: clang_HTMLStartTag_getAttrValue(self.x, idx) }.to_string()
+        }
+    }
+}
+
 // File
 pub struct File {
     x: CXFile
@@ -320,7 +465,7 @@ impl fmt::Display for String_ {
         unsafe {
             let c_str = clang_getCString(self.x) as *const c_char;
             let p = c_str as *const _;
-            str::from_utf8(CStr::from_ptr(p).to_bytes()).unwrap().to_owned().fmt(f)
+            f.write_str(&String::from_utf8_lossy(CStr::from_ptr(p).to_bytes()))
         }
     }
 }
@@ -361,14 +506,13 @@ pub struct TranslationUnit {
 
 impl TranslationUnit {
     pub fn parse(ix: &Index, file: &str, cmd_args: &[String],
-                 unsaved: &[UnsavedFile], opts: c_uint) -> TranslationUnit {
-        let fname = CString::new(file.as_bytes()).unwrap();
-        let fname = fname.as_ptr();
-        let c_args: Vec<CString> = cmd_args.iter().map(|s| CString::new(s.as_bytes()).unwrap()).collect();
-        let c_args: Vec<*const c_char> = c_args.iter().map(|s| s.as_ptr()).collect();
+                 unsaved: &[UnsavedFile], opts: ::libc::c_uint) -> TranslationUnit {
+        let fname = CString::new(file).unwrap();
+        let _c_args: Vec<CString> = cmd_args.iter().map(|s| CString::new(s.clone()).unwrap()).collect();
+        let c_args: Vec<*const c_char> = _c_args.iter().map(|s| s.as_ptr()).collect();
         let mut c_unsaved: Vec<Struct_CXUnsavedFile> = unsaved.iter().map(|f| f.x).collect();
         let tu = unsafe {
-            clang_parseTranslationUnit(ix.x, fname,
+            clang_parseTranslationUnit(ix.x, fname.as_ptr(),
                                        c_args.as_ptr(),
                                        c_args.len() as c_int,
                                        c_unsaved.as_mut_ptr(),
@@ -478,8 +622,8 @@ pub struct UnsavedFile {
 
 impl UnsavedFile {
     pub fn new(name: &str, contents: &str) -> UnsavedFile {
-        let name = CString::new(name.as_bytes()).unwrap();
-        let contents = CString::new(contents.as_bytes()).unwrap();
+        let name = CString::new(name).unwrap();
+        let contents = CString::new(contents).unwrap();
         let x = Struct_CXUnsavedFile {
             Filename: name.as_ptr(),
             Contents: contents.as_ptr(),
@@ -729,7 +873,7 @@ pub fn ast_dump(c: &Cursor, depth: isize)-> Enum_CXVisitorResult {
     print_indent(depth, &format!("({} {} {}",
         kind_to_str(c.kind()),
         c.spelling(),
-        type_to_str(ct))[..]
+        type_to_str(ct))
     );
     c.visit(| s, _: &Cursor| {
         ast_dump(s, depth + 1)

@@ -1,6 +1,8 @@
 use std::cell::RefCell;
 use std::fmt;
 use std::rc::Rc;
+use std::collections::HashMap;
+use std::sync::atomic::{AtomicUsize, ATOMIC_USIZE_INIT, Ordering};
 
 use syntax::abi;
 
@@ -8,6 +10,45 @@ pub use self::Global::*;
 pub use self::Type::*;
 pub use self::IKind::*;
 pub use self::FKind::*;
+
+static NEXT_MODULE_ID: AtomicUsize = ATOMIC_USIZE_INIT;
+
+#[derive(Clone, Copy, Eq, PartialEq, Hash, Debug)]
+pub struct ModuleId(usize);
+pub static ROOT_MODULE_ID: ModuleId = ModuleId(0);
+
+impl ModuleId {
+    pub fn next() -> ModuleId {
+        ModuleId(NEXT_MODULE_ID.fetch_add(1, Ordering::SeqCst) + 1)
+    }
+}
+
+pub type ModuleMap = HashMap<ModuleId, Module>;
+
+#[derive(Clone)]
+pub struct Module {
+    pub name: String,
+    pub globals: Vec<Global>,
+    pub parent_id: Option<ModuleId>,
+    // Just for convenience
+    pub children_ids: Vec<ModuleId>,
+}
+
+impl Module {
+    pub fn new(name: String, parent_id: Option<ModuleId>) -> Self {
+        Module {
+            name: name,
+            globals: vec![],
+            parent_id: parent_id,
+            children_ids: vec![],
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn add_global(&mut self, g: Global) {
+        self.globals.push(g)
+    }
+}
 
 #[derive(Clone)]
 pub enum Global {
@@ -83,7 +124,7 @@ pub enum Type {
     TVoid,
     TInt(IKind, Layout),
     TFloat(FKind, Layout),
-    TPtr(Box<Type>, bool, Layout),
+    TPtr(Box<Type>, bool, bool, Layout),
     TArray(Box<Type>, usize, Layout),
     TFuncProto(FuncSig),
     TFuncPtr(FuncSig),
@@ -95,26 +136,26 @@ pub enum Type {
 impl Type {
     pub fn size(&self) -> usize {
         match *self {
-            TInt(_, l)
-            | TFloat(_, l)
-            | TPtr(_, _, l)
-            | TArray(_, _, l) => l.size,
+            TInt(_, l) => l.size,
+            TFloat(_, l) => l.size,
+            TPtr(_, _, _, l) => l.size,
+            TArray(_, _, l) => l.size,
             TNamed(ref ti) => ti.borrow().ty.size(),
             TComp(ref ci) => ci.borrow().layout.size,
             TEnum(ref ei) => ei.borrow().layout.size,
-            TVoid
-            | TFuncProto(..)
-            | TFuncPtr(..) => 0,
+            TVoid => 0,
+            TFuncProto(..) => 0,
+            TFuncPtr(..) => 0,
         }
     }
 
     #[allow(dead_code)]
     pub fn align(&self) -> usize {
         match *self {
-            TInt(_, l)
-            | TFloat(_, l)
-            | TPtr(_, _, l)
-            | TArray(_, _, l) => l.align,
+            TInt(_, l) => l.align,
+            TFloat(_, l) => l.align,
+            TPtr(_, _, _, l) => l.align,
+            TArray(_, _, l) => l.align,
             TNamed(ref ti) => ti.borrow().ty.align(),
             TComp(ref ci) => ci.borrow().layout.align,
             TEnum(ref ei) => ei.borrow().layout.align,
@@ -124,6 +165,7 @@ impl Type {
         }
     }
 
+    #[allow(dead_code)]
     pub fn can_derive_debug(&self) -> bool {
         match *self {
             TArray(_, size, _) => size <= 32,
@@ -175,6 +217,7 @@ pub enum IKind {
 }
 
 impl IKind {
+    #[allow(dead_code)]
     pub fn is_signed(self) -> bool {
         match self {
             IBool => false,
@@ -203,6 +246,7 @@ pub enum CompMember {
     Field(FieldInfo),
     Comp(Rc<RefCell<CompInfo>>),
     CompField(Rc<RefCell<CompInfo>>, FieldInfo),
+    Enum(Rc<RefCell<EnumInfo>>),
 }
 
 #[derive(Copy, Clone, PartialEq)]
@@ -215,16 +259,49 @@ pub enum CompKind {
 pub struct CompInfo {
     pub kind: CompKind,
     pub name: String,
+    pub module_id: ModuleId,
+    pub filename: String,
+    pub comment: String,
     pub members: Vec<CompMember>,
+    pub args: Vec<Type>,
+    pub methods: Vec<VarInfo>,
+    pub vmethods: Vec<VarInfo>,
+    pub ref_template: Option<Type>,
+    pub has_vtable: bool,
+    pub has_destructor: bool,
+    pub hide: bool,
+    pub base_members: usize,
     pub layout: Layout,
 }
 
+static mut UNNAMED_COUNTER: u32 = 0;
+
+fn unnamed_name(name: String, filename: &String) -> String {
+    return if name.is_empty() {
+        let n = unsafe { UNNAMED_COUNTER += 1; UNNAMED_COUNTER };
+        format!("{}_unnamed_{}", filename, n)
+    } else {
+        name
+    };
+}
+
 impl CompInfo {
-    pub fn new(name: String, kind: CompKind, members: Vec<CompMember>, layout: Layout) -> CompInfo {
+    pub fn new(name: String, module_id: ModuleId, filename: String, comment: String, kind: CompKind, members: Vec<CompMember>, layout: Layout) -> CompInfo {
         CompInfo {
             kind: kind,
-            name: name,
+            module_id: module_id,
+            name: unnamed_name(name, &filename),
+            filename: filename,
+            comment: comment,
             members: members,
+            args: vec!(),
+            methods: vec!(),
+            vmethods: vec!(),
+            ref_template: None,
+            has_vtable: false,
+            has_destructor: false,
+            hide: false,
+            base_members: 0,
             layout: layout,
         }
     }
@@ -240,14 +317,16 @@ impl fmt::Debug for CompInfo {
 pub struct FieldInfo {
     pub name: String,
     pub ty: Type,
+    pub comment: String,
     pub bitfields: Option<Vec<(String, u32)>>,
 }
 
 impl FieldInfo {
-    pub fn new(name: String, ty: Type, bitfields: Option<Vec<(String, u32)>>) -> FieldInfo {
+    pub fn new(name: String, ty: Type, comment: String, bitfields: Option<Vec<(String, u32)>>) -> FieldInfo {
         FieldInfo {
             name: name,
             ty: ty,
+            comment: comment,
             bitfields: bitfields,
         }
     }
@@ -256,15 +335,21 @@ impl FieldInfo {
 #[derive(Clone, PartialEq)]
 pub struct EnumInfo {
     pub name: String,
+    pub module_id: ModuleId,
+    pub comment: String,
+    pub filename: String,
     pub items: Vec<EnumItem>,
     pub kind: IKind,
     pub layout: Layout,
 }
 
 impl EnumInfo {
-    pub fn new(name: String, kind: IKind, items: Vec<EnumItem>, layout: Layout) -> EnumInfo {
+    pub fn new(name: String, module_id: ModuleId, filename: String, kind: IKind, items: Vec<EnumItem>, layout: Layout) -> EnumInfo {
         EnumInfo {
-            name: name,
+            name: unnamed_name(name, &filename),
+            module_id: module_id,
+            comment: String::new(),
+            filename: filename,
             items: items,
             kind: kind,
             layout: layout,
@@ -281,13 +366,15 @@ impl fmt::Debug for EnumInfo {
 #[derive(Clone, PartialEq)]
 pub struct EnumItem {
     pub name: String,
+    pub comment: String,
     pub val: i64
 }
 
 impl EnumItem {
-    pub fn new(name: String, val: i64) -> EnumItem {
+    pub fn new(name: String, comment: String, val: i64) -> EnumItem {
         EnumItem {
             name: name,
+            comment: comment,
             val: val
         }
     }
@@ -296,14 +383,20 @@ impl EnumItem {
 #[derive(Clone, PartialEq)]
 pub struct TypeInfo {
     pub name: String,
-    pub ty: Type
+    pub module_id: ModuleId,
+    pub comment: String,
+    pub ty: Type,
+    pub layout: Layout,
 }
 
 impl TypeInfo {
-    pub fn new(name: String, ty: Type) -> TypeInfo {
+    pub fn new(name: String, module_id: ModuleId, ty: Type, layout: Layout) -> TypeInfo {
         TypeInfo {
             name: name,
-            ty: ty
+            module_id: module_id,
+            comment: String::new(),
+            ty: ty,
+            layout: layout,
         }
     }
 }
@@ -314,22 +407,33 @@ impl fmt::Debug for TypeInfo {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct VarInfo {
     pub name: String,
+    pub mangled: String,
+    pub comment: String,
     pub ty: Type,
     //TODO: support non-integer constants
     pub val: Option<i64>,
-    pub is_const: bool
+    pub is_const: bool,
+    pub is_static: bool,
 }
 
 impl VarInfo {
-    pub fn new(name: String, ty: Type) -> VarInfo {
+    pub fn new(name: String, mangled: String, comment: String, ty: Type) -> VarInfo {
+        let mangled = if name == mangled {
+            String::new()
+        } else {
+            mangled
+        };
         VarInfo {
             name: name,
+            mangled: mangled,
+            comment: comment,
             ty: ty,
             val: None,
-            is_const: false
+            is_const: false,
+            is_static: false,
         }
     }
 }

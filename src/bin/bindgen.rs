@@ -2,7 +2,8 @@
 #![crate_type = "bin"]
 
 extern crate bindgen;
-#[macro_use] extern crate log;
+#[macro_use]
+extern crate log;
 
 use bindgen::{Bindings, BindgenOptions, LinkType, Logger};
 use std::io;
@@ -16,17 +17,17 @@ struct StdLogger;
 
 impl Logger for StdLogger {
     fn error(&self, msg: &str) {
-        error!("{}", msg);
+        println!("{}", msg);
     }
 
     fn warn(&self, msg: &str) {
-        warn!("{}", msg);
+        println!("{}", msg);
     }
 }
 
 enum ParseResult {
     CmdUsage,
-    ParseOk(BindgenOptions, Box<io::Write+'static>),
+    ParseOk(BindgenOptions, Box<io::Write>),
     ParseErr(String)
 }
 
@@ -34,7 +35,6 @@ fn parse_args(args: &[String]) -> ParseResult {
     let args_len = args.len();
 
     let mut options: BindgenOptions = Default::default();
-    options.derive_debug = false;
     let mut out = Box::new(io::BufWriter::new(io::stdout())) as Box<io::Write>;
 
     if args_len == 0 {
@@ -47,7 +47,7 @@ fn parse_args(args: &[String]) -> ParseResult {
             options.links.push((args[ix][2..].to_string(), LinkType::Default));
             ix += 1;
         } else {
-            match &args[ix][..] {
+            match &*args[ix] {
                 "--help" | "-h" => {
                     return ParseResult::CmdUsage;
                 }
@@ -98,12 +98,8 @@ fn parse_args(args: &[String]) -> ParseResult {
                     options.builtins = true;
                     ix += 1;
                 }
-                "-no-rust-enums" => {
-                    options.rust_enums = false;
-                    ix += 1;
-                }
-                "-derive-debug" => {
-                    options.derive_debug = true;
+                "-ignore-functions" => {
+                    options.ignore_functions = true;
                     ix += 1;
                 }
                 "-allow-unknown-types" => {
@@ -117,6 +113,14 @@ fn parse_args(args: &[String]) -> ParseResult {
                     options.override_enum_ty = args[ix + 1].clone();
                     ix += 2;
                 }
+                "-enable-cxx-namespaces" => {
+                    options.enable_cxx_namespaces = true;
+                    ix += 1;
+                }
+                "-no-type-renaming" => {
+                    options.rename_types = false;
+                    ix += 1;
+                }
                 _ => {
                     options.clang_args.push(args[ix].clone());
                     ix += 1;
@@ -129,7 +133,7 @@ fn parse_args(args: &[String]) -> ParseResult {
 }
 
 fn print_usage(bin: String) {
-    let mut s = format!("Usage: {} [options] input.h", &bin[..]);
+    let mut s = format!("Usage: {} [options] input.h", &bin);
     s.push_str(
 "
 Options:
@@ -145,6 +149,10 @@ Options:
                                matching any rule are bound to.
     -builtins                  Output bindings for builtin definitions
                                (for example __builtin_va_list)
+    -ignore-functions          Don't generate bindings for functions and methods.
+                               This is useful when you only care about struct layouts.
+    -enable-cxx-namespaces     Enable support for C++ namespaces.
+    -no-type-renaming          Don't rename types.
     -allow-unknown-types       Don't fail if we encounter types we do not support,
                                instead treat them as void
     -emit-clang-ast            Output the ast (for debugging purposes)
@@ -163,14 +171,22 @@ Options:
     Options other than stated above are passed to clang.
 "
     );
-    print!("{}", &s[..]);
+    println!("{}", &s);
 }
 
 pub fn main() {
     let mut bind_args: Vec<_> = env::args().collect();
     let bin = bind_args.remove(0);
 
-    match parse_args(&bind_args[..]) {
+    match bindgen::get_include_dir() {
+        Some(path) => {
+            bind_args.push("-I".to_owned());
+            bind_args.push(path);
+        }
+        None => (),
+    }
+
+    match parse_args(&bind_args) {
         ParseResult::ParseErr(e) => panic!(e),
         ParseResult::CmdUsage => print_usage(bin),
         ParseResult::ParseOk(options, out) => {
@@ -179,7 +195,7 @@ pub fn main() {
                 Ok(bindings) => match bindings.write(out) {
                     Ok(()) => (),
                     Err(e) => {
-                        logger.error(&format!("Unable to write bindings to file. {}", e)[..]);
+                        logger.error(&format!("Unable to write bindings to file. {}", e));
                         exit(-1);
                     }
                 },

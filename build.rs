@@ -6,6 +6,7 @@ use std::process::Command;
 const LINUX_CLANG_DIRS: &'static [&'static str] = &[
     "/usr/lib",
     "/usr/lib/llvm",
+    "/usr/lib/llvm-3.8/lib",
     "/usr/lib/llvm-3.7/lib",
     "/usr/lib/llvm-3.6/lib",
     "/usr/lib/llvm-3.5/lib",
@@ -21,10 +22,7 @@ const MAC_CLANG_DIR: &'static [&'static str] = &[
 const WIN_CLANG_DIRS: &'static [&'static str] = &["C:\\Program Files\\LLVM\\bin", "C:\\Program Files\\LLVM\\lib"];
 
 fn path_exists(path: &Path) -> bool {
-    match fs::metadata(path) {
-        Ok(_) => true,
-        Err(_) => false
-    }
+    fs::metadata(path).is_ok()
 }
 
 fn main() {
@@ -37,16 +35,16 @@ fn main() {
     } else if cfg!(target_os = "macos") {
         MAC_CLANG_DIR.iter().map(ToString::to_string).collect()
     } else if cfg!(target_os = "windows") {
-		WIN_CLANG_DIRS.iter().map(ToString::to_string).collect()
+        WIN_CLANG_DIRS.iter().map(ToString::to_string).collect()
     } else {
         panic!("Platform not supported");
     };
 
     let clang_lib = if cfg!(target_os = "windows") {
-			format!("libclang{}", env::consts::DLL_SUFFIX)
-		} else {
-			format!("{}clang{}", env::consts::DLL_PREFIX, env::consts::DLL_SUFFIX)
-		};
+        format!("libclang{}", env::consts::DLL_SUFFIX)
+    } else {
+        format!("{}clang{}", env::consts::DLL_PREFIX, env::consts::DLL_SUFFIX)
+    };
 
     //may contain path to libclang detected via ldconfig
     let mut libclang_path_string = String::new();
@@ -60,7 +58,8 @@ fn main() {
             None
         }
     }).next();
-    if maybe_clang_dir == None && cfg!(target_os = "linux") {
+
+    if maybe_clang_dir.is_none() && cfg!(target_os = "linux") {
         //try to find via lddconfig
         //may return line, like
         //libclang.so.3.7 (libc6,x86-64) => /usr/lib64/libclang.so.3.7

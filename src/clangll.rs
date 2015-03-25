@@ -328,12 +328,17 @@ pub struct CXComment {
     pub ASTNode: *const c_void,
     pub TranslationUnit: CXTranslationUnit,
 }
-pub type Enum_CXLinkageKind = c_uint;
-pub const CXLinkage_Invalid: c_uint = 0;
-pub const CXLinkage_NoLinkage: c_uint = 1;
-pub const CXLinkage_Internal: c_uint = 2;
-pub const CXLinkage_UniqueExternal: c_uint = 3;
-pub const CXLinkage_External: c_uint = 4;
+pub type Enum_CXLinkageKind = ::libc::c_uint;
+pub const CXLinkage_Invalid: ::libc::c_uint = 0;
+pub const CXLinkage_NoLinkage: ::libc::c_uint = 1;
+pub const CXLinkage_Internal: ::libc::c_uint = 2;
+pub const CXLinkage_UniqueExternal: ::libc::c_uint = 3;
+pub const CXLinkage_External: ::libc::c_uint = 4;
+pub type Enum_CXVisibilityKind = ::libc::c_uint;
+pub const CXVisibility_Invalid: ::libc::c_uint = 0;
+pub const CXVisibility_Hidden: ::libc::c_uint = 1;
+pub const CXVisibility_Protected: ::libc::c_uint = 2;
+pub const CXVisibility_Default: ::libc::c_uint = 3;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Struct_CXPlatformAvailability {
@@ -1005,6 +1010,7 @@ extern "C" {
     pub fn clang_isPreprocessing(arg1: Enum_CXCursorKind) -> c_uint;
     pub fn clang_isUnexposed(arg1: Enum_CXCursorKind) -> c_uint;
     pub fn clang_getCursorLinkage(cursor: CXCursor) -> Enum_CXLinkageKind;
+    pub fn clang_getCursorVisibility(cursor: CXCursor) -> Enum_CXVisibilityKind;
     pub fn clang_getCursorAvailability(cursor: CXCursor) ->
      Enum_CXAvailabilityKind;
     pub fn clang_getCursorPlatformAvailability(cursor: CXCursor,
@@ -1081,8 +1087,11 @@ extern "C" {
      c_longlong;
     pub fn clang_Type_getCXXRefQualifier(T: CXType) ->
      Enum_CXRefQualifierKind;
-    pub fn clang_Cursor_isBitField(C: CXCursor) -> c_uint;
-    pub fn clang_isVirtualBase(arg1: CXCursor) -> c_uint;
+    pub fn clang_Type_getNumTemplateArguments(T: CXType) -> ::libc::c_int;
+    pub fn clang_Type_getTemplateArgumentAsType(T: CXType, i: ::libc::c_int) ->
+     CXType;
+    pub fn clang_Cursor_isBitField(C: CXCursor) -> ::libc::c_uint;
+    pub fn clang_isVirtualBase(arg1: CXCursor) -> ::libc::c_uint;
     pub fn clang_getCXXAccessSpecifier(arg1: CXCursor) ->
      Enum_CX_CXXAccessSpecifier;
     pub fn clang_getNumOverloadedDecls(cursor: CXCursor) -> c_uint;
@@ -1130,6 +1139,7 @@ extern "C" {
     pub fn clang_Cursor_getCommentRange(C: CXCursor) -> CXSourceRange;
     pub fn clang_Cursor_getRawCommentText(C: CXCursor) -> CXString;
     pub fn clang_Cursor_getBriefCommentText(C: CXCursor) -> CXString;
+    pub fn clang_Cursor_getMangling(C: CXCursor) -> CXString;
     pub fn clang_Cursor_getParsedComment(C: CXCursor) -> CXComment;
     pub fn clang_Cursor_getModule(C: CXCursor) -> CXModule;
     pub fn clang_Module_getASTFile(Module: CXModule) -> CXFile;

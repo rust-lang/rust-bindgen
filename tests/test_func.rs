@@ -15,20 +15,11 @@ fn func_ptr() {
 fn func_ptr_in_struct() {
     assert_bind_eq(Default::default(), "headers/func_ptr_in_struct.h", "
         #[repr(C)]
-        #[derive(Copy)]
-        #[derive(Debug)]
+        #[derive(Copy, Clone)]
         pub struct Struct_Foo {
             pub bar: ::std::option::Option<
-                extern \"C\" fn(x: ::std::os::raw::c_int,
+                unsafe extern \"C\" fn(x: ::std::os::raw::c_int,
                               y: ::std::os::raw::c_int) -> Enum_baz>,
-        }
-
-        impl ::std::clone::Clone for Struct_Foo {
-            fn clone(&self) -> Self { *self }
-        }
-
-        impl ::std::default::Default for Struct_Foo {
-            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
     ");
 }

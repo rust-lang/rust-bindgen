@@ -1,12 +1,14 @@
 #![crate_name = "bindgen"]
 #![crate_type = "dylib"]
+#![feature(quote)]
 
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
 
 extern crate syntex_syntax as syntax;
 extern crate libc;
-#[macro_use] extern crate log;
+#[macro_use]
+extern crate log;
 
 use std::collections::HashSet;
 use std::default::Default;
@@ -21,7 +23,7 @@ use syntax::print::pprust;
 use syntax::print::pp::eof;
 use syntax::ptr::P;
 
-use types::Global;
+use types::ModuleMap;
 
 mod types;
 mod clangll;
@@ -84,6 +86,11 @@ impl<'a> Builder<'a> {
         self
     }
 
+    pub fn rename_types(&mut self, value: bool) -> &mut Self {
+        self.options.rename_types = value;
+        self
+    }
+
     pub fn log(&mut self, logger: &'a Logger) -> &mut Self {
         self.logger = Some(logger);
         self
@@ -111,10 +118,13 @@ pub struct BindgenOptions {
     pub rust_enums: bool,
     pub links: Vec<(String, LinkType)>,
     pub emit_ast: bool,
+    pub ignore_functions: bool,
     pub fail_on_unknown_type: bool,
+    pub enable_cxx_namespaces: bool,
+    pub rename_types: bool,
+    pub derive_debug: bool,
     pub override_enum_ty: String,
     pub clang_args: Vec<String>,
-    pub derive_debug: bool,
 }
 
 impl Default for BindgenOptions {
@@ -125,18 +135,18 @@ impl Default for BindgenOptions {
             rust_enums: true,
             links: Vec::new(),
             emit_ast: false,
-            fail_on_unknown_type: false,
-            override_enum_ty: "".to_owned(),
-            clang_args: match get_include_dir() {
-                Some(path) => vec!("-idirafter".to_owned(), path),
-                None => Vec::new()
-            },
-            derive_debug: true
+            ignore_functions: false,
+            fail_on_unknown_type: true,
+            rename_types: true,
+            derive_debug: true,
+            enable_cxx_namespaces: false,
+            override_enum_ty: "".to_string(),
+            clang_args: Vec::new()
         }
     }
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum LinkType {
     Default,
     Static,
@@ -148,7 +158,7 @@ pub trait Logger {
     fn warn(&self, msg: &str);
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Bindings {
     module: ast::Mod
 }
@@ -157,21 +167,18 @@ impl Bindings {
     /// Deprecated - use a `Builder` instead
     pub fn generate(options: &BindgenOptions, logger: Option<&Logger>, span: Option<Span>) -> Result<Bindings, ()> {
         let l = DummyLogger;
-        let logger = match logger {
-            Some(l) => l,
-            None => &l as &Logger
-        };
+        let logger = logger.unwrap_or(&l as &Logger);
 
-        let span = match span {
-            Some(s) => s,
-            None => DUMMY_SP
-        };
+        let span = span.unwrap_or(DUMMY_SP);
 
-        let globals = try!(parse_headers(options, logger));
+        let module_map = try!(parse_headers(options, logger));
 
         let module = ast::Mod {
             inner: span,
-            items: gen::gen_mod(options, globals, span)
+            items: gen::gen_mods(&options.links[..],
+                                 module_map,
+                                 options.clone(),
+                                 span)
         };
 
         Ok(Bindings {
@@ -217,7 +224,7 @@ impl Logger for DummyLogger {
     fn warn(&self, _msg: &str) { }
 }
 
-fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<Vec<Global>, ()> {
+fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<ModuleMap, ()> {
     fn str_to_ikind(s: &str) -> Option<types::IKind> {
         match s {
             "uchar"     => Some(types::IUChar),
@@ -239,8 +246,10 @@ fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<Vec<Global
         builtins: options.builtins,
         match_pat: options.match_pat.clone(),
         emit_ast: options.emit_ast,
+        ignore_functions: options.ignore_functions,
         fail_on_unknown_type: options.fail_on_unknown_type,
-        override_enum_ty: str_to_ikind(&options.override_enum_ty[..]),
+        enable_cxx_namespaces: options.enable_cxx_namespaces,
+        override_enum_ty: str_to_ikind(&options.override_enum_ty),
         clang_args: options.clang_args.clone(),
     };
 

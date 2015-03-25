@@ -25,8 +25,8 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
     }
 
     // Reparse clang_args as it is passed in string form
-    let clang_args = visit.options.clang_args.join(" ");
-    visit.options.clang_args = parse_process_args(&clang_args[..]);
+    let clang_args = visit.options.clang_args.connect(" ");
+    visit.options.clang_args = parse_process_args(&clang_args);
 
     if let Some(path) = bindgen::get_include_dir() {
         visit.options.clang_args.push("-I".to_owned());
@@ -66,7 +66,7 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
             }
 
             Box::new(BindgenResult { items: Some(SmallVector::many(items)) }) as Box<base::MacResult>
-            
+
         }
         Err(_) => base::DummyResult::any(sp)
     };
@@ -223,7 +223,7 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
 // I'm sure there's a nicer way of doing it
 fn as_str<'a>(owned: &'a Option<String>) -> Option<&'a str> {
     match owned {
-        &Some(ref s) => Some(&s[..]),
+        &Some(ref s) => Some(s),
         &None => None
     }
 }
@@ -289,7 +289,7 @@ fn parse_process_args(s: &str) -> Vec<String> {
 
                     if part.len() > 0 {
                         // Remove any extra whitespace outside the quotes
-                        let part = &part[..].trim();
+                        let part = part.trim();
                         // Replace quoted characters
                         let part = part.replace("\\\"", "\"");
                         let part = part.replace("\\\'", "\'");

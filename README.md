@@ -6,16 +6,37 @@ rust-bindgen
 [![][travis-status-shield]](https://travis-ci.org/crabtw/rust-bindgen/)
 
 A binding generator for the rust language.
+This is a fork designed to work on Spidermonkey headers.
 It is ported from [clay's bindgen][].
 
 Requirements
 ------------
 
-* clang 3.4 and up
+* clang 3.7 with patches https://github.com/michaelwu/clang/tree/release_37_smhacks or clang 3.8+
 
-Note: The libclang.so has to be statically linked with LLVM or you will
-encounter [issue 89][]. You can also use LD_PRELOAD=/path/to/libclang.so to
-workaround the problem.
+This bindgen fork requires a patched clang or clang 3.8+ to work properly. This is one way to build a patched clang:
+```
+git clone https://github.com/llvm-mirror/llvm
+cd llvm
+git checkout release_37
+cd tools
+git clone https://github.com/llvm-mirror/clang
+cd clang
+git remote add mwu https://github.com/michaelwu/clang
+git fetch mwu
+git checkout release_37_smhacks
+cd ../.. # llvm root dir
+mkdir build
+cd build
+../configure --enable-optimized
+make
+```
+
+Then before building, make sure to export the path to this copy of clang:
+
+    export LIBCLANG_PATH=~/llvm/build/Release+Asserts/lib
+
+This path also needs to be set in LD_LIBRARY_PATH (Linux) or DYLD_LIBRARY_PATH (OSX) when running bindgen.
 
 Building
 --------
@@ -71,6 +92,28 @@ Options:
     Options other than stated above are passed to clang
 ```
 
+C++ Usage
+---------
+This fork of rust-bindgen can handle a number of C++ features. Because it currently uses a fork of clang though, it may require adding extra arguments to find certain headers. On OpenSUSE 13.2, these additional include pathes can be used:
+
+    -isystem /usr/lib64/gcc/x86_64-suse-linux/4.8/include -isystem /usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed
+
+On OSX, this include path seems to work:
+
+    -isystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1
+
+When passing in header files, the file will automatically be treated as C++ if it ends in ``.hpp``. If it doesn't, ``-x c++`` can be used to force C++ mode.
+
+Annotations
+-----------
+The translation of classes, structs, enums, and typedefs can be adjusted using annotations. Annotations are specifically formatted html tags inside doxygen style comments. The opaque annotation instructs bindgen to ignore all fields defined in a struct/class.
+
+    /// <div rust-bindgen opaque></div>
+
+The hide annotation instructs bindgen to ignore the struct/class/field/enum completely.
+
+    /// <div rust-bindgen hide></div>
+
 Macro Usage
 -----------
 
@@ -118,15 +161,3 @@ main.rs
     mod mysql_bindings {
         bindgen!("/usr/include/mysql/mysql.h", match="mysql.h", link="mysql")
     }
-
-TODO
-----
-
-* bitfield accessors
-
-[clay's bindgen]: https://github.com/jckarter/clay/blob/master/tools/bindgen.clay
-[crates-version-shield]: https://img.shields.io/crates/v/bindgen.svg?style=flat-square
-[crates-downloads-shield]: https://img.shields.io/crates/d/bindgen.svg?style=flat-square
-[crates-license-shield]: https://img.shields.io/crates/l/bindgen.svg?style=flat-square
-[travis-status-shield]: https://img.shields.io/travis/crabtw/rust-bindgen.svg?label=travis&style=flat-square
-[issue 89]: https://github.com/crabtw/rust-bindgen/issues/89

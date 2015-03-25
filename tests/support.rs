@@ -43,7 +43,7 @@ pub fn assert_bind_eq(options: BindgenOptions,
 
     let mut parser = parse::new_parser_from_source_str(ext_cx.parse_sess(), ext_cx.cfg(), "".to_string(), reference_items_str.to_string());
     let mut reference_items = Vec::new();
-    while let Some(item) = parser.parse_item().unwrap() {
+    while let Ok(Some(item)) = parser.parse_item() {
         reference_items.push(item);
     }
 
