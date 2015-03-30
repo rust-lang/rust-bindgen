@@ -21,7 +21,7 @@ fn with_anon_struct_bitfield() {
             #[repr(C)]
             #[derive(Copy)]
             pub struct Union_foo {
-                pub _bindgen_data_: [u32; 1u],
+                pub _bindgen_data_: [u32; 1usize],
             }
         ),
         quote_item!(cx,

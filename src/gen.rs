@@ -1036,7 +1036,7 @@ fn mk_ptrty(ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
 }
 
 fn mk_arrty(ctx: &GenCtx, base: &ast::Ty, n: usize) -> ast::Ty {
-    let int_lit = ast::LitInt(n as u64, ast::UnsignedIntLit(ast::TyUs(false)));
+    let int_lit = ast::LitInt(n as u64, ast::UnsignedIntLit(ast::TyUs));
     let sz = ast::ExprLit(P(respan(ctx.span, int_lit)));
     let ty = ast::TyFixedLengthVec(
         P(base.clone()),

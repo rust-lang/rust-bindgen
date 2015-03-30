@@ -19,8 +19,8 @@ fn with_anon_struct_array() {
             #[repr(C)]
             #[derive(Copy)]
             pub struct Struct_foo {
-                pub bar: [Struct_Unnamed1; 2u],
-                pub baz: [[[Struct_Unnamed2; 4u]; 3u]; 2u],
+                pub bar: [Struct_Unnamed1; 2usize],
+                pub baz: [[[Struct_Unnamed2; 4usize]; 3usize]; 2usize],
             }
         ),
         quote_item!(cx,
