@@ -57,7 +57,7 @@ impl Default for BindgenOptions {
     }
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum LinkType {
     Default,
     Static,

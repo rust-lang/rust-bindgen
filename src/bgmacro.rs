@@ -124,7 +124,7 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
         // Check for [ident=]value and if found save ident to name
         if parser.look_ahead(1, |t| t == &token::Eq) {
             match parser.bump_and_get() {
-                token::Ident(ident, _) => {
+                Ok(token::Ident(ident, _)) => {
                     let ident = parser.id_to_interned_str(ident);
                     name = Some(ident.to_string());
                     parser.expect(&token::Eq);
@@ -188,11 +188,11 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
             }
         }
 
-        if parser.eat(&token::Eof) {
+        if parser.eat(&token::Eof).is_ok() {
             return args_good
         }
 
-        if !parser.eat(&token::Comma) {
+        if parser.eat(&token::Comma).is_err() {
             cx.span_err(parser.span, "invalid argument format");
             return false
         }

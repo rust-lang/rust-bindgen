@@ -639,8 +639,6 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, members: Vec<Com
 }
 
 fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, items: Vec<EnumItem>) -> Vec<P<ast::Item>> {
-    use std::num::SignedInt;
-
     let ty = TInt(kind, Layout::zero());
     let ty_id = rust_type_id(ctx, name);
     let ty_def = ctypedef_to_rs(ctx, ty_id, &ty);
