@@ -561,6 +561,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String, members: Vec<CompMember>) -> Ve
                 span: ctx.span}));
     }
 
+    items.push(mk_clone_impl(ctx, &name[..]));
     items.push(mk_default_impl(ctx, &name[..]));
     items.extend(extra.into_iter());
     items
@@ -633,6 +634,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, members: Vec<Com
         mk_item(ctx, "".to_string(), union_impl, ast::Inherited, Vec::new())
     );
 
+    items.push(mk_clone_impl(ctx, &name[..]));
     items.push(mk_default_impl(ctx, &name[..]));
     items.extend(extra.into_iter());
     items
@@ -757,6 +759,16 @@ fn mk_default_impl(ctx: &GenCtx, ty_name: &str) -> P<ast::Item> {
     quote_item!(&ctx.ext_cx,
         impl ::std::default::Default for $name_ident {
             fn default() -> $name_ident { unsafe { ::std::mem::zeroed() } }
+        }
+    ).unwrap()
+}
+
+// Implements std::clone::Clone using dereferencing
+fn mk_clone_impl(ctx: &GenCtx, ty_name: &str) -> P<ast::Item> {
+    let name_ident = ctx.ext_cx.ident_of(ty_name);
+    quote_item!(&ctx.ext_cx,
+        impl ::std::clone::Clone for $name_ident {
+            fn clone(&self) -> $name_ident { *self }
         }
     ).unwrap()
 }
