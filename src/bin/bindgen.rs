@@ -13,6 +13,7 @@ use std::path;
 use std::env;
 use std::default::Default;
 use std::fs;
+use std::borrow::ToOwned;
 
 struct StdLogger;
 
@@ -159,9 +160,83 @@ Options:
     print!("{}", &s[..]);
 }
 
+// Get the first directory in PATH that contains a file named "clang".
+fn get_clang_dir() -> Option<path::PathBuf>{
+    match env::var_os("PATH") {
+        Some(paths) => {
+            for p in env::split_paths(&paths) {
+                let mut bin_path = p.clone();
+                bin_path.push("clang");
+                match fs::metadata(bin_path) {
+                    Ok(m) => {
+                        if m.is_file() {
+                            return Some(p);
+                        }
+                    }
+                    _ => (),
+                }
+            }
+            None
+        }
+        None => None,
+    }
+}
+
+// Try to find the directory that contains clang's bundled headers. Clang itself does something
+// very similar: it takes the parent directory of the current executable, appends
+// "../lib/clang/<VERSIONSTRING>/include". We have two problems emulating this behaviour:
+// * We don't have a very good way of finding the clang executable, but can fake this by
+//   searching $PATH and take one directory that contains "clang".
+// * We don't have access to <VERSIONSTRING>. There is clang_getClangVersion(), but it returns
+//   a human-readable description string which is not guaranteed to be stable and a pain to parse.
+//   We work around that by just taking the first directory in ../lib/clang and hope it's the
+//   current version.
+// TODO: test if this works on Windows at all.
+fn get_include_dir() -> Option<String> {
+    match get_clang_dir() {
+        Some(mut p) => {
+            p.push("..");
+            p.push("lib");
+            p.push("clang");
+
+            let dir_iter = match fs::read_dir(p) {
+                Ok(dir_iter) => dir_iter,
+                _ => return None
+            };
+            for dir in dir_iter {
+                match dir {
+                    Ok(dir) => {
+                        // Let's take the first dir. In my case, there's only one directory
+                        // there anyway.
+                        let mut p = dir.path();
+                        p.push("include");
+                        match p.into_os_string().into_string() {
+                            Ok(s) => return Some(s),
+                            // We found the directory, but can't access it as it contains
+                            // invalid unicode.
+                            _ => return None,
+                        }
+                    }
+                    _ => return None,
+                }
+            }
+            None
+        }
+        None => None,
+    }
+}
+
 pub fn main() {
     let mut bind_args: Vec<_> = env::args().collect();
     let bin = bind_args.remove(0);
+
+    match get_include_dir() {
+        Some(path) => {
+            bind_args.push("-I".to_owned());
+            bind_args.push(path);
+        }
+        None => (),
+    }
 
     match parse_args(&bind_args[..]) {
         ParseResult::ParseErr(e) => panic!(e),
