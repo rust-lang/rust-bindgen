@@ -166,10 +166,10 @@ pub fn main() {
     match parse_args(&bind_args[..]) {
         ParseResult::ParseErr(e) => panic!(e),
         ParseResult::CmdUsage => print_usage(bin),
-        ParseResult::ParseOk(options, mut out) => {
+        ParseResult::ParseOk(options, out) => {
             let logger = StdLogger;
             match Bindings::generate(&options, Some(&logger as &Logger), None) {
-                Ok(bindings) => match bindings.write(&mut out) {
+                Ok(bindings) => match bindings.write(out) {
                     Ok(()) => (),
                     Err(e) => {
                         logger.error(&format!("Unable to write bindings to file. {}", e)[..]);
