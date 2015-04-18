@@ -1,27 +1,21 @@
 [package]
 
-name = "rust-bindgen"
+name = "rust-bindgen-plugin"
 version = "0.13.0"
 authors = ["Jyun-Yan You <jyyou.tw@gmail.com>"]
 license = "BSD-3-Clause"
 
-build = "build.rs"
-
 [dependencies.log]
 git = "https://github.com/rust-lang/log.git"
+
+[dependencies.rust-bindgen]
+path = ".."
 
 [features]
 static = []
 
 [lib]
 
-name = "bindgen"
+name = "bindgen_plugin"
 path = "src/lib.rs"
-
-[[bin]]
-
-name = "bindgen"
-doc = false
-
-[[test]]
-name = "tests"
+plugin = true

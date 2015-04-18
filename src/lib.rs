@@ -1,9 +1,8 @@
 #![crate_name = "bindgen"]
 #![crate_type = "dylib"]
-#![feature(quote, plugin_registrar, unboxed_closures, rustc_private, libc, core)]
+#![feature(quote, rustc_private, libc, core)]
 
 extern crate syntax;
-extern crate rustc;
 extern crate libc;
 #[macro_use] extern crate log;
 
@@ -16,7 +15,6 @@ use syntax::codemap::{DUMMY_SP, Span};
 use syntax::print::{pp, pprust};
 use syntax::print::pp::eof;
 use syntax::ptr::P;
-use rustc::plugin::Registry;
 
 use types::Global;
 
@@ -25,13 +23,6 @@ mod clangll;
 mod clang;
 mod gen;
 mod parser;
-mod bgmacro;
-
-#[doc(hidden)]
-#[plugin_registrar]
-pub fn plugin_registrar(reg: &mut Registry) {
-    reg.register_macro("bindgen", bgmacro::bindgen_macro);
-}
 
 pub struct BindgenOptions {
     pub match_pat: Vec<String>,

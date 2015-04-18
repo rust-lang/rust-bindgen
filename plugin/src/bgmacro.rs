@@ -10,7 +10,7 @@ use syntax::parse::token;
 use syntax::ptr::P;
 use syntax::util::small_vector::SmallVector;
 
-use super::{Bindings, BindgenOptions, LinkType, Logger};
+use bindgen::{Bindings, BindgenOptions, LinkType, Logger};
 
 pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::TokenTree]) -> Box<base::MacResult+'static> {
     let mut visit = BindgenArgsVisitor {
