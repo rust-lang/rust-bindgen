@@ -6,6 +6,7 @@ use syntax::ast;
 use syntax::codemap;
 use syntax::ext::base;
 use syntax::fold::Folder;
+use syntax::parse;
 use syntax::parse::token;
 use syntax::ptr::P;
 use syntax::util::small_vector::SmallVector;
@@ -47,9 +48,20 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
 
     let logger = MacroLogger { sp: short_span, cx: cx };
 
-    let ret = match Bindings::generate(&visit.options, Some(&logger as &Logger), Some(short_span)) {
+    let ret = match Bindings::generate(&visit.options, Some(&logger as &Logger), None) {
         Ok(bindings) => {
-            Box::new(BindgenResult { items: Some(SmallVector::many(bindings.into_ast())) }) as Box<base::MacResult>
+            // syntex_syntax is not compatible with libsyntax so convert to string and reparse
+            let bindings_str = bindings.to_string();
+            // Unfortunately we lose span information due to reparsing
+            let mut parser = parse::new_parser_from_source_str(cx.parse_sess(), cx.cfg(), "(Auto-generated bindings)".to_string(), bindings_str);
+
+            let mut items = Vec::new();
+            while let Some(item) = parser.parse_item() {
+                items.push(item);
+            }
+
+            Box::new(BindgenResult { items: Some(SmallVector::many(items)) }) as Box<base::MacResult>
+            
         }
         Err(_) => base::DummyResult::any(sp)
     };
