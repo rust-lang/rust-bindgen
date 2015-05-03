@@ -12,6 +12,9 @@ log = "*"
 libc = "*"
 syntex_syntax = "*"
 
+[dev-dependencies.rust-bindgen-plugin]
+path = "./plugin"
+
 [features]
 static = []
 

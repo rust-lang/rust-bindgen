@@ -1,5 +1,7 @@
 use std::default::Default;
 
+use support::assert_bind_eq;
+
 #[test]
 fn with_anon_struct() {
     mod ffi { bindgen!("headers/union_with_anon_struct.h"); }
@@ -16,27 +18,28 @@ fn with_anon_struct() {
 
 #[test]
 fn with_anon_struct_bitfield() {
-    assert_bind_eq!("headers/union_with_anon_struct_bitfield.h", cx,
-        quote_item!(cx,
-            #[repr(C)]
-            #[derive(Copy)]
-            pub struct Union_foo {
-                pub _bindgen_data_: [u32; 1usize],
+    assert_bind_eq("headers/union_with_anon_struct_bitfield.h", "
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Union_foo {
+            pub _bindgen_data_: [u32; 1usize],
+        }
+
+        impl Union_foo {
+            pub unsafe fn a(&mut self) -> *mut ::libc::c_int {
+                let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
+                ::std::mem::transmute(raw.offset(0))
             }
-        ),
-        quote_item!(cx,
-            impl Union_foo {
-                pub unsafe fn a(&mut self) -> *mut ::libc::c_int {
-                    ::std::mem::transmute(&self._bindgen_data_)
-                }
-            }
-        ),
-        quote_item!(cx,
-            impl ::std::default::Default for Union_foo {
-                fn default() -> Union_foo { unsafe { ::std::mem::zeroed() } }
-            }
-        )
-    );
+        }
+
+        impl ::std::clone::Clone for Union_foo {
+            fn clone(&self) -> Self { *self }
+        }
+
+        impl ::std::default::Default for Union_foo {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+    ");
 }
 
 #[test]

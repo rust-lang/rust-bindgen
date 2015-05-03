@@ -1,11 +1,11 @@
-#![feature(quote, plugin, libc, rustc_private)]
-#![plugin(bindgen)]
+#![feature(plugin)]
+#![plugin(bindgen_plugin)]
+#![allow(dead_code)]
 
 extern crate bindgen;
 extern crate libc;
-extern crate syntax;
+extern crate syntex_syntax as syntax;
 
-#[macro_use]
 mod support;
 
 mod test_cmath;

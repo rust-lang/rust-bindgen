@@ -31,25 +31,34 @@ pub fn generate_bindings(filename: &str) -> Result<Vec<P<ast::Item>>, ()> {
     Ok(try!(bindgen::Bindings::generate(&options, Some(&logger as &Logger), None)).into_ast())
 }
 
-pub fn test_bind_eq<F>(filename: &str, f:F)
-    where F: FnOnce(DummyExtCtxt) -> Vec<Option<P<ast::Item>>>
+pub fn assert_bind_eq(filename: &str, reference_items_str: &str)
 {
     let ext_cx = mk_dummy_ext_ctxt();
-    let items = generate_bindings(filename).unwrap();
-    let quoted =f(ext_cx).into_iter().map(|x| x.unwrap()).collect();
+    let generated_items = generate_bindings(&format!("tests/{}", filename)[..]).unwrap();
+
+    let mut parser = parse::new_parser_from_source_str(ext_cx.parse_sess(), ext_cx.cfg(), "".to_string(), reference_items_str.to_string());
+    let mut reference_items = Vec::new();
+    while let Some(item) = parser.parse_item() {
+        reference_items.push(item);
+    }
 
     // The ast::Items themselves have insignificant (for our purposes)
     // differences that make them difficult to compare directly.  So, compare
     // rendered versions, which is not beautiful, but should work.
-    assert_eq!(render_items(&quoted), render_items(&items));
-}
-
-macro_rules! assert_bind_eq {
-    ($filename:expr, $ext_cx:ident, $($quote:expr),*) => {
-        ::support::test_bind_eq(concat!("tests/", $filename), |ext_cx| {
-            let $ext_cx = &ext_cx;
-            vec!($($quote),*)
-        });
+    let reference_rendered = render_items(&reference_items);
+    let generated_rendered = render_items(&generated_items);
+    
+    if reference_rendered != generated_rendered {
+        println!("Generated bindings for {} do not match the reference bindings.", filename);
+        println!("");
+        println!("Generated:");
+        println!("");
+        println!("{}", generated_rendered);
+        println!("");
+        println!("Reference:");
+        println!("");
+        println!("{}", reference_rendered);
+        panic!();
     }
 }
 

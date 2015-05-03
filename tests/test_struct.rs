@@ -1,5 +1,7 @@
 use std::default::Default;
 
+use support::assert_bind_eq;
+
 #[test]
 fn with_anon_struct() {
     mod ffi { bindgen!("headers/struct_with_anon_struct.h"); }
@@ -14,47 +16,52 @@ fn with_anon_struct() {
 
 #[test]
 fn with_anon_struct_array() {
-    assert_bind_eq!("headers/struct_with_anon_struct_array.h", cx,
-        quote_item!(cx,
-            #[repr(C)]
-            #[derive(Copy)]
-            pub struct Struct_foo {
-                pub bar: [Struct_Unnamed1; 2usize],
-                pub baz: [[[Struct_Unnamed2; 4usize]; 3usize]; 2usize],
-            }
-        ),
-        quote_item!(cx,
-            impl ::std::default::Default for Struct_foo {
-                fn default() -> Struct_foo { unsafe { ::std::mem::zeroed() } }
-            }
-        ),
-        quote_item!(cx,
-            #[repr(C)]
-            #[derive(Copy)]
-            pub struct Struct_Unnamed1 {
-                pub a: ::libc::c_int,
-                pub b: ::libc::c_int,
-            }
-        ),
-        quote_item!(cx,
-            impl ::std::default::Default for Struct_Unnamed1 {
-                fn default() -> Struct_Unnamed1 { unsafe { ::std::mem::zeroed() } }
-            }
-        ),
-        quote_item!(cx,
-            #[repr(C)]
-            #[derive(Copy)]
-            pub struct Struct_Unnamed2 {
-                pub a: ::libc::c_int,
-                pub b: ::libc::c_int,
-            }
-        ),
-        quote_item!(cx,
-            impl ::std::default::Default for Struct_Unnamed2 {
-                fn default() -> Struct_Unnamed2 { unsafe { ::std::mem::zeroed() } }
-            }
-        )
-    );
+    assert_bind_eq("headers/struct_with_anon_struct_array.h", "
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_foo {
+            pub bar: [Struct_Unnamed1; 2usize],
+            pub baz: [[[Struct_Unnamed2; 4usize]; 3usize]; 2usize],
+        }
+
+        impl ::std::clone::Clone for Struct_foo {
+            fn clone(&self) -> Self { *self }
+        }
+
+        impl ::std::default::Default for Struct_foo {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_Unnamed1 {
+            pub a: ::libc::c_int,
+            pub b: ::libc::c_int,
+        }
+
+        impl ::std::clone::Clone for Struct_Unnamed1 {
+            fn clone(&self) -> Self { *self }
+        }
+
+        impl ::std::default::Default for Struct_Unnamed1 {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_Unnamed2 {
+            pub a: ::libc::c_int,
+            pub b: ::libc::c_int,
+        }
+
+        impl ::std::clone::Clone for Struct_Unnamed2 {
+            fn clone(&self) -> Self { *self }
+        }
+
+        impl ::std::default::Default for Struct_Unnamed2 {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+    ");
 }
 
 #[test]
@@ -135,53 +142,57 @@ fn with_nesting() {
 
 #[test]
 fn containing_fwd_decl_struct() {
-    assert_bind_eq!("headers/struct_containing_forward_declared_struct.h", cx,
-        quote_item!(cx,
-            #[repr(C)]
-            #[derive(Copy)]
-            pub struct Struct_a {
-                pub val_a: *mut Struct_b,
-            }
-        ),
-        quote_item!(cx,
-            impl ::std::default::Default for Struct_a {
-                fn default() -> Struct_a { unsafe { ::std::mem::zeroed() } }
-            }
-        ),
-        quote_item!(cx,
-            #[repr(C)]
-            #[derive(Copy)]
-            pub struct Struct_b {
-                pub val_b: ::libc::c_int,
-            }
-        ),
-        quote_item!(cx,
-            impl ::std::default::Default for Struct_b {
-                fn default() -> Struct_b { unsafe { ::std::mem::zeroed() } }
-            }
-        )
-    );
+    assert_bind_eq("headers/struct_containing_forward_declared_struct.h", "
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_a {
+            pub val_a: *mut Struct_b,
+        }
+
+        impl ::std::clone::Clone for Struct_a {
+            fn clone(&self) -> Self { *self }
+        }
+
+        impl ::std::default::Default for Struct_a {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_b {
+            pub val_b: ::libc::c_int,
+        }
+
+        impl ::std::clone::Clone for Struct_b {
+            fn clone(&self) -> Self { *self }
+        }
+
+        impl ::std::default::Default for Struct_b {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+    ");
 }
 
 #[test]
 fn with_bitfields() {
-    assert_bind_eq!("headers/struct_with_bitfields.h", cx,
-        quote_item!(cx,
-            #[repr(C)]
-            #[derive(Copy)]
-            pub struct Struct_bitfield {
-                pub _bindgen_bitfield_1_: ::libc::c_ushort,
-                pub e: ::libc::c_int,
-                pub _bindgen_bitfield_2_: ::libc::c_uint,
-                pub _bindgen_bitfield_3_: ::libc::c_uint,
-            }
-        ),
-        quote_item!(cx,
-            impl ::std::default::Default for Struct_bitfield {
-                fn default() -> Struct_bitfield { unsafe { ::std::mem::zeroed() } }
-            }
-        )
-    );
+    assert_bind_eq("headers/struct_with_bitfields.h", "
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_bitfield {
+            pub _bindgen_bitfield_1_: ::libc::c_ushort,
+            pub e: ::libc::c_int,
+            pub _bindgen_bitfield_2_: ::libc::c_uint,
+            pub _bindgen_bitfield_3_: ::libc::c_uint,
+        }
+
+        impl ::std::clone::Clone for Struct_bitfield {
+            fn clone(&self) -> Self { *self }
+        }
+
+        impl ::std::default::Default for Struct_bitfield {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+    ");
 }
 
 #[test]
