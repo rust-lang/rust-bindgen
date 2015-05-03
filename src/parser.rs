@@ -317,7 +317,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
     fn is_bitfield_continuation(field: &il::FieldInfo, ty: &il::Type, width: u32) -> bool {
         match (&field.bitfields, ty) {
             (&Some(ref bitfields), &il::TInt(_, layout)) if *ty == field.ty => {
-                bitfields.iter().map(|&(_, w)| w).sum::<u32>() + width <= (layout.size * 8) as u32
+                bitfields.iter().map(|&(_, w)| w).fold(0u32, |acc, w| acc + w) + width <= (layout.size * 8) as u32
             },
             _ => false
         }

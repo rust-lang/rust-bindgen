@@ -7,8 +7,10 @@ license = "BSD-3-Clause"
 
 build = "build.rs"
 
-[dependencies.log]
-git = "https://github.com/rust-lang/log.git"
+[dependencies]
+log = "*"
+libc = "*"
+syntex_syntax = "*"
 
 [features]
 static = []

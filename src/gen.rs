@@ -10,11 +10,13 @@ use syntax::codemap::{Span, Spanned, respan, ExpnInfo, NameAndSpan, MacroBang};
 use syntax::ext::base;
 use syntax::ext::build::AstBuilder;
 use syntax::ext::expand::ExpansionConfig;
+use syntax::ext::quote::rt::ToTokens;
 use syntax::feature_gate::Features;
 use syntax::owned_slice::OwnedSlice;
 use syntax::parse;
 use syntax::attr::mk_attr_id;
 use syntax::ptr::P;
+use syntax::print::pprust::tts_to_string;
 
 use super::LinkType;
 use types::*;
@@ -682,38 +684,30 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, items: Vec<EnumItem>
 fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
                     kind: CompKind, members: &Vec<CompMember>,
                     extra: &mut Vec<P<ast::Item>>) -> Vec<P<ast::ImplItem>> {
-    let data_ident = ctx.ext_cx.ident_of(data_field);
 
     let mk_field_method = |ctx: &mut GenCtx, f: &FieldInfo, offset: usize| {
         // TODO: Implement bitfield accessors
         if f.bitfields.is_some() { return None; }
 
         let (f_name, _) = rust_id(ctx, f.name.clone());
-        let f_name_ident = ctx.ext_cx.ident_of(&f_name[..]);
         let ret_ty = P(cty_to_rs(ctx, &TPtr(Box::new(f.ty.clone()), false, Layout::zero())));
 
         // When the offset is zero, generate slightly prettier code.
-        let method = if offset == 0 {
-            quote_item!(&ctx.ext_cx,
-                impl X {
-                    pub unsafe fn $f_name_ident(&mut self) -> $ret_ty {
-                        ::std::mem::transmute(&self.$data_ident)
-                    }
-                }
-            )
-        } else {
-            let offset_expr = &ctx.ext_cx.expr_int(ctx.span, offset as isize);
-            quote_item!(&ctx.ext_cx,
-                impl X {
-                    pub unsafe fn $f_name_ident(&mut self) -> $ret_ty {
-                        let raw: *mut u8 = ::std::mem::transmute(&self.$data_ident);
-                        ::std::mem::transmute(raw.offset($offset_expr))
-                    }
-                }
-            )
+        let method = {
+            let impl_str = format!(r"
+                impl X {{
+                    pub unsafe fn {}(&mut self) -> {} {{
+                        let raw: *mut u8 = ::std::mem::transmute(&self.{});
+                        ::std::mem::transmute(raw.offset({}))
+                    }}
+                }}
+            ", f_name, tts_to_string(&ret_ty.to_tokens(&ctx.ext_cx)[..]), data_field, offset);
+
+            parse::new_parser_from_source_str(ctx.ext_cx.parse_sess(),
+                ctx.ext_cx.cfg(), "".to_string(), impl_str).parse_item().unwrap()
         };
 
-        method.unwrap().and_then(|i| {
+        method.and_then(|i| {
             match i.node {
                 ast::ItemImpl(_, _, _, _, _, mut items) => {
                     items.pop()
@@ -756,22 +750,26 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
 
 // Implements std::default::Default using std::mem::zeroed.
 fn mk_default_impl(ctx: &GenCtx, ty_name: &str) -> P<ast::Item> {
-    let name_ident = ctx.ext_cx.ident_of(ty_name);
-    quote_item!(&ctx.ext_cx,
-        impl ::std::default::Default for $name_ident {
-            fn default() -> $name_ident { unsafe { ::std::mem::zeroed() } }
-        }
-    ).unwrap()
+    let impl_str = format!(r"
+        impl ::std::default::Default for {} {{
+            fn default() -> Self {{ unsafe {{ ::std::mem::zeroed() }} }}
+        }}
+    ", ty_name);
+
+    parse::new_parser_from_source_str(ctx.ext_cx.parse_sess(),
+        ctx.ext_cx.cfg(), "".to_string(), impl_str).parse_item().unwrap()
 }
 
 // Implements std::clone::Clone using dereferencing
 fn mk_clone_impl(ctx: &GenCtx, ty_name: &str) -> P<ast::Item> {
-    let name_ident = ctx.ext_cx.ident_of(ty_name);
-    quote_item!(&ctx.ext_cx,
-        impl ::std::clone::Clone for $name_ident {
-            fn clone(&self) -> $name_ident { *self }
-        }
-    ).unwrap()
+    let impl_str = format!(r"
+        impl ::std::clone::Clone for {} {{
+            fn clone(&self) -> Self {{ *self }}
+        }}
+    ", ty_name);
+
+    parse::new_parser_from_source_str(ctx.ext_cx.parse_sess(),
+        ctx.ext_cx.cfg(), "".to_string(), impl_str).parse_item().unwrap()
 }
 
 fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout) -> Spanned<ast::StructField_> {

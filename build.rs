@@ -1,11 +1,16 @@
-#![feature(path_ext)]
-
 use std::env;
-use std::fs::PathExt;
+use std::fs;
 use std::path::Path;
 
 const LINUX_CLANG_DIRS: &'static [&'static str] = &["/usr/lib", "/usr/lib/llvm", "/usr/lib64/llvm"];
 const MAC_CLANG_DIR: &'static str = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib";
+
+fn path_exists(path: &Path) -> bool {
+    match fs::metadata(path) {
+        Ok(_) => true,
+        Err(_) => false
+    }
+}
 
 fn main() {
     let use_static_lib = env::var_os("LIBCLANG_STATIC").is_some() || cfg!(feature = "static");
@@ -26,7 +31,7 @@ fn main() {
         let clang_dir = Path::new(candidate_dir);
         let clang_path = clang_dir.join(clang_lib.clone());
 
-        if clang_path.exists() {
+        if path_exists(&*clang_path) {
             Some(clang_dir)
         } else {
             None

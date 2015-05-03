@@ -1,11 +1,8 @@
-#![feature(rustc_private, exit_status)]
-
 #![crate_name = "bindgen"]
 #![crate_type = "bin"]
 
 extern crate bindgen;
 #[macro_use] extern crate log;
-extern crate syntax;
 
 use bindgen::{Bindings, BindgenOptions, LinkType, Logger};
 use std::io;
@@ -14,6 +11,7 @@ use std::env;
 use std::default::Default;
 use std::fs;
 use std::borrow::ToOwned;
+use std::process::exit;
 
 struct StdLogger;
 
@@ -248,10 +246,10 @@ pub fn main() {
                     Ok(()) => (),
                     Err(e) => {
                         logger.error(&format!("Unable to write bindings to file. {}", e)[..]);
-                        env::set_exit_status(-1);
+                        exit(-1);
                     }
                 },
-                Err(()) => env::set_exit_status(-1)
+                Err(()) => exit(-1)
             }
         }
     }
