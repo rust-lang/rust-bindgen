@@ -1,7 +1,7 @@
 [package]
 
-name = "rust-bindgen"
-version = "0.13.0"
+name = "bindgen"
+version = "0.14.0"
 authors = ["Jyun-Yan You <jyyou.tw@gmail.com>"]
 license = "BSD-3-Clause"
 
@@ -12,8 +12,8 @@ log = "*"
 libc = "*"
 syntex_syntax = "*"
 
-[dev-dependencies.rust-bindgen-plugin]
-path = "./plugin"
+[dev-dependencies.bindgen_plugin]
+path = "./bindgen_plugin"
 
 [features]
 static = []
