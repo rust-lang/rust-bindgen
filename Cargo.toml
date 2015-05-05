@@ -2,6 +2,7 @@
 
 name = "bindgen"
 version = "0.14.0"
+description = "A binding generator for Rust"
 authors = ["Jyun-Yan You <jyyou.tw@gmail.com>"]
 license = "BSD-3-Clause"
 
@@ -13,6 +14,7 @@ libc = "*"
 syntex_syntax = "*"
 
 [dev-dependencies.bindgen_plugin]
+version = "*"
 path = "./bindgen_plugin"
 
 [features]
