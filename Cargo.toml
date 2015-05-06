@@ -9,9 +9,9 @@ license = "BSD-3-Clause"
 build = "build.rs"
 
 [dependencies]
-log = "*"
-libc = "*"
-syntex_syntax = "*"
+log = "0.3.*"
+libc = "0.1.*"
+syntex_syntax = "0.4.*"
 
 [features]
 static = []
