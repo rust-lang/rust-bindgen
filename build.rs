@@ -2,7 +2,7 @@ use std::env;
 use std::fs;
 use std::path::Path;
 
-const LINUX_CLANG_DIRS: &'static [&'static str] = &["/usr/lib", "/usr/lib/llvm", "/usr/lib64/llvm"];
+const LINUX_CLANG_DIRS: &'static [&'static str] = &["/usr/lib", "/usr/lib/llvm", "/usr/lib64/llvm", "/usr/lib/x86_64-linux-gnu"];
 const MAC_CLANG_DIR: &'static str = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib";
 
 fn path_exists(path: &Path) -> bool {
