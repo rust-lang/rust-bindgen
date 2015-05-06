@@ -8,6 +8,8 @@ extern crate libc;
 use std::collections::HashSet;
 use std::default::Default;
 use std::io::{Write, self};
+use std::fs::OpenOptions;
+use std::path::Path;
 
 use syntax::ast;
 use syntax::codemap::{DUMMY_SP, Span};
@@ -23,6 +25,68 @@ mod clang;
 mod gen;
 mod parser;
 
+#[derive(Clone)]
+pub struct Builder<'a> {
+    options: BindgenOptions,
+    logger: Option<&'a Logger>
+}
+
+pub fn builder<'a>() -> Builder<'a> {
+    Default::default()
+}
+
+impl<'a> Builder<'a> {
+    pub fn header<T: Into<String>>(&mut self, header: T) -> &mut Self {
+        self.options.clang_args.push(header.into());
+        self
+    }
+
+    pub fn link<T: Into<String>>(&mut self, library: T) -> &mut Self {
+        self.options.links.push((library.into(), LinkType::Default));
+        self
+    }
+
+    pub fn link_static<T: Into<String>>(&mut self, library: T) -> &mut Self {
+        self.options.links.push((library.into(), LinkType::Static));
+        self
+    }
+
+    pub fn link_framework<T: Into<String>>(&mut self, library: T) -> &mut Self {
+        self.options.links.push((library.into(), LinkType::Framework));
+        self
+    }
+
+    pub fn forbid_unknown_types(&mut self) -> &mut Self {
+        self.options.fail_on_unknown_type = true;
+        self
+    }
+
+    pub fn emit_builtins(&mut self) -> &mut Self {
+        self.options.builtins = true;
+        self
+    }
+
+    pub fn log(&mut self, logger: &'a Logger) -> &mut Self {
+        self.logger = Some(logger);
+        self
+    }
+
+    pub fn generate(&self) -> Result<Bindings, ()> {
+        Bindings::generate(&self.options, self.logger, None)
+    }
+}
+
+impl<'a> Default for Builder<'a> {
+    fn default() -> Builder<'a> {
+        Builder {
+            logger: None,
+            options: Default::default()
+        }
+    }
+}
+
+#[derive(Clone)]
+/// Deprecated - use a `Builder` instead
 pub struct BindgenOptions {
     pub match_pat: Vec<String>,
     pub builtins: bool,
@@ -47,7 +111,7 @@ impl Default for BindgenOptions {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum LinkType {
     Default,
     Static,
@@ -59,11 +123,13 @@ pub trait Logger {
     fn warn(&self, msg: &str);
 }
 
+#[derive(Clone)]
 pub struct Bindings {
     module: ast::Mod
 }
 
 impl Bindings {
+    /// Deprecated - use a `Builder` instead
     pub fn generate(options: &BindgenOptions, logger: Option<&Logger>, span: Option<Span>) -> Result<Bindings, ()> {
         let l = DummyLogger;
         let logger = match logger {
@@ -99,6 +165,11 @@ impl Bindings {
             self.write(ref_writer).ok().expect("Could not write bindings to string");
         }
         String::from_utf8(mod_str).unwrap()
+    }
+
+    pub fn write_to_file<P: AsRef<Path>>(&self, path: P) -> io::Result<()> {
+        let file = try!(OpenOptions::new().write(true).truncate(true).create(true).open(path));
+        self.write(Box::new(file))
     }
 
     pub fn write<'a>(&'a self, mut writer: Box<Write + 'a>) -> io::Result<()> {
@@ -163,4 +234,19 @@ fn builtin_names() -> HashSet<String> {
     });
 
     return names;
+}
+
+#[test]
+fn builder_state()
+{
+    let logger = DummyLogger;
+    let mut build = builder();
+    {
+        build.header("example.h");
+        build.link_static("m");
+        build.log(&logger);
+    }
+    assert!(build.logger.is_some());
+    assert!(build.options.clang_args.binary_search(&"example.h".to_string()).is_ok());
+    assert!(build.options.links.binary_search(&("m".to_string(), LinkType::Static)).is_ok());
 }
