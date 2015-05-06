@@ -1,3 +1,5 @@
+// Unused until we can generate code for tests
+
 #[allow(dead_code, non_camel_case_types)]
 pub mod ffi { bindgen!("/usr/include/math.h", link = "m"); }
 

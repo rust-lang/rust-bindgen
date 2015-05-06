@@ -1,6 +1,7 @@
 language: rust
 rust:
   - nightly
+  - beta
 env:
   - LLVM_VERSION=3.4
   - LLVM_VERSION=3.5
@@ -13,3 +14,4 @@ install:
 script:
   - export LIBCLANG_PATH=/usr/lib/llvm-${LLVM_VERSION}/lib
   - cargo build --verbose
+  - cargo test

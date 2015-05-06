@@ -1,7 +1,9 @@
+use bindgen;
+
 #[test]
 fn test_builtin_va_list() {
-    #[allow(non_camel_case_types)]
-    mod ffi { bindgen!("headers/builtin_va_list.h", emit_builtins = true); }
-    // Should test for more than compilation.
+	let bindings = bindgen::builder().header("tests/headers/builtin_va_list.h")
+				       .emit_builtins().generate().unwrap().to_string();
+    assert!(bindings.contains("__builtin_va_list"));
 }
 

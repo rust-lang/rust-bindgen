@@ -13,10 +13,6 @@ log = "*"
 libc = "*"
 syntex_syntax = "*"
 
-[dev-dependencies.bindgen_plugin]
-version = "*"
-path = "./bindgen_plugin"
-
 [features]
 static = []
 

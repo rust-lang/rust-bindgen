@@ -1,17 +1,32 @@
-use std::default::Default;
-
 use support::assert_bind_eq;
 
 #[test]
 fn with_anon_struct() {
-    mod ffi { bindgen!("headers/struct_with_anon_struct.h"); }
-    let mut x: ffi::Struct_foo = Default::default();
-
-    x.bar.a = 1;
-    x.bar.b = 2;
-
-    assert_eq!(x.bar.a, 1);
-    assert_eq!(x.bar.b, 2);
+    assert_bind_eq("headers/struct_with_anon_struct.h", "
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_foo {
+            pub bar: Struct_Unnamed1,
+        }
+        impl ::std::clone::Clone for Struct_foo {
+            fn clone(&self) -> Self { *self }
+        }
+        impl ::std::default::Default for Struct_foo {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_Unnamed1 {
+            pub a: ::libc::c_int,
+            pub b: ::libc::c_int,
+        }
+        impl ::std::clone::Clone for Struct_Unnamed1 {
+            fn clone(&self) -> Self { *self }
+        }
+        impl ::std::default::Default for Struct_Unnamed1 {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+    ");
 }
 
 #[test]
@@ -66,78 +81,171 @@ fn with_anon_struct_array() {
 
 #[test]
 fn with_anon_struct_pointer() {
-    mod ffi { bindgen!("headers/struct_with_anon_struct_pointer.h"); }
-    let mut x: ffi::Struct_foo = Default::default();
-    let mut unnamed: ffi::Struct_Unnamed1 = Default::default();
-
-    unsafe {
-        x.bar = &mut unnamed;
-
-        (*x.bar).a = 1;
-        (*x.bar).b = 2;
-
-        assert_eq!((*x.bar).a, 1);
-        assert_eq!((*x.bar).b, 2);
-
-        ::std::ptr::read(x.bar);
-    }
+    assert_bind_eq("headers/struct_with_anon_struct_pointer.h", "
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_foo {
+            pub bar: *mut Struct_Unnamed1,
+        }
+        impl ::std::clone::Clone for Struct_foo {
+            fn clone(&self) -> Self { *self }
+        }
+        impl ::std::default::Default for Struct_foo {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_Unnamed1 {
+            pub a: ::libc::c_int,
+            pub b: ::libc::c_int,
+        }
+        impl ::std::clone::Clone for Struct_Unnamed1 {
+            fn clone(&self) -> Self { *self }
+        }
+        impl ::std::default::Default for Struct_Unnamed1 {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+    ");
 }
 
 #[test]
 fn with_anon_union() {
-    mod ffi { bindgen!("headers/struct_with_anon_union.h"); }
-    let mut x: ffi::Struct_foo = Default::default();
-
-    unsafe {
-        *x.bar.a() = 0x12345678;
-        assert_eq!(*x.bar.a(), 0x12345678);
-        assert_eq!(*x.bar.b(), 0x5678);
-    }
+    assert_bind_eq("headers/struct_with_anon_union.h", "
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_foo {
+            pub bar: Union_Unnamed1,
+        }
+        impl ::std::clone::Clone for Struct_foo {
+            fn clone(&self) -> Self { *self }
+        }
+        impl ::std::default::Default for Struct_foo {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Union_Unnamed1 {
+            pub _bindgen_data_: [u32; 1usize],
+        }
+        impl Union_Unnamed1 {
+            pub unsafe fn a(&mut self) -> *mut ::libc::c_uint {
+                let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
+                ::std::mem::transmute(raw.offset(0))
+            }
+            pub unsafe fn b(&mut self) -> *mut ::libc::c_ushort {
+                let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
+                ::std::mem::transmute(raw.offset(0))
+            }
+        }
+        impl ::std::clone::Clone for Union_Unnamed1 {
+            fn clone(&self) -> Self { *self }
+        }
+        impl ::std::default::Default for Union_Unnamed1 {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+    ");
 }
 
 #[test]
 fn with_anon_unnamed_struct() {
-    mod ffi { bindgen!("headers/struct_with_anon_unnamed_struct.h"); }
-    let mut x: ffi::Struct_foo = Default::default();
-
-    unsafe {
-        *x.a() = 0x12345678;
-        *x.b() = 0x87654321;
-        assert_eq!(*x.a(), 0x12345678);
-        assert_eq!(*x.b(), 0x87654321);
-    }
+    assert_bind_eq("headers/struct_with_anon_unnamed_struct.h", "
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_foo {
+            pub _bindgen_data_1_: [u32; 2usize],
+        }
+        impl Struct_foo {
+            pub unsafe fn a(&mut self) -> *mut ::libc::c_uint {
+                let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
+                ::std::mem::transmute(raw.offset(0))
+            }
+            pub unsafe fn b(&mut self) -> *mut ::libc::c_uint {
+                let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
+                ::std::mem::transmute(raw.offset(4))
+            }
+        }
+        impl ::std::clone::Clone for Struct_foo {
+            fn clone(&self) -> Self { *self }
+        }
+        impl ::std::default::Default for Struct_foo {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+    ");
 }
 
 #[test]
 fn with_anon_unnamed_union() {
-    mod ffi { bindgen!("headers/struct_with_anon_unnamed_union.h"); }
-    let mut x: ffi::Struct_foo = Default::default();
-
-    unsafe {
-        *x.a() = 0x12345678;
-        assert_eq!(*x.a(), 0x12345678);
-        assert_eq!(*x.b(), 0x5678);
-    }
+    assert_bind_eq("headers/struct_with_anon_unnamed_union.h", "
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_foo {
+            pub _bindgen_data_1_: [u32; 1usize],
+        }
+        impl Struct_foo {
+            pub unsafe fn a(&mut self) -> *mut ::libc::c_uint {
+                let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
+                ::std::mem::transmute(raw.offset(0))
+            }
+            pub unsafe fn b(&mut self) -> *mut ::libc::c_ushort {
+                let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
+                ::std::mem::transmute(raw.offset(0))
+            }
+        }
+        impl ::std::clone::Clone for Struct_foo {
+            fn clone(&self) -> Self { *self }
+        }
+        impl ::std::default::Default for Struct_foo {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+    ");
 }
 
 #[test]
 fn with_nesting() {
-    mod ffi { bindgen!("headers/struct_with_nesting.h"); }
-    let mut x: ffi::Struct_foo = Default::default();
-
-    unsafe {
-        x.a = 0x12345678;
-        *x.b() = 0x87654321;
-
-        assert_eq!(x.a, 0x12345678);
-        assert_eq!(*x.b(), 0x87654321);
-        assert_eq!(*x.c1(), 0x4321);
-        assert_eq!(*x.c2(), 0x8765);
-        assert_eq!(*x.d1(), 0x21);
-        assert_eq!(*x.d2(), 0x43);
-        assert_eq!(*x.d3(), 0x65);
-        assert_eq!(*x.d4(), 0x87);
-    }
+    assert_bind_eq("headers/struct_with_nesting.h", "
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_foo {
+            pub a: ::libc::c_uint,
+            pub _bindgen_data_1_: [u32; 1usize],
+        }
+        impl Struct_foo {
+            pub unsafe fn b(&mut self) -> *mut ::libc::c_uint {
+                let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
+                ::std::mem::transmute(raw.offset(0))
+            }
+            pub unsafe fn c1(&mut self) -> *mut ::libc::c_ushort {
+                let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
+                ::std::mem::transmute(raw.offset(0))
+            }
+            pub unsafe fn c2(&mut self) -> *mut ::libc::c_ushort {
+                let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
+                ::std::mem::transmute(raw.offset(2))
+            }
+            pub unsafe fn d1(&mut self) -> *mut ::libc::c_uchar {
+                let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
+                ::std::mem::transmute(raw.offset(0))
+            }
+            pub unsafe fn d2(&mut self) -> *mut ::libc::c_uchar {
+                let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
+                ::std::mem::transmute(raw.offset(1))
+            }
+            pub unsafe fn d3(&mut self) -> *mut ::libc::c_uchar {
+                let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
+                ::std::mem::transmute(raw.offset(2))
+            }
+            pub unsafe fn d4(&mut self) -> *mut ::libc::c_uchar {
+                let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
+                ::std::mem::transmute(raw.offset(3))
+            }
+        }
+        impl ::std::clone::Clone for Struct_foo {
+            fn clone(&self) -> Self { *self }
+        }
+        impl ::std::default::Default for Struct_foo {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+    ");
 }
 
 #[test]
@@ -197,29 +305,29 @@ fn with_bitfields() {
 
 #[test]
 fn with_fwd_decl_struct() {
-    mod ffi { bindgen!("headers/forward_declared_struct.h"); }
-
-    let a = ffi::Struct_a { b: 1 };
-    let c = ffi::Struct_c { d: 1 };
-
-    assert_eq!(a.b, 1);
-    assert_eq!(c.d, 1);
+    assert_bind_eq("headers/forward_declared_struct.h", "
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_a {
+            pub b: ::libc::c_int,
+        }
+        impl ::std::clone::Clone for Struct_a {
+            fn clone(&self) -> Self { *self }
+        }
+        impl ::std::default::Default for Struct_a {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_c {
+            pub d: ::libc::c_int,
+        }
+        impl ::std::clone::Clone for Struct_c {
+            fn clone(&self) -> Self { *self }
+        }
+        impl ::std::default::Default for Struct_c {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+    ");
 }
 
-#[test]
-fn default_impl() {
-    mod ffi { bindgen!("headers/struct_with_nesting.h"); }
-
-    let mut x: ffi::Struct_foo = Default::default();
-
-    unsafe {
-        assert_eq!(x.a, 0);
-        assert_eq!(*x.b(), 0);
-        assert_eq!(*x.c1(), 0);
-        assert_eq!(*x.c2(), 0);
-        assert_eq!(*x.d1(), 0);
-        assert_eq!(*x.d2(), 0);
-        assert_eq!(*x.d3(), 0);
-        assert_eq!(*x.d4(), 0);
-    }
-}
