@@ -98,7 +98,7 @@ Examples
 
 Cargo.toml
 
-    [dependencies.rust-bindgen]
+    [dependencies.bindgen]
     git = "https://github.com/crabtw/rust-bindgen.git"
 
 main.rs
