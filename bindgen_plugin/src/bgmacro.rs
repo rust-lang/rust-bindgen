@@ -11,7 +11,7 @@ use syntax::parse::token;
 use syntax::ptr::P;
 use syntax::util::small_vector::SmallVector;
 
-use bindgen::{Bindings, BindgenOptions, LinkType, Logger};
+use bindgen::{Bindings, BindgenOptions, LinkType, Logger, self};
 
 pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::TokenTree]) -> Box<base::MacResult+'static> {
     let mut visit = BindgenArgsVisitor {
@@ -27,6 +27,11 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
     // Reparse clang_args as it is passed in string form
     let clang_args = visit.options.clang_args.connect(" ");
     visit.options.clang_args = parse_process_args(&clang_args[..]);
+
+    if let Some(path) = bindgen::get_include_dir() {
+        visit.options.clang_args.push("-I".to_owned());
+        visit.options.clang_args.push(path);
+    }
 
     // Set the working dir to the directory containing the invoking rs file so
     // that clang searches for headers relative to it rather than the crate root
