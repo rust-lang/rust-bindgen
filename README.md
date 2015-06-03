@@ -27,6 +27,10 @@ The default path on OS X is:
 
     /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/
 
+Or if you only have Xcode Command Line Tools installed:
+
+    export DYLD_LIBRARY_PATH=/Library/Developer/CommandLineTools/usr/lib
+
 Command Line Usage
 ------------------
 
