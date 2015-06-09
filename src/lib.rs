@@ -38,7 +38,11 @@ pub fn builder<'a>() -> Builder<'a> {
 
 impl<'a> Builder<'a> {
     pub fn header<T: Into<String>>(&mut self, header: T) -> &mut Self {
-        self.options.clang_args.push(header.into());
+        self.clang_arg(header)
+    }
+
+    pub fn clang_arg<T: Into<String>>(&mut self, arg: T) -> &mut Self {
+        self.options.clang_args.push(arg.into());
         self
     }
 
