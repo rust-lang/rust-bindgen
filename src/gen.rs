@@ -123,7 +123,7 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
         recursion_limit: 64,
         trace_mac: false,
     };
-    let sess = &parse::new_parse_sess();
+    let sess = &parse::ParseSess::new();
     let mut ctx = GenCtx {
         ext_cx: base::ExtCtxt::new(
             sess,
