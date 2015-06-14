@@ -11,7 +11,7 @@ build = "build.rs"
 [dependencies]
 log = "0.3.*"
 libc = "0.1.*"
-syntex_syntax = "0.4.*"
+syntex_syntax = "0.7.*"
 
 [features]
 static = []

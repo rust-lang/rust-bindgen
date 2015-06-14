@@ -99,5 +99,5 @@ impl DummyExtCtxt {
 }
 
 fn mk_dummy_ext_ctxt<'a>() -> DummyExtCtxt {
-    DummyExtCtxt { sess: parse::new_parse_sess() }
+    DummyExtCtxt { sess: parse::ParseSess::new() }
 }
