@@ -41,6 +41,11 @@ impl<'a> Builder<'a> {
         self.clang_arg(header)
     }
 
+    pub fn match_pat<T: Into<String>>(&mut self, arg: T) -> &mut Self {
+        self.options.match_pat.push(arg.into());
+        self
+    }
+
     pub fn clang_arg<T: Into<String>>(&mut self, arg: T) -> &mut Self {
         self.options.clang_args.push(arg.into());
         self
