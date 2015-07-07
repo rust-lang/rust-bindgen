@@ -451,8 +451,37 @@ fn visit_enum(cursor: &Cursor,
     return CXChildVisit_Continue;
 }
 
+fn visit_literal(cursor: &Cursor, unit: &TranslationUnit) -> Option<i64> {
+    if cursor.kind() == CXCursor_IntegerLiteral {
+        return match unit.tokens(cursor) {
+            None => None,
+            Some(tokens) => {
+                if tokens.len() == 0 || tokens[0].kind != CXToken_Literal {
+                    None
+                } else {
+                    let ref s = tokens[0].spelling;
+                    let parsed = {
+                        //TODO: try to preserve hex literals?
+                        if s.starts_with("0x") {
+                            i64::from_str_radix(&s[2..], 16)
+                        } else {
+                            s.parse()
+                        }
+                    };
+                    match parsed {
+                        Ok(i) => Some(i),
+                        Err(_) => None,
+                    }
+                }
+            }
+        }
+    }
+    return None;
+}
+
 fn visit_top<'r>(cursor: &Cursor,
-                 ctx: &mut ClangParserCtx) -> Enum_CXVisitorResult {
+                 ctx: &mut ClangParserCtx,
+                 unit: &TranslationUnit) -> Enum_CXVisitorResult {
     if !match_pattern(ctx, cursor) {
         return CXChildVisit_Continue;
     }
@@ -509,6 +538,10 @@ fn visit_top<'r>(cursor: &Cursor,
             let mut vi = vi.borrow_mut();
             vi.ty = ty.clone();
             vi.is_const = cursor.cur_type().is_const();
+            cursor.visit(|c, _: &Cursor| {
+                vi.val = visit_literal(c, unit);
+                CXChildVisit_Continue
+            });
             ctx.globals.push(var);
 
             return CXChildVisit_Continue;
@@ -586,11 +619,11 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
         cursor.visit(|cur, _: &Cursor| ast_dump(cur, 0));
     }
 
-    cursor.visit(|cur, _: &Cursor| visit_top(cur, &mut ctx));
+    cursor.visit(|cur, _: &Cursor| visit_top(cur, &mut ctx, &unit));
 
     while !ctx.builtin_defs.is_empty() {
         let c = ctx.builtin_defs.remove(0);
-        visit_top(&c.definition(), &mut ctx);
+        visit_top(&c.definition(), &mut ctx, &unit);
     }
 
     unit.dispose();

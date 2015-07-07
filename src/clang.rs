@@ -39,6 +39,12 @@ impl Cursor {
         }
     }
 
+    pub fn extent(&self) -> CXSourceRange {
+        unsafe {
+            clang_getCursorExtent(self.x)
+        }
+    }
+
     pub fn cur_type(&self) -> Type {
         unsafe {
             Type { x: clang_getCursorType(self.x) }
@@ -351,6 +357,12 @@ impl Index {
     }
 }
 
+// Token
+pub struct Token {
+    pub kind: CXTokenKind,
+    pub spelling: String,
+}
+
 // TranslationUnit
 pub struct TranslationUnit {
     x: CXTranslationUnit
@@ -358,7 +370,7 @@ pub struct TranslationUnit {
 
 impl TranslationUnit {
     pub fn parse(ix: &Index, file: &str, cmd_args: &[String],
-                 unsaved: &[UnsavedFile], opts: usize) -> TranslationUnit {
+                 unsaved: &[UnsavedFile], opts: ::libc::c_uint) -> TranslationUnit {
         let _fname = CString::new(file.as_bytes()).unwrap();
         let fname = _fname.as_ptr();
         let _c_args: Vec<CString> = cmd_args.iter().map(|s| CString::new(s.as_bytes()).unwrap()).collect();
@@ -370,7 +382,7 @@ impl TranslationUnit {
                                        c_args.len() as c_int,
                                        c_unsaved.as_mut_ptr(),
                                        c_unsaved.len() as c_uint,
-                                       opts as c_uint)
+                                       opts)
         };
         TranslationUnit { x: tu }
     }
@@ -411,6 +423,27 @@ impl TranslationUnit {
 
     pub fn is_null(&self) -> bool {
         self.x.is_null()
+    }
+
+    pub fn tokens(&self, cursor: &Cursor) -> Option<Vec<Token>> {
+        let range = cursor.extent();
+        let mut tokens = vec![];
+        unsafe {
+            let mut token_ptr = ::std::ptr::null_mut();
+            let mut num_tokens : c_uint = 0;
+            clang_tokenize(self.x, range, &mut token_ptr, &mut num_tokens);
+            if token_ptr.is_null() {
+                return None;
+            }
+            let token_array = ::std::slice::from_raw_parts(token_ptr, num_tokens as usize);
+            for &token in token_array.iter() {
+                let kind = clang_getTokenKind(token);
+                let spelling = String_ { x: clang_getTokenSpelling(self.x, token) }.to_string();
+                tokens.push(Token { kind: kind, spelling: spelling });
+            }
+            clang_disposeTokens(self.x, token_ptr, num_tokens);
+        }
+        return Some(tokens);
     }
 }
 
