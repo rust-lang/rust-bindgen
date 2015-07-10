@@ -151,7 +151,22 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
         match g {
             GOther => {}
             GFunc(_) => fs.push(g),
-            GVar(_) => vs.push(g),
+            GVar(_) => {
+                let is_int_const = {
+                    match g {
+                        GVar(ref vi) => {
+                            let v = vi.borrow();
+                            v.is_const && v.val.is_some()
+                        }
+                        _ => unreachable!()
+                    }
+                };
+                if is_int_const {
+                    gs.push(g);
+                } else {
+                    vs.push(g);
+                }
+            }
             _ => gs.push(g)
         }
     }
@@ -197,6 +212,11 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
                 }
                 let e = ei.borrow().clone();
                 defs.extend(cenum_to_rs(&mut ctx, enum_name(&e.name), e.kind, e.items).into_iter())
+            },
+            GVar(vi) => {
+                let v = vi.borrow();
+                let ty = cty_to_rs(&mut ctx, &v.ty);
+                defs.push(const_to_rs(&mut ctx, v.name.clone(), v.val.unwrap(), ty));
             },
             _ => { }
         }
@@ -643,6 +663,28 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, members: Vec<Com
     items
 }
 
+fn const_to_rs(ctx: &mut GenCtx, name: String, val: i64, val_ty: ast::Ty) -> P<ast::Item> {
+    let int_lit = ast::LitInt(
+        val.abs() as u64,
+        ast::UnsuffixedIntLit(if val < 0 { ast::Minus } else { ast::Plus })
+            );
+
+    let cst = ast::ItemConst(
+        P(val_ty),
+        ctx.ext_cx.expr_lit(ctx.span, int_lit)
+            );
+
+    let id = first(rust_id(ctx, name.clone()));
+    P(ast::Item {
+        ident: ctx.ext_cx.ident_of(&id[..]),
+        attrs: Vec::new(),
+        id: ast::DUMMY_NODE_ID,
+        node: cst,
+        vis: ast::Public,
+        span: ctx.span
+    })
+}
+
 fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, items: Vec<EnumItem>) -> Vec<P<ast::Item>> {
     let ty = TInt(kind, Layout::zero());
     let ty_id = rust_type_id(ctx, name);
@@ -651,27 +693,7 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, items: Vec<EnumItem>
     let mut def = ty_def;
 
     for it in items.iter() {
-        let int_lit = ast::LitInt(
-            it.val.abs() as u64,
-            ast::UnsuffixedIntLit(if it.val < 0 { ast::Minus } else { ast::Plus })
-        );
-
-        let cst = ast::ItemConst(
-            P(val_ty.clone()),
-            ctx.ext_cx.expr_lit(ctx.span, int_lit)
-        );
-
-        let id = first(rust_id(ctx, it.name.clone()));
-        let val_def = P(ast::Item {
-                         ident: ctx.ext_cx.ident_of(&id[..]),
-                         attrs: Vec::new(),
-                         id: ast::DUMMY_NODE_ID,
-                         node: cst,
-                         vis: ast::Public,
-                         span: ctx.span
-                      });
-
-        def.push(val_def);
+        def.push(const_to_rs(ctx, it.name.clone(), it.val, val_ty.clone()));
     }
 
     return def;
@@ -849,14 +871,16 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: String,
         attrs.push(mk_link_name_attr(ctx, name));
     }
 
+    let val_ty = P(cty_to_rs(ctx, ty));
+
     return P(ast::ForeignItem {
-              ident: ctx.ext_cx.ident_of(&rust_name[..]),
-              attrs: attrs,
-              node: ast::ForeignItemStatic(P(cty_to_rs(ctx, ty)), !is_const),
-              id: ast::DUMMY_NODE_ID,
-              span: ctx.span,
-              vis: ast::Public,
-           });
+        ident: ctx.ext_cx.ident_of(&rust_name[..]),
+        attrs: attrs,
+        node: ast::ForeignItemStatic(val_ty, !is_const),
+        id: ast::DUMMY_NODE_ID,
+        span: ctx.span,
+        vis: ast::Public,
+    });
 }
 
 fn cfuncty_to_rs(ctx: &mut GenCtx,

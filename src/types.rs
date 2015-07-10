@@ -281,6 +281,8 @@ impl fmt::Debug for TypeInfo {
 pub struct VarInfo {
     pub name: String,
     pub ty: Type,
+    //TODO: support non-integer constants
+    pub val: Option<i64>,
     pub is_const: bool
 }
 
@@ -289,6 +291,7 @@ impl VarInfo {
         VarInfo {
             name: name,
             ty: ty,
+            val: None,
             is_const: false
         }
     }
