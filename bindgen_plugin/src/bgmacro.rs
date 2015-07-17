@@ -205,7 +205,7 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
             }
         }
 
-        if parser.eat(&token::Eof).is_ok() {
+        if parser.check(&token::Eof) {
             return args_good
         }
 
