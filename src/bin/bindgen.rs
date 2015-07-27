@@ -126,7 +126,7 @@ fn print_usage(bin: String) {
 "
 Options:
     -h or --help               Display help message
-    -l <name> or -l<name>      Link to a dynamic library, can be proivded
+    -l <name> or -l<name>      Link to a dynamic library, can be provided
                                multiple times
     -static-link <name>        Link to a static library
     -framework-link <name>     Link to a framework
