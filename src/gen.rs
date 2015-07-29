@@ -488,12 +488,13 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: String, ty: &Type) -> Vec<P<ast::Item>
 fn comp_to_rs(ctx: &mut GenCtx, kind: CompKind, name: String,
               layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
     match kind {
-        CompKind::Struct => cstruct_to_rs(ctx, name, members),
+        CompKind::Struct => cstruct_to_rs(ctx, name, layout, members),
         CompKind::Union =>  cunion_to_rs(ctx, name, layout, members),
     }
 }
 
-fn cstruct_to_rs(ctx: &mut GenCtx, name: String, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
+fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
+                 layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
     let mut fields = vec!();
     let mut methods = vec!();
     // Nested composites may need to emit declarations and implementations as
@@ -557,7 +558,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String, members: Vec<CompMember>) -> Ve
 
     let id = rust_type_id(ctx, name.clone());
     let struct_def = P(ast::Item { ident: ctx.ext_cx.ident_of(&id[..]),
-        attrs: vec!(mk_repr_attr(ctx), mk_deriving_copy_attr(ctx)),
+        attrs: vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx)),
         id: ast::DUMMY_NODE_ID,
         node: def,
         vis: ast::Public,
@@ -640,7 +641,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, members: Vec<Com
         empty_generics()
     );
     let union_id = rust_type_id(ctx, name.clone());
-    let union_attrs = vec!(mk_repr_attr(ctx), mk_deriving_copy_attr(ctx));
+    let union_attrs = vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx));
     let union_def = mk_item(ctx, union_id, def, ast::Public, union_attrs);
 
     let union_impl = ast::ItemImpl(
@@ -833,10 +834,14 @@ fn mk_link_name_attr(ctx: &mut GenCtx, name: String) -> ast::Attribute {
     respan(ctx.span, attr)
 }
 
-fn mk_repr_attr(ctx: &mut GenCtx) -> ast::Attribute {
+fn mk_repr_attr(ctx: &mut GenCtx, layout: Layout) -> ast::Attribute {
+    let mut values = vec!(P(respan(ctx.span, ast::MetaWord(to_intern_str(ctx, "C".to_string())))));
+    if layout.packed {
+        values.push(P(respan(ctx.span, ast::MetaWord(to_intern_str(ctx, "packed".to_string())))));
+    }
     let attr_val = P(respan(ctx.span, ast::MetaList(
         to_intern_str(ctx, "repr".to_string()),
-        vec!(P(respan(ctx.span, ast::MetaWord(to_intern_str(ctx, "C".to_string())))))
+        values
     )));
 
     respan(ctx.span, ast::Attribute_ {

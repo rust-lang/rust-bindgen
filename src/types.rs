@@ -128,15 +128,16 @@ impl Type {
 pub struct Layout {
     pub size: usize,
     pub align: usize,
+    pub packed: bool,
 }
 
 impl Layout {
     pub fn new(size: usize, align: usize) -> Layout {
-        Layout { size: size, align: align }
+        Layout { size: size, align: align, packed: false }
     }
 
     pub fn zero() -> Layout {
-        Layout { size: 0, align: 0 }
+        Layout { size: 0, align: 0, packed: false }
     }
 }
 
