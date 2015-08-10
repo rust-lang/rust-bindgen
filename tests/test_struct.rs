@@ -331,3 +331,22 @@ fn with_fwd_decl_struct() {
     ");
 }
 
+
+#[test]
+fn packed_struct() {
+    assert_bind_eq("headers/struct_with_packing.h", "
+        #[repr(C, packed)]
+        #[derive(Copy)]
+        pub struct Struct_a {
+            pub b: ::libc::c_char,
+            pub c: ::libc::c_short,
+        }
+        impl ::std::clone::Clone for Struct_a {
+            fn clone(&self) -> Self { *self }
+        }
+        impl ::std::default::Default for Struct_a {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+    ");
+}
+

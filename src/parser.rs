@@ -312,7 +312,8 @@ fn opaque_ty(ctx: &mut ClangParserCtx, ty: &cx::Type) {
 /// nested composites that make up the visited composite.
 fn visit_composite(cursor: &Cursor, parent: &Cursor,
                    ctx: &mut ClangParserCtx,
-                   members: &mut Vec<CompMember>) -> Enum_CXVisitorResult {
+                   compinfo: &mut CompInfo) -> Enum_CXVisitorResult {
+    let ref mut members = compinfo.members;
 
     fn is_bitfield_continuation(field: &il::FieldInfo, ty: &il::Type, width: u32) -> bool {
         match (&field.bitfields, ty) {
@@ -421,10 +422,13 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 let ci = decl.compinfo();
                 cursor.visit(|c, p| {
                     let mut ci_ = ci.borrow_mut();
-                    visit_composite(c, p, ctx_, &mut ci_.members)
+                    visit_composite(c, p, ctx_, &mut ci_)
                 });
                 members.push(CompMember::Comp(decl.compinfo()));
             });
+        }
+        CXCursor_PackedAttr => {
+            compinfo.layout.packed = true;
         }
         _ => {
             // XXX: Some kind of warning would be nice, but this produces far
@@ -493,7 +497,7 @@ fn visit_top<'r>(cursor: &Cursor,
                 let ci = decl.compinfo();
                 cursor.visit(|c, p| {
                     let mut ci_ = ci.borrow_mut();
-                    visit_composite(c, p, ctx_, &mut ci_.members)
+                    visit_composite(c, p, ctx_, &mut ci_)
                 });
                 ctx_.globals.push(GComp(ci));
             });

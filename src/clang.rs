@@ -663,6 +663,7 @@ pub fn kind_to_str(x: Enum_CXCursorKind) -> &'static str {
         CXCursor_InclusionDirective => "InclusionDirective",
         //CXCursor_FirstPreprocessing => "FirstPreprocessing",
         //CXCursor_LastPreprocessing => "LastPreprocessing",
+        CXCursor_PackedAttr => "PackedAttr",
 
         _ => "?",
     }
