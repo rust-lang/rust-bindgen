@@ -1,7 +1,7 @@
 [package]
 
 name = "bindgen_plugin"
-version = "0.14.0"
+version = "0.15.0"
 description = "A binding generator for Rust - compiler plugin"
 authors = ["Jyun-Yan You <jyyou.tw@gmail.com>"]
 license = "BSD-3-Clause"
