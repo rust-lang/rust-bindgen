@@ -74,6 +74,7 @@ pub struct FuncSig {
     pub ret_ty: Box<Type>,
     pub args: Vec<(String, Type)>,
     pub is_variadic: bool,
+    pub is_safe: bool,
     pub abi: abi::Abi,
 }
 

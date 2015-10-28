@@ -218,10 +218,17 @@ fn mk_fn_sig(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Fu
     let ret_ty = Box::new(conv_ty(ctx, &ty.ret_type(), cursor));
     let abi = get_abi(ty.call_conv());
 
+    // Function is presumed unsafe if it takes a pointer argument.
+    let is_unsafe = args_lst.iter().any(|arg| match arg.1 {
+        TPtr(_, _, _) => true,
+        _ => false
+    });
+
     il::FuncSig {
         ret_ty: ret_ty,
         args: args_lst,
         is_variadic: ty.is_variadic(),
+        is_safe: !is_unsafe,
         abi: abi,
     }
 }

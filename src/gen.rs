@@ -1011,11 +1011,13 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
         },
         &TFuncPtr(ref sig) => {
             let decl = cfuncty_to_rs(ctx, &*sig.ret_ty, &sig.args[..], sig.is_variadic);
-            mk_fnty(ctx, &decl, sig.abi)
+            let unsafety = if sig.is_safe { ast::Unsafety::Normal } else { ast::Unsafety::Unsafe };
+            mk_fnty(ctx, &decl, unsafety, sig.abi)
         },
         &TFuncProto(ref sig) => {
             let decl = cfuncty_to_rs(ctx, &*sig.ret_ty, &sig.args[..], sig.is_variadic);
-            mk_fn_proto_ty(ctx, &decl, sig.abi)
+            let unsafety = if sig.is_safe { ast::Unsafety::Normal } else { ast::Unsafety::Unsafe };
+            mk_fn_proto_ty(ctx, &decl, unsafety, sig.abi)
         },
         &TNamed(ref ti) => {
             let id = rust_type_id(ctx, ti.borrow().name.clone());
@@ -1092,9 +1094,12 @@ fn mk_arrty(ctx: &GenCtx, base: &ast::Ty, n: usize) -> ast::Ty {
     };
 }
 
-fn mk_fn_proto_ty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: abi::Abi) -> ast::Ty {
+fn mk_fn_proto_ty(ctx: &mut GenCtx,
+                  decl: &ast::FnDecl,
+                  unsafety: ast::Unsafety,
+                  abi: abi::Abi) -> ast::Ty {
     let fnty = ast::TyBareFn(P(ast::BareFnTy {
-        unsafety: ast::Unsafety::Normal,
+        unsafety: unsafety,
         abi: abi,
         lifetimes: Vec::new(),
         decl: P(decl.clone())
@@ -1107,9 +1112,12 @@ fn mk_fn_proto_ty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: abi::Abi) -> ast::T
     }
 }
 
-fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: abi::Abi) -> ast::Ty {
+fn mk_fnty(ctx: &mut GenCtx,
+           decl: &ast::FnDecl,
+           unsafety: ast::Unsafety,
+           abi: abi::Abi) -> ast::Ty {
     let fnty = ast::TyBareFn(P(ast::BareFnTy {
-        unsafety: ast::Unsafety::Normal,
+        unsafety: unsafety,
         abi: abi,
         lifetimes: Vec::new(),
         decl: P(decl.clone())
