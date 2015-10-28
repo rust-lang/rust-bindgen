@@ -1,6 +1,7 @@
 use std::env;
 use std::fs;
 use std::path::Path;
+use std::process::Command;
 
 const LINUX_CLANG_DIRS: &'static [&'static str] = &[
     "/usr/lib",
@@ -42,7 +43,10 @@ fn main() {
 			format!("{}clang{}", env::consts::DLL_PREFIX, env::consts::DLL_SUFFIX)
 		};
 
-    let maybe_clang_dir = possible_clang_dirs.iter().filter_map(|candidate_dir| {
+    //may contain path to libclang detected via ldconfig
+    let mut libclang_path_string = String::new();
+
+    let mut maybe_clang_dir = possible_clang_dirs.iter().filter_map(|candidate_dir| {
         let clang_dir = Path::new(candidate_dir);
         let clang_path = clang_dir.join(clang_lib.clone());
         if path_exists(&*clang_path) {
@@ -51,6 +55,33 @@ fn main() {
             None
         }
     }).next();
+    
+    if maybe_clang_dir == None && cfg!(target_os = "linux") {
+        //try to find via lddconfig
+        //may return line, like
+        //libclang.so.3.7 (libc6,x86-64) => /usr/lib64/libclang.so.3.7
+        let lddresult = Command::new("/sbin/ldconfig")
+            .arg("-p")
+            .output();
+        if lddresult.is_ok() {
+            let lddresult = lddresult.unwrap();
+            let ldd_config_output = String::from_utf8_lossy(&lddresult.stdout).to_string();
+            for line in ldd_config_output.lines() {
+                let line_trim = line.trim();
+                if line_trim.starts_with(&*clang_lib) {
+                    let last_word = line_trim.rsplit(" ").next();
+                    if let Some(last_word) = last_word {
+                        let libclang_path = Path::new(last_word);
+                        if path_exists(&libclang_path) {
+                            libclang_path_string = last_word.to_owned();
+                            maybe_clang_dir = Path::new(&libclang_path_string).parent();
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
 
     macro_rules! qw {
         ($($i:ident)*) => (vec!($(stringify!($i)),*));
@@ -99,6 +130,7 @@ fn main() {
                 clangTooling
             ];
 
+
             print!("cargo:rustc-flags=");
             for lib in libs {
                 print!("-l static={} ", lib);
@@ -106,7 +138,12 @@ fn main() {
             println!("-L {} -l ncursesw -l z -l stdc++", clang_dir.to_str().unwrap());
         } else{
             println!("cargo:rustc-link-search=native={}", clang_dir.to_str().unwrap());
-            println!("cargo:rustc-link-lib=dylib=clang");
+            if !libclang_path_string.is_empty() {
+                let libclang_path = Path::new(&libclang_path_string);
+                println!("cargo:rustc-link-lib=dylib=:{}", libclang_path.file_name().unwrap().to_str().unwrap());
+            } else {
+                println!("cargo:rustc-link-lib=dylib=clang");
+            }
         }
     } else {
         panic!("Unable to find {}", clang_lib);
