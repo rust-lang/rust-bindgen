@@ -25,7 +25,7 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
     }
 
     // Reparse clang_args as it is passed in string form
-    let clang_args = visit.options.clang_args.connect(" ");
+    let clang_args = visit.options.clang_args.join(" ");
     visit.options.clang_args = parse_process_args(&clang_args[..]);
 
     if let Some(path) = bindgen::get_include_dir() {
@@ -61,7 +61,7 @@ pub fn bindgen_macro(cx: &mut base::ExtCtxt, sp: codemap::Span, tts: &[ast::Toke
             let mut parser = parse::new_parser_from_source_str(cx.parse_sess(), cx.cfg(), "(Auto-generated bindings)".to_string(), bindings_str);
 
             let mut items = Vec::new();
-            while let Some(item) = parser.parse_item() {
+            while let Ok(Some(item)) = parser.parse_item() {
                 items.push(item);
             }
 
@@ -144,7 +144,9 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
                 Ok(token::Ident(ident, _)) => {
                     let ident = parser.id_to_interned_str(ident);
                     name = Some(ident.to_string());
-                    parser.expect(&token::Eq);
+                    if let Err(_) = parser.expect(&token::Eq) {
+                        return false;
+                    }
                 },
                 _ => {
                     cx.span_err(span, "invalid argument format");
@@ -158,7 +160,9 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
             token::Ident(val, _) => {
                 let val = parser.id_to_interned_str(val);
                 span.hi = parser.span.hi;
-                parser.bump();
+                if let Err(_) = parser.bump() {
+                    return false;
+                }
 
                 // Bools are simply encoded as idents
                 let ret = match &*val {
@@ -173,7 +177,7 @@ fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut 
             }
             // Match [literal] and parse as an expression so we can expand macros
             _ => {
-                let expr = cx.expander().fold_expr(parser.parse_expr());
+                let expr = cx.expander().fold_expr(parser.parse_expr().unwrap());
                 span.hi = expr.span.hi;
                 match expr.node {
                     ast::ExprLit(ref lit) => {
@@ -281,7 +285,7 @@ fn parse_process_args(s: &str) -> Vec<String> {
 
                     let part: Vec<String> = starts.zip(ends).map(|((_, start), (_, end))| s[*start..*end].to_string()).collect();
 
-                    let part = part.connect("");
+                    let part = part.join("");
 
                     if part.len() > 0 {
                         // Remove any extra whitespace outside the quotes
