@@ -263,24 +263,24 @@ fn builder_state()
 
 // Get the first directory in PATH that contains a file named "clang".
 fn get_clang_dir() -> Option<path::PathBuf>{
-    match env::var_os("PATH") {
-        Some(paths) => {
-            for p in env::split_paths(&paths) {
-                let mut bin_path = p.clone();
-                bin_path.push("clang");
-                match fs::metadata(bin_path) {
-                    Ok(m) => {
-                        if m.is_file() {
-                            return Some(p);
-                        }
+    if let Some(paths) = env::var_os("PATH") {
+        for mut path in env::split_paths(&paths) {
+            path.push("clang");
+            if let Ok(real_path) = fs::canonicalize(&path) {
+                if fs::metadata(&real_path).iter().any(|m| m.is_file()) &&
+                    real_path
+                        .file_name()
+                        .and_then(|f| f.to_str())
+                        .iter()
+                        .any(|&f| f == "clang") {
+                    if let Some(dir) = real_path.parent() {
+                        return Some(dir.to_path_buf())
                     }
-                    _ => (),
                 }
             }
-            None
         }
-        None => None,
     }
+    None
 }
 
 // Try to find the directory that contains clang's bundled headers. Clang itself does something
