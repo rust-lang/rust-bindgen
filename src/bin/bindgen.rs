@@ -162,14 +162,6 @@ pub fn main() {
     let mut bind_args: Vec<_> = env::args().collect();
     let bin = bind_args.remove(0);
 
-    match bindgen::get_include_dir() {
-        Some(path) => {
-            bind_args.push("-I".to_owned());
-            bind_args.push(path);
-        }
-        None => (),
-    }
-
     match parse_args(&bind_args[..]) {
         ParseResult::ParseErr(e) => panic!(e),
         ParseResult::CmdUsage => print_usage(bin),

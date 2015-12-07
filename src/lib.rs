@@ -116,7 +116,10 @@ impl Default for BindgenOptions {
             emit_ast: false,
             fail_on_unknown_type: false,
             override_enum_ty: "".to_string(),
-            clang_args: Vec::new()
+            clang_args: match get_include_dir() {
+                Some(path) => vec!("-idirafter".to_owned(), path),
+                None => Vec::new()
+            }
         }
     }
 }
