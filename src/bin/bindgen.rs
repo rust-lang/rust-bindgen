@@ -10,7 +10,6 @@ use std::path;
 use std::env;
 use std::default::Default;
 use std::fs;
-use std::borrow::ToOwned;
 use std::process::exit;
 
 struct StdLogger;
