@@ -3,12 +3,12 @@
 #![feature(plugin_registrar, rustc_private)]
 
 extern crate bindgen;
-extern crate rustc;
+extern crate rustc_plugin;
 extern crate syntax;
 
 mod bgmacro;
 
-use rustc::plugin::Registry;
+use rustc_plugin::Registry;
 
 #[doc(hidden)]
 #[plugin_registrar]
