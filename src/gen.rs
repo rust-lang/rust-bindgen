@@ -37,7 +37,7 @@ fn ref_eq<'a, 'b, T>(thing: &'a T, other: &'b T) -> bool {
 
 fn to_intern_str(ctx: &mut GenCtx, s: String) -> parse::token::InternedString {
     let id = ctx.ext_cx.ident_of(&s[..]);
-    parse::token::get_ident(id)
+    id.name.as_str()
 }
 
 fn empty_generics() -> ast::Generics {
@@ -124,11 +124,13 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
         trace_mac: false,
     };
     let sess = &parse::ParseSess::new();
+    let mut feature_gated_cfgs = Vec::new();
     let mut ctx = GenCtx {
         ext_cx: base::ExtCtxt::new(
             sess,
             Vec::new(),
             cfg,
+            &mut feature_gated_cfgs,
         ),
         unnamed_ty: 0,
         span: span
@@ -136,8 +138,7 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
     ctx.ext_cx.bt_push(ExpnInfo {
         call_site: ctx.span,
         callee: NameAndSpan {
-            name: String::new(),
-            format: MacroBang,
+            format: MacroBang(parse::token::intern("")),
             allow_internal_unstable: false,
             span: None
         }
@@ -309,7 +310,7 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, LinkType)],
             };
             respan(ctx.span, ast::Attribute_ {
                 id: mk_attr_id(),
-                style: ast::AttrOuter,
+                style: ast::AttrStyle::Outer,
                 value: P(respan(ctx.span, ast::MetaList(
                     to_intern_str(ctx, "link".to_string()),
                     link_args)
@@ -547,12 +548,8 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
         }
     }
 
-    let ctor_id = if fields.is_empty() { Some(ast::DUMMY_NODE_ID) } else { None };
     let def = ast::ItemStruct(
-        P(ast::StructDef {
-           fields: fields,
-           ctor_id: ctor_id,
-        }),
+        ast::VariantData::Struct(fields, ast::DUMMY_NODE_ID),
         empty_generics()
     );
 
@@ -634,10 +631,9 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, members: Vec<Com
     let data_field = mk_blob_field(ctx, data_field_name, layout);
 
     let def = ast::ItemStruct(
-        P(ast::StructDef {
-           fields: vec!(data_field),
-           ctor_id: None,
-        }),
+        ast::VariantData::Struct(
+            vec!(data_field),
+            ast::DUMMY_NODE_ID),
         empty_generics()
     );
     let union_id = rust_type_id(ctx, name.clone());
@@ -727,7 +723,7 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
             ", f_name, tts_to_string(&ret_ty.to_tokens(&ctx.ext_cx)[..]), data_field, offset);
 
             parse::new_parser_from_source_str(ctx.ext_cx.parse_sess(),
-                ctx.ext_cx.cfg(), "".to_string(), impl_str).parse_item().unwrap()
+                ctx.ext_cx.cfg(), "".to_string(), impl_str).parse_item().unwrap().unwrap()
         };
 
         method.and_then(|i| {
@@ -780,7 +776,7 @@ fn mk_default_impl(ctx: &GenCtx, ty_name: &str) -> P<ast::Item> {
     ", ty_name);
 
     parse::new_parser_from_source_str(ctx.ext_cx.parse_sess(),
-        ctx.ext_cx.cfg(), "".to_string(), impl_str).parse_item().unwrap()
+        ctx.ext_cx.cfg(), "".to_string(), impl_str).parse_item().unwrap().unwrap()
 }
 
 // Implements std::clone::Clone using dereferencing
@@ -792,7 +788,7 @@ fn mk_clone_impl(ctx: &GenCtx, ty_name: &str) -> P<ast::Item> {
     ", ty_name);
 
     parse::new_parser_from_source_str(ctx.ext_cx.parse_sess(),
-        ctx.ext_cx.cfg(), "".to_string(), impl_str).parse_item().unwrap()
+        ctx.ext_cx.cfg(), "".to_string(), impl_str).parse_item().unwrap().unwrap()
 }
 
 fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout) -> Spanned<ast::StructField_> {
@@ -827,7 +823,7 @@ fn mk_link_name_attr(ctx: &mut GenCtx, name: String) -> ast::Attribute {
     )));
     let attr = ast::Attribute_ {
         id: mk_attr_id(),
-        style: ast::AttrOuter,
+        style: ast::AttrStyle::Outer,
         value: attr_val,
         is_sugared_doc: false
     };
@@ -846,7 +842,7 @@ fn mk_repr_attr(ctx: &mut GenCtx, layout: Layout) -> ast::Attribute {
 
     respan(ctx.span, ast::Attribute_ {
         id: mk_attr_id(),
-        style: ast::AttrOuter,
+        style: ast::AttrStyle::Outer,
         value: attr_val,
         is_sugared_doc: false
     })
@@ -860,7 +856,7 @@ fn mk_deriving_copy_attr(ctx: &mut GenCtx) -> ast::Attribute {
 
     respan(ctx.span, ast::Attribute_ {
         id: mk_attr_id(),
-        style: ast::AttrOuter,
+        style: ast::AttrStyle::Outer,
         value: attr_val,
         is_sugared_doc: false
     })
@@ -1083,7 +1079,8 @@ fn mk_arrty(ctx: &GenCtx, base: &ast::Ty, n: usize) -> ast::Ty {
         P(ast::Expr {
             id: ast::DUMMY_NODE_ID,
             node: sz,
-            span: ctx.span
+            span: ctx.span,
+            attrs: None,
         })
     );
 
