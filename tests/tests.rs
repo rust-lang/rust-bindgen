@@ -10,6 +10,7 @@ mod support;
 //mod test_cmath;
 mod test_enum;
 mod test_decl;
+mod test_extern;
 mod test_func;
 mod test_struct;
 mod test_union;
