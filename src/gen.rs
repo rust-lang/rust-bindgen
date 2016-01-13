@@ -14,6 +14,7 @@ use syntax::ext::quote::rt::ToTokens;
 use syntax::feature_gate::Features;
 use syntax::owned_slice::OwnedSlice;
 use syntax::parse;
+use syntax::parse::token::InternedString;
 use syntax::attr::mk_attr_id;
 use syntax::ptr::P;
 use syntax::print::pprust::tts_to_string;
@@ -211,8 +212,8 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
                     let mut e = ei.borrow_mut();
                     e.name = unnamed_name(&mut ctx, e.name.clone());
                 }
-                let e = ei.borrow().clone();
-                defs.extend(cenum_to_rs(&mut ctx, enum_name(&e.name), e.kind, e.items).into_iter())
+                let e = ei.borrow();
+                defs.extend(cenum_to_rs(&mut ctx, enum_name(&e.name), e.kind, &e.items).into_iter())
             },
             GVar(vi) => {
                 let v = vi.borrow();
@@ -476,8 +477,8 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: String, ty: &Type) -> Vec<P<ast::Item>
             let is_empty = ei.borrow().name.is_empty();
             if is_empty {
                 ei.borrow_mut().name = name.clone();
-                let e = ei.borrow().clone();
-                cenum_to_rs(ctx, name, e.kind, e.items)
+                let e = ei.borrow();
+                cenum_to_rs(ctx, name, e.kind, &e.items)
             } else {
                 vec!(mk_item(ctx, name, ty))
             }
@@ -555,7 +556,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
 
     let id = rust_type_id(ctx, name.clone());
     let struct_def = P(ast::Item { ident: ctx.ext_cx.ident_of(&id[..]),
-        attrs: vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx)),
+        attrs: vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx, false)),
         id: ast::DUMMY_NODE_ID,
         node: def,
         vis: ast::Public,
@@ -637,7 +638,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, members: Vec<Com
         empty_generics()
     );
     let union_id = rust_type_id(ctx, name.clone());
-    let union_attrs = vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx));
+    let union_attrs = vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx, false));
     let union_def = mk_item(ctx, union_id, def, ast::Public, union_attrs);
 
     let union_impl = ast::ItemImpl(
@@ -682,18 +683,80 @@ fn const_to_rs(ctx: &mut GenCtx, name: String, val: i64, val_ty: ast::Ty) -> P<a
     })
 }
 
-fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, items: Vec<EnumItem>) -> Vec<P<ast::Item>> {
-    let ty = TInt(kind, Layout::zero());
-    let ty_id = rust_type_id(ctx, name);
-    let ty_def = ctypedef_to_rs(ctx, ty_id, &ty);
-    let val_ty = cty_to_rs(ctx, &ty);
-    let mut def = ty_def;
+fn enum_kind_to_rust_type_name(kind: IKind) -> &'static str {
+    match kind {
+        ISChar => "i8",
+        IUChar => "u8",
+        IShort => "i16",
+        IUShort => "u16",
+        IInt => "i32",
+        IUInt => "u32",
+        ILong => "i64",
+        IULong => "u64",
+        _ => unreachable!(),
+    }
+}
 
-    for it in items.iter() {
-        def.push(const_to_rs(ctx, it.name.clone(), it.val, val_ty.clone()));
+fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, enum_items: &[EnumItem])
+               -> Vec<P<ast::Item>> {
+    let enum_name = ctx.ext_cx.ident_of(&name);
+    let enum_ty = ctx.ext_cx.ty_ident(ctx.span, enum_name);
+
+    let mut variants = vec![];
+    let mut found_values = HashMap::new();
+    let mut items = vec![];
+
+    for item in enum_items {
+        let name = ctx.ext_cx.ident_of(&item.name);
+
+        if let Some(orig) = found_values.get(&item.val) {
+            let value = ctx.ext_cx.expr_path(
+                ctx.ext_cx.path(ctx.span, vec![enum_name, *orig]));
+            items.push(P(ast::Item {
+                ident: name,
+                attrs: vec![],
+                id: ast::DUMMY_NODE_ID,
+                node: ast::ItemConst(enum_ty.clone(), value),
+                vis: ast::Public,
+                span: ctx.span,
+            }));
+            continue;
+        }
+
+        found_values.insert(item.val, name);
+
+        let sign = ast::UnsuffixedIntLit(if item.val < 0 { ast::Minus } else { ast::Plus });
+        let value = ctx.ext_cx.expr_lit(ctx.span, ast::LitInt(item.val.abs() as u64, sign));
+
+        variants.push(P(respan(ctx.span, ast::Variant_ {
+            name: name,
+            attrs: vec![],
+            data: ast::VariantData::Unit(ast::DUMMY_NODE_ID),
+            disr_expr: Some(value),
+        })));
     }
 
-    return def;
+    let enum_repr = InternedString::new(enum_kind_to_rust_type_name(kind));
+
+    let repr_arg = ctx.ext_cx.meta_word(ctx.span, enum_repr);
+    let repr_list = ctx.ext_cx.meta_list(ctx.span, InternedString::new("repr"), vec![repr_arg]);
+    let repr_attr = respan(ctx.span, ast::Attribute_ {
+        id: mk_attr_id(),
+        style: ast::AttrStyle::Outer,
+        value: repr_list,
+        is_sugared_doc: false,
+    });
+
+    items.push(P(ast::Item {
+        ident: enum_name,
+        attrs: vec![mk_deriving_copy_attr(ctx, true), repr_attr],
+        id: ast::DUMMY_NODE_ID,
+        node: ast::ItemEnum(ast::EnumDef { variants: variants }, empty_generics()),
+        vis: ast::Public,
+        span: ctx.span,
+    }));
+
+    items
 }
 
 /// Generates accessors for fields in nested structs and unions which must be
@@ -848,11 +911,14 @@ fn mk_repr_attr(ctx: &mut GenCtx, layout: Layout) -> ast::Attribute {
     })
 }
 
-fn mk_deriving_copy_attr(ctx: &mut GenCtx) -> ast::Attribute {
-    let attr_val = P(respan(ctx.span, ast::MetaList(
-        to_intern_str(ctx, "derive".to_string()),
-        vec!(P(respan(ctx.span, ast::MetaWord(to_intern_str(ctx, "Copy".to_string())))))
-    )));
+fn mk_deriving_copy_attr(ctx: &mut GenCtx, clone: bool) -> ast::Attribute {
+    let mut words = vec!();
+    if clone {
+        words.push(ctx.ext_cx.meta_word(ctx.span, InternedString::new("Clone")));
+    }
+    words.push(ctx.ext_cx.meta_word(ctx.span, InternedString::new("Copy")));
+
+    let attr_val = ctx.ext_cx.meta_list(ctx.span, InternedString::new("derive"), words);
 
     respan(ctx.span, ast::Attribute_ {
         id: mk_attr_id(),
