@@ -955,14 +955,10 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
                  aty: &[(String, Type)],
                  var: bool) -> ast::FnDecl {
 
-    let ret = P(match *rty {
-        TVoid => ast::Ty {
-            id: ast::DUMMY_NODE_ID,
-            node: ast::TyTup(vec![]),
-            span: ctx.span
-        },
-        _ => cty_to_rs(ctx, rty)
-    });
+    let ret = match *rty {
+        TVoid => ast::DefaultReturn(ctx.span),
+        _ => ast::Return(P(cty_to_rs(ctx, rty)))
+    };
 
     let mut unnamed: usize = 0;
     let args: Vec<ast::Arg> = aty.iter().map(|arg| {
@@ -1003,7 +999,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
     let var = !args.is_empty() && var;
     return ast::FnDecl {
         inputs: args,
-        output: ast::Return(ret),
+        output: ret,
         variadic: var
     };
 }
