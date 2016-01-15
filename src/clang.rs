@@ -120,7 +120,7 @@ impl Cursor {
             for i in 0..num {
                 args.push(Cursor { x: clang_Cursor_getArgument(self.x, i as c_uint) });
             }
-            return args;
+            args
         }
     }
 
@@ -140,7 +140,7 @@ impl Cursor {
 extern fn visit_children(cur: CXCursor, parent: CXCursor,
                          data: CXClientData) -> Enum_CXChildVisitResult {
     let func: &mut Box<CursorVisitor> = unsafe { mem::transmute(data) };
-    return (*func)(&Cursor { x : cur }, &Cursor { x: parent });
+    (*func)(&Cursor { x : cur }, &Cursor { x: parent })
 }
 
 impl PartialEq for Cursor {
@@ -151,7 +151,7 @@ impl PartialEq for Cursor {
     }
 
     fn ne(&self, other: &Cursor) -> bool {
-        return !self.eq(other);
+        !self.eq(other)
     }
 }
 
@@ -175,7 +175,7 @@ pub struct Type {
 impl Type {
     // common
     pub fn kind(&self) -> Enum_CXTypeKind {
-        return self.x.kind;
+        self.x.kind
     }
 
     pub fn declaration(&self) -> Cursor {
@@ -245,7 +245,7 @@ impl Type {
             for i in 0..num {
                 args.push(Type { x: clang_getArgType(self.x, i as c_uint) });
             }
-            return args;
+            args
         }
     }
 
@@ -275,7 +275,7 @@ impl SourceLocation {
             let mut col = 0;
             let mut off = 0;
             clang_getSpellingLocation(self.x, &mut file, &mut line, &mut col, &mut off);
-            return (File { x: file }, line as usize, col as usize, off as usize);
+            (File { x: file }, line as usize, col as usize, off as usize)
         }
     }
 }
@@ -283,15 +283,14 @@ impl SourceLocation {
 impl fmt::Display for SourceLocation {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let (file, line, col, _) = self.location();
-        match file.is_null() {
-            false => {
-                try!(file.name().fmt(f));
-                try!(":".fmt(f));
-                try!(line.fmt(f));
-                try!(":".fmt(f));
-                col.fmt(f)
-            },
-            true => "builtin definitions".fmt(f)
+        if !file.is_null() {
+            try!(file.name().fmt(f));
+            try!(":".fmt(f));
+            try!(line.fmt(f));
+            try!(":".fmt(f));
+            col.fmt(f)
+        } else {
+            "builtin definitions".fmt(f)
         }
     }
 }
@@ -304,7 +303,7 @@ pub struct File {
 impl File {
     pub fn name(&self) -> String {
         if self.is_null() {
-            return "".to_string();
+            return "".to_owned();
         }
         unsafe {
             String_ { x: clang_getFileName(self.x) }.to_string()
@@ -329,7 +328,7 @@ impl fmt::Display for String_ {
         unsafe {
             let c_str = clang_getCString(self.x) as *const c_char;
             let p = c_str as *const _;
-            str::from_utf8(CStr::from_ptr(p).to_bytes()).unwrap().to_string().fmt(f)
+            str::from_utf8(CStr::from_ptr(p).to_bytes()).unwrap().to_owned().fmt(f)
         }
     }
 }
@@ -371,10 +370,10 @@ pub struct TranslationUnit {
 impl TranslationUnit {
     pub fn parse(ix: &Index, file: &str, cmd_args: &[String],
                  unsaved: &[UnsavedFile], opts: ::libc::c_uint) -> TranslationUnit {
-        let _fname = CString::new(file.as_bytes()).unwrap();
-        let fname = _fname.as_ptr();
-        let _c_args: Vec<CString> = cmd_args.iter().map(|s| CString::new(s.as_bytes()).unwrap()).collect();
-        let c_args: Vec<*const c_char> = _c_args.iter().map(|s| s.as_ptr()).collect();
+        let fname = CString::new(file.as_bytes()).unwrap();
+        let fname = fname.as_ptr();
+        let c_args: Vec<CString> = cmd_args.iter().map(|s| CString::new(s.as_bytes()).unwrap()).collect();
+        let c_args: Vec<*const c_char> = c_args.iter().map(|s| s.as_ptr()).collect();
         let mut c_unsaved: Vec<Struct_CXUnsavedFile> = unsaved.iter().map(|f| f.x).collect();
         let tu = unsafe {
             clang_parseTranslationUnit(ix.x, fname,
@@ -405,7 +404,7 @@ impl TranslationUnit {
             for i in 0..num {
                 diags.push(Diagnostic { x: clang_getDiagnostic(self.x, i as c_uint) });
             }
-            return diags;
+            diags
         }
     }
 
@@ -443,7 +442,7 @@ impl TranslationUnit {
             }
             clang_disposeTokens(self.x, token_ptr, num_tokens);
         }
-        return Some(tokens);
+        Some(tokens)
     }
 }
 
@@ -744,5 +743,5 @@ pub fn ast_dump(c: &Cursor, depth: isize)-> Enum_CXVisitorResult {
         ast_dump(s, depth + 1)
     });
     print_indent(depth, ")");
-    return CXChildVisit_Continue;
+    CXChildVisit_Continue
 }

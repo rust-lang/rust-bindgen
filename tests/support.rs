@@ -5,7 +5,7 @@ use std::default::Default;
 
 use syntax::ast;
 use syntax::codemap;
-use syntax::codemap::{Span, DUMMY_SP};
+use syntax::codemap::DUMMY_SP;
 use syntax::parse;
 use syntax::parse::token;
 use syntax::print::pprust;
@@ -50,7 +50,7 @@ pub fn assert_bind_eq(filename: &str, reference_items_str: &str)
     // rendered versions, which is not beautiful, but should work.
     let reference_rendered = render_items(&reference_items);
     let generated_rendered = render_items(&generated_items);
-    
+
     if reference_rendered != generated_rendered {
         println!("Generated bindings for {} do not match the reference bindings.", filename);
         println!("");
