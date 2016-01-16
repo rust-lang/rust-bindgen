@@ -17,8 +17,8 @@ fn with_anon_struct() {
         #[repr(C)]
         #[derive(Copy)]
         pub struct Struct_Unnamed1 {
-            pub a: ::libc::c_int,
-            pub b: ::libc::c_int,
+            pub a: ::std::os::raw::c_int,
+            pub b: ::std::os::raw::c_int,
         }
         impl ::std::clone::Clone for Struct_Unnamed1 {
             fn clone(&self) -> Self { *self }
@@ -50,8 +50,8 @@ fn with_anon_struct_array() {
         #[repr(C)]
         #[derive(Copy)]
         pub struct Struct_Unnamed1 {
-            pub a: ::libc::c_int,
-            pub b: ::libc::c_int,
+            pub a: ::std::os::raw::c_int,
+            pub b: ::std::os::raw::c_int,
         }
 
         impl ::std::clone::Clone for Struct_Unnamed1 {
@@ -65,8 +65,8 @@ fn with_anon_struct_array() {
         #[repr(C)]
         #[derive(Copy)]
         pub struct Struct_Unnamed2 {
-            pub a: ::libc::c_int,
-            pub b: ::libc::c_int,
+            pub a: ::std::os::raw::c_int,
+            pub b: ::std::os::raw::c_int,
         }
 
         impl ::std::clone::Clone for Struct_Unnamed2 {
@@ -96,8 +96,8 @@ fn with_anon_struct_pointer() {
         #[repr(C)]
         #[derive(Copy)]
         pub struct Struct_Unnamed1 {
-            pub a: ::libc::c_int,
-            pub b: ::libc::c_int,
+            pub a: ::std::os::raw::c_int,
+            pub b: ::std::os::raw::c_int,
         }
         impl ::std::clone::Clone for Struct_Unnamed1 {
             fn clone(&self) -> Self { *self }
@@ -128,11 +128,11 @@ fn with_anon_union() {
             pub _bindgen_data_: [u32; 1usize],
         }
         impl Union_Unnamed1 {
-            pub unsafe fn a(&mut self) -> *mut ::libc::c_uint {
+            pub unsafe fn a(&mut self) -> *mut ::std::os::raw::c_uint {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(0))
             }
-            pub unsafe fn b(&mut self) -> *mut ::libc::c_ushort {
+            pub unsafe fn b(&mut self) -> *mut ::std::os::raw::c_ushort {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(0))
             }
@@ -155,11 +155,11 @@ fn with_anon_unnamed_struct() {
             pub _bindgen_data_1_: [u32; 2usize],
         }
         impl Struct_foo {
-            pub unsafe fn a(&mut self) -> *mut ::libc::c_uint {
+            pub unsafe fn a(&mut self) -> *mut ::std::os::raw::c_uint {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
                 ::std::mem::transmute(raw.offset(0))
             }
-            pub unsafe fn b(&mut self) -> *mut ::libc::c_uint {
+            pub unsafe fn b(&mut self) -> *mut ::std::os::raw::c_uint {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
                 ::std::mem::transmute(raw.offset(4))
             }
@@ -182,11 +182,11 @@ fn with_anon_unnamed_union() {
             pub _bindgen_data_1_: [u32; 1usize],
         }
         impl Struct_foo {
-            pub unsafe fn a(&mut self) -> *mut ::libc::c_uint {
+            pub unsafe fn a(&mut self) -> *mut ::std::os::raw::c_uint {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
                 ::std::mem::transmute(raw.offset(0))
             }
-            pub unsafe fn b(&mut self) -> *mut ::libc::c_ushort {
+            pub unsafe fn b(&mut self) -> *mut ::std::os::raw::c_ushort {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
                 ::std::mem::transmute(raw.offset(0))
             }
@@ -206,35 +206,35 @@ fn with_nesting() {
         #[repr(C)]
         #[derive(Copy)]
         pub struct Struct_foo {
-            pub a: ::libc::c_uint,
+            pub a: ::std::os::raw::c_uint,
             pub _bindgen_data_1_: [u32; 1usize],
         }
         impl Struct_foo {
-            pub unsafe fn b(&mut self) -> *mut ::libc::c_uint {
+            pub unsafe fn b(&mut self) -> *mut ::std::os::raw::c_uint {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
                 ::std::mem::transmute(raw.offset(0))
             }
-            pub unsafe fn c1(&mut self) -> *mut ::libc::c_ushort {
+            pub unsafe fn c1(&mut self) -> *mut ::std::os::raw::c_ushort {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
                 ::std::mem::transmute(raw.offset(0))
             }
-            pub unsafe fn c2(&mut self) -> *mut ::libc::c_ushort {
+            pub unsafe fn c2(&mut self) -> *mut ::std::os::raw::c_ushort {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
                 ::std::mem::transmute(raw.offset(2))
             }
-            pub unsafe fn d1(&mut self) -> *mut ::libc::c_uchar {
+            pub unsafe fn d1(&mut self) -> *mut ::std::os::raw::c_uchar {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
                 ::std::mem::transmute(raw.offset(0))
             }
-            pub unsafe fn d2(&mut self) -> *mut ::libc::c_uchar {
+            pub unsafe fn d2(&mut self) -> *mut ::std::os::raw::c_uchar {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
                 ::std::mem::transmute(raw.offset(1))
             }
-            pub unsafe fn d3(&mut self) -> *mut ::libc::c_uchar {
+            pub unsafe fn d3(&mut self) -> *mut ::std::os::raw::c_uchar {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
                 ::std::mem::transmute(raw.offset(2))
             }
-            pub unsafe fn d4(&mut self) -> *mut ::libc::c_uchar {
+            pub unsafe fn d4(&mut self) -> *mut ::std::os::raw::c_uchar {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
                 ::std::mem::transmute(raw.offset(3))
             }
@@ -268,7 +268,7 @@ fn containing_fwd_decl_struct() {
         #[repr(C)]
         #[derive(Copy)]
         pub struct Struct_b {
-            pub val_b: ::libc::c_int,
+            pub val_b: ::std::os::raw::c_int,
         }
 
         impl ::std::clone::Clone for Struct_b {
@@ -287,10 +287,10 @@ fn with_bitfields() {
         #[repr(C)]
         #[derive(Copy)]
         pub struct Struct_bitfield {
-            pub _bindgen_bitfield_1_: ::libc::c_ushort,
-            pub e: ::libc::c_int,
-            pub _bindgen_bitfield_2_: ::libc::c_uint,
-            pub _bindgen_bitfield_3_: ::libc::c_uint,
+            pub _bindgen_bitfield_1_: ::std::os::raw::c_ushort,
+            pub e: ::std::os::raw::c_int,
+            pub _bindgen_bitfield_2_: ::std::os::raw::c_uint,
+            pub _bindgen_bitfield_3_: ::std::os::raw::c_uint,
         }
 
         impl ::std::clone::Clone for Struct_bitfield {
@@ -309,7 +309,7 @@ fn with_fwd_decl_struct() {
         #[repr(C)]
         #[derive(Copy)]
         pub struct Struct_a {
-            pub b: ::libc::c_int,
+            pub b: ::std::os::raw::c_int,
         }
         impl ::std::clone::Clone for Struct_a {
             fn clone(&self) -> Self { *self }
@@ -320,7 +320,7 @@ fn with_fwd_decl_struct() {
         #[repr(C)]
         #[derive(Copy)]
         pub struct Struct_c {
-            pub d: ::libc::c_int,
+            pub d: ::std::os::raw::c_int,
         }
         impl ::std::clone::Clone for Struct_c {
             fn clone(&self) -> Self { *self }
@@ -338,8 +338,8 @@ fn packed_struct() {
         #[repr(C, packed)]
         #[derive(Copy)]
         pub struct Struct_a {
-            pub b: ::libc::c_char,
-            pub c: ::libc::c_short,
+            pub b: ::std::os::raw::c_char,
+            pub c: ::std::os::raw::c_short,
         }
         impl ::std::clone::Clone for Struct_a {
             fn clone(&self) -> Self { *self }

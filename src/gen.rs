@@ -1031,8 +1031,15 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: String, rty: &Type,
 }
 
 fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
+    let prefix = vec!["std".to_string(), "os".to_string(), "raw".to_string()];
+    let raw = |fragment: &str| {
+        let mut path = prefix.clone();
+        path.push(fragment.to_string());
+        path
+    };
+
     return match ty {
-        &TVoid => mk_ty(ctx, true, vec!("libc".to_string(), "c_void".to_string())),
+        &TVoid => mk_ty(ctx, true, raw("c_void")),
         &TInt(i, ref layout) => match i {
             IBool => {
                 let ty_name = match layout.size {
@@ -1044,20 +1051,20 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
                 };
                 mk_ty(ctx, false, vec!(ty_name.to_string()))
             },
-            ISChar => mk_ty(ctx, true, vec!("libc".to_string(), "c_char".to_string())),
-            IUChar => mk_ty(ctx, true, vec!("libc".to_string(), "c_uchar".to_string())),
-            IInt => mk_ty(ctx, true, vec!("libc".to_string(), "c_int".to_string())),
-            IUInt => mk_ty(ctx, true, vec!("libc".to_string(), "c_uint".to_string())),
-            IShort => mk_ty(ctx, true, vec!("libc".to_string(), "c_short".to_string())),
-            IUShort => mk_ty(ctx, true, vec!("libc".to_string(), "c_ushort".to_string())),
-            ILong => mk_ty(ctx, true, vec!("libc".to_string(), "c_long".to_string())),
-            IULong => mk_ty(ctx, true, vec!("libc".to_string(), "c_ulong".to_string())),
-            ILongLong => mk_ty(ctx, true, vec!("libc".to_string(), "c_longlong".to_string())),
-            IULongLong => mk_ty(ctx, true, vec!("libc".to_string(), "c_ulonglong".to_string()))
+            ISChar => mk_ty(ctx, true, raw("c_char")),
+            IUChar => mk_ty(ctx, true, raw("c_uchar")),
+            IInt => mk_ty(ctx, true, raw("c_int")),
+            IUInt => mk_ty(ctx, true, raw("c_uint")),
+            IShort => mk_ty(ctx, true, raw("c_short")),
+            IUShort => mk_ty(ctx, true, raw("c_ushort")),
+            ILong => mk_ty(ctx, true, raw("c_long")),
+            IULong => mk_ty(ctx, true, raw("c_ulong")),
+            ILongLong => mk_ty(ctx, true, raw("c_longlong")),
+            IULongLong => mk_ty(ctx, true, raw("c_ulonglong"))
         },
         &TFloat(f, _) => match f {
-            FFloat => mk_ty(ctx, true, vec!("libc".to_string(), "c_float".to_string())),
-            FDouble => mk_ty(ctx, true, vec!("libc".to_string(), "c_double".to_string()))
+            FFloat => mk_ty(ctx, true, raw("c_float")),
+            FDouble => mk_ty(ctx, true, raw("c_double"))
         },
         &TPtr(ref t, is_const, _) => {
             let id = cty_to_rs(ctx, &**t);
