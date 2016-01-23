@@ -5,8 +5,8 @@ fn func_ptr() {
     assert_bind_eq("headers/func_ptr.h", "
         extern \"C\" {
             pub static mut foo: ::std::option::Option<
-                extern \"C\" fn(x: ::libc::c_int,
-                              y: ::libc::c_int) -> ::libc::c_int>;
+                extern \"C\" fn(x: ::std::os::raw::c_int,
+                              y: ::std::os::raw::c_int) -> ::std::os::raw::c_int>;
         }
     ");
 }
@@ -18,8 +18,8 @@ fn func_ptr_in_struct() {
         #[derive(Copy)]
         pub struct Struct_Foo {
             pub bar: ::std::option::Option<
-                extern \"C\" fn(x: ::libc::c_int,
-                              y: ::libc::c_int) -> Enum_baz>,
+                extern \"C\" fn(x: ::std::os::raw::c_int,
+                              y: ::std::os::raw::c_int) -> Enum_baz>,
         }
 
         impl ::std::clone::Clone for Struct_Foo {
@@ -35,7 +35,7 @@ fn func_ptr_in_struct() {
 #[test]
 fn func_proto() {
     assert_bind_eq("headers/func_proto.h", "
-        pub type foo = extern \"C\" fn(bar: ::libc::c_int) -> ::libc::c_int;
+        pub type foo = extern \"C\" fn(bar: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
     ");
 }
 
@@ -52,7 +52,7 @@ fn with_func_ptr_arg() {
 fn with_array_arg() {
     assert_bind_eq("headers/func_with_array_arg.h", "
         extern \"C\" {
-            pub fn f(x: *mut ::libc::c_int);
+            pub fn f(x: *mut ::std::os::raw::c_int);
         }
     ");
 }

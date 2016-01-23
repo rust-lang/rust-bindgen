@@ -23,8 +23,8 @@ fn with_anon_struct() {
         #[repr(C)]
         #[derive(Copy)]
         pub struct Struct_Unnamed1 {
-            pub a: ::libc::c_uint,
-            pub b: ::libc::c_uint,
+            pub a: ::std::os::raw::c_uint,
+            pub b: ::std::os::raw::c_uint,
         }
         impl ::std::clone::Clone for Struct_Unnamed1 {
             fn clone(&self) -> Self { *self }
@@ -45,7 +45,7 @@ fn with_anon_struct_bitfield() {
         }
 
         impl Union_foo {
-            pub unsafe fn a(&mut self) -> *mut ::libc::c_int {
+            pub unsafe fn a(&mut self) -> *mut ::std::os::raw::c_int {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(0))
             }
@@ -87,11 +87,11 @@ fn with_anon_union() {
             pub _bindgen_data_: [u32; 1usize],
         }
         impl Union_Unnamed1 {
-            pub unsafe fn a(&mut self) -> *mut ::libc::c_uint {
+            pub unsafe fn a(&mut self) -> *mut ::std::os::raw::c_uint {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(0))
             }
-            pub unsafe fn b(&mut self) -> *mut ::libc::c_ushort {
+            pub unsafe fn b(&mut self) -> *mut ::std::os::raw::c_ushort {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(0))
             }
@@ -114,23 +114,23 @@ fn with_anon_unnamed_struct() {
             pub _bindgen_data_: [u32; 1usize],
         }
         impl Union_pixel {
-            pub unsafe fn rgba(&mut self) -> *mut ::libc::c_uint {
+            pub unsafe fn rgba(&mut self) -> *mut ::std::os::raw::c_uint {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(0))
             }
-            pub unsafe fn r(&mut self) -> *mut ::libc::c_uchar {
+            pub unsafe fn r(&mut self) -> *mut ::std::os::raw::c_uchar {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(0))
             }
-            pub unsafe fn g(&mut self) -> *mut ::libc::c_uchar {
+            pub unsafe fn g(&mut self) -> *mut ::std::os::raw::c_uchar {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(1))
             }
-            pub unsafe fn b(&mut self) -> *mut ::libc::c_uchar {
+            pub unsafe fn b(&mut self) -> *mut ::std::os::raw::c_uchar {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(2))
             }
-            pub unsafe fn a(&mut self) -> *mut ::libc::c_uchar {
+            pub unsafe fn a(&mut self) -> *mut ::std::os::raw::c_uchar {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(3))
             }
@@ -153,15 +153,15 @@ fn with_anon_unnamed_union() {
             pub _bindgen_data_: [u32; 1usize],
         }
         impl Union_foo {
-            pub unsafe fn a(&mut self) -> *mut ::libc::c_uint {
+            pub unsafe fn a(&mut self) -> *mut ::std::os::raw::c_uint {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(0))
             }
-            pub unsafe fn b(&mut self) -> *mut ::libc::c_ushort {
+            pub unsafe fn b(&mut self) -> *mut ::std::os::raw::c_ushort {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(0))
             }
-            pub unsafe fn c(&mut self) -> *mut ::libc::c_uchar {
+            pub unsafe fn c(&mut self) -> *mut ::std::os::raw::c_uchar {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(0))
             }
@@ -184,23 +184,23 @@ fn with_nesting() {
             pub _bindgen_data_: [u32; 1usize],
         }
         impl Union_foo {
-            pub unsafe fn a(&mut self) -> *mut ::libc::c_uint {
+            pub unsafe fn a(&mut self) -> *mut ::std::os::raw::c_uint {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(0))
             }
-            pub unsafe fn b1(&mut self) -> *mut ::libc::c_ushort {
+            pub unsafe fn b1(&mut self) -> *mut ::std::os::raw::c_ushort {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(0))
             }
-            pub unsafe fn b2(&mut self) -> *mut ::libc::c_ushort {
+            pub unsafe fn b2(&mut self) -> *mut ::std::os::raw::c_ushort {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(0))
             }
-            pub unsafe fn c1(&mut self) -> *mut ::libc::c_ushort {
+            pub unsafe fn c1(&mut self) -> *mut ::std::os::raw::c_ushort {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(2))
             }
-            pub unsafe fn c2(&mut self) -> *mut ::libc::c_ushort {
+            pub unsafe fn c2(&mut self) -> *mut ::std::os::raw::c_ushort {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(2))
             }
