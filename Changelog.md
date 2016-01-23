@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Breaking
 - Change the way to link to a library in the cli interface (see the `-l` option
   in the output of `--help`)
+- Map stdint.h + size_t types to Rust native ones (#256)
 
 ### Added
 - `-no-rust-enums` generate integer constants instead of enums

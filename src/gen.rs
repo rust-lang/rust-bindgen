@@ -416,8 +416,24 @@ fn ctypedef_to_rs(
         ty: &Type)
         -> Vec<P<ast::Item>> {
     fn mk_item(ctx: &mut GenCtx, name: &str, ty: &Type) -> P<ast::Item> {
+        let rust_ty = match &name[..] {
+            // Alias these types to `usize`, e.g. `type size_t = usize`, instead of aliasing them to
+            // an arch-dependent type, i.e. `type size_t = u64` on 64-bit archs and
+            // `type size_t = u32` on 32-bit archs
+            "size_t" | "uintptr_t" => mk_ty(ctx, false, vec!["usize".to_string()]),
+            // Same as above
+            "ptrdiff_t" | "intptr_t" | "ssize_t" => mk_ty(ctx, false, vec!["isize".to_string()]),
+            "uint8_t" => mk_ty(ctx, false, vec!["u8".to_string()]),
+            "int8_t" => mk_ty(ctx, false, vec!["i8".to_string()]),
+            "uint16_t" => mk_ty(ctx, false, vec!["u16".to_string()]),
+            "int16_t" => mk_ty(ctx, false, vec!["i16".to_string()]),
+            "uint32_t" => mk_ty(ctx, false, vec!["u32".to_string()]),
+            "int32_t" => mk_ty(ctx, false, vec!["i32".to_string()]),
+            "uint64_t" => mk_ty(ctx, false, vec!["u64".to_string()]),
+            "int64_t" => mk_ty(ctx, false, vec!["i64".to_string()]),
+            _ => cty_to_rs(ctx, ty),
+        };
         let rust_name = rust_type_id(ctx, name);
-        let rust_ty = cty_to_rs(ctx, ty);
         let base = ast::ItemKind::Ty(
             P(ast::Ty {
                 id: ast::DUMMY_NODE_ID,

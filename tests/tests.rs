@@ -14,3 +14,4 @@ mod test_func;
 mod test_struct;
 mod test_union;
 mod test_builtins;
+mod test_ints;
