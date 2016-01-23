@@ -24,24 +24,24 @@ pub enum Global {
 impl Global {
     pub fn compinfo(&self) -> Rc<RefCell<CompInfo>> {
         match *self {
-            GComp(ref i) => return i.clone(),
-            GCompDecl(ref i) => return i.clone(),
-            _ => panic!("global_compinfo".to_string())
+            GComp(ref i) => i.clone(),
+            GCompDecl(ref i) => i.clone(),
+            _ => panic!("global_compinfo")
         }
     }
 
     pub fn enuminfo(&self) -> Rc<RefCell<EnumInfo>> {
         match *self {
-            GEnum(ref i) => return i.clone(),
-            GEnumDecl(ref i) => return i.clone(),
-            _ => panic!("global_enuminfo".to_string())
+            GEnum(ref i) => i.clone(),
+            GEnumDecl(ref i) => i.clone(),
+            _ => panic!("global_enuminfo")
         }
     }
 
     pub fn typeinfo(&self) -> Rc<RefCell<TypeInfo>> {
         match *self {
-            GType(ref i) => return i.clone(),
-            _ => panic!("global_typeinfo".to_string())
+            GType(ref i) => i.clone(),
+            _ => panic!("global_typeinfo")
         }
     }
 
@@ -49,7 +49,7 @@ impl Global {
         match *self {
             GVar(ref i) => i.clone(),
             GFunc(ref i) => i.clone(),
-            _ => panic!("global_varinfo".to_string())
+            _ => panic!("global_varinfo")
         }
     }
 }
@@ -94,33 +94,33 @@ pub enum Type {
 
 impl Type {
     pub fn size(&self) -> usize {
-        match self {
-            &TInt(_, l) => l.size,
-            &TFloat(_, l) => l.size,
-            &TPtr(_, _, l) => l.size,
-            &TArray(_, _, l) => l.size,
-            &TNamed(ref ti) => ti.borrow().ty.size(),
-            &TComp(ref ci) => ci.borrow().layout.size,
-            &TEnum(ref ei) => ei.borrow().layout.size,
-            &TVoid => 0,
-            &TFuncProto(..) => 0,
-            &TFuncPtr(..) => 0,
+        match *self {
+            TInt(_, l) => l.size,
+            TFloat(_, l) => l.size,
+            TPtr(_, _, l) => l.size,
+            TArray(_, _, l) => l.size,
+            TNamed(ref ti) => ti.borrow().ty.size(),
+            TComp(ref ci) => ci.borrow().layout.size,
+            TEnum(ref ei) => ei.borrow().layout.size,
+            TVoid => 0,
+            TFuncProto(..) => 0,
+            TFuncPtr(..) => 0,
         }
     }
 
     #[allow(dead_code)]
     pub fn align(&self) -> usize {
-        match self {
-            &TInt(_, l) => l.align,
-            &TFloat(_, l) => l.align,
-            &TPtr(_, _, l) => l.align,
-            &TArray(_, _, l) => l.align,
-            &TNamed(ref ti) => ti.borrow().ty.align(),
-            &TComp(ref ci) => ci.borrow().layout.align,
-            &TEnum(ref ei) => ei.borrow().layout.align,
-            &TVoid => 0,
-            &TFuncProto(..) => 0,
-            &TFuncPtr(..) => 0,
+        match *self {
+            TInt(_, l) => l.align,
+            TFloat(_, l) => l.align,
+            TPtr(_, _, l) => l.align,
+            TArray(_, _, l) => l.align,
+            TNamed(ref ti) => ti.borrow().ty.align(),
+            TComp(ref ci) => ci.borrow().layout.align,
+            TEnum(ref ei) => ei.borrow().layout.align,
+            TVoid => 0,
+            TFuncProto(..) => 0,
+            TFuncPtr(..) => 0,
         }
     }
 }

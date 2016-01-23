@@ -55,7 +55,7 @@ fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {
         true
     });
 
-    return found;
+    found
 }
 
 fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
@@ -119,13 +119,11 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
         },
     };
 
-    if new_decl {
-        if ctx.options.builtin_names.contains(&cursor.spelling()) {
-            ctx.builtin_defs.push(cursor);
-        }
+    if new_decl && ctx.options.builtin_names.contains(&cursor.spelling()) {
+        ctx.builtin_defs.push(cursor);
     }
 
-    return decl;
+    decl
 }
 
 fn opaque_decl(ctx: &mut ClangParserCtx, decl: &Cursor) {
@@ -151,7 +149,7 @@ fn get_abi(cc: Enum_CXCallingConv) -> abi::Abi {
         CXCallingConv_X86FastCall => abi::Fastcall,
         CXCallingConv_AAPCS => abi::Aapcs,
         CXCallingConv_X86_64Win64 => abi::Win64,
-        _other => panic!("unsupported calling convention: {}", _other),
+        other => panic!("unsupported calling convention: {}", other),
     }
 }
 
@@ -159,14 +157,14 @@ fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, layout:
     let is_const = ty.is_const();
     match ty.kind() {
         CXType_Void => {
-            return TPtr(Box::new(TVoid), is_const, layout)
+            TPtr(Box::new(TVoid), is_const, layout)
         }
         CXType_Unexposed |
         CXType_FunctionProto |
         CXType_FunctionNoProto => {
             let ret_ty = ty.ret_type();
             let decl = ty.declaration();
-            return if ret_ty.kind() != CXType_Invalid {
+            if ret_ty.kind() != CXType_Invalid {
                 TFuncPtr(mk_fn_sig(ctx, ty, cursor))
             } else if decl.kind() != CXCursor_NoDeclFound {
                 TPtr(Box::new(conv_decl_ty(ctx, &decl)), ty.is_const(), layout)
@@ -175,19 +173,19 @@ fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, layout:
                 conv_ty(ctx, &can_ty, cursor)
             } else {
                 TPtr(Box::new(TVoid), ty.is_const(), layout)
-            };
+            }
         }
         CXType_Typedef => {
             let decl = ty.declaration();
             let def_ty = decl.typedef_type();
             if def_ty.kind() == CXType_FunctionProto ||
                def_ty.kind() == CXType_FunctionNoProto {
-                return TPtr(Box::new(conv_ptr_ty(ctx, &def_ty, cursor, layout)), is_const, layout);
+                TPtr(Box::new(conv_ptr_ty(ctx, &def_ty, cursor, layout)), is_const, layout)
             } else {
-                return TPtr(Box::new(conv_ty(ctx, ty, cursor)), is_const, layout);
+                TPtr(Box::new(conv_ty(ctx, ty, cursor)), is_const, layout)
             }
         }
-        _ => return TPtr(Box::new(conv_ty(ctx, ty, cursor)), is_const, layout),
+        _ => TPtr(Box::new(conv_ty(ctx, ty, cursor)), is_const, layout),
     }
 }
 
@@ -234,7 +232,7 @@ fn mk_fn_sig(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Fu
 }
 
 fn conv_decl_ty(ctx: &mut ClangParserCtx, cursor: &Cursor) -> il::Type {
-    return match cursor.kind() {
+    match cursor.kind() {
         CXCursor_StructDecl => {
             let decl = decl_name(ctx, cursor);
             let ci = decl.compinfo();
@@ -256,13 +254,13 @@ fn conv_decl_ty(ctx: &mut ClangParserCtx, cursor: &Cursor) -> il::Type {
             TNamed(ti)
         }
         _ => TVoid
-    };
+    }
 }
 
 fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type {
     debug!("conv_ty: ty=`{}` sp=`{}` loc=`{}`", type_to_str(ty.kind()), cursor.spelling(), cursor.location());
     let layout = Layout::new(ty.size(), ty.align());
-    return match ty.kind() {
+    match ty.kind() {
         CXType_Void | CXType_Invalid => TVoid,
         CXType_Bool => TInt(IBool, layout),
         CXType_SChar |
@@ -300,7 +298,7 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
             );
             TVoid
         },
-    };
+    }
 }
 
 fn opaque_ty(ctx: &mut ClangParserCtx, ty: &cx::Type) {
@@ -320,7 +318,7 @@ fn opaque_ty(ctx: &mut ClangParserCtx, ty: &cx::Type) {
 fn visit_composite(cursor: &Cursor, parent: &Cursor,
                    ctx: &mut ClangParserCtx,
                    compinfo: &mut CompInfo) -> Enum_CXVisitorResult {
-    let ref mut members = compinfo.members;
+    let members = &mut compinfo.members;
 
     fn is_bitfield_continuation(field: &il::FieldInfo, ty: &il::Type, width: u32) -> bool {
         match (&field.bitfields, ty) {
@@ -349,15 +347,15 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 (Some(width), _) => {
                     // Bitfields containing enums are not supported by the c standard
                     // https://stackoverflow.com/questions/11983231/is-it-safe-to-use-an-enum-in-a-bit-field
-                    match &ty {
-                        &il::TInt(_, _) => (),
+                    match ty {
+                        il::TInt(_, _) => (),
                         _ => {
                             let msg = format!("Enums in bitfields are not supported ({}.{}).",
                                 cursor.spelling(), parent.spelling());
                             ctx.logger.warn(&msg[..]);
                         }
                     }
-                    ("".to_string(), Some(vec!((cursor.spelling(), width))))
+                    ("".to_owned(), Some(vec!((cursor.spelling(), width))))
                 },
                 // The field is not a bitfield
                 (None, _) => (cursor.spelling(), None)
@@ -393,10 +391,10 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
 
             fn inner_composite(mut ty: &il::Type) -> Option<&Rc<RefCell<CompInfo>>> {
                 loop {
-                    match ty {
-                        &TComp(ref comp_ty) => return Some(comp_ty),
-                        &TPtr(ref ptr_ty, _, _) => ty = &**ptr_ty,
-                        &TArray(ref array_ty, _, _) => ty = &**array_ty,
+                    match *ty {
+                        TComp(ref comp_ty) => return Some(comp_ty),
+                        TPtr(ref ptr_ty, _, _) => ty = &**ptr_ty,
+                        TArray(ref array_ty, _, _) => ty = &**array_ty,
                         _ => return None
                     }
                 }
@@ -459,18 +457,18 @@ fn visit_enum(cursor: &Cursor,
         let item = EnumItem::new(name, val);
         items.push(item);
     }
-    return CXChildVisit_Continue;
+    CXChildVisit_Continue
 }
 
 fn visit_literal(cursor: &Cursor, unit: &TranslationUnit) -> Option<i64> {
     if cursor.kind() == CXCursor_IntegerLiteral {
-        return match unit.tokens(cursor) {
+        match unit.tokens(cursor) {
             None => None,
             Some(tokens) => {
-                if tokens.len() == 0 || tokens[0].kind != CXToken_Literal {
+                if tokens.is_empty() || tokens[0].kind != CXToken_Literal {
                     None
                 } else {
-                    let ref s = tokens[0].spelling;
+                    let s = &tokens[0].spelling;
                     let parsed = {
                         //TODO: try to preserve hex literals?
                         if s.starts_with("0x") {
@@ -487,10 +485,12 @@ fn visit_literal(cursor: &Cursor, unit: &TranslationUnit) -> Option<i64> {
             }
         }
     }
-    return None;
+    else {
+        None
+    }
 }
 
-fn visit_top<'r>(cursor: &Cursor,
+fn visit_top(cursor: &Cursor,
                  ctx: &mut ClangParserCtx,
                  unit: &TranslationUnit) -> Enum_CXVisitorResult {
     if !match_pattern(ctx, cursor) {
@@ -499,7 +499,7 @@ fn visit_top<'r>(cursor: &Cursor,
 
     match cursor.kind() {
         CXCursor_UnexposedDecl => {
-            return CXChildVisit_Recurse;
+            CXChildVisit_Recurse
         }
         CXCursor_StructDecl | CXCursor_UnionDecl => {
             fwd_decl(ctx, cursor, |ctx_| {
@@ -511,7 +511,7 @@ fn visit_top<'r>(cursor: &Cursor,
                 });
                 ctx_.globals.push(GComp(ci));
             });
-            return CXChildVisit_Continue;
+            CXChildVisit_Continue
         }
         CXCursor_EnumDecl => {
             fwd_decl(ctx, cursor, |ctx_| {
@@ -523,7 +523,7 @@ fn visit_top<'r>(cursor: &Cursor,
                 });
                 ctx_.globals.push(GEnum(ei));
             });
-            return CXChildVisit_Continue;
+            CXChildVisit_Continue
         }
         CXCursor_FunctionDecl => {
             let linkage = cursor.linkage();
@@ -538,7 +538,7 @@ fn visit_top<'r>(cursor: &Cursor,
             vi.ty = TFuncPtr(mk_fn_sig(ctx, &cursor.cur_type(), cursor));
             ctx.globals.push(func);
 
-            return CXChildVisit_Continue;
+            CXChildVisit_Continue
         }
         CXCursor_VarDecl => {
             let linkage = cursor.linkage();
@@ -558,7 +558,7 @@ fn visit_top<'r>(cursor: &Cursor,
             });
             ctx.globals.push(var);
 
-            return CXChildVisit_Continue;
+            CXChildVisit_Continue
         }
         CXCursor_TypedefDecl => {
             let mut under_ty = cursor.typedef_type();
@@ -575,22 +575,21 @@ fn visit_top<'r>(cursor: &Cursor,
 
             opaque_ty(ctx, &under_ty);
 
-            return CXChildVisit_Continue;
+            CXChildVisit_Continue
         }
         CXCursor_FieldDecl => {
-            return CXChildVisit_Continue;
+            CXChildVisit_Continue
         }
-        _ => return CXChildVisit_Continue,
+        _ => CXChildVisit_Continue,
     }
 }
 
 fn log_err_warn(ctx: &mut ClangParserCtx, msg: &str, is_err: bool) {
-    match is_err {
-        true => {
-            ctx.err_count += 1;
-            ctx.logger.error(msg)
-        },
-        false => ctx.logger.warn(msg)
+    if is_err {
+        ctx.err_count += 1;
+        ctx.logger.error(msg)
+    } else {
+        ctx.logger.warn(msg)
     }
 }
 
@@ -617,7 +616,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
     }
 
     let diags = unit.diags();
-    for d in diags.iter() {
+    for d in &diags {
         let msg = d.format(Diagnostic::default_opts());
         let is_err = d.severity() >= CXDiagnostic_Error;
         log_err_warn(&mut ctx, &msg[..], is_err);
