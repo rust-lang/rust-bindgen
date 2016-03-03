@@ -148,6 +148,7 @@ fn main() {
                 println!("cargo:rustc-link-lib=dylib=clang");
             }
         }
+        println!("cargo:rerun-if-changed=");
     } else {
         panic!("Unable to find {}", clang_lib);
     }
