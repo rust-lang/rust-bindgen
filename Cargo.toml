@@ -10,8 +10,8 @@ build = "build.rs"
 
 [dependencies]
 log = "0.3.*"
-libc = "0.1.*"
-syntex_syntax = "0.23.*"
+libc = "0.2.*"
+syntex_syntax = "0.29.*"
 
 [features]
 static = []

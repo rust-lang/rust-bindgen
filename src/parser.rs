@@ -143,12 +143,12 @@ fn fwd_decl<F:FnOnce(&mut ClangParserCtx)->()>(ctx: &mut ClangParserCtx, cursor:
 
 fn get_abi(cc: Enum_CXCallingConv) -> abi::Abi {
     match cc {
-        CXCallingConv_Default => abi::C,
-        CXCallingConv_C => abi::C,
-        CXCallingConv_X86StdCall => abi::Stdcall,
-        CXCallingConv_X86FastCall => abi::Fastcall,
-        CXCallingConv_AAPCS => abi::Aapcs,
-        CXCallingConv_X86_64Win64 => abi::Win64,
+        CXCallingConv_Default => abi::Abi::C,
+        CXCallingConv_C => abi::Abi::C,
+        CXCallingConv_X86StdCall => abi::Abi::Stdcall,
+        CXCallingConv_X86FastCall => abi::Abi::Fastcall,
+        CXCallingConv_AAPCS => abi::Abi::Aapcs,
+        CXCallingConv_X86_64Win64 => abi::Abi::Win64,
         other => panic!("unsupported calling convention: {}", other),
     }
 }
