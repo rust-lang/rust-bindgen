@@ -142,7 +142,7 @@ impl Type {
     }
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Layout {
     pub size: usize,
     pub align: usize,

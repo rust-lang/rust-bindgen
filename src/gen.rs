@@ -1,3 +1,4 @@
+use std;
 use std::cell::RefCell;
 use std::vec::Vec;
 use std::rc::Rc;
@@ -213,7 +214,7 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
                     e.name = unnamed_name(&mut ctx, e.name.clone());
                 }
                 let e = ei.borrow();
-                defs.extend(cenum_to_rs(&mut ctx, enum_name(&e.name), e.kind, &e.items).into_iter())
+                defs.extend(cenum_to_rs(&mut ctx, enum_name(&e.name), e.kind, e.layout, &e.items).into_iter())
             },
             GVar(vi) => {
                 let v = vi.borrow();
@@ -477,7 +478,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: String, ty: &Type) -> Vec<P<ast::Item>
             if is_empty {
                 ei.borrow_mut().name = name.clone();
                 let e = ei.borrow();
-                cenum_to_rs(ctx, name, e.kind, &e.items)
+                cenum_to_rs(ctx, name, e.kind, e.layout, &e.items)
             } else {
                 vec!(mk_item(ctx, name, ty))
             }
@@ -699,24 +700,81 @@ fn const_to_rs(ctx: &mut GenCtx, name: String, val: i64, val_ty: ast::Ty) -> P<a
     })
 }
 
-fn enum_kind_to_rust_type_name(kind: IKind) -> &'static str {
+fn enum_kind_is_signed(kind: IKind) -> bool {
     match kind {
-        ISChar => "i8",
-        IUChar => "u8",
-        IShort => "i16",
-        IUShort => "u16",
-        IInt => "i32",
-        IUInt => "u32",
-        ILong => "i64",
-        IULong => "u64",
-        _ => unreachable!(),
+        IBool => false,
+        ISChar => true,
+        IUChar => false,
+        IShort => true,
+        IUShort => false,
+        IInt => true,
+        IUInt => false,
+        ILong => true,
+        IULong => false,
+        ILongLong => true,
+        IULongLong => false,
     }
 }
 
-fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, enum_items: &[EnumItem])
+fn enum_size_to_rust_type_name(signed: bool, size: usize) -> &'static str {
+    match (signed, size) {
+        (true, 1) => "i8",
+        (false, 1) => "u8",
+        (true, 2) => "i16",
+        (false, 2) => "u16",
+        (true, 4) => "i32",
+        (false, 4) => "u32",
+        (true, 8) => "i64",
+        (false, 8) => "u64",
+        _ => unreachable!("invalid enum decl: signed: {}, size: {}", signed, size),
+    }
+}
+
+fn enum_size_to_unsigned_max_value(size: usize) -> u64 {
+    match size {
+        1 => std::u8::MAX as u64,
+        2 => std::u16::MAX as u64,
+        4 => std::u32::MAX as u64,
+        8 => std::u64::MAX,
+        _ => unreachable!("invalid enum size: {}", size)
+    }
+}
+
+fn cenum_value_to_int_lit(
+        ctx: &mut GenCtx,
+        enum_is_signed: bool,
+        size: usize,
+        value: i64)
+        -> P<ast::Expr> {
+    if enum_is_signed {
+        let int_lit =
+            ast::LitKind::Int(value.abs() as u64, ast::LitIntType::Unsuffixed);
+        let expr = ctx.ext_cx.expr_lit(ctx.span, int_lit);
+        if value < 0 {
+            ctx.ext_cx.expr(
+                ctx.span, ast::ExprKind::Unary(ast::UnOp::Neg, expr))
+        } else {
+            expr
+        }
+    } else {
+        let u64_value =
+            value as u64 & enum_size_to_unsigned_max_value(size);
+        let int_lit =
+            ast::LitKind::Int(u64_value, ast::LitIntType::Unsuffixed);
+        ctx.ext_cx.expr_lit(ctx.span, int_lit)
+    }
+}
+
+
+fn cenum_to_rs(ctx: &mut GenCtx,
+               name: String,
+               kind: IKind,
+               layout: Layout,
+               enum_items: &[EnumItem])
                -> Vec<P<ast::Item>> {
     let enum_name = ctx.ext_cx.ident_of(&name);
     let enum_ty = ctx.ext_cx.ty_ident(ctx.span, enum_name);
+    let enum_is_signed = enum_kind_is_signed(kind);
 
     let mut variants = vec![];
     let mut found_values = HashMap::new();
@@ -741,12 +799,8 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, enum_items: &[EnumIt
 
         found_values.insert(item.val, name);
 
-        let int_lit = ast::LitKind::Int(item.val.abs() as u64, ast::LitIntType::Unsuffixed);
-        let mut value = ctx.ext_cx.expr_lit(ctx.span, int_lit);
-        if item.val < 0 {
-            let negated = ast::ExprKind::Unary(ast::UnOp::Neg, value);
-            value = ctx.ext_cx.expr(ctx.span, negated);
-        }
+        let value = cenum_value_to_int_lit(
+            ctx, enum_is_signed, layout.size, item.val);
 
         variants.push(respan(ctx.span, ast::Variant_ {
             name: name,
@@ -756,7 +810,7 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, enum_items: &[EnumIt
         }));
     }
 
-    let enum_repr = InternedString::new(enum_kind_to_rust_type_name(kind));
+    let enum_repr = InternedString::new(enum_size_to_rust_type_name(enum_is_signed, layout.size));
 
     let repr_arg = ctx.ext_cx.meta_word(ctx.span, enum_repr);
     let repr_list = ctx.ext_cx.meta_list(ctx.span, InternedString::new("repr"), vec![repr_arg]);
