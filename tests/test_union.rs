@@ -22,6 +22,7 @@ fn with_anon_struct() {
         }
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_Unnamed1 {
             pub a: ::std::os::raw::c_uint,
             pub b: ::std::os::raw::c_uint,

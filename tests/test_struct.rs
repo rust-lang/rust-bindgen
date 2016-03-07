@@ -5,6 +5,7 @@ fn with_anon_struct() {
     assert_bind_eq("headers/struct_with_anon_struct.h", "
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_foo {
             pub bar: Struct_Unnamed1,
         }
@@ -16,6 +17,7 @@ fn with_anon_struct() {
         }
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_Unnamed1 {
             pub a: ::std::os::raw::c_int,
             pub b: ::std::os::raw::c_int,
@@ -34,6 +36,7 @@ fn with_anon_struct_array() {
     assert_bind_eq("headers/struct_with_anon_struct_array.h", "
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_foo {
             pub bar: [Struct_Unnamed1; 2usize],
             pub baz: [[[Struct_Unnamed2; 4usize]; 3usize]; 2usize],
@@ -49,6 +52,7 @@ fn with_anon_struct_array() {
 
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_Unnamed1 {
             pub a: ::std::os::raw::c_int,
             pub b: ::std::os::raw::c_int,
@@ -64,6 +68,7 @@ fn with_anon_struct_array() {
 
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_Unnamed2 {
             pub a: ::std::os::raw::c_int,
             pub b: ::std::os::raw::c_int,
@@ -84,6 +89,7 @@ fn with_anon_struct_pointer() {
     assert_bind_eq("headers/struct_with_anon_struct_pointer.h", "
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_foo {
             pub bar: *mut Struct_Unnamed1,
         }
@@ -95,6 +101,7 @@ fn with_anon_struct_pointer() {
         }
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_Unnamed1 {
             pub a: ::std::os::raw::c_int,
             pub b: ::std::os::raw::c_int,
@@ -113,6 +120,7 @@ fn with_anon_union() {
     assert_bind_eq("headers/struct_with_anon_union.h", "
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_foo {
             pub bar: Union_Unnamed1,
         }
@@ -151,6 +159,7 @@ fn with_anon_unnamed_struct() {
     assert_bind_eq("headers/struct_with_anon_unnamed_struct.h", "
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_foo {
             pub _bindgen_data_1_: [u32; 2usize],
         }
@@ -178,6 +187,7 @@ fn with_anon_unnamed_union() {
     assert_bind_eq("headers/struct_with_anon_unnamed_union.h", "
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_foo {
             pub _bindgen_data_1_: [u32; 1usize],
         }
@@ -205,6 +215,7 @@ fn with_nesting() {
     assert_bind_eq("headers/struct_with_nesting.h", "
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_foo {
             pub a: ::std::os::raw::c_uint,
             pub _bindgen_data_1_: [u32; 1usize],
@@ -253,6 +264,7 @@ fn containing_fwd_decl_struct() {
     assert_bind_eq("headers/struct_containing_forward_declared_struct.h", "
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_a {
             pub val_a: *mut Struct_b,
         }
@@ -267,6 +279,7 @@ fn containing_fwd_decl_struct() {
 
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_b {
             pub val_b: ::std::os::raw::c_int,
         }
@@ -286,6 +299,7 @@ fn with_bitfields() {
     assert_bind_eq("headers/struct_with_bitfields.h", "
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_bitfield {
             pub _bindgen_bitfield_1_: ::std::os::raw::c_ushort,
             pub e: ::std::os::raw::c_int,
@@ -308,6 +322,7 @@ fn with_fwd_decl_struct() {
     assert_bind_eq("headers/forward_declared_struct.h", "
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_a {
             pub b: ::std::os::raw::c_int,
         }
@@ -319,6 +334,7 @@ fn with_fwd_decl_struct() {
         }
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_c {
             pub d: ::std::os::raw::c_int,
         }
@@ -337,6 +353,7 @@ fn packed_struct() {
     assert_bind_eq("headers/struct_with_packing.h", "
         #[repr(C, packed)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_a {
             pub b: ::std::os::raw::c_char,
             pub c: ::std::os::raw::c_short,
@@ -350,3 +367,54 @@ fn packed_struct() {
     ");
 }
 
+#[test]
+fn derive_debug_big_array() {
+    assert_bind_eq("headers/struct_with_derive_debug.h", "
+        #[repr(C)]
+        #[derive(Copy)]
+        #[derive(Debug)]
+        pub struct Struct_LittleArray {
+            pub a: [::std::os::raw::c_int; 32usize],
+        }
+        impl ::std::clone::Clone for Struct_LittleArray {
+            fn clone(&self) -> Self { *self }
+        }
+        impl ::std::default::Default for Struct_LittleArray {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_BigArray {
+            pub a: [::std::os::raw::c_int; 33usize],
+        }
+        impl ::std::clone::Clone for Struct_BigArray {
+            fn clone(&self) -> Self { *self }
+        }
+        impl ::std::default::Default for Struct_BigArray {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+        #[repr(C)]
+        #[derive(Copy)]
+        #[derive(Debug)]
+        pub struct Struct_WithLittleArray {
+            pub a: Struct_LittleArray,
+        }
+        impl ::std::clone::Clone for Struct_WithLittleArray {
+            fn clone(&self) -> Self { *self }
+        }
+        impl ::std::default::Default for Struct_WithLittleArray {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+        #[repr(C)]
+        #[derive(Copy)]
+        pub struct Struct_WithBigArray {
+            pub a: Struct_BigArray,
+        }
+        impl ::std::clone::Clone for Struct_WithBigArray {
+            fn clone(&self) -> Self { *self }
+        }
+        impl ::std::default::Default for Struct_WithBigArray {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+    ");
+}

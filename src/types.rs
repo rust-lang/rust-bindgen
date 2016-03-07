@@ -123,6 +123,23 @@ impl Type {
             TFuncPtr(..) => 0,
         }
     }
+
+    pub fn can_derive_debug(&self) -> bool {
+        match self {
+            &TArray(_, size, _) => size <= 32,
+            &TComp(ref comp) => {
+                comp.borrow()
+                    .members
+                    .iter()
+                    .all(|member| match member {
+                        &CompMember::Field(ref f) |
+                        &CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
+                        _ => true,
+                    })
+            }
+            _ => true,
+        }
+    }
 }
 
 #[derive(Copy, Clone, PartialEq)]

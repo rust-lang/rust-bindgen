@@ -16,6 +16,7 @@ fn func_ptr_in_struct() {
     assert_bind_eq("headers/func_ptr_in_struct.h", "
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Struct_Foo {
             pub bar: ::std::option::Option<
                 extern \"C\" fn(x: ::std::os::raw::c_int,

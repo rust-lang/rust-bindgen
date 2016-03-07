@@ -505,6 +505,9 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
     let mut unnamed: u32 = 0;
     let mut bitfields: u32 = 0;
 
+    // Debug is only defined on little arrays
+    let mut can_derive_debug = true;
+
     for m in &members {
         let (opt_rc_c, opt_f) = match *m {
             CompMember::Field(ref f) => { (None, Some(f)) }
@@ -520,6 +523,10 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
                 }
                 None => rust_type_id(ctx, f.name.clone())
             };
+
+            if !f.ty.can_derive_debug() {
+                can_derive_debug = false;
+            }
 
             let f_ty = P(cty_to_rs(ctx, &f.ty));
 
@@ -554,8 +561,12 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
     );
 
     let id = rust_type_id(ctx, name.clone());
+    let mut attrs = vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx, false));
+    if can_derive_debug {
+        attrs.push(mk_deriving_debug_attr(ctx));
+    }
     let struct_def = P(ast::Item { ident: ctx.ext_cx.ident_of(&id[..]),
-        attrs: vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx, false)),
+        attrs: attrs,
         id: ast::DUMMY_NODE_ID,
         node: def,
         vis: ast::Visibility::Public,
@@ -936,6 +947,19 @@ fn mk_deriving_copy_attr(ctx: &mut GenCtx, clone: bool) -> ast::Attribute {
         words.push(ctx.ext_cx.meta_word(ctx.span, InternedString::new("Clone")));
     }
     words.push(ctx.ext_cx.meta_word(ctx.span, InternedString::new("Copy")));
+
+    let attr_val = ctx.ext_cx.meta_list(ctx.span, InternedString::new("derive"), words);
+
+    respan(ctx.span, ast::Attribute_ {
+        id: mk_attr_id(),
+        style: ast::AttrStyle::Outer,
+        value: attr_val,
+        is_sugared_doc: false
+    })
+}
+
+fn mk_deriving_debug_attr(ctx: &mut GenCtx) -> ast::Attribute {
+    let words = vec!(ctx.ext_cx.meta_word(ctx.span, InternedString::new("Debug")));
 
     let attr_val = ctx.ext_cx.meta_list(ctx.span, InternedString::new("derive"), words);
 
