@@ -12,7 +12,11 @@ const LINUX_CLANG_DIRS: &'static [&'static str] = &[
     "/usr/lib64/llvm",
     "/usr/lib/x86_64-linux-gnu",
 ];
-const MAC_CLANG_DIR: &'static str = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib";
+const MAC_CLANG_DIR: &'static [&'static str] = &[
+    "/usr/local/opt/llvm/lib",
+    "/Library/Developer/CommandLineTools/usr/lib",
+    "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib",
+];
 const WIN_CLANG_DIRS: &'static [&'static str] = &["C:\\Program Files\\LLVM\\bin", "C:\\Program Files\\LLVM\\lib"];
 
 fn path_exists(path: &Path) -> bool {
@@ -30,7 +34,7 @@ fn main() {
     } else if cfg!(any(target_os = "linux", target_os = "freebsd")) {
         LINUX_CLANG_DIRS.iter().map(ToString::to_string).collect()
     } else if cfg!(target_os = "macos") {
-        vec![MAC_CLANG_DIR.to_string()]
+        MAC_CLANG_DIR.iter().map(ToString::to_string).collect()
     } else if cfg!(target_os = "windows") {
 		WIN_CLANG_DIRS.iter().map(ToString::to_string).collect()
     } else {
@@ -55,7 +59,6 @@ fn main() {
             None
         }
     }).next();
-    
     if maybe_clang_dir == None && cfg!(target_os = "linux") {
         //try to find via lddconfig
         //may return line, like
@@ -137,7 +140,7 @@ fn main() {
             }
             println!("-L {} -l ncursesw -l z -l stdc++", clang_dir.to_str().unwrap());
         } else{
-            println!("cargo:rustc-link-search=native={}", clang_dir.to_str().unwrap());
+            println!("cargo:rustc-link-search={}", clang_dir.to_str().unwrap());
             if !libclang_path_string.is_empty() {
                 let libclang_path = Path::new(&libclang_path_string);
                 println!("cargo:rustc-link-lib=dylib=:{}", libclang_path.file_name().unwrap().to_str().unwrap());
