@@ -1,6 +1,6 @@
 #![allow(non_upper_case_globals, dead_code)]
 
-use libc::{c_uint, c_char, c_int, c_ulong};
+use std::os::raw::{c_uint, c_char, c_int, c_ulong};
 use std::{mem, ptr};
 use std::fmt;
 use std::str;
@@ -369,7 +369,7 @@ pub struct TranslationUnit {
 
 impl TranslationUnit {
     pub fn parse(ix: &Index, file: &str, cmd_args: &[String],
-                 unsaved: &[UnsavedFile], opts: ::libc::c_uint) -> TranslationUnit {
+                 unsaved: &[UnsavedFile], opts: c_uint) -> TranslationUnit {
         let fname = CString::new(file.as_bytes()).unwrap();
         let fname = fname.as_ptr();
         let c_args: Vec<CString> = cmd_args.iter().map(|s| CString::new(s.as_bytes()).unwrap()).collect();
