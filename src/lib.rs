@@ -76,6 +76,11 @@ impl<'a> Builder<'a> {
         self
     }
 
+    pub fn rust_enums(&mut self, value: bool) -> &mut Self {
+        self.options.rust_enums = value;
+        self
+    }
+
     pub fn log(&mut self, logger: &'a Logger) -> &mut Self {
         self.logger = Some(logger);
         self
@@ -100,6 +105,7 @@ impl<'a> Default for Builder<'a> {
 pub struct BindgenOptions {
     pub match_pat: Vec<String>,
     pub builtins: bool,
+    pub rust_enums: bool,
     pub links: Vec<(String, LinkType)>,
     pub emit_ast: bool,
     pub fail_on_unknown_type: bool,
@@ -112,6 +118,7 @@ impl Default for BindgenOptions {
         BindgenOptions {
             match_pat: Vec::new(),
             builtins: false,
+            rust_enums: true,
             links: Vec::new(),
             emit_ast: false,
             fail_on_unknown_type: false,
@@ -159,7 +166,7 @@ impl Bindings {
 
         let module = ast::Mod {
             inner: span,
-            items: gen::gen_mod(&options.links[..], globals, span)
+            items: gen::gen_mod(options, globals, span)
         };
 
         Ok(Bindings {

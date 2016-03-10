@@ -1,8 +1,6 @@
 use bindgen;
 use bindgen::{Logger, BindgenOptions};
 
-use std::default::Default;
-
 use syntax::ast;
 use syntax::codemap;
 use syntax::codemap::DUMMY_SP;
@@ -23,8 +21,9 @@ impl Logger for TestLogger {
     }
 }
 
-pub fn generate_bindings(filename: &str) -> Result<Vec<P<ast::Item>>, ()> {
-    let mut options:BindgenOptions = Default::default();
+pub fn generate_bindings(mut options: BindgenOptions,
+                         filename: &str)
+                         -> Result<Vec<P<ast::Item>>, ()> {
     if filename.ends_with("hpp") {
         options.clang_args.push("-std=c++11".to_string());
         options.clang_args.push("-Wno-narrowing".to_string());
@@ -35,10 +34,12 @@ pub fn generate_bindings(filename: &str) -> Result<Vec<P<ast::Item>>, ()> {
     Ok(try!(bindgen::Bindings::generate(&options, Some(&logger as &Logger), None)).into_ast())
 }
 
-pub fn assert_bind_eq(filename: &str, reference_items_str: &str)
-{
+pub fn assert_bind_eq(options: BindgenOptions,
+                      filename: &str,
+                      reference_items_str: &str) {
     let ext_cx = mk_dummy_ext_ctxt();
-    let generated_items = generate_bindings(&format!("tests/{}", filename)[..]).unwrap();
+    let generated_items =
+        generate_bindings(options, &format!("tests/{}", filename)[..]).unwrap();
 
     let mut parser = parse::new_parser_from_source_str(ext_cx.parse_sess(), ext_cx.cfg(), "".to_string(), reference_items_str.to_string());
     let mut reference_items = Vec::new();

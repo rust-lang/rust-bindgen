@@ -97,6 +97,10 @@ fn parse_args(args: &[String]) -> ParseResult {
                     options.builtins = true;
                     ix += 1;
                 }
+                "-no-rust-enums" => {
+                    options.rust_enums = false;
+                    ix += 1;
+                }
                 "-allow-unknown-types" => {
                     options.fail_on_unknown_type = false;
                     ix += 1;

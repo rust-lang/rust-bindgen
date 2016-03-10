@@ -2,7 +2,7 @@ use support::assert_bind_eq;
 
 #[test]
 fn with_anon_struct() {
-    assert_bind_eq("headers/struct_with_anon_struct.h", "
+    assert_bind_eq(Default::default(), "headers/struct_with_anon_struct.h", "
         #[repr(C)]
         #[derive(Copy)]
         #[derive(Debug)]
@@ -33,7 +33,7 @@ fn with_anon_struct() {
 
 #[test]
 fn with_anon_struct_array() {
-    assert_bind_eq("headers/struct_with_anon_struct_array.h", "
+    assert_bind_eq(Default::default(), "headers/struct_with_anon_struct_array.h", "
         #[repr(C)]
         #[derive(Copy)]
         #[derive(Debug)]
@@ -86,7 +86,7 @@ fn with_anon_struct_array() {
 
 #[test]
 fn with_anon_struct_pointer() {
-    assert_bind_eq("headers/struct_with_anon_struct_pointer.h", "
+    assert_bind_eq(Default::default(), "headers/struct_with_anon_struct_pointer.h", "
         #[repr(C)]
         #[derive(Copy)]
         #[derive(Debug)]
@@ -117,7 +117,7 @@ fn with_anon_struct_pointer() {
 
 #[test]
 fn with_anon_union() {
-    assert_bind_eq("headers/struct_with_anon_union.h", "
+    assert_bind_eq(Default::default(), "headers/struct_with_anon_union.h", "
         #[repr(C)]
         #[derive(Copy)]
         #[derive(Debug)]
@@ -156,7 +156,7 @@ fn with_anon_union() {
 
 #[test]
 fn with_anon_unnamed_struct() {
-    assert_bind_eq("headers/struct_with_anon_unnamed_struct.h", "
+    assert_bind_eq(Default::default(), "headers/struct_with_anon_unnamed_struct.h", "
         #[repr(C)]
         #[derive(Copy)]
         #[derive(Debug)]
@@ -184,7 +184,7 @@ fn with_anon_unnamed_struct() {
 
 #[test]
 fn with_anon_unnamed_union() {
-    assert_bind_eq("headers/struct_with_anon_unnamed_union.h", "
+    assert_bind_eq(Default::default(), "headers/struct_with_anon_unnamed_union.h", "
         #[repr(C)]
         #[derive(Copy)]
         #[derive(Debug)]
@@ -212,7 +212,7 @@ fn with_anon_unnamed_union() {
 
 #[test]
 fn with_nesting() {
-    assert_bind_eq("headers/struct_with_nesting.h", "
+    assert_bind_eq(Default::default(), "headers/struct_with_nesting.h", "
         #[repr(C)]
         #[derive(Copy)]
         #[derive(Debug)]
@@ -261,7 +261,7 @@ fn with_nesting() {
 
 #[test]
 fn containing_fwd_decl_struct() {
-    assert_bind_eq("headers/struct_containing_forward_declared_struct.h", "
+    assert_bind_eq(Default::default(), "headers/struct_containing_forward_declared_struct.h", "
         #[repr(C)]
         #[derive(Copy)]
         #[derive(Debug)]
@@ -296,7 +296,7 @@ fn containing_fwd_decl_struct() {
 
 #[test]
 fn with_bitfields() {
-    assert_bind_eq("headers/struct_with_bitfields.h", "
+    assert_bind_eq(Default::default(), "headers/struct_with_bitfields.h", "
         #[repr(C)]
         #[derive(Copy)]
         #[derive(Debug)]
@@ -319,7 +319,7 @@ fn with_bitfields() {
 
 #[test]
 fn with_fwd_decl_struct() {
-    assert_bind_eq("headers/forward_declared_struct.h", "
+    assert_bind_eq(Default::default(), "headers/forward_declared_struct.h", "
         #[repr(C)]
         #[derive(Copy)]
         #[derive(Debug)]
@@ -350,7 +350,7 @@ fn with_fwd_decl_struct() {
 
 #[test]
 fn packed_struct() {
-    assert_bind_eq("headers/struct_with_packing.h", "
+    assert_bind_eq(Default::default(), "headers/struct_with_packing.h", "
         #[repr(C, packed)]
         #[derive(Copy)]
         #[derive(Debug)]
@@ -369,7 +369,7 @@ fn packed_struct() {
 
 #[test]
 fn derive_debug_big_array() {
-    assert_bind_eq("headers/struct_with_derive_debug.h", "
+    assert_bind_eq(Default::default(), "headers/struct_with_derive_debug.h", "
         #[repr(C)]
         #[derive(Copy)]
         #[derive(Debug)]
