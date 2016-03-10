@@ -268,7 +268,7 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
     };
 
     if !Vec::is_empty(&vars) {
-        defs.push(mk_extern(&mut ctx, links, vars, abi::C));
+        defs.push(mk_extern(&mut ctx, links, vars, abi::Abi::C));
     }
 
     for (abi, funcs) in funcs.into_iter() {
@@ -281,7 +281,7 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
 }
 
 fn mk_extern(ctx: &mut GenCtx, links: &[(String, LinkType)],
-             foreign_items: Vec<P<ast::ForeignItem>>,
+             foreign_items: Vec<ast::ForeignItem>,
              abi: abi::Abi) -> P<ast::Item> {
     let attrs = if links.is_empty() {
         Vec::new()
@@ -292,27 +292,27 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, LinkType)],
                 LinkType::Static => Some("static"),
                 LinkType::Framework => Some("framework")
             };
-            let link_name = P(respan(ctx.span, ast::MetaNameValue(
+            let link_name = P(respan(ctx.span, ast::MetaItemKind::NameValue(
                 to_intern_str(ctx, "name".to_owned()),
-                respan(ctx.span, ast::LitStr(
+                respan(ctx.span, ast::LitKind::Str(
                     to_intern_str(ctx, l.to_owned()),
-                    ast::CookedStr
+                    ast::StrStyle::Cooked
                 ))
             )));
             let link_args = match k {
                 None => vec!(link_name),
-                Some(ref k) => vec!(link_name, P(respan(ctx.span, ast::MetaNameValue(
+                Some(ref k) => vec!(link_name, P(respan(ctx.span, ast::MetaItemKind::NameValue(
                     to_intern_str(ctx, "kind".to_owned()),
-                    respan(ctx.span, ast::LitStr(
+                    respan(ctx.span, ast::LitKind::Str(
                         to_intern_str(ctx, (*k).to_owned()),
-                        ast::CookedStr
+                        ast::StrStyle::Cooked
                     ))
                 ))))
             };
             respan(ctx.span, ast::Attribute_ {
                 id: mk_attr_id(),
                 style: ast::AttrStyle::Outer,
-                value: P(respan(ctx.span, ast::MetaList(
+                value: P(respan(ctx.span, ast::MetaItemKind::List(
                     to_intern_str(ctx, "link".to_owned()),
                     link_args)
                 )),
@@ -323,7 +323,7 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, LinkType)],
 
     let mut items = Vec::new();
     items.extend(foreign_items.into_iter());
-    let ext = ast::ItemForeignMod(ast::ForeignMod {
+    let ext = ast::ItemKind::ForeignMod(ast::ForeignMod {
         abi: abi,
         items: items
     });
@@ -333,7 +333,7 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, LinkType)],
         attrs: attrs,
         id: ast::DUMMY_NODE_ID,
         node: ext,
-        vis: ast::Inherited,
+        vis: ast::Visibility::Inherited,
         span: ctx.span
     })
 }
@@ -442,7 +442,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: String, ty: &Type) -> Vec<P<ast::Item>
     fn mk_item(ctx: &mut GenCtx, name: String, ty: &Type) -> P<ast::Item> {
         let rust_name = rust_type_id(ctx, name);
         let rust_ty = cty_to_rs(ctx, ty);
-        let base = ast::ItemTy(
+        let base = ast::ItemKind::Ty(
             P(ast::Ty {
                 id: ast::DUMMY_NODE_ID,
                 node: rust_ty.node,
@@ -456,7 +456,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: String, ty: &Type) -> Vec<P<ast::Item>
             attrs: Vec::new(),
             id: ast::DUMMY_NODE_ID,
             node: base,
-            vis: ast::Public,
+            vis: ast::Visibility::Public,
             span: ctx.span
         })
     }
@@ -526,7 +526,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
             fields.push(respan(ctx.span, ast::StructField_ {
                 kind: ast::NamedField(
                     ctx.ext_cx.ident_of(&f_name[..]),
-                    ast::Public,
+                    ast::Visibility::Public,
                 ),
                 id: ast::DUMMY_NODE_ID,
                 ty: f_ty,
@@ -548,7 +548,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
         }
     }
 
-    let def = ast::ItemStruct(
+    let def = ast::ItemKind::Struct(
         ast::VariantData::Struct(fields, ast::DUMMY_NODE_ID),
         empty_generics()
     );
@@ -558,13 +558,13 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
         attrs: vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx, false)),
         id: ast::DUMMY_NODE_ID,
         node: def,
-        vis: ast::Public,
+        vis: ast::Visibility::Public,
         span: ctx.span
     });
 
     let mut items = vec!(struct_def);
     if !methods.is_empty() {
-        let impl_ = ast::ItemImpl(
+        let impl_ = ast::ItemKind::Impl(
             ast::Unsafety::Normal,
             ast::ImplPolarity::Positive,
             empty_generics(),
@@ -578,7 +578,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
                 attrs: vec!(),
                 id: ast::DUMMY_NODE_ID,
                 node: impl_,
-                vis: ast::Inherited,
+                vis: ast::Visibility::Inherited,
                 span: ctx.span}));
     }
 
@@ -589,7 +589,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
 }
 
 fn opaque_to_rs(ctx: &mut GenCtx, name: String) -> P<ast::Item> {
-    let def = ast::ItemEnum(
+    let def = ast::ItemKind::Enum(
         ast::EnumDef {
            variants: vec!()
         },
@@ -602,13 +602,13 @@ fn opaque_to_rs(ctx: &mut GenCtx, name: String) -> P<ast::Item> {
         attrs: Vec::new(),
         id: ast::DUMMY_NODE_ID,
         node: def,
-        vis: ast::Public,
+        vis: ast::Visibility::Public,
         span: ctx.span
     })
 }
 
 fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
-    fn mk_item(ctx: &mut GenCtx, name: String, item: ast::Item_, vis:
+    fn mk_item(ctx: &mut GenCtx, name: String, item: ast::ItemKind, vis:
                ast::Visibility, attrs: Vec<ast::Attribute>) -> P<ast::Item> {
         P(ast::Item {
             ident: ctx.ext_cx.ident_of(&name[..]),
@@ -631,7 +631,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, members: Vec<Com
     let data_field_name = "_bindgen_data_";
     let data_field = mk_blob_field(ctx, data_field_name, layout);
 
-    let def = ast::ItemStruct(
+    let def = ast::ItemKind::Struct(
         ast::VariantData::Struct(
             vec!(data_field),
             ast::DUMMY_NODE_ID),
@@ -639,9 +639,9 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, members: Vec<Com
     );
     let union_id = rust_type_id(ctx, name.clone());
     let union_attrs = vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx, false));
-    let union_def = mk_item(ctx, union_id, def, ast::Public, union_attrs);
+    let union_def = mk_item(ctx, union_id, def, ast::Visibility::Public, union_attrs);
 
-    let union_impl = ast::ItemImpl(
+    let union_impl = ast::ItemKind::Impl(
         ast::Unsafety::Normal,
         ast::ImplPolarity::Positive,
         empty_generics(),
@@ -652,7 +652,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, members: Vec<Com
 
     let mut items = vec!(
         union_def,
-        mk_item(ctx, "".to_owned(), union_impl, ast::Inherited, Vec::new())
+        mk_item(ctx, "".to_owned(), union_impl, ast::Visibility::Inherited, Vec::new())
     );
 
     items.push(mk_clone_impl(ctx, &name[..]));
@@ -662,14 +662,19 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, members: Vec<Com
 }
 
 fn const_to_rs(ctx: &mut GenCtx, name: String, val: i64, val_ty: ast::Ty) -> P<ast::Item> {
-    let int_lit = ast::LitInt(
+    let int_lit = ast::LitKind::Int(
         val.abs() as u64,
-        ast::UnsuffixedIntLit(if val < 0 { ast::Minus } else { ast::Plus })
+        ast::LitIntType::Unsuffixed
             );
+    let mut value = ctx.ext_cx.expr_lit(ctx.span, int_lit);
+    if val < 0 {
+        let negated = ast::ExprKind::Unary(ast::UnOp::Neg, value);
+        value = ctx.ext_cx.expr(ctx.span, negated);
+    }
 
-    let cst = ast::ItemConst(
+    let cst = ast::ItemKind::Const(
         P(val_ty),
-        ctx.ext_cx.expr_lit(ctx.span, int_lit)
+        value
             );
 
     let id = first(rust_id(ctx, name.clone()));
@@ -678,7 +683,7 @@ fn const_to_rs(ctx: &mut GenCtx, name: String, val: i64, val_ty: ast::Ty) -> P<a
         attrs: Vec::new(),
         id: ast::DUMMY_NODE_ID,
         node: cst,
-        vis: ast::Public,
+        vis: ast::Visibility::Public,
         span: ctx.span
     })
 }
@@ -716,8 +721,8 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, enum_items: &[EnumIt
                 ident: name,
                 attrs: vec![],
                 id: ast::DUMMY_NODE_ID,
-                node: ast::ItemConst(enum_ty.clone(), value),
-                vis: ast::Public,
+                node: ast::ItemKind::Const(enum_ty.clone(), value),
+                vis: ast::Visibility::Public,
                 span: ctx.span,
             }));
             continue;
@@ -725,15 +730,19 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, enum_items: &[EnumIt
 
         found_values.insert(item.val, name);
 
-        let sign = ast::UnsuffixedIntLit(if item.val < 0 { ast::Minus } else { ast::Plus });
-        let value = ctx.ext_cx.expr_lit(ctx.span, ast::LitInt(item.val.abs() as u64, sign));
+        let int_lit = ast::LitKind::Int(item.val.abs() as u64, ast::LitIntType::Unsuffixed);
+        let mut value = ctx.ext_cx.expr_lit(ctx.span, int_lit);
+        if item.val < 0 {
+            let negated = ast::ExprKind::Unary(ast::UnOp::Neg, value);
+            value = ctx.ext_cx.expr(ctx.span, negated);
+        }
 
-        variants.push(P(respan(ctx.span, ast::Variant_ {
+        variants.push(respan(ctx.span, ast::Variant_ {
             name: name,
             attrs: vec![],
             data: ast::VariantData::Unit(ast::DUMMY_NODE_ID),
             disr_expr: Some(value),
-        })));
+        }));
     }
 
     let enum_repr = InternedString::new(enum_kind_to_rust_type_name(kind));
@@ -751,8 +760,8 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, enum_items: &[EnumIt
         ident: enum_name,
         attrs: vec![mk_deriving_copy_attr(ctx, true), repr_attr],
         id: ast::DUMMY_NODE_ID,
-        node: ast::ItemEnum(ast::EnumDef { variants: variants }, empty_generics()),
-        vis: ast::Public,
+        node: ast::ItemKind::Enum(ast::EnumDef { variants: variants }, empty_generics()),
+        vis: ast::Visibility::Public,
         span: ctx.span,
     }));
 
@@ -765,7 +774,7 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, enum_items: &[EnumIt
 /// These are emitted into `extra`.
 fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
                     kind: CompKind, members: &[CompMember],
-                    extra: &mut Vec<P<ast::Item>>) -> Vec<P<ast::ImplItem>> {
+                    extra: &mut Vec<P<ast::Item>>) -> Vec<ast::ImplItem> {
 
     let mk_field_method = |ctx: &mut GenCtx, f: &FieldInfo, offset: usize| {
         // TODO: Implement bitfield accessors
@@ -791,7 +800,7 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
 
         method.and_then(|i| {
             match i.node {
-                ast::ItemImpl(_, _, _, _, _, mut items) => {
+                ast::ItemKind::Impl(_, _, _, _, _, mut items) => {
                     items.pop()
                 }
                 _ => unreachable!("impl parsed to something other than impl")
@@ -868,7 +877,7 @@ fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout) -> Spanned<ast::Struc
     respan(ctx.span, ast::StructField_ {
         kind: ast::NamedField(
             ctx.ext_cx.ident_of(name),
-            ast::Public,
+            ast::Visibility::Public,
         ),
         id: ast::DUMMY_NODE_ID,
         ty: data_ty,
@@ -877,11 +886,11 @@ fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout) -> Spanned<ast::Struc
 }
 
 fn mk_link_name_attr(ctx: &mut GenCtx, name: String) -> ast::Attribute {
-    let lit = respan(ctx.span, ast::LitStr(
+    let lit = respan(ctx.span, ast::LitKind::Str(
         to_intern_str(ctx, name),
-        ast::CookedStr
+        ast::StrStyle::Cooked
     ));
-    let attr_val = P(respan(ctx.span, ast::MetaNameValue(
+    let attr_val = P(respan(ctx.span, ast::MetaItemKind::NameValue(
         to_intern_str(ctx, "link_name".to_owned()), lit
     )));
     let attr = ast::Attribute_ {
@@ -894,11 +903,11 @@ fn mk_link_name_attr(ctx: &mut GenCtx, name: String) -> ast::Attribute {
 }
 
 fn mk_repr_attr(ctx: &mut GenCtx, layout: Layout) -> ast::Attribute {
-    let mut values = vec!(P(respan(ctx.span, ast::MetaWord(to_intern_str(ctx, "C".to_owned())))));
+    let mut values = vec!(P(respan(ctx.span, ast::MetaItemKind::Word(to_intern_str(ctx, "C".to_owned())))));
     if layout.packed {
-        values.push(P(respan(ctx.span, ast::MetaWord(to_intern_str(ctx, "packed".to_owned())))));
+        values.push(P(respan(ctx.span, ast::MetaItemKind::Word(to_intern_str(ctx, "packed".to_owned())))));
     }
-    let attr_val = P(respan(ctx.span, ast::MetaList(
+    let attr_val = P(respan(ctx.span, ast::MetaItemKind::List(
         to_intern_str(ctx, "repr".to_owned()),
         values
     )));
@@ -930,7 +939,7 @@ fn mk_deriving_copy_attr(ctx: &mut GenCtx, clone: bool) -> ast::Attribute {
 
 fn cvar_to_rs(ctx: &mut GenCtx, name: String,
                                 ty: &Type,
-                                is_const: bool) -> P<ast::ForeignItem> {
+                                is_const: bool) -> ast::ForeignItem {
     let (rust_name, was_mangled) = rust_id(ctx, name.clone());
 
     let mut attrs = Vec::new();
@@ -940,14 +949,14 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: String,
 
     let val_ty = P(cty_to_rs(ctx, ty));
 
-    P(ast::ForeignItem {
+    ast::ForeignItem {
         ident: ctx.ext_cx.ident_of(&rust_name[..]),
         attrs: attrs,
-        node: ast::ForeignItemStatic(val_ty, !is_const),
+        node: ast::ForeignItemKind::Static(val_ty, !is_const),
         id: ast::DUMMY_NODE_ID,
         span: ctx.span,
-        vis: ast::Public,
-    })
+        vis: ast::Visibility::Public,
+    }
 }
 
 fn cfuncty_to_rs(ctx: &mut GenCtx,
@@ -956,8 +965,8 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
                  var: bool) -> ast::FnDecl {
 
     let ret = match *rty {
-        TVoid => ast::DefaultReturn(ctx.span),
-        _ => ast::Return(P(cty_to_rs(ctx, rty)))
+        TVoid => ast::FunctionRetTy::Default(ctx.span),
+        _ => ast::FunctionRetTy::Ty(P(cty_to_rs(ctx, rty)))
     };
 
     let mut unnamed: usize = 0;
@@ -985,8 +994,8 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
             ty: arg_ty,
             pat: P(ast::Pat {
                  id: ast::DUMMY_NODE_ID,
-                 node: ast::PatIdent(
-                     ast::BindByValue(ast::MutImmutable),
+                 node: ast::PatKind::Ident(
+                     ast::BindingMode::ByValue(ast::Mutability::Immutable),
                      respan(ctx.span, ctx.ext_cx.ident_of(&arg_name[..])),
                      None
                  ),
@@ -1006,9 +1015,9 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
 
 fn cfunc_to_rs(ctx: &mut GenCtx, name: String, rty: &Type,
                aty: &[(String, Type)],
-               var: bool) -> P<ast::ForeignItem> {
+               var: bool) -> ast::ForeignItem {
     let var = !aty.is_empty() && var;
-    let decl = ast::ForeignItemFn(
+    let decl = ast::ForeignItemKind::Fn(
         P(cfuncty_to_rs(ctx, rty, aty, var)),
         empty_generics()
     );
@@ -1020,14 +1029,14 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: String, rty: &Type,
         attrs.push(mk_link_name_attr(ctx, name));
     }
 
-    P(ast::ForeignItem {
+    ast::ForeignItem {
         ident: ctx.ext_cx.ident_of(&rust_name[..]),
         attrs: attrs,
         node: decl,
         id: ast::DUMMY_NODE_ID,
         span: ctx.span,
-        vis: ast::Public,
-    })
+        vis: ast::Visibility::Public,
+    }
 }
 
 fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
@@ -1102,7 +1111,7 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
 }
 
 fn mk_ty(ctx: &GenCtx, global: bool, segments: Vec<String>) -> ast::Ty {
-    let ty = ast::TyPath(
+    let ty = ast::TyKind::Path(
         None,
         ast::Path {
             span: ctx.span,
@@ -1110,7 +1119,7 @@ fn mk_ty(ctx: &GenCtx, global: bool, segments: Vec<String>) -> ast::Ty {
             segments: segments.iter().map(|s| {
                 ast::PathSegment {
                     identifier: ctx.ext_cx.ident_of(&s[..]),
-                    parameters: ast::AngleBracketedParameters(ast::AngleBracketedParameterData {
+                    parameters: ast::PathParameters::AngleBracketed(ast::AngleBracketedParameterData {
                         lifetimes: Vec::new(),
                         types: OwnedSlice::empty(),
                         bindings: OwnedSlice::empty(),
@@ -1128,9 +1137,9 @@ fn mk_ty(ctx: &GenCtx, global: bool, segments: Vec<String>) -> ast::Ty {
 }
 
 fn mk_ptrty(ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
-    let ty = ast::TyPtr(ast::MutTy {
+    let ty = ast::TyKind::Ptr(ast::MutTy {
         ty: P(base.clone()),
-        mutbl: if is_const { ast::MutImmutable } else { ast::MutMutable }
+        mutbl: if is_const { ast::Mutability::Immutable } else { ast::Mutability::Mutable }
     });
 
     ast::Ty {
@@ -1141,9 +1150,9 @@ fn mk_ptrty(ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
 }
 
 fn mk_arrty(ctx: &GenCtx, base: &ast::Ty, n: usize) -> ast::Ty {
-    let int_lit = ast::LitInt(n as u64, ast::UnsignedIntLit(ast::TyUs));
-    let sz = ast::ExprLit(P(respan(ctx.span, int_lit)));
-    let ty = ast::TyFixedLengthVec(
+    let int_lit = ast::LitKind::Int(n as u64, ast::LitIntType::Unsigned(ast::UintTy::Us));
+    let sz = ast::ExprKind::Lit(P(respan(ctx.span, int_lit)));
+    let ty = ast::TyKind::FixedLengthVec(
         P(base.clone()),
         P(ast::Expr {
             id: ast::DUMMY_NODE_ID,
@@ -1164,7 +1173,7 @@ fn mk_fn_proto_ty(ctx: &mut GenCtx,
                   decl: &ast::FnDecl,
                   unsafety: ast::Unsafety,
                   abi: abi::Abi) -> ast::Ty {
-    let fnty = ast::TyBareFn(P(ast::BareFnTy {
+    let fnty = ast::TyKind::BareFn(P(ast::BareFnTy {
         unsafety: unsafety,
         abi: abi,
         lifetimes: Vec::new(),
@@ -1182,7 +1191,7 @@ fn mk_fnty(ctx: &mut GenCtx,
            decl: &ast::FnDecl,
            unsafety: ast::Unsafety,
            abi: abi::Abi) -> ast::Ty {
-    let fnty = ast::TyBareFn(P(ast::BareFnTy {
+    let fnty = ast::TyKind::BareFn(P(ast::BareFnTy {
         unsafety: unsafety,
         abi: abi,
         lifetimes: Vec::new(),
@@ -1192,7 +1201,7 @@ fn mk_fnty(ctx: &mut GenCtx,
     let segs = vec![
         ast::PathSegment {
             identifier: ctx.ext_cx.ident_of("std"),
-            parameters: ast::AngleBracketedParameters(ast::AngleBracketedParameterData {
+            parameters: ast::PathParameters::AngleBracketed(ast::AngleBracketedParameterData {
                 lifetimes: Vec::new(),
                 types: OwnedSlice::empty(),
                 bindings: OwnedSlice::empty(),
@@ -1200,7 +1209,7 @@ fn mk_fnty(ctx: &mut GenCtx,
         },
         ast::PathSegment {
             identifier: ctx.ext_cx.ident_of("option"),
-            parameters: ast::AngleBracketedParameters(ast::AngleBracketedParameterData {
+            parameters: ast::PathParameters::AngleBracketed(ast::AngleBracketedParameterData {
                 lifetimes: Vec::new(),
                 types: OwnedSlice::empty(),
                 bindings: OwnedSlice::empty(),
@@ -1208,7 +1217,7 @@ fn mk_fnty(ctx: &mut GenCtx,
         },
         ast::PathSegment {
             identifier: ctx.ext_cx.ident_of("Option"),
-            parameters: ast::AngleBracketedParameters(ast::AngleBracketedParameterData {
+            parameters: ast::PathParameters::AngleBracketed(ast::AngleBracketedParameterData {
                 lifetimes: Vec::new(),
                 types: OwnedSlice::from_vec(vec!(
                     P(ast::Ty {
@@ -1224,7 +1233,7 @@ fn mk_fnty(ctx: &mut GenCtx,
 
     ast::Ty {
         id: ast::DUMMY_NODE_ID,
-        node: ast::TyPath(
+        node: ast::TyKind::Path(
             None,
             ast::Path {
                 span: ctx.span,
