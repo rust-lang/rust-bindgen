@@ -6,9 +6,10 @@ use std::process::Command;
 const LINUX_CLANG_DIRS: &'static [&'static str] = &[
     "/usr/lib",
     "/usr/lib/llvm",
-    "/usr/lib/llvm-3.4/lib",
-    "/usr/lib/llvm-3.5/lib",
+    "/usr/lib/llvm-3.7/lib",
     "/usr/lib/llvm-3.6/lib",
+    "/usr/lib/llvm-3.5/lib",
+    "/usr/lib/llvm-3.4/lib",
     "/usr/lib64/llvm",
     "/usr/lib/x86_64-linux-gnu",
 ];

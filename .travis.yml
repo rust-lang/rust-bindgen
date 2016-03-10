@@ -1,18 +1,63 @@
 language: rust
-rust:
-  - nightly
-  - beta
-  - stable
+addons:
+    apt:
+      sources:
+        - llvm-toolchain-precise
+        - llvm-toolchain-precise-3.5
+        - llvm-toolchain-precise-3.6
+        - llvm-toolchain-precise-3.7
+        - ubuntu-toolchain-r-test
+      packages:
+        - libclang-3.4-dev
+        - llvm-3.4-dev
+        - libclang-3.6-dev
+        - llvm-3.6-dev
+        - libclang-3.7-dev
+        - llvm-3.7-dev
+        - libclang-3.8-dev
+        - llvm-3.8-dev
 env:
   - LLVM_VERSION=3.4
+  - LLVM_VERSION=3.6
   - LLVM_VERSION=3.7
+  - LLVM_VERSION=3.8
+rust:
+  - nightly
+matrix:
+  include:
+    - env: LLVM_VERSION=3.7
+      rust: stable
+    - env: LLVM_VERSION=3.7
+      rust: beta
+    - os: osx
+      env: LLVM_VERSION=devtools
+      rust: nightly
+    - os: osx
+      env: LLVM_VERSION=3.5
+      rust: nightly
+
+cache:
+  directories:
+    - $HOME/.cargo
+
 before_install:
-  - yes | sudo add-apt-repository "deb http://llvm.org/apt/precise/ llvm-toolchain-precise-${LLVM_VERSION} main"
-  - yes | sudo add-apt-repository "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu precise main"
-  - sudo apt-get update
-install:
-  - sudo apt-get install --force-yes libclang-${LLVM_VERSION}-dev llvm-${LLVM_VERSION}-dev
-script:
-  - export LIBCLANG_PATH=/usr/lib/llvm-${LLVM_VERSION}/lib
-  - cargo build --verbose
-  - cargo test
+  -
+    if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
+      if [ "${LLVM_VERSION}" != "devtools" ]; then
+        brew update >/dev/null;
+        brew install llvm3${LLVM_VERSION#3.};
+      fi
+    fi
+
+before_script:
+  -
+    if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+      export LIBCLANG_PATH=/usr/lib/llvm-${LLVM_VERSION}/lib;
+    elif [ "${TRAVIS_OS_NAME}" = "osx" ]; then
+      if [ "${LLVM_VERSION}" = "devtools" ]; then
+        export LIBCLANG_PATH=/Library/Developer/CommandLineTools/usr/lib;
+      else
+        export LIBCLANG_PATH=`brew --prefix llvm3${LLVM_VERSION#3.}`/lib/llvm-${LLVM_VERSION}/lib;
+      fi
+    fi
+  - echo $LIBCLANG_PATH
