@@ -756,16 +756,6 @@ fn cenum_to_rs(ctx: &mut GenCtx, name: String, kind: IKind, enum_items: &[EnumIt
         }));
     }
 
-    // for univariant enums, we add a dummy variant to avoid rust-lang/rust#10292
-    if enum_items.len() == 1 {
-        variants.push(respan(ctx.span, ast::Variant_ {
-            name: ctx.ext_cx.ident_of("__DUMMY"),
-            attrs: vec![],
-            data: ast::VariantData::Unit(ast::DUMMY_NODE_ID),
-            disr_expr: None,
-        }));
-    }
-
     let enum_repr = InternedString::new(enum_kind_to_rust_type_name(kind));
 
     let repr_arg = ctx.ext_cx.meta_word(ctx.span, enum_repr);
