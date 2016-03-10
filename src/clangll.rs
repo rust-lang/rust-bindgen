@@ -6,332 +6,334 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 
-pub type ptrdiff_t = ::libc::c_long;
-pub type size_t = ::libc::c_ulong;
-pub type wchar_t = ::libc::c_int;
+use ::std::os::raw::{ c_char, c_int, c_long, c_longlong, c_uint, c_ulong, c_ulonglong, c_void};
+
+pub type ptrdiff_t = c_long;
+pub type size_t = c_ulong;
+pub type wchar_t = c_int;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXString {
-    pub data: *const ::libc::c_void,
-    pub private_flags: ::libc::c_uint,
+    pub data: *const c_void,
+    pub private_flags: c_uint,
 }
-pub type CXIndex = *mut ::libc::c_void;
+pub type CXIndex = *mut c_void;
 pub enum Struct_CXTranslationUnitImpl { }
 pub type CXTranslationUnit = *mut Struct_CXTranslationUnitImpl;
-pub type CXClientData = *mut ::libc::c_void;
+pub type CXClientData = *mut c_void;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Struct_CXUnsavedFile {
-    pub Filename: *const ::libc::c_char,
-    pub Contents: *const ::libc::c_char,
-    pub Length: ::libc::c_ulong,
+    pub Filename: *const c_char,
+    pub Contents: *const c_char,
+    pub Length: c_ulong,
 }
-pub type Enum_CXAvailabilityKind = ::libc::c_uint;
-pub const CXAvailability_Available: ::libc::c_uint = 0;
-pub const CXAvailability_Deprecated: ::libc::c_uint = 1;
-pub const CXAvailability_NotAvailable: ::libc::c_uint = 2;
-pub const CXAvailability_NotAccessible: ::libc::c_uint = 3;
+pub type Enum_CXAvailabilityKind = c_uint;
+pub const CXAvailability_Available: c_uint = 0;
+pub const CXAvailability_Deprecated: c_uint = 1;
+pub const CXAvailability_NotAvailable: c_uint = 2;
+pub const CXAvailability_NotAccessible: c_uint = 3;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Struct_CXVersion {
-    pub Major: ::libc::c_int,
-    pub Minor: ::libc::c_int,
-    pub Subminor: ::libc::c_int,
+    pub Major: c_int,
+    pub Minor: c_int,
+    pub Subminor: c_int,
 }
 pub type CXVersion = Struct_CXVersion;
-pub type CXGlobalOptFlags = ::libc::c_uint;
-pub const CXGlobalOpt_None: ::libc::c_uint = 0;
-pub const CXGlobalOpt_ThreadBackgroundPriorityForIndexing: ::libc::c_uint =
+pub type CXGlobalOptFlags = c_uint;
+pub const CXGlobalOpt_None: c_uint = 0;
+pub const CXGlobalOpt_ThreadBackgroundPriorityForIndexing: c_uint =
     1;
-pub const CXGlobalOpt_ThreadBackgroundPriorityForEditing: ::libc::c_uint = 2;
-pub const CXGlobalOpt_ThreadBackgroundPriorityForAll: ::libc::c_uint = 3;
-pub type CXFile = *mut ::libc::c_void;
+pub const CXGlobalOpt_ThreadBackgroundPriorityForEditing: c_uint = 2;
+pub const CXGlobalOpt_ThreadBackgroundPriorityForAll: c_uint = 3;
+pub type CXFile = *mut c_void;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXFileUniqueID {
-    pub data: [::libc::c_ulonglong; 3],
+    pub data: [c_ulonglong; 3],
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXSourceLocation {
-    pub ptr_data: [*const ::libc::c_void; 2],
-    pub int_data: ::libc::c_uint,
+    pub ptr_data: [*const c_void; 2],
+    pub int_data: c_uint,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXSourceRange {
-    pub ptr_data: [*const ::libc::c_void; 2],
-    pub begin_int_data: ::libc::c_uint,
-    pub end_int_data: ::libc::c_uint,
+    pub ptr_data: [*const c_void; 2],
+    pub begin_int_data: c_uint,
+    pub end_int_data: c_uint,
 }
-pub type Enum_CXDiagnosticSeverity = ::libc::c_uint;
-pub const CXDiagnostic_Ignored: ::libc::c_uint = 0;
-pub const CXDiagnostic_Note: ::libc::c_uint = 1;
-pub const CXDiagnostic_Warning: ::libc::c_uint = 2;
-pub const CXDiagnostic_Error: ::libc::c_uint = 3;
-pub const CXDiagnostic_Fatal: ::libc::c_uint = 4;
-pub type CXDiagnostic = *mut ::libc::c_void;
-pub type CXDiagnosticSet = *mut ::libc::c_void;
-pub type Enum_CXLoadDiag_Error = ::libc::c_uint;
-pub const CXLoadDiag_None: ::libc::c_uint = 0;
-pub const CXLoadDiag_Unknown: ::libc::c_uint = 1;
-pub const CXLoadDiag_CannotLoad: ::libc::c_uint = 2;
-pub const CXLoadDiag_InvalidFile: ::libc::c_uint = 3;
-pub type Enum_CXDiagnosticDisplayOptions = ::libc::c_uint;
-pub const CXDiagnostic_DisplaySourceLocation: ::libc::c_uint = 1;
-pub const CXDiagnostic_DisplayColumn: ::libc::c_uint = 2;
-pub const CXDiagnostic_DisplaySourceRanges: ::libc::c_uint = 4;
-pub const CXDiagnostic_DisplayOption: ::libc::c_uint = 8;
-pub const CXDiagnostic_DisplayCategoryId: ::libc::c_uint = 16;
-pub const CXDiagnostic_DisplayCategoryName: ::libc::c_uint = 32;
-pub type Enum_CXTranslationUnit_Flags = ::libc::c_uint;
-pub const CXTranslationUnit_None: ::libc::c_uint = 0;
-pub const CXTranslationUnit_DetailedPreprocessingRecord: ::libc::c_uint = 1;
-pub const CXTranslationUnit_Incomplete: ::libc::c_uint = 2;
-pub const CXTranslationUnit_PrecompiledPreamble: ::libc::c_uint = 4;
-pub const CXTranslationUnit_CacheCompletionResults: ::libc::c_uint = 8;
-pub const CXTranslationUnit_ForSerialization: ::libc::c_uint = 16;
-pub const CXTranslationUnit_CXXChainedPCH: ::libc::c_uint = 32;
-pub const CXTranslationUnit_SkipFunctionBodies: ::libc::c_uint = 64;
+pub type Enum_CXDiagnosticSeverity = c_uint;
+pub const CXDiagnostic_Ignored: c_uint = 0;
+pub const CXDiagnostic_Note: c_uint = 1;
+pub const CXDiagnostic_Warning: c_uint = 2;
+pub const CXDiagnostic_Error: c_uint = 3;
+pub const CXDiagnostic_Fatal: c_uint = 4;
+pub type CXDiagnostic = *mut c_void;
+pub type CXDiagnosticSet = *mut c_void;
+pub type Enum_CXLoadDiag_Error = c_uint;
+pub const CXLoadDiag_None: c_uint = 0;
+pub const CXLoadDiag_Unknown: c_uint = 1;
+pub const CXLoadDiag_CannotLoad: c_uint = 2;
+pub const CXLoadDiag_InvalidFile: c_uint = 3;
+pub type Enum_CXDiagnosticDisplayOptions = c_uint;
+pub const CXDiagnostic_DisplaySourceLocation: c_uint = 1;
+pub const CXDiagnostic_DisplayColumn: c_uint = 2;
+pub const CXDiagnostic_DisplaySourceRanges: c_uint = 4;
+pub const CXDiagnostic_DisplayOption: c_uint = 8;
+pub const CXDiagnostic_DisplayCategoryId: c_uint = 16;
+pub const CXDiagnostic_DisplayCategoryName: c_uint = 32;
+pub type Enum_CXTranslationUnit_Flags = c_uint;
+pub const CXTranslationUnit_None: c_uint = 0;
+pub const CXTranslationUnit_DetailedPreprocessingRecord: c_uint = 1;
+pub const CXTranslationUnit_Incomplete: c_uint = 2;
+pub const CXTranslationUnit_PrecompiledPreamble: c_uint = 4;
+pub const CXTranslationUnit_CacheCompletionResults: c_uint = 8;
+pub const CXTranslationUnit_ForSerialization: c_uint = 16;
+pub const CXTranslationUnit_CXXChainedPCH: c_uint = 32;
+pub const CXTranslationUnit_SkipFunctionBodies: c_uint = 64;
 pub const CXTranslationUnit_IncludeBriefCommentsInCodeCompletion:
-           ::libc::c_uint =
+           c_uint =
     128;
-pub type Enum_CXSaveTranslationUnit_Flags = ::libc::c_uint;
-pub const CXSaveTranslationUnit_None: ::libc::c_uint = 0;
-pub type Enum_CXSaveError = ::libc::c_uint;
-pub const CXSaveError_None: ::libc::c_uint = 0;
-pub const CXSaveError_Unknown: ::libc::c_uint = 1;
-pub const CXSaveError_TranslationErrors: ::libc::c_uint = 2;
-pub const CXSaveError_InvalidTU: ::libc::c_uint = 3;
-pub type Enum_CXReparse_Flags = ::libc::c_uint;
-pub const CXReparse_None: ::libc::c_uint = 0;
-pub type Enum_CXTUResourceUsageKind = ::libc::c_uint;
-pub const CXTUResourceUsage_AST: ::libc::c_uint = 1;
-pub const CXTUResourceUsage_Identifiers: ::libc::c_uint = 2;
-pub const CXTUResourceUsage_Selectors: ::libc::c_uint = 3;
-pub const CXTUResourceUsage_GlobalCompletionResults: ::libc::c_uint = 4;
-pub const CXTUResourceUsage_SourceManagerContentCache: ::libc::c_uint = 5;
-pub const CXTUResourceUsage_AST_SideTables: ::libc::c_uint = 6;
-pub const CXTUResourceUsage_SourceManager_Membuffer_Malloc: ::libc::c_uint =
+pub type Enum_CXSaveTranslationUnit_Flags = c_uint;
+pub const CXSaveTranslationUnit_None: c_uint = 0;
+pub type Enum_CXSaveError = c_uint;
+pub const CXSaveError_None: c_uint = 0;
+pub const CXSaveError_Unknown: c_uint = 1;
+pub const CXSaveError_TranslationErrors: c_uint = 2;
+pub const CXSaveError_InvalidTU: c_uint = 3;
+pub type Enum_CXReparse_Flags = c_uint;
+pub const CXReparse_None: c_uint = 0;
+pub type Enum_CXTUResourceUsageKind = c_uint;
+pub const CXTUResourceUsage_AST: c_uint = 1;
+pub const CXTUResourceUsage_Identifiers: c_uint = 2;
+pub const CXTUResourceUsage_Selectors: c_uint = 3;
+pub const CXTUResourceUsage_GlobalCompletionResults: c_uint = 4;
+pub const CXTUResourceUsage_SourceManagerContentCache: c_uint = 5;
+pub const CXTUResourceUsage_AST_SideTables: c_uint = 6;
+pub const CXTUResourceUsage_SourceManager_Membuffer_Malloc: c_uint =
     7;
-pub const CXTUResourceUsage_SourceManager_Membuffer_MMap: ::libc::c_uint = 8;
+pub const CXTUResourceUsage_SourceManager_Membuffer_MMap: c_uint = 8;
 pub const CXTUResourceUsage_ExternalASTSource_Membuffer_Malloc:
-           ::libc::c_uint =
+           c_uint =
     9;
-pub const CXTUResourceUsage_ExternalASTSource_Membuffer_MMap: ::libc::c_uint
+pub const CXTUResourceUsage_ExternalASTSource_Membuffer_MMap: c_uint
            =
     10;
-pub const CXTUResourceUsage_Preprocessor: ::libc::c_uint = 11;
-pub const CXTUResourceUsage_PreprocessingRecord: ::libc::c_uint = 12;
-pub const CXTUResourceUsage_SourceManager_DataStructures: ::libc::c_uint =
+pub const CXTUResourceUsage_Preprocessor: c_uint = 11;
+pub const CXTUResourceUsage_PreprocessingRecord: c_uint = 12;
+pub const CXTUResourceUsage_SourceManager_DataStructures: c_uint =
     13;
-pub const CXTUResourceUsage_Preprocessor_HeaderSearch: ::libc::c_uint = 14;
-pub const CXTUResourceUsage_MEMORY_IN_BYTES_BEGIN: ::libc::c_uint = 1;
-pub const CXTUResourceUsage_MEMORY_IN_BYTES_END: ::libc::c_uint = 14;
-pub const CXTUResourceUsage_First: ::libc::c_uint = 1;
-pub const CXTUResourceUsage_Last: ::libc::c_uint = 14;
+pub const CXTUResourceUsage_Preprocessor_HeaderSearch: c_uint = 14;
+pub const CXTUResourceUsage_MEMORY_IN_BYTES_BEGIN: c_uint = 1;
+pub const CXTUResourceUsage_MEMORY_IN_BYTES_END: c_uint = 14;
+pub const CXTUResourceUsage_First: c_uint = 1;
+pub const CXTUResourceUsage_Last: c_uint = 14;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Struct_CXTUResourceUsageEntry {
     pub kind: Enum_CXTUResourceUsageKind,
-    pub amount: ::libc::c_ulong,
+    pub amount: c_ulong,
 }
 pub type CXTUResourceUsageEntry = Struct_CXTUResourceUsageEntry;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Struct_CXTUResourceUsage {
-    pub data: *mut ::libc::c_void,
-    pub numEntries: ::libc::c_uint,
+    pub data: *mut c_void,
+    pub numEntries: c_uint,
     pub entries: *mut CXTUResourceUsageEntry,
 }
 pub type CXTUResourceUsage = Struct_CXTUResourceUsage;
-pub type Enum_CXCursorKind = ::libc::c_uint;
-pub const CXCursor_UnexposedDecl: ::libc::c_uint = 1;
-pub const CXCursor_StructDecl: ::libc::c_uint = 2;
-pub const CXCursor_UnionDecl: ::libc::c_uint = 3;
-pub const CXCursor_ClassDecl: ::libc::c_uint = 4;
-pub const CXCursor_EnumDecl: ::libc::c_uint = 5;
-pub const CXCursor_FieldDecl: ::libc::c_uint = 6;
-pub const CXCursor_EnumConstantDecl: ::libc::c_uint = 7;
-pub const CXCursor_FunctionDecl: ::libc::c_uint = 8;
-pub const CXCursor_VarDecl: ::libc::c_uint = 9;
-pub const CXCursor_ParmDecl: ::libc::c_uint = 10;
-pub const CXCursor_ObjCInterfaceDecl: ::libc::c_uint = 11;
-pub const CXCursor_ObjCCategoryDecl: ::libc::c_uint = 12;
-pub const CXCursor_ObjCProtocolDecl: ::libc::c_uint = 13;
-pub const CXCursor_ObjCPropertyDecl: ::libc::c_uint = 14;
-pub const CXCursor_ObjCIvarDecl: ::libc::c_uint = 15;
-pub const CXCursor_ObjCInstanceMethodDecl: ::libc::c_uint = 16;
-pub const CXCursor_ObjCClassMethodDecl: ::libc::c_uint = 17;
-pub const CXCursor_ObjCImplementationDecl: ::libc::c_uint = 18;
-pub const CXCursor_ObjCCategoryImplDecl: ::libc::c_uint = 19;
-pub const CXCursor_TypedefDecl: ::libc::c_uint = 20;
-pub const CXCursor_CXXMethod: ::libc::c_uint = 21;
-pub const CXCursor_Namespace: ::libc::c_uint = 22;
-pub const CXCursor_LinkageSpec: ::libc::c_uint = 23;
-pub const CXCursor_Constructor: ::libc::c_uint = 24;
-pub const CXCursor_Destructor: ::libc::c_uint = 25;
-pub const CXCursor_ConversionFunction: ::libc::c_uint = 26;
-pub const CXCursor_TemplateTypeParameter: ::libc::c_uint = 27;
-pub const CXCursor_NonTypeTemplateParameter: ::libc::c_uint = 28;
-pub const CXCursor_TemplateTemplateParameter: ::libc::c_uint = 29;
-pub const CXCursor_FunctionTemplate: ::libc::c_uint = 30;
-pub const CXCursor_ClassTemplate: ::libc::c_uint = 31;
-pub const CXCursor_ClassTemplatePartialSpecialization: ::libc::c_uint = 32;
-pub const CXCursor_NamespaceAlias: ::libc::c_uint = 33;
-pub const CXCursor_UsingDirective: ::libc::c_uint = 34;
-pub const CXCursor_UsingDeclaration: ::libc::c_uint = 35;
-pub const CXCursor_TypeAliasDecl: ::libc::c_uint = 36;
-pub const CXCursor_ObjCSynthesizeDecl: ::libc::c_uint = 37;
-pub const CXCursor_ObjCDynamicDecl: ::libc::c_uint = 38;
-pub const CXCursor_CXXAccessSpecifier: ::libc::c_uint = 39;
-pub const CXCursor_FirstDecl: ::libc::c_uint = 1;
-pub const CXCursor_LastDecl: ::libc::c_uint = 39;
-pub const CXCursor_FirstRef: ::libc::c_uint = 40;
-pub const CXCursor_ObjCSuperClassRef: ::libc::c_uint = 40;
-pub const CXCursor_ObjCProtocolRef: ::libc::c_uint = 41;
-pub const CXCursor_ObjCClassRef: ::libc::c_uint = 42;
-pub const CXCursor_TypeRef: ::libc::c_uint = 43;
-pub const CXCursor_CXXBaseSpecifier: ::libc::c_uint = 44;
-pub const CXCursor_TemplateRef: ::libc::c_uint = 45;
-pub const CXCursor_NamespaceRef: ::libc::c_uint = 46;
-pub const CXCursor_MemberRef: ::libc::c_uint = 47;
-pub const CXCursor_LabelRef: ::libc::c_uint = 48;
-pub const CXCursor_OverloadedDeclRef: ::libc::c_uint = 49;
-pub const CXCursor_VariableRef: ::libc::c_uint = 50;
-pub const CXCursor_LastRef: ::libc::c_uint = 50;
-pub const CXCursor_FirstInvalid: ::libc::c_uint = 70;
-pub const CXCursor_InvalidFile: ::libc::c_uint = 70;
-pub const CXCursor_NoDeclFound: ::libc::c_uint = 71;
-pub const CXCursor_NotImplemented: ::libc::c_uint = 72;
-pub const CXCursor_InvalidCode: ::libc::c_uint = 73;
-pub const CXCursor_LastInvalid: ::libc::c_uint = 73;
-pub const CXCursor_FirstExpr: ::libc::c_uint = 100;
-pub const CXCursor_UnexposedExpr: ::libc::c_uint = 100;
-pub const CXCursor_DeclRefExpr: ::libc::c_uint = 101;
-pub const CXCursor_MemberRefExpr: ::libc::c_uint = 102;
-pub const CXCursor_CallExpr: ::libc::c_uint = 103;
-pub const CXCursor_ObjCMessageExpr: ::libc::c_uint = 104;
-pub const CXCursor_BlockExpr: ::libc::c_uint = 105;
-pub const CXCursor_IntegerLiteral: ::libc::c_uint = 106;
-pub const CXCursor_FloatingLiteral: ::libc::c_uint = 107;
-pub const CXCursor_ImaginaryLiteral: ::libc::c_uint = 108;
-pub const CXCursor_StringLiteral: ::libc::c_uint = 109;
-pub const CXCursor_CharacterLiteral: ::libc::c_uint = 110;
-pub const CXCursor_ParenExpr: ::libc::c_uint = 111;
-pub const CXCursor_UnaryOperator: ::libc::c_uint = 112;
-pub const CXCursor_ArraySubscriptExpr: ::libc::c_uint = 113;
-pub const CXCursor_BinaryOperator: ::libc::c_uint = 114;
-pub const CXCursor_CompoundAssignOperator: ::libc::c_uint = 115;
-pub const CXCursor_ConditionalOperator: ::libc::c_uint = 116;
-pub const CXCursor_CStyleCastExpr: ::libc::c_uint = 117;
-pub const CXCursor_CompoundLiteralExpr: ::libc::c_uint = 118;
-pub const CXCursor_InitListExpr: ::libc::c_uint = 119;
-pub const CXCursor_AddrLabelExpr: ::libc::c_uint = 120;
-pub const CXCursor_StmtExpr: ::libc::c_uint = 121;
-pub const CXCursor_GenericSelectionExpr: ::libc::c_uint = 122;
-pub const CXCursor_GNUNullExpr: ::libc::c_uint = 123;
-pub const CXCursor_CXXStaticCastExpr: ::libc::c_uint = 124;
-pub const CXCursor_CXXDynamicCastExpr: ::libc::c_uint = 125;
-pub const CXCursor_CXXReinterpretCastExpr: ::libc::c_uint = 126;
-pub const CXCursor_CXXConstCastExpr: ::libc::c_uint = 127;
-pub const CXCursor_CXXFunctionalCastExpr: ::libc::c_uint = 128;
-pub const CXCursor_CXXTypeidExpr: ::libc::c_uint = 129;
-pub const CXCursor_CXXBoolLiteralExpr: ::libc::c_uint = 130;
-pub const CXCursor_CXXNullPtrLiteralExpr: ::libc::c_uint = 131;
-pub const CXCursor_CXXThisExpr: ::libc::c_uint = 132;
-pub const CXCursor_CXXThrowExpr: ::libc::c_uint = 133;
-pub const CXCursor_CXXNewExpr: ::libc::c_uint = 134;
-pub const CXCursor_CXXDeleteExpr: ::libc::c_uint = 135;
-pub const CXCursor_UnaryExpr: ::libc::c_uint = 136;
-pub const CXCursor_ObjCStringLiteral: ::libc::c_uint = 137;
-pub const CXCursor_ObjCEncodeExpr: ::libc::c_uint = 138;
-pub const CXCursor_ObjCSelectorExpr: ::libc::c_uint = 139;
-pub const CXCursor_ObjCProtocolExpr: ::libc::c_uint = 140;
-pub const CXCursor_ObjCBridgedCastExpr: ::libc::c_uint = 141;
-pub const CXCursor_PackExpansionExpr: ::libc::c_uint = 142;
-pub const CXCursor_SizeOfPackExpr: ::libc::c_uint = 143;
-pub const CXCursor_LambdaExpr: ::libc::c_uint = 144;
-pub const CXCursor_ObjCBoolLiteralExpr: ::libc::c_uint = 145;
-pub const CXCursor_ObjCSelfExpr: ::libc::c_uint = 146;
-pub const CXCursor_LastExpr: ::libc::c_uint = 146;
-pub const CXCursor_FirstStmt: ::libc::c_uint = 200;
-pub const CXCursor_UnexposedStmt: ::libc::c_uint = 200;
-pub const CXCursor_LabelStmt: ::libc::c_uint = 201;
-pub const CXCursor_CompoundStmt: ::libc::c_uint = 202;
-pub const CXCursor_CaseStmt: ::libc::c_uint = 203;
-pub const CXCursor_DefaultStmt: ::libc::c_uint = 204;
-pub const CXCursor_IfStmt: ::libc::c_uint = 205;
-pub const CXCursor_SwitchStmt: ::libc::c_uint = 206;
-pub const CXCursor_WhileStmt: ::libc::c_uint = 207;
-pub const CXCursor_DoStmt: ::libc::c_uint = 208;
-pub const CXCursor_ForStmt: ::libc::c_uint = 209;
-pub const CXCursor_GotoStmt: ::libc::c_uint = 210;
-pub const CXCursor_IndirectGotoStmt: ::libc::c_uint = 211;
-pub const CXCursor_ContinueStmt: ::libc::c_uint = 212;
-pub const CXCursor_BreakStmt: ::libc::c_uint = 213;
-pub const CXCursor_ReturnStmt: ::libc::c_uint = 214;
-pub const CXCursor_GCCAsmStmt: ::libc::c_uint = 215;
-pub const CXCursor_AsmStmt: ::libc::c_uint = 215;
-pub const CXCursor_ObjCAtTryStmt: ::libc::c_uint = 216;
-pub const CXCursor_ObjCAtCatchStmt: ::libc::c_uint = 217;
-pub const CXCursor_ObjCAtFinallyStmt: ::libc::c_uint = 218;
-pub const CXCursor_ObjCAtThrowStmt: ::libc::c_uint = 219;
-pub const CXCursor_ObjCAtSynchronizedStmt: ::libc::c_uint = 220;
-pub const CXCursor_ObjCAutoreleasePoolStmt: ::libc::c_uint = 221;
-pub const CXCursor_ObjCForCollectionStmt: ::libc::c_uint = 222;
-pub const CXCursor_CXXCatchStmt: ::libc::c_uint = 223;
-pub const CXCursor_CXXTryStmt: ::libc::c_uint = 224;
-pub const CXCursor_CXXForRangeStmt: ::libc::c_uint = 225;
-pub const CXCursor_SEHTryStmt: ::libc::c_uint = 226;
-pub const CXCursor_SEHExceptStmt: ::libc::c_uint = 227;
-pub const CXCursor_SEHFinallyStmt: ::libc::c_uint = 228;
-pub const CXCursor_MSAsmStmt: ::libc::c_uint = 229;
-pub const CXCursor_NullStmt: ::libc::c_uint = 230;
-pub const CXCursor_DeclStmt: ::libc::c_uint = 231;
-pub const CXCursor_OMPParallelDirective: ::libc::c_uint = 232;
-pub const CXCursor_LastStmt: ::libc::c_uint = 232;
-pub const CXCursor_TranslationUnit: ::libc::c_uint = 300;
-pub const CXCursor_FirstAttr: ::libc::c_uint = 400;
-pub const CXCursor_UnexposedAttr: ::libc::c_uint = 400;
-pub const CXCursor_IBActionAttr: ::libc::c_uint = 401;
-pub const CXCursor_IBOutletAttr: ::libc::c_uint = 402;
-pub const CXCursor_IBOutletCollectionAttr: ::libc::c_uint = 403;
-pub const CXCursor_CXXFinalAttr: ::libc::c_uint = 404;
-pub const CXCursor_CXXOverrideAttr: ::libc::c_uint = 405;
-pub const CXCursor_AnnotateAttr: ::libc::c_uint = 406;
-pub const CXCursor_AsmLabelAttr: ::libc::c_uint = 407;
-pub const CXCursor_PackedAttr: ::libc::c_uint = 408;
-pub const CXCursor_LastAttr: ::libc::c_uint = 408;
-pub const CXCursor_PreprocessingDirective: ::libc::c_uint = 500;
-pub const CXCursor_MacroDefinition: ::libc::c_uint = 501;
-pub const CXCursor_MacroExpansion: ::libc::c_uint = 502;
-pub const CXCursor_MacroInstantiation: ::libc::c_uint = 502;
-pub const CXCursor_InclusionDirective: ::libc::c_uint = 503;
-pub const CXCursor_FirstPreprocessing: ::libc::c_uint = 500;
-pub const CXCursor_LastPreprocessing: ::libc::c_uint = 503;
-pub const CXCursor_ModuleImportDecl: ::libc::c_uint = 600;
-pub const CXCursor_FirstExtraDecl: ::libc::c_uint = 600;
-pub const CXCursor_LastExtraDecl: ::libc::c_uint = 600;
+pub type Enum_CXCursorKind = c_uint;
+pub const CXCursor_UnexposedDecl: c_uint = 1;
+pub const CXCursor_StructDecl: c_uint = 2;
+pub const CXCursor_UnionDecl: c_uint = 3;
+pub const CXCursor_ClassDecl: c_uint = 4;
+pub const CXCursor_EnumDecl: c_uint = 5;
+pub const CXCursor_FieldDecl: c_uint = 6;
+pub const CXCursor_EnumConstantDecl: c_uint = 7;
+pub const CXCursor_FunctionDecl: c_uint = 8;
+pub const CXCursor_VarDecl: c_uint = 9;
+pub const CXCursor_ParmDecl: c_uint = 10;
+pub const CXCursor_ObjCInterfaceDecl: c_uint = 11;
+pub const CXCursor_ObjCCategoryDecl: c_uint = 12;
+pub const CXCursor_ObjCProtocolDecl: c_uint = 13;
+pub const CXCursor_ObjCPropertyDecl: c_uint = 14;
+pub const CXCursor_ObjCIvarDecl: c_uint = 15;
+pub const CXCursor_ObjCInstanceMethodDecl: c_uint = 16;
+pub const CXCursor_ObjCClassMethodDecl: c_uint = 17;
+pub const CXCursor_ObjCImplementationDecl: c_uint = 18;
+pub const CXCursor_ObjCCategoryImplDecl: c_uint = 19;
+pub const CXCursor_TypedefDecl: c_uint = 20;
+pub const CXCursor_CXXMethod: c_uint = 21;
+pub const CXCursor_Namespace: c_uint = 22;
+pub const CXCursor_LinkageSpec: c_uint = 23;
+pub const CXCursor_Constructor: c_uint = 24;
+pub const CXCursor_Destructor: c_uint = 25;
+pub const CXCursor_ConversionFunction: c_uint = 26;
+pub const CXCursor_TemplateTypeParameter: c_uint = 27;
+pub const CXCursor_NonTypeTemplateParameter: c_uint = 28;
+pub const CXCursor_TemplateTemplateParameter: c_uint = 29;
+pub const CXCursor_FunctionTemplate: c_uint = 30;
+pub const CXCursor_ClassTemplate: c_uint = 31;
+pub const CXCursor_ClassTemplatePartialSpecialization: c_uint = 32;
+pub const CXCursor_NamespaceAlias: c_uint = 33;
+pub const CXCursor_UsingDirective: c_uint = 34;
+pub const CXCursor_UsingDeclaration: c_uint = 35;
+pub const CXCursor_TypeAliasDecl: c_uint = 36;
+pub const CXCursor_ObjCSynthesizeDecl: c_uint = 37;
+pub const CXCursor_ObjCDynamicDecl: c_uint = 38;
+pub const CXCursor_CXXAccessSpecifier: c_uint = 39;
+pub const CXCursor_FirstDecl: c_uint = 1;
+pub const CXCursor_LastDecl: c_uint = 39;
+pub const CXCursor_FirstRef: c_uint = 40;
+pub const CXCursor_ObjCSuperClassRef: c_uint = 40;
+pub const CXCursor_ObjCProtocolRef: c_uint = 41;
+pub const CXCursor_ObjCClassRef: c_uint = 42;
+pub const CXCursor_TypeRef: c_uint = 43;
+pub const CXCursor_CXXBaseSpecifier: c_uint = 44;
+pub const CXCursor_TemplateRef: c_uint = 45;
+pub const CXCursor_NamespaceRef: c_uint = 46;
+pub const CXCursor_MemberRef: c_uint = 47;
+pub const CXCursor_LabelRef: c_uint = 48;
+pub const CXCursor_OverloadedDeclRef: c_uint = 49;
+pub const CXCursor_VariableRef: c_uint = 50;
+pub const CXCursor_LastRef: c_uint = 50;
+pub const CXCursor_FirstInvalid: c_uint = 70;
+pub const CXCursor_InvalidFile: c_uint = 70;
+pub const CXCursor_NoDeclFound: c_uint = 71;
+pub const CXCursor_NotImplemented: c_uint = 72;
+pub const CXCursor_InvalidCode: c_uint = 73;
+pub const CXCursor_LastInvalid: c_uint = 73;
+pub const CXCursor_FirstExpr: c_uint = 100;
+pub const CXCursor_UnexposedExpr: c_uint = 100;
+pub const CXCursor_DeclRefExpr: c_uint = 101;
+pub const CXCursor_MemberRefExpr: c_uint = 102;
+pub const CXCursor_CallExpr: c_uint = 103;
+pub const CXCursor_ObjCMessageExpr: c_uint = 104;
+pub const CXCursor_BlockExpr: c_uint = 105;
+pub const CXCursor_IntegerLiteral: c_uint = 106;
+pub const CXCursor_FloatingLiteral: c_uint = 107;
+pub const CXCursor_ImaginaryLiteral: c_uint = 108;
+pub const CXCursor_StringLiteral: c_uint = 109;
+pub const CXCursor_CharacterLiteral: c_uint = 110;
+pub const CXCursor_ParenExpr: c_uint = 111;
+pub const CXCursor_UnaryOperator: c_uint = 112;
+pub const CXCursor_ArraySubscriptExpr: c_uint = 113;
+pub const CXCursor_BinaryOperator: c_uint = 114;
+pub const CXCursor_CompoundAssignOperator: c_uint = 115;
+pub const CXCursor_ConditionalOperator: c_uint = 116;
+pub const CXCursor_CStyleCastExpr: c_uint = 117;
+pub const CXCursor_CompoundLiteralExpr: c_uint = 118;
+pub const CXCursor_InitListExpr: c_uint = 119;
+pub const CXCursor_AddrLabelExpr: c_uint = 120;
+pub const CXCursor_StmtExpr: c_uint = 121;
+pub const CXCursor_GenericSelectionExpr: c_uint = 122;
+pub const CXCursor_GNUNullExpr: c_uint = 123;
+pub const CXCursor_CXXStaticCastExpr: c_uint = 124;
+pub const CXCursor_CXXDynamicCastExpr: c_uint = 125;
+pub const CXCursor_CXXReinterpretCastExpr: c_uint = 126;
+pub const CXCursor_CXXConstCastExpr: c_uint = 127;
+pub const CXCursor_CXXFunctionalCastExpr: c_uint = 128;
+pub const CXCursor_CXXTypeidExpr: c_uint = 129;
+pub const CXCursor_CXXBoolLiteralExpr: c_uint = 130;
+pub const CXCursor_CXXNullPtrLiteralExpr: c_uint = 131;
+pub const CXCursor_CXXThisExpr: c_uint = 132;
+pub const CXCursor_CXXThrowExpr: c_uint = 133;
+pub const CXCursor_CXXNewExpr: c_uint = 134;
+pub const CXCursor_CXXDeleteExpr: c_uint = 135;
+pub const CXCursor_UnaryExpr: c_uint = 136;
+pub const CXCursor_ObjCStringLiteral: c_uint = 137;
+pub const CXCursor_ObjCEncodeExpr: c_uint = 138;
+pub const CXCursor_ObjCSelectorExpr: c_uint = 139;
+pub const CXCursor_ObjCProtocolExpr: c_uint = 140;
+pub const CXCursor_ObjCBridgedCastExpr: c_uint = 141;
+pub const CXCursor_PackExpansionExpr: c_uint = 142;
+pub const CXCursor_SizeOfPackExpr: c_uint = 143;
+pub const CXCursor_LambdaExpr: c_uint = 144;
+pub const CXCursor_ObjCBoolLiteralExpr: c_uint = 145;
+pub const CXCursor_ObjCSelfExpr: c_uint = 146;
+pub const CXCursor_LastExpr: c_uint = 146;
+pub const CXCursor_FirstStmt: c_uint = 200;
+pub const CXCursor_UnexposedStmt: c_uint = 200;
+pub const CXCursor_LabelStmt: c_uint = 201;
+pub const CXCursor_CompoundStmt: c_uint = 202;
+pub const CXCursor_CaseStmt: c_uint = 203;
+pub const CXCursor_DefaultStmt: c_uint = 204;
+pub const CXCursor_IfStmt: c_uint = 205;
+pub const CXCursor_SwitchStmt: c_uint = 206;
+pub const CXCursor_WhileStmt: c_uint = 207;
+pub const CXCursor_DoStmt: c_uint = 208;
+pub const CXCursor_ForStmt: c_uint = 209;
+pub const CXCursor_GotoStmt: c_uint = 210;
+pub const CXCursor_IndirectGotoStmt: c_uint = 211;
+pub const CXCursor_ContinueStmt: c_uint = 212;
+pub const CXCursor_BreakStmt: c_uint = 213;
+pub const CXCursor_ReturnStmt: c_uint = 214;
+pub const CXCursor_GCCAsmStmt: c_uint = 215;
+pub const CXCursor_AsmStmt: c_uint = 215;
+pub const CXCursor_ObjCAtTryStmt: c_uint = 216;
+pub const CXCursor_ObjCAtCatchStmt: c_uint = 217;
+pub const CXCursor_ObjCAtFinallyStmt: c_uint = 218;
+pub const CXCursor_ObjCAtThrowStmt: c_uint = 219;
+pub const CXCursor_ObjCAtSynchronizedStmt: c_uint = 220;
+pub const CXCursor_ObjCAutoreleasePoolStmt: c_uint = 221;
+pub const CXCursor_ObjCForCollectionStmt: c_uint = 222;
+pub const CXCursor_CXXCatchStmt: c_uint = 223;
+pub const CXCursor_CXXTryStmt: c_uint = 224;
+pub const CXCursor_CXXForRangeStmt: c_uint = 225;
+pub const CXCursor_SEHTryStmt: c_uint = 226;
+pub const CXCursor_SEHExceptStmt: c_uint = 227;
+pub const CXCursor_SEHFinallyStmt: c_uint = 228;
+pub const CXCursor_MSAsmStmt: c_uint = 229;
+pub const CXCursor_NullStmt: c_uint = 230;
+pub const CXCursor_DeclStmt: c_uint = 231;
+pub const CXCursor_OMPParallelDirective: c_uint = 232;
+pub const CXCursor_LastStmt: c_uint = 232;
+pub const CXCursor_TranslationUnit: c_uint = 300;
+pub const CXCursor_FirstAttr: c_uint = 400;
+pub const CXCursor_UnexposedAttr: c_uint = 400;
+pub const CXCursor_IBActionAttr: c_uint = 401;
+pub const CXCursor_IBOutletAttr: c_uint = 402;
+pub const CXCursor_IBOutletCollectionAttr: c_uint = 403;
+pub const CXCursor_CXXFinalAttr: c_uint = 404;
+pub const CXCursor_CXXOverrideAttr: c_uint = 405;
+pub const CXCursor_AnnotateAttr: c_uint = 406;
+pub const CXCursor_AsmLabelAttr: c_uint = 407;
+pub const CXCursor_PackedAttr: c_uint = 408;
+pub const CXCursor_LastAttr: c_uint = 408;
+pub const CXCursor_PreprocessingDirective: c_uint = 500;
+pub const CXCursor_MacroDefinition: c_uint = 501;
+pub const CXCursor_MacroExpansion: c_uint = 502;
+pub const CXCursor_MacroInstantiation: c_uint = 502;
+pub const CXCursor_InclusionDirective: c_uint = 503;
+pub const CXCursor_FirstPreprocessing: c_uint = 500;
+pub const CXCursor_LastPreprocessing: c_uint = 503;
+pub const CXCursor_ModuleImportDecl: c_uint = 600;
+pub const CXCursor_FirstExtraDecl: c_uint = 600;
+pub const CXCursor_LastExtraDecl: c_uint = 600;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXCursor {
     pub kind: Enum_CXCursorKind,
-    pub xdata: ::libc::c_int,
-    pub data: [*const ::libc::c_void; 3],
+    pub xdata: c_int,
+    pub data: [*const c_void; 3],
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXComment {
-    pub ASTNode: *const ::libc::c_void,
+    pub ASTNode: *const c_void,
     pub TranslationUnit: CXTranslationUnit,
 }
-pub type Enum_CXLinkageKind = ::libc::c_uint;
-pub const CXLinkage_Invalid: ::libc::c_uint = 0;
-pub const CXLinkage_NoLinkage: ::libc::c_uint = 1;
-pub const CXLinkage_Internal: ::libc::c_uint = 2;
-pub const CXLinkage_UniqueExternal: ::libc::c_uint = 3;
-pub const CXLinkage_External: ::libc::c_uint = 4;
+pub type Enum_CXLinkageKind = c_uint;
+pub const CXLinkage_Invalid: c_uint = 0;
+pub const CXLinkage_NoLinkage: c_uint = 1;
+pub const CXLinkage_Internal: c_uint = 2;
+pub const CXLinkage_UniqueExternal: c_uint = 3;
+pub const CXLinkage_External: c_uint = 4;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Struct_CXPlatformAvailability {
@@ -339,280 +341,280 @@ pub struct Struct_CXPlatformAvailability {
     pub Introduced: CXVersion,
     pub Deprecated: CXVersion,
     pub Obsoleted: CXVersion,
-    pub Unavailable: ::libc::c_int,
+    pub Unavailable: c_int,
     pub Message: CXString,
 }
 pub type CXPlatformAvailability = Struct_CXPlatformAvailability;
-pub type Enum_CXLanguageKind = ::libc::c_uint;
-pub const CXLanguage_Invalid: ::libc::c_uint = 0;
-pub const CXLanguage_C: ::libc::c_uint = 1;
-pub const CXLanguage_ObjC: ::libc::c_uint = 2;
-pub const CXLanguage_CPlusPlus: ::libc::c_uint = 3;
+pub type Enum_CXLanguageKind = c_uint;
+pub const CXLanguage_Invalid: c_uint = 0;
+pub const CXLanguage_C: c_uint = 1;
+pub const CXLanguage_ObjC: c_uint = 2;
+pub const CXLanguage_CPlusPlus: c_uint = 3;
 pub enum Struct_CXCursorSetImpl { }
 pub type CXCursorSet = *mut Struct_CXCursorSetImpl;
-pub type Enum_CXTypeKind = ::libc::c_uint;
-pub const CXType_Invalid: ::libc::c_uint = 0;
-pub const CXType_Unexposed: ::libc::c_uint = 1;
-pub const CXType_Void: ::libc::c_uint = 2;
-pub const CXType_Bool: ::libc::c_uint = 3;
-pub const CXType_Char_U: ::libc::c_uint = 4;
-pub const CXType_UChar: ::libc::c_uint = 5;
-pub const CXType_Char16: ::libc::c_uint = 6;
-pub const CXType_Char32: ::libc::c_uint = 7;
-pub const CXType_UShort: ::libc::c_uint = 8;
-pub const CXType_UInt: ::libc::c_uint = 9;
-pub const CXType_ULong: ::libc::c_uint = 10;
-pub const CXType_ULongLong: ::libc::c_uint = 11;
-pub const CXType_UInt128: ::libc::c_uint = 12;
-pub const CXType_Char_S: ::libc::c_uint = 13;
-pub const CXType_SChar: ::libc::c_uint = 14;
-pub const CXType_WChar: ::libc::c_uint = 15;
-pub const CXType_Short: ::libc::c_uint = 16;
-pub const CXType_Int: ::libc::c_uint = 17;
-pub const CXType_Long: ::libc::c_uint = 18;
-pub const CXType_LongLong: ::libc::c_uint = 19;
-pub const CXType_Int128: ::libc::c_uint = 20;
-pub const CXType_Float: ::libc::c_uint = 21;
-pub const CXType_Double: ::libc::c_uint = 22;
-pub const CXType_LongDouble: ::libc::c_uint = 23;
-pub const CXType_NullPtr: ::libc::c_uint = 24;
-pub const CXType_Overload: ::libc::c_uint = 25;
-pub const CXType_Dependent: ::libc::c_uint = 26;
-pub const CXType_ObjCId: ::libc::c_uint = 27;
-pub const CXType_ObjCClass: ::libc::c_uint = 28;
-pub const CXType_ObjCSel: ::libc::c_uint = 29;
-pub const CXType_FirstBuiltin: ::libc::c_uint = 2;
-pub const CXType_LastBuiltin: ::libc::c_uint = 29;
-pub const CXType_Complex: ::libc::c_uint = 100;
-pub const CXType_Pointer: ::libc::c_uint = 101;
-pub const CXType_BlockPointer: ::libc::c_uint = 102;
-pub const CXType_LValueReference: ::libc::c_uint = 103;
-pub const CXType_RValueReference: ::libc::c_uint = 104;
-pub const CXType_Record: ::libc::c_uint = 105;
-pub const CXType_Enum: ::libc::c_uint = 106;
-pub const CXType_Typedef: ::libc::c_uint = 107;
-pub const CXType_ObjCInterface: ::libc::c_uint = 108;
-pub const CXType_ObjCObjectPointer: ::libc::c_uint = 109;
-pub const CXType_FunctionNoProto: ::libc::c_uint = 110;
-pub const CXType_FunctionProto: ::libc::c_uint = 111;
-pub const CXType_ConstantArray: ::libc::c_uint = 112;
-pub const CXType_Vector: ::libc::c_uint = 113;
-pub const CXType_IncompleteArray: ::libc::c_uint = 114;
-pub const CXType_VariableArray: ::libc::c_uint = 115;
-pub const CXType_DependentSizedArray: ::libc::c_uint = 116;
-pub const CXType_MemberPointer: ::libc::c_uint = 117;
-pub type Enum_CXCallingConv = ::libc::c_uint;
-pub const CXCallingConv_Default: ::libc::c_uint = 0;
-pub const CXCallingConv_C: ::libc::c_uint = 1;
-pub const CXCallingConv_X86StdCall: ::libc::c_uint = 2;
-pub const CXCallingConv_X86FastCall: ::libc::c_uint = 3;
-pub const CXCallingConv_X86ThisCall: ::libc::c_uint = 4;
-pub const CXCallingConv_X86Pascal: ::libc::c_uint = 5;
-pub const CXCallingConv_AAPCS: ::libc::c_uint = 6;
-pub const CXCallingConv_AAPCS_VFP: ::libc::c_uint = 7;
-pub const CXCallingConv_PnaclCall: ::libc::c_uint = 8;
-pub const CXCallingConv_IntelOclBicc: ::libc::c_uint = 9;
-pub const CXCallingConv_X86_64Win64: ::libc::c_uint = 10;
-pub const CXCallingConv_X86_64SysV: ::libc::c_uint = 11;
-pub const CXCallingConv_Invalid: ::libc::c_uint = 100;
-pub const CXCallingConv_Unexposed: ::libc::c_uint = 200;
+pub type Enum_CXTypeKind = c_uint;
+pub const CXType_Invalid: c_uint = 0;
+pub const CXType_Unexposed: c_uint = 1;
+pub const CXType_Void: c_uint = 2;
+pub const CXType_Bool: c_uint = 3;
+pub const CXType_Char_U: c_uint = 4;
+pub const CXType_UChar: c_uint = 5;
+pub const CXType_Char16: c_uint = 6;
+pub const CXType_Char32: c_uint = 7;
+pub const CXType_UShort: c_uint = 8;
+pub const CXType_UInt: c_uint = 9;
+pub const CXType_ULong: c_uint = 10;
+pub const CXType_ULongLong: c_uint = 11;
+pub const CXType_UInt128: c_uint = 12;
+pub const CXType_Char_S: c_uint = 13;
+pub const CXType_SChar: c_uint = 14;
+pub const CXType_WChar: c_uint = 15;
+pub const CXType_Short: c_uint = 16;
+pub const CXType_Int: c_uint = 17;
+pub const CXType_Long: c_uint = 18;
+pub const CXType_LongLong: c_uint = 19;
+pub const CXType_Int128: c_uint = 20;
+pub const CXType_Float: c_uint = 21;
+pub const CXType_Double: c_uint = 22;
+pub const CXType_LongDouble: c_uint = 23;
+pub const CXType_NullPtr: c_uint = 24;
+pub const CXType_Overload: c_uint = 25;
+pub const CXType_Dependent: c_uint = 26;
+pub const CXType_ObjCId: c_uint = 27;
+pub const CXType_ObjCClass: c_uint = 28;
+pub const CXType_ObjCSel: c_uint = 29;
+pub const CXType_FirstBuiltin: c_uint = 2;
+pub const CXType_LastBuiltin: c_uint = 29;
+pub const CXType_Complex: c_uint = 100;
+pub const CXType_Pointer: c_uint = 101;
+pub const CXType_BlockPointer: c_uint = 102;
+pub const CXType_LValueReference: c_uint = 103;
+pub const CXType_RValueReference: c_uint = 104;
+pub const CXType_Record: c_uint = 105;
+pub const CXType_Enum: c_uint = 106;
+pub const CXType_Typedef: c_uint = 107;
+pub const CXType_ObjCInterface: c_uint = 108;
+pub const CXType_ObjCObjectPointer: c_uint = 109;
+pub const CXType_FunctionNoProto: c_uint = 110;
+pub const CXType_FunctionProto: c_uint = 111;
+pub const CXType_ConstantArray: c_uint = 112;
+pub const CXType_Vector: c_uint = 113;
+pub const CXType_IncompleteArray: c_uint = 114;
+pub const CXType_VariableArray: c_uint = 115;
+pub const CXType_DependentSizedArray: c_uint = 116;
+pub const CXType_MemberPointer: c_uint = 117;
+pub type Enum_CXCallingConv = c_uint;
+pub const CXCallingConv_Default: c_uint = 0;
+pub const CXCallingConv_C: c_uint = 1;
+pub const CXCallingConv_X86StdCall: c_uint = 2;
+pub const CXCallingConv_X86FastCall: c_uint = 3;
+pub const CXCallingConv_X86ThisCall: c_uint = 4;
+pub const CXCallingConv_X86Pascal: c_uint = 5;
+pub const CXCallingConv_AAPCS: c_uint = 6;
+pub const CXCallingConv_AAPCS_VFP: c_uint = 7;
+pub const CXCallingConv_PnaclCall: c_uint = 8;
+pub const CXCallingConv_IntelOclBicc: c_uint = 9;
+pub const CXCallingConv_X86_64Win64: c_uint = 10;
+pub const CXCallingConv_X86_64SysV: c_uint = 11;
+pub const CXCallingConv_Invalid: c_uint = 100;
+pub const CXCallingConv_Unexposed: c_uint = 200;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXType {
     pub kind: Enum_CXTypeKind,
-    pub data: [*mut ::libc::c_void; 2],
+    pub data: [*mut c_void; 2],
 }
-pub type Enum_CXTypeLayoutError = ::libc::c_int;
-pub const CXTypeLayoutError_Invalid: ::libc::c_int = -1;
-pub const CXTypeLayoutError_Incomplete: ::libc::c_int = -2;
-pub const CXTypeLayoutError_Dependent: ::libc::c_int = -3;
-pub const CXTypeLayoutError_NotConstantSize: ::libc::c_int = -4;
-pub const CXTypeLayoutError_InvalidFieldName: ::libc::c_int = -5;
-pub type Enum_CXRefQualifierKind = ::libc::c_uint;
-pub const CXRefQualifier_None: ::libc::c_uint = 0;
-pub const CXRefQualifier_LValue: ::libc::c_uint = 1;
-pub const CXRefQualifier_RValue: ::libc::c_uint = 2;
-pub type Enum_CX_CXXAccessSpecifier = ::libc::c_uint;
-pub const CX_CXXInvalidAccessSpecifier: ::libc::c_uint = 0;
-pub const CX_CXXPublic: ::libc::c_uint = 1;
-pub const CX_CXXProtected: ::libc::c_uint = 2;
-pub const CX_CXXPrivate: ::libc::c_uint = 3;
-pub type Enum_CXChildVisitResult = ::libc::c_uint;
-pub const CXChildVisit_Break: ::libc::c_uint = 0;
-pub const CXChildVisit_Continue: ::libc::c_uint = 1;
-pub const CXChildVisit_Recurse: ::libc::c_uint = 2;
+pub type Enum_CXTypeLayoutError = c_int;
+pub const CXTypeLayoutError_Invalid: c_int = -1;
+pub const CXTypeLayoutError_Incomplete: c_int = -2;
+pub const CXTypeLayoutError_Dependent: c_int = -3;
+pub const CXTypeLayoutError_NotConstantSize: c_int = -4;
+pub const CXTypeLayoutError_InvalidFieldName: c_int = -5;
+pub type Enum_CXRefQualifierKind = c_uint;
+pub const CXRefQualifier_None: c_uint = 0;
+pub const CXRefQualifier_LValue: c_uint = 1;
+pub const CXRefQualifier_RValue: c_uint = 2;
+pub type Enum_CX_CXXAccessSpecifier = c_uint;
+pub const CX_CXXInvalidAccessSpecifier: c_uint = 0;
+pub const CX_CXXPublic: c_uint = 1;
+pub const CX_CXXProtected: c_uint = 2;
+pub const CX_CXXPrivate: c_uint = 3;
+pub type Enum_CXChildVisitResult = c_uint;
+pub const CXChildVisit_Break: c_uint = 0;
+pub const CXChildVisit_Continue: c_uint = 1;
+pub const CXChildVisit_Recurse: c_uint = 2;
 pub type CXCursorVisitor =
     ::std::option::Option<extern "C" fn
                               (arg1: CXCursor, arg2: CXCursor,
                                arg3: CXClientData)
                               -> Enum_CXChildVisitResult>;
-pub type CXObjCPropertyAttrKind = ::libc::c_uint;
-pub const CXObjCPropertyAttr_noattr: ::libc::c_uint = 0;
-pub const CXObjCPropertyAttr_readonly: ::libc::c_uint = 1;
-pub const CXObjCPropertyAttr_getter: ::libc::c_uint = 2;
-pub const CXObjCPropertyAttr_assign: ::libc::c_uint = 4;
-pub const CXObjCPropertyAttr_readwrite: ::libc::c_uint = 8;
-pub const CXObjCPropertyAttr_retain: ::libc::c_uint = 16;
-pub const CXObjCPropertyAttr_copy: ::libc::c_uint = 32;
-pub const CXObjCPropertyAttr_nonatomic: ::libc::c_uint = 64;
-pub const CXObjCPropertyAttr_setter: ::libc::c_uint = 128;
-pub const CXObjCPropertyAttr_atomic: ::libc::c_uint = 256;
-pub const CXObjCPropertyAttr_weak: ::libc::c_uint = 512;
-pub const CXObjCPropertyAttr_strong: ::libc::c_uint = 1024;
-pub const CXObjCPropertyAttr_unsafe_unretained: ::libc::c_uint = 2048;
-pub type CXObjCDeclQualifierKind = ::libc::c_uint;
-pub const CXObjCDeclQualifier_None: ::libc::c_uint = 0;
-pub const CXObjCDeclQualifier_In: ::libc::c_uint = 1;
-pub const CXObjCDeclQualifier_Inout: ::libc::c_uint = 2;
-pub const CXObjCDeclQualifier_Out: ::libc::c_uint = 4;
-pub const CXObjCDeclQualifier_Bycopy: ::libc::c_uint = 8;
-pub const CXObjCDeclQualifier_Byref: ::libc::c_uint = 16;
-pub const CXObjCDeclQualifier_Oneway: ::libc::c_uint = 32;
-pub type CXModule = *mut ::libc::c_void;
-pub type Enum_CXCommentKind = ::libc::c_uint;
-pub const CXComment_Null: ::libc::c_uint = 0;
-pub const CXComment_Text: ::libc::c_uint = 1;
-pub const CXComment_InlineCommand: ::libc::c_uint = 2;
-pub const CXComment_HTMLStartTag: ::libc::c_uint = 3;
-pub const CXComment_HTMLEndTag: ::libc::c_uint = 4;
-pub const CXComment_Paragraph: ::libc::c_uint = 5;
-pub const CXComment_BlockCommand: ::libc::c_uint = 6;
-pub const CXComment_ParamCommand: ::libc::c_uint = 7;
-pub const CXComment_TParamCommand: ::libc::c_uint = 8;
-pub const CXComment_VerbatimBlockCommand: ::libc::c_uint = 9;
-pub const CXComment_VerbatimBlockLine: ::libc::c_uint = 10;
-pub const CXComment_VerbatimLine: ::libc::c_uint = 11;
-pub const CXComment_FullComment: ::libc::c_uint = 12;
-pub type Enum_CXCommentInlineCommandRenderKind = ::libc::c_uint;
-pub const CXCommentInlineCommandRenderKind_Normal: ::libc::c_uint = 0;
-pub const CXCommentInlineCommandRenderKind_Bold: ::libc::c_uint = 1;
-pub const CXCommentInlineCommandRenderKind_Monospaced: ::libc::c_uint = 2;
-pub const CXCommentInlineCommandRenderKind_Emphasized: ::libc::c_uint = 3;
-pub type Enum_CXCommentParamPassDirection = ::libc::c_uint;
-pub const CXCommentParamPassDirection_In: ::libc::c_uint = 0;
-pub const CXCommentParamPassDirection_Out: ::libc::c_uint = 1;
-pub const CXCommentParamPassDirection_InOut: ::libc::c_uint = 2;
-pub type Enum_CXNameRefFlags = ::libc::c_uint;
-pub const CXNameRange_WantQualifier: ::libc::c_uint = 1;
-pub const CXNameRange_WantTemplateArgs: ::libc::c_uint = 2;
-pub const CXNameRange_WantSinglePiece: ::libc::c_uint = 4;
-pub type Enum_CXTokenKind = ::libc::c_uint;
-pub const CXToken_Punctuation: ::libc::c_uint = 0;
-pub const CXToken_Keyword: ::libc::c_uint = 1;
-pub const CXToken_Identifier: ::libc::c_uint = 2;
-pub const CXToken_Literal: ::libc::c_uint = 3;
-pub const CXToken_Comment: ::libc::c_uint = 4;
+pub type CXObjCPropertyAttrKind = c_uint;
+pub const CXObjCPropertyAttr_noattr: c_uint = 0;
+pub const CXObjCPropertyAttr_readonly: c_uint = 1;
+pub const CXObjCPropertyAttr_getter: c_uint = 2;
+pub const CXObjCPropertyAttr_assign: c_uint = 4;
+pub const CXObjCPropertyAttr_readwrite: c_uint = 8;
+pub const CXObjCPropertyAttr_retain: c_uint = 16;
+pub const CXObjCPropertyAttr_copy: c_uint = 32;
+pub const CXObjCPropertyAttr_nonatomic: c_uint = 64;
+pub const CXObjCPropertyAttr_setter: c_uint = 128;
+pub const CXObjCPropertyAttr_atomic: c_uint = 256;
+pub const CXObjCPropertyAttr_weak: c_uint = 512;
+pub const CXObjCPropertyAttr_strong: c_uint = 1024;
+pub const CXObjCPropertyAttr_unsafe_unretained: c_uint = 2048;
+pub type CXObjCDeclQualifierKind = c_uint;
+pub const CXObjCDeclQualifier_None: c_uint = 0;
+pub const CXObjCDeclQualifier_In: c_uint = 1;
+pub const CXObjCDeclQualifier_Inout: c_uint = 2;
+pub const CXObjCDeclQualifier_Out: c_uint = 4;
+pub const CXObjCDeclQualifier_Bycopy: c_uint = 8;
+pub const CXObjCDeclQualifier_Byref: c_uint = 16;
+pub const CXObjCDeclQualifier_Oneway: c_uint = 32;
+pub type CXModule = *mut c_void;
+pub type Enum_CXCommentKind = c_uint;
+pub const CXComment_Null: c_uint = 0;
+pub const CXComment_Text: c_uint = 1;
+pub const CXComment_InlineCommand: c_uint = 2;
+pub const CXComment_HTMLStartTag: c_uint = 3;
+pub const CXComment_HTMLEndTag: c_uint = 4;
+pub const CXComment_Paragraph: c_uint = 5;
+pub const CXComment_BlockCommand: c_uint = 6;
+pub const CXComment_ParamCommand: c_uint = 7;
+pub const CXComment_TParamCommand: c_uint = 8;
+pub const CXComment_VerbatimBlockCommand: c_uint = 9;
+pub const CXComment_VerbatimBlockLine: c_uint = 10;
+pub const CXComment_VerbatimLine: c_uint = 11;
+pub const CXComment_FullComment: c_uint = 12;
+pub type Enum_CXCommentInlineCommandRenderKind = c_uint;
+pub const CXCommentInlineCommandRenderKind_Normal: c_uint = 0;
+pub const CXCommentInlineCommandRenderKind_Bold: c_uint = 1;
+pub const CXCommentInlineCommandRenderKind_Monospaced: c_uint = 2;
+pub const CXCommentInlineCommandRenderKind_Emphasized: c_uint = 3;
+pub type Enum_CXCommentParamPassDirection = c_uint;
+pub const CXCommentParamPassDirection_In: c_uint = 0;
+pub const CXCommentParamPassDirection_Out: c_uint = 1;
+pub const CXCommentParamPassDirection_InOut: c_uint = 2;
+pub type Enum_CXNameRefFlags = c_uint;
+pub const CXNameRange_WantQualifier: c_uint = 1;
+pub const CXNameRange_WantTemplateArgs: c_uint = 2;
+pub const CXNameRange_WantSinglePiece: c_uint = 4;
+pub type Enum_CXTokenKind = c_uint;
+pub const CXToken_Punctuation: c_uint = 0;
+pub const CXToken_Keyword: c_uint = 1;
+pub const CXToken_Identifier: c_uint = 2;
+pub const CXToken_Literal: c_uint = 3;
+pub const CXToken_Comment: c_uint = 4;
 pub type CXTokenKind = Enum_CXTokenKind;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXToken {
-    pub int_data: [::libc::c_uint; 4],
-    pub ptr_data: *mut ::libc::c_void,
+    pub int_data: [c_uint; 4],
+    pub ptr_data: *mut c_void,
 }
-pub type CXCompletionString = *mut ::libc::c_void;
+pub type CXCompletionString = *mut c_void;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXCompletionResult {
     pub CursorKind: Enum_CXCursorKind,
     pub CompletionString: CXCompletionString,
 }
-pub type Enum_CXCompletionChunkKind = ::libc::c_uint;
-pub const CXCompletionChunk_Optional: ::libc::c_uint = 0;
-pub const CXCompletionChunk_TypedText: ::libc::c_uint = 1;
-pub const CXCompletionChunk_Text: ::libc::c_uint = 2;
-pub const CXCompletionChunk_Placeholder: ::libc::c_uint = 3;
-pub const CXCompletionChunk_Informative: ::libc::c_uint = 4;
-pub const CXCompletionChunk_CurrentParameter: ::libc::c_uint = 5;
-pub const CXCompletionChunk_LeftParen: ::libc::c_uint = 6;
-pub const CXCompletionChunk_RightParen: ::libc::c_uint = 7;
-pub const CXCompletionChunk_LeftBracket: ::libc::c_uint = 8;
-pub const CXCompletionChunk_RightBracket: ::libc::c_uint = 9;
-pub const CXCompletionChunk_LeftBrace: ::libc::c_uint = 10;
-pub const CXCompletionChunk_RightBrace: ::libc::c_uint = 11;
-pub const CXCompletionChunk_LeftAngle: ::libc::c_uint = 12;
-pub const CXCompletionChunk_RightAngle: ::libc::c_uint = 13;
-pub const CXCompletionChunk_Comma: ::libc::c_uint = 14;
-pub const CXCompletionChunk_ResultType: ::libc::c_uint = 15;
-pub const CXCompletionChunk_Colon: ::libc::c_uint = 16;
-pub const CXCompletionChunk_SemiColon: ::libc::c_uint = 17;
-pub const CXCompletionChunk_Equal: ::libc::c_uint = 18;
-pub const CXCompletionChunk_HorizontalSpace: ::libc::c_uint = 19;
-pub const CXCompletionChunk_VerticalSpace: ::libc::c_uint = 20;
+pub type Enum_CXCompletionChunkKind = c_uint;
+pub const CXCompletionChunk_Optional: c_uint = 0;
+pub const CXCompletionChunk_TypedText: c_uint = 1;
+pub const CXCompletionChunk_Text: c_uint = 2;
+pub const CXCompletionChunk_Placeholder: c_uint = 3;
+pub const CXCompletionChunk_Informative: c_uint = 4;
+pub const CXCompletionChunk_CurrentParameter: c_uint = 5;
+pub const CXCompletionChunk_LeftParen: c_uint = 6;
+pub const CXCompletionChunk_RightParen: c_uint = 7;
+pub const CXCompletionChunk_LeftBracket: c_uint = 8;
+pub const CXCompletionChunk_RightBracket: c_uint = 9;
+pub const CXCompletionChunk_LeftBrace: c_uint = 10;
+pub const CXCompletionChunk_RightBrace: c_uint = 11;
+pub const CXCompletionChunk_LeftAngle: c_uint = 12;
+pub const CXCompletionChunk_RightAngle: c_uint = 13;
+pub const CXCompletionChunk_Comma: c_uint = 14;
+pub const CXCompletionChunk_ResultType: c_uint = 15;
+pub const CXCompletionChunk_Colon: c_uint = 16;
+pub const CXCompletionChunk_SemiColon: c_uint = 17;
+pub const CXCompletionChunk_Equal: c_uint = 18;
+pub const CXCompletionChunk_HorizontalSpace: c_uint = 19;
+pub const CXCompletionChunk_VerticalSpace: c_uint = 20;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXCodeCompleteResults {
     pub Results: *mut CXCompletionResult,
-    pub NumResults: ::libc::c_uint,
+    pub NumResults: c_uint,
 }
-pub type Enum_CXCodeComplete_Flags = ::libc::c_uint;
-pub const CXCodeComplete_IncludeMacros: ::libc::c_uint = 1;
-pub const CXCodeComplete_IncludeCodePatterns: ::libc::c_uint = 2;
-pub const CXCodeComplete_IncludeBriefComments: ::libc::c_uint = 4;
-pub type Enum_CXCompletionContext = ::libc::c_uint;
-pub const CXCompletionContext_Unexposed: ::libc::c_uint = 0;
-pub const CXCompletionContext_AnyType: ::libc::c_uint = 1;
-pub const CXCompletionContext_AnyValue: ::libc::c_uint = 2;
-pub const CXCompletionContext_ObjCObjectValue: ::libc::c_uint = 4;
-pub const CXCompletionContext_ObjCSelectorValue: ::libc::c_uint = 8;
-pub const CXCompletionContext_CXXClassTypeValue: ::libc::c_uint = 16;
-pub const CXCompletionContext_DotMemberAccess: ::libc::c_uint = 32;
-pub const CXCompletionContext_ArrowMemberAccess: ::libc::c_uint = 64;
-pub const CXCompletionContext_ObjCPropertyAccess: ::libc::c_uint = 128;
-pub const CXCompletionContext_EnumTag: ::libc::c_uint = 256;
-pub const CXCompletionContext_UnionTag: ::libc::c_uint = 512;
-pub const CXCompletionContext_StructTag: ::libc::c_uint = 1024;
-pub const CXCompletionContext_ClassTag: ::libc::c_uint = 2048;
-pub const CXCompletionContext_Namespace: ::libc::c_uint = 4096;
-pub const CXCompletionContext_NestedNameSpecifier: ::libc::c_uint = 8192;
-pub const CXCompletionContext_ObjCInterface: ::libc::c_uint = 16384;
-pub const CXCompletionContext_ObjCProtocol: ::libc::c_uint = 32768;
-pub const CXCompletionContext_ObjCCategory: ::libc::c_uint = 65536;
-pub const CXCompletionContext_ObjCInstanceMessage: ::libc::c_uint = 131072;
-pub const CXCompletionContext_ObjCClassMessage: ::libc::c_uint = 262144;
-pub const CXCompletionContext_ObjCSelectorName: ::libc::c_uint = 524288;
-pub const CXCompletionContext_MacroName: ::libc::c_uint = 1048576;
-pub const CXCompletionContext_NaturalLanguage: ::libc::c_uint = 2097152;
-pub const CXCompletionContext_Unknown: ::libc::c_uint = 4194303;
+pub type Enum_CXCodeComplete_Flags = c_uint;
+pub const CXCodeComplete_IncludeMacros: c_uint = 1;
+pub const CXCodeComplete_IncludeCodePatterns: c_uint = 2;
+pub const CXCodeComplete_IncludeBriefComments: c_uint = 4;
+pub type Enum_CXCompletionContext = c_uint;
+pub const CXCompletionContext_Unexposed: c_uint = 0;
+pub const CXCompletionContext_AnyType: c_uint = 1;
+pub const CXCompletionContext_AnyValue: c_uint = 2;
+pub const CXCompletionContext_ObjCObjectValue: c_uint = 4;
+pub const CXCompletionContext_ObjCSelectorValue: c_uint = 8;
+pub const CXCompletionContext_CXXClassTypeValue: c_uint = 16;
+pub const CXCompletionContext_DotMemberAccess: c_uint = 32;
+pub const CXCompletionContext_ArrowMemberAccess: c_uint = 64;
+pub const CXCompletionContext_ObjCPropertyAccess: c_uint = 128;
+pub const CXCompletionContext_EnumTag: c_uint = 256;
+pub const CXCompletionContext_UnionTag: c_uint = 512;
+pub const CXCompletionContext_StructTag: c_uint = 1024;
+pub const CXCompletionContext_ClassTag: c_uint = 2048;
+pub const CXCompletionContext_Namespace: c_uint = 4096;
+pub const CXCompletionContext_NestedNameSpecifier: c_uint = 8192;
+pub const CXCompletionContext_ObjCInterface: c_uint = 16384;
+pub const CXCompletionContext_ObjCProtocol: c_uint = 32768;
+pub const CXCompletionContext_ObjCCategory: c_uint = 65536;
+pub const CXCompletionContext_ObjCInstanceMessage: c_uint = 131072;
+pub const CXCompletionContext_ObjCClassMessage: c_uint = 262144;
+pub const CXCompletionContext_ObjCSelectorName: c_uint = 524288;
+pub const CXCompletionContext_MacroName: c_uint = 1048576;
+pub const CXCompletionContext_NaturalLanguage: c_uint = 2097152;
+pub const CXCompletionContext_Unknown: c_uint = 4194303;
 pub type CXInclusionVisitor =
     ::std::option::Option<extern "C" fn
                               (arg1: CXFile, arg2: *mut CXSourceLocation,
-                               arg3: ::libc::c_uint, arg4: CXClientData)>;
-pub type CXRemapping = *mut ::libc::c_void;
-pub type Enum_CXVisitorResult = ::libc::c_uint;
-pub const CXVisit_Break: ::libc::c_uint = 0;
-pub const CXVisit_Continue: ::libc::c_uint = 1;
+                               arg3: c_uint, arg4: CXClientData)>;
+pub type CXRemapping = *mut c_void;
+pub type Enum_CXVisitorResult = c_uint;
+pub const CXVisit_Break: c_uint = 0;
+pub const CXVisit_Continue: c_uint = 1;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXCursorAndRangeVisitor {
-    pub context: *mut ::libc::c_void,
+    pub context: *mut c_void,
     pub visit: ::std::option::Option<extern "C" fn
-                                         (arg1: *mut ::libc::c_void,
+                                         (arg1: *mut c_void,
                                           arg2: CXCursor, arg3: CXSourceRange)
                                          -> Enum_CXVisitorResult>,
 }
-pub type CXResult = ::libc::c_uint;
-pub const CXResult_Success: ::libc::c_uint = 0;
-pub const CXResult_Invalid: ::libc::c_uint = 1;
-pub const CXResult_VisitBreak: ::libc::c_uint = 2;
-pub type CXIdxClientFile = *mut ::libc::c_void;
-pub type CXIdxClientEntity = *mut ::libc::c_void;
-pub type CXIdxClientContainer = *mut ::libc::c_void;
-pub type CXIdxClientASTFile = *mut ::libc::c_void;
+pub type CXResult = c_uint;
+pub const CXResult_Success: c_uint = 0;
+pub const CXResult_Invalid: c_uint = 1;
+pub const CXResult_VisitBreak: c_uint = 2;
+pub type CXIdxClientFile = *mut c_void;
+pub type CXIdxClientEntity = *mut c_void;
+pub type CXIdxClientContainer = *mut c_void;
+pub type CXIdxClientASTFile = *mut c_void;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXIdxLoc {
-    pub ptr_data: [*mut ::libc::c_void; 2],
-    pub int_data: ::libc::c_uint,
+    pub ptr_data: [*mut c_void; 2],
+    pub int_data: c_uint,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXIdxIncludedFileInfo {
     pub hashLoc: CXIdxLoc,
-    pub filename: *const ::libc::c_char,
+    pub filename: *const c_char,
     pub file: CXFile,
-    pub isImport: ::libc::c_int,
-    pub isAngled: ::libc::c_int,
-    pub isModuleImport: ::libc::c_int,
+    pub isImport: c_int,
+    pub isAngled: c_int,
+    pub isModuleImport: c_int,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -620,51 +622,51 @@ pub struct CXIdxImportedASTFileInfo {
     pub file: CXFile,
     pub module: CXModule,
     pub loc: CXIdxLoc,
-    pub isImplicit: ::libc::c_int,
+    pub isImplicit: c_int,
 }
-pub type CXIdxEntityKind = ::libc::c_uint;
-pub const CXIdxEntity_Unexposed: ::libc::c_uint = 0;
-pub const CXIdxEntity_Typedef: ::libc::c_uint = 1;
-pub const CXIdxEntity_Function: ::libc::c_uint = 2;
-pub const CXIdxEntity_Variable: ::libc::c_uint = 3;
-pub const CXIdxEntity_Field: ::libc::c_uint = 4;
-pub const CXIdxEntity_EnumConstant: ::libc::c_uint = 5;
-pub const CXIdxEntity_ObjCClass: ::libc::c_uint = 6;
-pub const CXIdxEntity_ObjCProtocol: ::libc::c_uint = 7;
-pub const CXIdxEntity_ObjCCategory: ::libc::c_uint = 8;
-pub const CXIdxEntity_ObjCInstanceMethod: ::libc::c_uint = 9;
-pub const CXIdxEntity_ObjCClassMethod: ::libc::c_uint = 10;
-pub const CXIdxEntity_ObjCProperty: ::libc::c_uint = 11;
-pub const CXIdxEntity_ObjCIvar: ::libc::c_uint = 12;
-pub const CXIdxEntity_Enum: ::libc::c_uint = 13;
-pub const CXIdxEntity_Struct: ::libc::c_uint = 14;
-pub const CXIdxEntity_Union: ::libc::c_uint = 15;
-pub const CXIdxEntity_CXXClass: ::libc::c_uint = 16;
-pub const CXIdxEntity_CXXNamespace: ::libc::c_uint = 17;
-pub const CXIdxEntity_CXXNamespaceAlias: ::libc::c_uint = 18;
-pub const CXIdxEntity_CXXStaticVariable: ::libc::c_uint = 19;
-pub const CXIdxEntity_CXXStaticMethod: ::libc::c_uint = 20;
-pub const CXIdxEntity_CXXInstanceMethod: ::libc::c_uint = 21;
-pub const CXIdxEntity_CXXConstructor: ::libc::c_uint = 22;
-pub const CXIdxEntity_CXXDestructor: ::libc::c_uint = 23;
-pub const CXIdxEntity_CXXConversionFunction: ::libc::c_uint = 24;
-pub const CXIdxEntity_CXXTypeAlias: ::libc::c_uint = 25;
-pub const CXIdxEntity_CXXInterface: ::libc::c_uint = 26;
-pub type CXIdxEntityLanguage = ::libc::c_uint;
-pub const CXIdxEntityLang_None: ::libc::c_uint = 0;
-pub const CXIdxEntityLang_C: ::libc::c_uint = 1;
-pub const CXIdxEntityLang_ObjC: ::libc::c_uint = 2;
-pub const CXIdxEntityLang_CXX: ::libc::c_uint = 3;
-pub type CXIdxEntityCXXTemplateKind = ::libc::c_uint;
-pub const CXIdxEntity_NonTemplate: ::libc::c_uint = 0;
-pub const CXIdxEntity_Template: ::libc::c_uint = 1;
-pub const CXIdxEntity_TemplatePartialSpecialization: ::libc::c_uint = 2;
-pub const CXIdxEntity_TemplateSpecialization: ::libc::c_uint = 3;
-pub type CXIdxAttrKind = ::libc::c_uint;
-pub const CXIdxAttr_Unexposed: ::libc::c_uint = 0;
-pub const CXIdxAttr_IBAction: ::libc::c_uint = 1;
-pub const CXIdxAttr_IBOutlet: ::libc::c_uint = 2;
-pub const CXIdxAttr_IBOutletCollection: ::libc::c_uint = 3;
+pub type CXIdxEntityKind = c_uint;
+pub const CXIdxEntity_Unexposed: c_uint = 0;
+pub const CXIdxEntity_Typedef: c_uint = 1;
+pub const CXIdxEntity_Function: c_uint = 2;
+pub const CXIdxEntity_Variable: c_uint = 3;
+pub const CXIdxEntity_Field: c_uint = 4;
+pub const CXIdxEntity_EnumConstant: c_uint = 5;
+pub const CXIdxEntity_ObjCClass: c_uint = 6;
+pub const CXIdxEntity_ObjCProtocol: c_uint = 7;
+pub const CXIdxEntity_ObjCCategory: c_uint = 8;
+pub const CXIdxEntity_ObjCInstanceMethod: c_uint = 9;
+pub const CXIdxEntity_ObjCClassMethod: c_uint = 10;
+pub const CXIdxEntity_ObjCProperty: c_uint = 11;
+pub const CXIdxEntity_ObjCIvar: c_uint = 12;
+pub const CXIdxEntity_Enum: c_uint = 13;
+pub const CXIdxEntity_Struct: c_uint = 14;
+pub const CXIdxEntity_Union: c_uint = 15;
+pub const CXIdxEntity_CXXClass: c_uint = 16;
+pub const CXIdxEntity_CXXNamespace: c_uint = 17;
+pub const CXIdxEntity_CXXNamespaceAlias: c_uint = 18;
+pub const CXIdxEntity_CXXStaticVariable: c_uint = 19;
+pub const CXIdxEntity_CXXStaticMethod: c_uint = 20;
+pub const CXIdxEntity_CXXInstanceMethod: c_uint = 21;
+pub const CXIdxEntity_CXXConstructor: c_uint = 22;
+pub const CXIdxEntity_CXXDestructor: c_uint = 23;
+pub const CXIdxEntity_CXXConversionFunction: c_uint = 24;
+pub const CXIdxEntity_CXXTypeAlias: c_uint = 25;
+pub const CXIdxEntity_CXXInterface: c_uint = 26;
+pub type CXIdxEntityLanguage = c_uint;
+pub const CXIdxEntityLang_None: c_uint = 0;
+pub const CXIdxEntityLang_C: c_uint = 1;
+pub const CXIdxEntityLang_ObjC: c_uint = 2;
+pub const CXIdxEntityLang_CXX: c_uint = 3;
+pub type CXIdxEntityCXXTemplateKind = c_uint;
+pub const CXIdxEntity_NonTemplate: c_uint = 0;
+pub const CXIdxEntity_Template: c_uint = 1;
+pub const CXIdxEntity_TemplatePartialSpecialization: c_uint = 2;
+pub const CXIdxEntity_TemplateSpecialization: c_uint = 3;
+pub type CXIdxAttrKind = c_uint;
+pub const CXIdxAttr_Unexposed: c_uint = 0;
+pub const CXIdxAttr_IBAction: c_uint = 1;
+pub const CXIdxAttr_IBOutlet: c_uint = 2;
+pub const CXIdxAttr_IBOutletCollection: c_uint = 3;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXIdxAttrInfo {
@@ -678,11 +680,11 @@ pub struct CXIdxEntityInfo {
     pub kind: CXIdxEntityKind,
     pub templateKind: CXIdxEntityCXXTemplateKind,
     pub lang: CXIdxEntityLanguage,
-    pub name: *const ::libc::c_char,
-    pub USR: *const ::libc::c_char,
+    pub name: *const c_char,
+    pub USR: *const c_char,
     pub cursor: CXCursor,
     pub attributes: *const *const CXIdxAttrInfo,
-    pub numAttributes: ::libc::c_uint,
+    pub numAttributes: c_uint,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -697,8 +699,8 @@ pub struct CXIdxIBOutletCollectionAttrInfo {
     pub classCursor: CXCursor,
     pub classLoc: CXIdxLoc,
 }
-pub type CXIdxDeclInfoFlags = ::libc::c_uint;
-pub const CXIdxDeclFlag_Skipped: ::libc::c_uint = 1;
+pub type CXIdxDeclInfoFlags = c_uint;
+pub const CXIdxDeclFlag_Skipped: c_uint = 1;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXIdxDeclInfo {
@@ -707,19 +709,19 @@ pub struct CXIdxDeclInfo {
     pub loc: CXIdxLoc,
     pub semanticContainer: *const CXIdxContainerInfo,
     pub lexicalContainer: *const CXIdxContainerInfo,
-    pub isRedeclaration: ::libc::c_int,
-    pub isDefinition: ::libc::c_int,
-    pub isContainer: ::libc::c_int,
+    pub isRedeclaration: c_int,
+    pub isDefinition: c_int,
+    pub isContainer: c_int,
     pub declAsContainer: *const CXIdxContainerInfo,
-    pub isImplicit: ::libc::c_int,
+    pub isImplicit: c_int,
     pub attributes: *const *const CXIdxAttrInfo,
-    pub numAttributes: ::libc::c_uint,
-    pub flags: ::libc::c_uint,
+    pub numAttributes: c_uint,
+    pub flags: c_uint,
 }
-pub type CXIdxObjCContainerKind = ::libc::c_uint;
-pub const CXIdxObjCContainer_ForwardRef: ::libc::c_uint = 0;
-pub const CXIdxObjCContainer_Interface: ::libc::c_uint = 1;
-pub const CXIdxObjCContainer_Implementation: ::libc::c_uint = 2;
+pub type CXIdxObjCContainerKind = c_uint;
+pub const CXIdxObjCContainer_ForwardRef: c_uint = 0;
+pub const CXIdxObjCContainer_Interface: c_uint = 1;
+pub const CXIdxObjCContainer_Implementation: c_uint = 2;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXIdxObjCContainerDeclInfo {
@@ -744,7 +746,7 @@ pub struct CXIdxObjCProtocolRefInfo {
 #[derive(Copy, Clone)]
 pub struct CXIdxObjCProtocolRefListInfo {
     pub protocols: *const *const CXIdxObjCProtocolRefInfo,
-    pub numProtocols: ::libc::c_uint,
+    pub numProtocols: c_uint,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -774,11 +776,11 @@ pub struct CXIdxObjCPropertyDeclInfo {
 pub struct CXIdxCXXClassDeclInfo {
     pub declInfo: *const CXIdxDeclInfo,
     pub bases: *const *const CXIdxBaseClassInfo,
-    pub numBases: ::libc::c_uint,
+    pub numBases: c_uint,
 }
-pub type CXIdxEntityRefKind = ::libc::c_uint;
-pub const CXIdxEntityRef_Direct: ::libc::c_uint = 1;
-pub const CXIdxEntityRef_Implicit: ::libc::c_uint = 2;
+pub type CXIdxEntityRefKind = c_uint;
+pub const CXIdxEntityRef_Direct: c_uint = 1;
+pub const CXIdxEntityRef_Implicit: c_uint = 2;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXIdxEntityRefInfo {
@@ -794,16 +796,16 @@ pub struct CXIdxEntityRefInfo {
 pub struct IndexerCallbacks {
     pub abortQuery: ::std::option::Option<extern "C" fn
                                               (arg1: CXClientData,
-                                               arg2: *mut ::libc::c_void)
-                                              -> ::libc::c_int>,
+                                               arg2: *mut c_void)
+                                              -> c_int>,
     pub diagnostic: ::std::option::Option<extern "C" fn
                                               (arg1: CXClientData,
                                                arg2: CXDiagnosticSet,
-                                               arg3: *mut ::libc::c_void)>,
+                                               arg3: *mut c_void)>,
     pub enteredMainFile: ::std::option::Option<extern "C" fn
                                                    (arg1: CXClientData,
                                                     arg2: CXFile,
-                                                    arg3: *mut ::libc::c_void)
+                                                    arg3: *mut c_void)
                                                    -> CXIdxClientFile>,
     pub ppIncludedFile: ::std::option::Option<extern "C" fn
                                                   (arg1: CXClientData,
@@ -818,7 +820,7 @@ pub struct IndexerCallbacks {
     pub startedTranslationUnit: ::std::option::Option<extern "C" fn
                                                           (arg1: CXClientData,
                                                            arg2:
-                                                               *mut ::libc::c_void)
+                                                               *mut c_void)
                                                           ->
                                                               CXIdxClientContainer>,
     pub indexDeclaration: ::std::option::Option<extern "C" fn
@@ -830,94 +832,94 @@ pub struct IndexerCallbacks {
                                                          arg2:
                                                              *const CXIdxEntityRefInfo)>,
 }
-pub type CXIndexAction = *mut ::libc::c_void;
-pub type CXIndexOptFlags = ::libc::c_uint;
-pub const CXIndexOpt_None: ::libc::c_uint = 0;
-pub const CXIndexOpt_SuppressRedundantRefs: ::libc::c_uint = 1;
-pub const CXIndexOpt_IndexFunctionLocalSymbols: ::libc::c_uint = 2;
-pub const CXIndexOpt_IndexImplicitTemplateInstantiations: ::libc::c_uint = 4;
-pub const CXIndexOpt_SuppressWarnings: ::libc::c_uint = 8;
-pub const CXIndexOpt_SkipParsedBodiesInSession: ::libc::c_uint = 16;
+pub type CXIndexAction = *mut c_void;
+pub type CXIndexOptFlags = c_uint;
+pub const CXIndexOpt_None: c_uint = 0;
+pub const CXIndexOpt_SuppressRedundantRefs: c_uint = 1;
+pub const CXIndexOpt_IndexFunctionLocalSymbols: c_uint = 2;
+pub const CXIndexOpt_IndexImplicitTemplateInstantiations: c_uint = 4;
+pub const CXIndexOpt_SuppressWarnings: c_uint = 8;
+pub const CXIndexOpt_SkipParsedBodiesInSession: c_uint = 16;
 extern "C" {
-    pub fn clang_getCString(string: CXString) -> *const ::libc::c_char;
+    pub fn clang_getCString(string: CXString) -> *const c_char;
     pub fn clang_disposeString(string: CXString);
-    pub fn clang_createIndex(excludeDeclarationsFromPCH: ::libc::c_int,
-                             displayDiagnostics: ::libc::c_int) -> CXIndex;
+    pub fn clang_createIndex(excludeDeclarationsFromPCH: c_int,
+                             displayDiagnostics: c_int) -> CXIndex;
     pub fn clang_disposeIndex(index: CXIndex);
     pub fn clang_CXIndex_setGlobalOptions(arg1: CXIndex,
-                                          options: ::libc::c_uint);
-    pub fn clang_CXIndex_getGlobalOptions(arg1: CXIndex) -> ::libc::c_uint;
+                                          options: c_uint);
+    pub fn clang_CXIndex_getGlobalOptions(arg1: CXIndex) -> c_uint;
     pub fn clang_getFileName(SFile: CXFile) -> CXString;
     pub fn clang_getFileTime(SFile: CXFile) -> ::libc::time_t;
     pub fn clang_getFileUniqueID(file: CXFile, outID: *mut CXFileUniqueID) ->
-     ::libc::c_int;
+     c_int;
     pub fn clang_isFileMultipleIncludeGuarded(tu: CXTranslationUnit,
-                                              file: CXFile) -> ::libc::c_uint;
+                                              file: CXFile) -> c_uint;
     pub fn clang_getFile(tu: CXTranslationUnit,
-                         file_name: *const ::libc::c_char) -> CXFile;
+                         file_name: *const c_char) -> CXFile;
     pub fn clang_getNullLocation() -> CXSourceLocation;
     pub fn clang_equalLocations(loc1: CXSourceLocation,
-                                loc2: CXSourceLocation) -> ::libc::c_uint;
+                                loc2: CXSourceLocation) -> c_uint;
     pub fn clang_getLocation(tu: CXTranslationUnit, file: CXFile,
-                             line: ::libc::c_uint, column: ::libc::c_uint) ->
+                             line: c_uint, column: c_uint) ->
      CXSourceLocation;
     pub fn clang_getLocationForOffset(tu: CXTranslationUnit, file: CXFile,
-                                      offset: ::libc::c_uint) ->
+                                      offset: c_uint) ->
      CXSourceLocation;
     pub fn clang_Location_isInSystemHeader(location: CXSourceLocation) ->
-     ::libc::c_int;
+     c_int;
     pub fn clang_Location_isFromMainFile(location: CXSourceLocation) ->
-     ::libc::c_int;
+     c_int;
     pub fn clang_getNullRange() -> CXSourceRange;
     pub fn clang_getRange(begin: CXSourceLocation, end: CXSourceLocation) ->
      CXSourceRange;
     pub fn clang_equalRanges(range1: CXSourceRange, range2: CXSourceRange) ->
-     ::libc::c_uint;
-    pub fn clang_Range_isNull(range: CXSourceRange) -> ::libc::c_int;
+     c_uint;
+    pub fn clang_Range_isNull(range: CXSourceRange) -> c_int;
     pub fn clang_getExpansionLocation(location: CXSourceLocation,
                                       file: *mut CXFile,
-                                      line: *mut ::libc::c_uint,
-                                      column: *mut ::libc::c_uint,
-                                      offset: *mut ::libc::c_uint);
+                                      line: *mut c_uint,
+                                      column: *mut c_uint,
+                                      offset: *mut c_uint);
     pub fn clang_getPresumedLocation(location: CXSourceLocation,
                                      filename: *mut CXString,
-                                     line: *mut ::libc::c_uint,
-                                     column: *mut ::libc::c_uint);
+                                     line: *mut c_uint,
+                                     column: *mut c_uint);
     pub fn clang_getInstantiationLocation(location: CXSourceLocation,
                                           file: *mut CXFile,
-                                          line: *mut ::libc::c_uint,
-                                          column: *mut ::libc::c_uint,
-                                          offset: *mut ::libc::c_uint);
+                                          line: *mut c_uint,
+                                          column: *mut c_uint,
+                                          offset: *mut c_uint);
     pub fn clang_getSpellingLocation(location: CXSourceLocation,
                                      file: *mut CXFile,
-                                     line: *mut ::libc::c_uint,
-                                     column: *mut ::libc::c_uint,
-                                     offset: *mut ::libc::c_uint);
+                                     line: *mut c_uint,
+                                     column: *mut c_uint,
+                                     offset: *mut c_uint);
     pub fn clang_getFileLocation(location: CXSourceLocation,
-                                 file: *mut CXFile, line: *mut ::libc::c_uint,
-                                 column: *mut ::libc::c_uint,
-                                 offset: *mut ::libc::c_uint);
+                                 file: *mut CXFile, line: *mut c_uint,
+                                 column: *mut c_uint,
+                                 offset: *mut c_uint);
     pub fn clang_getRangeStart(range: CXSourceRange) -> CXSourceLocation;
     pub fn clang_getRangeEnd(range: CXSourceRange) -> CXSourceLocation;
     pub fn clang_getNumDiagnosticsInSet(Diags: CXDiagnosticSet) ->
-     ::libc::c_uint;
+     c_uint;
     pub fn clang_getDiagnosticInSet(Diags: CXDiagnosticSet,
-                                    Index: ::libc::c_uint) -> CXDiagnostic;
-    pub fn clang_loadDiagnostics(file: *const ::libc::c_char,
+                                    Index: c_uint) -> CXDiagnostic;
+    pub fn clang_loadDiagnostics(file: *const c_char,
                                  error: *mut Enum_CXLoadDiag_Error,
                                  errorString: *mut CXString) ->
      CXDiagnosticSet;
     pub fn clang_disposeDiagnosticSet(Diags: CXDiagnosticSet);
     pub fn clang_getChildDiagnostics(D: CXDiagnostic) -> CXDiagnosticSet;
-    pub fn clang_getNumDiagnostics(Unit: CXTranslationUnit) -> ::libc::c_uint;
-    pub fn clang_getDiagnostic(Unit: CXTranslationUnit, Index: ::libc::c_uint)
+    pub fn clang_getNumDiagnostics(Unit: CXTranslationUnit) -> c_uint;
+    pub fn clang_getDiagnostic(Unit: CXTranslationUnit, Index: c_uint)
      -> CXDiagnostic;
     pub fn clang_getDiagnosticSetFromTU(Unit: CXTranslationUnit) ->
      CXDiagnosticSet;
     pub fn clang_disposeDiagnostic(Diagnostic: CXDiagnostic);
     pub fn clang_formatDiagnostic(Diagnostic: CXDiagnostic,
-                                  Options: ::libc::c_uint) -> CXString;
-    pub fn clang_defaultDiagnosticDisplayOptions() -> ::libc::c_uint;
+                                  Options: c_uint) -> CXString;
+    pub fn clang_defaultDiagnosticDisplayOptions() -> c_uint;
     pub fn clang_getDiagnosticSeverity(arg1: CXDiagnostic) ->
      Enum_CXDiagnosticSeverity;
     pub fn clang_getDiagnosticLocation(arg1: CXDiagnostic) ->
@@ -925,63 +927,63 @@ extern "C" {
     pub fn clang_getDiagnosticSpelling(arg1: CXDiagnostic) -> CXString;
     pub fn clang_getDiagnosticOption(Diag: CXDiagnostic,
                                      Disable: *mut CXString) -> CXString;
-    pub fn clang_getDiagnosticCategory(arg1: CXDiagnostic) -> ::libc::c_uint;
-    pub fn clang_getDiagnosticCategoryName(Category: ::libc::c_uint) ->
+    pub fn clang_getDiagnosticCategory(arg1: CXDiagnostic) -> c_uint;
+    pub fn clang_getDiagnosticCategoryName(Category: c_uint) ->
      CXString;
     pub fn clang_getDiagnosticCategoryText(arg1: CXDiagnostic) -> CXString;
-    pub fn clang_getDiagnosticNumRanges(arg1: CXDiagnostic) -> ::libc::c_uint;
+    pub fn clang_getDiagnosticNumRanges(arg1: CXDiagnostic) -> c_uint;
     pub fn clang_getDiagnosticRange(Diagnostic: CXDiagnostic,
-                                    Range: ::libc::c_uint) -> CXSourceRange;
+                                    Range: c_uint) -> CXSourceRange;
     pub fn clang_getDiagnosticNumFixIts(Diagnostic: CXDiagnostic) ->
-     ::libc::c_uint;
+     c_uint;
     pub fn clang_getDiagnosticFixIt(Diagnostic: CXDiagnostic,
-                                    FixIt: ::libc::c_uint,
+                                    FixIt: c_uint,
                                     ReplacementRange: *mut CXSourceRange) ->
      CXString;
     pub fn clang_getTranslationUnitSpelling(CTUnit: CXTranslationUnit) ->
      CXString;
     pub fn clang_createTranslationUnitFromSourceFile(CIdx: CXIndex,
                                                      source_filename:
-                                                         *const ::libc::c_char,
+                                                         *const c_char,
                                                      num_clang_command_line_args:
-                                                         ::libc::c_int,
+                                                         c_int,
                                                      clang_command_line_args:
-                                                         *const *const ::libc::c_char,
+                                                         *const *const c_char,
                                                      num_unsaved_files:
-                                                         ::libc::c_uint,
+                                                         c_uint,
                                                      unsaved_files:
                                                          *mut Struct_CXUnsavedFile)
      -> CXTranslationUnit;
     pub fn clang_createTranslationUnit(arg1: CXIndex,
-                                       ast_filename: *const ::libc::c_char) ->
+                                       ast_filename: *const c_char) ->
      CXTranslationUnit;
-    pub fn clang_defaultEditingTranslationUnitOptions() -> ::libc::c_uint;
+    pub fn clang_defaultEditingTranslationUnitOptions() -> c_uint;
     pub fn clang_parseTranslationUnit(CIdx: CXIndex,
-                                      source_filename: *const ::libc::c_char,
+                                      source_filename: *const c_char,
                                       command_line_args:
-                                          *const *const ::libc::c_char,
-                                      num_command_line_args: ::libc::c_int,
+                                          *const *const c_char,
+                                      num_command_line_args: c_int,
                                       unsaved_files:
                                           *mut Struct_CXUnsavedFile,
-                                      num_unsaved_files: ::libc::c_uint,
-                                      options: ::libc::c_uint) ->
+                                      num_unsaved_files: c_uint,
+                                      options: c_uint) ->
      CXTranslationUnit;
-    pub fn clang_defaultSaveOptions(TU: CXTranslationUnit) -> ::libc::c_uint;
+    pub fn clang_defaultSaveOptions(TU: CXTranslationUnit) -> c_uint;
     pub fn clang_saveTranslationUnit(TU: CXTranslationUnit,
-                                     FileName: *const ::libc::c_char,
-                                     options: ::libc::c_uint) ->
-     ::libc::c_int;
+                                     FileName: *const c_char,
+                                     options: c_uint) ->
+     c_int;
     pub fn clang_disposeTranslationUnit(arg1: CXTranslationUnit);
     pub fn clang_defaultReparseOptions(TU: CXTranslationUnit) ->
-     ::libc::c_uint;
+     c_uint;
     pub fn clang_reparseTranslationUnit(TU: CXTranslationUnit,
-                                        num_unsaved_files: ::libc::c_uint,
+                                        num_unsaved_files: c_uint,
                                         unsaved_files:
                                             *mut Struct_CXUnsavedFile,
-                                        options: ::libc::c_uint) ->
-     ::libc::c_int;
+                                        options: c_uint) ->
+     c_int;
     pub fn clang_getTUResourceUsageName(kind: Enum_CXTUResourceUsageKind) ->
-     *const ::libc::c_char;
+     *const c_char;
     pub fn clang_getCXTUResourceUsage(TU: CXTranslationUnit) ->
      CXTUResourceUsage;
     pub fn clang_disposeCXTUResourceUsage(usage: CXTUResourceUsage);
@@ -989,36 +991,36 @@ extern "C" {
     pub fn clang_getTranslationUnitCursor(arg1: CXTranslationUnit) ->
      CXCursor;
     pub fn clang_equalCursors(arg1: CXCursor, arg2: CXCursor) ->
-     ::libc::c_uint;
-    pub fn clang_Cursor_isNull(cursor: CXCursor) -> ::libc::c_int;
-    pub fn clang_hashCursor(arg1: CXCursor) -> ::libc::c_uint;
+     c_uint;
+    pub fn clang_Cursor_isNull(cursor: CXCursor) -> c_int;
+    pub fn clang_hashCursor(arg1: CXCursor) -> c_uint;
     pub fn clang_getCursorKind(arg1: CXCursor) -> Enum_CXCursorKind;
-    pub fn clang_isDeclaration(arg1: Enum_CXCursorKind) -> ::libc::c_uint;
-    pub fn clang_isReference(arg1: Enum_CXCursorKind) -> ::libc::c_uint;
-    pub fn clang_isExpression(arg1: Enum_CXCursorKind) -> ::libc::c_uint;
-    pub fn clang_isStatement(arg1: Enum_CXCursorKind) -> ::libc::c_uint;
-    pub fn clang_isAttribute(arg1: Enum_CXCursorKind) -> ::libc::c_uint;
-    pub fn clang_isInvalid(arg1: Enum_CXCursorKind) -> ::libc::c_uint;
-    pub fn clang_isTranslationUnit(arg1: Enum_CXCursorKind) -> ::libc::c_uint;
-    pub fn clang_isPreprocessing(arg1: Enum_CXCursorKind) -> ::libc::c_uint;
-    pub fn clang_isUnexposed(arg1: Enum_CXCursorKind) -> ::libc::c_uint;
+    pub fn clang_isDeclaration(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_isReference(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_isExpression(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_isStatement(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_isAttribute(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_isInvalid(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_isTranslationUnit(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_isPreprocessing(arg1: Enum_CXCursorKind) -> c_uint;
+    pub fn clang_isUnexposed(arg1: Enum_CXCursorKind) -> c_uint;
     pub fn clang_getCursorLinkage(cursor: CXCursor) -> Enum_CXLinkageKind;
     pub fn clang_getCursorAvailability(cursor: CXCursor) ->
      Enum_CXAvailabilityKind;
     pub fn clang_getCursorPlatformAvailability(cursor: CXCursor,
                                                always_deprecated:
-                                                   *mut ::libc::c_int,
+                                                   *mut c_int,
                                                deprecated_message:
                                                    *mut CXString,
                                                always_unavailable:
-                                                   *mut ::libc::c_int,
+                                                   *mut c_int,
                                                unavailable_message:
                                                    *mut CXString,
                                                availability:
                                                    *mut CXPlatformAvailability,
                                                availability_size:
-                                                   ::libc::c_int) ->
-     ::libc::c_int;
+                                                   c_int) ->
+     c_int;
     pub fn clang_disposeCXPlatformAvailability(availability:
                                                    *mut CXPlatformAvailability);
     pub fn clang_getCursorLanguage(cursor: CXCursor) -> Enum_CXLanguageKind;
@@ -1027,14 +1029,14 @@ extern "C" {
     pub fn clang_createCXCursorSet() -> CXCursorSet;
     pub fn clang_disposeCXCursorSet(cset: CXCursorSet);
     pub fn clang_CXCursorSet_contains(cset: CXCursorSet, cursor: CXCursor) ->
-     ::libc::c_uint;
+     c_uint;
     pub fn clang_CXCursorSet_insert(cset: CXCursorSet, cursor: CXCursor) ->
-     ::libc::c_uint;
+     c_uint;
     pub fn clang_getCursorSemanticParent(cursor: CXCursor) -> CXCursor;
     pub fn clang_getCursorLexicalParent(cursor: CXCursor) -> CXCursor;
     pub fn clang_getOverriddenCursors(cursor: CXCursor,
                                       overridden: *mut *mut CXCursor,
-                                      num_overridden: *mut ::libc::c_uint);
+                                      num_overridden: *mut c_uint);
     pub fn clang_disposeOverriddenCursors(overridden: *mut CXCursor);
     pub fn clang_getIncludedFile(cursor: CXCursor) -> CXFile;
     pub fn clang_getCursor(arg1: CXTranslationUnit, arg2: CXSourceLocation) ->
@@ -1045,86 +1047,86 @@ extern "C" {
     pub fn clang_getTypeSpelling(CT: CXType) -> CXString;
     pub fn clang_getTypedefDeclUnderlyingType(C: CXCursor) -> CXType;
     pub fn clang_getEnumDeclIntegerType(C: CXCursor) -> CXType;
-    pub fn clang_getEnumConstantDeclValue(C: CXCursor) -> ::libc::c_longlong;
+    pub fn clang_getEnumConstantDeclValue(C: CXCursor) -> c_longlong;
     pub fn clang_getEnumConstantDeclUnsignedValue(C: CXCursor) ->
-     ::libc::c_ulonglong;
-    pub fn clang_getFieldDeclBitWidth(C: CXCursor) -> ::libc::c_int;
-    pub fn clang_Cursor_getNumArguments(C: CXCursor) -> ::libc::c_int;
-    pub fn clang_Cursor_getArgument(C: CXCursor, i: ::libc::c_uint) ->
+     c_ulonglong;
+    pub fn clang_getFieldDeclBitWidth(C: CXCursor) -> c_int;
+    pub fn clang_Cursor_getNumArguments(C: CXCursor) -> c_int;
+    pub fn clang_Cursor_getArgument(C: CXCursor, i: c_uint) ->
      CXCursor;
-    pub fn clang_equalTypes(A: CXType, B: CXType) -> ::libc::c_uint;
+    pub fn clang_equalTypes(A: CXType, B: CXType) -> c_uint;
     pub fn clang_getCanonicalType(T: CXType) -> CXType;
-    pub fn clang_isConstQualifiedType(T: CXType) -> ::libc::c_uint;
-    pub fn clang_isVolatileQualifiedType(T: CXType) -> ::libc::c_uint;
-    pub fn clang_isRestrictQualifiedType(T: CXType) -> ::libc::c_uint;
+    pub fn clang_isConstQualifiedType(T: CXType) -> c_uint;
+    pub fn clang_isVolatileQualifiedType(T: CXType) -> c_uint;
+    pub fn clang_isRestrictQualifiedType(T: CXType) -> c_uint;
     pub fn clang_getPointeeType(T: CXType) -> CXType;
     pub fn clang_getTypeDeclaration(T: CXType) -> CXCursor;
     pub fn clang_getDeclObjCTypeEncoding(C: CXCursor) -> CXString;
     pub fn clang_getTypeKindSpelling(K: Enum_CXTypeKind) -> CXString;
     pub fn clang_getFunctionTypeCallingConv(T: CXType) -> Enum_CXCallingConv;
     pub fn clang_getResultType(T: CXType) -> CXType;
-    pub fn clang_getNumArgTypes(T: CXType) -> ::libc::c_int;
-    pub fn clang_getArgType(T: CXType, i: ::libc::c_uint) -> CXType;
-    pub fn clang_isFunctionTypeVariadic(T: CXType) -> ::libc::c_uint;
+    pub fn clang_getNumArgTypes(T: CXType) -> c_int;
+    pub fn clang_getArgType(T: CXType, i: c_uint) -> CXType;
+    pub fn clang_isFunctionTypeVariadic(T: CXType) -> c_uint;
     pub fn clang_getCursorResultType(C: CXCursor) -> CXType;
-    pub fn clang_isPODType(T: CXType) -> ::libc::c_uint;
+    pub fn clang_isPODType(T: CXType) -> c_uint;
     pub fn clang_getElementType(T: CXType) -> CXType;
-    pub fn clang_getNumElements(T: CXType) -> ::libc::c_longlong;
+    pub fn clang_getNumElements(T: CXType) -> c_longlong;
     pub fn clang_getArrayElementType(T: CXType) -> CXType;
-    pub fn clang_getArraySize(T: CXType) -> ::libc::c_longlong;
-    pub fn clang_Type_getAlignOf(T: CXType) -> ::libc::c_longlong;
+    pub fn clang_getArraySize(T: CXType) -> c_longlong;
+    pub fn clang_Type_getAlignOf(T: CXType) -> c_longlong;
     pub fn clang_Type_getClassType(T: CXType) -> CXType;
-    pub fn clang_Type_getSizeOf(T: CXType) -> ::libc::c_longlong;
-    pub fn clang_Type_getOffsetOf(T: CXType, S: *const ::libc::c_char) ->
-     ::libc::c_longlong;
+    pub fn clang_Type_getSizeOf(T: CXType) -> c_longlong;
+    pub fn clang_Type_getOffsetOf(T: CXType, S: *const c_char) ->
+     c_longlong;
     pub fn clang_Type_getCXXRefQualifier(T: CXType) ->
      Enum_CXRefQualifierKind;
-    pub fn clang_Cursor_isBitField(C: CXCursor) -> ::libc::c_uint;
-    pub fn clang_isVirtualBase(arg1: CXCursor) -> ::libc::c_uint;
+    pub fn clang_Cursor_isBitField(C: CXCursor) -> c_uint;
+    pub fn clang_isVirtualBase(arg1: CXCursor) -> c_uint;
     pub fn clang_getCXXAccessSpecifier(arg1: CXCursor) ->
      Enum_CX_CXXAccessSpecifier;
-    pub fn clang_getNumOverloadedDecls(cursor: CXCursor) -> ::libc::c_uint;
-    pub fn clang_getOverloadedDecl(cursor: CXCursor, index: ::libc::c_uint) ->
+    pub fn clang_getNumOverloadedDecls(cursor: CXCursor) -> c_uint;
+    pub fn clang_getOverloadedDecl(cursor: CXCursor, index: c_uint) ->
      CXCursor;
     pub fn clang_getIBOutletCollectionType(arg1: CXCursor) -> CXType;
     pub fn clang_visitChildren(parent: CXCursor, visitor: CXCursorVisitor,
-                               client_data: CXClientData) -> ::libc::c_uint;
+                               client_data: CXClientData) -> c_uint;
     pub fn clang_getCursorUSR(arg1: CXCursor) -> CXString;
-    pub fn clang_constructUSR_ObjCClass(class_name: *const ::libc::c_char) ->
+    pub fn clang_constructUSR_ObjCClass(class_name: *const c_char) ->
      CXString;
-    pub fn clang_constructUSR_ObjCCategory(class_name: *const ::libc::c_char,
+    pub fn clang_constructUSR_ObjCCategory(class_name: *const c_char,
                                            category_name:
-                                               *const ::libc::c_char) ->
+                                               *const c_char) ->
      CXString;
     pub fn clang_constructUSR_ObjCProtocol(protocol_name:
-                                               *const ::libc::c_char) ->
+                                               *const c_char) ->
      CXString;
-    pub fn clang_constructUSR_ObjCIvar(name: *const ::libc::c_char,
+    pub fn clang_constructUSR_ObjCIvar(name: *const c_char,
                                        classUSR: CXString) -> CXString;
-    pub fn clang_constructUSR_ObjCMethod(name: *const ::libc::c_char,
-                                         isInstanceMethod: ::libc::c_uint,
+    pub fn clang_constructUSR_ObjCMethod(name: *const c_char,
+                                         isInstanceMethod: c_uint,
                                          classUSR: CXString) -> CXString;
-    pub fn clang_constructUSR_ObjCProperty(property: *const ::libc::c_char,
+    pub fn clang_constructUSR_ObjCProperty(property: *const c_char,
                                            classUSR: CXString) -> CXString;
     pub fn clang_getCursorSpelling(arg1: CXCursor) -> CXString;
     pub fn clang_Cursor_getSpellingNameRange(arg1: CXCursor,
-                                             pieceIndex: ::libc::c_uint,
-                                             options: ::libc::c_uint) ->
+                                             pieceIndex: c_uint,
+                                             options: c_uint) ->
      CXSourceRange;
     pub fn clang_getCursorDisplayName(arg1: CXCursor) -> CXString;
     pub fn clang_getCursorReferenced(arg1: CXCursor) -> CXCursor;
     pub fn clang_getCursorDefinition(arg1: CXCursor) -> CXCursor;
-    pub fn clang_isCursorDefinition(arg1: CXCursor) -> ::libc::c_uint;
+    pub fn clang_isCursorDefinition(arg1: CXCursor) -> c_uint;
     pub fn clang_getCanonicalCursor(arg1: CXCursor) -> CXCursor;
-    pub fn clang_Cursor_getObjCSelectorIndex(arg1: CXCursor) -> ::libc::c_int;
-    pub fn clang_Cursor_isDynamicCall(C: CXCursor) -> ::libc::c_int;
+    pub fn clang_Cursor_getObjCSelectorIndex(arg1: CXCursor) -> c_int;
+    pub fn clang_Cursor_isDynamicCall(C: CXCursor) -> c_int;
     pub fn clang_Cursor_getReceiverType(C: CXCursor) -> CXType;
     pub fn clang_Cursor_getObjCPropertyAttributes(C: CXCursor,
-                                                  reserved: ::libc::c_uint) ->
-     ::libc::c_uint;
-    pub fn clang_Cursor_getObjCDeclQualifiers(C: CXCursor) -> ::libc::c_uint;
-    pub fn clang_Cursor_isObjCOptional(C: CXCursor) -> ::libc::c_uint;
-    pub fn clang_Cursor_isVariadic(C: CXCursor) -> ::libc::c_uint;
+                                                  reserved: c_uint) ->
+     c_uint;
+    pub fn clang_Cursor_getObjCDeclQualifiers(C: CXCursor) -> c_uint;
+    pub fn clang_Cursor_isObjCOptional(C: CXCursor) -> c_uint;
+    pub fn clang_Cursor_isVariadic(C: CXCursor) -> c_uint;
     pub fn clang_Cursor_getCommentRange(C: CXCursor) -> CXSourceRange;
     pub fn clang_Cursor_getRawCommentText(C: CXCursor) -> CXString;
     pub fn clang_Cursor_getBriefCommentText(C: CXCursor) -> CXString;
@@ -1136,80 +1138,80 @@ extern "C" {
     pub fn clang_Module_getFullName(Module: CXModule) -> CXString;
     pub fn clang_Module_getNumTopLevelHeaders(arg1: CXTranslationUnit,
                                               Module: CXModule) ->
-     ::libc::c_uint;
+     c_uint;
     pub fn clang_Module_getTopLevelHeader(arg1: CXTranslationUnit,
                                           Module: CXModule,
-                                          Index: ::libc::c_uint) -> CXFile;
+                                          Index: c_uint) -> CXFile;
     pub fn clang_Comment_getKind(Comment: CXComment) -> Enum_CXCommentKind;
-    pub fn clang_Comment_getNumChildren(Comment: CXComment) -> ::libc::c_uint;
+    pub fn clang_Comment_getNumChildren(Comment: CXComment) -> c_uint;
     pub fn clang_Comment_getChild(Comment: CXComment,
-                                  ChildIdx: ::libc::c_uint) -> CXComment;
-    pub fn clang_Comment_isWhitespace(Comment: CXComment) -> ::libc::c_uint;
+                                  ChildIdx: c_uint) -> CXComment;
+    pub fn clang_Comment_isWhitespace(Comment: CXComment) -> c_uint;
     pub fn clang_InlineContentComment_hasTrailingNewline(Comment: CXComment)
-     -> ::libc::c_uint;
+     -> c_uint;
     pub fn clang_TextComment_getText(Comment: CXComment) -> CXString;
     pub fn clang_InlineCommandComment_getCommandName(Comment: CXComment) ->
      CXString;
     pub fn clang_InlineCommandComment_getRenderKind(Comment: CXComment) ->
      Enum_CXCommentInlineCommandRenderKind;
     pub fn clang_InlineCommandComment_getNumArgs(Comment: CXComment) ->
-     ::libc::c_uint;
+     c_uint;
     pub fn clang_InlineCommandComment_getArgText(Comment: CXComment,
-                                                 ArgIdx: ::libc::c_uint) ->
+                                                 ArgIdx: c_uint) ->
      CXString;
     pub fn clang_HTMLTagComment_getTagName(Comment: CXComment) -> CXString;
     pub fn clang_HTMLStartTagComment_isSelfClosing(Comment: CXComment) ->
-     ::libc::c_uint;
+     c_uint;
     pub fn clang_HTMLStartTag_getNumAttrs(Comment: CXComment) ->
-     ::libc::c_uint;
+     c_uint;
     pub fn clang_HTMLStartTag_getAttrName(Comment: CXComment,
-                                          AttrIdx: ::libc::c_uint) ->
+                                          AttrIdx: c_uint) ->
      CXString;
     pub fn clang_HTMLStartTag_getAttrValue(Comment: CXComment,
-                                           AttrIdx: ::libc::c_uint) ->
+                                           AttrIdx: c_uint) ->
      CXString;
     pub fn clang_BlockCommandComment_getCommandName(Comment: CXComment) ->
      CXString;
     pub fn clang_BlockCommandComment_getNumArgs(Comment: CXComment) ->
-     ::libc::c_uint;
+     c_uint;
     pub fn clang_BlockCommandComment_getArgText(Comment: CXComment,
-                                                ArgIdx: ::libc::c_uint) ->
+                                                ArgIdx: c_uint) ->
      CXString;
     pub fn clang_BlockCommandComment_getParagraph(Comment: CXComment) ->
      CXComment;
     pub fn clang_ParamCommandComment_getParamName(Comment: CXComment) ->
      CXString;
     pub fn clang_ParamCommandComment_isParamIndexValid(Comment: CXComment) ->
-     ::libc::c_uint;
+     c_uint;
     pub fn clang_ParamCommandComment_getParamIndex(Comment: CXComment) ->
-     ::libc::c_uint;
+     c_uint;
     pub fn clang_ParamCommandComment_isDirectionExplicit(Comment: CXComment)
-     -> ::libc::c_uint;
+     -> c_uint;
     pub fn clang_ParamCommandComment_getDirection(Comment: CXComment) ->
      Enum_CXCommentParamPassDirection;
     pub fn clang_TParamCommandComment_getParamName(Comment: CXComment) ->
      CXString;
     pub fn clang_TParamCommandComment_isParamPositionValid(Comment: CXComment)
-     -> ::libc::c_uint;
+     -> c_uint;
     pub fn clang_TParamCommandComment_getDepth(Comment: CXComment) ->
-     ::libc::c_uint;
+     c_uint;
     pub fn clang_TParamCommandComment_getIndex(Comment: CXComment,
-                                               Depth: ::libc::c_uint) ->
-     ::libc::c_uint;
+                                               Depth: c_uint) ->
+     c_uint;
     pub fn clang_VerbatimBlockLineComment_getText(Comment: CXComment) ->
      CXString;
     pub fn clang_VerbatimLineComment_getText(Comment: CXComment) -> CXString;
     pub fn clang_HTMLTagComment_getAsString(Comment: CXComment) -> CXString;
     pub fn clang_FullComment_getAsHTML(Comment: CXComment) -> CXString;
     pub fn clang_FullComment_getAsXML(Comment: CXComment) -> CXString;
-    pub fn clang_CXXMethod_isPureVirtual(C: CXCursor) -> ::libc::c_uint;
-    pub fn clang_CXXMethod_isStatic(C: CXCursor) -> ::libc::c_uint;
-    pub fn clang_CXXMethod_isVirtual(C: CXCursor) -> ::libc::c_uint;
+    pub fn clang_CXXMethod_isPureVirtual(C: CXCursor) -> c_uint;
+    pub fn clang_CXXMethod_isStatic(C: CXCursor) -> c_uint;
+    pub fn clang_CXXMethod_isVirtual(C: CXCursor) -> c_uint;
     pub fn clang_getTemplateCursorKind(C: CXCursor) -> Enum_CXCursorKind;
     pub fn clang_getSpecializedCursorTemplate(C: CXCursor) -> CXCursor;
     pub fn clang_getCursorReferenceNameRange(C: CXCursor,
-                                             NameFlags: ::libc::c_uint,
-                                             PieceIndex: ::libc::c_uint) ->
+                                             NameFlags: c_uint,
+                                             PieceIndex: c_uint) ->
      CXSourceRange;
     pub fn clang_getTokenKind(arg1: CXToken) -> CXTokenKind;
     pub fn clang_getTokenSpelling(arg1: CXTranslationUnit, arg2: CXToken) ->
@@ -1220,56 +1222,56 @@ extern "C" {
      CXSourceRange;
     pub fn clang_tokenize(TU: CXTranslationUnit, Range: CXSourceRange,
                           Tokens: *mut *mut CXToken,
-                          NumTokens: *mut ::libc::c_uint);
+                          NumTokens: *mut c_uint);
     pub fn clang_annotateTokens(TU: CXTranslationUnit, Tokens: *mut CXToken,
-                                NumTokens: ::libc::c_uint,
+                                NumTokens: c_uint,
                                 Cursors: *mut CXCursor);
     pub fn clang_disposeTokens(TU: CXTranslationUnit, Tokens: *mut CXToken,
-                               NumTokens: ::libc::c_uint);
+                               NumTokens: c_uint);
     pub fn clang_getCursorKindSpelling(Kind: Enum_CXCursorKind) -> CXString;
     pub fn clang_getDefinitionSpellingAndExtent(arg1: CXCursor,
                                                 startBuf:
-                                                    *mut *const ::libc::c_char,
+                                                    *mut *const c_char,
                                                 endBuf:
-                                                    *mut *const ::libc::c_char,
+                                                    *mut *const c_char,
                                                 startLine:
-                                                    *mut ::libc::c_uint,
+                                                    *mut c_uint,
                                                 startColumn:
-                                                    *mut ::libc::c_uint,
-                                                endLine: *mut ::libc::c_uint,
+                                                    *mut c_uint,
+                                                endLine: *mut c_uint,
                                                 endColumn:
-                                                    *mut ::libc::c_uint);
+                                                    *mut c_uint);
     pub fn clang_enableStackTraces();
     pub fn clang_executeOnThread(_fn:
                                      ::std::option::Option<extern "C" fn
                                                                (arg1:
-                                                                    *mut ::libc::c_void)>,
-                                 user_data: *mut ::libc::c_void,
-                                 stack_size: ::libc::c_uint);
+                                                                    *mut c_void)>,
+                                 user_data: *mut c_void,
+                                 stack_size: c_uint);
     pub fn clang_getCompletionChunkKind(completion_string: CXCompletionString,
-                                        chunk_number: ::libc::c_uint) ->
+                                        chunk_number: c_uint) ->
      Enum_CXCompletionChunkKind;
     pub fn clang_getCompletionChunkText(completion_string: CXCompletionString,
-                                        chunk_number: ::libc::c_uint) ->
+                                        chunk_number: c_uint) ->
      CXString;
     pub fn clang_getCompletionChunkCompletionString(completion_string:
                                                         CXCompletionString,
                                                     chunk_number:
-                                                        ::libc::c_uint) ->
+                                                        c_uint) ->
      CXCompletionString;
     pub fn clang_getNumCompletionChunks(completion_string: CXCompletionString)
-     -> ::libc::c_uint;
+     -> c_uint;
     pub fn clang_getCompletionPriority(completion_string: CXCompletionString)
-     -> ::libc::c_uint;
+     -> c_uint;
     pub fn clang_getCompletionAvailability(completion_string:
                                                CXCompletionString) ->
      Enum_CXAvailabilityKind;
     pub fn clang_getCompletionNumAnnotations(completion_string:
                                                  CXCompletionString) ->
-     ::libc::c_uint;
+     c_uint;
     pub fn clang_getCompletionAnnotation(completion_string:
                                              CXCompletionString,
-                                         annotation_number: ::libc::c_uint) ->
+                                         annotation_number: c_uint) ->
      CXString;
     pub fn clang_getCompletionParent(completion_string: CXCompletionString,
                                      kind: *mut Enum_CXCursorKind) ->
@@ -1279,32 +1281,32 @@ extern "C" {
      CXString;
     pub fn clang_getCursorCompletionString(cursor: CXCursor) ->
      CXCompletionString;
-    pub fn clang_defaultCodeCompleteOptions() -> ::libc::c_uint;
+    pub fn clang_defaultCodeCompleteOptions() -> c_uint;
     pub fn clang_codeCompleteAt(TU: CXTranslationUnit,
-                                complete_filename: *const ::libc::c_char,
-                                complete_line: ::libc::c_uint,
-                                complete_column: ::libc::c_uint,
+                                complete_filename: *const c_char,
+                                complete_line: c_uint,
+                                complete_column: c_uint,
                                 unsaved_files: *mut Struct_CXUnsavedFile,
-                                num_unsaved_files: ::libc::c_uint,
-                                options: ::libc::c_uint) ->
+                                num_unsaved_files: c_uint,
+                                options: c_uint) ->
      *mut CXCodeCompleteResults;
     pub fn clang_sortCodeCompletionResults(Results: *mut CXCompletionResult,
-                                           NumResults: ::libc::c_uint);
+                                           NumResults: c_uint);
     pub fn clang_disposeCodeCompleteResults(Results:
                                                 *mut CXCodeCompleteResults);
     pub fn clang_codeCompleteGetNumDiagnostics(Results:
                                                    *mut CXCodeCompleteResults)
-     -> ::libc::c_uint;
+     -> c_uint;
     pub fn clang_codeCompleteGetDiagnostic(Results:
                                                *mut CXCodeCompleteResults,
-                                           Index: ::libc::c_uint) ->
+                                           Index: c_uint) ->
      CXDiagnostic;
     pub fn clang_codeCompleteGetContexts(Results: *mut CXCodeCompleteResults)
-     -> ::libc::c_ulonglong;
+     -> c_ulonglong;
     pub fn clang_codeCompleteGetContainerKind(Results:
                                                   *mut CXCodeCompleteResults,
                                               IsIncomplete:
-                                                  *mut ::libc::c_uint) ->
+                                                  *mut c_uint) ->
      Enum_CXCursorKind;
     pub fn clang_codeCompleteGetContainerUSR(Results:
                                                  *mut CXCodeCompleteResults)
@@ -1313,17 +1315,17 @@ extern "C" {
                                                  *mut CXCodeCompleteResults)
      -> CXString;
     pub fn clang_getClangVersion() -> CXString;
-    pub fn clang_toggleCrashRecovery(isEnabled: ::libc::c_uint);
+    pub fn clang_toggleCrashRecovery(isEnabled: c_uint);
     pub fn clang_getInclusions(tu: CXTranslationUnit,
                                visitor: CXInclusionVisitor,
                                client_data: CXClientData);
-    pub fn clang_getRemappings(path: *const ::libc::c_char) -> CXRemapping;
+    pub fn clang_getRemappings(path: *const c_char) -> CXRemapping;
     pub fn clang_getRemappingsFromFileList(filePaths:
-                                               *mut *const ::libc::c_char,
-                                           numFiles: ::libc::c_uint) ->
+                                               *mut *const c_char,
+                                           numFiles: c_uint) ->
      CXRemapping;
-    pub fn clang_remap_getNumFiles(arg1: CXRemapping) -> ::libc::c_uint;
-    pub fn clang_remap_getFilenames(arg1: CXRemapping, index: ::libc::c_uint,
+    pub fn clang_remap_getNumFiles(arg1: CXRemapping) -> c_uint;
+    pub fn clang_remap_getFilenames(arg1: CXRemapping, index: c_uint,
                                     original: *mut CXString,
                                     transformed: *mut CXString);
     pub fn clang_remap_dispose(arg1: CXRemapping);
@@ -1334,7 +1336,7 @@ extern "C" {
                                     visitor: CXCursorAndRangeVisitor) ->
      CXResult;
     pub fn clang_index_isEntityObjCContainerKind(arg1: CXIdxEntityKind) ->
-     ::libc::c_int;
+     c_int;
     pub fn clang_index_getObjCContainerDeclInfo(arg1: *const CXIdxDeclInfo) ->
      *const CXIdxObjCContainerDeclInfo;
     pub fn clang_index_getObjCInterfaceDeclInfo(arg1: *const CXIdxDeclInfo) ->
@@ -1363,29 +1365,29 @@ extern "C" {
     pub fn clang_indexSourceFile(arg1: CXIndexAction,
                                  client_data: CXClientData,
                                  index_callbacks: *mut IndexerCallbacks,
-                                 index_callbacks_size: ::libc::c_uint,
-                                 index_options: ::libc::c_uint,
-                                 source_filename: *const ::libc::c_char,
+                                 index_callbacks_size: c_uint,
+                                 index_options: c_uint,
+                                 source_filename: *const c_char,
                                  command_line_args:
-                                     *const *const ::libc::c_char,
-                                 num_command_line_args: ::libc::c_int,
+                                     *const *const c_char,
+                                 num_command_line_args: c_int,
                                  unsaved_files: *mut Struct_CXUnsavedFile,
-                                 num_unsaved_files: ::libc::c_uint,
+                                 num_unsaved_files: c_uint,
                                  out_TU: *mut CXTranslationUnit,
-                                 TU_options: ::libc::c_uint) -> ::libc::c_int;
+                                 TU_options: c_uint) -> c_int;
     pub fn clang_indexTranslationUnit(arg1: CXIndexAction,
                                       client_data: CXClientData,
                                       index_callbacks: *mut IndexerCallbacks,
-                                      index_callbacks_size: ::libc::c_uint,
-                                      index_options: ::libc::c_uint,
+                                      index_callbacks_size: c_uint,
+                                      index_options: c_uint,
                                       arg2: CXTranslationUnit) ->
-     ::libc::c_int;
+     c_int;
     pub fn clang_indexLoc_getFileLocation(loc: CXIdxLoc,
                                           indexFile: *mut CXIdxClientFile,
                                           file: *mut CXFile,
-                                          line: *mut ::libc::c_uint,
-                                          column: *mut ::libc::c_uint,
-                                          offset: *mut ::libc::c_uint);
+                                          line: *mut c_uint,
+                                          column: *mut c_uint,
+                                          offset: *mut c_uint);
     pub fn clang_indexLoc_getCXSourceLocation(loc: CXIdxLoc) ->
      CXSourceLocation;
 }
