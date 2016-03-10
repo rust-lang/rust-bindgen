@@ -5,7 +5,7 @@ rust:
   - stable
 env:
   - LLVM_VERSION=3.4
-  - LLVM_VERSION=3.5
+  - LLVM_VERSION=3.7
 before_install:
   - yes | sudo add-apt-repository "deb http://llvm.org/apt/precise/ llvm-toolchain-precise-${LLVM_VERSION} main"
   - yes | sudo add-apt-repository "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu precise main"
