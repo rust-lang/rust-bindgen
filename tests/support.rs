@@ -27,6 +27,7 @@ pub fn generate_bindings(filename: &str) -> Result<Vec<P<ast::Item>>, ()> {
     let mut options:BindgenOptions = Default::default();
     if filename.ends_with("hpp") {
         options.clang_args.push("-std=c++11".to_string());
+        options.clang_args.push("-Wno-narrowing".to_string());
     }
     options.clang_args.push(filename.to_string());
 
