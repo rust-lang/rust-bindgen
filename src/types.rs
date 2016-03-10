@@ -174,6 +174,24 @@ pub enum IKind {
     IULongLong
 }
 
+impl IKind {
+    pub fn is_signed(self) -> bool {
+        match self {
+            IBool => false,
+            ISChar => true,
+            IUChar => false,
+            IShort => true,
+            IUShort => false,
+            IInt => true,
+            IUInt => false,
+            ILong => true,
+            IULong => false,
+            ILongLong => true,
+            IULongLong => false,
+        }
+    }
+}
+
 #[derive(Copy, Clone, PartialEq)]
 pub enum FKind {
     FFloat,

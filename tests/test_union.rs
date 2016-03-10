@@ -2,7 +2,7 @@ use support::assert_bind_eq;
 
 #[test]
 fn with_anon_struct() {
-    assert_bind_eq("headers/union_with_anon_struct.h", "
+    assert_bind_eq(Default::default(), "headers/union_with_anon_struct.h", "
         #[repr(C)]
         #[derive(Copy)]
         pub struct Union_foo {
@@ -38,7 +38,7 @@ fn with_anon_struct() {
 
 #[test]
 fn with_anon_struct_bitfield() {
-    assert_bind_eq("headers/union_with_anon_struct_bitfield.h", "
+    assert_bind_eq(Default::default(), "headers/union_with_anon_struct_bitfield.h", "
         #[repr(C)]
         #[derive(Copy)]
         pub struct Union_foo {
@@ -64,7 +64,7 @@ fn with_anon_struct_bitfield() {
 
 #[test]
 fn with_anon_union() {
-    assert_bind_eq("headers/union_with_anon_union.h", "
+    assert_bind_eq(Default::default(), "headers/union_with_anon_union.h", "
         #[repr(C)]
         #[derive(Copy)]
         pub struct Union_foo {
@@ -108,7 +108,7 @@ fn with_anon_union() {
 
 #[test]
 fn with_anon_unnamed_struct() {
-    assert_bind_eq("headers/union_with_anon_unnamed_struct.h", "
+    assert_bind_eq(Default::default(), "headers/union_with_anon_unnamed_struct.h", "
         #[repr(C)]
         #[derive(Copy)]
         pub struct Union_pixel {
@@ -147,7 +147,7 @@ fn with_anon_unnamed_struct() {
 
 #[test]
 fn with_anon_unnamed_union() {
-    assert_bind_eq("headers/union_with_anon_unnamed_union.h", "
+    assert_bind_eq(Default::default(), "headers/union_with_anon_unnamed_union.h", "
         #[repr(C)]
         #[derive(Copy)]
         pub struct Union_foo {
@@ -178,7 +178,7 @@ fn with_anon_unnamed_union() {
 
 #[test]
 fn with_nesting() {
-    assert_bind_eq("headers/union_with_nesting.h", "
+    assert_bind_eq(Default::default(), "headers/union_with_nesting.h", "
         #[repr(C)]
         #[derive(Copy)]
         pub struct Union_foo {

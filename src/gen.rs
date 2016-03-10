@@ -20,7 +20,7 @@ use syntax::attr::mk_attr_id;
 use syntax::ptr::P;
 use syntax::print::pprust::tts_to_string;
 
-use super::LinkType;
+use super::{BindgenOptions, LinkType};
 use types::*;
 
 struct GenCtx<'r> {
@@ -115,7 +115,11 @@ fn enum_name(name: &str) -> String {
     format!("Enum_{}", name)
 }
 
-pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> Vec<P<ast::Item>> {
+pub fn gen_mod(
+        options: &BindgenOptions,
+        globs: Vec<Global>,
+        span: Span)
+        -> Vec<P<ast::Item>> {
     // Create a dummy ExtCtxt. We only need this for string interning and that uses TLS.
     let mut features = Features::new();
     features.allow_quote = true;
@@ -180,8 +184,11 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
     for g in gs.into_iter() {
         match g {
             GType(ti) => {
-                let t = ti.borrow().clone();
-                defs.extend(ctypedef_to_rs(&mut ctx, t.name.clone(), &t.ty).into_iter())
+                let t = ti.borrow();
+                defs.extend(ctypedef_to_rs(
+                    &mut ctx,
+                    options.rust_enums,
+                    t.name.clone(), &t.ty))
             },
             GCompDecl(ci) => {
                 {
@@ -214,7 +221,10 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
                     e.name = unnamed_name(&mut ctx, e.name.clone());
                 }
                 let e = ei.borrow();
-                defs.extend(cenum_to_rs(&mut ctx, enum_name(&e.name), e.kind, e.layout, &e.items).into_iter())
+                defs.extend(cenum_to_rs(
+                    &mut ctx,
+                    options.rust_enums,
+                    enum_name(&e.name), e.kind, e.layout, &e.items));
             },
             GVar(vi) => {
                 let v = vi.borrow();
@@ -269,11 +279,11 @@ pub fn gen_mod(links: &[(String, LinkType)], globs: Vec<Global>, span: Span) -> 
     };
 
     if !Vec::is_empty(&vars) {
-        defs.push(mk_extern(&mut ctx, links, vars, abi::Abi::C));
+        defs.push(mk_extern(&mut ctx, &options.links, vars, abi::Abi::C));
     }
 
     for (abi, funcs) in funcs.into_iter() {
-        defs.push(mk_extern(&mut ctx, links, funcs, abi));
+        defs.push(mk_extern(&mut ctx, &options.links, funcs, abi));
     }
 
     //let attrs = vec!(mk_attr_list(&mut ctx, "allow", ["dead_code", "non_camel_case_types", "uppercase_variables"]));
@@ -439,7 +449,12 @@ fn tag_dup_decl(gs: Vec<Global>) -> Vec<Global> {
     res
 }
 
-fn ctypedef_to_rs(ctx: &mut GenCtx, name: String, ty: &Type) -> Vec<P<ast::Item>> {
+fn ctypedef_to_rs(
+        ctx: &mut GenCtx,
+        rust_enums: bool,
+        name: String,
+        ty: &Type)
+        -> Vec<P<ast::Item>> {
     fn mk_item(ctx: &mut GenCtx, name: String, ty: &Type) -> P<ast::Item> {
         let rust_name = rust_type_id(ctx, name);
         let rust_ty = cty_to_rs(ctx, ty);
@@ -478,7 +493,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, name: String, ty: &Type) -> Vec<P<ast::Item>
             if is_empty {
                 ei.borrow_mut().name = name.clone();
                 let e = ei.borrow();
-                cenum_to_rs(ctx, name, e.kind, e.layout, &e.items)
+                cenum_to_rs(ctx, rust_enums, name, e.kind, e.layout, &e.items)
             } else {
                 vec!(mk_item(ctx, name, ty))
             }
@@ -700,22 +715,6 @@ fn const_to_rs(ctx: &mut GenCtx, name: String, val: i64, val_ty: ast::Ty) -> P<a
     })
 }
 
-fn enum_kind_is_signed(kind: IKind) -> bool {
-    match kind {
-        IBool => false,
-        ISChar => true,
-        IUChar => false,
-        IShort => true,
-        IUShort => false,
-        IInt => true,
-        IUInt => false,
-        ILong => true,
-        IULong => false,
-        ILongLong => true,
-        IULongLong => false,
-    }
-}
-
 fn enum_size_to_rust_type_name(signed: bool, size: usize) -> &'static str {
     match (signed, size) {
         (true, 1) => "i8",
@@ -765,20 +764,41 @@ fn cenum_value_to_int_lit(
     }
 }
 
-
-fn cenum_to_rs(ctx: &mut GenCtx,
-               name: String,
-               kind: IKind,
-               layout: Layout,
-               enum_items: &[EnumItem])
-               -> Vec<P<ast::Item>> {
+fn cenum_to_rs(
+       ctx: &mut GenCtx,
+       rust_enums: bool,
+       name: String,
+       kind: IKind,
+       layout: Layout,
+       enum_items: &[EnumItem])
+       -> Vec<P<ast::Item>> {
     let enum_name = ctx.ext_cx.ident_of(&name);
     let enum_ty = ctx.ext_cx.ty_ident(ctx.span, enum_name);
-    let enum_is_signed = enum_kind_is_signed(kind);
+    let enum_is_signed = kind.is_signed();
+    let enum_repr = enum_size_to_rust_type_name(enum_is_signed, layout.size);
+    let mut items = vec![];
+
+    if !rust_enums {
+        items.push(ctx.ext_cx.item_ty(
+            ctx.span,
+            enum_name,
+            ctx.ext_cx.ty_ident(
+                ctx.span,
+                ctx.ext_cx.ident_of(enum_repr))));
+        for item in enum_items {
+            let value = cenum_value_to_int_lit(
+                ctx, enum_is_signed, layout.size, item.val);
+            items.push(ctx.ext_cx.item_const(
+                ctx.span,
+                ctx.ext_cx.ident_of(&item.name),
+                enum_ty.clone(),
+                value));
+        }
+        return items;
+    }
 
     let mut variants = vec![];
     let mut found_values = HashMap::new();
-    let mut items = vec![];
 
     for item in enum_items {
         let name = ctx.ext_cx.ident_of(&item.name);
@@ -810,7 +830,7 @@ fn cenum_to_rs(ctx: &mut GenCtx,
         }));
     }
 
-    let enum_repr = InternedString::new(enum_size_to_rust_type_name(enum_is_signed, layout.size));
+    let enum_repr = InternedString::new(enum_repr);
 
     let repr_arg = ctx.ext_cx.meta_word(ctx.span, enum_repr);
     let repr_list = ctx.ext_cx.meta_list(ctx.span, InternedString::new("repr"), vec![repr_arg]);
