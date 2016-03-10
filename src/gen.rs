@@ -700,22 +700,6 @@ fn const_to_rs(ctx: &mut GenCtx, name: String, val: i64, val_ty: ast::Ty) -> P<a
     })
 }
 
-fn enum_kind_is_signed(kind: IKind) -> bool {
-    match kind {
-        IBool => false,
-        ISChar => true,
-        IUChar => false,
-        IShort => true,
-        IUShort => false,
-        IInt => true,
-        IUInt => false,
-        ILong => true,
-        IULong => false,
-        ILongLong => true,
-        IULongLong => false,
-    }
-}
-
 fn enum_size_to_rust_type_name(signed: bool, size: usize) -> &'static str {
     match (signed, size) {
         (true, 1) => "i8",
@@ -774,7 +758,7 @@ fn cenum_to_rs(ctx: &mut GenCtx,
                -> Vec<P<ast::Item>> {
     let enum_name = ctx.ext_cx.ident_of(&name);
     let enum_ty = ctx.ext_cx.ty_ident(ctx.span, enum_name);
-    let enum_is_signed = enum_kind_is_signed(kind);
+    let enum_is_signed = kind.is_signed();
 
     let mut variants = vec![];
     let mut found_values = HashMap::new();
