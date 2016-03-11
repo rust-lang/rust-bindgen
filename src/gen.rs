@@ -226,6 +226,7 @@ pub fn gen_mod(
                 defs.extend(cenum_to_rs(
                     &mut ctx,
                     options.rust_enums,
+                    options.derive_debug,
                     enum_name(&e.name), e.kind, e.layout, &e.items));
             },
             GVar(vi) => {
@@ -496,7 +497,7 @@ fn ctypedef_to_rs(
             if is_empty {
                 ei.borrow_mut().name = name.clone();
                 let e = ei.borrow();
-                cenum_to_rs(ctx, rust_enums, name, e.kind, e.layout, &e.items)
+                cenum_to_rs(ctx, rust_enums, derive_debug, name, e.kind, e.layout, &e.items)
             } else {
                 vec!(mk_item(ctx, name, ty))
             }
@@ -788,6 +789,7 @@ fn cenum_value_to_int_lit(
 fn cenum_to_rs(
        ctx: &mut GenCtx,
        rust_enums: bool,
+       derive_debug: bool,
        name: String,
        kind: IKind,
        layout: Layout,
@@ -862,9 +864,17 @@ fn cenum_to_rs(
         is_sugared_doc: false,
     });
 
+    let attrs = {
+        let mut v = vec![mk_deriving_copy_attr(ctx, true), repr_attr];
+        if derive_debug {
+            v.push(mk_deriving_debug_attr(ctx));
+        }
+        v
+    };
+
     items.push(P(ast::Item {
         ident: enum_name,
-        attrs: vec![mk_deriving_copy_attr(ctx, true), repr_attr],
+        attrs: attrs,
         id: ast::DUMMY_NODE_ID,
         node: ast::ItemKind::Enum(ast::EnumDef { variants: variants }, empty_generics()),
         vis: ast::Visibility::Public,
