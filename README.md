@@ -1,5 +1,6 @@
 rust-bindgen
 ============
+![][crates-version-shield] ![][crates-downloads-shield] ![][crates-license-shield] ![][travis-status-shield]
 
 A binding generator for the rust language.
 It is ported from [clay's bindgen][].
@@ -121,4 +122,8 @@ TODO
 * bitfield accessors
 
 [clay's bindgen]: https://github.com/jckarter/clay/blob/master/tools/bindgen.clay
+[crates-version-shield]: https://img.shields.io/crates/v/bindgen.svg?style=flat-square
+[crates-downloads-shield]: https://img.shields.io/crates/d/bindgen.svg?style=flat-square
+[crates-license-shield]: https://img.shields.io/crates/l/bindgen.svg?style=flat-square
+[travis-status-shield]: https://img.shields.io/travis/crabtw/rust-bindgen.svg?label=travis&style=flat-square
 [issue 89]: https://github.com/crabtw/rust-bindgen/issues/89
