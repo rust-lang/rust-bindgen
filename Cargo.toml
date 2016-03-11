@@ -1,11 +1,13 @@
 [package]
-
 name = "bindgen"
 version = "0.16.0"
 description = "A binding generator for Rust"
 authors = ["Jyun-Yan You <jyyou.tw@gmail.com>"]
 license = "BSD-3-Clause"
-
+homepage = "https://github.com/crabtw/rust-bindgen"
+repository = "https://github.com/crabtw/rust-bindgen"
+readme = "README.md"
+keywords = [ "bindings", "ffi", "code-generation" ]
 build = "build.rs"
 
 [dependencies]
@@ -17,12 +19,10 @@ syntex_syntax = "0.29.*"
 static = []
 
 [lib]
-
 name = "bindgen"
 path = "src/lib.rs"
 
 [[bin]]
-
 name = "bindgen"
 doc = false
 
