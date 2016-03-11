@@ -132,6 +132,7 @@ fn with_anon_union() {
         }
         #[repr(C)]
         #[derive(Copy)]
+        #[derive(Debug)]
         pub struct Union_Unnamed1 {
             pub _bindgen_data_: [u32; 1usize],
         }

@@ -671,7 +671,22 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, derive_debug: bool, layout: Layo
         empty_generics()
     );
     let union_id = rust_type_id(ctx, name.clone());
-    let union_attrs = vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx, false));
+    let union_attrs = {
+        let mut attrs = vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx, false));
+        if derive_debug {
+            let can_derive_debug = members.iter()
+                .all(|member| match member {
+                    &CompMember::Field(ref f) |
+                    &CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
+                    _ => true
+                });
+            if can_derive_debug {
+                attrs.push(mk_deriving_debug_attr(ctx))
+            }
+        }
+        attrs
+    };
+
     let union_def = mk_item(ctx, union_id, def, ast::Visibility::Public, union_attrs);
 
     let union_impl = ast::ItemKind::Impl(
