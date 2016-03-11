@@ -34,6 +34,7 @@ fn parse_args(args: &[String]) -> ParseResult {
     let args_len = args.len();
 
     let mut options: BindgenOptions = Default::default();
+    options.derive_debug = false;
     let mut out = Box::new(io::BufWriter::new(io::stdout())) as Box<io::Write>;
 
     if args_len == 0 {
@@ -99,6 +100,10 @@ fn parse_args(args: &[String]) -> ParseResult {
                 }
                 "-no-rust-enums" => {
                     options.rust_enums = false;
+                    ix += 1;
+                }
+                "-derive-debug" => {
+                    options.derive_debug = true;
                     ix += 1;
                 }
                 "-allow-unknown-types" => {

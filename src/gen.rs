@@ -188,6 +188,7 @@ pub fn gen_mod(
                 defs.extend(ctypedef_to_rs(
                     &mut ctx,
                     options.rust_enums,
+                    options.derive_debug,
                     t.name.clone(), &t.ty))
             },
             GCompDecl(ci) => {
@@ -205,6 +206,7 @@ pub fn gen_mod(
                 }
                 let c = ci.borrow().clone();
                 defs.extend(comp_to_rs(&mut ctx, c.kind, comp_name(c.kind, &c.name),
+                                       options.derive_debug,
                                        c.layout, c.members).into_iter())
             },
             GEnumDecl(ei) => {
@@ -452,6 +454,7 @@ fn tag_dup_decl(gs: Vec<Global>) -> Vec<Global> {
 fn ctypedef_to_rs(
         ctx: &mut GenCtx,
         rust_enums: bool,
+        derive_debug: bool,
         name: String,
         ty: &Type)
         -> Vec<P<ast::Item>> {
@@ -483,7 +486,7 @@ fn ctypedef_to_rs(
             if is_empty {
                 ci.borrow_mut().name = name.clone();
                 let c = ci.borrow().clone();
-                comp_to_rs(ctx, c.kind, name, c.layout, c.members)
+                comp_to_rs(ctx, c.kind, name, derive_debug, c.layout, c.members)
             } else {
                 vec!(mk_item(ctx, name, ty))
             }
@@ -503,14 +506,16 @@ fn ctypedef_to_rs(
 }
 
 fn comp_to_rs(ctx: &mut GenCtx, kind: CompKind, name: String,
+              derive_debug: bool,
               layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
     match kind {
-        CompKind::Struct => cstruct_to_rs(ctx, name, layout, members),
-        CompKind::Union =>  cunion_to_rs(ctx, name, layout, members),
+        CompKind::Struct => cstruct_to_rs(ctx, name, derive_debug, layout, members),
+        CompKind::Union =>  cunion_to_rs(ctx, name, derive_debug, layout, members),
     }
 }
 
 fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
+                 derive_debug: bool,
                  layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
     let mut fields = vec!();
     let mut methods = vec!();
@@ -522,7 +527,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
     let mut bitfields: u32 = 0;
 
     // Debug is only defined on little arrays
-    let mut can_derive_debug = true;
+    let mut can_derive_debug = derive_debug;
 
     for m in &members {
         let (opt_rc_c, opt_f) = match *m {
@@ -563,9 +568,10 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
                 unnamed += 1;
                 let field_name = format!("_bindgen_data_{}_", unnamed);
                 fields.push(mk_blob_field(ctx, &field_name[..], c.layout));
-                methods.extend(gen_comp_methods(ctx, &field_name[..], 0, c.kind, &c.members, &mut extra).into_iter());
+                methods.extend(gen_comp_methods(ctx, &field_name[..], 0, c.kind, &c.members, &mut extra, derive_debug).into_iter());
             } else {
                 extra.extend(comp_to_rs(ctx, c.kind, comp_name(c.kind, &c.name),
+                                        derive_debug,
                                         c.layout, c.members.clone()).into_iter());
             }
         }
@@ -634,7 +640,7 @@ fn opaque_to_rs(ctx: &mut GenCtx, name: String) -> P<ast::Item> {
     })
 }
 
-fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
+fn cunion_to_rs(ctx: &mut GenCtx, name: String, derive_debug: bool, layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
     fn mk_item(ctx: &mut GenCtx, name: String, item: ast::ItemKind, vis:
                ast::Visibility, attrs: Vec<ast::Attribute>) -> P<ast::Item> {
         P(ast::Item {
@@ -674,7 +680,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, layout: Layout, members: Vec<Com
         empty_generics(),
         None,
         P(cty_to_rs(ctx, &union)),
-        gen_comp_methods(ctx, data_field_name, 0, CompKind::Union, &members, &mut extra),
+        gen_comp_methods(ctx, data_field_name, 0, CompKind::Union, &members, &mut extra, derive_debug),
     );
 
     let mut items = vec!(
@@ -859,7 +865,8 @@ fn cenum_to_rs(
 /// These are emitted into `extra`.
 fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
                     kind: CompKind, members: &[CompMember],
-                    extra: &mut Vec<P<ast::Item>>) -> Vec<ast::ImplItem> {
+                    extra: &mut Vec<P<ast::Item>>,
+                    derive_debug: bool) -> Vec<ast::ImplItem> {
 
     let mk_field_method = |ctx: &mut GenCtx, f: &FieldInfo, offset: usize| {
         // TODO: Implement bitfield accessors
@@ -904,7 +911,7 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
             CompMember::Comp(ref rc_c) => {
                 let c = &rc_c.borrow();
                 methods.extend(gen_comp_methods(ctx, data_field, offset, c.kind,
-                                                &c.members, extra).into_iter());
+                                                &c.members, extra, derive_debug).into_iter());
                 c.layout.size
             }
             CompMember::CompField(ref rc_c, ref f) => {
@@ -912,6 +919,7 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
 
                 let c = rc_c.borrow();
                 extra.extend(comp_to_rs(ctx, c.kind, comp_name(c.kind, &c.name),
+                                        derive_debug,
                                         c.layout, c.members.clone()).into_iter());
                 f.ty.size()
             }
