@@ -11,6 +11,7 @@ keywords = [ "bindings", "ffi", "code-generation" ]
 build = "build.rs"
 
 [dependencies]
+clippy = { version = "*", optional = true }
 log = "0.3.*"
 libc = "0.2.*"
 syntex_syntax = "0.29.*"
