@@ -1,6 +1,9 @@
 rust-bindgen
 ============
-![][crates-version-shield] ![][crates-downloads-shield] ![][crates-license-shield] ![][travis-status-shield]
+[![][crates-version-shield]](https://crates.io/crates/bindgen)
+[![][crates-downloads-shield]](https://crates.io/crates/bindgen)
+[![][crates-license-shield]](https://github.com/crabtw/rust-bindgen/blob/master/LICENSE)
+[![][travis-status-shield]](https://travis-ci.org/crabtw/rust-bindgen/)
 
 A binding generator for the rust language.
 It is ported from [clay's bindgen][].
