@@ -1,6 +1,12 @@
 #![crate_name = "bindgen"]
 #![crate_type = "dylib"]
 
+#![cfg_attr(feature = "clippy", feature(plugin))]
+#![cfg_attr(feature = "clippy", plugin(clippy))]
+#![cfg_attr(feature = "clippy", allow(if_not_else))]
+#![cfg_attr(feature = "clippy", allow(items_after_statements))]
+#![cfg_attr(feature = "clippy", allow(needless_lifetimes))]
+
 extern crate syntex_syntax as syntax;
 extern crate libc;
 #[macro_use] extern crate log;

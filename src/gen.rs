@@ -676,9 +676,9 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, derive_debug: bool, layout: Layo
         let mut attrs = vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx, false));
         if derive_debug {
             let can_derive_debug = members.iter()
-                .all(|member| match member {
-                    &CompMember::Field(ref f) |
-                    &CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
+                .all(|member| match *member {
+                    CompMember::Field(ref f) |
+                    CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
                     _ => true
                 });
             if can_derive_debug {
@@ -983,11 +983,10 @@ fn mk_clone_impl(ctx: &GenCtx, ty_name: &str) -> P<ast::Item> {
 
 fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout) -> Spanned<ast::StructField_> {
     let ty_name = match layout.align {
-        1 => "u8",
-        2 => "u16",
-        4 => "u32",
         8 => "u64",
-        _ => "u8",
+        4 => "u32",
+        2 => "u16",
+        1 | _ => "u8",
     };
     let data_len = if ty_name == "u8" { layout.size } else { layout.size / layout.align };
     let base_ty = mk_ty(ctx, false, vec!(ty_name.to_owned()));
@@ -1117,7 +1116,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
         // (if any) are those specified within the [ and ] of the array type
         // derivation.
         let arg_ty = P(match *t {
-            TArray(ref typ, _, ref l) => cty_to_rs(ctx, &TPtr(typ.clone(), false, l.clone())),
+            TArray(ref typ, _, l) => cty_to_rs(ctx, &TPtr(typ.clone(), false, l)),
             _ => cty_to_rs(ctx, t),
         });
 
@@ -1183,11 +1182,10 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
         TInt(i, ref layout) => match i {
             IBool => {
                 let ty_name = match layout.size {
-                    1 => "u8",
-                    2 => "u16",
-                    4 => "u32",
                     8 => "u64",
-                    _ => "u8",
+                    4 => "u32",
+                    2 => "u16",
+                    1 | _ => "u8",
                 };
                 mk_ty(ctx, false, vec!(ty_name.to_owned()))
             },

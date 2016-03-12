@@ -24,16 +24,16 @@ pub enum Global {
 impl Global {
     pub fn compinfo(&self) -> Rc<RefCell<CompInfo>> {
         match *self {
-            GComp(ref i) => i.clone(),
-            GCompDecl(ref i) => i.clone(),
+            GComp(ref i)
+            | GCompDecl(ref i) => i.clone(),
             _ => panic!("global_compinfo")
         }
     }
 
     pub fn enuminfo(&self) -> Rc<RefCell<EnumInfo>> {
         match *self {
-            GEnum(ref i) => i.clone(),
-            GEnumDecl(ref i) => i.clone(),
+            GEnum(ref i)
+            | GEnumDecl(ref i) => i.clone(),
             _ => panic!("global_enuminfo")
         }
     }
@@ -47,8 +47,8 @@ impl Global {
 
     pub fn varinfo(&self) -> Rc<RefCell<VarInfo>> {
         match *self {
-            GVar(ref i) => i.clone(),
-            GFunc(ref i) => i.clone(),
+            GVar(ref i)
+            | GFunc(ref i) => i.clone(),
             _ => panic!("global_varinfo")
         }
     }
@@ -58,12 +58,12 @@ impl fmt::Debug for Global {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             GType(ref ti) => ti.borrow().fmt(f),
-            GComp(ref ci) => ci.borrow().fmt(f),
-            GCompDecl(ref ci) => ci.borrow().fmt(f),
-            GEnum(ref ei) => ei.borrow().fmt(f),
-            GEnumDecl(ref ei) => ei.borrow().fmt(f),
-            GVar(ref vi) => vi.borrow().fmt(f),
-            GFunc(ref vi) => vi.borrow().fmt(f),
+            GComp(ref ci)
+            | GCompDecl(ref ci) => ci.borrow().fmt(f),
+            GEnum(ref ei)
+            | GEnumDecl(ref ei) => ei.borrow().fmt(f),
+            GVar(ref vi)
+            | GFunc(ref vi) => vi.borrow().fmt(f),
             GOther => "*".fmt(f),
         }
     }
@@ -95,45 +95,45 @@ pub enum Type {
 impl Type {
     pub fn size(&self) -> usize {
         match *self {
-            TInt(_, l) => l.size,
-            TFloat(_, l) => l.size,
-            TPtr(_, _, l) => l.size,
-            TArray(_, _, l) => l.size,
+            TInt(_, l)
+            | TFloat(_, l)
+            | TPtr(_, _, l)
+            | TArray(_, _, l) => l.size,
             TNamed(ref ti) => ti.borrow().ty.size(),
             TComp(ref ci) => ci.borrow().layout.size,
             TEnum(ref ei) => ei.borrow().layout.size,
-            TVoid => 0,
-            TFuncProto(..) => 0,
-            TFuncPtr(..) => 0,
+            TVoid
+            | TFuncProto(..)
+            | TFuncPtr(..) => 0,
         }
     }
 
     #[allow(dead_code)]
     pub fn align(&self) -> usize {
         match *self {
-            TInt(_, l) => l.align,
-            TFloat(_, l) => l.align,
-            TPtr(_, _, l) => l.align,
-            TArray(_, _, l) => l.align,
+            TInt(_, l)
+            | TFloat(_, l)
+            | TPtr(_, _, l)
+            | TArray(_, _, l) => l.align,
             TNamed(ref ti) => ti.borrow().ty.align(),
             TComp(ref ci) => ci.borrow().layout.align,
             TEnum(ref ei) => ei.borrow().layout.align,
-            TVoid => 0,
-            TFuncProto(..) => 0,
-            TFuncPtr(..) => 0,
+            TVoid
+            | TFuncProto(..)
+            | TFuncPtr(..) => 0,
         }
     }
 
     pub fn can_derive_debug(&self) -> bool {
-        match self {
-            &TArray(_, size, _) => size <= 32,
-            &TComp(ref comp) => {
+        match *self {
+            TArray(_, size, _) => size <= 32,
+            TComp(ref comp) => {
                 comp.borrow()
                     .members
                     .iter()
-                    .all(|member| match member {
-                        &CompMember::Field(ref f) |
-                        &CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
+                    .all(|member| match *member {
+                        CompMember::Field(ref f) |
+                        CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
                         _ => true,
                     })
             }
