@@ -283,12 +283,8 @@ impl SourceLocation {
 impl fmt::Display for SourceLocation {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let (file, line, col, _) = self.location();
-        if !file.is_null() {
-            try!(file.name().fmt(f));
-            try!(":".fmt(f));
-            try!(line.fmt(f));
-            try!(":".fmt(f));
-            col.fmt(f)
+        if let Some(name) = file.name() {
+            write!(f, "{}:{}:{}", name, line, col)
         } else {
             "builtin definitions".fmt(f)
         }
@@ -301,17 +297,13 @@ pub struct File {
 }
 
 impl File {
-    pub fn name(&self) -> String {
-        if self.is_null() {
-            return "".to_owned();
+    pub fn name(&self) -> Option<String> {
+        if self.x.is_null() {
+            return None;
         }
         unsafe {
-            String_ { x: clang_getFileName(self.x) }.to_string()
+            Some(String_ { x: clang_getFileName(self.x) }.to_string())
         }
-    }
-
-    pub fn is_null(&self) -> bool {
-        self.x.is_null()
     }
 }
 

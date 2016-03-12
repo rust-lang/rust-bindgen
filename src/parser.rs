@@ -38,15 +38,15 @@ struct ClangParserCtx<'a> {
 fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {
     let (file, _, _, _) = cursor.location().location();
 
-    if file.is_null() {
-        return ctx.options.builtins;
-    }
+    let name = match file.name() {
+        None => return ctx.options.builtins,
+        Some(name) => name,
+    };
 
     if ctx.options.match_pat.is_empty() {
         return true;
     }
 
-    let name = file.name();
     let mut found = false;
     ctx.options.match_pat.iter().all(|pat| {
         if (&name[..]).contains(pat) {
@@ -318,8 +318,6 @@ fn opaque_ty(ctx: &mut ClangParserCtx, ty: &cx::Type) {
 fn visit_composite(cursor: &Cursor, parent: &Cursor,
                    ctx: &mut ClangParserCtx,
                    compinfo: &mut CompInfo) -> Enum_CXVisitorResult {
-    let members = &mut compinfo.members;
-
     fn is_bitfield_continuation(field: &il::FieldInfo, ty: &il::Type, width: u32) -> bool {
         match (&field.bitfields, ty) {
             (&Some(ref bitfields), &il::TInt(_, layout)) if *ty == field.ty => {
@@ -328,6 +326,19 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             _ => false
         }
     }
+
+    fn inner_composite(mut ty: &il::Type) -> Option<&Rc<RefCell<CompInfo>>> {
+        loop {
+            match *ty {
+                TComp(ref comp_ty) => return Some(comp_ty),
+                TPtr(ref ptr_ty, _, _) => ty = &**ptr_ty,
+                TArray(ref array_ty, _, _) => ty = &**array_ty,
+                _ => return None
+            }
+        }
+    }
+
+    let members = &mut compinfo.members;
 
     match cursor.kind() {
         CXCursor_FieldDecl => {
@@ -388,17 +399,6 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             //         } bar[3][2];
             //     };
             //
-
-            fn inner_composite(mut ty: &il::Type) -> Option<&Rc<RefCell<CompInfo>>> {
-                loop {
-                    match *ty {
-                        TComp(ref comp_ty) => return Some(comp_ty),
-                        TPtr(ref ptr_ty, _, _) => ty = &**ptr_ty,
-                        TArray(ref array_ty, _, _) => ty = &**array_ty,
-                        _ => return None
-                    }
-                }
-            }
 
             let is_composite = match (inner_composite(&ty), members.last()) {
                 (Some(ty_compinfo), Some(&CompMember::Comp(ref c))) => {

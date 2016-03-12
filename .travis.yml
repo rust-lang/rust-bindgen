@@ -35,6 +35,9 @@ matrix:
     - os: osx
       env: LLVM_VERSION=3.5
       rust: nightly
+    - env: LLVM_VERSION=3.7
+      rust: nightly
+      script: cargo build --features clippy
 
 cache:
   directories:
