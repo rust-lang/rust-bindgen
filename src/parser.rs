@@ -38,15 +38,15 @@ struct ClangParserCtx<'a> {
 fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {
     let (file, _, _, _) = cursor.location().location();
 
-    if file.is_null() {
-        return ctx.options.builtins;
-    }
+    let name = match file.name() {
+        None => return ctx.options.builtins,
+        Some(name) => name,
+    };
 
     if ctx.options.match_pat.is_empty() {
         return true;
     }
 
-    let name = file.name();
     let mut found = false;
     ctx.options.match_pat.iter().all(|pat| {
         if (&name[..]).contains(pat) {
