@@ -9,15 +9,22 @@ pub use self::Type::*;
 pub use self::IKind::*;
 pub use self::FKind::*;
 
+/// A representation of a top level entity
 #[derive(Clone)]
 pub enum Global {
+    /// A type definition, like `typedef int my_type;`.
     GType(Rc<RefCell<TypeInfo>>),
+    /// A C composed type, like a struct or union.
     GComp(Rc<RefCell<CompInfo>>),
     GCompDecl(Rc<RefCell<CompInfo>>),
+    /// A C enum.
     GEnum(Rc<RefCell<EnumInfo>>),
     GEnumDecl(Rc<RefCell<EnumInfo>>),
+    /// A C global variable.
     GVar(Rc<RefCell<VarInfo>>),
+    /// A function prototype, like `int func();`.
     GFunc(Rc<RefCell<VarInfo>>),
+    /// Something else.
     GOther
 }
 
@@ -69,30 +76,45 @@ impl fmt::Debug for Global {
     }
 }
 
+/// A function signature.
 #[derive(Clone, PartialEq, Debug)]
 pub struct FuncSig {
+    /// The return type of the function.
     pub ret_ty: Box<Type>,
+    /// The arguments of the function.
     pub args: Vec<(String, Type)>,
+    /// Is the function variadic?
     pub is_variadic: bool,
+    /// Must it be called in an `unsafe` block?
     pub is_safe: bool,
+    /// The ABI of the function
     pub abi: abi::Abi,
 }
 
+/// A representation of a C type.
 #[derive(Clone, PartialEq, Debug)]
 pub enum Type {
+    /// The `void` C type.
     TVoid,
+    /// A C integer number, like `int` or `char`.
     TInt(IKind, Layout),
+    /// A C floating-point number, like `float` or `double`.
     TFloat(FKind, Layout),
+    /// A Pointer, the boolean indicating if it is const.
     TPtr(Box<Type>, bool, Layout),
     TArray(Box<Type>, usize, Layout),
     TFuncProto(FuncSig),
     TFuncPtr(FuncSig),
+    /// A typedef declaration?
     TNamed(Rc<RefCell<TypeInfo>>),
+    /// A C composed type, like a struct or an union.
     TComp(Rc<RefCell<CompInfo>>),
+    /// A C enum.
     TEnum(Rc<RefCell<EnumInfo>>)
 }
 
 impl Type {
+    /// Returns the size in bytes of the type.
     pub fn size(&self) -> usize {
         match *self {
             TInt(_, l)
@@ -108,6 +130,7 @@ impl Type {
         }
     }
 
+    /// Returns the alignement of the type.
     #[allow(dead_code)]
     pub fn align(&self) -> usize {
         match *self {
@@ -124,6 +147,7 @@ impl Type {
         }
     }
 
+    /// Whether `Debug` can be derived for the type.
     pub fn can_derive_debug(&self) -> bool {
         match *self {
             TArray(_, size, _) => size <= 32,
@@ -142,10 +166,13 @@ impl Type {
     }
 }
 
+/// Describes the layout of an element
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Layout {
+    /// The size in bytes of the element.
     pub size: usize,
     pub align: usize,
+    /// See `#[repr(C, Packed)]`.
     pub packed: bool,
 }
 
@@ -159,6 +186,9 @@ impl Layout {
     }
 }
 
+/// A representation of a C integer kind.
+///
+/// For example: bool -> IBool, unsigned long -> IULong.
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum IKind {
     IBool,
@@ -205,12 +235,14 @@ pub enum CompMember {
     CompField(Rc<RefCell<CompInfo>>, FieldInfo),
 }
 
+/// Is the composed element a struct or an union?
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum CompKind {
     Struct,
     Union,
 }
 
+/// Represents a composed element declaration, like a struct or an union.
 #[derive(Clone, PartialEq)]
 pub struct CompInfo {
     pub kind: CompKind,
@@ -236,6 +268,7 @@ impl fmt::Debug for CompInfo {
     }
 }
 
+/// A field in a struct or a union.
 #[derive(Clone, PartialEq, Debug)]
 pub struct FieldInfo {
     pub name: String,
@@ -253,10 +286,12 @@ impl FieldInfo {
     }
 }
 
+/// A C enum.
 #[derive(Clone, PartialEq)]
 pub struct EnumInfo {
     pub name: String,
     pub items: Vec<EnumItem>,
+    /// The underlining representation of the enum.
     pub kind: IKind,
     pub layout: Layout,
 }
@@ -278,6 +313,7 @@ impl fmt::Debug for EnumInfo {
     }
 }
 
+/// A variant in a C enum.
 #[derive(Clone, PartialEq, Debug)]
 pub struct EnumItem {
     pub name: String,
@@ -314,12 +350,14 @@ impl fmt::Debug for TypeInfo {
     }
 }
 
+/// A C variable declaration.
 #[derive(Clone)]
 pub struct VarInfo {
     pub name: String,
     pub ty: Type,
     //TODO: support non-integer constants
     pub val: Option<i64>,
+    /// Is the variable constant?
     pub is_const: bool
 }
 
