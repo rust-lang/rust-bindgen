@@ -69,7 +69,7 @@ impl fmt::Debug for Global {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct FuncSig {
     pub ret_ty: Box<Type>,
     pub args: Vec<(String, Type)>,
@@ -78,7 +78,7 @@ pub struct FuncSig {
     pub abi: abi::Abi,
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum Type {
     TVoid,
     TInt(IKind, Layout),
@@ -159,7 +159,7 @@ impl Layout {
     }
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum IKind {
     IBool,
     ISChar,
@@ -192,20 +192,20 @@ impl IKind {
     }
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum FKind {
     FFloat,
     FDouble
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum CompMember {
     Field(FieldInfo),
     Comp(Rc<RefCell<CompInfo>>),
     CompField(Rc<RefCell<CompInfo>>, FieldInfo),
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum CompKind {
     Struct,
     Union,
@@ -236,7 +236,7 @@ impl fmt::Debug for CompInfo {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct FieldInfo {
     pub name: String,
     pub ty: Type,
@@ -278,7 +278,7 @@ impl fmt::Debug for EnumInfo {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct EnumItem {
     pub name: String,
     pub val: i64
