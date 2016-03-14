@@ -896,7 +896,7 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
         if f.bitfields.is_some() { return None; }
 
         let (f_name, _) = rust_id(ctx, f.name.clone());
-        let ret_ty = P(cty_to_rs(ctx, &TPtr(Box::new(f.ty.clone()), false, Layout::zero())));
+        let ret_ty = P(cty_to_rs(ctx, &TPtr(Box::new(f.ty.clone()), false, Layout::default())));
 
         // When the offset is zero, generate slightly prettier code.
         let method = {

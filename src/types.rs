@@ -180,9 +180,15 @@ impl Layout {
     pub fn new(size: usize, align: usize) -> Layout {
         Layout { size: size, align: align, packed: false }
     }
+}
 
-    pub fn zero() -> Layout {
-        Layout { size: 0, align: 0, packed: false }
+impl Default for Layout {
+    fn default() -> Layout {
+        Layout {
+            size: 0,
+            align: 0,
+            packed: false
+        }
     }
 }
 
