@@ -467,6 +467,7 @@ fn ctypedef_to_rs(
     }
 }
 
+/// Converts a C composed type (struct or union) to Rust AST Items.
 fn comp_to_rs(ctx: &mut GenCtx, kind: CompKind, name: String,
               derive_debug: bool,
               layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
