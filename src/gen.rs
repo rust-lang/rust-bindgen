@@ -28,10 +28,6 @@ struct GenCtx<'r> {
     span: Span
 }
 
-fn first<A, B>((val, _): (A, B)) -> A {
-    val
-}
-
 fn ref_eq<T>(thing: &T, other: &T) -> bool {
     (thing as *const T) == (other as *const T)
 }
@@ -724,7 +720,7 @@ fn const_to_rs(ctx: &mut GenCtx, name: String, val: i64, val_ty: ast::Ty) -> P<a
         value
             );
 
-    let id = first(rust_id(ctx, name.clone()));
+    let id = rust_id(ctx, name.clone()).0;
     P(ast::Item {
         ident: ctx.ext_cx.ident_of(&id[..]),
         attrs: Vec::new(),
@@ -1104,7 +1100,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
             unnamed += 1;
             format!("arg{}", unnamed)
         } else {
-            first(rust_id(ctx, n.clone()))
+            rust_id(ctx, n.clone()).0
         };
 
         // From the C90 standard (http://c0x.coding-guidelines.com/6.7.5.3.html)
