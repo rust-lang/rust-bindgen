@@ -144,7 +144,7 @@ fn extract_definitions(ctx: &mut GenCtx,
             GVar(ref vi) => {
                 let v = vi.borrow();
                 let ty = cty_to_rs(ctx, &v.ty);
-                defs.push(const_to_rs(ctx, v.name.clone(), v.val.unwrap(), ty));
+                defs.push(const_to_rs(ctx, &v.name, v.val.unwrap(), ty));
             },
             _ => { }
         }
@@ -675,25 +675,31 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, derive_debug: bool, layout: Layo
     items
 }
 
-fn const_to_rs(ctx: &mut GenCtx, name: String, val: i64, val_ty: ast::Ty) -> P<ast::Item> {
-    let int_lit = ast::LitKind::Int(
-        val.abs() as u64,
-        ast::LitIntType::Unsuffixed
-            );
-    let mut value = ctx.ext_cx.expr_lit(ctx.span, int_lit);
-    if val < 0 {
-        let negated = ast::ExprKind::Unary(ast::UnOp::Neg, value);
-        value = ctx.ext_cx.expr(ctx.span, negated);
+/// Converts a signed number to AST Expression.
+fn i64_to_int_lit(ctx: &mut GenCtx, value: i64) -> P<ast::Expr> {
+    let int_lit = ast::LitKind::Int(value.abs() as u64,
+                                    ast::LitIntType::Unsuffixed);
+    let expr = ctx.ext_cx.expr_lit(ctx.span, int_lit);
+    if value < 0 {
+        let negated = ast::ExprKind::Unary(ast::UnOp::Neg, expr);
+        ctx.ext_cx.expr(ctx.span, negated)
+    } else {
+        expr
     }
+}
 
-    let cst = ast::ItemKind::Const(
-        P(val_ty),
-        value
-            );
+/// Converts a C const to Rust AST.
+fn const_to_rs(ctx: &mut GenCtx,
+               name: &str,
+               val: i64,
+               val_ty: ast::Ty) -> P<ast::Item> {
+    let int_lit = i64_to_int_lit(ctx, val);
 
-    let id = rust_id(ctx, &name).0;
+    let cst = ast::ItemKind::Const(P(val_ty), int_lit);
+
+    let id = rust_id(ctx, name).0;
     P(ast::Item {
-        ident: ctx.ext_cx.ident_of(&id[..]),
+        ident: ctx.ext_cx.ident_of(&id),
         attrs: Vec::new(),
         id: ast::DUMMY_NODE_ID,
         node: cst,
