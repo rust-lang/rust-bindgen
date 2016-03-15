@@ -3,7 +3,6 @@ use std::cell::RefCell;
 use std::vec::Vec;
 use std::rc::Rc;
 use std::collections::HashMap;
-use std::collections::hash_map::Entry;
 
 use syntax::abi;
 use syntax::ast;
@@ -154,6 +153,34 @@ fn extract_definitions(ctx: &mut GenCtx,
     defs
 }
 
+fn extract_functions(ctx: &mut GenCtx,
+                    fs: &[Global])
+                    -> HashMap<abi::Abi, Vec<ast::ForeignItem>> {
+    let func_list = fs.iter().map(|f| {
+        match *f {
+            GFunc(ref vi) => {
+                let v = vi.borrow();
+                match v.ty {
+                    TFuncPtr(ref sig) => {
+                        let decl = cfunc_to_rs(ctx, v.name.clone(),
+                        &*sig.ret_ty, &sig.args[..],
+                        sig.is_variadic);
+                        (sig.abi, decl)
+                    }
+                    _ => unreachable!()
+                }
+            },
+            _ => unreachable!()
+        }
+    });
+
+    let mut map = HashMap::new();
+    for (abi, func) in func_list {
+        map.entry(abi).or_insert(vec!()).push(func);
+    }
+    map
+}
+
 pub fn gen_mod(
         options: &BindgenOptions,
         globs: Vec<Global>,
@@ -230,38 +257,7 @@ pub fn gen_mod(
         }
     }).collect();
 
-    let funcs = {
-        let func_list = fs.into_iter().map(|f| {
-            match f {
-                GFunc(vi) => {
-                    let v = vi.borrow();
-                    match v.ty {
-                        TFuncPtr(ref sig) => {
-                            let decl = cfunc_to_rs(&mut ctx, v.name.clone(),
-                                                   &*sig.ret_ty, &sig.args[..],
-                                                   sig.is_variadic);
-                            (sig.abi, decl)
-                        }
-                        _ => unreachable!()
-                    }
-                },
-                _ => unreachable!()
-            }
-        });
-
-        let mut map: HashMap<abi::Abi, Vec<_>> = HashMap::new();
-        for (abi, func) in func_list {
-            match map.entry(abi) {
-                Entry::Occupied(mut occ) => {
-                    occ.get_mut().push(func);
-                }
-                Entry::Vacant(vac) => {
-                    vac.insert(vec!(func));
-                }
-            }
-        }
-        map
-    };
+    let funcs = extract_functions(&mut ctx, &fs);
 
     if !Vec::is_empty(&vars) {
         defs.push(mk_extern(&mut ctx, &options.links, vars, abi::Abi::C));
