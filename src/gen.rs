@@ -32,8 +32,8 @@ fn ref_eq<T>(thing: &T, other: &T) -> bool {
     (thing as *const T) == (other as *const T)
 }
 
-fn to_intern_str(ctx: &mut GenCtx, s: String) -> parse::token::InternedString {
-    let id = ctx.ext_cx.ident_of(&s[..]);
+fn to_intern_str(ctx: &mut GenCtx, s: &str) -> parse::token::InternedString {
+    let id = ctx.ext_cx.ident_of(s);
     id.name.as_str()
 }
 
@@ -302,18 +302,18 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, LinkType)],
                 LinkType::Framework => Some("framework")
             };
             let link_name = P(respan(ctx.span, ast::MetaItemKind::NameValue(
-                to_intern_str(ctx, "name".to_owned()),
+                to_intern_str(ctx, "name"),
                 respan(ctx.span, ast::LitKind::Str(
-                    to_intern_str(ctx, l.to_owned()),
+                    to_intern_str(ctx, l),
                     ast::StrStyle::Cooked
                 ))
             )));
             let link_args = match k {
                 None => vec!(link_name),
                 Some(ref k) => vec!(link_name, P(respan(ctx.span, ast::MetaItemKind::NameValue(
-                    to_intern_str(ctx, "kind".to_owned()),
+                    to_intern_str(ctx, "kind"),
                     respan(ctx.span, ast::LitKind::Str(
-                        to_intern_str(ctx, (*k).to_owned()),
+                        to_intern_str(ctx, *k),
                         ast::StrStyle::Cooked
                     ))
                 ))))
@@ -322,7 +322,7 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, LinkType)],
                 id: mk_attr_id(),
                 style: ast::AttrStyle::Outer,
                 value: P(respan(ctx.span, ast::MetaItemKind::List(
-                    to_intern_str(ctx, "link".to_owned()),
+                    to_intern_str(ctx, "link"),
                     link_args)
                 )),
                 is_sugared_doc: false
@@ -997,11 +997,11 @@ fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout, span: Span) -> ast::S
 
 fn mk_link_name_attr(ctx: &mut GenCtx, name: String) -> ast::Attribute {
     let lit = respan(ctx.span, ast::LitKind::Str(
-        to_intern_str(ctx, name),
+        to_intern_str(ctx, &name),
         ast::StrStyle::Cooked
     ));
     let attr_val = P(respan(ctx.span, ast::MetaItemKind::NameValue(
-        to_intern_str(ctx, "link_name".to_owned()), lit
+        to_intern_str(ctx, "link_name"), lit
     )));
     let attr = ast::Attribute_ {
         id: mk_attr_id(),
@@ -1013,12 +1013,12 @@ fn mk_link_name_attr(ctx: &mut GenCtx, name: String) -> ast::Attribute {
 }
 
 fn mk_repr_attr(ctx: &mut GenCtx, layout: Layout) -> ast::Attribute {
-    let mut values = vec!(P(respan(ctx.span, ast::MetaItemKind::Word(to_intern_str(ctx, "C".to_owned())))));
+    let mut values = vec!(P(respan(ctx.span, ast::MetaItemKind::Word(to_intern_str(ctx, "C")))));
     if layout.packed {
-        values.push(P(respan(ctx.span, ast::MetaItemKind::Word(to_intern_str(ctx, "packed".to_owned())))));
+        values.push(P(respan(ctx.span, ast::MetaItemKind::Word(to_intern_str(ctx, "packed")))));
     }
     let attr_val = P(respan(ctx.span, ast::MetaItemKind::List(
-        to_intern_str(ctx, "repr".to_owned()),
+        to_intern_str(ctx, "repr"),
         values
     )));
 
