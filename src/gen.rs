@@ -88,6 +88,72 @@ fn enum_name(name: &str) -> String {
     format!("Enum_{}", name)
 }
 
+fn extract_definitions(ctx: &mut GenCtx,
+                       options: &BindgenOptions,
+                       globals: &[Global])
+                       -> Vec<P<ast::Item>> {
+    let mut defs = vec!();
+
+    for g in globals {
+        match *g {
+            GType(ref ti) => {
+                let t = ti.borrow();
+                defs.extend(ctypedef_to_rs(
+                    ctx,
+                    options.rust_enums,
+                    options.derive_debug,
+                    t.name.clone(), &t.ty))
+            },
+            GCompDecl(ref ci) => {
+                {
+                    let mut c = ci.borrow_mut();
+                    c.name = unnamed_name(ctx, &c.name);
+                }
+                let c = ci.borrow().clone();
+                defs.push(opaque_to_rs(ctx, comp_name(c.kind, &c.name)));
+            },
+            GComp(ref ci) => {
+                {
+                    let mut c = ci.borrow_mut();
+                    c.name = unnamed_name(ctx, &c.name);
+                }
+                let c = ci.borrow().clone();
+                defs.extend(comp_to_rs(ctx, c.kind, comp_name(c.kind, &c.name),
+                                       options.derive_debug,
+                                       c.layout, c.members).into_iter())
+            },
+            GEnumDecl(ref ei) => {
+                {
+                    let mut e = ei.borrow_mut();
+                    e.name = unnamed_name(ctx, &e.name);
+                }
+                let e = ei.borrow().clone();
+                defs.push(opaque_to_rs(ctx, enum_name(&e.name)));
+            },
+            GEnum(ref ei) => {
+                {
+                    let mut e = ei.borrow_mut();
+                    e.name = unnamed_name(ctx, &e.name);
+                }
+                let e = ei.borrow();
+                defs.extend(cenum_to_rs(
+                    ctx,
+                    options.rust_enums,
+                    options.derive_debug,
+                    enum_name(&e.name), e.kind, e.layout, &e.items));
+            },
+            GVar(ref vi) => {
+                let v = vi.borrow();
+                let ty = cty_to_rs(ctx, &v.ty);
+                defs.push(const_to_rs(ctx, v.name.clone(), v.val.unwrap(), ty));
+            },
+            _ => { }
+        }
+    }
+
+    defs
+}
+
 pub fn gen_mod(
         options: &BindgenOptions,
         globs: Vec<Global>,
@@ -151,65 +217,8 @@ pub fn gen_mod(
         }
     }
 
-    let mut defs = vec!();
     gs = remove_redundant_decl(gs);
-
-    for g in gs.into_iter() {
-        match g {
-            GType(ti) => {
-                let t = ti.borrow();
-                defs.extend(ctypedef_to_rs(
-                    &mut ctx,
-                    options.rust_enums,
-                    options.derive_debug,
-                    t.name.clone(), &t.ty))
-            },
-            GCompDecl(ci) => {
-                {
-                    let mut c = ci.borrow_mut();
-                    c.name = unnamed_name(&mut ctx, &c.name);
-                }
-                let c = ci.borrow().clone();
-                defs.push(opaque_to_rs(&mut ctx, comp_name(c.kind, &c.name)));
-            },
-            GComp(ci) => {
-                {
-                    let mut c = ci.borrow_mut();
-                    c.name = unnamed_name(&mut ctx, &c.name);
-                }
-                let c = ci.borrow().clone();
-                defs.extend(comp_to_rs(&mut ctx, c.kind, comp_name(c.kind, &c.name),
-                                       options.derive_debug,
-                                       c.layout, c.members).into_iter())
-            },
-            GEnumDecl(ei) => {
-                {
-                    let mut e = ei.borrow_mut();
-                    e.name = unnamed_name(&mut ctx, &e.name);
-                }
-                let e = ei.borrow().clone();
-                defs.push(opaque_to_rs(&mut ctx, enum_name(&e.name)));
-            },
-            GEnum(ei) => {
-                {
-                    let mut e = ei.borrow_mut();
-                    e.name = unnamed_name(&mut ctx, &e.name);
-                }
-                let e = ei.borrow();
-                defs.extend(cenum_to_rs(
-                    &mut ctx,
-                    options.rust_enums,
-                    options.derive_debug,
-                    enum_name(&e.name), e.kind, e.layout, &e.items));
-            },
-            GVar(vi) => {
-                let v = vi.borrow();
-                let ty = cty_to_rs(&mut ctx, &v.ty);
-                defs.push(const_to_rs(&mut ctx, v.name.clone(), v.val.unwrap(), ty));
-            },
-            _ => { }
-        }
-    }
+    let mut defs = extract_definitions(&mut ctx, &options, &gs);
 
     let vars = vs.into_iter().map(|v| {
         match v {
