@@ -101,7 +101,7 @@ fn extract_definitions(ctx: &mut GenCtx,
                     ctx,
                     options.rust_enums,
                     options.derive_debug,
-                    t.name.clone(), &t.ty))
+                    &t.name, &t.ty))
             },
             GCompDecl(ref ci) => {
                 {
@@ -412,14 +412,15 @@ fn tag_dup_decl(gs: &[Global]) -> Vec<Global> {
     res
 }
 
+/// Converts a C typedef to Rust AST Items.
 fn ctypedef_to_rs(
         ctx: &mut GenCtx,
         rust_enums: bool,
         derive_debug: bool,
-        name: String,
+        name: &str,
         ty: &Type)
         -> Vec<P<ast::Item>> {
-    fn mk_item(ctx: &mut GenCtx, name: String, ty: &Type) -> P<ast::Item> {
+    fn mk_item(ctx: &mut GenCtx, name: &str, ty: &Type) -> P<ast::Item> {
         let rust_name = rust_type_id(ctx, &name);
         let rust_ty = cty_to_rs(ctx, ty);
         let base = ast::ItemKind::Ty(
@@ -432,7 +433,7 @@ fn ctypedef_to_rs(
         );
 
         P(ast::Item {
-            ident: ctx.ext_cx.ident_of(&rust_name[..]),
+            ident: ctx.ext_cx.ident_of(&rust_name),
             attrs: Vec::new(),
             id: ast::DUMMY_NODE_ID,
             node: base,
@@ -445,9 +446,9 @@ fn ctypedef_to_rs(
         TComp(ref ci) => {
             let is_empty = ci.borrow().name.is_empty();
             if is_empty {
-                ci.borrow_mut().name = name.clone();
+                ci.borrow_mut().name = name.into();
                 let c = ci.borrow().clone();
-                comp_to_rs(ctx, c.kind, name, derive_debug, c.layout, c.members)
+                comp_to_rs(ctx, c.kind, name.into(), derive_debug, c.layout, c.members)
             } else {
                 vec!(mk_item(ctx, name, ty))
             }
@@ -455,9 +456,9 @@ fn ctypedef_to_rs(
         TEnum(ref ei) => {
             let is_empty = ei.borrow().name.is_empty();
             if is_empty {
-                ei.borrow_mut().name = name.clone();
+                ei.borrow_mut().name = name.into();
                 let e = ei.borrow();
-                cenum_to_rs(ctx, rust_enums, derive_debug, name, e.kind, e.layout, &e.items)
+                cenum_to_rs(ctx, rust_enums, derive_debug, name.into(), e.kind, e.layout, &e.items)
             } else {
                 vec!(mk_item(ctx, name, ty))
             }
