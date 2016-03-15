@@ -30,7 +30,7 @@ mod clang;
 mod gen;
 mod parser;
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Builder<'a> {
     options: BindgenOptions,
     logger: Option<&'a Logger>
@@ -118,7 +118,7 @@ impl<'a> Default for Builder<'a> {
     }
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 /// Deprecated - use a `Builder` instead
 #[doc(hidden)]
 pub struct BindgenOptions {
@@ -155,14 +155,14 @@ impl Default for BindgenOptions {
     }
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum LinkType {
     Static,
     Dynamic,
     Framework
 }
 
-pub trait Logger {
+pub trait Logger: std::fmt::Debug {
     fn error(&self, msg: &str);
     fn warn(&self, msg: &str);
 }
@@ -233,6 +233,7 @@ impl Bindings {
 }
 
 
+#[derive(Debug)]
 struct DummyLogger;
 
 impl Logger for DummyLogger {

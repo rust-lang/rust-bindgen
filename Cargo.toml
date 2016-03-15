@@ -12,8 +12,10 @@ keywords = [ "bindings", "ffi", "code-generation" ]
 [dependencies]
 clang-sys = "~0.6.0"
 clippy = { version = "0.0.69", optional = true }
+docopt = "~0.6.80"
 log = "~0.3.6"
 libc = "~0.2.11"
+rustc-serialize = "~0.3.19"
 syntex_syntax = "~0.32.0"
 
 [features]

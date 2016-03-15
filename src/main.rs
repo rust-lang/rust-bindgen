@@ -1,14 +1,15 @@
 extern crate bindgen;
 #[macro_use] extern crate log;
+extern crate docopt;
+#[macro_use]
+extern crate rustc_serialize;
 
-use bindgen::{Bindings, BindgenOptions, LinkType, Logger};
-use std::io;
-use std::path;
-use std::env;
-use std::default::Default;
-use std::fs;
+use bindgen::{Builder, LinkType, Logger};
+use std::io::{self, Write};
+use std::fs::File;
 use std::process::exit;
 
+#[derive(Debug)]
 struct StdLogger;
 
 impl Logger for StdLogger {
@@ -21,161 +22,114 @@ impl Logger for StdLogger {
     }
 }
 
-enum ParseResult {
-    CmdUsage,
-    ParseOk(BindgenOptions, Box<io::Write+'static>),
-    ParseErr(String)
-}
+const USAGE: &'static str = "
+Generate C bindings for Rust.
 
-fn parse_args(args: &[String]) -> ParseResult {
-    let args_len = args.len();
-
-    let mut options: BindgenOptions = Default::default();
-    options.derive_debug = false;
-    let mut out = Box::new(io::BufWriter::new(io::stdout())) as Box<io::Write>;
-
-    if args_len == 0 {
-        return ParseResult::CmdUsage;
-    }
-
-    let mut ix: usize = 0;
-    while ix < args_len {
-        if args[ix].len() > 2 && &args[ix][..2] == "-l" {
-            options.links.push((args[ix][2..].to_string(), LinkType::Dynamic));
-            ix += 1;
-        } else {
-            match &args[ix][..] {
-                "--help" | "-h" => {
-                    return ParseResult::CmdUsage;
-                }
-                "-emit-clang-ast" => {
-                    options.emit_ast = true;
-                    ix += 1;
-                }
-                "-o" => {
-                    if ix + 1 >= args_len {
-                        return ParseResult::ParseErr("Missing output filename".to_string());
-                    }
-                    let path = path::Path::new(&args[ix + 1]);
-                    match fs::File::create(&path) {
-                        Ok(f) => { out = Box::new(io::BufWriter::new(f)) as Box<io::Write>; }
-                        Err(_) => { return ParseResult::ParseErr(format!("Open {} failed", args[ix + 1])); }
-                    }
-                    ix += 2;
-                }
-                "-l" => {
-                    if ix + 1 >= args_len {
-                        return ParseResult::ParseErr("Missing link name".to_string());
-                    }
-                    let parts = args[ix + 1].split('=').collect::<Vec<_>>();
-                    options.links.push(match parts.len() {
-                        1 => (parts[0].to_string(), LinkType::Dynamic),
-                        2 => (parts[1].to_string(), match parts[0] {
-                            "static" => LinkType::Static,
-                            "dynamic" => LinkType::Dynamic,
-                            "framework" => LinkType::Framework,
-                            _ => return ParseResult::ParseErr("Invalid link kind".to_string()),
-                        }),
-                        _ => return ParseResult::ParseErr("Invalid link name".to_string()),
-                    });
-                    ix += 2;
-                }
-                "-match" => {
-                    if ix + 1 >= args_len {
-                        return ParseResult::ParseErr("Missing match pattern".to_string());
-                    }
-                    options.match_pat.push(args[ix + 1].clone());
-                    ix += 2;
-                }
-                "-builtins" => {
-                    options.builtins = true;
-                    ix += 1;
-                }
-                "-no-rust-enums" => {
-                    options.rust_enums = false;
-                    ix += 1;
-                }
-                "-derive-debug" => {
-                    options.derive_debug = true;
-                    ix += 1;
-                }
-                "-allow-unknown-types" => {
-                    options.fail_on_unknown_type = false;
-                    ix += 1;
-                }
-                "-override-enum-type" => {
-                    if ix + 1 >= args_len {
-                        return ParseResult::ParseErr("Missing enum type".to_string());
-                    }
-                    options.override_enum_ty = args[ix + 1].clone();
-                    ix += 2;
-                }
-                _ => {
-                    options.clang_args.push(args[ix].clone());
-                    ix += 1;
-                }
-            }
-        }
-    }
-
-    return ParseResult::ParseOk(options, out);
-}
-
-fn print_usage(bin: String) {
-    let mut s = format!("Usage: {} [OPTIONS] HEADERS...", &bin[..]);
-    s.push_str(
-"
+Usage:
+  bindgen [options] <file>
+  bindgen (-h | --help)
 
 Options:
-    -h, --help                  Display help message
-    -l [KIND=]NAME              Link to the specified library NAME. The optional KIND can be one of,
-                                static, dylib, or framework. If omitted, dylib is assumed.
-    -o FILENAME                 Write generated bindings to FILENAME (default is stdout)
-    -match NAME                 Only output bindings for definitions from files whose names contain
-                                NAME. Can be used multiples times to include files matching any of
-                                the names.
-    -builtins                   Output bindings for builtin definitions (for example,
-                                `__builtin_va_list`)
-    -allow-unknown-types        Do not fail if unknown types are encountered; instead treat them as
-                                `void`
-    -emit-clang-ast             Output the AST (for debugging purposes)
-    -override-enum-type TYPE    Override the integer type for enums, where TYPE is one of:
-                                  uchar
-                                  schar
-                                  ushort
-                                  sshort
-                                  uint
-                                  sint
-                                  ulong
-                                  slong
-                                  ulonglong
-                                  slonglong
-    
-    Options other than the above are passed to Clang.
-"
-    );
-    print!("{}", &s[..]);
+  -h, --help                   Display this help message.
+  --link=<library>             Link to a dynamic library, can be provided multiple times.
+                               <library> is in the format `[kind=]lib`, where `kind` is
+                               one of `static`, `dynamic` or `framework`.
+  --output=<output>            Write bindings to <output> (- is stdout).
+                               [default: -]
+  --match=<name>               Only output bindings for definitions from files
+                               whose name contains <name>
+                               If multiple -match options are provided, files
+                               matching any rule are bound to.
+  --builtins                   Output bindings for builtin definitions
+                               (for example __builtin_va_list)
+  --emit-clang-ast             Output the ast (for debugging purposes)
+  --override-enum-type=<type>  Override enum type, type name could be
+                                 uchar
+                                 schar
+                                 ushort
+                                 sshort
+                                 uint
+                                 sint
+                                 ulong
+                                 slong
+                                 ulonglong
+                                 slonglong
+  --clang-options=<opts>      Options to clang.
+";
+
+#[derive(Debug, RustcDecodable)]
+struct Args {
+    arg_file: String,
+    flag_link: String,
+    flag_output: String,
+    flag_match: Option<String>,
+    flag_builtins: bool,
+    flag_emit_clang_ast: bool,
+    flag_override_enum_type: String,
+    flag_clang_options: String,
+}
+
+fn args_to_opts(args: Args, builder: &mut Builder) {
+    builder.header(args.arg_file)
+           .emit_ast(args.flag_emit_clang_ast)
+           .override_enum_ty(args.flag_override_enum_type)
+           .clang_arg(args.flag_clang_options);
+    if let Some(s) = args.flag_match {
+        builder.match_pat(s);
+    }
+    if args.flag_builtins {
+        builder.builtins();
+    }
+    let mut parts = args.flag_link.split('=');
+    let (lib, kind) = match (parts.next(),parts.next()) {
+        (Some(lib), None) => (lib, LinkType::Dynamic),
+        (Some(kind), Some(lib)) => (lib, match kind {
+            "static" => LinkType::Static,
+            "dynamic" => LinkType::Dynamic,
+            "framework" => LinkType::Framework,
+            _ => {
+                println!("Link type unknown: {}", kind);
+                exit(1);
+            },
+        }),
+        _ => {
+            println!("Wrong link format: {}", args.flag_link);
+            exit(1);
+        },
+    };
+    builder.link(lib, kind);
+}
+
+fn get_output(o: &str) -> Box<Write> {
+    if o == "-" {
+        Box::new(io::stdout())
+    } else {
+        Box::new(File::open(o).expect(&format!("\"{}\" unreadable", o)))
+    }
 }
 
 pub fn main() {
-    let mut bind_args: Vec<_> = env::args().collect();
-    let bin = bind_args.remove(0);
+    let args: Args = docopt::Docopt::new(USAGE)
+        .and_then(|d| d.decode())
+        .unwrap_or_else(|e| e.exit());
+    debug!("{:?}", args);
 
-    match parse_args(&bind_args[..]) {
-        ParseResult::ParseErr(e) => panic!(e),
-        ParseResult::CmdUsage => print_usage(bin),
-        ParseResult::ParseOk(options, out) => {
-            let logger = StdLogger;
-            match Bindings::generate(&options, Some(&logger as &Logger), None) {
-                Ok(bindings) => match bindings.write(out) {
-                    Ok(()) => (),
-                    Err(e) => {
-                        logger.error(&format!("Unable to write bindings to file. {}", e)[..]);
-                        exit(-1);
-                    }
-                },
-                Err(()) => exit(-1)
+    let output = get_output(&args.flag_output);
+
+    let logger = StdLogger;
+    let mut builder = Builder::default();
+    builder.log(&logger);
+    args_to_opts(args, &mut builder);
+    debug!("{:?}", builder);
+
+    match builder.generate() {
+        Ok(bindings) => match bindings.write(output) {
+            Ok(()) => (),
+            Err(e) => {
+                logger.error(&format!("Unable to write bindings to file. {}", e)[..]);
+                exit(-1);
             }
-        }
+        },
+        Err(()) => exit(-1)
     }
 }
