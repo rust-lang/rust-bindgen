@@ -1078,20 +1078,9 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
             TArray(ref typ, _, l) => cty_to_rs(ctx, &TPtr(typ.clone(), false, l)),
             _ => cty_to_rs(ctx, t),
         });
+        let ident = ctx.ext_cx.ident_of(&arg_name);
 
-        ast::Arg {
-            ty: arg_ty,
-            pat: P(ast::Pat {
-                 id: ast::DUMMY_NODE_ID,
-                 node: ast::PatKind::Ident(
-                     ast::BindingMode::ByValue(ast::Mutability::Immutable),
-                     respan(ctx.span, ctx.ext_cx.ident_of(&arg_name[..])),
-                     None
-                 ),
-                 span: ctx.span
-            }),
-            id: ast::DUMMY_NODE_ID,
-        }
+        ctx.ext_cx.arg(ctx.span, ident, arg_ty)
     }).collect();
 
     let var = !args.is_empty() && var;
