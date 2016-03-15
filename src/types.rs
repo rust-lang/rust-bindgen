@@ -238,7 +238,9 @@ pub enum FKind {
 pub enum CompMember {
     Field(FieldInfo),
     Comp(Rc<RefCell<CompInfo>>),
+    Enum(Rc<RefCell<EnumInfo>>),
     CompField(Rc<RefCell<CompInfo>>, FieldInfo),
+    EnumField(Rc<RefCell<EnumInfo>>, FieldInfo),
 }
 
 /// Is the composed element a struct or an union?
