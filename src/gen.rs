@@ -47,26 +47,16 @@ fn rust_id(ctx: &mut GenCtx, name: &str) -> (String, bool) {
     }
 }
 
-fn rust_type_id(ctx: &mut GenCtx, name: String) -> String {
-    if "bool" == &name[..] ||
-        "uint" == &name[..] ||
-        "u8" == &name[..] ||
-        "u16" == &name[..] ||
-        "u32" == &name[..] ||
-        "f32" == &name[..] ||
-        "f64" == &name[..] ||
-        "i8" == &name[..] ||
-        "i16" == &name[..] ||
-        "i32" == &name[..] ||
-        "i64" == &name[..] ||
-        "Self" == &name[..] ||
-        "str" == &name[..] {
-        let mut s = "_".to_owned();
-        s.push_str(&name[..]);
-        s
-    } else {
-        let (n, _) = rust_id(ctx, &name);
-        n
+fn rust_type_id(ctx: &mut GenCtx, name: &str) -> String {
+    match name {
+        "bool" | "uint" | "u8" | "u16" | "u32" | "f32" | "f64" | "i8" | "i16" |
+        "i32" | "i64" | "Self" | "str" => {
+            format!("_{}", name)
+        },
+        _ => {
+            let (n, _) = rust_id(ctx, name);
+            n
+        }
     }
 }
 
@@ -443,7 +433,7 @@ fn ctypedef_to_rs(
         ty: &Type)
         -> Vec<P<ast::Item>> {
     fn mk_item(ctx: &mut GenCtx, name: String, ty: &Type) -> P<ast::Item> {
-        let rust_name = rust_type_id(ctx, name);
+        let rust_name = rust_type_id(ctx, &name);
         let rust_ty = cty_to_rs(ctx, ty);
         let base = ast::ItemKind::Ty(
             P(ast::Ty {
@@ -526,7 +516,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
                     bitfields += 1;
                     format!("_bindgen_bitfield_{}_", bitfields)
                 }
-                None => rust_type_id(ctx, f.name.clone())
+                None => rust_type_id(ctx, &f.name)
             };
 
             if !f.ty.can_derive_debug() {
@@ -565,7 +555,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
         ast::Generics::default()
     );
 
-    let id = rust_type_id(ctx, name.clone());
+    let id = rust_type_id(ctx, &name);
     let mut attrs = vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx, false));
     if can_derive_debug {
         attrs.push(mk_deriving_debug_attr(ctx));
@@ -612,7 +602,7 @@ fn opaque_to_rs(ctx: &mut GenCtx, name: String) -> P<ast::Item> {
         ast::Generics::default()
     );
 
-    let id = rust_type_id(ctx, name);
+    let id = rust_type_id(ctx, &name);
     P(ast::Item {
         ident: ctx.ext_cx.ident_of(&id[..]),
         attrs: Vec::new(),
@@ -653,7 +643,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, derive_debug: bool, layout: Layo
             ast::DUMMY_NODE_ID),
         ast::Generics::default()
     );
-    let union_id = rust_type_id(ctx, name.clone());
+    let union_id = rust_type_id(ctx, &name);
     let union_attrs = {
         let mut attrs = vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx, false));
         if derive_debug {
@@ -1205,7 +1195,7 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
             mk_fn_proto_ty(ctx, &decl, unsafety, sig.abi)
         },
         TNamed(ref ti) => {
-            let id = rust_type_id(ctx, ti.borrow().name.clone());
+            let id = rust_type_id(ctx, &ti.borrow().name);
             mk_ty(ctx, false, vec!(id))
         },
         TComp(ref ci) => {
