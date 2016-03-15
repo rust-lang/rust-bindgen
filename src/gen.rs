@@ -732,6 +732,7 @@ fn enum_size_to_unsigned_max_value(size: usize) -> u64 {
     }
 }
 
+/// Converts a C enum variant to an AST expression.
 fn cenum_value_to_int_lit(
         ctx: &mut GenCtx,
         enum_is_signed: bool,
@@ -739,15 +740,7 @@ fn cenum_value_to_int_lit(
         value: i64)
         -> P<ast::Expr> {
     if enum_is_signed {
-        let int_lit =
-            ast::LitKind::Int(value.abs() as u64, ast::LitIntType::Unsuffixed);
-        let expr = ctx.ext_cx.expr_lit(ctx.span, int_lit);
-        if value < 0 {
-            ctx.ext_cx.expr(
-                ctx.span, ast::ExprKind::Unary(ast::UnOp::Neg, expr))
-        } else {
-            expr
-        }
+        i64_to_int_lit(ctx, value)
     } else {
         let u64_value =
             value as u64 & enum_size_to_unsigned_max_value(size);
