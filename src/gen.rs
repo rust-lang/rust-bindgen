@@ -1154,7 +1154,7 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
         },
         TPtr(ref t, is_const, _) => {
             let id = cty_to_rs(ctx, &**t);
-            mk_ptrty(ctx, &id, is_const)
+            mk_ptrty(ctx, id, is_const)
         },
         TArray(ref t, s, _) => {
             let ty = cty_to_rs(ctx, &**t);
@@ -1213,17 +1213,14 @@ fn mk_ty(ctx: &GenCtx, global: bool, segments: Vec<String>) -> ast::Ty {
     }
 }
 
-fn mk_ptrty(ctx: &mut GenCtx, base: &ast::Ty, is_const: bool) -> ast::Ty {
-    let ty = ast::TyKind::Ptr(ast::MutTy {
-        ty: P(base.clone()),
-        mutbl: if is_const { ast::Mutability::Immutable } else { ast::Mutability::Mutable }
-    });
+fn mk_ptrty(ctx: &mut GenCtx, base: ast::Ty, is_const: bool) -> ast::Ty {
+    let mutability = if is_const {
+        ast::Mutability::Immutable
+    } else {
+        ast::Mutability::Mutable
+    };
 
-    ast::Ty {
-        id: ast::DUMMY_NODE_ID,
-        node: ty,
-        span: ctx.span
-    }
+    ctx.ext_cx.ty_ptr(ctx.span, P(base), mutability).unwrap()
 }
 
 fn mk_arrty(ctx: &GenCtx, base: &ast::Ty, n: usize) -> ast::Ty {
