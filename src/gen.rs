@@ -109,7 +109,7 @@ fn extract_definitions(ctx: &mut GenCtx,
                     c.name = unnamed_name(ctx, &c.name);
                 }
                 let c = ci.borrow().clone();
-                defs.push(opaque_to_rs(ctx, comp_name(c.kind, &c.name)));
+                defs.push(opaque_to_rs(ctx, &comp_name(c.kind, &c.name)));
             },
             GComp(ref ci) => {
                 {
@@ -127,7 +127,7 @@ fn extract_definitions(ctx: &mut GenCtx,
                     e.name = unnamed_name(ctx, &e.name);
                 }
                 let e = ei.borrow().clone();
-                defs.push(opaque_to_rs(ctx, enum_name(&e.name)));
+                defs.push(opaque_to_rs(ctx, &enum_name(&e.name)));
             },
             GEnum(ref ei) => {
                 {
@@ -585,17 +585,18 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     items
 }
 
-fn opaque_to_rs(ctx: &mut GenCtx, name: String) -> P<ast::Item> {
+/// Convert a opaque type name to an ast Item.
+fn opaque_to_rs(ctx: &mut GenCtx, name: &str) -> P<ast::Item> {
     let def = ast::ItemKind::Enum(
         ast::EnumDef {
-           variants: vec!()
+            variants: vec!()
         },
         ast::Generics::default()
     );
 
     let id = rust_type_id(ctx, &name);
     P(ast::Item {
-        ident: ctx.ext_cx.ident_of(&id[..]),
+        ident: ctx.ext_cx.ident_of(&id),
         attrs: Vec::new(),
         id: ast::DUMMY_NODE_ID,
         node: def,
