@@ -1163,12 +1163,12 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
         TFuncPtr(ref sig) => {
             let decl = cfuncty_to_rs(ctx, &*sig.ret_ty, &sig.args[..], sig.is_variadic);
             let unsafety = if sig.is_safe { ast::Unsafety::Normal } else { ast::Unsafety::Unsafe };
-            mk_fnty(ctx, &decl, unsafety, sig.abi)
+            mk_fnty(ctx, decl, unsafety, sig.abi)
         },
         TFuncProto(ref sig) => {
             let decl = cfuncty_to_rs(ctx, &*sig.ret_ty, &sig.args[..], sig.is_variadic);
             let unsafety = if sig.is_safe { ast::Unsafety::Normal } else { ast::Unsafety::Unsafe };
-            mk_fn_proto_ty(ctx, &decl, unsafety, sig.abi)
+            mk_fn_proto_ty(ctx, decl, unsafety, sig.abi)
         },
         TNamed(ref ti) => {
             let id = rust_type_id(ctx, &ti.borrow().name);
@@ -1225,44 +1225,36 @@ fn mk_ptrty(ctx: &mut GenCtx, base: ast::Ty, is_const: bool) -> ast::Ty {
 
 fn mk_arrty(ctx: &GenCtx, base: &ast::Ty, n: usize) -> ast::Ty {
     let int_lit = ast::LitKind::Int(n as u64, ast::LitIntType::Unsigned(ast::UintTy::Us));
-    let sz = ast::ExprKind::Lit(P(respan(ctx.span, int_lit)));
+    let sz = ctx.ext_cx.expr_lit(ctx.span, int_lit).unwrap();
     let ty = ast::TyKind::FixedLengthVec(
         P(base.clone()),
-        P(ast::Expr {
-            id: ast::DUMMY_NODE_ID,
-            node: sz,
-            span: ctx.span,
-            attrs: None,
-        })
+        P(sz)
     );
 
-    ast::Ty {
-        id: ast::DUMMY_NODE_ID,
-        node: ty,
-        span: ctx.span
-    }
+    ctx.ext_cx.ty(ctx.span, ty).unwrap()
 }
 
-fn mk_fn_proto_ty(ctx: &mut GenCtx,
-                  decl: &ast::FnDecl,
-                  unsafety: ast::Unsafety,
-                  abi: abi::Abi) -> ast::Ty {
-    let fnty = ast::TyKind::BareFn(P(ast::BareFnTy {
+fn mk_barefn(decl: ast::FnDecl,
+             unsafety: ast::Unsafety,
+             abi: abi::Abi) -> ast::TyKind {
+    ast::TyKind::BareFn(P(ast::BareFnTy {
         unsafety: unsafety,
         abi: abi,
         lifetimes: Vec::new(),
-        decl: P(decl.clone())
-    }));
+        decl: P(decl)
+    }))
+}
 
-    ast::Ty {
-        id: ast::DUMMY_NODE_ID,
-        node: fnty,
-        span: ctx.span,
-    }
+fn mk_fn_proto_ty(ctx: &mut GenCtx,
+                  decl: ast::FnDecl,
+                  unsafety: ast::Unsafety,
+                  abi: abi::Abi) -> ast::Ty {
+    let fnty = mk_barefn(decl, unsafety, abi);
+    ctx.ext_cx.ty(ctx.span, fnty).unwrap()
 }
 
 fn mk_fnty(ctx: &mut GenCtx,
-           decl: &ast::FnDecl,
+           decl: ast::FnDecl,
            unsafety: ast::Unsafety,
            abi: abi::Abi) -> ast::Ty {
     let fnty = ast::TyKind::BareFn(P(ast::BareFnTy {
@@ -1272,49 +1264,14 @@ fn mk_fnty(ctx: &mut GenCtx,
         decl: P(decl.clone())
     }));
 
-    let segs = vec![
-        ast::PathSegment {
-            identifier: ctx.ext_cx.ident_of("std"),
-            parameters: ast::PathParameters::AngleBracketed(ast::AngleBracketedParameterData {
-                lifetimes: Vec::new(),
-                types: P::new(),
-                bindings: P::new(),
-            }),
-        },
-        ast::PathSegment {
-            identifier: ctx.ext_cx.ident_of("option"),
-            parameters: ast::PathParameters::AngleBracketed(ast::AngleBracketedParameterData {
-                lifetimes: Vec::new(),
-                types: P::new(),
-                bindings: P::new(),
-            }),
-        },
-        ast::PathSegment {
-            identifier: ctx.ext_cx.ident_of("Option"),
-            parameters: ast::PathParameters::AngleBracketed(ast::AngleBracketedParameterData {
-                lifetimes: Vec::new(),
-                types: P::from_vec(vec!(
-                    P(ast::Ty {
-                        id: ast::DUMMY_NODE_ID,
-                        node: fnty,
-                        span: ctx.span
-                    })
-                )),
-                bindings: P::new(),
-            }),
-        }
-    ];
-
-    ast::Ty {
-        id: ast::DUMMY_NODE_ID,
-        node: ast::TyKind::Path(
-            None,
-            ast::Path {
-                span: ctx.span,
-                global: true,
-                segments: segs
-            },
-        ),
-        span: ctx.span
-    }
+    let idents = ["std", "option", "Option"].iter()
+        .map(|item| ctx.ext_cx.ident_of(item))
+        .collect();
+    let types = vec![ctx.ext_cx.ty(ctx.span, fnty)];
+    ctx.ext_cx.ty_path(ctx.ext_cx.path_all(ctx.span,
+                                           true,
+                                           idents,
+                                           Vec::new(),
+                                           types,
+                                           Vec::new())).unwrap()
 }
