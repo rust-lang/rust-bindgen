@@ -471,14 +471,17 @@ fn comp_to_rs(ctx: &mut GenCtx, kind: CompKind, name: String,
               derive_debug: bool,
               layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
     match kind {
-        CompKind::Struct => cstruct_to_rs(ctx, name, derive_debug, layout, members),
+        CompKind::Struct => cstruct_to_rs(ctx, &name, derive_debug, layout, members),
         CompKind::Union =>  cunion_to_rs(ctx, name, derive_debug, layout, members),
     }
 }
 
-fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
+/// Converts a C struct to Rust AST Items.
+fn cstruct_to_rs(ctx: &mut GenCtx,
+                 name: &str,
                  derive_debug: bool,
-                 layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
+                 layout: Layout,
+                 members: Vec<CompMember>) -> Vec<P<ast::Item>> {
     let mut fields: Vec<ast::StructField> = vec!();
     let mut methods = vec!();
     // Nested composites may need to emit declarations and implementations as
@@ -528,8 +531,8 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
             if c.name.is_empty() {
                 unnamed += 1;
                 let field_name = format!("_bindgen_data_{}_", unnamed);
-                fields.push(mk_blob_field(ctx, &field_name[..], c.layout, ctx.span));
-                methods.extend(gen_comp_methods(ctx, &field_name[..], 0, c.kind, &c.members, &mut extra, derive_debug).into_iter());
+                fields.push(mk_blob_field(ctx, &field_name, c.layout, ctx.span));
+                methods.extend(gen_comp_methods(ctx, &field_name, 0, c.kind, &c.members, &mut extra, derive_debug).into_iter());
             } else {
                 extra.extend(comp_to_rs(ctx, c.kind, comp_name(c.kind, &c.name),
                                         derive_debug,
@@ -548,7 +551,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
     if can_derive_debug {
         attrs.push(mk_deriving_debug_attr(ctx));
     }
-    let struct_def = P(ast::Item { ident: ctx.ext_cx.ident_of(&id[..]),
+    let struct_def = P(ast::Item { ident: ctx.ext_cx.ident_of(&id),
         attrs: attrs,
         id: ast::DUMMY_NODE_ID,
         node: def,
@@ -568,7 +571,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
         );
         items.push(
             P(ast::Item {
-                ident: ctx.ext_cx.ident_of(&name[..]),
+                ident: ctx.ext_cx.ident_of(&name),
                 attrs: vec!(),
                 id: ast::DUMMY_NODE_ID,
                 node: impl_,
@@ -576,8 +579,8 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
                 span: ctx.span}));
     }
 
-    items.push(mk_clone_impl(ctx, &name[..]));
-    items.push(mk_default_impl(ctx, &name[..]));
+    items.push(mk_clone_impl(ctx, &name));
+    items.push(mk_default_impl(ctx, &name));
     items.extend(extra.into_iter());
     items
 }
