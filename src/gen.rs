@@ -215,7 +215,7 @@ pub fn gen_mod(
             span: None
         }
     });
-    let uniq_globs = tag_dup_decl(globs);
+    let uniq_globs = tag_dup_decl(&globs);
 
     let mut fs = vec!();
     let mut vs = vec!();
@@ -361,43 +361,31 @@ fn remove_redundant_decl(gs: Vec<Global>) -> Vec<Global> {
     ).collect()
 }
 
-fn tag_dup_decl(gs: Vec<Global>) -> Vec<Global> {
+fn tag_dup_decl(gs: &[Global]) -> Vec<Global> {
     fn check(name1: &str, name2: &str) -> bool {
         !name1.is_empty() && name1 == name2
     }
 
-    fn check_dup(g1: &Global, g2: &Global) -> bool {
+    fn is_dup(g1: &Global, g2: &Global) -> bool {
         match (g1, g2) {
           (&GType(ref ti1), &GType(ref ti2)) => {
               let a = ti1.borrow();
               let b = ti2.borrow();
               check(&a.name[..], &b.name[..])
           },
-          (&GComp(ref ci1), &GComp(ref ci2)) => {
-              let a = ci1.borrow();
-              let b = ci2.borrow();
-              check(&a.name[..], &b.name[..])
-          },
+          (&GComp(ref ci1), &GComp(ref ci2)) |
           (&GCompDecl(ref ci1), &GCompDecl(ref ci2)) => {
               let a = ci1.borrow();
               let b = ci2.borrow();
               check(&a.name[..], &b.name[..])
           },
-          (&GEnum(ref ei1), &GEnum(ref ei2)) => {
-              let a = ei1.borrow();
-              let b = ei2.borrow();
-              check(&a.name[..], &b.name[..])
-          },
+          (&GEnum(ref ei1), &GEnum(ref ei2)) |
           (&GEnumDecl(ref ei1), &GEnumDecl(ref ei2)) => {
               let a = ei1.borrow();
               let b = ei2.borrow();
               check(&a.name[..], &b.name[..])
           },
-          (&GVar(ref vi1), &GVar(ref vi2)) => {
-              let a = vi1.borrow();
-              let b = vi2.borrow();
-              check(&a.name[..], &b.name[..])
-          },
+          (&GVar(ref vi1), &GVar(ref vi2)) |
           (&GFunc(ref vi1), &GFunc(ref vi2)) => {
               let a = vi1.borrow();
               let b = vi2.borrow();
@@ -408,20 +396,14 @@ fn tag_dup_decl(gs: Vec<Global>) -> Vec<Global> {
     }
 
     if gs.is_empty() {
-        return gs;
+        return vec!();
     }
 
     let mut res: Vec<Global> = vec!();
     res.push(gs[0].clone());
 
     for (i, gsi) in gs.iter().enumerate().skip(1) {
-        let mut dup = false;
-        for gsj in gs.iter().take(i) {
-            if check_dup(&gsi, &gsj) {
-                dup = true;
-                break;
-            }
-        }
+        let dup = gs.iter().take(i).any(|item| is_dup(&item, &gsi));
         if !dup {
             res.push(gsi.clone());
         }
