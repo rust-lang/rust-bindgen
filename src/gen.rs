@@ -139,7 +139,7 @@ fn extract_definitions(ctx: &mut GenCtx,
                     ctx,
                     options.rust_enums,
                     options.derive_debug,
-                    enum_name(&e.name), e.kind, e.layout, &e.items));
+                    &enum_name(&e.name), e.kind, e.layout, &e.items));
             },
             GVar(ref vi) => {
                 let v = vi.borrow();
@@ -458,7 +458,7 @@ fn ctypedef_to_rs(
             if is_empty {
                 ei.borrow_mut().name = name.into();
                 let e = ei.borrow();
-                cenum_to_rs(ctx, rust_enums, derive_debug, name.into(), e.kind, e.layout, &e.items)
+                cenum_to_rs(ctx, rust_enums, derive_debug, name, e.kind, e.layout, &e.items)
             } else {
                 vec!(mk_item(ctx, name, ty))
             }
@@ -755,12 +755,12 @@ fn cenum_to_rs(
        ctx: &mut GenCtx,
        rust_enums: bool,
        derive_debug: bool,
-       name: String,
+       name: &str,
        kind: IKind,
        layout: Layout,
        enum_items: &[EnumItem])
        -> Vec<P<ast::Item>> {
-    let enum_name = ctx.ext_cx.ident_of(&name);
+    let enum_name = ctx.ext_cx.ident_of(name);
     let enum_ty = ctx.ext_cx.ty_ident(ctx.span, enum_name);
     let enum_is_signed = kind.is_signed();
     let enum_repr = enum_size_to_rust_type_name(enum_is_signed, layout.size);
