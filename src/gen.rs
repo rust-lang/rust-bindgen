@@ -1023,12 +1023,7 @@ fn mk_deriving_debug_attr(ctx: &mut GenCtx) -> ast::Attribute {
 
     let attr_val = ctx.ext_cx.meta_list(ctx.span, InternedString::new("derive"), words);
 
-    respan(ctx.span, ast::Attribute_ {
-        id: mk_attr_id(),
-        style: ast::AttrStyle::Outer,
-        value: attr_val,
-        is_sugared_doc: false
-    })
+    ctx.ext_cx.attribute(ctx.span, attr_val)
 }
 
 fn cvar_to_rs(ctx: &mut GenCtx, name: String,
