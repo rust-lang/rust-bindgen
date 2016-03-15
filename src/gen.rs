@@ -37,17 +37,6 @@ fn to_intern_str(ctx: &mut GenCtx, s: &str) -> parse::token::InternedString {
     id.name.as_str()
 }
 
-fn empty_generics() -> ast::Generics {
-    ast::Generics {
-        lifetimes: Vec::new(),
-        ty_params: P::new(),
-        where_clause: ast::WhereClause {
-            id: ast::DUMMY_NODE_ID,
-            predicates: Vec::new()
-        }
-    }
-}
-
 fn rust_id(ctx: &mut GenCtx, name: String) -> (String, bool) {
     let token = parse::token::Ident(ctx.ext_cx.ident_of(&name[..]));
     if token.is_any_keyword() || "bool" == &name[..] {
@@ -463,7 +452,7 @@ fn ctypedef_to_rs(
                 node: rust_ty.node,
                 span: ctx.span,
             }),
-            empty_generics()
+            ast::Generics::default()
         );
 
         P(ast::Item {
@@ -574,7 +563,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
 
     let def = ast::ItemKind::Struct(
         ast::VariantData::Struct(fields, ast::DUMMY_NODE_ID),
-        empty_generics()
+        ast::Generics::default()
     );
 
     let id = rust_type_id(ctx, name.clone());
@@ -595,7 +584,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
         let impl_ = ast::ItemKind::Impl(
             ast::Unsafety::Normal,
             ast::ImplPolarity::Positive,
-            empty_generics(),
+            ast::Generics::default(),
             None,
             P(mk_ty(ctx, false, vec!(id))),
             methods
@@ -621,7 +610,7 @@ fn opaque_to_rs(ctx: &mut GenCtx, name: String) -> P<ast::Item> {
         ast::EnumDef {
            variants: vec!()
         },
-        empty_generics()
+        ast::Generics::default()
     );
 
     let id = rust_type_id(ctx, name);
@@ -663,7 +652,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, derive_debug: bool, layout: Layo
         ast::VariantData::Struct(
             vec!(data_field),
             ast::DUMMY_NODE_ID),
-        empty_generics()
+        ast::Generics::default()
     );
     let union_id = rust_type_id(ctx, name.clone());
     let union_attrs = {
@@ -687,7 +676,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, derive_debug: bool, layout: Layo
     let union_impl = ast::ItemKind::Impl(
         ast::Unsafety::Normal,
         ast::ImplPolarity::Positive,
-        empty_generics(),
+        ast::Generics::default(),
         None,
         P(cty_to_rs(ctx, &union)),
         gen_comp_methods(ctx, data_field_name, 0, CompKind::Union, &members, &mut extra, derive_debug),
@@ -870,7 +859,8 @@ fn cenum_to_rs(
         ident: enum_name,
         attrs: attrs,
         id: ast::DUMMY_NODE_ID,
-        node: ast::ItemKind::Enum(ast::EnumDef { variants: variants }, empty_generics()),
+        node: ast::ItemKind::Enum(ast::EnumDef { variants: variants },
+                                  ast::Generics::default()),
         vis: ast::Visibility::Public,
         span: ctx.span,
     }));
@@ -1142,7 +1132,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: String, rty: &Type,
     let var = !aty.is_empty() && var;
     let decl = ast::ForeignItemKind::Fn(
         P(cfuncty_to_rs(ctx, rty, aty, var)),
-        empty_generics()
+        ast::Generics::default()
     );
 
     let (rust_name, was_mangled) = rust_id(ctx, name.clone());
