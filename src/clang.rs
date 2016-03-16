@@ -1,15 +1,15 @@
 #![allow(non_upper_case_globals, dead_code)]
 
 use std::os::raw::{c_uint, c_char, c_int, c_ulong};
-use std::{mem, ptr};
 use std::fmt;
 use std::str;
 use std::ffi::CStr;
 use std::hash::Hash;
 use std::hash::Hasher;
 use std::ffi::CString;
+use std::mem;
 
-use clangll::*;
+use clang_sys::*;
 
 // Cursor
 #[derive(Copy, Clone)]
@@ -17,7 +17,7 @@ pub struct Cursor {
     x: CXCursor
 }
 
-pub type CursorVisitor<'s> = for<'a, 'b> FnMut(&'a Cursor, &'b Cursor) -> Enum_CXChildVisitResult + 's;
+pub type CursorVisitor<'s> = for<'a, 'b> FnMut(&'a Cursor, &'b Cursor) -> CXChildVisitResult + 's;
 
 impl Cursor {
     // common
@@ -27,7 +27,7 @@ impl Cursor {
         }
     }
 
-    pub fn kind(&self) -> Enum_CXCursorKind {
+    pub fn kind(&self) -> CXCursorKind {
         unsafe {
             clang_getCursorKind(self.x)
         }
@@ -64,12 +64,11 @@ impl Cursor {
     }
 
     pub fn visit<F>(&self, func:F)
-        where F: for<'a, 'b> FnMut(&'a Cursor, &'b Cursor) -> Enum_CXChildVisitResult
+        where F: for<'a, 'b> FnMut(&'a Cursor, &'b Cursor) -> CXChildVisitResult
     {
         let mut data: Box<CursorVisitor> = Box::new(func);
-        let opt_visit = Some(visit_children as extern "C" fn(CXCursor, CXCursor, CXClientData) -> Enum_CXChildVisitResult);
         unsafe {
-            clang_visitChildren(self.x, opt_visit, mem::transmute(&mut data));
+            clang_visitChildren(self.x, visit_children, mem::transmute(&mut data));
         }
     }
 
@@ -106,7 +105,7 @@ impl Cursor {
     }
 
     // function, variable
-    pub fn linkage(&self) -> Enum_CXLinkageKind {
+    pub fn linkage(&self) -> CXLinkageKind {
         unsafe {
             clang_getCursorLinkage(self.x)
         }
@@ -138,7 +137,7 @@ impl Cursor {
 }
 
 extern fn visit_children(cur: CXCursor, parent: CXCursor,
-                         data: CXClientData) -> Enum_CXChildVisitResult {
+                         data: CXClientData) -> CXChildVisitResult {
     let func: &mut Box<CursorVisitor> = unsafe { mem::transmute(data) };
     (*func)(&Cursor { x : cur }, &Cursor { x: parent })
 }
@@ -174,7 +173,7 @@ pub struct Type {
 
 impl Type {
     // common
-    pub fn kind(&self) -> Enum_CXTypeKind {
+    pub fn kind(&self) -> CXTypeKind {
         self.x.kind
     }
 
@@ -255,7 +254,7 @@ impl Type {
         }
     }
 
-    pub fn call_conv(&self) -> Enum_CXCallingConv {
+    pub fn call_conv(&self) -> CXCallingConv {
         unsafe {
             clang_getFunctionTypeCallingConv(self.x)
         }
@@ -270,7 +269,7 @@ pub struct SourceLocation {
 impl SourceLocation {
     pub fn location(&self) -> (File, usize, usize, usize) {
         unsafe {
-            let mut file = ptr::null_mut();
+            let mut file = mem::uninitialized();
             let mut line = 0;
             let mut col = 0;
             let mut off = 0;
@@ -298,7 +297,7 @@ pub struct File {
 
 impl File {
     pub fn name(&self) -> Option<String> {
-        if self.x.is_null() {
+        if self.x.0.is_null() {
             return None;
         }
         unsafe {
@@ -344,7 +343,7 @@ impl Index {
     }
 
     pub fn is_null(&self) -> bool {
-        self.x.is_null()
+        self.x.0.is_null()
     }
 }
 
@@ -361,12 +360,12 @@ pub struct TranslationUnit {
 
 impl TranslationUnit {
     pub fn parse(ix: &Index, file: &str, cmd_args: &[String],
-                 unsaved: &[UnsavedFile], opts: c_uint) -> TranslationUnit {
+                 unsaved: &[UnsavedFile], opts: CXTranslationUnit_Flags) -> TranslationUnit {
         let fname = CString::new(file.as_bytes()).unwrap();
         let fname = fname.as_ptr();
         let c_args: Vec<CString> = cmd_args.iter().map(|s| CString::new(s.as_bytes()).unwrap()).collect();
         let c_args: Vec<*const c_char> = c_args.iter().map(|s| s.as_ptr()).collect();
-        let mut c_unsaved: Vec<Struct_CXUnsavedFile> = unsaved.iter().map(|f| f.x).collect();
+        let mut c_unsaved: Vec<CXUnsavedFile> = unsaved.iter().map(|f| f.x).collect();
         let tu = unsafe {
             clang_parseTranslationUnit(ix.x, fname,
                                        c_args.as_ptr(),
@@ -378,14 +377,14 @@ impl TranslationUnit {
         TranslationUnit { x: tu }
     }
 
-    pub fn reparse(&self, unsaved: &[UnsavedFile], opts: usize) -> bool {
-        let mut c_unsaved: Vec<Struct_CXUnsavedFile> = unsaved.iter().map(|f| f.x).collect();
+    pub fn reparse(&self, unsaved: &[UnsavedFile], opts: CXReparse_Flags) -> bool {
+        let mut c_unsaved: Vec<CXUnsavedFile> = unsaved.iter().map(|f| f.x).collect();
 
         unsafe {
             clang_reparseTranslationUnit(self.x,
                                          c_unsaved.len() as c_uint,
                                          c_unsaved.as_mut_ptr(),
-                                         opts as c_uint) == 0
+                                         opts) == CXErrorCode::Success
         }
     }
 
@@ -413,7 +412,7 @@ impl TranslationUnit {
     }
 
     pub fn is_null(&self) -> bool {
-        self.x.is_null()
+        self.x.0.is_null()
     }
 
     pub fn tokens(&self, cursor: &Cursor) -> Option<Vec<Token>> {
@@ -444,19 +443,19 @@ pub struct Diagnostic {
 }
 
 impl Diagnostic {
-    pub fn default_opts() -> usize {
+    pub fn default_opts() -> CXDiagnosticDisplayOptions {
         unsafe {
-            clang_defaultDiagnosticDisplayOptions() as usize
+            clang_defaultDiagnosticDisplayOptions()
         }
     }
 
-    pub fn format(&self, opts: usize) -> String {
+    pub fn format(&self, opts: CXDiagnosticDisplayOptions) -> String {
         unsafe {
-            String_ { x: clang_formatDiagnostic(self.x, opts as c_uint) }.to_string()
+            String_ { x: clang_formatDiagnostic(self.x, opts) }.to_string()
         }
     }
 
-    pub fn severity(&self) -> Enum_CXDiagnosticSeverity {
+    pub fn severity(&self) -> CXDiagnosticSeverity {
         unsafe {
             clang_getDiagnosticSeverity(self.x)
         }
@@ -471,7 +470,7 @@ impl Diagnostic {
 
 // UnsavedFile
 pub struct UnsavedFile {
-    x: Struct_CXUnsavedFile,
+    x: CXUnsavedFile,
     name: CString,
     contents: CString
 }
@@ -480,7 +479,7 @@ impl UnsavedFile {
     pub fn new(name: &str, contents: &str) -> UnsavedFile {
         let name = CString::new(name.as_bytes()).unwrap();
         let contents = CString::new(contents.as_bytes()).unwrap();
-        let x = Struct_CXUnsavedFile {
+        let x = CXUnsavedFile {
             Filename: name.as_ptr(),
             Contents: contents.as_ptr(),
             Length: contents.as_bytes().len() as c_ulong,
@@ -493,230 +492,8 @@ impl UnsavedFile {
     }
 }
 
-pub fn kind_to_str(x: Enum_CXCursorKind) -> &'static str {
-    match x {
-        CXCursor_UnexposedDecl => "UnexposedDecl",
-        CXCursor_StructDecl => "StructDecl",
-        CXCursor_UnionDecl => "UnionDecl",
-        CXCursor_ClassDecl => "ClassDecl",
-        CXCursor_EnumDecl => "EnumDecl",
-        CXCursor_FieldDecl => "FieldDecl",
-        CXCursor_EnumConstantDecl => "EnumConstantDecl",
-        CXCursor_FunctionDecl => "FunctionDecl",
-        CXCursor_VarDecl => "VarDecl",
-        CXCursor_ParmDecl => "ParmDecl",
-        CXCursor_ObjCInterfaceDecl => "ObjCInterfaceDecl",
-        CXCursor_ObjCCategoryDecl => "ObjCCategoryDecl",
-        CXCursor_ObjCProtocolDecl => "ObjCProtocolDecl",
-        CXCursor_ObjCPropertyDecl => "ObjCPropertyDecl",
-        CXCursor_ObjCIvarDecl => "ObjCIvarDecl",
-        CXCursor_ObjCInstanceMethodDecl => "ObjCInstanceMethodDecl",
-        CXCursor_ObjCClassMethodDecl => "ObjCClassMethodDecl",
-        CXCursor_ObjCImplementationDecl => "ObjCImplementationDecl",
-        CXCursor_ObjCCategoryImplDecl => "ObjCCategoryImplDecl",
-        CXCursor_TypedefDecl => "TypedefDecl",
-        CXCursor_CXXMethod => "CXXMethod",
-        CXCursor_Namespace => "Namespace",
-        CXCursor_LinkageSpec => "LinkageSpec",
-        CXCursor_Constructor => "Constructor",
-        CXCursor_Destructor => "Destructor",
-        CXCursor_ConversionFunction => "ConversionFunction",
-        CXCursor_TemplateTypeParameter => "TemplateTypeParameter",
-        CXCursor_NonTypeTemplateParameter => "NonTypeTemplateParameter",
-        CXCursor_TemplateTemplateParameter => "TemplateTemplateParameter",
-        CXCursor_FunctionTemplate => "FunctionTemplate",
-        CXCursor_ClassTemplate => "ClassTemplate",
-        CXCursor_ClassTemplatePartialSpecialization => "ClassTemplatePartialSpecialization",
-        CXCursor_NamespaceAlias => "NamespaceAlias",
-        CXCursor_UsingDirective => "UsingDirective",
-        CXCursor_UsingDeclaration => "UsingDeclaration",
-        CXCursor_TypeAliasDecl => "TypeAliasDecl",
-        CXCursor_ObjCSynthesizeDecl => "ObjCSynthesizeDecl",
-        CXCursor_ObjCDynamicDecl => "ObjCDynamicDecl",
-        CXCursor_CXXAccessSpecifier => "CXXAccessSpecifier",
-        // CXCursor_FirstDecl => "FirstDecl",
-        // CXCursor_LastDecl => "LastDecl",
-        CXCursor_FirstRef => "FirstRef",
-        // CXCursor_ObjCSuperClassRef => "ObjCSuperClassRef",
-        CXCursor_ObjCProtocolRef => "ObjCProtocolRef",
-        CXCursor_ObjCClassRef => "ObjCClassRef",
-        CXCursor_TypeRef => "TypeRef",
-        CXCursor_CXXBaseSpecifier => "CXXBaseSpecifier",
-        CXCursor_TemplateRef => "TemplateRef",
-        CXCursor_NamespaceRef => "NamespaceRef",
-        CXCursor_MemberRef => "MemberRef",
-        // CXCursor_LabelRef => "LabelRef",
-        CXCursor_OverloadedDeclRef => "OverloadedDeclRef",
-        CXCursor_VariableRef => "VariableRef",
-        // CXCursor_LastRef => "LastRef",
-        CXCursor_FirstInvalid => "FirstInvalid",
-        // CXCursor_InvalidFile => "InvalidFile",
-        CXCursor_NoDeclFound => "NoDeclFound",
-        CXCursor_NotImplemented => "NotImplemented",
-        CXCursor_InvalidCode => "InvalidCode",
-        // CXCursor_LastInvalid => "LastInvalid",
-        CXCursor_FirstExpr => "FirstExpr",
-        // CXCursor_UnexposedExpr => "UnexposedExpr",
-        CXCursor_DeclRefExpr => "DeclRefExpr",
-        CXCursor_MemberRefExpr => "MemberRefExpr",
-        CXCursor_CallExpr => "CallExpr",
-        CXCursor_ObjCMessageExpr => "ObjCMessageExpr",
-        CXCursor_BlockExpr => "BlockExpr",
-        CXCursor_IntegerLiteral => "IntegerLiteral",
-        CXCursor_FloatingLiteral => "FloatingLiteral",
-        CXCursor_ImaginaryLiteral => "ImaginaryLiteral",
-        CXCursor_StringLiteral => "StringLiteral",
-        CXCursor_CharacterLiteral => "CharacterLiteral",
-        CXCursor_ParenExpr => "ParenExpr",
-        CXCursor_UnaryOperator => "UnaryOperator",
-        CXCursor_ArraySubscriptExpr => "ArraySubscriptExpr",
-        CXCursor_BinaryOperator => "BinaryOperator",
-        CXCursor_CompoundAssignOperator => "CompoundAssignOperator",
-        CXCursor_ConditionalOperator => "ConditionalOperator",
-        CXCursor_CStyleCastExpr => "CStyleCastExpr",
-        CXCursor_CompoundLiteralExpr => "CompoundLiteralExpr",
-        CXCursor_InitListExpr => "InitListExpr",
-        CXCursor_AddrLabelExpr => "AddrLabelExpr",
-        CXCursor_StmtExpr => "StmtExpr",
-        CXCursor_GenericSelectionExpr => "GenericSelectionExpr",
-        CXCursor_GNUNullExpr => "GNUNullExpr",
-        CXCursor_CXXStaticCastExpr => "CXXStaticCastExpr",
-        CXCursor_CXXDynamicCastExpr => "CXXDynamicCastExpr",
-        CXCursor_CXXReinterpretCastExpr => "CXXReinterpretCastExpr",
-        CXCursor_CXXConstCastExpr => "CXXConstCastExpr",
-        CXCursor_CXXFunctionalCastExpr => "CXXFunctionalCastExpr",
-        CXCursor_CXXTypeidExpr => "CXXTypeidExpr",
-        CXCursor_CXXBoolLiteralExpr => "CXXBoolLiteralExpr",
-        CXCursor_CXXNullPtrLiteralExpr => "CXXNullPtrLiteralExpr",
-        CXCursor_CXXThisExpr => "CXXThisExpr",
-        CXCursor_CXXThrowExpr => "CXXThrowExpr",
-        CXCursor_CXXNewExpr => "CXXNewExpr",
-        CXCursor_CXXDeleteExpr => "CXXDeleteExpr",
-        CXCursor_UnaryExpr => "UnaryExpr",
-        CXCursor_ObjCStringLiteral => "ObjCStringLiteral",
-        CXCursor_ObjCEncodeExpr => "ObjCEncodeExpr",
-        CXCursor_ObjCSelectorExpr => "ObjCSelectorExpr",
-        CXCursor_ObjCProtocolExpr => "ObjCProtocolExpr",
-        CXCursor_ObjCBridgedCastExpr => "ObjCBridgedCastExpr",
-        CXCursor_PackExpansionExpr => "PackExpansionExpr",
-        CXCursor_SizeOfPackExpr => "SizeOfPackExpr",
-        CXCursor_LambdaExpr => "LambdaExpr",
-        CXCursor_ObjCBoolLiteralExpr => "ObjCBoolLiteralExpr",
-        // CXCursor_LastExpr => "LastExpr",
-        CXCursor_FirstStmt => "FirstStmt",
-        // CXCursor_UnexposedStmt => "UnexposedStmt",
-        CXCursor_LabelStmt => "LabelStmt",
-        CXCursor_CompoundStmt => "CompoundStmt",
-        CXCursor_CaseStmt => "CaseStmt",
-        CXCursor_DefaultStmt => "DefaultStmt",
-        CXCursor_IfStmt => "IfStmt",
-        CXCursor_SwitchStmt => "SwitchStmt",
-        CXCursor_WhileStmt => "WhileStmt",
-        CXCursor_DoStmt => "DoStmt",
-        CXCursor_ForStmt => "ForStmt",
-        CXCursor_GotoStmt => "GotoStmt",
-        CXCursor_IndirectGotoStmt => "IndirectGotoStmt",
-        CXCursor_ContinueStmt => "ContinueStmt",
-        CXCursor_BreakStmt => "BreakStmt",
-        CXCursor_ReturnStmt => "ReturnStmt",
-        CXCursor_AsmStmt => "AsmStmt",
-        CXCursor_ObjCAtTryStmt => "ObjCAtTryStmt",
-        CXCursor_ObjCAtCatchStmt => "ObjCAtCatchStmt",
-        CXCursor_ObjCAtFinallyStmt => "ObjCAtFinallyStmt",
-        CXCursor_ObjCAtThrowStmt => "ObjCAtThrowStmt",
-        CXCursor_ObjCAtSynchronizedStmt => "ObjCAtSynchronizedStmt",
-        CXCursor_ObjCAutoreleasePoolStmt => "ObjCAutoreleasePoolStmt",
-        CXCursor_ObjCForCollectionStmt => "ObjCForCollectionStmt",
-        CXCursor_CXXCatchStmt => "CXXCatchStmt",
-        CXCursor_CXXTryStmt => "CXXTryStmt",
-        CXCursor_CXXForRangeStmt => "CXXForRangeStmt",
-        CXCursor_SEHTryStmt => "SEHTryStmt",
-        CXCursor_SEHExceptStmt => "SEHExceptStmt",
-        CXCursor_SEHFinallyStmt => "SEHFinallyStmt",
-        CXCursor_NullStmt => "NullStmt",
-        CXCursor_DeclStmt => "DeclStmt",
-        // CXCursor_LastStmt => "LastStmt",
-        CXCursor_TranslationUnit => "TranslationUnit",
-        CXCursor_FirstAttr => "FirstAttr",
-        // CXCursor_UnexposedAttr => "UnexposedAttr",
-        CXCursor_IBActionAttr => "IBActionAttr",
-        CXCursor_IBOutletAttr => "IBOutletAttr",
-        CXCursor_IBOutletCollectionAttr => "IBOutletCollectionAttr",
-        CXCursor_CXXFinalAttr => "CXXFinalAttr",
-        CXCursor_CXXOverrideAttr => "CXXOverrideAttr",
-        CXCursor_AnnotateAttr => "AnnotateAttr",
-        CXCursor_AsmLabelAttr => "AsmLabelAttr",
-        // CXCursor_LastAttr => "LastAttr",
-        CXCursor_PreprocessingDirective => "PreprocessingDirective",
-        CXCursor_MacroDefinition => "MacroDefinition",
-        CXCursor_MacroExpansion => "MacroExpansion",
-        // CXCursor_MacroInstantiation => "MacroInstantiation",
-        CXCursor_InclusionDirective => "InclusionDirective",
-        //CXCursor_FirstPreprocessing => "FirstPreprocessing",
-        //CXCursor_LastPreprocessing => "LastPreprocessing",
-        CXCursor_PackedAttr => "PackedAttr",
-
-        _ => "?",
-    }
-}
-
-pub fn type_to_str(x: Enum_CXTypeKind) -> &'static str {
-    match x {
-        CXType_Invalid => "Invalid",
-        CXType_Unexposed => "Unexposed",
-        CXType_Void => "Void",
-        CXType_Bool => "Bool",
-        CXType_Char_U =>  "Char_U",
-        CXType_UChar => "UChar",
-        CXType_Char16=> "Char16",
-        CXType_Char32=> "Char32",
-        CXType_UShort => "UShort",
-        CXType_UInt => "UInt",
-        CXType_ULong => "ULong",
-        CXType_ULongLong => "ULongLong",
-        CXType_UInt128=>"UInt128",
-        CXType_Char_S => "Char_S",
-        CXType_SChar => "SChar",
-        CXType_WChar => "WChar",
-        CXType_Short => "Short",
-        CXType_Int => "Int",
-        CXType_Long => "Long",
-        CXType_LongLong => "LongLong",
-        CXType_Int128=>"Int128",
-        CXType_Float => "Float",
-        CXType_Double => "Double",
-        CXType_LongDouble => "LongDouble",
-        CXType_NullPtr => "NullPtr",
-        CXType_Overload => "Overload",
-        CXType_Dependent => "Dependent",
-        CXType_ObjCId => "ObjCId",
-        CXType_ObjCClass => "ObjCClass",
-        CXType_ObjCSel => "ObjCSel",
-        // CXType_FirstBuiltin => "FirstBuiltin",
-        // CXType_LastBuiltin => "LastBuiltin",
-        CXType_Complex => "Complex",
-        CXType_Pointer => "Pointer",
-        CXType_BlockPointer => "BlockPointer",
-        CXType_LValueReference => "LValueReference",
-        CXType_RValueReference => "RValueReference",
-        CXType_Record => "Record",
-        CXType_Enum => "Enum",
-        CXType_Typedef => "Typedef",
-        CXType_ObjCInterface => "ObjCInterface",
-        CXType_ObjCObjectPointer => "ObjCObjectPointer",
-        CXType_FunctionNoProto => "FunctionNoProto",
-        CXType_FunctionProto => "FunctionProto",
-        CXType_ConstantArray => "ConstantArray",
-        CXType_Vector => "Vector",
-        CXType_IncompleteArray => "IncompleteArray",
-        CXType_VariableArray => "VariableArray",
-        CXType_DependentSizedArray => "DependentSizedArray",
-        _ => "?"
-    }
-}
-
 // Debug
-pub fn ast_dump(c: &Cursor, depth: isize)-> Enum_CXVisitorResult {
+pub fn ast_dump(c: &Cursor, depth: isize)-> CXChildVisitResult {
     fn print_indent(depth: isize, s: &str) {
         let mut i = 0;
         while i < depth {
@@ -726,14 +503,14 @@ pub fn ast_dump(c: &Cursor, depth: isize)-> Enum_CXVisitorResult {
         println!("{}", s);
     }
     let ct = c.cur_type().kind();
-    print_indent(depth, &format!("({} {} {}",
-        kind_to_str(c.kind()),
+    print_indent(depth, &format!("({:?} {} {:?}",
+        c.kind(),
         c.spelling(),
-        type_to_str(ct))[..]
+        ct)[..]
     );
     c.visit(| s, _: &Cursor| {
         ast_dump(s, depth + 1)
     });
     print_indent(depth, ")");
-    CXChildVisit_Continue
+    CXChildVisitResult::Continue
 }

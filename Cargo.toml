@@ -8,16 +8,16 @@ homepage = "https://github.com/crabtw/rust-bindgen"
 repository = "https://github.com/crabtw/rust-bindgen"
 readme = "README.md"
 keywords = [ "bindings", "ffi", "code-generation" ]
-build = "build.rs"
 
 [dependencies]
+clang-sys = "0.4.*"
 clippy = { version = "*", optional = true }
 log = "0.3.*"
 libc = "0.2.*"
 syntex_syntax = "0.32.*"
 
 [features]
-static = []
+static = ["clang-sys/static"]
 
 [lib]
 name = "bindgen"
