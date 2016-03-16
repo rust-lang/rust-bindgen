@@ -992,12 +992,22 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: String,
         attrs.push(mk_link_name_attr(ctx, &name));
     }
 
-    let val_ty = P(cty_to_rs(ctx, ty));
+    let node = {
+        let val_ty = P(cty_to_rs(ctx, ty));
+        ast::ForeignItemKind::Static(val_ty, !is_const)
+    };
 
+    mk_foreign_item(ctx, &rust_name, attrs, node)
+}
+
+fn mk_foreign_item(ctx: &mut GenCtx,
+                   name: &str,
+                   attrs: Vec<ast::Attribute>,
+                   node: ast::ForeignItemKind) -> ast::ForeignItem {
     ast::ForeignItem {
-        ident: ctx.ext_cx.ident_of(&rust_name[..]),
+        ident: ctx.ext_cx.ident_of(name),
         attrs: attrs,
-        node: ast::ForeignItemKind::Static(val_ty, !is_const),
+        node: node,
         id: ast::DUMMY_NODE_ID,
         span: ctx.span,
         vis: ast::Visibility::Public,
@@ -1063,14 +1073,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: String, rty: &Type,
         attrs.push(mk_link_name_attr(ctx, &name));
     }
 
-    ast::ForeignItem {
-        ident: ctx.ext_cx.ident_of(&rust_name[..]),
-        attrs: attrs,
-        node: decl,
-        id: ast::DUMMY_NODE_ID,
-        span: ctx.span,
-        vis: ast::Visibility::Public,
-    }
+    mk_foreign_item(ctx, &rust_name, attrs, decl)
 }
 
 fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
