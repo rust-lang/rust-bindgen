@@ -4,7 +4,7 @@ use support::assert_bind_eq;
 fn with_anon_struct() {
     assert_bind_eq(Default::default(), "headers/union_with_anon_struct.h", "
         #[repr(C)]
-        #[derive(Copy)]
+        #[derive(Copy, Clone)]
         #[derive(Debug)]
         pub struct Union_foo {
             pub _bindgen_data_: [u32; 2usize],
@@ -15,21 +15,15 @@ fn with_anon_struct() {
                 ::std::mem::transmute(raw.offset(0))
             }
         }
-        impl ::std::clone::Clone for Union_foo {
-            fn clone(&self) -> Self { *self }
-        }
         impl ::std::default::Default for Union_foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
-        #[derive(Copy)]
+        #[derive(Copy, Clone)]
         #[derive(Debug)]
         pub struct Struct_Unnamed1 {
             pub a: ::std::os::raw::c_uint,
             pub b: ::std::os::raw::c_uint,
-        }
-        impl ::std::clone::Clone for Struct_Unnamed1 {
-            fn clone(&self) -> Self { *self }
         }
         impl ::std::default::Default for Struct_Unnamed1 {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -41,7 +35,7 @@ fn with_anon_struct() {
 fn with_anon_struct_bitfield() {
     assert_bind_eq(Default::default(), "headers/union_with_anon_struct_bitfield.h", "
         #[repr(C)]
-        #[derive(Copy)]
+        #[derive(Copy, Clone)]
         #[derive(Debug)]
         pub struct Union_foo {
             pub _bindgen_data_: [u32; 1usize],
@@ -53,11 +47,6 @@ fn with_anon_struct_bitfield() {
                 ::std::mem::transmute(raw.offset(0))
             }
         }
-
-        impl ::std::clone::Clone for Union_foo {
-            fn clone(&self) -> Self { *self }
-        }
-
         impl ::std::default::Default for Union_foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
@@ -68,7 +57,7 @@ fn with_anon_struct_bitfield() {
 fn with_anon_union() {
     assert_bind_eq(Default::default(), "headers/union_with_anon_union.h", "
         #[repr(C)]
-        #[derive(Copy)]
+        #[derive(Copy, Clone)]
         #[derive(Debug)]
         pub struct Union_foo {
             pub _bindgen_data_: [u32; 1usize],
@@ -79,14 +68,11 @@ fn with_anon_union() {
                 ::std::mem::transmute(raw.offset(0))
             }
         }
-        impl ::std::clone::Clone for Union_foo {
-            fn clone(&self) -> Self { *self }
-        }
         impl ::std::default::Default for Union_foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
-        #[derive(Copy)]
+        #[derive(Copy, Clone)]
         #[derive(Debug)]
         pub struct Union_Unnamed1 {
             pub _bindgen_data_: [u32; 1usize],
@@ -101,9 +87,6 @@ fn with_anon_union() {
                 ::std::mem::transmute(raw.offset(0))
             }
         }
-        impl ::std::clone::Clone for Union_Unnamed1 {
-            fn clone(&self) -> Self { *self }
-        }
         impl ::std::default::Default for Union_Unnamed1 {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
@@ -114,7 +97,7 @@ fn with_anon_union() {
 fn with_anon_unnamed_struct() {
     assert_bind_eq(Default::default(), "headers/union_with_anon_unnamed_struct.h", "
         #[repr(C)]
-        #[derive(Copy)]
+        #[derive(Copy, Clone)]
         #[derive(Debug)]
         pub struct Union_pixel {
             pub _bindgen_data_: [u32; 1usize],
@@ -141,9 +124,6 @@ fn with_anon_unnamed_struct() {
                 ::std::mem::transmute(raw.offset(3))
             }
         }
-        impl ::std::clone::Clone for Union_pixel {
-            fn clone(&self) -> Self { *self }
-        }
         impl ::std::default::Default for Union_pixel {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
@@ -154,7 +134,7 @@ fn with_anon_unnamed_struct() {
 fn with_anon_unnamed_union() {
     assert_bind_eq(Default::default(), "headers/union_with_anon_unnamed_union.h", "
         #[repr(C)]
-        #[derive(Copy)]
+        #[derive(Copy, Clone)]
         #[derive(Debug)]
         pub struct Union_foo {
             pub _bindgen_data_: [u32; 1usize],
@@ -173,9 +153,6 @@ fn with_anon_unnamed_union() {
                 ::std::mem::transmute(raw.offset(0))
             }
         }
-        impl ::std::clone::Clone for Union_foo {
-            fn clone(&self) -> Self { *self }
-        }
         impl ::std::default::Default for Union_foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
@@ -186,7 +163,7 @@ fn with_anon_unnamed_union() {
 fn with_nesting() {
     assert_bind_eq(Default::default(), "headers/union_with_nesting.h", "
         #[repr(C)]
-        #[derive(Copy)]
+        #[derive(Copy, Clone)]
         #[derive(Debug)]
         pub struct Union_foo {
             pub _bindgen_data_: [u32; 1usize],
@@ -213,9 +190,6 @@ fn with_nesting() {
                 ::std::mem::transmute(raw.offset(2))
             }
         }
-        impl ::std::clone::Clone for Union_foo {
-            fn clone(&self) -> Self { *self }
-        }
         impl ::std::default::Default for Union_foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
@@ -226,7 +200,7 @@ fn with_nesting() {
 fn with_derive_debug() {
     assert_bind_eq(Default::default(), "headers/union_with_big_member.h", "
         #[repr(C)]
-        #[derive(Copy)]
+        #[derive(Copy, Clone)]
         pub struct Union_WithBigArray {
             pub _bindgen_data_: [u32; 33usize],
         }
@@ -240,14 +214,11 @@ fn with_derive_debug() {
                 ::std::mem::transmute(raw.offset(0))
             }
         }
-        impl ::std::clone::Clone for Union_WithBigArray {
-            fn clone(&self) -> Self { *self }
-        }
         impl ::std::default::Default for Union_WithBigArray {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
-        #[derive(Copy)]
+        #[derive(Copy, Clone)]
         pub struct Union_WithBigMember {
             pub _bindgen_data_: [u32; 33usize],
         }
@@ -260,9 +231,6 @@ fn with_derive_debug() {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(0))
             }
-        }
-        impl ::std::clone::Clone for Union_WithBigMember {
-            fn clone(&self) -> Self { *self }
         }
         impl ::std::default::Default for Union_WithBigMember {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }

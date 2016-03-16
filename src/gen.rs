@@ -547,7 +547,8 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     );
 
     let id = rust_type_id(ctx, &name);
-    let mut attrs = vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx, false));
+    let mut attrs = vec!(mk_repr_attr(ctx, layout),
+                         mk_deriving_copy_clone_attr(ctx));
     if can_derive_debug {
         attrs.push(mk_deriving_debug_attr(ctx));
     }
@@ -579,7 +580,6 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
                 span: ctx.span}));
     }
 
-    items.push(mk_clone_impl(ctx, &name));
     items.push(mk_default_impl(ctx, &name));
     items.extend(extra.into_iter());
     items
@@ -637,7 +637,8 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, derive_debug: bool, layout: Layo
     );
     let union_id = rust_type_id(ctx, &name);
     let union_attrs = {
-        let mut attrs = vec!(mk_repr_attr(ctx, layout), mk_deriving_copy_attr(ctx, false));
+        let mut attrs = vec!(mk_repr_attr(ctx, layout),
+                             mk_deriving_copy_clone_attr(ctx));
         if derive_debug {
             let can_derive_debug = members.iter()
                 .all(|member| match *member {
@@ -668,7 +669,6 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, derive_debug: bool, layout: Layo
         mk_item(ctx, "".to_owned(), union_impl, ast::Visibility::Inherited, Vec::new())
     );
 
-    items.push(mk_clone_impl(ctx, &name[..]));
     items.push(mk_default_impl(ctx, &name[..]));
     items.extend(extra.into_iter());
     items
@@ -820,7 +820,7 @@ fn cenum_to_rs(
     let repr_attr = mk_attr(ctx, "repr", &[enum_repr]);
 
     let attrs = {
-        let mut v = vec![mk_deriving_copy_attr(ctx, true), repr_attr];
+        let mut v = vec![mk_deriving_copy_clone_attr(ctx), repr_attr];
         if derive_debug {
             v.push(mk_deriving_debug_attr(ctx));
         }
@@ -925,18 +925,6 @@ fn mk_default_impl(ctx: &GenCtx, ty_name: &str) -> P<ast::Item> {
         ctx.ext_cx.cfg(), "".to_owned(), impl_str).parse_item().unwrap().unwrap()
 }
 
-// Implements std::clone::Clone using dereferencing
-fn mk_clone_impl(ctx: &GenCtx, ty_name: &str) -> P<ast::Item> {
-    let impl_str = format!(r"
-        impl ::std::clone::Clone for {} {{
-            fn clone(&self) -> Self {{ *self }}
-        }}
-    ", ty_name);
-
-    parse::new_parser_from_source_str(ctx.ext_cx.parse_sess(),
-        ctx.ext_cx.cfg(), "".to_owned(), impl_str).parse_item().unwrap().unwrap()
-}
-
 fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout, span: Span) -> ast::StructField {
     let ty_name = match layout.align {
         8 => "u64",
@@ -969,14 +957,8 @@ fn mk_repr_attr(ctx: &mut GenCtx, layout: Layout) -> ast::Attribute {
     mk_attr(ctx, "repr", &values)
 }
 
-fn mk_deriving_copy_attr(ctx: &mut GenCtx, clone: bool) -> ast::Attribute {
-    let mut words = vec!();
-    if clone {
-        words.push("Clone");
-    }
-    words.push("Copy");
-
-    mk_attr(ctx, "derive", &words)
+fn mk_deriving_copy_clone_attr(ctx: &mut GenCtx) -> ast::Attribute {
+    mk_attr(ctx, "derive", &["Copy", "Clone"])
 }
 
 fn mk_deriving_debug_attr(ctx: &mut GenCtx) -> ast::Attribute {
