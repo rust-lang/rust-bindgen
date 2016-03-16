@@ -966,64 +966,47 @@ fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout, span: Span) -> ast::S
     }
 }
 
-fn mk_link_name_attr(ctx: &mut GenCtx, name: String) -> ast::Attribute {
-    let lit = respan(ctx.span, ast::LitKind::Str(
-        to_intern_str(ctx, &name),
-        ast::StrStyle::Cooked
-    ));
-    let attr_val = P(respan(ctx.span, ast::MetaItemKind::NameValue(
-        to_intern_str(ctx, "link_name"), lit
-    )));
-    let attr = ast::Attribute_ {
-        id: mk_attr_id(),
-        style: ast::AttrStyle::Outer,
-        value: attr_val,
-        is_sugared_doc: false
-    };
-    respan(ctx.span, attr)
+fn mk_link_name_attr(ctx: &mut GenCtx, name: &str) -> ast::Attribute {
+    mk_attr(ctx, "link_name", &[name])
 }
 
 fn mk_repr_attr(ctx: &mut GenCtx, layout: Layout) -> ast::Attribute {
-    let mut values = vec!(P(respan(ctx.span, ast::MetaItemKind::Word(to_intern_str(ctx, "C")))));
+    let mut values = vec!("C");
     if layout.packed {
-        values.push(P(respan(ctx.span, ast::MetaItemKind::Word(to_intern_str(ctx, "packed")))));
+        values.push("packed");
     }
-    let attr_val = P(respan(ctx.span, ast::MetaItemKind::List(
-        to_intern_str(ctx, "repr"),
-        values
-    )));
-
-    respan(ctx.span, ast::Attribute_ {
-        id: mk_attr_id(),
-        style: ast::AttrStyle::Outer,
-        value: attr_val,
-        is_sugared_doc: false
-    })
+    mk_attr(ctx, "repr", &values)
 }
 
 fn mk_deriving_copy_attr(ctx: &mut GenCtx, clone: bool) -> ast::Attribute {
     let mut words = vec!();
     if clone {
-        words.push(ctx.ext_cx.meta_word(ctx.span, InternedString::new("Clone")));
+        words.push("Clone");
     }
-    words.push(ctx.ext_cx.meta_word(ctx.span, InternedString::new("Copy")));
+    words.push("Copy");
 
-    let attr_val = ctx.ext_cx.meta_list(ctx.span, InternedString::new("derive"), words);
-
-    respan(ctx.span, ast::Attribute_ {
-        id: mk_attr_id(),
-        style: ast::AttrStyle::Outer,
-        value: attr_val,
-        is_sugared_doc: false
-    })
+    mk_attr(ctx, "derive", &words)
 }
 
 fn mk_deriving_debug_attr(ctx: &mut GenCtx) -> ast::Attribute {
-    let words = vec!(ctx.ext_cx.meta_word(ctx.span, InternedString::new("Debug")));
+    mk_attr(ctx,
+            "derive",
+            &["Debug"])
+}
 
-    let attr_val = ctx.ext_cx.meta_list(ctx.span, InternedString::new("derive"), words);
-
-    ctx.ext_cx.attribute(ctx.span, attr_val)
+fn mk_attr(ctx: &mut GenCtx,
+           name: &str,
+           args: &[&str]) -> ast::Attribute {
+    let args: Vec<_> = args.iter()
+        .map(|arg| {
+            let word = to_intern_str(ctx, arg);
+            ctx.ext_cx.meta_word(ctx.span, word)
+        }).collect();
+    let attr = {
+        let name = to_intern_str(ctx, name);
+        ctx.ext_cx.meta_list(ctx.span, name, args)
+    };
+    ctx.ext_cx.attribute(ctx.span, attr)
 }
 
 fn cvar_to_rs(ctx: &mut GenCtx, name: String,
@@ -1033,7 +1016,7 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: String,
 
     let mut attrs = Vec::new();
     if was_mangled {
-        attrs.push(mk_link_name_attr(ctx, name));
+        attrs.push(mk_link_name_attr(ctx, &name));
     }
 
     let val_ty = P(cty_to_rs(ctx, ty));
@@ -1104,7 +1087,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx, name: String, rty: &Type,
 
     let mut attrs = Vec::new();
     if was_mangled {
-        attrs.push(mk_link_name_attr(ctx, name));
+        attrs.push(mk_link_name_attr(ctx, &name));
     }
 
     ast::ForeignItem {
