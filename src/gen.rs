@@ -1189,11 +1189,7 @@ fn mk_ty(ctx: &GenCtx, global: bool, segments: Vec<String>) -> ast::Ty {
         },
     );
 
-    ast::Ty {
-        id: ast::DUMMY_NODE_ID,
-        node: ty,
-        span: ctx.span
-    }
+    ctx.ext_cx.ty(ctx.span, ty).unwrap()
 }
 
 fn mk_ptrty(ctx: &mut GenCtx, base: ast::Ty, is_const: bool) -> ast::Ty {
