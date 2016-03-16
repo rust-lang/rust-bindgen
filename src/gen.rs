@@ -13,7 +13,6 @@ use syntax::ext::expand::ExpansionConfig;
 use syntax::ext::quote::rt::ToTokens;
 use syntax::feature_gate::Features;
 use syntax::parse;
-use syntax::parse::token::InternedString;
 use syntax::attr::mk_attr_id;
 use syntax::ptr::P;
 use syntax::print::pprust::tts_to_string;
@@ -793,6 +792,7 @@ fn cenum_to_rs(
         if let Some(orig) = found_values.get(&item.val) {
             let value = ctx.ext_cx.expr_path(
                 ctx.ext_cx.path(ctx.span, vec![enum_name, *orig]));
+            // Can't use ctx.ext_cx.item because of Visibility::Public
             items.push(P(ast::Item {
                 ident: name,
                 attrs: vec![],
@@ -817,16 +817,7 @@ fn cenum_to_rs(
         }));
     }
 
-    let enum_repr = InternedString::new(enum_repr);
-
-    let repr_arg = ctx.ext_cx.meta_word(ctx.span, enum_repr);
-    let repr_list = ctx.ext_cx.meta_list(ctx.span, InternedString::new("repr"), vec![repr_arg]);
-    let repr_attr = respan(ctx.span, ast::Attribute_ {
-        id: mk_attr_id(),
-        style: ast::AttrStyle::Outer,
-        value: repr_list,
-        is_sugared_doc: false,
-    });
+    let repr_attr = mk_attr(ctx, "repr", &[enum_repr]);
 
     let attrs = {
         let mut v = vec![mk_deriving_copy_attr(ctx, true), repr_attr];
