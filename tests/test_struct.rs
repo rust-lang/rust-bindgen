@@ -74,8 +74,7 @@ fn with_anon_union() {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
-        #[derive(Copy)]
-        #[derive(Debug)]
+        #[derive(Copy, Clone, Debug)]
         pub struct Union_unnamed1 {
             pub _bindgen_data_: [u32; 1usize],
         }
