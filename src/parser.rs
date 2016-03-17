@@ -66,7 +66,6 @@ fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {
         return true;
     }
 
-    let name = file.name();
     ctx.options.match_pat.iter().any(|pat| name.contains(pat))
 }
 
@@ -81,7 +80,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
         let (file, _, _, _) = cursor.location().location();
         let ty = cursor.cur_type();
         let layout = Layout::new(ty.size(), ty.align());
-        let filename = match Path::new(&file.name()).file_name() {
+        let filename = match Path::new(&file.name().unwrap_or("".to_owned())).file_name() {
             Some(name) => name.to_string_lossy().replace(".", "_"),
             _ => "".to_string()
         };
@@ -450,12 +449,7 @@ impl Annotations {
 /// nested composites that make up the visited composite.
 fn visit_composite(cursor: &Cursor, parent: &Cursor,
                    ctx: &mut ClangParserCtx,
-<<<<<<< 6f1904e52612db3a2517727c053e7cbc84601b2a
-                   compinfo: &mut CompInfo) -> Enum_CXVisitorResult {
-=======
                    ci: &mut CompInfo) -> Enum_CXVisitorResult {
-
->>>>>>> SM hacks squash
     fn is_bitfield_continuation(field: &il::FieldInfo, ty: &il::Type, width: u32) -> bool {
         match (&field.bitfields, ty) {
             (&Some(ref bitfields), &il::TInt(_, layout)) if *ty == field.ty => {
@@ -473,14 +467,12 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
         loop {
             match *ty {
                 TComp(ref comp_ty) => return Some(comp_ty),
-                TPtr(ref ptr_ty, _, _) => ty = &**ptr_ty,
+                TPtr(ref ptr_ty, _, _, _) => ty = &**ptr_ty,
                 TArray(ref array_ty, _, _) => ty = &**array_ty,
                 _ => return None
             }
         }
     }
-
-    let members = &mut compinfo.members;
 
     match cursor.kind() {
         CXCursor_FieldDecl => {
@@ -547,22 +539,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             //     };
             //
 
-<<<<<<< 6f1904e52612db3a2517727c053e7cbc84601b2a
-            let is_composite = match (inner_composite(&ty), members.last()) {
-=======
-            fn inner_composite(mut ty: &il::Type) -> Option<&Rc<RefCell<CompInfo>>> {
-                loop {
-                    match ty {
-                        &TComp(ref comp_ty) => return Some(comp_ty),
-                        &TPtr(ref ptr_ty, _, _, _) => ty = &**ptr_ty,
-                        &TArray(ref array_ty, _, _) => ty = &**array_ty,
-                        _ => return None
-                    }
-                }
-            }
-
             let is_composite = match (inner_composite(&ty), ci.members.last()) {
->>>>>>> SM hacks squash
                 (Some(ty_compinfo), Some(&CompMember::Comp(ref c))) => {
                     c.borrow().deref() as *const _ == ty_compinfo.borrow().deref() as *const _
                 },
