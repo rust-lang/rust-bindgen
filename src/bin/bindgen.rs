@@ -94,6 +94,13 @@ fn parse_args(args: &[String]) -> ParseResult {
                     options.match_pat.push(args[ix + 1].clone());
                     ix += 2;
                 }
+                "-match-type" => {
+                    if ix + 1 >= args_len {
+                        return ParseResult::ParseErr("Missing match type pattern".to_string());
+                    }
+                    options.match_type.push(args[ix + 1].clone());
+                    ix += 2;
+                }
                 "-builtins" => {
                     options.builtins = true;
                     ix += 1;

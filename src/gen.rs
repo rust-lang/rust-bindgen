@@ -905,8 +905,9 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
     let mut anon_enum_count = 0;
     let mut setters = vec!();
     let mut has_destructor = ci.has_destructor;
+
     for m in members.iter() {
-        if let &CompMember::Enum(ref ei) = m {
+        if let CompMember::Enum(ref ei) = *m {
             let e = ei.borrow().clone();
             let ename = if e.name.is_empty() {
                 let ename = format!("{}_enum{}", name, anon_enum_count);
@@ -921,9 +922,9 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
 
         fn comp_fields(m: &CompMember)
                        -> (Option<Rc<RefCell<CompInfo>>>, Option<FieldInfo>) {
-            match m {
-                &CompMember::Field(ref f) => { (None, Some(f.clone())) }
-                &CompMember::Comp(ref rc_c) => {
+            match *m {
+                CompMember::Field(ref f) => { (None, Some(f.clone())) }
+                CompMember::Comp(ref rc_c) => {
                     let c = rc_c.borrow();
                     if c.members.len() == 1 {
                         comp_fields(&c.members[0])
@@ -931,7 +932,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                         (Some(rc_c.clone()), None)
                     }
                 }
-                &CompMember::CompField(ref rc_c, ref f) => { (Some(rc_c.clone()), Some(f.clone())) }
+                CompMember::CompField(ref rc_c, ref f) => { (Some(rc_c.clone()), Some(f.clone())) }
                 _ => unreachable!()
             }
         }
@@ -997,15 +998,24 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
         }
 
         if let Some(rc_c) = opt_rc_c {
-            let c = rc_c.borrow();
-            if c.name.is_empty() {
+            if rc_c.borrow().name.is_empty() {
+                let c = rc_c.borrow();
                 unnamed += 1;
                 let field_name = format!("_bindgen_data_{}_", unnamed);
                 fields.push(mk_blob_field(ctx, &field_name, c.layout));
                 methods.extend(gen_comp_methods(ctx, &field_name, 0, c.kind, &c.members, &mut extra).into_iter());
             } else {
-                let name = comp_name(&ctx, c.kind, &c.name);
-                extra.extend(comp_to_rs(ctx, &name, c.clone()).into_iter());
+                let name = comp_name(&ctx, rc_c.borrow().kind, &rc_c.borrow().name);
+                fields.push(respan(ctx.span, ast::StructField_ {
+                    kind: ast::NamedField(
+                        ctx.ext_cx.ident_of(&name),
+                        ast::Visibility::Public,
+                    ),
+                    id: ast::DUMMY_NODE_ID,
+                    ty: P(cty_to_rs(ctx, &TComp(rc_c.clone()), true, true)),
+                    attrs: mk_doc_attr(ctx, &rc_c.borrow().comment)
+                }));
+                extra.extend(comp_to_rs(ctx, &name, rc_c.borrow().clone()).into_iter());
             }
         }
     }
@@ -1255,7 +1265,10 @@ fn enum_size_to_rust_type_name(signed: bool, size: usize) -> &'static str {
         (false, 4) => "u32",
         (true, 8) => "i64",
         (false, 8) => "u64",
-        _ => unreachable!("invalid enum decl: signed: {}, size: {}", signed, size),
+        _ => {
+            println!("invalid enum decl: signed: {}, size: {}", signed, size);
+            "i32"
+        }
     }
 }
 
@@ -1264,13 +1277,17 @@ fn cenum_value_to_int_lit(ctx: &mut GenCtx,
                           size: usize,
                           value: i64) -> P<ast::Expr> {
     if enum_is_signed {
-        let int_lit = ast::LitKind::Int(value.abs() as u64, ast::LitIntType::Unsuffixed);
-        let expr = ctx.ext_cx.expr_lit(ctx.span, int_lit);
-
-        if value < 0 {
-            ctx.ext_cx.expr(ctx.span, ast::ExprKind::Unary(ast::UnOp::Neg, expr))
+        if value == std::i64::MIN {
+            let lit = ast::LitKind::Int(std::u64::MAX, ast::LitIntType::Unsuffixed);
+            ctx.ext_cx.expr_lit(ctx.span, lit)
         } else {
-            expr
+            let lit = ast::LitKind::Int(value.abs() as u64, ast::LitIntType::Unsuffixed);
+            let expr = ctx.ext_cx.expr_lit(ctx.span, lit);
+            if value < 0 {
+                ctx.ext_cx.expr(ctx.span, ast::ExprKind::Unary(ast::UnOp::Neg, expr))
+            } else {
+                expr
+            }
         }
     } else {
         let u64_value = value as u64 & enum_size_to_unsigned_max_value(size);
@@ -1851,7 +1868,6 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type, allow_bool: bool, use_full_path: bool)
             } else {
                 mk_ty_args(ctx, false, &[id], args)
             }
-
         },
         TEnum(ref ei) => {
             let e = ei.borrow();

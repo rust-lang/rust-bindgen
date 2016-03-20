@@ -332,6 +332,12 @@ impl FieldInfo {
     }
 }
 
+impl fmt::Debug for FieldInfo {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        self.name.fmt(f)
+    }
+}
+
 #[derive(Clone, PartialEq)]
 pub struct EnumInfo {
     pub name: String,

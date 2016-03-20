@@ -455,10 +455,6 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             (&Some(ref bitfields), &il::TInt(_, layout)) if *ty == field.ty => {
                 bitfields.iter().map(|&(_, w)| w).fold(0u32, |acc, w| acc + w) + width <= (layout.size * 8) as u32
             },
-            (&Some(ref bitfields), &il::TNamed(ref info)) if *ty == field.ty => {
-                let info = info.borrow();
-                bitfields.iter().map(|&(_, w)| w).fold(0u32, |acc, w| acc + w) + width <= (info.layout.size * 8) as u32
-            },
             _ => false
         }
     }
@@ -767,8 +763,8 @@ fn visit_literal(cursor: &Cursor, unit: &TranslationUnit) -> Option<i64> {
 }
 
 fn visit_top(cursor: &Cursor,
-                 mut ctx: &mut ClangParserCtx,
-                 unit: &TranslationUnit) -> Enum_CXVisitorResult {
+             mut ctx: &mut ClangParserCtx,
+             unit: &TranslationUnit) -> Enum_CXVisitorResult {
     if !match_pattern(ctx, cursor) {
         return CXChildVisit_Continue;
     }
@@ -777,7 +773,10 @@ fn visit_top(cursor: &Cursor,
         CXCursor_UnexposedDecl => {
             return CXChildVisit_Recurse;
         }
-        CXCursor_StructDecl | CXCursor_UnionDecl | CXCursor_ClassDecl | CXCursor_ClassTemplate => {
+        CXCursor_StructDecl
+        | CXCursor_UnionDecl
+        | CXCursor_ClassDecl
+        | CXCursor_ClassTemplate => {
             let anno = Annotations::new(cursor);
             fwd_decl(ctx, cursor, |ctx_| {
                 let decl = decl_name(ctx_, cursor);
