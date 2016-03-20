@@ -272,6 +272,8 @@ pub struct CompInfo {
     pub hide: bool,
     pub base_members: usize,
     pub layout: Layout,
+    /// Typedef'd types names, that we'll resolve early to avoid name conflicts
+    pub typedefs: Vec<String>,
 }
 
 static mut UNNAMED_COUNTER: u32 = 0;
@@ -303,6 +305,7 @@ impl CompInfo {
             hide: false,
             base_members: 0,
             layout: layout,
+            typedefs: vec!(),
         }
     }
 }

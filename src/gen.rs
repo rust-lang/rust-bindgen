@@ -944,6 +944,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                 has_destructor = true;
             }
             if !cty_is_translatable(&f.ty) {
+                println!("{} not translatable, void: {}", f.name, f.ty == TVoid);
                 continue;
             }
             let f_name = match f.bitfields {

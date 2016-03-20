@@ -52,6 +52,10 @@ impl<'a> ClangParserCtx<'a> {
     fn current_module_mut(&mut self) -> &mut Module {
         self.module_map.get_mut(&self.current_module_id).expect("Module not found!")
     }
+
+    fn module_mut(&mut self, id: &ModuleId) -> &mut Module {
+        self.module_map.get_mut(id).expect("Module not found!")
+    }
 }
 
 fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {
@@ -289,7 +293,16 @@ fn mk_fn_sig(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Fu
     }
 }
 
-fn conv_decl_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type {
+fn conv_decl_ty(ctx: &mut ClangParserCtx,
+                ty: &cx::Type,
+                cursor: &Cursor) -> il::Type {
+    conv_decl_ty_resolving_typedefs(ctx, ty, cursor, false)
+}
+
+fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
+                                   ty: &cx::Type,
+                                   cursor: &Cursor,
+                                   resolve_typedefs: bool) -> il::Type {
     let ty_decl = &ty.declaration();
     return match ty_decl.kind() {
         CXCursor_StructDecl |
@@ -328,6 +341,10 @@ fn conv_decl_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il:
             TEnum(ei)
         }
         CXCursor_TypedefDecl => {
+            if resolve_typedefs {
+                return conv_ty_resolving_typedefs(ctx, &ty_decl.typedef_type(), &ty_decl.typedef_type().declaration(), resolve_typedefs);
+            }
+
             let decl = decl_name(ctx, ty_decl);
             let ti = decl.typeinfo();
             TNamed(ti)
@@ -349,10 +366,28 @@ fn conv_decl_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il:
     };
 }
 
-fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type {
+fn conv_ty(ctx: &mut ClangParserCtx,
+           ty: &cx::Type,
+           cursor: &Cursor) -> il::Type {
+    conv_ty_resolving_typedefs(ctx, ty, cursor, false)
+}
+
+fn conv_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
+                              ty: &cx::Type,
+                              cursor: &Cursor,
+                              resolve_typedefs: bool) -> il::Type {
     let layout = Layout::new(ty.size(), ty.align());
     match ty.kind() {
-        CXType_Void | CXType_Invalid => TVoid,
+        CXType_Void => TVoid,
+        CXType_Invalid => {
+            log_err_warn(ctx,
+                &format!("invalid type `{}` ({})",
+                    type_to_str(ty.kind()), cursor.location()
+                ),
+                false
+            );
+            TVoid
+        }
         CXType_Bool => TInt(IBool, layout),
         CXType_SChar |
         CXType_Char_S => TInt(ISChar, layout),
@@ -380,7 +415,7 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
         CXType_Record |
         CXType_Typedef  |
         CXType_Unexposed |
-        CXType_Enum => conv_decl_ty(ctx, ty, cursor),
+        CXType_Enum => conv_decl_ty_resolving_typedefs(ctx, ty, cursor, resolve_typedefs),
         CXType_ConstantArray => TArray(Box::new(conv_ty(ctx, &ty.elem_type(), cursor)), ty.array_size(), layout),
         _ => {
             let fail = ctx.options.fail_on_unknown_type;
@@ -471,12 +506,21 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
     }
 
     match cursor.kind() {
+        CXCursor_TypedefDecl => {
+            ci.typedefs.push(cursor.spelling().to_owned());
+        }
         CXCursor_FieldDecl => {
             let anno = Annotations::new(cursor);
             if anno.hide {
                 return CXChildVisit_Continue;
             }
-            let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
+
+            let type_spelling = cursor.cur_type().spelling();
+            let is_class_typedef = ci.typedefs.iter().any(|spelling| *spelling == *type_spelling);
+
+            // println!("{} is ctd: {}", type_spelling, is_class_typedef);
+
+            let ty = conv_ty_resolving_typedefs(ctx, &cursor.cur_type(), cursor, is_class_typedef);
             let comment = cursor.raw_comment();
 
             let (name, bitfields) = match (cursor.bit_width(), ci.members.last_mut()) {
@@ -704,15 +748,15 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
         CXCursor_Destructor => {
             ci.has_destructor = true;
         }
+        CXCursor_CXXAccessSpecifier => {}
         _ => {
             // XXX: Some kind of warning would be nice, but this produces far
             //      too many.
-            //log_err_warn(ctx,
-            //    &format!("unhandled composite member `{}` (kind {}) in `{}` ({})",
-            //        cursor.spelling(), cursor.kind(), parent.spelling(), cursor.location()
-            //    )[..],
-            //    false
-            //);
+            log_err_warn(ctx,
+            &format!("unhandled composite member `{}` (kind {}) in `{}` ({})",
+            cursor.spelling(), cursor.kind(), parent.spelling(), cursor.location()
+            ),
+            false);
         }
     }
     CXChildVisit_Continue
