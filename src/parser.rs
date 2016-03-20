@@ -748,7 +748,13 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
         CXCursor_Destructor => {
             ci.has_destructor = true;
         }
-        CXCursor_CXXAccessSpecifier => {}
+        // Intentionally not handled
+        CXCursor_CXXAccessSpecifier |
+        CXCursor_CXXFinalAttr |
+        CXCursor_Constructor |
+        CXCursor_FunctionTemplate |
+        CXCursor_ConversionFunction |
+        CXCursor_VarDecl => {}
         _ => {
             // XXX: Some kind of warning would be nice, but this produces far
             //      too many.
