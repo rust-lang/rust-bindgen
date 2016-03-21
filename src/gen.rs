@@ -1121,6 +1121,11 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                 span: ctx.span}));
     }
 
+    // Template args have incomplete type in general
+    if ci.args.is_empty() {
+        extra.push(mk_test_fn(ctx, name, &layout));
+    }
+
     items.extend(extra.into_iter());
 
     let mut mangledlist = vec!();
@@ -2090,4 +2095,16 @@ fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: Abi) -> ast::Ty {
         ),
         span: ctx.span
     }
+}
+
+fn mk_test_fn(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
+    let size = layout.size;
+    let struct_name = ctx.ext_cx.ident_of(name);
+    let fn_name = ctx.ext_cx.ident_of(&format!("bindgen_test_layout_{}", name));
+    let item = quote_item!(&ctx.ext_cx,
+        #[test]
+        fn $fn_name() {
+            assert_eq!(::std::mem::size_of::<$struct_name>(), $size);
+        }).unwrap();
+    item
 }
