@@ -274,6 +274,8 @@ pub struct CompInfo {
     pub layout: Layout,
     /// Typedef'd types names, that we'll resolve early to avoid name conflicts
     pub typedefs: Vec<String>,
+    /// If this type has a template parameter which is not a type (e.g.: a size_t)
+    pub has_non_type_template_params: bool,
 }
 
 static mut UNNAMED_COUNTER: u32 = 0;
@@ -306,6 +308,7 @@ impl CompInfo {
             base_members: 0,
             layout: layout,
             typedefs: vec!(),
+            has_non_type_template_params: false,
         }
     }
 }

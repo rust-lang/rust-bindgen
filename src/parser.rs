@@ -129,7 +129,11 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                         let mut list = Vec::with_capacity(len as usize);
                         for i in 0..len {
                             let arg_type = ty.template_arg_type(i);
-                            list.push(conv_ty(ctx, &arg_type, &cursor));
+                            if arg_type.kind() != CXType_Invalid {
+                                list.push(conv_ty(ctx, &arg_type, &cursor));
+                            } else {
+                                ctx.logger.warn("warning: Template parameter is not a type");
+                            }
                         }
                         list
                     }
@@ -303,20 +307,24 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
                                    ty: &cx::Type,
                                    cursor: &Cursor,
                                    resolve_typedefs: bool) -> il::Type {
-    let ty_decl = &ty.declaration();
+    let ty_decl = ty.declaration();
     return match ty_decl.kind() {
         CXCursor_StructDecl |
         CXCursor_UnionDecl |
         CXCursor_ClassTemplate |
         CXCursor_ClassDecl => {
-            let decl = decl_name(ctx, ty_decl);
+            let decl = decl_name(ctx, &ty_decl);
             let args = match ty.num_template_args() {
                 -1 => vec!(),
                 len => {
                     let mut list = Vec::with_capacity(len as usize);
                     for i in 0..len {
                         let arg_type = ty.template_arg_type(i);
-                        list.push(conv_ty(ctx, &arg_type, &cursor));
+                        if arg_type.kind() != CXType_Invalid {
+                            list.push(conv_ty(ctx, &arg_type, &cursor));
+                        } else {
+                            ctx.logger.warn("warning: Template parameter is not a type");
+                        }
                     }
                     list
                 }
@@ -325,18 +333,18 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
             if !args.is_empty() {
                 ci.borrow_mut().args = args;
                 cursor.visit(|c, _: &Cursor| {
-                    if c.kind() != CXCursor_TemplateRef {
-                        return CXChildVisit_Continue;
+                    if c.kind() == CXCursor_TemplateRef {
+                        let cref = c.definition();
+                        ci.borrow_mut().ref_template = Some(conv_decl_ty(ctx, &cref.cur_type(), &cref));
                     }
-                    let cref = c.definition();
-                    ci.borrow_mut().ref_template = Some(conv_decl_ty(ctx, &cref.cur_type(), &cref));
+
                     CXChildVisit_Continue
                 });
             }
             TComp(ci)
         }
         CXCursor_EnumDecl => {
-            let decl = decl_name(ctx, ty_decl);
+            let decl = decl_name(ctx, &ty_decl);
             let ei = decl.enuminfo();
             TEnum(ei)
         }
@@ -345,7 +353,7 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
                 return conv_ty_resolving_typedefs(ctx, &ty_decl.typedef_type(), &ty_decl.typedef_type().declaration(), resolve_typedefs);
             }
 
-            let decl = decl_name(ctx, ty_decl);
+            let decl = decl_name(ctx, &ty_decl);
             let ti = decl.typeinfo();
             TNamed(ti)
         }
@@ -377,12 +385,14 @@ fn conv_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
                               cursor: &Cursor,
                               resolve_typedefs: bool) -> il::Type {
     let layout = Layout::new(ty.size(), ty.align());
+    println!("conv_ty: `{}` layout: {:?}, kind {}: {}", cursor.spelling(), layout, ty.kind(), type_to_str(ty.kind()));
+
     match ty.kind() {
         CXType_Void => TVoid,
         CXType_Invalid => {
             log_err_warn(ctx,
                 &format!("invalid type `{}` ({})",
-                    type_to_str(ty.kind()), cursor.location()
+                    cursor.spelling(), cursor.location()
                 ),
                 false
             );
@@ -408,6 +418,7 @@ fn conv_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
         CXType_LongDouble => TFloat(FDouble, layout),
         CXType_Pointer => conv_ptr_ty(ctx, &ty.pointee_type(), cursor, false, layout),
         CXType_LValueReference => conv_ptr_ty(ctx, &ty.pointee_type(), cursor, true, layout),
+        // XXX DependentSizedArray is wrong
         CXType_VariableArray | CXType_DependentSizedArray | CXType_IncompleteArray => {
             conv_ptr_ty(ctx, &ty.elem_type(), cursor, false, layout)
         }
@@ -517,8 +528,6 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
 
             let type_spelling = cursor.cur_type().spelling();
             let is_class_typedef = ci.typedefs.iter().any(|spelling| *spelling == *type_spelling);
-
-            // println!("{} is ctd: {}", type_spelling, is_class_typedef);
 
             let ty = conv_ty_resolving_typedefs(ctx, &cursor.cur_type(), cursor, is_class_typedef);
             let comment = cursor.raw_comment();
@@ -748,6 +757,12 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
         CXCursor_Destructor => {
             ci.has_destructor = true;
         }
+        CXCursor_NonTypeTemplateParameter => {
+            log_err_warn(ctx, &format!("warning: Non-type template parameter in composite member could affect layout: `{}` (kind {}) in `{}` ({})",
+                              cursor.spelling(), cursor.kind(), parent.spelling(),
+                              cursor.location()), false);
+            ci.has_non_type_template_params = true;
+        }
         // Intentionally not handled
         CXCursor_CXXAccessSpecifier |
         CXCursor_CXXFinalAttr |
@@ -758,11 +773,9 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
         _ => {
             // XXX: Some kind of warning would be nice, but this produces far
             //      too many.
-            log_err_warn(ctx,
-            &format!("unhandled composite member `{}` (kind {}) in `{}` ({})",
-            cursor.spelling(), cursor.kind(), parent.spelling(), cursor.location()
-            ),
-            false);
+            log_err_warn(ctx, &format!("unhandled composite member `{}` (kind {}) in `{}` ({})",
+                              cursor.spelling(), cursor.kind(), parent.spelling(),
+                              cursor.location()), false);
         }
     }
     CXChildVisit_Continue
