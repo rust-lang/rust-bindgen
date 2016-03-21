@@ -803,6 +803,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
     let mut bitfields: u32 = 0;
 
     if ci.hide ||
+       ci.has_non_type_template_params ||
        template_args.iter().any(|f| f == &TVoid) {
         return vec!();
     }
@@ -943,10 +944,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             if cty_has_destructor(&f.ty) {
                 has_destructor = true;
             }
-            if !cty_is_translatable(&f.ty) {
-                println!("{}::{} not translatable, void: {}", ci.name, f.name, f.ty == TVoid);
-                continue;
-            }
+
             let f_name = match f.bitfields {
                 Some(_) => {
                     bitfields += 1;
@@ -954,6 +952,24 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                 }
                 None => rust_type_id(ctx, &f.name)
             };
+
+            if !cty_is_translatable(&f.ty) {
+                println!("{}::{} not translatable, void: {}", ci.name, f.name, f.ty == TVoid);
+                let size = f.ty.size();
+
+                if size != 0 {
+                    fields.push(respan(ctx.span, ast::StructField_ {
+                        kind: ast::NamedField(
+                            ctx.ext_cx.ident_of(&f_name),
+                            ast::Visibility::Public,
+                        ),
+                        id: ast::DUMMY_NODE_ID,
+                        ty: quote_ty!(&ctx.ext_cx, [u8; $size]),
+                        attrs: mk_doc_attr(ctx, &f.comment)
+                    }));
+                }
+                continue;
+            }
 
             let mut offset: u32 = 0;
             if let Some(ref bitfields) = f.bitfields {
@@ -1886,14 +1902,15 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type, allow_bool: bool, use_full_path: bool)
 }
 
 fn cty_is_translatable(ty: &Type) -> bool {
-    match ty {
-        &TVoid => false,
-        &TArray(ref t, _, _) => {
+    match *ty {
+        TVoid => false,
+        TArray(ref t, _, _) => {
             cty_is_translatable(&**t)
         },
-        &TComp(ref ci) => {
+        TComp(ref ci) => {
             let c = ci.borrow();
-            !c.args.iter().any(|gt| gt == &TVoid)
+            println!("translatable? nttp: {}", c.has_non_type_template_params);
+            !c.args.iter().any(|gt| gt == &TVoid) && !c.has_non_type_template_params
         },
         _ => true,
     }

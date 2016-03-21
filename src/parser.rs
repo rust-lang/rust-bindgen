@@ -123,6 +123,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                 GCompDecl(ci)
             }
             CXCursor_ClassDecl => {
+                let mut has_non_type_template_params = false;
                 let args = match ty.num_template_args() {
                     -1 => vec!(),
                     len => {
@@ -132,6 +133,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                             if arg_type.kind() != CXType_Invalid {
                                 list.push(conv_ty(ctx, &arg_type, &cursor));
                             } else {
+                                has_non_type_template_params = true;
                                 ctx.logger.warn("warning: Template parameter is not a type");
                             }
                         }
@@ -159,6 +161,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
 
                 let ci = Rc::new(RefCell::new(CompInfo::new(spelling, module_id, filename, comment, CompKind::Struct, vec!(), layout)));
                 ci.borrow_mut().args = args;
+                ci.borrow_mut().has_non_type_template_params = has_non_type_template_params;
                 GCompDecl(ci)
             }
             CXCursor_TypedefDecl => {
