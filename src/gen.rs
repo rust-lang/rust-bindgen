@@ -1909,7 +1909,6 @@ fn cty_is_translatable(ty: &Type) -> bool {
         },
         TComp(ref ci) => {
             let c = ci.borrow();
-            println!("translatable? nttp: {}", c.has_non_type_template_params);
             !c.args.iter().any(|gt| gt == &TVoid) && !c.has_non_type_template_params
         },
         _ => true,

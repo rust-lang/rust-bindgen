@@ -388,7 +388,7 @@ fn conv_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
                               cursor: &Cursor,
                               resolve_typedefs: bool) -> il::Type {
     let layout = Layout::new(ty.size(), ty.align());
-    println!("conv_ty: `{}` layout: {:?}, kind {}: {}", cursor.spelling(), layout, ty.kind(), type_to_str(ty.kind()));
+    // println!("conv_ty: `{}` layout: {:?}, kind {}: {}", cursor.spelling(), layout, ty.kind(), type_to_str(ty.kind()));
 
     match ty.kind() {
         CXType_Void => TVoid,
