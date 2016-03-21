@@ -510,6 +510,18 @@ pub const CXToken_Identifier: c_uint = 2;
 pub const CXToken_Literal: c_uint = 3;
 pub const CXToken_Comment: c_uint = 4;
 pub type CXTokenKind = Enum_CXTokenKind;
+pub type Enum_CXTemplateArgumentKind = c_uint;
+pub const CXTemplateArgumentKind_Null: c_uint = 0;
+pub const CXTemplateArgumentKind_Type: c_uint = 1;
+pub const CXTemplateArgumentKind_Declaration: c_uint = 2;
+pub const CXTemplateArgumentKind_NullPtr: c_uint = 3;
+pub const CXTemplateArgumentKind_Integral: c_uint = 4;
+pub const CXTemplateArgumentKind_Template: c_uint = 5;
+pub const CXTemplateArgumentKind_TemplateExpansion: c_uint = 6;
+pub const CXTemplateArgumentKind_Expression: c_uint = 7;
+pub const CXTemplateArgumentKind_Pack: c_uint = 8;
+pub const CXTemplateArgumentKind_Invalid: c_uint = 9;
+pub type CXTemplateArgumentKind = Enum_CXTemplateArgumentKind;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXToken {
@@ -1060,6 +1072,12 @@ extern "C" {
     pub fn clang_Cursor_getNumArguments(C: CXCursor) -> c_int;
     pub fn clang_Cursor_getArgument(C: CXCursor, i: c_uint) ->
      CXCursor;
+    pub fn clang_Cursor_getTemplateArgumentKind(C: CXCursor, i: c_uint) ->
+     CXTemplateArgumentKind;
+    pub fn clang_Cursor_getTemplateArgumentValue(C: CXCursor, i: c_uint) ->
+     c_longlong;
+    pub fn clang_Cursor_getTemplateArgumentUnsignedValue(C: CXCursor, i: c_uint) ->
+     c_ulonglong;
     pub fn clang_equalTypes(A: CXType, B: CXType) -> c_uint;
     pub fn clang_getCanonicalType(T: CXType) -> CXType;
     pub fn clang_isConstQualifiedType(T: CXType) -> c_uint;
@@ -1087,11 +1105,11 @@ extern "C" {
      c_longlong;
     pub fn clang_Type_getCXXRefQualifier(T: CXType) ->
      Enum_CXRefQualifierKind;
-    pub fn clang_Type_getNumTemplateArguments(T: CXType) -> ::libc::c_int;
-    pub fn clang_Type_getTemplateArgumentAsType(T: CXType, i: ::libc::c_int) ->
+    pub fn clang_Type_getNumTemplateArguments(T: CXType) -> c_int;
+    pub fn clang_Type_getTemplateArgumentAsType(T: CXType, i: c_int) ->
      CXType;
-    pub fn clang_Cursor_isBitField(C: CXCursor) -> ::libc::c_uint;
-    pub fn clang_isVirtualBase(arg1: CXCursor) -> ::libc::c_uint;
+    pub fn clang_Cursor_isBitField(C: CXCursor) -> c_uint;
+    pub fn clang_isVirtualBase(arg1: CXCursor) -> c_uint;
     pub fn clang_getCXXAccessSpecifier(arg1: CXCursor) ->
      Enum_CX_CXXAccessSpecifier;
     pub fn clang_getNumOverloadedDecls(cursor: CXCursor) -> c_uint;

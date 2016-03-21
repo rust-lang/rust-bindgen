@@ -1,6 +1,6 @@
 #![allow(non_upper_case_globals, dead_code)]
 
-use std::os::raw::{c_uint, c_char, c_int, c_ulong};
+use std::os::raw::{c_uint, c_char, c_int, c_ulong, c_longlong};
 use std::{mem, ptr};
 use std::fmt;
 use std::hash::Hash;
@@ -210,6 +210,19 @@ impl Cursor {
     pub fn is_virtual_base(&self) -> bool {
         unsafe {
             clang_isVirtualBase(self.x) != 0
+        }
+    }
+
+    // CXX template
+    pub fn template_arg_kind(&self, i: c_int) -> CXTemplateArgumentKind {
+        unsafe {
+            clang_Cursor_getTemplateArgumentKind(self.x, i as c_uint)
+        }
+    }
+
+    pub fn template_arg_value(&self, i: c_int) -> c_longlong {
+        unsafe {
+            clang_Cursor_getTemplateArgumentValue(self.x, i as c_uint)
         }
     }
 }
