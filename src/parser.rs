@@ -439,7 +439,7 @@ fn conv_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
         CXType_Typedef  |
         CXType_Unexposed |
         CXType_Enum => conv_decl_ty_resolving_typedefs(ctx, ty, cursor, resolve_typedefs),
-        CXType_ConstantArray => TArray(Box::new(conv_ty(ctx, &ty.elem_type(), cursor)), ty.array_size(), layout),
+        CXType_ConstantArray => TArray(Box::new(conv_ty_resolving_typedefs(ctx, &ty.elem_type(), cursor, resolve_typedefs)), ty.array_size(), layout),
         _ => {
             let fail = ctx.options.fail_on_unknown_type;
             log_err_warn(ctx,
@@ -541,7 +541,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             // XXX make it more consistent
             let type_spelling = cursor.cur_type().spelling()
                                       .replace("const ", "")
-                                      .replace(" *", "");
+                                      .split(' ').next().unwrap_or("").to_owned();
             let is_class_typedef = ci.typedefs.iter().any(|spelling| *spelling == *type_spelling);
 
             let ty = conv_ty_resolving_typedefs(ctx, &cursor.cur_type(), cursor, is_class_typedef);
