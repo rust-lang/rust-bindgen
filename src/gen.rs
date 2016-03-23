@@ -90,10 +90,20 @@ fn rust_type_id(ctx: &mut GenCtx, name: &str) -> String {
         "u32" | "f32" | "f64" | "i8" |
         "i16" | "i32" | "i64" | "Self" |
         "str" => {
-            let mut s = "_".to_string();
+            let mut s = "_".to_owned();
             s.push_str(name);
             s
         }
+        "int8_t" => "i8".to_owned(),
+        "uint8_t" => "u8".to_owned(),
+        "int16_t" => "i16".to_owned(),
+        "uint16_t" => "u16".to_owned(),
+        "int32_t" => "i32".to_owned(),
+        "uint32_t" => "u32".to_owned(),
+        "int64_t" => "i64".to_owned(),
+        "uint64_t" => "u64".to_owned(),
+        "size_t" => "usize".to_owned(),
+        "ssize_t" => "isize".to_owned(),
         _ => first(rust_id(ctx, name))
     }
 }
