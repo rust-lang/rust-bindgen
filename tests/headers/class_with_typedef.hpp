@@ -8,3 +8,8 @@ public:
     AnotherInt d;
     AnotherInt* other_ptr;
 };
+
+class D: public C {
+public:
+    MyInt* ptr;
+};

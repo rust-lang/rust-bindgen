@@ -661,7 +661,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
         }
         CXCursor_CXXBaseSpecifier => {
             let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
-            let fieldname = if ci.members.len() > 0 {
+            let fieldname = if !ci.members.is_empty() {
                 format!("_base{}", ci.members.len())
             } else {
                 "_base".to_string()
@@ -683,6 +683,9 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 ci.has_vtable = true;
             } else {
                 ci.members.push(CompMember::Field(field));
+            }
+            if let TComp(ref info) = ty {
+                ci.typedefs.extend(info.borrow().typedefs.clone().into_iter());
             }
             ci.base_members += 1;
         }
@@ -887,6 +890,10 @@ fn visit_top(cursor: &Cursor,
             CXChildVisit_Continue
         }
         CXCursor_FunctionDecl => {
+            if ctx.options.ignore_functions {
+                return CXChildVisit_Continue;
+            }
+
             let linkage = cursor.linkage();
             if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
                 return CXChildVisit_Continue;
