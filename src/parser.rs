@@ -226,6 +226,15 @@ fn get_abi(cc: Enum_CXCallingConv) -> abi::Abi {
 }
 
 fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, is_ref: bool, layout: Layout) -> il::Type {
+    conv_ptr_ty_resolving_typedefs(ctx, ty, cursor, is_ref, layout, false)
+}
+
+fn conv_ptr_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
+                                  ty: &cx::Type,
+                                  cursor: &Cursor,
+                                  is_ref: bool,
+                                  layout: Layout,
+                                  resolve_typedefs: bool) -> il::Type {
     let is_const = ty.is_const();
     match ty.kind() {
         CXType_Void => {
@@ -239,9 +248,9 @@ fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, is_ref:
                 TFuncPtr(mk_fn_sig(ctx, ty, cursor))
             } else if cursor.kind() == CXCursor_VarDecl {
                 let can_ty = ty.canonical_type();
-                conv_ty(ctx, &can_ty, cursor)
+                conv_ty_resolving_typedefs(ctx, &can_ty, cursor, resolve_typedefs)
             } else {
-                TPtr(Box::new(conv_decl_ty(ctx, ty, cursor)), ty.is_const(), is_ref, layout)
+                TPtr(Box::new(conv_decl_ty_resolving_typedefs(ctx, ty, cursor, resolve_typedefs)), ty.is_const(), is_ref, layout)
             };
         }
         CXType_Typedef => {
@@ -249,12 +258,12 @@ fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, is_ref:
             let def_ty = decl.typedef_type();
             if def_ty.kind() == CXType_FunctionProto ||
                def_ty.kind() == CXType_FunctionNoProto {
-                return TPtr(Box::new(conv_ptr_ty(ctx, &def_ty, cursor, is_ref, layout)), is_const, is_ref, layout);
+                return TPtr(Box::new(conv_ptr_ty_resolving_typedefs(ctx, &def_ty, cursor, is_ref, layout, resolve_typedefs)), is_const, is_ref, layout);
             } else {
-                return TPtr(Box::new(conv_ty(ctx, ty, cursor)), is_const, is_ref, layout);
+                return TPtr(Box::new(conv_ty_resolving_typedefs(ctx, ty, cursor, resolve_typedefs)), is_const, is_ref, layout);
             }
         }
-        _ => return TPtr(Box::new(conv_ty(ctx, ty, cursor)), is_const, is_ref, layout),
+        _ => return TPtr(Box::new(conv_ty_resolving_typedefs(ctx, ty, cursor, resolve_typedefs)), is_const, is_ref, layout),
     }
 }
 
@@ -419,11 +428,11 @@ fn conv_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
         CXType_Float => TFloat(FFloat, layout),
         CXType_Double => TFloat(FDouble, layout),
         CXType_LongDouble => TFloat(FDouble, layout),
-        CXType_Pointer => conv_ptr_ty(ctx, &ty.pointee_type(), cursor, false, layout),
-        CXType_LValueReference => conv_ptr_ty(ctx, &ty.pointee_type(), cursor, true, layout),
+        CXType_Pointer => conv_ptr_ty_resolving_typedefs(ctx, &ty.pointee_type(), cursor, false, layout, resolve_typedefs),
+        CXType_LValueReference => conv_ptr_ty_resolving_typedefs(ctx, &ty.pointee_type(), cursor, true, layout, resolve_typedefs),
         // XXX DependentSizedArray is wrong
         CXType_VariableArray | CXType_DependentSizedArray | CXType_IncompleteArray => {
-            conv_ptr_ty(ctx, &ty.elem_type(), cursor, false, layout)
+            conv_ptr_ty_resolving_typedefs(ctx, &ty.elem_type(), cursor, false, layout, resolve_typedefs)
         }
         CXType_FunctionProto => TFuncProto(mk_fn_sig(ctx, ty, cursor)),
         CXType_Record |
@@ -529,7 +538,10 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 return CXChildVisit_Continue;
             }
 
-            let type_spelling = cursor.cur_type().spelling();
+            // XXX make it more consistent
+            let type_spelling = cursor.cur_type().spelling()
+                                      .replace("const ", "")
+                                      .replace(" *", "");
             let is_class_typedef = ci.typedefs.iter().any(|spelling| *spelling == *type_spelling);
 
             let ty = conv_ty_resolving_typedefs(ctx, &cursor.cur_type(), cursor, is_class_typedef);
