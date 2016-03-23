@@ -56,6 +56,11 @@ impl<'a> Builder<'a> {
         self
     }
 
+    pub fn opaque_type<T: Into<String>>(&mut self, arg: T) -> &mut Self {
+        self.options.opaque_types.push(arg.into());
+        self
+    }
+
     pub fn clang_arg<T: Into<String>>(&mut self, arg: T) -> &mut Self {
         self.options.clang_args.push(arg.into());
         self
@@ -120,6 +125,7 @@ impl<'a> Default for Builder<'a> {
 pub struct BindgenOptions {
     pub match_pat: Vec<String>,
     pub blacklist_type: Vec<String>,
+    pub opaque_types: Vec<String>,
     pub builtins: bool,
     pub rust_enums: bool,
     pub links: Vec<(String, LinkType)>,
@@ -138,6 +144,7 @@ impl Default for BindgenOptions {
         BindgenOptions {
             match_pat: Vec::new(),
             blacklist_type: Vec::new(),
+            opaque_types: Vec::new(),
             builtins: false,
             rust_enums: true,
             links: Vec::new(),

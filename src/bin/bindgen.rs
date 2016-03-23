@@ -96,9 +96,16 @@ fn parse_args(args: &[String]) -> ParseResult {
                 }
                 "-blacklist-type" => {
                     if ix + 1 >= args_len {
-                        return ParseResult::ParseErr("Missing blacklist type pattern".to_string());
+                        return ParseResult::ParseErr("Missing blacklist type name".to_string());
                     }
                     options.blacklist_type.push(args[ix + 1].clone());
+                    ix += 2;
+                }
+                "-opaque-type" => {
+                    if ix + 1 >= args_len {
+                        return ParseResult::ParseErr("Missing opaque type name".to_string());
+                    }
+                    options.opaque_types.push(args[ix + 1].clone());
                     ix += 2;
                 }
                 "-builtins" => {

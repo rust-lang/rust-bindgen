@@ -399,10 +399,18 @@ fn gen_mod(mut ctx: &mut GenCtx,
     }
 }
 
+fn type_opaque(ctx: &GenCtx, global: &Global) -> bool {
+    let global_name = global.name();
+
+    // Can't make an opaque type without layout
+    global.layout().is_some() &&
+    ctx.options.opaque_types.iter().any(|name| *name == global_name)
+}
+
 fn type_blacklisted(ctx: &GenCtx, global: &Global) -> bool {
     let global_name = global.name();
 
-    ctx.options.blacklist_type.iter().all(|name| *name != global_name)
+    ctx.options.blacklist_type.iter().any(|name| *name == global_name)
 }
 
 fn gen_globals(mut ctx: &mut GenCtx,
@@ -441,7 +449,16 @@ fn gen_globals(mut ctx: &mut GenCtx,
     gs = remove_redundant_decl(gs);
 
     for g in gs.into_iter() {
-        if !type_blacklisted(ctx, &g) {
+        if type_blacklisted(ctx, &g) {
+            continue;
+        }
+
+        if type_opaque(ctx, &g) {
+            let name = first(rust_id(ctx, &g.name()));
+            let layout = g.layout().unwrap();
+            defs.push(mk_opaque_struct(ctx, &name, &layout));
+            // This should always be true but anyways..
+            defs.push(mk_test_fn(ctx, &name, &layout));
             continue;
         }
 
@@ -2131,5 +2148,19 @@ fn mk_test_fn(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
         fn $fn_name() {
             assert_eq!(::std::mem::size_of::<$struct_name>(), $size);
         }).unwrap();
+    item
+}
+
+fn mk_opaque_struct(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
+    let size = layout.size;
+    let struct_name = ctx.ext_cx.ident_of(name);
+
+    let item = quote_item!(&ctx.ext_cx,
+        #[repr(C)]
+        #[derive(Copy, Clone, Debug)]
+        struct $struct_name {
+            _bindgen_opaque_blob: [u8; $size]
+        }
+    ).unwrap();
     item
 }

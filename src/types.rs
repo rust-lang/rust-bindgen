@@ -77,6 +77,19 @@ impl Global {
         }
     }
 
+    pub fn layout(&self) -> Option<Layout> {
+        Some(match *self {
+            GType(ref info) => info.borrow().layout,
+            GComp(ref info)
+            | GCompDecl(ref info) => info.borrow().layout,
+            GEnum(ref info)
+            | GEnumDecl(ref info) => info.borrow().layout,
+            GVar(_)
+            | GFunc(_)
+            | GOther => return None,
+        })
+    }
+
     pub fn compinfo(&self) -> Rc<RefCell<CompInfo>> {
         match *self {
             GComp(ref i)
