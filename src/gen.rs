@@ -469,6 +469,14 @@ fn gen_globals(mut ctx: &mut GenCtx,
         }
 
         if let Some(substituted) = ctx.current_module().translations.get(&g.name()) {
+            match (substituted.layout(), g.layout()) {
+                (Some(l), Some(lg)) if l.size != lg.size => {},
+                (None, None) => {},
+                _ => {
+                    // XXX real logger
+                    println!("warning: substituted type for {} does not match its size", g.name());
+                }
+            }
             g = substituted.clone();
         }
 
