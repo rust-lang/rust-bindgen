@@ -685,6 +685,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 ci.members.push(CompMember::Field(field));
             }
             if let TComp(ref info) = ty {
+                ci.has_nonempty_base |= !info.borrow().members.is_empty();
                 ci.typedefs.extend(info.borrow().typedefs.clone().into_iter());
             }
             ci.base_members += 1;

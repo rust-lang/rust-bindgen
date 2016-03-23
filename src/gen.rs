@@ -1068,6 +1068,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
         }));
     }
 
+    let field_count = fields.len();
     let variant_data = if fields.is_empty() {
         ast::VariantData::Unit(ast::DUMMY_NODE_ID)
     } else {
@@ -1136,7 +1137,17 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
     }
 
     // Template args have incomplete type in general
-    if ci.args.is_empty() {
+    //
+    // XXX if x is a class without members, C++ still will report
+    // sizeof(x) == 1, since it requires to be adressable.
+    //
+    // We maybe should add a dummy byte if it's the case, but...
+    // That could play wrong with inheritance.
+    //
+    // So for now don't generate a test if the struct/class is empty
+    // or has only empty bases.
+    if ci.args.is_empty() && field_count > 0 &&
+       (ci.has_nonempty_base || ci.base_members < field_count) {
         extra.push(mk_test_fn(ctx, name, &layout));
     }
 
