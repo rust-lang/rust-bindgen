@@ -389,7 +389,11 @@ fn gen_mod(mut ctx: &mut GenCtx,
     }
 }
 
+fn type_blacklisted(ctx: &GenCtx, global: &Global) -> bool {
+    let global_name = global.name();
 
+    ctx.options.blacklist_type.iter().all(|name| *name != global_name)
+}
 
 fn gen_globals(mut ctx: &mut GenCtx,
                links: &[(String, LinkType)],
@@ -427,6 +431,10 @@ fn gen_globals(mut ctx: &mut GenCtx,
     gs = remove_redundant_decl(gs);
 
     for g in gs.into_iter() {
+        if !type_blacklisted(ctx, &g) {
+            continue;
+        }
+
         match g {
             GType(ti) => {
                 let t = ti.borrow().clone();

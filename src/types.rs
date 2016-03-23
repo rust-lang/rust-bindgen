@@ -63,6 +63,20 @@ pub enum Global {
 }
 
 impl Global {
+    // XXX prevent this dumb to_owned()... didn't want to deal with the borrowed lifetime
+    pub fn name(&self) -> String {
+        match *self {
+            GType(ref info) => info.borrow().name.to_owned(),
+            GComp(ref info)
+            | GCompDecl(ref info) => info.borrow().name.to_owned(),
+            GEnum(ref info)
+            | GEnumDecl(ref info) => info.borrow().name.to_owned(),
+            GVar(ref info)
+            | GFunc(ref info) => info.borrow().name.to_owned(),
+            GOther => "".to_owned(),
+        }
+    }
+
     pub fn compinfo(&self) -> Rc<RefCell<CompInfo>> {
         match *self {
             GComp(ref i)

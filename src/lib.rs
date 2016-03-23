@@ -51,8 +51,8 @@ impl<'a> Builder<'a> {
         self
     }
 
-    pub fn match_type<T: Into<String>>(&mut self, arg: T) -> &mut Self {
-        self.options.match_type.push(arg.into());
+    pub fn blacklist_type<T: Into<String>>(&mut self, arg: T) -> &mut Self {
+        self.options.blacklist_type.push(arg.into());
         self
     }
 
@@ -119,7 +119,7 @@ impl<'a> Default for Builder<'a> {
 /// Deprecated - use a `Builder` instead
 pub struct BindgenOptions {
     pub match_pat: Vec<String>,
-    pub match_type: Vec<String>,
+    pub blacklist_type: Vec<String>,
     pub builtins: bool,
     pub rust_enums: bool,
     pub links: Vec<(String, LinkType)>,
@@ -137,7 +137,7 @@ impl Default for BindgenOptions {
     fn default() -> BindgenOptions {
         BindgenOptions {
             match_pat: Vec::new(),
-            match_type: Vec::new(),
+            blacklist_type: Vec::new(),
             builtins: false,
             rust_enums: true,
             links: Vec::new(),
