@@ -53,8 +53,9 @@ impl<'r> GenCtx<'r> {
         ret
     }
 
-    fn current_module(&self) -> &Module {
-        self.module_map.get(&self.current_module_id).expect("Module not found!")
+    fn current_module_mut(&mut self) -> &mut Module {
+        let id = self.current_module_id;
+        self.module_map.get_mut(&id).expect("Module not found!")
     }
 }
 
@@ -417,6 +418,60 @@ fn type_blacklisted(ctx: &GenCtx, global: &Global) -> bool {
     ctx.options.blacklist_type.iter().any(|name| *name == global_name)
 }
 
+fn gen_global(mut ctx: &mut GenCtx,
+              g: Global,
+              defs: &mut Vec<P<ast::Item>>) {
+    // XXX unify with anotations both type_blacklisted
+    // and type_opaque (which actually doesn't mean the same).
+    if type_blacklisted(ctx, &g) {
+        return;
+    }
+
+    if type_opaque(ctx, &g) {
+        let name = first(rust_id(ctx, &g.name()));
+        let layout = g.layout().unwrap();
+        defs.push(mk_opaque_struct(ctx, &name, &layout));
+        // This should always be true but anyways..
+        defs.push(mk_test_fn(ctx, &name, &layout));
+        return;
+    }
+
+    match g {
+        GType(ti) => {
+            let t = ti.borrow().clone();
+            defs.push(ctypedef_to_rs(&mut ctx, t))
+        },
+        GCompDecl(ci) => {
+            let c = ci.borrow().clone();
+            let name = comp_name(&ctx, c.kind, &c.name);
+
+            defs.push(opaque_to_rs(&mut ctx, &name));
+        },
+        GComp(ci) => {
+            let c = ci.borrow().clone();
+            let name = comp_name(&ctx, c.kind, &c.name);
+            defs.extend(comp_to_rs(&mut ctx, &name, c).into_iter())
+        },
+        GEnumDecl(ei) => {
+            let e = ei.borrow().clone();
+            let name = enum_name(&ctx, &e.name);
+
+            defs.push(opaque_to_rs(&mut ctx, &name));
+        },
+        GEnum(ei) => {
+            let e = ei.borrow().clone();
+            let name = enum_name(&ctx, &e.name);
+            defs.extend(cenum_to_rs(&mut ctx, name, e.kind, e.comment, &e.items, e.layout).into_iter())
+        },
+        GVar(vi) => {
+            let v = vi.borrow();
+            let ty = cty_to_rs(&mut ctx, &v.ty, v.is_const, true);
+            defs.push(const_to_rs(&mut ctx, v.name.clone(), v.val.unwrap(), ty));
+        },
+        _ => { }
+    }
+}
+
 fn gen_globals(mut ctx: &mut GenCtx,
                links: &[(String, LinkType)],
                globs: &[Global]) -> Vec<P<ast::Item>> {
@@ -453,22 +508,7 @@ fn gen_globals(mut ctx: &mut GenCtx,
     gs = remove_redundant_decl(gs);
 
     for mut g in gs.into_iter() {
-        // XXX unify with anotations both type_blacklisted
-        // and type_opaque (which actually doesn't mean the same).
-        if type_blacklisted(ctx, &g) {
-            continue;
-        }
-
-        if type_opaque(ctx, &g) {
-            let name = first(rust_id(ctx, &g.name()));
-            let layout = g.layout().unwrap();
-            defs.push(mk_opaque_struct(ctx, &name, &layout));
-            // This should always be true but anyways..
-            defs.push(mk_test_fn(ctx, &name, &layout));
-            continue;
-        }
-
-        if let Some(substituted) = ctx.current_module().translations.get(&g.name()) {
+        if let Some(substituted) = ctx.current_module_mut().translations.remove(&g.name()) {
             match (substituted.layout(), g.layout()) {
                 (Some(l), Some(lg)) if l.size != lg.size => {},
                 (None, None) => {},
@@ -477,43 +517,16 @@ fn gen_globals(mut ctx: &mut GenCtx,
                     println!("warning: substituted type for {} does not match its size", g.name());
                 }
             }
-            g = substituted.clone();
+            g = substituted;
         }
 
-        match g {
-            GType(ti) => {
-                let t = ti.borrow().clone();
-                defs.push(ctypedef_to_rs(&mut ctx, t))
-            },
-            GCompDecl(ci) => {
-                let c = ci.borrow().clone();
-                let name = comp_name(&ctx, c.kind, &c.name);
+        gen_global(ctx, g, &mut defs);
+    }
 
-                defs.push(opaque_to_rs(&mut ctx, &name));
-            },
-            GComp(ci) => {
-                let c = ci.borrow().clone();
-                let name = comp_name(&ctx, c.kind, &c.name);
-                defs.extend(comp_to_rs(&mut ctx, &name, c).into_iter())
-            },
-            GEnumDecl(ei) => {
-                let e = ei.borrow().clone();
-                let name = enum_name(&ctx, &e.name);
-
-                defs.push(opaque_to_rs(&mut ctx, &name));
-            },
-            GEnum(ei) => {
-                let e = ei.borrow().clone();
-                let name = enum_name(&ctx, &e.name);
-                defs.extend(cenum_to_rs(&mut ctx, name, e.kind, e.comment, &e.items, e.layout).into_iter())
-            },
-            GVar(vi) => {
-                let v = vi.borrow();
-                let ty = cty_to_rs(&mut ctx, &v.ty, v.is_const, true);
-                defs.push(const_to_rs(&mut ctx, v.name.clone(), v.val.unwrap(), ty));
-            },
-            _ => { }
-        }
+    let mut pending_translations = std::mem::replace(&mut ctx.current_module_mut().translations, HashMap::new());
+    for (name, g) in pending_translations.drain() {
+        println!("warning: generating definition for not found type: {}", name);
+        gen_global(ctx, g, &mut defs);
     }
 
     let vars: Vec<_> = vs.into_iter().map(|v| {
