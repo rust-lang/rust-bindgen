@@ -1022,24 +1022,20 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             }
         }
 
-        if let Some(rc_c) = opt_rc_c {
-            if rc_c.borrow().name.is_empty() {
+        if let Some(mut rc_c) = opt_rc_c {
+            let name_is_empty = rc_c.borrow().name.is_empty();
+
+            if name_is_empty {
                 let c = rc_c.borrow();
                 unnamed += 1;
                 let field_name = format!("_bindgen_data_{}_", unnamed);
                 fields.push(mk_blob_field(ctx, &field_name, c.layout));
                 methods.extend(gen_comp_methods(ctx, &field_name, 0, c.kind, &c.members, &mut extra).into_iter());
             } else {
+                // Mangled name to deal with multiple definitions of the same inner type
+                let mangled_name = [name, &*rc_c.borrow().name].join("_").to_owned();
+                rc_c.borrow_mut().name = mangled_name;
                 let name = comp_name(&ctx, rc_c.borrow().kind, &rc_c.borrow().name);
-                fields.push(respan(ctx.span, ast::StructField_ {
-                    kind: ast::NamedField(
-                        ctx.ext_cx.ident_of(&name),
-                        ast::Visibility::Public,
-                    ),
-                    id: ast::DUMMY_NODE_ID,
-                    ty: P(cty_to_rs(ctx, &TComp(rc_c.clone()), true, true)),
-                    attrs: mk_doc_attr(ctx, &rc_c.borrow().comment)
-                }));
                 extra.extend(comp_to_rs(ctx, &name, rc_c.borrow().clone()).into_iter());
             }
         }
