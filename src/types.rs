@@ -32,6 +32,9 @@ pub struct Module {
     pub parent_id: Option<ModuleId>,
     // Just for convenience
     pub children_ids: Vec<ModuleId>,
+    /// Types that must be substituted in this module,
+    /// in the form original_name -> substituted_type
+    pub translations: HashMap<String, Global>,
 }
 
 impl Module {
@@ -41,6 +44,7 @@ impl Module {
             globals: vec![],
             parent_id: parent_id,
             children_ids: vec![],
+            translations: HashMap::new(),
         }
     }
 

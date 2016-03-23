@@ -467,6 +467,7 @@ fn opaque_ty(ctx: &mut ClangParserCtx, ty: &cx::Type) {
 struct Annotations {
     opaque: bool,
     hide: bool,
+    use_as: Option<String>,
 }
 
 impl Annotations {
@@ -474,6 +475,7 @@ impl Annotations {
         let mut anno = Annotations {
             opaque: false,
             hide: false,
+            use_as: None,
         };
 
         anno.parse(&cursor.comment());
@@ -487,10 +489,10 @@ impl Annotations {
            comment.get_tag_attr_name(0) == "rustbindgen" {
             for i in 0..comment.get_num_tag_attrs() {
                 let name = comment.get_tag_attr_name(i);
-
                 match name.as_str() {
                     "opaque" => self.opaque = true,
                     "hide" => self.hide = true,
+                    "replaces" => self.use_as = Some(comment.get_tag_attr_value(i)),
                     _ => (),
                 }
             }
@@ -860,7 +862,7 @@ fn visit_top(cursor: &Cursor,
         | CXCursor_ClassDecl
         | CXCursor_ClassTemplate => {
             let anno = Annotations::new(cursor);
-            fwd_decl(ctx, cursor, |ctx_| {
+            fwd_decl(ctx, cursor, move |ctx_| {
                 let decl = decl_name(ctx_, cursor);
                 let ci = decl.compinfo();
                 cursor.visit(|c, p| {
@@ -873,7 +875,12 @@ fn visit_top(cursor: &Cursor,
                 if anno.hide {
                     ci.borrow_mut().hide = true;
                 }
-                ctx_.current_module_mut().globals.push(GComp(ci));
+                if let Some(other_type_name) = anno.use_as {
+                    ci.borrow_mut().name = other_type_name.clone();
+                    ctx_.current_module_mut().translations.insert(other_type_name, GComp(ci));
+                } else {
+                    ctx_.current_module_mut().globals.push(GComp(ci));
+                }
             });
             CXChildVisit_Continue
         }

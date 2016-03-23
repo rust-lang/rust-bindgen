@@ -52,6 +52,10 @@ impl<'r> GenCtx<'r> {
         ret.reverse();
         ret
     }
+
+    fn current_module(&self) -> &Module {
+        self.module_map.get(&self.current_module_id).expect("Module not found!")
+    }
 }
 
 fn first<A, B>((val, _): (A, B)) -> A {
@@ -448,7 +452,9 @@ fn gen_globals(mut ctx: &mut GenCtx,
     let mut defs = vec!();
     gs = remove_redundant_decl(gs);
 
-    for g in gs.into_iter() {
+    for mut g in gs.into_iter() {
+        // XXX unify with anotations both type_blacklisted
+        // and type_opaque (which actually doesn't mean the same).
         if type_blacklisted(ctx, &g) {
             continue;
         }
@@ -460,6 +466,10 @@ fn gen_globals(mut ctx: &mut GenCtx,
             // This should always be true but anyways..
             defs.push(mk_test_fn(ctx, &name, &layout));
             continue;
+        }
+
+        if let Some(substituted) = ctx.current_module().translations.get(&g.name()) {
+            g = substituted.clone();
         }
 
         match g {
