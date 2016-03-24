@@ -107,8 +107,10 @@ fn rust_type_id(ctx: &mut GenCtx, name: &str) -> String {
         "uint32_t" => "u32".to_owned(),
         "int64_t" => "i64".to_owned(),
         "uint64_t" => "u64".to_owned(),
-        "size_t" => "usize".to_owned(),
-        "ssize_t" => "isize".to_owned(),
+        "uintptr_t"
+        | "size_t" => "usize".to_owned(),
+        "intptr_t"
+        | "ssize_t" => "isize".to_owned(),
         _ => first(rust_id(ctx, name))
     }
 }
@@ -1063,7 +1065,13 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             };
 
             // If the member is not a template argument, it needs the full path.
-            let needs_full_path = !template_args.iter().any(|arg| *arg == f_ty);
+            let needs_full_path = !template_args.iter().any(|arg| {
+                f_ty == *arg || match f_ty {
+                    TPtr(ref t, _, _, _) => **t == *arg,
+                    TArray(ref t, _, _) => **t == *arg,
+                    _ => false,
+                }
+            });
             let f_ty = P(cty_to_rs(ctx, &f_ty, f.bitfields.is_none(), needs_full_path));
 
             fields.push(respan(ctx.span, ast::StructField_ {

@@ -22,6 +22,8 @@ namespace {
 template<typename T>
 class C: public A {
     T m_c;
+    T* m_c_ptr;
+    T m_c_arr[10];
 };
 
 
