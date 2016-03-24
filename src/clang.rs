@@ -95,6 +95,12 @@ impl Cursor {
         }
     }
 
+    pub fn referenced(&self) -> Cursor {
+        unsafe {
+            Cursor { x: clang_getCursorReferenced(self.x) }
+        }
+    }
+
     pub fn canonical(&self) -> Cursor {
         unsafe {
             Cursor { x: clang_getCanonicalCursor(self.x) }

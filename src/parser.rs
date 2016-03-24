@@ -320,12 +320,18 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
                                    cursor: &Cursor,
                                    resolve_typedefs: bool) -> il::Type {
     let ty_decl = ty.declaration();
+    // println!("conv_ty_decl: `{}`, ty kind {}: {}, decl `{}` kind {}: {}", cursor.spelling(), ty.kind(), type_to_str(ty.kind()), ty_decl.spelling(), ty_decl.kind(), kind_to_str(ty_decl.kind()));
     return match ty_decl.kind() {
         CXCursor_StructDecl |
         CXCursor_UnionDecl |
         CXCursor_ClassTemplate |
         CXCursor_ClassDecl => {
             let decl = decl_name(ctx, &ty_decl);
+            // NB: This will only return a number greater than 0 if this is a **full** class
+            // template specialization.
+            //
+            // If the cursor kind is CXCursor_ClassTemplate, this will still return -1
+            // and we'll have to keep traversing the cursor.
             let args = match ty.num_template_args() {
                 -1 => vec!(),
                 len => {
@@ -349,10 +355,10 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
                         let cref = c.definition();
                         ci.borrow_mut().ref_template = Some(conv_decl_ty(ctx, &cref.cur_type(), &cref));
                     }
-
                     CXChildVisit_Continue
                 });
             }
+
             TComp(ci)
         }
         CXCursor_EnumDecl => {

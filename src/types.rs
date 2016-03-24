@@ -141,7 +141,7 @@ impl fmt::Debug for Global {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct FuncSig {
     pub ret_ty: Box<Type>,
     pub args: Vec<(String, Type)>,
@@ -150,7 +150,7 @@ pub struct FuncSig {
     pub abi: abi::Abi,
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum Type {
     TVoid,
     TInt(IKind, Layout),
@@ -232,7 +232,7 @@ impl Layout {
     }
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum IKind {
     IBool,
     ISChar,
@@ -266,7 +266,7 @@ impl IKind {
     }
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum FKind {
     FFloat,
     FDouble
