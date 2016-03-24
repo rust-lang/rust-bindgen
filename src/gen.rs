@@ -970,15 +970,17 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
 
     for m in members.iter() {
         if let CompMember::Enum(ref ei) = *m {
-            let e = ei.borrow().clone();
-            let ename = if e.name.is_empty() {
-                let ename = format!("{}_enum{}", name, anon_enum_count);
-                anon_enum_count += 1;
-                ename
+            let empty_name = ei.borrow().name.is_empty();
+            if empty_name {
+                ei.borrow_mut().name = format!("{}_enum{}", name, anon_enum_count);
             } else {
-                e.name.clone()
-            };
-            extra.extend(cenum_to_rs(ctx, ename, e.kind, e.comment, &e.items, e.layout).into_iter());
+                // Mangled name to deal with multiple definitions of the same inner type
+                let new_name = [name, &*ei.borrow().name].join("_").to_owned();
+                ei.borrow_mut().name = new_name;
+            }
+
+            let e = ei.borrow().clone();
+            extra.extend(cenum_to_rs(ctx, e.name, e.kind, e.comment, &e.items, e.layout).into_iter());
             continue;
         }
 
