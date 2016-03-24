@@ -522,7 +522,7 @@ fn gen_globals(mut ctx: &mut GenCtx,
     for mut g in gs.into_iter() {
         if let Some(substituted) = ctx.current_module_mut().translations.remove(&g.name()) {
             match (substituted.layout(), g.layout()) {
-                (Some(l), Some(lg)) if l.size != lg.size => {},
+                (Some(l), Some(lg)) if l.size == lg.size => {},
                 (None, None) => {},
                 _ => {
                     // XXX real logger
