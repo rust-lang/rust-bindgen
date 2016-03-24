@@ -953,27 +953,10 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
         }
     }
 
-    if members.is_empty() {
-        let mut phantom_count = 0;
-        for arg in template_args {
-            let f_name = format!("_phantom{}", phantom_count);
-            phantom_count += 1;
-            let inner_type = P(cty_to_rs(ctx, &arg, true, false));
-            fields.push(respan(ctx.span, ast::StructField_ {
-                kind: ast::NamedField(
-                    ctx.ext_cx.ident_of(&f_name),
-                    ast::Visibility::Public,
-                ),
-                id: ast::DUMMY_NODE_ID,
-                ty: quote_ty!(&ctx.ext_cx, ::std::marker::PhantomData<$inner_type>),
-                attrs: vec!(),
-            }));
-        }
-    }
-
     let mut anon_enum_count = 0;
     let mut setters = vec!();
     let mut has_destructor = ci.has_destructor;
+    let mut template_args_used = vec![false; template_args.len()];
 
     for m in members.iter() {
         if let CompMember::Enum(ref ei) = *m {
@@ -1065,13 +1048,20 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             };
 
             // If the member is not a template argument, it needs the full path.
-            let needs_full_path = !template_args.iter().any(|arg| {
-                f_ty == *arg || match f_ty {
+            let mut needs_full_path = true;
+            for (index, arg) in template_args.iter().enumerate() {
+                let used = f_ty == *arg || match f_ty {
                     TPtr(ref t, _, _, _) => **t == *arg,
                     TArray(ref t, _, _) => **t == *arg,
                     _ => false,
+                };
+                if used {
+                    template_args_used[index] = true;
+                    needs_full_path = false;
+                    break;
                 }
-            });
+            }
+
             let f_ty = P(cty_to_rs(ctx, &f_ty, f.bitfields.is_none(), needs_full_path));
 
             fields.push(respan(ctx.span, ast::StructField_ {
@@ -1106,6 +1096,27 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             }
         }
     }
+
+    let mut phantom_count = 0;
+    for (i, arg) in template_args.iter().enumerate() {
+        if template_args_used[i] {
+            continue;
+        }
+
+        let f_name = format!("_phantom{}", phantom_count);
+        phantom_count += 1;
+        let inner_type = P(cty_to_rs(ctx, &arg, true, false));
+        fields.push(respan(ctx.span, ast::StructField_ {
+            kind: ast::NamedField(
+                ctx.ext_cx.ident_of(&f_name),
+                ast::Visibility::Public,
+            ),
+            id: ast::DUMMY_NODE_ID,
+            ty: quote_ty!(&ctx.ext_cx, ::std::marker::PhantomData<$inner_type>),
+            attrs: vec!(),
+        }));
+    }
+
     if !setters.is_empty() {
         extra.push(P(ast::Item {
             ident: ctx.ext_cx.ident_of(""),
