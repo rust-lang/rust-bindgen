@@ -91,6 +91,11 @@ impl<'a> Builder<'a> {
         self
     }
 
+    pub fn no_bitfield_methods(&mut self) -> &mut Self {
+        self.options.gen_bitfield_methods = false;
+        self
+    }
+
     pub fn rust_enums(&mut self, value: bool) -> &mut Self {
         self.options.rust_enums = value;
         self
@@ -131,6 +136,7 @@ pub struct BindgenOptions {
     pub links: Vec<(String, LinkType)>,
     pub emit_ast: bool,
     pub ignore_functions: bool,
+    pub gen_bitfield_methods: bool,
     pub fail_on_unknown_type: bool,
     pub enable_cxx_namespaces: bool,
     pub rename_types: bool,
@@ -150,6 +156,7 @@ impl Default for BindgenOptions {
             links: Vec::new(),
             emit_ast: false,
             ignore_functions: false,
+            gen_bitfield_methods: true,
             fail_on_unknown_type: true,
             rename_types: true,
             derive_debug: true,

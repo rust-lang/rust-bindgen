@@ -116,6 +116,10 @@ fn parse_args(args: &[String]) -> ParseResult {
                     options.ignore_functions = true;
                     ix += 1;
                 }
+                "-no-bitfield-methods" => {
+                    options.gen_bitfield_methods = false;
+                    ix += 1;
+                }
                 "-allow-unknown-types" => {
                     options.fail_on_unknown_type = false;
                     ix += 1;

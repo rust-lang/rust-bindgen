@@ -1028,13 +1028,15 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                 continue;
             }
 
-            let mut offset: u32 = 0;
-            if let Some(ref bitfields) = f.bitfields {
-                for &(ref bf_name, bf_size) in bitfields.iter() {
-                    setters.push(gen_bitfield_method(ctx, &f_name, bf_name, &f.ty, offset as usize, bf_size));
-                    offset += bf_size;
+            if ctx.options.gen_bitfield_methods {
+                let mut offset: u32 = 0;
+                if let Some(ref bitfields) = f.bitfields {
+                    for &(ref bf_name, bf_size) in bitfields.iter() {
+                        setters.push(gen_bitfield_method(ctx, &f_name, bf_name, &f.ty, offset as usize, bf_size));
+                        offset += bf_size;
+                    }
+                    setters.push(gen_fullbitfield_method(ctx, &f_name, &f.ty, bitfields))
                 }
-                setters.push(gen_fullbitfield_method(ctx, &f_name, &f.ty, bitfields))
             }
 
             let mut bypass = false;
@@ -1510,6 +1512,9 @@ fn cenum_to_rs(ctx: &mut GenCtx,
 fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
                     kind: CompKind, members: &[CompMember],
                     extra: &mut Vec<P<ast::Item>>) -> Vec<ast::ImplItem> {
+    if !ctx.options.gen_bitfield_methods {
+        return vec![];
+    }
 
     let mk_field_method = |ctx: &mut GenCtx, f: &FieldInfo, offset: usize| {
         // TODO: Implement bitfield accessors
@@ -2208,14 +2213,25 @@ fn mk_test_fn(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
 }
 
 fn mk_opaque_struct(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
-    let size = layout.size;
+    let (size, ty_name) = if layout.size % 8 == 0 {
+        (layout.size / 8, "u64")
+    } else if layout.size % 4 == 0 {
+        (layout.size / 4, "u32")
+    } else if layout.size % 2 == 0 {
+        (layout.size / 2, "u16")
+    } else {
+        (layout.size, "u8")
+    };
+
     let struct_name = ctx.ext_cx.ident_of(name);
+    let ty_name = ctx.ext_cx.ident_of(ty_name);
+
 
     let item = quote_item!(&ctx.ext_cx,
         #[repr(C)]
         #[derive(Copy, Clone, Debug)]
-        struct $struct_name {
-            _bindgen_opaque_blob: [u8; $size]
+        pub struct $struct_name {
+            _bindgen_opaque_blob: [$ty_name; $size]
         }
     ).unwrap();
     item
