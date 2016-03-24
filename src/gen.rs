@@ -986,14 +986,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                        -> (Option<Rc<RefCell<CompInfo>>>, Option<FieldInfo>) {
             match *m {
                 CompMember::Field(ref f) => { (None, Some(f.clone())) }
-                CompMember::Comp(ref rc_c) => {
-                    let c = rc_c.borrow();
-                    if c.members.len() == 1 {
-                        comp_fields(&c.members[0])
-                    } else {
-                        (Some(rc_c.clone()), None)
-                    }
-                }
+                CompMember::Comp(ref rc_c) => { (Some(rc_c.clone()), None) }
                 CompMember::CompField(ref rc_c, ref f) => { (Some(rc_c.clone()), Some(f.clone())) }
                 _ => unreachable!()
             }

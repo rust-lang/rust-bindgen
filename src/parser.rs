@@ -611,23 +611,23 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             //     };
             //
 
-            let is_composite = match (inner_composite(&ty), ci.members.last()) {
-                (Some(ty_compinfo), Some(&CompMember::Comp(ref c))) => {
-                    c.borrow().deref() as *const _ == ty_compinfo.borrow().deref() as *const _
-                },
-                _ => false
-            };
+            //let is_composite = match (inner_composite(&ty), ci.members.last()) {
+            //    (Some(ty_compinfo), Some(&CompMember::Comp(ref c))) => {
+            //        c.borrow().deref() as *const _ == ty_compinfo.borrow().deref() as *const _
+            //    },
+            //    _ => false
+            //};
 
             let field = FieldInfo::new(name, ty.clone(), comment, bitfields);
-            if is_composite {
-                if let Some(CompMember::Comp(c)) = ci.members.pop() {
-                    ci.members.push(CompMember::CompField(c, field));
-                } else {
-                    unreachable!(); // Checks in is_composite make this unreachable.
-                }
-            } else {
-                ci.members.push(CompMember::Field(field));
-            }
+            //if is_composite {
+            //    if let Some(CompMember::Comp(c)) = ci.members.pop() {
+            //        ci.members.push(CompMember::CompField(c, field));
+            //    } else {
+            //        unreachable!(); // Checks in is_composite make this unreachable.
+            //    }
+            //} else {
+            ci.members.push(CompMember::Field(field));
+            //}
         }
         CXCursor_StructDecl | CXCursor_UnionDecl => {
             fwd_decl(ctx, cursor, |ctx_| {
