@@ -406,7 +406,17 @@ fn gen_mod(mut ctx: &mut GenCtx,
     }
 }
 
-fn type_opaque(ctx: &GenCtx, global: &Global) -> bool {
+fn type_opaque(ctx: &GenCtx, ty: &Type) -> bool {
+    let ty_name = ty.name();
+
+    match ty_name {
+        Some(ty_name)
+            => ctx.options.opaque_types.iter().any(|name| *name == ty_name),
+        None => false,
+    }
+}
+
+fn global_opaque(ctx: &GenCtx, global: &Global) -> bool {
     let global_name = global.name();
 
     // Can't make an opaque type without layout
@@ -429,7 +439,7 @@ fn gen_global(mut ctx: &mut GenCtx,
         return;
     }
 
-    if type_opaque(ctx, &g) {
+    if global_opaque(ctx, &g) {
         let name = first(rust_id(ctx, &g.name()));
         let layout = g.layout().unwrap();
         defs.push(mk_opaque_struct(ctx, &name, &layout));
@@ -1004,8 +1014,11 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                 None => rust_type_id(ctx, &f.name)
             };
 
-            if !cty_is_translatable(&f.ty) {
-                println!("{}::{} not translatable, void: {}", ci.name, f.name, f.ty == TVoid);
+            let is_translatable = cty_is_translatable(&f.ty);
+            if !is_translatable || type_opaque(ctx, &f.ty) {
+                if !is_translatable {
+                    println!("{}::{} not translatable, void: {}", ci.name, f.name, f.ty == TVoid);
+                }
                 let size = f.ty.size();
 
                 if size != 0 {

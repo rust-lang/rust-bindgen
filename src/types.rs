@@ -165,6 +165,17 @@ pub enum Type {
 }
 
 impl Type {
+    pub fn name(&self) -> Option<String> {
+        match *self {
+            TNamed(ref info) => Some(info.borrow().name.clone()),
+            TComp(ref info)  => Some(info.borrow().name.clone()),
+            TEnum(ref info)  => Some(info.borrow().name.clone()),
+            TArray(ref t, _, _) => t.name(),
+            TPtr(ref t, _, _, _) => t.name(),
+            _ => None
+        }
+    }
+
     pub fn size(&self) -> usize {
         match *self {
             TInt(_, l) => l.size,
