@@ -699,10 +699,6 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             ci.base_members += 1;
         }
         CXCursor_CXXMethod => {
-            if ctx.options.ignore_functions {
-                return CXChildVisit_Continue;
-            }
-
             let linkage = cursor.linkage();
             if linkage != CXLinkage_External {
                 return CXChildVisit_Continue;
@@ -774,6 +770,10 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             let mut vi = VarInfo::new(spelling, cursor.mangling(), cursor.raw_comment(), sig);
             vi.is_static = cursor.method_is_static();
             vi.is_const = cursor.cur_type().is_const();
+
+            if ctx.options.ignore_functions {
+                return CXChildVisit_Continue;
+            }
 
             if cursor.method_is_virtual() {
                 ci.vmethods.push(vi);
