@@ -319,21 +319,24 @@ pub struct CompInfo {
     pub typedefs: Vec<String>,
     /// If this type has a template parameter which is not a type (e.g.: a size_t)
     pub has_non_type_template_params: bool,
+    /// If this type was unnamed when parsed
+    pub was_unnamed: bool,
 }
 
 static mut UNNAMED_COUNTER: u32 = 0;
 
 fn unnamed_name(name: String, filename: &String) -> String {
-    return if name.is_empty() {
+    if name.is_empty() {
         let n = unsafe { UNNAMED_COUNTER += 1; UNNAMED_COUNTER };
         format!("{}_unnamed_{}", filename, n)
     } else {
         name
-    };
+    }
 }
 
 impl CompInfo {
     pub fn new(name: String, module_id: ModuleId, filename: String, comment: String, kind: CompKind, members: Vec<CompMember>, layout: Layout) -> CompInfo {
+        let was_unnamed = name.is_empty();
         CompInfo {
             kind: kind,
             module_id: module_id,
@@ -353,6 +356,7 @@ impl CompInfo {
             layout: layout,
             typedefs: vec!(),
             has_non_type_template_params: false,
+            was_unnamed: was_unnamed,
         }
     }
 }

@@ -618,16 +618,19 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             //    _ => false
             //};
 
-            let field = FieldInfo::new(name, ty.clone(), comment, bitfields);
-            //if is_composite {
-            //    if let Some(CompMember::Comp(c)) = ci.members.pop() {
-            //        ci.members.push(CompMember::CompField(c, field));
-            //    } else {
-            //        unreachable!(); // Checks in is_composite make this unreachable.
-            //    }
-            //} else {
+            // If it's a field from an unnamed union we only have to update the name
+            if let Some(&mut CompMember::Field(ref mut info)) = ci.members.last_mut() {
+                if let (&TComp(ref field_ty_ci), &TComp(ref ci)) = (&info.ty, &ty) {
+                    if field_ty_ci.borrow().was_unnamed && ci.borrow().was_unnamed &&
+                       field_ty_ci.borrow().name == ci.borrow().name {
+                        info.name = name;
+                        return CXChildVisit_Continue;
+                    }
+                }
+            }
+
+            let field = FieldInfo::new(name, ty, comment, bitfields);
             ci.members.push(CompMember::Field(field));
-            //}
         }
         CXCursor_StructDecl | CXCursor_UnionDecl => {
             fwd_decl(ctx, cursor, |ctx_| {
@@ -640,7 +643,15 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                     let mut ci_ = ci2.borrow_mut();
                     visit_composite(c, p, ctx_, &mut ci_)
                 });
+
                 ci.members.push(CompMember::Comp(decl.compinfo()));
+
+                // Anonymous structs are legal in both C++ and C11
+                if ci2.borrow().kind == CompKind::Union && ci2.borrow().was_unnamed {
+                    let ci2b = ci2.borrow();
+                    let field = FieldInfo::new(ci2b.name.clone(), TComp(ci2.clone()), ci2b.comment.clone(), None);
+                    ci.members.push(CompMember::Field(field));
+                }
             });
         }
         CXCursor_PackedAttr => {
