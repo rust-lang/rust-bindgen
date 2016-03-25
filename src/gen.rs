@@ -973,6 +973,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             let empty_name = ei.borrow().name.is_empty();
             if empty_name {
                 ei.borrow_mut().name = format!("{}_enum{}", name, anon_enum_count);
+                anon_enum_count += 1;
             } else {
                 // Mangled name to deal with multiple definitions of the same inner type
                 let new_name = [name, &*ei.borrow().name].join("_").to_owned();
@@ -1088,7 +1089,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             }
         }
 
-        if let Some(mut rc_c) = opt_rc_c {
+        if let Some(rc_c) = opt_rc_c {
             let name_is_empty = rc_c.borrow().name.is_empty();
 
             if name_is_empty {
