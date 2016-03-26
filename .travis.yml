@@ -39,6 +39,9 @@ matrix:
       rust: nightly
       script: cargo build --features clippy
 
+notifications:
+  webhooks: http://build.servo.org:54856/travis
+
 cache:
   directories:
     - $HOME/.cargo
