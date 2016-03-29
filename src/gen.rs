@@ -2195,37 +2195,48 @@ fn mk_fnty(ctx: &mut GenCtx, decl: &ast::FnDecl, abi: Abi) -> ast::Ty {
 
 fn mk_test_fn(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
     let size = layout.size;
+    let align = layout.align;
     let struct_name = ctx.ext_cx.ident_of(name);
     let fn_name = ctx.ext_cx.ident_of(&format!("bindgen_test_layout_{}", name));
+    let size_of_expr = quote_expr!(&ctx.ext_cx, ::std::mem::size_of::<$struct_name>());
+    let align_of_expr = quote_expr!(&ctx.ext_cx, ::std::mem::align_of::<$struct_name>());
     let item = quote_item!(&ctx.ext_cx,
         #[test]
         fn $fn_name() {
-            assert_eq!(::std::mem::size_of::<$struct_name>(), $size);
+            assert_eq!($size_of_expr, $size);
+            assert_eq!($align_of_expr, $align);
         }).unwrap();
     item
 }
 
 fn mk_opaque_struct(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
-    let (size, ty_name) = if layout.size % 8 == 0 {
-        (layout.size / 8, "u64")
-    } else if layout.size % 4 == 0 {
-        (layout.size / 4, "u32")
-    } else if layout.size % 2 == 0 {
-        (layout.size / 2, "u16")
+    let struct_name = ctx.ext_cx.ident_of(name);
+    // XXX prevent this spurious clone
+    let blob_field = mk_blob_field(ctx, "_bindgen_opaque_blob", layout.clone());
+    let variant_data = if layout.size == 0 {
+        ast::VariantData::Unit(ast::DUMMY_NODE_ID)
     } else {
-        (layout.size, "u8")
+        ast::VariantData::Struct(vec![blob_field], ast::DUMMY_NODE_ID)
     };
 
-    let struct_name = ctx.ext_cx.ident_of(name);
-    let ty_name = ctx.ext_cx.ident_of(ty_name);
-
-
-    let item = quote_item!(&ctx.ext_cx,
-        #[repr(C)]
-        #[derive(Copy, Clone, Debug)]
-        pub struct $struct_name {
-            _bindgen_opaque_blob: [$ty_name; $size]
+    let def = ast::ItemKind::Struct(
+        variant_data,
+        ast::Generics {
+            lifetimes: vec!(),
+            ty_params: OwnedSlice::empty(),
+            where_clause: ast::WhereClause {
+                id: ast::DUMMY_NODE_ID,
+                predicates: vec!()
+            }
         }
-    ).unwrap();
-    item
+    );
+
+    P(ast::Item {
+        ident: ctx.ext_cx.ident_of(&name),
+        attrs: vec![],
+        id: ast::DUMMY_NODE_ID,
+        node: def,
+        vis: ast::Visibility::Public,
+        span: ctx.span
+    })
 }
