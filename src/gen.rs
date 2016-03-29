@@ -1015,18 +1015,8 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                 if !is_translatable {
                     println!("{}::{} not translatable, void: {}", ci.name, f.name, f.ty == TVoid);
                 }
-                let size = f.ty.size();
-
-                if size != 0 {
-                    fields.push(respan(ctx.span, ast::StructField_ {
-                        kind: ast::NamedField(
-                            ctx.ext_cx.ident_of(&f_name),
-                            ast::Visibility::Public,
-                        ),
-                        id: ast::DUMMY_NODE_ID,
-                        ty: quote_ty!(&ctx.ext_cx, [u8; $size]),
-                        attrs: mk_doc_attr(ctx, &f.comment)
-                    }));
+                if let Some(layout) = f.ty.layout() {
+                    fields.push(mk_blob_field(ctx, &f_name, layout));
                 }
                 continue;
             }

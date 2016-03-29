@@ -177,34 +177,27 @@ impl Type {
     }
 
     pub fn size(&self) -> usize {
-        match *self {
-            TInt(_, l) => l.size,
-            TFloat(_, l) => l.size,
-            TPtr(_, _, _, l) => l.size,
-            TArray(_, _, l) => l.size,
-            TNamed(ref ti) => ti.borrow().ty.size(),
-            TComp(ref ci) => ci.borrow().layout.size,
-            TEnum(ref ei) => ei.borrow().layout.size,
-            TVoid => 0,
-            TFuncProto(..) => 0,
-            TFuncPtr(..) => 0,
-        }
+        self.layout().map(|l| l.size).unwrap_or(0)
     }
 
     #[allow(dead_code)]
     pub fn align(&self) -> usize {
-        match *self {
-            TInt(_, l) => l.align,
-            TFloat(_, l) => l.align,
-            TPtr(_, _, _, l) => l.align,
-            TArray(_, _, l) => l.align,
-            TNamed(ref ti) => ti.borrow().ty.align(),
-            TComp(ref ci) => ci.borrow().layout.align,
-            TEnum(ref ei) => ei.borrow().layout.align,
-            TVoid
-            | TFuncProto(..)
-            | TFuncPtr(..) => 0,
-        }
+        self.layout().map(|l| l.align).unwrap_or(0)
+    }
+
+    pub fn layout(&self) -> Option<Layout> {
+        Some(match *self {
+            TInt(_, l) => l.clone(),
+            TFloat(_, l) => l.clone(),
+            TPtr(_, _, _, l) => l.clone(),
+            TArray(_, _, l) => l.clone(),
+            TComp(ref ci) => ci.borrow().layout.clone(),
+            TEnum(ref ei) => ei.borrow().layout.clone(),
+            TNamed(ref ti) => return ti.borrow().ty.layout(),
+            TVoid |
+            TFuncProto(..) |
+            TFuncPtr(..) => return None,
+        })
     }
 
     #[allow(dead_code)]
