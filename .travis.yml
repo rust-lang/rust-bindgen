@@ -6,6 +6,7 @@ addons:
         - llvm-toolchain-precise-3.5
         - llvm-toolchain-precise-3.6
         - llvm-toolchain-precise-3.7
+        - llvm-toolchain-precise-3.8
         - ubuntu-toolchain-r-test
       packages:
         - libclang-3.4-dev
@@ -34,6 +35,12 @@ matrix:
       rust: nightly
     - os: osx
       env: LLVM_VERSION=3.5
+      rust: nightly
+    - os: osx
+      env: LLVM_VERSION=3.7
+      rust: nightly
+    - os: osx
+      env: LLVM_VERSION=3.8
       rust: nightly
     - env: LLVM_VERSION=3.7
       rust: nightly
