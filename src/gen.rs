@@ -1743,7 +1743,7 @@ fn mk_link_name_attr(ctx: &mut GenCtx, name: String) -> ast::Attribute {
     respan(ctx.span, attr)
 }
 
-fn mk_repr_attr(ctx: &mut GenCtx, layout: Layout) -> ast::Attribute {
+fn mk_repr_attr(ctx: &GenCtx, layout: Layout) -> ast::Attribute {
     let mut values = vec!(P(respan(ctx.span, ast::MetaItemKind::Word(InternedString::new("C")))));
     if layout.packed {
         values.push(P(respan(ctx.span, ast::MetaItemKind::Word(InternedString::new("packed")))));
@@ -2263,7 +2263,7 @@ fn mk_opaque_struct(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
 
     P(ast::Item {
         ident: ctx.ext_cx.ident_of(&name),
-        attrs: vec![],
+        attrs: vec![mk_repr_attr(ctx, layout.clone())],
         id: ast::DUMMY_NODE_ID,
         node: def,
         vis: ast::Visibility::Public,
