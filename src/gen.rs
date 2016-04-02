@@ -457,7 +457,7 @@ fn gen_global(mut ctx: &mut GenCtx,
             let c = ci.borrow().clone();
             let name = comp_name(&ctx, c.kind, &c.name);
 
-            defs.push(opaque_to_rs(&mut ctx, &name));
+            defs.push(opaque_to_rs(&mut ctx, &name, c.layout));
         },
         GComp(ci) => {
             let c = ci.borrow().clone();
@@ -467,13 +467,14 @@ fn gen_global(mut ctx: &mut GenCtx,
         GEnumDecl(ei) => {
             let e = ei.borrow().clone();
             let name = enum_name(&ctx, &e.name);
+            let dummy = EnumItem::new("_BindgenOpaqueEnum".to_owned(), "".to_owned(), 0);
 
-            defs.push(opaque_to_rs(&mut ctx, &name));
+            defs.extend(cenum_to_rs(&mut ctx, &name, e.kind, e.comment, &[dummy], e.layout).into_iter())
         },
         GEnum(ei) => {
             let e = ei.borrow().clone();
             let name = enum_name(&ctx, &e.name);
-            defs.extend(cenum_to_rs(&mut ctx, name, e.kind, e.comment, &e.items, e.layout).into_iter())
+            defs.extend(cenum_to_rs(&mut ctx, &name, e.kind, e.comment, &e.items, e.layout).into_iter())
         },
         GVar(vi) => {
             let v = vi.borrow();
@@ -989,7 +990,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             }
 
             let e = ei.borrow().clone();
-            extra.extend(cenum_to_rs(ctx, e.name, e.kind, e.comment, &e.items, e.layout).into_iter());
+            extra.extend(cenum_to_rs(ctx, &e.name, e.kind, e.comment, &e.items, e.layout).into_iter());
             continue;
         }
 
@@ -1266,7 +1267,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
     items
 }
 
-fn opaque_to_rs(ctx: &mut GenCtx, name: &str) -> P<ast::Item> {
+fn opaque_to_rs(ctx: &mut GenCtx, name: &str, _layout: Layout) -> P<ast::Item> {
     let def = ast::ItemKind::Enum(
         ast::EnumDef {
            variants: vec!()
@@ -1274,10 +1275,11 @@ fn opaque_to_rs(ctx: &mut GenCtx, name: &str) -> P<ast::Item> {
         empty_generics()
     );
 
+    // XXX can't repr(C) an empty enum
     let id = rust_type_id(ctx, name);
     P(ast::Item {
         ident: ctx.ext_cx.ident_of(&id),
-        attrs: Vec::new(),
+        attrs: vec![],
         id: ast::DUMMY_NODE_ID,
         node: def,
         vis: ast::Visibility::Public,
@@ -1429,12 +1431,12 @@ fn cenum_value_to_int_lit(ctx: &mut GenCtx,
 }
 
 fn cenum_to_rs(ctx: &mut GenCtx,
-               name: String,
+               name: &str,
                kind: IKind,
                comment: String,
                enum_items: &[EnumItem],
                layout: Layout) -> Vec<P<ast::Item>> {
-    let enum_name = ctx.ext_cx.ident_of(&name);
+    let enum_name = ctx.ext_cx.ident_of(name);
     let enum_ty = ctx.ext_cx.ty_ident(ctx.span, enum_name);
     let enum_is_signed = kind.is_signed();
     let enum_repr = enum_size_to_rust_type_name(enum_is_signed, layout.size);
