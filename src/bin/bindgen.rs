@@ -139,6 +139,13 @@ fn parse_args(args: &[String]) -> ParseResult {
                     options.rename_types = false;
                     ix += 1;
                 }
+                "-raw-line" => {
+                    if ix + 1 >= args_len {
+                        return ParseResult::ParseErr("Missing raw-line argument".to_string());
+                    }
+                    options.raw_lines.push(args[ix + 1].clone());
+                    ix += 2;
+                }
                 _ => {
                     options.clang_args.push(args[ix].clone());
                     ix += 1;
