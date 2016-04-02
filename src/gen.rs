@@ -544,20 +544,12 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
 
         if let Some(rc_e) = opt_rc_e {
             let e = rc_e.borrow();
-            if e.name.is_empty() {
-                //XXX: 10.000 lines of Linux header code do not trigger this. What does it do?
-                unreachable!();
-                //unnamed += 1;
-                //let field_name = format!("_bindgen_data_{}_", unnamed);
-                //fields.push(mk_blob_field(ctx, &field_name[..], c.layout));
-                //methods.extend(gen_comp_methods(ctx, &field_name[..], 0, c.kind, &c.members, &mut extra, options, derive_debug).into_iter());
-            } else {
-                extra.extend(cenum_to_rs(
-                    ctx,
-                    options,
-                    options.derive_debug,
-                    &e.name, e.kind, e.layout, &e.items));
-            }
+            assert!(!e.name.is_empty());
+            extra.extend(cenum_to_rs(
+                ctx,
+                options,
+                options.derive_debug,
+                &e.name, e.kind, e.layout, &e.items));
         }
     }
 
