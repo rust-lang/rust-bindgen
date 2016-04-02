@@ -938,6 +938,14 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             vffields.push(respan(ctx.span, field));
         }
 
+        // FIXME: rustc actually generates tons of warnings
+        // due to an empty repr(C) type, so we just generate
+        // a dummy field with pointer-alignment to supress it.
+        if vffields.is_empty() {
+            vffields.push(mk_blob_field(ctx, "_bindgen_empty_ctype_warning_fix",
+                                        Layout::new(::std::mem::size_of::<*mut ()>(), ::std::mem::align_of::<*mut ()>())));
+        }
+
         let vf_name = format!("_vftable_{}", name);
         let item = P(ast::Item {
             ident: ctx.ext_cx.ident_of(&vf_name),
