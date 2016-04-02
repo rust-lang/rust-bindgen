@@ -7,6 +7,8 @@ enum nsStyleSVGOpacitySource {
 
 class Weird {
   unsigned int         mStrokeDasharrayLength;
+  unsigned int         bitTest: 16;
+  unsigned int         bitTest2: 15;
   unsigned char          mClipRule;         // [inherited]
   unsigned char          mColorInterpolation; // [inherited] see nsStyleConsts.h
   unsigned char          mColorInterpolationFilters; // [inherited] see nsStyleConsts.h

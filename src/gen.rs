@@ -1,4 +1,5 @@
 use std;
+use std::cmp;
 use std::cell::RefCell;
 use std::vec::Vec;
 use std::rc::Rc;
@@ -1012,12 +1013,23 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             }
 
             let (f_name, f_ty) = match f.bitfields {
-                Some(_) => {
+                Some(ref v) => {
                     bitfields += 1;
-                    // XXX(emilio): This is probably wrong for most bitfields, where the with is
-                    // greater than 8. Should probably get the width of the bitfields and adjust
-                    // the generated type and layout based on that.
-                    (format!("_bitfield_{}", bitfields), TInt(IUChar, Layout::new(1, 1)))
+                    // NOTE: We rely on the name of the type converted to rust types,
+                    // and on the alignment.
+                    let bits = v.iter().fold(0, |acc, &(_, w)| acc + w);
+
+                    let layout_size = cmp::max(1, bits.next_power_of_two() / 8) as usize;
+                    let name = match layout_size {
+                        1 => "uint8_t",
+                        2 => "uint16_t",
+                        4 => "uint32_t",
+                        8 => "uint64_t",
+                        _ => panic!("bitfield width not supported: {}", layout_size),
+                    };
+
+                    let ty = TNamed(Rc::new(RefCell::new(TypeInfo::new(name.to_owned(), ROOT_MODULE_ID, TVoid, Layout::new(layout_size, layout_size)))));
+                    (format!("_bitfield_{}", bitfields), ty)
                 }
                 None => (rust_type_id(ctx, &f.name), f.ty.clone())
             };
@@ -1619,19 +1631,18 @@ fn type_for_bitfield_width(ctx: &mut GenCtx, width: u32, is_arg: bool) -> ast::T
 }
 
 fn gen_bitfield_method(ctx: &mut GenCtx, bindgen_name: &str,
-                       field_name: &str, bitfield_type: &Type,
+                       field_name: &str, field_type: &Type,
                        offset: usize, width: u32) -> ast::ImplItem {
     let input_type = type_for_bitfield_width(ctx, width, true);
-    let equivalent_field_type = type_for_bitfield_width(ctx, width, false);
-    let field_type = cty_to_rs(ctx, &bitfield_type, false, true);
+    let field_type = cty_to_rs(ctx, &field_type, false, true);
     let setter_name = ctx.ext_cx.ident_of(&format!("set_{}", field_name));
     let bindgen_ident = ctx.ext_cx.ident_of(bindgen_name);
 
     let item = quote_item!(&ctx.ext_cx,
         impl X {
             pub fn $setter_name(&mut self, val: $input_type) {
-                self.$bindgen_ident = ((self.$bindgen_ident as $equivalent_field_type) & !(((1 << $width) - 1) << $offset)) as $field_type;
-                self.$bindgen_ident = ((self.$bindgen_ident as $equivalent_field_type) | ((val as $equivalent_field_type) << $offset)) as $field_type;
+                self.$bindgen_ident &= !(((1 << $width as $field_type) - 1) << $offset);
+                self.$bindgen_ident |= (val as $field_type) << $offset;
             }
         }
     ).unwrap();
@@ -1645,7 +1656,6 @@ fn gen_bitfield_method(ctx: &mut GenCtx, bindgen_name: &str,
 fn gen_fullbitfield_method(ctx: &mut GenCtx, bindgen_name: &String,
                            bitfield_type: &Type, bitfields: &[(String, u32)]) -> ast::ImplItem {
     let field_type = cty_to_rs(ctx, bitfield_type, false, true);
-    let total_width = bitfields.iter().fold(0, |acc, &(_, w)| acc + w);
     let mut args = vec!();
     let mut unnamed: usize = 0;
     for &(ref name, width) in bitfields.iter() {
