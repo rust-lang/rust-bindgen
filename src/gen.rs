@@ -2239,7 +2239,6 @@ fn mk_test_fn(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
 }
 
 fn mk_opaque_struct(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
-    let struct_name = ctx.ext_cx.ident_of(name);
     // XXX prevent this spurious clone
     let blob_field = mk_blob_field(ctx, "_bindgen_opaque_blob", layout.clone());
     let variant_data = if layout.size == 0 {
