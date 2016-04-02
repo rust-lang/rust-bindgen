@@ -1493,7 +1493,11 @@ fn cenum_to_rs(ctx: &mut GenCtx,
         is_sugared_doc: false,
     }));
 
-    attrs.push(mk_deriving_copy_and_maybe_debug_attr(ctx));
+    attrs.push(if ctx.options.derive_debug {
+        mk_deriving_attr(ctx, &["Debug", "Copy", "Clone"])
+    } else {
+        mk_deriving_attr(ctx, &["Copy", "Clone"])
+    });
 
     items.push(P(ast::Item {
         ident: enum_name,
@@ -1503,8 +1507,6 @@ fn cenum_to_rs(ctx: &mut GenCtx,
         vis: ast::Visibility::Public,
         span: ctx.span,
     }));
-
-    items.push(mk_clone_impl(ctx, &name));
 
     items
 }
