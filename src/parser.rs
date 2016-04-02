@@ -508,8 +508,8 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                    ctx: &mut ClangParserCtx,
                    ci: &mut CompInfo) -> Enum_CXVisitorResult {
     fn is_bitfield_continuation(field: &il::FieldInfo, ty: &il::Type, width: u32) -> bool {
-        match (&field.bitfields, ty) {
-            (&Some(ref bitfields), &il::TInt(_, layout)) if *ty == field.ty => {
+        match (&field.bitfields, ty.layout()) {
+            (&Some(ref bitfields), Some(layout)) => {
                 bitfields.iter().map(|&(_, w)| w).fold(0u32, |acc, w| acc + w) + width <= (layout.size * 8) as u32
             },
             _ => false
@@ -540,9 +540,9 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 (Some(width), Some(&mut il::CompMember::Field(ref mut field)))
                     if is_bitfield_continuation(field, &ty, width) => {
 
-                    if let Some(ref mut bitfields) = field.bitfields {
-                        bitfields.push((cursor.spelling(), width));
-                    } else { unreachable!() }
+                    // println!("found bitfield continuation {} (width: {})", cursor.spelling(), width);
+
+                    field.bitfields.as_mut().unwrap().push((cursor.spelling(), width));
                     return CXChildVisit_Continue;
                 },
                 // The field is the start of a new bitfield
@@ -600,11 +600,13 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
 
             // If it's a field from an unnamed union we only have to update the name
             if let Some(&mut CompMember::Field(ref mut info)) = ci.members.last_mut() {
-                if let (&TComp(ref field_ty_ci), &TComp(ref ci)) = (&info.ty, &ty) {
-                    if field_ty_ci.borrow().was_unnamed && ci.borrow().was_unnamed &&
-                       field_ty_ci.borrow().name == ci.borrow().name {
-                        info.name = name;
-                        return CXChildVisit_Continue;
+                if bitfields.is_none() && info.bitfields.is_none() {
+                    if let (&TComp(ref field_ty_ci), &TComp(ref ci)) = (&info.ty, &ty) {
+                        if field_ty_ci.borrow().was_unnamed && ci.borrow().was_unnamed &&
+                           field_ty_ci.borrow().name == ci.borrow().name {
+                            info.name = name;
+                            return CXChildVisit_Continue;
+                        }
                     }
                 }
             }

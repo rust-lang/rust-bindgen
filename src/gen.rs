@@ -1011,20 +1011,25 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                 has_destructor = true;
             }
 
-            let f_name = match f.bitfields {
+            let (f_name, f_ty) = match f.bitfields {
                 Some(_) => {
                     bitfields += 1;
-                    format!("_bitfield_{}", bitfields)
+                    // XXX(emilio): This is probably wrong for most bitfields, where the with is
+                    // greater than 8. Should probably get the width of the bitfields and adjust
+                    // the generated type and layout based on that.
+                    (format!("_bitfield_{}", bitfields), TInt(IUChar, Layout::new(1, 1)))
                 }
-                None => rust_type_id(ctx, &f.name)
+                None => (rust_type_id(ctx, &f.name), f.ty.clone())
             };
 
-            let is_translatable = cty_is_translatable(&f.ty);
-            if !is_translatable || type_opaque(ctx, &f.ty) {
+            drop(f.ty); // to ensure it's not used unintentionally
+
+            let is_translatable = cty_is_translatable(&f_ty);
+            if !is_translatable || type_opaque(ctx, &f_ty) {
                 if !is_translatable {
-                    println!("{}::{} not translatable, void: {}", ci.name, f.name, f.ty == TVoid);
+                    println!("{}::{} not translatable, void: {}", ci.name, f.name, f_ty == TVoid);
                 }
-                if let Some(layout) = f.ty.layout() {
+                if let Some(layout) = f_ty.layout() {
                     fields.push(mk_blob_field(ctx, &f_name, layout));
                 }
                 continue;
@@ -1034,10 +1039,10 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                 let mut offset: u32 = 0;
                 if let Some(ref bitfields) = f.bitfields {
                     for &(ref bf_name, bf_size) in bitfields.iter() {
-                        setters.push(gen_bitfield_method(ctx, &f_name, bf_name, &f.ty, offset as usize, bf_size));
+                        setters.push(gen_bitfield_method(ctx, &f_name, bf_name, &f_ty, offset as usize, bf_size));
                         offset += bf_size;
                     }
-                    setters.push(gen_fullbitfield_method(ctx, &f_name, &f.ty, bitfields))
+                    setters.push(gen_fullbitfield_method(ctx, &f_name, &f_ty, bitfields))
                 }
             }
 
@@ -1048,13 +1053,13 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                         bypass = true;
                         inner_f.ty.clone()
                     } else {
-                        f.ty.clone()
+                        f_ty
                     }
                 } else {
-                    f.ty.clone()
+                    f_ty
                 }
             } else {
-                f.ty.clone()
+                f_ty
             };
 
             // If the member is not a template argument, it needs the full path.
@@ -1596,7 +1601,7 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
     methods
 }
 
-fn type_for_bitfield_width(ctx: &mut GenCtx, width: u32) -> ast::Ty {
+fn type_for_bitfield_width(ctx: &mut GenCtx, width: u32, is_arg: bool) -> ast::Ty {
     let input_type = if width > 16 {
         "u32"
     } else if width > 8 {
@@ -1604,36 +1609,43 @@ fn type_for_bitfield_width(ctx: &mut GenCtx, width: u32) -> ast::Ty {
     } else if width > 1 {
         "u8"
     } else {
-        "bool"
+        if is_arg {
+            "bool"
+        } else {
+            "u8"
+        }
     };
     mk_ty(ctx, false, &[input_type.to_owned()])
 }
 
-fn gen_bitfield_method(ctx: &mut GenCtx, bindgen_name: &String,
-                       field_name: &String, field_type: &Type,
+fn gen_bitfield_method(ctx: &mut GenCtx, bindgen_name: &str,
+                       field_name: &str, bitfield_type: &Type,
                        offset: usize, width: u32) -> ast::ImplItem {
-    let input_type = type_for_bitfield_width(ctx, width);
-    let field_type = cty_to_rs(ctx, &field_type, false, true);
+    let input_type = type_for_bitfield_width(ctx, width, true);
+    let equivalent_field_type = type_for_bitfield_width(ctx, width, false);
+    let field_type = cty_to_rs(ctx, &bitfield_type, false, true);
     let setter_name = ctx.ext_cx.ident_of(&format!("set_{}", field_name));
-    let bindgen_ident = ctx.ext_cx.ident_of(&*bindgen_name);
+    let bindgen_ident = ctx.ext_cx.ident_of(bindgen_name);
 
-    let node = &quote_item!(&ctx.ext_cx,
+    let item = quote_item!(&ctx.ext_cx,
         impl X {
             pub fn $setter_name(&mut self, val: $input_type) {
-                self.$bindgen_ident &= !(((1 << $width) - 1) << $offset);
-                self.$bindgen_ident |= (val as $field_type) << $offset;
+                self.$bindgen_ident = ((self.$bindgen_ident as $equivalent_field_type) & !(((1 << $width) - 1) << $offset)) as $field_type;
+                self.$bindgen_ident = ((self.$bindgen_ident as $equivalent_field_type) | ((val as $equivalent_field_type) << $offset)) as $field_type;
             }
         }
-    ).unwrap().node;
-    match node {
+    ).unwrap();
+
+    match &item.node {
         &ast::ItemKind::Impl(_, _, _, _, _, ref items) => items[0].clone(),
         _ => unreachable!()
     }
 }
 
 fn gen_fullbitfield_method(ctx: &mut GenCtx, bindgen_name: &String,
-                           field_type: &Type, bitfields: &[(String, u32)]) -> ast::ImplItem {
-    let field_type = cty_to_rs(ctx, field_type, false, true);
+                           bitfield_type: &Type, bitfields: &[(String, u32)]) -> ast::ImplItem {
+    let field_type = cty_to_rs(ctx, bitfield_type, false, true);
+    let total_width = bitfields.iter().fold(0, |acc, &(_, w)| acc + w);
     let mut args = vec!();
     let mut unnamed: usize = 0;
     for &(ref name, width) in bitfields.iter() {
@@ -1645,7 +1657,7 @@ fn gen_fullbitfield_method(ctx: &mut GenCtx, bindgen_name: &String,
             ctx.ext_cx.ident_of(name)
         };
         args.push(ast::Arg {
-            ty: P(type_for_bitfield_width(ctx, width)),
+            ty: P(type_for_bitfield_width(ctx, width, true)),
             pat: P(ast::Pat {
                 id: ast::DUMMY_NODE_ID,
                 node: ast::PatKind::Ident(
@@ -1668,7 +1680,9 @@ fn gen_fullbitfield_method(ctx: &mut GenCtx, bindgen_name: &String,
     let stmts = Vec::with_capacity(bitfields.len() + 1);
 
     let mut offset = 0;
+
     let mut exprs = quote_expr!(&ctx.ext_cx, 0);
+
     let mut unnamed: usize = 0;
     for &(ref name, width) in bitfields.iter() {
         let name_ident = if name.is_empty() {
@@ -1681,6 +1695,7 @@ fn gen_fullbitfield_method(ctx: &mut GenCtx, bindgen_name: &String,
         exprs = quote_expr!(&ctx.ext_cx,
             $exprs | (($name_ident as $field_type) << $offset)
         );
+
         offset += width;
     }
 
@@ -1699,7 +1714,7 @@ fn gen_fullbitfield_method(ctx: &mut GenCtx, bindgen_name: &String,
             decl: P(fndecl),
             generics: empty_generics(),
             explicit_self: respan(ctx.span, ast::SelfKind::Static),
-            constness: ast::Constness::Const,
+            constness: ast::Constness::NotConst,
         }, P(block)
     );
 
