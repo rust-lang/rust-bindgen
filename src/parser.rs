@@ -2,7 +2,6 @@
 
 use std::collections::{HashMap, HashSet};
 use std::cell::RefCell;
-use std::ops::Deref;
 use std::rc::Rc;
 use std::path::Path;
 
@@ -51,10 +50,6 @@ impl<'a> ClangParserCtx<'a> {
 
     fn current_module_mut(&mut self) -> &mut Module {
         self.module_map.get_mut(&self.current_module_id).expect("Module not found!")
-    }
-
-    fn module_mut(&mut self, id: &ModuleId) -> &mut Module {
-        self.module_map.get_mut(id).expect("Module not found!")
     }
 }
 
@@ -223,10 +218,6 @@ fn get_abi(cc: Enum_CXCallingConv) -> abi::Abi {
         CXCallingConv_X86_64Win64 => abi::Abi::Win64,
         other => panic!("unsupported calling convention: {}", other),
     }
-}
-
-fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, is_ref: bool, layout: Layout) -> il::Type {
-    conv_ptr_ty_resolving_typedefs(ctx, ty, cursor, is_ref, layout, false)
 }
 
 fn conv_ptr_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
@@ -522,17 +513,6 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 bitfields.iter().map(|&(_, w)| w).fold(0u32, |acc, w| acc + w) + width <= (layout.size * 8) as u32
             },
             _ => false
-        }
-    }
-
-    fn inner_composite(mut ty: &il::Type) -> Option<&Rc<RefCell<CompInfo>>> {
-        loop {
-            match *ty {
-                TComp(ref comp_ty) => return Some(comp_ty),
-                TPtr(ref ptr_ty, _, _, _) => ty = &**ptr_ty,
-                TArray(ref array_ty, _, _) => ty = &**array_ty,
-                _ => return None
-            }
         }
     }
 

@@ -280,6 +280,7 @@ pub enum FKind {
 pub enum CompMember {
     Field(FieldInfo),
     Comp(Rc<RefCell<CompInfo>>),
+    #[allow(dead_code)]
     CompField(Rc<RefCell<CompInfo>>, FieldInfo),
     Enum(Rc<RefCell<EnumInfo>>),
 }
