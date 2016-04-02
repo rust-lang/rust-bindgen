@@ -1173,7 +1173,14 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
     let mut attrs = mk_doc_attr(ctx, &ci.comment);
     attrs.push(mk_repr_attr(ctx, layout));
     if !has_destructor {
-        attrs.push(mk_deriving_copy_attr(ctx));
+        if template_args.is_empty() {
+            extra.push(mk_clone_impl(ctx, name));
+            attrs.push(mk_deriving_copy_attr(ctx));
+        } else {
+            // TODO: make mk_clone_impl work for template arguments,
+            // meanwhile just fallback to deriving.
+            attrs.push(mk_deriving_attr(ctx, &["Copy", "Clone"]))
+       }
     }
     let struct_def = ast::Item {
         ident: ctx.ext_cx.ident_of(&id),
@@ -1307,6 +1314,8 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: &str, layout: Layout, members: Vec<CompM
                                       CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
                                       _ => true
                                   });
+
+    extra.push(mk_clone_impl(ctx, name));
     union_attrs.push(if can_derive_debug {
         mk_deriving_copy_and_maybe_debug_attr(ctx)
     } else {
@@ -1494,6 +1503,8 @@ fn cenum_to_rs(ctx: &mut GenCtx,
         vis: ast::Visibility::Public,
         span: ctx.span,
     }));
+
+    items.push(mk_clone_impl(ctx, &name));
 
     items
 }
@@ -1749,12 +1760,30 @@ fn mk_repr_attr(ctx: &mut GenCtx, layout: Layout) -> ast::Attribute {
 }
 
 fn mk_deriving_copy_attr(ctx: &mut GenCtx) -> ast::Attribute {
-    mk_deriving_attr(ctx, &["Copy", "Clone"])
+    mk_deriving_attr(ctx, &["Copy"])
+}
+
+// NB: This requires that the type you implement it for also
+// implements Copy.
+//
+// Implements std::clone::Clone using dereferencing.
+//
+// This is to bypass big arrays not implementing clone,
+// but implementing copy due to hacks inside rustc's internals.
+fn mk_clone_impl(ctx: &GenCtx, ty_name: &str) -> P<ast::Item> {
+    let impl_str = format!(r"
+        impl ::std::clone::Clone for {} {{
+            fn clone(&self) -> Self {{ *self }}
+        }}
+    ", ty_name);
+
+    parse::new_parser_from_source_str(ctx.ext_cx.parse_sess(),
+        ctx.ext_cx.cfg(), "".to_owned(), impl_str).parse_item().unwrap().unwrap()
 }
 
 fn mk_deriving_copy_and_maybe_debug_attr(ctx: &mut GenCtx) -> ast::Attribute {
     if ctx.options.derive_debug {
-        mk_deriving_attr(ctx, &["Copy", "Clone", "Debug"])
+        mk_deriving_attr(ctx, &["Copy", "Debug"])
     } else {
         mk_deriving_copy_attr(ctx)
     }
