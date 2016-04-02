@@ -552,8 +552,8 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                     match ty {
                         il::TInt(_, _) => (),
                         _ => {
-                            let msg = format!("Enums in bitfields are not supported ({}.{}).",
-                                cursor.spelling(), parent.spelling());
+                            let msg = format!("Enums in bitfields are not supported ({}::{}).",
+                                parent.spelling(), cursor.spelling());
                             ctx.logger.warn(&msg);
                         }
                     }

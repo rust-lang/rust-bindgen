@@ -1571,9 +1571,9 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
                 f.ty.size()
             }
             CompMember::Comp(ref rc_c) => {
-                let c = &rc_c.borrow();
-                methods.extend(gen_comp_methods(ctx, data_field, offset, c.kind,
-                                                &c.members, extra).into_iter());
+                let c = rc_c.borrow();
+                let name = comp_name(&ctx, c.kind, &c.name);
+                extra.extend(comp_to_rs(ctx, &name, c.clone()).into_iter());
                 c.layout.size
             }
             CompMember::CompField(ref rc_c, ref f) => {
