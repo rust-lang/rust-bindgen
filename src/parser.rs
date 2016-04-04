@@ -626,6 +626,9 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                     visit_composite(c, p, ctx_, &mut ci_)
                 });
 
+                // Propagate template types to inner structs
+                ci2.borrow_mut().args.extend(ci.args.clone().into_iter());
+
                 ci.members.push(CompMember::Comp(decl.compinfo()));
 
                 // Anonymous structs are legal in both C++ and C11

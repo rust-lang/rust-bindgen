@@ -11,3 +11,12 @@ A::B var;
 class D {
     A::B member;
 };
+
+template<typename T>
+class Templated {
+    T member;
+
+    class Templated_inner {
+        T* member_ptr;
+    };
+};
