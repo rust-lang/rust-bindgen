@@ -861,6 +861,9 @@ fn visit_top(cursor: &Cursor,
         | CXCursor_ClassDecl
         | CXCursor_ClassTemplate => {
             let anno = Annotations::new(cursor);
+            if anno.hide {
+                return CXChildVisit_Continue;
+            }
             fwd_decl(ctx, cursor, move |ctx_| {
                 let decl = decl_name(ctx_, cursor);
                 let ci = decl.compinfo();
@@ -951,6 +954,11 @@ fn visit_top(cursor: &Cursor,
             CXChildVisit_Continue
         }
         CXCursor_TypedefDecl => {
+            let anno = Annotations::new(cursor);
+            if anno.hide {
+                return CXChildVisit_Continue;
+            }
+
             let mut under_ty = cursor.typedef_type();
             if under_ty.kind() == CXType_Unexposed {
                 under_ty = under_ty.canonical_type();
