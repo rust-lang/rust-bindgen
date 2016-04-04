@@ -17,6 +17,8 @@ class Templated {
     T member;
 
     class Templated_inner {
+    public:
         T* member_ptr;
+        void get() {}
     };
 };

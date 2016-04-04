@@ -984,10 +984,6 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             if empty_name {
                 ei.borrow_mut().name = format!("{}_enum{}", name, anon_enum_count);
                 anon_enum_count += 1;
-            } else {
-                // Mangled name to deal with multiple definitions of the same inner type
-                let new_name = [name, &*ei.borrow().name].join("_").to_owned();
-                ei.borrow_mut().name = new_name;
             }
 
             let e = ei.borrow().clone();
@@ -1115,9 +1111,6 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                 fields.push(mk_blob_field(ctx, &field_name, c.layout));
                 methods.extend(gen_comp_methods(ctx, &field_name, 0, c.kind, &c.members, &mut extra).into_iter());
             } else {
-                // Mangled name to deal with multiple definitions of the same inner type
-                let mangled_name = [name, &*rc_c.borrow().name].join("_").to_owned();
-                rc_c.borrow_mut().name = mangled_name;
                 let name = comp_name(&ctx, rc_c.borrow().kind, &rc_c.borrow().name);
                 extra.extend(comp_to_rs(ctx, &name, rc_c.borrow().clone()).into_iter());
             }

@@ -621,6 +621,10 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 // to globals otherwise it will be declared later and a global.
                 let decl = decl_name(ctx_, cursor);
                 let ci2 = decl.compinfo();
+                // Mangle the name to prevent multiple definitions
+                // of the same inner type to cause conflicts
+                let new_name = [&*ci.name, &*ci2.borrow().name].join("_").to_owned();
+                ci2.borrow_mut().name = new_name;
                 cursor.visit(|c, p| {
                     let mut ci_ = ci2.borrow_mut();
                     visit_composite(c, p, ctx_, &mut ci_)
@@ -649,9 +653,13 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
         }
         CXCursor_EnumDecl => {
             let anno = Annotations::new(cursor);
+
             fwd_decl(ctx, cursor, |ctx_| {
                 let decl = decl_name(ctx_, cursor);
                 let ei = decl.enuminfo();
+                // Mangle the name to avoid name conflicts with inner types
+                let new_name = [&*ci.name, &*ei.borrow().name].join("_").to_owned();
+                ei.borrow_mut().name = new_name;
                 ei.borrow_mut().comment = cursor.raw_comment();
                 cursor.visit(|c, _: &Cursor| {
                     let mut ei_ = ei.borrow_mut();
@@ -752,6 +760,14 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 if cursor.method_is_virtual() {
                     sig.args.insert(0, ("this".to_string(),TPtr(Box::new(TVoid), cursor.cur_type().is_const(), false, Layout::zero())));
                 } else {
+                    // XXX This is weak and doesn't work if names are mangled further, but...
+                    // We can't have access to the current Rc from here, so we can't pass the type
+                    // here.
+                    //
+                    // Also, it would form an rc cycle.
+                    //
+                    // Possibly marking the "this" attribute with TOther or a similar marked value
+                    // would be a better choice.
                     sig.args.insert(0, ("this".to_string(),
                                         TPtr(Box::new(TNamed(Rc::new(RefCell::new(TypeInfo::new(ci.name.clone(), ctx.current_module_id, TVoid, Layout::zero()))))), cursor.cur_type().is_const(), false, Layout::zero())));
                 }
