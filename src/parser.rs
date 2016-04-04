@@ -614,7 +614,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             let field = FieldInfo::new(name, ty, comment, bitfields);
             ci.members.push(CompMember::Field(field));
         }
-        CXCursor_StructDecl | CXCursor_UnionDecl => {
+        CXCursor_ClassDecl | CXCursor_StructDecl | CXCursor_UnionDecl => {
             fwd_decl(ctx, cursor, |ctx_| {
                 // If the struct is anonymous (i.e. declared here) then it
                 // cannot be used elsewhere and so does not need to be added
