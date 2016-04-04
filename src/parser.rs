@@ -259,13 +259,21 @@ fn conv_ptr_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
 }
 
 fn mk_fn_sig(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::FuncSig {
+    mk_fn_sig_resolving_typedefs(ctx, ty, cursor, &[])
+}
+
+fn mk_fn_sig_resolving_typedefs(ctx: &mut ClangParserCtx,
+                                ty: &cx::Type,
+                                cursor: &Cursor,
+                                typedefs: &[String]) -> il::FuncSig {
     let args_lst: Vec<(String, il::Type)> = match cursor.kind() {
         CXCursor_FunctionDecl | CXCursor_CXXMethod => {
             // For CXCursor_FunctionDecl, cursor.args() is the reliable way to
             // get parameter names and types.
             cursor.args().iter().map(|arg| {
                 let arg_name = arg.spelling();
-                (arg_name, conv_ty(ctx, &arg.cur_type(), arg))
+                let is_class_typedef = arg.cur_type().sanitized_spelling_in(typedefs);
+                (arg_name, conv_ty_resolving_typedefs(ctx, &arg.cur_type(), arg, is_class_typedef))
             }).collect()
         }
         _ => {
@@ -274,7 +282,8 @@ fn mk_fn_sig(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Fu
             let mut args_lst = vec!();
             cursor.visit(|c: &Cursor, _: &Cursor| {
                 if c.kind() == CXCursor_ParmDecl {
-                    args_lst.push((c.spelling(), conv_ty(ctx, &c.cur_type(), c)));
+                    let is_class_typedef = c.cur_type().sanitized_spelling_in(typedefs);
+                    args_lst.push((c.spelling(), conv_ty_resolving_typedefs(ctx, &c.cur_type(), c, is_class_typedef)));
                 }
                 CXChildVisit_Continue
             });
@@ -526,12 +535,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 return CXChildVisit_Continue;
             }
 
-            // XXX make it more consistent
-            let type_spelling = cursor.cur_type().spelling()
-                                      .replace("const ", "")
-                                      .split(' ').next().unwrap_or("").to_owned();
-            let is_class_typedef = ci.typedefs.iter().any(|spelling| *spelling == *type_spelling);
-
+            let is_class_typedef = cursor.cur_type().sanitized_spelling_in(&ci.typedefs);
             let ty = conv_ty_resolving_typedefs(ctx, &cursor.cur_type(), cursor, is_class_typedef);
             let comment = cursor.raw_comment();
 
@@ -713,7 +717,8 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 return CXChildVisit_Continue;
             }
 
-            if ci.args.len() > 0 {
+            // XXX no methods yet for templates
+            if !ci.args.is_empty() {
                 return CXChildVisit_Continue;
             }
 
@@ -754,7 +759,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 ci.has_vtable = true;
             }
 
-            let mut sig = mk_fn_sig(ctx, &cursor.cur_type(), cursor);
+            let mut sig = mk_fn_sig_resolving_typedefs(ctx, &cursor.cur_type(), cursor, &ci.typedefs);
             if !cursor.method_is_static() {
                 // XXX what have i done
                 if cursor.method_is_virtual() {

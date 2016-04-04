@@ -8,6 +8,9 @@ public:
     MyInt arr[10];
     AnotherInt d;
     AnotherInt* other_ptr;
+
+    void method(MyInt c) {};
+    void anotherMethod(AnotherInt c) {};
 };
 
 class D: public C {

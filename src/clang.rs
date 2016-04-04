@@ -286,6 +286,22 @@ impl Type {
         }
     }
 
+    // XXX make it more consistent
+    //
+    // This is currently only used to detect typedefs,
+    // so it should not be a problem.
+    pub fn sanitized_spelling(&self) -> String {
+        self.spelling()
+            .replace("const ", "")
+            .split(' ').next().unwrap_or("").to_owned()
+    }
+
+    pub fn sanitized_spelling_in(&self, possible: &[String]) -> bool {
+        let type_spelling = self.sanitized_spelling();
+        possible.iter()
+                .any(|spelling| *spelling == *type_spelling)
+    }
+
     pub fn is_const(&self) -> bool {
         unsafe {
             clang_isConstQualifiedType(self.x) == 1
