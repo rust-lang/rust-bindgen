@@ -211,7 +211,7 @@ fn gen_unmangle_method(ctx: &mut GenCtx,
         decl: P(fndecl),
         generics: empty_generics(),
         explicit_self: respan(ctx.span, self_kind),
-        constness: ast::Constness::NotConst,
+        constness: ast::Constness::Const,
     };
 
     let block = ast::Block {
