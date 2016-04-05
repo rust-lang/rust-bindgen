@@ -193,7 +193,9 @@ impl Type {
             TArray(_, _, l) => l.clone(),
             TComp(ref ci) => ci.borrow().layout.clone(),
             TEnum(ref ei) => ei.borrow().layout.clone(),
-            TNamed(ref ti) => return ti.borrow().ty.layout(),
+            // Test first with the underlying type layout, else with the reported one
+            // This fixes a weird bug in SM when it can't find layout for uint32_t
+            TNamed(ref ti) => ti.borrow().ty.layout().unwrap_or(ti.borrow().layout.clone()),
             TVoid |
             TFuncProto(..) |
             TFuncPtr(..) => return None,
