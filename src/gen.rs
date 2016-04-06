@@ -211,7 +211,7 @@ fn gen_unmangle_method(ctx: &mut GenCtx,
         decl: P(fndecl),
         generics: empty_generics(),
         explicit_self: respan(ctx.span, self_kind),
-        constness: ast::Constness::Const,
+        constness: ast::Constness::NotConst,
     };
 
     let block = ast::Block {
@@ -1717,7 +1717,7 @@ fn gen_fullbitfield_method(ctx: &mut GenCtx, bindgen_name: &String,
             decl: P(fndecl),
             generics: empty_generics(),
             explicit_self: respan(ctx.span, ast::SelfKind::Static),
-            constness: ast::Constness::NotConst,
+            constness: ast::Constness::Const,
         }, P(block)
     );
 
