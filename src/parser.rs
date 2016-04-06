@@ -159,7 +159,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                 ci.borrow_mut().has_non_type_template_params = has_non_type_template_params;
                 GCompDecl(ci)
             }
-            CXCursor_TypedefDecl => {
+            CXCursor_TypeAliasDecl | CXCursor_TypedefDecl => {
                 let ti = Rc::new(RefCell::new(TypeInfo::new(spelling, ctx.current_module_id, TVoid, layout)));
                 GType(ti)
             }
@@ -366,7 +366,7 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
             let ei = decl.enuminfo();
             TEnum(ei)
         }
-        CXCursor_TypedefDecl => {
+        CXCursor_TypeAliasDecl | CXCursor_TypedefDecl => {
             if resolve_typedefs {
                 return conv_ty_resolving_typedefs(ctx, &ty_decl.typedef_type(), &ty_decl.typedef_type().declaration(), resolve_typedefs);
             }
@@ -375,7 +375,7 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
             let ti = decl.typeinfo();
             TNamed(ti)
         }
-        CXCursor_NoDeclFound | CXCursor_TypeAliasDecl => {
+        CXCursor_NoDeclFound => {
             let layout = Layout::new(ty.size(), ty.align());
             TNamed(Rc::new(RefCell::new(TypeInfo::new(ty.spelling().replace("const ", ""), ctx.current_module_id, TVoid, layout))))
         }
@@ -526,7 +526,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
     }
 
     match cursor.kind() {
-        CXCursor_TypedefDecl => {
+        CXCursor_TypeAliasDecl | CXCursor_TypedefDecl => {
             ci.typedefs.push(cursor.spelling().to_owned());
         }
         CXCursor_FieldDecl => {
@@ -977,7 +977,7 @@ fn visit_top(cursor: &Cursor,
 
             CXChildVisit_Continue
         }
-        CXCursor_TypedefDecl => {
+        CXCursor_TypeAliasDecl | CXCursor_TypedefDecl => {
             let anno = Annotations::new(cursor);
             if anno.hide {
                 return CXChildVisit_Continue;
@@ -1074,7 +1074,10 @@ fn visit_top(cursor: &Cursor,
 
             return CXChildVisit_Continue;
         }
-        _ => return CXChildVisit_Continue,
+        _ => {
+            // println!("Not handled cursor: {}", cursor.kind());
+            return CXChildVisit_Continue;
+        }
     }
 }
 
