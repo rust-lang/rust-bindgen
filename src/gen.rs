@@ -1599,10 +1599,6 @@ fn cenum_to_rs(ctx: &mut GenCtx,
 fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
                     kind: CompKind, members: &[CompMember],
                     extra: &mut Vec<P<ast::Item>>) -> Vec<ast::ImplItem> {
-    if !ctx.options.gen_bitfield_methods {
-        return vec![];
-    }
-
     let mk_field_method = |ctx: &mut GenCtx, f: &FieldInfo, offset: usize| {
         // TODO: Implement bitfield accessors
         if f.bitfields.is_some() { return None; }
@@ -1640,7 +1636,9 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
     for m in members.into_iter() {
         let advance_by = match *m {
             CompMember::Field(ref f) => {
-                methods.extend(mk_field_method(ctx, f, offset).into_iter());
+                if ctx.options.gen_bitfield_methods {
+                    methods.extend(mk_field_method(ctx, f, offset).into_iter());
+                }
                 f.ty.size()
             }
             CompMember::Comp(ref rc_c) => {
@@ -1650,7 +1648,9 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
                 c.layout.size
             }
             CompMember::CompField(ref rc_c, ref f) => {
-                methods.extend(mk_field_method(ctx, f, offset).into_iter());
+                if ctx.options.gen_bitfield_methods {
+                    methods.extend(mk_field_method(ctx, f, offset).into_iter());
+                }
 
                 let c = rc_c.borrow();
                 let name = comp_name(&ctx, c.kind, &c.name);
