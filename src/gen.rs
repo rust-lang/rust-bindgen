@@ -1398,6 +1398,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: &str, layout: Layout, members: Vec<CompM
                                   });
 
     extra.push(mk_clone_impl(ctx, name));
+    extra.push(mk_test_fn(ctx, &name, &layout));
     union_attrs.push(if can_derive_debug {
         mk_deriving_copy_and_maybe_debug_attr(ctx)
     } else {
