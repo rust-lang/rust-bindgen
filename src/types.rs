@@ -202,7 +202,6 @@ impl Type {
         })
     }
 
-    #[allow(dead_code)]
     pub fn can_derive_debug(&self) -> bool {
         match *self {
             TArray(_, size, _) => size <= 32,

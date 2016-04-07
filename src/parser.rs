@@ -640,7 +640,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 ci.members.push(CompMember::Comp(decl.compinfo()));
 
                 // Anonymous structs are legal in both C++ and C11
-                if ci2.borrow().kind == CompKind::Union && ci2.borrow().was_unnamed {
+                if ci2.borrow().was_unnamed {
                     let ci2b = ci2.borrow();
                     let field = FieldInfo::new(ci2b.name.clone(), TComp(ci2.clone()), ci2b.comment.clone(), None);
                     ci.members.push(CompMember::Field(field));
