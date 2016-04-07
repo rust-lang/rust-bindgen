@@ -379,7 +379,26 @@ fn gen_mod(mut ctx: &mut GenCtx,
             span: span.clone(),
         })]
     } else {
-        vec![]
+        // TODO: Could be worth it to avoid this if
+        // we know there won't be any union.
+        let union_fields_decl = quote_item!(&ctx.ext_cx,
+            #[derive(Copy, Clone, Debug)]
+            pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
+        ).unwrap();
+
+        let union_fields_impl = quote_item!(&ctx.ext_cx,
+            impl<T> __BindgenUnionField<T> {
+                unsafe fn as_ref(&self) -> &T {
+                    ::std::mem::transmute(self)
+                }
+
+                unsafe fn as_mut(&mut self) -> &mut T {
+                    ::std::mem::transmute(self)
+                }
+            }
+        ).unwrap();
+
+        vec![union_fields_decl, union_fields_impl]
     };
 
     ctx.current_module_id = module_id;
@@ -1298,10 +1317,12 @@ fn opaque_to_rs(ctx: &mut GenCtx, name: &str, _layout: Layout) -> P<ast::Item> {
 }
 
 fn cunion_to_rs(ctx: &mut GenCtx, name: &str, layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
-    fn mk_item(ctx: &mut GenCtx, name: String, item: ast::ItemKind, vis:
+    const UNION_DATA_FIELD_NAME: &'static str = "_bindgen_data_";
+
+    fn mk_item(ctx: &mut GenCtx, name: &str, item: ast::ItemKind, vis:
                ast::Visibility, attrs: Vec<ast::Attribute>) -> P<ast::Item> {
         P(ast::Item {
-            ident: ctx.ext_cx.ident_of(&name),
+            ident: ctx.ext_cx.ident_of(name),
             attrs: attrs,
             id: ast::DUMMY_NODE_ID,
             node: item,
@@ -1319,15 +1340,41 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: &str, layout: Layout, members: Vec<CompM
     // after the current union.
     let mut extra = vec!();
 
-    let data_field_name = "_bindgen_data_";
-    let data_field = mk_blob_field(ctx, data_field_name, layout);
+    fn mk_union_field(ctx: &GenCtx, name: &str, ty: ast::Ty) -> Spanned<ast::StructField_> {
+        let field_ty = if !ctx.options.enable_cxx_namespaces ||
+                          ctx.current_module_id == ROOT_MODULE_ID {
+            quote_ty!(&ctx.ext_cx, __BindgenUnionField<$ty>)
+        } else {
+            quote_ty!(&ctx.ext_cx, root::__BindgenUnionField<$ty>)
+        };
+
+        respan(ctx.span, ast::StructField_ {
+            kind: ast::NamedField(
+                ctx.ext_cx.ident_of(name),
+                ast::Visibility::Public,
+            ),
+            id: ast::DUMMY_NODE_ID,
+            ty: field_ty,
+            attrs: vec![],
+        })
+    }
+
+    let mut fields = members.iter()
+                        .flat_map(|member| match *member {
+                            CompMember::Field(ref f) => {
+                                let cty = cty_to_rs(ctx, &f.ty, false, true);
+                                Some(mk_union_field(ctx, &f.name, cty))
+                            }
+                            _ => None,
+                        }).collect::<Vec<_>>();
+    fields.push(mk_blob_field(ctx, UNION_DATA_FIELD_NAME, layout));
 
     let def = ast::ItemKind::Struct(
-        ast::VariantData::Struct(vec![data_field], ast::DUMMY_NODE_ID),
+        ast::VariantData::Struct(fields, ast::DUMMY_NODE_ID),
         empty_generics()
     );
     let union_id = rust_type_id(ctx, name);
-    let mut union_attrs = vec!(mk_repr_attr(ctx, layout));
+    let mut union_attrs = vec![mk_repr_attr(ctx, layout)];
     let can_derive_debug = members.iter()
                                   .all(|member| match *member {
                                       CompMember::Field(ref f) |
@@ -1342,20 +1389,18 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: &str, layout: Layout, members: Vec<CompM
         mk_deriving_copy_attr(ctx)
     });
 
-    let union_def = mk_item(ctx, union_id, def, ast::Visibility::Public, union_attrs);
-
+    let union_def = mk_item(ctx, &union_id, def, ast::Visibility::Public, union_attrs);
     let union_impl = ast::ItemKind::Impl(
         ast::Unsafety::Normal,
         ast::ImplPolarity::Positive,
         empty_generics(),
         None,
         P(cty_to_rs(ctx, &union, true, true)),
-        gen_comp_methods(ctx, data_field_name, 0, CompKind::Union, &members, &mut extra),
+        gen_comp_methods(ctx, UNION_DATA_FIELD_NAME, 0, CompKind::Union, &members, &mut extra),
     );
-
     let mut items = vec!(
         union_def,
-        mk_item(ctx, "".to_owned(), union_impl, ast::Visibility::Inherited, Vec::new())
+        mk_item(ctx, "", union_impl, ast::Visibility::Inherited, vec![])
     );
 
     items.extend(extra.into_iter());
