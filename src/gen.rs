@@ -388,17 +388,33 @@ fn gen_mod(mut ctx: &mut GenCtx,
 
         let union_fields_impl = quote_item!(&ctx.ext_cx,
             impl<T> __BindgenUnionField<T> {
-                unsafe fn as_ref(&self) -> &T {
+                #[inline]
+                pub fn new() -> Self {
+                    __BindgenUnionField(::std::marker::PhantomData)
+                }
+
+                #[inline]
+                pub unsafe fn as_ref(&self) -> &T {
                     ::std::mem::transmute(self)
                 }
 
-                unsafe fn as_mut(&mut self) -> &mut T {
+                #[inline]
+                pub unsafe fn as_mut(&mut self) -> &mut T {
                     ::std::mem::transmute(self)
                 }
             }
         ).unwrap();
 
-        vec![union_fields_decl, union_fields_impl]
+        let union_fields_default_impl = quote_item!(&ctx.ext_cx,
+            impl<T> ::std::default::Default for __BindgenUnionField<T> {
+                #[inline]
+                fn default() -> Self {
+                    Self::new()
+                }
+            }
+        ).unwrap();
+
+        vec![union_fields_decl, union_fields_impl, union_fields_default_impl]
     };
 
     ctx.current_module_id = module_id;
