@@ -1208,16 +1208,31 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
         }
     );
 
+
     let mut attrs = mk_doc_attr(ctx, &ci.comment);
     attrs.push(mk_repr_attr(ctx, layout));
     if !has_destructor {
+        let can_derive_debug = members.iter()
+                                      .all(|member| match *member {
+                                          CompMember::Field(ref f) |
+                                          CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
+                                          _ => true
+                                      });
         if template_args.is_empty() {
             extra.push(mk_clone_impl(ctx, name));
-            attrs.push(mk_deriving_copy_attr(ctx));
+            attrs.push(if can_derive_debug && ctx.options.derive_debug {
+                mk_deriving_attr(ctx, &["Debug", "Copy"])
+            } else {
+                mk_deriving_attr(ctx, &["Copy"])
+            });
         } else {
-            // TODO: make mk_clone_impl work for template arguments,
-            // meanwhile just fallback to deriving.
-            attrs.push(mk_deriving_attr(ctx, &["Copy", "Clone"]))
+            attrs.push(if can_derive_debug && ctx.options.derive_debug {
+                // TODO: make mk_clone_impl work for template arguments,
+                // meanwhile just fallback to deriving.
+                mk_deriving_attr(ctx, &["Copy", "Clone", "Debug"])
+            } else {
+                mk_deriving_attr(ctx, &["Copy", "Clone"])
+            });
        }
     }
     let struct_def = ast::Item {
