@@ -5,3 +5,16 @@ template<typename T, typename U> class Foo {
 };
 
 void bar(Foo<int, int> foo);
+
+template<typename T>
+class D {
+    typedef Foo<int, int> MyFoo;
+
+    MyFoo m_foo;
+
+    template<typename Z>
+    class U {
+        MyFoo m_nested_foo;
+        Z m_baz;
+    };
+};

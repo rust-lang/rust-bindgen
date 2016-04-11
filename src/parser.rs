@@ -633,13 +633,15 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 // of the same inner type to cause conflicts
                 let new_name = [&*ci.name, &*ci2.borrow().name].join("_").to_owned();
                 ci2.borrow_mut().name = new_name;
+
+                // Propagate template arguments and typedefs to inner structs
+                ci2.borrow_mut().args.extend(ci.args.clone().into_iter());
+                ci2.borrow_mut().typedefs.extend(ci.typedefs.clone().into_iter());
+
                 cursor.visit(|c, p| {
                     let mut ci_ = ci2.borrow_mut();
                     visit_composite(c, p, ctx_, &mut ci_)
                 });
-
-                // Propagate template types to inner structs
-                ci2.borrow_mut().args.extend(ci.args.clone().into_iter());
 
                 ci.members.push(CompMember::Comp(decl.compinfo()));
 
