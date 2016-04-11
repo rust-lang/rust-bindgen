@@ -111,6 +111,7 @@ fn rust_type_id(ctx: &mut GenCtx, name: &str) -> String {
         "uintptr_t"
         | "size_t" => "usize".to_owned(),
         "intptr_t"
+        | "ptrdiff_t"
         | "ssize_t" => "isize".to_owned(),
         _ => first(rust_id(ctx, name))
     }
