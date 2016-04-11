@@ -263,6 +263,8 @@ fn gen_unmangle_method(ctx: &mut GenCtx,
         is_sugared_doc: false
     }));
 
+    let name = first(rust_id(ctx, &name));
+
     ast::ImplItem {
         id: ast::DUMMY_NODE_ID,
         ident: ctx.ext_cx.ident_of(&name),
