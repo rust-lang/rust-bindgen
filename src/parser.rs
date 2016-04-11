@@ -618,13 +618,17 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             let field = FieldInfo::new(name, ty, comment, bitfields);
             ci.members.push(CompMember::Field(field));
         }
-        CXCursor_ClassDecl | CXCursor_StructDecl | CXCursor_UnionDecl => {
+        CXCursor_StructDecl |
+        CXCursor_UnionDecl |
+        CXCursor_ClassTemplate |
+        CXCursor_ClassDecl => {
             fwd_decl(ctx, cursor, |ctx_| {
                 // If the struct is anonymous (i.e. declared here) then it
                 // cannot be used elsewhere and so does not need to be added
                 // to globals otherwise it will be declared later and a global.
                 let decl = decl_name(ctx_, cursor);
                 let ci2 = decl.compinfo();
+
                 // Mangle the name to prevent multiple definitions
                 // of the same inner type to cause conflicts
                 let new_name = [&*ci.name, &*ci2.borrow().name].join("_").to_owned();
