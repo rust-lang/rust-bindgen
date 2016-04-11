@@ -82,8 +82,8 @@ fn empty_generics() -> ast::Generics {
 fn rust_id(ctx: &mut GenCtx, name: &str) -> (String, bool) {
     let token = parse::token::Ident(ctx.ext_cx.ident_of(name), parse::token::Plain);
     if token.is_any_keyword() || "bool" == name {
-        let mut s = "_".to_string();
-        s.push_str(name);
+        let mut s = name.to_owned();
+        s.push_str("_");
         (s, true)
     } else {
         (name.to_owned(), false)
@@ -96,8 +96,8 @@ fn rust_type_id(ctx: &mut GenCtx, name: &str) -> String {
         "u32" | "f32" | "f64" | "i8" |
         "i16" | "i32" | "i64" | "Self" |
         "str" => {
-            let mut s = "_".to_owned();
-            s.push_str(name);
+            let mut s = name.to_owned();
+            s.push_str("_");
             s
         }
         "int8_t" => "i8".to_owned(),
