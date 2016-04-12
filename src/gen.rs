@@ -310,25 +310,25 @@ pub fn gen_mods(links: &[(String, LinkType)],
     });
 
     if let Some(root_mod) = gen_mod(&mut ctx, ROOT_MODULE_ID, links, span) {
+        // Move out of the pointer so we can mutate it
+        let mut root_mod_item = root_mod.and_then(|item| item);
+
+        gen_union_field_definitions_if_necessary(&mut ctx, &mut root_mod_item);
+
         if !ctx.options.enable_cxx_namespaces {
-            match root_mod.node {
+            match root_mod_item.node {
                 // XXX This clone might be really expensive, but doing:
-                // ast::ItemMod(ref mut root) => {
-                //     return ::std::mem::replace(&mut root.items, vec![]);
-                // }
-                // fails with "error: cannot borrow immutable anonymous field as mutable".
-                // So...
-                ast::ItemKind::Mod(ref root) => {
-                    return root.items.clone()
+                ast::ItemKind::Mod(root) => {
+                    return root.items;
                 }
                 _ => unreachable!(),
             }
         }
 
-        let ident = root_mod.ident;
+        let ident = root_mod_item.ident;
         let root_export = quote_item!(&ctx.ext_cx, pub use $ident::*;).unwrap();
 
-        vec![root_export, root_mod]
+        vec![root_export, P(root_mod_item)]
     } else {
         vec![]
     }
@@ -345,64 +345,10 @@ fn gen_mod(mut ctx: &mut GenCtx,
     // Import just the root to minimise name conflicts
     let mut globals = if module_id != ROOT_MODULE_ID {
         // XXX Pass this previously instead of looking it up always?
-        let root = ctx.ext_cx.ident_of(&ctx.module_map.get(&ROOT_MODULE_ID).unwrap().name);
-        vec![P(ast::Item {
-            ident: ctx.ext_cx.ident_of(""),
-            attrs: vec![],
-            id: ast::DUMMY_NODE_ID,
-            node: ast::ItemKind::Use(P(
-                Spanned {
-                    node: ast::ViewPathSimple(root.clone(),
-                              ast::Path {
-                                  span: span.clone(),
-                                  global: false,
-                                  segments: vec![ast::PathSegment {
-                                      identifier: root,
-                                      parameters: ast::PathParameters::none(),
-                                  }]
-                              }),
-                    span: span.clone(),
-                })),
-            vis: ast::Visibility::Public,
-            span: span.clone(),
-        })]
+        let root_ident = ctx.ext_cx.ident_of(&ctx.module_map.get(&ROOT_MODULE_ID).unwrap().name);
+        vec![quote_item!(&ctx.ext_cx, use $root_ident;).unwrap()]
     } else {
-        // TODO: Could be worth it to avoid this if
-        // we know there won't be any union.
-        let union_fields_decl = quote_item!(&ctx.ext_cx,
-            #[derive(Copy, Clone, Debug)]
-            pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
-        ).unwrap();
-
-        let union_fields_impl = quote_item!(&ctx.ext_cx,
-            impl<T> __BindgenUnionField<T> {
-                #[inline]
-                pub fn new() -> Self {
-                    __BindgenUnionField(::std::marker::PhantomData)
-                }
-
-                #[inline]
-                pub unsafe fn as_ref(&self) -> &T {
-                    ::std::mem::transmute(self)
-                }
-
-                #[inline]
-                pub unsafe fn as_mut(&mut self) -> &mut T {
-                    ::std::mem::transmute(self)
-                }
-            }
-        ).unwrap();
-
-        let union_fields_default_impl = quote_item!(&ctx.ext_cx,
-            impl<T> ::std::default::Default for __BindgenUnionField<T> {
-                #[inline]
-                fn default() -> Self {
-                    Self::new()
-                }
-            }
-        ).unwrap();
-
-        vec![union_fields_decl, union_fields_impl, union_fields_default_impl]
+        vec![]
     };
 
     ctx.current_module_id = module_id;
@@ -1337,6 +1283,8 @@ fn opaque_to_rs(ctx: &mut GenCtx, name: &str, _layout: Layout) -> P<ast::Item> {
 
 fn cunion_to_rs(ctx: &mut GenCtx, name: &str, layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
     const UNION_DATA_FIELD_NAME: &'static str = "_bindgen_data_";
+
+    ctx.saw_union = true;
 
     fn mk_item(ctx: &mut GenCtx, name: &str, item: ast::ItemKind, vis:
                ast::Visibility, attrs: Vec<ast::Attribute>) -> P<ast::Item> {
@@ -2362,4 +2310,52 @@ fn mk_opaque_struct(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
         vis: ast::Visibility::Public,
         span: ctx.span
     })
+}
+
+fn gen_union_field_definitions_if_necessary(ctx: &mut GenCtx, mut root_mod: &mut ast::Item) {
+    if !ctx.saw_union {
+        return;
+    }
+
+    let union_fields_decl = quote_item!(&ctx.ext_cx,
+        #[derive(Copy, Clone, Debug)]
+        pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
+    ).unwrap();
+
+    let union_fields_impl = quote_item!(&ctx.ext_cx,
+        impl<T> __BindgenUnionField<T> {
+            #[inline]
+            pub fn new() -> Self {
+                __BindgenUnionField(::std::marker::PhantomData)
+            }
+
+            #[inline]
+            pub unsafe fn as_ref(&self) -> &T {
+                ::std::mem::transmute(self)
+            }
+
+            #[inline]
+            pub unsafe fn as_mut(&mut self) -> &mut T {
+                ::std::mem::transmute(self)
+            }
+        }
+    ).unwrap();
+
+    let union_fields_default_impl = quote_item!(&ctx.ext_cx,
+        impl<T> ::std::default::Default for __BindgenUnionField<T> {
+            #[inline]
+            fn default() -> Self {
+                Self::new()
+            }
+        }
+    ).unwrap();
+
+
+    match root_mod.node {
+        ast::ItemKind::Mod(ref mut root) => {
+            let old_items = std::mem::replace(&mut root.items, vec![union_fields_decl, union_fields_impl, union_fields_default_impl]);
+            root.items.extend(old_items.into_iter());
+        }
+        _ => unreachable!(),
+    }
 }
