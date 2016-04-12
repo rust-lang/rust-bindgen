@@ -29,6 +29,7 @@ struct GenCtx<'r> {
     span: Span,
     module_map: ModuleMap,
     current_module_id: ModuleId,
+    saw_union: bool,
 }
 
 impl<'r> GenCtx<'r> {
@@ -296,6 +297,7 @@ pub fn gen_mods(links: &[(String, LinkType)],
         span: span,
         module_map: map,
         current_module_id: ROOT_MODULE_ID,
+        saw_union: false,
     };
 
     ctx.ext_cx.bt_push(ExpnInfo {
