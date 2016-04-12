@@ -323,25 +323,8 @@ pub fn gen_mods(links: &[(String, LinkType)],
             }
         }
 
-        let root_export = P(ast::Item {
-            ident: ctx.ext_cx.ident_of(""),
-            attrs: vec![],
-            id: ast::DUMMY_NODE_ID,
-            node: ast::ItemKind::Use(P(
-                Spanned {
-                    node: ast::ViewPathGlob(ast::Path {
-                        span: span.clone(),
-                        global: false,
-                        segments: vec![ast::PathSegment {
-                            identifier: root_mod.ident,
-                            parameters: ast::PathParameters::none(),
-                        }]
-                    }),
-                    span: span.clone(),
-                })),
-            vis: ast::Visibility::Public,
-            span: span.clone(),
-        });
+        let ident = root_mod.ident;
+        let root_export = quote_item!(&ctx.ext_cx, pub use $ident::*;).unwrap();
 
         vec![root_export, root_mod]
     } else {
