@@ -900,8 +900,11 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                 },
                 _ => unreachable!()
             };
+
+            let name = first(rust_id(ctx, &vm.name));
+
             let field = ast::StructField_ {
-                kind: ast::NamedField(ctx.ext_cx.ident_of(&vm.name), ast::Visibility::Public),
+                kind: ast::NamedField(ctx.ext_cx.ident_of(&name), ast::Visibility::Public),
                 id: ast::DUMMY_NODE_ID,
                 ty: P(ty),
                 attrs: vec!(),
@@ -1478,7 +1481,8 @@ fn cenum_to_rs(ctx: &mut GenCtx,
                                                           ctx.ext_cx.ident_of(enum_repr))));
         for item in enum_items {
             let value = cenum_value_to_int_lit(ctx, enum_is_signed, layout.size, item.val);
-            items.push(ctx.ext_cx.item_const(ctx.span, ctx.ext_cx.ident_of(&item.name), enum_ty.clone(), value));
+            let name = first(rust_id(ctx, &item.name));
+            items.push(ctx.ext_cx.item_const(ctx.span, ctx.ext_cx.ident_of(&name), enum_ty.clone(), value));
         }
         return items;
     }
@@ -1486,7 +1490,8 @@ fn cenum_to_rs(ctx: &mut GenCtx,
     let mut variants = vec![];
     let mut found_values = HashMap::new();
     for item in enum_items {
-        let name = ctx.ext_cx.ident_of(&item.name);
+        let name = first(rust_id(ctx, &item.name));
+        let name = ctx.ext_cx.ident_of(&name);
         if let Some(orig) = found_values.get(&item.val) {
             let value = ctx.ext_cx.expr_path(
                 ctx.ext_cx.path(ctx.span, vec![enum_name, *orig]));
