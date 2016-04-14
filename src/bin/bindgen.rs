@@ -120,6 +120,13 @@ fn parse_args(args: &[String]) -> ParseResult {
                     options.gen_bitfield_methods = false;
                     ix += 1;
                 }
+                "-dtor-attr" => {
+                    if ix + 1 >= args_len {
+                        return ParseResult::ParseErr("Missing dtor attr".to_string());
+                    }
+                    options.dtor_attrs.push(args[ix + 1].clone());
+                    ix += 2;
+                }
                 "-allow-unknown-types" => {
                     options.fail_on_unknown_type = false;
                     ix += 1;

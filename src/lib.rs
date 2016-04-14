@@ -86,6 +86,11 @@ impl<'a> Builder<'a> {
         self
     }
 
+    pub fn dtor_attr<T: Into<String>>(&mut self, attr: T) -> &mut Self {
+        self.options.dtor_attrs.push(attr.into());
+        self
+    }
+
     pub fn forbid_unknown_types(&mut self) -> &mut Self {
         self.options.fail_on_unknown_type = true;
         self
@@ -148,18 +153,20 @@ pub struct BindgenOptions {
     pub derive_debug: bool,
     pub override_enum_ty: String,
     pub raw_lines: Vec<String>,
+    /// Attributes for a type with destructor
+    pub dtor_attrs: Vec<String>,
     pub clang_args: Vec<String>,
 }
 
 impl Default for BindgenOptions {
     fn default() -> BindgenOptions {
         BindgenOptions {
-            match_pat: Vec::new(),
-            blacklist_type: Vec::new(),
-            opaque_types: Vec::new(),
+            match_pat: vec![],
+            blacklist_type: vec![],
+            opaque_types: vec![],
             builtins: false,
             rust_enums: true,
-            links: Vec::new(),
+            links: vec![],
             emit_ast: false,
             ignore_functions: false,
             gen_bitfield_methods: true,
@@ -169,7 +176,8 @@ impl Default for BindgenOptions {
             enable_cxx_namespaces: false,
             override_enum_ty: "".to_string(),
             raw_lines: vec![],
-            clang_args: Vec::new()
+            dtor_attrs: vec![],
+            clang_args: vec![],
         }
     }
 }
@@ -221,7 +229,7 @@ impl Bindings {
     }
 
     pub fn to_string(&self) -> String {
-        let mut mod_str = Vec::new();
+        let mut mod_str = vec![];
         {
             let ref_writer = Box::new(mod_str.by_ref()) as Box<Write>;
             self.write(ref_writer).expect("Could not write bindings to string");

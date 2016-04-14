@@ -844,7 +844,10 @@ fn comp_attrs(ctx: &GenCtx, ci: &CompInfo, name: &str, has_destructor: bool, ext
 
 
     if has_destructor {
-        attrs.push(quote_attr!(&ctx.ext_cx, #[unsafe_no_drop_flag]));
+        for attr in ctx.options.dtor_attrs.iter() {
+            let attr = ctx.ext_cx.ident_of(attr);
+            attrs.push(quote_attr!(&ctx.ext_cx, #[$attr]));
+        }
     } else {
         // TODO: make can_derive_debug more reliable in presence of opaque types and all that stuff
         let can_derive_debug = ci.members.iter()
