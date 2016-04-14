@@ -833,9 +833,48 @@ fn comp_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo)
               -> Vec<P<ast::Item>> {
     match ci.kind {
         CompKind::Struct => cstruct_to_rs(ctx, name, ci),
-        CompKind::Union =>  cunion_to_rs(ctx, name, ci.layout, ci.members),
+        CompKind::Union => cunion_to_rs(ctx, name, ci),
     }
 }
+
+fn comp_attrs(ctx: &GenCtx, ci: &CompInfo, name: &str, has_destructor: bool, extra: &mut Vec<P<ast::Item>>) -> Vec<ast::Attribute> {
+    let mut attrs = mk_doc_attr(ctx, &ci.comment);
+    attrs.push(mk_repr_attr(ctx, ci.layout));
+    let mut derives = vec![];
+
+
+    if has_destructor {
+        attrs.push(quote_attr!(&ctx.ext_cx, #[unsafe_no_drop_flag]));
+    } else {
+        // TODO: make can_derive_debug more reliable in presence of opaque types and all that stuff
+        let can_derive_debug = ci.members.iter()
+                                         .all(|member| match *member {
+                                              CompMember::Field(ref f) |
+                                              CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
+                                              _ => true
+                                          });
+
+        if can_derive_debug && ctx.options.derive_debug {
+            derives.push("Debug");
+        }
+        derives.push("Copy");
+
+        // TODO: make mk_clone_impl work for template arguments,
+        // meanwhile just fallback to deriving.
+        if ci.args.is_empty() {
+            extra.push(mk_clone_impl(ctx, name));
+        } else {
+            derives.push("Clone");
+        }
+    }
+
+    if !derives.is_empty() {
+        attrs.push(mk_deriving_attr(ctx, &derives));
+    }
+
+    attrs
+}
+
 
 fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>> {
     let layout = ci.layout;
@@ -917,7 +956,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
         // a dummy field with pointer-alignment to supress it.
         if vffields.is_empty() {
             vffields.push(mk_blob_field(ctx, "_bindgen_empty_ctype_warning_fix",
-                                        Layout::new(::std::mem::size_of::<*mut ()>(), ::std::mem::align_of::<*mut ()>())));
+                                        &Layout::new(::std::mem::size_of::<*mut ()>(), ::std::mem::align_of::<*mut ()>())));
         }
 
         let vf_name = format!("_vftable_{}", name);
@@ -1010,7 +1049,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                     println!("{}::{} not translatable, void: {}", ci.name, f.name, f_ty == TVoid);
                 }
                 if let Some(layout) = f_ty.layout() {
-                    fields.push(mk_blob_field(ctx, &f_name, layout));
+                    fields.push(mk_blob_field(ctx, &f_name, &layout));
                 }
                 continue;
             }
@@ -1080,7 +1119,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                 let c = rc_c.borrow();
                 unnamed += 1;
                 let field_name = format!("_bindgen_data_{}_", unnamed);
-                fields.push(mk_blob_field(ctx, &field_name, c.layout));
+                fields.push(mk_blob_field(ctx, &field_name, &c.layout));
                 methods.extend(gen_comp_methods(ctx, &field_name, 0, c.kind, &c.members, &mut extra).into_iter());
             } else {
                 let name = comp_name(&ctx, rc_c.borrow().kind, &rc_c.borrow().name);
@@ -1161,33 +1200,8 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
         }
     );
 
+    let attrs = comp_attrs(&ctx, &ci, name, has_destructor, &mut extra);
 
-    let mut attrs = mk_doc_attr(ctx, &ci.comment);
-    attrs.push(mk_repr_attr(ctx, layout));
-    if !has_destructor {
-        let can_derive_debug = members.iter()
-                                      .all(|member| match *member {
-                                          CompMember::Field(ref f) |
-                                          CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
-                                          _ => true
-                                      });
-        if template_args.is_empty() {
-            extra.push(mk_clone_impl(ctx, name));
-            attrs.push(if can_derive_debug && ctx.options.derive_debug {
-                mk_deriving_attr(ctx, &["Debug", "Copy"])
-            } else {
-                mk_deriving_attr(ctx, &["Copy"])
-            });
-        } else {
-            attrs.push(if can_derive_debug && ctx.options.derive_debug {
-                // TODO: make mk_clone_impl work for template arguments,
-                // meanwhile just fallback to deriving.
-                mk_deriving_attr(ctx, &["Copy", "Clone", "Debug"])
-            } else {
-                mk_deriving_attr(ctx, &["Copy", "Clone"])
-            });
-       }
-    }
     let struct_def = ast::Item {
         ident: ctx.ext_cx.ident_of(&id),
         attrs: attrs,
@@ -1284,10 +1298,13 @@ fn opaque_to_rs(ctx: &mut GenCtx, name: &str, _layout: Layout) -> P<ast::Item> {
     })
 }
 
-fn cunion_to_rs(ctx: &mut GenCtx, name: &str, layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
+fn cunion_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>> {
     const UNION_DATA_FIELD_NAME: &'static str = "_bindgen_data_";
 
     ctx.saw_union = true;
+
+    let members = &ci.members;
+    let layout = &ci.layout;
 
     fn mk_item(ctx: &mut GenCtx, name: &str, item: ast::ItemKind, vis:
                ast::Visibility, attrs: Vec<ast::Attribute>) -> P<ast::Item> {
@@ -1301,9 +1318,8 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: &str, layout: Layout, members: Vec<CompM
         })
     }
 
-    // XXX what module id is correct?
-    let ci = Rc::new(RefCell::new(CompInfo::new(name.to_owned(), ROOT_MODULE_ID, name.to_owned(), "".to_owned(), CompKind::Union, members.clone(), layout)));
-    let union = TNamed(Rc::new(RefCell::new(TypeInfo::new(name.to_owned(), ROOT_MODULE_ID, TComp(ci), layout))));
+    let tmp_ci = Rc::new(RefCell::new(ci.clone()));
+    let union = TNamed(Rc::new(RefCell::new(TypeInfo::new(name.to_owned(), ROOT_MODULE_ID, TComp(tmp_ci), layout.clone()))));
 
     // Nested composites may need to emit declarations and implementations as
     // they are encountered.  The declarations end up in 'extra' and are emitted
@@ -1343,22 +1359,12 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: &str, layout: Layout, members: Vec<CompM
         ast::VariantData::Struct(fields, ast::DUMMY_NODE_ID),
         empty_generics()
     );
-    let union_id = rust_type_id(ctx, name);
-    let mut union_attrs = vec![mk_repr_attr(ctx, layout)];
-    let can_derive_debug = members.iter()
-                                  .all(|member| match *member {
-                                      CompMember::Field(ref f) |
-                                      CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
-                                      _ => true
-                                  });
 
-    extra.push(mk_clone_impl(ctx, name));
+    let union_id = rust_type_id(ctx, name);
+
+    let union_attrs = comp_attrs(&ctx, &ci, name, ci.has_destructor, &mut extra);
+
     extra.push(mk_test_fn(ctx, &name, &layout));
-    union_attrs.push(if can_derive_debug {
-        mk_deriving_copy_and_maybe_debug_attr(ctx)
-    } else {
-        mk_deriving_copy_attr(ctx)
-    });
 
     let union_def = mk_item(ctx, &union_id, def, ast::Visibility::Public, union_attrs);
     let union_impl = ast::ItemKind::Impl(
@@ -1749,7 +1755,7 @@ fn gen_fullbitfield_method(ctx: &mut GenCtx, bindgen_name: &String,
     }
 }
 
-fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout) -> Spanned<ast::StructField_> {
+fn mk_blob_field(ctx: &GenCtx, name: &str, layout: &Layout) -> Spanned<ast::StructField_> {
     let ty_name = match layout.align {
         8 => "u64",
         4 => "u32",
@@ -1807,10 +1813,6 @@ fn mk_repr_attr(ctx: &GenCtx, layout: Layout) -> ast::Attribute {
     })
 }
 
-fn mk_deriving_copy_attr(ctx: &mut GenCtx) -> ast::Attribute {
-    mk_deriving_attr(ctx, &["Copy"])
-}
-
 // NB: This requires that the type you implement it for also
 // implements Copy.
 //
@@ -1829,15 +1831,7 @@ fn mk_clone_impl(ctx: &GenCtx, ty_name: &str) -> P<ast::Item> {
         ctx.ext_cx.cfg(), "".to_owned(), impl_str).parse_item().unwrap().unwrap()
 }
 
-fn mk_deriving_copy_and_maybe_debug_attr(ctx: &mut GenCtx) -> ast::Attribute {
-    if ctx.options.derive_debug {
-        mk_deriving_attr(ctx, &["Copy", "Debug"])
-    } else {
-        mk_deriving_copy_attr(ctx)
-    }
-}
-
-fn mk_deriving_attr(ctx: &mut GenCtx, attrs: &[&'static str]) -> ast::Attribute {
+fn mk_deriving_attr(ctx: &GenCtx, attrs: &[&'static str]) -> ast::Attribute {
     let attr_val = P(respan(ctx.span, ast::MetaItemKind::List(
         InternedString::new("derive"),
         attrs.iter().map(|attr| {
@@ -1853,7 +1847,7 @@ fn mk_deriving_attr(ctx: &mut GenCtx, attrs: &[&'static str]) -> ast::Attribute 
     })
 }
 
-fn mk_doc_attr(ctx: &mut GenCtx, doc: &str) -> Vec<ast::Attribute> {
+fn mk_doc_attr(ctx: &GenCtx, doc: &str) -> Vec<ast::Attribute> {
     if doc.is_empty() {
         return vec!();
     }
@@ -2288,7 +2282,7 @@ fn mk_test_fn(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
 
 fn mk_opaque_struct(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
     // XXX prevent this spurious clone
-    let blob_field = mk_blob_field(ctx, "_bindgen_opaque_blob", layout.clone());
+    let blob_field = mk_blob_field(ctx, "_bindgen_opaque_blob", layout);
     let variant_data = if layout.size == 0 {
         ast::VariantData::Unit(ast::DUMMY_NODE_ID)
     } else {
