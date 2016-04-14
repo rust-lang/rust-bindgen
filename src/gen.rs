@@ -1048,6 +1048,9 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
 
             let is_translatable = cty_is_translatable(&f_ty);
             if !is_translatable || type_opaque(ctx, &f_ty) {
+                // Be conservative here and assume it might have a
+                // destructor or some other serious constraint.
+                has_destructor = true;
                 if !is_translatable {
                     println!("{}::{} not translatable, void: {}", ci.name, f.name, f_ty == TVoid);
                 }
