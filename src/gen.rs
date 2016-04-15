@@ -376,65 +376,13 @@ fn gen_mod(mut ctx: &mut GenCtx,
     }
 }
 
-// XXX: Replace the name-based lookup, or do it at parse-time,
-// to keep all the mess in the same place.
-fn type_opaque(ctx: &GenCtx, ty: &Type) -> bool {
-    match *ty {
-        TComp(ref ci) if ci.borrow().opaque => return true,
-        _ => {}
-    }
-
-    let ty_name = ty.name();
-
-    match ty_name {
-        Some(ty_name)
-            => ctx.options.opaque_types.iter().any(|name| *name == ty_name),
-        None => false,
-    }
-}
-
-fn global_opaque(ctx: &GenCtx, global: &Global) -> bool {
-    let global_name = global.name();
-
-    match *global {
-        GCompDecl(ref ci) |
-        GComp(ref ci) if ci.borrow().opaque => return true,
-        _ => {}
-    }
-
-    // Can't make an opaque type without layout
-    global.layout().is_some() &&
-    ctx.options.opaque_types.iter().any(|name| *name == global_name)
-}
-
-fn type_blacklisted(ctx: &GenCtx, global: &Global) -> bool {
-    let global_name = global.name();
-
-    ctx.options.blacklist_type.iter().any(|name| *name == global_name)
-}
-
 fn gen_global(mut ctx: &mut GenCtx,
               g: Global,
               defs: &mut Vec<P<ast::Item>>) {
-    // XXX unify with anotations both type_blacklisted
-    // and type_opaque (which actually doesn't mean the same).
-    if type_blacklisted(ctx, &g) {
-        return;
-    }
-
-    if global_opaque(ctx, &g) {
-        let name = first(rust_id(ctx, &g.name()));
-        let layout = g.layout().unwrap();
-        defs.push(mk_opaque_struct(ctx, &name, &layout));
-        // This should always be true but anyways..
-        defs.push(mk_test_fn(ctx, &name, &layout));
-        return;
-    }
-
     match g {
         GType(ti) => {
             let t = ti.borrow().clone();
-            defs.push(ctypedef_to_rs(&mut ctx, t))
+            defs.extend(ctypedef_to_rs(&mut ctx, t).into_iter())
         },
         GCompDecl(ci) => {
             let c = ci.borrow().clone();
@@ -802,7 +750,7 @@ fn tag_dup_decl(gs: &[Global]) -> Vec<Global> {
     res
 }
 
-fn ctypedef_to_rs(ctx: &mut GenCtx, ty: TypeInfo) -> P<ast::Item> {
+fn ctypedef_to_rs(ctx: &mut GenCtx, ty: TypeInfo) -> Vec<P<ast::Item>> {
     fn mk_item(ctx: &mut GenCtx, name: &str, comment: &str, ty: &Type) -> P<ast::Item> {
         let rust_name = rust_type_id(ctx, name);
         let rust_ty = if cty_is_translatable(ty) {
@@ -829,7 +777,14 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, ty: TypeInfo) -> P<ast::Item> {
         })
     }
 
-    match ty.ty {
+    if ty.opaque {
+        return vec![
+            mk_opaque_struct(ctx, &ty.name, &ty.layout),
+            mk_test_fn(ctx, &ty.name, &ty.layout),
+        ];
+    }
+
+    let item = match ty.ty {
         TComp(ref ci) => {
             assert!(!ci.borrow().name.is_empty());
             mk_item(ctx, &ty.name, &ty.comment, &ty.ty)
@@ -839,11 +794,26 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, ty: TypeInfo) -> P<ast::Item> {
             mk_item(ctx, &ty.name, &ty.comment, &ty.ty)
         },
         _ => mk_item(ctx, &ty.name, &ty.comment, &ty.ty),
-    }
+    };
+
+    vec![item]
 }
 
 fn comp_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo)
               -> Vec<P<ast::Item>> {
+    if ci.hide {
+        return vec![];
+    }
+
+    if ci.opaque {
+        let name = first(rust_id(ctx, &ci.name));
+        // The test should always be correct but...
+        return vec![
+            mk_opaque_struct(ctx, &name, &ci.layout),
+            mk_test_fn(ctx, &name, &ci.layout),
+        ];
+    }
+
     match ci.kind {
         CompKind::Struct => cstruct_to_rs(ctx, name, ci),
         CompKind::Union => cunion_to_rs(ctx, name, ci),
@@ -852,9 +822,12 @@ fn comp_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo)
 
 fn comp_attrs(ctx: &GenCtx, ci: &CompInfo, name: &str, has_destructor: bool, extra: &mut Vec<P<ast::Item>>) -> Vec<ast::Attribute> {
     let mut attrs = mk_doc_attr(ctx, &ci.comment);
-    attrs.push(mk_repr_attr(ctx, ci.layout));
+    attrs.push(mk_repr_attr(ctx, &ci.layout));
     let mut derives = vec![];
 
+    if ci.can_derive_debug() && ctx.options.derive_debug {
+        derives.push("Debug");
+    }
 
     if has_destructor {
         for attr in ctx.options.dtor_attrs.iter() {
@@ -862,17 +835,6 @@ fn comp_attrs(ctx: &GenCtx, ci: &CompInfo, name: &str, has_destructor: bool, ext
             attrs.push(quote_attr!(&ctx.ext_cx, #[$attr]));
         }
     } else {
-        // TODO: make can_derive_debug more reliable in presence of opaque types and all that stuff
-        let can_derive_debug = ci.members.iter()
-                                         .all(|member| match *member {
-                                              CompMember::Field(ref f) |
-                                              CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
-                                              _ => true
-                                          });
-
-        if can_derive_debug && ctx.options.derive_debug {
-            derives.push("Debug");
-        }
         derives.push("Copy");
 
         // TODO: make mk_clone_impl work for template arguments,
@@ -906,8 +868,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
     let mut unnamed: u32 = 0;
     let mut bitfields: u32 = 0;
 
-    if ci.hide ||
-       ci.has_non_type_template_params ||
+    if ci.has_non_type_template_params ||
        template_args.iter().any(|f| f == &TVoid) {
         return vec!();
     }
@@ -978,7 +939,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
         let vf_name = format!("_vftable_{}", name);
         let item = P(ast::Item {
             ident: ctx.ext_cx.ident_of(&vf_name),
-            attrs: vec!(mk_repr_attr(ctx, layout)),
+            attrs: vec!(mk_repr_attr(ctx, &layout)),
             id: ast::DUMMY_NODE_ID,
             node: ast::ItemKind::Struct(
                 ast::VariantData::Struct(vffields, ast::DUMMY_NODE_ID),
@@ -1060,7 +1021,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             drop(f.ty); // to ensure it's not used unintentionally
 
             let is_translatable = cty_is_translatable(&f_ty);
-            if !is_translatable || type_opaque(ctx, &f_ty) {
+            if !is_translatable || f_ty.is_opaque() {
                 // Be conservative here and assume it might have a
                 // destructor or some other serious constraint.
                 has_destructor = true;
@@ -1814,7 +1775,7 @@ fn mk_link_name_attr(ctx: &mut GenCtx, name: String) -> ast::Attribute {
     respan(ctx.span, attr)
 }
 
-fn mk_repr_attr(ctx: &GenCtx, layout: Layout) -> ast::Attribute {
+fn mk_repr_attr(ctx: &GenCtx, layout: &Layout) -> ast::Attribute {
     let mut values = vec!(P(respan(ctx.span, ast::MetaItemKind::Word(InternedString::new("C")))));
     if layout.packed {
         values.push(P(respan(ctx.span, ast::MetaItemKind::Word(InternedString::new("packed")))));
@@ -2300,7 +2261,6 @@ fn mk_test_fn(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
 }
 
 fn mk_opaque_struct(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
-    // XXX prevent this spurious clone
     let blob_field = mk_blob_field(ctx, "_bindgen_opaque_blob", layout);
     let variant_data = if layout.size == 0 {
         ast::VariantData::Unit(ast::DUMMY_NODE_ID)
@@ -2322,7 +2282,7 @@ fn mk_opaque_struct(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
 
     P(ast::Item {
         ident: ctx.ext_cx.ident_of(&name),
-        attrs: vec![mk_repr_attr(ctx, layout.clone())],
+        attrs: vec![mk_repr_attr(ctx, layout)],
         id: ast::DUMMY_NODE_ID,
         node: def,
         vis: ast::Visibility::Public,

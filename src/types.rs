@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::fmt;
 use std::rc::Rc;
 use std::collections::HashMap;
@@ -204,18 +204,18 @@ impl Type {
 
     pub fn can_derive_debug(&self) -> bool {
         match *self {
-            TArray(_, size, _) => size <= 32,
-            TComp(ref comp) => {
-                comp.borrow()
-                    .members
-                    .iter()
-                    .all(|member| match *member {
-                        CompMember::Field(ref f) |
-                        CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
-                        _ => true,
-                    })
-            }
+            TArray(ref t, size, _) => size <= 32 && t.can_derive_debug(),
+            TNamed(ref ti) => ti.borrow().ty.can_derive_debug(),
+            TComp(ref comp) => comp.borrow().can_derive_debug(),
             _ => true,
+        }
+    }
+
+    pub fn is_opaque(&self) -> bool {
+        match *self {
+            TNamed(ref ti) => ti.borrow().ty.is_opaque(),
+            TComp(ref ci) => ci.borrow().opaque,
+            _ => false,
         }
     }
 }
@@ -321,6 +321,9 @@ pub struct CompInfo {
     pub has_non_type_template_params: bool,
     /// If this type was unnamed when parsed
     pub was_unnamed: bool,
+    /// Used to detect if we've run in a can_derive_debug cycle while
+    /// cycling around the template arguments.
+    detect_derive_debug_cycle: Cell<bool>,
 }
 
 static mut UNNAMED_COUNTER: u32 = 0;
@@ -358,6 +361,43 @@ impl CompInfo {
             typedefs: vec!(),
             has_non_type_template_params: false,
             was_unnamed: was_unnamed,
+            detect_derive_debug_cycle: Cell::new(false),
+        }
+    }
+
+    pub fn can_derive_debug(&self) -> bool {
+        if self.hide || self.opaque {
+            return false;
+        }
+
+        if self.detect_derive_debug_cycle.get() {
+            println!("Derive debug cycle detected: {}!", self.name);
+            return true;
+        }
+
+        match self.kind {
+            CompKind::Union => {
+                let size_divisor = if self.layout.align == 0 { 1 } else { self.layout.align };
+                if self.layout.size / size_divisor > 32 {
+                    return false;
+                }
+
+                true
+            }
+            CompKind::Struct => {
+                self.detect_derive_debug_cycle.set(true);
+
+                let can_derive_debug = self.args.iter().all(|ty| ty.can_derive_debug()) &&
+                    self.members.iter()
+                        .all(|member| match *member {
+                            CompMember::Field(ref f) |
+                            CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
+                            _ => true,
+                        });
+                self.detect_derive_debug_cycle.set(false);
+
+                can_derive_debug
+            }
         }
     }
 }
@@ -448,6 +488,9 @@ pub struct TypeInfo {
     pub comment: String,
     pub ty: Type,
     pub layout: Layout,
+    // TODO: Is this really useful?
+    // You can just make opaque the underlying type
+    pub opaque: bool,
 }
 
 impl TypeInfo {
@@ -458,6 +501,7 @@ impl TypeInfo {
             comment: String::new(),
             ty: ty,
             layout: layout,
+            opaque: false,
         }
     }
 }

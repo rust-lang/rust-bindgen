@@ -10,3 +10,7 @@ struct C;
 struct D {
     int a;
 };
+
+struct NotAnnotated {
+    int f;
+};

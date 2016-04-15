@@ -26,6 +26,8 @@ pub struct ClangParserOptions {
     pub enable_cxx_namespaces: bool,
     pub override_enum_ty: Option<il::IKind>,
     pub clang_args: Vec<String>,
+    pub opaque_types: Vec<String>,
+    pub blacklist_type: Vec<String>,
 }
 
 struct ClangParserCtx<'a> {
@@ -84,12 +86,67 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
             _ => "".to_string()
         };
         let glob_decl = match cursor.kind() {
+            CXCursor_UnionDecl |
+            CXCursor_ClassTemplate |
+            CXCursor_ClassDecl |
             CXCursor_StructDecl => {
-                let ci = Rc::new(RefCell::new(CompInfo::new(spelling, ctx.current_module_id, filename, comment, CompKind::Struct, vec!(), layout)));
-                GCompDecl(ci)
-            }
-            CXCursor_UnionDecl => {
-                let ci = Rc::new(RefCell::new(CompInfo::new(spelling, ctx.current_module_id, filename, comment, CompKind::Union, vec!(), layout)));
+                let kind = if cursor.kind() == CXCursor_UnionDecl {
+                    CompKind::Union
+                } else {
+                    CompKind::Struct
+                };
+
+                let opaque = ctx.options.opaque_types.iter().any(|name| *name == spelling);
+                let hide = ctx.options.blacklist_type.iter().any(|name| *name == spelling);
+
+                let mut has_non_type_template_params = false;
+                let args = match cursor.kind() {
+                    CXCursor_ClassDecl => {
+                        match ty.num_template_args() {
+                            -1 => vec![],
+                            len => {
+                                let mut list = Vec::with_capacity(len as usize);
+                                for i in 0..len {
+                                    let arg_type = ty.template_arg_type(i);
+                                    if arg_type.kind() != CXType_Invalid {
+                                        list.push(conv_ty(ctx, &arg_type, &cursor));
+                                    } else {
+                                        has_non_type_template_params = true;
+                                        ctx.logger.warn("warning: Template parameter is not a type");
+                                    }
+                                }
+                                list
+                            }
+                        }
+                    }
+                    _ => vec![],
+                };
+
+                let module_id = if args.is_empty() {
+                    ctx.current_module_id
+                } else {
+                    // it's an instantiation of another template,
+                    // find the canonical declaration to find the module it belongs to.
+                    let parent = cursor.specialized();
+                    ctx.name.get(&parent).and_then(|global| {
+                        if let GCompDecl(ref ci) = *global {
+                            Some(ci.borrow().module_id)
+                        } else {
+                            None
+                        }
+                    }).unwrap_or_else(|| {
+                        ctx.logger.warn("Template class wasn't declared when parsing specialisation!");
+                        ctx.current_module_id
+                    })
+                };
+
+                let mut ci = CompInfo::new(spelling, module_id, filename, comment, kind, vec![], layout);
+                ci.opaque = opaque;
+                ci.hide = hide;
+                ci.args = args;
+                ci.has_non_type_template_params = has_non_type_template_params;
+
+                let ci = Rc::new(RefCell::new(ci));
                 GCompDecl(ci)
             }
             CXCursor_EnumDecl => {
@@ -113,54 +170,12 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                 let ei = Rc::new(RefCell::new(EnumInfo::new(spelling, ctx.current_module_id, filename, kind, vec!(), layout)));
                 GEnumDecl(ei)
             }
-            CXCursor_ClassTemplate => {
-                let ci = Rc::new(RefCell::new(CompInfo::new(spelling, ctx.current_module_id, filename, comment, CompKind::Struct, vec!(), layout)));
-                GCompDecl(ci)
-            }
-            CXCursor_ClassDecl => {
-                let mut has_non_type_template_params = false;
-                let args = match ty.num_template_args() {
-                    -1 => vec!(),
-                    len => {
-                        let mut list = Vec::with_capacity(len as usize);
-                        for i in 0..len {
-                            let arg_type = ty.template_arg_type(i);
-                            if arg_type.kind() != CXType_Invalid {
-                                list.push(conv_ty(ctx, &arg_type, &cursor));
-                            } else {
-                                has_non_type_template_params = true;
-                                ctx.logger.warn("warning: Template parameter is not a type");
-                            }
-                        }
-                        list
-                    }
-                };
-
-                let module_id = if args.is_empty() {
-                    ctx.current_module_id
-                } else {
-                    // it's an instantiation of another template,
-                    // find the canonical declaration to find the module it belongs to.
-                    let parent = cursor.specialized();
-                    ctx.name.get(&parent).and_then(|global| {
-                        if let GCompDecl(ref ci) = *global {
-                            Some(ci.borrow().module_id)
-                        } else {
-                            None
-                        }
-                    }).unwrap_or_else(|| {
-                        ctx.logger.warn("Template class wasn't declared when parsing specialisation!");
-                        ctx.current_module_id
-                    })
-                };
-
-                let ci = Rc::new(RefCell::new(CompInfo::new(spelling, module_id, filename, comment, CompKind::Struct, vec!(), layout)));
-                ci.borrow_mut().args = args;
-                ci.borrow_mut().has_non_type_template_params = has_non_type_template_params;
-                GCompDecl(ci)
-            }
             CXCursor_TypeAliasDecl | CXCursor_TypedefDecl => {
-                let ti = Rc::new(RefCell::new(TypeInfo::new(spelling, ctx.current_module_id, TVoid, layout)));
+                let opaque = ctx.options.opaque_types.iter().any(|name| *name == spelling);
+                let mut ti = TypeInfo::new(spelling, ctx.current_module_id, TVoid, layout);
+                ti.opaque = opaque;
+
+                let ti = Rc::new(RefCell::new(ti));
                 GType(ti)
             }
             CXCursor_VarDecl => {
@@ -901,12 +916,15 @@ fn visit_top(cursor: &Cursor,
                     let mut ci_ = ci.borrow_mut();
                     visit_composite(c, p, ctx_, &mut ci_)
                 });
+
                 if anno.opaque {
                     ci.borrow_mut().opaque = true;
                 }
+
                 if anno.hide {
                     ci.borrow_mut().hide = true;
                 }
+
                 if let Some(other_type_name) = anno.use_as {
                     ci.borrow_mut().name = other_type_name.clone();
                     ctx_.current_module_mut().translations.insert(other_type_name, GComp(ci));
@@ -1003,6 +1021,11 @@ fn visit_top(cursor: &Cursor,
             let ti = typedef.typeinfo();
             let mut ti = ti.borrow_mut();
             ti.ty = ty.clone();
+
+            if anno.opaque {
+                ti.opaque = true;
+            }
+
             ti.comment = cursor.raw_comment();
             ctx.current_module_mut().globals.push(typedef);
 

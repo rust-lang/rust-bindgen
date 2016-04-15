@@ -287,6 +287,7 @@ fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<ModuleMap,
         }
     }
 
+    // TODO: Unify most of these with BindgenOptions?
     let clang_opts = parser::ClangParserOptions {
         builtin_names: builtin_names(),
         builtins: options.builtins,
@@ -297,6 +298,8 @@ fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<ModuleMap,
         enable_cxx_namespaces: options.enable_cxx_namespaces,
         override_enum_ty: str_to_ikind(&options.override_enum_ty),
         clang_args: options.clang_args.clone(),
+        opaque_types: options.opaque_types.clone(),
+        blacklist_type: options.blacklist_type.clone(),
     };
 
     parser::parse(clang_opts, logger)
