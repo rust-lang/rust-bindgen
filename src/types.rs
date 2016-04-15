@@ -204,18 +204,18 @@ impl Type {
 
     pub fn can_derive_debug(&self) -> bool {
         match *self {
-            TArray(_, size, _) => size <= 32,
-            TComp(ref comp) => {
-                comp.borrow()
-                    .members
-                    .iter()
-                    .all(|member| match *member {
-                        CompMember::Field(ref f) |
-                        CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
-                        _ => true,
-                    })
-            }
+            TArray(ref t, size, _) => size <= 32 && t.can_derive_debug(),
+            TNamed(ref ti) => ti.borrow().ty.can_derive_debug(),
+            TComp(ref comp) => comp.borrow().can_derive_debug(),
             _ => true,
+        }
+    }
+
+    pub fn is_opaque(&self) -> bool {
+        match *self {
+            TNamed(ref ti) => ti.borrow().ty.is_opaque(),
+            TComp(ref ci) => ci.borrow().opaque,
+            _ => false,
         }
     }
 }
@@ -360,6 +360,27 @@ impl CompInfo {
             was_unnamed: was_unnamed,
         }
     }
+
+    pub fn can_derive_debug(&self) -> bool {
+        // XXX: We could probably be smarter about this,
+        // checking that the length of the generated array
+        // for our layout is less or equal than 32.
+        if self.kind != CompKind::Struct {
+            return false;
+        }
+
+        if self.hide || self.opaque {
+            return false;
+        }
+
+        self.args.iter().all(|ty| ty.can_derive_debug()) &&
+        self.members.iter()
+            .all(|member| match *member {
+                CompMember::Field(ref f) |
+                CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
+                _ => true,
+            })
+    }
 }
 
 impl fmt::Debug for CompInfo {
@@ -448,6 +469,9 @@ pub struct TypeInfo {
     pub comment: String,
     pub ty: Type,
     pub layout: Layout,
+    // TODO: Is this really useful?
+    // You can just make opaque the underlying type
+    pub opaque: bool,
 }
 
 impl TypeInfo {
@@ -458,6 +482,7 @@ impl TypeInfo {
             comment: String::new(),
             ty: ty,
             layout: layout,
+            opaque: false,
         }
     }
 }
