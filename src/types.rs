@@ -215,7 +215,7 @@ impl Type {
         match *self {
             TArray(ref t, _, _) => t.is_opaque(),
             TPtr(ref t, _, _, _) => t.is_opaque(),
-            TNamed(ref ti) => ti.borrow().ty.is_opaque(),
+            TNamed(ref ti) => ti.borrow().opaque || ti.borrow().ty.is_opaque(),
             TComp(ref ci) => ci.borrow().is_opaque(),
             _ => false,
         }
@@ -368,7 +368,7 @@ impl CompInfo {
     }
 
     pub fn can_derive_debug(&self) -> bool {
-        if self.hide || self.opaque {
+        if self.hide || self.is_opaque() {
             return false;
         }
 
