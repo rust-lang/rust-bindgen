@@ -96,7 +96,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                     CompKind::Struct
                 };
 
-                let opaque = ctx.options.opaque_types.iter().any(|name| *name == spelling);
+                let mut opaque = ctx.options.opaque_types.iter().any(|name| *name == spelling);
                 let hide = ctx.options.blacklist_type.iter().any(|name| *name == spelling);
 
                 let mut has_non_type_template_params = false;
@@ -122,23 +122,22 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                     _ => vec![],
                 };
 
-                let module_id = if args.is_empty() {
-                    ctx.current_module_id
-                } else {
-                    // it's an instantiation of another template,
-                    // find the canonical declaration to find the module it belongs to.
-                    let parent = cursor.specialized();
-                    ctx.name.get(&parent).and_then(|global| {
-                        if let GCompDecl(ref ci) = *global {
-                            Some(ci.borrow().module_id)
-                        } else {
-                            None
+                let mut module_id = ctx.current_module_id;
+
+                // If it's an instantiation of another template,
+                // find the canonical declaration to find the module
+                // it belongs to and if it's opaque.
+                let parent = cursor.specialized();
+                if let Some(parent) = ctx.name.get(&parent) {
+                    match *parent {
+                        GComp(ref ci) |
+                        GCompDecl(ref ci) => {
+                            opaque |= ci.borrow().opaque;
+                            module_id = ci.borrow().module_id;
                         }
-                    }).unwrap_or_else(|| {
-                        ctx.logger.warn("Template class wasn't declared when parsing specialisation!");
-                        ctx.current_module_id
-                    })
-                };
+                        _ => {}
+                    }
+                }
 
                 let mut ci = CompInfo::new(spelling, module_id, filename, comment, kind, vec![], layout);
                 ci.opaque = opaque;

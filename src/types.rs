@@ -213,8 +213,10 @@ impl Type {
 
     pub fn is_opaque(&self) -> bool {
         match *self {
+            TArray(ref t, _, _) => t.is_opaque(),
+            TPtr(ref t, _, _, _) => t.is_opaque(),
             TNamed(ref ti) => ti.borrow().ty.is_opaque(),
-            TComp(ref ci) => ci.borrow().opaque,
+            TComp(ref ci) => ci.borrow().is_opaque(),
             _ => false,
         }
     }
@@ -399,6 +401,15 @@ impl CompInfo {
                 can_derive_debug
             }
         }
+    }
+
+    pub fn is_opaque(&self) -> bool {
+        if let Some(ref template) = self.ref_template {
+            if template.is_opaque() {
+                return true;
+            }
+        }
+        self.opaque
     }
 }
 
