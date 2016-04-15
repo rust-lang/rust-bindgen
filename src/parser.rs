@@ -1013,6 +1013,13 @@ fn visit_top(cursor: &Cursor,
 
             if cursor.spelling() ==
                cursor.typedef_type().declaration().spelling() {
+                // XXX: This is a real hack, but in the common idiom of:
+                // typedef struct xxx { ... } xxx;
+                //
+                // The annotation arrives here, so...
+                if anno.opaque {
+                    ctx.options.opaque_types.push(cursor.spelling());
+                }
                 return CXChildVisit_Continue;
             }
             let ty = conv_ty(ctx, &under_ty, cursor);
