@@ -700,10 +700,10 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
         }
         CXCursor_CXXBaseSpecifier => {
             let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
-            let fieldname = if !ci.members.is_empty() {
-                format!("_base{}", ci.members.len())
-            } else {
+            let fieldname = if ci.members.is_empty() {
                 "_base".to_string()
+            } else {
+                format!("_base{}", ci.members.len())
             };
             let found_virtual_base = if ci.members.is_empty() {
                 false
@@ -716,16 +716,19 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             } else {
                 false
             };
-            let field = FieldInfo::new(fieldname, ty.clone(), "".to_owned(), None);
+
+            if let TComp(ref info) = ty {
+                ci.has_nonempty_base |= !info.borrow().members.is_empty();
+                ci.has_destructor |= info.borrow().has_destructor;
+                ci.typedefs.extend(info.borrow().typedefs.clone().into_iter());
+            }
+
+            let field = FieldInfo::new(fieldname, ty, "".to_owned(), None);
             if !found_virtual_base && cursor.is_virtual_base() {
                 ci.members.insert(0, CompMember::Field(field));
                 ci.has_vtable = true;
             } else {
                 ci.members.push(CompMember::Field(field));
-            }
-            if let TComp(ref info) = ty {
-                ci.has_nonempty_base |= !info.borrow().members.is_empty();
-                ci.typedefs.extend(info.borrow().typedefs.clone().into_iter());
             }
             ci.base_members += 1;
         }

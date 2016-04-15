@@ -435,11 +435,18 @@ impl CompInfo {
 
     pub fn has_destructor(&self) -> bool {
         self.has_destructor ||
-        self.ref_template.as_ref().map(|t| t.has_destructor()).unwrap_or(false) ||
-        self.members.iter().any(|m| match *m {
+        self.ref_template.as_ref().map_or(false, |t| t.has_destructor()) ||
+        self.args.iter().any(|t| t != &TVoid && t.has_destructor()) ||
+        self.members.iter().enumerate().any(|(index, m)| match *m {
             CompMember::Field(ref f) |
-            CompMember::CompField(_, ref f)
-                => f.ty.is_opaque() || f.ty.has_destructor() || !f.ty.is_translatable(),
+            CompMember::CompField(_, ref f) => {
+                // Base members may not be resolved yet
+                if index < self.base_members {
+                    f.ty.has_destructor()
+                } else {
+                    f.ty.has_destructor() || !f.ty.is_translatable()
+                }
+            },
             _ => false,
         })
     }
