@@ -820,7 +820,7 @@ fn comp_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo)
     }
 }
 
-fn comp_attrs(ctx: &GenCtx, ci: &CompInfo, name: &str, has_destructor: bool, extra: &mut Vec<P<ast::Item>>) -> Vec<ast::Attribute> {
+fn comp_attrs(ctx: &GenCtx, ci: &CompInfo, name: &str, extra: &mut Vec<P<ast::Item>>) -> Vec<ast::Attribute> {
     let mut attrs = mk_doc_attr(ctx, &ci.comment);
     attrs.push(mk_repr_attr(ctx, &ci.layout));
     let mut derives = vec![];
@@ -829,7 +829,7 @@ fn comp_attrs(ctx: &GenCtx, ci: &CompInfo, name: &str, has_destructor: bool, ext
         derives.push("Debug");
     }
 
-    if has_destructor {
+    if ci.has_destructor() {
         for attr in ctx.options.dtor_attrs.iter() {
             let attr = ctx.ext_cx.ident_of(attr);
             attrs.push(quote_attr!(&ctx.ext_cx, #[$attr]));
@@ -963,7 +963,6 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
 
     let mut anon_enum_count = 0;
     let mut setters = vec!();
-    let mut has_destructor = ci.has_destructor;
     let mut template_args_used = vec![false; template_args.len()];
 
     for m in members.iter() {
@@ -992,10 +991,6 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
         let (opt_rc_c, opt_f) = comp_fields(m);
 
         if let Some(f) = opt_f {
-            if cty_has_destructor(&f.ty) {
-                has_destructor = true;
-            }
-
             let (f_name, f_ty) = match f.bitfields {
                 Some(ref v) => {
                     bitfields += 1;
@@ -1022,9 +1017,6 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
 
             let is_translatable = cty_is_translatable(&f_ty);
             if !is_translatable || f_ty.is_opaque() {
-                // Be conservative here and assume it might have a
-                // destructor or some other serious constraint.
-                has_destructor = true;
                 if !is_translatable {
                     println!("{}::{} not translatable, void: {}", ci.name, f.name, f_ty == TVoid);
                 }
@@ -1180,7 +1172,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
         }
     );
 
-    let attrs = comp_attrs(&ctx, &ci, name, has_destructor, &mut extra);
+    let attrs = comp_attrs(&ctx, &ci, name, &mut extra);
 
     let struct_def = ast::Item {
         ident: ctx.ext_cx.ident_of(&id),
@@ -1342,7 +1334,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>>
 
     let union_id = rust_type_id(ctx, name);
 
-    let union_attrs = comp_attrs(&ctx, &ci, name, ci.has_destructor, &mut extra);
+    let union_attrs = comp_attrs(&ctx, &ci, name, &mut extra);
 
     extra.push(mk_test_fn(ctx, &name, &layout));
 
@@ -2064,30 +2056,6 @@ fn cty_is_translatable(ty: &Type) -> bool {
             !c.args.iter().any(|gt| gt == &TVoid) && !c.has_non_type_template_params
         },
         _ => true,
-    }
-}
-
-fn cty_has_destructor(ty: &Type) -> bool {
-    match ty {
-        &TArray(ref t, _, _) => {
-            cty_has_destructor(&**t)
-        }
-        &TComp(ref ci) => {
-            let c = ci.borrow();
-            if c.has_destructor || c.members.iter().any(|f| match f {
-                &CompMember::Field(ref f) |
-                &CompMember::CompField(_, ref f) =>
-                    cty_has_destructor(&f.ty),
-                _ => false,
-            }) {
-                return true;
-            }
-            c.ref_template.is_some()
-        },
-        &TNamed(ref ti) => {
-            cty_has_destructor(&ti.borrow().ty)
-        },
-        _ => false,
     }
 }
 

@@ -123,6 +123,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                 };
 
                 let mut module_id = ctx.current_module_id;
+                let mut has_dtor = false;
 
                 // If it's an instantiation of another template,
                 // find the canonical declaration to find the module
@@ -133,6 +134,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                         GComp(ref ci) |
                         GCompDecl(ref ci) => {
                             opaque |= ci.borrow().opaque;
+                            has_dtor |= ci.borrow().has_destructor;
                             module_id = ci.borrow().module_id;
                         }
                         _ => {}
@@ -143,6 +145,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                 ci.opaque = opaque;
                 ci.hide = hide;
                 ci.args = args;
+                ci.has_destructor = has_dtor;
                 ci.has_non_type_template_params = has_non_type_template_params;
 
                 let ci = Rc::new(RefCell::new(ci));
@@ -820,6 +823,12 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
         }
         CXCursor_Destructor => {
             ci.has_destructor = true;
+            if let Some(ref t) = ci.ref_template {
+                match *t {
+                    TComp(ref parent_ci) => parent_ci.borrow_mut().has_destructor = true,
+                    _ => {}
+                }
+            }
         }
         CXCursor_NonTypeTemplateParameter => {
             log_err_warn(ctx, &format!("warning: Non-type template parameter in composite member could affect layout: `{}` (kind {}) in `{}` ({})",

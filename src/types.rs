@@ -220,6 +220,27 @@ impl Type {
             _ => false,
         }
     }
+
+    // If a type is opaque we conservatively
+    // assume it has destructor
+    pub fn has_destructor(&self) -> bool {
+        self.is_opaque() || match *self {
+            TArray(ref t, _, _) => t.has_destructor(),
+            TNamed(ref ti) => ti.borrow().ty.has_destructor(),
+            TComp(ref ci) => ci.borrow().has_destructor(),
+            _ => false,
+        }
+    }
+
+    pub fn is_translatable(&self) -> bool {
+        match *self {
+            TVoid => false,
+            TArray(ref t, _, _) => t.is_translatable(),
+            TNamed(ref ti) => ti.borrow().ty.is_translatable(),
+            TComp(ref ci) => ci.borrow().is_translatable(),
+            _ => true,
+        }
+    }
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -410,6 +431,21 @@ impl CompInfo {
             }
         }
         self.opaque
+    }
+
+    pub fn has_destructor(&self) -> bool {
+        self.has_destructor ||
+        self.ref_template.as_ref().map(|t| t.has_destructor()).unwrap_or(false) ||
+        self.members.iter().any(|m| match *m {
+            CompMember::Field(ref f) |
+            CompMember::CompField(_, ref f)
+                => f.ty.is_opaque() || f.ty.has_destructor() || !f.ty.is_translatable(),
+            _ => false,
+        })
+    }
+
+    pub fn is_translatable(&self) -> bool {
+        self.args.iter().all(|t| t.is_translatable()) && !self.has_non_type_template_params
     }
 }
 
