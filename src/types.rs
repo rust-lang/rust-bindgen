@@ -308,6 +308,11 @@ pub struct CompInfo {
     pub has_destructor: bool,
     pub has_nonempty_base: bool,
     pub hide: bool,
+    /// If this struct should be replaced by an opaque blob.
+    ///
+    /// This is useful if for some reason we can't generate
+    /// the correct layout.
+    pub opaque: bool,
     pub base_members: usize,
     pub layout: Layout,
     /// Typedef'd types names, that we'll resolve early to avoid name conflicts
@@ -347,6 +352,7 @@ impl CompInfo {
             has_destructor: false,
             has_nonempty_base: false,
             hide: false,
+            opaque: false,
             base_members: 0,
             layout: layout,
             typedefs: vec!(),

@@ -902,7 +902,7 @@ fn visit_top(cursor: &Cursor,
                     visit_composite(c, p, ctx_, &mut ci_)
                 });
                 if anno.opaque {
-                    ci.borrow_mut().members = vec!();
+                    ci.borrow_mut().opaque = true;
                 }
                 if anno.hide {
                     ci.borrow_mut().hide = true;

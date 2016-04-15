@@ -376,7 +376,14 @@ fn gen_mod(mut ctx: &mut GenCtx,
     }
 }
 
+// XXX: Replace the name-based lookup, or do it at parse-time,
+// to keep all the mess in the same place.
 fn type_opaque(ctx: &GenCtx, ty: &Type) -> bool {
+    match *ty {
+        TComp(ref ci) if ci.borrow().opaque => return true,
+        _ => {}
+    }
+
     let ty_name = ty.name();
 
     match ty_name {
@@ -388,6 +395,12 @@ fn type_opaque(ctx: &GenCtx, ty: &Type) -> bool {
 
 fn global_opaque(ctx: &GenCtx, global: &Global) -> bool {
     let global_name = global.name();
+
+    match *global {
+        GCompDecl(ref ci) |
+        GComp(ref ci) if ci.borrow().opaque => return true,
+        _ => {}
+    }
 
     // Can't make an opaque type without layout
     global.layout().is_some() &&
