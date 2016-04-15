@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::fmt;
 use std::rc::Rc;
 use std::collections::HashMap;
@@ -321,6 +321,9 @@ pub struct CompInfo {
     pub has_non_type_template_params: bool,
     /// If this type was unnamed when parsed
     pub was_unnamed: bool,
+    /// Used to detect if we've run in a can_derive_debug cycle while
+    /// cycling around the template arguments.
+    detect_derive_debug_cycle: Cell<bool>,
 }
 
 static mut UNNAMED_COUNTER: u32 = 0;
@@ -358,28 +361,44 @@ impl CompInfo {
             typedefs: vec!(),
             has_non_type_template_params: false,
             was_unnamed: was_unnamed,
+            detect_derive_debug_cycle: Cell::new(false),
         }
     }
 
     pub fn can_derive_debug(&self) -> bool {
-        // XXX: We could probably be smarter about this,
-        // checking that the length of the generated array
-        // for our layout is less or equal than 32.
-        if self.kind != CompKind::Struct {
-            return false;
-        }
-
         if self.hide || self.opaque {
             return false;
         }
 
-        self.args.iter().all(|ty| ty.can_derive_debug()) &&
-        self.members.iter()
-            .all(|member| match *member {
-                CompMember::Field(ref f) |
-                CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
-                _ => true,
-            })
+        if self.detect_derive_debug_cycle.get() {
+            println!("Derive debug cycle detected: {}!", self.name);
+            return true;
+        }
+
+        match self.kind {
+            CompKind::Union => {
+                let size_divisor = if self.layout.align == 0 { 1 } else { self.layout.align };
+                if self.layout.size / size_divisor > 32 {
+                    return false;
+                }
+
+                true
+            }
+            CompKind::Struct => {
+                self.detect_derive_debug_cycle.set(true);
+
+                let can_derive_debug = self.args.iter().all(|ty| ty.can_derive_debug()) &&
+                    self.members.iter()
+                        .all(|member| match *member {
+                            CompMember::Field(ref f) |
+                            CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
+                            _ => true,
+                        });
+                self.detect_derive_debug_cycle.set(false);
+
+                can_derive_debug
+            }
+        }
     }
 }
 
