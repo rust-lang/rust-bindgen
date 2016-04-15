@@ -79,6 +79,11 @@ impl<'a> Builder<'a> {
         self
     }
 
+    pub fn derive_debug(&mut self, derive_debug: bool) -> &mut Self {
+        self.options.derive_debug = derive_debug;
+        self
+    }
+
     pub fn rust_enums(&mut self, value: bool) -> &mut Self {
         self.options.rust_enums = value;
         self
