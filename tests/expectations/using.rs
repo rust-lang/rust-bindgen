@@ -6,7 +6,7 @@
 
 
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Struct_Point<T> {
     pub x: T,
     pub y: T,

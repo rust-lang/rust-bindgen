@@ -27,6 +27,26 @@ pub struct Struct_D_U<T, Z> {
     pub m_baz: Z,
     pub _phantom0: ::std::marker::PhantomData<T>,
 }
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct Struct_Rooted<T> {
+    pub prev: *mut T,
+    pub next: *mut T,
+    pub ptr: T,
+}
+#[repr(C)]
+#[derive(Debug, Copy)]
+pub struct Struct_RootedContainer {
+    pub root: Struct_Rooted<*mut ::std::os::raw::c_void>,
+}
+impl ::std::clone::Clone for Struct_RootedContainer {
+    fn clone(&self) -> Self { *self }
+}
+#[test]
+fn bindgen_test_layout_Struct_RootedContainer() {
+    assert_eq!(::std::mem::size_of::<Struct_RootedContainer>() , 24usize);
+    assert_eq!(::std::mem::align_of::<Struct_RootedContainer>() , 8usize);
+}
 extern "C" {
     #[link_name = "_Z3bar3FooIiiE"]
     pub fn bar(foo: Struct_Foo<::std::os::raw::c_int, ::std::os::raw::c_int>);

@@ -45,7 +45,7 @@ fn bindgen_test_layout_Struct_D() {
     assert_eq!(::std::mem::align_of::<Struct_D>() , 4usize);
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Struct_Templated<T> {
     pub member: T,
 }

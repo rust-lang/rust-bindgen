@@ -18,3 +18,14 @@ class D {
         Z m_baz;
     };
 };
+
+template<typename T>
+class Rooted {
+    T* prev;
+    T* next;
+    T ptr;
+};
+
+class RootedContainer {
+    Rooted<void*> root;
+};

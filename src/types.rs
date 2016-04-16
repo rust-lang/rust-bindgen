@@ -235,10 +235,36 @@ impl Type {
         }
     }
 
-    fn can_derive_copy(&self) -> bool {
-        !self.is_opaque() && match *self {
+    // For some reason, deriving copies of an array of a type that is not known to be copy
+    // is a compile error. e.g.:
+    //
+    // #[derive(Copy)]
+    // struct A<T> {
+    //     member: T,
+    // }
+    //
+    // is fine, while:
+    //
+    // #[derive(Copy)]
+    // struct A<T> {
+    //     member: [T; 1],
+    // }
+    //
+    // is an error.
+    //
+    // That's the point of the existance of can_derive_copy_in_array().
+    pub fn can_derive_copy_in_array(&self) -> bool {
+        match *self {
             TVoid => false,
-            TArray(ref t, _, _) => t.can_derive_copy(),
+            TNamed(ref ti) => ti.borrow().ty.can_derive_copy_in_array(),
+            TArray(ref t, _, _) => t.can_derive_copy_in_array(),
+            ref t => t.can_derive_copy(),
+        }
+    }
+
+    pub fn can_derive_copy(&self) -> bool {
+        !self.is_opaque() && match *self {
+            TArray(ref t, _, _) => t.can_derive_copy_in_array(),
             TNamed(ref ti) => ti.borrow().ty.can_derive_copy(),
             TComp(ref comp) => comp.borrow().can_derive_copy(),
             _ => true,
