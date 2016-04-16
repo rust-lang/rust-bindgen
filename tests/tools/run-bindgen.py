@@ -8,6 +8,7 @@ import tempfile
 BINDGEN_FLAGS_PREFIX = "// bindgen-flags: ";
 COMMON_PRELUDE = """
 #![feature(const_fn)]
+#![allow(non_snake_case)]
 """
 
 if len(sys.argv) != 4:
