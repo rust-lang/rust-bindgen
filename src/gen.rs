@@ -778,10 +778,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, ty: TypeInfo) -> Vec<P<ast::Item>> {
     }
 
     if ty.opaque {
-        return vec![
-            mk_opaque_struct(ctx, &ty.name, &ty.layout),
-            mk_test_fn(ctx, &ty.name, &ty.layout),
-        ];
+        return mk_opaque_struct(ctx, &ty.name, &ty.layout);
     }
 
     let item = match ty.ty {
@@ -807,11 +804,7 @@ fn comp_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo)
 
     if ci.opaque {
         let name = first(rust_id(ctx, &ci.name));
-        // The test should always be correct but...
-        return vec![
-            mk_opaque_struct(ctx, &name, &ci.layout),
-            mk_test_fn(ctx, &name, &ci.layout),
-        ];
+        return mk_opaque_struct(ctx, &name, &ci.layout);
     }
 
     match ci.kind {
@@ -991,29 +984,15 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
         let (opt_rc_c, opt_f) = comp_fields(m);
 
         if let Some(f) = opt_f {
-            let (f_name, f_ty) = match f.bitfields {
+            let f_name = match f.bitfields {
                 Some(ref v) => {
                     bitfields += 1;
-                    // NOTE: We rely on the name of the type converted to rust types,
-                    // and on the alignment.
-                    let bits = v.iter().fold(0, |acc, &(_, w)| acc + w);
-
-                    let layout_size = cmp::max(1, bits.next_power_of_two() / 8) as usize;
-                    let name = match layout_size {
-                        1 => "uint8_t",
-                        2 => "uint16_t",
-                        4 => "uint32_t",
-                        8 => "uint64_t",
-                        _ => panic!("bitfield width not supported: {}", layout_size),
-                    };
-
-                    let ty = TNamed(Rc::new(RefCell::new(TypeInfo::new(name.to_owned(), ROOT_MODULE_ID, TVoid, Layout::new(layout_size, layout_size)))));
-                    (format!("_bitfield_{}", bitfields), ty)
+                    format!("_bitfield_{}", bitfields)
                 }
-                None => (rust_type_id(ctx, &f.name), f.ty.clone())
+                None => rust_type_id(ctx, &f.name)
             };
 
-            drop(f.ty); // to ensure it's not used unintentionally
+            let f_ty = f.ty;
 
             let is_translatable = cty_is_translatable(&f_ty);
             if !is_translatable || f_ty.is_opaque() {
@@ -1623,8 +1602,18 @@ fn gen_bitfield_method(ctx: &mut GenCtx, bindgen_name: &str,
                        field_name: &str, field_type: &Type,
                        offset: usize, width: u32) -> ast::ImplItem {
     let input_type = type_for_bitfield_width(ctx, width, true);
+    let width = width % (field_type.layout().unwrap().size as u32 * 8);
+
     let field_type = cty_to_rs(ctx, &field_type, false, true);
-    let setter_name = ctx.ext_cx.ident_of(&format!("set_{}", field_name));
+
+    let real_field_name = if field_name.is_empty() {
+        format!("at_offset_{}", offset)
+    } else {
+        field_name.into()
+    };
+
+
+    let setter_name = ctx.ext_cx.ident_of(&format!("set_{}", real_field_name));
     let bindgen_ident = ctx.ext_cx.ident_of(bindgen_name);
 
     let item = quote_item!(&ctx.ext_cx,
@@ -2228,7 +2217,7 @@ fn mk_test_fn(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
     item
 }
 
-fn mk_opaque_struct(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
+fn mk_opaque_struct(ctx: &GenCtx, name: &str, layout: &Layout) -> Vec<P<ast::Item>> {
     let blob_field = mk_blob_field(ctx, "_bindgen_opaque_blob", layout);
     let variant_data = if layout.size == 0 {
         ast::VariantData::Unit(ast::DUMMY_NODE_ID)
@@ -2248,14 +2237,23 @@ fn mk_opaque_struct(ctx: &GenCtx, name: &str, layout: &Layout) -> P<ast::Item> {
         }
     );
 
-    P(ast::Item {
+    let struct_decl = P(ast::Item {
         ident: ctx.ext_cx.ident_of(&name),
         attrs: vec![mk_repr_attr(ctx, layout)],
         id: ast::DUMMY_NODE_ID,
         node: def,
         vis: ast::Visibility::Public,
         span: ctx.span
-    })
+    });
+
+    let mut ret = vec![struct_decl];
+
+    // The test should always be correct but...
+    if *layout != Layout::zero() {
+        ret.push(mk_test_fn(ctx, &name, layout));
+    }
+
+    ret
 }
 
 fn gen_union_field_definitions_if_necessary(ctx: &mut GenCtx, mut root_mod: &mut ast::Item) {
@@ -2264,7 +2262,7 @@ fn gen_union_field_definitions_if_necessary(ctx: &mut GenCtx, mut root_mod: &mut
     }
 
     let union_fields_decl = quote_item!(&ctx.ext_cx,
-        #[derive(Copy, Clone, Debug)]
+        #[derive(Copy, Debug)]
         pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
     ).unwrap();
 
@@ -2296,10 +2294,19 @@ fn gen_union_field_definitions_if_necessary(ctx: &mut GenCtx, mut root_mod: &mut
         }
     ).unwrap();
 
+    let union_fields_clone_impl = quote_item!(&ctx.ext_cx,
+        impl<T> ::std::clone::Clone for __BindgenUnionField<T> {
+            #[inline]
+            fn clone(&self) -> Self {
+                Self::new()
+            }
+        }
+    ).unwrap();
+
 
     match root_mod.node {
         ast::ItemKind::Mod(ref mut root) => {
-            let old_items = std::mem::replace(&mut root.items, vec![union_fields_decl, union_fields_impl, union_fields_default_impl]);
+            let old_items = std::mem::replace(&mut root.items, vec![union_fields_decl, union_fields_impl, union_fields_default_impl, union_fields_clone_impl]);
             root.items.extend(old_items.into_iter());
         }
         _ => unreachable!(),

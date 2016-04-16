@@ -124,6 +124,19 @@ impl Global {
             _ => panic!("global_varinfo")
         }
     }
+
+    pub fn to_type(self) -> Type {
+        match self {
+            GType(ti) => TNamed(ti),
+            GComp(ci)
+            | GCompDecl(ci) => TComp(ci),
+            GEnum(ei)
+            | GEnumDecl(ei) => TEnum(ei),
+            GVar(_)
+            | GFunc(_)
+            | GOther => TVoid,
+        }
+    }
 }
 
 impl fmt::Debug for Global {
@@ -165,6 +178,7 @@ pub enum Type {
 }
 
 impl Type {
+    #[allow(dead_code)]
     pub fn name(&self) -> Option<String> {
         match *self {
             TNamed(ref info) => Some(info.borrow().name.clone()),
@@ -173,6 +187,16 @@ impl Type {
             TArray(ref t, _, _) => t.name(),
             TPtr(ref t, _, _, _) => t.name(),
             _ => None
+        }
+    }
+
+    // XXX Add this info to enums?
+    pub fn was_unnamed(&self) -> bool {
+        match *self {
+            TComp(ref ci) => ci.borrow().was_unnamed,
+            TArray(ref t, _, _) => t.was_unnamed(),
+            TPtr(ref t, _, _, _) => t.was_unnamed(),
+            _ => false,
         }
     }
 
@@ -203,7 +227,7 @@ impl Type {
     }
 
     pub fn can_derive_debug(&self) -> bool {
-        match *self {
+        !self.is_opaque() && match *self {
             TArray(ref t, size, _) => size <= 32 && t.can_derive_debug(),
             TNamed(ref ti) => ti.borrow().ty.can_derive_debug(),
             TComp(ref comp) => comp.borrow().can_derive_debug(),
@@ -217,6 +241,16 @@ impl Type {
             TPtr(ref t, _, _, _) => t.is_opaque(),
             TNamed(ref ti) => ti.borrow().opaque || ti.borrow().ty.is_opaque(),
             TComp(ref ci) => ci.borrow().is_opaque(),
+            _ => false,
+        }
+    }
+
+    pub fn is_union_like(&self) -> bool {
+        match *self {
+            TArray(ref t, _, _) => t.is_union_like(),
+            TPtr(ref t, _, _, _) => t.is_union_like(),
+            TNamed(ref ti) => ti.borrow().ty.is_union_like(),
+            TComp(ref ci) => ci.borrow().kind == CompKind::Union,
             _ => false,
         }
     }
@@ -236,8 +270,8 @@ impl Type {
         match *self {
             TVoid => false,
             TArray(ref t, _, _) => t.is_translatable(),
-            TNamed(ref ti) => ti.borrow().ty.is_translatable(),
             TComp(ref ci) => ci.borrow().is_translatable(),
+            // NB: TNamed explicitely ommited here
             _ => true,
         }
     }
@@ -300,7 +334,7 @@ pub enum FKind {
     FDouble
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum CompMember {
     Field(FieldInfo),
     Comp(Rc<RefCell<CompInfo>>),
@@ -434,25 +468,37 @@ impl CompInfo {
     }
 
     pub fn has_destructor(&self) -> bool {
-        self.has_destructor ||
-        self.ref_template.as_ref().map_or(false, |t| t.has_destructor()) ||
-        self.args.iter().any(|t| t != &TVoid && t.has_destructor()) ||
-        self.members.iter().enumerate().any(|(index, m)| match *m {
-            CompMember::Field(ref f) |
-            CompMember::CompField(_, ref f) => {
-                // Base members may not be resolved yet
-                if index < self.base_members {
-                    f.ty.has_destructor()
-                } else {
-                    f.ty.has_destructor() || !f.ty.is_translatable()
-                }
-            },
-            _ => false,
-        })
+        self.has_destructor || match self.kind {
+            CompKind::Union => false,
+            CompKind::Struct => {
+                // NB: We can't rely on a type with type parameters
+                // not having destructor.
+                //
+                // This is unfortunate, but...
+                !self.args.is_empty() ||
+                self.members.iter().enumerate().any(|(index, m)| match *m {
+                    CompMember::Field(ref f) |
+                    CompMember::CompField(_, ref f) => {
+                        // Base members may not be resolved yet
+                        if index < self.base_members {
+                            f.ty.has_destructor()
+                        } else {
+                            f.ty.has_destructor() || !f.ty.is_translatable()
+                        }
+                    },
+                    _ => false,
+                })
+            }
+        }
     }
 
     pub fn is_translatable(&self) -> bool {
-        self.args.iter().all(|t| t.is_translatable()) && !self.has_non_type_template_params
+        match self.kind {
+            CompKind::Union => true,
+            CompKind::Struct => {
+                self.args.iter().all(|t| t != &TVoid) && !self.has_non_type_template_params
+            }
+        }
     }
 }
 

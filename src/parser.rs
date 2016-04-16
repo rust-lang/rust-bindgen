@@ -4,6 +4,7 @@ use std::collections::{HashMap, HashSet};
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::path::Path;
+use std::cmp;
 
 use syntax::abi;
 
@@ -369,8 +370,8 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
                 ci.borrow_mut().args = args;
                 cursor.visit(|c, _: &Cursor| {
                     if c.kind() == CXCursor_TemplateRef {
-                        let cref = c.definition();
-                        ci.borrow_mut().ref_template = Some(conv_decl_ty(ctx, &cref.cur_type(), &cref));
+                        let decl = decl_name(ctx, &c.referenced());
+                        ci.borrow_mut().ref_template = Some(decl.to_type());
                     }
                     CXChildVisit_Continue
                 });
@@ -383,7 +384,8 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
             let ei = decl.enuminfo();
             TEnum(ei)
         }
-        CXCursor_TypeAliasDecl | CXCursor_TypedefDecl => {
+        CXCursor_TypeAliasDecl |
+        CXCursor_TypedefDecl => {
             if resolve_typedefs {
                 return conv_ty_resolving_typedefs(ctx, &ty_decl.typedef_type(), &ty_decl.typedef_type().declaration(), resolve_typedefs);
             }
@@ -533,10 +535,11 @@ impl Annotations {
 fn visit_composite(cursor: &Cursor, parent: &Cursor,
                    ctx: &mut ClangParserCtx,
                    ci: &mut CompInfo) -> Enum_CXVisitorResult {
-    fn is_bitfield_continuation(field: &il::FieldInfo, ty: &il::Type, width: u32) -> bool {
-        match (&field.bitfields, ty.layout()) {
+    fn is_bitfield_continuation(field: &il::FieldInfo, _ty: &il::Type, width: u32) -> bool {
+        match (&field.bitfields, field.ty.layout()) {
             (&Some(ref bitfields), Some(layout)) => {
-                bitfields.iter().map(|&(_, w)| w).fold(0u32, |acc, w| acc + w) + width <= (layout.size * 8) as u32
+                let actual_width = bitfields.iter().map(|&(_, w)| w).fold(0u32, |acc, w| acc + w);
+                actual_width + width <= (layout.size * 8) as u32
             },
             _ => false
         }
@@ -553,7 +556,9 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             }
 
             let is_class_typedef = cursor.cur_type().sanitized_spelling_in(&ci.typedefs);
-            let ty = conv_ty_resolving_typedefs(ctx, &cursor.cur_type(), cursor, is_class_typedef);
+
+            // NB: Overwritten in the case of non-integer bitfield
+            let mut ty = conv_ty_resolving_typedefs(ctx, &cursor.cur_type(), cursor, is_class_typedef);
             let comment = cursor.raw_comment();
 
             let (name, bitfields) = match (cursor.bit_width(), ci.members.last_mut()) {
@@ -573,9 +578,30 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                     match ty {
                         il::TInt(_, _) => (),
                         _ => {
-                            let msg = format!("Enums in bitfields are not supported ({}::{}).",
-                                parent.spelling(), cursor.spelling());
+                            // NOTE: We rely on the name of the type converted to rust types,
+                            // and on the alignment.
+                            let bits = cmp::max(width, ty.size() as u32 * 8);
+                            let layout_size = cmp::max(1, bits.next_power_of_two() / 8) as usize;
+
+                            let msg = format!("Enums in bitfields are not supported ({}::{}). Trying to recover with width: {}",
+                                parent.spelling(), cursor.spelling(), layout_size * 8);
                             ctx.logger.warn(&msg);
+
+                            let name = match layout_size {
+                                1 => "uint8_t",
+                                2 => "uint16_t",
+                                4 => "uint32_t",
+                                8 => "uint64_t",
+                                _ => panic!("bitfield width not supported: {}", layout_size),
+                            };
+
+                            // NB: We rely on the ULongLong not being translated 
+                            // (using the common uintxx_t name)
+                            let ti = TypeInfo::new(name.into(),
+                                                   ctx.current_module_id,
+                                                   TInt(IKind::IULongLong, Layout::new(layout_size, layout_size)),
+                                                   Layout::new(layout_size, layout_size));
+                            ty = TNamed(Rc::new(RefCell::new(ti)))
                         }
                     }
                     ("".to_owned(), Some(vec!((cursor.spelling(), width))))
@@ -619,15 +645,12 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             //    _ => false
             //};
 
-            // If it's a field from an unnamed union we only have to update the name
             if let Some(&mut CompMember::Field(ref mut info)) = ci.members.last_mut() {
                 if bitfields.is_none() && info.bitfields.is_none() {
-                    if let (&TComp(ref field_ty_ci), &TComp(ref ci)) = (&info.ty, &ty) {
-                        if field_ty_ci.borrow().was_unnamed && ci.borrow().was_unnamed &&
-                           field_ty_ci.borrow().name == ci.borrow().name {
-                            info.name = name;
-                            return CXChildVisit_Continue;
-                        }
+                    if info.ty.was_unnamed() && ty.was_unnamed() &&
+                        info.ty.name() == ty.name() {
+                        *info = FieldInfo::new(name, ty, comment, bitfields);
+                        return CXChildVisit_Continue;
                     }
                 }
             }
@@ -917,9 +940,6 @@ fn visit_top(cursor: &Cursor,
         | CXCursor_ClassDecl
         | CXCursor_ClassTemplate => {
             let anno = Annotations::new(cursor);
-            if anno.hide {
-                return CXChildVisit_Continue;
-            }
             fwd_decl(ctx, cursor, move |ctx_| {
                 let decl = decl_name(ctx_, cursor);
                 let ci = decl.compinfo();
