@@ -2,42 +2,19 @@ language: rust
 addons:
     apt:
       sources:
-        - llvm-toolchain-precise
-        - llvm-toolchain-precise-3.5
-        - llvm-toolchain-precise-3.6
-        - llvm-toolchain-precise-3.7
+        - llvm-toolchain-precise-3.8
         - ubuntu-toolchain-r-test
       packages:
-        - libclang-3.4-dev
-        - llvm-3.4-dev
-        - libclang-3.6-dev
-        - llvm-3.6-dev
-        - libclang-3.7-dev
-        - llvm-3.7-dev
         - libclang-3.8-dev
         - llvm-3.8-dev
 env:
-  - LLVM_VERSION=3.4
-  - LLVM_VERSION=3.6
-  - LLVM_VERSION=3.7
   - LLVM_VERSION=3.8
 rust:
   - nightly
 matrix:
   include:
     - env: LLVM_VERSION=3.7
-      rust: stable
-    - env: LLVM_VERSION=3.7
-      rust: beta
-    - os: osx
-      env: LLVM_VERSION=devtools
       rust: nightly
-    - os: osx
-      env: LLVM_VERSION=3.5
-      rust: nightly
-    - env: LLVM_VERSION=3.7
-      rust: nightly
-      script: cargo build --features clippy
 
 cache:
   directories:
@@ -64,3 +41,8 @@ before_script:
       fi
     fi
   - echo $LIBCLANG_PATH
+
+script:
+  - cargo build
+  - cargo build --verbose
+  - make test
