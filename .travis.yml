@@ -46,3 +46,5 @@ script:
   - cargo build
   - cargo build --verbose
   - make test
+  - git add -A
+  - git diff-index --quiet HEAD
