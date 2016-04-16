@@ -11,11 +11,6 @@ env:
   - LLVM_VERSION=3.8
 rust:
   - nightly
-matrix:
-  include:
-    - env: LLVM_VERSION=3.7
-      rust: nightly
-
 cache:
   directories:
     - $HOME/.cargo
