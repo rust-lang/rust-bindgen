@@ -1,4 +1,4 @@
-
+// bindgen-flags: -enable-cxx-namespaces
 
 void top_level();
 

@@ -97,7 +97,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                     CompKind::Struct
                 };
 
-                let mut opaque = ctx.options.opaque_types.iter().any(|name| *name == spelling);
+                let opaque = ctx.options.opaque_types.iter().any(|name| *name == spelling);
                 let hide = ctx.options.blacklist_type.iter().any(|name| *name == spelling);
 
                 let mut has_non_type_template_params = false;
@@ -123,30 +123,19 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                     _ => vec![],
                 };
 
-                let mut module_id = ctx.current_module_id;
-                let mut has_dtor = false;
+                let mut ci = CompInfo::new(spelling, ctx.current_module_id, filename, comment, kind, vec![], layout);
 
                 // If it's an instantiation of another template,
                 // find the canonical declaration to find the module
                 // it belongs to and if it's opaque.
                 let parent = cursor.specialized();
                 if let Some(parent) = ctx.name.get(&parent) {
-                    match *parent {
-                        GComp(ref ci) |
-                        GCompDecl(ref ci) => {
-                            opaque |= ci.borrow().opaque;
-                            has_dtor |= ci.borrow().has_destructor;
-                            module_id = ci.borrow().module_id;
-                        }
-                        _ => {}
-                    }
+                    ci.ref_template = Some(parent.clone().to_type())
                 }
 
-                let mut ci = CompInfo::new(spelling, module_id, filename, comment, kind, vec![], layout);
                 ci.opaque = opaque;
                 ci.hide = hide;
                 ci.args = args;
-                ci.has_destructor = has_dtor;
                 ci.has_non_type_template_params = has_non_type_template_params;
 
                 let ci = Rc::new(RefCell::new(ci));
@@ -365,16 +354,12 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
                     list
                 }
             };
+
             let ci = decl.compinfo();
+            // NB: Args might be filled from decl_name,
+            // it's important not to override
             if !args.is_empty() {
                 ci.borrow_mut().args = args;
-                cursor.visit(|c, _: &Cursor| {
-                    if c.kind() == CXCursor_TemplateRef {
-                        let decl = decl_name(ctx, &c.referenced());
-                        ci.borrow_mut().ref_template = Some(decl.to_type());
-                    }
-                    CXChildVisit_Continue
-                });
             }
 
             TComp(ci)
@@ -859,6 +844,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
         }
         CXCursor_Destructor => {
             ci.has_destructor = true;
+            // Propagate the change to the parent
             if let Some(ref t) = ci.ref_template {
                 match *t {
                     TComp(ref parent_ci) => parent_ci.borrow_mut().has_destructor = true,

@@ -458,6 +458,15 @@ impl CompInfo {
         }
     }
 
+    // Return the module id or the class declaration module id.
+    pub fn module_id(&self) -> ModuleId {
+        self.ref_template.as_ref().and_then(|t| if let TComp(ref ci) = *t {
+            Some(ci.borrow().module_id)
+        } else {
+            None
+        }).unwrap_or(self.module_id)
+    }
+
     pub fn can_derive_debug(&self) -> bool {
         if self.hide || self.is_opaque() {
             return false;
@@ -511,6 +520,7 @@ impl CompInfo {
                 // not having destructor.
                 //
                 // This is unfortunate, but...
+                self.ref_template.as_ref().map_or(false, |t| t.has_destructor()) ||
                 self.args.iter().any(|t| t.has_destructor()) ||
                 self.members.iter().enumerate().any(|(index, m)| match *m {
                     CompMember::Field(ref f) |

@@ -2014,7 +2014,7 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type, allow_bool: bool, use_full_path: bool)
             }).collect();
 
             if use_full_path {
-                let mut path = ctx.full_path_for_module(c.module_id);
+                let mut path = ctx.full_path_for_module(c.module_id());
                 path.push(id);
                 mk_ty_args(ctx, false, &path, args)
             } else {

@@ -22,7 +22,7 @@ class D {
 template<typename T>
 class Rooted {
     T* prev;
-    T* next;
+    Rooted<void*>* next;
     T ptr;
 };
 

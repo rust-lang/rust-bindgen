@@ -31,7 +31,7 @@ pub struct Struct_D_U<T, Z> {
 #[derive(Debug, Copy, Clone)]
 pub struct Struct_Rooted<T> {
     pub prev: *mut T,
-    pub next: *mut T,
+    pub next: *mut Struct_Rooted<*mut ::std::os::raw::c_void>,
     pub ptr: T,
 }
 #[repr(C)]
