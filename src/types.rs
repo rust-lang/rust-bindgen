@@ -235,6 +235,16 @@ impl Type {
         }
     }
 
+    fn can_derive_copy(&self) -> bool {
+        !self.is_opaque() && match *self {
+            TVoid => false,
+            TArray(ref t, _, _) => t.can_derive_copy(),
+            TNamed(ref ti) => ti.borrow().ty.can_derive_copy(),
+            TComp(ref comp) => comp.borrow().can_derive_copy(),
+            _ => true,
+        }
+    }
+
     pub fn is_opaque(&self) -> bool {
         match *self {
             TArray(ref t, _, _) => t.is_opaque(),
@@ -475,7 +485,7 @@ impl CompInfo {
                 // not having destructor.
                 //
                 // This is unfortunate, but...
-                !self.args.is_empty() ||
+                self.args.iter().any(|t| t.has_destructor()) ||
                 self.members.iter().enumerate().any(|(index, m)| match *m {
                     CompMember::Field(ref f) |
                     CompMember::CompField(_, ref f) => {
@@ -487,6 +497,33 @@ impl CompInfo {
                         }
                     },
                     _ => false,
+                })
+            }
+        }
+    }
+
+    // We only
+    pub fn can_derive_copy(&self) -> bool {
+        match self.kind {
+            CompKind::Union => true,
+            CompKind::Struct => {
+                if self.has_destructor() {
+                    return false;
+                }
+
+                // Anything not destructible and with template parameters
+                // is copiable
+                if self.args.is_empty() {
+                    return true;
+                }
+
+                // With template args, use a safe subset of the types,
+                // since copyability depends on the types itself.
+                self.ref_template.as_ref().map_or(true, |t| t.can_derive_copy()) &&
+                self.members.iter().all(|m| match *m {
+                    CompMember::Field(ref f) |
+                    CompMember::CompField(_, ref f) => f.ty.can_derive_copy(),
+                    _ => true,
                 })
             }
         }
@@ -504,7 +541,7 @@ impl CompInfo {
 
 impl fmt::Debug for CompInfo {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.name.fmt(f)
+        write!(f, "CompInfo({}, ref: {:?}, args: {:?}, members: {:?}", self.name, self.ref_template, self.args, self.members)
     }
 }
 

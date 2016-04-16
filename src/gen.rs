@@ -827,7 +827,9 @@ fn comp_attrs(ctx: &GenCtx, ci: &CompInfo, name: &str, extra: &mut Vec<P<ast::It
             let attr = ctx.ext_cx.ident_of(attr);
             attrs.push(quote_attr!(&ctx.ext_cx, #[$attr]));
         }
-    } else {
+    }
+
+    if ci.can_derive_copy() {
         derives.push("Copy");
 
         // TODO: make mk_clone_impl work for template arguments,

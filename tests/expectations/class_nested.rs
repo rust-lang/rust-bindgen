@@ -50,7 +50,7 @@ pub struct Struct_Templated<T> {
     pub member: T,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Struct_Templated_Templated_inner<T> {
     pub member_ptr: *mut T,
 }
