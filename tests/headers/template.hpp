@@ -29,3 +29,29 @@ class Rooted {
 class RootedContainer {
     Rooted<void*> root;
 };
+
+template<typename T>
+class WithDtor;
+
+typedef WithDtor<int> WithDtorIntFwd;
+
+template<typename T>
+class WithDtor {
+    T member;
+    ~WithDtor() {}
+};
+
+class PODButContainsDtor {
+    WithDtorIntFwd member;
+};
+
+
+/** <div rustbindgen opaque> */
+template<typename T>
+class Opaque {
+    T member;
+};
+
+class POD {
+    Opaque<int> opaque_member;
+};

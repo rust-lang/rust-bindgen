@@ -538,19 +538,12 @@ impl CompInfo {
         }
     }
 
-    // We only
     pub fn can_derive_copy(&self) -> bool {
         match self.kind {
             CompKind::Union => true,
             CompKind::Struct => {
                 if self.has_destructor() {
                     return false;
-                }
-
-                // Anything not destructible and with template parameters
-                // is copiable
-                if self.args.is_empty() {
-                    return true;
                 }
 
                 // With template args, use a safe subset of the types,

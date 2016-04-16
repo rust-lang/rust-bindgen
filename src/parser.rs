@@ -360,7 +360,17 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
             // it's important not to override
             if !args.is_empty() {
                 ci.borrow_mut().args = args;
+                // XXX: This is a super-dumb way to get the spesialisation,
+                // but it seems to be the only one that'd work here...
+                cursor.visit(|c, _: &Cursor| {
+                    if c.kind() == CXCursor_TemplateRef {
+                    let decl = decl_name(ctx, &c.referenced());
+                        ci.borrow_mut().ref_template = Some(decl.to_type());
+                    }
+                    CXChildVisit_Continue
+                });
             }
+
 
             TComp(ci)
         }
