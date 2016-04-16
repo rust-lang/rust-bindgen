@@ -249,9 +249,10 @@ impl Bindings {
 
         for line in self.raw_lines.iter() {
             try!(writer.write(line.as_bytes()));
+            try!(writer.write("\n".as_bytes()));
         }
         if !self.raw_lines.is_empty() {
-            try!(writer.write("\n\n".as_bytes()));
+            try!(writer.write("\n".as_bytes()));
         }
 
         let mut ps = pprust::rust_printer(writer);
