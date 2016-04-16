@@ -1,3 +1,4 @@
+// bindgen-flags: -std=c++11
 
 class whatever {
 };

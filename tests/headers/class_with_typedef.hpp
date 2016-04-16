@@ -1,3 +1,5 @@
+// bindgen-flags: -no-type-renaming
+
 typedef int AnotherInt;
 
 class C {

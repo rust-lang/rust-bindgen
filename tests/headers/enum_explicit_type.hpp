@@ -1,3 +1,5 @@
+// bindgen-flags: -std=c++11
+
 enum Foo: unsigned char {
     Bar = 0,
     Qux

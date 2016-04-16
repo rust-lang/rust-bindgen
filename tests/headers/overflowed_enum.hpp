@@ -1,3 +1,5 @@
+// bindgen-flags: -std=c++11 -Wno-narrowing
+
 enum Foo {
     BAP_ARM = 0x93fcb9,
     BAP_X86 = 0xb67eed,

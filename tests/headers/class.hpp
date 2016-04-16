@@ -9,3 +9,12 @@ class WithDtor {
 
     ~WithDtor() {}
 };
+
+union Union {
+    float d;
+    int i;
+};
+
+class WithUnion {
+    Union data;
+};
