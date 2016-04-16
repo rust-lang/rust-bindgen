@@ -595,7 +595,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                                 _ => panic!("bitfield width not supported: {}", layout_size),
                             };
 
-                            // NB: We rely on the ULongLong not being translated 
+                            // NB: We rely on the ULongLong not being translated
                             // (using the common uintxx_t name)
                             let ti = TypeInfo::new(name.into(),
                                                    ctx.current_module_id,
@@ -647,8 +647,18 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
 
             if let Some(&mut CompMember::Field(ref mut info)) = ci.members.last_mut() {
                 if bitfields.is_none() && info.bitfields.is_none() {
-                    if info.ty.was_unnamed() && ty.was_unnamed() &&
-                        info.ty.name() == ty.name() {
+                    let should_replace = if let TComp(ref ci) = info.ty {
+                        if ci.borrow().was_unnamed && ty.was_unnamed() &&
+                            Some(&ci.borrow().name) == ty.name().as_ref() {
+                            true
+                        } else {
+                            false
+                        }
+                    } else {
+                        false
+                    };
+
+                    if should_replace {
                         *info = FieldInfo::new(name, ty, comment, bitfields);
                         return CXChildVisit_Continue;
                     }
