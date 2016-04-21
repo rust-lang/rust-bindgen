@@ -771,6 +771,10 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 return CXChildVisit_Continue;
             }
 
+            if cursor.is_inlined_function() {
+                return CXChildVisit_Continue;
+            }
+
             // XXX no methods yet for templates
             if !ci.args.is_empty() {
                 return CXChildVisit_Continue;
@@ -996,6 +1000,10 @@ fn visit_top(cursor: &Cursor,
 
             let visibility = cursor.visibility();
             if visibility != CXVisibility_Default {
+                return CXChildVisit_Continue;
+            }
+
+            if cursor.is_inlined_function() {
                 return CXChildVisit_Continue;
             }
 

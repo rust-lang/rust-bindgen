@@ -123,6 +123,10 @@ impl Cursor {
         }
     }
 
+    pub fn is_inlined_function(&self) -> bool {
+        unsafe { clang_Cursor_isFunctionInlined(self.x) != 0 }
+    }
+
     // bitfield
     pub fn bit_width(&self) -> Option<u32> {
         unsafe {
