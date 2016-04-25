@@ -13,6 +13,7 @@ use syntax::ext::expand::ExpansionConfig;
 use syntax::ext::quote::rt::ToTokens;
 use syntax::feature_gate::Features;
 use syntax::parse;
+use syntax::parse::token::InternedString;
 use syntax::attr::mk_attr_id;
 use syntax::ptr::P;
 use syntax::print::pprust::tts_to_string;
@@ -28,11 +29,6 @@ struct GenCtx<'r> {
 
 fn ref_eq<T>(thing: &T, other: &T) -> bool {
     (thing as *const T) == (other as *const T)
-}
-
-fn to_intern_str(ctx: &mut GenCtx, s: &str) -> parse::token::InternedString {
-    let id = ctx.ext_cx.ident_of(s);
-    id.name.as_str()
 }
 
 fn rust_id(ctx: &mut GenCtx, name: &str) -> (String, bool) {
@@ -284,18 +280,18 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, LinkType)],
                 LinkType::Framework => Some("framework")
             };
             let link_name = P(respan(ctx.span, ast::MetaItemKind::NameValue(
-                to_intern_str(ctx, "name"),
+                InternedString::new("name"),
                 respan(ctx.span, ast::LitKind::Str(
-                    to_intern_str(ctx, l),
+                    ctx.ext_cx.name_of(l).as_str(),
                     ast::StrStyle::Cooked
                 ))
             )));
             let link_args = match k {
                 None => vec!(link_name),
                 Some(ref k) => vec!(link_name, P(respan(ctx.span, ast::MetaItemKind::NameValue(
-                    to_intern_str(ctx, "kind"),
+                    InternedString::new("kind"),
                     respan(ctx.span, ast::LitKind::Str(
-                        to_intern_str(ctx, *k),
+                        ctx.ext_cx.name_of(k).as_str(),
                         ast::StrStyle::Cooked
                     ))
                 ))))
@@ -304,7 +300,7 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, LinkType)],
                 id: mk_attr_id(),
                 style: ast::AttrStyle::Outer,
                 value: P(respan(ctx.span, ast::MetaItemKind::List(
-                    to_intern_str(ctx, "link"),
+                    InternedString::new("link"),
                     link_args)
                 )),
                 is_sugared_doc: false
@@ -972,11 +968,11 @@ fn mk_attr(ctx: &mut GenCtx,
            args: &[&str]) -> ast::Attribute {
     let args: Vec<_> = args.iter()
         .map(|arg| {
-            let word = to_intern_str(ctx, arg);
+            let word = ctx.ext_cx.name_of(arg).as_str();
             ctx.ext_cx.meta_word(ctx.span, word)
         }).collect();
     let attr = {
-        let name = to_intern_str(ctx, name);
+        let name = ctx.ext_cx.name_of(name).as_str();
         ctx.ext_cx.meta_list(ctx.span, name, args)
     };
     ctx.ext_cx.attribute(ctx.span, attr)
