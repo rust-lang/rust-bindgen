@@ -201,13 +201,20 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
 }
 
 fn opaque_decl(ctx: &mut ClangParserCtx, decl: &Cursor) {
+    let spelling = decl.spelling();
+    let hide = ctx.options.blacklist_type.iter().any(|name| *name == spelling);
+
+    if hide {
+        return;
+    }
+
     let name = decl_name(ctx, decl);
     ctx.current_module_mut().globals.push(name);
 }
 
 fn fwd_decl<F:FnOnce(&mut ClangParserCtx)->()>(ctx: &mut ClangParserCtx, cursor: &Cursor, f: F) {
-    let def = &cursor.definition();
-    if cursor == def {
+    let def = cursor.definition();
+    if cursor == &def {
         f(ctx);
     } else if def.kind() == CXCursor_NoDeclFound ||
               def.kind() == CXCursor_InvalidFile {
