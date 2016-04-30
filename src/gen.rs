@@ -1491,9 +1491,9 @@ fn cenum_to_rs(ctx: &mut GenCtx,
     }));
 
     attrs.push(if ctx.options.derive_debug {
-        mk_deriving_attr(ctx, &["Debug", "Copy", "Clone"])
+        mk_deriving_attr(ctx, &["Debug", "Copy", "Clone", "Eq", "PartialEq", "Hash"])
     } else {
-        mk_deriving_attr(ctx, &["Copy", "Clone"])
+        mk_deriving_attr(ctx, &["Copy", "Clone", "Eq", "PartialEq", "Hash"])
     });
 
     items.push(P(ast::Item {

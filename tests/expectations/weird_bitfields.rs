@@ -6,7 +6,7 @@
 
 
 #[repr(u32)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Enum_nsStyleSVGOpacitySource {
     eStyleSVGOpacitySource_Normal = 0,
     eStyleSVGOpacitySource_ContextFillOpacity = 1,

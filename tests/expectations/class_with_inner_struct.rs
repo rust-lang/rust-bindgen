@@ -124,7 +124,7 @@ fn bindgen_test_layout_Struct_B() {
     assert_eq!(::std::mem::align_of::<Struct_B>() , 4usize);
 }
 #[repr(i32)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Enum_StepSyntax {
     Keyword = 0,
     FunctionalWithoutKeyword = 1,

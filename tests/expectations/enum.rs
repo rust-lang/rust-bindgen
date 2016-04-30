@@ -6,8 +6,8 @@
 
 
 #[repr(u32)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Enum_Foo { Bar = 0, Qux = 1, }
 #[repr(i32)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Enum_Neg { MinusOne = -1, One = 1, }

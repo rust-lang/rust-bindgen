@@ -6,7 +6,7 @@
 
 
 #[repr(u32)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Enum_enum_and_vtable_mangling_hpp_unnamed_1 {
     match_ = 0,
     whatever_else = 1,

@@ -25,7 +25,7 @@ impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
 }
 pub const JSVAL_TAG_SHIFT: ::std::os::raw::c_uint = 47;
 #[repr(u8)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum JSValueType {
     JSVAL_TYPE_DOUBLE = 0,
     JSVAL_TYPE_INT32 = 1,
@@ -40,7 +40,7 @@ pub enum JSValueType {
     JSVAL_TYPE_MISSING = 33,
 }
 #[repr(u32)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum JSValueTag {
     JSVAL_TAG_MAX_DOUBLE = 131056,
     JSVAL_TAG_INT32 = 131057,
@@ -53,7 +53,7 @@ pub enum JSValueTag {
     JSVAL_TAG_OBJECT = 131064,
 }
 #[repr(u64)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum JSValueShiftedTag {
     JSVAL_SHIFTED_TAG_MAX_DOUBLE = 18444492278190833663,
     JSVAL_SHIFTED_TAG_INT32 = 18444633011384221696,
@@ -66,7 +66,7 @@ pub enum JSValueShiftedTag {
     JSVAL_SHIFTED_TAG_OBJECT = 18445618173802708992,
 }
 #[repr(u32)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum JSWhyMagic {
     JS_ELEMENTS_HOLE = 0,
     JS_NO_ITER_VALUE = 1,
