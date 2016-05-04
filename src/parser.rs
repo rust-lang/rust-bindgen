@@ -590,6 +590,10 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                     // `lexical_parent` should return the reference to the
                     // class, but I've tried everything I could think about and
                     // failed miserably.
+                    //
+                    // Also, there could be more complex cases, like a templated
+                    // type in an inner type declaration, that this is
+                    // completely unable to catch.
                     if child_cursor.kind() == CXCursor_ClassDecl &&
                        child_ci.args.is_empty() &&
                        child_ci.name == ci.name &&
