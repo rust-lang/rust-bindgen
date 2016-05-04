@@ -25,6 +25,12 @@ impl Cursor {
         }
     }
 
+    pub fn display_name(&self) -> String {
+        unsafe {
+            String_ { x: clang_getCursorDisplayName(self.x) }.to_string()
+        }
+    }
+
     pub fn mangling(&self) -> String {
         let mut mangling = unsafe {
             String_ { x: clang_Cursor_getMangling(self.x) }.to_string()
@@ -268,6 +274,30 @@ pub struct Type {
     x: CXType
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+enum SizeofError {
+    Invalid,
+    Incomplete,
+    Dependent,
+    NotConstantSize,
+    InvalidFieldName,
+    Unknown,
+}
+
+impl ::std::convert::From<i32> for SizeofError {
+    fn from(val: i32) -> Self {
+        use self::SizeofError::*;
+        match val {
+            CXTypeLayoutError_Invalid => Invalid,
+            CXTypeLayoutError_Incomplete => Incomplete,
+            CXTypeLayoutError_Dependent => Dependent,
+            CXTypeLayoutError_NotConstantSize => NotConstantSize,
+            CXTypeLayoutError_InvalidFieldName => InvalidFieldName,
+            _ => Unknown,
+        }
+    }
+}
+
 impl Type {
     // common
     pub fn kind(&self) -> Enum_CXTypeKind {
@@ -285,6 +315,7 @@ impl Type {
             String_ { x: clang_getTypeSpelling(self.x) }.to_string()
         }
     }
+
 
     // XXX make it more consistent
     //
@@ -312,6 +343,15 @@ impl Type {
         unsafe {
             let val = clang_Type_getSizeOf(self.x);
             if val < 0 { 0 } else { val as usize }
+        }
+    }
+
+    pub fn fallible_size(&self) -> Result<usize, SizeofError> {
+        let val = unsafe { clang_Type_getSizeOf(self.x) };
+        if val < 0 {
+            Err(SizeofError::from(val as i32))
+        } else {
+            Ok(val as usize)
         }
     }
 
