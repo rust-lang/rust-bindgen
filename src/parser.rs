@@ -124,6 +124,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                 };
 
                 let mut ci = CompInfo::new(spelling, ctx.current_module_id, filename, comment, kind, vec![], layout);
+                ci.parser_cursor = Some(cursor);
 
                 // If it's an instantiation of another template,
                 // find the canonical declaration to find the module
@@ -367,17 +368,17 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
             // it's important not to override
             if !args.is_empty() {
                 ci.borrow_mut().args = args;
+
                 // XXX: This is a super-dumb way to get the spesialisation,
                 // but it seems to be the only one that'd work here...
                 cursor.visit(|c, _: &Cursor| {
                     if c.kind() == CXCursor_TemplateRef {
-                    let decl = decl_name(ctx, &c.referenced());
+                        let decl = decl_name(ctx, &c.referenced());
                         ci.borrow_mut().ref_template = Some(decl.to_type());
                     }
                     CXChildVisit_Continue
                 });
             }
-
 
             TComp(ci)
         }
@@ -458,7 +459,9 @@ fn conv_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
         CXType_Pointer => conv_ptr_ty_resolving_typedefs(ctx, &ty.pointee_type(), cursor, false, layout, resolve_typedefs),
         CXType_LValueReference => conv_ptr_ty_resolving_typedefs(ctx, &ty.pointee_type(), cursor, true, layout, resolve_typedefs),
         // XXX DependentSizedArray is wrong
-        CXType_VariableArray | CXType_DependentSizedArray | CXType_IncompleteArray => {
+        CXType_VariableArray |
+        CXType_DependentSizedArray |
+        CXType_IncompleteArray => {
             conv_ptr_ty_resolving_typedefs(ctx, &ty.elem_type(), cursor, false, layout, resolve_typedefs)
         }
         CXType_FunctionProto => TFuncProto(mk_fn_sig(ctx, ty, cursor)),
@@ -537,6 +540,7 @@ impl Annotations {
 fn visit_composite(cursor: &Cursor, parent: &Cursor,
                    ctx: &mut ClangParserCtx,
                    ci: &mut CompInfo) -> Enum_CXVisitorResult {
+    assert!(ci.parser_cursor.is_some());
     fn is_bitfield_continuation(field: &il::FieldInfo, _ty: &il::Type, width: u32) -> bool {
         match (&field.bitfields, field.ty.layout()) {
             (&Some(ref bitfields), Some(layout)) => {
@@ -560,8 +564,41 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             let is_class_typedef = cursor.cur_type().sanitized_spelling_in(&ci.typedefs);
             let mutable = cursor.is_mutable_field();
 
+            let cursor_ty = cursor.cur_type();
+
             // NB: Overwritten in the case of non-integer bitfield
-            let mut ty = conv_ty_resolving_typedefs(ctx, &cursor.cur_type(), cursor, is_class_typedef);
+            let mut ty = conv_ty_resolving_typedefs(ctx,
+                                                    &cursor.cur_type(),
+                                                    cursor,
+                                                    is_class_typedef);
+
+            use std::cell::BorrowState;
+            if let Some(child_ci) = ty.get_outermost_composite() {
+                if let BorrowState::Unused = child_ci.borrow_state() {
+                    let mut child_ci = child_ci.borrow_mut();
+                    let child_cursor = child_ci.parser_cursor.unwrap();
+
+                    // TODO: This is lame, ideally we should use cursors.
+                    // The problem this is trying to solve is
+                    // tests/headers/inner_template_self.hpp.
+                    //
+                    // The problem with this is that clang treats the *prev*
+                    // field as a Class Declaration instead of a Class Template,
+                    // so we have to check now for the name and the module id.
+                    //
+                    // Ideally, some method like `semantic_parent` or
+                    // `lexical_parent` should return the reference to the
+                    // class, but I've tried everything I could think about and
+                    // failed miserably.
+                    if child_cursor.kind() == CXCursor_ClassDecl &&
+                       child_ci.args.is_empty() &&
+                       child_ci.name == ci.name &&
+                       child_ci.module_id == ci.module_id {
+                            child_ci.args = ci.args.clone();
+                    }
+                }
+            }
+
             let comment = cursor.raw_comment();
 
             let (name, bitfields) = match (cursor.bit_width(), ci.members.last_mut()) {

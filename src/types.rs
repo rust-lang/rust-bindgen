@@ -10,6 +10,7 @@ pub use self::Global::*;
 pub use self::Type::*;
 pub use self::IKind::*;
 pub use self::FKind::*;
+use clang::Cursor;
 
 static NEXT_MODULE_ID: AtomicUsize = ATOMIC_USIZE_INIT;
 
@@ -197,6 +198,15 @@ impl Type {
             TArray(ref t, _, _) => t.was_unnamed(),
             TPtr(ref t, _, _, _) => t.was_unnamed(),
             _ => false,
+        }
+    }
+
+    pub fn get_outermost_composite(&self) -> Option<Rc<RefCell<CompInfo>>> {
+        match *self {
+            TComp(ref ci) => Some(ci.clone()),
+            TArray(ref t, _, _) => t.get_outermost_composite(),
+            TPtr(ref t, _, _, _) => t.get_outermost_composite(),
+            _ => None,
         }
     }
 
@@ -401,6 +411,7 @@ pub struct CompInfo {
     pub has_destructor: bool,
     pub has_nonempty_base: bool,
     pub hide: bool,
+    pub parser_cursor: Option<Cursor>,
     /// If this struct should be replaced by an opaque blob.
     ///
     /// This is useful if for some reason we can't generate
@@ -431,7 +442,13 @@ fn unnamed_name(name: String, filename: &String) -> String {
 }
 
 impl CompInfo {
-    pub fn new(name: String, module_id: ModuleId, filename: String, comment: String, kind: CompKind, members: Vec<CompMember>, layout: Layout) -> CompInfo {
+    pub fn new(name: String,
+               module_id: ModuleId,
+               filename: String,
+               comment: String,
+               kind: CompKind,
+               members: Vec<CompMember>,
+               layout: Layout) -> CompInfo {
         let was_unnamed = name.is_empty();
         CompInfo {
             kind: kind,
@@ -448,6 +465,7 @@ impl CompInfo {
             has_destructor: false,
             has_nonempty_base: false,
             hide: false,
+            parser_cursor: None,
             opaque: false,
             base_members: 0,
             layout: layout,

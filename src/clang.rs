@@ -43,6 +43,12 @@ impl Cursor {
         mangling
     }
 
+    pub fn lexical_parent(&self) -> Cursor {
+        unsafe {
+            Cursor { x: clang_getCursorLexicalParent(self.x) }
+        }
+    }
+
     pub fn semantic_parent(&self) -> Cursor {
         unsafe {
             Cursor { x: clang_getCursorSemanticParent(self.x) }

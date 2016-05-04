@@ -1,6 +1,7 @@
 #![crate_name = "bindgen"]
 #![crate_type = "dylib"]
 #![feature(quote)]
+#![feature(borrow_state)]
 
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
