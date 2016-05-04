@@ -213,7 +213,7 @@ fn opaque_decl(ctx: &mut ClangParserCtx, decl: &Cursor) {
     ctx.current_module_mut().globals.push(name);
 }
 
-fn fwd_decl<F:FnOnce(&mut ClangParserCtx)->()>(ctx: &mut ClangParserCtx, cursor: &Cursor, f: F) {
+fn fwd_decl<F: FnOnce(&mut ClangParserCtx)->()>(ctx: &mut ClangParserCtx, cursor: &Cursor, f: F) {
     let def = cursor.definition();
     if cursor == &def {
         f(ctx);
@@ -568,9 +568,10 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
 
             // NB: Overwritten in the case of non-integer bitfield
             let mut ty = conv_ty_resolving_typedefs(ctx,
-                                                    &cursor.cur_type(),
+                                                    &cursor_ty,
                                                     cursor,
                                                     is_class_typedef);
+
 
             use std::cell::BorrowState;
             if let Some(child_ci) = ty.get_outermost_composite() {
@@ -579,10 +580,12 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                     let child_cursor = child_ci.parser_cursor.unwrap();
 
                     // TODO: This is lame, ideally we should use cursors.
-                    // The problem this is trying to solve is
-                    // tests/headers/inner_template_self.hpp.
+                    // The problem this loop is trying to solve is
+                    // tests/headers/inner_template_self.hpp, and templates with
+                    // incomplete types.
                     //
-                    // The problem with this is that clang treats the *prev*
+                    // The problem with this is that, in the first case (see the
+                    // CXCursor_ClassDecl branch below) clang treats the *prev*
                     // field as a Class Declaration instead of a Class Template,
                     // so we have to check now for the name and the module id.
                     //
@@ -594,11 +597,44 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                     // Also, there could be more complex cases, like a templated
                     // type in an inner type declaration, that this is
                     // completely unable to catch.
-                    if child_cursor.kind() == CXCursor_ClassDecl &&
-                       child_ci.args.is_empty() &&
-                       child_ci.name == ci.name &&
-                       child_ci.module_id == ci.module_id {
-                            child_ci.args = ci.args.clone();
+                    //
+                    // In the second case (the CXCursor_ClassTemplate branch),
+                    // we're not able to retrieve the template parameters of an
+                    // incomplete type via the declaration or anything like
+                    // that. We can inspect the AST and deduct them though,
+                    // since there's a leading CXCursor_TemplateRef.
+                    if child_ci.args.is_empty() {
+                        // println!("child: {:?} {:?}, {:?}, {:?}", cursor.spelling(),
+                        //                               type_to_str(cursor_ty.kind()),
+                        //                               type_to_str(child_cursor.cur_type().kind()),
+                        //                               kind_to_str(child_cursor.kind()));
+                        match child_cursor.kind() {
+                            CXCursor_ClassDecl => {
+                                child_ci.args = ci.args.clone();
+                            }
+                            CXCursor_ClassTemplate => {
+                                let mut found_invalid_template_ref = false;
+                                cursor.visit(|c, _| {
+                                    // println!("ichild: {:?} {:?}, {:?}", c.spelling(),
+                                    //                               kind_to_str(c.kind()),
+                                    //                               type_to_str(c.cur_type().kind()));
+                                    if c.kind() == CXCursor_TemplateRef &&
+                                       c.cur_type().kind() == CXType_Invalid {
+                                        found_invalid_template_ref = true;
+                                    }
+                                    if found_invalid_template_ref &&
+                                       c.kind() == CXCursor_TypeRef {
+                                        child_ci.args.push(TNamed(Rc::new(RefCell::new(
+                                            TypeInfo::new(c.spelling(),
+                                                          ctx.current_module_id,
+                                                          TVoid,
+                                                          Layout::zero())))));
+                                    }
+                                    CXChildVisit_Continue
+                                })
+                            }
+                            _ => {}
+                        }
                     }
                 }
             }
@@ -727,6 +763,13 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 // of the same inner type to cause conflicts
                 let new_name = [&*ci.name, &*ci2.borrow().name].join("_").to_owned();
                 ci2.borrow_mut().name = new_name;
+
+                // This clear() is needed because of the speculation we do on
+                // incomplete types inside visit_composite() members.
+                //
+                // If this type ends up being complete, we're going to really
+                // parse them now, so we should reset them.
+                ci2.borrow_mut().args.clear();
 
                 // Propagate template arguments and typedefs to inner structs
                 ci2.borrow_mut().args.extend(ci.args.clone().into_iter());
@@ -998,6 +1041,9 @@ fn visit_top(cursor: &Cursor,
             fwd_decl(ctx, cursor, move |ctx_| {
                 let decl = decl_name(ctx_, cursor);
                 let ci = decl.compinfo();
+                // This clear() is needed because of the speculation we do
+                // on incomplete types inside visit_composite() members.
+                ci.borrow_mut().args.clear();
                 cursor.visit(|c, p| {
                     let mut ci_ = ci.borrow_mut();
                     visit_composite(c, p, ctx_, &mut ci_)

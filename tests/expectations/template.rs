@@ -74,6 +74,32 @@ fn bindgen_test_layout_Struct_POD() {
     assert_eq!(::std::mem::size_of::<Struct_POD>() , 4usize);
     assert_eq!(::std::mem::align_of::<Struct_POD>() , 4usize);
 }
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct Struct_NestedBase<T, U> {
+    pub buff: *mut T,
+    pub _phantom0: ::std::marker::PhantomData<U>,
+}
+/**
+ * <div rustbindgen replaces="NestedReplaced"></div>
+ */
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct Struct_NestedReplaced<T> {
+    pub buff: *mut T,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct Struct_NestedContainer<T> {
+    pub c: T,
+    pub nested: Struct_NestedReplaced<T>,
+    pub inc: Struct_Incomplete<T>,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct Struct_Incomplete<T> {
+    pub d: T,
+}
 extern "C" {
     #[link_name = "_Z3bar3FooIiiE"]
     pub fn bar(foo: Struct_Foo<::std::os::raw::c_int, ::std::os::raw::c_int>);

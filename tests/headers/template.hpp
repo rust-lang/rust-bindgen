@@ -55,3 +55,36 @@ class Opaque {
 class POD {
     Opaque<int> opaque_member;
 };
+
+/**
+ * <div rustbindgen replaces="NestedReplaced"></div>
+ */
+template<typename T>
+class Nested {
+    T* buff;
+};
+
+template<typename T, typename U>
+class NestedBase {
+    T* buff;
+};
+
+template<typename T>
+class NestedReplaced: public NestedBase<T, int> {
+};
+
+template<typename T>
+class Incomplete;
+
+template<typename T>
+class NestedContainer {
+    T c;
+private:
+    NestedReplaced<T> nested;
+    Incomplete<T> inc;
+};
+
+template<typename T>
+class Incomplete {
+    T d;
+};
