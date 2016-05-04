@@ -558,6 +558,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             }
 
             let is_class_typedef = cursor.cur_type().sanitized_spelling_in(&ci.typedefs);
+            let mutable = cursor.is_mutable_field();
 
             // NB: Overwritten in the case of non-integer bitfield
             let mut ty = conv_ty_resolving_typedefs(ctx, &cursor.cur_type(), cursor, is_class_typedef);
@@ -661,13 +662,13 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                     };
 
                     if should_replace {
-                        *info = FieldInfo::new(name, ty, comment, bitfields);
+                        *info = FieldInfo::new(name, ty, comment, bitfields, mutable);
                         return CXChildVisit_Continue;
                     }
                 }
             }
 
-            let field = FieldInfo::new(name, ty, comment, bitfields);
+            let field = FieldInfo::new(name, ty, comment, bitfields, mutable);
             ci.members.push(CompMember::Field(field));
         }
         CXCursor_StructDecl |
@@ -700,7 +701,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 // Anonymous structs are legal in both C++ and C11
                 if ci2.borrow().was_unnamed {
                     let ci2b = ci2.borrow();
-                    let field = FieldInfo::new(ci2b.name.clone(), TComp(ci2.clone()), ci2b.comment.clone(), None);
+                    let field = FieldInfo::new(ci2b.name.clone(), TComp(ci2.clone()), ci2b.comment.clone(), None, false);
                     ci.members.push(CompMember::Field(field));
                 }
             });
@@ -758,7 +759,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 ci.typedefs.extend(info.borrow().typedefs.clone().into_iter());
             }
 
-            let field = FieldInfo::new(fieldname, ty, "".to_owned(), None);
+            let field = FieldInfo::new(fieldname, ty, "".to_owned(), None, false);
             if !found_virtual_base && cursor.is_virtual_base() {
                 ci.members.insert(0, CompMember::Field(field));
                 ci.has_vtable = true;

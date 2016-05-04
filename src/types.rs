@@ -580,15 +580,22 @@ pub struct FieldInfo {
     pub ty: Type,
     pub comment: String,
     pub bitfields: Option<Vec<(String, u32)>>,
+    /// If the C++ field is marked as `mutable`
+    pub mutable: bool,
 }
 
 impl FieldInfo {
-    pub fn new(name: String, ty: Type, comment: String, bitfields: Option<Vec<(String, u32)>>) -> FieldInfo {
+    pub fn new(name: String,
+               ty: Type,
+               comment: String,
+               bitfields: Option<Vec<(String, u32)>>,
+               mutable: bool) -> FieldInfo {
         FieldInfo {
             name: name,
             ty: ty,
             comment: comment,
             bitfields: bitfields,
+            mutable: mutable,
         }
     }
 }

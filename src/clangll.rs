@@ -1235,6 +1235,7 @@ extern "C" {
     pub fn clang_CXXMethod_isPureVirtual(C: CXCursor) -> c_uint;
     pub fn clang_CXXMethod_isStatic(C: CXCursor) -> c_uint;
     pub fn clang_CXXMethod_isVirtual(C: CXCursor) -> c_uint;
+    pub fn clang_CXXField_isMutable(C: CXCursor) -> c_uint;
     pub fn clang_getTemplateCursorKind(C: CXCursor) -> Enum_CXCursorKind;
     pub fn clang_getSpecializedCursorTemplate(C: CXCursor) -> CXCursor;
     pub fn clang_getCursorReferenceNameRange(C: CXCursor,

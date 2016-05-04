@@ -205,6 +205,12 @@ impl Cursor {
         }
     }
 
+    pub fn is_mutable_field(&self) -> bool {
+        unsafe {
+            clang_CXXField_isMutable(self.x) != 0
+        }
+    }
+
     // CXX method
     pub fn method_is_static(&self) -> bool {
         unsafe {

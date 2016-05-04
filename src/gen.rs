@@ -1049,7 +1049,25 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                 }
             }
 
-            let f_ty = P(cty_to_rs(ctx, &f_ty, f.bitfields.is_none(), needs_full_path));
+            let rust_ty = P(cty_to_rs(ctx, &f_ty, f.bitfields.is_none(), needs_full_path));
+
+            // Wrap mutable fields in a Cell/UnsafeCell
+            let rust_ty = if f.mutable {
+                if !f_ty.can_derive_copy() {
+                    quote_ty!(&ctx.ext_cx, ::std::cell::UnsafeCell<$rust_ty>)
+                // We can only wrap in a cell for non-copiable types, since
+                // Cell<T>: Clone, but not Copy.
+                //
+                // It's fine though, since mutating copiable types is trivial
+                // and doesn't make a lot of sense marking fields as `mutable`.
+                } else if !ci.can_derive_copy() {
+                    quote_ty!(&ctx.ext_cx, ::std::cell::Cell<$rust_ty>)
+                } else {
+                    rust_ty
+                }
+            } else {
+                rust_ty
+            };
 
             fields.push(respan(ctx.span, ast::StructField_ {
                 kind: ast::NamedField(
@@ -1057,7 +1075,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                     ast::Visibility::Public,
                 ),
                 id: ast::DUMMY_NODE_ID,
-                ty: f_ty,
+                ty: rust_ty,
                 attrs: mk_doc_attr(ctx, &f.comment)
             }));
             if bypass {
