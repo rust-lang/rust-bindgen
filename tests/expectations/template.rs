@@ -100,6 +100,18 @@ pub struct Struct_NestedContainer<T> {
 pub struct Struct_Incomplete<T> {
     pub d: T,
 }
+#[repr(C)]
+#[derive(Debug, Copy)]
+pub struct Struct_Untemplated;
+impl ::std::clone::Clone for Struct_Untemplated {
+    fn clone(&self) -> Self { *self }
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct Struct_Templated<T> {
+    pub m_untemplated: Struct_Untemplated,
+    pub _phantom0: ::std::marker::PhantomData<T>,
+}
 extern "C" {
     #[link_name = "_Z3bar3FooIiiE"]
     pub fn bar(foo: Struct_Foo<::std::os::raw::c_int, ::std::os::raw::c_int>);

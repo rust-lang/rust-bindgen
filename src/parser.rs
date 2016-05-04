@@ -366,7 +366,12 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
             let ci = decl.compinfo();
             // NB: Args might be filled from decl_name,
             // it's important not to override
-            if !args.is_empty() {
+            //
+            // We might incur in double borrows here. If that's the case, we're
+            // already scanning the compinfo, and we'd get the args from the
+            // ast.
+            use std::cell::BorrowState;
+            if !args.is_empty() && ci.borrow_state() == BorrowState::Unused {
                 ci.borrow_mut().args = args;
 
                 // XXX: This is a super-dumb way to get the spesialisation,
@@ -610,7 +615,10 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                         //                               kind_to_str(child_cursor.kind()));
                         match child_cursor.kind() {
                             CXCursor_ClassDecl => {
-                                child_ci.args = ci.args.clone();
+                                if child_ci.name == ci.name &&
+                                   child_ci.module_id == ci.module_id {
+                                    child_ci.args = ci.args.clone();
+                                }
                             }
                             CXCursor_ClassTemplate => {
                                 let mut found_invalid_template_ref = false;

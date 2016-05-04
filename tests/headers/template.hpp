@@ -88,3 +88,10 @@ template<typename T>
 class Incomplete {
     T d;
 };
+
+class Untemplated {};
+
+template<typename T>
+class Templated {
+    Untemplated m_untemplated;
+};
