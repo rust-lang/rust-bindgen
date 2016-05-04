@@ -7,13 +7,12 @@ use std::collections::hash_map::Entry;
 
 use syntax::abi;
 use syntax::ast;
-use syntax::codemap::{Span, Spanned, respan, ExpnInfo, NameAndSpan, MacroBang};
+use syntax::codemap::{Span, respan, ExpnInfo, NameAndSpan, MacroBang};
 use syntax::ext::base;
 use syntax::ext::build::AstBuilder;
 use syntax::ext::expand::ExpansionConfig;
 use syntax::ext::quote::rt::ToTokens;
 use syntax::feature_gate::Features;
-use syntax::owned_slice::OwnedSlice;
 use syntax::parse;
 use syntax::parse::token::InternedString;
 use syntax::attr::mk_attr_id;
@@ -45,7 +44,7 @@ fn to_intern_str(ctx: &mut GenCtx, s: String) -> parse::token::InternedString {
 fn empty_generics() -> ast::Generics {
     ast::Generics {
         lifetimes: Vec::new(),
-        ty_params: OwnedSlice::empty(),
+        ty_params: P::new(),
         where_clause: ast::WhereClause {
             id: ast::DUMMY_NODE_ID,
             predicates: Vec::new()
@@ -54,7 +53,7 @@ fn empty_generics() -> ast::Generics {
 }
 
 fn rust_id(ctx: &mut GenCtx, name: String) -> (String, bool) {
-    let token = parse::token::Ident(ctx.ext_cx.ident_of(&name[..]), parse::token::Plain);
+    let token = parse::token::Ident(ctx.ext_cx.ident_of(&name[..]));
     if token.is_any_keyword() || "bool" == &name[..] {
         let mut s = "_".to_owned();
         s.push_str(&name[..]);
@@ -122,7 +121,7 @@ pub fn gen_mod(
         -> Vec<P<ast::Item>> {
     // Create a dummy ExtCtxt. We only need this for string interning and that uses TLS.
     let mut features = Features::new();
-    features.allow_quote = true;
+    features.quote = true;
     let cfg = ExpansionConfig {
         crate_name: "xxx".to_owned(),
         features: Some(&features),
@@ -518,7 +517,7 @@ fn comp_to_rs(ctx: &mut GenCtx, kind: CompKind, name: String,
 fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
                  derive_debug: bool,
                  layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
-    let mut fields = vec!();
+    let mut fields: Vec<ast::StructField> = vec!();
     let mut methods = vec!();
     // Nested composites may need to emit declarations and implementations as
     // they are encountered.  The declarations end up in 'extra' and are emitted
@@ -552,15 +551,14 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
 
             let f_ty = P(cty_to_rs(ctx, &f.ty));
 
-            fields.push(respan(ctx.span, ast::StructField_ {
-                kind: ast::NamedField(
-                    ctx.ext_cx.ident_of(&f_name[..]),
-                    ast::Visibility::Public,
-                ),
+            fields.push(ast::StructField {
+                span: ctx.span,
+                vis: ast::Visibility::Public,
+                ident: Some(ctx.ext_cx.ident_of(&f_name[..])),
                 id: ast::DUMMY_NODE_ID,
                 ty: f_ty,
                 attrs: Vec::new()
-            }));
+            });
         }
 
         if let Some(rc_c) = opt_rc_c {
@@ -568,7 +566,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: String,
             if c.name.is_empty() {
                 unnamed += 1;
                 let field_name = format!("_bindgen_data_{}_", unnamed);
-                fields.push(mk_blob_field(ctx, &field_name[..], c.layout));
+                fields.push(mk_blob_field(ctx, &field_name[..], c.layout, ctx.span));
                 methods.extend(gen_comp_methods(ctx, &field_name[..], 0, c.kind, &c.members, &mut extra, derive_debug).into_iter());
             } else {
                 extra.extend(comp_to_rs(ctx, c.kind, comp_name(c.kind, &c.name),
@@ -663,7 +661,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, derive_debug: bool, layout: Layo
     let mut extra = vec!();
 
     let data_field_name = "_bindgen_data_";
-    let data_field = mk_blob_field(ctx, data_field_name, layout);
+    let data_field = mk_blob_field(ctx, data_field_name, layout, ctx.span);
 
     let def = ast::ItemKind::Struct(
         ast::VariantData::Struct(
@@ -981,7 +979,7 @@ fn mk_clone_impl(ctx: &GenCtx, ty_name: &str) -> P<ast::Item> {
         ctx.ext_cx.cfg(), "".to_owned(), impl_str).parse_item().unwrap().unwrap()
 }
 
-fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout) -> Spanned<ast::StructField_> {
+fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout, span: Span) -> ast::StructField {
     let ty_name = match layout.align {
         8 => "u64",
         4 => "u32",
@@ -991,15 +989,14 @@ fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout) -> Spanned<ast::Struc
     let data_len = if ty_name == "u8" { layout.size } else { layout.size / layout.align };
     let base_ty = mk_ty(ctx, false, vec!(ty_name.to_owned()));
     let data_ty = P(mk_arrty(ctx, &base_ty, data_len));
-    respan(ctx.span, ast::StructField_ {
-        kind: ast::NamedField(
-            ctx.ext_cx.ident_of(name),
-            ast::Visibility::Public,
-        ),
+    ast::StructField{
+        span: span,
+        vis: ast::Visibility::Public,
+        ident: Some(ctx.ext_cx.ident_of(name)),
         id: ast::DUMMY_NODE_ID,
         ty: data_ty,
         attrs: Vec::new()
-    })
+    }
 }
 
 fn mk_link_name_attr(ctx: &mut GenCtx, name: String) -> ast::Attribute {
@@ -1250,8 +1247,8 @@ fn mk_ty(ctx: &GenCtx, global: bool, segments: Vec<String>) -> ast::Ty {
                     identifier: ctx.ext_cx.ident_of(&s[..]),
                     parameters: ast::PathParameters::AngleBracketed(ast::AngleBracketedParameterData {
                         lifetimes: Vec::new(),
-                        types: OwnedSlice::empty(),
-                        bindings: OwnedSlice::empty(),
+                        types: P::new(),
+                        bindings: P::new(),
                     }),
                 }
             }).collect()
@@ -1332,30 +1329,30 @@ fn mk_fnty(ctx: &mut GenCtx,
             identifier: ctx.ext_cx.ident_of("std"),
             parameters: ast::PathParameters::AngleBracketed(ast::AngleBracketedParameterData {
                 lifetimes: Vec::new(),
-                types: OwnedSlice::empty(),
-                bindings: OwnedSlice::empty(),
+                types: P::new(),
+                bindings: P::new(),
             }),
         },
         ast::PathSegment {
             identifier: ctx.ext_cx.ident_of("option"),
             parameters: ast::PathParameters::AngleBracketed(ast::AngleBracketedParameterData {
                 lifetimes: Vec::new(),
-                types: OwnedSlice::empty(),
-                bindings: OwnedSlice::empty(),
+                types: P::new(),
+                bindings: P::new(),
             }),
         },
         ast::PathSegment {
             identifier: ctx.ext_cx.ident_of("Option"),
             parameters: ast::PathParameters::AngleBracketed(ast::AngleBracketedParameterData {
                 lifetimes: Vec::new(),
-                types: OwnedSlice::from_vec(vec!(
+                types: P::from_vec(vec!(
                     P(ast::Ty {
                         id: ast::DUMMY_NODE_ID,
                         node: fnty,
                         span: ctx.span
                     })
                 )),
-                bindings: OwnedSlice::empty(),
+                bindings: P::new(),
             }),
         }
     ];
