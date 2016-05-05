@@ -1065,9 +1065,48 @@ fn visit_top(cursor: &Cursor,
                     ci.borrow_mut().hide = true;
                 }
 
+                // If we find a previous translation, we take it now and carry
+                // on.
+                //
+                // XXX: This clone is spurious and could be avoided with another
+                // scope I think.
+                let name = ci.borrow().name.clone();
+                if let Some(translation) = ctx_.current_module_mut().translations.remove(&name) {
+                    println!("*** {}: found previous translation", name);
+                    if let GComp(ref translated) = translation {
+                        *ci.borrow_mut() = translated.borrow().clone();
+                    }
+                }
+
                 if let Some(other_type_name) = anno.use_as {
                     ci.borrow_mut().name = other_type_name.clone();
-                    ctx_.current_module_mut().translations.insert(other_type_name, GComp(ci));
+                    // if the translated type already existed, and we can
+                    // replace it, just do it (tm).
+                    //
+                    // We'll still need the translations map for not found
+                    // translations and stuff like that.
+                    //
+                    // This is a linear search, which is crap, but fwiw it's not
+                    // too common (just when a type marked as translation is
+                    // found).
+                    let mut found = false;
+                    for v in ctx_.current_module_mut().globals.iter_mut() {
+                        match *v {
+                            GComp(ref mut other_ci) => {
+                                if other_ci.borrow().name == other_type_name {
+                                    *other_ci.borrow_mut() = ci.borrow().clone();
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+
+                    if !found {
+                        ctx_.current_module_mut().translations
+                            .insert(other_type_name, GComp(ci));
+                    }
                 } else {
                     ctx_.current_module_mut().globals.push(GComp(ci));
                 }

@@ -95,3 +95,25 @@ template<typename T>
 class Templated {
     Untemplated m_untemplated;
 };
+
+/**
+ * If the replacement doesn't happen at the parse level the container would be
+ * copy and the replacement wouldn't, so this wouldn't compile.
+ *
+ * <div rustbindgen replaces="ReplacedWithoutDestructor"></div>
+ */
+template<typename T>
+class ReplacedWithDestructor {
+    T* buff;
+    ~ReplacedWithDestructor() {};
+};
+
+template<typename T>
+class ReplacedWithoutDestructor {
+    T* buff;
+};
+
+template<typename T>
+class ShouldNotBeCopiable {
+    ReplacedWithoutDestructor<T> m_member;
+};
