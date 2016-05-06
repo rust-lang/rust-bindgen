@@ -114,6 +114,26 @@ class ReplacedWithoutDestructor {
 };
 
 template<typename T>
+class ReplacedWithoutDestructorFwd;
+
+template<typename T>
 class ShouldNotBeCopiable {
     ReplacedWithoutDestructor<T> m_member;
+};
+
+template<typename T>
+class ShouldNotBeCopiableAsWell {
+    ReplacedWithoutDestructorFwd<T> m_member;
+};
+
+/**
+ * If the replacement doesn't happen at the parse level the container would be
+ * copy and the replacement wouldn't, so this wouldn't compile.
+ *
+ * <div rustbindgen replaces="ReplacedWithoutDestructorFwd"></div>
+ */
+template<typename T>
+class ReplacedWithDestructorDeclaredAfter {
+    T* buff;
+    ~ReplacedWithDestructorDeclaredAfter() {};
 };

@@ -1092,7 +1092,8 @@ fn visit_top(cursor: &Cursor,
                     let mut found = false;
                     for v in ctx_.current_module_mut().globals.iter_mut() {
                         match *v {
-                            GComp(ref mut other_ci) => {
+                            GComp(ref mut other_ci) |
+                            GCompDecl(ref mut other_ci) => {
                                 if other_ci.borrow().name == other_type_name {
                                     *other_ci.borrow_mut() = ci.borrow().clone();
                                     found = true;
