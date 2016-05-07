@@ -121,9 +121,9 @@ class ShouldNotBeCopiable {
     ReplacedWithoutDestructor<T> m_member;
 };
 
-template<typename T>
+template<typename U>
 class ShouldNotBeCopiableAsWell {
-    ReplacedWithoutDestructorFwd<T> m_member;
+    ReplacedWithoutDestructorFwd<U> m_member;
 };
 
 /**

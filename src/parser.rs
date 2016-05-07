@@ -1089,22 +1089,45 @@ fn visit_top(cursor: &Cursor,
                     // This is a linear search, which is crap, but fwiw it's not
                     // too common (just when a type marked as translation is
                     // found).
-                    let mut found = false;
+                    //
+                    // NB: We have to also loop through the `name` map to take
+                    // declarations in files that haven't been matched into
+                    // account (since they won't appear in globals).
+                    let mut found_in_globals = false;
                     for v in ctx_.current_module_mut().globals.iter_mut() {
+                        match *v {
+                            GComp(ref mut other_ci) => {
+                                if other_ci.borrow().name == other_type_name {
+                                    *other_ci.borrow_mut() = ci.borrow().clone();
+                                    found_in_globals = true;
+                                }
+                            },
+                            _ => {},
+                        }
+                    }
+
+                    for (cursor, v) in ctx_.name.iter_mut() {
+                        // We can find ourselves here, and that's no fun at
+                        // all.
+                        if *cursor == ci.borrow().parser_cursor.unwrap() {
+                            continue;
+                        }
                         match *v {
                             GComp(ref mut other_ci) |
                             GCompDecl(ref mut other_ci) => {
                                 if other_ci.borrow().name == other_type_name {
+                                    // We have to preserve template parameter
+                                    // names here if we want to survive.
+                                    let args = other_ci.borrow().args.clone();
                                     *other_ci.borrow_mut() = ci.borrow().clone();
-                                    found = true;
-                                    break;
+                                    other_ci.borrow_mut().args = args;
                                 }
                             }
                             _ => {}
                         }
                     }
 
-                    if !found {
+                    if !found_in_globals {
                         ctx_.current_module_mut().translations
                             .insert(other_type_name, GComp(ci));
                     }

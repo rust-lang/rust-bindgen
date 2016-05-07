@@ -123,11 +123,28 @@ pub struct Struct_Templated<T> {
 pub struct Struct_ReplacedWithoutDestructor<T> {
     pub buff: *mut T,
 }
+/**
+ * If the replacement doesn't happen at the parse level the container would be
+ * copy and the replacement wouldn't, so this wouldn't compile.
+ *
+ * <div rustbindgen replaces="ReplacedWithoutDestructorFwd"></div>
+ */
+#[repr(C)]
+#[derive(Debug)]
+pub struct Struct_ReplacedWithoutDestructorFwd<T> {
+    pub buff: *mut T,
+}
 #[repr(C)]
 #[derive(Debug)]
 pub struct Struct_ShouldNotBeCopiable<T> {
     pub m_member: Struct_ReplacedWithoutDestructor<T>,
     pub _phantom0: ::std::marker::PhantomData<T>,
+}
+#[repr(C)]
+#[derive(Debug)]
+pub struct Struct_ShouldNotBeCopiableAsWell<U> {
+    pub m_member: Struct_ReplacedWithoutDestructorFwd<U>,
+    pub _phantom0: ::std::marker::PhantomData<U>,
 }
 extern "C" {
     #[link_name = "_Z3bar3FooIiiE"]
