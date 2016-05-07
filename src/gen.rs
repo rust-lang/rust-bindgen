@@ -1037,14 +1037,15 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             // If the member is not a template argument, it needs the full path.
             let mut needs_full_path = true;
             for (index, arg) in template_args.iter().enumerate() {
-                let used = f_ty == *arg || match f_ty {
-                    TPtr(ref t, _, _, _) => **t == *arg,
-                    TArray(ref t, _, _) => **t == *arg,
-                    _ => false,
-                };
+                let used = f_ty.signature_contains_type(arg);
+
                 if used {
                     template_args_used[index] = true;
-                    needs_full_path = false;
+                    needs_full_path = *arg == f_ty || match f_ty {
+                        TPtr(ref t, _, _, _) => **t != *arg,
+                        TArray(ref t, _, _) => **t != *arg,
+                        _ => true,
+                    };
                     break;
                 }
             }

@@ -10,7 +10,6 @@
 pub struct Struct_LinkedList<T> {
     pub next: *mut Struct_LinkedList<T>,
     pub prev: *mut Struct_LinkedList<T>,
-    pub _phantom0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]

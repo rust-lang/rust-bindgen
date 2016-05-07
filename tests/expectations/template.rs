@@ -138,13 +138,11 @@ pub struct Struct_ReplacedWithoutDestructorFwd<T> {
 #[derive(Debug)]
 pub struct Struct_ShouldNotBeCopiable<T> {
     pub m_member: Struct_ReplacedWithoutDestructor<T>,
-    pub _phantom0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
 #[derive(Debug)]
 pub struct Struct_ShouldNotBeCopiableAsWell<U> {
     pub m_member: Struct_ReplacedWithoutDestructorFwd<U>,
-    pub _phantom0: ::std::marker::PhantomData<U>,
 }
 extern "C" {
     #[link_name = "_Z3bar3FooIiiE"]

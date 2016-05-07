@@ -191,6 +191,15 @@ impl Type {
         }
     }
 
+    pub fn signature_contains_type(&self, other: &Type) -> bool {
+        self == other || match *self {
+            TPtr(ref t, _, _, _) => t.signature_contains_type(other),
+            TArray(ref t, _, _) => t.signature_contains_type(other),
+            TComp(ref info) => info.borrow().signature_contains_type(other),
+            _ => false,
+        }
+    }
+
     // XXX Add this info to enums?
     pub fn was_unnamed(&self) -> bool {
         match *self {
@@ -583,6 +592,10 @@ impl CompInfo {
                 self.args.iter().all(|t| t != &TVoid) && !self.has_non_type_template_params
             }
         }
+    }
+
+    pub fn signature_contains_type(&self, other: &Type) -> bool {
+        self.args.iter().any(|t| t.signature_contains_type(other))
     }
 }
 
