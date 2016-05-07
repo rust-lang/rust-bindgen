@@ -324,12 +324,6 @@ fn mk_fn_sig_resolving_typedefs(ctx: &mut ClangParserCtx,
     }
 }
 
-fn conv_decl_ty(ctx: &mut ClangParserCtx,
-                ty: &cx::Type,
-                cursor: &Cursor) -> il::Type {
-    conv_decl_ty_resolving_typedefs(ctx, ty, cursor, false)
-}
-
 fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
                                    ty: &cx::Type,
                                    cursor: &Cursor,

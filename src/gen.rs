@@ -1,5 +1,4 @@
 use std;
-use std::cmp;
 use std::cell::RefCell;
 use std::vec::Vec;
 use std::rc::Rc;
@@ -987,7 +986,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
 
         if let Some(f) = opt_f {
             let f_name = match f.bitfields {
-                Some(ref v) => {
+                Some(_) => {
                     bitfields += 1;
                     format!("_bitfield_{}", bitfields)
                 }

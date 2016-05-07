@@ -287,7 +287,7 @@ pub struct Type {
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
-enum SizeofError {
+pub enum LayoutError {
     Invalid,
     Incomplete,
     Dependent,
@@ -296,9 +296,9 @@ enum SizeofError {
     Unknown,
 }
 
-impl ::std::convert::From<i32> for SizeofError {
+impl ::std::convert::From<i32> for LayoutError {
     fn from(val: i32) -> Self {
-        use self::SizeofError::*;
+        use self::LayoutError::*;
         match val {
             CXTypeLayoutError_Invalid => Invalid,
             CXTypeLayoutError_Incomplete => Incomplete,
@@ -358,10 +358,10 @@ impl Type {
         }
     }
 
-    pub fn fallible_size(&self) -> Result<usize, SizeofError> {
+    pub fn fallible_size(&self) -> Result<usize, LayoutError> {
         let val = unsafe { clang_Type_getSizeOf(self.x) };
         if val < 0 {
-            Err(SizeofError::from(val as i32))
+            Err(LayoutError::from(val as i32))
         } else {
             Ok(val as usize)
         }

@@ -300,6 +300,7 @@ impl Type {
         }
     }
 
+    #[allow(dead_code)]
     pub fn is_union_like(&self) -> bool {
         match *self {
             TArray(ref t, _, _) => t.is_union_like(),
