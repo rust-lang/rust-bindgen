@@ -10,11 +10,11 @@ readme = "README.md"
 keywords = [ "bindings", "ffi", "code-generation" ]
 
 [dependencies]
-clang-sys = "0.4.*"
+clang-sys = "~0.4.2"
 clippy = { version = "*", optional = true }
-log = "0.3.*"
-libc = "0.2.*"
-syntex_syntax = "0.32.*"
+log = "~0.3.6"
+libc = "~0.2.11"
+syntex_syntax = "~0.32.0"
 
 [features]
 static = ["clang-sys/static"]
