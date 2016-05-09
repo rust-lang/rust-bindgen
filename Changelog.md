@@ -28,5 +28,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.15.0] - 2016-08-31
 
+[Unreleased]: https://github.com/crabtw/rust-bindgen/compare/0.16...HEAD
 [0.16.0]: https://github.com/crabtw/rust-bindgen/compare/0.15...0.16
 [0.15.0]: https://github.com/crabtw/rust-bindgen/compare/0.14...0.15
