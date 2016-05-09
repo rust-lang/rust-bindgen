@@ -12,7 +12,7 @@ use std::mem;
 use clang_sys::*;
 
 // Cursor
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Cursor {
     x: CXCursor
 }
