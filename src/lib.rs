@@ -4,6 +4,7 @@
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
 
+extern crate clang_sys;
 extern crate syntex_syntax as syntax;
 extern crate libc;
 #[macro_use] extern crate log;
@@ -24,7 +25,6 @@ use syntax::ptr::P;
 use types::Global;
 
 mod types;
-mod clangll;
 mod clang;
 mod gen;
 mod parser;
