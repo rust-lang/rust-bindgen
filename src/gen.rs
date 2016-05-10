@@ -547,7 +547,9 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     let id = rust_type_id(ctx, &name);
     let mut attrs = vec![mk_repr_attr(ctx, layout)];
     if can_derive_clone {
-        attrs.push(mk_deriving_copy_clone_attr(ctx));
+        attrs.push(mk_attr(ctx, "derive", &["Copy", "Clone"]));
+    } else {
+        attrs.push(mk_attr(ctx, "derive", &["Copy"]));
     }
     if can_derive_debug {
         attrs.push(mk_deriving_debug_attr(ctx));

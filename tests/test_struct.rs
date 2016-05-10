@@ -315,6 +315,7 @@ fn derive_debug_big_array() {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
+        #[derive(Copy)]
         pub struct Struct_BigArray {
             pub a: [::std::os::raw::c_int; 33usize],
         }
@@ -334,6 +335,7 @@ fn derive_debug_big_array() {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
+        #[derive(Copy)]
         pub struct Struct_WithBigArray {
             pub a: Struct_BigArray,
         }
