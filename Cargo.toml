@@ -10,7 +10,7 @@ readme = "README.md"
 keywords = [ "bindings", "ffi", "code-generation" ]
 
 [dependencies]
-clang-sys = "~0.5"
+clang-sys = "~0.4.2"
 clippy = { version = "*", optional = true }
 log = "~0.3.6"
 libc = "~0.2.11"
