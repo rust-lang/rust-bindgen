@@ -656,19 +656,23 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, derive_debug: bool, layout: Layo
         ast::Generics::default()
     );
     let union_id = rust_type_id(ctx, &name);
+
+    // Waiting for https://github.com/rust-lang/rfcs/issues/1038
+    let can_auto_derive = members.iter()
+        .all(|member| match *member {
+            CompMember::Field(ref f) |
+            CompMember::CompField(_, ref f) => f.ty.can_auto_derive(),
+            _ => true
+        });
     let union_attrs = {
-        let mut attrs = vec!(mk_repr_attr(ctx, layout),
-                             mk_deriving_copy_clone_attr(ctx));
-        if derive_debug {
-            let can_derive_debug = members.iter()
-                .all(|member| match *member {
-                    CompMember::Field(ref f) |
-                    CompMember::CompField(_, ref f) => f.ty.can_auto_derive(),
-                    _ => true
-                });
-            if can_derive_debug {
-                attrs.push(mk_deriving_debug_attr(ctx))
+        let mut attrs = vec![mk_repr_attr(ctx, layout)];
+        if can_auto_derive {
+            attrs.push(mk_deriving_copy_clone_attr(ctx));
+            if derive_debug {
+                attrs.push(mk_deriving_debug_attr(ctx));
             }
+        } else {
+            attrs.push(mk_attr(ctx, "derive", &["Copy"]));
         }
         attrs
     };
@@ -688,6 +692,10 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, derive_debug: bool, layout: Layo
         union_def,
         mk_item(ctx, "".to_owned(), union_impl, ast::Visibility::Inherited, Vec::new())
     );
+
+    if !can_auto_derive {
+        items.push(mk_clone_impl(ctx, &name));
+    }
 
     items.push(mk_default_impl(ctx, &name[..]));
     items.extend(extra.into_iter());
