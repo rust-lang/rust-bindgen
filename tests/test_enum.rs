@@ -8,11 +8,11 @@ fn default_without_rust_enums() -> BindgenOptions {
 #[test]
 fn with_simple_enum() {
     assert_bind_eq(Default::default(), "headers/enum.h", "
-        #[derive(Clone, Copy)]
+        #[derive(Copy, Clone)]
         #[repr(u32)]
         #[derive(Debug)]
         pub enum Enum_Foo { Bar = 0, Qux = 1, }
-        #[derive(Clone, Copy)]
+        #[derive(Copy, Clone)]
         #[repr(i32)]
         #[derive(Debug)]
         pub enum Enum_Neg { MinusOne = -1, One = 1, }
@@ -30,15 +30,15 @@ fn with_simple_enum() {
 #[test]
 fn with_packed_enums() {
     assert_bind_eq(Default::default(), "headers/enum_packed.h", "
-        #[derive(Clone, Copy)]
+        #[derive(Copy, Clone)]
         #[repr(u8)]
         #[derive(Debug)]
         pub enum Enum_Foo { Bar = 0, Qux = 1, }
-        #[derive(Clone, Copy)]
+        #[derive(Copy, Clone)]
         #[repr(i8)]
         #[derive(Debug)]
         pub enum Enum_Neg { MinusOne = -1, One = 1, }
-        #[derive(Clone, Copy)]
+        #[derive(Copy, Clone)]
         #[repr(u16)]
         #[derive(Debug)]
         pub enum Enum_Bigger { Much = 255, Larger = 256, }
@@ -60,7 +60,7 @@ fn with_packed_enums() {
 fn with_duplicate_enum_value() {
     assert_bind_eq(Default::default(), "headers/enum_dupe.h", "
         pub const Dupe: Enum_Foo = Enum_Foo::Bar;
-        #[derive(Clone, Copy)]
+        #[derive(Copy, Clone)]
         #[repr(u32)]
         #[derive(Debug)]
         pub enum Enum_Foo { Bar = 1, }
@@ -75,23 +75,23 @@ fn with_duplicate_enum_value() {
 #[test]
 fn with_explicitly_typed_cxx_enum() {
     assert_bind_eq(Default::default(), "headers/enum_explicit_type.hpp", "
-        #[derive(Clone, Copy)]
+        #[derive(Copy, Clone)]
         #[repr(u8)]
         #[derive(Debug)]
         pub enum Enum_Foo { Bar = 0, Qux = 1, }
-        #[derive(Clone, Copy)]
+        #[derive(Copy, Clone)]
         #[repr(i8)]
         #[derive(Debug)]
         pub enum Enum_Neg { MinusOne = -1, One = 1, }
-        #[derive(Clone, Copy)]
+        #[derive(Copy, Clone)]
         #[repr(u16)]
         #[derive(Debug)]
         pub enum Enum_Bigger { Much = 255, Larger = 256, }
-        #[derive(Clone, Copy)]
+        #[derive(Copy, Clone)]
         #[repr(i64)]
         #[derive(Debug)]
         pub enum Enum_MuchLong { MuchLow = -4294967296, }
-        #[derive(Clone, Copy)]
+        #[derive(Copy, Clone)]
         #[repr(u64)]
         #[derive(Debug)]
         pub enum Enum_MuchLongLong { MuchHigh = 4294967296, }
@@ -116,7 +116,7 @@ fn with_explicitly_typed_cxx_enum() {
 #[test]
 fn with_overflowed_enum_value() {
     assert_bind_eq(Default::default(), "headers/overflowed_enum.hpp", "
-        #[derive(Clone, Copy)]
+        #[derive(Copy, Clone)]
         #[repr(u32)]
         #[derive(Debug)]
         pub enum Enum_Foo {
@@ -124,7 +124,7 @@ fn with_overflowed_enum_value() {
             BAP_X86 = 11960045,
             BAP_X86_64 = 3128633167,
         }
-        #[derive(Clone, Copy)]
+        #[derive(Copy, Clone)]
         #[repr(u16)]
         #[derive(Debug)]
         pub enum Enum_Bar { One = 1, Big = 2, }
