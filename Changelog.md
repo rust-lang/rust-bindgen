@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Fix build on OSX
 - Fix overflow of enums variants (#232)
+- Fix impl Clone on structs with large array member (#319)
 
 
 ## [0.16.0] - 2016-02-17
