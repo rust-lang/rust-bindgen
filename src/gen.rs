@@ -487,8 +487,9 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     let mut unnamed: u32 = 0;
     let mut bitfields: u32 = 0;
 
-    // Debug is only defined on little arrays
+    // Waiting for https://github.com/rust-lang/rfcs/issues/1038
     let mut can_derive_debug = derive_debug;
+    let mut can_derive_clone = true;
 
     for m in &members {
         let (opt_rc_c, opt_f) = match *m {
@@ -506,8 +507,9 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
                 None => rust_type_id(ctx, &f.name)
             };
 
-            if !f.ty.can_derive_debug() {
+            if !f.ty.can_auto_derive() {
                 can_derive_debug = false;
+                can_derive_clone = false;
             }
 
             let f_ty = P(cty_to_rs(ctx, &f.ty));
@@ -543,8 +545,10 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     );
 
     let id = rust_type_id(ctx, &name);
-    let mut attrs = vec!(mk_repr_attr(ctx, layout),
-                         mk_deriving_copy_clone_attr(ctx));
+    let mut attrs = vec![mk_repr_attr(ctx, layout)];
+    if can_derive_clone {
+        attrs.push(mk_deriving_copy_clone_attr(ctx));
+    }
     if can_derive_debug {
         attrs.push(mk_deriving_debug_attr(ctx));
     }
@@ -576,9 +580,27 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
                 span: ctx.span}));
     }
 
+    if !can_derive_clone {
+        items.push(mk_clone_impl(ctx, &name));
+    }
+
     items.push(mk_default_impl(ctx, &name));
     items.extend(extra.into_iter());
     items
+}
+
+// Implements std::clone::Clone using dereferencing
+fn mk_clone_impl(ctx: &GenCtx, ty_name: &str) -> P<ast::Item> {
+    let impl_str = format!(r"
+        impl ::std::clone::Clone for {} {{
+            fn clone(&self) -> Self {{ *self }}
+        }}
+    ", ty_name);
+
+    parse::new_parser_from_source_str(ctx.ext_cx.parse_sess(),
+                                      ctx.ext_cx.cfg(),
+                                      "".to_owned(),
+                                      impl_str).parse_item().unwrap().unwrap()
 }
 
 /// Convert a opaque type name to an ast Item.
@@ -639,7 +661,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, derive_debug: bool, layout: Layo
             let can_derive_debug = members.iter()
                 .all(|member| match *member {
                     CompMember::Field(ref f) |
-                    CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
+                    CompMember::CompField(_, ref f) => f.ty.can_auto_derive(),
                     _ => true
                 });
             if can_derive_debug {

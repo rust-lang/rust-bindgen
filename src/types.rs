@@ -147,8 +147,8 @@ impl Type {
         }
     }
 
-    /// Whether `Debug` can be derived for the type.
-    pub fn can_derive_debug(&self) -> bool {
+    /// Whether the type contains a field can't be derived
+    pub fn can_auto_derive(&self) -> bool {
         match *self {
             TArray(_, size, _) => size <= 32,
             TComp(ref comp) => {
@@ -157,7 +157,7 @@ impl Type {
                     .iter()
                     .all(|member| match *member {
                         CompMember::Field(ref f) |
-                        CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
+                        CompMember::CompField(_, ref f) => f.ty.can_auto_derive(),
                         _ => true,
                     })
             }
