@@ -1,3 +1,6 @@
+use std::io::{stderr, Write};
+use std::process::{Command, Stdio};
+
 use bindgen;
 use bindgen::{Logger, BindgenOptions};
 
@@ -63,6 +66,26 @@ pub fn assert_bind_eq(options: BindgenOptions,
         println!("Reference:");
         println!("");
         println!("{}", reference_rendered);
+        panic!();
+    }
+
+    try_compile(&reference_rendered);
+}
+
+fn try_compile(src: &str) {
+    let mut rustc = Command::new("rustc")
+                        .arg("--crate-type=lib")
+                        .arg("-Zno-trans")
+                        .arg("-")
+                        .stdin(Stdio::piped())
+                        .stdout(Stdio::null())
+                        .stderr(Stdio::piped())
+                        .spawn()
+                        .unwrap();
+    rustc.stdin.as_mut().unwrap().write(src.as_bytes()).unwrap();
+    let res = rustc.wait_with_output().unwrap();
+    if !res.status.success() {
+        stderr().write(&res.stderr).unwrap();
         panic!();
     }
 }
