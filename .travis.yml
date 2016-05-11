@@ -11,6 +11,8 @@ addons:
       packages:
         - libclang-3.4-dev
         - llvm-3.4-dev
+        - libclang-3.5-dev
+        - llvm-3.5-dev
         - libclang-3.6-dev
         - llvm-3.6-dev
         - libclang-3.7-dev
@@ -19,29 +21,24 @@ addons:
         - llvm-3.8-dev
 env:
   - LLVM_VERSION=3.4
+  - LLVM_VERSION=3.5
   - LLVM_VERSION=3.6
   - LLVM_VERSION=3.7
   - LLVM_VERSION=3.8
 rust:
+  - stable
+  - beta
   - nightly
+os:
+  - osx
+  - linux
 matrix:
+  allow_failures:
+    - rust: nightly
   include:
-    - env: LLVM_VERSION=3.7
-      rust: stable
-    - env: LLVM_VERSION=3.7
-      rust: beta
     - os: osx
       env: LLVM_VERSION=devtools
-      rust: nightly
-    - os: osx
-      env: LLVM_VERSION=3.5
-      rust: nightly
-    - os: osx
-      env: LLVM_VERSION=3.7
-      rust: nightly
-    - os: osx
-      env: LLVM_VERSION=3.8
-      rust: nightly
+      rust: stable
     - env: LLVM_VERSION=3.7
       rust: nightly
       script: cargo build --features clippy
@@ -49,9 +46,7 @@ matrix:
 notifications:
   webhooks: http://build.servo.org:54856/travis
 
-cache:
-  directories:
-    - $HOME/.cargo
+cache: cargo
 
 before_install:
   -
