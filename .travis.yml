@@ -25,6 +25,10 @@ matrix:
   allow_failures:
     - rust: nightly
   include:
+    - os: linux
+      env: LLVM_VERSION=3.5
+      rust: stable
+      script: cargo build --features static --verbose
     - os: osx
       env: LLVM_VERSION=devtools
       rust: stable
