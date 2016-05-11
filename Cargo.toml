@@ -19,10 +19,6 @@ syntex_syntax = "~0.32.0"
 [features]
 static = ["clang-sys/static"]
 
-[lib]
-name = "bindgen"
-path = "src/lib.rs"
-
 [[bin]]
 name = "bindgen"
 doc = false
