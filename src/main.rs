@@ -1,6 +1,3 @@
-#![crate_name = "bindgen"]
-#![crate_type = "bin"]
-
 extern crate bindgen;
 #[macro_use] extern crate log;
 
@@ -44,7 +41,7 @@ fn parse_args(args: &[String]) -> ParseResult {
     let mut ix: usize = 0;
     while ix < args_len {
         if args[ix].len() > 2 && &args[ix][..2] == "-l" {
-            options.links.push((args[ix][2..].to_string(), LinkType::Default));
+            options.links.push((args[ix][2..].to_string(), LinkType::Dynamic));
             ix += 1;
         } else {
             match &args[ix][..] {
@@ -70,21 +67,17 @@ fn parse_args(args: &[String]) -> ParseResult {
                     if ix + 1 >= args_len {
                         return ParseResult::ParseErr("Missing link name".to_string());
                     }
-                    options.links.push((args[ix + 1].clone(), LinkType::Default));
-                    ix += 2;
-                }
-                "-static-link" => {
-                    if ix + 1 >= args_len {
-                        return ParseResult::ParseErr("Missing link name".to_string());
-                    }
-                    options.links.push((args[ix + 1].clone(), LinkType::Static));
-                    ix += 2;
-                }
-                "-framework-link" => {
-                    if ix + 1 >= args_len {
-                        return ParseResult::ParseErr("Missing link name".to_string());
-                    }
-                    options.links.push((args[ix + 1].clone(), LinkType::Framework));
+                    let parts = args[ix + 1].split('=').collect::<Vec<_>>();
+                    options.links.push(match parts.len() {
+                        1 => (parts[0].to_string(), LinkType::Dynamic),
+                        2 => (parts[1].to_string(), match parts[0] {
+                            "static" => LinkType::Static,
+                            "dynamic" => LinkType::Dynamic,
+                            "framework" => LinkType::Framework,
+                            _ => return ParseResult::ParseErr("Invalid link kind".to_string()),
+                        }),
+                        _ => return ParseResult::ParseErr("Invalid link name".to_string()),
+                    });
                     ix += 2;
                 }
                 "-match" => {
@@ -129,38 +122,36 @@ fn parse_args(args: &[String]) -> ParseResult {
 }
 
 fn print_usage(bin: String) {
-    let mut s = format!("Usage: {} [options] input.h", &bin[..]);
+    let mut s = format!("Usage: {} [OPTIONS] HEADERS...", &bin[..]);
     s.push_str(
 "
-Options:
-    -h or --help               Display help message
-    -l <name> or -l<name>      Link to a dynamic library, can be provided
-                               multiple times
-    -static-link <name>        Link to a static library
-    -framework-link <name>     Link to a framework
-    -o <output.rs>             Write bindings to <output.rs> (default stdout)
-    -match <name>              Only output bindings for definitions from files
-                               whose name contains <name>
-                               If multiple -match options are provided, files
-                               matching any rule are bound to.
-    -builtins                  Output bindings for builtin definitions
-                               (for example __builtin_va_list)
-    -allow-unknown-types       Don't fail if we encounter types we do not support,
-                               instead treat them as void
-    -emit-clang-ast            Output the ast (for debugging purposes)
-    -override-enum-type <type> Override enum type, type name could be
-                                 uchar
-                                 schar
-                                 ushort
-                                 sshort
-                                 uint
-                                 sint
-                                 ulong
-                                 slong
-                                 ulonglong
-                                 slonglong
 
-    Options other than stated above are passed to clang.
+Options:
+    -h, --help                  Display help message
+    -l [KIND=]NAME              Link to the specified library NAME. The optional KIND can be one of,
+                                static, dylib, or framework. If omitted, dylib is assumed.
+    -o FILENAME                 Write generated bindings to FILENAME (default is stdout)
+    -match NAME                 Only output bindings for definitions from files whose names contain
+                                NAME. Can be used multiples times to include files matching any of
+                                the names.
+    -builtins                   Output bindings for builtin definitions (for example,
+                                `__builtin_va_list`)
+    -allow-unknown-types        Do not fail if unknown types are encountered; instead treat them as
+                                `void`
+    -emit-clang-ast             Output the AST (for debugging purposes)
+    -override-enum-type TYPE    Override the integer type for enums, where TYPE is one of:
+                                  uchar
+                                  schar
+                                  ushort
+                                  sshort
+                                  uint
+                                  sint
+                                  ulong
+                                  slong
+                                  ulonglong
+                                  slonglong
+    
+    Options other than the above are passed to Clang.
 "
     );
     print!("{}", &s[..]);

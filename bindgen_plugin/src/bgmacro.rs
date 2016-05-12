@@ -96,9 +96,19 @@ impl MacroArgsVisitor for BindgenArgsVisitor {
         if name.is_some() { self.seen_named = true; }
         else if !self.seen_named { name = Some("clang_args") }
         match name {
-            Some("link") => self.options.links.push((val.to_string(), LinkType::Default)),
-            Some("link_static") => self.options.links.push((val.to_string(), LinkType::Static)),
-            Some("link_framework") => self.options.links.push((val.to_string(), LinkType::Framework)),
+            Some("link") => {
+                let parts = val.split('=').collect::<Vec<_>>();
+                self.options.links.push(match parts.len() {
+                    1 => (parts[0].to_string(), LinkType::Dynamic),
+                    2 => (parts[1].to_string(), match parts[0] {
+                        "static" => LinkType::Static,
+                        "dynamic" => LinkType::Dynamic,
+                        "framework" => LinkType::Framework,
+                        _ => return false,
+                    }),
+                    _ => return false,
+                })
+            },
             Some("match") => self.options.match_pat.push(val.to_string()),
             Some("clang_args") => self.options.clang_args.push(val.to_string()),
             Some("enum_type") => self.options.override_enum_ty = val.to_string(),
@@ -116,7 +126,7 @@ impl MacroArgsVisitor for BindgenArgsVisitor {
         if name.is_some() { self.seen_named = true; }
         match name {
             Some("allow_unknown_types") => self.options.fail_on_unknown_type = !val,
-            Some("emit_builtins") => self.options.builtins = val,
+            Some("builtins") => self.options.builtins = val,
             _ => return false
         }
         true
@@ -129,7 +139,7 @@ impl MacroArgsVisitor for BindgenArgsVisitor {
 }
 
 // Parses macro invocations in the form [ident=|:]value where value is an ident or literal
-// e.g. bindgen!(module_name, "header.h", emit_builtins=false, clang_args:"-I /usr/local/include")
+// e.g. bindgen!(module_name, "header.h", builtins=false, clang_args:"-I /usr/local/include")
 fn parse_macro_opts(cx: &mut base::ExtCtxt, tts: &[ast::TokenTree], visit: &mut MacroArgsVisitor) -> bool {
     let mut parser = cx.new_parser_from_tts(tts);
     let mut args_good = true;
