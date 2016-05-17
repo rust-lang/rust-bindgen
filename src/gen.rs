@@ -386,8 +386,11 @@ fn gen_global(mut ctx: &mut GenCtx,
         GCompDecl(ci) => {
             let c = ci.borrow().clone();
             let name = comp_name(&ctx, c.kind, &c.name);
-
-            defs.push(opaque_to_rs(&mut ctx, &name, c.layout));
+            if !c.args.is_empty() {
+                defs.extend(comp_to_rs(&mut ctx, &name, c).into_iter());
+            } else {
+                defs.push(opaque_to_rs(&mut ctx, &name, c.layout));
+            }
         },
         GComp(ci) => {
             let c = ci.borrow().clone();
@@ -1145,21 +1148,8 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
     } else {
         ast::VariantData::Struct(fields, ast::DUMMY_NODE_ID)
     };
-    let ty_params = template_args.iter().map(|gt| {
-        let name = match gt {
-            &TNamed(ref ti) => {
-                ctx.ext_cx.ident_of(&ti.borrow().name)
-            },
-            _ => ctx.ext_cx.ident_of("")
-        };
-        ast::TyParam {
-            ident: name,
-            id: ast::DUMMY_NODE_ID,
-            bounds: P::new(),
-            default: None,
-            span: ctx.span
-        }
-    }).collect();
+
+    let ty_params = mk_ty_params(ctx, &template_args);
 
     let def = ast::ItemKind::Struct(
         variant_data,
@@ -2275,6 +2265,25 @@ fn mk_opaque_struct(ctx: &GenCtx, name: &str, layout: &Layout) -> Vec<P<ast::Ite
     }
 
     ret
+}
+
+/// Generates a vector of rust's ty params from a list of types
+fn mk_ty_params(ctx: &GenCtx, template_args: &[Type]) -> Vec<ast::TyParam> {
+    template_args.iter().map(|gt| {
+        let name = match *gt {
+            TNamed(ref ti) => {
+                ctx.ext_cx.ident_of(&ti.borrow().name)
+            },
+            _ => ctx.ext_cx.ident_of("")
+        };
+        ast::TyParam {
+            ident: name,
+            id: ast::DUMMY_NODE_ID,
+            bounds: P::new(),
+            default: None,
+            span: ctx.span
+        }
+    }).collect()
 }
 
 fn gen_union_field_definitions_if_necessary(ctx: &mut GenCtx, mut root_mod: &mut ast::Item) {

@@ -14,6 +14,7 @@ pub mod root {
         pub m_c: T,
         pub m_c_ptr: *mut T,
         pub m_c_arr: [T; 10usize],
+        pub _phantom0: ::std::marker::PhantomData<T>,
     }
     extern "C" {
         #[link_name = "_Z9top_levelv"]
@@ -57,7 +58,6 @@ pub mod root {
         #[derive(Debug)]
         pub struct Struct_D<T> {
             pub m_c: root::Struct_C<T>,
-            pub _phantom0: ::std::marker::PhantomData<T>,
         }
         extern "C" {
             #[link_name = "_ZN1w3hehEv"]

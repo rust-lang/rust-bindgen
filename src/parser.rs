@@ -71,6 +71,13 @@ fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {
     ctx.options.match_pat.iter().any(|pat| name.contains(pat))
 }
 
+fn conv_template_type_parameter(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Type {
+    assert_eq!(cursor.kind(), CXCursor_TemplateTypeParameter);
+    let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
+    let layout = Layout::new(ty.size(), ty.align());
+    TNamed(Rc::new(RefCell::new(TypeInfo::new(cursor.spelling(), ctx.current_module_id, TVoid, layout))))
+}
+
 fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
     let cursor = cursor.canonical();
     let override_enum_ty = ctx.options.override_enum_ty;
@@ -101,26 +108,31 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                 let hide = ctx.options.blacklist_type.iter().any(|name| *name == spelling);
 
                 let mut has_non_type_template_params = false;
-                let args = match cursor.kind() {
-                    CXCursor_ClassDecl => {
-                        match ty.num_template_args() {
-                            -1 => vec![],
-                            len => {
-                                let mut list = Vec::with_capacity(len as usize);
-                                for i in 0..len {
-                                    let arg_type = ty.template_arg_type(i);
-                                    if arg_type.kind() != CXType_Invalid {
-                                        list.push(conv_ty(ctx, &arg_type, &cursor));
-                                    } else {
-                                        has_non_type_template_params = true;
-                                        ctx.logger.warn("warning: Template parameter is not a type");
-                                    }
-                                }
-                                list
+                let args = match ty.num_template_args() {
+                    // In forward declarations, etc, they are in the ast... sigh
+                    -1 => {
+                        let mut args = vec![];
+                        cursor.visit(|c, _| {
+                            if c.kind() == CXCursor_TemplateTypeParameter {
+                                args.push(conv_template_type_parameter(ctx, c));
+                            }
+                            CXChildVisit_Continue
+                        });
+                        args
+                    }
+                    len => {
+                        let mut list = Vec::with_capacity(len as usize);
+                        for i in 0..len {
+                            let arg_type = ty.template_arg_type(i);
+                            if arg_type.kind() != CXType_Invalid {
+                                list.push(conv_ty(ctx, &arg_type, &cursor));
+                            } else {
+                                has_non_type_template_params = true;
+                                ctx.logger.warn("warning: Template parameter is not a type");
                             }
                         }
+                        list
                     }
-                    _ => vec![],
                 };
 
                 let mut ci = CompInfo::new(spelling, ctx.current_module_id, filename, comment, kind, vec![], layout);
@@ -210,6 +222,7 @@ fn opaque_decl(ctx: &mut ClangParserCtx, decl: &Cursor) {
     }
 
     let name = decl_name(ctx, decl);
+    println!("{:?}", name);
     ctx.current_module_mut().globals.push(name);
 }
 
@@ -602,41 +615,41 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                     // incomplete type via the declaration or anything like
                     // that. We can inspect the AST and deduct them though,
                     // since there's a leading CXCursor_TemplateRef.
-                    if child_ci.args.is_empty() {
+                    if child_ci.args.is_empty() && child_cursor.kind() == CXCursor_ClassDecl {
                         // println!("child: {:?} {:?}, {:?}, {:?}", cursor.spelling(),
                         //                               type_to_str(cursor_ty.kind()),
                         //                               type_to_str(child_cursor.cur_type().kind()),
                         //                               kind_to_str(child_cursor.kind()));
-                        match child_cursor.kind() {
-                            CXCursor_ClassDecl => {
-                                if child_ci.name == ci.name &&
-                                   child_ci.module_id == ci.module_id {
-                                    child_ci.args = ci.args.clone();
-                                }
-                            }
-                            CXCursor_ClassTemplate => {
-                                let mut found_invalid_template_ref = false;
-                                cursor.visit(|c, _| {
-                                    // println!("ichild: {:?} {:?}, {:?}", c.spelling(),
-                                    //                               kind_to_str(c.kind()),
-                                    //                               type_to_str(c.cur_type().kind()));
-                                    if c.kind() == CXCursor_TemplateRef &&
-                                       c.cur_type().kind() == CXType_Invalid {
-                                        found_invalid_template_ref = true;
-                                    }
-                                    if found_invalid_template_ref &&
-                                       c.kind() == CXCursor_TypeRef {
-                                        child_ci.args.push(TNamed(Rc::new(RefCell::new(
-                                            TypeInfo::new(c.spelling(),
-                                                          ctx.current_module_id,
-                                                          TVoid,
-                                                          Layout::zero())))));
-                                    }
-                                    CXChildVisit_Continue
-                                })
-                            }
-                            _ => {}
+                        if child_ci.name == ci.name &&
+                           child_ci.module_id == ci.module_id {
+                            child_ci.args = ci.args.clone();
                         }
+                    }
+
+                    if child_cursor.kind() == CXCursor_ClassTemplate {
+                        // We need to take into account the possibly different
+                        // type template names, so we need to clear them and
+                        // re-scan.
+                        child_ci.args.clear();
+                        let mut found_invalid_template_ref = false;
+                        cursor.visit(|c, _| {
+                            // println!("ichild: {:?} {:?}, {:?}", c.spelling(),
+                            //                               kind_to_str(c.kind()),
+                            //                               type_to_str(c.cur_type().kind()));
+                            if c.kind() == CXCursor_TemplateRef &&
+                               c.cur_type().kind() == CXType_Invalid {
+                                found_invalid_template_ref = true;
+                            }
+                            if found_invalid_template_ref &&
+                               c.kind() == CXCursor_TypeRef {
+                                child_ci.args.push(TNamed(Rc::new(RefCell::new(
+                                    TypeInfo::new(c.spelling(),
+                                                  ctx.current_module_id,
+                                                  TVoid,
+                                                  Layout::zero())))));
+                            }
+                            CXChildVisit_Continue
+                        })
                     }
                 }
             }
@@ -796,9 +809,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             ci.layout.packed = true;
         }
         CXCursor_TemplateTypeParameter => {
-            let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
-            let layout = Layout::new(ty.size(), ty.align());
-            ci.args.push(TNamed(Rc::new(RefCell::new(TypeInfo::new(cursor.spelling(), ctx.current_module_id, TVoid, layout)))));
+            ci.args.push(conv_template_type_parameter(ctx, cursor));
         }
         CXCursor_EnumDecl => {
             let anno = Annotations::new(cursor);
