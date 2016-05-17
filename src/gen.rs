@@ -386,7 +386,8 @@ fn gen_global(mut ctx: &mut GenCtx,
         GCompDecl(ci) => {
             let c = ci.borrow().clone();
             let name = comp_name(&ctx, c.kind, &c.name);
-            if !c.args.is_empty() {
+            if !c.args.is_empty() &&
+               !c.args.iter().any(|a| a.name().map(|name| name.is_empty()).unwrap_or(true)) {
                 defs.extend(comp_to_rs(&mut ctx, &name, c).into_iter());
             } else {
                 defs.push(opaque_to_rs(&mut ctx, &name, c.layout));
