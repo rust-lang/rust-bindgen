@@ -20,13 +20,14 @@ with open(sys.argv[2]) as f:
     if line.startswith(BINDGEN_FLAGS_PREFIX):
       flags = line.strip().split(BINDGEN_FLAGS_PREFIX)[1].split(' ')
 
-base_command = [sys.argv[1], sys.argv[2], "-o", sys.argv[3]]
+base_command = [sys.argv[1], "-o", sys.argv[3]]
 
 for line in COMMON_PRELUDE.split('\n'):
   flags.append("-raw-line")
   flags.append(line)
 
 base_command.extend(flags);
+base_command.append(sys.argv[2]);
 subprocess.check_call(base_command, cwd=os.getcwd())
 
 

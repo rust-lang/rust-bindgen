@@ -55,7 +55,7 @@ impl Module {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub enum Global {
     GType(Rc<RefCell<TypeInfo>>),
     GComp(Rc<RefCell<CompInfo>>),
@@ -435,6 +435,8 @@ pub struct CompInfo {
     pub has_non_type_template_params: bool,
     /// If this type was unnamed when parsed
     pub was_unnamed: bool,
+    /// Set of static vars declared inside this class.
+    pub vars: Vec<Global>,
     /// Used to detect if we've run in a can_derive_debug cycle while
     /// cycling around the template arguments.
     detect_derive_debug_cycle: Cell<bool>,
@@ -467,9 +469,9 @@ impl CompInfo {
             filename: filename,
             comment: comment,
             members: members,
-            args: vec!(),
-            methods: vec!(),
-            vmethods: vec!(),
+            args: vec![],
+            methods: vec![],
+            vmethods: vec![],
             ref_template: None,
             has_vtable: false,
             has_destructor: false,
@@ -479,7 +481,8 @@ impl CompInfo {
             opaque: false,
             base_members: 0,
             layout: layout,
-            typedefs: vec!(),
+            typedefs: vec![],
+            vars: vec![],
             has_non_type_template_params: false,
             was_unnamed: was_unnamed,
             detect_derive_debug_cycle: Cell::new(false),

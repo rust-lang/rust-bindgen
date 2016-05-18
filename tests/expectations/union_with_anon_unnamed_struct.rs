@@ -6,6 +6,7 @@
 
 
 #[derive(Copy, Debug)]
+#[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
 impl <T> __BindgenUnionField<T> {
     #[inline]

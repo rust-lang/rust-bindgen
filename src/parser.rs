@@ -37,6 +37,7 @@ struct ClangParserCtx<'a> {
     builtin_defs: Vec<Cursor>,
     module_map: ModuleMap,
     current_module_id: ModuleId,
+    current_translation_unit: TranslationUnit,
     logger: &'a (Logger+'a),
     err_count: i32,
     anonymous_modules_found: usize,
@@ -185,8 +186,15 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
             }
             CXCursor_VarDecl => {
                 let mangled = cursor.mangling();
-                let vi = Rc::new(RefCell::new(VarInfo::new(spelling, mangled, comment, TVoid)));
-                GVar(vi)
+                let is_const = ty.is_const();
+                let ty = conv_ty_resolving_typedefs(ctx,  &ty, &cursor, true);
+                let mut vi = VarInfo::new(spelling, mangled, comment, ty);
+                vi.is_const = is_const;
+                cursor.visit(|c, _: &Cursor| {
+                    vi.val = visit_literal(c, &ctx.current_translation_unit);
+                    CXChildVisit_Continue
+                });
+                GVar(Rc::new(RefCell::new(vi)))
             }
             CXCursor_MacroDefinition => {
                 let vi = Rc::new(RefCell::new(VarInfo::new(spelling, String::new(), comment, TVoid)));
@@ -972,13 +980,26 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                               cursor.location()), false);
             ci.has_non_type_template_params = true;
         }
+        CXCursor_VarDecl => {
+            let linkage = cursor.linkage();
+            if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
+                return CXChildVisit_Continue;
+            }
+
+            let visibility = cursor.visibility();
+            if visibility != CXVisibility_Default {
+                return CXChildVisit_Continue;
+            }
+
+            let var = decl_name(ctx, cursor);
+            ci.vars.push(var);
+        }
         // Intentionally not handled
         CXCursor_CXXAccessSpecifier |
         CXCursor_CXXFinalAttr |
         CXCursor_Constructor |
         CXCursor_FunctionTemplate |
-        CXCursor_ConversionFunction |
-        CXCursor_VarDecl => {}
+        CXCursor_ConversionFunction => {}
         _ => {
             // XXX: Some kind of warning would be nice, but this produces far
             //      too many.
@@ -1035,8 +1056,7 @@ fn visit_literal(cursor: &Cursor, unit: &TranslationUnit) -> Option<i64> {
 }
 
 fn visit_top(cursor: &Cursor,
-             mut ctx: &mut ClangParserCtx,
-             unit: &TranslationUnit) -> Enum_CXVisitorResult {
+             mut ctx: &mut ClangParserCtx) -> Enum_CXVisitorResult {
     if !match_pattern(ctx, cursor) {
         return CXChildVisit_Continue;
     }
@@ -1194,17 +1214,8 @@ fn visit_top(cursor: &Cursor,
             if visibility != CXVisibility_Default {
                 return CXChildVisit_Continue;
             }
-            let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
-            let var = decl_name(ctx, cursor);
-            let vi = var.varinfo();
-            let mut vi = vi.borrow_mut();
-            vi.ty = ty.clone();
-            vi.is_const = cursor.cur_type().is_const();
-            cursor.visit(|c, _: &Cursor| {
-                vi.val = visit_literal(c, unit);
-                CXChildVisit_Continue
-            });
-            ctx.current_module_mut().globals.push(var);
+            let val = decl_name(ctx, cursor);
+            ctx.current_module_mut().globals.push(val);
 
             CXChildVisit_Continue
         }
@@ -1255,7 +1266,7 @@ fn visit_top(cursor: &Cursor,
                 return CXChildVisit_Recurse;
             }
 
-            let namespace_name = match unit.tokens(cursor) {
+            let namespace_name = match ctx.current_translation_unit.tokens(cursor) {
                 None => None,
                 Some(tokens) => {
                     if tokens.len() <= 1 {
@@ -1292,13 +1303,13 @@ fn visit_top(cursor: &Cursor,
             let previous_id = ctx.current_module_id;
 
             ctx.current_module_id = mod_id;
-            cursor.visit(|cur, _: &Cursor| visit_top(cur, &mut ctx, &unit));
+            cursor.visit(|cur, _: &Cursor| visit_top(cur, &mut ctx));
             ctx.current_module_id = previous_id;
 
             return CXChildVisit_Continue;
         }
         CXCursor_MacroDefinition => {
-            let val = parse_int_literal_tokens(cursor, unit, 1);
+            let val = parse_int_literal_tokens(cursor, &ctx.current_translation_unit, 1);
             if val.is_none() {
                 // Not an integer literal.
                 return CXChildVisit_Continue;
@@ -1334,12 +1345,25 @@ fn log_err_warn(ctx: &mut ClangParserCtx, msg: &str, is_err: bool) {
 }
 
 pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<ModuleMap, ()> {
+    let ix = cx::Index::create(false, true);
+    if ix.is_null() {
+        logger.error("Clang failed to create index");
+        return Err(())
+    }
+
+    let unit = TranslationUnit::parse(&ix, "", &options.clang_args, &[], CXTranslationUnit_DetailedPreprocessingRecord);
+    if unit.is_null() {
+        logger.error("No input files given");
+        return Err(())
+    }
+
     let mut ctx = ClangParserCtx {
         options: options,
         name: HashMap::new(),
         builtin_defs: vec!(),
         module_map: ModuleMap::new(),
         current_module_id: ROOT_MODULE_ID,
+        current_translation_unit: unit,
         logger: logger,
         err_count: 0,
         anonymous_modules_found: 0,
@@ -1347,19 +1371,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<ModuleMap, 
 
     ctx.module_map.insert(ROOT_MODULE_ID, Module::new("root".to_owned(), None));
 
-    let ix = cx::Index::create(false, true);
-    if ix.is_null() {
-        ctx.logger.error("Clang failed to create index");
-        return Err(())
-    }
-
-    let unit = TranslationUnit::parse(&ix, "", &ctx.options.clang_args[..], &[], CXTranslationUnit_DetailedPreprocessingRecord);
-    if unit.is_null() {
-        ctx.logger.error("No input files given");
-        return Err(())
-    }
-
-    let diags = unit.diags();
+    let diags = ctx.current_translation_unit.diags();
     for d in &diags {
         let msg = d.format(Diagnostic::default_opts());
         let is_err = d.severity() >= CXDiagnostic_Error;
@@ -1370,20 +1382,20 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<ModuleMap, 
         return Err(())
     }
 
-    let cursor = unit.cursor();
+    let cursor = ctx.current_translation_unit.cursor();
 
     if ctx.options.emit_ast {
         cursor.visit(|cur, _: &Cursor| ast_dump(cur, 0));
     }
 
-    cursor.visit(|cur, _: &Cursor| visit_top(cur, &mut ctx, &unit));
+    cursor.visit(|cur, _: &Cursor| visit_top(cur, &mut ctx));
 
     while !ctx.builtin_defs.is_empty() {
         let c = ctx.builtin_defs.remove(0);
-        visit_top(&c.definition(), &mut ctx, &unit);
+        visit_top(&c.definition(), &mut ctx);
     }
 
-    unit.dispose();
+    ctx.current_translation_unit.dispose();
     ix.dispose();
 
     if ctx.err_count > 0 {

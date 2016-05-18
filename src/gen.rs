@@ -1242,9 +1242,23 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             _ => unreachable!()
         }
     }
-    if mangledlist.len() > 0 {
-        items.push(mk_extern(ctx, &vec![], mangledlist, Abi::C));
+    if !mangledlist.is_empty() {
+        items.push(mk_extern(ctx, &[], mangledlist, Abi::C));
         items.push(mk_impl(ctx, id_ty, unmangledlist));
+    }
+
+    if !ci.vars.is_empty() {
+        let vars = ci.vars.into_iter().map(|v| {
+            let vi = v.varinfo();
+            let v = vi.borrow_mut();
+            let mut var_name = v.name.clone();
+            if !v.mangled.is_empty() {
+                var_name = format!("{}_consts_{}", name, v.name);
+            }
+            cvar_to_rs(ctx, var_name, v.mangled.clone(), &v.ty, v.is_const)
+        }).collect();
+
+        items.push(mk_extern(ctx, &[], vars, Abi::C));
     }
     items
 }
@@ -2301,6 +2315,7 @@ fn gen_union_field_definitions_if_necessary(ctx: &mut GenCtx, mut root_mod: &mut
 
     let union_fields_decl = quote_item!(&ctx.ext_cx,
         #[derive(Copy, Debug)]
+        #[repr(C)]
         pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
     ).unwrap();
 
