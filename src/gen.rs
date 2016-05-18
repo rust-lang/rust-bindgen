@@ -384,8 +384,15 @@ fn gen_global(mut ctx: &mut GenCtx,
             defs.extend(ctypedef_to_rs(&mut ctx, t).into_iter())
         },
         GCompDecl(ci) => {
-            let c = ci.borrow().clone();
+            let mut c = ci.borrow().clone();
             let name = comp_name(&ctx, c.kind, &c.name);
+            // Use the reference template if any
+            while let Some(TComp(ref_template)) = c.ref_template.clone() {
+                if c.name != ref_template.borrow().name {
+                    break;
+                }
+                c = ref_template.borrow().clone();
+            }
             if !c.args.is_empty() &&
                !c.args.iter().any(|a| a.name().map(|name| name.is_empty()).unwrap_or(true)) {
                 defs.extend(comp_to_rs(&mut ctx, &name, c).into_iter());
