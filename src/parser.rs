@@ -222,7 +222,6 @@ fn opaque_decl(ctx: &mut ClangParserCtx, decl: &Cursor) {
     }
 
     let name = decl_name(ctx, decl);
-    println!("{:?}", name);
     ctx.current_module_mut().globals.push(name);
 }
 
