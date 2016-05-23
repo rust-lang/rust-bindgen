@@ -200,7 +200,7 @@ fn with_nesting() {
 fn with_derive_debug() {
     assert_bind_eq(Default::default(), "headers/union_with_big_member.h", "
         #[repr(C)]
-        #[derive(Copy, Clone)]
+        #[derive(Copy)]
         pub struct Union_WithBigArray {
             pub _bindgen_data_: [u32; 33usize],
         }
@@ -214,11 +214,14 @@ fn with_derive_debug() {
                 ::std::mem::transmute(raw.offset(0))
             }
         }
+        impl ::std::clone::Clone for Union_WithBigArray {
+            fn clone(&self) -> Self { *self }
+        }
         impl ::std::default::Default for Union_WithBigArray {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
-        #[derive(Copy, Clone)]
+        #[derive(Copy)]
         pub struct Union_WithBigMember {
             pub _bindgen_data_: [u32; 33usize],
         }
@@ -231,6 +234,9 @@ fn with_derive_debug() {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
                 ::std::mem::transmute(raw.offset(0))
             }
+        }
+        impl ::std::clone::Clone for Union_WithBigMember {
+            fn clone(&self) -> Self { *self }
         }
         impl ::std::default::Default for Union_WithBigMember {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
