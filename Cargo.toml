@@ -11,7 +11,7 @@ keywords = [ "bindings", "ffi", "code-generation" ]
 
 [dependencies]
 clang-sys = "~0.5.1"
-clippy = { version = "*", optional = true }
+clippy = { version = "0.0.69", optional = true }
 log = "~0.3.6"
 libc = "~0.2.11"
 syntex_syntax = "~0.32.0"
