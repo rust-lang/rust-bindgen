@@ -84,6 +84,16 @@ impl<'a> Builder<'a> {
         self
     }
 
+    pub fn override_enum_ty<T: Into<String>>(&mut self, ty: T) -> &mut Self {
+        self.options.override_enum_ty = ty.into();
+        self
+    }
+
+    pub fn emit_ast(&mut self, value: bool) -> &mut Self {
+        self.options.emit_ast = value;
+        self
+    }
+
     pub fn generate(&self) -> Result<Bindings, ()> {
         Bindings::generate(&self.options, self.logger, None)
     }
