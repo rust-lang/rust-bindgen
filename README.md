@@ -1,99 +1,88 @@
-rust-bindgen
-============
+# rust-bindgen
+
 [![][crates-version-shield]](https://crates.io/crates/bindgen)
 [![][crates-downloads-shield]](https://crates.io/crates/bindgen)
 [![][crates-license-shield]](https://github.com/crabtw/rust-bindgen/blob/master/LICENSE)
 [![Build Status](https://travis-ci.org/crabtw/rust-bindgen.svg?branch=master)](https://travis-ci.org/crabtw/rust-bindgen)
 
-A binding generator for the rust language.
-It is ported from [clay's bindgen][].
+A native binding generator for the Rust language.
 
-Requirements
-------------
+*rust-bindgen* was originally ported from [clay's bindgen].
 
-* clang 3.4 and up
+## Requirements
 
-Note: The libclang.so has to be statically linked with LLVM or you will
-encounter [issue 89][]. You can also use LD_PRELOAD=/path/to/libclang.so to
-workaround the problem.
+* Clang >= 3.4
 
-Building
---------
+*Note:* `libclang.so` has to be statically linked with LLVM or you will encounter [issue 89]. You can also use `LD_PRELOAD=/path/to/libclang.so` to workaround the problem.
+
+## Building
 
     $ cargo build
 
-Note: This links with Apple's version of libclang on OS X by default. This can be changed by setting the LIBCLANG_PATH environment variable.
+Note: this links with Apple's version of `libclang` on OS X, by default. This can be changed by setting the `LIBCLANG_PATH` environment variable.
 
-If you are running the command line tool you will also need to append this
-path to your DYLD_LIBRARY_PATH environment variable, which you might already have set if you have installed the Rust compiler outside of standard /usr/local path.
-
-The default path on OS X is:
+If you are running the command line tool you will also need to append the following path to the `DYLD_LIBRARY_PATH` environment variable. You might already have done this if you have installed the Rust compiler outside of standard `/usr/local` directory.
 
     /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/
 
-Or if you only have Xcode Command Line Tools installed:
+Or, if you only have Xcode Command Line Tools installed:
 
-    export DYLD_LIBRARY_PATH=/Library/Developer/CommandLineTools/usr/lib
+    /Library/Developer/CommandLineTools/usr/lib
 
-Command Line Usage
-------------------
+## Usage
+
+### Command Line
 
 ```
-Usage: ./bindgen [options] input.h
+Usage: bindgen [OPTIONS] HEADERS...
+
 Options:
-    -h or --help               Display help message
-    -l <name> or -l<name>      Link to a dynamic library, can be provided
-                               multiple times
-    -static-link <name>        Link to a static library
-    -framework-link <name>     Link to a framework
-    -o <output.rs>             Write bindings to <output.rs> (default stdout)
-    -match <name>              Only output bindings for definitions from files
-                               whose name contains <name>
-                               If multiple -match options are provided, files
-                               matching any rule are bound to
-    -builtins                  Output bindings for builtin definitions
-                               (for example __builtin_va_list)
-    -allow-unknown-types       Don't fail if we encounter types we do not support,
-                               instead treat them as void
-    -emit-clang-ast            Output the ast (for debugging purposes)
-    -override-enum-type <type> Override enum type, type name could be
-                                 uchar
-                                 schar
-                                 ushort
-                                 sshort
-                                 uint
-                                 sint
-                                 ulong
-                                 slong
-                                 ulonglong
-                                 slonglong
-
-    Options other than stated above are passed to clang
+    -h, --help                  Display help message
+    -l [KIND=]NAME              Link to the specified library NAME. The optional KIND can be one of,
+                                static, dylib, or framework. If omitted, dylib is assumed.
+    -o FILENAME                 Write generated bindings to FILENAME (default is stdout)
+    -match NAME                 Only output bindings for definitions from files whose names contain
+                                NAME. Can be used multiples times to include files matching any of
+                                the names.
+    -builtins                   Output bindings for builtin definitions (for example,
+                                `__builtin_va_list`)
+    -allow-unknown-types        Do not fail if unknown types are encountered; instead treat them as
+                                `void`
+    -emit-clang-ast             Output the AST (for debugging purposes)
+    -override-enum-type TYPE    Override the integer type for enums, where TYPE is one of:
+                                  uchar
+                                  schar
+                                  ushort
+                                  sshort
+                                  uint
+                                  sint
+                                  ulong
+                                  slong
+                                  ulonglong
+                                  slonglong
+    
+    Options other than the above are passed to Clang.
 ```
 
-Macro Usage
------------
+### Macro
 
-```
-Usage: bindgen!([headers], [named options])
+    bindgen!(header..., options...)
+
 Options:
 
-    Option Name          Type              Default
-    ----------------------------------------------
-    link                 multiple strings
-    link_static          multiple strings
-    link_framework       multiple strings
-    match                multiple strings
-    emit_builtins        bool              true
-    allow_unknown_types  bool              false
-    clang_args           string
-```
-See "Command Line Usage" section for option descriptions
+| Option Name         | Type | Default |
+| ------------------- | ---- | ------- |
+| link                | str  |         |
+| match               | str  |         |
+| builtins            | bool | true    |
+| allow_unknown_types | bool | false   |
+| clang_args          | str  |         |
 
-Examples
---------
+See the Usage · [Command Line](#command-line) section for descriptions of options.
 
-###Generate MySQL client bindings
+### Examples
+
+#### Generate MySQL client bindings
 
     bindgen -l mysql -match mysql.h -o mysql.rs /usr/include/mysql/mysql.h
 
@@ -104,29 +93,30 @@ Examples
 
 *or*
 
-Cargo.toml
+`Cargo.toml`
 
-    [dependencies.bindgen]
-    git = "https://github.com/crabtw/rust-bindgen.git"
+    [dependencies]
+    bindgen = ">= 0"
 
-main.rs
+`main.rs`
 
     #![feature(phase)]
     #[phase(plugin)] extern crate bindgen;
-
+    
     #[allow(dead_code, uppercase_variables, non_camel_case_types)]
     mod mysql_bindings {
         bindgen!("/usr/include/mysql/mysql.h", match="mysql.h", link="mysql")
     }
 
-TODO
-----
+To Do
+-----
 
-* bitfield accessors
+* Bit-field accessors
 
-[clay's bindgen]: https://github.com/jckarter/clay/blob/master/tools/bindgen.clay
 [crates-version-shield]: https://img.shields.io/crates/v/bindgen.svg?style=flat-square
 [crates-downloads-shield]: https://img.shields.io/crates/d/bindgen.svg?style=flat-square
 [crates-license-shield]: https://img.shields.io/crates/l/bindgen.svg?style=flat-square
 [travis-status-shield]: https://img.shields.io/travis/crabtw/rust-bindgen.svg?label=travis&style=flat-square
+
+[clay's bindgen]: https://github.com/jckarter/clay/blob/master/tools/bindgen.clay
 [issue 89]: https://github.com/crabtw/rust-bindgen/issues/89

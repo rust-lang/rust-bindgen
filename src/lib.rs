@@ -54,18 +54,8 @@ impl<'a> Builder<'a> {
         self
     }
 
-    pub fn link<T: Into<String>>(&mut self, library: T) -> &mut Self {
-        self.options.links.push((library.into(), LinkType::Default));
-        self
-    }
-
-    pub fn link_static<T: Into<String>>(&mut self, library: T) -> &mut Self {
-        self.options.links.push((library.into(), LinkType::Static));
-        self
-    }
-
-    pub fn link_framework<T: Into<String>>(&mut self, library: T) -> &mut Self {
-        self.options.links.push((library.into(), LinkType::Framework));
+    pub fn link<T: Into<String>>(&mut self, library: T, link_type: LinkType) -> &mut Self {
+        self.options.links.push((library.into(), link_type));
         self
     }
 
@@ -74,7 +64,7 @@ impl<'a> Builder<'a> {
         self
     }
 
-    pub fn emit_builtins(&mut self) -> &mut Self {
+    pub fn builtins(&mut self) -> &mut Self {
         self.options.builtins = true;
         self
     }
@@ -143,8 +133,8 @@ impl Default for BindgenOptions {
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum LinkType {
-    Default,
     Static,
+    Dynamic,
     Framework
 }
 
@@ -274,7 +264,7 @@ fn builder_state()
     let mut build = builder();
     {
         build.header("example.h");
-        build.link_static("m");
+        build.link("m", LinkType::Static);
         build.log(&logger);
     }
     assert!(build.logger.is_some());

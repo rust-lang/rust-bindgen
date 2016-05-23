@@ -275,8 +275,8 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, LinkType)],
     } else {
         links.iter().map(|&(ref l, ref k)| {
             let k = match *k {
-                LinkType::Default => None,
                 LinkType::Static => Some("static"),
+                LinkType::Dynamic => Some("dylib"),
                 LinkType::Framework => Some("framework")
             };
             let link_name = P(respan(ctx.span, ast::MetaItemKind::NameValue(
