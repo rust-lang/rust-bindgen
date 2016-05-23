@@ -27,7 +27,8 @@ matrix:
     - os: osx
       env: LLVM_VERSION=devtools
       rust: stable
-    - env: LLVM_VERSION=3.7
+    - os: linux
+      env: LLVM_VERSION=3.7
       rust: nightly
       script: cargo build --features clippy
 
