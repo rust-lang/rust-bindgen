@@ -14,6 +14,10 @@ fn func_ptr() {
 #[test]
 fn func_ptr_in_struct() {
     assert_bind_eq(Default::default(), "headers/func_ptr_in_struct.h", "
+        #[derive(Copy, Clone)]
+        #[repr(u32)]
+        #[derive(Debug)]
+        pub enum Enum_baz { TEST = 0, }
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
