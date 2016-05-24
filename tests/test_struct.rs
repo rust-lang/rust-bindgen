@@ -402,3 +402,19 @@ fn derive_debug_big_array() {
         }
     ");
 }
+
+#[test]
+fn struct_with_incomplete_array() {
+    assert_bind_eq(Default::default(), "headers/struct_with_incomplete_array.h", "
+        #[repr(C)]
+        #[derive(Copy, Clone)]
+        #[derive(Debug)]
+        pub struct Struct_incomplete_array {
+            pub x: ::std::os::raw::c_int,
+            pub y: [::std::os::raw::c_int; 0usize],
+        }
+        impl ::std::default::Default for Struct_incomplete_array {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+    ");
+}

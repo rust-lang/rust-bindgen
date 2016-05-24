@@ -15,6 +15,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Use `clang_sys` instead of the internal ffi
+- Use `[type; 0]` for the incomplete and dependent sized array
 
 ### Fixed
 - Fix build on OSX

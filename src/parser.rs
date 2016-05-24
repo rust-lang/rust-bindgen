@@ -274,9 +274,10 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
         CXTypeKind::Float => TFloat(FFloat, layout),
         CXTypeKind::Double | CXTypeKind::LongDouble => TFloat(FDouble, layout),
         CXTypeKind::Pointer => conv_ptr_ty(ctx, &ty.pointee_type(), cursor, layout),
-        CXTypeKind::VariableArray | CXTypeKind::DependentSizedArray | CXTypeKind::IncompleteArray => {
-            conv_ptr_ty(ctx, &ty.elem_type(), cursor, layout)
-        }
+        CXTypeKind::VariableArray => unreachable!(),
+        CXTypeKind::DependentSizedArray | CXTypeKind::IncompleteArray => {
+            TArray(Box::new(conv_ty(ctx, &ty.elem_type(), cursor)), 0, layout)
+        },
         CXTypeKind::FunctionProto => TFuncProto(mk_fn_sig(ctx, ty, cursor)),
         CXTypeKind::Record |
         CXTypeKind::Typedef  |
