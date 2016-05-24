@@ -517,6 +517,8 @@ struct Annotations {
     opaque: bool,
     hide: bool,
     use_as: Option<String>,
+    /// Disable deriving copy/clone on this struct.
+    no_copy: bool,
 }
 
 impl Annotations {
@@ -525,6 +527,7 @@ impl Annotations {
             opaque: false,
             hide: false,
             use_as: None,
+            no_copy: false,
         };
 
         anno.parse(&cursor.comment());
@@ -542,6 +545,7 @@ impl Annotations {
                     "opaque" => self.opaque = true,
                     "hide" => self.hide = true,
                     "replaces" => self.use_as = Some(comment.get_tag_attr_value(i)),
+                    "nocopy" => self.no_copy = true,
                     _ => (),
                 }
             }
@@ -1087,6 +1091,10 @@ fn visit_top(cursor: &Cursor,
 
                 if anno.hide {
                     ci.borrow_mut().hide = true;
+                }
+
+                if anno.no_copy {
+                    ci.borrow_mut().no_copy = true;
                 }
 
                 // If we find a previous translation, we take it now and carry

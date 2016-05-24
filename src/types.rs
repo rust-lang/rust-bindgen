@@ -429,6 +429,8 @@ pub struct CompInfo {
     pub opaque: bool,
     pub base_members: usize,
     pub layout: Layout,
+    /// If this struct is explicitely marked as non-copiable.
+    pub no_copy: bool,
     /// Typedef'd types names, that we'll resolve early to avoid name conflicts
     pub typedefs: Vec<String>,
     /// If this type has a template parameter which is not a type (e.g.: a size_t)
@@ -479,6 +481,7 @@ impl CompInfo {
             hide: false,
             parser_cursor: None,
             opaque: false,
+            no_copy: false,
             base_members: 0,
             layout: layout,
             typedefs: vec![],
@@ -570,6 +573,9 @@ impl CompInfo {
     }
 
     pub fn can_derive_copy(&self) -> bool {
+        if self.no_copy {
+            return false;
+        }
         match self.kind {
             CompKind::Union => true,
             CompKind::Struct => {
