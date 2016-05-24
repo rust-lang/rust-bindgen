@@ -549,7 +549,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
                 ctx,
                 options,
                 options.derive_debug,
-                &e.name, e.kind, e.layout, &e.items));
+                &enum_name(&e.name), e.kind, e.layout, &e.items));
         }
     }
 

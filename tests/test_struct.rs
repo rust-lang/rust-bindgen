@@ -15,7 +15,11 @@ fn with_anon_enum() {
         #[derive(Copy, Clone)]
         #[repr(u32)]
         #[derive(Debug)]
-        pub enum Unnamed1 { FOO_OPTION_1 = 0, FOO_OPTION_2 = 1, FOO_OPTION_3 = 2, }
+        pub enum Enum_Unnamed1 {
+            FOO_OPTION_1 = 0,
+            FOO_OPTION_2 = 1,
+            FOO_OPTION_3 = 2,
+        }
     ");
 }
 
@@ -43,7 +47,11 @@ fn with_anon_enum_bitfields() {
         #[derive(Copy, Clone)]
         #[repr(u32)]
         #[derive(Debug)]
-        pub enum Unnamed1 { FOO_OPTION_1 = 0, FOO_OPTION_2 = 1, FOO_OPTION_3 = 2, }
+        pub enum Enum_Unnamed1 {
+            FOO_OPTION_1 = 0,
+            FOO_OPTION_2 = 1,
+            FOO_OPTION_3 = 2,
+        }
     ");
 }
 
