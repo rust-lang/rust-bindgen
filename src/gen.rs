@@ -171,7 +171,7 @@ fn extract_functions(ctx: &mut GenCtx,
 
     let mut map = HashMap::new();
     for (abi, func) in func_list {
-        map.entry(abi).or_insert(vec!()).push(func);
+        map.entry(abi).or_insert_with(Vec::new).push(func);
     }
     map
 }
@@ -240,7 +240,7 @@ pub fn gen_mod(
     }
 
     gs = remove_redundant_decl(gs);
-    let mut defs = extract_definitions(&mut ctx, &options, &gs);
+    let mut defs = extract_definitions(&mut ctx, options, &gs);
 
     let vars = vs.into_iter().map(|v| {
         match v {
@@ -398,7 +398,7 @@ fn tag_dup_decl(gs: &[Global]) -> Vec<Global> {
     res.push(gs[0].clone());
 
     for (i, gsi) in gs.iter().enumerate().skip(1) {
-        let dup = gs.iter().take(i).any(|item| is_dup(&item, &gsi));
+        let dup = gs.iter().take(i).any(|item| is_dup(item, gsi));
         if !dup {
             res.push(gsi.clone());
         }
@@ -416,7 +416,7 @@ fn ctypedef_to_rs(
         ty: &Type)
         -> Vec<P<ast::Item>> {
     fn mk_item(ctx: &mut GenCtx, name: &str, ty: &Type) -> P<ast::Item> {
-        let rust_name = rust_type_id(ctx, &name);
+        let rust_name = rust_type_id(ctx, name);
         let rust_ty = cty_to_rs(ctx, ty);
         let base = ast::ItemKind::Ty(
             P(ast::Ty {
@@ -558,7 +558,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
         ast::Generics::default()
     );
 
-    let id = rust_type_id(ctx, &name);
+    let id = rust_type_id(ctx, name);
     let mut attrs = vec![mk_repr_attr(ctx, layout)];
     if can_derive_clone {
         attrs.push(mk_attr(ctx, "derive", &["Copy", "Clone"]));
@@ -588,7 +588,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
         );
         items.push(
             P(ast::Item {
-                ident: ctx.ext_cx.ident_of(&name),
+                ident: ctx.ext_cx.ident_of(name),
                 attrs: vec!(),
                 id: ast::DUMMY_NODE_ID,
                 node: impl_,
@@ -597,10 +597,10 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     }
 
     if !can_derive_clone {
-        items.push(mk_clone_impl(ctx, &name));
+        items.push(mk_clone_impl(ctx, name));
     }
 
-    items.push(mk_default_impl(ctx, &name));
+    items.push(mk_default_impl(ctx, name));
     items.extend(extra.into_iter());
     items
 }
@@ -628,7 +628,7 @@ fn opaque_to_rs(ctx: &mut GenCtx, name: &str) -> P<ast::Item> {
         ast::Generics::default()
     );
 
-    let id = rust_type_id(ctx, &name);
+    let id = rust_type_id(ctx, name);
     P(ast::Item {
         ident: ctx.ext_cx.ident_of(&id),
         attrs: Vec::new(),
@@ -886,6 +886,7 @@ fn cenum_to_rs(
 /// represented in Rust as an untyped array.  This process may generate
 /// declarations and implementations that must be placed at the root level.
 /// These are emitted into `extra`.
+    #[cfg_attr(feature = "clippy", allow(too_many_arguments))]
 fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
                     kind: CompKind, members: &[CompMember],
                     extra: &mut Vec<P<ast::Item>>,
@@ -1081,7 +1082,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
             unnamed += 1;
             format!("arg{}", unnamed)
         } else {
-            rust_id(ctx, &n).0
+            rust_id(ctx, n).0
         };
 
         // From the C90 standard (http://c0x.coding-guidelines.com/6.7.5.3.html)

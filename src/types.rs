@@ -194,7 +194,7 @@ impl Default for Layout {
 
 /// A representation of a C integer kind.
 ///
-/// For example: bool -> IBool, unsigned long -> IULong.
+/// For example: bool -> `IBool`, unsigned long -> `IULong`.
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum IKind {
     IBool,

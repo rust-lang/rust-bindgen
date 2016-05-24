@@ -309,7 +309,7 @@ fn opaque_ty(ctx: &mut ClangParserCtx, ty: &cx::Type) {
 }
 
 /// Recursively visits a cursor that represents a composite (struct or union)
-/// type and fills members with CompMember instances representing the fields and
+/// type and fills members with `CompMember` instances representing the fields and
 /// nested composites that make up the visited composite.
 fn visit_composite(cursor: &Cursor, parent: &Cursor,
                    ctx: &mut ClangParserCtx,
