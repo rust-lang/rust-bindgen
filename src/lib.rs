@@ -40,6 +40,7 @@ pub fn builder<'a>() -> Builder<'a> {
 }
 
 impl<'a> Builder<'a> {
+    /// Add a C header to parse.
     pub fn header<T: Into<String>>(&mut self, header: T) -> &mut Self {
         self.clang_arg(header)
     }
@@ -49,16 +50,19 @@ impl<'a> Builder<'a> {
         self
     }
 
+    /// Add a clang CLI argument.
     pub fn clang_arg<T: Into<String>>(&mut self, arg: T) -> &mut Self {
         self.options.clang_args.push(arg.into());
         self
     }
 
+    /// Add a library to link.
     pub fn link<T: Into<String>>(&mut self, library: T, link_type: LinkType) -> &mut Self {
         self.options.links.push((library.into(), link_type));
         self
     }
 
+    /// Force bindgen to exit if a type is not recognized.
     pub fn forbid_unknown_types(&mut self) -> &mut Self {
         self.options.fail_on_unknown_type = true;
         self
@@ -69,16 +73,19 @@ impl<'a> Builder<'a> {
         self
     }
 
+    /// Control if the generated structs will derive Debug.
     pub fn derive_debug(&mut self, derive_debug: bool) -> &mut Self {
         self.options.derive_debug = derive_debug;
         self
     }
 
+    /// Control if bindgen should convert the C enums to rust enums or rust constants.
     pub fn rust_enums(&mut self, value: bool) -> &mut Self {
         self.options.rust_enums = value;
         self
     }
 
+    /// Set the logger to use.
     pub fn log(&mut self, logger: &'a Logger) -> &mut Self {
         self.logger = Some(logger);
         self
@@ -89,11 +96,13 @@ impl<'a> Builder<'a> {
         self
     }
 
+    /// Controls if bindgen should also print the parsed AST (for debug).
     pub fn emit_ast(&mut self, value: bool) -> &mut Self {
         self.options.emit_ast = value;
         self
     }
 
+    /// Generate the binding using the options previously set.
     pub fn generate(&self) -> Result<Bindings, ()> {
         Bindings::generate(&self.options, self.logger, None)
     }
@@ -110,6 +119,7 @@ impl<'a> Default for Builder<'a> {
 
 #[derive(Clone)]
 /// Deprecated - use a `Builder` instead
+#[doc(hidden)]
 pub struct BindgenOptions {
     pub match_pat: Vec<String>,
     pub builtins: bool,
@@ -160,6 +170,7 @@ pub struct Bindings {
 
 impl Bindings {
     /// Deprecated - use a `Builder` instead
+    #[doc(hidden)]
     pub fn generate(options: &BindgenOptions, logger: Option<&Logger>, span: Option<Span>) -> Result<Bindings, ()> {
         let l = DummyLogger;
         let logger = match logger {
