@@ -21,6 +21,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Fix build on OSX
 - Fix overflow of enums variants (#232)
 - Fix impl Clone on structs with large array member (#319)
+- Fix function typedef generation when K&R style (no args specified) (#212)
 
 
 ## [0.16.0] - 2016-02-17

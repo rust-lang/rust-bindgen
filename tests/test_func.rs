@@ -40,6 +40,13 @@ fn func_proto() {
 }
 
 #[test]
+fn func_no_proto() {
+    assert_bind_eq(Default::default(), "headers/func_no_proto.h", "
+        pub type no_proto = extern \"C\" fn() -> ::std::os::raw::c_int;
+    ");
+}
+
+#[test]
 fn with_func_ptr_arg() {
     assert_bind_eq(Default::default(), "headers/func_with_func_ptr_arg.h", "
         extern \"C\" {

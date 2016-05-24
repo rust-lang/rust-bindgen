@@ -278,7 +278,7 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
         CXTypeKind::DependentSizedArray | CXTypeKind::IncompleteArray => {
             TArray(Box::new(conv_ty(ctx, &ty.elem_type(), cursor)), 0, layout)
         },
-        CXTypeKind::FunctionProto => TFuncProto(mk_fn_sig(ctx, ty, cursor)),
+        CXTypeKind::FunctionProto | CXTypeKind::FunctionNoProto => TFuncProto(mk_fn_sig(ctx, ty, cursor)),
         CXTypeKind::Record |
         CXTypeKind::Typedef  |
         CXTypeKind::Unexposed |
