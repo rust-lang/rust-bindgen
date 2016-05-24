@@ -157,9 +157,6 @@ fn get_abi(cc: CXCallingConv) -> abi::Abi {
 fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, layout: Layout) -> il::Type {
     let is_const = ty.is_const();
     match ty.kind() {
-        CXTypeKind::Void => {
-            TPtr(Box::new(TVoid), is_const, layout)
-        }
         CXTypeKind::Unexposed |
         CXTypeKind::FunctionProto |
         CXTypeKind::FunctionNoProto => {
@@ -174,16 +171,6 @@ fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, layout:
                 conv_ty(ctx, &can_ty, cursor)
             } else {
                 TPtr(Box::new(TVoid), ty.is_const(), layout)
-            }
-        }
-        CXTypeKind::Typedef => {
-            let decl = ty.declaration();
-            let def_ty = decl.typedef_type();
-            if def_ty.kind() == CXTypeKind::FunctionProto ||
-               def_ty.kind() == CXTypeKind::FunctionNoProto {
-                TPtr(Box::new(conv_ptr_ty(ctx, &def_ty, cursor, layout)), is_const, layout)
-            } else {
-                TPtr(Box::new(conv_ty(ctx, ty, cursor)), is_const, layout)
             }
         }
         _ => TPtr(Box::new(conv_ty(ctx, ty, cursor)), is_const, layout),
