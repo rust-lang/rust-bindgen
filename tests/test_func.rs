@@ -49,8 +49,10 @@ fn func_no_proto() {
 #[test]
 fn with_func_ptr_arg() {
     assert_bind_eq(Default::default(), "headers/func_with_func_ptr_arg.h", "
+        pub type ty = extern \"C\" fn() -> ::std::os::raw::c_int;
         extern \"C\" {
             pub fn foo(bar: ::std::option::Option<extern \"C\" fn()>);
+            pub fn function(_proc: *mut ty);
         }
     ");
 }
