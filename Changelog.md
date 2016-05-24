@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Breaking
 - Change the way to link to a library in the cli interface (see the `-l` option
   in the output of `--help`)
+- Default to fail on unknown type (see `-allow-unknown-types`)
 
 ### Added
 - `-no-rust-enums` generate integer constants instead of enums
