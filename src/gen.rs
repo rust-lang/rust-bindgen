@@ -94,7 +94,7 @@ fn extract_definitions(ctx: &mut GenCtx,
                 let t = ti.borrow();
                 defs.extend(ctypedef_to_rs(
                     ctx,
-                    options.rust_enums,
+                    options,
                     options.derive_debug,
                     &t.name, &t.ty))
             },
@@ -113,7 +113,7 @@ fn extract_definitions(ctx: &mut GenCtx,
                 }
                 let c = ci.borrow().clone();
                 defs.extend(comp_to_rs(ctx, c.kind, comp_name(c.kind, &c.name),
-                                       options.derive_debug,
+                                       options, options.derive_debug,
                                        c.layout, c.members).into_iter())
             },
             GEnumDecl(ref ei) => {
@@ -132,7 +132,7 @@ fn extract_definitions(ctx: &mut GenCtx,
                 let e = ei.borrow();
                 defs.extend(cenum_to_rs(
                     ctx,
-                    options.rust_enums,
+                    options,
                     options.derive_debug,
                     &enum_name(&e.name), e.kind, e.layout, &e.items));
             },
@@ -410,7 +410,7 @@ fn tag_dup_decl(gs: &[Global]) -> Vec<Global> {
 /// Converts a C typedef to Rust AST Items.
 fn ctypedef_to_rs(
         ctx: &mut GenCtx,
-        rust_enums: bool,
+        options: &BindgenOptions,
         derive_debug: bool,
         name: &str,
         ty: &Type)
@@ -443,7 +443,7 @@ fn ctypedef_to_rs(
             if is_empty {
                 ci.borrow_mut().name = name.into();
                 let c = ci.borrow().clone();
-                comp_to_rs(ctx, c.kind, name.into(), derive_debug, c.layout, c.members)
+                comp_to_rs(ctx, c.kind, name.into(), options, derive_debug, c.layout, c.members)
             } else {
                 vec!(mk_item(ctx, name, ty))
             }
@@ -453,7 +453,7 @@ fn ctypedef_to_rs(
             if is_empty {
                 ei.borrow_mut().name = name.into();
                 let e = ei.borrow();
-                cenum_to_rs(ctx, rust_enums, derive_debug, name, e.kind, e.layout, &e.items)
+                cenum_to_rs(ctx, options, derive_debug, name, e.kind, e.layout, &e.items)
             } else {
                 vec!(mk_item(ctx, name, ty))
             }
@@ -464,17 +464,19 @@ fn ctypedef_to_rs(
 
 /// Converts a C composed type (struct or union) to Rust AST Items.
 fn comp_to_rs(ctx: &mut GenCtx, kind: CompKind, name: String,
+              options: &BindgenOptions,
               derive_debug: bool,
               layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
     match kind {
-        CompKind::Struct => cstruct_to_rs(ctx, &name, derive_debug, layout, members),
-        CompKind::Union =>  cunion_to_rs(ctx, name, derive_debug, layout, members),
+        CompKind::Struct => cstruct_to_rs(ctx, &name, options, derive_debug, layout, members),
+        CompKind::Union =>  cunion_to_rs(ctx, name, options, derive_debug, layout, members),
     }
 }
 
 /// Converts a C struct to Rust AST Items.
 fn cstruct_to_rs(ctx: &mut GenCtx,
                  name: &str,
+                 options: &BindgenOptions,
                  derive_debug: bool,
                  layout: Layout,
                  members: Vec<CompMember>) -> Vec<P<ast::Item>> {
@@ -492,10 +494,12 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     let mut can_derive_clone = true;
 
     for m in &members {
-        let (opt_rc_c, opt_f) = match *m {
-            CompMember::Field(ref f) => { (None, Some(f)) }
-            CompMember::Comp(ref rc_c) => { (Some(rc_c), None) }
-            CompMember::CompField(ref rc_c, ref f) => { (Some(rc_c), Some(f)) }
+        let (opt_rc_c, opt_rc_e, opt_f) = match *m {
+            CompMember::Field(ref f) => { (None, None, Some(f)) }
+            CompMember::Comp(ref rc_c) => { (Some(rc_c), None, None) }
+            CompMember::CompField(ref rc_c, ref f) => { (Some(rc_c), None, Some(f)) }
+            CompMember::Enum(ref rc_e) => { (None, Some(rc_e), None) }
+            CompMember::EnumField(ref rc_e, ref f) => { (None, Some(rc_e), Some(f)) }
         };
 
         if let Some(f) = opt_f {
@@ -530,12 +534,22 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
                 unnamed += 1;
                 let field_name = format!("_bindgen_data_{}_", unnamed);
                 fields.push(mk_blob_field(ctx, &field_name, c.layout, ctx.span));
-                methods.extend(gen_comp_methods(ctx, &field_name, 0, c.kind, &c.members, &mut extra, derive_debug).into_iter());
+                methods.extend(gen_comp_methods(ctx, &field_name, 0, c.kind, &c.members, &mut extra, options, derive_debug).into_iter());
             } else {
                 extra.extend(comp_to_rs(ctx, c.kind, comp_name(c.kind, &c.name),
-                                        derive_debug,
+                                        options, derive_debug,
                                         c.layout, c.members.clone()).into_iter());
             }
+        }
+
+        if let Some(rc_e) = opt_rc_e {
+            let e = rc_e.borrow();
+            assert!(!e.name.is_empty());
+            extra.extend(cenum_to_rs(
+                ctx,
+                options,
+                options.derive_debug,
+                &enum_name(&e.name), e.kind, e.layout, &e.items));
         }
     }
 
@@ -625,7 +639,7 @@ fn opaque_to_rs(ctx: &mut GenCtx, name: &str) -> P<ast::Item> {
     })
 }
 
-fn cunion_to_rs(ctx: &mut GenCtx, name: String, derive_debug: bool, layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
+fn cunion_to_rs(ctx: &mut GenCtx, name: String, options: &BindgenOptions, derive_debug: bool, layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
     fn mk_item(ctx: &mut GenCtx, name: String, item: ast::ItemKind, vis:
                ast::Visibility, attrs: Vec<ast::Attribute>) -> P<ast::Item> {
         P(ast::Item {
@@ -685,7 +699,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, derive_debug: bool, layout: Layo
         ast::Generics::default(),
         None,
         P(cty_to_rs(ctx, &union)),
-        gen_comp_methods(ctx, data_field_name, 0, CompKind::Union, &members, &mut extra, derive_debug),
+        gen_comp_methods(ctx, data_field_name, 0, CompKind::Union, &members, &mut extra, options, derive_debug),
     );
 
     let mut items = vec!(
@@ -779,7 +793,7 @@ fn cenum_value_to_int_lit(
 
 fn cenum_to_rs(
        ctx: &mut GenCtx,
-       rust_enums: bool,
+       options: &BindgenOptions,
        derive_debug: bool,
        name: &str,
        kind: IKind,
@@ -792,7 +806,7 @@ fn cenum_to_rs(
     let enum_repr = enum_size_to_rust_type_name(enum_is_signed, layout.size);
     let mut items = vec![];
 
-    if !rust_enums {
+    if !options.rust_enums {
         items.push(ctx.ext_cx.item_ty(
             ctx.span,
             enum_name,
@@ -875,6 +889,7 @@ fn cenum_to_rs(
 fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
                     kind: CompKind, members: &[CompMember],
                     extra: &mut Vec<P<ast::Item>>,
+                    options: &BindgenOptions,
                     derive_debug: bool) -> Vec<ast::ImplItem> {
 
     let mk_field_method = |ctx: &mut GenCtx, f: &FieldInfo, offset: usize| {
@@ -920,7 +935,7 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
             CompMember::Comp(ref rc_c) => {
                 let c = &rc_c.borrow();
                 methods.extend(gen_comp_methods(ctx, data_field, offset, c.kind,
-                                                &c.members, extra, derive_debug).into_iter());
+                                                &c.members, extra, options, derive_debug).into_iter());
                 c.layout.size
             }
             CompMember::CompField(ref rc_c, ref f) => {
@@ -928,8 +943,14 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
 
                 let c = rc_c.borrow();
                 extra.extend(comp_to_rs(ctx, c.kind, comp_name(c.kind, &c.name),
-                                        derive_debug,
+                                        options, derive_debug,
                                         c.layout, c.members.clone()).into_iter());
+                f.ty.size()
+            }
+            CompMember::Enum(ref rc_e) => {
+                rc_e.borrow().layout.size
+            }
+            CompMember::EnumField(ref _rc_e, ref f) => {
                 f.ty.size()
             }
         };

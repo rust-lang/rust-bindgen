@@ -1,6 +1,61 @@
 use support::assert_bind_eq;
 
 #[test]
+fn with_anon_enum() {
+    assert_bind_eq(Default::default(), "headers/struct_with_anon_enum.h", "
+        #[repr(C)]
+        #[derive(Copy, Clone)]
+        #[derive(Debug)]
+        pub struct Struct_foo {
+            pub bar: Enum_Unnamed1,
+        }
+        impl ::std::default::Default for Struct_foo {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+        #[derive(Copy, Clone)]
+        #[repr(u32)]
+        #[derive(Debug)]
+        pub enum Enum_Unnamed1 {
+            FOO_OPTION_1 = 0,
+            FOO_OPTION_2 = 1,
+            FOO_OPTION_3 = 2,
+        }
+    ");
+}
+
+#[test]
+fn with_anon_enum_bitfields() {
+    assert_bind_eq(Default::default(), "headers/struct_with_anon_enum_bitfields.h", "
+        #[derive(Copy, Clone)]
+        #[repr(u32)]
+        #[derive(Debug)]
+        pub enum Enum_test {
+            TEST_OPTION_1 = 0,
+            TEST_OPTION_2 = 1,
+            TEST_OPTION_3 = 2,
+        }
+        #[repr(C)]
+        #[derive(Copy, Clone)]
+        #[derive(Debug)]
+        pub struct Struct_foo {
+            pub _bindgen_bitfield_1_: Enum_Unnamed1,
+            pub _bindgen_bitfield_2_: Enum_test,
+        }
+        impl ::std::default::Default for Struct_foo {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+        #[derive(Copy, Clone)]
+        #[repr(u32)]
+        #[derive(Debug)]
+        pub enum Enum_Unnamed1 {
+            FOO_OPTION_1 = 0,
+            FOO_OPTION_2 = 1,
+            FOO_OPTION_3 = 2,
+        }
+    ");
+}
+
+#[test]
 fn with_anon_struct() {
     assert_bind_eq(Default::default(), "headers/struct_with_anon_struct.h", "
         #[repr(C)]

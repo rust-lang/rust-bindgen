@@ -333,6 +333,17 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
         }
     }
 
+    fn inner_enumeration(mut ty: &il::Type) -> Option<&Rc<RefCell<EnumInfo>>> {
+        loop {
+            match *ty {
+                TEnum(ref enum_ty) => return Some(enum_ty),
+                TPtr(ref ptr_ty, _, _) => ty = &**ptr_ty,
+                TArray(ref array_ty, _, _) => ty = &**array_ty,
+                _ => return None
+            }
+        }
+    }
+
     let members = &mut compinfo.members;
 
     match cursor.kind() {
@@ -367,11 +378,12 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 (None, _) => (cursor.spelling(), None)
             };
 
-            // The Clang C api does not fully expose composite fields, but it
-            // does expose them in a way that can be detected. When the current
-            // field kind is TComp, TPtr or TArray and the previous member is a
-            // composite type - the same type as this field - then this is a
-            // composite field.  e.g.:
+            // The Clang C api does not fully expose composite and enumeration
+            // fields, but it does expose them in a way that can be detected.
+            // When the current field kind is TComp/TEnum, TPtr or TArray and
+            // the previous member is a composite/enumeration type - the same
+            // type as this field - then this is a composite or enumeration
+            // field. e.g.:
             //
             //     struct foo {
             //         union {
@@ -394,10 +406,25 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             //         } bar[3][2];
             //     };
             //
+            //     struct foo {
+            //         enum {
+            //             OPTION_1,
+            //             OPTION_2,
+            //             OPTION_3
+            //         } bar;
+            //     };
+            //
 
             let is_composite = match (inner_composite(&ty), members.last()) {
                 (Some(ty_compinfo), Some(&CompMember::Comp(ref c))) => {
                     c.borrow().deref() as *const _ == ty_compinfo.borrow().deref() as *const _
+                },
+                _ => false
+            };
+            
+            let is_enumeration = match (inner_enumeration(&ty), members.last()) {
+                (Some(ty_enuminfo), Some(&CompMember::Enum(ref e))) => {
+                    e.borrow().deref() as *const _ == ty_enuminfo.borrow().deref() as *const _
                 },
                 _ => false
             };
@@ -408,6 +435,12 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                     members.push(CompMember::CompField(c, field));
                 } else {
                     unreachable!(); // Checks in is_composite make this unreachable.
+                }
+            } else if is_enumeration {
+                if let Some(CompMember::Enum(e)) = members.pop() {
+                    members.push(CompMember::EnumField(e, field));
+                } else {
+                    unreachable!(); // Checks in is_enumeration make this unreachable.
                 }
             } else {
                 members.push(CompMember::Field(field));
@@ -427,18 +460,32 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 members.push(CompMember::Comp(decl.compinfo()));
             });
         }
+        CXCursorKind::EnumDecl => {
+            fwd_decl(ctx, cursor, |ctx_| {
+                // If the enum is anonymous (i.e. declared here) then it
+                // cannot be used elsewhere and so does not need to be added
+                // to globals otherwise it will be declared later and a global.
+                let decl = decl_name(ctx_, cursor);
+                let ci = decl.enuminfo();
+                cursor.visit(|c, _| {
+                    let mut ci_ = ci.borrow_mut();
+                    visit_enum(c, &mut ci_.items)
+                });
+                members.push(CompMember::Enum(decl.enuminfo()));
+            });
+        }
         CXCursorKind::PackedAttr => {
             compinfo.layout.packed = true;
         }
         _ => {
             // XXX: Some kind of warning would be nice, but this produces far
             //      too many.
-            //log_err_warn(ctx,
-            //    &format!("unhandled composite member `{}` (kind {}) in `{}` ({})",
-            //        cursor.spelling(), cursor.kind(), parent.spelling(), cursor.location()
-            //    )[..],
-            //    false
-            //);
+            log_err_warn(ctx,
+                &format!("unhandled composite member `{}` (kind {:?}) in `{}` ({})",
+                    cursor.spelling(), cursor.kind(), parent.spelling(), cursor.location()
+                )[..],
+                false
+            );
         }
     }
     CXChildVisitResult::Continue
