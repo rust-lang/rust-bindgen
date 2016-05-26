@@ -72,6 +72,8 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
             let ty = cursor.cur_type();
             let layout = Layout::new(ty.size(), ty.align());
 
+            println!("type {} = {:?} {:?}", spelling, ty, layout);
+
             let glob_decl = match cursor.kind() {
                 CXCursorKind::StructDecl => {
                     let ci = Rc::new(RefCell::new(CompInfo::new(spelling, CompKind::Struct, vec!(), layout)));
@@ -102,7 +104,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                     GEnumDecl(ei)
                 }
                 CXCursorKind::TypedefDecl => {
-                    let ti = Rc::new(RefCell::new(TypeInfo::new(spelling, TVoid)));
+                    let ti = Rc::new(RefCell::new(TypeInfo::new(spelling, TVoid, layout)));
                     GType(ti)
                 }
                 CXCursorKind::VarDecl => {
@@ -409,7 +411,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 },
                 _ => false
             };
-            
+
             let is_enumeration = match (inner_enumeration(&ty), members.last()) {
                 (Some(ty_enuminfo), Some(&CompMember::Enum(ref e))) => {
                     e.borrow().deref() as *const _ == ty_enuminfo.borrow().deref() as *const _

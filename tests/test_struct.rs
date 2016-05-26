@@ -418,3 +418,34 @@ fn struct_with_incomplete_array() {
         }
     ");
 }
+
+#[test]
+fn struct_with_aligned_struct() {
+    assert_bind_eq(Default::default(), "headers/struct_with_aligned_struct.h", "
+        pub type int16_t = ::std::os::raw::c_short;
+        pub type int32_t = ::std::os::raw::c_int;
+        pub type int64_t = ::std::os::raw::c_longlong;
+        #[repr(C)]
+        #[derive(Copy, Clone)]
+        #[derive(Debug)]
+        pub struct Struct_foo {
+            pub x: int32_t,
+            pub y: int64_t,
+            pub z: int16_t,
+        }
+        impl ::std::default::Default for Struct_foo {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+        #[repr(C)]
+        #[derive(Copy, Clone)]
+        #[derive(Debug)]
+        pub struct Struct_bar {
+            pub a: int32_t,
+            pub b: int64_t,
+            pub foo: Struct_foo,
+        }
+        impl ::std::default::Default for Struct_bar {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+    ");
+}

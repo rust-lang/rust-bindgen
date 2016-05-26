@@ -121,7 +121,7 @@ impl Type {
             | TFloat(_, l)
             | TPtr(_, _, l)
             | TArray(_, _, l) => l.size,
-            TNamed(ref ti) => ti.borrow().ty.size(),
+            TNamed(ref ti) => ti.borrow().layout.size,
             TComp(ref ci) => ci.borrow().layout.size,
             TEnum(ref ei) => ei.borrow().layout.size,
             TVoid
@@ -138,13 +138,17 @@ impl Type {
             | TFloat(_, l)
             | TPtr(_, _, l)
             | TArray(_, _, l) => l.align,
-            TNamed(ref ti) => ti.borrow().ty.align(),
+            TNamed(ref ti) => ti.borrow().layout.align,
             TComp(ref ci) => ci.borrow().layout.align,
             TEnum(ref ei) => ei.borrow().layout.align,
             TVoid
             | TFuncProto(..)
             | TFuncPtr(..) => 0,
         }
+    }
+
+    pub fn layout(&self) -> Layout {
+        Layout::new(self.size(), self.align())
     }
 
     /// Whether the type contains a field can't be derived
@@ -241,6 +245,28 @@ pub enum CompMember {
     Enum(Rc<RefCell<EnumInfo>>),
     CompField(Rc<RefCell<CompInfo>>, FieldInfo),
     EnumField(Rc<RefCell<EnumInfo>>, FieldInfo),
+}
+
+impl CompMember {
+    pub fn name(&self) -> String {
+        match self {
+            &CompMember::Field(ref f) => f.name.clone(),
+            &CompMember::Comp(ref rc_c) => rc_c.borrow().name.clone(),
+            &CompMember::CompField(_, ref f) => f.name.clone(),
+            &CompMember::Enum(ref rc_e) => rc_e.borrow().name.clone(),
+            &CompMember::EnumField(_, ref f) => f.name.clone(),
+        }
+    }
+
+    pub fn layout(&self) -> Layout {
+        match self {
+            &CompMember::Field(ref f) => f.ty.layout(),
+            &CompMember::Comp(ref rc_c) => rc_c.borrow().layout,
+            &CompMember::CompField(ref rc_c, _) => rc_c.borrow().layout,
+            &CompMember::Enum(ref rc_e) => rc_e.borrow().layout,
+            &CompMember::EnumField(ref rc_e, _) => rc_e.borrow().layout,
+        }
+    }
 }
 
 /// Is the composed element a struct or an union?
@@ -340,21 +366,23 @@ impl EnumItem {
 #[derive(Clone, PartialEq)]
 pub struct TypeInfo {
     pub name: String,
-    pub ty: Type
+    pub ty: Type,
+    pub layout: Layout,
 }
 
 impl TypeInfo {
-    pub fn new(name: String, ty: Type) -> TypeInfo {
+    pub fn new(name: String, ty: Type, layout: Layout) -> TypeInfo {
         TypeInfo {
             name: name,
-            ty: ty
+            ty: ty,
+            layout: layout,
         }
     }
 }
 
 impl fmt::Debug for TypeInfo {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.name.fmt(f)
+        write!(f, "{}: {:?}", self.name, self.ty)
     }
 }
 

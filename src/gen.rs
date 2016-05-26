@@ -493,6 +493,8 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     let mut can_derive_debug = derive_debug;
     let mut can_derive_clone = true;
 
+    let mut offset = 0;
+
     for m in &members {
         let (opt_rc_c, opt_rc_e, opt_f) = match *m {
             CompMember::Field(ref f) => { (None, None, Some(f)) }
@@ -501,6 +503,8 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
             CompMember::Enum(ref rc_e) => { (None, Some(rc_e), None) }
             CompMember::EnumField(ref rc_e, ref f) => { (None, Some(rc_e), Some(f)) }
         };
+
+        println!("member {}.{} {:?}", name, m.name(), m.layout());
 
         if let Some(f) = opt_f {
             let f_name = match f.bitfields {
@@ -653,7 +657,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, options: &BindgenOptions, derive
     }
 
     let ci = Rc::new(RefCell::new(CompInfo::new(name.clone(), CompKind::Union, members.clone(), layout)));
-    let union = TNamed(Rc::new(RefCell::new(TypeInfo::new(name.clone(), TComp(ci)))));
+    let union = TNamed(Rc::new(RefCell::new(TypeInfo::new(name.clone(), TComp(ci), layout))));
 
     // Nested composites may need to emit declarations and implementations as
     // they are encountered.  The declarations end up in 'extra' and are emitted
