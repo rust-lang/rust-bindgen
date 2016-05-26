@@ -3,7 +3,7 @@
 [![][crates-version-shield]](https://crates.io/crates/bindgen)
 [![][crates-downloads-shield]](https://crates.io/crates/bindgen)
 [![][crates-license-shield]](https://github.com/crabtw/rust-bindgen/blob/master/LICENSE)
-[![Build Status](https://travis-ci.org/crabtw/rust-bindgen.svg?branch=master)](https://travis-ci.org/crabtw/rust-bindgen)
+[![Build Status][travis-status-shield]](https://travis-ci.org/crabtw/rust-bindgen)
 
 A native binding generator for the Rust language.
 
@@ -116,7 +116,7 @@ To Do
 [crates-version-shield]: https://img.shields.io/crates/v/bindgen.svg?style=flat-square
 [crates-downloads-shield]: https://img.shields.io/crates/d/bindgen.svg?style=flat-square
 [crates-license-shield]: https://img.shields.io/crates/l/bindgen.svg?style=flat-square
-[travis-status-shield]: https://img.shields.io/travis/crabtw/rust-bindgen.svg?label=travis&style=flat-square
+[travis-status-shield]: https://img.shields.io/travis/crabtw/rust-bindgen/master.svg?label=travis&style=flat-square
 
 [clay's bindgen]: https://github.com/jckarter/clay/blob/master/tools/bindgen.clay
 [issue 89]: https://github.com/crabtw/rust-bindgen/issues/89
