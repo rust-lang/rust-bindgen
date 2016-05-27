@@ -13,8 +13,7 @@ use std::collections::HashSet;
 use std::default::Default;
 use std::io::{Write, self};
 use std::fs::OpenOptions;
-use std::path::{Path, self};
-use std::{env, fs};
+use std::path::Path;
 
 use syntax::ast;
 use syntax::codemap::{DUMMY_SP, Span};
@@ -23,6 +22,8 @@ use syntax::print::pp::eof;
 use syntax::ptr::P;
 
 use types::Global;
+
+use clang_sys::support::Clang;
 
 mod types;
 mod clang;
@@ -134,6 +135,12 @@ pub struct BindgenOptions {
 
 impl Default for BindgenOptions {
     fn default() -> BindgenOptions {
+        let clang = Clang::find(None).expect("No clang found, is it installed?");
+        let mut args = Vec::new();
+        for dir in clang.c_search_paths {
+            args.push("-idirafter".to_owned());
+            args.push(dir.to_str().unwrap().to_owned());
+        }
         BindgenOptions {
             match_pat: Vec::new(),
             builtins: false,
@@ -142,10 +149,7 @@ impl Default for BindgenOptions {
             emit_ast: false,
             fail_on_unknown_type: false,
             override_enum_ty: "".to_owned(),
-            clang_args: match get_include_dir() {
-                Some(path) => vec!("-idirafter".to_owned(), path),
-                None => Vec::new()
-            },
+            clang_args: args,
             derive_debug: true
         }
     }
@@ -294,71 +298,4 @@ fn builder_state()
     assert!(build.logger.is_some());
     assert!(build.options.clang_args.binary_search(&"example.h".to_owned()).is_ok());
     assert!(build.options.links.binary_search(&("m".to_owned(), LinkType::Static)).is_ok());
-}
-
-// Get the first directory in PATH that contains a file named "clang".
-fn get_clang_dir() -> Option<path::PathBuf>{
-    if let Some(paths) = env::var_os("PATH") {
-        for mut path in env::split_paths(&paths) {
-            path.push("clang");
-            if let Ok(real_path) = fs::canonicalize(&path) {
-                if fs::metadata(&real_path).iter().any(|m| m.is_file()) &&
-                    real_path
-                        .file_name()
-                        .and_then(|f| f.to_str())
-                        .iter()
-                        .any(|&f| f.starts_with("clang")) {
-                    if let Some(dir) = real_path.parent() {
-                        return Some(dir.to_path_buf())
-                    }
-                }
-            }
-        }
-    }
-    None
-}
-
-// Try to find the directory that contains clang's bundled headers. Clang itself does something
-// very similar: it takes the parent directory of the current executable, appends
-// "../lib/clang/<VERSIONSTRING>/include". We have two problems emulating this behaviour:
-// * We don't have a very good way of finding the clang executable, but can fake this by
-//   searching $PATH and take one directory that contains "clang".
-// * We don't have access to <VERSIONSTRING>. There is clang_getClangVersion(), but it returns
-//   a human-readable description string which is not guaranteed to be stable and a pain to parse.
-//   We work around that by just taking the first directory in ../lib/clang and hope it's the
-//   current version.
-// TODO: test if this works on Windows at all.
-#[doc(hidden)]
-pub fn get_include_dir() -> Option<String> {
-    match get_clang_dir() {
-        Some(mut p) => {
-            p.push("..");
-            p.push("lib");
-            p.push("clang");
-
-            let dir_iter = match fs::read_dir(p) {
-                Ok(dir_iter) => dir_iter,
-                _ => return None
-            };
-            for dir in dir_iter {
-                match dir {
-                    Ok(dir) => {
-                        // Let's take the first dir. In my case, there's only one directory
-                        // there anyway.
-                        let mut p = dir.path();
-                        p.push("include");
-                        match p.into_os_string().into_string() {
-                            Ok(s) => return Some(s),
-                            // We found the directory, but can't access it as it contains
-                            // invalid unicode.
-                            _ => return None,
-                        }
-                    }
-                    _ => return None,
-                }
-            }
-            None
-        }
-        None => None,
-    }
 }
