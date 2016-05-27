@@ -17,6 +17,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Use `clang_sys` instead of the internal ffi
 - Use `[type; 0]` for the incomplete and dependent sized array
 - Don't expand typedefed function parameter types (#212)
+- Generate padding bytes in struct base on field align and struct size
 
 ### Fixed
 - Fix build on OSX
