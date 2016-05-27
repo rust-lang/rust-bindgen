@@ -1,4 +1,5 @@
 use std;
+use std::mem;
 use std::cell::RefCell;
 use std::vec::Vec;
 use std::rc::Rc;
@@ -473,30 +474,40 @@ fn comp_to_rs(ctx: &mut GenCtx, kind: CompKind, name: String,
     }
 }
 
-fn padding_field(ctx: &mut GenCtx,
-                 name: &str,
-                 size: usize) -> ast::StructField {
-    let (el_ty, el_num) =
-        if (size % 8) == 0 {
-            (mk_ty(ctx, false, vec!("u64".to_owned())), size / 8)
-        } else if (size % 4) == 0 {
-            (mk_ty(ctx, false, vec!("u32".to_owned())), size / 4)
-        } else if (size % 2) == 0 {
-            (mk_ty(ctx, false, vec!("u16".to_owned())), size / 2)
-        } else {
-            (mk_ty(ctx, false, vec!("u8".to_owned())), size)
-        };
+fn gen_padding_fields(ctx: &mut GenCtx,
+                      idx: usize,
+                      size: usize) -> Vec<ast::StructField> {
+    let max_clone_array_len = 32; // impl<T: Copy> Clone for [T; 32]
+    let max_field_size = mem::size_of::<u64>() * max_clone_array_len;
+    let u64_ty = P(mk_ty(ctx, false, vec!("u64".to_owned())));
+    let u8_ty = P(mk_ty(ctx, false, vec!("u8".to_owned())));
 
-    let padding_ty = P(mk_arrty(ctx, &el_ty, el_num));
+    let mut fields = (0..(size / max_field_size))
+        .map(|_| (&u64_ty, max_clone_array_len))
+        .collect::<Vec<(&P<ast::Ty>, usize)>>();
 
-    ast::StructField {
-        span: ctx.span,
-        vis: ast::Visibility::Inherited,
-        ident: Some(ctx.ext_cx.ident_of(&name[..])),
-        id: ast::DUMMY_NODE_ID,
-        ty: padding_ty,
-        attrs: Vec::new()
+    if (size % max_field_size) != 0 {
+        fields.push((&u64_ty, (size % max_field_size) / mem::size_of::<u64>()));
     }
+
+    if (size % mem::size_of::<u64>()) != 0 {
+        fields.push((&u8_ty, size % mem::size_of::<u64>()));
+    }
+
+    fields.iter().enumerate().map(|(i, &(ref el_ty, el_num))| {
+        let name = format!("_bindgen_padding_{}_", idx + i);
+
+        let padding_ty = P(mk_arrty(ctx, &el_ty, el_num));
+
+        ast::StructField {
+            span: ctx.span,
+            vis: ast::Visibility::Inherited,
+            ident: Some(ctx.ext_cx.ident_of(&name[..])),
+            id: ast::DUMMY_NODE_ID,
+            ty: padding_ty,
+            attrs: Vec::new()
+        }
+    }).collect()
 }
 
 /// Converts a C struct to Rust AST Items.
@@ -535,12 +546,12 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
         if !layout.packed && m.layout().align != 0 && (offset % m.layout().align) != 0 {
             let padding_size = m.layout().align - (offset % m.layout().align);
 
-            if padding_size > 8 {
-                paddings += 1;
+            if padding_size > mem::size_of::<u64>() {
+                let mut padding_fields = gen_padding_fields(ctx, paddings, padding_size);
 
-                let padding_name = format!("_bindgen_padding_{}_", paddings);
+                fields.append(&mut padding_fields);
 
-                fields.push(padding_field(ctx, &padding_name, padding_size));
+                paddings += padding_fields.len();
             }
 
             offset += padding_size;
@@ -602,12 +613,9 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     }
 
     if offset < layout.size {
-        let padding_size = layout.size - offset;
+        let mut padding_fields = gen_padding_fields(ctx, paddings, layout.size - offset);
 
-        paddings += 1;
-        let padding_name = format!("_bindgen_padding_{}_", paddings);
-
-        fields.push(padding_field(ctx, &padding_name, padding_size));
+        fields.append(&mut padding_fields);
     }
 
     let def = ast::ItemKind::Struct(
