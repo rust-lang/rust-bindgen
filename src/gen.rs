@@ -476,22 +476,32 @@ fn comp_to_rs(ctx: &mut GenCtx, kind: CompKind, name: String,
 
 fn gen_padding_fields(ctx: &mut GenCtx,
                       idx: usize,
-                      size: usize) -> Vec<ast::StructField> {
-    let max_clone_array_len = 32; // impl<T: Copy> Clone for [T; 32]
-    let max_field_size = mem::size_of::<u64>() * max_clone_array_len;
+                      offset: usize,
+                      padding_size: usize) -> Vec<ast::StructField> {
+    const MAX_ARRAY_CLONE_LEN: usize = 32; // impl<T: Copy> Clone for [T; 32]
+
+    let u64_size = mem::size_of::<u64>();
+    let max_field_size = u64_size * MAX_ARRAY_CLONE_LEN;
     let u64_ty = P(mk_ty(ctx, false, vec!("u64".to_owned())));
     let u8_ty = P(mk_ty(ctx, false, vec!("u8".to_owned())));
+    let mut size = padding_size;
+
+    let u64_padding_size = u64_size - (offset % u64_size);
+
+    if (size - u64_padding_size) > u64_size && u64_padding_size != u64_size {
+        size -= u64_padding_size;
+    }
 
     let mut fields = (0..(size / max_field_size))
-        .map(|_| (&u64_ty, max_clone_array_len))
+        .map(|_| (&u64_ty, MAX_ARRAY_CLONE_LEN))
         .collect::<Vec<(&P<ast::Ty>, usize)>>();
 
     if (size % max_field_size) != 0 {
-        fields.push((&u64_ty, (size % max_field_size) / mem::size_of::<u64>()));
+        fields.push((&u64_ty, (size % max_field_size) / u64_size));
     }
 
-    if (size % mem::size_of::<u64>()) != 0 {
-        fields.push((&u8_ty, size % mem::size_of::<u64>()));
+    if (size % u64_size) != 0 {
+        fields.push((&u8_ty, size % u64_size));
     }
 
     fields.iter().enumerate().map(|(i, &(ref el_ty, el_num))| {
@@ -547,7 +557,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
             let padding_size = m.layout().align - (offset % m.layout().align);
 
             if padding_size > mem::size_of::<u64>() {
-                let mut padding_fields = gen_padding_fields(ctx, paddings, padding_size);
+                let mut padding_fields = gen_padding_fields(ctx, paddings, offset, padding_size);
 
                 fields.append(&mut padding_fields);
 
@@ -613,7 +623,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     }
 
     if offset < layout.size {
-        let mut padding_fields = gen_padding_fields(ctx, paddings, layout.size - offset);
+        let mut padding_fields = gen_padding_fields(ctx, paddings, offset, layout.size - offset);
 
         fields.append(&mut padding_fields);
     }
