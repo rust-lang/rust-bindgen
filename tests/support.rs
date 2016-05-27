@@ -12,6 +12,7 @@ use syntax::parse::token;
 use syntax::print::pprust;
 use syntax::ptr::P;
 
+#[derive(Debug)]
 struct TestLogger;
 
 impl Logger for TestLogger {
