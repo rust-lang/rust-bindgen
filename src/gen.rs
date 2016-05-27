@@ -180,7 +180,7 @@ pub fn gen_mod(
         options: &BindgenOptions,
         globs: Vec<Global>,
         span: Span)
-        -> Vec<P<ast::Item>> {
+        -> (Vec<P<ast::Item>>, Vec<ast::Attribute>) {
     // Create a dummy ExtCtxt. We only need this for string interning and that uses TLS.
     let mut features = Features::new();
     features.quote = true;
@@ -262,9 +262,16 @@ pub fn gen_mod(
         defs.push(mk_extern(&mut ctx, &options.links, funcs, abi));
     }
 
-    //let attrs = vec!(mk_attr_list(&mut ctx, "allow", ["dead_code", "non_camel_case_types", "uppercase_variables"]));
-
-    defs
+    //let attrs = vec!(mk_attr_list(&mut ctx, "allow", ));
+    let mod_attrs = vec![
+        mk_attr_style(&mut ctx,
+                      "allow",
+                      &["dead_code",
+                        "non_camel_case_types",
+                        "non_snake_case"],
+                      ast::AttrStyle::Inner)
+    ];
+    (defs, mod_attrs)
 }
 
 fn mk_extern(ctx: &mut GenCtx, links: &[(String, LinkType)],
@@ -1033,9 +1040,17 @@ fn mk_deriving_debug_attr(ctx: &mut GenCtx) -> ast::Attribute {
             &["Debug"])
 }
 
+
 fn mk_attr(ctx: &mut GenCtx,
            name: &str,
            args: &[&str]) -> ast::Attribute {
+    mk_attr_style(ctx, name, args, ast::AttrStyle::Outer)
+}
+
+fn mk_attr_style(ctx: &mut GenCtx,
+                 name: &str,
+                 args: &[&str],
+                 style: ast::AttrStyle) -> ast::Attribute {
     let args: Vec<_> = args.iter()
         .map(|arg| {
             let word = ctx.ext_cx.name_of(arg).as_str();
@@ -1045,7 +1060,12 @@ fn mk_attr(ctx: &mut GenCtx,
         let name = ctx.ext_cx.name_of(name).as_str();
         ctx.ext_cx.meta_list(ctx.span, name, args)
     };
-    ctx.ext_cx.attribute(ctx.span, attr)
+    respan(ctx.span, ast::Attribute_ {
+        id: mk_attr_id(),
+        style: style,
+        value: attr,
+        is_sugared_doc: false,
+    })
 }
 
 fn cvar_to_rs(ctx: &mut GenCtx, name: String,

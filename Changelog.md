@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `-no-rust-enums` generate integer constants instead of enums
 - Derive Debug when possible
 - Support for inline enum declarations in struct fields (e.g.: `struct { enum { Option_A, Option_B } field; };`)
+- Silent lint warnings (#112)
 
 ### Changed
 - Use `clang_sys` instead of the internal ffi
