@@ -9,6 +9,8 @@ A native binding generator for the Rust language.
 
 *rust-bindgen* was originally ported from [clay's bindgen].
 
+[Documentation](https://crabtw.github.io/rust-bindgen/)
+
 ## Requirements
 
 * Clang >= 3.4

@@ -3,8 +3,10 @@
 
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
-
 #![warn(missing_docs)]
+
+#![doc(html_root_url = "https://crabtw.github.io/rust-bindgen/")]
+
 
 //! TODO: add some doc
 
