@@ -156,7 +156,7 @@ fn extract_functions(ctx: &mut GenCtx,
             GFunc(ref vi) => {
                 let v = vi.borrow();
                 match v.ty {
-                    TFuncPtr(ref sig) => {
+                    TFuncPtr(ref sig, _) => {
                         let decl = cfunc_to_rs(ctx, v.name.clone(),
                         &*sig.ret_ty, &sig.args[..],
                         sig.is_variadic);
@@ -473,6 +473,32 @@ fn comp_to_rs(ctx: &mut GenCtx, kind: CompKind, name: String,
     }
 }
 
+fn padding_field(ctx: &mut GenCtx,
+                 name: &str,
+                 size: usize) -> ast::StructField {
+    let (el_ty, el_num) =
+        if (size % 8) == 0 {
+            (mk_ty(ctx, false, vec!("u64".to_owned())), size / 8)
+        } else if (size % 4) == 0 {
+            (mk_ty(ctx, false, vec!("u32".to_owned())), size / 4)
+        } else if (size % 2) == 0 {
+            (mk_ty(ctx, false, vec!("u16".to_owned())), size / 2)
+        } else {
+            (mk_ty(ctx, false, vec!("u8".to_owned())), size)
+        };
+
+    let padding_ty = P(mk_arrty(ctx, &el_ty, el_num));
+
+    ast::StructField {
+        span: ctx.span,
+        vis: ast::Visibility::Inherited,
+        ident: Some(ctx.ext_cx.ident_of(&name[..])),
+        id: ast::DUMMY_NODE_ID,
+        ty: padding_ty,
+        attrs: Vec::new()
+    }
+}
+
 /// Converts a C struct to Rust AST Items.
 fn cstruct_to_rs(ctx: &mut GenCtx,
                  name: &str,
@@ -488,14 +514,16 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     let mut extra = vec!();
     let mut unnamed: u32 = 0;
     let mut bitfields: u32 = 0;
+    let mut paddings = 0;
+    let mut offset = 0;
 
     // Waiting for https://github.com/rust-lang/rfcs/issues/1038
     let mut can_derive_debug = derive_debug;
     let mut can_derive_clone = true;
 
-    let mut offset = 0;
-
     for m in &members {
+        debug!("convert field {} {:?}", m.name(), m);
+
         let (opt_rc_c, opt_rc_e, opt_f) = match *m {
             CompMember::Field(ref f) => { (None, None, Some(f)) }
             CompMember::Comp(ref rc_c) => { (Some(rc_c), None, None) }
@@ -504,7 +532,21 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
             CompMember::EnumField(ref rc_e, ref f) => { (None, Some(rc_e), Some(f)) }
         };
 
-        println!("member {}.{} {:?}", name, m.name(), m.layout());
+        if !layout.packed && m.layout().align != 0 && (offset % m.layout().align) != 0 {
+            let padding_size = m.layout().align - (offset % m.layout().align);
+
+            if padding_size > 8 {
+                paddings += 1;
+
+                let padding_name = format!("_bindgen_padding_{}_", paddings);
+
+                fields.push(padding_field(ctx, &padding_name, padding_size));
+            }
+
+            offset += padding_size;
+        }
+
+        debug!("member {}::{} @ {}, {:?}", name, m.name(), offset, m.layout());
 
         if let Some(f) = opt_f {
             let f_name = match f.bitfields {
@@ -555,6 +597,17 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
                 options.derive_debug,
                 &enum_name(&e.name), e.kind, e.layout, &e.items));
         }
+
+        offset += m.layout().size as usize;
+    }
+
+    if offset < layout.size {
+        let padding_size = layout.size - offset;
+
+        paddings += 1;
+        let padding_name = format!("_bindgen_padding_{}_", paddings);
+
+        fields.push(padding_field(ctx, &padding_name, padding_size));
     }
 
     let def = ast::ItemKind::Struct(
@@ -1173,12 +1226,12 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
             let ty = cty_to_rs(ctx, &**t);
             mk_arrty(ctx, &ty, s)
         },
-        TFuncPtr(ref sig) => {
+        TFuncPtr(ref sig, _) => {
             let decl = cfuncty_to_rs(ctx, &*sig.ret_ty, &sig.args[..], sig.is_variadic);
             let unsafety = if sig.is_safe { ast::Unsafety::Normal } else { ast::Unsafety::Unsafe };
             mk_fnty(ctx, decl, unsafety, sig.abi)
         },
-        TFuncProto(ref sig) => {
+        TFuncProto(ref sig, _) => {
             let decl = cfuncty_to_rs(ctx, &*sig.ret_ty, &sig.args[..], sig.is_variadic);
             let unsafety = if sig.is_safe { ast::Unsafety::Normal } else { ast::Unsafety::Unsafe };
             mk_fn_proto_ty(ctx, decl, unsafety, sig.abi)

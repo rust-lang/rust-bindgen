@@ -432,6 +432,7 @@ fn struct_with_aligned_struct() {
             pub x: int32_t,
             pub y: int64_t,
             pub z: int16_t,
+            _bindgen_padding_1_: [u16; 23usize],
         }
         impl ::std::default::Default for Struct_foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -442,6 +443,7 @@ fn struct_with_aligned_struct() {
         pub struct Struct_bar {
             pub a: int32_t,
             pub b: int64_t,
+            _bindgen_padding_1_: [u64; 6usize],
             pub foo: Struct_foo,
         }
         impl ::std::default::Default for Struct_bar {

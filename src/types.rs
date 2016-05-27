@@ -103,8 +103,8 @@ pub enum Type {
     /// A Pointer, the boolean indicating if it is const.
     TPtr(Box<Type>, bool, Layout),
     TArray(Box<Type>, usize, Layout),
-    TFuncProto(FuncSig),
-    TFuncPtr(FuncSig),
+    TFuncProto(FuncSig, Layout),
+    TFuncPtr(FuncSig, Layout),
     /// A typedef declaration?
     TNamed(Rc<RefCell<TypeInfo>>),
     /// A C composed type, like a struct or an union.
@@ -119,14 +119,14 @@ impl Type {
         match *self {
             TInt(_, l)
             | TFloat(_, l)
-            | TPtr(_, _, l)
-            | TArray(_, _, l) => l.size,
+            | TFuncProto(_, l)
+            | TFuncPtr(_, l)
+            | TPtr(_, _, l) => l.size,
+            TArray(_, size, l) => l.size * size,
             TNamed(ref ti) => ti.borrow().layout.size,
             TComp(ref ci) => ci.borrow().layout.size,
             TEnum(ref ei) => ei.borrow().layout.size,
-            TVoid
-            | TFuncProto(..)
-            | TFuncPtr(..) => 0,
+            TVoid => 0,
         }
     }
 
@@ -136,14 +136,14 @@ impl Type {
         match *self {
             TInt(_, l)
             | TFloat(_, l)
+            | TFuncProto(_, l)
+            | TFuncPtr(_, l)
             | TPtr(_, _, l)
             | TArray(_, _, l) => l.align,
             TNamed(ref ti) => ti.borrow().layout.align,
             TComp(ref ci) => ci.borrow().layout.align,
             TEnum(ref ei) => ei.borrow().layout.align,
-            TVoid
-            | TFuncProto(..)
-            | TFuncPtr(..) => 0,
+            TVoid => 0,
         }
     }
 
@@ -262,9 +262,9 @@ impl CompMember {
         match self {
             &CompMember::Field(ref f) => f.ty.layout(),
             &CompMember::Comp(ref rc_c) => rc_c.borrow().layout,
-            &CompMember::CompField(ref rc_c, _) => rc_c.borrow().layout,
+            &CompMember::CompField(_, ref f) => f.ty.layout(),
             &CompMember::Enum(ref rc_e) => rc_e.borrow().layout,
-            &CompMember::EnumField(ref rc_e, _) => rc_e.borrow().layout,
+            &CompMember::EnumField(_, ref f) => f.ty.layout(),
         }
     }
 }
