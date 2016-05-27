@@ -13,7 +13,7 @@ use syntax::abi;
 use types as il;
 use types::*;
 use clang as cx;
-use clang::{ast_dump, Cursor, Diagnostic, TranslationUnit};
+use clang::{Cursor, Diagnostic, TranslationUnit, ast_dump};
 
 use super::Logger;
 
@@ -32,8 +32,8 @@ struct ClangParserCtx<'a> {
     name: HashMap<Cursor, Global>,
     globals: Vec<Global>,
     builtin_defs: Vec<Cursor>,
-    logger: &'a (Logger+'a),
-    err_count: i32
+    logger: &'a (Logger + 'a),
+    err_count: i32,
 }
 
 fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {
@@ -76,31 +76,39 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
 
             let glob_decl = match cursor.kind() {
                 CXCursorKind::StructDecl => {
-                    let ci = Rc::new(RefCell::new(CompInfo::new(spelling, CompKind::Struct, vec!(), layout)));
+                    let ci = Rc::new(RefCell::new(CompInfo::new(spelling,
+                                                                CompKind::Struct,
+                                                                vec![],
+                                                                layout)));
                     GCompDecl(ci)
                 }
                 CXCursorKind::UnionDecl => {
-                    let ci = Rc::new(RefCell::new(CompInfo::new(spelling, CompKind::Union, vec!(), layout)));
+                    let ci = Rc::new(RefCell::new(CompInfo::new(spelling,
+                                                                CompKind::Union,
+                                                                vec![],
+                                                                layout)));
                     GCompDecl(ci)
                 }
                 CXCursorKind::EnumDecl => {
                     let kind = match override_enum_ty {
                         Some(t) => t,
-                        None => match cursor.enum_type().kind() {
-                            CXTypeKind::SChar | CXTypeKind::Char_S => ISChar,
-                            CXTypeKind::UChar | CXTypeKind::Char_U => IUChar,
-                            CXTypeKind::UShort => IUShort,
-                            CXTypeKind::UInt => IUInt,
-                            CXTypeKind::ULong => IULong,
-                            CXTypeKind::ULongLong => IULongLong,
-                            CXTypeKind::Short => IShort,
-                            CXTypeKind::Int => IInt,
-                            CXTypeKind::Long => ILong,
-                            CXTypeKind::LongLong => ILongLong,
-                            _ => IInt,
+                        None => {
+                            match cursor.enum_type().kind() {
+                                CXTypeKind::SChar | CXTypeKind::Char_S => ISChar,
+                                CXTypeKind::UChar | CXTypeKind::Char_U => IUChar,
+                                CXTypeKind::UShort => IUShort,
+                                CXTypeKind::UInt => IUInt,
+                                CXTypeKind::ULong => IULong,
+                                CXTypeKind::ULongLong => IULongLong,
+                                CXTypeKind::Short => IShort,
+                                CXTypeKind::Int => IInt,
+                                CXTypeKind::Long => ILong,
+                                CXTypeKind::LongLong => ILongLong,
+                                _ => IInt,
+                            }
                         }
                     };
-                    let ei = Rc::new(RefCell::new(EnumInfo::new(spelling, kind, vec!(), layout)));
+                    let ei = Rc::new(RefCell::new(EnumInfo::new(spelling, kind, vec![], layout)));
                     GEnumDecl(ei)
                 }
                 CXCursorKind::TypedefDecl => {
@@ -120,7 +128,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
 
             e.insert(glob_decl.clone());
             glob_decl
-        },
+        }
     };
 
     if new_decl && ctx.options.builtin_names.contains(&cursor.spelling()) {
@@ -135,12 +143,13 @@ fn opaque_decl(ctx: &mut ClangParserCtx, decl: &Cursor) {
     ctx.globals.push(name);
 }
 
-fn fwd_decl<F:FnOnce(&mut ClangParserCtx)->()>(ctx: &mut ClangParserCtx, cursor: &Cursor, f: F) {
+fn fwd_decl<F: FnOnce(&mut ClangParserCtx) -> ()>(ctx: &mut ClangParserCtx,
+                                                  cursor: &Cursor,
+                                                  f: F) {
     let def = &cursor.definition();
     if cursor == def {
         f(ctx);
-    } else if def.kind() == CXCursorKind::NoDeclFound ||
-              def.kind() == CXCursorKind::InvalidFile {
+    } else if def.kind() == CXCursorKind::NoDeclFound || def.kind() == CXCursorKind::InvalidFile {
         opaque_decl(ctx, cursor);
     }
 }
@@ -156,7 +165,11 @@ fn get_abi(cc: CXCallingConv) -> abi::Abi {
     }
 }
 
-fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, layout: Layout) -> il::Type {
+fn conv_ptr_ty(ctx: &mut ClangParserCtx,
+               ty: &cx::Type,
+               cursor: &Cursor,
+               layout: Layout)
+               -> il::Type {
     let is_const = ty.is_const();
     match ty.kind() {
         CXTypeKind::Unexposed |
@@ -184,15 +197,18 @@ fn mk_fn_sig(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Fu
         CXCursorKind::FunctionDecl => {
             // For CXCursorKind::FunctionDecl, cursor.args() is the reliable way to
             // get parameter names and types.
-            cursor.args().iter().map(|arg| {
-                let arg_name = arg.spelling();
-                (arg_name, conv_ty(ctx, &arg.cur_type(), arg))
-            }).collect()
+            cursor.args()
+                  .iter()
+                  .map(|arg| {
+                      let arg_name = arg.spelling();
+                      (arg_name, conv_ty(ctx, &arg.cur_type(), arg))
+                  })
+                  .collect()
         }
         _ => {
             // For non-CXCursorKind::FunctionDecl, visiting the cursor's children is
             // the only reliable way to get parameter names.
-            let mut args_lst = vec!();
+            let mut args_lst = vec![];
             cursor.visit(|c: &Cursor, _: &Cursor| {
                 if c.kind() == CXCursorKind::ParmDecl {
                     args_lst.push((c.spelling(), conv_ty(ctx, &c.cur_type(), c)));
@@ -207,9 +223,11 @@ fn mk_fn_sig(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Fu
     let abi = get_abi(ty.call_conv());
 
     // Function is presumed unsafe if it takes a pointer argument.
-    let is_unsafe = args_lst.iter().any(|arg| match arg.1 {
-        TPtr(_, _, _) => true,
-        _ => false
+    let is_unsafe = args_lst.iter().any(|arg| {
+        match arg.1 {
+            TPtr(_, _, _) => true,
+            _ => false,
+        }
     });
 
     il::FuncSig {
@@ -238,13 +256,17 @@ fn conv_decl_ty(ctx: &mut ClangParserCtx, cursor: &Cursor) -> il::Type {
             let ti = decl.typeinfo();
             TNamed(ti)
         }
-        _ => TVoid
+        _ => TVoid,
     }
 }
 
 fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type {
     debug!("conv_ty: ty=`{:?}` sp=`{}` loc=`{}` size=`{}` align=`{}`",
-           ty.kind(), cursor.spelling(), cursor.location(), ty.size(), ty.align());
+           ty.kind(),
+           cursor.spelling(),
+           cursor.location(),
+           ty.size(),
+           ty.align());
 
     let layout = Layout::new(ty.size(), ty.align());
 
@@ -269,23 +291,28 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
         CXTypeKind::VariableArray => unreachable!(),
         CXTypeKind::DependentSizedArray | CXTypeKind::IncompleteArray => {
             TArray(Box::new(conv_ty(ctx, &ty.elem_type(), cursor)), 0, layout)
-        },
-        CXTypeKind::FunctionProto | CXTypeKind::FunctionNoProto => TFuncProto(mk_fn_sig(ctx, ty, cursor), layout),
+        }
+        CXTypeKind::FunctionProto | CXTypeKind::FunctionNoProto => {
+            TFuncProto(mk_fn_sig(ctx, ty, cursor), layout)
+        }
         CXTypeKind::Record |
-        CXTypeKind::Typedef  |
+        CXTypeKind::Typedef |
         CXTypeKind::Unexposed |
         CXTypeKind::Enum => conv_decl_ty(ctx, &ty.declaration()),
-        CXTypeKind::ConstantArray => TArray(Box::new(conv_ty(ctx, &ty.elem_type(), cursor)), ty.array_size(), layout),
+        CXTypeKind::ConstantArray => {
+            TArray(Box::new(conv_ty(ctx, &ty.elem_type(), cursor)),
+                   ty.array_size(),
+                   layout)
+        }
         _ => {
             let fail = ctx.options.fail_on_unknown_type;
             log_err_warn(ctx,
-                &format!("unsupported type `{:?}` ({})",
-                    ty.kind(), cursor.location()
-                )[..],
-                fail
-            );
+                         &format!("unsupported type `{:?}` ({})",
+                                  ty.kind(),
+                                  cursor.location())[..],
+                         fail);
             TVoid
-        },
+        }
     }
 }
 
@@ -293,8 +320,7 @@ fn opaque_ty(ctx: &mut ClangParserCtx, ty: &cx::Type) {
     if ty.kind() == CXTypeKind::Record || ty.kind() == CXTypeKind::Enum {
         let decl = ty.declaration();
         let def = decl.definition();
-        if def.kind() == CXCursorKind::NoDeclFound ||
-           def.kind() == CXCursorKind::InvalidFile {
+        if def.kind() == CXCursorKind::NoDeclFound || def.kind() == CXCursorKind::InvalidFile {
             opaque_decl(ctx, &decl);
         }
     }
@@ -303,15 +329,18 @@ fn opaque_ty(ctx: &mut ClangParserCtx, ty: &cx::Type) {
 /// Recursively visits a cursor that represents a composite (struct or union)
 /// type and fills members with `CompMember` instances representing the fields and
 /// nested composites that make up the visited composite.
-fn visit_composite(cursor: &Cursor, parent: &Cursor,
+fn visit_composite(cursor: &Cursor,
+                   parent: &Cursor,
                    ctx: &mut ClangParserCtx,
-                   compinfo: &mut CompInfo) -> CXChildVisitResult {
+                   compinfo: &mut CompInfo)
+                   -> CXChildVisitResult {
     fn is_bitfield_continuation(field: &il::FieldInfo, ty: &il::Type, width: u32) -> bool {
         match (&field.bitfields, ty) {
             (&Some(ref bitfields), &il::TInt(_, layout)) if *ty == field.ty => {
-                bitfields.iter().map(|&(_, w)| w).fold(0u32, |acc, w| acc + w) + width <= (layout.size * 8) as u32
-            },
-            _ => false
+                bitfields.iter().map(|&(_, w)| w).fold(0u32, |acc, w| acc + w) + width <=
+                (layout.size * 8) as u32
+            }
+            _ => false,
         }
     }
 
@@ -321,7 +350,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 TComp(ref comp_ty) => return Some(comp_ty),
                 TPtr(ref ptr_ty, _, _) => ty = &**ptr_ty,
                 TArray(ref array_ty, _, _) => ty = &**array_ty,
-                _ => return None
+                _ => return None,
             }
         }
     }
@@ -332,7 +361,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 TEnum(ref enum_ty) => return Some(enum_ty),
                 TPtr(ref ptr_ty, _, _) => ty = &**ptr_ty,
                 TArray(ref array_ty, _, _) => ty = &**array_ty,
-                _ => return None
+                _ => return None,
             }
         }
     }
@@ -350,9 +379,11 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
 
                     if let Some(ref mut bitfields) = field.bitfields {
                         bitfields.push((cursor.spelling(), width));
-                    } else { unreachable!() }
+                    } else {
+                        unreachable!()
+                    }
                     return CXChildVisitResult::Continue;
-                },
+                }
                 // The field is the start of a new bitfield
                 (Some(width), _) => {
                     // Bitfields containing enums are not supported by the c standard
@@ -361,14 +392,15 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                         il::TInt(_, _) => (),
                         _ => {
                             let msg = format!("Enums in bitfields are not supported ({}.{}).",
-                                cursor.spelling(), parent.spelling());
+                                              cursor.spelling(),
+                                              parent.spelling());
                             ctx.logger.warn(&msg[..]);
                         }
                     }
-                    ("".to_owned(), Some(vec!((cursor.spelling(), width))))
-                },
+                    ("".to_owned(), Some(vec![(cursor.spelling(), width)]))
+                }
                 // The field is not a bitfield
-                (None, _) => (cursor.spelling(), None)
+                (None, _) => (cursor.spelling(), None),
             };
 
             // The Clang C api does not fully expose composite and enumeration
@@ -411,15 +443,15 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             let is_composite = match (inner_composite(&ty), members.last()) {
                 (Some(ty_compinfo), Some(&CompMember::Comp(ref c))) => {
                     c.borrow().deref() as *const _ == ty_compinfo.borrow().deref() as *const _
-                },
-                _ => false
+                }
+                _ => false,
             };
 
             let is_enumeration = match (inner_enumeration(&ty), members.last()) {
                 (Some(ty_enuminfo), Some(&CompMember::Enum(ref e))) => {
                     e.borrow().deref() as *const _ == ty_enuminfo.borrow().deref() as *const _
-                },
-                _ => false
+                }
+                _ => false,
             };
 
             let field = FieldInfo::new(name, ty.clone(), bitfields);
@@ -477,18 +509,18 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             // XXX: Some kind of warning would be nice, but this produces far
             //      too many.
             log_err_warn(ctx,
-                &format!("unhandled composite member `{}` (kind {:?}) in `{}` ({})",
-                    cursor.spelling(), cursor.kind(), parent.spelling(), cursor.location()
-                )[..],
-                false
-            );
+                         &format!("unhandled composite member `{}` (kind {:?}) in `{}` ({})",
+                                  cursor.spelling(),
+                                  cursor.kind(),
+                                  parent.spelling(),
+                                  cursor.location())[..],
+                         false);
         }
     }
     CXChildVisitResult::Continue
 }
 
-fn visit_enum(cursor: &Cursor,
-              items: &mut Vec<EnumItem>) -> CXChildVisitResult {
+fn visit_enum(cursor: &Cursor, items: &mut Vec<EnumItem>) -> CXChildVisitResult {
     if cursor.kind() == CXCursorKind::EnumConstantDecl {
         let name = cursor.spelling();
         let val = cursor.enum_val();
@@ -508,7 +540,7 @@ fn visit_literal(cursor: &Cursor, unit: &TranslationUnit) -> Option<i64> {
                 } else {
                     let s = &tokens[0].spelling;
                     let parsed = {
-                        //TODO: try to preserve hex literals?
+                        // TODO: try to preserve hex literals?
                         if s.starts_with("0x") {
                             i64::from_str_radix(&s[2..], 16)
                         } else {
@@ -522,23 +554,21 @@ fn visit_literal(cursor: &Cursor, unit: &TranslationUnit) -> Option<i64> {
                 }
             }
         }
-    }
-    else {
+    } else {
         None
     }
 }
 
 fn visit_top(cursor: &Cursor,
-                 ctx: &mut ClangParserCtx,
-                 unit: &TranslationUnit) -> CXChildVisitResult {
+             ctx: &mut ClangParserCtx,
+             unit: &TranslationUnit)
+             -> CXChildVisitResult {
     if !match_pattern(ctx, cursor) {
         return CXChildVisitResult::Continue;
     }
 
     match cursor.kind() {
-        CXCursorKind::UnexposedDecl => {
-            CXChildVisitResult::Recurse
-        }
+        CXCursorKind::UnexposedDecl => CXChildVisitResult::Recurse,
         CXCursorKind::StructDecl | CXCursorKind::UnionDecl => {
             fwd_decl(ctx, cursor, |ctx_| {
                 let decl = decl_name(ctx_, cursor);
@@ -618,9 +648,7 @@ fn visit_top(cursor: &Cursor,
 
             CXChildVisitResult::Continue
         }
-        CXCursorKind::FieldDecl => {
-            CXChildVisitResult::Continue
-        }
+        CXCursorKind::FieldDecl => CXChildVisitResult::Continue,
         _ => CXChildVisitResult::Continue,
     }
 }
@@ -638,23 +666,23 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
     let mut ctx = ClangParserCtx {
         options: options,
         name: HashMap::new(),
-        builtin_defs: vec!(),
-        globals: vec!(),
+        builtin_defs: vec![],
+        globals: vec![],
         logger: logger,
-        err_count: 0
+        err_count: 0,
     };
 
     let ix = cx::Index::create(false, true);
     if ix.is_null() {
         ctx.logger.error("Clang failed to create index");
-        return Err(())
+        return Err(());
     }
 
     let flags = CXTranslationUnit_Flags::empty();
     let unit = TranslationUnit::parse(&ix, "", &ctx.options.clang_args[..], &[], flags);
     if unit.is_null() {
         ctx.logger.error("No input files given");
-        return Err(())
+        return Err(());
     }
 
     let diags = unit.diags();
@@ -665,7 +693,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
     }
 
     if ctx.err_count > 0 {
-        return Err(())
+        return Err(());
     }
 
     let cursor = unit.cursor();
@@ -685,7 +713,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
     ix.dispose();
 
     if ctx.err_count > 0 {
-        return Err(())
+        return Err(());
     }
 
     Ok(ctx.globals)

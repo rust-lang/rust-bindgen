@@ -25,38 +25,38 @@ pub enum Global {
     /// A function prototype, like `int func();`.
     GFunc(Rc<RefCell<VarInfo>>),
     /// Something else.
-    GOther
+    GOther,
 }
 
 impl Global {
     pub fn compinfo(&self) -> Rc<RefCell<CompInfo>> {
         match *self {
-            GComp(ref i)
-            | GCompDecl(ref i) => i.clone(),
-            _ => panic!("global_compinfo")
+            GComp(ref i) |
+            GCompDecl(ref i) => i.clone(),
+            _ => panic!("global_compinfo"),
         }
     }
 
     pub fn enuminfo(&self) -> Rc<RefCell<EnumInfo>> {
         match *self {
-            GEnum(ref i)
-            | GEnumDecl(ref i) => i.clone(),
-            _ => panic!("global_enuminfo")
+            GEnum(ref i) |
+            GEnumDecl(ref i) => i.clone(),
+            _ => panic!("global_enuminfo"),
         }
     }
 
     pub fn typeinfo(&self) -> Rc<RefCell<TypeInfo>> {
         match *self {
             GType(ref i) => i.clone(),
-            _ => panic!("global_typeinfo")
+            _ => panic!("global_typeinfo"),
         }
     }
 
     pub fn varinfo(&self) -> Rc<RefCell<VarInfo>> {
         match *self {
-            GVar(ref i)
-            | GFunc(ref i) => i.clone(),
-            _ => panic!("global_varinfo")
+            GVar(ref i) |
+            GFunc(ref i) => i.clone(),
+            _ => panic!("global_varinfo"),
         }
     }
 }
@@ -65,12 +65,12 @@ impl fmt::Debug for Global {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             GType(ref ti) => ti.borrow().fmt(f),
-            GComp(ref ci)
-            | GCompDecl(ref ci) => ci.borrow().fmt(f),
-            GEnum(ref ei)
-            | GEnumDecl(ref ei) => ei.borrow().fmt(f),
-            GVar(ref vi)
-            | GFunc(ref vi) => vi.borrow().fmt(f),
+            GComp(ref ci) |
+            GCompDecl(ref ci) => ci.borrow().fmt(f),
+            GEnum(ref ei) |
+            GEnumDecl(ref ei) => ei.borrow().fmt(f),
+            GVar(ref vi) |
+            GFunc(ref vi) => vi.borrow().fmt(f),
             GOther => "*".fmt(f),
         }
     }
@@ -110,18 +110,18 @@ pub enum Type {
     /// A C composed type, like a struct or an union.
     TComp(Rc<RefCell<CompInfo>>),
     /// A C enum.
-    TEnum(Rc<RefCell<EnumInfo>>)
+    TEnum(Rc<RefCell<EnumInfo>>),
 }
 
 impl Type {
     /// Returns the size in bytes of the type.
     pub fn size(&self) -> usize {
         match *self {
-            TInt(_, l)
-            | TFloat(_, l)
-            | TFuncProto(_, l)
-            | TFuncPtr(_, l)
-            | TPtr(_, _, l) => l.size,
+            TInt(_, l) |
+            TFloat(_, l) |
+            TFuncProto(_, l) |
+            TFuncPtr(_, l) |
+            TPtr(_, _, l) => l.size,
             TArray(_, size, l) => l.size * size,
             TNamed(ref ti) => ti.borrow().layout.size,
             TComp(ref ci) => ci.borrow().layout.size,
@@ -134,12 +134,12 @@ impl Type {
     #[allow(dead_code)]
     pub fn align(&self) -> usize {
         match *self {
-            TInt(_, l)
-            | TFloat(_, l)
-            | TFuncProto(_, l)
-            | TFuncPtr(_, l)
-            | TPtr(_, _, l)
-            | TArray(_, _, l) => l.align,
+            TInt(_, l) |
+            TFloat(_, l) |
+            TFuncProto(_, l) |
+            TFuncPtr(_, l) |
+            TPtr(_, _, l) |
+            TArray(_, _, l) => l.align,
             TNamed(ref ti) => ti.borrow().layout.align,
             TComp(ref ci) => ci.borrow().layout.align,
             TEnum(ref ei) => ei.borrow().layout.align,
@@ -159,10 +159,12 @@ impl Type {
                 comp.borrow()
                     .members
                     .iter()
-                    .all(|member| match *member {
-                        CompMember::Field(ref f) |
-                        CompMember::CompField(_, ref f) => f.ty.can_auto_derive(),
-                        _ => true,
+                    .all(|member| {
+                        match *member {
+                            CompMember::Field(ref f) |
+                            CompMember::CompField(_, ref f) => f.ty.can_auto_derive(),
+                            _ => true,
+                        }
                     })
             }
             _ => true,
@@ -182,7 +184,11 @@ pub struct Layout {
 
 impl Layout {
     pub fn new(size: usize, align: usize) -> Layout {
-        Layout { size: size, align: align, packed: false }
+        Layout {
+            size: size,
+            align: align,
+            packed: false,
+        }
     }
 }
 
@@ -191,7 +197,7 @@ impl Default for Layout {
         Layout {
             size: 0,
             align: 0,
-            packed: false
+            packed: false,
         }
     }
 }
@@ -211,7 +217,7 @@ pub enum IKind {
     ILong,
     IULong,
     ILongLong,
-    IULongLong
+    IULongLong,
 }
 
 impl IKind {
@@ -235,7 +241,7 @@ impl IKind {
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum FKind {
     FFloat,
-    FDouble
+    FDouble,
 }
 
 #[derive(Clone, PartialEq, Debug)]
@@ -351,14 +357,14 @@ impl fmt::Debug for EnumInfo {
 #[derive(Clone, PartialEq, Debug)]
 pub struct EnumItem {
     pub name: String,
-    pub val: i64
+    pub val: i64,
 }
 
 impl EnumItem {
     pub fn new(name: String, val: i64) -> EnumItem {
         EnumItem {
             name: name,
-            val: val
+            val: val,
         }
     }
 }
@@ -391,10 +397,10 @@ impl fmt::Debug for TypeInfo {
 pub struct VarInfo {
     pub name: String,
     pub ty: Type,
-    //TODO: support non-integer constants
+    // TODO: support non-integer constants
     pub val: Option<i64>,
     /// Is the variable constant?
-    pub is_const: bool
+    pub is_const: bool,
 }
 
 impl VarInfo {
@@ -403,7 +409,7 @@ impl VarInfo {
             name: name,
             ty: ty,
             val: None,
-            is_const: false
+            is_const: false,
         }
     }
 }

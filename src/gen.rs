@@ -7,7 +7,7 @@ use std::collections::HashMap;
 
 use syntax::abi;
 use syntax::ast;
-use syntax::codemap::{Span, respan, ExpnInfo, NameAndSpan, MacroBang};
+use syntax::codemap::{ExpnInfo, MacroBang, NameAndSpan, Span, respan};
 use syntax::ext::base;
 use syntax::ext::build::AstBuilder;
 use syntax::ext::expand::ExpansionConfig;
@@ -25,7 +25,7 @@ use types::*;
 struct GenCtx<'r> {
     ext_cx: base::ExtCtxt<'r>,
     unnamed_ty: usize,
-    span: Span
+    span: Span,
 }
 
 fn ref_eq<T>(thing: &T, other: &T) -> bool {
@@ -44,10 +44,19 @@ fn rust_id(ctx: &mut GenCtx, name: &str) -> (String, bool) {
 
 fn rust_type_id(ctx: &mut GenCtx, name: &str) -> String {
     match name {
-        "bool" | "uint" | "u8" | "u16" | "u32" | "f32" | "f64" | "i8" | "i16" |
-        "i32" | "i64" | "Self" | "str" => {
-            format!("_{}", name)
-        },
+        "bool" |
+        "uint" |
+        "u8" |
+        "u16" |
+        "u32" |
+        "f32" |
+        "f64" |
+        "i8" |
+        "i16" |
+        "i32" |
+        "i64" |
+        "Self" |
+        "str" => format!("_{}", name),
         _ => {
             let (n, _) = rust_id(ctx, name);
             n
@@ -69,7 +78,7 @@ fn unnamed_name(ctx: &mut GenCtx, name: &str) -> String {
 fn comp_name(kind: CompKind, name: &str) -> String {
     match kind {
         CompKind::Struct => struct_name(name),
-        CompKind::Union  => union_name(name),
+        CompKind::Union => union_name(name),
     }
 }
 
@@ -101,18 +110,14 @@ fn extract_definitions(ctx: &mut GenCtx,
                        options: &BindgenOptions,
                        globals: &[Global])
                        -> Vec<P<ast::Item>> {
-    let mut defs = vec!();
+    let mut defs = vec![];
 
     for g in globals {
         match *g {
             GType(ref ti) => {
                 let t = ti.borrow();
-                defs.extend(ctypedef_to_rs(
-                    ctx,
-                    options,
-                    options.derive_debug,
-                    &t.name, &t.ty))
-            },
+                defs.extend(ctypedef_to_rs(ctx, options, options.derive_debug, &t.name, &t.ty))
+            }
             GCompDecl(ref ci) => {
                 {
                     let mut c = ci.borrow_mut();
@@ -120,17 +125,22 @@ fn extract_definitions(ctx: &mut GenCtx,
                 }
                 let c = ci.borrow().clone();
                 defs.push(opaque_to_rs(ctx, &comp_name(c.kind, &c.name)));
-            },
+            }
             GComp(ref ci) => {
                 {
                     let mut c = ci.borrow_mut();
                     c.name = unnamed_name(ctx, &c.name);
                 }
                 let c = ci.borrow().clone();
-                defs.extend(comp_to_rs(ctx, c.kind, comp_name(c.kind, &c.name),
-                                       options, options.derive_debug,
-                                       c.layout, c.members).into_iter())
-            },
+                defs.extend(comp_to_rs(ctx,
+                                       c.kind,
+                                       comp_name(c.kind, &c.name),
+                                       options,
+                                       options.derive_debug,
+                                       c.layout,
+                                       c.members)
+                                .into_iter())
+            }
             GEnumDecl(ref ei) => {
                 {
                     let mut e = ei.borrow_mut();
@@ -138,49 +148,51 @@ fn extract_definitions(ctx: &mut GenCtx,
                 }
                 let e = ei.borrow().clone();
                 defs.push(opaque_to_rs(ctx, &enum_name(&e.name)));
-            },
+            }
             GEnum(ref ei) => {
                 {
                     let mut e = ei.borrow_mut();
                     e.name = unnamed_name(ctx, &e.name);
                 }
                 let e = ei.borrow();
-                defs.extend(cenum_to_rs(
-                    ctx,
-                    options,
-                    options.derive_debug,
-                    &enum_name(&e.name), e.kind, e.layout, &e.items));
-            },
+                defs.extend(cenum_to_rs(ctx,
+                                        options,
+                                        options.derive_debug,
+                                        &enum_name(&e.name),
+                                        e.kind,
+                                        e.layout,
+                                        &e.items));
+            }
             GVar(ref vi) => {
                 let v = vi.borrow();
                 let ty = cty_to_rs(ctx, &v.ty);
                 defs.push(const_to_rs(ctx, &v.name, v.val.unwrap(), ty));
-            },
-            _ => { }
+            }
+            _ => {}
         }
     }
 
     defs
 }
 
-fn extract_functions(ctx: &mut GenCtx,
-                    fs: &[Global])
-                    -> HashMap<abi::Abi, Vec<ast::ForeignItem>> {
+fn extract_functions(ctx: &mut GenCtx, fs: &[Global]) -> HashMap<abi::Abi, Vec<ast::ForeignItem>> {
     let func_list = fs.iter().map(|f| {
         match *f {
             GFunc(ref vi) => {
                 let v = vi.borrow();
                 match v.ty {
                     TFuncPtr(ref sig, _) => {
-                        let decl = cfunc_to_rs(ctx, v.name.clone(),
-                        &*sig.ret_ty, &sig.args[..],
-                        sig.is_variadic);
+                        let decl = cfunc_to_rs(ctx,
+                                               v.name.clone(),
+                                               &*sig.ret_ty,
+                                               &sig.args[..],
+                                               sig.is_variadic);
                         (sig.abi, decl)
                     }
-                    _ => unreachable!()
+                    _ => unreachable!(),
                 }
-            },
-            _ => unreachable!()
+            }
+            _ => unreachable!(),
         }
     });
 
@@ -232,11 +244,10 @@ fn remove_unnamed(globals: &mut Vec<Global>) {
     }
 }
 
-pub fn gen_mod(
-        options: &BindgenOptions,
-        globs: Vec<Global>,
-        span: Span)
-        -> (Vec<P<ast::Item>>, Vec<ast::Attribute>) {
+pub fn gen_mod(options: &BindgenOptions,
+               globs: Vec<Global>,
+               span: Span)
+               -> (Vec<P<ast::Item>>, Vec<ast::Attribute>) {
     // Create a dummy ExtCtxt. We only need this for string interning and that uses TLS.
     let mut features = Features::new();
     features.quote = true;
@@ -249,28 +260,23 @@ pub fn gen_mod(
     let sess = &parse::ParseSess::new();
     let mut feature_gated_cfgs = Vec::new();
     let mut ctx = GenCtx {
-        ext_cx: base::ExtCtxt::new(
-            sess,
-            Vec::new(),
-            cfg,
-            &mut feature_gated_cfgs,
-        ),
+        ext_cx: base::ExtCtxt::new(sess, Vec::new(), cfg, &mut feature_gated_cfgs),
         unnamed_ty: 0,
-        span: span
+        span: span,
     };
     ctx.ext_cx.bt_push(ExpnInfo {
         call_site: ctx.span,
         callee: NameAndSpan {
             format: MacroBang(parse::token::intern("")),
             allow_internal_unstable: false,
-            span: None
-        }
+            span: None,
+        },
     });
     let uniq_globs = tag_dup_decl(&globs);
 
-    let mut fs = vec!();
-    let mut vs = vec!();
-    let mut gs = vec!();
+    let mut fs = vec![];
+    let mut vs = vec![];
+    let mut gs = vec![];
     for g in uniq_globs.into_iter() {
         match g {
             GOther => {}
@@ -282,7 +288,7 @@ pub fn gen_mod(
                             let v = vi.borrow();
                             v.is_const && v.val.is_some()
                         }
-                        _ => unreachable!()
+                        _ => unreachable!(),
                     }
                 };
                 if is_int_const {
@@ -291,7 +297,7 @@ pub fn gen_mod(
                     vs.push(g);
                 }
             }
-            _ => gs.push(g)
+            _ => gs.push(g),
         }
     }
 
@@ -299,15 +305,17 @@ pub fn gen_mod(
     remove_unnamed(&mut gs);
     let mut defs = extract_definitions(&mut ctx, options, &gs);
 
-    let vars = vs.into_iter().map(|v| {
-        match v {
-            GVar(vi) => {
-                let v = vi.borrow();
-                cvar_to_rs(&mut ctx, v.name.clone(), &v.ty, v.is_const)
-            },
-            _ => unreachable!()
-        }
-    }).collect();
+    let vars = vs.into_iter()
+                 .map(|v| {
+                     match v {
+                         GVar(vi) => {
+                             let v = vi.borrow();
+                             cvar_to_rs(&mut ctx, v.name.clone(), &v.ty, v.is_const)
+                         }
+                         _ => unreachable!(),
+                     }
+                 })
+                 .collect();
 
     let funcs = extract_functions(&mut ctx, &fs);
 
@@ -319,65 +327,69 @@ pub fn gen_mod(
         defs.push(mk_extern(&mut ctx, &options.links, funcs, abi));
     }
 
-    //let attrs = vec!(mk_attr_list(&mut ctx, "allow", ));
-    let mod_attrs = vec![
-        mk_attr_style(&mut ctx,
-                      "allow",
-                      &["dead_code",
-                        "non_camel_case_types",
-                        "non_upper_case_globals",
-                        "non_snake_case"],
-                      ast::AttrStyle::Inner)
-    ];
+    // let attrs = vec!(mk_attr_list(&mut ctx, "allow", ));
+    let mod_attrs = vec![mk_attr_style(&mut ctx,
+                                       "allow",
+                                       &["dead_code",
+                                         "non_camel_case_types",
+                                         "non_upper_case_globals",
+                                         "non_snake_case"],
+                                       ast::AttrStyle::Inner)];
     (defs, mod_attrs)
 }
 
-fn mk_extern(ctx: &mut GenCtx, links: &[(String, LinkType)],
+fn mk_extern(ctx: &mut GenCtx,
+             links: &[(String, LinkType)],
              foreign_items: Vec<ast::ForeignItem>,
-             abi: abi::Abi) -> P<ast::Item> {
+             abi: abi::Abi)
+             -> P<ast::Item> {
     let attrs = if links.is_empty() {
         Vec::new()
     } else {
-        links.iter().map(|&(ref l, ref k)| {
-            let k = match *k {
-                LinkType::Static => Some("static"),
-                LinkType::Dynamic => Some("dylib"),
-                LinkType::Framework => Some("framework")
-            };
-            let link_name = P(respan(ctx.span, ast::MetaItemKind::NameValue(
+        links.iter()
+             .map(|&(ref l, ref k)| {
+                 let k = match *k {
+                     LinkType::Static => Some("static"),
+                     LinkType::Dynamic => Some("dylib"),
+                     LinkType::Framework => Some("framework"),
+                 };
+                 let link_name = P(respan(ctx.span, ast::MetaItemKind::NameValue(
                 InternedString::new("name"),
                 respan(ctx.span, ast::LitKind::Str(
                     ctx.ext_cx.name_of(l).as_str(),
                     ast::StrStyle::Cooked
                 ))
             )));
-            let link_args = match k {
-                None => vec!(link_name),
-                Some(ref k) => vec!(link_name, P(respan(ctx.span, ast::MetaItemKind::NameValue(
+                 let link_args = match k {
+                     None => vec![link_name],
+                     Some(ref k) => {
+                         vec!(link_name, P(respan(ctx.span, ast::MetaItemKind::NameValue(
                     InternedString::new("kind"),
                     respan(ctx.span, ast::LitKind::Str(
                         ctx.ext_cx.name_of(k).as_str(),
                         ast::StrStyle::Cooked
                     ))
                 ))))
-            };
-            respan(ctx.span, ast::Attribute_ {
-                id: mk_attr_id(),
-                style: ast::AttrStyle::Outer,
-                value: P(respan(ctx.span, ast::MetaItemKind::List(
-                    InternedString::new("link"),
-                    link_args)
-                )),
-                is_sugared_doc: false
-            })
-        }).collect()
+                     }
+                 };
+                 respan(ctx.span,
+                        ast::Attribute_ {
+                            id: mk_attr_id(),
+                            style: ast::AttrStyle::Outer,
+                            value: P(respan(ctx.span,
+                                            ast::MetaItemKind::List(InternedString::new("link"),
+                                                                    link_args))),
+                            is_sugared_doc: false,
+                        })
+             })
+             .collect()
     };
 
     let mut items = Vec::new();
     items.extend(foreign_items.into_iter());
     let ext = ast::ItemKind::ForeignMod(ast::ForeignMod {
         abi: abi,
-        items: items
+        items: items,
     });
 
     P(ast::Item {
@@ -386,39 +398,41 @@ fn mk_extern(ctx: &mut GenCtx, links: &[(String, LinkType)],
         id: ast::DUMMY_NODE_ID,
         node: ext,
         vis: ast::Visibility::Inherited,
-        span: ctx.span
+        span: ctx.span,
     })
 }
 
 fn remove_redundant_decl(gs: Vec<Global>) -> Vec<Global> {
     fn check_decl(a: &Global, ty: &Type) -> bool {
         match *a {
-          GComp(ref ci1) => match *ty {
-              TComp(ref ci2) => {
-                  ref_eq(ci1, ci2) && ci1.borrow().name.is_empty()
-              },
-              _ => false
-          },
-          GEnum(ref ei1) => match *ty {
-              TEnum(ref ei2) => {
-                  ref_eq(ei1, ei2) && ei1.borrow().name.is_empty()
-              },
-              _ => false
-          },
-          _ => false
+            GComp(ref ci1) => {
+                match *ty {
+                    TComp(ref ci2) => ref_eq(ci1, ci2) && ci1.borrow().name.is_empty(),
+                    _ => false,
+                }
+            }
+            GEnum(ref ei1) => {
+                match *ty {
+                    TEnum(ref ei2) => ref_eq(ei1, ei2) && ei1.borrow().name.is_empty(),
+                    _ => false,
+                }
+            }
+            _ => false,
         }
     }
 
-    let typedefs: Vec<Type> = gs.iter().filter_map(|g|
-        match *g {
-            GType(ref ti) => Some(ti.borrow().ty.clone()),
-            _ => None
-        }
-    ).collect();
+    let typedefs: Vec<Type> = gs.iter()
+                                .filter_map(|g| {
+                                    match *g {
+                                        GType(ref ti) => Some(ti.borrow().ty.clone()),
+                                        _ => None,
+                                    }
+                                })
+                                .collect();
 
-    gs.into_iter().filter(|g|
-        !typedefs.iter().any(|t| check_decl(g, t))
-    ).collect()
+    gs.into_iter()
+      .filter(|g| !typedefs.iter().any(|t| check_decl(g, t)))
+      .collect()
 }
 
 fn tag_dup_decl(gs: &[Global]) -> Vec<Global> {
@@ -428,38 +442,38 @@ fn tag_dup_decl(gs: &[Global]) -> Vec<Global> {
 
     fn is_dup(g1: &Global, g2: &Global) -> bool {
         match (g1, g2) {
-          (&GType(ref ti1), &GType(ref ti2)) => {
-              let a = ti1.borrow();
-              let b = ti2.borrow();
-              check(&a.name[..], &b.name[..])
-          },
-          (&GComp(ref ci1), &GComp(ref ci2)) |
-          (&GCompDecl(ref ci1), &GCompDecl(ref ci2)) => {
-              let a = ci1.borrow();
-              let b = ci2.borrow();
-              check(&a.name[..], &b.name[..])
-          },
-          (&GEnum(ref ei1), &GEnum(ref ei2)) |
-          (&GEnumDecl(ref ei1), &GEnumDecl(ref ei2)) => {
-              let a = ei1.borrow();
-              let b = ei2.borrow();
-              check(&a.name[..], &b.name[..])
-          },
-          (&GVar(ref vi1), &GVar(ref vi2)) |
-          (&GFunc(ref vi1), &GFunc(ref vi2)) => {
-              let a = vi1.borrow();
-              let b = vi2.borrow();
-              check(&a.name[..], &b.name[..])
-          },
-          _ => false
+            (&GType(ref ti1), &GType(ref ti2)) => {
+                let a = ti1.borrow();
+                let b = ti2.borrow();
+                check(&a.name[..], &b.name[..])
+            }
+            (&GComp(ref ci1), &GComp(ref ci2)) |
+            (&GCompDecl(ref ci1), &GCompDecl(ref ci2)) => {
+                let a = ci1.borrow();
+                let b = ci2.borrow();
+                check(&a.name[..], &b.name[..])
+            }
+            (&GEnum(ref ei1), &GEnum(ref ei2)) |
+            (&GEnumDecl(ref ei1), &GEnumDecl(ref ei2)) => {
+                let a = ei1.borrow();
+                let b = ei2.borrow();
+                check(&a.name[..], &b.name[..])
+            }
+            (&GVar(ref vi1), &GVar(ref vi2)) |
+            (&GFunc(ref vi1), &GFunc(ref vi2)) => {
+                let a = vi1.borrow();
+                let b = vi2.borrow();
+                check(&a.name[..], &b.name[..])
+            }
+            _ => false,
         }
     }
 
     if gs.is_empty() {
-        return vec!();
+        return vec![];
     }
 
-    let mut res: Vec<Global> = vec!();
+    let mut res: Vec<Global> = vec![];
     res.push(gs[0].clone());
 
     for (i, gsi) in gs.iter().enumerate().skip(1) {
@@ -473,13 +487,12 @@ fn tag_dup_decl(gs: &[Global]) -> Vec<Global> {
 }
 
 /// Converts a C typedef to Rust AST Items.
-fn ctypedef_to_rs(
-        ctx: &mut GenCtx,
-        options: &BindgenOptions,
-        derive_debug: bool,
-        name: &str,
-        ty: &Type)
-        -> Vec<P<ast::Item>> {
+fn ctypedef_to_rs(ctx: &mut GenCtx,
+                  options: &BindgenOptions,
+                  derive_debug: bool,
+                  name: &str,
+                  ty: &Type)
+                  -> Vec<P<ast::Item>> {
     fn mk_item(ctx: &mut GenCtx, name: &str, ty: &Type) -> P<ast::Item> {
         let rust_ty = match &name[..] {
             // Alias these types to `usize`, e.g. `type size_t = usize`, instead of aliasing them to
@@ -499,14 +512,12 @@ fn ctypedef_to_rs(
             _ => cty_to_rs(ctx, ty),
         };
         let rust_name = rust_type_id(ctx, name);
-        let base = ast::ItemKind::Ty(
-            P(ast::Ty {
-                id: ast::DUMMY_NODE_ID,
-                node: rust_ty.node,
-                span: ctx.span,
-            }),
-            ast::Generics::default()
-        );
+        let base = ast::ItemKind::Ty(P(ast::Ty {
+                                         id: ast::DUMMY_NODE_ID,
+                                         node: rust_ty.node,
+                                         span: ctx.span,
+                                     }),
+                                     ast::Generics::default());
 
         P(ast::Item {
             ident: ctx.ext_cx.ident_of(&rust_name),
@@ -514,7 +525,7 @@ fn ctypedef_to_rs(
             id: ast::DUMMY_NODE_ID,
             node: base,
             vis: ast::Visibility::Public,
-            span: ctx.span
+            span: ctx.span,
         })
     }
 
@@ -524,11 +535,17 @@ fn ctypedef_to_rs(
             if is_empty {
                 ci.borrow_mut().name = name.into();
                 let c = ci.borrow().clone();
-                comp_to_rs(ctx, c.kind, name.into(), options, derive_debug, c.layout, c.members)
+                comp_to_rs(ctx,
+                           c.kind,
+                           name.into(),
+                           options,
+                           derive_debug,
+                           c.layout,
+                           c.members)
             } else {
-                vec!(mk_item(ctx, name, ty))
+                vec![mk_item(ctx, name, ty)]
             }
-        },
+        }
         TEnum(ref ei) => {
             let is_empty = ei.borrow().name.is_empty();
             if is_empty {
@@ -536,34 +553,39 @@ fn ctypedef_to_rs(
                 let e = ei.borrow();
                 cenum_to_rs(ctx, options, derive_debug, name, e.kind, e.layout, &e.items)
             } else {
-                vec!(mk_item(ctx, name, ty))
+                vec![mk_item(ctx, name, ty)]
             }
-        },
-        _ => vec!(mk_item(ctx, name, ty))
+        }
+        _ => vec![mk_item(ctx, name, ty)],
     }
 }
 
 /// Converts a C composed type (struct or union) to Rust AST Items.
-fn comp_to_rs(ctx: &mut GenCtx, kind: CompKind, name: String,
+fn comp_to_rs(ctx: &mut GenCtx,
+              kind: CompKind,
+              name: String,
               options: &BindgenOptions,
               derive_debug: bool,
-              layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
+              layout: Layout,
+              members: Vec<CompMember>)
+              -> Vec<P<ast::Item>> {
     match kind {
         CompKind::Struct => cstruct_to_rs(ctx, &name, options, derive_debug, layout, members),
-        CompKind::Union =>  cunion_to_rs(ctx, name, options, derive_debug, layout, members),
+        CompKind::Union => cunion_to_rs(ctx, name, options, derive_debug, layout, members),
     }
 }
 
 fn gen_padding_fields(ctx: &mut GenCtx,
                       idx: usize,
                       offset: usize,
-                      padding_size: usize) -> Vec<ast::StructField> {
+                      padding_size: usize)
+                      -> Vec<ast::StructField> {
     const MAX_ARRAY_CLONE_LEN: usize = 32; // impl<T: Copy> Clone for [T; 32]
 
     let u64_size = mem::size_of::<u64>();
     let max_field_size = u64_size * MAX_ARRAY_CLONE_LEN;
-    let u64_ty = P(mk_ty(ctx, false, vec!("u64".to_owned())));
-    let u8_ty = P(mk_ty(ctx, false, vec!("u8".to_owned())));
+    let u64_ty = P(mk_ty(ctx, false, vec!["u64".to_owned()]));
+    let u8_ty = P(mk_ty(ctx, false, vec!["u8".to_owned()]));
     let mut size = padding_size;
 
     let u64_padding_size = u64_size - (offset % u64_size);
@@ -573,8 +595,8 @@ fn gen_padding_fields(ctx: &mut GenCtx,
     }
 
     let mut fields = (0..(size / max_field_size))
-        .map(|_| (&u64_ty, MAX_ARRAY_CLONE_LEN))
-        .collect::<Vec<(&P<ast::Ty>, usize)>>();
+                         .map(|_| (&u64_ty, MAX_ARRAY_CLONE_LEN))
+                         .collect::<Vec<(&P<ast::Ty>, usize)>>();
 
     let u64_num = (size % max_field_size) / u64_size;
 
@@ -588,20 +610,23 @@ fn gen_padding_fields(ctx: &mut GenCtx,
         fields.push((&u8_ty, u8_num));
     }
 
-    fields.iter().enumerate().map(|(i, &(ref el_ty, el_num))| {
-        let name = format!("_bindgen_padding_{}_", idx + i);
+    fields.iter()
+          .enumerate()
+          .map(|(i, &(ref el_ty, el_num))| {
+              let name = format!("_bindgen_padding_{}_", idx + i);
 
-        let padding_ty = P(mk_arrty(ctx, &el_ty, el_num));
+              let padding_ty = P(mk_arrty(ctx, &el_ty, el_num));
 
-        ast::StructField {
-            span: ctx.span,
-            vis: ast::Visibility::Inherited,
-            ident: Some(ctx.ext_cx.ident_of(&name[..])),
-            id: ast::DUMMY_NODE_ID,
-            ty: padding_ty,
-            attrs: Vec::new()
-        }
-    }).collect()
+              ast::StructField {
+                  span: ctx.span,
+                  vis: ast::Visibility::Inherited,
+                  ident: Some(ctx.ext_cx.ident_of(&name[..])),
+                  id: ast::DUMMY_NODE_ID,
+                  ty: padding_ty,
+                  attrs: Vec::new(),
+              }
+          })
+          .collect()
 }
 
 /// Converts a C struct to Rust AST Items.
@@ -610,13 +635,14 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
                  options: &BindgenOptions,
                  derive_debug: bool,
                  layout: Layout,
-                 members: Vec<CompMember>) -> Vec<P<ast::Item>> {
-    let mut fields: Vec<ast::StructField> = vec!();
-    let mut methods = vec!();
+                 members: Vec<CompMember>)
+                 -> Vec<P<ast::Item>> {
+    let mut fields: Vec<ast::StructField> = vec![];
+    let mut methods = vec![];
     // Nested composites may need to emit declarations and implementations as
     // they are encountered.  The declarations end up in 'extra' and are emitted
     // after the current struct.
-    let mut extra = vec!();
+    let mut extra = vec![];
     let mut unnamed: u32 = 0;
     let mut bitfields: u32 = 0;
     let mut paddings = 0;
@@ -630,11 +656,11 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
         debug!("convert field {} {:?}", m.name(), m);
 
         let (opt_rc_c, opt_rc_e, opt_f) = match *m {
-            CompMember::Field(ref f) => { (None, None, Some(f)) }
-            CompMember::Comp(ref rc_c) => { (Some(rc_c), None, None) }
-            CompMember::CompField(ref rc_c, ref f) => { (Some(rc_c), None, Some(f)) }
-            CompMember::Enum(ref rc_e) => { (None, Some(rc_e), None) }
-            CompMember::EnumField(ref rc_e, ref f) => { (None, Some(rc_e), Some(f)) }
+            CompMember::Field(ref f) => (None, None, Some(f)),
+            CompMember::Comp(ref rc_c) => (Some(rc_c), None, None),
+            CompMember::CompField(ref rc_c, ref f) => (Some(rc_c), None, Some(f)),
+            CompMember::Enum(ref rc_e) => (None, Some(rc_e), None),
+            CompMember::EnumField(ref rc_e, ref f) => (None, Some(rc_e), Some(f)),
         };
 
         if !layout.packed && m.layout().align != 0 && (offset % m.layout().align) != 0 {
@@ -651,7 +677,11 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
             offset += padding_size;
         }
 
-        debug!("member {}::{} @ {}, {:?}", name, m.name(), offset, m.layout());
+        debug!("member {}::{} @ {}, {:?}",
+               name,
+               m.name(),
+               offset,
+               m.layout());
 
         if let Some(f) = opt_f {
             let f_name = match f.bitfields {
@@ -659,7 +689,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
                     bitfields += 1;
                     format!("_bindgen_bitfield_{}_", bitfields)
                 }
-                None => rust_type_id(ctx, &f.name)
+                None => rust_type_id(ctx, &f.name),
             };
 
             if !f.ty.can_auto_derive() {
@@ -675,7 +705,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
                 ident: Some(ctx.ext_cx.ident_of(&f_name[..])),
                 id: ast::DUMMY_NODE_ID,
                 ty: f_ty,
-                attrs: Vec::new()
+                attrs: Vec::new(),
             });
         }
 
@@ -685,22 +715,37 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
                 unnamed += 1;
                 let field_name = format!("_bindgen_data_{}_", unnamed);
                 fields.push(mk_blob_field(ctx, &field_name, c.layout, ctx.span));
-                methods.extend(gen_comp_methods(ctx, &field_name, 0, c.kind, &c.members, &mut extra, options, derive_debug).into_iter());
+                methods.extend(gen_comp_methods(ctx,
+                                                &field_name,
+                                                0,
+                                                c.kind,
+                                                &c.members,
+                                                &mut extra,
+                                                options,
+                                                derive_debug)
+                                   .into_iter());
             } else {
-                extra.extend(comp_to_rs(ctx, c.kind, comp_name(c.kind, &c.name),
-                                        options, derive_debug,
-                                        c.layout, c.members.clone()).into_iter());
+                extra.extend(comp_to_rs(ctx,
+                                        c.kind,
+                                        comp_name(c.kind, &c.name),
+                                        options,
+                                        derive_debug,
+                                        c.layout,
+                                        c.members.clone())
+                                 .into_iter());
             }
         }
 
         if let Some(rc_e) = opt_rc_e {
             let e = rc_e.borrow();
             assert!(!e.name.is_empty());
-            extra.extend(cenum_to_rs(
-                ctx,
-                options,
-                options.derive_debug,
-                &enum_name(&e.name), e.kind, e.layout, &e.items));
+            extra.extend(cenum_to_rs(ctx,
+                                     options,
+                                     options.derive_debug,
+                                     &enum_name(&e.name),
+                                     e.kind,
+                                     e.layout,
+                                     &e.items));
         }
 
         offset += m.layout().size as usize;
@@ -712,10 +757,8 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
         fields.append(&mut padding_fields);
     }
 
-    let def = ast::ItemKind::Struct(
-        ast::VariantData::Struct(fields, ast::DUMMY_NODE_ID),
-        ast::Generics::default()
-    );
+    let def = ast::ItemKind::Struct(ast::VariantData::Struct(fields, ast::DUMMY_NODE_ID),
+                                    ast::Generics::default());
 
     let id = rust_type_id(ctx, name);
     let mut attrs = vec![mk_repr_attr(ctx, layout)];
@@ -727,32 +770,31 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     if can_derive_debug {
         attrs.push(mk_deriving_debug_attr(ctx));
     }
-    let struct_def = P(ast::Item { ident: ctx.ext_cx.ident_of(&id),
+    let struct_def = P(ast::Item {
+        ident: ctx.ext_cx.ident_of(&id),
         attrs: attrs,
         id: ast::DUMMY_NODE_ID,
         node: def,
         vis: ast::Visibility::Public,
-        span: ctx.span
+        span: ctx.span,
     });
 
-    let mut items = vec!(struct_def);
+    let mut items = vec![struct_def];
     if !methods.is_empty() {
-        let impl_ = ast::ItemKind::Impl(
-            ast::Unsafety::Normal,
-            ast::ImplPolarity::Positive,
-            ast::Generics::default(),
-            None,
-            P(mk_ty(ctx, false, vec!(id))),
-            methods
-        );
-        items.push(
-            P(ast::Item {
-                ident: ctx.ext_cx.ident_of(name),
-                attrs: vec!(),
-                id: ast::DUMMY_NODE_ID,
-                node: impl_,
-                vis: ast::Visibility::Inherited,
-                span: ctx.span}));
+        let impl_ = ast::ItemKind::Impl(ast::Unsafety::Normal,
+                                        ast::ImplPolarity::Positive,
+                                        ast::Generics::default(),
+                                        None,
+                                        P(mk_ty(ctx, false, vec![id])),
+                                        methods);
+        items.push(P(ast::Item {
+            ident: ctx.ext_cx.ident_of(name),
+            attrs: vec![],
+            id: ast::DUMMY_NODE_ID,
+            node: impl_,
+            vis: ast::Visibility::Inherited,
+            span: ctx.span,
+        }));
     }
 
     if !can_derive_clone {
@@ -770,22 +812,21 @@ fn mk_clone_impl(ctx: &GenCtx, ty_name: &str) -> P<ast::Item> {
         impl ::std::clone::Clone for {} {{
             fn clone(&self) -> Self {{ *self }}
         }}
-    ", ty_name);
+    ",
+                           ty_name);
 
     parse::new_parser_from_source_str(ctx.ext_cx.parse_sess(),
                                       ctx.ext_cx.cfg(),
                                       "".to_owned(),
-                                      impl_str).parse_item().unwrap().unwrap()
+                                      impl_str)
+        .parse_item()
+        .unwrap()
+        .unwrap()
 }
 
 /// Convert a opaque type name to an ast Item.
 fn opaque_to_rs(ctx: &mut GenCtx, name: &str) -> P<ast::Item> {
-    let def = ast::ItemKind::Enum(
-        ast::EnumDef {
-            variants: vec!()
-        },
-        ast::Generics::default()
-    );
+    let def = ast::ItemKind::Enum(ast::EnumDef { variants: vec![] }, ast::Generics::default());
 
     let id = rust_type_id(ctx, name);
     P(ast::Item {
@@ -794,49 +835,60 @@ fn opaque_to_rs(ctx: &mut GenCtx, name: &str) -> P<ast::Item> {
         id: ast::DUMMY_NODE_ID,
         node: def,
         vis: ast::Visibility::Public,
-        span: ctx.span
+        span: ctx.span,
     })
 }
 
-fn cunion_to_rs(ctx: &mut GenCtx, name: String, options: &BindgenOptions, derive_debug: bool, layout: Layout, members: Vec<CompMember>) -> Vec<P<ast::Item>> {
-    fn mk_item(ctx: &mut GenCtx, name: String, item: ast::ItemKind, vis:
-               ast::Visibility, attrs: Vec<ast::Attribute>) -> P<ast::Item> {
+fn cunion_to_rs(ctx: &mut GenCtx,
+                name: String,
+                options: &BindgenOptions,
+                derive_debug: bool,
+                layout: Layout,
+                members: Vec<CompMember>)
+                -> Vec<P<ast::Item>> {
+    fn mk_item(ctx: &mut GenCtx,
+               name: String,
+               item: ast::ItemKind,
+               vis: ast::Visibility,
+               attrs: Vec<ast::Attribute>)
+               -> P<ast::Item> {
         P(ast::Item {
             ident: ctx.ext_cx.ident_of(&name[..]),
             attrs: attrs,
             id: ast::DUMMY_NODE_ID,
             node: item,
             vis: vis,
-            span: ctx.span
+            span: ctx.span,
         })
     }
 
-    let ci = Rc::new(RefCell::new(CompInfo::new(name.clone(), CompKind::Union, members.clone(), layout)));
+    let ci = Rc::new(RefCell::new(CompInfo::new(name.clone(),
+                                                CompKind::Union,
+                                                members.clone(),
+                                                layout)));
     let union = TNamed(Rc::new(RefCell::new(TypeInfo::new(name.clone(), TComp(ci), layout))));
 
     // Nested composites may need to emit declarations and implementations as
     // they are encountered.  The declarations end up in 'extra' and are emitted
     // after the current union.
-    let mut extra = vec!();
+    let mut extra = vec![];
 
     let data_field_name = "_bindgen_data_";
     let data_field = mk_blob_field(ctx, data_field_name, layout, ctx.span);
 
-    let def = ast::ItemKind::Struct(
-        ast::VariantData::Struct(
-            vec!(data_field),
-            ast::DUMMY_NODE_ID),
-        ast::Generics::default()
-    );
+    let def = ast::ItemKind::Struct(ast::VariantData::Struct(vec![data_field], ast::DUMMY_NODE_ID),
+                                    ast::Generics::default());
     let union_id = rust_type_id(ctx, &name);
 
     // Waiting for https://github.com/rust-lang/rfcs/issues/1038
     let can_auto_derive = members.iter()
-        .all(|member| match *member {
-            CompMember::Field(ref f) |
-            CompMember::CompField(_, ref f) => f.ty.can_auto_derive(),
-            _ => true
-        });
+                                 .all(|member| {
+                                     match *member {
+                                         CompMember::Field(ref f) |
+                                         CompMember::CompField(_, ref f) => f.ty.can_auto_derive(),
+                                         _ => true,
+                                     }
+                                 });
     let union_attrs = {
         let mut attrs = vec![mk_repr_attr(ctx, layout)];
         if can_auto_derive {
@@ -852,19 +904,26 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, options: &BindgenOptions, derive
 
     let union_def = mk_item(ctx, union_id, def, ast::Visibility::Public, union_attrs);
 
-    let union_impl = ast::ItemKind::Impl(
-        ast::Unsafety::Normal,
-        ast::ImplPolarity::Positive,
-        ast::Generics::default(),
-        None,
-        P(cty_to_rs(ctx, &union)),
-        gen_comp_methods(ctx, data_field_name, 0, CompKind::Union, &members, &mut extra, options, derive_debug),
-    );
+    let union_impl = ast::ItemKind::Impl(ast::Unsafety::Normal,
+                                         ast::ImplPolarity::Positive,
+                                         ast::Generics::default(),
+                                         None,
+                                         P(cty_to_rs(ctx, &union)),
+                                         gen_comp_methods(ctx,
+                                                          data_field_name,
+                                                          0,
+                                                          CompKind::Union,
+                                                          &members,
+                                                          &mut extra,
+                                                          options,
+                                                          derive_debug));
 
-    let mut items = vec!(
-        union_def,
-        mk_item(ctx, "".to_owned(), union_impl, ast::Visibility::Inherited, Vec::new())
-    );
+    let mut items = vec![union_def,
+                         mk_item(ctx,
+                                 "".to_owned(),
+                                 union_impl,
+                                 ast::Visibility::Inherited,
+                                 Vec::new())];
 
     if !can_auto_derive {
         items.push(mk_clone_impl(ctx, &name));
@@ -877,8 +936,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, options: &BindgenOptions, derive
 
 /// Converts a signed number to AST Expression.
 fn i64_to_int_lit(ctx: &mut GenCtx, value: i64) -> P<ast::Expr> {
-    let int_lit = ast::LitKind::Int(value.abs() as u64,
-                                    ast::LitIntType::Unsuffixed);
+    let int_lit = ast::LitKind::Int(value.abs() as u64, ast::LitIntType::Unsuffixed);
     let expr = ctx.ext_cx.expr_lit(ctx.span, int_lit);
     if value < 0 {
         let negated = ast::ExprKind::Unary(ast::UnOp::Neg, expr);
@@ -889,10 +947,7 @@ fn i64_to_int_lit(ctx: &mut GenCtx, value: i64) -> P<ast::Expr> {
 }
 
 /// Converts a C const to Rust AST.
-fn const_to_rs(ctx: &mut GenCtx,
-               name: &str,
-               val: i64,
-               val_ty: ast::Ty) -> P<ast::Item> {
+fn const_to_rs(ctx: &mut GenCtx, name: &str, val: i64, val_ty: ast::Ty) -> P<ast::Item> {
     let int_lit = i64_to_int_lit(ctx, val);
 
     let cst = ast::ItemKind::Const(P(val_ty), int_lit);
@@ -904,7 +959,7 @@ fn const_to_rs(ctx: &mut GenCtx,
         id: ast::DUMMY_NODE_ID,
         node: cst,
         vis: ast::Visibility::Public,
-        span: ctx.span
+        span: ctx.span,
     })
 }
 
@@ -928,37 +983,33 @@ fn enum_size_to_unsigned_max_value(size: usize) -> u64 {
         2 => std::u16::MAX as u64,
         4 => std::u32::MAX as u64,
         8 => std::u64::MAX,
-        _ => unreachable!("invalid enum size: {}", size)
+        _ => unreachable!("invalid enum size: {}", size),
     }
 }
 
 /// Converts a C enum variant to an AST expression.
-fn cenum_value_to_int_lit(
-        ctx: &mut GenCtx,
-        enum_is_signed: bool,
-        size: usize,
-        value: i64)
-        -> P<ast::Expr> {
+fn cenum_value_to_int_lit(ctx: &mut GenCtx,
+                          enum_is_signed: bool,
+                          size: usize,
+                          value: i64)
+                          -> P<ast::Expr> {
     if enum_is_signed {
         i64_to_int_lit(ctx, value)
     } else {
-        let u64_value =
-            value as u64 & enum_size_to_unsigned_max_value(size);
-        let int_lit =
-            ast::LitKind::Int(u64_value, ast::LitIntType::Unsuffixed);
+        let u64_value = value as u64 & enum_size_to_unsigned_max_value(size);
+        let int_lit = ast::LitKind::Int(u64_value, ast::LitIntType::Unsuffixed);
         ctx.ext_cx.expr_lit(ctx.span, int_lit)
     }
 }
 
-fn cenum_to_rs(
-       ctx: &mut GenCtx,
-       options: &BindgenOptions,
-       derive_debug: bool,
-       name: &str,
-       kind: IKind,
-       layout: Layout,
-       enum_items: &[EnumItem])
-       -> Vec<P<ast::Item>> {
+fn cenum_to_rs(ctx: &mut GenCtx,
+               options: &BindgenOptions,
+               derive_debug: bool,
+               name: &str,
+               kind: IKind,
+               layout: Layout,
+               enum_items: &[EnumItem])
+               -> Vec<P<ast::Item>> {
     let enum_name = ctx.ext_cx.ident_of(name);
     let enum_ty = ctx.ext_cx.ty_ident(ctx.span, enum_name);
     let enum_is_signed = kind.is_signed();
@@ -966,20 +1017,16 @@ fn cenum_to_rs(
     let mut items = vec![];
 
     if !options.rust_enums {
-        items.push(ctx.ext_cx.item_ty(
-            ctx.span,
-            enum_name,
-            ctx.ext_cx.ty_ident(
-                ctx.span,
-                ctx.ext_cx.ident_of(enum_repr))));
+        items.push(ctx.ext_cx.item_ty(ctx.span,
+                                      enum_name,
+                                      ctx.ext_cx
+                                         .ty_ident(ctx.span, ctx.ext_cx.ident_of(enum_repr))));
         for item in enum_items {
-            let value = cenum_value_to_int_lit(
-                ctx, enum_is_signed, layout.size, item.val);
-            items.push(ctx.ext_cx.item_const(
-                ctx.span,
-                ctx.ext_cx.ident_of(&item.name),
-                enum_ty.clone(),
-                value));
+            let value = cenum_value_to_int_lit(ctx, enum_is_signed, layout.size, item.val);
+            items.push(ctx.ext_cx.item_const(ctx.span,
+                                             ctx.ext_cx.ident_of(&item.name),
+                                             enum_ty.clone(),
+                                             value));
         }
         return items;
     }
@@ -991,8 +1038,7 @@ fn cenum_to_rs(
         let name = ctx.ext_cx.ident_of(&item.name);
 
         if let Some(orig) = found_values.get(&item.val) {
-            let value = ctx.ext_cx.expr_path(
-                ctx.ext_cx.path(ctx.span, vec![enum_name, *orig]));
+            let value = ctx.ext_cx.expr_path(ctx.ext_cx.path(ctx.span, vec![enum_name, *orig]));
             // Can't use ctx.ext_cx.item because of Visibility::Public
             items.push(P(ast::Item {
                 ident: name,
@@ -1007,15 +1053,15 @@ fn cenum_to_rs(
 
         found_values.insert(item.val, name);
 
-        let value = cenum_value_to_int_lit(
-            ctx, enum_is_signed, layout.size, item.val);
+        let value = cenum_value_to_int_lit(ctx, enum_is_signed, layout.size, item.val);
 
-        variants.push(respan(ctx.span, ast::Variant_ {
-            name: name,
-            attrs: vec![],
-            data: ast::VariantData::Unit(ast::DUMMY_NODE_ID),
-            disr_expr: Some(value),
-        }));
+        variants.push(respan(ctx.span,
+                             ast::Variant_ {
+                                 name: name,
+                                 attrs: vec![],
+                                 data: ast::VariantData::Unit(ast::DUMMY_NODE_ID),
+                                 disr_expr: Some(value),
+                             }));
     }
 
     let repr_attr = mk_attr(ctx, "repr", &[enum_repr]);
@@ -1045,16 +1091,22 @@ fn cenum_to_rs(
 /// represented in Rust as an untyped array.  This process may generate
 /// declarations and implementations that must be placed at the root level.
 /// These are emitted into `extra`.
-    #[cfg_attr(feature = "clippy", allow(too_many_arguments))]
-fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
-                    kind: CompKind, members: &[CompMember],
+#[cfg_attr(feature = "clippy", allow(too_many_arguments))]
+fn gen_comp_methods(ctx: &mut GenCtx,
+                    data_field: &str,
+                    data_offset: usize,
+                    kind: CompKind,
+                    members: &[CompMember],
                     extra: &mut Vec<P<ast::Item>>,
                     options: &BindgenOptions,
-                    derive_debug: bool) -> Vec<ast::ImplItem> {
+                    derive_debug: bool)
+                    -> Vec<ast::ImplItem> {
 
     let mk_field_method = |ctx: &mut GenCtx, f: &FieldInfo, offset: usize| {
         // TODO: Implement bitfield accessors
-        if f.bitfields.is_some() { return None; }
+        if f.bitfields.is_some() {
+            return None;
+        }
 
         let (f_name, _) = rust_id(ctx, &f.name);
         let ret_ty = P(cty_to_rs(ctx, &TPtr(Box::new(f.ty.clone()), false, Layout::default())));
@@ -1068,24 +1120,31 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
                         ::std::mem::transmute(raw.offset({}))
                     }}
                 }}
-            ", f_name, tts_to_string(&ret_ty.to_tokens(&ctx.ext_cx)[..]), data_field, offset);
+            ",
+                                   f_name,
+                                   tts_to_string(&ret_ty.to_tokens(&ctx.ext_cx)[..]),
+                                   data_field,
+                                   offset);
 
             parse::new_parser_from_source_str(ctx.ext_cx.parse_sess(),
-                ctx.ext_cx.cfg(), "".to_owned(), impl_str).parse_item().unwrap().unwrap()
+                                              ctx.ext_cx.cfg(),
+                                              "".to_owned(),
+                                              impl_str)
+                .parse_item()
+                .unwrap()
+                .unwrap()
         };
 
         method.and_then(|i| {
             match i.node {
-                ast::ItemKind::Impl(_, _, _, _, _, mut items) => {
-                    items.pop()
-                }
-                _ => unreachable!("impl parsed to something other than impl")
+                ast::ItemKind::Impl(_, _, _, _, _, mut items) => items.pop(),
+                _ => unreachable!("impl parsed to something other than impl"),
             }
         })
     };
 
     let mut offset = data_offset;
-    let mut methods = vec!();
+    let mut methods = vec![];
     for m in members.into_iter() {
         let advance_by = match *m {
             CompMember::Field(ref f) => {
@@ -1094,29 +1153,39 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
             }
             CompMember::Comp(ref rc_c) => {
                 let c = &rc_c.borrow();
-                methods.extend(gen_comp_methods(ctx, data_field, offset, c.kind,
-                                                &c.members, extra, options, derive_debug).into_iter());
+                methods.extend(gen_comp_methods(ctx,
+                                                data_field,
+                                                offset,
+                                                c.kind,
+                                                &c.members,
+                                                extra,
+                                                options,
+                                                derive_debug)
+                                   .into_iter());
                 c.layout.size
             }
             CompMember::CompField(ref rc_c, ref f) => {
                 methods.extend(mk_field_method(ctx, f, offset).into_iter());
 
                 let c = rc_c.borrow();
-                extra.extend(comp_to_rs(ctx, c.kind, comp_name(c.kind, &c.name),
-                                        options, derive_debug,
-                                        c.layout, c.members.clone()).into_iter());
+                extra.extend(comp_to_rs(ctx,
+                                        c.kind,
+                                        comp_name(c.kind, &c.name),
+                                        options,
+                                        derive_debug,
+                                        c.layout,
+                                        c.members.clone())
+                                 .into_iter());
                 f.ty.size()
             }
-            CompMember::Enum(ref rc_e) => {
-                rc_e.borrow().layout.size
-            }
-            CompMember::EnumField(ref _rc_e, ref f) => {
-                f.ty.size()
-            }
+            CompMember::Enum(ref rc_e) => rc_e.borrow().layout.size,
+            CompMember::EnumField(ref _rc_e, ref f) => f.ty.size(),
         };
         match kind {
-            CompKind::Struct => { offset += advance_by; }
-            CompKind::Union  => { }
+            CompKind::Struct => {
+                offset += advance_by;
+            }
+            CompKind::Union => {}
         }
     }
     methods
@@ -1128,10 +1197,16 @@ fn mk_default_impl(ctx: &GenCtx, ty_name: &str) -> P<ast::Item> {
         impl ::std::default::Default for {} {{
             fn default() -> Self {{ unsafe {{ ::std::mem::zeroed() }} }}
         }}
-    ", ty_name);
+    ",
+                           ty_name);
 
     parse::new_parser_from_source_str(ctx.ext_cx.parse_sess(),
-        ctx.ext_cx.cfg(), "".to_owned(), impl_str).parse_item().unwrap().unwrap()
+                                      ctx.ext_cx.cfg(),
+                                      "".to_owned(),
+                                      impl_str)
+        .parse_item()
+        .unwrap()
+        .unwrap()
 }
 
 fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout, span: Span) -> ast::StructField {
@@ -1141,16 +1216,20 @@ fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout, span: Span) -> ast::S
         2 => "u16",
         1 | _ => "u8",
     };
-    let data_len = if ty_name == "u8" { layout.size } else { layout.size / layout.align };
-    let base_ty = mk_ty(ctx, false, vec!(ty_name.to_owned()));
+    let data_len = if ty_name == "u8" {
+        layout.size
+    } else {
+        layout.size / layout.align
+    };
+    let base_ty = mk_ty(ctx, false, vec![ty_name.to_owned()]);
     let data_ty = P(mk_arrty(ctx, &base_ty, data_len));
-    ast::StructField{
+    ast::StructField {
         span: span,
         vis: ast::Visibility::Public,
         ident: Some(ctx.ext_cx.ident_of(name)),
         id: ast::DUMMY_NODE_ID,
         ty: data_ty,
-        attrs: Vec::new()
+        attrs: Vec::new(),
     }
 }
 
@@ -1159,7 +1238,7 @@ fn mk_link_name_attr(ctx: &mut GenCtx, name: &str) -> ast::Attribute {
 }
 
 fn mk_repr_attr(ctx: &mut GenCtx, layout: Layout) -> ast::Attribute {
-    let mut values = vec!("C");
+    let mut values = vec!["C"];
     if layout.packed {
         values.push("packed");
     }
@@ -1171,42 +1250,39 @@ fn mk_deriving_copy_clone_attr(ctx: &mut GenCtx) -> ast::Attribute {
 }
 
 fn mk_deriving_debug_attr(ctx: &mut GenCtx) -> ast::Attribute {
-    mk_attr(ctx,
-            "derive",
-            &["Debug"])
+    mk_attr(ctx, "derive", &["Debug"])
 }
 
 
-fn mk_attr(ctx: &mut GenCtx,
-           name: &str,
-           args: &[&str]) -> ast::Attribute {
+fn mk_attr(ctx: &mut GenCtx, name: &str, args: &[&str]) -> ast::Attribute {
     mk_attr_style(ctx, name, args, ast::AttrStyle::Outer)
 }
 
 fn mk_attr_style(ctx: &mut GenCtx,
                  name: &str,
                  args: &[&str],
-                 style: ast::AttrStyle) -> ast::Attribute {
+                 style: ast::AttrStyle)
+                 -> ast::Attribute {
     let args: Vec<_> = args.iter()
-        .map(|arg| {
-            let word = ctx.ext_cx.name_of(arg).as_str();
-            ctx.ext_cx.meta_word(ctx.span, word)
-        }).collect();
+                           .map(|arg| {
+                               let word = ctx.ext_cx.name_of(arg).as_str();
+                               ctx.ext_cx.meta_word(ctx.span, word)
+                           })
+                           .collect();
     let attr = {
         let name = ctx.ext_cx.name_of(name).as_str();
         ctx.ext_cx.meta_list(ctx.span, name, args)
     };
-    respan(ctx.span, ast::Attribute_ {
-        id: mk_attr_id(),
-        style: style,
-        value: attr,
-        is_sugared_doc: false,
-    })
+    respan(ctx.span,
+           ast::Attribute_ {
+               id: mk_attr_id(),
+               style: style,
+               value: attr,
+               is_sugared_doc: false,
+           })
 }
 
-fn cvar_to_rs(ctx: &mut GenCtx, name: String,
-                                ty: &Type,
-                                is_const: bool) -> ast::ForeignItem {
+fn cvar_to_rs(ctx: &mut GenCtx, name: String, ty: &Type, is_const: bool) -> ast::ForeignItem {
     let (rust_name, was_mangled) = rust_id(ctx, &name);
 
     let mut attrs = Vec::new();
@@ -1225,7 +1301,8 @@ fn cvar_to_rs(ctx: &mut GenCtx, name: String,
 fn mk_foreign_item(ctx: &mut GenCtx,
                    name: &str,
                    attrs: Vec<ast::Attribute>,
-                   node: ast::ForeignItemKind) -> ast::ForeignItem {
+                   node: ast::ForeignItemKind)
+                   -> ast::ForeignItem {
     ast::ForeignItem {
         ident: ctx.ext_cx.ident_of(name),
         attrs: attrs,
@@ -1236,57 +1313,58 @@ fn mk_foreign_item(ctx: &mut GenCtx,
     }
 }
 
-fn cfuncty_to_rs(ctx: &mut GenCtx,
-                 rty: &Type,
-                 aty: &[(String, Type)],
-                 var: bool) -> ast::FnDecl {
+fn cfuncty_to_rs(ctx: &mut GenCtx, rty: &Type, aty: &[(String, Type)], var: bool) -> ast::FnDecl {
 
     let ret = match *rty {
         TVoid => ast::FunctionRetTy::Default(ctx.span),
-        _ => ast::FunctionRetTy::Ty(P(cty_to_rs(ctx, rty)))
+        _ => ast::FunctionRetTy::Ty(P(cty_to_rs(ctx, rty))),
     };
 
     let mut unnamed: usize = 0;
-    let args: Vec<ast::Arg> = aty.iter().map(|arg| {
-        let (ref n, ref t) = *arg;
+    let args: Vec<ast::Arg> =
+        aty.iter()
+           .map(|arg| {
+               let (ref n, ref t) = *arg;
 
-        let arg_name = if n.is_empty() {
-            unnamed += 1;
-            format!("arg{}", unnamed)
-        } else {
-            rust_id(ctx, n).0
-        };
+               let arg_name = if n.is_empty() {
+                   unnamed += 1;
+                   format!("arg{}", unnamed)
+               } else {
+                   rust_id(ctx, n).0
+               };
 
-        // From the C90 standard (http://c0x.coding-guidelines.com/6.7.5.3.html)
-        // 1598 - A declaration of a parameter as “array of type” shall be
-        // adjusted to “qualified pointer to type”, where the type qualifiers
-        // (if any) are those specified within the [ and ] of the array type
-        // derivation.
-        let arg_ty = P(match *t {
-            TArray(ref typ, _, l) => cty_to_rs(ctx, &TPtr(typ.clone(), false, l)),
-            _ => cty_to_rs(ctx, t),
-        });
-        let ident = ctx.ext_cx.ident_of(&arg_name);
+               // From the C90 standard (http://c0x.coding-guidelines.com/6.7.5.3.html)
+               // 1598 - A declaration of a parameter as “array of type” shall be
+               // adjusted to “qualified pointer to type”, where the type qualifiers
+               // (if any) are those specified within the [ and ] of the array type
+               // derivation.
+               let arg_ty = P(match *t {
+                   TArray(ref typ, _, l) => cty_to_rs(ctx, &TPtr(typ.clone(), false, l)),
+                   _ => cty_to_rs(ctx, t),
+               });
+               let ident = ctx.ext_cx.ident_of(&arg_name);
 
-        ctx.ext_cx.arg(ctx.span, ident, arg_ty)
-    }).collect();
+               ctx.ext_cx.arg(ctx.span, ident, arg_ty)
+           })
+           .collect();
 
     let var = !args.is_empty() && var;
     ast::FnDecl {
         inputs: args,
         output: ret,
-        variadic: var
+        variadic: var,
     }
 }
 
-fn cfunc_to_rs(ctx: &mut GenCtx, name: String, rty: &Type,
+fn cfunc_to_rs(ctx: &mut GenCtx,
+               name: String,
+               rty: &Type,
                aty: &[(String, Type)],
-               var: bool) -> ast::ForeignItem {
+               var: bool)
+               -> ast::ForeignItem {
     let var = !aty.is_empty() && var;
-    let decl = ast::ForeignItemKind::Fn(
-        P(cfuncty_to_rs(ctx, rty, aty, var)),
-        ast::Generics::default()
-    );
+    let decl = ast::ForeignItemKind::Fn(P(cfuncty_to_rs(ctx, rty, aty, var)),
+                                        ast::Generics::default());
 
     let (rust_name, was_mangled) = rust_id(ctx, &name);
 
@@ -1308,62 +1386,74 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
 
     match *ty {
         TVoid => mk_ty(ctx, true, raw("c_void")),
-        TInt(i, ref layout) => match i {
-            IBool => {
-                let ty_name = match layout.size {
-                    8 => "u64",
-                    4 => "u32",
-                    2 => "u16",
-                    1 | _ => "u8",
-                };
-                mk_ty(ctx, false, vec!(ty_name.to_owned()))
-            },
-            ISChar => mk_ty(ctx, true, raw("c_char")),
-            IUChar => mk_ty(ctx, true, raw("c_uchar")),
-            IInt => mk_ty(ctx, true, raw("c_int")),
-            IUInt => mk_ty(ctx, true, raw("c_uint")),
-            IShort => mk_ty(ctx, true, raw("c_short")),
-            IUShort => mk_ty(ctx, true, raw("c_ushort")),
-            ILong => mk_ty(ctx, true, raw("c_long")),
-            IULong => mk_ty(ctx, true, raw("c_ulong")),
-            ILongLong => mk_ty(ctx, true, raw("c_longlong")),
-            IULongLong => mk_ty(ctx, true, raw("c_ulonglong"))
-        },
-        TFloat(f, _) => match f {
-            FFloat => mk_ty(ctx, true, raw("c_float")),
-            FDouble => mk_ty(ctx, true, raw("c_double"))
-        },
+        TInt(i, ref layout) => {
+            match i {
+                IBool => {
+                    let ty_name = match layout.size {
+                        8 => "u64",
+                        4 => "u32",
+                        2 => "u16",
+                        1 | _ => "u8",
+                    };
+                    mk_ty(ctx, false, vec![ty_name.to_owned()])
+                }
+                ISChar => mk_ty(ctx, true, raw("c_char")),
+                IUChar => mk_ty(ctx, true, raw("c_uchar")),
+                IInt => mk_ty(ctx, true, raw("c_int")),
+                IUInt => mk_ty(ctx, true, raw("c_uint")),
+                IShort => mk_ty(ctx, true, raw("c_short")),
+                IUShort => mk_ty(ctx, true, raw("c_ushort")),
+                ILong => mk_ty(ctx, true, raw("c_long")),
+                IULong => mk_ty(ctx, true, raw("c_ulong")),
+                ILongLong => mk_ty(ctx, true, raw("c_longlong")),
+                IULongLong => mk_ty(ctx, true, raw("c_ulonglong")),
+            }
+        }
+        TFloat(f, _) => {
+            match f {
+                FFloat => mk_ty(ctx, true, raw("c_float")),
+                FDouble => mk_ty(ctx, true, raw("c_double")),
+            }
+        }
         TPtr(ref t, is_const, _) => {
             let id = cty_to_rs(ctx, &**t);
             mk_ptrty(ctx, id, is_const)
-        },
+        }
         TArray(ref t, s, _) => {
             let ty = cty_to_rs(ctx, &**t);
             mk_arrty(ctx, &ty, s)
-        },
+        }
         TFuncPtr(ref sig, _) => {
             let decl = cfuncty_to_rs(ctx, &*sig.ret_ty, &sig.args[..], sig.is_variadic);
-            let unsafety = if sig.is_safe { ast::Unsafety::Normal } else { ast::Unsafety::Unsafe };
+            let unsafety = if sig.is_safe {
+                ast::Unsafety::Normal
+            } else {
+                ast::Unsafety::Unsafe
+            };
             mk_fnty(ctx, decl, unsafety, sig.abi)
-        },
+        }
         TFuncProto(ref sig, _) => {
             let decl = cfuncty_to_rs(ctx, &*sig.ret_ty, &sig.args[..], sig.is_variadic);
-            let unsafety = if sig.is_safe { ast::Unsafety::Normal } else { ast::Unsafety::Unsafe };
+            let unsafety = if sig.is_safe {
+                ast::Unsafety::Normal
+            } else {
+                ast::Unsafety::Unsafe
+            };
             mk_fn_proto_ty(ctx, decl, unsafety, sig.abi)
-        },
+        }
         TNamed(ref ti) => {
             let id = rust_type_id(ctx, &ti.borrow().name);
-            mk_ty(ctx, false, vec!(id))
-        },
+            mk_ty(ctx, false, vec![id])
+        }
         TComp(ref ci) => {
             let mut c = ci.borrow_mut();
             c.name = unnamed_name(ctx, &c.name);
-            mk_ty(ctx, false, vec!(comp_name(c.kind, &c.name)))
-        },
+            mk_ty(ctx, false, vec![comp_name(c.kind, &c.name)])
+        }
         TEnum(ref ei) => {
             let mut e = ei.borrow_mut();
             e.name = unnamed_name(ctx, &e.name);
-            mk_ty(ctx, false, vec!(enum_name(&e.name)))
+            mk_ty(ctx, false, vec![enum_name(&e.name)])
         }
     }
 }
@@ -1403,52 +1493,43 @@ fn mk_ptrty(ctx: &mut GenCtx, base: ast::Ty, is_const: bool) -> ast::Ty {
 fn mk_arrty(ctx: &GenCtx, base: &ast::Ty, n: usize) -> ast::Ty {
     let int_lit = ast::LitKind::Int(n as u64, ast::LitIntType::Unsigned(ast::UintTy::Us));
     let sz = ctx.ext_cx.expr_lit(ctx.span, int_lit).unwrap();
-    let ty = ast::TyKind::FixedLengthVec(
-        P(base.clone()),
-        P(sz)
-    );
+    let ty = ast::TyKind::FixedLengthVec(P(base.clone()), P(sz));
 
     ctx.ext_cx.ty(ctx.span, ty).unwrap()
 }
 
-fn mk_barefn(decl: ast::FnDecl,
-             unsafety: ast::Unsafety,
-             abi: abi::Abi) -> ast::TyKind {
+fn mk_barefn(decl: ast::FnDecl, unsafety: ast::Unsafety, abi: abi::Abi) -> ast::TyKind {
     ast::TyKind::BareFn(P(ast::BareFnTy {
         unsafety: unsafety,
         abi: abi,
         lifetimes: Vec::new(),
-        decl: P(decl)
+        decl: P(decl),
     }))
 }
 
 fn mk_fn_proto_ty(ctx: &mut GenCtx,
                   decl: ast::FnDecl,
                   unsafety: ast::Unsafety,
-                  abi: abi::Abi) -> ast::Ty {
+                  abi: abi::Abi)
+                  -> ast::Ty {
     let fnty = mk_barefn(decl, unsafety, abi);
     ctx.ext_cx.ty(ctx.span, fnty).unwrap()
 }
 
-fn mk_fnty(ctx: &mut GenCtx,
-           decl: ast::FnDecl,
-           unsafety: ast::Unsafety,
-           abi: abi::Abi) -> ast::Ty {
+fn mk_fnty(ctx: &mut GenCtx, decl: ast::FnDecl, unsafety: ast::Unsafety, abi: abi::Abi) -> ast::Ty {
     let fnty = ast::TyKind::BareFn(P(ast::BareFnTy {
         unsafety: unsafety,
         abi: abi,
         lifetimes: Vec::new(),
-        decl: P(decl.clone())
+        decl: P(decl.clone()),
     }));
 
-    let idents = ["std", "option", "Option"].iter()
-        .map(|item| ctx.ext_cx.ident_of(item))
-        .collect();
+    let idents = ["std", "option", "Option"]
+                     .iter()
+                     .map(|item| ctx.ext_cx.ident_of(item))
+                     .collect();
     let types = vec![ctx.ext_cx.ty(ctx.span, fnty)];
-    ctx.ext_cx.ty_path(ctx.ext_cx.path_all(ctx.span,
-                                           true,
-                                           idents,
-                                           Vec::new(),
-                                           types,
-                                           Vec::new())).unwrap()
+    ctx.ext_cx
+       .ty_path(ctx.ext_cx.path_all(ctx.span, true, idents, Vec::new(), types, Vec::new()))
+       .unwrap()
 }

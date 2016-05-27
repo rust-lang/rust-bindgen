@@ -1,5 +1,6 @@
 extern crate bindgen;
-#[macro_use] extern crate log;
+#[macro_use]
+extern crate log;
 extern crate docopt;
 #[macro_use]
 extern crate rustc_serialize;
@@ -81,21 +82,24 @@ fn args_to_opts(args: Args, builder: &mut Builder) {
         builder.builtins();
     }
     let mut parts = args.flag_link.split('=');
-    let (lib, kind) = match (parts.next(),parts.next()) {
+    let (lib, kind) = match (parts.next(), parts.next()) {
         (Some(lib), None) => (lib, LinkType::Dynamic),
-        (Some(kind), Some(lib)) => (lib, match kind {
-            "static" => LinkType::Static,
-            "dynamic" => LinkType::Dynamic,
-            "framework" => LinkType::Framework,
-            _ => {
-                println!("Link type unknown: {}", kind);
-                exit(1);
-            },
-        }),
+        (Some(kind), Some(lib)) => {
+            (lib,
+             match kind {
+                "static" => LinkType::Static,
+                "dynamic" => LinkType::Dynamic,
+                "framework" => LinkType::Framework,
+                _ => {
+                    println!("Link type unknown: {}", kind);
+                    exit(1);
+                }
+            })
+        }
         _ => {
             println!("Wrong link format: {}", args.flag_link);
             exit(1);
-        },
+        }
     };
     builder.link(lib, kind);
 }
@@ -110,8 +114,8 @@ fn get_output(o: &str) -> Box<Write> {
 
 pub fn main() {
     let args: Args = docopt::Docopt::new(USAGE)
-        .and_then(|d| d.decode())
-        .unwrap_or_else(|e| e.exit());
+                         .and_then(|d| d.decode())
+                         .unwrap_or_else(|e| e.exit());
     debug!("{:?}", args);
 
     let output = get_output(&args.flag_output);
@@ -123,13 +127,15 @@ pub fn main() {
     debug!("{:?}", builder);
 
     match builder.generate() {
-        Ok(bindings) => match bindings.write(output) {
-            Ok(()) => (),
-            Err(e) => {
-                logger.error(&format!("Unable to write bindings to file. {}", e)[..]);
-                exit(-1);
+        Ok(bindings) => {
+            match bindings.write(output) {
+                Ok(()) => (),
+                Err(e) => {
+                    logger.error(&format!("Unable to write bindings to file. {}", e)[..]);
+                    exit(-1);
+                }
             }
-        },
-        Err(()) => exit(-1)
+        }
+        Err(()) => exit(-1),
     }
 }

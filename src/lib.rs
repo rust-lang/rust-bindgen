@@ -7,11 +7,12 @@
 extern crate clang_sys;
 extern crate syntex_syntax as syntax;
 extern crate libc;
-#[macro_use] extern crate log;
+#[macro_use]
+extern crate log;
 
 use std::collections::HashSet;
 use std::default::Default;
-use std::io::{Write, self};
+use std::io::{self, Write};
 use std::fs::OpenOptions;
 use std::path::Path;
 
@@ -33,7 +34,7 @@ mod parser;
 #[derive(Debug, Clone)]
 pub struct Builder<'a> {
     options: BindgenOptions,
-    logger: Option<&'a Logger>
+    logger: Option<&'a Logger>,
 }
 
 pub fn builder<'a>() -> Builder<'a> {
@@ -113,7 +114,7 @@ impl<'a> Default for Builder<'a> {
     fn default() -> Builder<'a> {
         Builder {
             logger: None,
-            options: Default::default()
+            options: Default::default(),
         }
     }
 }
@@ -150,7 +151,7 @@ impl Default for BindgenOptions {
             fail_on_unknown_type: true,
             override_enum_ty: "".to_owned(),
             clang_args: args,
-            derive_debug: true
+            derive_debug: true,
         }
     }
 }
@@ -159,7 +160,7 @@ impl Default for BindgenOptions {
 pub enum LinkType {
     Static,
     Dynamic,
-    Framework
+    Framework,
 }
 
 pub trait Logger: std::fmt::Debug {
@@ -176,16 +177,19 @@ pub struct Bindings {
 impl Bindings {
     /// Deprecated - use a `Builder` instead
     #[doc(hidden)]
-    pub fn generate(options: &BindgenOptions, logger: Option<&Logger>, span: Option<Span>) -> Result<Bindings, ()> {
+    pub fn generate(options: &BindgenOptions,
+                    logger: Option<&Logger>,
+                    span: Option<Span>)
+                    -> Result<Bindings, ()> {
         let l = DummyLogger;
         let logger = match logger {
             Some(l) => l,
-            None => &l as &Logger
+            None => &l as &Logger,
         };
 
         let span = match span {
             Some(s) => s,
-            None => DUMMY_SP
+            None => DUMMY_SP,
         };
 
         let globals = try!(parse_headers(options, logger));
@@ -193,7 +197,7 @@ impl Bindings {
         let (m, attrs) = gen::gen_mod(options, globals, span);
         let module = ast::Mod {
             inner: span,
-            items: m
+            items: m,
         };
 
         Ok(Bindings {
@@ -237,24 +241,24 @@ impl Bindings {
 struct DummyLogger;
 
 impl Logger for DummyLogger {
-    fn error(&self, _msg: &str) { }
-    fn warn(&self, _msg: &str) { }
+    fn error(&self, _msg: &str) {}
+    fn warn(&self, _msg: &str) {}
 }
 
 fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<Vec<Global>, ()> {
     fn str_to_ikind(s: &str) -> Option<types::IKind> {
         match s {
-            "uchar"     => Some(types::IUChar),
-            "schar"     => Some(types::ISChar),
-            "ushort"    => Some(types::IUShort),
-            "sshort"    => Some(types::IShort),
-            "uint"      => Some(types::IUInt),
-            "sint"      => Some(types::IInt),
-            "ulong"     => Some(types::IULong),
-            "slong"     => Some(types::ILong),
+            "uchar" => Some(types::IUChar),
+            "schar" => Some(types::ISChar),
+            "ushort" => Some(types::IUShort),
+            "sshort" => Some(types::IShort),
+            "uint" => Some(types::IUInt),
+            "sint" => Some(types::IInt),
+            "ulong" => Some(types::IULong),
+            "slong" => Some(types::ILong),
             "ulonglong" => Some(types::IULongLong),
             "slonglong" => Some(types::ILongLong),
-            _           => None,
+            _ => None,
         }
     }
 
@@ -273,11 +277,7 @@ fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<Vec<Global
 
 fn builtin_names() -> HashSet<String> {
     let mut names = HashSet::new();
-    let keys = [
-        "__va_list_tag",
-        "__va_list",
-        "__builtin_va_list",
-    ];
+    let keys = ["__va_list_tag", "__va_list", "__builtin_va_list"];
 
     for s in &keys {
         names.insert((*s).to_owned());
@@ -287,8 +287,7 @@ fn builtin_names() -> HashSet<String> {
 }
 
 #[test]
-fn builder_state()
-{
+fn builder_state() {
     let logger = DummyLogger;
     let mut build = builder();
     {
