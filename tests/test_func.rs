@@ -17,16 +17,16 @@ fn func_ptr_in_struct() {
         #[derive(Copy, Clone)]
         #[repr(u32)]
         #[derive(Debug)]
-        pub enum Enum_baz { TEST = 0, }
+        pub enum baz { TEST = 0, }
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_Foo {
+        pub struct Foo {
             pub bar: ::std::option::Option<
                 extern \"C\" fn(x: ::std::os::raw::c_int,
-                              y: ::std::os::raw::c_int) -> Enum_baz>,
+                              y: ::std::os::raw::c_int) -> baz>,
         }
-        impl ::std::default::Default for Struct_Foo {
+        impl ::std::default::Default for Foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
     ");

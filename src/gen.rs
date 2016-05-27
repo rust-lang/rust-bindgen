@@ -55,10 +55,12 @@ fn rust_type_id(ctx: &mut GenCtx, name: &str) -> String {
     }
 }
 
+const UNNAMED_PREFIX: &'static str = "Unnamed";
+
 fn unnamed_name(ctx: &mut GenCtx, name: &str) -> String {
     if name.is_empty() {
         ctx.unnamed_ty += 1;
-        format!("Unnamed{}", ctx.unnamed_ty)
+        format!("{}{}", UNNAMED_PREFIX, ctx.unnamed_ty)
     } else {
         name.into()
     }
@@ -72,15 +74,27 @@ fn comp_name(kind: CompKind, name: &str) -> String {
 }
 
 fn struct_name(name: &str) -> String {
-    format!("Struct_{}", name)
+    if name.starts_with(UNNAMED_PREFIX) {
+        format!("Struct_{}", name)
+    } else {
+        name.into()
+    }
 }
 
 fn union_name(name: &str) -> String {
-    format!("Union_{}", name)
+    if name.starts_with(UNNAMED_PREFIX) {
+        format!("Union_{}", name)
+    } else {
+        name.into()
+    }
 }
 
 fn enum_name(name: &str) -> String {
-    format!("Enum_{}", name)
+    if name.starts_with(UNNAMED_PREFIX) {
+        format!("Enum_{}", name)
+    } else {
+        name.into()
+    }
 }
 
 fn extract_definitions(ctx: &mut GenCtx,
@@ -177,6 +191,47 @@ fn extract_functions(ctx: &mut GenCtx,
     map
 }
 
+/// Converts `typedef struct {...} Test` to rust `struct Test {...}`
+fn remove_unnamed(globals: &mut Vec<Global>) {
+    let mut i = 1;
+    while i < globals.len() {
+        let mut remove = false;
+        match globals[i] {
+            GType(ref t) => {
+                let t = t.borrow();
+                match t.ty {
+                    TComp(ref c) => {
+                        let mut c = c.borrow_mut();
+                        if c.name.is_empty() {
+                            c.name = t.name.clone();
+                            remove = true;
+                        } else if c.name == t.name {
+                            remove = true;
+                        }
+                    }
+                    TEnum(ref e) => {
+                        let mut e = e.borrow_mut();
+                        if e.name.is_empty() {
+                            e.name = t.name.clone();
+                            remove = true;
+                        } else if e.name == t.name {
+                            remove = true;
+                        }
+                    }
+                    _ => (),
+                }
+            }
+            _ => (),
+        }
+
+        if remove {
+            globals.remove(i);
+        } else {
+            i += 1;
+        }
+    }
+}
+
 pub fn gen_mod(
         options: &BindgenOptions,
         globs: Vec<Global>,
@@ -241,6 +296,7 @@ pub fn gen_mod(
     }
 
     gs = remove_redundant_decl(gs);
+    remove_unnamed(&mut gs);
     let mut defs = extract_definitions(&mut ctx, options, &gs);
 
     let vars = vs.into_iter().map(|v| {

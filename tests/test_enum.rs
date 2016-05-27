@@ -11,19 +11,19 @@ fn with_simple_enum() {
         #[derive(Copy, Clone)]
         #[repr(u32)]
         #[derive(Debug)]
-        pub enum Enum_Foo { Bar = 0, Qux = 1, }
+        pub enum Foo { Bar = 0, Qux = 1, }
         #[derive(Copy, Clone)]
         #[repr(i32)]
         #[derive(Debug)]
-        pub enum Enum_Neg { MinusOne = -1, One = 1, }
+        pub enum Neg { MinusOne = -1, One = 1, }
     ");
     assert_bind_eq(default_without_rust_enums(), "headers/enum.h", "
-        type Enum_Foo = u32;
-        const Bar: Enum_Foo = 0;
-        const Qux: Enum_Foo = 1;
-        type Enum_Neg = i32;
-        const MinusOne: Enum_Neg = -1;
-        const One: Enum_Neg = 1;
+        type Foo = u32;
+        const Bar: Foo = 0;
+        const Qux: Foo = 1;
+        type Neg = i32;
+        const MinusOne: Neg = -1;
+        const One: Neg = 1;
     ");
 }
 
@@ -33,42 +33,42 @@ fn with_packed_enums() {
         #[derive(Copy, Clone)]
         #[repr(u8)]
         #[derive(Debug)]
-        pub enum Enum_Foo { Bar = 0, Qux = 1, }
+        pub enum Foo { Bar = 0, Qux = 1, }
         #[derive(Copy, Clone)]
         #[repr(i8)]
         #[derive(Debug)]
-        pub enum Enum_Neg { MinusOne = -1, One = 1, }
+        pub enum Neg { MinusOne = -1, One = 1, }
         #[derive(Copy, Clone)]
         #[repr(u16)]
         #[derive(Debug)]
-        pub enum Enum_Bigger { Much = 255, Larger = 256, }
+        pub enum Bigger { Much = 255, Larger = 256, }
     ");
     assert_bind_eq(default_without_rust_enums(), "headers/enum_packed.h", "
-        type Enum_Foo = u8;
-        const Bar: Enum_Foo = 0;
-        const Qux: Enum_Foo = 1;
-        type Enum_Neg = i8;
-        const MinusOne: Enum_Neg = -1;
-        const One: Enum_Neg = 1;
-        type Enum_Bigger = u16;
-        const Much: Enum_Bigger = 255;
-        const Larger: Enum_Bigger = 256;
+        type Foo = u8;
+        const Bar: Foo = 0;
+        const Qux: Foo = 1;
+        type Neg = i8;
+        const MinusOne: Neg = -1;
+        const One: Neg = 1;
+        type Bigger = u16;
+        const Much: Bigger = 255;
+        const Larger: Bigger = 256;
     ");
 }
 
 #[test]
 fn with_duplicate_enum_value() {
     assert_bind_eq(Default::default(), "headers/enum_dupe.h", "
-        pub const Dupe: Enum_Foo = Enum_Foo::Bar;
+        pub const Dupe: Foo = Foo::Bar;
         #[derive(Copy, Clone)]
         #[repr(u32)]
         #[derive(Debug)]
-        pub enum Enum_Foo { Bar = 1, }
+        pub enum Foo { Bar = 1, }
     ");
     assert_bind_eq(default_without_rust_enums(), "headers/enum_dupe.h", "
-        type Enum_Foo = u32;
-        const Bar: Enum_Foo = 1;
-        const Dupe: Enum_Foo = 1;
+        type Foo = u32;
+        const Bar: Foo = 1;
+        const Dupe: Foo = 1;
     ");
 }
 
@@ -78,38 +78,38 @@ fn with_explicitly_typed_cxx_enum() {
         #[derive(Copy, Clone)]
         #[repr(u8)]
         #[derive(Debug)]
-        pub enum Enum_Foo { Bar = 0, Qux = 1, }
+        pub enum Foo { Bar = 0, Qux = 1, }
         #[derive(Copy, Clone)]
         #[repr(i8)]
         #[derive(Debug)]
-        pub enum Enum_Neg { MinusOne = -1, One = 1, }
+        pub enum Neg { MinusOne = -1, One = 1, }
         #[derive(Copy, Clone)]
         #[repr(u16)]
         #[derive(Debug)]
-        pub enum Enum_Bigger { Much = 255, Larger = 256, }
+        pub enum Bigger { Much = 255, Larger = 256, }
         #[derive(Copy, Clone)]
         #[repr(i64)]
         #[derive(Debug)]
-        pub enum Enum_MuchLong { MuchLow = -4294967296, }
+        pub enum MuchLong { MuchLow = -4294967296, }
         #[derive(Copy, Clone)]
         #[repr(u64)]
         #[derive(Debug)]
-        pub enum Enum_MuchLongLong { MuchHigh = 4294967296, }
+        pub enum MuchLongLong { MuchHigh = 4294967296, }
     ");
     assert_bind_eq(default_without_rust_enums(), "headers/enum_explicit_type.hpp", "
-        type Enum_Foo = u8;
-        const Bar: Enum_Foo = 0;
-        const Qux: Enum_Foo = 1;
-        type Enum_Neg = i8;
-        const MinusOne: Enum_Neg = -1;
-        const One: Enum_Neg = 1;
-        type Enum_Bigger = u16;
-        const Much: Enum_Bigger = 255;
-        const Larger: Enum_Bigger = 256;
-        type Enum_MuchLong = i64;
-        const MuchLow: Enum_MuchLong = -4294967296;
-        type Enum_MuchLongLong = u64;
-        const MuchHigh: Enum_MuchLongLong = 4294967296;
+        type Foo = u8;
+        const Bar: Foo = 0;
+        const Qux: Foo = 1;
+        type Neg = i8;
+        const MinusOne: Neg = -1;
+        const One: Neg = 1;
+        type Bigger = u16;
+        const Much: Bigger = 255;
+        const Larger: Bigger = 256;
+        type MuchLong = i64;
+        const MuchLow: MuchLong = -4294967296;
+        type MuchLongLong = u64;
+        const MuchHigh: MuchLongLong = 4294967296;
     ");
 }
 
@@ -119,7 +119,7 @@ fn with_overflowed_enum_value() {
         #[derive(Copy, Clone)]
         #[repr(u32)]
         #[derive(Debug)]
-        pub enum Enum_Foo {
+        pub enum Foo {
             BAP_ARM = 9698489,
             BAP_X86 = 11960045,
             BAP_X86_64 = 3128633167,
@@ -127,15 +127,15 @@ fn with_overflowed_enum_value() {
         #[derive(Copy, Clone)]
         #[repr(u16)]
         #[derive(Debug)]
-        pub enum Enum_Bar { One = 1, Big = 2, }
+        pub enum Bar { One = 1, Big = 2, }
     ");
     assert_bind_eq(default_without_rust_enums(), "headers/overflowed_enum.hpp", "
-        type Enum_Foo = u32;
-        const BAP_ARM: Enum_Foo = 9698489;
-        const BAP_X86: Enum_Foo = 11960045;
-        const BAP_X86_64: Enum_Foo = 3128633167;
-        type Enum_Bar = u16;
-        const One: Enum_Bar = 1;
-        const Big: Enum_Bar = 2;
+        type Foo = u32;
+        const BAP_ARM: Foo = 9698489;
+        const BAP_X86: Foo = 11960045;
+        const BAP_X86_64: Foo = 3128633167;
+        type Bar = u16;
+        const One: Bar = 1;
+        const Big: Bar = 2;
     ");
 }

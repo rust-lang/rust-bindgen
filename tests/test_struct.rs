@@ -8,10 +8,10 @@ fn with_anon_enum() {
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_foo {
+        pub struct foo {
             pub bar: Enum_Unnamed1,
         }
-        impl ::std::default::Default for Struct_foo {
+        impl ::std::default::Default for foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[derive(Copy, Clone)]
@@ -31,7 +31,7 @@ fn with_anon_enum_bitfields() {
         #[derive(Copy, Clone)]
         #[repr(u32)]
         #[derive(Debug)]
-        pub enum Enum_test {
+        pub enum test {
             TEST_OPTION_1 = 0,
             TEST_OPTION_2 = 1,
             TEST_OPTION_3 = 2,
@@ -39,11 +39,11 @@ fn with_anon_enum_bitfields() {
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_foo {
+        pub struct foo {
             pub _bindgen_bitfield_1_: Enum_Unnamed1,
-            pub _bindgen_bitfield_2_: Enum_test,
+            pub _bindgen_bitfield_2_: test,
         }
-        impl ::std::default::Default for Struct_foo {
+        impl ::std::default::Default for foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[derive(Copy, Clone)]
@@ -63,10 +63,10 @@ fn with_anon_struct() {
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_foo {
+        pub struct foo {
             pub bar: Struct_Unnamed1,
         }
-        impl ::std::default::Default for Struct_foo {
+        impl ::std::default::Default for foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
@@ -88,11 +88,11 @@ fn with_anon_struct_array() {
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_foo {
+        pub struct foo {
             pub bar: [Struct_Unnamed1; 2usize],
             pub baz: [[[Struct_Unnamed2; 4usize]; 3usize]; 2usize],
         }
-        impl ::std::default::Default for Struct_foo {
+        impl ::std::default::Default for foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
 
@@ -126,10 +126,10 @@ fn with_anon_struct_pointer() {
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_foo {
+        pub struct foo {
             pub bar: *mut Struct_Unnamed1,
         }
-        impl ::std::default::Default for Struct_foo {
+        impl ::std::default::Default for foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
@@ -151,10 +151,10 @@ fn with_anon_union() {
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_foo {
+        pub struct foo {
             pub bar: Union_Unnamed1,
         }
-        impl ::std::default::Default for Struct_foo {
+        impl ::std::default::Default for foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
@@ -185,10 +185,10 @@ fn with_anon_unnamed_struct() {
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_foo {
+        pub struct foo {
             pub _bindgen_data_1_: [u32; 2usize],
         }
-        impl Struct_foo {
+        impl foo {
             pub unsafe fn a(&mut self) -> *mut ::std::os::raw::c_uint {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
                 ::std::mem::transmute(raw.offset(0))
@@ -198,7 +198,7 @@ fn with_anon_unnamed_struct() {
                 ::std::mem::transmute(raw.offset(4))
             }
         }
-        impl ::std::default::Default for Struct_foo {
+        impl ::std::default::Default for foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
     ");
@@ -210,10 +210,10 @@ fn with_anon_unnamed_union() {
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_foo {
+        pub struct foo {
             pub _bindgen_data_1_: [u32; 1usize],
         }
-        impl Struct_foo {
+        impl foo {
             pub unsafe fn a(&mut self) -> *mut ::std::os::raw::c_uint {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
                 ::std::mem::transmute(raw.offset(0))
@@ -223,7 +223,7 @@ fn with_anon_unnamed_union() {
                 ::std::mem::transmute(raw.offset(0))
             }
         }
-        impl ::std::default::Default for Struct_foo {
+        impl ::std::default::Default for foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
     ");
@@ -235,11 +235,11 @@ fn with_nesting() {
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_foo {
+        pub struct foo {
             pub a: ::std::os::raw::c_uint,
             pub _bindgen_data_1_: [u32; 1usize],
         }
-        impl Struct_foo {
+        impl foo {
             pub unsafe fn b(&mut self) -> *mut ::std::os::raw::c_uint {
                 let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_1_);
                 ::std::mem::transmute(raw.offset(0))
@@ -269,7 +269,7 @@ fn with_nesting() {
                 ::std::mem::transmute(raw.offset(3))
             }
         }
-        impl ::std::default::Default for Struct_foo {
+        impl ::std::default::Default for foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
     ");
@@ -281,20 +281,20 @@ fn containing_fwd_decl_struct() {
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_a {
-            pub val_a: *mut Struct_b,
+        pub struct a {
+            pub val_a: *mut b,
         }
-        impl ::std::default::Default for Struct_a {
+        impl ::std::default::Default for a {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
 
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_b {
+        pub struct b {
             pub val_b: ::std::os::raw::c_int,
         }
-        impl ::std::default::Default for Struct_b {
+        impl ::std::default::Default for b {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
     ");
@@ -306,13 +306,13 @@ fn with_bitfields() {
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_bitfield {
+        pub struct bitfield {
             pub _bindgen_bitfield_1_: ::std::os::raw::c_ushort,
             pub e: ::std::os::raw::c_int,
             pub _bindgen_bitfield_2_: ::std::os::raw::c_uint,
             pub _bindgen_bitfield_3_: ::std::os::raw::c_uint,
         }
-        impl ::std::default::Default for Struct_bitfield {
+        impl ::std::default::Default for bitfield {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
     ");
@@ -324,19 +324,19 @@ fn with_fwd_decl_struct() {
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_a {
+        pub struct a {
             pub b: ::std::os::raw::c_int,
         }
-        impl ::std::default::Default for Struct_a {
+        impl ::std::default::Default for a {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_c {
+        pub struct c {
             pub d: ::std::os::raw::c_int,
         }
-        impl ::std::default::Default for Struct_c {
+        impl ::std::default::Default for c {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
     ");
@@ -349,11 +349,11 @@ fn packed_struct() {
         #[repr(C, packed)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_a {
+        pub struct a {
             pub b: ::std::os::raw::c_char,
             pub c: ::std::os::raw::c_short,
         }
-        impl ::std::default::Default for Struct_a {
+        impl ::std::default::Default for a {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
     ");
@@ -365,41 +365,41 @@ fn derive_debug_big_array() {
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_LittleArray {
+        pub struct LittleArray {
             pub a: [::std::os::raw::c_int; 32usize],
         }
-        impl ::std::default::Default for Struct_LittleArray {
+        impl ::std::default::Default for LittleArray {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
         #[derive(Copy)]
-        pub struct Struct_BigArray {
+        pub struct BigArray {
             pub a: [::std::os::raw::c_int; 33usize],
         }
-        impl ::std::clone::Clone for Struct_BigArray {
+        impl ::std::clone::Clone for BigArray {
             fn clone(&self) -> Self { *self  }
         }
-        impl ::std::default::Default for Struct_BigArray {
+        impl ::std::default::Default for BigArray {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_WithLittleArray {
-            pub a: Struct_LittleArray,
+        pub struct WithLittleArray {
+            pub a: LittleArray,
         }
-        impl ::std::default::Default for Struct_WithLittleArray {
+        impl ::std::default::Default for WithLittleArray {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
         #[derive(Copy)]
-        pub struct Struct_WithBigArray {
-            pub a: Struct_BigArray,
+        pub struct WithBigArray {
+            pub a: BigArray,
         }
-        impl ::std::clone::Clone for Struct_WithBigArray {
+        impl ::std::clone::Clone for WithBigArray {
             fn clone(&self) -> Self { *self  }
         }
-        impl ::std::default::Default for Struct_WithBigArray {
+        impl ::std::default::Default for WithBigArray {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
     ");
@@ -411,11 +411,11 @@ fn struct_with_incomplete_array() {
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_incomplete_array {
+        pub struct incomplete_array {
             pub x: ::std::os::raw::c_int,
             pub y: [::std::os::raw::c_int; 0usize],
         }
-        impl ::std::default::Default for Struct_incomplete_array {
+        impl ::std::default::Default for incomplete_array {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
     ");
@@ -446,25 +446,25 @@ fn struct_with_aligned_struct() {
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_foo {
+        pub struct foo {
             pub x: int32_t,
             pub y: int64_t,
             pub z: int16_t,
             _bindgen_padding_0_: [u64; 5usize],
         }
-        impl ::std::default::Default for Struct_foo {
+        impl ::std::default::Default for foo {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
-        pub struct Struct_bar {
+        pub struct bar {
             pub a: int32_t,
             pub b: int64_t,
             _bindgen_padding_0_: [u64; 6usize],
-            pub foo: Struct_foo,
+            pub foo: foo,
         }
-        impl ::std::default::Default for Struct_bar {
+        impl ::std::default::Default for bar {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
     ");
@@ -475,7 +475,7 @@ fn struct_with_aligned_struct() {
     #[repr(C)]
     #[derive(Copy, Clone)]
     #[derive(Debug)]
-    pub struct Struct_foo {
+    pub struct foo {
         pub x: int32_t,
         pub y: int64_t,
         pub z: int16_t,
@@ -485,22 +485,22 @@ fn struct_with_aligned_struct() {
     #[repr(C)]
     #[derive(Copy, Clone)]
     #[derive(Debug)]
-    pub struct Struct_bar {
+    pub struct bar {
         pub a: int32_t,
         pub b: int64_t,
         _bindgen_padding_0_: [u64; 6usize],
-        pub foo: Struct_foo,
+        pub foo: foo,
     }
 
-    assert_eq!(mem::size_of::<Struct_foo>(), 64);
-    assert_eq!(offset_of!(Struct_foo, x), 0);
-    assert_eq!(offset_of!(Struct_foo, y), 8);
-    assert_eq!(offset_of!(Struct_foo, z), 16);
-    assert_eq!(offset_of!(Struct_foo, _bindgen_padding_0_), 24);
+    assert_eq!(mem::size_of::<foo>(), 64);
+    assert_eq!(offset_of!(foo, x), 0);
+    assert_eq!(offset_of!(foo, y), 8);
+    assert_eq!(offset_of!(foo, z), 16);
+    assert_eq!(offset_of!(foo, _bindgen_padding_0_), 24);
 
-    assert_eq!(mem::size_of::<Struct_bar>(), 128);
-    assert_eq!(offset_of!(Struct_bar, a), 0);
-    assert_eq!(offset_of!(Struct_bar, b), 8);
-    assert_eq!(offset_of!(Struct_bar, _bindgen_padding_0_), 16);
-    assert_eq!(offset_of!(Struct_bar, foo), 64);
+    assert_eq!(mem::size_of::<bar>(), 128);
+    assert_eq!(offset_of!(bar, a), 0);
+    assert_eq!(offset_of!(bar, b), 8);
+    assert_eq!(offset_of!(bar, _bindgen_padding_0_), 16);
+    assert_eq!(offset_of!(bar, foo), 64);
 }
