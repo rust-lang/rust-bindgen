@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [0.17.0] - 2016-05-27
 ### Breaking
 - Change the way to link to a library in the cli interface (see the `-l` option
   in the output of `--help`)
@@ -42,6 +44,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.15.0] - 2016-08-31
 
-[Unreleased]: https://github.com/crabtw/rust-bindgen/compare/0.16...HEAD
+[Unreleased]: https://github.com/crabtw/rust-bindgen/compare/0.17...HEAD
+[0.17.0]: https://github.com/crabtw/rust-bindgen/compare/0.16...0.17
 [0.16.0]: https://github.com/crabtw/rust-bindgen/compare/0.15...0.16
 [0.15.0]: https://github.com/crabtw/rust-bindgen/compare/0.14...0.15
