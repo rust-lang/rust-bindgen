@@ -1,4 +1,5 @@
 use std;
+use std::mem;
 use std::cell::RefCell;
 use std::vec::Vec;
 use std::rc::Rc;
@@ -156,7 +157,7 @@ fn extract_functions(ctx: &mut GenCtx,
             GFunc(ref vi) => {
                 let v = vi.borrow();
                 match v.ty {
-                    TFuncPtr(ref sig) => {
+                    TFuncPtr(ref sig, _) => {
                         let decl = cfunc_to_rs(ctx, v.name.clone(),
                         &*sig.ret_ty, &sig.args[..],
                         sig.is_variadic);
@@ -496,6 +497,56 @@ fn comp_to_rs(ctx: &mut GenCtx, kind: CompKind, name: String,
     }
 }
 
+fn gen_padding_fields(ctx: &mut GenCtx,
+                      idx: usize,
+                      offset: usize,
+                      padding_size: usize) -> Vec<ast::StructField> {
+    const MAX_ARRAY_CLONE_LEN: usize = 32; // impl<T: Copy> Clone for [T; 32]
+
+    let u64_size = mem::size_of::<u64>();
+    let max_field_size = u64_size * MAX_ARRAY_CLONE_LEN;
+    let u64_ty = P(mk_ty(ctx, false, vec!("u64".to_owned())));
+    let u8_ty = P(mk_ty(ctx, false, vec!("u8".to_owned())));
+    let mut size = padding_size;
+
+    let u64_padding_size = u64_size - (offset % u64_size);
+
+    if (size - u64_padding_size) > u64_size && u64_padding_size != u64_size {
+        size -= u64_padding_size;
+    }
+
+    let mut fields = (0..(size / max_field_size))
+        .map(|_| (&u64_ty, MAX_ARRAY_CLONE_LEN))
+        .collect::<Vec<(&P<ast::Ty>, usize)>>();
+
+    let u64_num = (size % max_field_size) / u64_size;
+
+    if u64_num > 0 {
+        fields.push((&u64_ty, u64_num));
+    }
+
+    let u8_num = size % u64_size;
+
+    if u8_num > 0 {
+        fields.push((&u8_ty, u8_num));
+    }
+
+    fields.iter().enumerate().map(|(i, &(ref el_ty, el_num))| {
+        let name = format!("_bindgen_padding_{}_", idx + i);
+
+        let padding_ty = P(mk_arrty(ctx, &el_ty, el_num));
+
+        ast::StructField {
+            span: ctx.span,
+            vis: ast::Visibility::Inherited,
+            ident: Some(ctx.ext_cx.ident_of(&name[..])),
+            id: ast::DUMMY_NODE_ID,
+            ty: padding_ty,
+            attrs: Vec::new()
+        }
+    }).collect()
+}
+
 /// Converts a C struct to Rust AST Items.
 fn cstruct_to_rs(ctx: &mut GenCtx,
                  name: &str,
@@ -511,12 +562,16 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     let mut extra = vec!();
     let mut unnamed: u32 = 0;
     let mut bitfields: u32 = 0;
+    let mut paddings = 0;
+    let mut offset = 0;
 
     // Waiting for https://github.com/rust-lang/rfcs/issues/1038
     let mut can_derive_debug = derive_debug;
     let mut can_derive_clone = true;
 
     for m in &members {
+        debug!("convert field {} {:?}", m.name(), m);
+
         let (opt_rc_c, opt_rc_e, opt_f) = match *m {
             CompMember::Field(ref f) => { (None, None, Some(f)) }
             CompMember::Comp(ref rc_c) => { (Some(rc_c), None, None) }
@@ -524,6 +579,22 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
             CompMember::Enum(ref rc_e) => { (None, Some(rc_e), None) }
             CompMember::EnumField(ref rc_e, ref f) => { (None, Some(rc_e), Some(f)) }
         };
+
+        if !layout.packed && m.layout().align != 0 && (offset % m.layout().align) != 0 {
+            let padding_size = m.layout().align - (offset % m.layout().align);
+
+            if padding_size > mem::size_of::<u64>() {
+                let mut padding_fields = gen_padding_fields(ctx, paddings, offset, padding_size);
+
+                fields.append(&mut padding_fields);
+
+                paddings += padding_fields.len();
+            }
+
+            offset += padding_size;
+        }
+
+        debug!("member {}::{} @ {}, {:?}", name, m.name(), offset, m.layout());
 
         if let Some(f) = opt_f {
             let f_name = match f.bitfields {
@@ -574,6 +645,14 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
                 options.derive_debug,
                 &enum_name(&e.name), e.kind, e.layout, &e.items));
         }
+
+        offset += m.layout().size as usize;
+    }
+
+    if offset < layout.size {
+        let mut padding_fields = gen_padding_fields(ctx, paddings, offset, layout.size - offset);
+
+        fields.append(&mut padding_fields);
     }
 
     let def = ast::ItemKind::Struct(
@@ -676,7 +755,7 @@ fn cunion_to_rs(ctx: &mut GenCtx, name: String, options: &BindgenOptions, derive
     }
 
     let ci = Rc::new(RefCell::new(CompInfo::new(name.clone(), CompKind::Union, members.clone(), layout)));
-    let union = TNamed(Rc::new(RefCell::new(TypeInfo::new(name.clone(), TComp(ci)))));
+    let union = TNamed(Rc::new(RefCell::new(TypeInfo::new(name.clone(), TComp(ci), layout))));
 
     // Nested composites may need to emit declarations and implementations as
     // they are encountered.  The declarations end up in 'extra' and are emitted
@@ -1205,12 +1284,12 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type) -> ast::Ty {
             let ty = cty_to_rs(ctx, &**t);
             mk_arrty(ctx, &ty, s)
         },
-        TFuncPtr(ref sig) => {
+        TFuncPtr(ref sig, _) => {
             let decl = cfuncty_to_rs(ctx, &*sig.ret_ty, &sig.args[..], sig.is_variadic);
             let unsafety = if sig.is_safe { ast::Unsafety::Normal } else { ast::Unsafety::Unsafe };
             mk_fnty(ctx, decl, unsafety, sig.abi)
         },
-        TFuncProto(ref sig) => {
+        TFuncProto(ref sig, _) => {
             let decl = cfuncty_to_rs(ctx, &*sig.ret_ty, &sig.args[..], sig.is_variadic);
             let unsafety = if sig.is_safe { ast::Unsafety::Normal } else { ast::Unsafety::Unsafe };
             mk_fn_proto_ty(ctx, decl, unsafety, sig.abi)

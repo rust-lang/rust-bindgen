@@ -1,3 +1,5 @@
+use std::mem;
+
 use support::assert_bind_eq;
 
 #[test]
@@ -417,4 +419,86 @@ fn struct_with_incomplete_array() {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
     ");
+}
+
+macro_rules! offset_of_unsafe {
+    ($container:path, $field:ident) => {{
+        let $container { $field : _, .. };
+
+        &(*(0 as *const $container)).$field as *const _ as isize
+    }};
+}
+
+macro_rules! offset_of {
+    ($container:path, $field:ident) => {
+        unsafe { offset_of_unsafe!($container, $field) }
+    };
+}
+
+#[test]
+fn struct_with_aligned_struct() {
+    assert_bind_eq(Default::default(), "headers/struct_with_aligned_struct.h", "
+        pub type int16_t = ::std::os::raw::c_short;
+        pub type int32_t = ::std::os::raw::c_int;
+        pub type int64_t = ::std::os::raw::c_longlong;
+        #[repr(C)]
+        #[derive(Copy, Clone)]
+        #[derive(Debug)]
+        pub struct Struct_foo {
+            pub x: int32_t,
+            pub y: int64_t,
+            pub z: int16_t,
+            _bindgen_padding_0_: [u64; 5usize],
+        }
+        impl ::std::default::Default for Struct_foo {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+        #[repr(C)]
+        #[derive(Copy, Clone)]
+        #[derive(Debug)]
+        pub struct Struct_bar {
+            pub a: int32_t,
+            pub b: int64_t,
+            _bindgen_padding_0_: [u64; 6usize],
+            pub foo: Struct_foo,
+        }
+        impl ::std::default::Default for Struct_bar {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
+    ");
+
+    pub type int16_t = ::std::os::raw::c_short;
+    pub type int32_t = ::std::os::raw::c_int;
+    pub type int64_t = ::std::os::raw::c_longlong;
+    #[repr(C)]
+    #[derive(Copy, Clone)]
+    #[derive(Debug)]
+    pub struct Struct_foo {
+        pub x: int32_t,
+        pub y: int64_t,
+        pub z: int16_t,
+        _bindgen_padding_0_: [u64; 5usize],
+    }
+
+    #[repr(C)]
+    #[derive(Copy, Clone)]
+    #[derive(Debug)]
+    pub struct Struct_bar {
+        pub a: int32_t,
+        pub b: int64_t,
+        _bindgen_padding_0_: [u64; 6usize],
+        pub foo: Struct_foo,
+    }
+
+    assert_eq!(mem::size_of::<Struct_foo>(), 64);
+    assert_eq!(offset_of!(Struct_foo, x), 0);
+    assert_eq!(offset_of!(Struct_foo, y), 8);
+    assert_eq!(offset_of!(Struct_foo, z), 16);
+    assert_eq!(offset_of!(Struct_foo, _bindgen_padding_0_), 24);
+
+    assert_eq!(mem::size_of::<Struct_bar>(), 128);
+    assert_eq!(offset_of!(Struct_bar, a), 0);
+    assert_eq!(offset_of!(Struct_bar, b), 8);
+    assert_eq!(offset_of!(Struct_bar, _bindgen_padding_0_), 16);
+    assert_eq!(offset_of!(Struct_bar, foo), 64);
 }

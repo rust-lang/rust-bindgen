@@ -72,6 +72,8 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
             let ty = cursor.cur_type();
             let layout = Layout::new(ty.size(), ty.align());
 
+            debug!("type `{}` = {:?}; // {:?}", spelling, ty, layout);
+
             let glob_decl = match cursor.kind() {
                 CXCursorKind::StructDecl => {
                     let ci = Rc::new(RefCell::new(CompInfo::new(spelling, CompKind::Struct, vec!(), layout)));
@@ -102,7 +104,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                     GEnumDecl(ei)
                 }
                 CXCursorKind::TypedefDecl => {
-                    let ti = Rc::new(RefCell::new(TypeInfo::new(spelling, TVoid)));
+                    let ti = Rc::new(RefCell::new(TypeInfo::new(spelling, TVoid, layout)));
                     GType(ti)
                 }
                 CXCursorKind::VarDecl => {
@@ -163,7 +165,7 @@ fn conv_ptr_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor, layout:
             let ret_ty = ty.ret_type();
             let decl = ty.declaration();
             if ret_ty.kind() != CXTypeKind::Invalid {
-                TFuncPtr(mk_fn_sig(ctx, ty, cursor))
+                TFuncPtr(mk_fn_sig(ctx, ty, cursor), layout)
             } else if decl.kind() != CXCursorKind::NoDeclFound {
                 TPtr(Box::new(conv_decl_ty(ctx, &decl)), ty.is_const(), layout)
             } else if cursor.kind() == CXCursorKind::VarDecl {
@@ -241,8 +243,11 @@ fn conv_decl_ty(ctx: &mut ClangParserCtx, cursor: &Cursor) -> il::Type {
 }
 
 fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type {
-    debug!("conv_ty: ty=`{:?}` sp=`{}` loc=`{}`", ty.kind(), cursor.spelling(), cursor.location());
+    debug!("conv_ty: ty=`{:?}` sp=`{}` loc=`{}` size=`{}` align=`{}`",
+           ty.kind(), cursor.spelling(), cursor.location(), ty.size(), ty.align());
+
     let layout = Layout::new(ty.size(), ty.align());
+
     match ty.kind() {
         CXTypeKind::Void | CXTypeKind::Invalid => TVoid,
         CXTypeKind::Bool => TInt(IBool, layout),
@@ -265,7 +270,7 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
         CXTypeKind::DependentSizedArray | CXTypeKind::IncompleteArray => {
             TArray(Box::new(conv_ty(ctx, &ty.elem_type(), cursor)), 0, layout)
         },
-        CXTypeKind::FunctionProto | CXTypeKind::FunctionNoProto => TFuncProto(mk_fn_sig(ctx, ty, cursor)),
+        CXTypeKind::FunctionProto | CXTypeKind::FunctionNoProto => TFuncProto(mk_fn_sig(ctx, ty, cursor), layout),
         CXTypeKind::Record |
         CXTypeKind::Typedef  |
         CXTypeKind::Unexposed |
@@ -409,7 +414,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 },
                 _ => false
             };
-            
+
             let is_enumeration = match (inner_enumeration(&ty), members.last()) {
                 (Some(ty_enuminfo), Some(&CompMember::Enum(ref e))) => {
                     e.borrow().deref() as *const _ == ty_enuminfo.borrow().deref() as *const _
@@ -464,6 +469,9 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
         }
         CXCursorKind::PackedAttr => {
             compinfo.layout.packed = true;
+        }
+        CXCursorKind::UnexposedAttr => {
+            // skip unknown attributes
         }
         _ => {
             // XXX: Some kind of warning would be nice, but this produces far
@@ -565,7 +573,10 @@ fn visit_top(cursor: &Cursor,
             let vi = func.varinfo();
             let mut vi = vi.borrow_mut();
 
-            vi.ty = TFuncPtr(mk_fn_sig(ctx, &cursor.cur_type(), cursor));
+            let ty = cursor.cur_type();
+            let layout = Layout::new(ty.size(), ty.align());
+
+            vi.ty = TFuncPtr(mk_fn_sig(ctx, &ty, cursor), layout);
             ctx.globals.push(func);
 
             CXChildVisitResult::Continue

@@ -171,10 +171,24 @@ pub struct Type {
     x: CXType
 }
 
+impl fmt::Debug for Type {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}: {}", self.name(), self.kind_name())
+    }
+}
+
 impl Type {
     // common
+    pub fn name(&self) -> String {
+        String_ { x : unsafe { clang_getTypeSpelling(self.x) } }.to_string()
+    }
+
     pub fn kind(&self) -> CXTypeKind {
         self.x.kind
+    }
+
+    pub fn kind_name(&self) -> String {
+        String_ { x: unsafe { clang_getTypeKindSpelling(self.x.kind) } }.to_string()
     }
 
     pub fn declaration(&self) -> Cursor {
