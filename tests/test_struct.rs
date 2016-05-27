@@ -437,10 +437,12 @@ macro_rules! offset_of {
 
 #[test]
 fn struct_with_aligned_struct() {
+    #![allow(non_camel_case_types)]
+
     assert_bind_eq(Default::default(), "headers/struct_with_aligned_struct.h", "
-        pub type int16_t = ::std::os::raw::c_short;
-        pub type int32_t = ::std::os::raw::c_int;
-        pub type int64_t = ::std::os::raw::c_longlong;
+        pub type int16_t = i16;
+        pub type int32_t = i32;
+        pub type int64_t = i64;
         #[repr(C)]
         #[derive(Copy, Clone)]
         #[derive(Debug)]
