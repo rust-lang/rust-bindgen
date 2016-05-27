@@ -496,12 +496,16 @@ fn gen_padding_fields(ctx: &mut GenCtx,
         .map(|_| (&u64_ty, MAX_ARRAY_CLONE_LEN))
         .collect::<Vec<(&P<ast::Ty>, usize)>>();
 
-    if (size % max_field_size) != 0 {
-        fields.push((&u64_ty, (size % max_field_size) / u64_size));
+    let u64_num = (size % max_field_size) / u64_size;
+
+    if u64_num > 0 {
+        fields.push((&u64_ty, u64_num));
     }
 
-    if (size % u64_size) != 0 {
-        fields.push((&u8_ty, size % u64_size));
+    let u8_num = size % u64_size;
+
+    if u8_num > 0 {
+        fields.push((&u8_ty, u8_num));
     }
 
     fields.iter().enumerate().map(|(i, &(ref el_ty, el_num))| {
