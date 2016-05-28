@@ -41,7 +41,7 @@ fn is_type(name: &str) -> bool {
 fn rust_id(ctx: &mut GenCtx, name: &str) -> (String, bool) {
     let token = parse::token::Ident(ctx.ext_cx.ident_of(name));
     if token.is_any_keyword() || is_type(name) {
-        let s = format!("_{}", name);
+        let s = format!("{}_", name);
         (s, true)
     } else {
         (name.into(), false)

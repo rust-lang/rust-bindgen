@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Breaking
 - New command line interface.
+- Reserved words are suffixed and not prefixed (#302)
 
 ### Added
 - `env_logger` for the bindgen binary.
