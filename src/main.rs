@@ -4,6 +4,7 @@ extern crate log;
 extern crate docopt;
 #[macro_use]
 extern crate rustc_serialize;
+extern crate env_logger;
 
 use bindgen::{Builder, LinkType, Logger};
 use std::io::{self, Write};
@@ -115,6 +116,8 @@ fn get_output(o: &str) -> Box<Write> {
 }
 
 pub fn main() {
+    env_logger::init().unwrap();
+
     let args: Args = docopt::Docopt::new(USAGE)
                          .and_then(|d| d.decode())
                          .unwrap_or_else(|e| e.exit());

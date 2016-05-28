@@ -7,6 +7,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Breaking
 - New command line interface.
 
+### Added
+- `env_logger` for the bindgen binary.
+
 ## [0.17.0] - 2016-05-27
 ### Breaking
 - Change the way to link to a library in the cli interface (see the `-l` option

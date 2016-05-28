@@ -16,6 +16,7 @@ docopt = "~0.6.80"
 log = "~0.3.6"
 libc = "~0.2.11"
 rustc-serialize = "~0.3.19"
+env_logger = "~0.3.3"
 syntex_syntax = "~0.32.0"
 
 [features]
