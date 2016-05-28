@@ -1,30 +1,33 @@
 [package]
-name = "bindgen"
-version = "0.17.0"
-description = "A binding generator for Rust"
 authors = ["Jyun-Yan You <jyyou.tw@gmail.com>"]
-license = "BSD-3-Clause"
+description = "A binding generator for Rust"
 homepage = "https://github.com/crabtw/rust-bindgen"
-repository = "https://github.com/crabtw/rust-bindgen"
+keywords = ["bindings", "ffi", "code-generation"]
+license = "BSD-3-Clause"
+name = "bindgen"
 readme = "README.md"
-keywords = [ "bindings", "ffi", "code-generation" ]
+repository = "https://github.com/crabtw/rust-bindgen"
+version = "0.17.0"
+
+[[bin]]
+doc = false
+name = "bindgen"
 
 [dependencies]
 clang-sys = "~0.6.0"
-clippy = { version = "0.0.69", optional = true }
 docopt = "~0.6.80"
-log = "~0.3.6"
-libc = "~0.2.11"
-rustc-serialize = "~0.3.19"
 env_logger = "~0.3.3"
+libc = "~0.2.11"
+log = "~0.3.6"
+rustc-serialize = "~0.3.19"
 syntex_syntax = "~0.32.0"
+
+[dependencies.clippy]
+optional = true
+version = "~0.0.69"
 
 [features]
 static = ["clang-sys/static"]
-
-[[bin]]
-name = "bindgen"
-doc = false
 
 [[test]]
 name = "tests"
