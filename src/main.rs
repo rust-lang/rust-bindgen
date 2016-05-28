@@ -73,8 +73,10 @@ struct Args {
 fn args_to_opts(args: Args, builder: &mut Builder) {
     builder.header(args.arg_file)
            .emit_ast(args.flag_emit_clang_ast)
-           .override_enum_ty(args.flag_override_enum_type)
-           .clang_arg(args.flag_clang_options);
+           .override_enum_ty(args.flag_override_enum_type);
+    for arg in args.flag_clang_options.split(" ") {
+        builder.clang_arg(arg);
+    }
     if let Some(s) = args.flag_match {
         builder.match_pat(s);
     }
