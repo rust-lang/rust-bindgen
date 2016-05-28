@@ -104,6 +104,12 @@ impl<'a> Builder<'a> {
         self
     }
 
+    /// Sets the prefix to use for c_void and others.
+    pub fn ctypes_prefix<T: Into<Vec<String>>>(&mut self, prefix: T) -> &mut Self {
+        self.options.ctypes_prefix = prefix.into();
+        self
+    }
+
     /// Generate the binding using the options previously set.
     pub fn generate(&self) -> Result<Bindings, ()> {
         Bindings::generate(&self.options, self.logger, None)
@@ -132,6 +138,10 @@ pub struct BindgenOptions {
     pub override_enum_ty: String,
     pub clang_args: Vec<String>,
     pub derive_debug: bool,
+    /// The prefix to use for the c types like c_void.
+    ///
+    /// Default: ["std", "os", "raw"]
+    pub ctypes_prefix: Vec<String>,
 }
 
 impl Default for BindgenOptions {
@@ -152,6 +162,7 @@ impl Default for BindgenOptions {
             override_enum_ty: "".to_owned(),
             clang_args: args,
             derive_debug: true,
+            ctypes_prefix: vec!["std".into(), "os".into(), "raw".into()],
         }
     }
 }

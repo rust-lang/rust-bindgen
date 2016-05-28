@@ -56,6 +56,9 @@ Options:
                                  slong
                                  ulonglong
                                  slonglong
+  --ctypes-prefix=<prefix>    Use this prefix for all the types in the generated
+                              code.
+                              [default: std::os::raw]
   --clang-options=<opts>      Options to clang.
 ";
 
@@ -69,11 +72,16 @@ struct Args {
     flag_emit_clang_ast: bool,
     flag_override_enum_type: String,
     flag_clang_options: String,
+    flag_ctypes_prefix: String,
 }
 
 fn args_to_opts(args: Args, builder: &mut Builder) {
     builder.header(args.arg_file)
            .emit_ast(args.flag_emit_clang_ast)
+           .ctypes_prefix(args.flag_ctypes_prefix
+                              .split("::")
+                              .map(String::from)
+                              .collect::<Vec<_>>())
            .override_enum_ty(args.flag_override_enum_type);
     for arg in args.flag_clang_options.split(" ") {
         builder.clang_arg(arg);

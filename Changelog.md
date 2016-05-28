@@ -10,6 +10,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - `env_logger` for the bindgen binary.
+- Possibility to configure the prefix for the C types in the generated code,
+  instead of `std::os::raw`. See `--ctypes-prefix` (#316)
 
 ### Fixed
 - Now correctly handle variable names like "u8".
