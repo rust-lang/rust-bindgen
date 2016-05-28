@@ -4,6 +4,8 @@
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
 
+#![warn(missing_docs)]
+
 extern crate clang_sys;
 extern crate syntex_syntax as syntax;
 extern crate libc;
