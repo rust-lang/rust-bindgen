@@ -56,6 +56,8 @@ Options:
                                  slong
                                  ulonglong
                                  slonglong
+  --use-core                  Use `core` as a base crate for `Option` and such.
+                              See also `--ctypes-prefix`.
   --ctypes-prefix=<prefix>    Use this prefix for all the types in the generated
                               code.
                               [default: std::os::raw]
@@ -73,6 +75,7 @@ struct Args {
     flag_override_enum_type: String,
     flag_clang_options: String,
     flag_ctypes_prefix: String,
+    flag_use_core: bool,
 }
 
 fn args_to_opts(args: Args, builder: &mut Builder) {
@@ -82,6 +85,7 @@ fn args_to_opts(args: Args, builder: &mut Builder) {
                               .split("::")
                               .map(String::from)
                               .collect::<Vec<_>>())
+           .use_core(args.flag_use_core)
            .override_enum_ty(args.flag_override_enum_type);
     for arg in args.flag_clang_options.split(" ") {
         builder.clang_arg(arg);

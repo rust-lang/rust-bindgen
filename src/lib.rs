@@ -113,6 +113,12 @@ impl<'a> Builder<'a> {
         self
     }
 
+    /// Defines if we should use `std` or `core` for `Option` and such.
+    pub fn use_core(&mut self, value: bool) -> &mut Self {
+        self.options.use_core = value;
+        self
+    }
+
     /// Sets the prefix to use for c_void and others.
     pub fn ctypes_prefix<T: Into<Vec<String>>>(&mut self, prefix: T) -> &mut Self {
         self.options.ctypes_prefix = prefix.into();
@@ -151,6 +157,8 @@ pub struct BindgenOptions {
     ///
     /// Default: ["std", "os", "raw"]
     pub ctypes_prefix: Vec<String>,
+    /// Defines if we should use `std` or `core` for `Option` and such.
+    pub use_core: bool,
 }
 
 impl Default for BindgenOptions {
@@ -172,6 +180,7 @@ impl Default for BindgenOptions {
             clang_args: args,
             derive_debug: true,
             ctypes_prefix: vec!["std".into(), "os".into(), "raw".into()],
+            use_core: false,
         }
     }
 }
