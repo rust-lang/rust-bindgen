@@ -16,3 +16,4 @@ mod test_union;
 mod test_builtins;
 mod test_ints;
 mod test_typedef;
+mod test_keywords;

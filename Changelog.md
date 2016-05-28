@@ -10,6 +10,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - `env_logger` for the bindgen binary.
 
+### Fixed
+- Now correctly handle variable names like "u8".
+
 ## [0.17.0] - 2016-05-27
 ### Breaking
 - Change the way to link to a library in the cli interface (see the `-l` option

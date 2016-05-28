@@ -32,9 +32,15 @@ fn ref_eq<T>(thing: &T, other: &T) -> bool {
     (thing as *const T) == (other as *const T)
 }
 
+fn is_type(name: &str) -> bool {
+    ["bool", "uint", "u8", "u16", "u32", "u64", "f32", "f64", "i8", "i16", "i32", "i64", "Self",
+     "self", "usize", "isize"]
+        .contains(&name)
+}
+
 fn rust_id(ctx: &mut GenCtx, name: &str) -> (String, bool) {
     let token = parse::token::Ident(ctx.ext_cx.ident_of(name));
-    if token.is_any_keyword() || "bool" == name {
+    if token.is_any_keyword() || is_type(name) {
         let s = format!("_{}", name);
         (s, true)
     } else {
@@ -43,25 +49,8 @@ fn rust_id(ctx: &mut GenCtx, name: &str) -> (String, bool) {
 }
 
 fn rust_type_id(ctx: &mut GenCtx, name: &str) -> String {
-    match name {
-        "bool" |
-        "uint" |
-        "u8" |
-        "u16" |
-        "u32" |
-        "f32" |
-        "f64" |
-        "i8" |
-        "i16" |
-        "i32" |
-        "i64" |
-        "Self" |
-        "str" => format!("_{}", name),
-        _ => {
-            let (n, _) = rust_id(ctx, name);
-            n
-        }
-    }
+    let (n, _) = rust_id(ctx, name);
+    n
 }
 
 const UNNAMED_PREFIX: &'static str = "Unnamed";
@@ -1234,7 +1223,8 @@ fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout, span: Span) -> ast::S
 }
 
 fn mk_link_name_attr(ctx: &mut GenCtx, name: &str) -> ast::Attribute {
-    mk_attr(ctx, "link_name", &[name])
+    let attr = format!("name = \"{}\"", name);
+    mk_attr(ctx, "link_name", &[&attr])
 }
 
 fn mk_repr_attr(ctx: &mut GenCtx, layout: Layout) -> ast::Attribute {
