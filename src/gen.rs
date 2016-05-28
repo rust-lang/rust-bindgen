@@ -201,32 +201,29 @@ fn remove_unnamed(globals: &mut Vec<Global>) {
     let mut i = 1;
     while i < globals.len() {
         let mut remove = false;
-        match globals[i] {
-            GType(ref t) => {
-                let t = t.borrow();
-                match t.ty {
-                    TComp(ref c) => {
-                        let mut c = c.borrow_mut();
-                        if c.name.is_empty() {
-                            c.name = t.name.clone();
-                            remove = true;
-                        } else if c.name == t.name {
-                            remove = true;
-                        }
+        if let GType(ref t) = globals[i] {
+            let t = t.borrow();
+            match t.ty {
+                TComp(ref c) => {
+                    let mut c = c.borrow_mut();
+                    if c.name.is_empty() {
+                        c.name = t.name.clone();
+                        remove = true;
+                    } else if c.name == t.name {
+                        remove = true;
                     }
-                    TEnum(ref e) => {
-                        let mut e = e.borrow_mut();
-                        if e.name.is_empty() {
-                            e.name = t.name.clone();
-                            remove = true;
-                        } else if e.name == t.name {
-                            remove = true;
-                        }
-                    }
-                    _ => (),
                 }
+                TEnum(ref e) => {
+                    let mut e = e.borrow_mut();
+                    if e.name.is_empty() {
+                        e.name = t.name.clone();
+                        remove = true;
+                    } else if e.name == t.name {
+                        remove = true;
+                    }
+                }
+                _ => (),
             }
-            _ => (),
         }
 
         if remove {
@@ -608,7 +605,7 @@ fn gen_padding_fields(ctx: &mut GenCtx,
           .map(|(i, &(ref el_ty, el_num))| {
               let name = format!("_bindgen_padding_{}_", idx + i);
 
-              let padding_ty = P(mk_arrty(ctx, &el_ty, el_num));
+              let padding_ty = P(mk_arrty(ctx, el_ty, el_num));
 
               ast::StructField {
                   span: ctx.span,

@@ -255,22 +255,22 @@ pub enum CompMember {
 
 impl CompMember {
     pub fn name(&self) -> String {
-        match self {
-            &CompMember::Field(ref f) => f.name.clone(),
-            &CompMember::Comp(ref rc_c) => rc_c.borrow().name.clone(),
-            &CompMember::CompField(_, ref f) => f.name.clone(),
-            &CompMember::Enum(ref rc_e) => rc_e.borrow().name.clone(),
-            &CompMember::EnumField(_, ref f) => f.name.clone(),
+        match *self {
+            CompMember::Comp(ref rc_c) => rc_c.borrow().name.clone(),
+            CompMember::Enum(ref rc_e) => rc_e.borrow().name.clone(),
+            CompMember::Field(ref f) |
+            CompMember::EnumField(_, ref f) |
+            CompMember::CompField(_, ref f) => f.name.clone(),
         }
     }
 
     pub fn layout(&self) -> Layout {
-        match self {
-            &CompMember::Field(ref f) => f.ty.layout(),
-            &CompMember::Comp(ref rc_c) => rc_c.borrow().layout,
-            &CompMember::CompField(_, ref f) => f.ty.layout(),
-            &CompMember::Enum(ref rc_e) => rc_e.borrow().layout,
-            &CompMember::EnumField(_, ref f) => f.ty.layout(),
+        match *self {
+            CompMember::Comp(ref rc_c) => rc_c.borrow().layout,
+            CompMember::Enum(ref rc_e) => rc_e.borrow().layout,
+            CompMember::Field(ref f) |
+            CompMember::EnumField(_, ref f) |
+            CompMember::CompField(_, ref f) => f.ty.layout(),
         }
     }
 }

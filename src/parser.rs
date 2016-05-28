@@ -648,7 +648,6 @@ fn visit_top(cursor: &Cursor,
 
             CXChildVisitResult::Continue
         }
-        CXCursorKind::FieldDecl => CXChildVisitResult::Continue,
         _ => CXChildVisitResult::Continue,
     }
 }
