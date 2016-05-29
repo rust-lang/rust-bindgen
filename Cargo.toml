@@ -29,6 +29,9 @@ syntex_syntax = "~0.32.0"
 optional = true
 version = "~0.0.69"
 
+[dev-dependencies]
+diff = "~0.1.9"
+
 [features]
 static = ["clang-sys/static"]
 

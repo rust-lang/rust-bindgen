@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 
 extern crate bindgen;
+extern crate diff;
 extern crate syntex_syntax as syntax;
 
 mod support;

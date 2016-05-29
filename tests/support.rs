@@ -4,6 +4,8 @@ use std::process::{Command, Stdio};
 use bindgen;
 use bindgen::{Logger, BindgenOptions};
 
+use diff;
+
 use syntax::ast;
 use syntax::codemap;
 use syntax::codemap::DUMMY_SP;
@@ -60,13 +62,16 @@ pub fn assert_bind_eq(options: BindgenOptions,
     if reference_rendered != generated_rendered {
         println!("Generated bindings for {} do not match the reference bindings.", filename);
         println!("");
-        println!("Generated:");
+        println!("--- reference");
+        println!("+++ generated");
         println!("");
-        println!("{}", generated_rendered);
-        println!("");
-        println!("Reference:");
-        println!("");
-        println!("{}", reference_rendered);
+        for diff in diff::lines(&reference_rendered, &generated_rendered) {
+            match diff {
+                diff::Result::Left(l)    => println!("- {}", l),
+                diff::Result::Both(l, _) => println!("  {}", l),
+                diff::Result::Right(r)   => println!("+ {}", r)
+            }
+        }
         panic!();
     }
 
