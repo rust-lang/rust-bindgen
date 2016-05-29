@@ -15,10 +15,13 @@ name = "bindgen"
 
 [dependencies]
 clang-sys = "~0.6.0"
+# only for main, see https://github.com/rust-lang/cargo/issues/1982
 docopt = "~0.6.80"
+# only for main, see https://github.com/rust-lang/cargo/issues/1982
 env_logger = "~0.3.3"
 libc = "~0.2.11"
 log = "~0.3.6"
+# only for main, see https://github.com/rust-lang/cargo/issues/1982
 rustc-serialize = "~0.3.19"
 syntex_syntax = "~0.32.0"
 
