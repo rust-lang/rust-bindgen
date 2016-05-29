@@ -65,7 +65,7 @@ before_script:
   - echo $LIBCLANG_PATH
 
 after_success: |
-  [ "${TRAVIS_RUST_VERSION}" = "stable"] &&
+  [ "${TRAVIS_RUST_VERSION}" = "stable" ] &&
   [ "${TRAVIS_OS_NAME}" = "linux" ] &&
   [ "${LLVM_VERSION}" = "3.8" ] &&
   ./scripts/travis-doc-upload.sh
