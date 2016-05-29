@@ -28,10 +28,11 @@ const USAGE: &'static str = "
 Generate C bindings for Rust.
 
 Usage:
-  bindgen [options] <file>
+  bindgen [options] <file> [-- <clang-args>...]
   bindgen (-h | --help)
 
 Options:
+  <clang-args>                 Options passed directly to clang.
   -h, --help                   Display this help message.
   --link=<library>             Link to a dynamic library, can be provided multiple times.
                                <library> is in the format `[kind=]lib`, where `kind` is
@@ -61,19 +62,18 @@ Options:
   --ctypes-prefix=<prefix>    Use this prefix for all the types in the generated
                               code.
                               [default: std::os::raw]
-  --clang-options=<opts>      Options to clang.
 ";
 
 #[derive(Debug, RustcDecodable)]
 struct Args {
     arg_file: String,
+    arg_clang_args: Vec<String>,
     flag_link: String,
     flag_output: String,
     flag_match: Option<String>,
     flag_builtins: bool,
     flag_emit_clang_ast: bool,
     flag_override_enum_type: String,
-    flag_clang_options: String,
     flag_ctypes_prefix: String,
     flag_use_core: bool,
 }
@@ -87,7 +87,7 @@ fn args_to_opts(args: Args, builder: &mut Builder) {
                               .collect::<Vec<_>>())
            .use_core(args.flag_use_core)
            .override_enum_ty(args.flag_override_enum_type);
-    for arg in args.flag_clang_options.split(" ") {
+    for arg in args.arg_clang_args {
         builder.clang_arg(arg);
     }
     if let Some(s) = args.flag_match {
