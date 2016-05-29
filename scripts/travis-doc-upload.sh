@@ -26,4 +26,4 @@ echo "<meta http-equiv=refresh content=0;url=`echo $PROJECT_NAME`/index.html>" >
 sudo pip install ghp-import
 ghp-import -n target/doc
 
-git push git@github.com:$DOCS_REPO gh-pages
+git push -fq git@github.com:$DOCS_REPO gh-pages
