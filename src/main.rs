@@ -55,7 +55,7 @@ Options:
 struct Args {
     arg_file: String,
     arg_clang_args: Vec<String>,
-    flag_link: String,
+    flag_link: Option<String>,
     flag_output: String,
     flag_match: Option<String>,
     flag_builtins: bool,
@@ -83,27 +83,29 @@ fn args_to_opts(args: Args, builder: &mut Builder) {
     if args.flag_builtins {
         builder.builtins();
     }
-    let mut parts = args.flag_link.split('=');
-    let (lib, kind) = match (parts.next(), parts.next()) {
-        (Some(lib), None) => (lib, LinkType::Dynamic),
-        (Some(kind), Some(lib)) => {
-            (lib,
-             match kind {
-                "static" => LinkType::Static,
-                "dynamic" => LinkType::Dynamic,
-                "framework" => LinkType::Framework,
-                _ => {
-                    println!("Link type unknown: {}", kind);
-                    exit(1);
-                }
-            })
-        }
-        _ => {
-            println!("Wrong link format: {}", args.flag_link);
-            exit(1);
-        }
-    };
-    builder.link(lib, kind);
+    if let Some(link) = args.flag_link {
+        let mut parts = link.split('=');
+        let (lib, kind) = match (parts.next(), parts.next()) {
+            (Some(lib), None) => (lib, LinkType::Dynamic),
+            (Some(kind), Some(lib)) => {
+                (lib,
+                 match kind {
+                    "static" => LinkType::Static,
+                    "dynamic" => LinkType::Dynamic,
+                    "framework" => LinkType::Framework,
+                    _ => {
+                        println!("Link type unknown: {}", kind);
+                        exit(1);
+                    }
+                })
+            }
+            _ => {
+                println!("Wrong link format: {}", link);
+                exit(1);
+            }
+        };
+        builder.link(lib, kind);
+    }
 }
 
 fn get_output(o: &str) -> Box<Write> {
