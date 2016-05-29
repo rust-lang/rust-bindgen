@@ -6,9 +6,8 @@
 set -e
 
 PROJECT_NAME=bindgen
+DOCS_REPO=crabtw/rust-bindgen
 SSH_KEY_TRAVIS_ID=26066e6f8a7a
-
-[ "$TRAVIS_RUST_VERSION" = stable ]
 
 [ "$TRAVIS_BRANCH" = master ]
 
@@ -27,6 +26,4 @@ echo "<meta http-equiv=refresh content=0;url=`echo $PROJECT_NAME`/index.html>" >
 sudo pip install ghp-import
 ghp-import -n target/doc
 
-git config user.name "doc upload bot"
-git config user.email "nobody@example.com"
-git push -fq origin gh-pages
+git push git@github.com:$DOCS_REPO gh-pages
