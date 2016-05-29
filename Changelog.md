@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Breaking
 - New command line interface.
 - Reserved words are suffixed and not prefixed (#302)
+- `builder()` -> `Builder::new()`.
 
 ### Added
 - `env_logger` for the bindgen binary.

@@ -44,12 +44,12 @@ pub struct Builder<'a> {
     logger: Option<&'a Logger>,
 }
 
-/// Returns a new builder for Bindgen.
-pub fn builder<'a>() -> Builder<'a> {
-    Default::default()
-}
-
 impl<'a> Builder<'a> {
+    /// Returns a new builder for Bindgen.
+    pub fn new() -> Builder<'a> {
+        Default::default()
+    }
+
     /// Add a C header to parse.
     pub fn header<T: Into<String>>(&mut self, header: T) -> &mut Self {
         self.clang_arg(header)

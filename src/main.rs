@@ -138,7 +138,7 @@ pub fn main() {
     let output = get_output(&args.flag_output);
 
     let logger = StdLogger;
-    let mut builder = Builder::default();
+    let mut builder = Builder::new();
     builder.log(&logger);
     args_to_opts(args, &mut builder);
     debug!("{:?}", builder);
