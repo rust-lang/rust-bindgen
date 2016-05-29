@@ -334,7 +334,7 @@ fn builtin_names() -> HashSet<String> {
 #[test]
 fn builder_state() {
     let logger = DummyLogger;
-    let mut build = builder();
+    let mut build = Builder::new();
     {
         build.header("example.h");
         build.link("m", LinkType::Static);
