@@ -110,7 +110,7 @@ fn get_output(o: &str) -> Box<Write> {
     if o == "-" {
         Box::new(io::stdout())
     } else {
-        Box::new(File::open(o).expect(&format!("\"{}\" unreadable", o)))
+        Box::new(File::create(o).expect(&format!("\"{}\" unwritable", o)))
     }
 }
 
