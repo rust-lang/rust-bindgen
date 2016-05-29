@@ -115,7 +115,7 @@ fn get_output(o: &str) -> Box<Write> {
 }
 
 pub fn main() {
-    env_logger::init().unwrap();
+    env_logger::LogBuilder::new().parse("bindgen=warn").init().unwrap();
 
     let args: Args = docopt::Docopt::new(USAGE)
                          .and_then(|d| d.decode())
