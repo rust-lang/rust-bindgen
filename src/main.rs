@@ -51,6 +51,7 @@ Options:
                               [default: std::os::raw]
   --remove-prefix=<prefix>    Prefix to remove from all the symbols, like
                               `libfoo_`. The removal is case-insensitive.
+  --no-derive-debug           Disable `derive(Debug)` for all generated types.
 ";
 
 #[derive(Debug, RustcDecodable)]
@@ -66,6 +67,8 @@ struct Args {
     flag_ctypes_prefix: String,
     flag_use_core: bool,
     flag_remove_prefix: Option<String>,
+    // TODO: allow finer control.
+    flag_no_derive_debug: bool,
 }
 
 fn args_to_opts(args: Args, builder: &mut Builder) {
@@ -76,6 +79,7 @@ fn args_to_opts(args: Args, builder: &mut Builder) {
                               .map(String::from)
                               .collect::<Vec<_>>())
            .use_core(args.flag_use_core)
+           .derive_debug(!args.flag_no_derive_debug)
            .override_enum_ty(args.flag_override_enum_type);
     for arg in args.arg_clang_args {
         builder.clang_arg(arg);
