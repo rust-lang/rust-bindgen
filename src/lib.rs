@@ -200,12 +200,12 @@ pub enum LinkType {
 
 /// Trait used internaly to log things with context like the C file line number.
 pub trait Logger: std::fmt::Debug {
-    /// Like `error!()`.
+    /// Defaults to `error!()`.
     fn error(&self, msg: &str) {
         error!("{}", msg);
     }
 
-    /// Like `warn!()`.
+    /// Defaults to `warn!()`.
     fn warn(&self, msg: &str) {
         warn!("{}", msg);
     }
