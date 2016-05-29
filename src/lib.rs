@@ -109,6 +109,12 @@ impl<'a> Builder<'a> {
         self
     }
 
+    /// Set the prefix to remove from all the symbols, like `libfoo_`.
+    pub fn remove_prefix<T: Into<String>>(&mut self, ty: T) -> &mut Self {
+        self.options.remove_prefix = ty.into();
+        self
+    }
+
     /// Controls if bindgen should also print the parsed AST (for debug).
     pub fn emit_ast(&mut self, value: bool) -> &mut Self {
         self.options.emit_ast = value;
@@ -161,6 +167,8 @@ pub struct BindgenOptions {
     pub ctypes_prefix: Vec<String>,
     /// Defines if we should use `std` or `core` for `Option` and such.
     pub use_core: bool,
+    /// Prefix to remove from all the symbols, like `libfoo_`.
+    pub remove_prefix: String,
 }
 
 impl Default for BindgenOptions {
@@ -183,6 +191,7 @@ impl Default for BindgenOptions {
             derive_debug: true,
             ctypes_prefix: vec!["std".into(), "os".into(), "raw".into()],
             use_core: false,
+            remove_prefix: String::new(),
         }
     }
 }

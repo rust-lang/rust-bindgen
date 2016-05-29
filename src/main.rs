@@ -49,6 +49,8 @@ Options:
   --ctypes-prefix=<prefix>    Use this prefix for all the types in the generated
                               code.
                               [default: std::os::raw]
+  --remove-prefix=<prefix>    Prefix to remove from all the symbols, like
+                              `libfoo_`. The removal is case-insensitive.
 ";
 
 #[derive(Debug, RustcDecodable)]
@@ -63,6 +65,7 @@ struct Args {
     flag_override_enum_type: String,
     flag_ctypes_prefix: String,
     flag_use_core: bool,
+    flag_remove_prefix: Option<String>,
 }
 
 fn args_to_opts(args: Args, builder: &mut Builder) {
@@ -79,6 +82,9 @@ fn args_to_opts(args: Args, builder: &mut Builder) {
     }
     if let Some(s) = args.flag_match {
         builder.match_pat(s);
+    }
+    if let Some(s) = args.flag_remove_prefix {
+        builder.remove_prefix(s);
     }
     if args.flag_builtins {
         builder.builtins();

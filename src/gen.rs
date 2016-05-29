@@ -4,6 +4,7 @@ use std::cell::RefCell;
 use std::vec::Vec;
 use std::rc::Rc;
 use std::collections::HashMap;
+use std::ascii::AsciiExt;
 
 use syntax::abi;
 use syntax::ast;
@@ -38,19 +39,18 @@ fn is_type(name: &str) -> bool {
         .contains(&name)
 }
 
-fn rust_id(ctx: &mut GenCtx, name: &str) -> (String, bool) {
+fn rust_id(ctx: &mut GenCtx, mut name: &str, remove_prefix: &str) -> (String, bool) {
+    let mut modified = false;
+    if remove_prefix != "" && name.len() >= remove_prefix.len() && name[..remove_prefix.len()].eq_ignore_ascii_case(remove_prefix) {
+        name = &name[remove_prefix.len()..];
+        modified = true;
+    }
     let token = parse::token::Ident(ctx.ext_cx.ident_of(name));
     if token.is_any_keyword() || is_type(name) {
-        let s = format!("{}_", name);
-        (s, true)
+        (format!("{}_", name), true)
     } else {
-        (name.into(), false)
+        (name.into(), modified)
     }
-}
-
-fn rust_type_id(ctx: &mut GenCtx, name: &str) -> String {
-    let (n, _) = rust_id(ctx, name);
-    n
 }
 
 const UNNAMED_PREFIX: &'static str = "Unnamed";
@@ -113,7 +113,7 @@ fn extract_definitions(ctx: &mut GenCtx,
                     c.name = unnamed_name(ctx, &c.name);
                 }
                 let c = ci.borrow().clone();
-                defs.push(opaque_to_rs(ctx, &comp_name(c.kind, &c.name)));
+                defs.push(opaque_to_rs(ctx, &comp_name(c.kind, &c.name), &options.remove_prefix));
             }
             GComp(ref ci) => {
                 {
@@ -136,7 +136,7 @@ fn extract_definitions(ctx: &mut GenCtx,
                     e.name = unnamed_name(ctx, &e.name);
                 }
                 let e = ei.borrow().clone();
-                defs.push(opaque_to_rs(ctx, &enum_name(&e.name)));
+                defs.push(opaque_to_rs(ctx, &enum_name(&e.name), &options.remove_prefix));
             }
             GEnum(ref ei) => {
                 {
@@ -155,7 +155,7 @@ fn extract_definitions(ctx: &mut GenCtx,
             GVar(ref vi) => {
                 let v = vi.borrow();
                 let ty = cty_to_rs(ctx, &v.ty, options);
-                defs.push(const_to_rs(ctx, &v.name, v.val.unwrap(), ty));
+                defs.push(const_to_rs(ctx, &v.name, v.val.unwrap(), ty, options));
             }
             _ => {}
         }
@@ -501,7 +501,7 @@ fn ctypedef_to_rs(ctx: &mut GenCtx,
             "int64_t" => mk_ty(ctx, false, vec!["i64".to_string()]),
             _ => cty_to_rs(ctx, ty, options),
         };
-        let rust_name = rust_type_id(ctx, name);
+        let rust_name = rust_id(ctx, name, &options.remove_prefix).0;
         let base = ast::ItemKind::Ty(P(ast::Ty {
                                          id: ast::DUMMY_NODE_ID,
                                          node: rust_ty.node,
@@ -679,7 +679,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
                     bitfields += 1;
                     format!("_bindgen_bitfield_{}_", bitfields)
                 }
-                None => rust_type_id(ctx, &f.name),
+                None => rust_id(ctx, &f.name, &options.remove_prefix).0,
             };
 
             if !f.ty.can_auto_derive() {
@@ -750,7 +750,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     let def = ast::ItemKind::Struct(ast::VariantData::Struct(fields, ast::DUMMY_NODE_ID),
                                     ast::Generics::default());
 
-    let id = rust_type_id(ctx, name);
+    let id = rust_id(ctx, name, &options.remove_prefix).0;
     let mut attrs = vec![mk_repr_attr(ctx, layout)];
     if can_derive_clone {
         attrs.push(mk_attr(ctx, "derive", &["Copy", "Clone"]));
@@ -775,7 +775,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
                                         ast::ImplPolarity::Positive,
                                         ast::Generics::default(),
                                         None,
-                                        P(mk_ty(ctx, false, vec![id])),
+                                        P(mk_ty(ctx, false, vec![id.clone()])),
                                         methods);
         items.push(P(ast::Item {
             ident: ctx.ext_cx.ident_of(name),
@@ -788,10 +788,10 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     }
 
     if !can_derive_clone {
-        items.push(mk_clone_impl(ctx, name, options.use_core));
+        items.push(mk_clone_impl(ctx, &id, options.use_core));
     }
 
-    items.push(mk_default_impl(ctx, name, options.use_core));
+    items.push(mk_default_impl(ctx, &id, options.use_core));
     items.extend(extra.into_iter());
     items
 }
@@ -821,10 +821,10 @@ fn mk_clone_impl(ctx: &GenCtx, ty_name: &str, use_core: bool) -> P<ast::Item> {
 }
 
 /// Convert a opaque type name to an ast Item.
-fn opaque_to_rs(ctx: &mut GenCtx, name: &str) -> P<ast::Item> {
+fn opaque_to_rs(ctx: &mut GenCtx, name: &str, remove_prefix: &str) -> P<ast::Item> {
     let def = ast::ItemKind::Enum(ast::EnumDef { variants: vec![] }, ast::Generics::default());
 
-    let id = rust_type_id(ctx, name);
+    let id = rust_id(ctx, name, remove_prefix).0;
     P(ast::Item {
         ident: ctx.ext_cx.ident_of(&id),
         attrs: Vec::new(),
@@ -874,7 +874,7 @@ fn cunion_to_rs(ctx: &mut GenCtx,
 
     let def = ast::ItemKind::Struct(ast::VariantData::Struct(vec![data_field], ast::DUMMY_NODE_ID),
                                     ast::Generics::default());
-    let union_id = rust_type_id(ctx, &name);
+    let union_id = rust_id(ctx, &name, &options.remove_prefix).0;
 
     // Waiting for https://github.com/rust-lang/rfcs/issues/1038
     let can_auto_derive = members.iter()
@@ -898,7 +898,7 @@ fn cunion_to_rs(ctx: &mut GenCtx,
         attrs
     };
 
-    let union_def = mk_item(ctx, union_id, def, ast::Visibility::Public, union_attrs);
+    let union_def = mk_item(ctx, union_id.clone(), def, ast::Visibility::Public, union_attrs);
 
     let union_impl = ast::ItemKind::Impl(ast::Unsafety::Normal,
                                          ast::ImplPolarity::Positive,
@@ -922,10 +922,10 @@ fn cunion_to_rs(ctx: &mut GenCtx,
                                  Vec::new())];
 
     if !can_auto_derive {
-        items.push(mk_clone_impl(ctx, &name, options.use_core));
+        items.push(mk_clone_impl(ctx, &union_id, options.use_core));
     }
 
-    items.push(mk_default_impl(ctx, &name, options.use_core));
+    items.push(mk_default_impl(ctx, &union_id, options.use_core));
     items.extend(extra.into_iter());
     items
 }
@@ -943,12 +943,12 @@ fn i64_to_int_lit(ctx: &mut GenCtx, value: i64) -> P<ast::Expr> {
 }
 
 /// Converts a C const to Rust AST.
-fn const_to_rs(ctx: &mut GenCtx, name: &str, val: i64, val_ty: ast::Ty) -> P<ast::Item> {
+fn const_to_rs(ctx: &mut GenCtx, name: &str, val: i64, val_ty: ast::Ty, options: &BindgenOptions) -> P<ast::Item> {
     let int_lit = i64_to_int_lit(ctx, val);
 
     let cst = ast::ItemKind::Const(P(val_ty), int_lit);
 
-    let id = rust_id(ctx, name).0;
+    let id = rust_id(ctx, name, &options.remove_prefix).0;
     P(ast::Item {
         ident: ctx.ext_cx.ident_of(&id),
         attrs: Vec::new(),
@@ -1006,7 +1006,8 @@ fn cenum_to_rs(ctx: &mut GenCtx,
                layout: Layout,
                enum_items: &[EnumItem])
                -> Vec<P<ast::Item>> {
-    let enum_name = ctx.ext_cx.ident_of(name);
+    let mangled_name = rust_id(ctx, name, &options.remove_prefix).0;
+    let enum_name = ctx.ext_cx.ident_of(&mangled_name);
     let enum_ty = ctx.ext_cx.ty_ident(ctx.span, enum_name);
     let enum_is_signed = kind.is_signed();
     let enum_repr = enum_size_to_rust_type_name(enum_is_signed, layout.size);
@@ -1031,7 +1032,8 @@ fn cenum_to_rs(ctx: &mut GenCtx,
     let mut found_values = HashMap::new();
 
     for item in enum_items {
-        let name = ctx.ext_cx.ident_of(&item.name);
+        let rust_name = rust_id(ctx, &item.name, &options.remove_prefix).0;
+        let name = ctx.ext_cx.ident_of(&rust_name);
 
         if let Some(orig) = found_values.get(&item.val) {
             let value = ctx.ext_cx.expr_path(ctx.ext_cx.path(ctx.span, vec![enum_name, *orig]));
@@ -1104,7 +1106,7 @@ fn gen_comp_methods(ctx: &mut GenCtx,
             return None;
         }
 
-        let (f_name, _) = rust_id(ctx, &f.name);
+        let (f_name, _) = rust_id(ctx, &f.name, &options.remove_prefix);
         let ret_ty = P(cty_to_rs(ctx,
                                  &TPtr(Box::new(f.ty.clone()), false, Layout::default()),
                                  options));
@@ -1299,7 +1301,7 @@ fn cvar_to_rs(ctx: &mut GenCtx,
               is_const: bool,
               options: &BindgenOptions)
               -> ast::ForeignItem {
-    let (rust_name, was_mangled) = rust_id(ctx, &name);
+    let (rust_name, was_mangled) = rust_id(ctx, &name, &options.remove_prefix);
 
     let mut attrs = Vec::new();
     if was_mangled {
@@ -1351,7 +1353,7 @@ fn cfuncty_to_rs(ctx: &mut GenCtx,
                    unnamed += 1;
                    format!("arg{}", unnamed)
                } else {
-                   rust_id(ctx, n).0
+                   rust_id(ctx, n, &options.remove_prefix).0
                };
 
                // From the C90 standard (http://c0x.coding-guidelines.com/6.7.5.3.html)
@@ -1388,7 +1390,7 @@ fn cfunc_to_rs(ctx: &mut GenCtx,
     let decl = ast::ForeignItemKind::Fn(P(cfuncty_to_rs(ctx, rty, aty, var, options)),
                                         ast::Generics::default());
 
-    let (rust_name, was_mangled) = rust_id(ctx, &name);
+    let (rust_name, was_mangled) = rust_id(ctx, &name, &options.remove_prefix);
 
     let mut attrs = Vec::new();
     if was_mangled {
@@ -1463,17 +1465,19 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type, options: &BindgenOptions) -> ast::Ty {
             mk_fn_proto_ty(ctx, decl, unsafety, sig.abi)
         }
         TNamed(ref ti) => {
-            let id = rust_type_id(ctx, &ti.borrow().name);
+            let id = rust_id(ctx, &ti.borrow().name, &options.remove_prefix).0;
             mk_ty(ctx, false, vec![id])
         }
         TComp(ref ci) => {
             let mut c = ci.borrow_mut();
             c.name = unnamed_name(ctx, &c.name);
+            c.name = rust_id(ctx, &c.name, &options.remove_prefix).0;
             mk_ty(ctx, false, vec![comp_name(c.kind, &c.name)])
         }
         TEnum(ref ei) => {
             let mut e = ei.borrow_mut();
             e.name = unnamed_name(ctx, &e.name);
+            e.name = rust_id(ctx, &e.name, &options.remove_prefix).0;
             mk_ty(ctx, false, vec![enum_name(&e.name)])
         }
     }
