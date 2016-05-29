@@ -6,23 +6,10 @@ extern crate docopt;
 extern crate rustc_serialize;
 extern crate env_logger;
 
-use bindgen::{Builder, LinkType, Logger};
+use bindgen::{Builder, LinkType};
 use std::io::{self, Write};
 use std::fs::File;
 use std::process::exit;
-
-#[derive(Debug)]
-struct StdLogger;
-
-impl Logger for StdLogger {
-    fn error(&self, msg: &str) {
-        error!("{}", msg);
-    }
-
-    fn warn(&self, msg: &str) {
-        warn!("{}", msg);
-    }
-}
 
 const USAGE: &'static str = "
 Generate C bindings for Rust.
@@ -137,9 +124,7 @@ pub fn main() {
 
     let output = get_output(&args.flag_output);
 
-    let logger = StdLogger;
     let mut builder = Builder::new();
-    builder.log(&logger);
     args_to_opts(args, &mut builder);
     debug!("{:?}", builder);
 
@@ -148,7 +133,7 @@ pub fn main() {
             match bindings.write(output) {
                 Ok(()) => (),
                 Err(e) => {
-                    logger.error(&format!("Unable to write bindings to file. {}", e)[..]);
+                    error!("Unable to write bindings to file. {}", e);
                     exit(-1);
                 }
             }

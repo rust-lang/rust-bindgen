@@ -201,9 +201,14 @@ pub enum LinkType {
 /// Trait used internaly to log things with context like the C file line number.
 pub trait Logger: std::fmt::Debug {
     /// Like `error!()`.
-    fn error(&self, msg: &str);
+    fn error(&self, msg: &str) {
+        error!("{}", msg);
+    }
+
     /// Like `warn!()`.
-    fn warn(&self, msg: &str);
+    fn warn(&self, msg: &str) {
+        warn!("{}", msg);
+    }
 }
 
 /// Contains the generated code.
@@ -283,10 +288,7 @@ impl Bindings {
 #[derive(Debug)]
 struct DummyLogger;
 
-impl Logger for DummyLogger {
-    fn error(&self, _msg: &str) {}
-    fn warn(&self, _msg: &str) {}
-}
+impl Logger for DummyLogger {}
 
 fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<Vec<Global>, ()> {
     fn str_to_ikind(s: &str) -> Option<types::IKind> {
