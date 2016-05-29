@@ -63,3 +63,6 @@ before_script:
       fi
     fi
   - echo $LIBCLANG_PATH
+
+after_success:
+  - ./scripts/travis-doc-upload.sh
