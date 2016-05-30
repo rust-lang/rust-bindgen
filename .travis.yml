@@ -16,7 +16,6 @@ env:
   - LLVM_VERSION=3.8
 rust:
   - stable
-  - beta
   - nightly
 os:
   - osx
