@@ -1,6 +1,7 @@
 [package]
 authors = ["Jyun-Yan You <jyyou.tw@gmail.com>"]
 description = "A binding generator for Rust"
+documentation = "https://crabtw.github.io/rust-bindgen/bindgen/index.html"
 homepage = "https://github.com/crabtw/rust-bindgen"
 keywords = ["bindings", "ffi", "code-generation"]
 license = "BSD-3-Clause"
