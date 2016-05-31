@@ -903,6 +903,12 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             ci.base_members += 1;
         }
         CXCursor_CXXMethod => {
+            // Make sure to mark has_vtable properly, even if we
+            // would otherwise skip this method due to linkage/visibility.
+            if cursor.method_is_virtual() {
+                ci.has_vtable = true;
+            }
+
             let linkage = cursor.linkage();
             if linkage != CXLinkage_External {
                 return CXChildVisit_Continue;
@@ -953,10 +959,6 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                     }
                 }
                 return false;
-            }
-
-            if cursor.method_is_virtual() {
-                ci.has_vtable = true;
             }
 
             let mut sig = mk_fn_sig_resolving_typedefs(ctx, &cursor.cur_type(), cursor, &ci.typedefs);
