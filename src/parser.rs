@@ -31,6 +31,7 @@ pub struct ClangParserOptions {
     pub clang_args: Vec<String>,
     pub opaque_types: Vec<String>,
     pub blacklist_type: Vec<String>,
+    pub msvc_mangling: bool,
 }
 
 struct ClangParserCtx<'a> {
@@ -64,6 +65,18 @@ impl<'a> ClangParserCtx<'a> {
     fn current_module_mut(&mut self) -> &mut Module {
         self.module_map.get_mut(&self.current_module_id).expect("Module not found!")
     }
+}
+
+fn cursor_link_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> String {
+    let mut mangling = cursor.mangling();
+
+    // Try to undo backend linkage munging (prepended _, generally)
+    if cfg!(target_os = "macos") ||
+       (cfg!(target_os = "windows") && !ctx.options.msvc_mangling)
+    {
+        mangling.remove(0);
+    }
+    mangling
 }
 
 fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {
@@ -195,7 +208,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                 GType(ti)
             }
             CXCursor_VarDecl => {
-                let mangled = cursor.mangling();
+                let mangled = cursor_link_name(ctx, &cursor);
                 let is_const = ty.is_const();
                 let ty = conv_ty_resolving_typedefs(ctx,  &ty, &cursor, true);
                 let mut vi = VarInfo::new(spelling, mangled, comment, ty);
@@ -211,7 +224,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                 GVar(vi)
             }
             CXCursor_FunctionDecl => {
-                let mangled = cursor.mangling();
+                let mangled = cursor_link_name(ctx, &cursor);
                 let vi = Rc::new(RefCell::new(VarInfo::new(spelling, mangled, comment, TVoid)));
                 GFunc(vi)
             }
@@ -971,7 +984,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 return CXChildVisit_Continue;
             }
 
-            let mut vi = VarInfo::new(spelling, cursor.mangling(), cursor.raw_comment(), sig);
+            let mut vi = VarInfo::new(spelling, cursor_link_name(ctx, &cursor), cursor.raw_comment(), sig);
             vi.is_static = cursor.method_is_static();
             vi.is_const = cursor.cur_type().is_const();
 

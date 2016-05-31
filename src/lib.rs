@@ -170,6 +170,8 @@ pub struct BindgenOptions {
     pub class_constants: bool,
     /// Wether to generate names that are **directly** under namespaces.
     pub namespaced_constants: bool,
+    // whether to use msvc mangling rules
+    pub msvc_mangling: bool,
     pub override_enum_ty: String,
     pub raw_lines: Vec<String>,
     /// Attributes for a type with destructor
@@ -197,6 +199,7 @@ impl Default for BindgenOptions {
             unstable_rust: true,
             class_constants: true,
             namespaced_constants: true,
+            msvc_mangling: false,
             raw_lines: vec![],
             dtor_attrs: vec![],
             clang_args: vec![],
@@ -325,6 +328,7 @@ fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<ModuleMap,
         clang_args: options.clang_args.clone(),
         opaque_types: options.opaque_types.clone(),
         blacklist_type: options.blacklist_type.clone(),
+        msvc_mangling: options.msvc_mangling,
     };
 
     parser::parse(clang_opts, logger)

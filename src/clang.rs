@@ -32,15 +32,9 @@ impl Cursor {
     }
 
     pub fn mangling(&self) -> String {
-        let mut mangling = unsafe {
+         unsafe {
             String_ { x: clang_Cursor_getMangling(self.x) }.to_string()
-        };
-
-        // Try to undo backend mangling
-        if cfg!(target_os = "macos") || cfg!(all(target_os = "windows", target_env = "gnu")) {
-            mangling.remove(0);
         }
-        mangling
     }
 
     pub fn lexical_parent(&self) -> Cursor {
