@@ -1239,7 +1239,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
         items.push(mk_impl(ctx, id_ty, unmangledlist));
     }
 
-    if !ci.vars.is_empty() {
+    if !ci.vars.is_empty() && template_args.is_empty() {
         let vars = ci.vars.into_iter().map(|v| {
             let vi = v.varinfo();
             let v = vi.borrow_mut();
