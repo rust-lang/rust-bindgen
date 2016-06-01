@@ -883,24 +883,16 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
 
     if ci.has_vtable {
         let mut vffields = vec![];
-        let base_vftable = if !members.is_empty() {
-            if let CompMember::Field(ref fi) = members[0] {
-                match fi.ty {
-                    TComp(ref ci2) => {
-                        let ci2 = ci2.borrow();
-                        if ci2.has_vtable {
-                            Some(format!("_vftable_{}", ci2.name))
-                        } else {
-                            None
-                        }
-                    },
-                    _ => None
+        let base_vftable = match members.get(0) {
+            Some(&CompMember::Field(FieldInfo { ty: TComp(ref ci2), .. })) => {
+                let ci2 = ci2.borrow();
+                if ci2.has_vtable {
+                    Some(format!("_vftable_{}", ci2.name))
+                } else {
+                    None
                 }
-            } else {
-                None
-            }
-        } else {
-            None
+            },
+            _ => None,
         };
 
         if let Some(ref base) = base_vftable {
