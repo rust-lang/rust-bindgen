@@ -14,35 +14,71 @@ pub struct Struct_bitfield {
     pub _bitfield_3: ::std::os::raw::c_uint,
 }
 impl Struct_bitfield {
+    #[inline]
+    pub fn a(&self) -> ::std::os::raw::c_ushort {
+        (self._bitfield_1 & (1usize as ::std::os::raw::c_ushort)) >> 0usize
+    }
+    #[inline]
     pub fn set_a(&mut self, val: bool) {
-        self._bitfield_1 &=
-            !(((1 << (1u32 as ::std::os::raw::c_ushort)) - 1) << 0usize);
-        self._bitfield_1 |= (val as ::std::os::raw::c_ushort) << 0usize;
+        self._bitfield_1 &= !(1usize as ::std::os::raw::c_ushort);
+        self._bitfield_1 |=
+            ((val as ::std::os::raw::c_ushort) << 0usize) &
+                (1usize as ::std::os::raw::c_ushort);
     }
+    #[inline]
+    pub fn b(&self) -> ::std::os::raw::c_ushort {
+        (self._bitfield_1 & (2usize as ::std::os::raw::c_ushort)) >> 1usize
+    }
+    #[inline]
     pub fn set_b(&mut self, val: bool) {
-        self._bitfield_1 &=
-            !(((1 << (1u32 as ::std::os::raw::c_ushort)) - 1) << 1usize);
-        self._bitfield_1 |= (val as ::std::os::raw::c_ushort) << 1usize;
+        self._bitfield_1 &= !(2usize as ::std::os::raw::c_ushort);
+        self._bitfield_1 |=
+            ((val as ::std::os::raw::c_ushort) << 1usize) &
+                (2usize as ::std::os::raw::c_ushort);
     }
+    #[inline]
+    pub fn c(&self) -> ::std::os::raw::c_ushort {
+        (self._bitfield_1 & (4usize as ::std::os::raw::c_ushort)) >> 2usize
+    }
+    #[inline]
     pub fn set_c(&mut self, val: bool) {
-        self._bitfield_1 &=
-            !(((1 << (1u32 as ::std::os::raw::c_ushort)) - 1) << 2usize);
-        self._bitfield_1 |= (val as ::std::os::raw::c_ushort) << 2usize;
+        self._bitfield_1 &= !(4usize as ::std::os::raw::c_ushort);
+        self._bitfield_1 |=
+            ((val as ::std::os::raw::c_ushort) << 2usize) &
+                (4usize as ::std::os::raw::c_ushort);
     }
+    #[inline]
+    pub fn at_offset_3(&self) -> ::std::os::raw::c_ushort {
+        (self._bitfield_1 & (8usize as ::std::os::raw::c_ushort)) >> 3usize
+    }
+    #[inline]
     pub fn set_at_offset_3(&mut self, val: bool) {
-        self._bitfield_1 &=
-            !(((1 << (1u32 as ::std::os::raw::c_ushort)) - 1) << 3usize);
-        self._bitfield_1 |= (val as ::std::os::raw::c_ushort) << 3usize;
+        self._bitfield_1 &= !(8usize as ::std::os::raw::c_ushort);
+        self._bitfield_1 |=
+            ((val as ::std::os::raw::c_ushort) << 3usize) &
+                (8usize as ::std::os::raw::c_ushort);
     }
+    #[inline]
+    pub fn at_offset_4(&self) -> ::std::os::raw::c_ushort {
+        (self._bitfield_1 & (48usize as ::std::os::raw::c_ushort)) >> 4usize
+    }
+    #[inline]
     pub fn set_at_offset_4(&mut self, val: u8) {
-        self._bitfield_1 &=
-            !(((1 << (2u32 as ::std::os::raw::c_ushort)) - 1) << 4usize);
-        self._bitfield_1 |= (val as ::std::os::raw::c_ushort) << 4usize;
+        self._bitfield_1 &= !(48usize as ::std::os::raw::c_ushort);
+        self._bitfield_1 |=
+            ((val as ::std::os::raw::c_ushort) << 4usize) &
+                (48usize as ::std::os::raw::c_ushort);
     }
+    #[inline]
+    pub fn d(&self) -> ::std::os::raw::c_ushort {
+        (self._bitfield_1 & (192usize as ::std::os::raw::c_ushort)) >> 6usize
+    }
+    #[inline]
     pub fn set_d(&mut self, val: u8) {
-        self._bitfield_1 &=
-            !(((1 << (2u32 as ::std::os::raw::c_ushort)) - 1) << 6usize);
-        self._bitfield_1 |= (val as ::std::os::raw::c_ushort) << 6usize;
+        self._bitfield_1 &= !(192usize as ::std::os::raw::c_ushort);
+        self._bitfield_1 |=
+            ((val as ::std::os::raw::c_ushort) << 6usize) &
+                (192usize as ::std::os::raw::c_ushort);
     }
     pub const fn new_bitfield_1(a: bool, b: bool, c: bool,
                                 unnamed_bitfield1: bool,
@@ -55,18 +91,31 @@ impl Struct_bitfield {
             ((unnamed_bitfield2 as ::std::os::raw::c_ushort) << 4u32) |
             ((d as ::std::os::raw::c_ushort) << 6u32)
     }
+    #[inline]
+    pub fn f(&self) -> ::std::os::raw::c_uint {
+        (self._bitfield_2 & (3usize as ::std::os::raw::c_uint)) >> 0usize
+    }
+    #[inline]
     pub fn set_f(&mut self, val: u8) {
-        self._bitfield_2 &=
-            !(((1 << (2u32 as ::std::os::raw::c_uint)) - 1) << 0usize);
-        self._bitfield_2 |= (val as ::std::os::raw::c_uint) << 0usize;
+        self._bitfield_2 &= !(3usize as ::std::os::raw::c_uint);
+        self._bitfield_2 |=
+            ((val as ::std::os::raw::c_uint) << 0usize) &
+                (3usize as ::std::os::raw::c_uint);
     }
     pub const fn new_bitfield_2(f: u8) -> ::std::os::raw::c_uint {
         0 | ((f as ::std::os::raw::c_uint) << 0u32)
     }
+    #[inline]
+    pub fn g(&self) -> ::std::os::raw::c_uint {
+        (self._bitfield_3 & (4294967295usize as ::std::os::raw::c_uint)) >>
+            0usize
+    }
+    #[inline]
     pub fn set_g(&mut self, val: u32) {
-        self._bitfield_3 &=
-            !(((1 << (0u32 as ::std::os::raw::c_uint)) - 1) << 0usize);
-        self._bitfield_3 |= (val as ::std::os::raw::c_uint) << 0usize;
+        self._bitfield_3 &= !(4294967295usize as ::std::os::raw::c_uint);
+        self._bitfield_3 |=
+            ((val as ::std::os::raw::c_uint) << 0usize) &
+                (4294967295usize as ::std::os::raw::c_uint);
     }
     pub const fn new_bitfield_3(g: u32) -> ::std::os::raw::c_uint {
         0 | ((g as ::std::os::raw::c_uint) << 0u32)

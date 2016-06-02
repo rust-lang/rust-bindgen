@@ -147,13 +147,25 @@ pub struct jsval_layout_jsval_layout_opaque_hpp_unnamed_1 {
     pub _bitfield_1: u64,
 }
 impl jsval_layout_jsval_layout_opaque_hpp_unnamed_1 {
-    pub fn set_payload47(&mut self, val: u32) {
-        self._bitfield_1 &= !(((1 << (47u32 as u64)) - 1) << 0usize);
-        self._bitfield_1 |= (val as u64) << 0usize;
+    #[inline]
+    pub fn payload47(&self) -> u64 {
+        (self._bitfield_1 & (140737488355327usize as u64)) >> 0usize
     }
+    #[inline]
+    pub fn set_payload47(&mut self, val: u32) {
+        self._bitfield_1 &= !(140737488355327usize as u64);
+        self._bitfield_1 |=
+            ((val as u64) << 0usize) & (140737488355327usize as u64);
+    }
+    #[inline]
+    pub fn tag(&self) -> u64 {
+        (self._bitfield_1 & (18446603336221196288usize as u64)) >> 47usize
+    }
+    #[inline]
     pub fn set_tag(&mut self, val: u32) {
-        self._bitfield_1 &= !(((1 << (17u32 as u64)) - 1) << 47usize);
-        self._bitfield_1 |= (val as u64) << 47usize;
+        self._bitfield_1 &= !(18446603336221196288usize as u64);
+        self._bitfield_1 |=
+            ((val as u64) << 47usize) & (18446603336221196288usize as u64);
     }
     pub const fn new_bitfield_1(payload47: u32, tag: u32) -> u64 {
         0 | ((payload47 as u64) << 0u32) | ((tag as u64) << 47u32)

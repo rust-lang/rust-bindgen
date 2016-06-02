@@ -681,11 +681,12 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                 (Some(width), _) => {
                     // Bitfields containing enums are not supported by the c standard
                     // https://stackoverflow.com/questions/11983231/is-it-safe-to-use-an-enum-in-a-bit-field
+
                     match ty {
-                        il::TInt(_, _) => (),
+                        il::TInt(..) => {},
                         _ => {
-                            // NOTE: We rely on the name of the type converted to rust types,
-                            // and on the alignment.
+                            // NOTE: We rely on the name of the type converted
+                            // to rust types, and on the alignment.
                             let bits = cmp::max(width, ty.size() as u32 * 8);
                             let layout_size = cmp::max(1, bits.next_power_of_two() / 8) as usize;
 
@@ -710,7 +711,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                             ty = TNamed(Rc::new(RefCell::new(ti)))
                         }
                     }
-                    ("".to_owned(), Some(vec!((cursor.spelling(), width))))
+                    ("".to_owned(), Some(vec![(cursor.spelling(), width)]))
                 },
                 // The field is not a bitfield
                 (None, _) => (cursor.spelling(), None)

@@ -1017,7 +1017,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
                 let mut offset: u32 = 0;
                 if let Some(ref bitfields) = f.bitfields {
                     for &(ref bf_name, bf_size) in bitfields.iter() {
-                        setters.push(gen_bitfield_method(ctx, &f_name, bf_name, &f_ty, offset as usize, bf_size));
+                        setters.extend(gen_bitfield_methods(ctx, &f_name, bf_name, &f_ty, offset as usize, bf_size).into_iter());
                         offset += bf_size;
                     }
                     setters.push(gen_fullbitfield_method(ctx, &f_name, &f_ty, bitfields))
@@ -1623,13 +1623,13 @@ fn type_for_bitfield_width(ctx: &mut GenCtx, width: u32, is_arg: bool) -> ast::T
     mk_ty(ctx, false, &[input_type.to_owned()])
 }
 
-fn gen_bitfield_method(ctx: &mut GenCtx, bindgen_name: &str,
-                       field_name: &str, field_type: &Type,
-                       offset: usize, width: u32) -> ast::ImplItem {
+fn gen_bitfield_methods(ctx: &mut GenCtx, bindgen_name: &str,
+                        field_name: &str, field_type: &Type,
+                        offset: usize, width: u32) -> Vec<ast::ImplItem> {
     let input_type = type_for_bitfield_width(ctx, width, true);
-    let width = width % (field_type.layout().unwrap().size as u32 * 8);
+    let width = width as usize;
 
-    let field_type = cty_to_rs(ctx, &field_type, false, true);
+    let field_type = cty_to_rs(ctx, field_type, false, true);
 
     let real_field_name = if field_name.is_empty() {
         format!("at_offset_{}", offset)
@@ -1638,20 +1638,28 @@ fn gen_bitfield_method(ctx: &mut GenCtx, bindgen_name: &str,
     };
 
 
-    let setter_name = ctx.ext_cx.ident_of(&format!("set_{}", real_field_name));
     let bindgen_ident = ctx.ext_cx.ident_of(bindgen_name);
+    let setter_name = ctx.ext_cx.ident_of(&format!("set_{}", real_field_name));
+    let getter_name = ctx.ext_cx.ident_of(&real_field_name);
 
+    let mask = ((1usize << width) - 1) << offset;
     let item = quote_item!(&ctx.ext_cx,
         impl X {
+            #[inline]
+            pub fn $getter_name(&self) -> $field_type {
+                (self.$bindgen_ident & ($mask as $field_type)) >> $offset
+            }
+
+            #[inline]
             pub fn $setter_name(&mut self, val: $input_type) {
-                self.$bindgen_ident &= !(((1 << $width as $field_type) - 1) << $offset);
-                self.$bindgen_ident |= (val as $field_type) << $offset;
+                self.$bindgen_ident &= !($mask as $field_type);
+                self.$bindgen_ident |= (val as $field_type << $offset) & ($mask as $field_type);
             }
         }
     ).unwrap();
 
-    match &item.node {
-        &ast::ItemKind::Impl(_, _, _, _, _, ref items) => items[0].clone(),
+    match item.node {
+        ast::ItemKind::Impl(_, _, _, _, _, ref items) => items.clone(),
         _ => unreachable!()
     }
 }

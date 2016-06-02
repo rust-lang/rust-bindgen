@@ -11,13 +11,19 @@ pub struct Struct_C {
     pub _bitfield_1: u8,
 }
 impl Struct_C {
+    #[inline]
+    pub fn a(&self) -> u8 { (self._bitfield_1 & (1usize as u8)) >> 0usize }
+    #[inline]
     pub fn set_a(&mut self, val: bool) {
-        self._bitfield_1 &= !(((1 << (1u32 as u8)) - 1) << 0usize);
-        self._bitfield_1 |= (val as u8) << 0usize;
+        self._bitfield_1 &= !(1usize as u8);
+        self._bitfield_1 |= ((val as u8) << 0usize) & (1usize as u8);
     }
+    #[inline]
+    pub fn b(&self) -> u8 { (self._bitfield_1 & (254usize as u8)) >> 1usize }
+    #[inline]
     pub fn set_b(&mut self, val: u8) {
-        self._bitfield_1 &= !(((1 << (7u32 as u8)) - 1) << 1usize);
-        self._bitfield_1 |= (val as u8) << 1usize;
+        self._bitfield_1 &= !(254usize as u8);
+        self._bitfield_1 |= ((val as u8) << 1usize) & (254usize as u8);
     }
     pub const fn new_bitfield_1(a: bool, b: u8) -> u8 {
         0 | ((a as u8) << 0u32) | ((b as u8) << 1u32)

@@ -144,6 +144,11 @@ pub struct Struct_ShouldNotBeCopiable<T> {
 pub struct Struct_ShouldNotBeCopiableAsWell<U> {
     pub m_member: Struct_ReplacedWithoutDestructorFwd<U>,
 }
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct Struct_TemplateWithVar<T> {
+    pub _phantom0: ::std::marker::PhantomData<T>,
+}
 extern "C" {
     #[link_name = "_Z3bar3FooIiiE"]
     pub fn bar(foo: Struct_Foo<::std::os::raw::c_int, ::std::os::raw::c_int>);

@@ -31,40 +31,78 @@ pub struct Struct_Weird {
     pub _bitfield_2: u32,
 }
 impl Struct_Weird {
-    pub fn set_bitTest(&mut self, val: u16) {
-        self._bitfield_1 &=
-            !(((1 << (16u32 as ::std::os::raw::c_uint)) - 1) << 0usize);
-        self._bitfield_1 |= (val as ::std::os::raw::c_uint) << 0usize;
+    #[inline]
+    pub fn bitTest(&self) -> ::std::os::raw::c_uint {
+        (self._bitfield_1 & (65535usize as ::std::os::raw::c_uint)) >> 0usize
     }
+    #[inline]
+    pub fn set_bitTest(&mut self, val: u16) {
+        self._bitfield_1 &= !(65535usize as ::std::os::raw::c_uint);
+        self._bitfield_1 |=
+            ((val as ::std::os::raw::c_uint) << 0usize) &
+                (65535usize as ::std::os::raw::c_uint);
+    }
+    #[inline]
+    pub fn bitTest2(&self) -> ::std::os::raw::c_uint {
+        (self._bitfield_1 & (2147418112usize as ::std::os::raw::c_uint)) >>
+            16usize
+    }
+    #[inline]
     pub fn set_bitTest2(&mut self, val: u16) {
-        self._bitfield_1 &=
-            !(((1 << (15u32 as ::std::os::raw::c_uint)) - 1) << 16usize);
-        self._bitfield_1 |= (val as ::std::os::raw::c_uint) << 16usize;
+        self._bitfield_1 &= !(2147418112usize as ::std::os::raw::c_uint);
+        self._bitfield_1 |=
+            ((val as ::std::os::raw::c_uint) << 16usize) &
+                (2147418112usize as ::std::os::raw::c_uint);
     }
     pub const fn new_bitfield_1(bitTest: u16, bitTest2: u16)
      -> ::std::os::raw::c_uint {
         0 | ((bitTest as ::std::os::raw::c_uint) << 0u32) |
             ((bitTest2 as ::std::os::raw::c_uint) << 16u32)
     }
+    #[inline]
+    pub fn mFillOpacitySource(&self) -> u32 {
+        (self._bitfield_2 & (7usize as u32)) >> 0usize
+    }
+    #[inline]
     pub fn set_mFillOpacitySource(&mut self, val: u8) {
-        self._bitfield_2 &= !(((1 << (3u32 as u32)) - 1) << 0usize);
-        self._bitfield_2 |= (val as u32) << 0usize;
+        self._bitfield_2 &= !(7usize as u32);
+        self._bitfield_2 |= ((val as u32) << 0usize) & (7usize as u32);
     }
+    #[inline]
+    pub fn mStrokeOpacitySource(&self) -> u32 {
+        (self._bitfield_2 & (56usize as u32)) >> 3usize
+    }
+    #[inline]
     pub fn set_mStrokeOpacitySource(&mut self, val: u8) {
-        self._bitfield_2 &= !(((1 << (3u32 as u32)) - 1) << 3usize);
-        self._bitfield_2 |= (val as u32) << 3usize;
+        self._bitfield_2 &= !(56usize as u32);
+        self._bitfield_2 |= ((val as u32) << 3usize) & (56usize as u32);
     }
+    #[inline]
+    pub fn mStrokeDasharrayFromObject(&self) -> u32 {
+        (self._bitfield_2 & (64usize as u32)) >> 6usize
+    }
+    #[inline]
     pub fn set_mStrokeDasharrayFromObject(&mut self, val: bool) {
-        self._bitfield_2 &= !(((1 << (1u32 as u32)) - 1) << 6usize);
-        self._bitfield_2 |= (val as u32) << 6usize;
+        self._bitfield_2 &= !(64usize as u32);
+        self._bitfield_2 |= ((val as u32) << 6usize) & (64usize as u32);
     }
+    #[inline]
+    pub fn mStrokeDashoffsetFromObject(&self) -> u32 {
+        (self._bitfield_2 & (128usize as u32)) >> 7usize
+    }
+    #[inline]
     pub fn set_mStrokeDashoffsetFromObject(&mut self, val: bool) {
-        self._bitfield_2 &= !(((1 << (1u32 as u32)) - 1) << 7usize);
-        self._bitfield_2 |= (val as u32) << 7usize;
+        self._bitfield_2 &= !(128usize as u32);
+        self._bitfield_2 |= ((val as u32) << 7usize) & (128usize as u32);
     }
+    #[inline]
+    pub fn mStrokeWidthFromObject(&self) -> u32 {
+        (self._bitfield_2 & (256usize as u32)) >> 8usize
+    }
+    #[inline]
     pub fn set_mStrokeWidthFromObject(&mut self, val: bool) {
-        self._bitfield_2 &= !(((1 << (1u32 as u32)) - 1) << 8usize);
-        self._bitfield_2 |= (val as u32) << 8usize;
+        self._bitfield_2 &= !(256usize as u32);
+        self._bitfield_2 |= ((val as u32) << 8usize) & (256usize as u32);
     }
     pub const fn new_bitfield_2(mFillOpacitySource: u8,
                                 mStrokeOpacitySource: u8,

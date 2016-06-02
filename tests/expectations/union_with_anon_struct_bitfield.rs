@@ -56,15 +56,28 @@ pub struct Struct_foo_union_with_anon_struct_bitfield_h_unnamed_1 {
     pub _bitfield_1: ::std::os::raw::c_int,
 }
 impl Struct_foo_union_with_anon_struct_bitfield_h_unnamed_1 {
-    pub fn set_b(&mut self, val: u8) {
-        self._bitfield_1 &=
-            !(((1 << (7u32 as ::std::os::raw::c_int)) - 1) << 0usize);
-        self._bitfield_1 |= (val as ::std::os::raw::c_int) << 0usize;
+    #[inline]
+    pub fn b(&self) -> ::std::os::raw::c_int {
+        (self._bitfield_1 & (127usize as ::std::os::raw::c_int)) >> 0usize
     }
+    #[inline]
+    pub fn set_b(&mut self, val: u8) {
+        self._bitfield_1 &= !(127usize as ::std::os::raw::c_int);
+        self._bitfield_1 |=
+            ((val as ::std::os::raw::c_int) << 0usize) &
+                (127usize as ::std::os::raw::c_int);
+    }
+    #[inline]
+    pub fn c(&self) -> ::std::os::raw::c_int {
+        (self._bitfield_1 & (4294967168usize as ::std::os::raw::c_int)) >>
+            7usize
+    }
+    #[inline]
     pub fn set_c(&mut self, val: u32) {
-        self._bitfield_1 &=
-            !(((1 << (25u32 as ::std::os::raw::c_int)) - 1) << 7usize);
-        self._bitfield_1 |= (val as ::std::os::raw::c_int) << 7usize;
+        self._bitfield_1 &= !(4294967168usize as ::std::os::raw::c_int);
+        self._bitfield_1 |=
+            ((val as ::std::os::raw::c_int) << 7usize) &
+                (4294967168usize as ::std::os::raw::c_int);
     }
     pub const fn new_bitfield_1(b: u8, c: u32) -> ::std::os::raw::c_int {
         0 | ((b as ::std::os::raw::c_int) << 0u32) |
