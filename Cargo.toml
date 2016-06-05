@@ -15,7 +15,7 @@ doc = false
 name = "bindgen"
 
 [dependencies]
-clang-sys = "~0.6.0"
+clang-sys = "~0.7.0"
 # only for main, see https://github.com/rust-lang/cargo/issues/1982
 docopt = "~0.6.80"
 # only for main, see https://github.com/rust-lang/cargo/issues/1982
@@ -24,11 +24,11 @@ libc = "~0.2.11"
 log = "~0.3.6"
 # only for main, see https://github.com/rust-lang/cargo/issues/1982
 rustc-serialize = "~0.3.19"
-syntex_syntax = "~0.32.0"
+syntex_syntax = "~0.33.0"
 
 [dependencies.clippy]
 optional = true
-version = "~0.0.69"
+version = "0.0.72"
 
 [dev-dependencies]
 diff = "~0.1.9"
