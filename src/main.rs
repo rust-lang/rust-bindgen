@@ -52,6 +52,7 @@ Options:
   --remove-prefix=<prefix>    Prefix to remove from all the symbols, like
                               `libfoo_`. The removal is case-insensitive.
   --no-derive-debug           Disable `derive(Debug)` for all generated types.
+  --no-rust-enums             Convert C enums to Rust constants instead of enums.
 ";
 
 #[derive(Debug, RustcDecodable)]
@@ -69,6 +70,7 @@ struct Args {
     flag_remove_prefix: Option<String>,
     // TODO: allow finer control.
     flag_no_derive_debug: bool,
+    flag_no_rust_enums: bool,
 }
 
 fn args_to_opts(args: Args, builder: &mut Builder) {
@@ -116,6 +118,7 @@ fn args_to_opts(args: Args, builder: &mut Builder) {
         };
         builder.link(lib, kind);
     }
+    builder.rust_enums(!args.flag_no_rust_enums);
 }
 
 fn get_output(o: &str) -> Box<Write> {
