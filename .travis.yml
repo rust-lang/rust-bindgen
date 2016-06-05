@@ -2,10 +2,8 @@ language: rust
 addons:
     apt:
       sources:
-        - llvm-toolchain-precise
         - llvm-toolchain-precise-3.5
         - llvm-toolchain-precise-3.8
-        - ubuntu-toolchain-r-test
       packages:
         - libclang-3.5-dev
         - llvm-3.5-dev
