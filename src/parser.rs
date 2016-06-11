@@ -310,6 +310,12 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
                          true);
             TVoid
         }
+        CXTypeKind::Int128 | CXTypeKind::UInt128 => {
+            log_err_warn(ctx,
+                         "128-bits integers are not supported, see https://github.com/crabtw/rust-bindgen/issues/355",
+                         true);
+            TVoid
+        }
         _ => {
             let fail = ctx.options.fail_on_unknown_type;
             log_err_warn(ctx,
