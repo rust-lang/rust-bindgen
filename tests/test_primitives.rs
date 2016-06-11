@@ -1,3 +1,4 @@
+use support::assert_bind_eq;
 use bindgen;
 
 #[test]
@@ -33,11 +34,10 @@ fn signed() {
 
 #[test]
 fn floats() {
-    let bindings = bindgen::Builder::new("tests/headers/floats.h")
-        .generate()
-        .unwrap()
-        .to_string();
-
-    assert!(bindings.contains("pub type float = f32;"));
-    assert!(bindings.contains("pub type double = f64;"));
+    assert_bind_eq(Default::default(), "headers/floats.h", "
+    extern \"C\" {
+        pub static mut f: f32;
+        pub static mut d: f64;
+    }
+    ");
 }
