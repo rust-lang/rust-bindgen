@@ -133,6 +133,15 @@ impl<'a> Builder<'a> {
         self
     }
 
+    /// Defines if we should convert float and double to f32 and f64.
+    ///
+    /// The format is [not defined](https://en.wikipedia.org/wiki/C_data_types#Basic_types),
+    /// but is the same as in rust in all the supported platforms.
+    pub fn dont_convert_floats(&mut self) -> &mut Self {
+        self.options.convert_floats = false;
+        self
+    }
+
     /// Generate the binding using the options previously set.
     pub fn generate(&self) -> Result<Bindings, ()> {
         Bindings::generate(&self.options, self.logger, None)
@@ -160,6 +169,8 @@ pub struct BindgenOptions {
     pub use_core: bool,
     /// Prefix to remove from all the symbols, like `libfoo_`.
     pub remove_prefix: String,
+    /// See `Builder::convert_floats`.
+    pub convert_floats: bool,
 }
 
 impl Default for BindgenOptions {
@@ -183,6 +194,7 @@ impl Default for BindgenOptions {
             ctypes_prefix: vec!["std".into(), "os".into(), "raw".into()],
             use_core: false,
             remove_prefix: String::new(),
+            convert_floats: true,
         }
     }
 }

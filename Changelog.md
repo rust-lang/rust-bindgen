@@ -8,6 +8,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Remove `Builder::default` to force the specification of the C header file
   name.
 
+### Changed
+- Convert `float` and `double` to `f32` and `f64` by default (#348).
+
 ## [0.18.0] - 2016-06-05
 ### Breaking
 - New command line interface.

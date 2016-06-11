@@ -53,6 +53,8 @@ Options:
                               `libfoo_`. The removal is case-insensitive.
   --no-derive-debug           Disable `derive(Debug)` for all generated types.
   --no-rust-enums             Convert C enums to Rust constants instead of enums.
+  --dont-convert-floats       Disables the convertion of C `float` and `double`
+                              to Rust `f32` and `f64`.
 ";
 
 #[derive(Debug, RustcDecodable)]
@@ -71,6 +73,7 @@ struct Args {
     // TODO: allow finer control.
     flag_no_derive_debug: bool,
     flag_no_rust_enums: bool,
+    flag_dont_convert_floats: bool,
 }
 
 fn args_to_opts(args: Args) -> Builder<'static> {
@@ -95,6 +98,9 @@ fn args_to_opts(args: Args) -> Builder<'static> {
     }
     if args.flag_builtins {
         builder.builtins();
+    }
+    if args.flag_dont_convert_floats {
+        builder.dont_convert_floats();
     }
     if let Some(link) = args.flag_link {
         let mut parts = link.split('=');

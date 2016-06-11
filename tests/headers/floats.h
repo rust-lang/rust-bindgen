@@ -1,0 +1,2 @@
+float f;
+double d;

@@ -1449,8 +1449,24 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type, options: &BindgenOptions) -> ast::Ty {
         }
         TFloat(f, _) => {
             match f {
-                FFloat => mk_ty(ctx, true, raw("c_float")),
-                FDouble => mk_ty(ctx, true, raw("c_double")),
+                FFloat => {
+                    mk_ty(ctx,
+                          !options.convert_floats,
+                          if options.convert_floats {
+                              vec!["f32".into()]
+                          } else {
+                              raw("c_float")
+                          })
+                }
+                FDouble => {
+                    mk_ty(ctx,
+                          !options.convert_floats,
+                          if options.convert_floats {
+                              vec!["f64".into()]
+                          } else {
+                              raw("c_double")
+                          })
+                }
             }
         }
         TPtr(ref t, is_const, _) => {

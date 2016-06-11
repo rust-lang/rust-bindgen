@@ -15,7 +15,7 @@ mod test_func;
 mod test_struct;
 mod test_union;
 mod test_builtins;
-mod test_ints;
+mod test_primitives;
 mod test_typedef;
 mod test_keywords;
 mod test_prefix;

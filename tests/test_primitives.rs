@@ -30,3 +30,14 @@ fn signed() {
     assert!(bindings.contains("pub type int32_t = i32;"));
     assert!(bindings.contains("pub type int64_t = i64;"));
 }
+
+#[test]
+fn floats() {
+    let bindings = bindgen::Builder::new("tests/headers/floats.h")
+        .generate()
+        .unwrap()
+        .to_string();
+
+    assert!(bindings.contains("pub type float = f32;"));
+    assert!(bindings.contains("pub type double = f64;"));
+}
