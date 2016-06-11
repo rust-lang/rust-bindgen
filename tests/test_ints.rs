@@ -2,8 +2,7 @@ use bindgen;
 
 #[test]
 fn unsigned() {
-    let bindings = bindgen::Builder::new()
-        .header("tests/headers/unsigned.h")
+    let bindings = bindgen::Builder::new("tests/headers/unsigned.h")
         .generate()
         .unwrap()
         .to_string();
@@ -18,8 +17,7 @@ fn unsigned() {
 
 #[test]
 fn signed() {
-    let bindings = bindgen::Builder::new()
-        .header("tests/headers/signed.h")
+    let bindings = bindgen::Builder::new("tests/headers/signed.h")
         .generate()
         .unwrap()
         .to_string();

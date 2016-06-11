@@ -680,7 +680,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
     let flags = CXTranslationUnit_Flags::empty();
     let unit = TranslationUnit::parse(&ix, "", &ctx.options.clang_args[..], &[], flags);
     if unit.is_null() {
-        ctx.logger.error("No input files given");
+        ctx.logger.error("Unknown parsing error");
         return Err(());
     }
 

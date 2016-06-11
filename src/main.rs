@@ -73,15 +73,16 @@ struct Args {
     flag_no_rust_enums: bool,
 }
 
-fn args_to_opts(args: Args, builder: &mut Builder) {
-    builder.header(args.arg_file)
-           .emit_ast(args.flag_emit_clang_ast)
+fn args_to_opts(args: Args) -> Builder<'static> {
+    let mut builder = Builder::new(args.arg_file);
+    builder.emit_ast(args.flag_emit_clang_ast)
            .ctypes_prefix(args.flag_ctypes_prefix
                               .split("::")
                               .map(String::from)
                               .collect::<Vec<_>>())
            .use_core(args.flag_use_core)
            .derive_debug(!args.flag_no_derive_debug)
+           .rust_enums(!args.flag_no_rust_enums)
            .override_enum_ty(args.flag_override_enum_type);
     for arg in args.arg_clang_args {
         builder.clang_arg(arg);
@@ -118,7 +119,7 @@ fn args_to_opts(args: Args, builder: &mut Builder) {
         };
         builder.link(lib, kind);
     }
-    builder.rust_enums(!args.flag_no_rust_enums);
+    builder
 }
 
 fn get_output(o: &str) -> Box<Write> {
@@ -139,8 +140,7 @@ pub fn main() {
 
     let output = get_output(&args.flag_output);
 
-    let mut builder = Builder::new();
-    args_to_opts(args, &mut builder);
+    let builder = args_to_opts(args);
     debug!("{:?}", builder);
 
     match builder.generate() {

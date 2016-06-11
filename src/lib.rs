@@ -45,14 +45,14 @@ pub struct Builder<'a> {
 }
 
 impl<'a> Builder<'a> {
-    /// Returns a new builder for Bindgen.
-    pub fn new() -> Builder<'a> {
-        Default::default()
-    }
-
-    /// Add a C header to parse.
-    pub fn header<T: Into<String>>(&mut self, header: T) -> &mut Self {
-        self.clang_arg(header)
+    /// Returns a new builder for the C header to parse.
+    pub fn new<T: Into<String>>(header: T) -> Builder<'a> {
+        let mut builder = Builder {
+            logger: None,
+            options: Default::default(),
+        };
+        builder.clang_arg(header);
+        builder
     }
 
     /// Add a pattern to filter which file to generate a binding for.
@@ -136,15 +136,6 @@ impl<'a> Builder<'a> {
     /// Generate the binding using the options previously set.
     pub fn generate(&self) -> Result<Bindings, ()> {
         Bindings::generate(&self.options, self.logger, None)
-    }
-}
-
-impl<'a> Default for Builder<'a> {
-    fn default() -> Builder<'a> {
-        Builder {
-            logger: None,
-            options: Default::default(),
-        }
     }
 }
 
@@ -343,12 +334,9 @@ fn builtin_names() -> HashSet<String> {
 #[test]
 fn builder_state() {
     let logger = DummyLogger;
-    let mut build = Builder::new();
-    {
-        build.header("example.h");
-        build.link("m", LinkType::Static);
-        build.log(&logger);
-    }
+    let mut build = Builder::new("example.h");
+    build.link("m", LinkType::Static)
+         .log(&logger);
     assert!(build.logger.is_some());
     assert!(build.options.clang_args.binary_search(&"example.h".to_owned()).is_ok());
     assert!(build.options.links.binary_search(&("m".to_owned(), LinkType::Static)).is_ok());

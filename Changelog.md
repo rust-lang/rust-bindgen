@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Breaking
+- Remove `Builder::default` to force the specification of the C header file
+  name.
 
 ## [0.18.0] - 2016-06-05
 ### Breaking
