@@ -41,7 +41,8 @@ fn is_type(name: &str) -> bool {
 
 fn rust_id(ctx: &mut GenCtx, mut name: &str, remove_prefix: &str) -> (String, bool) {
     let mut modified = false;
-    if remove_prefix != "" && name.len() >= remove_prefix.len() && name[..remove_prefix.len()].eq_ignore_ascii_case(remove_prefix) {
+    if remove_prefix != "" && name.len() >= remove_prefix.len() &&
+       name[..remove_prefix.len()].eq_ignore_ascii_case(remove_prefix) {
         name = &name[remove_prefix.len()..];
         modified = true;
     }
@@ -249,8 +250,13 @@ pub fn gen_mod(options: &BindgenOptions,
     };
     let sess = &parse::ParseSess::new();
     let mut feature_gated_cfgs = Vec::new();
+    let mut macro_loader = base::DummyMacroLoader;
     let mut ctx = GenCtx {
-        ext_cx: base::ExtCtxt::new(sess, Vec::new(), cfg, &mut feature_gated_cfgs),
+        ext_cx: base::ExtCtxt::new(sess,
+                                   Vec::new(),
+                                   cfg,
+                                   &mut feature_gated_cfgs,
+                                   &mut macro_loader),
         unnamed_ty: 0,
         span: span,
     };
@@ -898,7 +904,11 @@ fn cunion_to_rs(ctx: &mut GenCtx,
         attrs
     };
 
-    let union_def = mk_item(ctx, union_id.clone(), def, ast::Visibility::Public, union_attrs);
+    let union_def = mk_item(ctx,
+                            union_id.clone(),
+                            def,
+                            ast::Visibility::Public,
+                            union_attrs);
 
     let union_impl = ast::ItemKind::Impl(ast::Unsafety::Normal,
                                          ast::ImplPolarity::Positive,
@@ -943,7 +953,12 @@ fn i64_to_int_lit(ctx: &mut GenCtx, value: i64) -> P<ast::Expr> {
 }
 
 /// Converts a C const to Rust AST.
-fn const_to_rs(ctx: &mut GenCtx, name: &str, val: i64, val_ty: ast::Ty, options: &BindgenOptions) -> P<ast::Item> {
+fn const_to_rs(ctx: &mut GenCtx,
+               name: &str,
+               val: i64,
+               val_ty: ast::Ty,
+               options: &BindgenOptions)
+               -> P<ast::Item> {
     let int_lit = i64_to_int_lit(ctx, val);
 
     let cst = ast::ItemKind::Const(P(val_ty), int_lit);

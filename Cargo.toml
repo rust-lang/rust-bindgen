@@ -24,7 +24,7 @@ libc = "~0.2.11"
 log = "~0.3.6"
 # only for main, see https://github.com/rust-lang/cargo/issues/1982
 rustc-serialize = "~0.3.19"
-syntex_syntax = "~0.33.0"
+syntex_syntax = "~0.35.0"
 
 [dependencies.clippy]
 optional = true
