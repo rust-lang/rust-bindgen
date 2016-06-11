@@ -304,6 +304,12 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
                    ty.array_size(),
                    layout)
         }
+        CXTypeKind::Vector => {
+            log_err_warn(ctx,
+                         "Vector types are not supported, see https://github.com/crabtw/rust-bindgen/issues/356",
+                         true);
+            TVoid
+        }
         _ => {
             let fail = ctx.options.fail_on_unknown_type;
             log_err_warn(ctx,
