@@ -17,8 +17,6 @@ pub struct Cursor {
     x: CXCursor,
 }
 
-pub type CursorVisitor<'s> = for<'a, 'b> FnMut(&'a Cursor, &'b Cursor) -> CXChildVisitResult + 's;
-
 impl Cursor {
     // common
     pub fn spelling(&self) -> String {
@@ -52,9 +50,8 @@ impl Cursor {
     pub fn visit<F>(&self, func: F)
         where F: for<'a, 'b> FnMut(&'a Cursor, &'b Cursor) -> CXChildVisitResult
     {
-        let mut data: Box<CursorVisitor> = Box::new(func);
         unsafe {
-            clang_visitChildren(self.x, visit_children, mem::transmute(&mut data));
+            clang_visitChildren(self.x, visit_children::<F>, &func as *const F as CXClientData);
         }
     }
 
@@ -110,12 +107,14 @@ impl Cursor {
     }
 }
 
-extern "C" fn visit_children(cur: CXCursor,
-                             parent: CXCursor,
-                             data: CXClientData)
-                             -> CXChildVisitResult {
-    let func: &mut Box<CursorVisitor> = unsafe { mem::transmute(data) };
-    (*func)(&Cursor { x: cur }, &Cursor { x: parent })
+extern "C" fn visit_children<F>(cur: CXCursor,
+                                parent: CXCursor,
+                                data: CXClientData)
+                                -> CXChildVisitResult
+    where F: for<'a, 'b> FnMut(&'a Cursor, &'b Cursor) -> CXChildVisitResult
+{
+    let func = unsafe { &mut *(data as *mut F) };
+    func(&Cursor { x: cur }, &Cursor { x: parent })
 }
 
 impl PartialEq for Cursor {
