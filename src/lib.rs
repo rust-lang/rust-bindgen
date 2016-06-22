@@ -122,6 +122,11 @@ impl<'a> Builder<'a> {
         self
     }
 
+    pub fn disable_class_constants(&mut self) -> &mut Self {
+        self.options.class_constants = false;
+        self
+    }
+
     pub fn generate(&self) -> Result<Bindings, ()> {
         Bindings::generate(&self.options, self.logger, None)
     }
@@ -152,6 +157,8 @@ pub struct BindgenOptions {
     pub enable_cxx_namespaces: bool,
     pub rename_types: bool,
     pub derive_debug: bool,
+    /// Wether to generate C++ class constants.
+    pub class_constants: bool,
     pub override_enum_ty: String,
     pub raw_lines: Vec<String>,
     /// Attributes for a type with destructor
@@ -176,6 +183,7 @@ impl Default for BindgenOptions {
             derive_debug: true,
             enable_cxx_namespaces: false,
             override_enum_ty: "".to_string(),
+            class_constants: true,
             raw_lines: vec![],
             dtor_attrs: vec![],
             clang_args: vec![],
@@ -295,6 +303,7 @@ fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<ModuleMap,
         builtins: options.builtins,
         match_pat: options.match_pat.clone(),
         emit_ast: options.emit_ast,
+        class_constants: options.class_constants,
         ignore_functions: options.ignore_functions,
         fail_on_unknown_type: options.fail_on_unknown_type,
         enable_cxx_namespaces: options.enable_cxx_namespaces,
