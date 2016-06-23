@@ -43,3 +43,6 @@ script:
   - make test
   - git add -A
   - git diff-index --quiet HEAD
+
+notifications:
+  webhooks: http://build.servo.org:54856/travis
