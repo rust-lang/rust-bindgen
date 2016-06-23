@@ -446,6 +446,12 @@ impl Type {
             clang_getFunctionTypeCallingConv(self.x)
         }
     }
+
+    pub fn named(&self) -> Type {
+        unsafe {
+            Type { x: clang_Type_getNamedType(self.x) }
+        }
+    }
 }
 
 // SourceLocation
@@ -946,6 +952,9 @@ pub fn type_to_str(x: Enum_CXTypeKind) -> &'static str {
         CXType_IncompleteArray => "IncompleteArray",
         CXType_VariableArray => "VariableArray",
         CXType_DependentSizedArray => "DependentSizedArray",
+        CXType_MemberPointer => "MemberPointer",
+        CXType_Auto => "Auto",
+        CXType_Elaborated => "Elaborated",
         _ => "?"
     }
 }
