@@ -38,8 +38,7 @@ before_script:
   - echo $LIBCLANG_PATH
 
 script:
-  - cargo build
-  - cargo build --verbose
+  - cargo build --verbose --features llvm_stable
   - make test
   - git add -A
   - git diff-index --quiet HEAD

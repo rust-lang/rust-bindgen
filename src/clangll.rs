@@ -1109,6 +1109,7 @@ extern "C" {
     pub fn clang_Type_getTemplateArgumentAsType(T: CXType, i: c_int) ->
      CXType;
     pub fn clang_Cursor_isBitField(C: CXCursor) -> c_uint;
+    #[cfg(not(feature="llvm_stable"))]
     pub fn clang_Cursor_isFunctionInlined(C: CXCursor) -> c_uint;
     pub fn clang_isVirtualBase(arg1: CXCursor) -> c_uint;
     pub fn clang_getCXXAccessSpecifier(arg1: CXCursor) ->
