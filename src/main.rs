@@ -16,6 +16,7 @@ Generate C bindings for Rust.
 
 Usage:
   bindgen [options] <file> [-- <clang-args>...]
+  bindgen [options] (--match=<name> ...) <file> [-- <clang-args>...]
   bindgen (-h | --help)
 
 Options:
@@ -63,7 +64,7 @@ struct Args {
     arg_clang_args: Vec<String>,
     flag_link: Option<String>,
     flag_output: String,
-    flag_match: Option<String>,
+    flag_match: Vec<String>,
     flag_builtins: bool,
     flag_emit_clang_ast: bool,
     flag_override_enum_type: String,
@@ -90,8 +91,8 @@ fn args_to_opts(args: Args) -> Builder<'static> {
     for arg in args.arg_clang_args {
         builder.clang_arg(arg);
     }
-    if let Some(s) = args.flag_match {
-        builder.match_pat(s);
+    for flag_match in args.flag_match {
+        builder.match_pat(flag_match);
     }
     if let Some(s) = args.flag_remove_prefix {
         builder.remove_prefix(s);
