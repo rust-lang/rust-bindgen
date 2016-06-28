@@ -18,6 +18,7 @@ syntex_syntax = "0.32"
 
 [features]
 static = []
+llvm_stable = []
 
 [lib]
 name = "bindgen"

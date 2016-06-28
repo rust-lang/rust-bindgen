@@ -135,8 +135,17 @@ impl Cursor {
         }
     }
 
+    #[cfg(not(feature="llvm_stable"))]
     pub fn is_inlined_function(&self) -> bool {
         unsafe { clang_Cursor_isFunctionInlined(self.x) != 0 }
+    }
+
+    // TODO: Remove this when LLVM 3.9 is released.
+    //
+    // This is currently used for CI purposes.
+    #[cfg(feature="llvm_stable")]
+    pub fn is_inlined_function(&self) -> bool {
+        false
     }
 
     // bitfield
