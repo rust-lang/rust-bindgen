@@ -490,6 +490,8 @@ fn conv_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
         CXType_Unexposed |
         CXType_Enum => conv_decl_ty_resolving_typedefs(ctx, ty, cursor, resolve_typedefs),
         CXType_ConstantArray => TArray(Box::new(conv_ty_resolving_typedefs(ctx, &ty.elem_type(), cursor, resolve_typedefs)), ty.array_size(), layout),
+        #[cfg(not(feature="llvm_stable"))]
+        CXType_Elaborated => conv_ty_resolving_typedefs(ctx, &ty.named(), cursor, resolve_typedefs),
         _ => {
             let fail = ctx.options.fail_on_unknown_type;
             log_err_warn(ctx,
