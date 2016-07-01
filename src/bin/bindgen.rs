@@ -120,6 +120,10 @@ fn parse_args(args: &[String]) -> ParseResult {
                     options.gen_bitfield_methods = false;
                     ix += 1;
                 }
+                "-no-class-constants" => {
+                    options.class_constants = false;
+                    ix += 1;
+                }
                 "-dtor-attr" => {
                     if ix + 1 >= args_len {
                         return ParseResult::ParseErr("Missing dtor attr".to_string());
