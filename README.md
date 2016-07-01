@@ -1,163 +1,121 @@
-rust-bindgen
-============
-[![][crates-version-shield]](https://crates.io/crates/bindgen)
-[![][crates-downloads-shield]](https://crates.io/crates/bindgen)
-[![][crates-license-shield]](https://github.com/crabtw/rust-bindgen/blob/master/LICENSE)
-[![][travis-status-shield]](https://travis-ci.org/crabtw/rust-bindgen/)
+# Servo's rust-bindgen
 
-A binding generator for the rust language.
-This is a fork designed to work on Spidermonkey headers.
-It is ported from [clay's bindgen][].
+A binding generator for the Rust language.
 
-Requirements
-------------
+This is a fork of [crabtw/rust-bindgen](https://github.com/crabtw/rust-bindgen)
+designed to work on C++ code as well.
 
-* clang 3.7 with patches https://github.com/michaelwu/clang/tree/release_37_smhacks or clang 3.8+
+Currently this is being used for Servo's SpiderMonkey bindings, and also for
+the [Stylo](https://public.etherpad-mozilla.org/p/stylo) project.
 
-This bindgen fork requires a patched clang or clang 3.8+ to work properly. This is one way to build a patched clang:
-```
-git clone https://github.com/llvm-mirror/llvm
-cd llvm
-git checkout release_37
-cd tools
-git clone https://github.com/llvm-mirror/clang
-cd clang
-git remote add mwu https://github.com/michaelwu/clang
-git fetch mwu
-git checkout release_37_smhacks
-cd ../.. # llvm root dir
-mkdir build
-cd build
-../configure --enable-optimized
-make
-```
+## Requirements
 
-Then before building, make sure to export the path to this copy of clang:
+The current generator runs on with clang 3.8, but can also run with clang 3.9
+with more features (such as detection of inlined functions).
 
-    export LIBCLANG_PATH=~/llvm/build/Release+Asserts/lib
+### Installing clang 3.8
 
-This path also needs to be set in LD_LIBRARY_PATH (Linux) or DYLD_LIBRARY_PATH (OSX) when running bindgen.
-
-Building
---------
-
-    $ cargo build
-
-Note: This links with Apple's version of libclang on OS X by default. This can be changed by setting the LIBCLANG_PATH environment variable.
-
-If you are running the command line tool you will also need to append this
-path to your DYLD_LIBRARY_PATH environment variable, which you might already have set if you have installed the Rust compiler outside of standard /usr/local path.
-
-The default path on OS X is:
-
-    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/
-
-Or if you only have Xcode Command Line Tools installed:
-
-    export DYLD_LIBRARY_PATH=/Library/Developer/CommandLineTools/usr/lib
-
-Command Line Usage
-------------------
+#### OSX
 
 ```
-Usage: ./bindgen [options] input.h
-Options:
-    -h or --help               Display help message
-    -l <name> or -l<name>      Link to a dynamic library, can be provided
-                               multiple times
-    -static-link <name>        Link to a static library
-    -framework-link <name>     Link to a framework
-    -o <output.rs>             Write bindings to <output.rs> (default stdout)
-    -match <name>              Only output bindings for definitions from files
-                               whose name contains <name>
-                               If multiple -match options are provided, files
-                               matching any rule are bound to
-    -builtins                  Output bindings for builtin definitions
-                               (for example __builtin_va_list)
-    -allow-unknown-types       Don't fail if we encounter types we do not support,
-                               instead treat them as void
-    -emit-clang-ast            Output the ast (for debugging purposes)
-    -override-enum-type <type> Override enum type, type name could be
-                                 uchar
-                                 schar
-                                 ushort
-                                 sshort
-                                 uint
-                                 sint
-                                 ulong
-                                 slong
-                                 ulonglong
-                                 slonglong
-
-    Options other than stated above are passed to clang
+# brew install llvm38
 ```
 
-C++ Usage
----------
-This fork of rust-bindgen can handle a number of C++ features. Because it currently uses a fork of clang though, it may require adding extra arguments to find certain headers. On OpenSUSE 13.2, these additional include pathes can be used:
-
-    -isystem /usr/lib64/gcc/x86_64-suse-linux/4.8/include -isystem /usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed
-
-On OSX, this include path seems to work:
-
-    -isystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1
-
-When passing in header files, the file will automatically be treated as C++ if it ends in ``.hpp``. If it doesn't, ``-x c++`` can be used to force C++ mode.
-
-Annotations
------------
-The translation of classes, structs, enums, and typedefs can be adjusted using annotations. Annotations are specifically formatted html tags inside doxygen style comments. The opaque annotation instructs bindgen to ignore all fields defined in a struct/class.
-
-    /// <div rustbindgen opaque></div>
-
-The hide annotation instructs bindgen to ignore the struct/class/field/enum completely.
-
-    /// <div rustbindgen hide></div>
-
-Macro Usage
------------
+#### On Debian-based Linuxes
 
 ```
-Usage: bindgen!([headers], [named options])
-Options:
-
-    Option Name          Type              Default
-    ----------------------------------------------
-    link                 multiple strings
-    link_static          multiple strings
-    link_framework       multiple strings
-    match                multiple strings
-    emit_builtins        bool              true
-    allow_unknown_types  bool              false
-    clang_args           string
+# apt-get install llvm-3.8-dev libclang-3.8-dev
 ```
-See "Command Line Usage" section for option descriptions
 
-Examples
---------
+#### Arch
 
-###Generate MySQL client bindings
+```
+# pacman -S clang clang-tools-extra
+```
 
-    bindgen -l mysql -match mysql.h -o mysql.rs /usr/include/mysql/mysql.h
+## Building
 
-*or*
+```
+$ cargo build --features llvm_stable
+```
 
-    echo '#include <mysql.h>' > gen.h
-    bindgen `mysql_config --cflags` -l mysql -match mysql.h -o mysql.rs gen.h
+If you want a build with extra features (llvm 3.9) then you can just use:
 
-*or*
+```
+$ cargo build
+```
 
-Cargo.toml
+# Command Line Usage
 
-    [dependencies.bindgen]
-    git = "https://github.com/crabtw/rust-bindgen.git"
+There are a few options documented when running `./bindgen --help`. Other
+options might exist (see [the SpiderMonkey script][sm-script] and [the Stylo
+scripts][stylo-scripts] to see how is it used inside the Servo organisation.
 
-main.rs
+## C++ Usage
 
-    #![feature(phase)]
-    #[phase(plugin)] extern crate bindgen;
+This fork of rust-bindgen can handle a number of C++ features.
 
-    #[allow(dead_code, uppercase_variables, non_camel_case_types)]
-    mod mysql_bindings {
-        bindgen!("/usr/include/mysql/mysql.h", match="mysql.h", link="mysql")
-    }
+When passing in header files, the file will automatically be treated as C++ if
+it ends in ``.hpp``. If it doesn't, ``-x c++`` can be used to force C++ mode.
+
+## Annotations
+
+The translation of classes, structs, enums, and typedefs can be adjusted using
+annotations. Annotations are specifically formatted html tags inside doxygen
+style comments.
+
+### `opaque`
+
+The `opaque` annotation instructs bindgen to ignore all fields defined in
+a struct/class.
+
+```cpp
+/// <div rustbindgen opaque></div>
+```
+
+### `hide`
+
+The `hide` annotation instructs bindgen to ignore the struct/class/field/enum
+completely.
+
+```
+/// <div rustbindgen hide></div>
+```
+
+### `replaces`
+
+The `replaces` annotation can be used to use a type as a replacement for other
+(presumably more complex) type. This is used in Stylo to generate bindings for
+structures that for multiple reasons are too complex for bindgen to understand.
+
+For example, in a C++ header:
+
+```cpp
+/**
+ * <div rustbindgen replaces="nsTArray"></div>
+ */
+template<typename T>
+class nsTArray_Simple {
+  T* mBuffer;
+public:
+  // The existence of a destructor here prevents bindgen from deriving the Clone
+  // trait via a simple memory copy.
+  ~nsTArray_Simple() {};
+};
+```
+
+That way, after code generation, the bindings for the `nsTArray` type are
+the ones that would be generated for `nsTArray_Simple`.
+
+### `nocopy`
+
+The `nocopy` annotation is used to prevent bindgen to autoderive the `Copy`
+and `Clone` traits for a type.
+
+# Macro Usage
+
+This mode isn't actively maintained, so no promises are made around it. Check
+out the upstream documentation for info about how it *should* work.
+
+[sm-script]: https://github.com/servo/rust-mozjs/blob/master/etc/bindings.sh
+[stylo-scripts]: https://github.com/servo/servo/tree/master/ports/geckolib/gecko_bindings/tools
