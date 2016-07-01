@@ -108,11 +108,11 @@ Annotations
 -----------
 The translation of classes, structs, enums, and typedefs can be adjusted using annotations. Annotations are specifically formatted html tags inside doxygen style comments. The opaque annotation instructs bindgen to ignore all fields defined in a struct/class.
 
-    /// <div rust-bindgen opaque></div>
+    /// <div rustbindgen opaque></div>
 
 The hide annotation instructs bindgen to ignore the struct/class/field/enum completely.
 
-    /// <div rust-bindgen hide></div>
+    /// <div rustbindgen hide></div>
 
 Macro Usage
 -----------
