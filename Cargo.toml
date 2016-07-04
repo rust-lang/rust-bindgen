@@ -15,6 +15,8 @@ clippy = { version = "*", optional = true }
 log = "0.3.*"
 libc = "0.2.*"
 syntex_syntax = "0.32"
+# TODO: Use clang-sys for our low-level bindings once llvm 3.9 is stable.
+clang-sys = "0.7.2"
 
 [features]
 static = []
