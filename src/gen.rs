@@ -150,21 +150,17 @@ fn enum_name(ctx: &GenCtx, name: &str) -> String {
 fn gen_unmangle_method(ctx: &mut GenCtx,
                        v: &VarInfo,
                        counts: &mut HashMap<String, isize>,
-                       self_kind: ast::SelfKind)
+                       self_kind: Option<ast::Mutability>)
                        -> ast::ImplItem {
-    let fndecl;
+    let mut fndecl;
     let mut args = vec![];
 
-    match self_kind {
-        ast::SelfKind::Static => (),
-        ast::SelfKind::Region(_, mutable, _) => {
-            let selfexpr = match mutable {
-                ast::Mutability::Immutable => quote_expr!(&ctx.ext_cx, &*self),
-                ast::Mutability::Mutable => quote_expr!(&ctx.ext_cx, &mut *self),
-            };
-            args.push(selfexpr);
-        },
-        _ => unreachable!()
+    if let Some(mutability) = self_kind {
+        let selfexpr = match mutability {
+            ast::Mutability::Immutable => quote_expr!(&ctx.ext_cx, &*self),
+            ast::Mutability::Mutable => quote_expr!(&ctx.ext_cx, &mut *self),
+        };
+        args.push(selfexpr);
     }
 
     match v.ty {
@@ -173,13 +169,12 @@ fn gen_unmangle_method(ctx: &mut GenCtx,
                                    &*sig.ret_ty, sig.args.as_slice(),
                                    false);
             let mut unnamed: usize = 0;
-            let iter = if args.len() > 0 {
+            let iter = if !args.is_empty() {
                 sig.args[1..].iter()
             } else {
                 sig.args.iter()
             };
-            for arg in iter {
-                let (ref n, _) = *arg;
+            for &(ref n, _) in iter {
                 let argname = if n.is_empty() {
                     unnamed += 1;
                     format!("arg{}", unnamed)
@@ -197,7 +192,7 @@ fn gen_unmangle_method(ctx: &mut GenCtx,
                         })
                     }),
                     span: ctx.span,
-                    attrs: None,
+                    attrs: ast::ThinVec::new(),
                 };
                 args.push(P(expr));
             }
@@ -205,38 +200,71 @@ fn gen_unmangle_method(ctx: &mut GenCtx,
         _ => unreachable!()
     };
 
+
+    if let Some(mutability) = self_kind {
+        assert!(!fndecl.inputs.is_empty());
+        fndecl.inputs[0] = ast::Arg {
+            ty: P(ast::Ty {
+                id: ast::DUMMY_NODE_ID,
+                node: ast::TyKind::Rptr(None, ast::MutTy {
+                    ty: P(ast::Ty {
+                        id: ast::DUMMY_NODE_ID,
+                        node: ast::TyKind::ImplicitSelf,
+                        span: ctx.span
+                    }),
+                    mutbl: mutability,
+                }),
+                span: ctx.span,
+            }),
+            pat: P(ast::Pat {
+                id: ast::DUMMY_NODE_ID,
+                node: ast::PatKind::Ident(ast::BindingMode::ByValue(ast::Mutability::Immutable),
+                                          respan(ctx.span, ctx.ext_cx.ident_of("self")),
+                                          None),
+                span: ctx.span,
+            }),
+            id: ast::DUMMY_NODE_ID,
+        };
+    }
+
     let sig = ast::MethodSig {
         unsafety: ast::Unsafety::Unsafe,
         abi: Abi::Rust,
         decl: P(fndecl),
         generics: empty_generics(),
-        explicit_self: respan(ctx.span, self_kind),
         constness: ast::Constness::NotConst,
     };
 
-    let block = ast::Block {
-        stmts: vec![],
-        expr: Some(P(ast::Expr {
-            id: ast::DUMMY_NODE_ID,
-            node: ast::ExprKind::Call(
-                P(ast::Expr {
-                    id: ast::DUMMY_NODE_ID,
-                    node: ast::ExprKind::Path(None, ast::Path {
-                        span: ctx.span,
-                        global: false,
-                        segments: vec!(ast::PathSegment {
-                            identifier: ctx.ext_cx.ident_of(&v.mangled),
-                            parameters: ast::PathParameters::none()
-                        })
-                    }),
+    let call = P(ast::Expr {
+        id: ast::DUMMY_NODE_ID,
+        node: ast::ExprKind::Call(
+            P(ast::Expr {
+                id: ast::DUMMY_NODE_ID,
+                node: ast::ExprKind::Path(None, ast::Path {
                     span: ctx.span,
-                    attrs: None,
+                    global: false,
+                    segments: vec![ast::PathSegment {
+                        identifier: ctx.ext_cx.ident_of(&v.mangled),
+                        parameters: ast::PathParameters::none()
+                    }]
                 }),
-                args
-            ),
-            span: ctx.span,
-            attrs: None,
-        })),
+                span: ctx.span,
+                attrs: ast::ThinVec::new(),
+            }),
+            args
+        ),
+        span: ctx.span,
+        attrs: ast::ThinVec::new(),
+    });
+
+    let block = ast::Block {
+        stmts: vec![
+            ast::Stmt {
+                id: ast::DUMMY_NODE_ID,
+                node: ast::StmtKind::Expr(call),
+                span: ctx.span,
+            }
+        ],
         id: ast::DUMMY_NODE_ID,
         rules: ast::BlockCheckMode::Default,
         span: ctx.span
@@ -282,16 +310,12 @@ pub fn gen_mods(links: &[(String, LinkType)],
     // Create a dummy ExtCtxt. We only need this for string interning and that uses TLS.
     let mut features = Features::new();
     features.quote = true;
-    let cfg = ExpansionConfig {
-        crate_name: "xxx".to_owned(),
-        features: Some(&features),
-        recursion_limit: 64,
-        trace_mac: false,
-    };
-    let sess = &parse::ParseSess::new();
-    let mut feature_gated_cfgs = vec![];
+
+    let cfg = ExpansionConfig::default("xxx".to_owned());
+    let sess = parse::ParseSess::new();
+    let mut loader = base::DummyMacroLoader;
     let mut ctx = GenCtx {
-        ext_cx: base::ExtCtxt::new(sess, vec![], cfg, &mut feature_gated_cfgs),
+        ext_cx: base::ExtCtxt::new(&sess, vec![], cfg, &mut loader),
         options: options,
         span: span,
         module_map: map,
@@ -1220,11 +1244,11 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             TFuncPtr(ref sig) => {
                 let name = v.mangled.clone();
                 let explicit_self = if v.is_static {
-                    ast::SelfKind::Static
+                    None
                 } else if v.is_const {
-                    ast::SelfKind::Region(None, ast::Mutability::Immutable, ctx.ext_cx.ident_of("self"))
+                    Some(ast::Mutability::Immutable)
                 } else {
-                    ast::SelfKind::Region(None, ast::Mutability::Mutable, ctx.ext_cx.ident_of("self"))
+                    Some(ast::Mutability::Mutable)
                 };
                 unmangledlist.push(gen_unmangle_method(ctx, &v, &mut unmangle_count, explicit_self));
                 mangledlist.push(cfunc_to_rs(ctx, name, String::new(), String::new(),
@@ -1698,8 +1722,6 @@ fn gen_fullbitfield_method(ctx: &mut GenCtx, bindgen_name: &String,
         variadic: false
     };
 
-    let stmts = Vec::with_capacity(bitfields.len() + 1);
-
     let mut offset = 0;
 
     let mut exprs = quote_expr!(&ctx.ext_cx, 0);
@@ -1721,8 +1743,13 @@ fn gen_fullbitfield_method(ctx: &mut GenCtx, bindgen_name: &String,
     }
 
     let block = ast::Block {
-        stmts: stmts,
-        expr: Some(exprs),
+        stmts: vec![
+            ast::Stmt {
+                id: ast::DUMMY_NODE_ID,
+                node: ast::StmtKind::Expr(exprs),
+                span: ctx.span,
+            }
+        ],
         id: ast::DUMMY_NODE_ID,
         rules: ast::BlockCheckMode::Default,
         span: ctx.span
@@ -1734,7 +1761,6 @@ fn gen_fullbitfield_method(ctx: &mut GenCtx, bindgen_name: &String,
             abi: Abi::Rust,
             decl: P(fndecl),
             generics: empty_generics(),
-            explicit_self: respan(ctx.span, ast::SelfKind::Static),
             constness: ast::Constness::Const,
         }, P(block)
     );
@@ -2151,7 +2177,7 @@ fn mk_arrty(ctx: &GenCtx, base: &ast::Ty, n: usize) -> ast::Ty {
             id: ast::DUMMY_NODE_ID,
             node: sz,
             span: ctx.span,
-            attrs: None,
+            attrs: ast::ThinVec::new(),
         })
     );
 

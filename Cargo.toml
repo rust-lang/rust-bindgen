@@ -14,7 +14,8 @@ build = "build.rs"
 clippy = { version = "*", optional = true }
 log = "0.3.*"
 libc = "0.2.*"
-syntex_syntax = "0.32"
+syntex_syntax = "0.37"
+clang-sys = "0.7.2"
 
 [features]
 static = []

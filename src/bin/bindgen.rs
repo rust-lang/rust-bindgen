@@ -4,6 +4,7 @@
 extern crate bindgen;
 #[macro_use]
 extern crate log;
+extern crate clang_sys;
 
 use bindgen::{Bindings, BindgenOptions, LinkType, Logger};
 use std::io;
@@ -214,12 +215,14 @@ pub fn main() {
     let mut bind_args: Vec<_> = env::args().collect();
     let bin = bind_args.remove(0);
 
-    match bindgen::get_include_dir() {
-        Some(path) => {
-            bind_args.push("-I".to_owned());
-            bind_args.push(path);
+    if let Some(clang) = clang_sys::support::Clang::find(None) {
+        // TODO: distinguish C and C++ paths? C++'s should be enough, I guess.
+        for path in clang.cpp_search_paths.into_iter() {
+            if let Ok(path) = path.into_os_string().into_string() {
+                bind_args.push("-isystem".to_owned());
+                bind_args.push(path);
+            }
         }
-        None => (),
     }
 
     match parse_args(&bind_args) {
