@@ -1353,20 +1353,20 @@ fn visit_top(cursor: &Cursor,
         }
         CXCursor_MacroDefinition => {
             let val = parse_int_literal_tokens(cursor, &ctx.current_translation_unit, 1);
-            if val.is_none() {
-                // Not an integer literal.
-                return CXChildVisit_Continue;
-            }
+            let val = match val {
+                None => return CXChildVisit_Continue, // Not an integer literal.
+                Some(v) => v,
+            };
             let var = decl_name(ctx, cursor);
             let vi = var.varinfo();
             let mut vi = vi.borrow_mut();
-            vi.ty = match val {
-                None => TVoid,
-                Some(v) if v.abs() > u32::max_value() as i64 => TInt(IULongLong, Layout::new(8, 8)),
-                _ => TInt(IUInt, Layout::new(4, 4)),
+            vi.ty = if val.abs() > u32::max_value() as i64  {
+                TInt(IULongLong, Layout::new(8, 8))
+            } else {
+                TInt(IUInt, Layout::new(4, 4))
             };
             vi.is_const = true;
-            vi.val = val;
+            vi.val = Some(val);
             ctx.current_module_mut().globals.push(var);
 
             return CXChildVisit_Continue;
