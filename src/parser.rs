@@ -26,6 +26,7 @@ pub struct ClangParserOptions {
     pub ignore_functions: bool,
     pub enable_cxx_namespaces: bool,
     pub class_constants: bool,
+    pub namespaced_constants: bool,
     pub override_enum_ty: Option<il::IKind>,
     pub clang_args: Vec<String>,
     pub opaque_types: Vec<String>,
@@ -38,6 +39,9 @@ struct ClangParserCtx<'a> {
     builtin_defs: Vec<Cursor>,
     module_map: ModuleMap,
     current_module_id: ModuleId,
+    /// This member is used to track down if we're in a namespace if the
+    /// enable_cxx_namespaces option is disabled.
+    namespace_depth: usize,
     current_translation_unit: TranslationUnit,
     logger: &'a (Logger+'a),
     err_count: i32,
@@ -51,6 +55,10 @@ impl<'a> ClangParserCtx<'a> {
 
     fn current_module(&self) -> &Module {
         self.module(&self.current_module_id)
+    }
+
+    fn in_root_namespace(&self) -> bool {
+        self.namespace_depth == 0
     }
 
     fn current_module_mut(&mut self) -> &mut Module {
@@ -1229,6 +1237,12 @@ fn visit_top(cursor: &Cursor,
             CXChildVisit_Continue
         }
         CXCursor_VarDecl => {
+            // TODO: At some point we might want to mangle them instead?
+            // We already have a bunch of that logic.
+            if !ctx.in_root_namespace() && !ctx.options.namespaced_constants {
+                return CXChildVisit_Continue;
+            }
+
             let linkage = cursor.linkage();
             if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
                 return CXChildVisit_Continue;
@@ -1287,7 +1301,10 @@ fn visit_top(cursor: &Cursor,
         }
         CXCursor_Namespace => {
             if !ctx.options.enable_cxx_namespaces {
-                return CXChildVisit_Recurse;
+                ctx.namespace_depth += 1;
+                cursor.visit(|cur, _: &Cursor| visit_top(cur, &mut ctx));
+                ctx.namespace_depth -= 1;
+                return CXChildVisit_Continue;
             }
 
             let namespace_name = match ctx.current_translation_unit.tokens(cursor) {
@@ -1327,7 +1344,9 @@ fn visit_top(cursor: &Cursor,
             let previous_id = ctx.current_module_id;
 
             ctx.current_module_id = mod_id;
+            ctx.namespace_depth += 1;
             cursor.visit(|cur, _: &Cursor| visit_top(cur, &mut ctx));
+            ctx.namespace_depth -= 1;
             ctx.current_module_id = previous_id;
 
             return CXChildVisit_Continue;
@@ -1386,6 +1405,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<ModuleMap, 
         name: HashMap::new(),
         builtin_defs: vec!(),
         module_map: ModuleMap::new(),
+        namespace_depth: 0,
         current_module_id: ROOT_MODULE_ID,
         current_translation_unit: unit,
         logger: logger,

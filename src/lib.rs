@@ -159,6 +159,8 @@ pub struct BindgenOptions {
     pub derive_debug: bool,
     /// Wether to generate C++ class constants.
     pub class_constants: bool,
+    /// Wether to generate names that are **directly** under namespaces.
+    pub namespaced_constants: bool,
     pub override_enum_ty: String,
     pub raw_lines: Vec<String>,
     /// Attributes for a type with destructor
@@ -184,6 +186,7 @@ impl Default for BindgenOptions {
             enable_cxx_namespaces: false,
             override_enum_ty: "".to_string(),
             class_constants: true,
+            namespaced_constants: true,
             raw_lines: vec![],
             dtor_attrs: vec![],
             clang_args: vec![],
@@ -304,6 +307,7 @@ fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<ModuleMap,
         match_pat: options.match_pat.clone(),
         emit_ast: options.emit_ast,
         class_constants: options.class_constants,
+        namespaced_constants: options.namespaced_constants,
         ignore_functions: options.ignore_functions,
         fail_on_unknown_type: options.fail_on_unknown_type,
         enable_cxx_namespaces: options.enable_cxx_namespaces,
