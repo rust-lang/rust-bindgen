@@ -41,17 +41,17 @@ fn remove_prefix() {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         extern \"C\" {
-            #[link_name(name = \"test_var\")]
+            #[link_name = \"test_var\"]
             pub static mut var: ::std::os::raw::c_int;
         }
         extern \"C\" {
-            #[link_name(name = \"test_fn\")]
+            #[link_name = \"test_fn\"]
             pub fn fn_() -> ::std::os::raw::c_int;
-            #[link_name(name = \"test_fn2\")]
+            #[link_name = \"test_fn2\"]
             pub fn fn2() -> union;
-            #[link_name(name = \"test_fn3\")]
+            #[link_name = \"test_fn3\"]
             pub fn fn3() -> struct_;
-            #[link_name(name = \"test_fn4\")]
+            #[link_name = \"test_fn4\"]
             pub fn fn4() -> enum_;
         }
     ");
