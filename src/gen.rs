@@ -106,7 +106,24 @@ fn extract_definitions(ctx: &mut GenCtx,
         match *g {
             GType(ref ti) => {
                 let t = ti.borrow();
-                defs.extend(ctypedef_to_rs(ctx, options, options.derive_debug, &t.name, &t.ty))
+
+                let is_cyclic = {
+                    let n;
+                    let c;
+                    let e;
+                    match t.ty {
+                        TNamed(ref ni) => { n=ni.borrow(); Some(&n.name) },
+                        TComp(ref ci) =>  { c=ci.borrow(); Some(&c.name) },
+                        TEnum(ref ei) =>  { e=ei.borrow(); Some(&e.name) },
+                        _ => None,
+                    }.map(|alias|
+                        rust_id(ctx, &t.name, &options.remove_prefix).0 == rust_id(ctx, alias, &options.remove_prefix).0
+                    ).unwrap_or(false)
+                    // important: need to end borrow of n, c, e, here
+                };
+                if !is_cyclic {
+                    defs.extend(ctypedef_to_rs(ctx, options, options.derive_debug, &t.name, &t.ty))
+                }
             }
             GCompDecl(ref ci) => {
                 {
