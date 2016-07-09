@@ -1261,8 +1261,18 @@ fn mk_blob_field(ctx: &GenCtx, name: &str, layout: Layout, span: Span) -> ast::S
 }
 
 fn mk_link_name_attr(ctx: &mut GenCtx, name: &str) -> ast::Attribute {
-    let attr = format!("name = \"{}\"", name);
-    mk_attr(ctx, "link_name", &[&attr])
+    let attr = {
+        let k = ctx.ext_cx.name_of("link_name").as_str();
+        let v = ctx.ext_cx.name_of(name).as_str();
+        ctx.ext_cx.meta_name_value(ctx.span, k, ast::LitKind::Str(v,ast::StrStyle::Cooked))
+    };
+    respan(ctx.span,
+           ast::Attribute_ {
+               id: mk_attr_id(),
+               style: ast::AttrStyle::Outer,
+               value: attr,
+               is_sugared_doc: false,
+           })
 }
 
 fn mk_repr_attr(ctx: &mut GenCtx, layout: Layout) -> ast::Attribute {
