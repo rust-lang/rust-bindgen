@@ -1,4 +1,4 @@
-use bindgen::BindgenOptions;
+use bindgen::{Builder,BindgenOptions};
 use support::assert_bind_eq;
 
 #[test]
@@ -55,4 +55,17 @@ fn remove_prefix() {
             pub fn fn4() -> enum_;
         }
     ");
+}
+
+#[test]
+fn ignore_cyclic_references() {
+    let bindings = Builder::new("tests/headers/cyclic.h")
+        .remove_prefix("my_")
+        .generate()
+        .unwrap()
+        .to_string();
+    
+    assert!(!bindings.contains("pub type type_t = type_t;"));
+    assert!(!bindings.contains("pub type struct_t = struct_t;"));
+    assert!(!bindings.contains("pub type enum_t = enum_t;"));
 }
