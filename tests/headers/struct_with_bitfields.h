@@ -1,3 +1,4 @@
+// bindgen-flags: -no-unstable-rust
 struct bitfield {
     unsigned short
     a   :1,

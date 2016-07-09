@@ -1,3 +1,4 @@
+// bindgen-flags: -no-unstable-rust
 union foo {
     int a;
     struct {
