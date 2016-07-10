@@ -125,6 +125,10 @@ fn parse_args(args: &[String]) -> ParseResult {
                     options.namespaced_constants = false;
                     ix += 1;
                 }
+                "-no-unstable-rust" => {
+                    options.unstable_rust = false;
+                    ix += 1;
+                }
                 "-no-class-constants" => {
                     options.class_constants = false;
                     ix += 1;

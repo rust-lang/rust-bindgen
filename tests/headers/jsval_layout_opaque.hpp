@@ -1,4 +1,4 @@
-// bindgen-flags: -std=c++11 -match jsval_layout_opaque.hpp -no-type-renaming
+// bindgen-flags: -std=c++11 -match jsval_layout_opaque.hpp -no-type-renaming -no-unstable-rust
 
 #include <stdint.h>
 #include <stddef.h>

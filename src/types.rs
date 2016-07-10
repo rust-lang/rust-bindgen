@@ -1,4 +1,5 @@
-use std::cell::{Cell, RefCell};
+use std::cell::Cell;
+use hacks::refcell::RefCell;
 use std::fmt;
 use std::rc::Rc;
 use std::collections::HashMap;

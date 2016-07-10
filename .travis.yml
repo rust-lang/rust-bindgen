@@ -10,6 +10,7 @@ addons:
 env:
   - LLVM_VERSION=3.8
 rust:
+  - stable
   - nightly
 cache:
   directories:

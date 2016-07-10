@@ -1,12 +1,12 @@
 #![crate_name = "bindgen"]
 #![crate_type = "dylib"]
-#![feature(quote)]
-#![feature(borrow_state)]
 
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
 
 extern crate syntex_syntax as syntax;
+extern crate aster;
+extern crate quasi;
 extern crate clang_sys;
 extern crate libc;
 #[macro_use]
@@ -29,8 +29,11 @@ use types::ModuleMap;
 mod types;
 mod clangll;
 mod clang;
-mod gen;
 mod parser;
+mod hacks;
+mod gen {
+    include!(concat!(env!("OUT_DIR"), "/gen.rs"));
+}
 
 #[derive(Clone)]
 pub struct Builder<'a> {
@@ -107,6 +110,10 @@ impl<'a> Builder<'a> {
         self
     }
 
+    pub fn no_unstable_rust(&mut self) -> &mut Self {
+        self.options.unstable_rust = false;
+        self
+    }
     pub fn rust_enums(&mut self, value: bool) -> &mut Self {
         self.options.rust_enums = value;
         self
@@ -157,7 +164,9 @@ pub struct BindgenOptions {
     pub enable_cxx_namespaces: bool,
     pub rename_types: bool,
     pub derive_debug: bool,
-    /// Wether to generate C++ class constants.
+    /// Generate or not only stable rust.
+    pub unstable_rust: bool,
+    /// Whether to generate C++ class constants.
     pub class_constants: bool,
     /// Wether to generate names that are **directly** under namespaces.
     pub namespaced_constants: bool,
@@ -185,6 +194,7 @@ impl Default for BindgenOptions {
             derive_debug: true,
             enable_cxx_namespaces: false,
             override_enum_ty: "".to_string(),
+            unstable_rust: true,
             class_constants: true,
             namespaced_constants: true,
             raw_lines: vec![],

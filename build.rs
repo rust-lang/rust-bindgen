@@ -21,11 +21,27 @@ const MAC_CLANG_DIR: &'static [&'static str] = &[
 ];
 const WIN_CLANG_DIRS: &'static [&'static str] = &["C:\\Program Files\\LLVM\\bin", "C:\\Program Files\\LLVM\\lib"];
 
-fn path_exists(path: &Path) -> bool {
-    fs::metadata(path).is_ok()
+mod codegen {
+    extern crate quasi_codegen;
+    use std::path::Path;
+    use std::env;
+
+    pub fn main() {
+        let out_dir = env::var_os("OUT_DIR").unwrap();
+        let src = Path::new("src/gen.rs");
+        let dst = Path::new(&out_dir).join("gen.rs");
+
+        quasi_codegen::expand(&src, &dst).unwrap();
+        println!("cargo:rerun-if-changed=src/gen.rs");
+    }
 }
 
 fn main() {
+    codegen::main();
+    search_libclang();
+}
+
+fn search_libclang() {
     let use_static_lib = env::var_os("LIBCLANG_STATIC").is_some() || cfg!(feature = "static");
 
     let possible_clang_dirs = if let Ok(dir) = env::var("LIBCLANG_PATH") {
@@ -152,4 +168,8 @@ fn main() {
     } else {
         panic!("Unable to find {}", clang_lib);
     }
+}
+
+fn path_exists(path: &Path) -> bool {
+    fs::metadata(path).is_ok()
 }

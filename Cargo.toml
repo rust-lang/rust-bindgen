@@ -11,11 +11,16 @@ keywords = [ "bindings", "ffi", "code-generation" ]
 build = "build.rs"
 
 [dependencies]
+aster = { version = "0.21.1", features = ["with-syntex"] }
+quasi = { version = "0.15", features = ["with-syntex"] }
 clippy = { version = "*", optional = true }
+syntex_syntax = "0.38"
 log = "0.3.*"
 libc = "0.2.*"
-syntex_syntax = "0.37"
 clang-sys = "0.7.2"
+
+[build-dependencies]
+quasi_codegen = "0.15"
 
 [features]
 static = []

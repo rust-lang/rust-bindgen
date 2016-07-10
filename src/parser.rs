@@ -1,7 +1,7 @@
 #![allow(non_upper_case_globals)]
 
 use std::collections::{HashMap, HashSet};
-use std::cell::RefCell;
+use hacks::refcell::RefCell;
 use std::rc::Rc;
 use std::path::Path;
 use std::cmp;
@@ -393,7 +393,7 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
             // We might incur in double borrows here. If that's the case, we're
             // already scanning the compinfo, and we'd get the args from the
             // ast.
-            use std::cell::BorrowState;
+            use hacks::refcell::BorrowState;
             if !args.is_empty() && ci.borrow_state() == BorrowState::Unused {
                 ci.borrow_mut().args = args;
 
@@ -607,7 +607,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                                                     is_class_typedef);
 
 
-            use std::cell::BorrowState;
+            use hacks::refcell::BorrowState;
             if let Some(child_ci) = ty.get_outermost_composite() {
                 if let BorrowState::Unused = child_ci.borrow_state() {
                     let mut child_ci = child_ci.borrow_mut();

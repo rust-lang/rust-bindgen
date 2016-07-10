@@ -1,3 +1,4 @@
+// bindgen-flags: -no-unstable-rust
 // You can guess where this is taken from...
 enum nsStyleSVGOpacitySource {
   eStyleSVGOpacitySource_Normal,
