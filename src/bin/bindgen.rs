@@ -121,6 +121,10 @@ fn parse_args(args: &[String]) -> ParseResult {
                     options.gen_bitfield_methods = false;
                     ix += 1;
                 }
+                "-no-namespaced-constants" => {
+                    options.namespaced_constants = false;
+                    ix += 1;
+                }
                 "-no-class-constants" => {
                     options.class_constants = false;
                     ix += 1;
