@@ -1,37 +1,38 @@
 language: rust
 
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - gcc-5
-
-env:
-  - LLVM_VERSION=3.5
-  - LLVM_VERSION=3.8
-rust:
-  - stable
-  - nightly
-os:
-  - osx
-  - linux
-
 matrix:
   allow_failures:
     - rust: nightly
   include:
-    - os: linux
-      env: LLVM_VERSION=3.5
-      rust: stable
+    - rust: stable
+      env: LLVM_VERSION=3.5.2
       script: cargo build --features static --verbose
+    - rust: nightly
+      env: LLVM_VERSION=3.5.2
+      script: cargo build --features clippy --verbose
+    - rust: stable
+      env: LLVM_VERSION=3.5.2
+    - rust: nightly
+      env: LLVM_VERSION=3.5.2
+    - rust: stable
+      env: LLVM_VERSION=3.8.0
+    - rust: nightly
+      env: LLVM_VERSION=3.8.0
     - os: osx
-      env: LLVM_VERSION=devtools
       rust: stable
-    - os: linux
+      env: LLVM_VERSION=devtools
+    - os: osx
+      rust: stable
       env: LLVM_VERSION=3.5
+    - os: osx
       rust: nightly
-      script: cargo build --features clippy
+      env: LLVM_VERSION=3.5
+    - os: osx
+      rust: stable
+      env: LLVM_VERSION=3.8
+    - os: osx
+      rust: nightly
+      env: LLVM_VERSION=3.8
 
 notifications:
   webhooks: http://build.servo.org:54856/travis
@@ -41,13 +42,13 @@ cache: cargo
 before_install:
   -
     set -e;
-    if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
-      if [ "${LLVM_VERSION}" != "devtools" ]; then
+    if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
+      if [ "${LLVM_VERSION}" == "devtools" ]; then
+        export LIBCLANG_PATH=/Library/Developer/CommandLineTools/usr/lib;
+      else
         brew update >/dev/null;
         brew install llvm3${LLVM_VERSION#3.};
         export LIBCLANG_PATH=`brew --prefix llvm3${LLVM_VERSION#3.}`/lib/llvm-${LLVM_VERSION}/lib;
-      else
-        export LIBCLANG_PATH=/Library/Developer/CommandLineTools/usr/lib;
       fi
     else
       export LLVM=clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04;
@@ -56,6 +57,7 @@ before_install:
       tar -xf ${LLVM}.tar.xz -C llvm --strip-components=1;
       export LIBCLANG_PATH=`pwd`/llvm/lib;
     fi
+  -
     echo $LIBCLANG_PATH;
 
 after_success: |
