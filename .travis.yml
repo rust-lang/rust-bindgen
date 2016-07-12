@@ -46,19 +46,19 @@ before_install:
         brew update >/dev/null;
         brew install llvm3${LLVM_VERSION#3.};
         export LIBCLANG_PATH=`brew --prefix llvm3${LLVM_VERSION#3.}`/lib/llvm-${LLVM_VERSION}/lib;
-      fi
+      fi;
     else
       if [ "${LLVM_VERSION}" == "3.5" ]; then
         export LLVM_VERSION_TRIPLE=3.5.2;
       else
         export LLVM_VERSION_TRIPLE=3.8.0;
-      fi
+      fi;
       export LLVM=clang+llvm-${LLVM_VERSION_TRIPLE}-x86_64-linux-gnu-ubuntu-14.04;
       wget http://llvm.org/releases/${LLVM_VERSION_TRIPLE}/${LLVM}.tar.xz ;
       mkdir llvm;
       tar -xf ${LLVM}.tar.xz -C llvm --strip-components=1;
       export LIBCLANG_PATH=`pwd`/llvm/lib;
-    fi
+    fi;
   -
     echo $LIBCLANG_PATH;
 
