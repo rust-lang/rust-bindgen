@@ -5,29 +5,29 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - gcc-5
+      - gcc-6
 
-os:
-  - linux
-  - osx
-rust:
-  - stable
-  - nightly
 env:
   - LLVM_VERSION=3.5
   - LLVM_VERSION=3.8
+rust:
+  - stable
+  - nightly
+os:
+  - linux
+  - osx
 
 matrix:
   allow_failures:
     - rust: nightly
   include:
     - os: linux
-      rust: stable
       env: LLVM_VERSION=3.5
+      rust: stable
       script: cargo build --features static --verbose
     - os: linux
-      rust: nightly
       env: LLVM_VERSION=3.5
+      rust: nightly
       script: cargo build --features clippy --verbose
     - os: osx
       rust: stable
@@ -35,6 +35,8 @@ matrix:
 
 notifications:
   webhooks: http://build.servo.org:54856/travis
+
+cache: cargo
 
 before_install:
   -
@@ -62,8 +64,8 @@ before_install:
   -
     echo $LIBCLANG_PATH;
 
-after_success: |
-  [ "${TRAVIS_RUST_VERSION}" = "stable" ] &&
-  [ "${TRAVIS_OS_NAME}" = "linux" ] &&
-  [ "${LLVM_VERSION}" = "3.8" ] &&
-  ./scripts/travis-doc-upload.sh
+after_success:
+  -
+    if [ "${TRAVIS_OS_NAME}" == "linux" ] && [ "${TRAVIS_RUST_VERSION}" == "stable" ] && [ "${LLVM_VERSION}" == "3.8" ]; then
+      ./scripts/travis-doc-upload.sh;
+    fi;
