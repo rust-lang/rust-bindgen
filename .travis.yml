@@ -36,8 +36,6 @@ matrix:
 notifications:
   webhooks: http://build.servo.org:54856/travis
 
-cache: cargo
-
 before_install:
   -
     set -e;
@@ -63,9 +61,3 @@ before_install:
     fi;
   -
     echo $LIBCLANG_PATH;
-
-after_success:
-  -
-    if [ "${TRAVIS_OS_NAME}" == "linux" ] && [ "${TRAVIS_RUST_VERSION}" == "stable" ] && [ "${LLVM_VERSION}" == "3.8" ]; then
-      ./scripts/travis-doc-upload.sh;
-    fi;
