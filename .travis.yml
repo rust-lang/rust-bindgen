@@ -36,6 +36,8 @@ matrix:
 notifications:
   webhooks: http://build.servo.org:54856/travis
 
+cache: cargo
+
 before_install:
   -
     set -e;
