@@ -78,6 +78,7 @@ fn match_pattern(ctx: &mut ClangParserCtx, cursor: &Cursor) -> bool {
         return true;
     }
 
+    let name = name.replace("\\", "/");
     ctx.options.match_pat.iter().any(|pat| name.contains(pat))
 }
 
