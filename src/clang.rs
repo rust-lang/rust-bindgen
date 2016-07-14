@@ -37,7 +37,7 @@ impl Cursor {
         };
 
         // Try to undo backend mangling
-        if cfg!(target_os = "macos") || cfg!(target_os = "windows") {
+        if cfg!(target_os = "macos") || cfg!(all(target_os = "windows", target_env = "gnu")) {
             mangling.remove(0);
         }
         mangling
