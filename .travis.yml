@@ -1,14 +1,12 @@
 language: rust
+
 addons:
-    apt:
-      sources:
-        - llvm-toolchain-precise-3.5
-        - llvm-toolchain-precise-3.8
-      packages:
-        - libclang-3.5-dev
-        - llvm-3.5-dev
-        - libclang-3.8-dev
-        - llvm-3.8-dev
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-6
+
 env:
   - LLVM_VERSION=3.5
   - LLVM_VERSION=3.8
@@ -16,8 +14,9 @@ rust:
   - stable
   - nightly
 os:
-  - osx
   - linux
+  - osx
+
 matrix:
   allow_failures:
     - rust: nightly
@@ -26,43 +25,39 @@ matrix:
       env: LLVM_VERSION=3.5
       rust: stable
       script: cargo build --features static --verbose
-    - os: osx
-      env: LLVM_VERSION=devtools
-      rust: stable
     - os: linux
       env: LLVM_VERSION=3.5
       rust: nightly
-      script: cargo build --features clippy
+      script: cargo build --features clippy --verbose
+    - os: osx
+      rust: stable
+      env: LLVM_VERSION=devtools
 
 notifications:
   webhooks: http://build.servo.org:54856/travis
 
-cache: cargo
-
 before_install:
   -
-    if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
-      if [ "${LLVM_VERSION}" != "devtools" ]; then
-        brew update >/dev/null;
-        brew install llvm3${LLVM_VERSION#3.};
-      fi
-    fi
-
-before_script:
-  -
-    if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-      export LIBCLANG_PATH=/usr/lib/llvm-${LLVM_VERSION}/lib;
-    elif [ "${TRAVIS_OS_NAME}" = "osx" ]; then
-      if [ "${LLVM_VERSION}" = "devtools" ]; then
+    set -e;
+    if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
+      if [ "${LLVM_VERSION}" == "devtools" ]; then
         export LIBCLANG_PATH=/Library/Developer/CommandLineTools/usr/lib;
       else
+        brew update >/dev/null;
+        brew install llvm3${LLVM_VERSION#3.};
         export LIBCLANG_PATH=`brew --prefix llvm3${LLVM_VERSION#3.}`/lib/llvm-${LLVM_VERSION}/lib;
-      fi
-    fi
-  - echo $LIBCLANG_PATH
-
-after_success: |
-  [ "${TRAVIS_RUST_VERSION}" = "stable" ] &&
-  [ "${TRAVIS_OS_NAME}" = "linux" ] &&
-  [ "${LLVM_VERSION}" = "3.8" ] &&
-  ./scripts/travis-doc-upload.sh
+      fi;
+    else
+      if [ "${LLVM_VERSION}" == "3.5" ]; then
+        export LLVM_VERSION_TRIPLE=3.5.2;
+      else
+        export LLVM_VERSION_TRIPLE=3.8.0;
+      fi;
+      export LLVM=clang+llvm-${LLVM_VERSION_TRIPLE}-x86_64-linux-gnu-ubuntu-14.04;
+      wget http://llvm.org/releases/${LLVM_VERSION_TRIPLE}/${LLVM}.tar.xz ;
+      mkdir llvm;
+      tar -xf ${LLVM}.tar.xz -C llvm --strip-components=1;
+      export LIBCLANG_PATH=`pwd`/llvm/lib;
+    fi;
+  -
+    echo $LIBCLANG_PATH;
