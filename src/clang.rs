@@ -11,6 +11,8 @@ use std::mem;
 
 use clang_sys::*;
 
+use cexpr::token::{Token as CexprToken,Kind as CexprTokenKind};
+
 // Cursor
 #[derive(Copy, Clone, Debug)]
 pub struct Cursor {
@@ -326,6 +328,21 @@ pub struct Token {
     pub spelling: String,
 }
 
+impl Into<CexprToken> for Token {
+    fn into(self) -> CexprToken {
+        CexprToken {
+            kind:match self.kind {
+                CXTokenKind::Comment => CexprTokenKind::Comment,
+                CXTokenKind::Identifier => CexprTokenKind::Identifier,
+                CXTokenKind::Keyword => CexprTokenKind::Keyword,
+                CXTokenKind::Literal => CexprTokenKind::Literal,
+                CXTokenKind::Punctuation => CexprTokenKind::Punctuation,
+            },
+            raw:self.spelling.into_bytes().into_boxed_slice()
+        }
+    }
+}
+
 // TranslationUnit
 pub struct TranslationUnit {
     x: CXTranslationUnit,
@@ -394,7 +411,10 @@ impl TranslationUnit {
     }
 
     pub fn tokens(&self, cursor: &Cursor) -> Option<Vec<Token>> {
-        let range = cursor.extent();
+        let mut range = cursor.extent();
+        if cursor.kind()==CXCursorKind::MacroDefinition {
+            range.end_int_data-=1; // bug observed in clang 3.5 ~ 3.8
+        }
         let mut tokens = vec![];
         unsafe {
             let mut token_ptr = ::std::ptr::null_mut();
