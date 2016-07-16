@@ -8,6 +8,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Remove `Builder::default` to force the specification of the C header file
   name.
 
+### Added
+- Add support for parsing complex macro definitions (integers only for now),
+  see `--convert-macros` (#370)
+
 ### Changed
 - Convert `float` and `double` to `f32` and `f64` by default (#348).
 
