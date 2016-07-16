@@ -1049,13 +1049,15 @@ fn cenum_to_rs(ctx: &mut GenCtx,
         items.push(ctx.ext_cx.item_ty(ctx.span,
                                       enum_name,
                                       ctx.ext_cx
-                                         .ty_ident(ctx.span, ctx.ext_cx.ident_of(enum_repr))));
+                                         .ty_ident(ctx.span, ctx.ext_cx.ident_of(enum_repr)))
+                   .map(|p|ast::Item{vis:ast::Visibility::Public,..p}));
         for item in enum_items {
             let value = cenum_value_to_int_lit(ctx, enum_is_signed, layout.size, item.val);
             items.push(ctx.ext_cx.item_const(ctx.span,
                                              ctx.ext_cx.ident_of(&item.name),
                                              enum_ty.clone(),
-                                             value));
+                                             value)
+                       .map(|p|ast::Item{vis:ast::Visibility::Public,..p}));
         }
         return items;
     }
