@@ -32,6 +32,7 @@ version = "0.0.72"
 
 [dev-dependencies]
 diff = "~0.1.9"
+lazy_static = "0.2"
 
 [features]
 static = ["clang-sys/static"]

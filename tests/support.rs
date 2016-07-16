@@ -75,7 +75,11 @@ pub fn assert_bind_eq(options: BindgenOptions,
         panic!();
     }
 
-    try_compile(&reference_rendered);
+    use std::sync::Mutex;
+    lazy_static! {
+        static ref TRY_COMPILE_GUARD: Mutex<fn(&str)> = Mutex::new(try_compile);
+    }
+    TRY_COMPILE_GUARD.lock().unwrap()(&reference_rendered);
 }
 
 fn try_compile(src: &str) {
