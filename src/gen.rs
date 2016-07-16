@@ -1052,9 +1052,10 @@ fn cenum_to_rs(ctx: &mut GenCtx,
                                          .ty_ident(ctx.span, ctx.ext_cx.ident_of(enum_repr)))
                    .map(|p|ast::Item{vis:ast::Visibility::Public,..p}));
         for item in enum_items {
+            let rust_name = rust_id(ctx, &item.name, &options.remove_prefix).0;
             let value = cenum_value_to_int_lit(ctx, enum_is_signed, layout.size, item.val);
             items.push(ctx.ext_cx.item_const(ctx.span,
-                                             ctx.ext_cx.ident_of(&item.name),
+                                             ctx.ext_cx.ident_of(&rust_name),
                                              enum_ty.clone(),
                                              value)
                        .map(|p|ast::Item{vis:ast::Visibility::Public,..p}));
