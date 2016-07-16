@@ -18,12 +18,12 @@ fn with_simple_enum() {
         pub enum Neg { MinusOne = -1, One = 1, }
     ");
     assert_bind_eq(default_without_rust_enums(), "headers/enum.h", "
-        type Foo = u32;
-        const Bar: Foo = 0;
-        const Qux: Foo = 1;
-        type Neg = i32;
-        const MinusOne: Neg = -1;
-        const One: Neg = 1;
+        pub type Foo = u32;
+        pub const Bar: Foo = 0;
+        pub const Qux: Foo = 1;
+        pub type Neg = i32;
+        pub const MinusOne: Neg = -1;
+        pub const One: Neg = 1;
     ");
 }
 
@@ -44,15 +44,15 @@ fn with_packed_enums() {
         pub enum Bigger { Much = 255, Larger = 256, }
     ");
     assert_bind_eq(default_without_rust_enums(), "headers/enum_packed.h", "
-        type Foo = u8;
-        const Bar: Foo = 0;
-        const Qux: Foo = 1;
-        type Neg = i8;
-        const MinusOne: Neg = -1;
-        const One: Neg = 1;
-        type Bigger = u16;
-        const Much: Bigger = 255;
-        const Larger: Bigger = 256;
+        pub type Foo = u8;
+        pub const Bar: Foo = 0;
+        pub const Qux: Foo = 1;
+        pub type Neg = i8;
+        pub const MinusOne: Neg = -1;
+        pub const One: Neg = 1;
+        pub type Bigger = u16;
+        pub const Much: Bigger = 255;
+        pub const Larger: Bigger = 256;
     ");
 }
 
@@ -66,9 +66,9 @@ fn with_duplicate_enum_value() {
         pub enum Foo { Bar = 1, }
     ");
     assert_bind_eq(default_without_rust_enums(), "headers/enum_dupe.h", "
-        type Foo = u32;
-        const Bar: Foo = 1;
-        const Dupe: Foo = 1;
+        pub type Foo = u32;
+        pub const Bar: Foo = 1;
+        pub const Dupe: Foo = 1;
     ");
 }
 
@@ -97,19 +97,19 @@ fn with_explicitly_typed_cxx_enum() {
         pub enum MuchLongLong { MuchHigh = 4294967296, }
     ");
     assert_bind_eq(default_without_rust_enums(), "headers/enum_explicit_type.hpp", "
-        type Foo = u8;
-        const Bar: Foo = 0;
-        const Qux: Foo = 1;
-        type Neg = i8;
-        const MinusOne: Neg = -1;
-        const One: Neg = 1;
-        type Bigger = u16;
-        const Much: Bigger = 255;
-        const Larger: Bigger = 256;
-        type MuchLong = i64;
-        const MuchLow: MuchLong = -4294967296;
-        type MuchLongLong = u64;
-        const MuchHigh: MuchLongLong = 4294967296;
+        pub type Foo = u8;
+        pub const Bar: Foo = 0;
+        pub const Qux: Foo = 1;
+        pub type Neg = i8;
+        pub const MinusOne: Neg = -1;
+        pub const One: Neg = 1;
+        pub type Bigger = u16;
+        pub const Much: Bigger = 255;
+        pub const Larger: Bigger = 256;
+        pub type MuchLong = i64;
+        pub const MuchLow: MuchLong = -4294967296;
+        pub type MuchLongLong = u64;
+        pub const MuchHigh: MuchLongLong = 4294967296;
     ");
 }
 
@@ -130,12 +130,12 @@ fn with_overflowed_enum_value() {
         pub enum Bar { One = 1, Big = 2, }
     ");
     assert_bind_eq(default_without_rust_enums(), "headers/overflowed_enum.hpp", "
-        type Foo = u32;
-        const BAP_ARM: Foo = 9698489;
-        const BAP_X86: Foo = 11960045;
-        const BAP_X86_64: Foo = 3128633167;
-        type Bar = u16;
-        const One: Bar = 1;
-        const Big: Bar = 2;
+        pub type Foo = u32;
+        pub const BAP_ARM: Foo = 9698489;
+        pub const BAP_X86: Foo = 11960045;
+        pub const BAP_X86_64: Foo = 3128633167;
+        pub type Bar = u16;
+        pub const One: Bar = 1;
+        pub const Big: Bar = 2;
     ");
 }
