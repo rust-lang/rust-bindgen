@@ -14,6 +14,7 @@ fn unsigned() {
     assert!(bindings.contains("pub type uint16_t = u16;"));
     assert!(bindings.contains("pub type uint32_t = u32;"));
     assert!(bindings.contains("pub type uint64_t = u64;"));
+    assert!(bindings.contains("pub static mut c: wchar_t;"));
 }
 
 #[test]

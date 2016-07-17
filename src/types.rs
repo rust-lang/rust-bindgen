@@ -218,6 +218,7 @@ pub enum IKind {
     IULong,
     ILongLong,
     IULongLong,
+    IWChar,
 }
 
 impl IKind {
@@ -234,6 +235,7 @@ impl IKind {
             IULong => false,
             ILongLong => true,
             IULongLong => false,
+            IWChar => false,
         }
     }
 }

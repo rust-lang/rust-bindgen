@@ -1475,6 +1475,7 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type, options: &BindgenOptions) -> ast::Ty {
                 IULong => mk_ty(ctx, true, raw("c_ulong")),
                 ILongLong => mk_ty(ctx, true, raw("c_longlong")),
                 IULongLong => mk_ty(ctx, true, raw("c_ulonglong")),
+                IWChar => mk_ty(ctx, true, raw("wchar_t")),
             }
         }
         TFloat(f, _) => {
