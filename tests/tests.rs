@@ -1,5 +1,7 @@
 #![allow(dead_code)]
 
+#[macro_use]
+extern crate lazy_static;
 extern crate bindgen;
 extern crate diff;
 extern crate syntex_syntax as syntax;
