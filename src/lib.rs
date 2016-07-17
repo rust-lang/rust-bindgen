@@ -15,6 +15,7 @@ extern crate syntex_syntax as syntax;
 extern crate libc;
 #[macro_use]
 extern crate log;
+extern crate cexpr;
 
 use std::collections::HashSet;
 use std::default::Default;
@@ -142,6 +143,34 @@ impl<'a> Builder<'a> {
         self
     }
 
+    /// Turn macros definitions into const definitions, when possible
+    pub fn convert_macros(&mut self, value: bool) -> &mut Self {
+        self.options.convert_macros = value;
+        self
+    }
+
+    /// When converting macros, convert integers that would fit in a `u8`,
+    /// `u16`, `u32`, `u64`, `i8`, `i16`, `i32`, `i64` to the corresponding
+    /// named C type the supplied list.
+    ///
+    /// The `Iterator` must return exactly 8 items.
+    pub fn macro_int_types<T: Into<String>, I: Iterator<Item=T>>(&mut self, mut types: I) -> &mut Self {
+        self.options.macro_int_types = (
+            types.next().expect("Not enough types in macro_int_types").into(),
+            types.next().expect("Not enough types in macro_int_types").into(),
+            types.next().expect("Not enough types in macro_int_types").into(),
+            types.next().expect("Not enough types in macro_int_types").into(),
+            types.next().expect("Not enough types in macro_int_types").into(),
+            types.next().expect("Not enough types in macro_int_types").into(),
+            types.next().expect("Not enough types in macro_int_types").into(),
+            types.next().expect("Not enough types in macro_int_types").into(),
+        );
+        if let Some(_)=types.next() {
+            panic!("Additional type specified in macro_int_types")
+        }
+        self
+    }
+
     /// Generate the binding using the options previously set.
     pub fn generate(&self) -> Result<Bindings, ()> {
         Bindings::generate(&self.options, self.logger, None)
@@ -171,6 +200,9 @@ pub struct BindgenOptions {
     pub remove_prefix: String,
     /// See `Builder::convert_floats`.
     pub convert_floats: bool,
+    pub convert_macros: bool,
+    // would use Array here but that requires Copy
+    pub macro_int_types: (String,String,String,String,String,String,String,String),
 }
 
 impl Default for BindgenOptions {
@@ -195,6 +227,8 @@ impl Default for BindgenOptions {
             use_core: false,
             remove_prefix: String::new(),
             convert_floats: true,
+            convert_macros: false,
+            macro_int_types: ("uchar".to_owned(),"ushort".to_owned(),"uint".to_owned(),"ulonglong".to_owned(),"schar".to_owned(),"sshort".to_owned(),"sint".to_owned(),"slonglong".to_owned())
         }
     }
 }
@@ -319,6 +353,17 @@ fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<Vec<Global
         }
     }
 
+    let m_ty=parser::MacroTypes{
+        t_u8:  str_to_ikind(&options.macro_int_types.0).expect("Invalid C type specified for u8"),
+        t_u16: str_to_ikind(&options.macro_int_types.1).expect("Invalid C type specified for u16"),
+        t_u32: str_to_ikind(&options.macro_int_types.2).expect("Invalid C type specified for u32"),
+        t_u64: str_to_ikind(&options.macro_int_types.3).expect("Invalid C type specified for u64"),
+        t_i8:  str_to_ikind(&options.macro_int_types.4).expect("Invalid C type specified for i8"),
+        t_i16: str_to_ikind(&options.macro_int_types.5).expect("Invalid C type specified for i16"),
+        t_i32: str_to_ikind(&options.macro_int_types.6).expect("Invalid C type specified for i32"),
+        t_i64: str_to_ikind(&options.macro_int_types.7).expect("Invalid C type specified for i64"),
+    };
+
     let clang_opts = parser::ClangParserOptions {
         builtin_names: builtin_names(),
         builtins: options.builtins,
@@ -327,6 +372,8 @@ fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<Vec<Global
         fail_on_unknown_type: options.fail_on_unknown_type,
         override_enum_ty: str_to_ikind(&options.override_enum_ty[..]),
         clang_args: options.clang_args.clone(),
+        macros: options.convert_macros,
+        macro_types: m_ty,
     };
 
     parser::parse(clang_opts, logger)

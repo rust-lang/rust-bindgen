@@ -56,6 +56,11 @@ Options:
   --no-rust-enums             Convert C enums to Rust constants instead of enums.
   --dont-convert-floats       Disables the convertion of C `float` and `double`
                               to Rust `f32` and `f64`.
+  --convert-macros            Try to convert macros into const definitions
+  --macro-int-types=<ty,...>  When converting macros, convert integers that
+                              would fit in a u8,u16,u32,u64,i8,i16,i32,i64 to
+                              the corresponding named C type, respectively. See
+                              `--override-enum-type` for the type names.
 ";
 
 #[derive(Debug, RustcDecodable)]
@@ -75,6 +80,8 @@ struct Args {
     flag_no_derive_debug: bool,
     flag_no_rust_enums: bool,
     flag_dont_convert_floats: bool,
+    flag_convert_macros: bool,
+    flag_macro_int_types: Option<String>,
 }
 
 fn args_to_opts(args: Args) -> Builder<'static> {
@@ -87,7 +94,8 @@ fn args_to_opts(args: Args) -> Builder<'static> {
            .use_core(args.flag_use_core)
            .derive_debug(!args.flag_no_derive_debug)
            .rust_enums(!args.flag_no_rust_enums)
-           .override_enum_ty(args.flag_override_enum_type);
+           .override_enum_ty(args.flag_override_enum_type)
+           .convert_macros(args.flag_convert_macros);
     for arg in args.arg_clang_args {
         builder.clang_arg(arg);
     }
@@ -96,6 +104,9 @@ fn args_to_opts(args: Args) -> Builder<'static> {
     }
     if let Some(s) = args.flag_remove_prefix {
         builder.remove_prefix(s);
+    }
+    if let Some(s) = args.flag_macro_int_types {
+        builder.macro_int_types(s.split(","));
     }
     if args.flag_builtins {
         builder.builtins();

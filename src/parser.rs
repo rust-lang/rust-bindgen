@@ -17,6 +17,17 @@ use clang::{Cursor, Diagnostic, TranslationUnit, ast_dump};
 
 use super::Logger;
 
+pub struct MacroTypes {
+    pub t_u8:  IKind,
+    pub t_u16: IKind,
+    pub t_u32: IKind,
+    pub t_u64: IKind,
+    pub t_i8:  IKind,
+    pub t_i16: IKind,
+    pub t_i32: IKind,
+    pub t_i64: IKind,
+}
+
 pub struct ClangParserOptions {
     pub builtin_names: HashSet<String>,
     pub builtins: bool,
@@ -25,6 +36,8 @@ pub struct ClangParserOptions {
     pub fail_on_unknown_type: bool,
     pub override_enum_ty: Option<il::IKind>,
     pub clang_args: Vec<String>,
+    pub macros: bool,
+    pub macro_types: MacroTypes,
 }
 
 struct ClangParserCtx<'a> {
@@ -32,6 +45,7 @@ struct ClangParserCtx<'a> {
     name: HashMap<Cursor, Global>,
     globals: Vec<Global>,
     builtin_defs: Vec<Cursor>,
+    defined_macros: HashMap<Vec<u8>,::cexpr::expr::EvalResult>,
     logger: &'a (Logger + 'a),
     err_count: i32,
 }
@@ -337,6 +351,39 @@ fn opaque_ty(ctx: &mut ClangParserCtx, ty: &cx::Type) {
         }
     }
 }
+
+impl MacroTypes {
+    fn infer(&self, val: &::cexpr::expr::EvalResult) -> Option<(Type,Option<i64>)> {
+        use cexpr::expr::EvalResult::*;
+        match val {
+            &Int(::std::num::Wrapping(i)) => {
+                let kind=if i>=0 {
+                    if i<=(::std::u8::MAX as i64) {
+                        self.t_u8
+                    } else if i<=(::std::u16::MAX as i64) {
+                        self.t_u16
+                    } else if i<=(::std::u32::MAX as i64) {
+                        self.t_u32
+                    } else {
+                        self.t_u64
+                    }
+                } else {
+                    if i>=(::std::i8::MIN as i64) {
+                        self.t_i8
+                    } else if i>=(::std::i16::MIN as i64) {
+                        self.t_i16
+                    } else if i>=(::std::i32::MIN as i64) {
+                        self.t_i32
+                    } else {
+                        self.t_i64
+                    }
+                };
+                Some((Type::TInt(kind,Layout::default()),Some(i)))
+            },
+            _ => None,
+        }
+    }
+    }
 
 /// Recursively visits a cursor that represents a composite (struct or union)
 /// type and fills members with `CompMember` instances representing the fields and
@@ -660,6 +707,35 @@ fn visit_top(cursor: &Cursor,
 
             CXChildVisitResult::Continue
         }
+        CXCursorKind::MacroDefinition if ctx.options.macros => {
+            use cexpr::*;
+            let tokens: Vec<_>=unit.tokens(cursor).unwrap().into_iter().filter_map(|t|
+                if t.kind!=CXTokenKind::Comment {
+                    Some(t.into())
+                } else {
+                    None
+                }
+            ).collect();
+            match expr::IdentifierParser::new(&ctx.defined_macros).macro_definition(&tokens) {
+                nom::IResult::Done(_,(id,val)) => {
+                    let id=id.to_owned();
+
+                    if let Some((ty,val))=ctx.options.macro_types.infer(&val) {
+                        let var=Global::GVar(Rc::new(RefCell::new(VarInfo{
+                            name:String::from_utf8(id.clone()).expect("C identifiers should be valid UTF-8"),
+                            ty:ty,
+                            val:val,
+                            is_const:true,
+                        })));
+                        ctx.globals.push(var);
+                    }
+
+                    ctx.defined_macros.insert(id,val);
+                },
+                _ => {}
+            }
+            CXChildVisitResult::Continue
+        }
         _ => CXChildVisitResult::Continue,
     }
 }
@@ -679,6 +755,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
         name: HashMap::new(),
         builtin_defs: vec![],
         globals: vec![],
+        defined_macros: HashMap::new(),
         logger: logger,
         err_count: 0,
     };
@@ -689,7 +766,11 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
         return Err(());
     }
 
-    let flags = CXTranslationUnit_Flags::empty();
+    let flags = if ctx.options.macros {
+        CXTranslationUnit_DetailedPreprocessingRecord
+    } else {
+        CXTranslationUnit_Flags::empty()
+    };
     let unit = TranslationUnit::parse(&ix, "", &ctx.options.clang_args[..], &[], flags);
     if unit.is_null() {
         ctx.logger.error("Unknown parsing error");
