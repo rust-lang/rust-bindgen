@@ -299,6 +299,7 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
         CXTypeKind::Int => TInt(IInt, layout),
         CXTypeKind::Long => TInt(ILong, layout),
         CXTypeKind::LongLong => TInt(ILongLong, layout),
+        CXTypeKind::WChar => TInt(IWChar, layout),
         CXTypeKind::Float => TFloat(FFloat, layout),
         CXTypeKind::Double | CXTypeKind::LongDouble => TFloat(FDouble, layout),
         CXTypeKind::Pointer => conv_ptr_ty(ctx, &ty.pointee_type(), cursor, layout),

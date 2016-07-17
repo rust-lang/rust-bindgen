@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Add support for parsing complex macro definitions (integers only for now),
   see `--convert-macros` (#370)
+- Support for `wchar_t`
 
 ### Changed
 - Convert `float` and `double` to `f32` and `f64` by default (#348).
