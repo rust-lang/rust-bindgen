@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+
+## [0.19.0] - 2016-07-17
 ### Breaking
 - Remove `Builder::default` to force the specification of the C header file
   name.
@@ -78,7 +81,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.15.0] - 2016-08-31
 
-[Unreleased]: https://github.com/crabtw/rust-bindgen/compare/0.17...HEAD
+[Unreleased]: https://github.com/crabtw/rust-bindgen/compare/0.19...HEAD
+[0.19.0]: https://github.com/crabtw/rust-bindgen/compare/0.18...0.19
 [0.18.0]: https://github.com/crabtw/rust-bindgen/compare/0.17...0.18
 [0.17.0]: https://github.com/crabtw/rust-bindgen/compare/0.16...0.17
 [0.16.0]: https://github.com/crabtw/rust-bindgen/compare/0.15...0.16
