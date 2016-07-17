@@ -259,20 +259,17 @@ pub fn gen_mod(options: &BindgenOptions,
     // Create a dummy ExtCtxt. We only need this for string interning and that uses TLS.
     let mut features = Features::new();
     features.quote = true;
-    let cfg = ExpansionConfig {
-        crate_name: "xxx".to_owned(),
-        features: Some(&features),
-        recursion_limit: 64,
-        trace_mac: false,
+    let cfg = {
+        let mut cfg = ExpansionConfig::default("xxx".into());
+        cfg.features = Some(&features);
+        cfg
     };
     let sess = &parse::ParseSess::new();
-    let mut feature_gated_cfgs = Vec::new();
     let mut macro_loader = base::DummyMacroLoader;
     let mut ctx = GenCtx {
         ext_cx: base::ExtCtxt::new(sess,
                                    Vec::new(),
                                    cfg,
-                                   &mut feature_gated_cfgs,
                                    &mut macro_loader),
         unnamed_ty: 0,
         span: span,
