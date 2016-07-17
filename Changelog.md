@@ -18,6 +18,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Allow emission of -9223372036854775808 integer literal (#375)
+- Pointers to function pointers now generate the correct number of
+  indirections (#212)
 
 ## [0.18.0] - 2016-06-05
 ### Breaking

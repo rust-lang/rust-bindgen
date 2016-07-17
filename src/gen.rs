@@ -1450,6 +1450,15 @@ fn cfunc_to_rs(ctx: &mut GenCtx,
     mk_foreign_item(ctx, &rust_name, attrs, decl)
 }
 
+fn is_named_fnproto(ty: &Type) -> bool {
+    if let &TNamed(ref rc)=ty {
+        if let TFuncProto(..)=rc.borrow().ty {
+            return true
+        }
+    }
+    false
+}
+
 fn cty_to_rs(ctx: &mut GenCtx, ty: &Type, options: &BindgenOptions) -> ast::Ty {
     let raw = |fragment: &str| {
         let mut path = options.ctypes_prefix.clone();
@@ -1507,13 +1516,17 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type, options: &BindgenOptions) -> ast::Ty {
         }
         TPtr(ref t, is_const, _) => {
             let id = cty_to_rs(ctx, &**t, options);
-            mk_ptrty(ctx, id, is_const)
+            if is_named_fnproto(&**t) {
+                id
+            } else {
+                mk_ptrty(ctx, id, is_const)
+            }
         }
         TArray(ref t, s, _) => {
             let ty = cty_to_rs(ctx, &**t, options);
             mk_arrty(ctx, &ty, s)
         }
-        TFuncPtr(ref sig, _) => {
+        TFuncPtr(ref sig, _) | TFuncProto(ref sig, _) => {
             let decl = cfuncty_to_rs(ctx, &*sig.ret_ty, &sig.args[..], sig.is_variadic, options);
             let unsafety = if sig.is_safe {
                 ast::Unsafety::Normal
@@ -1521,15 +1534,6 @@ fn cty_to_rs(ctx: &mut GenCtx, ty: &Type, options: &BindgenOptions) -> ast::Ty {
                 ast::Unsafety::Unsafe
             };
             mk_fnty(ctx, decl, unsafety, sig.abi, options.use_core)
-        }
-        TFuncProto(ref sig, _) => {
-            let decl = cfuncty_to_rs(ctx, &*sig.ret_ty, &sig.args[..], sig.is_variadic, options);
-            let unsafety = if sig.is_safe {
-                ast::Unsafety::Normal
-            } else {
-                ast::Unsafety::Unsafe
-            };
-            mk_fn_proto_ty(ctx, decl, unsafety, sig.abi)
         }
         TNamed(ref ti) => {
             let id = rust_id(ctx, &ti.borrow().name, &options.remove_prefix).0;
@@ -1590,24 +1594,6 @@ fn mk_arrty(ctx: &GenCtx, base: &ast::Ty, n: usize) -> ast::Ty {
     ctx.ext_cx.ty(ctx.span, ty).unwrap()
 }
 
-fn mk_barefn(decl: ast::FnDecl, unsafety: ast::Unsafety, abi: abi::Abi) -> ast::TyKind {
-    ast::TyKind::BareFn(P(ast::BareFnTy {
-        unsafety: unsafety,
-        abi: abi,
-        lifetimes: Vec::new(),
-        decl: P(decl),
-    }))
-}
-
-fn mk_fn_proto_ty(ctx: &mut GenCtx,
-                  decl: ast::FnDecl,
-                  unsafety: ast::Unsafety,
-                  abi: abi::Abi)
-                  -> ast::Ty {
-    let fnty = mk_barefn(decl, unsafety, abi);
-    ctx.ext_cx.ty(ctx.span, fnty).unwrap()
-}
-
 fn mk_fnty(ctx: &mut GenCtx,
            decl: ast::FnDecl,
            unsafety: ast::Unsafety,
@@ -1618,7 +1604,7 @@ fn mk_fnty(ctx: &mut GenCtx,
         unsafety: unsafety,
         abi: abi,
         lifetimes: Vec::new(),
-        decl: P(decl.clone()),
+        decl: P(decl),
     }));
 
     let idents = [if use_core {
