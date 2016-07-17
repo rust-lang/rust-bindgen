@@ -16,6 +16,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Convert `float` and `double` to `f32` and `f64` by default (#348).
 
+### Fixed
+- Allow emission of -9223372036854775808 integer literal (#375)
+
 ## [0.18.0] - 2016-06-05
 ### Breaking
 - New command line interface.

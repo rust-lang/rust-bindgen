@@ -20,3 +20,7 @@ enum MuchLong: long {
 enum MuchLongLong: unsigned long long {
     MuchHigh = 4294967296,
 };
+
+enum MostLongLong: long long {
+    MostLow = -9223372036854775808,
+};

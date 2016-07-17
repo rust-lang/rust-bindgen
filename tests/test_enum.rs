@@ -95,6 +95,10 @@ fn with_explicitly_typed_cxx_enum() {
         #[repr(u64)]
         #[derive(Debug)]
         pub enum MuchLongLong { MuchHigh = 4294967296, }
+        #[derive(Copy, Clone)]
+        #[repr(i64)]
+        #[derive(Debug)]
+        pub enum MostLongLong { MostLow = -9223372036854775808, }
     ");
     assert_bind_eq(default_without_rust_enums(), "headers/enum_explicit_type.hpp", "
         pub type Foo = u8;
@@ -110,6 +114,8 @@ fn with_explicitly_typed_cxx_enum() {
         pub const MuchLow: MuchLong = -4294967296;
         pub type MuchLongLong = u64;
         pub const MuchHigh: MuchLongLong = 4294967296;
+        pub type MostLongLong = i64;
+        pub const MostLow: MostLongLong = -9223372036854775808;
     ");
 }
 

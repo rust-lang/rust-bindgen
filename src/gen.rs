@@ -954,9 +954,17 @@ fn cunion_to_rs(ctx: &mut GenCtx,
     items
 }
 
+fn i64_abs(i: i64) -> u64 {
+    if i<0 {
+        i.wrapping_neg() as u64
+    } else {
+        i as u64
+    }
+}
+
 /// Converts a signed number to AST Expression.
 fn i64_to_int_lit(ctx: &mut GenCtx, value: i64) -> P<ast::Expr> {
-    let int_lit = ast::LitKind::Int(value.abs() as u64, ast::LitIntType::Unsuffixed);
+    let int_lit = ast::LitKind::Int(i64_abs(value), ast::LitIntType::Unsuffixed);
     let expr = ctx.ext_cx.expr_lit(ctx.span, int_lit);
     if value < 0 {
         let negated = ast::ExprKind::Unary(ast::UnOp::Neg, expr);
