@@ -70,8 +70,16 @@ fn ref_eq<T>(thing: &T, other: &T) -> bool {
 
 fn rust_id(ctx: &mut GenCtx, name: &str) -> (String, bool) {
     let token = parse::token::Ident(ctx.ext_cx.ident_of(name));
-    if token.is_any_keyword() || "bool" == name {
+    if token.is_any_keyword() ||
+        name.contains("@") ||
+        name.contains("?") ||
+        name.contains("$") ||
+        "bool" == name
+    {
         let mut s = name.to_owned();
+        s = s.replace("@", "_");
+        s = s.replace("?", "_");
+        s = s.replace("$", "_");
         s.push_str("_");
         (s, true)
     } else {
@@ -214,6 +222,7 @@ fn gen_unmangle_method(ctx: &mut GenCtx,
         constness: ast::Constness::NotConst,
     };
 
+    let mangled_rs = first(rust_id(ctx, &v.mangled));
     let call = P(ast::Expr {
         id: ast::DUMMY_NODE_ID,
         node: ast::ExprKind::Call(
@@ -223,7 +232,7 @@ fn gen_unmangle_method(ctx: &mut GenCtx,
                     span: ctx.span,
                     global: false,
                     segments: vec![ast::PathSegment {
-                        identifier: ctx.ext_cx.ident_of(&v.mangled),
+                        identifier: ctx.ext_cx.ident_of(&mangled_rs),
                         parameters: ast::PathParameters::none()
                     }]
                 }),

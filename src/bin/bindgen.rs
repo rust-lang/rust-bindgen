@@ -166,6 +166,10 @@ fn parse_args(args: &[String]) -> ParseResult {
                     options.raw_lines.push(args[ix + 1].clone());
                     ix += 2;
                 }
+                "-use-msvc-mangling" => {
+                    options.msvc_mangling = true;
+                    ix += 1;
+                }
                 _ => {
                     options.clang_args.push(args[ix].clone());
                     ix += 1;
@@ -201,6 +205,8 @@ Options:
     -allow-unknown-types       Don't fail if we encounter types we do not support,
                                instead treat them as void
     -emit-clang-ast            Output the ast (for debugging purposes)
+    -use-msvc-mangling         Handle MSVC C++ ABI mangling; requires that --target
+                               be set to (i686|x86_64)-pc-win32
     -override-enum-type <type> Override enum type, type name could be
                                  uchar
                                  schar
