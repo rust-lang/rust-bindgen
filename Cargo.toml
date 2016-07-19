@@ -17,7 +17,7 @@ clippy = { version = "*", optional = true }
 syntex_syntax = "0.38"
 log = "0.3.*"
 libc = "0.2.*"
-clang-sys = "0.7.2"
+clang-sys = "0.8.0"
 
 [build-dependencies]
 quasi_codegen = "0.15"
