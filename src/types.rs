@@ -13,6 +13,8 @@ pub use self::IKind::*;
 pub use self::FKind::*;
 use clang::Cursor;
 
+use parser::{Annotations, Accessor};
+
 static NEXT_MODULE_ID: AtomicUsize = ATOMIC_USIZE_INIT;
 
 #[derive(Clone, Copy, Eq, PartialEq, Hash, Debug)]
@@ -446,6 +448,9 @@ pub struct CompInfo {
     /// Used to detect if we've run in a has_destructor cycle while cycling
     /// around the template arguments.
     detect_has_destructor_cycle: Cell<bool>,
+
+    /// Annotations on the decl
+    pub anno: Annotations,
 }
 
 static mut UNNAMED_COUNTER: u32 = 0;
@@ -466,7 +471,8 @@ impl CompInfo {
                comment: String,
                kind: CompKind,
                members: Vec<CompMember>,
-               layout: Layout) -> CompInfo {
+               layout: Layout,
+               anno: Annotations) -> CompInfo {
         let was_unnamed = name.is_empty();
         CompInfo {
             kind: kind,
@@ -494,6 +500,7 @@ impl CompInfo {
             was_unnamed: was_unnamed,
             detect_derive_debug_cycle: Cell::new(false),
             detect_has_destructor_cycle: Cell::new(false),
+            anno: anno,
         }
     }
 
@@ -640,6 +647,12 @@ pub struct FieldInfo {
     pub bitfields: Option<Vec<(String, u32)>>,
     /// If the C++ field is marked as `mutable`
     pub mutable: bool,
+    /// True when field or enclosing struct
+    /// has a `<div rust-bindgen private>` annotation
+    pub private: bool,
+    /// Set by the `<div rust-bindgen accessor="..">`
+    /// annotation on a field or enclosing struct
+    pub accessor: Accessor,
 }
 
 impl FieldInfo {
@@ -654,6 +667,8 @@ impl FieldInfo {
             comment: comment,
             bitfields: bitfields,
             mutable: mutable,
+            private: false,
+            accessor: Accessor::None,
         }
     }
 }
