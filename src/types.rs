@@ -440,9 +440,12 @@ pub struct CompInfo {
     pub was_unnamed: bool,
     /// Set of static vars declared inside this class.
     pub vars: Vec<Global>,
-    /// Used to detect if we've run in a can_derive_debug cycle while
-    /// cycling around the template arguments.
+    /// Used to detect if we've run in a can_derive_debug cycle while cycling
+    /// around the template arguments.
     detect_derive_debug_cycle: Cell<bool>,
+    /// Used to detect if we've run in a has_destructor cycle while cycling
+    /// around the template arguments.
+    detect_has_destructor_cycle: Cell<bool>,
 }
 
 static mut UNNAMED_COUNTER: u32 = 0;
@@ -490,6 +493,7 @@ impl CompInfo {
             has_non_type_template_params: false,
             was_unnamed: was_unnamed,
             detect_derive_debug_cycle: Cell::new(false),
+            detect_has_destructor_cycle: Cell::new(false),
         }
     }
 
@@ -548,7 +552,15 @@ impl CompInfo {
     }
 
     pub fn has_destructor(&self) -> bool {
-        self.has_destructor || match self.kind {
+        if self.detect_has_destructor_cycle.get() {
+            warn!("Cycle detected looking for destructors: {}!", self.name);
+            // Assume no destructor, since we don't have an explicit one.
+            return false;
+        }
+
+        self.detect_has_destructor_cycle.set(true);
+
+        let has_destructor = self.has_destructor || match self.kind {
             CompKind::Union => false,
             CompKind::Struct => {
                 // NB: We can't rely on a type with type parameters
@@ -570,7 +582,11 @@ impl CompInfo {
                     _ => false,
                 })
             }
-        }
+        };
+
+        self.detect_has_destructor_cycle.set(false);
+
+        has_destructor
     }
 
     pub fn can_derive_copy(&self) -> bool {
