@@ -213,6 +213,9 @@ impl Default for BindgenOptions {
             args.push("-idirafter".to_owned());
             args.push(dir.to_str().unwrap().to_owned());
         }
+        if cfg!(target_os="macos") {
+            args.push("-U__BLOCKS__".to_owned());
+        }
         BindgenOptions {
             match_pat: Vec::new(),
             builtins: false,
