@@ -9,7 +9,7 @@ BINDGEN := ./target/debug/bindgen
 
 .PHONY: $(BINDGEN)
 $(BINDGEN):
-	[ -f $@ ] || cargo build
+	[ -f $@ ] || cargo build --features llvm_stable
 
 .PHONY: test
 test: regen-tests

@@ -27,7 +27,13 @@ for line in COMMON_PRELUDE.split('\n'):
 
 base_command.extend(flags);
 base_command.append(sys.argv[2]);
-subprocess.check_call(base_command, cwd=os.getcwd())
+env = os.environ.copy()
+
+# El Capitan likes to unset dyld variables
+# https://forums.developer.apple.com/thread/9233
+if "DYLD_LIBRARY_PATH" not in env and "LIBCLANG_PATH" in env:
+    env["DYLD_LIBRARY_PATH"] = env["LIBCLANG_PATH"]
+subprocess.check_call(base_command, cwd=os.getcwd(), env=env)
 
 
 name = None
