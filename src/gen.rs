@@ -480,8 +480,7 @@ fn gen_globals(mut ctx: &mut GenCtx,
                 (Some(l), Some(lg)) if l.size == lg.size => {},
                 (None, None) => {},
                 _ => {
-                    // XXX real logger
-                    println!("warning: substituted type for {} does not match its size", g.name());
+                    warn!("warning: substituted type for {} does not match its size", g.name());
                 }
             }
             g = substituted;
@@ -492,7 +491,7 @@ fn gen_globals(mut ctx: &mut GenCtx,
 
     let mut pending_translations = std::mem::replace(&mut ctx.current_module_mut().translations, HashMap::new());
     for (name, g) in pending_translations.drain() {
-        println!("warning: generating definition for not found type: {}", name);
+        warn!("warning: generating definition for not found type: {}", name);
         gen_global(ctx, g, &mut defs);
     }
 
@@ -983,7 +982,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             let is_translatable = cty_is_translatable(&f_ty);
             if !is_translatable || f_ty.is_opaque() {
                 if !is_translatable {
-                    println!("{}::{} not translatable, void: {}", ci.name, f.name, f_ty == TVoid);
+                    warn!("{}::{} not translatable, void: {}", ci.name, f.name, f_ty == TVoid);
                 }
                 if let Some(layout) = f_ty.layout() {
                     fields.push(mk_blob_field(ctx, &f_name, &layout));
@@ -1326,7 +1325,7 @@ fn enum_size_to_rust_type_name(signed: bool, size: usize) -> &'static str {
         (true, 8) => "i64",
         (false, 8) => "u64",
         _ => {
-            println!("invalid enum decl: signed: {}, size: {}", signed, size);
+            warn!("invalid enum decl: signed: {}, size: {}", signed, size);
             "i32"
         }
     }
