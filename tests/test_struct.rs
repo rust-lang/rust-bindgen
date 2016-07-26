@@ -467,6 +467,30 @@ fn struct_with_aligned_struct() {
         impl ::std::default::Default for bar {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
+		#[repr(C)]
+		#[derive(Copy, Clone)]
+		#[derive(Debug)]
+		pub struct smaller_align {
+			pub x: int32_t,
+			pub y: int64_t,
+			pub z: int16_t,
+			_bindgen_padding_0_: [u8; 14usize],
+		}
+		impl ::std::default::Default for smaller_align {
+			fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+		}
+		#[repr(C)]
+		#[derive(Copy, Clone)]
+		#[derive(Debug)]
+		pub struct implicit_pad {
+			pub a: int32_t,
+			pub b: int32_t,
+			pub c: int16_t,
+		}
+		impl ::std::default::Default for implicit_pad {
+			fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+		}
+
     ");
 
     pub type int16_t = ::std::os::raw::c_short;

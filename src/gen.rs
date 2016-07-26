@@ -587,7 +587,6 @@ fn comp_to_rs(ctx: &mut GenCtx,
 
 fn gen_padding_fields(ctx: &mut GenCtx,
                       idx: usize,
-                      offset: usize,
                       padding_size: usize)
                       -> Vec<ast::StructField> {
     const MAX_ARRAY_CLONE_LEN: usize = 32; // impl<T: Copy> Clone for [T; 32]
@@ -596,28 +595,22 @@ fn gen_padding_fields(ctx: &mut GenCtx,
     let max_field_size = u64_size * MAX_ARRAY_CLONE_LEN;
     let u64_ty = P(mk_ty(ctx, false, vec!["u64".to_owned()]));
     let u8_ty = P(mk_ty(ctx, false, vec!["u8".to_owned()]));
-    let mut size = padding_size;
 
-    let u64_padding_size = u64_size - (offset % u64_size);
+    let mut fields = vec![];
+    if padding_size <= MAX_ARRAY_CLONE_LEN {
+        // Use u8s if possible
+        fields.push((&u8_ty, padding_size));
+    } else {
+        // u64s only; subtract implicit 8-byte pad for alignment
+        let size = padding_size - (padding_size % u64_size);
+        (0..(size / max_field_size))
+            .map(|_| (&u64_ty, MAX_ARRAY_CLONE_LEN))
+            .collect::<Vec<(&P<ast::Ty>, usize)>>();
 
-    if (size - u64_padding_size) > u64_size && u64_padding_size != u64_size {
-        size -= u64_padding_size;
-    }
-
-    let mut fields = (0..(size / max_field_size))
-                         .map(|_| (&u64_ty, MAX_ARRAY_CLONE_LEN))
-                         .collect::<Vec<(&P<ast::Ty>, usize)>>();
-
-    let u64_num = (size % max_field_size) / u64_size;
-
-    if u64_num > 0 {
-        fields.push((&u64_ty, u64_num));
-    }
-
-    let u8_num = size % u64_size;
-
-    if u8_num > 0 {
-        fields.push((&u8_ty, u8_num));
+        let u64_num = (size % max_field_size) / u64_size;
+        if u64_num > 0 {
+            fields.push((&u64_ty, u64_num));
+        }
     }
 
     fields.iter()
@@ -662,8 +655,10 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     let mut can_derive_debug = derive_debug;
     let mut can_derive_clone = true;
 
+    let mut largest_member_alignment = 1;
+
     for m in &members {
-        debug!("convert field {} {:?}", m.name(), m);
+        debug!("convert field {} {:?}; offset {}", m.name(), m, offset);
 
         let (opt_rc_c, opt_rc_e, opt_f) = match *m {
             CompMember::Field(ref f) => (None, None, Some(f)),
@@ -673,11 +668,13 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
             CompMember::EnumField(ref rc_e, ref f) => (None, Some(rc_e), Some(f)),
         };
 
+        if largest_member_alignment < m.layout().align { largest_member_alignment = m.layout().align; }
+
         if !layout.packed && m.layout().align != 0 && (offset % m.layout().align) != 0 {
             let padding_size = m.layout().align - (offset % m.layout().align);
 
             if padding_size > mem::size_of::<u64>() {
-                let mut padding_fields = gen_padding_fields(ctx, paddings, offset, padding_size);
+                let mut padding_fields = gen_padding_fields(ctx, paddings, padding_size);
 
                 fields.append(&mut padding_fields);
 
@@ -762,9 +759,11 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
     }
 
     if offset < layout.size {
-        let mut padding_fields = gen_padding_fields(ctx, paddings, offset, layout.size - offset);
-
-        fields.append(&mut padding_fields);
+        // We only need to pad if the pad amount is more than the existing alignment
+        if layout.size - offset > largest_member_alignment {
+            let mut padding_fields = gen_padding_fields(ctx, paddings, layout.size - offset);
+            fields.append(&mut padding_fields);
+        }
     }
 
     let def = ast::ItemKind::Struct(ast::VariantData::Struct(fields, ast::DUMMY_NODE_ID),
