@@ -19,6 +19,7 @@ use syntax::print::pprust::tts_to_string;
 
 use super::BindgenOptions;
 use super::LinkType;
+use parser::Accessor;
 use types::*;
 use aster;
 
@@ -840,6 +841,52 @@ fn comp_attrs(ctx: &GenCtx, ci: &CompInfo, name: &str, extra: &mut Vec<P<ast::It
     attrs
 }
 
+fn gen_accessors(ctx: &mut GenCtx, name: &str, ty: &ast::Ty, accessor: Accessor,
+                 methods: &mut Vec<ast::ImplItem>) {
+    if accessor == Accessor::None {
+        return;
+    }
+    let ident =  ctx.ext_cx.ident_of(&format!("{}", name));
+    let mutable_getter_name = ctx.ext_cx.ident_of(&format!("get_{}_mut", name));
+    let getter_name = ctx.ext_cx.ident_of(&format!("get_{}", name));
+    let imp = match accessor {
+        Accessor::Regular => quote_item!(&ctx.ext_cx,
+            impl X {
+                #[inline]
+                pub fn $getter_name(&self) -> & $ty {
+                    & self.$ident
+                }
+                pub fn $mutable_getter_name(&mut self) -> &mut $ty {
+                    &mut self.$ident
+                }
+            }
+        ),
+        Accessor::Unsafe => quote_item!(&ctx.ext_cx,
+            impl X {
+                #[inline]
+                pub unsafe fn $getter_name(&self) -> & $ty {
+                    & self.$ident
+                }
+                pub unsafe fn $mutable_getter_name(&mut self) -> &mut $ty {
+                    &mut self.$ident
+                }
+            }
+        ),
+        Accessor::Immutable => quote_item!(&ctx.ext_cx,
+            impl X {
+                #[inline]
+                pub fn $getter_name(&self) -> & $ty {
+                    & self.$ident
+                }
+            }
+        ),
+        _ => return
+    };
+    match imp.unwrap().node {
+        ast::ItemKind::Impl(_, _, _, _, _, ref items) => methods.extend(items.clone()),
+        _ => unreachable!()
+    }
+}
 
 fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>> {
     let layout = ci.layout;
@@ -878,14 +925,15 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
         };
 
         if let Some(ref base) = base_vftable {
-            vffields.push(ast::StructField {
+            let field = ast::StructField {
                 span: ctx.span,
                 vis: ast::Visibility::Public,
                 ident: Some(ctx.ext_cx.ident_of("_base")),
                 id: ast::DUMMY_NODE_ID,
                 ty: P(mk_ty(ctx, false, &[base.clone()])),
                 attrs: vec![],
-            });
+            };
+            vffields.push(field);
         }
 
         for vm in ci.vmethods.iter() {
@@ -1052,15 +1100,22 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
             } else {
                 rust_ty
             };
-
-            fields.push(ast::StructField {
+            let vis = if f.private {
+                ast::Visibility::Inherited
+            } else {
+                ast::Visibility::Public
+            };
+            gen_accessors(ctx, &f_name, &rust_ty, f.accessor, &mut methods);
+            let field = ast::StructField {
                 span: ctx.span,
                 ident: Some(ctx.ext_cx.ident_of(&f_name)),
-                vis: ast::Visibility::Public,
+                vis: vis,
                 id: ast::DUMMY_NODE_ID,
                 ty: rust_ty,
                 attrs: mk_doc_attr(ctx, &f.comment)
-            });
+            };
+            fields.push(field);
+            
             if bypass {
                 continue;
             }

@@ -122,6 +122,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
             CXCursor_ClassTemplate |
             CXCursor_ClassDecl |
             CXCursor_StructDecl => {
+                let anno = Annotations::new(&cursor);
                 let kind = if cursor.kind() == CXCursor_UnionDecl {
                     CompKind::Union
                 } else {
@@ -159,7 +160,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                     }
                 };
 
-                let mut ci = CompInfo::new(spelling, ctx.current_module_id, filename, comment, kind, vec![], layout);
+                let mut ci = CompInfo::new(spelling, ctx.current_module_id, filename, comment, kind, vec![], layout, anno);
                 ci.parser_cursor = Some(cursor);
 
                 // If it's an instantiation of another template,
@@ -538,12 +539,34 @@ fn opaque_ty(ctx: &mut ClangParserCtx, ty: &cx::Type) {
     }
 }
 
-struct Annotations {
+#[derive(Copy, PartialEq, Clone, Debug)]
+pub enum Accessor {
+    None,
+    Regular,
+    Unsafe,
+    Immutable,
+}
+
+#[derive(Clone, PartialEq, Debug)]
+pub struct Annotations {
     opaque: bool,
     hide: bool,
     use_as: Option<String>,
     /// Disable deriving copy/clone on this struct.
     no_copy: bool,
+    // In the None case we fall back to the value specified
+    // in the enclosing decl
+    private: Option<bool>,
+    accessor: Option<Accessor>,
+}
+
+fn parse_accessor(s: &str) -> Accessor {
+    match s {
+        "false" => Accessor::None,
+        "unsafe" => Accessor::Unsafe,
+        "immutable" => Accessor::Immutable,
+        _ => Accessor::Regular,
+    }
 }
 
 impl Annotations {
@@ -553,6 +576,8 @@ impl Annotations {
             hide: false,
             use_as: None,
             no_copy: false,
+            private: None,
+            accessor: None
         };
 
         anno.parse(&cursor.comment());
@@ -571,6 +596,10 @@ impl Annotations {
                     "hide" => self.hide = true,
                     "replaces" => self.use_as = Some(comment.get_tag_attr_value(i)),
                     "nocopy" => self.no_copy = true,
+                    "private" => self.private = Some(comment.get_tag_attr_value(i) != "false"),
+                    "accessor" => {
+                        self.accessor = Some(parse_accessor(&comment.get_tag_attr_value(i)))
+                    },
                     _ => (),
                 }
             }
@@ -792,12 +821,16 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
 
                     if should_replace {
                         *info = FieldInfo::new(name, ty, comment, bitfields, mutable);
+                        info.private = anno.private.unwrap_or(ci.anno.private.unwrap_or(false));
+                        info.accessor = anno.accessor.unwrap_or(ci.anno.accessor.unwrap_or(Accessor::None));
                         return CXChildVisit_Continue;
                     }
                 }
             }
 
-            let field = FieldInfo::new(name, ty, comment, bitfields, mutable);
+            let mut field = FieldInfo::new(name, ty, comment, bitfields, mutable);
+            field.private = anno.private.unwrap_or(ci.anno.private.unwrap_or(false));
+            field.accessor = anno.accessor.unwrap_or(ci.anno.accessor.unwrap_or(Accessor::None));
             ci.members.push(CompMember::Field(field));
         }
         CXCursor_StructDecl |
