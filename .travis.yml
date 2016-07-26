@@ -42,6 +42,7 @@ script:
   - cargo build --verbose --features llvm_stable
   - make test
   - git add -A
+  - git diff @
   - git diff-index --quiet HEAD
 
 notifications:
