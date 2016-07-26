@@ -9,7 +9,7 @@ A native binding generator for the Rust language.
 
 *rust-bindgen* was originally ported from [clay's bindgen].
 
-[Documentation](https://crabtw.github.io/rust-bindgen/)
+[Documentation](https://yamakaky.github.io/rust-bindgen/)
 
 ## Requirements
 
@@ -78,4 +78,4 @@ Options:
 [travis-status-shield]: https://img.shields.io/travis/crabtw/rust-bindgen/master.svg?label=travis&style=flat-square
 
 [clay's bindgen]: https://github.com/jckarter/clay/blob/master/tools/bindgen.clay
-[issue 89]: https://github.com/crabtw/rust-bindgen/issues/89
+[issue 89]: https://github.com/yamakaky/rust-bindgen/issues/89
