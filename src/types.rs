@@ -397,8 +397,6 @@ pub enum FKind {
 pub enum CompMember {
     Field(FieldInfo),
     Comp(Rc<RefCell<CompInfo>>),
-    #[allow(dead_code)]
-    CompField(Rc<RefCell<CompInfo>>, FieldInfo),
     Enum(Rc<RefCell<EnumInfo>>),
 }
 
@@ -538,8 +536,7 @@ impl CompInfo {
                 let can_derive_debug = self.args.iter().all(|ty| ty.can_derive_debug()) &&
                     self.members.iter()
                         .all(|member| match *member {
-                            CompMember::Field(ref f) |
-                            CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
+                            CompMember::Field(ref f) => f.ty.can_derive_debug(),
                             _ => true,
                         });
                 self.detect_derive_debug_cycle.set(false);
@@ -577,8 +574,7 @@ impl CompInfo {
                 self.ref_template.as_ref().map_or(false, |t| t.has_destructor()) ||
                 self.args.iter().any(|t| t.has_destructor()) ||
                 self.members.iter().enumerate().any(|(index, m)| match *m {
-                    CompMember::Field(ref f) |
-                    CompMember::CompField(_, ref f) => {
+                    CompMember::Field(ref f) => {
                         // Base members may not be resolved yet
                         if index < self.base_members {
                             f.ty.has_destructor()
@@ -611,8 +607,7 @@ impl CompInfo {
                 // since copyability depends on the types itself.
                 self.ref_template.as_ref().map_or(true, |t| t.can_derive_copy()) &&
                 self.members.iter().all(|m| match *m {
-                    CompMember::Field(ref f) |
-                    CompMember::CompField(_, ref f) => f.ty.can_derive_copy(),
+                    CompMember::Field(ref f) => f.ty.can_derive_copy(),
                     _ => true,
                 })
             }

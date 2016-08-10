@@ -161,7 +161,9 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                     }
                 };
 
-                let mut ci = CompInfo::new(spelling, ctx.current_module_id, filename, comment, kind, vec![], layout, anno);
+                let mut ci = CompInfo::new(spelling, ctx.current_module_id,
+                                           filename, comment, kind, vec![],
+                                           layout, anno);
                 ci.parser_cursor = Some(cursor);
 
                 // If it's an instantiation of another template,

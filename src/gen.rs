@@ -992,147 +992,112 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo) -> Vec<P<ast::Item>
     let mut template_args_used = vec![false; template_args.len()];
 
     for m in members.iter() {
-        if let CompMember::Enum(ref ei) = *m {
-            let empty_name = ei.borrow().name.is_empty();
-            if empty_name {
-                ei.borrow_mut().name = format!("{}_enum{}", name, anon_enum_count);
-                anon_enum_count += 1;
-            }
-
-            let e = ei.borrow().clone();
-            extra.extend(cenum_to_rs(ctx, &e.name, e.kind, e.comment, &e.items, e.layout).into_iter());
-            continue;
-        }
-
-        fn comp_fields(m: &CompMember)
-                       -> (Option<Rc<RefCell<CompInfo>>>, Option<FieldInfo>) {
-            match *m {
-                CompMember::Field(ref f) => { (None, Some(f.clone())) }
-                CompMember::Comp(ref rc_c) => { (Some(rc_c.clone()), None) }
-                CompMember::CompField(ref rc_c, ref f) => { (Some(rc_c.clone()), Some(f.clone())) }
-                _ => unreachable!()
-            }
-        }
-
-        let (opt_rc_c, opt_f) = comp_fields(m);
-
-        if let Some(f) = opt_f {
-            let f_name = match f.bitfields {
-                Some(_) => {
-                    bitfields += 1;
-                    format!("_bitfield_{}", bitfields)
+        match *m {
+            CompMember::Enum(ref ei) => {
+                let empty_name = ei.borrow().name.is_empty();
+                if empty_name {
+                    ei.borrow_mut().name = format!("{}_enum{}", name, anon_enum_count);
+                    anon_enum_count += 1;
                 }
-                None => rust_type_id(ctx, &f.name)
-            };
 
-            let f_ty = f.ty;
-
-            let is_translatable = cty_is_translatable(&f_ty);
-            if !is_translatable || f_ty.is_opaque() {
-                if !is_translatable {
-                    warn!("{}::{} not translatable, void: {}", ci.name, f.name, f_ty == TVoid);
-                }
-                if let Some(layout) = f_ty.layout() {
-                    fields.push(mk_blob_field(ctx, &f_name, &layout));
-                }
-                continue;
+                let e = ei.borrow().clone();
+                extra.extend(cenum_to_rs(ctx, &e.name, e.kind, e.comment, &e.items, e.layout).into_iter());
             }
-
-            if ctx.options.gen_bitfield_methods {
-                let mut offset: u32 = 0;
-                if let Some(ref bitfields) = f.bitfields {
-                    for &(ref bf_name, bf_size) in bitfields.iter() {
-                        setters.extend(gen_bitfield_methods(ctx, &f_name, bf_name, &f_ty, offset as usize, bf_size).into_iter());
-                        offset += bf_size;
+            CompMember::Field(ref f) => {
+                let f_name = match f.bitfields {
+                    Some(_) => {
+                        bitfields += 1;
+                        format!("_bitfield_{}", bitfields)
                     }
-                    setters.push(gen_fullbitfield_method(ctx, &f_name, &f_ty, bitfields))
-                }
-            }
+                    None => rust_type_id(ctx, &f.name)
+                };
 
-            let mut bypass = false;
-            let f_ty = if let Some(ref rc_c) = opt_rc_c {
-                if rc_c.borrow().members.len() == 1 {
-                    if let CompMember::Field(ref inner_f) = rc_c.borrow().members[0] {
-                        bypass = true;
-                        inner_f.ty.clone()
+                let is_translatable = cty_is_translatable(&f.ty);
+                if !is_translatable || f.ty.is_opaque() {
+                    if !is_translatable {
+                        warn!("{}::{} not translatable, void: {}", ci.name, f.name, f.ty == TVoid);
+                    }
+                    if let Some(layout) = f.ty.layout() {
+                        fields.push(mk_blob_field(ctx, &f_name, &layout));
+                    }
+                    continue;
+                }
+
+                if ctx.options.gen_bitfield_methods {
+                    let mut offset: u32 = 0;
+                    if let Some(ref bitfields) = f.bitfields {
+                        for &(ref bf_name, bf_size) in bitfields.iter() {
+                            setters.extend(gen_bitfield_methods(ctx, &f_name, bf_name, &f.ty, offset as usize, bf_size).into_iter());
+                            offset += bf_size;
+                        }
+                        setters.push(gen_fullbitfield_method(ctx, &f_name, &f.ty, bitfields))
+                    }
+                }
+
+                // If the member is not a template argument, it needs the full path.
+                let mut needs_full_path = true;
+                for (index, arg) in template_args.iter().enumerate() {
+                    let used = f.ty.signature_contains_type(arg);
+
+                    if used {
+                        template_args_used[index] = true;
+                        needs_full_path = *arg == f.ty || match f.ty {
+                            TPtr(ref t, _, _, _) => **t != *arg,
+                            TArray(ref t, _, _) => **t != *arg,
+                            _ => true,
+                        };
+                        break;
+                    }
+                }
+
+                let rust_ty = P(cty_to_rs(ctx, &f.ty, f.bitfields.is_none(), needs_full_path));
+
+                // Wrap mutable fields in a Cell/UnsafeCell
+                let rust_ty = if f.mutable {
+                    if !f.ty.can_derive_copy() {
+                        quote_ty!(&ctx.ext_cx, ::std::cell::UnsafeCell<$rust_ty>)
+                    // We can only wrap in a cell for non-copiable types, since
+                    // Cell<T>: Clone, but not Copy.
+                    //
+                    // It's fine though, since mutating copiable types is trivial
+                    // and doesn't make a lot of sense marking fields as `mutable`.
+                    } else if !ci.can_derive_copy() {
+                        quote_ty!(&ctx.ext_cx, ::std::cell::Cell<$rust_ty>)
                     } else {
-                        f_ty
+                        rust_ty
                     }
-                } else {
-                    f_ty
-                }
-            } else {
-                f_ty
-            };
-
-            // If the member is not a template argument, it needs the full path.
-            let mut needs_full_path = true;
-            for (index, arg) in template_args.iter().enumerate() {
-                let used = f_ty.signature_contains_type(arg);
-
-                if used {
-                    template_args_used[index] = true;
-                    needs_full_path = *arg == f_ty || match f_ty {
-                        TPtr(ref t, _, _, _) => **t != *arg,
-                        TArray(ref t, _, _) => **t != *arg,
-                        _ => true,
-                    };
-                    break;
-                }
-            }
-
-            let rust_ty = P(cty_to_rs(ctx, &f_ty, f.bitfields.is_none(), needs_full_path));
-
-            // Wrap mutable fields in a Cell/UnsafeCell
-            let rust_ty = if f.mutable {
-                if !f_ty.can_derive_copy() {
-                    quote_ty!(&ctx.ext_cx, ::std::cell::UnsafeCell<$rust_ty>)
-                // We can only wrap in a cell for non-copiable types, since
-                // Cell<T>: Clone, but not Copy.
-                //
-                // It's fine though, since mutating copiable types is trivial
-                // and doesn't make a lot of sense marking fields as `mutable`.
-                } else if !ci.can_derive_copy() {
-                    quote_ty!(&ctx.ext_cx, ::std::cell::Cell<$rust_ty>)
                 } else {
                     rust_ty
-                }
-            } else {
-                rust_ty
-            };
-            let vis = if f.private {
-                ast::Visibility::Inherited
-            } else {
-                ast::Visibility::Public
-            };
-            gen_accessors(ctx, &f_name, &rust_ty, f.accessor, &mut methods);
-            let field = ast::StructField {
-                span: ctx.span,
-                ident: Some(ctx.ext_cx.ident_of(&f_name)),
-                vis: vis,
-                id: ast::DUMMY_NODE_ID,
-                ty: rust_ty,
-                attrs: mk_doc_attr(ctx, &f.comment)
-            };
-            fields.push(field);
-            
-            if bypass {
-                continue;
+                };
+                let vis = if f.private {
+                    ast::Visibility::Inherited
+                } else {
+                    ast::Visibility::Public
+                };
+                gen_accessors(ctx, &f_name, &rust_ty, f.accessor, &mut methods);
+                let field = ast::StructField {
+                    span: ctx.span,
+                    ident: Some(ctx.ext_cx.ident_of(&f_name)),
+                    vis: vis,
+                    id: ast::DUMMY_NODE_ID,
+                    ty: rust_ty,
+                    attrs: mk_doc_attr(ctx, &f.comment)
+                };
+                fields.push(field);
             }
-        }
+            CompMember::Comp(ref rc_c) => {
+                let name_is_empty = rc_c.borrow().name.is_empty();
 
-        if let Some(rc_c) = opt_rc_c {
-            let name_is_empty = rc_c.borrow().name.is_empty();
-
-            if name_is_empty {
-                let c = rc_c.borrow();
-                unnamed += 1;
-                let field_name = format!("_bindgen_data_{}_", unnamed);
-                fields.push(mk_blob_field(ctx, &field_name, &c.layout));
-                methods.extend(gen_comp_methods(ctx, &field_name, 0, c.kind, &c.members, &mut extra).into_iter());
-            } else {
-                let name = comp_name(&ctx, rc_c.borrow().kind, &rc_c.borrow().name);
-                extra.extend(comp_to_rs(ctx, &name, rc_c.borrow().clone()).into_iter());
+                if name_is_empty {
+                    let c = rc_c.borrow();
+                    unnamed += 1;
+                    let field_name = format!("_bindgen_data_{}_", unnamed);
+                    fields.push(mk_blob_field(ctx, &field_name, &c.layout));
+                    methods.extend(gen_comp_methods(ctx, &field_name, 0, c.kind, &c.members, &mut extra).into_iter());
+                } else {
+                    let name = comp_name(&ctx, rc_c.borrow().kind, &rc_c.borrow().name);
+                    extra.extend(comp_to_rs(ctx, &name, rc_c.borrow().clone()).into_iter());
+                }
             }
         }
     }
@@ -1552,16 +1517,6 @@ fn gen_comp_methods(ctx: &mut GenCtx, data_field: &str, data_offset: usize,
                 let name = comp_name(&ctx, c.kind, &c.name);
                 extra.extend(comp_to_rs(ctx, &name, c.clone()).into_iter());
                 c.layout.size
-            }
-            CompMember::CompField(ref rc_c, ref f) => {
-                if ctx.options.gen_bitfield_methods {
-                    methods.extend(mk_field_method(ctx, f, offset).into_iter());
-                }
-
-                let c = rc_c.borrow();
-                let name = comp_name(&ctx, c.kind, &c.name);
-                extra.extend(comp_to_rs(ctx, &name, c.clone()).into_iter());
-                f.ty.size()
             }
             CompMember::Enum(_) => 0
         };
