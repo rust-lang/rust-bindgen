@@ -124,10 +124,16 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
             CXCursor_ClassDecl |
             CXCursor_StructDecl => {
                 let anno = Annotations::new(&cursor);
-                let kind = if cursor.kind() == CXCursor_UnionDecl {
-                    CompKind::Union
-                } else {
-                    CompKind::Struct
+
+                let kind = match cursor.kind() {
+                    CXCursor_UnionDecl => CompKind::Union,
+                    CXCursor_ClassTemplate => {
+                        match cursor.template_kind() {
+                            CXCursor_UnionDecl => CompKind::Union,
+                            _ => CompKind::Struct,
+                        }
+                    }
+                    _ => CompKind::Struct,
                 };
 
                 let opaque = ctx.options.opaque_types.iter().any(|name| *name == spelling);
@@ -389,7 +395,7 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
             // If the cursor kind is CXCursor_ClassTemplate, this will still return -1
             // and we'll have to keep traversing the cursor.
             let args = match ty.num_template_args() {
-                -1 => vec!(),
+                -1 => vec![],
                 len => {
                     let mut list = Vec::with_capacity(len as usize);
                     for i in 0..len {
