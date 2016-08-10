@@ -11,7 +11,7 @@ pub use self::Global::*;
 pub use self::Type::*;
 pub use self::IKind::*;
 pub use self::FKind::*;
-use clang::Cursor;
+use clang::{self, Cursor};
 
 use parser::{Annotations, Accessor};
 
@@ -226,7 +226,6 @@ impl Type {
         self.layout().map(|l| l.size).unwrap_or(0)
     }
 
-    #[allow(dead_code)]
     pub fn align(&self) -> usize {
         self.layout().map(|l| l.align).unwrap_or(0)
     }
@@ -344,12 +343,21 @@ pub struct Layout {
 }
 
 impl Layout {
-    pub fn new(size: usize, align: usize) -> Layout {
+    pub fn new(size: usize, align: usize) -> Self {
         Layout { size: size, align: align, packed: false }
+    }
+
+    // TODO: make this fallible using fallible_size().
+    pub fn from_ty(ty: &clang::Type) -> Self {
+        Self::new(ty.size(), ty.align())
     }
 
     pub fn zero() -> Layout {
         Layout { size: 0, align: 0, packed: false }
+    }
+
+    pub fn is_zero(&self) -> bool {
+        *self == Self::zero()
     }
 }
 
@@ -429,7 +437,7 @@ pub struct CompInfo {
     /// the correct layout.
     pub opaque: bool,
     pub base_members: usize,
-    pub layout: Layout,
+    layout: Layout,
     /// If this struct is explicitely marked as non-copiable.
     pub no_copy: bool,
     /// Typedef'd types names, that we'll resolve early to avoid name conflicts
@@ -500,6 +508,47 @@ impl CompInfo {
             detect_has_destructor_cycle: Cell::new(false),
             anno: anno,
         }
+    }
+
+    // Gets or computes the layout as appropriately.
+    pub fn layout(&self) -> Layout {
+        use std::cmp;
+        // The returned layout from clang is zero as of right now, but we should
+        // change it to be fallible to distinguish correctly between zero-sized
+        // types and unknown layout.
+        if !self.layout.is_zero() {
+            return self.layout.clone();
+        }
+
+        if self.args.is_empty() {
+            return self.layout.clone();
+        }
+
+        if self.kind == CompKind::Struct {
+            return self.layout.clone();
+        }
+
+        // If we're a union without known layout, we try to compute it from our
+        // members. This is not ideal, but clang fails to report the size for
+        // these kind of unions, see test/headers/template_union.hpp
+        let mut max_size = 0;
+        let mut max_align = 0;
+        for member in &self.members {
+            let layout = match *member {
+                CompMember::Field(ref f) => f.ty.layout().unwrap_or(Layout::zero()),
+                CompMember::Comp(ref ci) => ci.borrow().layout(),
+                CompMember::Enum(ref ei) => ei.borrow().layout.clone(),
+            };
+
+            max_size = cmp::max(max_size, layout.size);
+            max_align = cmp::max(max_align, layout.align);
+        }
+
+        Layout::new(max_size, max_align)
+    }
+
+    pub fn set_packed(&mut self, packed: bool) {
+        self.layout.packed = packed
     }
 
     // Return the module id or the class declaration module id.

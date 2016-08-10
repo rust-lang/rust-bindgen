@@ -113,7 +113,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
         let comment = cursor.raw_comment();
         let (file, _, _, _) = cursor.location().location();
         let ty = cursor.cur_type();
-        let layout = Layout::new(ty.size(), ty.align());
+        let layout = Layout::from_ty(&ty);
         let filename = match Path::new(&file.name().unwrap_or("".to_owned())).file_name() {
             Some(name) => name.to_string_lossy().replace(".", "_"),
             _ => "".to_string()
@@ -444,7 +444,7 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
             TNamed(ti)
         }
         CXCursor_NoDeclFound => {
-            let layout = Layout::new(ty.size(), ty.align());
+            let layout = Layout::from_ty(&ty);
             TNamed(Rc::new(RefCell::new(TypeInfo::new(ty.spelling().replace("const ", ""), ctx.current_module_id, TVoid, layout))))
         }
         _ => {
@@ -470,7 +470,7 @@ fn conv_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
                               ty: &cx::Type,
                               cursor: &Cursor,
                               resolve_typedefs: bool) -> il::Type {
-    let layout = Layout::new(ty.size(), ty.align());
+    let layout = Layout::from_ty(&ty);
     // println!("conv_ty: `{}` layout: {:?}, kind {}: {}", cursor.spelling(), layout, ty.kind(), type_to_str(ty.kind()));
 
     match ty.kind() {
@@ -879,7 +879,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             });
         }
         CXCursor_PackedAttr => {
-            ci.layout.packed = true;
+            ci.set_packed(true);
         }
         CXCursor_TemplateTypeParameter => {
             ci.args.push(conv_template_type_parameter(ctx, cursor));
