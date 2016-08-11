@@ -72,6 +72,56 @@ Options:
         bindgen!("/usr/include/lua.h", link="lua", builtins=true)
     }
 
+### Using a build script to generate bindings at compile time
+
+Due to a known issuewith `include!` https://github.com/rust-lang/rfcs/issues/752 when generating
+bindings in a build script and importing them with `include!` you'll want to wrap the bindings
+in a module before writing them to a file to avoid triggering the issue with top-level
+attributes in `include!`. Some more discussion about this issue can be found here
+https://github.com/Yamakaky/rust-bindgen/issues/359 .
+
+`Cargo.toml`
+```rust
+[package]
+...
+name = "bindgen_ex"
+build = "build.rs"
+
+[build-dependencies]
+bindgen = "0.19.0"
+```
+
+`build.rs`
+```rust
+extern crate bindgen;
+
+use std::io::prelude::*;
+use std::fs::File;
+
+fn main(){
+    let mut bindings = bindgen::Builder::new("my_lib.h");
+    bindings.link("my_lib", bindgen::LinkType::Static);
+    // Generate the bindings to a string so we can wrap them
+    // instead of going through the `write_to_file` API.
+    let generated_bindings = bindings.generate().expect("Failed to generate bindings");
+    // Now open the file we'll write the generated bindings too
+    let mut file = File::create("my_lib.rs").expect("Failed to open file");
+    // Wrap the bindings in a `pub mod` before writing bindgen's output
+    file.write(format!("pub mod {} {{\n", "my_lib").as_bytes()).unwrap();
+    file.write(generated_bindings.as_bytes()).unwrap();
+    file.write(b"}").unwrap(); 
+}
+```
+
+`main.rs`
+```rust
+include!("my_lib.rs");
+
+fn main() {
+    my_lib::example_function();
+}
+```
+
 [crates-version-shield]: https://img.shields.io/crates/v/bindgen.svg?style=flat-square
 [crates-downloads-shield]: https://img.shields.io/crates/d/bindgen.svg?style=flat-square
 [crates-license-shield]: https://img.shields.io/crates/l/bindgen.svg?style=flat-square
