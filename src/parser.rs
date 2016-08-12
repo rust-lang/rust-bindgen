@@ -24,6 +24,7 @@ pub struct ClangParserOptions {
     pub emit_ast: bool,
     pub fail_on_unknown_type: bool,
     pub ignore_functions: bool,
+    pub ignore_methods: bool,
     pub enable_cxx_namespaces: bool,
     pub class_constants: bool,
     pub namespaced_constants: bool,
@@ -1023,7 +1024,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             vi.is_static = cursor.method_is_static();
             vi.is_const = cursor.cur_type().is_const();
 
-            if ctx.options.ignore_functions {
+            if ctx.options.ignore_methods {
                 return CXChildVisit_Continue;
             }
 
