@@ -987,8 +987,8 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                     }
                 }
                 for base in ci.members[..ci.base_members].iter() {
-                    let base = match base {
-                        &CompMember::Field(ref fi) => {
+                    let base = match *base {
+                        CompMember::Field(ref fi) => {
                             match fi.ty {
                                 TComp(ref ci) => ci.clone(),
                                 _ => continue,

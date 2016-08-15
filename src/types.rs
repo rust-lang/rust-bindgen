@@ -167,7 +167,8 @@ pub struct FuncSig {
     pub abi: abi::Abi,
 }
 
-#[derive(Clone, PartialEq, Debug)]
+// NOTE: Remember to add your new variant to the PartialEq implementation below!
+#[derive(Clone, Debug)]
 pub enum Type {
     TVoid,
     TInt(IKind, Layout),
@@ -179,6 +180,41 @@ pub enum Type {
     TNamed(Rc<RefCell<TypeInfo>>),
     TComp(Rc<RefCell<CompInfo>>),
     TEnum(Rc<RefCell<EnumInfo>>)
+}
+
+/// Compares to Rc<T> types looking first at the value they point to.
+///
+/// This is needed to avoid infinite recursion in things like virtual function
+/// signatures.
+fn ref_ptr_aware_eq<T: PartialEq>(one: &Rc<T>, other: &Rc<T>) -> bool {
+    &**one as *const T == &**other as *const T ||
+        **one == **other
+}
+
+impl PartialEq for Type {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (&TVoid, &TVoid)
+                => true,
+            (&TInt(ref kind, ref l), &TInt(ref o_kind, ref o_l))
+                => kind == o_kind && l == o_l,
+            (&TFloat(ref kind, ref l), &TFloat(ref o_kind, ref o_l))
+                => kind == o_kind && l == o_l,
+            (&TPtr(ref ty, is_const, is_ref, ref l), &TPtr(ref o_ty, o_is_const, o_is_ref, ref o_l))
+                => is_const == o_is_const && is_ref == o_is_ref && l == o_l && ty == o_ty,
+            (&TArray(ref ty, count, ref l), &TArray(ref o_ty, o_count, ref o_l))
+                => count == o_count && l == o_l && ty == o_ty,
+            (&TFuncProto(ref sig), &TFuncProto(ref o_sig))
+                => sig == o_sig,
+            (&TNamed(ref ti), &TNamed(ref o_ti))
+                => ref_ptr_aware_eq(ti, o_ti),
+            (&TComp(ref ci), &TComp(ref o_ci))
+                => ref_ptr_aware_eq(ci, o_ci),
+            (&TEnum(ref ei), &TEnum(ref o_ei))
+                => ref_ptr_aware_eq(ei, o_ei),
+            _ => false,
+        }
+    }
 }
 
 impl Type {
