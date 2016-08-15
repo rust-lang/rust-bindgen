@@ -340,8 +340,9 @@ fn mk_fn_sig_resolving_typedefs(ctx: &mut ClangParserCtx,
             // get parameter names and types.
             cursor.args().iter().map(|arg| {
                 let arg_name = arg.spelling();
-                let is_class_typedef = arg.cur_type().sanitized_spelling_in(typedefs);
-                (arg_name, conv_ty_resolving_typedefs(ctx, &arg.cur_type(), arg, is_class_typedef))
+                let arg_ty = arg.cur_type();
+                let is_class_typedef = arg_ty.sanitized_spelling_in(typedefs);
+                (arg_name, conv_ty_resolving_typedefs(ctx, &arg_ty, arg, is_class_typedef))
             }).collect()
         }
         _ => {
@@ -450,8 +451,14 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
             TNamed(ti)
         }
         CXCursor_NoDeclFound => {
-            let layout = Layout::from_ty(&ty);
-            TNamed(Rc::new(RefCell::new(TypeInfo::new(ty.spelling().replace("const ", ""), ctx.current_module_id, TVoid, layout))))
+            let canonical = ty.canonical_type();
+            let kind = canonical.kind();
+            if kind != CXType_Invalid && kind != CXType_Unexposed {
+                conv_ty_resolving_typedefs(ctx, &canonical, &ty_decl, resolve_typedefs)
+            } else {
+                let layout = Layout::from_ty(ty);
+                TNamed(Rc::new(RefCell::new(TypeInfo::new(ty.spelling().replace("const ", ""), ctx.current_module_id, TVoid, layout))))
+            }
         }
         _ => {
             let fail = ctx.options.fail_on_unknown_type;
