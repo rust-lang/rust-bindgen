@@ -119,6 +119,10 @@ impl Cursor {
         }
     }
 
+    pub fn template_kind(&self) -> Enum_CXCursorKind {
+        unsafe { clang_getTemplateCursorKind(self.x) }
+    }
+
     pub fn visit<F>(&self, func:F)
         where F: for<'a, 'b> FnMut(&'a Cursor, &'b Cursor) -> Enum_CXChildVisitResult
     {

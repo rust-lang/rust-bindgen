@@ -11,7 +11,7 @@ pub use self::Global::*;
 pub use self::Type::*;
 pub use self::IKind::*;
 pub use self::FKind::*;
-use clang::Cursor;
+use clang::{self, Cursor};
 
 use parser::{Annotations, Accessor};
 
@@ -167,7 +167,8 @@ pub struct FuncSig {
     pub abi: abi::Abi,
 }
 
-#[derive(Clone, PartialEq, Debug)]
+// NOTE: Remember to add your new variant to the PartialEq implementation below!
+#[derive(Clone, Debug)]
 pub enum Type {
     TVoid,
     TInt(IKind, Layout),
@@ -179,6 +180,41 @@ pub enum Type {
     TNamed(Rc<RefCell<TypeInfo>>),
     TComp(Rc<RefCell<CompInfo>>),
     TEnum(Rc<RefCell<EnumInfo>>)
+}
+
+/// Compares to Rc<T> types looking first at the value they point to.
+///
+/// This is needed to avoid infinite recursion in things like virtual function
+/// signatures.
+fn ref_ptr_aware_eq<T: PartialEq>(one: &Rc<T>, other: &Rc<T>) -> bool {
+    &**one as *const T == &**other as *const T ||
+        **one == **other
+}
+
+impl PartialEq for Type {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (&TVoid, &TVoid)
+                => true,
+            (&TInt(ref kind, ref l), &TInt(ref o_kind, ref o_l))
+                => kind == o_kind && l == o_l,
+            (&TFloat(ref kind, ref l), &TFloat(ref o_kind, ref o_l))
+                => kind == o_kind && l == o_l,
+            (&TPtr(ref ty, is_const, is_ref, ref l), &TPtr(ref o_ty, o_is_const, o_is_ref, ref o_l))
+                => is_const == o_is_const && is_ref == o_is_ref && l == o_l && ty == o_ty,
+            (&TArray(ref ty, count, ref l), &TArray(ref o_ty, o_count, ref o_l))
+                => count == o_count && l == o_l && ty == o_ty,
+            (&TFuncProto(ref sig), &TFuncProto(ref o_sig))
+                => sig == o_sig,
+            (&TNamed(ref ti), &TNamed(ref o_ti))
+                => ref_ptr_aware_eq(ti, o_ti),
+            (&TComp(ref ci), &TComp(ref o_ci))
+                => ref_ptr_aware_eq(ci, o_ci),
+            (&TEnum(ref ei), &TEnum(ref o_ei))
+                => ref_ptr_aware_eq(ei, o_ei),
+            _ => false,
+        }
+    }
 }
 
 impl Type {
@@ -226,7 +262,6 @@ impl Type {
         self.layout().map(|l| l.size).unwrap_or(0)
     }
 
-    #[allow(dead_code)]
     pub fn align(&self) -> usize {
         self.layout().map(|l| l.align).unwrap_or(0)
     }
@@ -344,12 +379,21 @@ pub struct Layout {
 }
 
 impl Layout {
-    pub fn new(size: usize, align: usize) -> Layout {
+    pub fn new(size: usize, align: usize) -> Self {
         Layout { size: size, align: align, packed: false }
+    }
+
+    // TODO: make this fallible using fallible_size().
+    pub fn from_ty(ty: &clang::Type) -> Self {
+        Self::new(ty.size(), ty.align())
     }
 
     pub fn zero() -> Layout {
         Layout { size: 0, align: 0, packed: false }
+    }
+
+    pub fn is_zero(&self) -> bool {
+        *self == Self::zero()
     }
 }
 
@@ -397,8 +441,6 @@ pub enum FKind {
 pub enum CompMember {
     Field(FieldInfo),
     Comp(Rc<RefCell<CompInfo>>),
-    #[allow(dead_code)]
-    CompField(Rc<RefCell<CompInfo>>, FieldInfo),
     Enum(Rc<RefCell<EnumInfo>>),
 }
 
@@ -431,7 +473,7 @@ pub struct CompInfo {
     /// the correct layout.
     pub opaque: bool,
     pub base_members: usize,
-    pub layout: Layout,
+    layout: Layout,
     /// If this struct is explicitely marked as non-copiable.
     pub no_copy: bool,
     /// Typedef'd types names, that we'll resolve early to avoid name conflicts
@@ -504,6 +546,47 @@ impl CompInfo {
         }
     }
 
+    // Gets or computes the layout as appropriately.
+    pub fn layout(&self) -> Layout {
+        use std::cmp;
+        // The returned layout from clang is zero as of right now, but we should
+        // change it to be fallible to distinguish correctly between zero-sized
+        // types and unknown layout.
+        if !self.layout.is_zero() {
+            return self.layout.clone();
+        }
+
+        if self.args.is_empty() {
+            return self.layout.clone();
+        }
+
+        if self.kind == CompKind::Struct {
+            return self.layout.clone();
+        }
+
+        // If we're a union without known layout, we try to compute it from our
+        // members. This is not ideal, but clang fails to report the size for
+        // these kind of unions, see test/headers/template_union.hpp
+        let mut max_size = 0;
+        let mut max_align = 0;
+        for member in &self.members {
+            let layout = match *member {
+                CompMember::Field(ref f) => f.ty.layout().unwrap_or(Layout::zero()),
+                CompMember::Comp(ref ci) => ci.borrow().layout(),
+                CompMember::Enum(ref ei) => ei.borrow().layout.clone(),
+            };
+
+            max_size = cmp::max(max_size, layout.size);
+            max_align = cmp::max(max_align, layout.align);
+        }
+
+        Layout::new(max_size, max_align)
+    }
+
+    pub fn set_packed(&mut self, packed: bool) {
+        self.layout.packed = packed
+    }
+
     // Return the module id or the class declaration module id.
     pub fn module_id(&self) -> ModuleId {
         self.ref_template.as_ref().and_then(|t| if let TComp(ref ci) = *t {
@@ -538,8 +621,7 @@ impl CompInfo {
                 let can_derive_debug = self.args.iter().all(|ty| ty.can_derive_debug()) &&
                     self.members.iter()
                         .all(|member| match *member {
-                            CompMember::Field(ref f) |
-                            CompMember::CompField(_, ref f) => f.ty.can_derive_debug(),
+                            CompMember::Field(ref f) => f.ty.can_derive_debug(),
                             _ => true,
                         });
                 self.detect_derive_debug_cycle.set(false);
@@ -577,8 +659,7 @@ impl CompInfo {
                 self.ref_template.as_ref().map_or(false, |t| t.has_destructor()) ||
                 self.args.iter().any(|t| t.has_destructor()) ||
                 self.members.iter().enumerate().any(|(index, m)| match *m {
-                    CompMember::Field(ref f) |
-                    CompMember::CompField(_, ref f) => {
+                    CompMember::Field(ref f) => {
                         // Base members may not be resolved yet
                         if index < self.base_members {
                             f.ty.has_destructor()
@@ -611,8 +692,7 @@ impl CompInfo {
                 // since copyability depends on the types itself.
                 self.ref_template.as_ref().map_or(true, |t| t.can_derive_copy()) &&
                 self.members.iter().all(|m| match *m {
-                    CompMember::Field(ref f) |
-                    CompMember::CompField(_, ref f) => f.ty.can_derive_copy(),
+                    CompMember::Field(ref f) => f.ty.can_derive_copy(),
                     _ => true,
                 })
             }

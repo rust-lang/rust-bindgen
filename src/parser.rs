@@ -113,7 +113,7 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
         let comment = cursor.raw_comment();
         let (file, _, _, _) = cursor.location().location();
         let ty = cursor.cur_type();
-        let layout = Layout::new(ty.size(), ty.align());
+        let layout = Layout::from_ty(&ty);
         let filename = match Path::new(&file.name().unwrap_or("".to_owned())).file_name() {
             Some(name) => name.to_string_lossy().replace(".", "_"),
             _ => "".to_string()
@@ -124,10 +124,16 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
             CXCursor_ClassDecl |
             CXCursor_StructDecl => {
                 let anno = Annotations::new(&cursor);
-                let kind = if cursor.kind() == CXCursor_UnionDecl {
-                    CompKind::Union
-                } else {
-                    CompKind::Struct
+
+                let kind = match cursor.kind() {
+                    CXCursor_UnionDecl => CompKind::Union,
+                    CXCursor_ClassTemplate => {
+                        match cursor.template_kind() {
+                            CXCursor_UnionDecl => CompKind::Union,
+                            _ => CompKind::Struct,
+                        }
+                    }
+                    _ => CompKind::Struct,
                 };
 
                 let opaque = ctx.options.opaque_types.iter().any(|name| *name == spelling);
@@ -161,7 +167,9 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                     }
                 };
 
-                let mut ci = CompInfo::new(spelling, ctx.current_module_id, filename, comment, kind, vec![], layout, anno);
+                let mut ci = CompInfo::new(spelling, ctx.current_module_id,
+                                           filename, comment, kind, vec![],
+                                           layout, anno);
                 ci.parser_cursor = Some(cursor);
 
                 // If it's an instantiation of another template,
@@ -332,8 +340,9 @@ fn mk_fn_sig_resolving_typedefs(ctx: &mut ClangParserCtx,
             // get parameter names and types.
             cursor.args().iter().map(|arg| {
                 let arg_name = arg.spelling();
-                let is_class_typedef = arg.cur_type().sanitized_spelling_in(typedefs);
-                (arg_name, conv_ty_resolving_typedefs(ctx, &arg.cur_type(), arg, is_class_typedef))
+                let arg_ty = arg.cur_type();
+                let is_class_typedef = arg_ty.sanitized_spelling_in(typedefs);
+                (arg_name, conv_ty_resolving_typedefs(ctx, &arg_ty, arg, is_class_typedef))
             }).collect()
         }
         _ => {
@@ -387,7 +396,7 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
             // If the cursor kind is CXCursor_ClassTemplate, this will still return -1
             // and we'll have to keep traversing the cursor.
             let args = match ty.num_template_args() {
-                -1 => vec!(),
+                -1 => vec![],
                 len => {
                     let mut list = Vec::with_capacity(len as usize);
                     for i in 0..len {
@@ -442,8 +451,14 @@ fn conv_decl_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
             TNamed(ti)
         }
         CXCursor_NoDeclFound => {
-            let layout = Layout::new(ty.size(), ty.align());
-            TNamed(Rc::new(RefCell::new(TypeInfo::new(ty.spelling().replace("const ", ""), ctx.current_module_id, TVoid, layout))))
+            let canonical = ty.canonical_type();
+            let kind = canonical.kind();
+            if kind != CXType_Invalid && kind != CXType_Unexposed {
+                conv_ty_resolving_typedefs(ctx, &canonical, &ty_decl, resolve_typedefs)
+            } else {
+                let layout = Layout::from_ty(ty);
+                TNamed(Rc::new(RefCell::new(TypeInfo::new(ty.spelling().replace("const ", ""), ctx.current_module_id, TVoid, layout))))
+            }
         }
         _ => {
             let fail = ctx.options.fail_on_unknown_type;
@@ -468,7 +483,7 @@ fn conv_ty_resolving_typedefs(ctx: &mut ClangParserCtx,
                               ty: &cx::Type,
                               cursor: &Cursor,
                               resolve_typedefs: bool) -> il::Type {
-    let layout = Layout::new(ty.size(), ty.align());
+    let layout = Layout::from_ty(&ty);
     // println!("conv_ty: `{}` layout: {:?}, kind {}: {}", cursor.spelling(), layout, ty.kind(), type_to_str(ty.kind()));
 
     match ty.kind() {
@@ -877,7 +892,7 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
             });
         }
         CXCursor_PackedAttr => {
-            ci.layout.packed = true;
+            ci.set_packed(true);
         }
         CXCursor_TemplateTypeParameter => {
             ci.args.push(conv_template_type_parameter(ctx, cursor));
@@ -979,8 +994,8 @@ fn visit_composite(cursor: &Cursor, parent: &Cursor,
                     }
                 }
                 for base in ci.members[..ci.base_members].iter() {
-                    let base = match base {
-                        &CompMember::Field(ref fi) => {
+                    let base = match *base {
+                        CompMember::Field(ref fi) => {
                             match fi.ty {
                                 TComp(ref ci) => ci.clone(),
                                 _ => continue,
