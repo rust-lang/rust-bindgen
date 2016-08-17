@@ -681,13 +681,17 @@ impl CompInfo {
         if self.no_copy {
             return false;
         }
+
+        // NOTE: Take into account that while unions in C and C++ are copied by
+        // default, the may have an explicit destructor in C++, so we can't
+        // defer this check just for the union case.
+        if self.has_destructor() {
+            return false;
+        }
+
         match self.kind {
             CompKind::Union => true,
             CompKind::Struct => {
-                if self.has_destructor() {
-                    return false;
-                }
-
                 // With template args, use a safe subset of the types,
                 // since copyability depends on the types itself.
                 self.ref_template.as_ref().map_or(true, |t| t.can_derive_copy()) &&
