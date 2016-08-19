@@ -821,6 +821,7 @@ pub struct TypeInfo {
     // TODO: Is this really useful?
     // You can just make opaque the underlying type
     pub opaque: bool,
+    pub hide: bool,
 }
 
 impl TypeInfo {
@@ -832,6 +833,7 @@ impl TypeInfo {
             ty: ty,
             layout: layout,
             opaque: false,
+            hide: false,
         }
     }
 }

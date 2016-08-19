@@ -211,8 +211,10 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
             }
             CXCursor_TypeAliasDecl | CXCursor_TypedefDecl => {
                 let opaque = ctx.options.opaque_types.iter().any(|name| *name == spelling);
+                let hide = ctx.options.blacklist_type.iter().any(|name| *name == spelling);
                 let mut ti = TypeInfo::new(spelling, ctx.current_module_id, TVoid, layout);
                 ti.opaque = opaque;
+                ti.hide = hide;
 
                 let ti = Rc::new(RefCell::new(ti));
                 GType(ti)

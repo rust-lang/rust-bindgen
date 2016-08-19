@@ -770,6 +770,10 @@ fn ctypedef_to_rs(ctx: &mut GenCtx, ty: TypeInfo) -> Vec<P<ast::Item>> {
             .type_(&rust_name).build_ty(P(rust_ty))
     }
 
+    if ty.hide {
+        return vec![];
+    }
+
     if ty.opaque {
         return mk_opaque_struct(ctx, &ty.name, &ty.layout);
     }
