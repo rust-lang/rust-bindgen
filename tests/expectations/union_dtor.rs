@@ -4,7 +4,7 @@
 #![allow(non_snake_case)]
 
 
-#[derive(Copy, Debug)]
+#[derive(Debug)]
 #[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
 impl <T> __BindgenUnionField<T> {
@@ -23,25 +23,16 @@ impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
     #[inline]
     fn clone(&self) -> Self { Self::new() }
 }
+impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
 #[repr(C)]
 #[derive(Debug)]
-pub struct Union_UnionWithDtor {
+pub struct UnionWithDtor {
     pub mFoo: __BindgenUnionField<::std::os::raw::c_int>,
     pub mBar: __BindgenUnionField<*mut ::std::os::raw::c_void>,
-    pub _bindgen_data_: u64,
-}
-impl Union_UnionWithDtor {
-    pub unsafe fn mFoo(&mut self) -> *mut ::std::os::raw::c_int {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn mBar(&mut self) -> *mut *mut ::std::os::raw::c_void {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
+    pub bindgen_union_field: u64,
 }
 #[test]
-fn bindgen_test_layout_Union_UnionWithDtor() {
-    assert_eq!(::std::mem::size_of::<Union_UnionWithDtor>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Union_UnionWithDtor>() , 8usize);
+fn bindgen_test_layout_UnionWithDtor() {
+    assert_eq!(::std::mem::size_of::<UnionWithDtor>() , 8usize);
+    assert_eq!(::std::mem::align_of::<UnionWithDtor>() , 8usize);
 }

@@ -6,17 +6,17 @@
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Struct_nsTArray<T> {
+pub struct nsTArray<T> {
     pub mBuff: *mut T,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Struct_nsStyleAutoArray<T> {
+pub struct nsStyleAutoArray<T> {
     pub mFirstElement: T,
-    pub mOtherElements: Struct_nsTArray<T>,
+    pub mOtherElements: nsTArray<T>,
 }
 #[repr(i32)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum nsStyleAutoArray_WithSingleInitialElement {
     WITH_SINGLE_INITIAL_ELEMENT = 0,
 }

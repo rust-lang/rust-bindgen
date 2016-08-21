@@ -4,7 +4,7 @@
 #![allow(non_snake_case)]
 
 
-#[derive(Copy, Debug)]
+#[derive(Debug)]
 #[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
 impl <T> __BindgenUnionField<T> {
@@ -23,53 +23,34 @@ impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
     #[inline]
     fn clone(&self) -> Self { Self::new() }
 }
+impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
 #[repr(C)]
 #[derive(Copy)]
-pub struct Union_WithBigArray {
+pub struct WithBigArray {
     pub a: __BindgenUnionField<::std::os::raw::c_int>,
     pub b: __BindgenUnionField<[::std::os::raw::c_int; 33usize]>,
-    pub _bindgen_data_: [u32; 33usize],
-}
-impl Union_WithBigArray {
-    pub unsafe fn a(&mut self) -> *mut ::std::os::raw::c_int {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn b(&mut self) -> *mut [::std::os::raw::c_int; 33usize] {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-}
-impl ::std::clone::Clone for Union_WithBigArray {
-    fn clone(&self) -> Self { *self }
+    pub bindgen_union_field: [u32; 33usize],
 }
 #[test]
-fn bindgen_test_layout_Union_WithBigArray() {
-    assert_eq!(::std::mem::size_of::<Union_WithBigArray>() , 132usize);
-    assert_eq!(::std::mem::align_of::<Union_WithBigArray>() , 4usize);
+fn bindgen_test_layout_WithBigArray() {
+    assert_eq!(::std::mem::size_of::<WithBigArray>() , 132usize);
+    assert_eq!(::std::mem::align_of::<WithBigArray>() , 4usize);
+}
+impl Clone for WithBigArray {
+    fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
 #[derive(Copy)]
-pub struct Union_WithBigMember {
+pub struct WithBigMember {
     pub a: __BindgenUnionField<::std::os::raw::c_int>,
-    pub b: __BindgenUnionField<Union_WithBigArray>,
-    pub _bindgen_data_: [u32; 33usize],
-}
-impl Union_WithBigMember {
-    pub unsafe fn a(&mut self) -> *mut ::std::os::raw::c_int {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn b(&mut self) -> *mut Union_WithBigArray {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-}
-impl ::std::clone::Clone for Union_WithBigMember {
-    fn clone(&self) -> Self { *self }
+    pub b: __BindgenUnionField<WithBigArray>,
+    pub bindgen_union_field: [u32; 33usize],
 }
 #[test]
-fn bindgen_test_layout_Union_WithBigMember() {
-    assert_eq!(::std::mem::size_of::<Union_WithBigMember>() , 132usize);
-    assert_eq!(::std::mem::align_of::<Union_WithBigMember>() , 4usize);
+fn bindgen_test_layout_WithBigMember() {
+    assert_eq!(::std::mem::size_of::<WithBigMember>() , 132usize);
+    assert_eq!(::std::mem::align_of::<WithBigMember>() , 4usize);
+}
+impl Clone for WithBigMember {
+    fn clone(&self) -> Self { *self }
 }

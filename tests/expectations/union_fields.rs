@@ -4,7 +4,7 @@
 #![allow(non_snake_case)]
 
 
-#[derive(Copy, Debug)]
+#[derive(Debug)]
 #[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
 impl <T> __BindgenUnionField<T> {
@@ -23,36 +23,21 @@ impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
     #[inline]
     fn clone(&self) -> Self { Self::new() }
 }
+impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Union_union_fields_hpp_unnamed_1 {
+pub struct _bindgen_ty_bindgen_id_1 {
     pub mInt: __BindgenUnionField<::std::os::raw::c_int>,
     pub mFloat: __BindgenUnionField<f32>,
     pub mPointer: __BindgenUnionField<*mut ::std::os::raw::c_void>,
-    pub _bindgen_data_: u64,
-}
-impl Union_union_fields_hpp_unnamed_1 {
-    pub unsafe fn mInt(&mut self) -> *mut ::std::os::raw::c_int {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn mFloat(&mut self) -> *mut f32 {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn mPointer(&mut self) -> *mut *mut ::std::os::raw::c_void {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-}
-impl ::std::clone::Clone for Union_union_fields_hpp_unnamed_1 {
-    fn clone(&self) -> Self { *self }
+    pub bindgen_union_field: u64,
 }
 #[test]
-fn bindgen_test_layout_Union_union_fields_hpp_unnamed_1() {
-    assert_eq!(::std::mem::size_of::<Union_union_fields_hpp_unnamed_1>() ,
-               8usize);
-    assert_eq!(::std::mem::align_of::<Union_union_fields_hpp_unnamed_1>() ,
-               8usize);
+fn bindgen_test_layout__bindgen_ty_bindgen_id_1() {
+    assert_eq!(::std::mem::size_of::<_bindgen_ty_bindgen_id_1>() , 8usize);
+    assert_eq!(::std::mem::align_of::<_bindgen_ty_bindgen_id_1>() , 8usize);
 }
-pub type nsStyleUnion = Union_union_fields_hpp_unnamed_1;
+impl Clone for _bindgen_ty_bindgen_id_1 {
+    fn clone(&self) -> Self { *self }
+}
+pub type nsStyleUnion = _bindgen_ty_bindgen_id_1;

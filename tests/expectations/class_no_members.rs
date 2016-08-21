@@ -6,31 +6,40 @@
 
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_whatever;
-impl ::std::clone::Clone for Struct_whatever {
-    fn clone(&self) -> Self { *self }
-}
-#[repr(C)]
-#[derive(Debug, Copy)]
-pub struct Struct_whatever_child {
-    pub _base: Struct_whatever,
-}
-impl ::std::clone::Clone for Struct_whatever_child {
-    fn clone(&self) -> Self { *self }
-}
-#[repr(C)]
-#[derive(Debug, Copy)]
-pub struct Struct_whatever_child_with_member {
-    pub _base: Struct_whatever,
-    pub m_member: ::std::os::raw::c_int,
-}
-impl ::std::clone::Clone for Struct_whatever_child_with_member {
-    fn clone(&self) -> Self { *self }
+pub struct whatever {
+    pub _address: u8,
 }
 #[test]
-fn bindgen_test_layout_Struct_whatever_child_with_member() {
-    assert_eq!(::std::mem::size_of::<Struct_whatever_child_with_member>() ,
-               4usize);
-    assert_eq!(::std::mem::align_of::<Struct_whatever_child_with_member>() ,
-               4usize);
+fn bindgen_test_layout_whatever() {
+    assert_eq!(::std::mem::size_of::<whatever>() , 1usize);
+    assert_eq!(::std::mem::align_of::<whatever>() , 1usize);
+}
+impl Clone for whatever {
+    fn clone(&self) -> Self { *self }
+}
+#[repr(C)]
+#[derive(Debug, Copy)]
+pub struct whatever_child {
+    pub _address: u8,
+}
+#[test]
+fn bindgen_test_layout_whatever_child() {
+    assert_eq!(::std::mem::size_of::<whatever_child>() , 1usize);
+    assert_eq!(::std::mem::align_of::<whatever_child>() , 1usize);
+}
+impl Clone for whatever_child {
+    fn clone(&self) -> Self { *self }
+}
+#[repr(C)]
+#[derive(Debug, Copy)]
+pub struct whatever_child_with_member {
+    pub m_member: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_whatever_child_with_member() {
+    assert_eq!(::std::mem::size_of::<whatever_child_with_member>() , 4usize);
+    assert_eq!(::std::mem::align_of::<whatever_child_with_member>() , 4usize);
+}
+impl Clone for whatever_child_with_member {
+    fn clone(&self) -> Self { *self }
 }

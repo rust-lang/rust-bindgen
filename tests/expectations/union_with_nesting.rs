@@ -4,7 +4,7 @@
 #![allow(non_snake_case)]
 
 
-#[derive(Copy, Debug)]
+#[derive(Debug)]
 #[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
 impl <T> __BindgenUnionField<T> {
@@ -23,101 +23,69 @@ impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
     #[inline]
     fn clone(&self) -> Self { Self::new() }
 }
+impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Union_foo {
+pub struct foo {
     pub a: __BindgenUnionField<::std::os::raw::c_uint>,
-    pub foo_union_with_nesting_h_unnamed_1: __BindgenUnionField<Struct_foo_union_with_nesting_h_unnamed_1>,
-    pub _bindgen_data_: u32,
-}
-impl Union_foo {
-    pub unsafe fn a(&mut self) -> *mut ::std::os::raw::c_uint {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn foo_union_with_nesting_h_unnamed_1(&mut self)
-     -> *mut Struct_foo_union_with_nesting_h_unnamed_1 {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-}
-impl ::std::clone::Clone for Union_foo {
-    fn clone(&self) -> Self { *self }
-}
-#[test]
-fn bindgen_test_layout_Union_foo() {
-    assert_eq!(::std::mem::size_of::<Union_foo>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Union_foo>() , 4usize);
+    pub __bindgen_anon_1: __BindgenUnionField<foo__bindgen_ty_bindgen_id_3>,
+    pub bindgen_union_field: u32,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_foo_union_with_nesting_h_unnamed_1 {
-    pub foo_union_with_nesting_h_unnamed_1_union_with_nesting_h_unnamed_2: Union_foo_union_with_nesting_h_unnamed_1_union_with_nesting_h_unnamed_2,
-    pub foo_union_with_nesting_h_unnamed_1_union_with_nesting_h_unnamed_3: Union_foo_union_with_nesting_h_unnamed_1_union_with_nesting_h_unnamed_3,
+pub struct foo__bindgen_ty_bindgen_id_3 {
+    pub __bindgen_anon_1: foo__bindgen_ty_bindgen_id_3__bindgen_ty_bindgen_id_4,
+    pub __bindgen_anon_2: foo__bindgen_ty_bindgen_id_3__bindgen_ty_bindgen_id_7,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Union_foo_union_with_nesting_h_unnamed_1_union_with_nesting_h_unnamed_2 {
+pub struct foo__bindgen_ty_bindgen_id_3__bindgen_ty_bindgen_id_4 {
     pub b1: __BindgenUnionField<::std::os::raw::c_ushort>,
     pub b2: __BindgenUnionField<::std::os::raw::c_ushort>,
-    pub _bindgen_data_: u16,
-}
-impl Union_foo_union_with_nesting_h_unnamed_1_union_with_nesting_h_unnamed_2 {
-    pub unsafe fn b1(&mut self) -> *mut ::std::os::raw::c_ushort {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn b2(&mut self) -> *mut ::std::os::raw::c_ushort {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-}
-impl ::std::clone::Clone for
- Union_foo_union_with_nesting_h_unnamed_1_union_with_nesting_h_unnamed_2 {
-    fn clone(&self) -> Self { *self }
+    pub bindgen_union_field: u16,
 }
 #[test]
-fn bindgen_test_layout_Union_foo_union_with_nesting_h_unnamed_1_union_with_nesting_h_unnamed_2() {
-    assert_eq!(::std::mem::size_of::<Union_foo_union_with_nesting_h_unnamed_1_union_with_nesting_h_unnamed_2>()
+fn bindgen_test_layout_foo__bindgen_ty_bindgen_id_3__bindgen_ty_bindgen_id_4() {
+    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_bindgen_id_3__bindgen_ty_bindgen_id_4>()
                , 2usize);
-    assert_eq!(::std::mem::align_of::<Union_foo_union_with_nesting_h_unnamed_1_union_with_nesting_h_unnamed_2>()
+    assert_eq!(::std::mem::align_of::<foo__bindgen_ty_bindgen_id_3__bindgen_ty_bindgen_id_4>()
                , 2usize);
+}
+impl Clone for foo__bindgen_ty_bindgen_id_3__bindgen_ty_bindgen_id_4 {
+    fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Union_foo_union_with_nesting_h_unnamed_1_union_with_nesting_h_unnamed_3 {
+pub struct foo__bindgen_ty_bindgen_id_3__bindgen_ty_bindgen_id_7 {
     pub c1: __BindgenUnionField<::std::os::raw::c_ushort>,
     pub c2: __BindgenUnionField<::std::os::raw::c_ushort>,
-    pub _bindgen_data_: u16,
+    pub bindgen_union_field: u16,
 }
-impl Union_foo_union_with_nesting_h_unnamed_1_union_with_nesting_h_unnamed_3 {
-    pub unsafe fn c1(&mut self) -> *mut ::std::os::raw::c_ushort {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn c2(&mut self) -> *mut ::std::os::raw::c_ushort {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
+#[test]
+fn bindgen_test_layout_foo__bindgen_ty_bindgen_id_3__bindgen_ty_bindgen_id_7() {
+    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_bindgen_id_3__bindgen_ty_bindgen_id_7>()
+               , 2usize);
+    assert_eq!(::std::mem::align_of::<foo__bindgen_ty_bindgen_id_3__bindgen_ty_bindgen_id_7>()
+               , 2usize);
 }
-impl ::std::clone::Clone for
- Union_foo_union_with_nesting_h_unnamed_1_union_with_nesting_h_unnamed_3 {
+impl Clone for foo__bindgen_ty_bindgen_id_3__bindgen_ty_bindgen_id_7 {
     fn clone(&self) -> Self { *self }
 }
 #[test]
-fn bindgen_test_layout_Union_foo_union_with_nesting_h_unnamed_1_union_with_nesting_h_unnamed_3() {
-    assert_eq!(::std::mem::size_of::<Union_foo_union_with_nesting_h_unnamed_1_union_with_nesting_h_unnamed_3>()
-               , 2usize);
-    assert_eq!(::std::mem::align_of::<Union_foo_union_with_nesting_h_unnamed_1_union_with_nesting_h_unnamed_3>()
-               , 2usize);
+fn bindgen_test_layout_foo__bindgen_ty_bindgen_id_3() {
+    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_bindgen_id_3>() ,
+               4usize);
+    assert_eq!(::std::mem::align_of::<foo__bindgen_ty_bindgen_id_3>() ,
+               2usize);
 }
-impl ::std::clone::Clone for Struct_foo_union_with_nesting_h_unnamed_1 {
+impl Clone for foo__bindgen_ty_bindgen_id_3 {
     fn clone(&self) -> Self { *self }
 }
 #[test]
-fn bindgen_test_layout_Struct_foo_union_with_nesting_h_unnamed_1() {
-    assert_eq!(::std::mem::size_of::<Struct_foo_union_with_nesting_h_unnamed_1>()
-               , 4usize);
-    assert_eq!(::std::mem::align_of::<Struct_foo_union_with_nesting_h_unnamed_1>()
-               , 2usize);
+fn bindgen_test_layout_foo() {
+    assert_eq!(::std::mem::size_of::<foo>() , 4usize);
+    assert_eq!(::std::mem::align_of::<foo>() , 4usize);
+}
+impl Clone for foo {
+    fn clone(&self) -> Self { *self }
 }

@@ -5,5 +5,5 @@
 
 
 #[repr(i32)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
-pub enum Enum_Foo { Bar = -2, Qux = 1, }
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum Foo { Bar = -2, Qux = 1, }

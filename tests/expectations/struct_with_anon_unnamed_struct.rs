@@ -6,31 +6,30 @@
 
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_foo {
-    pub foo_struct_with_anon_unnamed_struct_h_unnamed_1: Struct_foo_struct_with_anon_unnamed_struct_h_unnamed_1,
+pub struct foo {
+    pub __bindgen_anon_1: foo__bindgen_ty_bindgen_id_2,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_foo_struct_with_anon_unnamed_struct_h_unnamed_1 {
+pub struct foo__bindgen_ty_bindgen_id_2 {
     pub a: ::std::os::raw::c_uint,
     pub b: ::std::os::raw::c_uint,
 }
-impl ::std::clone::Clone for
- Struct_foo_struct_with_anon_unnamed_struct_h_unnamed_1 {
+#[test]
+fn bindgen_test_layout_foo__bindgen_ty_bindgen_id_2() {
+    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_bindgen_id_2>() ,
+               8usize);
+    assert_eq!(::std::mem::align_of::<foo__bindgen_ty_bindgen_id_2>() ,
+               4usize);
+}
+impl Clone for foo__bindgen_ty_bindgen_id_2 {
     fn clone(&self) -> Self { *self }
 }
 #[test]
-fn bindgen_test_layout_Struct_foo_struct_with_anon_unnamed_struct_h_unnamed_1() {
-    assert_eq!(::std::mem::size_of::<Struct_foo_struct_with_anon_unnamed_struct_h_unnamed_1>()
-               , 8usize);
-    assert_eq!(::std::mem::align_of::<Struct_foo_struct_with_anon_unnamed_struct_h_unnamed_1>()
-               , 4usize);
+fn bindgen_test_layout_foo() {
+    assert_eq!(::std::mem::size_of::<foo>() , 8usize);
+    assert_eq!(::std::mem::align_of::<foo>() , 4usize);
 }
-impl ::std::clone::Clone for Struct_foo {
+impl Clone for foo {
     fn clone(&self) -> Self { *self }
-}
-#[test]
-fn bindgen_test_layout_Struct_foo() {
-    assert_eq!(::std::mem::size_of::<Struct_foo>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Struct_foo>() , 4usize);
 }

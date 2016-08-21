@@ -6,47 +6,47 @@
 
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_HasPrivate {
+pub struct HasPrivate {
     pub mNotPrivate: ::std::os::raw::c_int,
     /** <div rustbindgen private></div> */
     mIsPrivate: ::std::os::raw::c_int,
 }
-impl ::std::clone::Clone for Struct_HasPrivate {
-    fn clone(&self) -> Self { *self }
-}
 #[test]
-fn bindgen_test_layout_Struct_HasPrivate() {
-    assert_eq!(::std::mem::size_of::<Struct_HasPrivate>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Struct_HasPrivate>() , 4usize);
+fn bindgen_test_layout_HasPrivate() {
+    assert_eq!(::std::mem::size_of::<HasPrivate>() , 8usize);
+    assert_eq!(::std::mem::align_of::<HasPrivate>() , 4usize);
+}
+impl Clone for HasPrivate {
+    fn clone(&self) -> Self { *self }
 }
 /** <div rustbindgen private></div> */
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_VeryPrivate {
+pub struct VeryPrivate {
     mIsPrivate: ::std::os::raw::c_int,
     mIsAlsoPrivate: ::std::os::raw::c_int,
 }
-impl ::std::clone::Clone for Struct_VeryPrivate {
-    fn clone(&self) -> Self { *self }
-}
 #[test]
-fn bindgen_test_layout_Struct_VeryPrivate() {
-    assert_eq!(::std::mem::size_of::<Struct_VeryPrivate>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Struct_VeryPrivate>() , 4usize);
+fn bindgen_test_layout_VeryPrivate() {
+    assert_eq!(::std::mem::size_of::<VeryPrivate>() , 8usize);
+    assert_eq!(::std::mem::align_of::<VeryPrivate>() , 4usize);
+}
+impl Clone for VeryPrivate {
+    fn clone(&self) -> Self { *self }
 }
 /** <div rustbindgen private></div> */
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_ContradictPrivate {
-    /** <div rustbindgen private=false></div> */
-    mNotPrivate: ::std::os::raw::c_int,
+pub struct ContradictPrivate {
+    /** <div rustbindgen private="false"></div> */
+    pub mNotPrivate: ::std::os::raw::c_int,
     mIsPrivate: ::std::os::raw::c_int,
 }
-impl ::std::clone::Clone for Struct_ContradictPrivate {
-    fn clone(&self) -> Self { *self }
-}
 #[test]
-fn bindgen_test_layout_Struct_ContradictPrivate() {
-    assert_eq!(::std::mem::size_of::<Struct_ContradictPrivate>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Struct_ContradictPrivate>() , 4usize);
+fn bindgen_test_layout_ContradictPrivate() {
+    assert_eq!(::std::mem::size_of::<ContradictPrivate>() , 8usize);
+    assert_eq!(::std::mem::align_of::<ContradictPrivate>() , 4usize);
+}
+impl Clone for ContradictPrivate {
+    fn clone(&self) -> Self { *self }
 }

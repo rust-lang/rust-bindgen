@@ -7,7 +7,7 @@
 /** <div rustbindgen nocopy></div> */
 #[repr(C)]
 #[derive(Debug)]
-pub struct Struct_CopiableButWait<T> {
+pub struct CopiableButWait<T> {
     pub whatever: ::std::os::raw::c_int,
-    pub _phantom0: ::std::marker::PhantomData<T>,
+    pub _phantom_0: ::std::marker::PhantomData<T>,
 }

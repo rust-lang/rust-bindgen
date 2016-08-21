@@ -4,19 +4,34 @@
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
 
+// To avoid rather annoying warnings when matching with CXCursor_xxx as a
+// constant.
+#![allow(non_upper_case_globals)]
+
 extern crate syntex_syntax as syntax;
 extern crate aster;
 extern crate quasi;
 extern crate clang_sys;
 extern crate libc;
+extern crate regex;
 #[macro_use]
 extern crate log;
 
-use std::collections::HashSet;
-use std::default::Default;
-use std::io::{Write, self};
+mod clangll;
+mod clang;
+mod ir;
+mod parse;
+mod regex_set;
+mod codegen {
+    include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
+}
+
+use std::borrow::Borrow;
+use std::io::{self, Write};
 use std::fs::OpenOptions;
 use std::path::Path;
+use std::marker;
+use std::collections::HashSet;
 
 use syntax::ast;
 use syntax::codemap::{DUMMY_SP, Span};
@@ -24,21 +39,16 @@ use syntax::print::pprust;
 use syntax::print::pp::eof;
 use syntax::ptr::P;
 
-use types::ModuleMap;
+use ir::context::BindgenContext;
+use ir::item::{Item, ItemId};
+use parse::{ClangItemParser, ParseError};
+use regex_set::RegexSet;
 
-mod types;
-mod clangll;
-mod clang;
-mod parser;
-mod hacks;
-mod gen {
-    include!(concat!(env!("OUT_DIR"), "/gen.rs"));
-}
-
-#[derive(Clone)]
+#[derive(Debug)]
 pub struct Builder<'a> {
     options: BindgenOptions,
-    logger: Option<&'a Logger>
+    // TODO: Before the logger was here, do we still want the lifetime?
+    phantom: marker::PhantomData<&'a ()>,
 }
 
 pub fn builder<'a>() -> Builder<'a> {
@@ -51,17 +61,22 @@ impl<'a> Builder<'a> {
     }
 
     pub fn match_pat<T: Into<String>>(&mut self, arg: T) -> &mut Self {
-        self.options.match_pat.push(arg.into());
+        self.options.match_pat.insert(arg.into());
         self
     }
 
-    pub fn blacklist_type<T: Into<String>>(&mut self, arg: T) -> &mut Self {
-        self.options.blacklist_type.push(arg.into());
+    pub fn hide_type<T: Into<String>>(&mut self, arg: T) -> &mut Self {
+        self.options.hidden_types.insert(arg.into());
         self
     }
 
     pub fn opaque_type<T: Into<String>>(&mut self, arg: T) -> &mut Self {
-        self.options.opaque_types.push(arg.into());
+        self.options.opaque_types.insert(arg.into());
+        self
+    }
+
+    pub fn whitelisted_type<T: Borrow<str>>(&mut self, arg: &T) -> &mut Self {
+        self.options.whitelisted_types.insert(arg);
         self
     }
 
@@ -124,36 +139,34 @@ impl<'a> Builder<'a> {
         self
     }
 
-    pub fn log(&mut self, logger: &'a Logger) -> &mut Self {
-        self.logger = Some(logger);
-        self
-    }
-
     pub fn disable_class_constants(&mut self) -> &mut Self {
         self.options.class_constants = false;
         self
     }
 
-    pub fn generate(&self) -> Result<Bindings, ()> {
-        Bindings::generate(&self.options, self.logger, None)
+    pub fn generate(self) -> Result<Bindings, ()> {
+        Bindings::generate(self.options, None)
     }
 }
 
 impl<'a> Default for Builder<'a> {
     fn default() -> Builder<'a> {
         Builder {
-            logger: None,
-            options: Default::default()
+            options: Default::default(),
+            phantom: marker::PhantomData,
         }
     }
 }
 
-#[derive(Clone)]
 /// Deprecated - use a `Builder` instead
+#[derive(Debug)]
 pub struct BindgenOptions {
-    pub match_pat: Vec<String>,
-    pub blacklist_type: Vec<String>,
-    pub opaque_types: Vec<String>,
+    pub match_pat: HashSet<String>,
+    pub hidden_types: HashSet<String>,
+    pub opaque_types: HashSet<String>,
+    pub whitelisted_types: RegexSet,
+    pub whitelisted_functions: RegexSet,
+    pub whitelisted_vars: RegexSet,
     pub builtins: bool,
     pub rust_enums: bool,
     pub links: Vec<(String, LinkType)>,
@@ -171,7 +184,7 @@ pub struct BindgenOptions {
     pub class_constants: bool,
     /// Wether to generate names that are **directly** under namespaces.
     pub namespaced_constants: bool,
-    // whether to use msvc mangling rules
+    /// Whether to use msvc mangling rules
     pub msvc_mangling: bool,
     pub override_enum_ty: String,
     pub raw_lines: Vec<String>,
@@ -183,9 +196,12 @@ pub struct BindgenOptions {
 impl Default for BindgenOptions {
     fn default() -> BindgenOptions {
         BindgenOptions {
-            match_pat: vec![],
-            blacklist_type: vec![],
-            opaque_types: vec![],
+            match_pat: Default::default(),
+            hidden_types: Default::default(),
+            opaque_types: Default::default(),
+            whitelisted_types: Default::default(),
+            whitelisted_functions: Default::default(),
+            whitelisted_vars: Default::default(),
             builtins: false,
             rust_enums: true,
             links: vec![],
@@ -216,11 +232,6 @@ pub enum LinkType {
     Framework
 }
 
-pub trait Logger {
-    fn error(&self, msg: &str);
-    fn warn(&self, msg: &str);
-}
-
 #[derive(Debug, Clone)]
 pub struct Bindings {
     module: ast::Mod,
@@ -229,25 +240,20 @@ pub struct Bindings {
 
 impl Bindings {
     /// Deprecated - use a `Builder` instead
-    pub fn generate(options: &BindgenOptions, logger: Option<&Logger>, span: Option<Span>) -> Result<Bindings, ()> {
-        let l = DummyLogger;
-        let logger = logger.unwrap_or(&l as &Logger);
-
+    pub fn generate(options: BindgenOptions, span: Option<Span>) -> Result<Bindings, ()> {
         let span = span.unwrap_or(DUMMY_SP);
 
-        let module_map = try!(parse_headers(options, logger));
+        let mut context = BindgenContext::new(options);
+        parse(&mut context);
 
         let module = ast::Mod {
             inner: span,
-            items: gen::gen_mods(&options.links[..],
-                                 module_map,
-                                 options.clone(),
-                                 span)
+            items: codegen::codegen(&mut context),
         };
 
         Ok(Bindings {
             module: module,
-            raw_lines: options.raw_lines.clone(),
+            raw_lines: context.options().raw_lines.clone(),
         })
     }
 
@@ -290,68 +296,6 @@ impl Bindings {
     }
 }
 
-
-struct DummyLogger;
-
-impl Logger for DummyLogger {
-    fn error(&self, _msg: &str) { }
-    fn warn(&self, _msg: &str) { }
-}
-
-fn parse_headers(options: &BindgenOptions, logger: &Logger) -> Result<ModuleMap, ()> {
-    fn str_to_ikind(s: &str) -> Option<types::IKind> {
-        match s {
-            "uchar"     => Some(types::IUChar),
-            "schar"     => Some(types::ISChar),
-            "ushort"    => Some(types::IUShort),
-            "sshort"    => Some(types::IShort),
-            "uint"      => Some(types::IUInt),
-            "sint"      => Some(types::IInt),
-            "ulong"     => Some(types::IULong),
-            "slong"     => Some(types::ILong),
-            "ulonglong" => Some(types::IULongLong),
-            "slonglong" => Some(types::ILongLong),
-            _           => None,
-        }
-    }
-
-    // TODO: Unify most of these with BindgenOptions?
-    let clang_opts = parser::ClangParserOptions {
-        builtin_names: builtin_names(),
-        builtins: options.builtins,
-        match_pat: options.match_pat.clone(),
-        emit_ast: options.emit_ast,
-        class_constants: options.class_constants,
-        namespaced_constants: options.namespaced_constants,
-        ignore_functions: options.ignore_functions,
-        ignore_methods: options.ignore_methods,
-        fail_on_unknown_type: options.fail_on_unknown_type,
-        enable_cxx_namespaces: options.enable_cxx_namespaces,
-        override_enum_ty: str_to_ikind(&options.override_enum_ty),
-        clang_args: options.clang_args.clone(),
-        opaque_types: options.opaque_types.clone(),
-        blacklist_type: options.blacklist_type.clone(),
-        msvc_mangling: options.msvc_mangling,
-    };
-
-    parser::parse(clang_opts, logger)
-}
-
-fn builtin_names() -> HashSet<String> {
-    let mut names = HashSet::new();
-    let keys = [
-        "__va_list_tag",
-        "__va_list",
-        "__builtin_va_list",
-    ];
-
-    for s in &keys {
-        names.insert((*s).to_owned());
-    }
-
-    names
-}
-
 #[test]
 fn builder_state() {
     let logger = DummyLogger;
@@ -364,4 +308,58 @@ fn builder_state() {
     assert!(build.logger.is_some());
     assert!(build.options.clang_args.binary_search(&"example.h".to_owned()).is_ok());
     assert!(build.options.links.binary_search(&("m".to_owned(), LinkType::Static)).is_ok());
+}
+
+/// Determines whether the given cursor is in any of the files matched by the
+/// options.
+fn filter_builtins(ctx: &BindgenContext, cursor: &clang::Cursor) -> bool {
+    let (file, _, _, _) = cursor.location().location();
+
+    match file.name() {
+        None => ctx.options().builtins,
+        Some(..) => true,
+    }
+}
+
+pub fn parse_one(ctx: &mut BindgenContext,
+                 cursor: clang::Cursor,
+                 parent: Option<ItemId>,
+                 children: &mut Vec<ItemId>) -> clangll::Enum_CXVisitorResult {
+    if !filter_builtins(ctx, &cursor) {
+        return CXChildVisit_Continue
+    }
+
+    use clangll::CXChildVisit_Continue;
+    match Item::parse(cursor, parent, ctx) {
+        Ok(id) => children.push(id),
+        Err(ParseError::Continue) => {},
+        Err(ParseError::Recurse) => {
+            cursor.visit(|child, _| parse_one(ctx, *child, parent, children));
+        }
+    }
+    CXChildVisit_Continue
+}
+
+fn parse(context: &mut BindgenContext) {
+    use clang::Diagnostic;
+    use clangll::*;
+
+    for d in context.translation_unit().diags().iter() {
+        let msg = d.format(Diagnostic::default_opts());
+        let is_err = d.severity() >= CXDiagnostic_Error;
+        println!("{}, err: {}", msg, is_err);
+    }
+
+    let cursor = context.translation_unit().cursor();
+    if context.options().emit_ast {
+        cursor.visit(|cur, _| clang::ast_dump(cur, 0));
+    }
+
+    let root = context.root_module();
+    context.with_module(root, |context, children| {
+        cursor.visit(|cursor, _| parse_one(context, *cursor, None, children))
+    });
+
+    assert!(context.current_module() == context.root_module(),
+            "How did this happen?");
 }

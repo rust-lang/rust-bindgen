@@ -4,7 +4,7 @@
 #![allow(non_snake_case)]
 
 
-#[derive(Copy, Debug)]
+#[derive(Debug)]
 #[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
 impl <T> __BindgenUnionField<T> {
@@ -23,64 +23,36 @@ impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
     #[inline]
     fn clone(&self) -> Self { Self::new() }
 }
+impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Struct_NastyStruct<T> {
+pub struct NastyStruct<T> {
     pub mIsSome: bool,
-    pub mStorage: Union_NastyStruct_union_template_hpp_unnamed_1<T>,
-    pub NastyStruct_union_template_hpp_unnamed_2: Union_NastyStruct_union_template_hpp_unnamed_2<T>,
+    pub mStorage: NastyStruct__bindgen_ty_bindgen_id_5<T>,
+    pub __bindgen_anon_1: NastyStruct__bindgen_ty_bindgen_id_9<T>,
+    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Union_NastyStruct_union_template_hpp_unnamed_1<T> {
+pub struct NastyStruct__bindgen_ty_bindgen_id_5<T> {
     pub mFoo: __BindgenUnionField<*mut ::std::os::raw::c_void>,
     pub mDummy: __BindgenUnionField<::std::os::raw::c_ulong>,
-    pub _bindgen_data_: u64,
-    pub _phantom0: ::std::marker::PhantomData<T>,
-}
-impl <T> Union_NastyStruct_union_template_hpp_unnamed_1<T> {
-    pub unsafe fn mFoo(&mut self) -> *mut *mut ::std::os::raw::c_void {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn mDummy(&mut self) -> *mut ::std::os::raw::c_ulong {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
+    pub bindgen_union_field: u64,
+    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Union_NastyStruct_union_template_hpp_unnamed_2<T> {
+pub struct NastyStruct__bindgen_ty_bindgen_id_9<T> {
     pub wat: __BindgenUnionField<::std::os::raw::c_short>,
     pub wut: __BindgenUnionField<*mut ::std::os::raw::c_int>,
-    pub _bindgen_data_: u64,
-    pub _phantom0: ::std::marker::PhantomData<T>,
-}
-impl <T> Union_NastyStruct_union_template_hpp_unnamed_2<T> {
-    pub unsafe fn wat(&mut self) -> *mut ::std::os::raw::c_short {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn wut(&mut self) -> *mut *mut ::std::os::raw::c_int {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
+    pub bindgen_union_field: u64,
+    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Union_Whatever<T> {
+pub struct Whatever<T> {
     pub mTPtr: __BindgenUnionField<*mut ::std::os::raw::c_void>,
     pub mInt: __BindgenUnionField<::std::os::raw::c_int>,
-    pub _bindgen_data_: u64,
-    pub _phantom0: ::std::marker::PhantomData<T>,
-}
-impl <T> Union_Whatever<T> {
-    pub unsafe fn mTPtr(&mut self) -> *mut *mut ::std::os::raw::c_void {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn mInt(&mut self) -> *mut ::std::os::raw::c_int {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
+    pub bindgen_union_field: u64,
+    pub _phantom_0: ::std::marker::PhantomData<T>,
 }

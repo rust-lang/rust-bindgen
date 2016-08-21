@@ -6,34 +6,40 @@
 
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_C {
+pub struct C {
     pub _bitfield_1: u8,
 }
-impl Struct_C {
+#[test]
+fn bindgen_test_layout_C() {
+    assert_eq!(::std::mem::size_of::<C>() , 1usize);
+    assert_eq!(::std::mem::align_of::<C>() , 1usize);
+}
+impl Clone for C {
+    fn clone(&self) -> Self { *self }
+}
+impl C {
     #[inline]
-    pub fn a(&self) -> u8 { (self._bitfield_1 & (1usize as u8)) >> 0usize }
+    pub fn a(&self) -> bool {
+        unsafe {
+            ::std::mem::transmute(((self._bitfield_1 & (1usize as u8)) >>
+                                       0u32) as u8)
+        }
+    }
     #[inline]
     pub fn set_a(&mut self, val: bool) {
         self._bitfield_1 &= !(1usize as u8);
-        self._bitfield_1 |= ((val as u8) << 0usize) & (1usize as u8);
+        self._bitfield_1 |= ((val as u8 as u8) << 0u32) & (1usize as u8);
     }
     #[inline]
-    pub fn b(&self) -> u8 { (self._bitfield_1 & (254usize as u8)) >> 1usize }
+    pub fn b(&self) -> bool {
+        unsafe {
+            ::std::mem::transmute(((self._bitfield_1 & (254usize as u8)) >>
+                                       1u32) as u8)
+        }
+    }
     #[inline]
-    pub fn set_b(&mut self, val: u8) {
+    pub fn set_b(&mut self, val: bool) {
         self._bitfield_1 &= !(254usize as u8);
-        self._bitfield_1 |= ((val as u8) << 1usize) & (254usize as u8);
+        self._bitfield_1 |= ((val as u8 as u8) << 1u32) & (254usize as u8);
     }
-    #[inline]
-    pub fn new_bitfield_1(a: bool, b: u8) -> u8 {
-        0 | ((a as u8) << 0u32) | ((b as u8) << 1u32)
-    }
-}
-impl ::std::clone::Clone for Struct_C {
-    fn clone(&self) -> Self { *self }
-}
-#[test]
-fn bindgen_test_layout_Struct_C() {
-    assert_eq!(::std::mem::size_of::<Struct_C>() , 1usize);
-    assert_eq!(::std::mem::align_of::<Struct_C>() , 1usize);
 }

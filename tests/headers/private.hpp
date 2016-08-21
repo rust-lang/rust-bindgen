@@ -15,7 +15,7 @@ struct VeryPrivate {
 
 /** <div rustbindgen private></div> */
 struct ContradictPrivate {
-    /** <div rustbindgen private=false></div> */
+    /** <div rustbindgen private="false"></div> */
     int mNotPrivate;
     int mIsPrivate;
 };

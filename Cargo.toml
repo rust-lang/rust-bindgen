@@ -1,14 +1,18 @@
 [package]
-authors = ["Jyun-Yan You <jyyou.tw@gmail.com>"]
+authors = [
+  "Jyun-Yan You <jyyou.tw@gmail.com>",
+  "Emilio Cobos Álvarez <ecoal95@gmail.com>",
+  "The Servo project developers",
+]
 build = "build.rs"
 description = "A binding generator for Rust"
-homepage = "https://github.com/crabtw/rust-bindgen"
+homepage = "https://github.com/servo/rust-bindgen"
 keywords = ["bindings", "ffi", "code-generation"]
 license = "BSD-3-Clause"
 name = "bindgen"
 readme = "README.md"
-repository = "https://github.com/crabtw/rust-bindgen"
-version = "0.16.0"
+repository = "https://github.com/servo/rust-bindgen"
+version = "0.17.0"
 
 [[bin]]
 doc = false
@@ -20,14 +24,16 @@ quasi_codegen = "0.15"
 [dependencies]
 clang-sys = "0.8.0"
 docopt = "0.6.82"
-libc = "0.2.*"
-log = "0.3.*"
+libc = "0.2"
+log = "0.3"
+env_logger = "0.3"
 rustc-serialize = "0.3.19"
-syntex_syntax = "0.38"
+syntex_syntax = "0.43"
+regex = "0.1"
 
 [dependencies.aster]
 features = ["with-syntex"]
-version = "0.21.1"
+version = "0.26"
 
 [dependencies.clippy]
 optional = true
@@ -35,7 +41,7 @@ version = "*"
 
 [dependencies.quasi]
 features = ["with-syntex"]
-version = "0.15"
+version = "0.19"
 
 [features]
 llvm_stable = []

@@ -6,7 +6,7 @@
 
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_SomeAccessors {
+pub struct SomeAccessors {
     pub mNoAccessor: ::std::os::raw::c_int,
     /** <div rustbindgen accessor></div> */
     pub mBothAccessors: ::std::os::raw::c_int,
@@ -15,11 +15,20 @@ pub struct Struct_SomeAccessors {
     /** <div rustbindgen accessor="immutable"></div> */
     pub mImmutableAccessor: ::std::os::raw::c_int,
 }
-impl Struct_SomeAccessors {
+#[test]
+fn bindgen_test_layout_SomeAccessors() {
+    assert_eq!(::std::mem::size_of::<SomeAccessors>() , 16usize);
+    assert_eq!(::std::mem::align_of::<SomeAccessors>() , 4usize);
+}
+impl Clone for SomeAccessors {
+    fn clone(&self) -> Self { *self }
+}
+impl SomeAccessors {
     #[inline]
     pub fn get_mBothAccessors(&self) -> &::std::os::raw::c_int {
         &self.mBothAccessors
     }
+    #[inline]
     pub fn get_mBothAccessors_mut(&mut self) -> &mut ::std::os::raw::c_int {
         &mut self.mBothAccessors
     }
@@ -27,6 +36,7 @@ impl Struct_SomeAccessors {
     pub unsafe fn get_mUnsafeAccessors(&self) -> &::std::os::raw::c_int {
         &self.mUnsafeAccessors
     }
+    #[inline]
     pub unsafe fn get_mUnsafeAccessors_mut(&mut self)
      -> &mut ::std::os::raw::c_int {
         &mut self.mUnsafeAccessors
@@ -36,26 +46,27 @@ impl Struct_SomeAccessors {
         &self.mImmutableAccessor
     }
 }
-impl ::std::clone::Clone for Struct_SomeAccessors {
-    fn clone(&self) -> Self { *self }
-}
-#[test]
-fn bindgen_test_layout_Struct_SomeAccessors() {
-    assert_eq!(::std::mem::size_of::<Struct_SomeAccessors>() , 16usize);
-    assert_eq!(::std::mem::align_of::<Struct_SomeAccessors>() , 4usize);
-}
 /** <div rustbindgen accessor></div> */
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_AllAccessors {
+pub struct AllAccessors {
     pub mBothAccessors: ::std::os::raw::c_int,
     pub mAlsoBothAccessors: ::std::os::raw::c_int,
 }
-impl Struct_AllAccessors {
+#[test]
+fn bindgen_test_layout_AllAccessors() {
+    assert_eq!(::std::mem::size_of::<AllAccessors>() , 8usize);
+    assert_eq!(::std::mem::align_of::<AllAccessors>() , 4usize);
+}
+impl Clone for AllAccessors {
+    fn clone(&self) -> Self { *self }
+}
+impl AllAccessors {
     #[inline]
     pub fn get_mBothAccessors(&self) -> &::std::os::raw::c_int {
         &self.mBothAccessors
     }
+    #[inline]
     pub fn get_mBothAccessors_mut(&mut self) -> &mut ::std::os::raw::c_int {
         &mut self.mBothAccessors
     }
@@ -63,31 +74,33 @@ impl Struct_AllAccessors {
     pub fn get_mAlsoBothAccessors(&self) -> &::std::os::raw::c_int {
         &self.mAlsoBothAccessors
     }
+    #[inline]
     pub fn get_mAlsoBothAccessors_mut(&mut self)
      -> &mut ::std::os::raw::c_int {
         &mut self.mAlsoBothAccessors
     }
 }
-impl ::std::clone::Clone for Struct_AllAccessors {
-    fn clone(&self) -> Self { *self }
-}
-#[test]
-fn bindgen_test_layout_Struct_AllAccessors() {
-    assert_eq!(::std::mem::size_of::<Struct_AllAccessors>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Struct_AllAccessors>() , 4usize);
-}
 /** <div rustbindgen accessor="unsafe"></div> */
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_AllUnsafeAccessors {
+pub struct AllUnsafeAccessors {
     pub mBothAccessors: ::std::os::raw::c_int,
     pub mAlsoBothAccessors: ::std::os::raw::c_int,
 }
-impl Struct_AllUnsafeAccessors {
+#[test]
+fn bindgen_test_layout_AllUnsafeAccessors() {
+    assert_eq!(::std::mem::size_of::<AllUnsafeAccessors>() , 8usize);
+    assert_eq!(::std::mem::align_of::<AllUnsafeAccessors>() , 4usize);
+}
+impl Clone for AllUnsafeAccessors {
+    fn clone(&self) -> Self { *self }
+}
+impl AllUnsafeAccessors {
     #[inline]
     pub unsafe fn get_mBothAccessors(&self) -> &::std::os::raw::c_int {
         &self.mBothAccessors
     }
+    #[inline]
     pub unsafe fn get_mBothAccessors_mut(&mut self)
      -> &mut ::std::os::raw::c_int {
         &mut self.mBothAccessors
@@ -96,23 +109,16 @@ impl Struct_AllUnsafeAccessors {
     pub unsafe fn get_mAlsoBothAccessors(&self) -> &::std::os::raw::c_int {
         &self.mAlsoBothAccessors
     }
+    #[inline]
     pub unsafe fn get_mAlsoBothAccessors_mut(&mut self)
      -> &mut ::std::os::raw::c_int {
         &mut self.mAlsoBothAccessors
     }
 }
-impl ::std::clone::Clone for Struct_AllUnsafeAccessors {
-    fn clone(&self) -> Self { *self }
-}
-#[test]
-fn bindgen_test_layout_Struct_AllUnsafeAccessors() {
-    assert_eq!(::std::mem::size_of::<Struct_AllUnsafeAccessors>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Struct_AllUnsafeAccessors>() , 4usize);
-}
 /** <div rustbindgen accessor></div> */
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_ContradictAccessors {
+pub struct ContradictAccessors {
     pub mBothAccessors: ::std::os::raw::c_int,
     /** <div rustbindgen accessor="false"></div> */
     pub mNoAccessors: ::std::os::raw::c_int,
@@ -121,11 +127,20 @@ pub struct Struct_ContradictAccessors {
     /** <div rustbindgen accessor="immutable"></div> */
     pub mImmutableAccessor: ::std::os::raw::c_int,
 }
-impl Struct_ContradictAccessors {
+#[test]
+fn bindgen_test_layout_ContradictAccessors() {
+    assert_eq!(::std::mem::size_of::<ContradictAccessors>() , 16usize);
+    assert_eq!(::std::mem::align_of::<ContradictAccessors>() , 4usize);
+}
+impl Clone for ContradictAccessors {
+    fn clone(&self) -> Self { *self }
+}
+impl ContradictAccessors {
     #[inline]
     pub fn get_mBothAccessors(&self) -> &::std::os::raw::c_int {
         &self.mBothAccessors
     }
+    #[inline]
     pub fn get_mBothAccessors_mut(&mut self) -> &mut ::std::os::raw::c_int {
         &mut self.mBothAccessors
     }
@@ -133,6 +148,7 @@ impl Struct_ContradictAccessors {
     pub unsafe fn get_mUnsafeAccessors(&self) -> &::std::os::raw::c_int {
         &self.mUnsafeAccessors
     }
+    #[inline]
     pub unsafe fn get_mUnsafeAccessors_mut(&mut self)
      -> &mut ::std::os::raw::c_int {
         &mut self.mUnsafeAccessors
@@ -142,53 +158,47 @@ impl Struct_ContradictAccessors {
         &self.mImmutableAccessor
     }
 }
-impl ::std::clone::Clone for Struct_ContradictAccessors {
-    fn clone(&self) -> Self { *self }
-}
-#[test]
-fn bindgen_test_layout_Struct_ContradictAccessors() {
-    assert_eq!(::std::mem::size_of::<Struct_ContradictAccessors>() , 16usize);
-    assert_eq!(::std::mem::align_of::<Struct_ContradictAccessors>() , 4usize);
-}
 /** <div rustbindgen accessor replaces="Replaced"></div> */
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_Replaced {
+pub struct Replaced {
     pub mAccessor: ::std::os::raw::c_int,
 }
-impl Struct_Replaced {
+#[test]
+fn bindgen_test_layout_Replaced() {
+    assert_eq!(::std::mem::size_of::<Replaced>() , 4usize);
+    assert_eq!(::std::mem::align_of::<Replaced>() , 4usize);
+}
+impl Clone for Replaced {
+    fn clone(&self) -> Self { *self }
+}
+impl Replaced {
     #[inline]
     pub fn get_mAccessor(&self) -> &::std::os::raw::c_int { &self.mAccessor }
+    #[inline]
     pub fn get_mAccessor_mut(&mut self) -> &mut ::std::os::raw::c_int {
         &mut self.mAccessor
     }
 }
-impl ::std::clone::Clone for Struct_Replaced {
-    fn clone(&self) -> Self { *self }
-}
-#[test]
-fn bindgen_test_layout_Struct_Replaced() {
-    assert_eq!(::std::mem::size_of::<Struct_Replaced>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Struct_Replaced>() , 4usize);
-}
 /** <div rustbindgen accessor></div> */
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_Wrapper {
-    pub mReplaced: Struct_Replaced,
-}
-impl Struct_Wrapper {
-    #[inline]
-    pub fn get_mReplaced(&self) -> &Struct_Replaced { &self.mReplaced }
-    pub fn get_mReplaced_mut(&mut self) -> &mut Struct_Replaced {
-        &mut self.mReplaced
-    }
-}
-impl ::std::clone::Clone for Struct_Wrapper {
-    fn clone(&self) -> Self { *self }
+pub struct Wrapper {
+    pub mReplaced: Replaced,
 }
 #[test]
-fn bindgen_test_layout_Struct_Wrapper() {
-    assert_eq!(::std::mem::size_of::<Struct_Wrapper>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Struct_Wrapper>() , 4usize);
+fn bindgen_test_layout_Wrapper() {
+    assert_eq!(::std::mem::size_of::<Wrapper>() , 4usize);
+    assert_eq!(::std::mem::align_of::<Wrapper>() , 4usize);
+}
+impl Clone for Wrapper {
+    fn clone(&self) -> Self { *self }
+}
+impl Wrapper {
+    #[inline]
+    pub fn get_mReplaced(&self) -> &Replaced { &self.mReplaced }
+    #[inline]
+    pub fn get_mReplaced_mut(&mut self) -> &mut Replaced {
+        &mut self.mReplaced
+    }
 }

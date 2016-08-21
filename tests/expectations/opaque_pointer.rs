@@ -4,7 +4,11 @@
 #![allow(non_snake_case)]
 
 
+/**
+ * <div rustbindgen opaque></div>
+ */
 #[repr(C)]
+#[derive(Debug, Copy)]
 pub struct OtherOpaque {
     pub _bindgen_opaque_blob: u32,
 }
@@ -13,16 +17,29 @@ fn bindgen_test_layout_OtherOpaque() {
     assert_eq!(::std::mem::size_of::<OtherOpaque>() , 4usize);
     assert_eq!(::std::mem::align_of::<OtherOpaque>() , 4usize);
 }
+impl Clone for OtherOpaque {
+    fn clone(&self) -> Self { *self }
+}
+/**
+ * <div rustbindgen opaque></div>
+ */
 #[repr(C)]
-pub struct Opaque;
+#[derive(Debug, Copy, Clone)]
+pub struct Opaque<T> {
+    pub _phantom_0: ::std::marker::PhantomData<T>,
+}
 #[repr(C)]
-pub struct Struct_WithOpaquePtr {
-    pub whatever: u64,
+#[derive(Debug, Copy)]
+pub struct WithOpaquePtr {
+    pub whatever: *mut Opaque<::std::os::raw::c_int>,
     pub other: u32,
     pub t: u32,
 }
 #[test]
-fn bindgen_test_layout_Struct_WithOpaquePtr() {
-    assert_eq!(::std::mem::size_of::<Struct_WithOpaquePtr>() , 16usize);
-    assert_eq!(::std::mem::align_of::<Struct_WithOpaquePtr>() , 8usize);
+fn bindgen_test_layout_WithOpaquePtr() {
+    assert_eq!(::std::mem::size_of::<WithOpaquePtr>() , 16usize);
+    assert_eq!(::std::mem::align_of::<WithOpaquePtr>() , 8usize);
+}
+impl Clone for WithOpaquePtr {
+    fn clone(&self) -> Self { *self }
 }

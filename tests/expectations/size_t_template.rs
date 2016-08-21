@@ -5,12 +5,15 @@
 
 
 #[repr(C)]
-#[derive(Debug)]
-pub struct Struct_C {
+#[derive(Debug, Copy)]
+pub struct C {
     pub arr: [u32; 3usize],
 }
 #[test]
-fn bindgen_test_layout_Struct_C() {
-    assert_eq!(::std::mem::size_of::<Struct_C>() , 12usize);
-    assert_eq!(::std::mem::align_of::<Struct_C>() , 4usize);
+fn bindgen_test_layout_C() {
+    assert_eq!(::std::mem::size_of::<C>() , 12usize);
+    assert_eq!(::std::mem::align_of::<C>() , 4usize);
+}
+impl Clone for C {
+    fn clone(&self) -> Self { *self }
 }

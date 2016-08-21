@@ -14,4 +14,4 @@ class Wat3<3>;
 /** <div rustbindgen opaque></div> */
 typedef RandomTemplate<int> ShouldBeOpaque;
 
-typedef RandomTemplate<int> ShouldNotBeOpaque;
+typedef RandomTemplate<float> ShouldNotBeOpaque;

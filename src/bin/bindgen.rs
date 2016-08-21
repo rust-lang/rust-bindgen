@@ -2,6 +2,7 @@
 #![crate_type = "bin"]
 
 extern crate bindgen;
+extern crate env_logger;
 #[macro_use]
 extern crate docopt;
 #[macro_use]
@@ -9,25 +10,12 @@ extern crate log;
 extern crate clang_sys;
 extern crate rustc_serialize;
 
-use bindgen::{Bindings, BindgenOptions, LinkType, Logger};
+use bindgen::{Bindings, BindgenOptions, LinkType};
 use std::io;
 use std::path;
 use std::env;
 use std::default::Default;
 use std::fs;
-use std::process::exit;
-
-struct StdLogger;
-
-impl Logger for StdLogger {
-    fn error(&self, msg: &str) {
-        println!("{}", msg);
-    }
-
-    fn warn(&self, msg: &str) {
-        println!("{}", msg);
-    }
-}
 
 const USAGE: &'static str = "
 Usage:
@@ -40,6 +28,9 @@ Usage:
         [--dtor-attr=<attr>...] \
         [--opaque-type=<type>...] \
         [--blacklist-type=<type>...] \
+        [--whitelist-type=<type>...] \
+        [--whitelist-function=<name>...] \
+        [--whitelist-var=<name>...] \
         <input-header> \
         [-- <clang-args>...]
 
@@ -95,15 +86,25 @@ Options:
                                     ulonglong
                                     slonglong
 
-    --raw-line=<raw>              TODO
-    --dtor-attr=<attr>            TODO
-    --no-class-constants          TODO
-    --no-unstable-rust            TODO
-    --no-namespaced-constants     TODO
-    --no-bitfield-methods         TODO
-    --ignore-methods              TODO
-    --opaque-type=<type>          TODO
-    --blacklist-type=<type>       TODO
+    --raw-line=<raw>              Add a raw line at the beginning of the output.
+    --dtor-attr=<attr>            Attributes to add to structures with destructor.
+    --no-class-constants          Avoid generating class constants.
+    --no-unstable-rust            Avoid generating unstable rust.
+    --no-namespaced-constants     Avoid generating constants right under namespaces.
+    --no-bitfield-methods         Avoid generating methods for bitfield access.
+    --ignore-methods              Avoid generating all kind of methods.
+    --opaque-type=<type>          Mark a type as opaque.
+    --blacklist-type=<type>       Mark a type as hidden.
+    --whitelist-type=<type>       Whitelist the type. If this set or any other
+                                  of the whitelisting sets is not empty, then
+                                  all the non-whitelisted types (or dependant)
+                                  won't be generated.
+    --whitelist-function=<regex>  Whitelist all the free-standing functions
+                                  matching <regex>.  Same behavior on emptyness
+                                  than the type whitelisting.
+    --whitelist-var=<regex>       Whitelist all the free-standing variables
+                                  matching <regex>.  Same behavior on emptyness
+                                  than the type whitelisting.
 
     <clang-args>                  Options other than stated above are passed
                                   directly through to clang.
@@ -134,6 +135,9 @@ struct Args {
     flag_ignore_methods: bool,
     flag_opaque_type: Vec<String>,
     flag_blacklist_type: Vec<String>,
+    flag_whitelist_type: Vec<String>,
+    flag_whitelist_function: Vec<String>,
+    flag_whitelist_var: Vec<String>,
     arg_clang_args: Vec<String>,
 }
 
@@ -182,7 +186,10 @@ impl Into<ParseResult<(BindgenOptions, Box<io::Write>)>> for Args {
         options.gen_bitfield_methods = !self.flag_no_bitfield_methods;
         options.ignore_methods = self.flag_ignore_methods;
         options.opaque_types.extend(self.flag_opaque_type.drain(..));
-        options.blacklist_type.extend(self.flag_blacklist_type.drain(..));
+        options.hidden_types.extend(self.flag_blacklist_type.drain(..));
+        options.whitelisted_types.extend(self.flag_whitelist_type.drain(..));
+        options.whitelisted_functions.extend(self.flag_whitelist_function.drain(..));
+        options.whitelisted_vars.extend(self.flag_whitelist_var.drain(..));
         options.clang_args.extend(self.arg_clang_args.drain(..));
         options.clang_args.push(self.arg_input_header);
 
@@ -191,6 +198,13 @@ impl Into<ParseResult<(BindgenOptions, Box<io::Write>)>> for Args {
 }
 
 pub fn main() {
+    log::set_logger(|max_log_level| {
+        use env_logger::Logger;
+        let env_logger = Logger::new();
+        max_log_level.set(env_logger.filter());
+        Box::new(env_logger)
+    }).expect("Failed to set logger.");
+
     let mut bind_args: Vec<_> = env::args().collect();
 
     if let Some(clang) = clang_sys::support::Clang::find(None) {
@@ -217,24 +231,13 @@ pub fn main() {
         .and_then(|d| d.argv(bind_args.iter()).decode())
         .unwrap_or_else(|e| e.exit());
 
-    let logger = StdLogger;
     let result: ParseResult<_> = args.into();
     let (options, out) = result.unwrap_or_else(|msg| {
-        logger.error(&msg);
-        exit(-1);
+        panic!("Failed to generate_bindings: {:?}", msg);
     });
 
-    match Bindings::generate(&options, Some(&logger as &Logger), None) {
-        Ok(bindings) => match bindings.write(out) {
-            Ok(()) => (),
-            Err(e) => {
-                logger.error(&format!("Unable to write bindings to file. {}", e));
-                exit(-1);
-            }
-        },
-        Err(()) => {
-            logger.error("Failed to generate bindings".into());
-            exit(-1);
-        }
-    }
+    let bindings = Bindings::generate(options, None)
+                        .expect("Unable to generate bindings");
+    bindings.write(out)
+            .expect("Unable to write bindings to file.");
 }
