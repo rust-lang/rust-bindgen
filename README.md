@@ -33,16 +33,28 @@ with more features (such as detection of inlined functions).
 # pacman -S clang clang-tools-extra
 ```
 
+### Building clang 3.9
+
+Follow the instructions here: http://clang.llvm.org/get_started.html
+
+Those instructions list optional steps. For bindgen:
+
+* Checkout and build the extra-clang-tools
+* Checkout and build the compiler-rt
+* You do not need to checkout or build libcxx
+
 ## Building
 
 ```
 $ cargo build --features llvm_stable
 ```
 
-If you want a build with extra features (llvm 3.9) then you can just use:
+If you want a build with extra features (llvm 3.9) then you can use:
 
 ```
-$ cargo build
+$ LIBCLANG_PATH=path/to/clang-3.9/build/lib \
+    LD_LIBRARY_PATH=path/to/clang-3.9/build/lib \
+    cargo build
 ```
 
 # Command Line Usage
