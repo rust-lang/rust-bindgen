@@ -1,38 +1,49 @@
 [package]
-name = "bindgen"
-version = "0.16.0"
-description = "A binding generator for Rust"
 authors = ["Jyun-Yan You <jyyou.tw@gmail.com>"]
-license = "BSD-3-Clause"
-homepage = "https://github.com/crabtw/rust-bindgen"
-repository = "https://github.com/crabtw/rust-bindgen"
-readme = "README.md"
-keywords = [ "bindings", "ffi", "code-generation" ]
 build = "build.rs"
+description = "A binding generator for Rust"
+homepage = "https://github.com/crabtw/rust-bindgen"
+keywords = ["bindings", "ffi", "code-generation"]
+license = "BSD-3-Clause"
+name = "bindgen"
+readme = "README.md"
+repository = "https://github.com/crabtw/rust-bindgen"
+version = "0.16.0"
 
-[dependencies]
-aster = { version = "0.21.1", features = ["with-syntex"] }
-quasi = { version = "0.15", features = ["with-syntex"] }
-clippy = { version = "*", optional = true }
-syntex_syntax = "0.38"
-log = "0.3.*"
-libc = "0.2.*"
-clang-sys = "0.8.0"
+[[bin]]
+doc = false
+name = "bindgen"
 
 [build-dependencies]
 quasi_codegen = "0.15"
 
+[dependencies]
+clang-sys = "0.8.0"
+docopt = "0.6.82"
+libc = "0.2.*"
+log = "0.3.*"
+rustc-serialize = "0.3.19"
+syntex_syntax = "0.38"
+
+[dependencies.aster]
+features = ["with-syntex"]
+version = "0.21.1"
+
+[dependencies.clippy]
+optional = true
+version = "*"
+
+[dependencies.quasi]
+features = ["with-syntex"]
+version = "0.15"
+
 [features]
-static = []
 llvm_stable = []
+static = []
 
 [lib]
 name = "bindgen"
 path = "src/lib.rs"
-
-[[bin]]
-name = "bindgen"
-doc = false
 
 [[test]]
 name = "tests"
