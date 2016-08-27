@@ -1,4 +1,4 @@
-// bindgen-flags: -no-namespaced-constants
+// bindgen-flags: --no-namespaced-constants
 namespace foo {
     const int FOO = 4;
 }

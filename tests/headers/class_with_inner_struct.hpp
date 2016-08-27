@@ -1,4 +1,4 @@
-// bindgen-flags: -std=c++11
+// bindgen-flags: -- -std=c++11
 
 class A {
     unsigned c;

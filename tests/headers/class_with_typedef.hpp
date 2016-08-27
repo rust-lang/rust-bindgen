@@ -1,4 +1,4 @@
-// bindgen-flags: -no-type-renaming
+// bindgen-flags: --no-type-renaming
 
 typedef int AnotherInt;
 
