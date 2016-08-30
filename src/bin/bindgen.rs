@@ -143,8 +143,6 @@ impl Into<ParseResult<(BindgenOptions, Box<io::Write>)>> for Args {
     fn into(mut self) -> Result<(BindgenOptions, Box<io::Write>), String> {
         let mut options: BindgenOptions = Default::default();
 
-        options.clang_args.push(self.arg_input_header);
-
         for lib in self.flag_link.drain(..) {
             options.links.push((lib, LinkType::Default));
         }
@@ -186,6 +184,7 @@ impl Into<ParseResult<(BindgenOptions, Box<io::Write>)>> for Args {
         options.opaque_types.extend(self.flag_opaque_type.drain(..));
         options.blacklist_type.extend(self.flag_blacklist_type.drain(..));
         options.clang_args.extend(self.arg_clang_args.drain(..));
+        options.clang_args.push(self.arg_input_header);
 
         Ok((options, out))
     }
