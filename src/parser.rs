@@ -1490,6 +1490,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<ModuleMap, 
     }
 
     if ctx.err_count > 0 {
+        logger.error(&format!("{} errors after diagnostics", ctx.err_count));
         return Err(())
     }
 
@@ -1510,6 +1511,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<ModuleMap, 
     ix.dispose();
 
     if ctx.err_count > 0 {
+        logger.error(&format!("{} errors after translation", ctx.err_count));
         return Err(())
     }
 

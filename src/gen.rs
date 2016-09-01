@@ -968,6 +968,7 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo,
             vffields.push(field);
         }
 
+        let mut counts: HashMap<String, isize> = HashMap::new();
         for vm in ci.vmethods.iter() {
             let ty = match vm.ty {
                 TFuncPtr(ref sig) => {
@@ -977,7 +978,19 @@ fn cstruct_to_rs(ctx: &mut GenCtx, name: &str, ci: CompInfo,
                 _ => unreachable!()
             };
 
-            let name = first(rust_id(ctx, &vm.name));
+            let mut name = vm.name.clone();
+            let mut count = 0;
+            match counts.get(&vm.name) {
+                Some(x) => {
+                    count = *x;
+                    name.push_str(&x.to_string());
+                },
+                None => ()
+            }
+            count += 1;
+            counts.insert(vm.name.clone(), count);
+
+            let name = first(rust_id(ctx, &name));
 
             vffields.push(ast::StructField {
                 span: ctx.span,
