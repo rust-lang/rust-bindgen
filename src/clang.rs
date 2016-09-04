@@ -308,7 +308,9 @@ pub struct Index {
 
 impl Index {
     pub fn create(pch: bool, diag: bool) -> Index {
-        unsafe { Index { x: clang_createIndex(pch as c_int, diag as c_int) } }
+        let x = clang_createIndex(pch as c_int, diag as c_int);
+        assert!(!x.is_null());
+        unsafe { Index { x: x } }
     }
 
     pub fn dispose(&self) {
