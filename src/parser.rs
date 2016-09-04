@@ -761,7 +761,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
         err_count: 0,
     };
 
-    let ix = cx::Index::create(false, true);
+    let ix = cx::Index::create(false, false);
     if ix.is_null() {
         ctx.logger.error("Clang failed to create index");
         return Err(());
