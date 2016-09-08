@@ -199,11 +199,16 @@ pub fn main() {
             bind_args.push("--".to_owned());
         }
 
-        // TODO: distinguish C and C++ paths? C++'s should be enough, I guess.
-        for path in clang.cpp_search_paths.into_iter() {
-            if let Ok(path) = path.into_os_string().into_string() {
-                bind_args.push("-isystem".to_owned());
-                bind_args.push(path);
+        // If --target is specified, assume caller knows what they're doing and don't mess with
+        // include paths for them
+        let has_target_arg = bind_args.iter().rposition(|arg| arg.starts_with("--target")).is_some();
+        if !has_target_arg {
+            // TODO: distinguish C and C++ paths? C++'s should be enough, I guess.
+            for path in clang.cpp_search_paths.into_iter() {
+                if let Ok(path) = path.into_os_string().into_string() {
+                    bind_args.push("-isystem".to_owned());
+                    bind_args.push(path);
+                }
             }
         }
     }
