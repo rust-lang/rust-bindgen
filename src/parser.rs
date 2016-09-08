@@ -68,13 +68,10 @@ impl<'a> ClangParserCtx<'a> {
     }
 }
 
-fn cursor_link_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> String {
-    let mut mangling = cursor.mangling();
-
+fn cursor_link_name(_: &mut ClangParserCtx, cursor: &Cursor) -> String {
     // Try to undo backend linkage munging (prepended _, generally)
-    if cfg!(target_os = "macos") ||
-       (cfg!(target_os = "windows") && !ctx.options.msvc_mangling)
-    {
+    let mut mangling = cursor.mangling();
+    if cfg!(target_os = "macos") {
         mangling.remove(0);
     }
     mangling
