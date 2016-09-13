@@ -18,35 +18,21 @@ if len(sys.argv) != 4:
 [_, bindgen_path, c_path, rust_path] = sys.argv
 
 flags = []
-clang_flags = []
 
 with open(sys.argv[2]) as f:
   for line in f:
     if line.startswith(BINDGEN_FLAGS_PREFIX):
-      flags = line.strip().split(BINDGEN_FLAGS_PREFIX)[1]
-
-      try:
-        idx = flags.index(CLANG_FLAGS_SEPARATOR)
-        clang_flags = flags[idx + len(CLANG_FLAGS_SEPARATOR):].split(" ")
-        flags = flags[:idx]
-      except ValueError:
-        pass
-
-      flags = flags.split(" ")
+      flags = line.strip().split(BINDGEN_FLAGS_PREFIX)[1].split(" ")
       break
 
 base_command = [bindgen_path, "-o", rust_path]
 
 for line in COMMON_PRELUDE.split("\n"):
-  flags.append("--raw-line")
-  flags.append(line)
+  base_command.append("--raw-line")
+  base_command.append(line)
 
 base_command.extend(flags)
 base_command.append(c_path)
-
-if len(clang_flags):
-  base_command.append("--")
-  base_command.extend(clang_flags)
 
 env = os.environ.copy()
 

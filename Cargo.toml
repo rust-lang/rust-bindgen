@@ -23,7 +23,6 @@ quasi_codegen = "0.15"
 
 [dependencies]
 clang-sys = "0.8.0"
-docopt = "0.6.82"
 libc = "0.2"
 log = "0.3"
 env_logger = "0.3"
