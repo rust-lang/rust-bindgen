@@ -40,12 +40,11 @@ fn is_type(name: &str) -> bool {
 }
 
 fn rust_id(ctx: &mut GenCtx, mut name: &str, remove_prefix: &str) -> (String, bool) {
-    let mut modified = false;
-    if remove_prefix != "" && name.len() >= remove_prefix.len() &&
+    let modified = if remove_prefix != "" && name.len() >= remove_prefix.len() &&
        name[..remove_prefix.len()].eq_ignore_ascii_case(remove_prefix) {
         name = &name[remove_prefix.len()..];
-        modified = true;
-    }
+        true
+    } else { false };
     let token = parse::token::Ident(ctx.ext_cx.ident_of(name));
     if token.is_any_keyword() || is_type(name) {
         (format!("{}_", name), true)
@@ -116,9 +115,8 @@ fn extract_definitions(ctx: &mut GenCtx,
                         TComp(ref ci) =>  { c=ci.borrow(); Some(&c.name) },
                         TEnum(ref ei) =>  { e=ei.borrow(); Some(&e.name) },
                         _ => None,
-                    }.map(|alias|
-                        rust_id(ctx, &t.name, &options.remove_prefix).0 == rust_id(ctx, alias, &options.remove_prefix).0
-                    ).unwrap_or(false)
+                    }.map_or(false, |alias|
+                        rust_id(ctx, &t.name, &options.remove_prefix).0 == rust_id(ctx, alias, &options.remove_prefix).0)
                     // important: need to end borrow of n, c, e, here
                 };
                 if !is_cyclic {
@@ -372,7 +370,7 @@ fn mk_extern(ctx: &mut GenCtx,
             )));
                  let link_args = match k {
                      None => vec![link_name],
-                     Some(ref k) => {
+                     Some(k) => {
                          vec!(link_name, P(respan(ctx.span, ast::MetaItemKind::NameValue(
                     InternedString::new("kind"),
                     respan(ctx.span, ast::LitKind::Str(
@@ -615,7 +613,7 @@ fn gen_padding_fields(ctx: &mut GenCtx,
 
     fields.iter()
           .enumerate()
-          .map(|(i, &(ref el_ty, el_num))| {
+          .map(|(i, &(el_ty, el_num))| {
               let name = format!("_bindgen_padding_{}_", idx + i);
 
               let padding_ty = P(mk_arrty(ctx, el_ty, el_num));
@@ -1450,8 +1448,8 @@ fn cfunc_to_rs(ctx: &mut GenCtx,
 }
 
 fn is_named_fnproto(ty: &Type) -> bool {
-    if let &TNamed(ref rc)=ty {
-        if let TFuncProto(..)=rc.borrow().ty {
+    if let TNamed(ref rc) = *ty {
+        if let TFuncProto(..) = rc.borrow().ty {
             return true
         }
     }

@@ -106,7 +106,7 @@ fn args_to_opts(args: Args) -> Builder<'static> {
         builder.remove_prefix(s);
     }
     if let Some(s) = args.flag_macro_int_types {
-        builder.macro_int_types(s.split(","));
+        builder.macro_int_types(s.split(','));
     }
     if args.flag_builtins {
         builder.builtins();

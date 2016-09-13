@@ -356,8 +356,8 @@ fn opaque_ty(ctx: &mut ClangParserCtx, ty: &cx::Type) {
 impl MacroTypes {
     fn infer(&self, val: &::cexpr::expr::EvalResult) -> Option<(Type,Option<i64>)> {
         use cexpr::expr::EvalResult::*;
-        match val {
-            &Int(::std::num::Wrapping(i)) => {
+        match *val {
+            Int(::std::num::Wrapping(i)) => {
                 let kind=if i>=0 {
                     if i<=(::std::u8::MAX as i64) {
                         self.t_u8
@@ -717,23 +717,21 @@ fn visit_top(cursor: &Cursor,
                     None
                 }
             ).collect();
-            match expr::IdentifierParser::new(&ctx.defined_macros).macro_definition(&tokens) {
-                nom::IResult::Done(_,(id,val)) => {
-                    let id=id.to_owned();
+            if let nom::IResult::Done(_,(id,val)) =
+                    expr::IdentifierParser::new(&ctx.defined_macros).macro_definition(&tokens) {
+                let id=id.to_owned();
 
-                    if let Some((ty,val))=ctx.options.macro_types.infer(&val) {
-                        let var=Global::GVar(Rc::new(RefCell::new(VarInfo{
-                            name:String::from_utf8(id.clone()).expect("C identifiers should be valid UTF-8"),
-                            ty:ty,
-                            val:val,
-                            is_const:true,
-                        })));
-                        ctx.globals.push(var);
-                    }
+                if let Some((ty,val))=ctx.options.macro_types.infer(&val) {
+                    let var=Global::GVar(Rc::new(RefCell::new(VarInfo{
+                        name:String::from_utf8(id.clone()).expect("C identifiers should be valid UTF-8"),
+                        ty:ty,
+                        val:val,
+                        is_const:true,
+                    })));
+                    ctx.globals.push(var);
+                }
 
-                    ctx.defined_macros.insert(id,val);
-                },
-                _ => {}
+                ctx.defined_macros.insert(id,val);
             }
             CXChildVisitResult::Continue
         }
