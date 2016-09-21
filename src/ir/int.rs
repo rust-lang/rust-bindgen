@@ -13,6 +13,8 @@ pub enum IntKind {
     ULongLong,
     U16, // For Char16 and Wchar
     U32, // For Char32
+    I128,
+    U128,
     // Though now we're at it we could add equivalents for the rust types...
 }
 
@@ -21,10 +23,10 @@ impl IntKind {
         use self::IntKind::*;
         match *self {
             Bool | UChar | UShort |
-            UInt | ULong | ULongLong | U16 | U32 => false,
+            UInt | ULong | ULongLong | U16 | U32 | U128 => false,
 
             Char | Short | Int |
-            Long | LongLong => true,
+            Long | LongLong | I128 => true,
         }
     }
 }

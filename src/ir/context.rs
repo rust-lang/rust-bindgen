@@ -583,6 +583,8 @@ impl<'ctx> BindgenContext<'ctx> {
             CXType_ULong => TypeKind::Int(IntKind::ULong),
             CXType_LongLong => TypeKind::Int(IntKind::LongLong),
             CXType_ULongLong => TypeKind::Int(IntKind::ULongLong),
+            CXType_Int128 => TypeKind::Int(IntKind::I128),
+            CXType_UInt128 => TypeKind::Int(IntKind::U128),
             CXType_Float => TypeKind::Float(FloatKind::Float),
             CXType_Double => TypeKind::Float(FloatKind::Double),
             CXType_LongDouble => TypeKind::Float(FloatKind::LongDouble),

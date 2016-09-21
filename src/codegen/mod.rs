@@ -1306,6 +1306,11 @@ impl ToRustTy for Type {
                     IntKind::ULongLong => raw!(c_ulonglong),
                     IntKind::U16 => aster::ty::TyBuilder::new().u16(),
                     IntKind::U32 => aster::ty::TyBuilder::new().u32(),
+                    // FIXME: This doesn't generate the proper alignment, but we
+                    // can't do better right now. We should be able to use
+                    // i128/u128 when they're available.
+                    IntKind::U128 |
+                    IntKind::I128 => ArrayTyBuilder::new().with_len(2).build(aster::ty::TyBuilder::new().u64()),
                 }
             }
             TypeKind::Float(fk) => {
