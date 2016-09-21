@@ -2,32 +2,19 @@
 #![crate_type = "bin"]
 
 extern crate bindgen;
-#[macro_use]
-extern crate docopt;
+extern crate env_logger;
 #[macro_use]
 extern crate log;
 extern crate clang_sys;
 extern crate rustc_serialize;
 
-use bindgen::{Bindings, BindgenOptions, LinkType, Logger};
+use bindgen::{Bindings, BindgenOptions, LinkType};
+use std::default::Default;
 use std::io;
 use std::path;
+use std::process;
 use std::env;
-use std::default::Default;
 use std::fs;
-use std::process::exit;
-
-struct StdLogger;
-
-impl Logger for StdLogger {
-    fn error(&self, msg: &str) {
-        println!("{}", msg);
-    }
-
-    fn warn(&self, msg: &str) {
-        println!("{}", msg);
-    }
-}
 
 const USAGE: &'static str = "
 Usage:
@@ -35,11 +22,12 @@ Usage:
         [--link=<lib>...] \
         [--static-link=<lib>...] \
         [--framework-link=<framework>...] \
-        [--match=<name>...] \
         [--raw-line=<raw>...] \
-        [--dtor-attr=<attr>...] \
         [--opaque-type=<type>...] \
         [--blacklist-type=<type>...] \
+        [--whitelist-type=<type>...] \
+        [--whitelist-function=<name>...] \
+        [--whitelist-var=<name>...] \
         <input-header> \
         [-- <clang-args>...]
 
@@ -59,17 +47,14 @@ Options:
     -o=<output-rust-file>         Write bindings to <output-rust-file>
                                   (defaults to stdout)
 
-    --match=<name>                Only output bindings for definitions from
-                                  files whose name contains <name>. If multiple
-                                  match options are provided, files matching any
-                                  rule are bound to.
-
     --builtins                    Output bindings for builtin definitions (for
                                   example __builtin_va_list)
 
     --ignore-functions            Don't generate bindings for functions and
                                   methods. This is useful when you only care
                                   about struct layouts.
+
+    --ignore-methods              Avoid generating all kind of methods.
 
     --enable-cxx-namespaces       Enable support for C++ namespaces.
 
@@ -83,114 +68,149 @@ Options:
     --use-msvc-mangling           Handle MSVC C++ ABI mangling; requires that
                                   target be set to (i686|x86_64)-pc-win32
 
-    --override-enum-type=<type>   Override enum type, type name could be
-                                    uchar
-                                    schar
-                                    ushort
-                                    sshort
-                                    uint
-                                    sint
-                                    ulong
-                                    slong
-                                    ulonglong
-                                    slonglong
-
-    --raw-line=<raw>              TODO
-    --dtor-attr=<attr>            TODO
-    --no-class-constants          TODO
-    --no-unstable-rust            TODO
-    --no-namespaced-constants     TODO
-    --no-bitfield-methods         TODO
-    --ignore-methods              TODO
-    --opaque-type=<type>          TODO
-    --blacklist-type=<type>       TODO
+    --raw-line=<raw>              Add a raw line at the beginning of the output.
+    --no-unstable-rust            Avoid generating unstable rust.
+    --no-bitfield-methods         Avoid generating methods for bitfield access.
+    --opaque-type=<type>          Mark a type as opaque.
+    --blacklist-type=<type>       Mark a type as hidden.
+    --whitelist-type=<type>       Whitelist the type. If this set or any other
+                                  of the whitelisting sets is not empty, then
+                                  all the non-whitelisted types (or dependant)
+                                  won't be generated.
+    --whitelist-function=<regex>  Whitelist all the free-standing functions
+                                  matching <regex>.  Same behavior on emptyness
+                                  than the type whitelisting.
+    --whitelist-var=<regex>       Whitelist all the free-standing variables
+                                  matching <regex>.  Same behavior on emptyness
+                                  than the type whitelisting.
 
     <clang-args>                  Options other than stated above are passed
                                   directly through to clang.
 ";
 
-#[derive(Debug, RustcDecodable)]
-struct Args {
-    arg_input_header: String,
-    flag_link: Vec<String>,
-    flag_static_link: Vec<String>,
-    flag_framework_link: Vec<String>,
-    flag_o: Option<String>,
-    flag_match: Vec<String>,
-    flag_builtins: bool,
-    flag_ignore_functions: bool,
-    flag_enable_cxx_namespaces: bool,
-    flag_no_type_renaming: bool,
-    flag_allow_unknown_types: bool,
-    flag_emit_clang_ast: bool,
-    flag_use_msvc_mangling: bool,
-    flag_override_enum_type: String,
-    flag_raw_line: Vec<String>,
-    flag_dtor_attr: Vec<String>,
-    flag_no_class_constants: bool,
-    flag_no_unstable_rust: bool,
-    flag_no_namespaced_constants: bool,
-    flag_no_bitfield_methods: bool,
-    flag_ignore_methods: bool,
-    flag_opaque_type: Vec<String>,
-    flag_blacklist_type: Vec<String>,
-    arg_clang_args: Vec<String>,
-}
+// FIXME(emilio): Replace this with docopt if/when they fix their exponential
+// algorithm for argument parsing.
+fn parse_args_or_exit(args: Vec<String>) -> (BindgenOptions, Box<io::Write>) {
+    let mut options = BindgenOptions::default();
+    let mut dest_file = None;
+    let mut source_file = None;
 
-type ParseResult<T> = Result<T, String>;
-
-impl Into<ParseResult<(BindgenOptions, Box<io::Write>)>> for Args {
-    fn into(mut self) -> Result<(BindgenOptions, Box<io::Write>), String> {
-        let mut options: BindgenOptions = Default::default();
-
-        for lib in self.flag_link.drain(..) {
-            options.links.push((lib, LinkType::Default));
-        }
-
-        for lib in self.flag_static_link.drain(..) {
-            options.links.push((lib, LinkType::Static));
-        }
-
-        for lib in self.flag_framework_link.drain(..) {
-            options.links.push((lib, LinkType::Framework));
-        }
-
-        let out = if let Some(ref path_name) = self.flag_o {
-            let path = path::Path::new(path_name);
-            let file = try!(fs::File::create(path).map_err(|_| {
-                format!("Opening {} failed", path_name)
-            }));
-            Box::new(io::BufWriter::new(file)) as Box<io::Write>
-        } else {
-            Box::new(io::BufWriter::new(io::stdout())) as Box<io::Write>
+    let mut iter = args.into_iter().skip(1);
+    loop {
+        let next = match iter.next() {
+            Some(arg) => arg,
+            _ => break,
         };
 
-        options.match_pat.extend(self.flag_match.drain(..));
-        options.builtins = self.flag_builtins;
-        options.ignore_functions = self.flag_ignore_functions;
-        options.enable_cxx_namespaces = self.flag_enable_cxx_namespaces;
-        options.rename_types = !self.flag_no_type_renaming;
-        options.fail_on_unknown_type = !self.flag_allow_unknown_types;
-        options.emit_ast = self.flag_emit_clang_ast;
-        options.msvc_mangling = self.flag_use_msvc_mangling;
-        options.override_enum_ty = self.flag_override_enum_type;
-        options.raw_lines.extend(self.flag_raw_line.drain(..));
-        options.dtor_attrs.extend(self.flag_dtor_attr.drain(..));
-        options.class_constants = !self.flag_no_class_constants;
-        options.unstable_rust = !self.flag_no_unstable_rust;
-        options.namespaced_constants = !self.flag_no_namespaced_constants;
-        options.gen_bitfield_methods = !self.flag_no_bitfield_methods;
-        options.ignore_methods = self.flag_ignore_methods;
-        options.opaque_types.extend(self.flag_opaque_type.drain(..));
-        options.blacklist_type.extend(self.flag_blacklist_type.drain(..));
-        options.clang_args.extend(self.arg_clang_args.drain(..));
-        options.clang_args.push(self.arg_input_header);
-
-        Ok((options, out))
+        match &*next {
+            "-h" | "--help" => {
+                println!("{}", USAGE);
+                process::exit(0);
+            }
+            "-l" | "--link" => {
+                let lib = iter.next().expect("--link needs an argument");
+                options.links.push((lib, LinkType::Default));
+            }
+            "--static-link" => {
+                let lib = iter.next().expect("--static-link needs an argument");
+                options.links.push((lib, LinkType::Static));
+            }
+            "--framework-link" => {
+                let lib = iter.next().expect("--framework-link needs an argument");
+                options.links.push((lib, LinkType::Framework));
+            }
+            "--raw-line" => {
+                let line = iter.next().expect("--raw-line needs an argument");
+                options.raw_lines.push(line);
+            }
+            "--opaque-type" => {
+                let ty_canonical_name = iter.next().expect("--opaque-type expects a type");
+                options.opaque_types.insert(ty_canonical_name);
+            }
+            "--blacklist-type" => {
+                let ty_canonical_name = iter.next().expect("--blacklist-type expects a type");
+                options.hidden_types.insert(ty_canonical_name);
+            }
+            "--whitelist-type" => {
+                let ty_pat = iter.next().expect("--whitelist-type expects a type pattern");
+                options.whitelisted_types.insert(&ty_pat);
+            }
+            "--whitelist-function" => {
+                let function_pat = iter.next().expect("--whitelist-function expects a pattern");
+                options.whitelisted_functions.insert(&function_pat);
+            }
+            "--whitelist-var" => {
+                let var_pat = iter.next().expect("--whitelist-var expects a pattern");
+                options.whitelisted_vars.insert(&var_pat);
+            }
+            "--" => {
+                while let Some(clang_arg) = iter.next() {
+                    options.clang_args.push(clang_arg);
+                }
+            }
+            "--output" | "-o" => {
+                let out_name = iter.next().expect("-o expects a file name");
+                dest_file = Some(out_name);
+            }
+            "--builtins" => {
+                options.builtins = true;
+            }
+            "--ignore-functions" => {
+                options.ignore_functions = true;
+            }
+            "--no-bitfield-methods" => {
+                options.gen_bitfield_methods = false;
+            }
+            "--ignore-methods" => {
+                options.ignore_methods = true;
+            }
+            "--enable-cxx-namespaces" => {
+                options.enable_cxx_namespaces = true;
+            }
+            "--no-type-renaming" => {
+                options.rename_types = false;
+            }
+            "--no-unstable-rust" => {
+                options.unstable_rust = false;
+            }
+            "--emit-clang-ast" => {
+                options.emit_ast = true;
+            }
+            "--use-msvc-mangling" => {
+                options.msvc_mangling = true;
+            }
+            other if source_file.is_none() => {
+                source_file = Some(other.into());
+            }
+            other => {
+                panic!("Unknown option: \"{}\"", other);
+            }
+        }
     }
+
+    if let Some(source_file) = source_file.take() {
+        options.clang_args.push(source_file);
+    }
+
+    let out = if let Some(ref path_name) = dest_file {
+        let path = path::Path::new(path_name);
+        let file = fs::File::create(path).expect("Opening out file failed");
+        Box::new(io::BufWriter::new(file)) as Box<io::Write>
+    } else {
+        Box::new(io::BufWriter::new(io::stdout())) as Box<io::Write>
+    };
+
+    (options, out)
 }
 
 pub fn main() {
+    log::set_logger(|max_log_level| {
+        use env_logger::Logger;
+        let env_logger = Logger::new();
+        max_log_level.set(env_logger.filter());
+        Box::new(env_logger)
+    }).expect("Failed to set logger.");
+
     let mut bind_args: Vec<_> = env::args().collect();
 
     if let Some(clang) = clang_sys::support::Clang::find(None) {
@@ -213,28 +233,11 @@ pub fn main() {
         }
     }
 
-    let args: Args = docopt::Docopt::new(USAGE)
-        .and_then(|d| d.argv(bind_args.iter()).decode())
-        .unwrap_or_else(|e| e.exit());
+    let (options, out) = parse_args_or_exit(bind_args);
 
-    let logger = StdLogger;
-    let result: ParseResult<_> = args.into();
-    let (options, out) = result.unwrap_or_else(|msg| {
-        logger.error(&msg);
-        exit(-1);
-    });
+    let bindings = Bindings::generate(options, None)
+                        .expect("Unable to generate bindings");
 
-    match Bindings::generate(&options, Some(&logger as &Logger), None) {
-        Ok(bindings) => match bindings.write(out) {
-            Ok(()) => (),
-            Err(e) => {
-                logger.error(&format!("Unable to write bindings to file. {}", e));
-                exit(-1);
-            }
-        },
-        Err(()) => {
-            logger.error("Failed to generate bindings".into());
-            exit(-1);
-        }
-    }
+    bindings.write(out)
+            .expect("Unable to write bindings to file.");
 }

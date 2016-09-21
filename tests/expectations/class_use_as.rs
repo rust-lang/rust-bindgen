@@ -9,27 +9,27 @@
  */
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_whatever {
+pub struct whatever {
     pub replacement: ::std::os::raw::c_int,
 }
-impl ::std::clone::Clone for Struct_whatever {
-    fn clone(&self) -> Self { *self }
-}
 #[test]
-fn bindgen_test_layout_Struct_whatever() {
-    assert_eq!(::std::mem::size_of::<Struct_whatever>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Struct_whatever>() , 4usize);
+fn bindgen_test_layout_whatever() {
+    assert_eq!(::std::mem::size_of::<whatever>() , 4usize);
+    assert_eq!(::std::mem::align_of::<whatever>() , 4usize);
+}
+impl Clone for whatever {
+    fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_container {
-    pub c: Struct_whatever,
-}
-impl ::std::clone::Clone for Struct_container {
-    fn clone(&self) -> Self { *self }
+pub struct container {
+    pub c: whatever,
 }
 #[test]
-fn bindgen_test_layout_Struct_container() {
-    assert_eq!(::std::mem::size_of::<Struct_container>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Struct_container>() , 4usize);
+fn bindgen_test_layout_container() {
+    assert_eq!(::std::mem::size_of::<container>() , 4usize);
+    assert_eq!(::std::mem::align_of::<container>() , 4usize);
+}
+impl Clone for container {
+    fn clone(&self) -> Self { *self }
 }

@@ -6,9 +6,9 @@
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Struct_Point<T> {
+pub struct Point<T> {
     pub x: T,
     pub y: T,
 }
-pub type IntPoint2D = Struct_Point<::std::os::raw::c_int>;
-pub type IntVec2D = Struct_Point<::std::os::raw::c_int>;
+pub type IntPoint2D = Point<::std::os::raw::c_int>;
+pub type IntVec2D = Point<::std::os::raw::c_int>;

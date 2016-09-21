@@ -6,11 +6,10 @@
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Struct_RandomTemplate<T> {
-    pub _phantom0: ::std::marker::PhantomData<T>,
+pub struct RandomTemplate<T> {
+    pub _address: u8,
+    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
-pub enum Struct_Wat { }
-pub enum Struct_Wat3 { }
-#[repr(C)]
-pub struct ShouldBeOpaque;
-pub type ShouldNotBeOpaque = Struct_RandomTemplate<::std::os::raw::c_int>;
+/** <div rustbindgen opaque></div> */
+pub type ShouldBeOpaque = [u8; 0usize];
+pub type ShouldNotBeOpaque = RandomTemplate<f32>;

@@ -6,127 +6,117 @@
 
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_bitfield {
-    pub _bitfield_1: ::std::os::raw::c_ushort,
+pub struct bitfield {
+    pub _bitfield_1: u8,
     pub e: ::std::os::raw::c_int,
-    pub _bitfield_2: ::std::os::raw::c_uint,
-    pub _bitfield_3: ::std::os::raw::c_uint,
+    pub _bitfield_2: u8,
+    pub _bitfield_3: u32,
 }
-impl Struct_bitfield {
+#[test]
+fn bindgen_test_layout_bitfield() {
+    assert_eq!(::std::mem::size_of::<bitfield>() , 16usize);
+    assert_eq!(::std::mem::align_of::<bitfield>() , 4usize);
+}
+impl Clone for bitfield {
+    fn clone(&self) -> Self { *self }
+}
+impl bitfield {
     #[inline]
     pub fn a(&self) -> ::std::os::raw::c_ushort {
-        (self._bitfield_1 & (1usize as ::std::os::raw::c_ushort)) >> 0usize
+        unsafe {
+            ::std::mem::transmute(((self._bitfield_1 & (1usize as u8)) >>
+                                       0u32) as u16)
+        }
     }
     #[inline]
-    pub fn set_a(&mut self, val: bool) {
-        self._bitfield_1 &= !(1usize as ::std::os::raw::c_ushort);
-        self._bitfield_1 |=
-            ((val as ::std::os::raw::c_ushort) << 0usize) &
-                (1usize as ::std::os::raw::c_ushort);
+    pub fn set_a(&mut self, val: ::std::os::raw::c_ushort) {
+        self._bitfield_1 &= !(1usize as u8);
+        self._bitfield_1 |= ((val as u16 as u8) << 0u32) & (1usize as u8);
     }
     #[inline]
     pub fn b(&self) -> ::std::os::raw::c_ushort {
-        (self._bitfield_1 & (2usize as ::std::os::raw::c_ushort)) >> 1usize
+        unsafe {
+            ::std::mem::transmute(((self._bitfield_1 & (2usize as u8)) >>
+                                       1u32) as u16)
+        }
     }
     #[inline]
-    pub fn set_b(&mut self, val: bool) {
-        self._bitfield_1 &= !(2usize as ::std::os::raw::c_ushort);
-        self._bitfield_1 |=
-            ((val as ::std::os::raw::c_ushort) << 1usize) &
-                (2usize as ::std::os::raw::c_ushort);
+    pub fn set_b(&mut self, val: ::std::os::raw::c_ushort) {
+        self._bitfield_1 &= !(2usize as u8);
+        self._bitfield_1 |= ((val as u16 as u8) << 1u32) & (2usize as u8);
     }
     #[inline]
     pub fn c(&self) -> ::std::os::raw::c_ushort {
-        (self._bitfield_1 & (4usize as ::std::os::raw::c_ushort)) >> 2usize
+        unsafe {
+            ::std::mem::transmute(((self._bitfield_1 & (4usize as u8)) >>
+                                       2u32) as u16)
+        }
     }
     #[inline]
-    pub fn set_c(&mut self, val: bool) {
-        self._bitfield_1 &= !(4usize as ::std::os::raw::c_ushort);
-        self._bitfield_1 |=
-            ((val as ::std::os::raw::c_ushort) << 2usize) &
-                (4usize as ::std::os::raw::c_ushort);
+    pub fn set_c(&mut self, val: ::std::os::raw::c_ushort) {
+        self._bitfield_1 &= !(4usize as u8);
+        self._bitfield_1 |= ((val as u16 as u8) << 2u32) & (4usize as u8);
     }
     #[inline]
     pub fn at_offset_3(&self) -> ::std::os::raw::c_ushort {
-        (self._bitfield_1 & (8usize as ::std::os::raw::c_ushort)) >> 3usize
+        unsafe {
+            ::std::mem::transmute(((self._bitfield_1 & (8usize as u8)) >>
+                                       3u32) as u16)
+        }
     }
     #[inline]
-    pub fn set_at_offset_3(&mut self, val: bool) {
-        self._bitfield_1 &= !(8usize as ::std::os::raw::c_ushort);
-        self._bitfield_1 |=
-            ((val as ::std::os::raw::c_ushort) << 3usize) &
-                (8usize as ::std::os::raw::c_ushort);
+    pub fn set_at_offset_3(&mut self, val: ::std::os::raw::c_ushort) {
+        self._bitfield_1 &= !(8usize as u8);
+        self._bitfield_1 |= ((val as u16 as u8) << 3u32) & (8usize as u8);
     }
     #[inline]
     pub fn at_offset_4(&self) -> ::std::os::raw::c_ushort {
-        (self._bitfield_1 & (48usize as ::std::os::raw::c_ushort)) >> 4usize
+        unsafe {
+            ::std::mem::transmute(((self._bitfield_1 & (48usize as u8)) >>
+                                       4u32) as u16)
+        }
     }
     #[inline]
-    pub fn set_at_offset_4(&mut self, val: u8) {
-        self._bitfield_1 &= !(48usize as ::std::os::raw::c_ushort);
-        self._bitfield_1 |=
-            ((val as ::std::os::raw::c_ushort) << 4usize) &
-                (48usize as ::std::os::raw::c_ushort);
+    pub fn set_at_offset_4(&mut self, val: ::std::os::raw::c_ushort) {
+        self._bitfield_1 &= !(48usize as u8);
+        self._bitfield_1 |= ((val as u16 as u8) << 4u32) & (48usize as u8);
     }
     #[inline]
     pub fn d(&self) -> ::std::os::raw::c_ushort {
-        (self._bitfield_1 & (192usize as ::std::os::raw::c_ushort)) >> 6usize
+        unsafe {
+            ::std::mem::transmute(((self._bitfield_1 & (192usize as u8)) >>
+                                       6u32) as u16)
+        }
     }
     #[inline]
-    pub fn set_d(&mut self, val: u8) {
-        self._bitfield_1 &= !(192usize as ::std::os::raw::c_ushort);
-        self._bitfield_1 |=
-            ((val as ::std::os::raw::c_ushort) << 6usize) &
-                (192usize as ::std::os::raw::c_ushort);
-    }
-    #[inline]
-    pub fn new_bitfield_1(a: bool, b: bool, c: bool, unnamed_bitfield1: bool,
-                          unnamed_bitfield2: u8, d: u8)
-     -> ::std::os::raw::c_ushort {
-        0 | ((a as ::std::os::raw::c_ushort) << 0u32) |
-            ((b as ::std::os::raw::c_ushort) << 1u32) |
-            ((c as ::std::os::raw::c_ushort) << 2u32) |
-            ((unnamed_bitfield1 as ::std::os::raw::c_ushort) << 3u32) |
-            ((unnamed_bitfield2 as ::std::os::raw::c_ushort) << 4u32) |
-            ((d as ::std::os::raw::c_ushort) << 6u32)
+    pub fn set_d(&mut self, val: ::std::os::raw::c_ushort) {
+        self._bitfield_1 &= !(192usize as u8);
+        self._bitfield_1 |= ((val as u16 as u8) << 6u32) & (192usize as u8);
     }
     #[inline]
     pub fn f(&self) -> ::std::os::raw::c_uint {
-        (self._bitfield_2 & (3usize as ::std::os::raw::c_uint)) >> 0usize
+        unsafe {
+            ::std::mem::transmute(((self._bitfield_2 & (3usize as u8)) >>
+                                       0u32) as u32)
+        }
     }
     #[inline]
-    pub fn set_f(&mut self, val: u8) {
-        self._bitfield_2 &= !(3usize as ::std::os::raw::c_uint);
-        self._bitfield_2 |=
-            ((val as ::std::os::raw::c_uint) << 0usize) &
-                (3usize as ::std::os::raw::c_uint);
-    }
-    #[inline]
-    pub fn new_bitfield_2(f: u8) -> ::std::os::raw::c_uint {
-        0 | ((f as ::std::os::raw::c_uint) << 0u32)
+    pub fn set_f(&mut self, val: ::std::os::raw::c_uint) {
+        self._bitfield_2 &= !(3usize as u8);
+        self._bitfield_2 |= ((val as u32 as u8) << 0u32) & (3usize as u8);
     }
     #[inline]
     pub fn g(&self) -> ::std::os::raw::c_uint {
-        (self._bitfield_3 & (4294967295usize as ::std::os::raw::c_uint)) >>
-            0usize
+        unsafe {
+            ::std::mem::transmute(((self._bitfield_3 &
+                                        (4294967295usize as u32)) >> 0u32) as
+                                      u32)
+        }
     }
     #[inline]
-    pub fn set_g(&mut self, val: u32) {
-        self._bitfield_3 &= !(4294967295usize as ::std::os::raw::c_uint);
+    pub fn set_g(&mut self, val: ::std::os::raw::c_uint) {
+        self._bitfield_3 &= !(4294967295usize as u32);
         self._bitfield_3 |=
-            ((val as ::std::os::raw::c_uint) << 0usize) &
-                (4294967295usize as ::std::os::raw::c_uint);
+            ((val as u32 as u32) << 0u32) & (4294967295usize as u32);
     }
-    #[inline]
-    pub fn new_bitfield_3(g: u32) -> ::std::os::raw::c_uint {
-        0 | ((g as ::std::os::raw::c_uint) << 0u32)
-    }
-}
-impl ::std::clone::Clone for Struct_bitfield {
-    fn clone(&self) -> Self { *self }
-}
-#[test]
-fn bindgen_test_layout_Struct_bitfield() {
-    assert_eq!(::std::mem::size_of::<Struct_bitfield>() , 16usize);
-    assert_eq!(::std::mem::align_of::<Struct_bitfield>() , 4usize);
 }

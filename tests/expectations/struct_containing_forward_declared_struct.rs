@@ -6,27 +6,27 @@
 
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_a {
-    pub val_a: *mut Struct_b,
-}
-impl ::std::clone::Clone for Struct_a {
-    fn clone(&self) -> Self { *self }
-}
-#[test]
-fn bindgen_test_layout_Struct_a() {
-    assert_eq!(::std::mem::size_of::<Struct_a>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Struct_a>() , 8usize);
+pub struct a {
+    pub val_a: *mut a_b,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_b {
+pub struct a_b {
     pub val_b: ::std::os::raw::c_int,
 }
-impl ::std::clone::Clone for Struct_b {
+#[test]
+fn bindgen_test_layout_a_b() {
+    assert_eq!(::std::mem::size_of::<a_b>() , 4usize);
+    assert_eq!(::std::mem::align_of::<a_b>() , 4usize);
+}
+impl Clone for a_b {
     fn clone(&self) -> Self { *self }
 }
 #[test]
-fn bindgen_test_layout_Struct_b() {
-    assert_eq!(::std::mem::size_of::<Struct_b>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Struct_b>() , 4usize);
+fn bindgen_test_layout_a() {
+    assert_eq!(::std::mem::size_of::<a>() , 8usize);
+    assert_eq!(::std::mem::align_of::<a>() , 8usize);
+}
+impl Clone for a {
+    fn clone(&self) -> Self { *self }
 }

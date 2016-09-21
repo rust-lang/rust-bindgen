@@ -4,7 +4,7 @@
 #![allow(non_snake_case)]
 
 
-#[derive(Copy, Debug)]
+#[derive(Debug)]
 #[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
 impl <T> __BindgenUnionField<T> {
@@ -23,75 +23,62 @@ impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
     #[inline]
     fn clone(&self) -> Self { Self::new() }
 }
+impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Union_foo {
+pub struct foo {
     pub a: __BindgenUnionField<::std::os::raw::c_int>,
-    pub foo_union_with_anon_struct_bitfield_h_unnamed_1: __BindgenUnionField<Struct_foo_union_with_anon_struct_bitfield_h_unnamed_1>,
-    pub _bindgen_data_: u32,
+    pub __bindgen_anon_1: __BindgenUnionField<foo__bindgen_ty_bindgen_id_3>,
+    pub bindgen_union_field: u32,
 }
-impl Union_foo {
-    pub unsafe fn a(&mut self) -> *mut ::std::os::raw::c_int {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn foo_union_with_anon_struct_bitfield_h_unnamed_1(&mut self)
-     -> *mut Struct_foo_union_with_anon_struct_bitfield_h_unnamed_1 {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-}
-impl ::std::clone::Clone for Union_foo {
-    fn clone(&self) -> Self { *self }
+#[repr(C)]
+#[derive(Debug, Copy)]
+pub struct foo__bindgen_ty_bindgen_id_3 {
+    pub _bitfield_1: u32,
 }
 #[test]
-fn bindgen_test_layout_Union_foo() {
-    assert_eq!(::std::mem::size_of::<Union_foo>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Union_foo>() , 4usize);
+fn bindgen_test_layout_foo__bindgen_ty_bindgen_id_3() {
+    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_bindgen_id_3>() ,
+               4usize);
+    assert_eq!(::std::mem::align_of::<foo__bindgen_ty_bindgen_id_3>() ,
+               4usize);
 }
-#[repr(C)]
-#[derive(Debug, Copy)]
-pub struct Struct_foo_union_with_anon_struct_bitfield_h_unnamed_1 {
-    pub _bitfield_1: ::std::os::raw::c_int,
+impl Clone for foo__bindgen_ty_bindgen_id_3 {
+    fn clone(&self) -> Self { *self }
 }
-impl Struct_foo_union_with_anon_struct_bitfield_h_unnamed_1 {
+impl foo__bindgen_ty_bindgen_id_3 {
     #[inline]
     pub fn b(&self) -> ::std::os::raw::c_int {
-        (self._bitfield_1 & (127usize as ::std::os::raw::c_int)) >> 0usize
+        unsafe {
+            ::std::mem::transmute(((self._bitfield_1 & (127usize as u32)) >>
+                                       0u32) as u32)
+        }
     }
     #[inline]
-    pub fn set_b(&mut self, val: u8) {
-        self._bitfield_1 &= !(127usize as ::std::os::raw::c_int);
-        self._bitfield_1 |=
-            ((val as ::std::os::raw::c_int) << 0usize) &
-                (127usize as ::std::os::raw::c_int);
+    pub fn set_b(&mut self, val: ::std::os::raw::c_int) {
+        self._bitfield_1 &= !(127usize as u32);
+        self._bitfield_1 |= ((val as u32 as u32) << 0u32) & (127usize as u32);
     }
     #[inline]
     pub fn c(&self) -> ::std::os::raw::c_int {
-        (self._bitfield_1 & (4294967168usize as ::std::os::raw::c_int)) >>
-            7usize
+        unsafe {
+            ::std::mem::transmute(((self._bitfield_1 &
+                                        (4294967168usize as u32)) >> 7u32) as
+                                      u32)
+        }
     }
     #[inline]
-    pub fn set_c(&mut self, val: u32) {
-        self._bitfield_1 &= !(4294967168usize as ::std::os::raw::c_int);
+    pub fn set_c(&mut self, val: ::std::os::raw::c_int) {
+        self._bitfield_1 &= !(4294967168usize as u32);
         self._bitfield_1 |=
-            ((val as ::std::os::raw::c_int) << 7usize) &
-                (4294967168usize as ::std::os::raw::c_int);
+            ((val as u32 as u32) << 7u32) & (4294967168usize as u32);
     }
-    #[inline]
-    pub fn new_bitfield_1(b: u8, c: u32) -> ::std::os::raw::c_int {
-        0 | ((b as ::std::os::raw::c_int) << 0u32) |
-            ((c as ::std::os::raw::c_int) << 7u32)
-    }
-}
-impl ::std::clone::Clone for
- Struct_foo_union_with_anon_struct_bitfield_h_unnamed_1 {
-    fn clone(&self) -> Self { *self }
 }
 #[test]
-fn bindgen_test_layout_Struct_foo_union_with_anon_struct_bitfield_h_unnamed_1() {
-    assert_eq!(::std::mem::size_of::<Struct_foo_union_with_anon_struct_bitfield_h_unnamed_1>()
-               , 4usize);
-    assert_eq!(::std::mem::align_of::<Struct_foo_union_with_anon_struct_bitfield_h_unnamed_1>()
-               , 4usize);
+fn bindgen_test_layout_foo() {
+    assert_eq!(::std::mem::size_of::<foo>() , 4usize);
+    assert_eq!(::std::mem::align_of::<foo>() , 4usize);
+}
+impl Clone for foo {
+    fn clone(&self) -> Self { *self }
 }

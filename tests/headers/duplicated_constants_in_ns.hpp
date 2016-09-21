@@ -1,4 +1,4 @@
-// bindgen-flags: --no-namespaced-constants
+// bindgen-flags: --enable-cxx-namespaces
 namespace foo {
     const int FOO = 4;
 }

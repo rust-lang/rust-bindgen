@@ -6,22 +6,18 @@
 
 pub const NSID_LENGTH: ::std::os::raw::c_uint = 10;
 #[repr(C)]
-#[derive(Debug, Copy)]
-pub struct Struct_nsID {
-    pub _vftable: *const _vftable_Struct_nsID,
+pub struct bindgen_vtable__bindgen_id_4 {
 }
 #[repr(C)]
-pub struct _vftable_Struct_nsID {
-    pub ToProvidedString: unsafe extern "C" fn(this:
-                                                   *mut ::std::os::raw::c_void,
-                                               aDest:
-                                                   *mut [::std::os::raw::c_char; 10usize]),
-}
-impl ::std::clone::Clone for Struct_nsID {
-    fn clone(&self) -> Self { *self }
+#[derive(Debug, Copy)]
+pub struct nsID {
+    pub vtable_: *const bindgen_vtable__bindgen_id_4,
 }
 #[test]
-fn bindgen_test_layout_Struct_nsID() {
-    assert_eq!(::std::mem::size_of::<Struct_nsID>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Struct_nsID>() , 8usize);
+fn bindgen_test_layout_nsID() {
+    assert_eq!(::std::mem::size_of::<nsID>() , 8usize);
+    assert_eq!(::std::mem::align_of::<nsID>() , 8usize);
+}
+impl Clone for nsID {
+    fn clone(&self) -> Self { *self }
 }

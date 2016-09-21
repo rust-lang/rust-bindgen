@@ -6,31 +6,30 @@
 
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Base {
-    pub _vftable: *const _vftable_Base,
+pub struct Derived {
+    pub _base: Base,
+}
+#[test]
+fn bindgen_test_layout_Derived() {
+    assert_eq!(::std::mem::size_of::<Derived>() , 8usize);
+    assert_eq!(::std::mem::align_of::<Derived>() , 8usize);
+}
+impl Clone for Derived {
+    fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-pub struct _vftable_Base {
-    pub AsDerived: unsafe extern "C" fn(this: *mut ::std::os::raw::c_void)
-                       -> *mut Derived,
+pub struct bindgen_vtable__bindgen_id_2 {
 }
-impl ::std::clone::Clone for Base {
-    fn clone(&self) -> Self { *self }
+#[repr(C)]
+#[derive(Debug, Copy)]
+pub struct Base {
+    pub vtable_: *const bindgen_vtable__bindgen_id_2,
 }
 #[test]
 fn bindgen_test_layout_Base() {
     assert_eq!(::std::mem::size_of::<Base>() , 8usize);
     assert_eq!(::std::mem::align_of::<Base>() , 8usize);
 }
-#[repr(C)]
-#[derive(Debug, Copy)]
-pub struct Derived {
-    pub _base: Base,
-}
-#[repr(C)]
-pub struct _vftable_Derived {
-    pub _base: _vftable_Base,
-}
-impl ::std::clone::Clone for Derived {
+impl Clone for Base {
     fn clone(&self) -> Self { *self }
 }

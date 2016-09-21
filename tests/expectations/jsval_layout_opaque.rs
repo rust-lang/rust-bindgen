@@ -4,7 +4,7 @@
 #![allow(non_snake_case)]
 
 
-#[derive(Copy, Debug)]
+#[derive(Debug)]
 #[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
 impl <T> __BindgenUnionField<T> {
@@ -23,9 +23,10 @@ impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
     #[inline]
     fn clone(&self) -> Self { Self::new() }
 }
+impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
 pub const JSVAL_TAG_SHIFT: ::std::os::raw::c_uint = 47;
 #[repr(u8)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum JSValueType {
     JSVAL_TYPE_DOUBLE = 0,
     JSVAL_TYPE_INT32 = 1,
@@ -40,7 +41,7 @@ pub enum JSValueType {
     JSVAL_TYPE_MISSING = 33,
 }
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum JSValueTag {
     JSVAL_TAG_MAX_DOUBLE = 131056,
     JSVAL_TAG_INT32 = 131057,
@@ -53,7 +54,7 @@ pub enum JSValueTag {
     JSVAL_TAG_OBJECT = 131064,
 }
 #[repr(u64)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum JSValueShiftedTag {
     JSVAL_SHIFTED_TAG_MAX_DOUBLE = 18444492278190833663,
     JSVAL_SHIFTED_TAG_INT32 = 18444633011384221696,
@@ -66,7 +67,7 @@ pub enum JSValueShiftedTag {
     JSVAL_SHIFTED_TAG_OBJECT = 18445618173802708992,
 }
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum JSWhyMagic {
     JS_ELEMENTS_HOLE = 0,
     JS_NO_ITER_VALUE = 1,
@@ -92,155 +93,107 @@ pub enum JSWhyMagic {
 #[derive(Debug, Copy)]
 pub struct jsval_layout {
     pub asBits: __BindgenUnionField<u64>,
-    pub debugView: __BindgenUnionField<jsval_layout_jsval_layout_opaque_hpp_unnamed_1>,
-    pub s: __BindgenUnionField<jsval_layout_jsval_layout_opaque_hpp_unnamed_2>,
+    pub debugView: __BindgenUnionField<jsval_layout__bindgen_ty_bindgen_id_81>,
+    pub s: __BindgenUnionField<jsval_layout__bindgen_ty_bindgen_id_85>,
     pub asDouble: __BindgenUnionField<f64>,
     pub asPtr: __BindgenUnionField<*mut ::std::os::raw::c_void>,
     pub asWord: __BindgenUnionField<usize>,
     pub asUIntPtr: __BindgenUnionField<usize>,
-    pub _bindgen_data_: u64,
-}
-impl jsval_layout {
-    pub unsafe fn asBits(&mut self) -> *mut u64 {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn debugView(&mut self)
-     -> *mut jsval_layout_jsval_layout_opaque_hpp_unnamed_1 {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn s(&mut self)
-     -> *mut jsval_layout_jsval_layout_opaque_hpp_unnamed_2 {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn asDouble(&mut self) -> *mut f64 {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn asPtr(&mut self) -> *mut *mut ::std::os::raw::c_void {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn asWord(&mut self) -> *mut usize {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn asUIntPtr(&mut self) -> *mut usize {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-}
-impl ::std::clone::Clone for jsval_layout {
-    fn clone(&self) -> Self { *self }
-}
-#[test]
-fn bindgen_test_layout_jsval_layout() {
-    assert_eq!(::std::mem::size_of::<jsval_layout>() , 8usize);
-    assert_eq!(::std::mem::align_of::<jsval_layout>() , 8usize);
+    pub bindgen_union_field: u64,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct jsval_layout_jsval_layout_opaque_hpp_unnamed_1 {
+pub struct jsval_layout__bindgen_ty_bindgen_id_81 {
     pub _bitfield_1: u64,
 }
-impl jsval_layout_jsval_layout_opaque_hpp_unnamed_1 {
-    #[inline]
-    pub fn payload47(&self) -> u64 {
-        (self._bitfield_1 & (140737488355327usize as u64)) >> 0usize
-    }
-    #[inline]
-    pub fn set_payload47(&mut self, val: u32) {
-        self._bitfield_1 &= !(140737488355327usize as u64);
-        self._bitfield_1 |=
-            ((val as u64) << 0usize) & (140737488355327usize as u64);
-    }
-    #[inline]
-    pub fn tag(&self) -> u64 {
-        (self._bitfield_1 & (18446603336221196288usize as u64)) >> 47usize
-    }
-    #[inline]
-    pub fn set_tag(&mut self, val: u32) {
-        self._bitfield_1 &= !(18446603336221196288usize as u64);
-        self._bitfield_1 |=
-            ((val as u64) << 47usize) & (18446603336221196288usize as u64);
-    }
-    #[inline]
-    pub fn new_bitfield_1(payload47: u32, tag: u32) -> u64 {
-        0 | ((payload47 as u64) << 0u32) | ((tag as u64) << 47u32)
-    }
+#[test]
+fn bindgen_test_layout_jsval_layout__bindgen_ty_bindgen_id_81() {
+    assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_bindgen_id_81>()
+               , 8usize);
+    assert_eq!(::std::mem::align_of::<jsval_layout__bindgen_ty_bindgen_id_81>()
+               , 8usize);
 }
-impl ::std::clone::Clone for jsval_layout_jsval_layout_opaque_hpp_unnamed_1 {
+impl Clone for jsval_layout__bindgen_ty_bindgen_id_81 {
     fn clone(&self) -> Self { *self }
 }
-#[test]
-fn bindgen_test_layout_jsval_layout_jsval_layout_opaque_hpp_unnamed_1() {
-    assert_eq!(::std::mem::size_of::<jsval_layout_jsval_layout_opaque_hpp_unnamed_1>()
-               , 8usize);
-    assert_eq!(::std::mem::align_of::<jsval_layout_jsval_layout_opaque_hpp_unnamed_1>()
-               , 8usize);
+impl jsval_layout__bindgen_ty_bindgen_id_81 {
+    #[inline]
+    pub fn payload47(&self) -> u64 {
+        unsafe {
+            ::std::mem::transmute(((self._bitfield_1 &
+                                        (140737488355327usize as u64)) >>
+                                       0u32) as u64)
+        }
+    }
+    #[inline]
+    pub fn set_payload47(&mut self, val: u64) {
+        self._bitfield_1 &= !(140737488355327usize as u64);
+        self._bitfield_1 |=
+            ((val as u64 as u64) << 0u32) & (140737488355327usize as u64);
+    }
+    #[inline]
+    pub fn tag(&self) -> JSValueTag {
+        unsafe {
+            ::std::mem::transmute(((self._bitfield_1 &
+                                        (18446603336221196288usize as u64)) >>
+                                       47u32) as u32)
+        }
+    }
+    #[inline]
+    pub fn set_tag(&mut self, val: JSValueTag) {
+        self._bitfield_1 &= !(18446603336221196288usize as u64);
+        self._bitfield_1 |=
+            ((val as u32 as u64) << 47u32) &
+                (18446603336221196288usize as u64);
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct jsval_layout_jsval_layout_opaque_hpp_unnamed_2 {
-    pub payload: jsval_layout_jsval_layout_opaque_hpp_unnamed_2_jsval_layout_opaque_hpp_unnamed_3,
+pub struct jsval_layout__bindgen_ty_bindgen_id_85 {
+    pub payload: jsval_layout__bindgen_ty_bindgen_id_85__bindgen_ty_bindgen_id_86,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct jsval_layout_jsval_layout_opaque_hpp_unnamed_2_jsval_layout_opaque_hpp_unnamed_3 {
+pub struct jsval_layout__bindgen_ty_bindgen_id_85__bindgen_ty_bindgen_id_86 {
     pub i32: __BindgenUnionField<i32>,
     pub u32: __BindgenUnionField<u32>,
     pub why: __BindgenUnionField<JSWhyMagic>,
-    pub _bindgen_data_: u32,
+    pub bindgen_union_field: u32,
 }
-impl jsval_layout_jsval_layout_opaque_hpp_unnamed_2_jsval_layout_opaque_hpp_unnamed_3
- {
-    pub unsafe fn i32(&mut self) -> *mut i32 {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn u32(&mut self) -> *mut u32 {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn why(&mut self) -> *mut JSWhyMagic {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
+#[test]
+fn bindgen_test_layout_jsval_layout__bindgen_ty_bindgen_id_85__bindgen_ty_bindgen_id_86() {
+    assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_bindgen_id_85__bindgen_ty_bindgen_id_86>()
+               , 4usize);
+    assert_eq!(::std::mem::align_of::<jsval_layout__bindgen_ty_bindgen_id_85__bindgen_ty_bindgen_id_86>()
+               , 4usize);
 }
-impl ::std::clone::Clone for
- jsval_layout_jsval_layout_opaque_hpp_unnamed_2_jsval_layout_opaque_hpp_unnamed_3
- {
+impl Clone for
+ jsval_layout__bindgen_ty_bindgen_id_85__bindgen_ty_bindgen_id_86 {
     fn clone(&self) -> Self { *self }
 }
 #[test]
-fn bindgen_test_layout_jsval_layout_jsval_layout_opaque_hpp_unnamed_2_jsval_layout_opaque_hpp_unnamed_3() {
-    assert_eq!(::std::mem::size_of::<jsval_layout_jsval_layout_opaque_hpp_unnamed_2_jsval_layout_opaque_hpp_unnamed_3>()
+fn bindgen_test_layout_jsval_layout__bindgen_ty_bindgen_id_85() {
+    assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_bindgen_id_85>()
                , 4usize);
-    assert_eq!(::std::mem::align_of::<jsval_layout_jsval_layout_opaque_hpp_unnamed_2_jsval_layout_opaque_hpp_unnamed_3>()
+    assert_eq!(::std::mem::align_of::<jsval_layout__bindgen_ty_bindgen_id_85>()
                , 4usize);
 }
-impl ::std::clone::Clone for jsval_layout_jsval_layout_opaque_hpp_unnamed_2 {
+impl Clone for jsval_layout__bindgen_ty_bindgen_id_85 {
     fn clone(&self) -> Self { *self }
 }
-#[test]
-fn bindgen_test_layout_jsval_layout_jsval_layout_opaque_hpp_unnamed_2() {
-    assert_eq!(::std::mem::size_of::<jsval_layout_jsval_layout_opaque_hpp_unnamed_2>()
-               , 4usize);
-    assert_eq!(::std::mem::align_of::<jsval_layout_jsval_layout_opaque_hpp_unnamed_2>()
-               , 4usize);
+impl Clone for jsval_layout {
+    fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct Value {
     pub data: jsval_layout,
 }
-impl ::std::clone::Clone for Value {
-    fn clone(&self) -> Self { *self }
-}
 #[test]
 fn bindgen_test_layout_Value() {
     assert_eq!(::std::mem::size_of::<Value>() , 8usize);
     assert_eq!(::std::mem::align_of::<Value>() , 8usize);
+}
+impl Clone for Value {
+    fn clone(&self) -> Self { *self }
 }

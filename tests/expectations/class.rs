@@ -4,7 +4,7 @@
 #![allow(non_snake_case)]
 
 
-#[derive(Copy, Debug)]
+#[derive(Debug)]
 #[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
 impl <T> __BindgenUnionField<T> {
@@ -23,65 +23,52 @@ impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
     #[inline]
     fn clone(&self) -> Self { Self::new() }
 }
+impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
 #[repr(C)]
-#[derive(Copy)]
-pub struct Struct_C {
+pub struct C {
     pub a: ::std::os::raw::c_int,
     pub big_array: [::std::os::raw::c_char; 33usize],
 }
-impl ::std::clone::Clone for Struct_C {
-    fn clone(&self) -> Self { *self }
-}
 #[test]
-fn bindgen_test_layout_Struct_C() {
-    assert_eq!(::std::mem::size_of::<Struct_C>() , 40usize);
-    assert_eq!(::std::mem::align_of::<Struct_C>() , 4usize);
+fn bindgen_test_layout_C() {
+    assert_eq!(::std::mem::size_of::<C>() , 40usize);
+    assert_eq!(::std::mem::align_of::<C>() , 4usize);
 }
 #[repr(C)]
 #[derive(Debug)]
-pub struct Struct_WithDtor {
+pub struct WithDtor {
     pub b: ::std::os::raw::c_int,
 }
 #[test]
-fn bindgen_test_layout_Struct_WithDtor() {
-    assert_eq!(::std::mem::size_of::<Struct_WithDtor>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Struct_WithDtor>() , 4usize);
+fn bindgen_test_layout_WithDtor() {
+    assert_eq!(::std::mem::size_of::<WithDtor>() , 4usize);
+    assert_eq!(::std::mem::align_of::<WithDtor>() , 4usize);
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Union_Union {
+pub struct Union {
     pub d: __BindgenUnionField<f32>,
     pub i: __BindgenUnionField<::std::os::raw::c_int>,
-    pub _bindgen_data_: u32,
-}
-impl Union_Union {
-    pub unsafe fn d(&mut self) -> *mut f32 {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-    pub unsafe fn i(&mut self) -> *mut ::std::os::raw::c_int {
-        let raw: *mut u8 = ::std::mem::transmute(&self._bindgen_data_);
-        ::std::mem::transmute(raw.offset(0))
-    }
-}
-impl ::std::clone::Clone for Union_Union {
-    fn clone(&self) -> Self { *self }
+    pub bindgen_union_field: u32,
 }
 #[test]
-fn bindgen_test_layout_Union_Union() {
-    assert_eq!(::std::mem::size_of::<Union_Union>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Union_Union>() , 4usize);
+fn bindgen_test_layout_Union() {
+    assert_eq!(::std::mem::size_of::<Union>() , 4usize);
+    assert_eq!(::std::mem::align_of::<Union>() , 4usize);
+}
+impl Clone for Union {
+    fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_WithUnion {
-    pub data: Union_Union,
-}
-impl ::std::clone::Clone for Struct_WithUnion {
-    fn clone(&self) -> Self { *self }
+pub struct WithUnion {
+    pub data: Union,
 }
 #[test]
-fn bindgen_test_layout_Struct_WithUnion() {
-    assert_eq!(::std::mem::size_of::<Struct_WithUnion>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Struct_WithUnion>() , 4usize);
+fn bindgen_test_layout_WithUnion() {
+    assert_eq!(::std::mem::size_of::<WithUnion>() , 4usize);
+    assert_eq!(::std::mem::align_of::<WithUnion>() , 4usize);
+}
+impl Clone for WithUnion {
+    fn clone(&self) -> Self { *self }
 }

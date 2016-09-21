@@ -4,7 +4,9 @@
 #![allow(non_snake_case)]
 
 
+/** <div rustbindgen opaque> */
 #[repr(C)]
+#[derive(Debug, Copy)]
 pub struct opaque {
     pub _bindgen_opaque_blob: u32,
 }
@@ -13,12 +15,19 @@ fn bindgen_test_layout_opaque() {
     assert_eq!(::std::mem::size_of::<opaque>() , 4usize);
     assert_eq!(::std::mem::align_of::<opaque>() , 4usize);
 }
+impl Clone for opaque {
+    fn clone(&self) -> Self { *self }
+}
 #[repr(C)]
-pub struct Struct_container {
+#[derive(Debug, Copy)]
+pub struct container {
     pub contained: u32,
 }
 #[test]
-fn bindgen_test_layout_Struct_container() {
-    assert_eq!(::std::mem::size_of::<Struct_container>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Struct_container>() , 4usize);
+fn bindgen_test_layout_container() {
+    assert_eq!(::std::mem::size_of::<container>() , 4usize);
+    assert_eq!(::std::mem::align_of::<container>() , 4usize);
+}
+impl Clone for container {
+    fn clone(&self) -> Self { *self }
 }

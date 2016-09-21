@@ -5,5 +5,5 @@
 
 
 extern "C" {
-    pub fn foo(bar: ::std::option::Option<unsafe extern "C" fn()>);
+    pub fn foo(bar: *mut ::std::option::Option<unsafe extern "C" fn()>);
 }

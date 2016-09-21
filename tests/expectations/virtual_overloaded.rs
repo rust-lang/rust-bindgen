@@ -5,22 +5,18 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
-pub struct Struct_C {
-    pub _vftable: *const _vftable_Struct_C,
+pub struct bindgen_vtable__bindgen_id_1 {
 }
 #[repr(C)]
-pub struct _vftable_Struct_C {
-    pub do_thing: unsafe extern "C" fn(this: *mut ::std::os::raw::c_void,
-                                       arg1: ::std::os::raw::c_char),
-    pub do_thing1: unsafe extern "C" fn(this: *mut ::std::os::raw::c_void,
-                                        arg1: ::std::os::raw::c_int),
-}
-impl ::std::clone::Clone for Struct_C {
-    fn clone(&self) -> Self { *self }
+#[derive(Debug, Copy)]
+pub struct C {
+    pub vtable_: *const bindgen_vtable__bindgen_id_1,
 }
 #[test]
-fn bindgen_test_layout_Struct_C() {
-    assert_eq!(::std::mem::size_of::<Struct_C>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Struct_C>() , 8usize);
+fn bindgen_test_layout_C() {
+    assert_eq!(::std::mem::size_of::<C>() , 8usize);
+    assert_eq!(::std::mem::align_of::<C>() , 8usize);
+}
+impl Clone for C {
+    fn clone(&self) -> Self { *self }
 }

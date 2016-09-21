@@ -4,4 +4,14 @@
 #![allow(non_snake_case)]
 
 
-
+pub mod root {
+    use root;
+    pub mod foo {
+        use root;
+        pub const FOO: ::std::os::raw::c_int = 4;
+    }
+    pub mod bar {
+        use root;
+        pub const FOO: ::std::os::raw::c_int = 5;
+    }
+}

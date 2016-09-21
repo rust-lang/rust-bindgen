@@ -6,53 +6,45 @@
 
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_LittleArray {
+pub struct LittleArray {
     pub a: [::std::os::raw::c_int; 32usize],
 }
-impl ::std::clone::Clone for Struct_LittleArray {
-    fn clone(&self) -> Self { *self }
-}
 #[test]
-fn bindgen_test_layout_Struct_LittleArray() {
-    assert_eq!(::std::mem::size_of::<Struct_LittleArray>() , 128usize);
-    assert_eq!(::std::mem::align_of::<Struct_LittleArray>() , 4usize);
+fn bindgen_test_layout_LittleArray() {
+    assert_eq!(::std::mem::size_of::<LittleArray>() , 128usize);
+    assert_eq!(::std::mem::align_of::<LittleArray>() , 4usize);
+}
+impl Clone for LittleArray {
+    fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Copy)]
-pub struct Struct_BigArray {
+pub struct BigArray {
     pub a: [::std::os::raw::c_int; 33usize],
 }
-impl ::std::clone::Clone for Struct_BigArray {
-    fn clone(&self) -> Self { *self }
-}
 #[test]
-fn bindgen_test_layout_Struct_BigArray() {
-    assert_eq!(::std::mem::size_of::<Struct_BigArray>() , 132usize);
-    assert_eq!(::std::mem::align_of::<Struct_BigArray>() , 4usize);
+fn bindgen_test_layout_BigArray() {
+    assert_eq!(::std::mem::size_of::<BigArray>() , 132usize);
+    assert_eq!(::std::mem::align_of::<BigArray>() , 4usize);
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_WithLittleArray {
-    pub a: Struct_LittleArray,
-}
-impl ::std::clone::Clone for Struct_WithLittleArray {
-    fn clone(&self) -> Self { *self }
+pub struct WithLittleArray {
+    pub a: LittleArray,
 }
 #[test]
-fn bindgen_test_layout_Struct_WithLittleArray() {
-    assert_eq!(::std::mem::size_of::<Struct_WithLittleArray>() , 128usize);
-    assert_eq!(::std::mem::align_of::<Struct_WithLittleArray>() , 4usize);
+fn bindgen_test_layout_WithLittleArray() {
+    assert_eq!(::std::mem::size_of::<WithLittleArray>() , 128usize);
+    assert_eq!(::std::mem::align_of::<WithLittleArray>() , 4usize);
+}
+impl Clone for WithLittleArray {
+    fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Copy)]
-pub struct Struct_WithBigArray {
-    pub a: Struct_BigArray,
-}
-impl ::std::clone::Clone for Struct_WithBigArray {
-    fn clone(&self) -> Self { *self }
+pub struct WithBigArray {
+    pub a: BigArray,
 }
 #[test]
-fn bindgen_test_layout_Struct_WithBigArray() {
-    assert_eq!(::std::mem::size_of::<Struct_WithBigArray>() , 132usize);
-    assert_eq!(::std::mem::align_of::<Struct_WithBigArray>() , 4usize);
+fn bindgen_test_layout_WithBigArray() {
+    assert_eq!(::std::mem::size_of::<WithBigArray>() , 132usize);
+    assert_eq!(::std::mem::align_of::<WithBigArray>() , 4usize);
 }

@@ -15,9 +15,24 @@ pub struct Cursor {
     x: CXCursor
 }
 
+impl fmt::Debug for Cursor {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        write!(fmt, "Cursor({} kind: {}, loc: {})",
+               self.spelling(), kind_to_str(self.kind()), self.location())
+    }
+}
+
 pub type CursorVisitor<'s> = for<'a, 'b> FnMut(&'a Cursor, &'b Cursor) -> Enum_CXChildVisitResult + 's;
 
 impl Cursor {
+    pub fn is_declaration(&self) -> bool {
+        unsafe { clang_isDeclaration(self.kind()) != 0 }
+    }
+
+    pub fn null() -> Self {
+        Cursor { x: unsafe { clang_getNullCursor() } }
+    }
+
     // common
     pub fn spelling(&self) -> String {
         unsafe {
@@ -43,15 +58,68 @@ impl Cursor {
         }
     }
 
+    pub fn fallible_semantic_parent(&self) -> Option<Cursor> {
+        let sp = self.semantic_parent();
+        if sp == *self || !sp.is_valid() {
+            return None;
+        }
+        Some(sp)
+    }
+
     pub fn semantic_parent(&self) -> Cursor {
         unsafe {
             Cursor { x: clang_getCursorSemanticParent(self.x) }
         }
     }
 
+    pub fn num_template_args(&self) -> c_int {
+        unsafe {
+            clang_Cursor_getNumTemplateArguments(self.x)
+        }
+    }
+
+
+    /// This function gets the translation unit cursor. Note that we shouldn't
+    /// create a TranslationUnit struct here, because bindgen assumes there will
+    /// only be one of them alive at a time, and dispose it on drop. That can
+    /// change if this would be required, but I think we can survive fine
+    /// without it.
+    pub fn translation_unit(&self) -> Cursor {
+        assert!(self.is_valid());
+        unsafe {
+            let tu = clang_Cursor_getTranslationUnit(self.x);
+            let cursor = Cursor {
+                x: clang_getTranslationUnitCursor(tu),
+            };
+            assert!(cursor.is_valid());
+            cursor
+        }
+    }
+
+    pub fn is_toplevel(&self) -> bool {
+        let mut semantic_parent = self.semantic_parent();
+
+        while semantic_parent.kind() == CXCursor_Namespace ||
+              semantic_parent.kind() == CXCursor_NamespaceAlias ||
+              semantic_parent.kind() == CXCursor_NamespaceRef
+        {
+            semantic_parent = semantic_parent.semantic_parent();
+        }
+
+        let tu = self.translation_unit();
+        // Yes, the second can happen with, e.g., macro definitions.
+        semantic_parent == tu || semantic_parent == tu.semantic_parent()
+    }
+
     pub fn kind(&self) -> Enum_CXCursorKind {
         unsafe {
             clang_getCursorKind(self.x)
+        }
+    }
+
+    pub fn is_anonymous(&self) -> bool {
+        unsafe {
+            clang_Cursor_isAnonymous(self.x) != 0
         }
     }
 
@@ -77,10 +145,11 @@ impl Cursor {
         }
     }
 
-    pub fn raw_comment(&self) -> String {
-        unsafe {
+    pub fn raw_comment(&self) -> Option<String> {
+        let s = unsafe {
             String_ { x: clang_Cursor_getRawCommentText(self.x) }.to_string()
-        }
+        };
+        if s.is_empty() { None } else { Some(s) }
     }
 
     pub fn comment(&self) -> Comment {
@@ -165,9 +234,15 @@ impl Cursor {
         }
     }
 
-    pub fn enum_val(&self) -> i64 {
+    pub fn enum_val_signed(&self) -> i64 {
         unsafe {
             clang_getEnumConstantDeclValue(self.x) as i64
+        }
+    }
+
+    pub fn enum_val_unsigned(&self) -> u64 {
+        unsafe {
+            clang_getEnumConstantDeclUnsignedValue(self.x) as u64
         }
     }
 
@@ -195,7 +270,7 @@ impl Cursor {
     pub fn args(&self) -> Vec<Cursor> {
         unsafe {
             let num = self.num_args() as usize;
-            let mut args = vec!();
+            let mut args = vec![];
             for i in 0..num {
                 args.push(Cursor { x: clang_Cursor_getArgument(self.x, i as c_uint) });
             }
@@ -232,6 +307,12 @@ impl Cursor {
     pub fn method_is_static(&self) -> bool {
         unsafe {
             clang_CXXMethod_isStatic(self.x) != 0
+        }
+    }
+
+    pub fn method_is_const(&self) -> bool {
+        unsafe {
+            clang_CXXMethod_isConst(self.x) != 0
         }
     }
 
@@ -274,27 +355,38 @@ impl PartialEq for Cursor {
             clang_equalCursors(self.x, other.x) == 1
         }
     }
-
-    fn ne(&self, other: &Cursor) -> bool {
-        !self.eq(other)
-    }
 }
 
 impl Eq for Cursor {}
 
 impl Hash for Cursor {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        self.x.kind.hash(state);
-        self.x.xdata.hash(state);
-        self.x.data[0].hash(state);
-        self.x.data[1].hash(state);
-        self.x.data[2].hash(state);
+        unsafe { clang_hashCursor(self.x) }.hash(state)
     }
 }
 
 // type
+#[derive(Clone, Hash)]
 pub struct Type {
     x: CXType
+}
+
+impl PartialEq for Type {
+    fn eq(&self, other: &Self) -> bool {
+        unsafe {
+            clang_equalTypes(self.x, other.x) != 0
+        }
+    }
+}
+
+impl Eq for Type {}
+
+impl fmt::Debug for Type {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        write!(fmt, "Type({}, kind: {}, decl: {:?}, canon: {:?})",
+               self.spelling(), type_to_str(self.kind()), self.declaration(),
+               self.declaration().canonical())
+    }
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -358,7 +450,7 @@ impl Type {
 
     pub fn is_const(&self) -> bool {
         unsafe {
-            clang_isConstQualifiedType(self.x) == 1
+            clang_isConstQualifiedType(self.x) != 0
         }
     }
 
@@ -376,6 +468,24 @@ impl Type {
         } else {
             Ok(val as usize)
         }
+    }
+
+    pub fn fallible_align(&self) -> Result<usize, LayoutError> {
+        unsafe {
+            let val = clang_Type_getAlignOf(self.x);
+            if val < 0 {
+                Err(LayoutError::from(val as i32))
+            } else {
+                Ok(val as usize)
+            }
+        }
+    }
+
+    pub fn fallible_layout(&self) -> Result<::ir::layout::Layout, LayoutError> {
+        use ir::layout::Layout;
+        let size = try!(self.fallible_size());
+        let align = try!(self.fallible_align());
+        Ok(Layout::new(size, align))
     }
 
     pub fn align(&self) -> usize {
@@ -427,7 +537,7 @@ impl Type {
     // function
     pub fn is_variadic(&self) -> bool {
         unsafe {
-            clang_isFunctionTypeVariadic(self.x) == 1
+            clang_isFunctionTypeVariadic(self.x) != 0
         }
     }
 
@@ -581,20 +691,24 @@ pub struct Index {
 }
 
 impl Index {
-    pub fn create(pch: bool, diag: bool) -> Index {
+    pub fn new(pch: bool, diag: bool) -> Index {
         unsafe {
             Index { x: clang_createIndex(pch as c_int, diag as c_int) }
         }
     }
+}
 
-    pub fn dispose(&self) {
+impl fmt::Debug for Index {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        write!(fmt, "Index {{ }}")
+    }
+}
+
+impl Drop for Index {
+    fn drop(&mut self) {
         unsafe {
             clang_disposeIndex(self.x);
         }
-    }
-
-    pub fn is_null(&self) -> bool {
-        self.x.is_null()
     }
 }
 
@@ -607,6 +721,12 @@ pub struct Token {
 // TranslationUnit
 pub struct TranslationUnit {
     x: CXTranslationUnit
+}
+
+impl fmt::Debug for TranslationUnit {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        write!(fmt, "TranslationUnit {{ }}")
+    }
 }
 
 impl TranslationUnit {
@@ -655,12 +775,6 @@ impl TranslationUnit {
         }
     }
 
-    pub fn dispose(&self) {
-        unsafe {
-            clang_disposeTranslationUnit(self.x);
-        }
-    }
-
     pub fn is_null(&self) -> bool {
         self.x.is_null()
     }
@@ -686,6 +800,15 @@ impl TranslationUnit {
         Some(tokens)
     }
 }
+
+impl Drop for TranslationUnit {
+    fn drop(&mut self) {
+        unsafe {
+            clang_disposeTranslationUnit(self.x);
+        }
+    }
+}
+
 
 // Diagnostic
 pub struct Diagnostic {

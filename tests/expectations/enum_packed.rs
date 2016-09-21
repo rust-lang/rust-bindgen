@@ -5,11 +5,11 @@
 
 
 #[repr(u8)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
-pub enum Enum_Foo { Bar = 0, Qux = 1, }
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum Foo { Bar = 0, Qux = 1, }
 #[repr(i8)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
-pub enum Enum_Neg { MinusOne = -1, One = 1, }
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum Neg { MinusOne = -1, One = 1, }
 #[repr(u16)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
-pub enum Enum_Bigger { Much = 255, Larger = 256, }
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum Bigger { Much = 255, Larger = 256, }

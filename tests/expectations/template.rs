@@ -6,110 +6,129 @@
 
 #[repr(C)]
 #[derive(Debug)]
-pub struct Struct_Foo<T, U> {
+pub struct Foo<T, U> {
     pub m_member: T,
     pub m_member_ptr: *mut T,
     pub m_member_arr: [T; 1usize],
-    pub _phantom0: ::std::marker::PhantomData<U>,
+    pub _phantom_1: ::std::marker::PhantomData<U>,
+}
+extern "C" {
+    #[link_name = "_Z3bar3FooIiiE"]
+    pub fn bar(foo: Foo<::std::os::raw::c_int, ::std::os::raw::c_int>);
 }
 #[repr(C)]
 #[derive(Debug)]
-pub struct Struct_D<T> {
-    pub m_foo: Struct_Foo<::std::os::raw::c_int, ::std::os::raw::c_int>,
-    pub _phantom0: ::std::marker::PhantomData<T>,
+pub struct D<T> {
+    pub m_foo: D_MyFoo,
+    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
+pub type D_MyFoo = Foo<::std::os::raw::c_int, ::std::os::raw::c_int>;
 #[repr(C)]
 #[derive(Debug)]
-pub struct Struct_D_U<T, Z> {
-    pub m_nested_foo: Struct_Foo<::std::os::raw::c_int,
-                                 ::std::os::raw::c_int>,
+pub struct D_U<T, Z> {
+    pub m_nested_foo: D_MyFoo,
     pub m_baz: Z,
-    pub _phantom0: ::std::marker::PhantomData<T>,
+    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Struct_Rooted<T> {
+pub struct Rooted<T> {
     pub prev: *mut T,
-    pub next: *mut Struct_Rooted<*mut ::std::os::raw::c_void>,
+    pub next: *mut Rooted<*mut ::std::os::raw::c_void>,
     pub ptr: T,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_RootedContainer {
-    pub root: Struct_Rooted<*mut ::std::os::raw::c_void>,
-}
-impl ::std::clone::Clone for Struct_RootedContainer {
-    fn clone(&self) -> Self { *self }
+pub struct RootedContainer {
+    pub root: Rooted<*mut ::std::os::raw::c_void>,
 }
 #[test]
-fn bindgen_test_layout_Struct_RootedContainer() {
-    assert_eq!(::std::mem::size_of::<Struct_RootedContainer>() , 24usize);
-    assert_eq!(::std::mem::align_of::<Struct_RootedContainer>() , 8usize);
+fn bindgen_test_layout_RootedContainer() {
+    assert_eq!(::std::mem::size_of::<RootedContainer>() , 24usize);
+    assert_eq!(::std::mem::align_of::<RootedContainer>() , 8usize);
 }
-pub type WithDtorIntFwd = Struct_WithDtor<::std::os::raw::c_int>;
+impl Clone for RootedContainer {
+    fn clone(&self) -> Self { *self }
+}
 #[repr(C)]
 #[derive(Debug)]
-pub struct Struct_WithDtor<T> {
+pub struct WithDtor<T> {
     pub member: T,
 }
+pub type WithDtorIntFwd = WithDtor<::std::os::raw::c_int>;
 #[repr(C)]
 #[derive(Debug)]
-pub struct Struct_PODButContainsDtor {
+pub struct PODButContainsDtor {
     pub member: WithDtorIntFwd,
 }
 #[test]
-fn bindgen_test_layout_Struct_PODButContainsDtor() {
-    assert_eq!(::std::mem::size_of::<Struct_PODButContainsDtor>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Struct_PODButContainsDtor>() , 4usize);
+fn bindgen_test_layout_PODButContainsDtor() {
+    assert_eq!(::std::mem::size_of::<PODButContainsDtor>() , 4usize);
+    assert_eq!(::std::mem::align_of::<PODButContainsDtor>() , 4usize);
+}
+/** <div rustbindgen opaque> */
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct Opaque<T> {
+    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
-pub struct Opaque;
-#[repr(C)]
-pub struct Struct_POD {
+#[derive(Debug, Copy)]
+pub struct POD {
     pub opaque_member: u32,
 }
 #[test]
-fn bindgen_test_layout_Struct_POD() {
-    assert_eq!(::std::mem::size_of::<Struct_POD>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Struct_POD>() , 4usize);
+fn bindgen_test_layout_POD() {
+    assert_eq!(::std::mem::size_of::<POD>() , 4usize);
+    assert_eq!(::std::mem::align_of::<POD>() , 4usize);
 }
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct Struct_NestedBase<T, U> {
-    pub buff: *mut T,
-    pub _phantom0: ::std::marker::PhantomData<U>,
+impl Clone for POD {
+    fn clone(&self) -> Self { *self }
 }
 /**
  * <div rustbindgen replaces="NestedReplaced"></div>
  */
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Struct_NestedReplaced<T> {
+pub struct NestedReplaced<T> {
     pub buff: *mut T,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Struct_NestedContainer<T> {
-    pub c: T,
-    pub nested: Struct_NestedReplaced<T>,
-    pub inc: Struct_Incomplete<T>,
+pub struct NestedBase<T, U> {
+    pub buff: *mut T,
+    pub _phantom_1: ::std::marker::PhantomData<U>,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Struct_Incomplete<T> {
+pub struct Incomplete<T> {
     pub d: T,
 }
 #[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct NestedContainer<T> {
+    pub c: T,
+    pub nested: NestedReplaced<T>,
+    pub inc: Incomplete<T>,
+}
+#[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_Untemplated;
-impl ::std::clone::Clone for Struct_Untemplated {
+pub struct Untemplated {
+    pub _address: u8,
+}
+#[test]
+fn bindgen_test_layout_Untemplated() {
+    assert_eq!(::std::mem::size_of::<Untemplated>() , 1usize);
+    assert_eq!(::std::mem::align_of::<Untemplated>() , 1usize);
+}
+impl Clone for Untemplated {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Struct_Templated<T> {
-    pub m_untemplated: Struct_Untemplated,
-    pub _phantom0: ::std::marker::PhantomData<T>,
+pub struct Templated<T> {
+    pub m_untemplated: Untemplated,
+    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 /**
  * If the replacement doesn't happen at the parse level the container would be
@@ -119,8 +138,18 @@ pub struct Struct_Templated<T> {
  */
 #[repr(C)]
 #[derive(Debug)]
-pub struct Struct_ReplacedWithoutDestructor<T> {
+pub struct ReplacedWithoutDestructor<T> {
     pub buff: *mut T,
+}
+#[repr(C)]
+#[derive(Debug)]
+pub struct ShouldNotBeCopiable<T> {
+    pub m_member: ReplacedWithoutDestructor<T>,
+}
+#[repr(C)]
+#[derive(Debug)]
+pub struct ShouldNotBeCopiableAsWell<U> {
+    pub m_member: ReplacedWithoutDestructorFwd<U>,
 }
 /**
  * If the replacement doesn't happen at the parse level the container would be
@@ -130,25 +159,12 @@ pub struct Struct_ReplacedWithoutDestructor<T> {
  */
 #[repr(C)]
 #[derive(Debug)]
-pub struct Struct_ReplacedWithoutDestructorFwd<T> {
+pub struct ReplacedWithoutDestructorFwd<T> {
     pub buff: *mut T,
 }
 #[repr(C)]
-#[derive(Debug)]
-pub struct Struct_ShouldNotBeCopiable<T> {
-    pub m_member: Struct_ReplacedWithoutDestructor<T>,
-}
-#[repr(C)]
-#[derive(Debug)]
-pub struct Struct_ShouldNotBeCopiableAsWell<U> {
-    pub m_member: Struct_ReplacedWithoutDestructorFwd<U>,
-}
-#[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Struct_TemplateWithVar<T> {
-    pub _phantom0: ::std::marker::PhantomData<T>,
-}
-extern "C" {
-    #[link_name = "_Z3bar3FooIiiE"]
-    pub fn bar(foo: Struct_Foo<::std::os::raw::c_int, ::std::os::raw::c_int>);
+pub struct TemplateWithVar<T> {
+    pub _address: u8,
+    pub _phantom_0: ::std::marker::PhantomData<T>,
 }

@@ -6,15 +6,15 @@
 
 #[repr(C, packed)]
 #[derive(Debug, Copy)]
-pub struct Struct_a {
+pub struct a {
     pub b: ::std::os::raw::c_char,
     pub c: ::std::os::raw::c_short,
 }
-impl ::std::clone::Clone for Struct_a {
-    fn clone(&self) -> Self { *self }
-}
 #[test]
-fn bindgen_test_layout_Struct_a() {
-    assert_eq!(::std::mem::size_of::<Struct_a>() , 3usize);
-    assert_eq!(::std::mem::align_of::<Struct_a>() , 1usize);
+fn bindgen_test_layout_a() {
+    assert_eq!(::std::mem::size_of::<a>() , 3usize);
+    assert_eq!(::std::mem::align_of::<a>() , 1usize);
+}
+impl Clone for a {
+    fn clone(&self) -> Self { *self }
 }

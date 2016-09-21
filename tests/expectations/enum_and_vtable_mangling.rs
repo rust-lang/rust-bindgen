@@ -4,27 +4,26 @@
 #![allow(non_snake_case)]
 
 
+pub const match_: _bindgen_ty_bindgen_id_1 = _bindgen_ty_bindgen_id_1::match_;
+pub const whatever_else: _bindgen_ty_bindgen_id_1 =
+    _bindgen_ty_bindgen_id_1::whatever_else;
 #[repr(u32)]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
-pub enum Enum_enum_and_vtable_mangling_hpp_unnamed_1 {
-    match_ = 0,
-    whatever_else = 1,
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum _bindgen_ty_bindgen_id_1 { match_ = 0, whatever_else = 1, }
+#[repr(C)]
+pub struct bindgen_vtable__bindgen_id_4 {
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_C {
-    pub _vftable: *const _vftable_Struct_C,
+pub struct C {
+    pub vtable_: *const bindgen_vtable__bindgen_id_4,
     pub i: ::std::os::raw::c_int,
 }
-#[repr(C)]
-pub struct _vftable_Struct_C {
-    pub match_: unsafe extern "C" fn(this: *mut ::std::os::raw::c_void),
-}
-impl ::std::clone::Clone for Struct_C {
-    fn clone(&self) -> Self { *self }
-}
 #[test]
-fn bindgen_test_layout_Struct_C() {
-    assert_eq!(::std::mem::size_of::<Struct_C>() , 16usize);
-    assert_eq!(::std::mem::align_of::<Struct_C>() , 8usize);
+fn bindgen_test_layout_C() {
+    assert_eq!(::std::mem::size_of::<C>() , 16usize);
+    assert_eq!(::std::mem::align_of::<C>() , 8usize);
+}
+impl Clone for C {
+    fn clone(&self) -> Self { *self }
 }

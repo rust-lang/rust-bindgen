@@ -428,7 +428,7 @@ pub const CXCallingConv_X86_64SysV: c_uint = 11;
 pub const CXCallingConv_Invalid: c_uint = 100;
 pub const CXCallingConv_Unexposed: c_uint = 200;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Hash)]
 pub struct CXType {
     pub kind: Enum_CXTypeKind,
     pub data: [*mut c_void; 2],
@@ -1076,6 +1076,7 @@ extern "C" {
     pub fn clang_Cursor_getNumArguments(C: CXCursor) -> c_int;
     pub fn clang_Cursor_getArgument(C: CXCursor, i: c_uint) ->
      CXCursor;
+    pub fn clang_Cursor_getNumTemplateArguments(T: CXCursor) -> c_int;
     pub fn clang_Cursor_getTemplateArgumentKind(C: CXCursor, i: c_uint) ->
      CXTemplateArgumentKind;
     pub fn clang_Cursor_getTemplateArgumentValue(C: CXCursor, i: c_uint) ->
@@ -1148,6 +1149,7 @@ extern "C" {
                                              pieceIndex: c_uint,
                                              options: c_uint) ->
      CXSourceRange;
+    pub fn clang_Cursor_getOffsetOfField(C: CXCursor) -> c_longlong;
     pub fn clang_getCursorDisplayName(arg1: CXCursor) -> CXString;
     pub fn clang_getCursorReferenced(arg1: CXCursor) -> CXCursor;
     pub fn clang_getCursorDefinition(arg1: CXCursor) -> CXCursor;
@@ -1168,6 +1170,7 @@ extern "C" {
     pub fn clang_Cursor_getMangling(C: CXCursor) -> CXString;
     pub fn clang_Cursor_getParsedComment(C: CXCursor) -> CXComment;
     pub fn clang_Cursor_getModule(C: CXCursor) -> CXModule;
+    pub fn clang_Cursor_isAnonymous(C: CXCursor) -> c_uint;
     pub fn clang_Module_getASTFile(Module: CXModule) -> CXFile;
     pub fn clang_Module_getParent(Module: CXModule) -> CXModule;
     pub fn clang_Module_getName(Module: CXModule) -> CXString;
@@ -1241,6 +1244,7 @@ extern "C" {
     pub fn clang_FullComment_getAsHTML(Comment: CXComment) -> CXString;
     pub fn clang_FullComment_getAsXML(Comment: CXComment) -> CXString;
     pub fn clang_CXXMethod_isPureVirtual(C: CXCursor) -> c_uint;
+    pub fn clang_CXXMethod_isConst(C: CXCursor) -> c_uint;
     pub fn clang_CXXMethod_isStatic(C: CXCursor) -> c_uint;
     pub fn clang_CXXMethod_isVirtual(C: CXCursor) -> c_uint;
     pub fn clang_CXXField_isMutable(C: CXCursor) -> c_uint;

@@ -4,8 +4,11 @@
 #![allow(non_snake_case)]
 
 
-pub enum Struct_C { }
+/**
+ * <div rustbindgen opaque></div>
+ */
 #[repr(C)]
+#[derive(Debug, Copy)]
 pub struct D {
     pub _bindgen_opaque_blob: u32,
 }
@@ -14,16 +17,19 @@ fn bindgen_test_layout_D() {
     assert_eq!(::std::mem::size_of::<D>() , 4usize);
     assert_eq!(::std::mem::align_of::<D>() , 4usize);
 }
-#[repr(C)]
-#[derive(Debug, Copy)]
-pub struct Struct_NotAnnotated {
-    pub f: ::std::os::raw::c_int,
-}
-impl ::std::clone::Clone for Struct_NotAnnotated {
+impl Clone for D {
     fn clone(&self) -> Self { *self }
 }
+#[repr(C)]
+#[derive(Debug, Copy)]
+pub struct NotAnnotated {
+    pub f: ::std::os::raw::c_int,
+}
 #[test]
-fn bindgen_test_layout_Struct_NotAnnotated() {
-    assert_eq!(::std::mem::size_of::<Struct_NotAnnotated>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Struct_NotAnnotated>() , 4usize);
+fn bindgen_test_layout_NotAnnotated() {
+    assert_eq!(::std::mem::size_of::<NotAnnotated>() , 4usize);
+    assert_eq!(::std::mem::align_of::<NotAnnotated>() , 4usize);
+}
+impl Clone for NotAnnotated {
+    fn clone(&self) -> Self { *self }
 }

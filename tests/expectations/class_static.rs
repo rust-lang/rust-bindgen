@@ -6,15 +6,27 @@
 
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Struct_MyClass;
-impl ::std::clone::Clone for Struct_MyClass {
-    fn clone(&self) -> Self { *self }
+pub struct MyClass {
+    pub _address: u8,
 }
 extern "C" {
     #[link_name = "_ZN7MyClass7exampleE"]
-    pub static mut Struct_MyClass_consts_example:
-               *const ::std::os::raw::c_int;
+    pub static mut MyClass_example: *const ::std::os::raw::c_int;
+}
+extern "C" {
     #[link_name = "_ZN7MyClass26example_check_no_collisionE"]
-    pub static mut Struct_MyClass_consts_example_check_no_collision:
+    pub static mut MyClass_example_check_no_collision:
                *const ::std::os::raw::c_int;
+}
+#[test]
+fn bindgen_test_layout_MyClass() {
+    assert_eq!(::std::mem::size_of::<MyClass>() , 1usize);
+    assert_eq!(::std::mem::align_of::<MyClass>() , 1usize);
+}
+impl Clone for MyClass {
+    fn clone(&self) -> Self { *self }
+}
+extern "C" {
+    #[link_name = "_ZL26example_check_no_collision"]
+    pub static mut example_check_no_collision: *const ::std::os::raw::c_int;
 }

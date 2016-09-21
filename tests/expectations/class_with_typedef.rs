@@ -8,57 +8,65 @@ pub type AnotherInt = ::std::os::raw::c_int;
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct C {
-    pub c: ::std::os::raw::c_int,
-    pub ptr: *mut ::std::os::raw::c_int,
-    pub arr: [::std::os::raw::c_int; 10usize],
+    pub c: C_MyInt,
+    pub ptr: *mut C_MyInt,
+    pub arr: [C_MyInt; 10usize],
     pub d: AnotherInt,
     pub other_ptr: *mut AnotherInt,
 }
-impl ::std::clone::Clone for C {
-    fn clone(&self) -> Self { *self }
-}
+pub type C_MyInt = ::std::os::raw::c_int;
+pub type C_Lookup = *const ::std::os::raw::c_char;
 #[test]
 fn bindgen_test_layout_C() {
     assert_eq!(::std::mem::size_of::<C>() , 72usize);
     assert_eq!(::std::mem::align_of::<C>() , 8usize);
 }
 extern "C" {
-    fn _ZN1C6methodEi(this: *mut C, c: ::std::os::raw::c_int);
-    fn _ZN1C9methodRefERi(this: *mut C, c: *mut ::std::os::raw::c_int);
-    fn _ZN1C16complexMethodRefERPKc(this: *mut C,
-                                    c: *mut *const ::std::os::raw::c_char);
-    fn _ZN1C13anotherMethodEi(this: *mut C, c: AnotherInt);
+    #[link_name = "_ZN1C6methodEi"]
+    pub fn C_method(this: *mut C, c: C_MyInt);
+}
+extern "C" {
+    #[link_name = "_ZN1C9methodRefERi"]
+    pub fn C_methodRef(this: *mut C, c: *mut C_MyInt);
+}
+extern "C" {
+    #[link_name = "_ZN1C16complexMethodRefERPKc"]
+    pub fn C_complexMethodRef(this: *mut C, c: *mut C_Lookup);
+}
+extern "C" {
+    #[link_name = "_ZN1C13anotherMethodEi"]
+    pub fn C_anotherMethod(this: *mut C, c: AnotherInt);
+}
+impl Clone for C {
+    fn clone(&self) -> Self { *self }
 }
 impl C {
     #[inline]
-    pub unsafe fn method(&mut self, c: ::std::os::raw::c_int) {
-        _ZN1C6methodEi(&mut *self, c)
+    pub unsafe fn method(&mut self, c: C_MyInt) { C_method(&mut *self, c) }
+    #[inline]
+    pub unsafe fn methodRef(&mut self, c: *mut C_MyInt) {
+        C_methodRef(&mut *self, c)
     }
     #[inline]
-    pub unsafe fn methodRef(&mut self, c: *mut ::std::os::raw::c_int) {
-        _ZN1C9methodRefERi(&mut *self, c)
-    }
-    #[inline]
-    pub unsafe fn complexMethodRef(&mut self,
-                                   c: *mut *const ::std::os::raw::c_char) {
-        _ZN1C16complexMethodRefERPKc(&mut *self, c)
+    pub unsafe fn complexMethodRef(&mut self, c: *mut C_Lookup) {
+        C_complexMethodRef(&mut *self, c)
     }
     #[inline]
     pub unsafe fn anotherMethod(&mut self, c: AnotherInt) {
-        _ZN1C13anotherMethodEi(&mut *self, c)
+        C_anotherMethod(&mut *self, c)
     }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct D {
     pub _base: C,
-    pub ptr: *mut ::std::os::raw::c_int,
-}
-impl ::std::clone::Clone for D {
-    fn clone(&self) -> Self { *self }
+    pub ptr: *mut C_MyInt,
 }
 #[test]
 fn bindgen_test_layout_D() {
     assert_eq!(::std::mem::size_of::<D>() , 80usize);
     assert_eq!(::std::mem::align_of::<D>() , 8usize);
+}
+impl Clone for D {
+    fn clone(&self) -> Self { *self }
 }

@@ -1,7 +1,16 @@
-// bindgen-flags: --match jsval_layout_opaque.hpp --no-type-renaming --no-unstable-rust -- -std=c++11
+// bindgen-flags: --no-unstable-rust -- -std=c++11
 
-#include <stdint.h>
-#include <stddef.h>
+/**
+ * These typedefs are hacky, but keep our tests consistent across 64-bit
+ * platforms, otherwise the id's change and our CI is unhappy.
+ */
+typedef unsigned char uint8_t;
+typedef int int32_t;
+typedef unsigned int uint32_t;
+typedef unsigned long long uint64_t;
+typedef unsigned long long size_t;
+typedef unsigned long long uintptr_t;
+
 
 #define JS_PUNBOX64
 #define IS_LITTLE_ENDIAN

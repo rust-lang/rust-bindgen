@@ -5,4 +5,5 @@
 
 
 pub type foo =
-    unsafe extern "C" fn(bar: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    ::std::option::Option<unsafe extern "C" fn(bar: ::std::os::raw::c_int)
+                              -> ::std::os::raw::c_int>;
