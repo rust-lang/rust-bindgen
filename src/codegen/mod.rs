@@ -1380,7 +1380,16 @@ impl ToRustTy for Type {
             TypeKind::Pointer(inner) |
             TypeKind::Reference(inner) => {
                 let inner = ctx.resolve_item(inner);
-                inner.to_rust_ty(ctx).to_ptr(inner.expect_type().is_const(), ctx.span())
+                let inner_ty = inner.expect_type();
+                let ty = inner.to_rust_ty(ctx);
+
+                // Avoid the first function pointer level, since it's already
+                // represented in Rust.
+                if inner_ty.canonical_type(ctx).is_function() {
+                    ty
+                } else {
+                    ty.to_ptr(inner.expect_type().is_const(), ctx.span())
+                }
             }
             TypeKind::Named(..) => {
                 let name = item.canonical_name(ctx);

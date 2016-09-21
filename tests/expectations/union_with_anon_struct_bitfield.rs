@@ -28,25 +28,25 @@ impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
 #[derive(Debug, Copy)]
 pub struct foo {
     pub a: __BindgenUnionField<::std::os::raw::c_int>,
-    pub __bindgen_anon_1: __BindgenUnionField<foo__bindgen_ty_bindgen_id_3>,
+    pub __bindgen_anon_1: __BindgenUnionField<foo__bindgen_ty_bindgen_id_4>,
     pub bindgen_union_field: u32,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct foo__bindgen_ty_bindgen_id_3 {
+pub struct foo__bindgen_ty_bindgen_id_4 {
     pub _bitfield_1: u32,
 }
 #[test]
-fn bindgen_test_layout_foo__bindgen_ty_bindgen_id_3() {
-    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_bindgen_id_3>() ,
+fn bindgen_test_layout_foo__bindgen_ty_bindgen_id_4() {
+    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_bindgen_id_4>() ,
                4usize);
-    assert_eq!(::std::mem::align_of::<foo__bindgen_ty_bindgen_id_3>() ,
+    assert_eq!(::std::mem::align_of::<foo__bindgen_ty_bindgen_id_4>() ,
                4usize);
 }
-impl Clone for foo__bindgen_ty_bindgen_id_3 {
+impl Clone for foo__bindgen_ty_bindgen_id_4 {
     fn clone(&self) -> Self { *self }
 }
-impl foo__bindgen_ty_bindgen_id_3 {
+impl foo__bindgen_ty_bindgen_id_4 {
     #[inline]
     pub fn b(&self) -> ::std::os::raw::c_int {
         unsafe {

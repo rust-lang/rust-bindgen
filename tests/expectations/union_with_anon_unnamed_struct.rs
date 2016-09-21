@@ -28,25 +28,25 @@ impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
 #[derive(Debug, Copy)]
 pub struct pixel {
     pub rgba: __BindgenUnionField<::std::os::raw::c_uint>,
-    pub __bindgen_anon_1: __BindgenUnionField<pixel__bindgen_ty_bindgen_id_3>,
+    pub __bindgen_anon_1: __BindgenUnionField<pixel__bindgen_ty_bindgen_id_4>,
     pub bindgen_union_field: u32,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct pixel__bindgen_ty_bindgen_id_3 {
+pub struct pixel__bindgen_ty_bindgen_id_4 {
     pub r: ::std::os::raw::c_uchar,
     pub g: ::std::os::raw::c_uchar,
     pub b: ::std::os::raw::c_uchar,
     pub a: ::std::os::raw::c_uchar,
 }
 #[test]
-fn bindgen_test_layout_pixel__bindgen_ty_bindgen_id_3() {
-    assert_eq!(::std::mem::size_of::<pixel__bindgen_ty_bindgen_id_3>() ,
+fn bindgen_test_layout_pixel__bindgen_ty_bindgen_id_4() {
+    assert_eq!(::std::mem::size_of::<pixel__bindgen_ty_bindgen_id_4>() ,
                4usize);
-    assert_eq!(::std::mem::align_of::<pixel__bindgen_ty_bindgen_id_3>() ,
+    assert_eq!(::std::mem::align_of::<pixel__bindgen_ty_bindgen_id_4>() ,
                1usize);
 }
-impl Clone for pixel__bindgen_ty_bindgen_id_3 {
+impl Clone for pixel__bindgen_ty_bindgen_id_4 {
     fn clone(&self) -> Self { *self }
 }
 #[test]

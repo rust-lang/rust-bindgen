@@ -79,12 +79,12 @@ impl Clone for Bar {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct StyleShapeSource<ReferenceBox> {
-    pub __bindgen_anon_1: StyleShapeSource__bindgen_ty_bindgen_id_13<ReferenceBox>,
+    pub __bindgen_anon_1: StyleShapeSource__bindgen_ty_bindgen_id_14<ReferenceBox>,
     pub _phantom_0: ::std::marker::PhantomData<ReferenceBox>,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct StyleShapeSource__bindgen_ty_bindgen_id_13<ReferenceBox> {
+pub struct StyleShapeSource__bindgen_ty_bindgen_id_14<ReferenceBox> {
     pub mPosition: __BindgenUnionField<*mut Position>,
     pub mFragmentOrURL: __BindgenUnionField<*mut FragmentOrURL>,
     pub bindgen_union_field: u64,

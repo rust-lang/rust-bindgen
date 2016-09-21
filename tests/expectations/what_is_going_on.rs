@@ -21,9 +21,8 @@ pub type Float = f32;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct PointTyped<units, F> {
-    pub x: Float,
-    pub y: Float,
+    pub x: F,
+    pub y: F,
     pub _phantom_0: ::std::marker::PhantomData<units>,
-    pub _phantom_1: ::std::marker::PhantomData<F>,
 }
 pub type IntPoint = PointTyped<UnknownUnits, f32>;

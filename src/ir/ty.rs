@@ -75,6 +75,13 @@ impl Type {
         }
     }
 
+    pub fn is_function(&self) -> bool {
+        match self.kind {
+            TypeKind::Function(..) => true,
+            _ => false,
+        }
+    }
+
     pub fn is_builtin_or_named(&self) -> bool {
         match self.kind {
             TypeKind::Void |
@@ -243,9 +250,18 @@ impl Type {
                 => this_name == name,
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::Array(t, _) |
-            TypeKind::Pointer(t)
+            TypeKind::Pointer(t) |
+            TypeKind::Alias(_, t)
                 => type_resolver.resolve_type(t)
                                 .signature_contains_named_type(type_resolver, ty),
+            TypeKind::Function(ref sig) => {
+                sig.argument_types().iter().any(|&(_, arg)| {
+                    type_resolver.resolve_type(arg)
+                                 .signature_contains_named_type(type_resolver, ty)
+                }) ||
+                type_resolver.resolve_type(sig.return_type())
+                             .signature_contains_named_type(type_resolver, ty)
+            },
             TypeKind::TemplateRef(_inner, ref template_args) => {
                 template_args.iter().any(|arg| {
                     type_resolver.resolve_type(*arg)
@@ -332,7 +348,7 @@ pub enum TypeKind {
     /// already known types, and are converted to ResolvedTypeRef.
     ///
     /// see tests/headers/typeref.hpp to see somewhere where this is a problem.
-    UnresolvedTypeRef(clang::Type, Option<clang::Cursor>),
+    UnresolvedTypeRef(clang::Type, Option<clang::Cursor>, /* parent_id */ Option<ItemId>),
     ResolvedTypeRef(ItemId),
 
     /// A named type, that is, a template parameter, with an optional default
@@ -427,18 +443,18 @@ impl Type {
                             let referenced = location.referenced();
                             return Self::from_clang_ty(potential_id,
                                                        &referenced.cur_type(),
-                                                       Some(referenced),
+                                                       Some(referenced.cur_type().declaration()),
                                                        parent_id,
                                                        ctx);
                         }
                         CXCursor_TypeRef => {
                             let referenced = location.referenced();
-                            // FIXME: use potential id?
                             return Ok(ParseResult::AlreadyResolved(
-                                    Item::from_ty_or_ref(referenced.cur_type(),
-                                                         Some(referenced),
-                                                         parent_id,
-                                                         ctx)));
+                                    Item::from_ty_or_ref_with_id(potential_id,
+                                                                 referenced.cur_type(),
+                                                                 Some(referenced.cur_type().declaration()),
+                                                                 parent_id,
+                                                                 ctx)));
                         }
                         _ => {
                             if ty.kind() == CXType_Unexposed {
@@ -469,9 +485,11 @@ impl Type {
             // We might need to, though, if the context is already in the
             // process of resolving them.
             CXType_MemberPointer |
+            CXType_BlockPointer |
             CXType_Pointer => {
                 let inner =
-                    Item::from_ty_or_ref(ty.pointee_type(), Some(ty.pointee_type().declaration()), parent_id, ctx);
+                    Item::from_ty_or_ref(ty.pointee_type(), location,
+                                         parent_id, ctx);
                 TypeKind::Pointer(inner)
             }
             // XXX: RValueReference is most likely wrong, but I don't think we
@@ -479,7 +497,8 @@ impl Type {
             CXType_RValueReference |
             CXType_LValueReference => {
                 let inner =
-                    Item::from_ty_or_ref(ty.pointee_type(), Some(ty.pointee_type().declaration()), parent_id, ctx);
+                    Item::from_ty_or_ref(ty.pointee_type(), location,
+                                         parent_id, ctx);
                 TypeKind::Reference(inner)
             }
             // XXX DependentSizedArray is wrong

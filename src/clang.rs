@@ -17,14 +17,23 @@ pub struct Cursor {
 
 impl fmt::Debug for Cursor {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        write!(fmt, "Cursor({} kind: {}, loc: {})",
-               self.spelling(), kind_to_str(self.kind()), self.location())
+        write!(fmt, "Cursor({} kind: {}, loc: {}, usr: {:?})",
+               self.spelling(), kind_to_str(self.kind()), self.location(), self.usr())
     }
 }
 
 pub type CursorVisitor<'s> = for<'a, 'b> FnMut(&'a Cursor, &'b Cursor) -> Enum_CXChildVisitResult + 's;
 
 impl Cursor {
+    pub fn usr(&self) -> Option<String> {
+        let s = String_ { x: unsafe { clang_getCursorUSR(self.x) } }.to_string();
+        if s.is_empty() {
+            None
+        } else {
+            Some(s)
+        }
+    }
+
     pub fn is_declaration(&self) -> bool {
         unsafe { clang_isDeclaration(self.kind()) != 0 }
     }

@@ -191,9 +191,18 @@ impl Item {
             TypeKind::Array(inner, _) |
             TypeKind::Pointer(inner) |
             TypeKind::Reference(inner) |
-            TypeKind::Alias(_, inner) |
             TypeKind::ResolvedTypeRef(inner) => {
                 ctx.resolve_item(inner).applicable_template_args(ctx)
+            }
+            TypeKind::Alias(_, inner) => {
+                let parent_args = ctx.resolve_item(self.parent_id())
+                   .applicable_template_args(ctx);
+                let inner = ctx.resolve_type(inner);
+                // Avoid unused type parameters, sigh.
+                parent_args.iter().cloned().filter(|arg| {
+                    let arg = ctx.resolve_type(*arg);
+                    arg.is_named() && inner.signature_contains_named_type(ctx, arg)
+                }).collect()
             }
             // XXX Is this completely correct? Partial template specialization
             // is hard anyways, sigh...
@@ -436,11 +445,19 @@ impl ClangItemParser for Item {
                       location: Option<clang::Cursor>,
                       parent_id: Option<ItemId>,
                       context: &mut BindgenContext) -> ItemId {
-        debug!("from_ty_or_ref: {:?}, {:?}, {:?}", ty, location, parent_id);
+        Self::from_ty_or_ref_with_id(ItemId::next(), ty, location, parent_id, context)
+    }
+
+    fn from_ty_or_ref_with_id(potential_id: ItemId,
+                              ty: clang::Type,
+                              location: Option<clang::Cursor>,
+                              parent_id: Option<ItemId>,
+                              context: &mut BindgenContext) -> ItemId {
+        debug!("from_ty_or_ref_with_id: {:?} {:?}, {:?}, {:?}", potential_id, ty, location, parent_id);
 
         if context.collected_typerefs() {
             debug!("refs already collected, resolving directly");
-            return Self::from_ty(&ty, location, parent_id, context)
+            return Self::from_ty_with_id(potential_id, &ty, location, parent_id, context)
                         .expect("Unable to resolve type");
         }
 
@@ -452,15 +469,14 @@ impl ClangItemParser for Item {
         debug!("New unresolved type reference: {:?}, {:?}", ty, location);
 
         let is_const = ty.is_const();
-        let kind = TypeKind::UnresolvedTypeRef(ty, location);
-        let id = ItemId::next();
+        let kind = TypeKind::UnresolvedTypeRef(ty, location, parent_id);
         let current_module = context.current_module();
-        context.add_item(Item::new(id, None, None,
+        context.add_item(Item::new(potential_id, None, None,
                                    parent_id.unwrap_or(current_module),
                                    ItemKind::Type(Type::new(None, None, kind, is_const))),
                          Some(clang::Cursor::null()),
                          None);
-        id
+        potential_id
     }
 
 

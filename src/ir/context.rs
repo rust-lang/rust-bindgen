@@ -33,11 +33,9 @@ pub struct BindgenContext<'ctx> {
     /// output.
     items: BTreeMap<ItemId, Item>,
 
-    /// Clang cursor to type map. This is needed to be able to associate types
-    /// with item ids during parsing.
-    ///
-    /// The cursor used for storage is the definition cursor.
-    types: HashMap<Cursor, ItemId>,
+    /// Clang USR to type map. This is needed to be able to associate types with
+    /// item ids during parsing.
+    types: HashMap<String, ItemId>,
 
     /// A cursor to module map. Similar reason than above.
     modules: HashMap<Cursor, ItemId>,
@@ -135,17 +133,19 @@ impl<'ctx> BindgenContext<'ctx> {
         assert!(old_item.is_none(), "Inserted type twice?");
 
         if is_type && declaration.is_some() {
-            let declaration = declaration.unwrap();
-            debug_assert_eq!(declaration, declaration.canonical());
-            if declaration.is_valid() {
-                let old = self.types.insert(declaration, id);
-                debug_assert_eq!(old, None);
-            } else if location.is_some() &&
-                      (location.unwrap().kind() == CXCursor_ClassTemplate ||
-                       location.unwrap().kind() == CXCursor_ClassTemplatePartialSpecialization) {
-                let old = self.types.insert(location.unwrap().canonical(), id);
-                debug_assert_eq!(old, None);
-            } else {
+            let mut declaration = declaration.unwrap();
+            if !declaration.is_valid() {
+                if let Some(location) = location {
+                    if location.kind() == CXCursor_ClassTemplate ||
+                       location.kind() == CXCursor_ClassTemplatePartialSpecialization {
+                        declaration = location;
+                    }
+                }
+            }
+            declaration = declaration.canonical();
+
+
+            if !declaration.is_valid() {
                 // This could happen, for example, with types like `int*` or
                 // similar.
                 //
@@ -153,6 +153,14 @@ impl<'ctx> BindgenContext<'ctx> {
                 // duplicated, so we can just ignore them.
                 debug!("Invalid declaration {:?} found for type {:?}",
                        declaration, self.items.get(&id).unwrap().kind().expect_type());
+                return;
+            }
+
+            if let Some(usr) = declaration.usr() {
+                let old = self.types.insert(usr, id);
+                debug_assert_eq!(old, None);
+            } else {
+                error!("Valid declaration with no USR: {:?}, {:?}", declaration, location);
             }
         }
     }
@@ -206,7 +214,7 @@ impl<'ctx> BindgenContext<'ctx> {
         self.collected_typerefs
     }
 
-    fn collect_typerefs(&mut self) -> Vec<(ItemId, clang::Type, Option<clang::Cursor>)> {
+    fn collect_typerefs(&mut self) -> Vec<(ItemId, clang::Type, Option<clang::Cursor>, Option<ItemId>)> {
         debug_assert!(!self.collected_typerefs);
         self.collected_typerefs = true;
         let mut typerefs = vec![];
@@ -218,8 +226,8 @@ impl<'ctx> BindgenContext<'ctx> {
             };
 
             match *ty.kind() {
-                TypeKind::UnresolvedTypeRef(ref ty, loc) => {
-                    typerefs.push((*id, ty.clone(), loc));
+                TypeKind::UnresolvedTypeRef(ref ty, loc, parent_id) => {
+                    typerefs.push((*id, ty.clone(), loc, parent_id));
                 }
                 _ => {},
             };
@@ -230,9 +238,9 @@ impl<'ctx> BindgenContext<'ctx> {
     fn resolve_typerefs(&mut self) {
         let typerefs = self.collect_typerefs();
 
-        for (id, ty, loc) in typerefs {
+        for (id, ty, loc, parent_id) in typerefs {
             let _resolved = {
-                let resolved = Item::from_ty(&ty, loc, None, self)
+                let resolved = Item::from_ty(&ty, loc, parent_id, self)
                                      .expect("What happened?");
                 let mut item = self.items.get_mut(&id).unwrap();
 
@@ -494,8 +502,11 @@ impl<'ctx> BindgenContext<'ctx> {
         }
         let canonical_declaration = declaration.canonical();
         if canonical_declaration.is_valid() {
-            // First lookup to see if we already have it resolved.
-            let id = self.types.get(&canonical_declaration).map(|id| *id);
+            let id =
+                canonical_declaration
+                    .usr()
+                    .and_then(|usr| self.types.get(&usr))
+                    .map(|id| *id);
             if let Some(id) = id {
                 debug!("Already resolved ty {:?}, {:?}, {:?} {:?}",
                        id, declaration, ty, location);

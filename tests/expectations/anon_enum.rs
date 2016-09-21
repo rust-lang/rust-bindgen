@@ -12,7 +12,7 @@ pub struct Test {
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum Test__bindgen_ty_bindgen_id_4 { T_NONE = 0, }
+pub enum Test__bindgen_ty_bindgen_id_6 { T_NONE = 0, }
 #[test]
 fn bindgen_test_layout_Test() {
     assert_eq!(::std::mem::size_of::<Test>() , 8usize);
