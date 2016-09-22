@@ -333,7 +333,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
         let cfg = ExpansionConfig::default("xxx".to_owned());
         let sess = parse::ParseSess::new();
-        let mut loader = base::DummyMacroLoader;
+        let mut loader = base::DummyResolver;
         let mut ctx =
             GenContext(base::ExtCtxt::new(&sess, vec![], cfg, &mut loader));
 
