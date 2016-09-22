@@ -311,6 +311,7 @@ impl CodeGenerator for Type {
             TypeKind::Float(..) |
             TypeKind::Array(..) |
             TypeKind::Pointer(..) |
+            TypeKind::BlockPointer |
             TypeKind::Reference(..) |
             TypeKind::TemplateRef(..) |
             TypeKind::Function(..) |
@@ -1381,6 +1382,10 @@ impl ToRustTy for Type {
                 }
 
                 utils::build_templated_path(item, ctx, false)
+            }
+            TypeKind::BlockPointer => {
+                let void = raw!(c_void);
+                void.to_ptr(/* is_const = */ false, ctx.span())
             }
             TypeKind::Pointer(inner) |
             TypeKind::Reference(inner) => {

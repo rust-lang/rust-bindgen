@@ -90,6 +90,7 @@ impl Type {
             TypeKind::Array(..) |
             TypeKind::Reference(..) |
             TypeKind::Pointer(..) |
+            TypeKind::BlockPointer |
             TypeKind::Int(..) |
             TypeKind::Float(..) |
             TypeKind::Named(..) => true,
@@ -124,8 +125,9 @@ impl Type {
                 TypeKind::Comp(ref ci)
                     => ci.layout(type_resolver),
                 // FIXME(emilio): This is a hack for anonymous union templates.
-                    // Use the actual pointer size!
-                TypeKind::Pointer(..)
+                // Use the actual pointer size!
+                TypeKind::Pointer(..) |
+                TypeKind::BlockPointer
                     => Some(Layout::new(mem::size_of::<*mut ()>(), mem::align_of::<*mut ()>())),
                 TypeKind::ResolvedTypeRef(inner)
                     => type_resolver.resolve_type(inner).layout(type_resolver),
@@ -286,6 +288,7 @@ impl Type {
             TypeKind::Reference(..) |
             TypeKind::Void |
             TypeKind::NullPtr |
+            TypeKind::BlockPointer |
             TypeKind::Pointer(..) => self,
 
             TypeKind::ResolvedTypeRef(inner) |
@@ -334,6 +337,8 @@ pub enum TypeKind {
     /// A pointer to a type. The bool field represents whether it's const or
     /// not.
     Pointer(ItemId),
+    /// A pointer to an Apple block.
+    BlockPointer,
     /// A reference to a type, as in: int& foo().
     Reference(ItemId),
     /// A reference to a template, with different template parameter names. To
@@ -376,6 +381,7 @@ impl Type {
             TypeKind::Enum(..) |
             TypeKind::Reference(..) |
             TypeKind::NullPtr |
+            TypeKind::BlockPointer |
             TypeKind::Pointer(..) => false,
 
             TypeKind::UnresolvedTypeRef(..)
@@ -485,12 +491,14 @@ impl Type {
             // We might need to, though, if the context is already in the
             // process of resolving them.
             CXType_MemberPointer |
-            CXType_BlockPointer |
             CXType_Pointer => {
                 let inner =
                     Item::from_ty_or_ref(ty.pointee_type(), location,
                                          parent_id, ctx);
                 TypeKind::Pointer(inner)
+            }
+            CXType_BlockPointer => {
+                TypeKind::BlockPointer
             }
             // XXX: RValueReference is most likely wrong, but I don't think we
             // can even add bindings for that, so huh.
