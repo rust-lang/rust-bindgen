@@ -19,7 +19,7 @@ doc = false
 name = "bindgen"
 
 [build-dependencies]
-quasi_codegen = "0.15"
+quasi_codegen = "0.20"
 
 [dependencies]
 clang-sys = "0.8.0"
@@ -27,12 +27,12 @@ libc = "0.2"
 log = "0.3"
 env_logger = "0.3"
 rustc-serialize = "0.3.19"
-syntex_syntax = "0.43"
+syntex_syntax = "0.44"
 regex = "0.1"
 
 [dependencies.aster]
 features = ["with-syntex"]
-version = "0.26"
+version = "0.28"
 
 [dependencies.clippy]
 optional = true
@@ -40,7 +40,7 @@ version = "*"
 
 [dependencies.quasi]
 features = ["with-syntex"]
-version = "0.19"
+version = "0.20"
 
 [features]
 llvm_stable = []
