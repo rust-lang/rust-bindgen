@@ -29,6 +29,11 @@ pub trait ClangItemParser: Sized {
                       location: Option<clang::Cursor>,
                       parent_id: Option<ItemId>,
                       context: &mut BindgenContext) -> ItemId;
+    fn from_ty_or_ref_with_id(potential_id: ItemId,
+                              ty: clang::Type,
+                              location: Option<clang::Cursor>,
+                              parent_id: Option<ItemId>,
+                              context: &mut BindgenContext) -> ItemId;
     fn from_ty_with_id(id: ItemId,
                        ty: &clang::Type,
                        location: Option<clang::Cursor>,

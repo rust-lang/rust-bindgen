@@ -5,5 +5,5 @@
 
 
 extern "C" {
-    pub fn foo(bar: ::std::option::Option<unsafe extern "C" fn()>);
+    pub fn atexit_b(arg1: *mut ::std::os::raw::c_void);
 }

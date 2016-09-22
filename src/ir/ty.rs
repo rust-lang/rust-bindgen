@@ -75,6 +75,13 @@ impl Type {
         }
     }
 
+    pub fn is_function(&self) -> bool {
+        match self.kind {
+            TypeKind::Function(..) => true,
+            _ => false,
+        }
+    }
+
     pub fn is_builtin_or_named(&self) -> bool {
         match self.kind {
             TypeKind::Void |
@@ -83,6 +90,7 @@ impl Type {
             TypeKind::Array(..) |
             TypeKind::Reference(..) |
             TypeKind::Pointer(..) |
+            TypeKind::BlockPointer |
             TypeKind::Int(..) |
             TypeKind::Float(..) |
             TypeKind::Named(..) => true,
@@ -117,8 +125,9 @@ impl Type {
                 TypeKind::Comp(ref ci)
                     => ci.layout(type_resolver),
                 // FIXME(emilio): This is a hack for anonymous union templates.
-                    // Use the actual pointer size!
-                TypeKind::Pointer(..)
+                // Use the actual pointer size!
+                TypeKind::Pointer(..) |
+                TypeKind::BlockPointer
                     => Some(Layout::new(mem::size_of::<*mut ()>(), mem::align_of::<*mut ()>())),
                 TypeKind::ResolvedTypeRef(inner)
                     => type_resolver.resolve_type(inner).layout(type_resolver),
@@ -243,9 +252,18 @@ impl Type {
                 => this_name == name,
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::Array(t, _) |
-            TypeKind::Pointer(t)
+            TypeKind::Pointer(t) |
+            TypeKind::Alias(_, t)
                 => type_resolver.resolve_type(t)
                                 .signature_contains_named_type(type_resolver, ty),
+            TypeKind::Function(ref sig) => {
+                sig.argument_types().iter().any(|&(_, arg)| {
+                    type_resolver.resolve_type(arg)
+                                 .signature_contains_named_type(type_resolver, ty)
+                }) ||
+                type_resolver.resolve_type(sig.return_type())
+                             .signature_contains_named_type(type_resolver, ty)
+            },
             TypeKind::TemplateRef(_inner, ref template_args) => {
                 template_args.iter().any(|arg| {
                     type_resolver.resolve_type(*arg)
@@ -270,6 +288,7 @@ impl Type {
             TypeKind::Reference(..) |
             TypeKind::Void |
             TypeKind::NullPtr |
+            TypeKind::BlockPointer |
             TypeKind::Pointer(..) => self,
 
             TypeKind::ResolvedTypeRef(inner) |
@@ -318,6 +337,8 @@ pub enum TypeKind {
     /// A pointer to a type. The bool field represents whether it's const or
     /// not.
     Pointer(ItemId),
+    /// A pointer to an Apple block.
+    BlockPointer,
     /// A reference to a type, as in: int& foo().
     Reference(ItemId),
     /// A reference to a template, with different template parameter names. To
@@ -332,7 +353,7 @@ pub enum TypeKind {
     /// already known types, and are converted to ResolvedTypeRef.
     ///
     /// see tests/headers/typeref.hpp to see somewhere where this is a problem.
-    UnresolvedTypeRef(clang::Type, Option<clang::Cursor>),
+    UnresolvedTypeRef(clang::Type, Option<clang::Cursor>, /* parent_id */ Option<ItemId>),
     ResolvedTypeRef(ItemId),
 
     /// A named type, that is, a template parameter, with an optional default
@@ -360,6 +381,7 @@ impl Type {
             TypeKind::Enum(..) |
             TypeKind::Reference(..) |
             TypeKind::NullPtr |
+            TypeKind::BlockPointer |
             TypeKind::Pointer(..) => false,
 
             TypeKind::UnresolvedTypeRef(..)
@@ -427,18 +449,18 @@ impl Type {
                             let referenced = location.referenced();
                             return Self::from_clang_ty(potential_id,
                                                        &referenced.cur_type(),
-                                                       Some(referenced),
+                                                       Some(referenced.cur_type().declaration()),
                                                        parent_id,
                                                        ctx);
                         }
                         CXCursor_TypeRef => {
                             let referenced = location.referenced();
-                            // FIXME: use potential id?
                             return Ok(ParseResult::AlreadyResolved(
-                                    Item::from_ty_or_ref(referenced.cur_type(),
-                                                         Some(referenced),
-                                                         parent_id,
-                                                         ctx)));
+                                    Item::from_ty_or_ref_with_id(potential_id,
+                                                                 referenced.cur_type(),
+                                                                 Some(referenced.cur_type().declaration()),
+                                                                 parent_id,
+                                                                 ctx)));
                         }
                         _ => {
                             if ty.kind() == CXType_Unexposed {
@@ -471,15 +493,20 @@ impl Type {
             CXType_MemberPointer |
             CXType_Pointer => {
                 let inner =
-                    Item::from_ty_or_ref(ty.pointee_type(), Some(ty.pointee_type().declaration()), parent_id, ctx);
+                    Item::from_ty_or_ref(ty.pointee_type(), location,
+                                         parent_id, ctx);
                 TypeKind::Pointer(inner)
+            }
+            CXType_BlockPointer => {
+                TypeKind::BlockPointer
             }
             // XXX: RValueReference is most likely wrong, but I don't think we
             // can even add bindings for that, so huh.
             CXType_RValueReference |
             CXType_LValueReference => {
                 let inner =
-                    Item::from_ty_or_ref(ty.pointee_type(), Some(ty.pointee_type().declaration()), parent_id, ctx);
+                    Item::from_ty_or_ref(ty.pointee_type(), location,
+                                         parent_id, ctx);
                 TypeKind::Reference(inner)
             }
             // XXX DependentSizedArray is wrong

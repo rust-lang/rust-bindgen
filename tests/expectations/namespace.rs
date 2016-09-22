@@ -18,7 +18,7 @@ pub mod root {
             pub fn in_whatever();
         }
     }
-    pub mod _bindgen_mod_bindgen_id_12 {
+    pub mod _bindgen_mod_bindgen_id_13 {
         use root;
         pub mod empty {
             use root;
@@ -44,7 +44,7 @@ pub mod root {
     #[repr(C)]
     #[derive(Debug)]
     pub struct C<T> {
-        pub _base: root::_bindgen_mod_bindgen_id_12::A,
+        pub _base: root::_bindgen_mod_bindgen_id_13::A,
         pub m_c: T,
         pub m_c_ptr: *mut T,
         pub m_c_arr: [T; 10usize],
@@ -78,7 +78,7 @@ extern "C" {
 #[repr(C)]
 #[derive(Debug)]
 pub struct C<T> {
-    pub _base: root::_bindgen_mod_bindgen_id_12::A,
+    pub _base: root::_bindgen_mod_bindgen_id_13::A,
     pub m_c: T,
     pub m_c_ptr: *mut T,
     pub m_c_arr: [T; 10usize],

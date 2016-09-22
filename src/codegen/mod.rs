@@ -311,6 +311,7 @@ impl CodeGenerator for Type {
             TypeKind::Float(..) |
             TypeKind::Array(..) |
             TypeKind::Pointer(..) |
+            TypeKind::BlockPointer |
             TypeKind::Reference(..) |
             TypeKind::TemplateRef(..) |
             TypeKind::Function(..) |
@@ -1306,6 +1307,11 @@ impl ToRustTy for Type {
                     IntKind::ULongLong => raw!(c_ulonglong),
                     IntKind::U16 => aster::ty::TyBuilder::new().u16(),
                     IntKind::U32 => aster::ty::TyBuilder::new().u32(),
+                    // FIXME: This doesn't generate the proper alignment, but we
+                    // can't do better right now. We should be able to use
+                    // i128/u128 when they're available.
+                    IntKind::U128 |
+                    IntKind::I128 => ArrayTyBuilder::new().with_len(2).build(aster::ty::TyBuilder::new().u64()),
                 }
             }
             TypeKind::Float(fk) => {
@@ -1377,10 +1383,23 @@ impl ToRustTy for Type {
 
                 utils::build_templated_path(item, ctx, false)
             }
+            TypeKind::BlockPointer => {
+                let void = raw!(c_void);
+                void.to_ptr(/* is_const = */ false, ctx.span())
+            }
             TypeKind::Pointer(inner) |
             TypeKind::Reference(inner) => {
                 let inner = ctx.resolve_item(inner);
-                inner.to_rust_ty(ctx).to_ptr(inner.expect_type().is_const(), ctx.span())
+                let inner_ty = inner.expect_type();
+                let ty = inner.to_rust_ty(ctx);
+
+                // Avoid the first function pointer level, since it's already
+                // represented in Rust.
+                if inner_ty.canonical_type(ctx).is_function() {
+                    ty
+                } else {
+                    ty.to_ptr(inner.expect_type().is_const(), ctx.span())
+                }
             }
             TypeKind::Named(..) => {
                 let name = item.canonical_name(ctx);
