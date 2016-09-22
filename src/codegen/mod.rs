@@ -1,6 +1,6 @@
 mod helpers;
 
-use self::helpers::{attributes, ArrayTyBuilder, BlobTyBuilder};
+use self::helpers::{attributes, BlobTyBuilder};
 
 use ir::context::BindgenContext;
 use ir::item::{Item, ItemId, ItemCanonicalName, ItemCanonicalPath};
@@ -1317,7 +1317,7 @@ impl ToRustTy for Type {
                     // can't do better right now. We should be able to use
                     // i128/u128 when they're available.
                     IntKind::U128 |
-                    IntKind::I128 => ArrayTyBuilder::new().with_len(2).build(aster::ty::TyBuilder::new().u64()),
+                    IntKind::I128 => aster::ty::TyBuilder::new().array(2).u64(),
                 }
             }
             TypeKind::Float(fk) => {
@@ -1336,7 +1336,7 @@ impl ToRustTy for Type {
             }
             TypeKind::Array(item, len) => {
                 let inner = item.to_rust_ty(ctx);
-                ArrayTyBuilder::new().with_len(len).build(inner)
+                aster::ty::TyBuilder::new().array(len).build(inner)
             }
             TypeKind::Enum(..) => {
                 let path = item.canonical_path(ctx);

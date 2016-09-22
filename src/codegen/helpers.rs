@@ -3,7 +3,6 @@
 use aster;
 use ir::layout::Layout;
 use syntax::ast;
-use syntax::codemap::respan;
 use syntax::ptr::P;
 
 
@@ -68,46 +67,7 @@ impl BlobTyBuilder {
         if data_len == 1 {
             inner_ty
         } else {
-            ArrayTyBuilder::new().with_len(data_len).build(inner_ty)
+            aster::ty::TyBuilder::new().array(data_len).build(inner_ty)
         }
-    }
-}
-
-pub struct ArrayTyBuilder {
-    len: usize,
-}
-
-impl ArrayTyBuilder {
-    pub fn new() -> Self {
-        ArrayTyBuilder {
-            len: 0,
-        }
-    }
-
-    pub fn with_len(mut self, len: usize) -> Self {
-        self.len = len;
-        self
-    }
-
-    pub fn build(self, ty: P<ast::Ty>) -> P<ast::Ty> {
-        use syntax::codemap::DUMMY_SP;
-        let size =
-            ast::LitKind::Int(self.len as u64,
-                              ast::LitIntType::Unsigned(ast::UintTy::Us));
-        let size = ast::ExprKind::Lit(P(respan(DUMMY_SP, size)));
-        let array_kind = ast::TyKind::FixedLengthVec(ty,
-            P(ast::Expr {
-                id: ast::DUMMY_NODE_ID,
-                node: size,
-                span: DUMMY_SP,
-                attrs: ast::ThinVec::new(),
-            })
-        );
-
-        P(ast::Ty {
-            id: ast::DUMMY_NODE_ID,
-            node: array_kind,
-            span: DUMMY_SP,
-        })
     }
 }
