@@ -215,6 +215,10 @@ impl CompInfo {
         }
 
         if self.kind  == CompKind::Union {
+            if type_resolver.options().unstable_rust {
+                return false;
+            }
+
             let layout = layout.unwrap_or_else(Layout::zero);
             let size_divisor = cmp::max(1, layout.align);
             return layout.size / size_divisor <= RUST_DERIVE_IN_ARRAY_LIMIT;
@@ -223,12 +227,20 @@ impl CompInfo {
         self.detect_derive_debug_cycle.set(true);
 
         let can_derive_debug =
+            self.base_members.iter().all(|ty| {
+                type_resolver.resolve_type(*ty)
+                             .can_derive_debug(type_resolver)
+            }) &&
             self.template_args.iter().all(|ty| {
                 type_resolver.resolve_type(*ty)
                              .can_derive_debug(type_resolver)
             }) &&
             self.fields.iter().all(|field| {
                 type_resolver.resolve_type(field.ty)
+                             .can_derive_debug(type_resolver)
+            }) &&
+            self.ref_template.map_or(true, |template| {
+                type_resolver.resolve_type(template)
                              .can_derive_debug(type_resolver)
             });
 
@@ -287,7 +299,7 @@ impl CompInfo {
         has_destructor
     }
 
-    pub fn can_derive_copy(&self, type_resolver: &TypeResolver) -> bool {
+    pub fn can_derive_copy(&self, type_resolver: &TypeResolver, item: &Item) -> bool {
         // NOTE: Take into account that while unions in C and C++ are copied by
         // default, the may have an explicit destructor in C++, so we can't
         // defer this check just for the union case.
@@ -295,23 +307,31 @@ impl CompInfo {
             return false;
         }
 
-        match self.kind {
-            CompKind::Union => true,
-            CompKind::Struct => {
-                // With template args, use a safe subset of the types,
-                // since copyability depends on the types itself.
-                self.ref_template.as_ref().map_or(true, |t| {
-                    type_resolver.resolve_type(*t).can_derive_copy(type_resolver)
-                }) &&
-                self.base_members.iter().all(|t| {
-                    type_resolver.resolve_type(*t).can_derive_copy(type_resolver)
-                }) &&
-                self.fields.iter().all(|field| {
-                    type_resolver.resolve_type(field.ty)
-                                 .can_derive_copy(type_resolver)
-                })
+        if self.kind == CompKind::Union {
+            if !type_resolver.options().unstable_rust {
+                return true;
+            }
+
+            // https://github.com/rust-lang/rust/issues/36640
+            if !self.template_args.is_empty() ||
+                self.ref_template.is_some() ||
+                !item.applicable_template_args(type_resolver).is_empty() {
+                return false;
             }
         }
+
+        // With template args, use a safe subset of the types,
+        // since copyability depends on the types itself.
+        self.ref_template.as_ref().map_or(true, |t| {
+            type_resolver.resolve_item(*t).can_derive_copy(type_resolver)
+        }) &&
+        self.base_members.iter().all(|t| {
+            type_resolver.resolve_item(*t).can_derive_copy(type_resolver)
+        }) &&
+        self.fields.iter().all(|field| {
+            type_resolver.resolve_item(field.ty)
+                         .can_derive_copy(type_resolver)
+        })
     }
 
     pub fn is_template_specialization(&self) -> bool {

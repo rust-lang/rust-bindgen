@@ -338,6 +338,14 @@ impl Item {
             _ => None,
         }
     }
+
+    pub fn can_derive_copy(&self, ctx: &BindgenContext) -> bool {
+        self.expect_type().can_derive_copy(ctx, self)
+    }
+
+    pub fn can_derive_copy_in_array(&self, ctx: &BindgenContext) -> bool {
+        self.expect_type().can_derive_copy_in_array(ctx, self)
+    }
 }
 
 impl ClangItemParser for Item {

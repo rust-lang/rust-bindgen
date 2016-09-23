@@ -17,12 +17,12 @@ if len(sys.argv) != 4:
 
 [_, bindgen_path, c_path, rust_path] = sys.argv
 
-flags = []
+flags = ["--no-unstable-rust"]
 
 with open(sys.argv[2]) as f:
   for line in f:
     if line.startswith(BINDGEN_FLAGS_PREFIX):
-      flags = line.strip().split(BINDGEN_FLAGS_PREFIX)[1].split(" ")
+      flags.extend(line.strip().split(BINDGEN_FLAGS_PREFIX)[1].split(" "))
       break
 
 base_command = [bindgen_path, "-o", rust_path]

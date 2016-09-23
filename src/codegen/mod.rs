@@ -1,6 +1,6 @@
 mod helpers;
 
-use self::helpers::{attributes, ArrayTyBuilder, BlobTyBuilder};
+use self::helpers::{attributes, BlobTyBuilder};
 
 use ir::context::BindgenContext;
 use ir::item::{Item, ItemId, ItemCanonicalName, ItemCanonicalPath};
@@ -546,13 +546,14 @@ impl CodeGenerator for CompInfo {
             attributes.push(attributes::repr("C"));
         }
 
+        let is_union = self.kind() == CompKind::Union;
         let mut derives = vec![];
         let ty = item.expect_type();
         if ty.can_derive_debug(ctx) {
             derives.push("Debug");
         }
 
-        if ty.can_derive_copy(ctx) && !item.annotations().disallow_copy() {
+        if item.can_derive_copy(ctx) && !item.annotations().disallow_copy() {
             derives.push("Copy");
             if !applicable_template_args.is_empty() {
                 // FIXME: This requires extra logic if you have a big array in a
@@ -573,9 +574,15 @@ impl CodeGenerator for CompInfo {
 
         let mut template_args_used = vec![false; applicable_template_args.len()];
         let canonical_name = item.canonical_name(ctx);
-        let builder = aster::AstBuilder::new().item().pub_()
-                                .with_attrs(attributes)
-                                .struct_(&canonical_name);
+        let builder = if is_union && ctx.options().unstable_rust {
+            aster::AstBuilder::new().item().pub_()
+                            .with_attrs(attributes)
+                            .union_(&canonical_name)
+        } else {
+            aster::AstBuilder::new().item().pub_()
+                            .with_attrs(attributes)
+                            .struct_(&canonical_name)
+        };
 
         // Generate the vtable from the method list if appropriate.
         // TODO: I don't know how this could play with virtual methods that are
@@ -633,8 +640,6 @@ impl CodeGenerator for CompInfo {
                                     .pub_().build_ty(inner);
             fields.push(field);
         }
-
-        let is_union = self.kind() == CompKind::Union;
         if is_union {
             result.saw_union();
         }
@@ -705,7 +710,8 @@ impl CodeGenerator for CompInfo {
 
             let ty = field.ty().to_rust_ty(ctx);
 
-            let ty = if is_union {
+            // NB: In unstable rust we use proper `union` types.
+            let ty = if is_union && !ctx.options().unstable_rust {
                 quote_ty!(ctx.ext_cx(), __BindgenUnionField<$ty>)
             } else {
                 ty
@@ -817,7 +823,7 @@ impl CodeGenerator for CompInfo {
         }
         debug_assert!(current_bitfield_fields.is_empty());
 
-        if is_union {
+        if is_union && !ctx.options().unstable_rust {
             let layout = layout.expect("Unable to get layout information?");
             let ty = BlobTyBuilder::new(layout).build();
             let field = StructFieldBuilder::named("bindgen_union_field").pub_()
@@ -1311,7 +1317,7 @@ impl ToRustTy for Type {
                     // can't do better right now. We should be able to use
                     // i128/u128 when they're available.
                     IntKind::U128 |
-                    IntKind::I128 => ArrayTyBuilder::new().with_len(2).build(aster::ty::TyBuilder::new().u64()),
+                    IntKind::I128 => aster::ty::TyBuilder::new().array(2).u64(),
                 }
             }
             TypeKind::Float(fk) => {
@@ -1330,7 +1336,7 @@ impl ToRustTy for Type {
             }
             TypeKind::Array(item, len) => {
                 let inner = item.to_rust_ty(ctx);
-                ArrayTyBuilder::new().with_len(len).build(inner)
+                aster::ty::TyBuilder::new().array(len).build(inner)
             }
             TypeKind::Enum(..) => {
                 let path = item.canonical_path(ctx);
@@ -1375,7 +1381,7 @@ impl ToRustTy for Type {
                         }
                         None => {
                             warn!("Couldn't compute layout for a type with non \
-                                  template params or opaque, expect dragons!");
+                                  type template params or opaque, expect dragons!");
                             aster::AstBuilder::new().ty().unit()
                         }
                     }
@@ -1756,7 +1762,7 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
         }
         let saw_union = result.saw_union;
         let mut result = result.items;
-        if saw_union {
+        if saw_union && !context.options().unstable_rust {
             utils::prepend_union_types(context, &mut result);
         }
         result

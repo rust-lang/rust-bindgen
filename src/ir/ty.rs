@@ -175,32 +175,32 @@ impl Type {
     // is an error.
     //
     // That's the point of the existence of can_derive_copy_in_array().
-    pub fn can_derive_copy_in_array(&self, type_resolver: &TypeResolver) -> bool {
+    pub fn can_derive_copy_in_array(&self, type_resolver: &TypeResolver, item: &Item) -> bool {
         match self.kind {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::Alias(_, t) |
             TypeKind::Array(t, _) => {
-                type_resolver.resolve_type(t)
+                type_resolver.resolve_item(t)
                              .can_derive_copy_in_array(type_resolver)
             }
             TypeKind::Named(..) => false,
-            _ => self.can_derive_copy(type_resolver),
+            _ => self.can_derive_copy(type_resolver, item),
         }
     }
 
-    pub fn can_derive_copy(&self, type_resolver: &TypeResolver) -> bool {
+    pub fn can_derive_copy(&self, type_resolver: &TypeResolver, item: &Item) -> bool {
         !self.is_opaque(type_resolver) && match self.kind {
             TypeKind::Array(t, len) => {
                 len <= RUST_DERIVE_IN_ARRAY_LIMIT &&
-                type_resolver.resolve_type(t).can_derive_copy_in_array(type_resolver)
+                type_resolver.resolve_item(t).can_derive_copy_in_array(type_resolver)
             }
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateRef(t, _) |
             TypeKind::Alias(_, t) => {
-                type_resolver.resolve_type(t).can_derive_copy(type_resolver)
+                type_resolver.resolve_item(t).can_derive_copy(type_resolver)
             }
             TypeKind::Comp(ref info) => {
-                info.can_derive_copy(type_resolver)
+                info.can_derive_copy(type_resolver, item)
             }
             _ => true,
         }
