@@ -279,7 +279,6 @@ impl CodeGenerator for Var {
                item: &Item) {
         let canonical_name = item.canonical_name(ctx);
 
-        // TODO: Maybe warn here if there's a type mismatch
         if result.seen_var(&canonical_name) {
             return;
         }
