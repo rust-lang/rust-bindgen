@@ -38,21 +38,24 @@ struct CodegenResult {
     items: Vec<P<ast::Item>>,
     saw_union: bool,
     items_seen: HashSet<ItemId>,
-    /// The set of generated function names, needed because in C/C++ is legal to
+    /// The set of generated function/var names, needed because in C/C++ is legal to
     /// do something like:
     ///
     /// ```
     /// extern "C" {
     ///   void foo();
+    ///   extern int bar;
     /// }
     ///
     /// extern "C" {
     ///   void foo();
+    ///   extern int bar;
     /// }
     /// ```
     ///
     /// Being these two different declarations.
     functions_seen: HashSet<String>,
+    vars_seen: HashSet<String>,
 }
 
 impl CodegenResult {
@@ -62,6 +65,7 @@ impl CodegenResult {
             saw_union: false,
             items_seen: Default::default(),
             functions_seen: Default::default(),
+            vars_seen: Default::default(),
         }
     }
 
@@ -83,6 +87,14 @@ impl CodegenResult {
 
     fn saw_function(&mut self, name: &str) {
         self.functions_seen.insert(name.into());
+    }
+
+    fn seen_var(&self, name: &str) -> bool {
+        self.vars_seen.contains(name)
+    }
+
+    fn saw_var(&mut self, name: &str) {
+        self.vars_seen.insert(name.into());
     }
 
     fn inner<F>(&mut self, cb: F) -> Vec<P<ast::Item>>
@@ -265,23 +277,31 @@ impl CodeGenerator for Var {
                ctx: &BindgenContext,
                result: &mut CodegenResult,
                item: &Item) {
-        let name = item.canonical_name(ctx);
+        let canonical_name = item.canonical_name(ctx);
+
+        // TODO: Maybe warn here if there's a type mismatch
+        if result.seen_var(&canonical_name) {
+            return;
+        }
+        result.saw_var(&canonical_name);
+
         let ty = self.ty().to_rust_ty(ctx);
 
         if let Some(val) = self.val() {
-            let const_item = aster::AstBuilder::new().item().pub_().const_(name)
+            let const_item = aster::AstBuilder::new().item().pub_()
+                                                .const_(canonical_name)
                                                 .expr().int(val).build(ty);
             result.push(const_item)
         } else {
             let mut attrs = vec![];
             if let Some(mangled) = self.mangled_name() {
                 attrs.push(attributes::link_name(mangled));
-            } else if name != self.name() {
+            } else if canonical_name != self.name() {
                 attrs.push(attributes::link_name(self.name()));
             }
 
             let item = ast::ForeignItem {
-                ident: ctx.rust_ident_raw(&name),
+                ident: ctx.rust_ident_raw(&canonical_name),
                 attrs: attrs,
                 node: ast::ForeignItemKind::Static(ty, !self.is_const()),
                 id: ast::DUMMY_NODE_ID,
