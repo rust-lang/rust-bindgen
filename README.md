@@ -33,9 +33,27 @@ with more features (such as detection of inlined functions).
 # pacman -S clang clang-tools-extra
 ```
 
-### Building clang 3.9
+### Getting clang 3.9
 
-Follow the instructions here: http://clang.llvm.org/get_started.html
+#### From a package manager
+
+Clang 3.9 has ben released about a month ago, and some package managers already
+provide it.
+
+For example, for MacPorts:
+
+```
+$ port install clang-3.9
+$ LIBCLANG_PATH=/opt/local/libexec/llvm-3.9/lib \
+  LD_LIBRARY_PATH=/opt/local/libexec/llvm-3.9/lib \
+  cargo build
+```
+
+#### From source
+
+If your package manager doesn't yet offer Clang 3.9, you'll need to build from
+source. For that, follow the instructions
+[here](http://clang.llvm.org/get_started.html).
 
 Those instructions list optional steps. For bindgen:
 
@@ -54,7 +72,7 @@ If you want a build with extra features (llvm 3.9) then you can use:
 
 ```
 $ LIBCLANG_PATH=path/to/clang-3.9/build/lib \
-    LD_LIBRARY_PATH=path/to/clang-3.9/build/lib \
+  LD_LIBRARY_PATH=path/to/clang-3.9/build/lib \
     cargo build
 ```
 
