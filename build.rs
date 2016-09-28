@@ -15,5 +15,10 @@ mod codegen {
 }
 
 fn main() {
+    use std::env;
+
     codegen::main();
+    if let Ok(path) = env::var("LIBCLANG_PATH") {
+        println!("cargo:rustc-link-search=native={}", path);
+    }
 }
