@@ -173,6 +173,10 @@ pub struct BindgenOptions {
     pub emit_ast: bool,
     pub ignore_functions: bool,
     pub ignore_methods: bool,
+    /// Whether to generate code for inline functions. If you do this, you need
+    /// to make sure you compile the C++ code with a flag like
+    /// -fkeep-inline-functions
+    pub keep_inline_functions: bool,
     pub gen_bitfield_methods: bool,
     pub fail_on_unknown_type: bool,
     pub enable_cxx_namespaces: bool,
@@ -208,6 +212,7 @@ impl Default for BindgenOptions {
             emit_ast: false,
             ignore_functions: false,
             ignore_methods: false,
+            keep_inline_functions: false,
             gen_bitfield_methods: true,
             fail_on_unknown_type: true,
             rename_types: true,

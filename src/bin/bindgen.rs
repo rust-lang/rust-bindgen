@@ -56,6 +56,8 @@ Options:
 
     --ignore-methods              Avoid generating all kind of methods.
 
+    --keep-inline-functions       Generate code for inline functions anyway.
+
     --enable-cxx-namespaces       Enable support for C++ namespaces.
 
     --no-type-renaming            Don't rename types.
@@ -157,6 +159,9 @@ fn parse_args_or_exit(args: Vec<String>) -> (BindgenOptions, Box<io::Write>) {
             }
             "--ignore-functions" => {
                 options.ignore_functions = true;
+            }
+            "--keep-inline-functions" => {
+                options.keep_inline_functions = true;
             }
             "--no-bitfield-methods" => {
                 options.gen_bitfield_methods = false;

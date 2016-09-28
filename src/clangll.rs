@@ -408,9 +408,7 @@ pub const CXType_IncompleteArray: c_uint = 114;
 pub const CXType_VariableArray: c_uint = 115;
 pub const CXType_DependentSizedArray: c_uint = 116;
 pub const CXType_MemberPointer: c_uint = 117;
-#[cfg(not(feature="llvm_stable"))]
 pub const CXType_Auto: c_uint = 118;
-#[cfg(not(feature="llvm_stable"))]
 pub const CXType_Elaborated: c_uint = 119;
 pub type Enum_CXCallingConv = c_uint;
 pub const CXCallingConv_Default: c_uint = 0;
@@ -1113,10 +1111,8 @@ extern "C" {
     pub fn clang_Type_getNumTemplateArguments(T: CXType) -> c_int;
     pub fn clang_Type_getTemplateArgumentAsType(T: CXType, i: c_int) ->
      CXType;
-    #[cfg(not(feature="llvm_stable"))]
     pub fn clang_Type_getNamedType(CT: CXType) -> CXType;
     pub fn clang_Cursor_isBitField(C: CXCursor) -> c_uint;
-    #[cfg(not(feature="llvm_stable"))]
     pub fn clang_Cursor_isFunctionInlined(C: CXCursor) -> c_uint;
     pub fn clang_isVirtualBase(arg1: CXCursor) -> c_uint;
     pub fn clang_getCXXAccessSpecifier(arg1: CXCursor) ->

@@ -583,7 +583,7 @@ impl CompInfo {
                         return CXChildVisit_Continue;
                     }
 
-                    if cur.is_inlined_function() {
+                    if cur.is_inlined_function() && !ctx.options().keep_inline_functions {
                         return CXChildVisit_Continue;
                     }
 

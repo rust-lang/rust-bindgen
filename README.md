@@ -64,11 +64,14 @@ Those instructions list optional steps. For bindgen:
 
 ## Building
 
+Just run:
+
 ```
-$ cargo build --features llvm_stable
+cargo build
 ```
 
-If you want a build with extra features (llvm 3.9) then you can use:
+This version of bindgen requires LLVM 3.9, so if you don't have it installed in
+your `PATH`, you'll need to build it (see below) and do something like:
 
 ```
 $ LIBCLANG_PATH=path/to/clang-3.9/build/lib \
