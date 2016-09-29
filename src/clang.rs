@@ -56,7 +56,7 @@ impl Cursor {
     }
 
     pub fn mangling(&self) -> String {
-         unsafe {
+        unsafe {
             String_ { x: clang_Cursor_getMangling(self.x) }.to_string()
         }
     }
@@ -134,6 +134,19 @@ impl Cursor {
 
     pub fn is_template(&self) -> bool {
         self.specialized().is_valid()
+    }
+
+    pub fn is_fully_specialized_template(&self) -> bool {
+        self.is_template() && self.num_template_args() > 0
+    }
+
+    pub fn is_in_non_fully_specialized_template(&self) -> bool {
+        if self.is_toplevel() {
+            return false;
+        }
+        let parent = self.semantic_parent();
+        (parent.is_template() && !parent.is_fully_specialized_template()) ||
+            parent.is_in_non_fully_specialized_template()
     }
 
     pub fn is_valid(&self) -> bool {
