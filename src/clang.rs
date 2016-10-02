@@ -536,16 +536,16 @@ impl Type {
         }
     }
 
-    // array
+    // array, vector or complex.
     pub fn elem_type(&self) -> Type {
         unsafe {
-            Type { x: clang_getArrayElementType(self.x) }
+            Type { x: clang_getElementType(self.x) }
         }
     }
 
-    pub fn array_size(&self) -> usize {
+    pub fn num_elements(&self) -> usize {
         unsafe {
-            clang_getArraySize(self.x) as usize
+            clang_getNumElements(self.x) as usize
         }
     }
 
