@@ -538,10 +538,16 @@ impl Type {
                                     .expect("Not a complex type?");
                 TypeKind::Comp(complex)
             }
+            // FIXME: We stub vectors as arrays since in 99% of the cases the
+            // layout is going to be correct, and there's no way we can generate
+            // vector types properly in Rust for now.
+            //
+            // That being said, that should be fixed eventually.
+            CXType_Vector |
             CXType_ConstantArray => {
                 let inner = Item::from_ty(&ty.elem_type(), location, parent_id, ctx)
                                 .expect("Not able to resolve array element?");
-                TypeKind::Array(inner, ty.array_size())
+                TypeKind::Array(inner, ty.num_elements())
             }
             #[cfg(not(feature="llvm_stable"))]
             CXType_Elaborated => {
