@@ -735,6 +735,7 @@ impl Drop for Index {
 }
 
 // Token
+#[derive(Debug)]
 pub struct Token {
     pub kind: CXTokenKind,
     pub spelling: String,
