@@ -64,7 +64,7 @@ impl ClangSubItemParser for Var {
         use clangll::*;
         match cursor.kind() {
             CXCursor_MacroDefinition => {
-                let value = match parse_int_literal_tokens(&cursor, context.translation_unit(), 1) {
+                let value = match parse_int_literal_tokens(&cursor, context.translation_unit()) {
                     None => return Err(ParseError::Continue),
                     Some(v) => v,
                 };
@@ -81,7 +81,9 @@ impl ClangSubItemParser for Var {
                 }
                 context.note_parsed_macro(name.clone());
 
-                let ty = if value.abs() > u32::max_value() as i64  {
+                let ty = if value < 0 {
+                    Item::builtin_type(TypeKind::Int(IntKind::Int), true, context)
+                } else if value.abs() > u32::max_value() as i64  {
                     Item::builtin_type(TypeKind::Int(IntKind::ULongLong), true, context)
                 } else {
                     Item::builtin_type(TypeKind::Int(IntKind::UInt), true, context)
@@ -114,10 +116,7 @@ impl ClangSubItemParser for Var {
                     // Try to parse a literal token value
                     cursor.visit(|c, _| {
                         if c.kind() == CXCursor_IntegerLiteral {
-                            value =
-                                parse_int_literal_tokens(&c,
-                                                         context.translation_unit(),
-                                                         0);
+                            value = parse_int_literal_tokens(&c, context.translation_unit());
                         }
                         CXChildVisit_Continue
                     });
@@ -137,24 +136,36 @@ impl ClangSubItemParser for Var {
     }
 }
 
+/// Try and parse the immediately found tokens from an unit (if any) to integers
 fn parse_int_literal_tokens(cursor: &clang::Cursor,
-                            unit: &clang::TranslationUnit,
-                            which: usize) -> Option<i64> {
-    use clangll::CXToken_Literal;
+                            unit: &clang::TranslationUnit) -> Option<i64> {
+    use clangll::{CXToken_Literal, CXToken_Punctuation};
+
+    let mut lit = String::new();
     let tokens = match unit.tokens(cursor) {
         None => return None,
         Some(tokens) => tokens,
     };
 
-    if tokens.len() <= which || tokens[which].kind != CXToken_Literal {
-        return None;
+    for token in tokens {
+        match token.kind {
+            CXToken_Punctuation if token.spelling == "-" => {
+                // If there's ever any punctuation, we only need to worry about
+                // unary minus '-' (for now)
+                lit.push_str(&token.spelling);
+            },
+            CXToken_Literal => {
+                lit.push_str(&token.spelling);
+                break
+            },
+            _ => (),
+        }
     }
 
-    let s = &tokens[which].spelling;
     // TODO: try to preserve hex literals?
-    if s.starts_with("0x") {
-        i64::from_str_radix(&s[2..], 16).ok()
+    if lit.starts_with("0x") {
+        i64::from_str_radix(&lit[2..], 16).ok()
     } else {
-        s.parse().ok()
+        lit.parse().ok()
     }
 }
