@@ -26,6 +26,7 @@ mod codegen {
     include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 }
 
+use std::borrow::Borrow;
 use std::io::{self, Write};
 use std::fs::OpenOptions;
 use std::path::Path;
@@ -71,18 +72,18 @@ impl Builder {
         self
     }
 
-    pub fn whitelisted_type<T: Into<String>>(mut self, arg: T) -> Builder {
-        self.options.whitelisted_types.insert(&arg.into());
+    pub fn whitelisted_type<T: Borrow<str>>(mut self, arg: T) -> Builder {
+        self.options.whitelisted_types.insert(&arg);
         self
     }
 
-    pub fn whitelisted_function<T: Into<String>>(mut self, arg: T) -> Builder {
-        self.options.whitelisted_functions.insert(&arg.into());
+    pub fn whitelisted_function<T: Borrow<str>>(mut self, arg: T) -> Builder {
+        self.options.whitelisted_functions.insert(&arg);
         self
     }
 
-    pub fn whitelisted_var<T: Into<String>>(mut self, arg: T) -> Builder {
-        self.options.whitelisted_vars.insert(&arg.into());
+    pub fn whitelisted_var<T: Borrow<str>>(mut self, arg: T) -> Builder {
+        self.options.whitelisted_vars.insert(&arg);
         self
     }
 
