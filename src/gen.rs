@@ -285,7 +285,7 @@ pub fn gen_mod(options: &BindgenOptions,
     let mut fs = vec![];
     let mut vs = vec![];
     let mut gs = vec![];
-    for g in uniq_globs.into_iter() {
+    for g in uniq_globs {
         match g {
             GOther => {}
             GFunc(_) => fs.push(g),
@@ -331,7 +331,7 @@ pub fn gen_mod(options: &BindgenOptions,
         defs.push(mk_extern(&mut ctx, &options.links, vars, abi::Abi::C));
     }
 
-    for (abi, funcs) in funcs.into_iter() {
+    for (abi, funcs) in funcs {
         defs.push(mk_extern(&mut ctx, &options.links, funcs, abi));
     }
 
@@ -601,9 +601,6 @@ fn gen_padding_fields(ctx: &mut GenCtx,
     } else {
         // u64s only; subtract implicit 8-byte pad for alignment
         let size = padding_size - (padding_size % u64_size);
-        (0..(size / max_field_size))
-            .map(|_| (&u64_ty, MAX_ARRAY_CLONE_LEN))
-            .collect::<Vec<(&P<ast::Ty>, usize)>>();
 
         let u64_num = (size % max_field_size) / u64_size;
         if u64_num > 0 {
@@ -756,12 +753,10 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
         offset += m.layout().size as usize;
     }
 
-    if offset < layout.size {
-        // We only need to pad if the pad amount is more than the existing alignment
-        if layout.size - offset > largest_member_alignment {
-            let mut padding_fields = gen_padding_fields(ctx, paddings, layout.size - offset);
-            fields.append(&mut padding_fields);
-        }
+    // We only need to pad if the pad amount is more than the existing alignment
+    if offset < layout.size && layout.size - offset > largest_member_alignment {
+        let mut padding_fields = gen_padding_fields(ctx, paddings, layout.size - offset);
+        fields.append(&mut padding_fields);
     }
 
     let def = ast::ItemKind::Struct(ast::VariantData::Struct(fields, ast::DUMMY_NODE_ID),
@@ -1188,7 +1183,7 @@ fn gen_comp_methods(ctx: &mut GenCtx,
 
     let mut offset = data_offset;
     let mut methods = vec![];
-    for m in members.into_iter() {
+    for m in members {
         let advance_by = match *m {
             CompMember::Field(ref f) => {
                 methods.extend(mk_field_method(ctx, f, offset).into_iter());

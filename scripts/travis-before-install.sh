@@ -1,3 +1,8 @@
+# Workaround for a Travis CI issue on OS X: https://github.com/travis-ci/travis-ci/issues/6522
+if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
+    rvm get head || true
+fi
+
 set -e
 
 function llvm_version_triple() {

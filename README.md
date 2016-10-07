@@ -2,8 +2,8 @@
 
 [![][crates-version-shield]](https://crates.io/crates/bindgen)
 [![][crates-downloads-shield]](https://crates.io/crates/bindgen)
-[![][crates-license-shield]](https://github.com/crabtw/rust-bindgen/blob/master/LICENSE.txt)
-[![][travis-status-shield]](https://travis-ci.org/crabtw/rust-bindgen)
+[![][crates-license-shield]](https://github.com/Yamakaky/rust-bindgen/blob/master/LICENSE)
+[![][travis-status-shield]](https://travis-ci.org/Yamakaky/rust-bindgen)
 
 A native binding generator for the Rust language.
 
@@ -74,11 +74,11 @@ Options:
 
 ### Using a build script to generate bindings at compile time
 
-Due to a known issuewith `include!` https://github.com/rust-lang/rfcs/issues/752 when generating
-bindings in a build script and importing them with `include!` you'll want to wrap the bindings
+Due to a known issue with `include!` (https://github.com/rust-lang/rfcs/issues/752) when generating
+bindings in a build script and importing them with `include!`, you'll want to wrap the bindings
 in a module before writing them to a file to avoid triggering the issue with top-level
-attributes in `include!`. Some more discussion about this issue can be found here
-https://github.com/Yamakaky/rust-bindgen/issues/359 .
+attributes in `include!`. Some more discussion about this issue can be found
+[here](https://github.com/Yamakaky/rust-bindgen/issues/359).
 
 `Cargo.toml`
 ```rust
@@ -109,7 +109,7 @@ fn main(){
     // Wrap the bindings in a `pub mod` before writing bindgen's output
     file.write(format!("pub mod {} {{\n", "my_lib").as_bytes()).unwrap();
     file.write(generated_bindings.as_bytes()).unwrap();
-    file.write(b"}").unwrap(); 
+    file.write(b"}").unwrap();
 }
 ```
 
@@ -125,7 +125,6 @@ fn main() {
 [crates-version-shield]: https://img.shields.io/crates/v/bindgen.svg?style=flat-square
 [crates-downloads-shield]: https://img.shields.io/crates/d/bindgen.svg?style=flat-square
 [crates-license-shield]: https://img.shields.io/crates/l/bindgen.svg?style=flat-square
-[travis-status-shield]: https://img.shields.io/travis/crabtw/rust-bindgen/master.svg?label=travis&style=flat-square
+[travis-status-shield]: https://img.shields.io/travis/Yamakaky/rust-bindgen/master.svg?label=travis&style=flat-square
 
 [clay's bindgen]: https://github.com/jckarter/clay/blob/master/tools/bindgen.clay
-[issue 89]: https://github.com/yamakaky/rust-bindgen/issues/89
