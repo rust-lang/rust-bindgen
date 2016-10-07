@@ -30,7 +30,6 @@ use std::borrow::Borrow;
 use std::io::{self, Write};
 use std::fs::OpenOptions;
 use std::path::Path;
-use std::marker;
 use std::collections::HashSet;
 
 use syntax::ast;
@@ -44,117 +43,106 @@ use ir::item::{Item, ItemId};
 use parse::{ClangItemParser, ParseError};
 use regex_set::RegexSet;
 
-#[derive(Debug)]
-pub struct Builder<'a> {
+#[derive(Debug,Default)]
+pub struct Builder {
     options: BindgenOptions,
-    // TODO: Before the logger was here, do we still want the lifetime?
-    phantom: marker::PhantomData<&'a ()>,
 }
 
-pub fn builder<'a>() -> Builder<'a> {
+pub fn builder() -> Builder {
     Default::default()
 }
 
-impl<'a> Builder<'a> {
-    pub fn header<T: Into<String>>(&mut self, header: T) -> &mut Self {
+impl Builder {
+    pub fn header<T: Into<String>>(self, header: T) -> Builder {
         self.clang_arg(header)
     }
 
-    pub fn match_pat<T: Into<String>>(&mut self, arg: T) -> &mut Self {
+    pub fn match_pat<T: Into<String>>(mut self, arg: T) -> Builder {
         self.options.match_pat.insert(arg.into());
         self
     }
 
-    pub fn hide_type<T: Into<String>>(&mut self, arg: T) -> &mut Self {
+    pub fn hide_type<T: Into<String>>(mut self, arg: T) -> Builder {
         self.options.hidden_types.insert(arg.into());
         self
     }
 
-    pub fn opaque_type<T: Into<String>>(&mut self, arg: T) -> &mut Self {
+    pub fn opaque_type<T: Into<String>>(mut self, arg: T) -> Builder {
         self.options.opaque_types.insert(arg.into());
         self
     }
 
-    pub fn whitelisted_type<T: Borrow<str>>(&mut self, arg: &T) -> &mut Self {
+    pub fn whitelisted_type<T: Borrow<str>>(mut self, arg: &T) -> Builder {
         self.options.whitelisted_types.insert(arg);
         self
     }
 
-    pub fn raw_line<T: Into<String>>(&mut self, arg: T) -> &mut Self {
+    pub fn raw_line<T: Into<String>>(mut self, arg: T) -> Builder {
         self.options.raw_lines.push(arg.into());
         self
     }
 
-    pub fn clang_arg<T: Into<String>>(&mut self, arg: T) -> &mut Self {
+    pub fn clang_arg<T: Into<String>>(mut self, arg: T) -> Builder {
         self.options.clang_args.push(arg.into());
         self
     }
 
-    pub fn link<T: Into<String>>(&mut self, library: T) -> &mut Self {
+    pub fn link<T: Into<String>>(mut self, library: T) -> Builder {
         self.options.links.push((library.into(), LinkType::Default));
         self
     }
 
-    pub fn link_static<T: Into<String>>(&mut self, library: T) -> &mut Self {
+    pub fn link_static<T: Into<String>>(mut self, library: T) -> Builder {
         self.options.links.push((library.into(), LinkType::Static));
         self
     }
 
-    pub fn link_framework<T: Into<String>>(&mut self, library: T) -> &mut Self {
+    pub fn link_framework<T: Into<String>>(mut self, library: T) -> Builder {
         self.options.links.push((library.into(), LinkType::Framework));
         self
     }
 
-    pub fn dtor_attr<T: Into<String>>(&mut self, attr: T) -> &mut Self {
+    pub fn dtor_attr<T: Into<String>>(mut self, attr: T) -> Builder {
         self.options.dtor_attrs.push(attr.into());
         self
     }
 
-    pub fn forbid_unknown_types(&mut self) -> &mut Self {
+    pub fn forbid_unknown_types(mut self) -> Builder {
         self.options.fail_on_unknown_type = true;
         self
     }
 
-    pub fn emit_builtins(&mut self) -> &mut Self {
+    pub fn emit_builtins(mut self) -> Builder {
         self.options.builtins = true;
         self
     }
 
-    pub fn no_bitfield_methods(&mut self) -> &mut Self {
+    pub fn no_bitfield_methods(mut self) -> Builder {
         self.options.gen_bitfield_methods = false;
         self
     }
 
-    pub fn no_unstable_rust(&mut self) -> &mut Self {
+    pub fn no_unstable_rust(mut self) -> Builder {
         self.options.unstable_rust = false;
         self
     }
-    pub fn rust_enums(&mut self, value: bool) -> &mut Self {
+    pub fn rust_enums(mut self, value: bool) -> Builder {
         self.options.rust_enums = value;
         self
     }
 
-    pub fn rename_types(&mut self, value: bool) -> &mut Self {
+    pub fn rename_types(mut self, value: bool) -> Builder {
         self.options.rename_types = value;
         self
     }
 
-    pub fn disable_class_constants(&mut self) -> &mut Self {
+    pub fn disable_class_constants(mut self) -> Builder {
         self.options.class_constants = false;
         self
     }
 
     pub fn generate(self) -> Result<Bindings, ()> {
         Bindings::generate(self.options, None)
-    }
-}
-
-impl<'a> Default for Builder<'a> {
-    fn default() -> Builder<'a> {
-        Builder {
-            options: Default::default(),
-            phantom: marker::PhantomData,
-        }
     }
 }
 
