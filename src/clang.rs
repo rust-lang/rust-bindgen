@@ -334,11 +334,12 @@ impl Into<CexprToken> for Token {
     fn into(self) -> CexprToken {
         CexprToken {
             kind:match self.kind {
-                CXTokenKind::Comment => CexprTokenKind::Comment,
-                CXTokenKind::Identifier => CexprTokenKind::Identifier,
-                CXTokenKind::Keyword => CexprTokenKind::Keyword,
-                CXTokenKind::Literal => CexprTokenKind::Literal,
-                CXTokenKind::Punctuation => CexprTokenKind::Punctuation,
+                CXToken_Comment => CexprTokenKind::Comment,
+                CXToken_Identifier => CexprTokenKind::Identifier,
+                CXToken_Keyword => CexprTokenKind::Keyword,
+                CXToken_Literal => CexprTokenKind::Literal,
+                CXToken_Punctuation => CexprTokenKind::Punctuation,
+                _ => panic!("invalid token kind: {:?}", self.kind),
             },
             raw:self.spelling.into_bytes().into_boxed_slice()
         }
@@ -383,7 +384,7 @@ impl TranslationUnit {
             clang_reparseTranslationUnit(self.x,
                                          c_unsaved.len() as c_uint,
                                          c_unsaved.as_mut_ptr(),
-                                         opts) == CXErrorCode::Success
+                                         opts) == CXError_Success
         }
     }
 
@@ -414,7 +415,7 @@ impl TranslationUnit {
 
     pub fn tokens(&self, cursor: &Cursor) -> Option<Vec<Token>> {
         let mut range = cursor.extent();
-        if cursor.kind()==CXCursorKind::MacroDefinition {
+        if cursor.kind()==CXCursor_MacroDefinition {
             range.end_int_data-=1; // bug observed in clang 3.5 ~ 3.8
         }
         let mut tokens = vec![];
@@ -504,5 +505,5 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
                  &format!("({:?} {} {:?}", c.kind(), c.spelling(), ct)[..]);
     c.visit(|s, _: &Cursor| ast_dump(s, depth + 1));
     print_indent(depth, ")");
-    CXChildVisitResult::Continue
+    CXChildVisit_Continue
 }

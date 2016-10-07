@@ -89,35 +89,35 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
             debug!("type `{}` = {:?}; // {:?}", spelling, ty, layout);
 
             let glob_decl = match cursor.kind() {
-                CXCursorKind::StructDecl => {
+                CXCursor_StructDecl => {
                     let ci = Rc::new(RefCell::new(CompInfo::new(spelling,
                                                                 CompKind::Struct,
                                                                 vec![],
                                                                 layout)));
                     GCompDecl(ci)
                 }
-                CXCursorKind::UnionDecl => {
+                CXCursor_UnionDecl => {
                     let ci = Rc::new(RefCell::new(CompInfo::new(spelling,
                                                                 CompKind::Union,
                                                                 vec![],
                                                                 layout)));
                     GCompDecl(ci)
                 }
-                CXCursorKind::EnumDecl => {
+                CXCursor_EnumDecl => {
                     let kind = match override_enum_ty {
                         Some(t) => t,
                         None => {
                             match cursor.enum_type().kind() {
-                                CXTypeKind::SChar | CXTypeKind::Char_S => ISChar,
-                                CXTypeKind::UChar | CXTypeKind::Char_U => IUChar,
-                                CXTypeKind::UShort => IUShort,
-                                CXTypeKind::UInt => IUInt,
-                                CXTypeKind::ULong => IULong,
-                                CXTypeKind::ULongLong => IULongLong,
-                                CXTypeKind::Short => IShort,
-                                CXTypeKind::Int => IInt,
-                                CXTypeKind::Long => ILong,
-                                CXTypeKind::LongLong => ILongLong,
+                                CXType_SChar | CXType_Char_S => ISChar,
+                                CXType_UChar | CXType_Char_U => IUChar,
+                                CXType_UShort => IUShort,
+                                CXType_UInt => IUInt,
+                                CXType_ULong => IULong,
+                                CXType_ULongLong => IULongLong,
+                                CXType_Short => IShort,
+                                CXType_Int => IInt,
+                                CXType_Long => ILong,
+                                CXType_LongLong => ILongLong,
                                 _ => IInt,
                             }
                         }
@@ -125,15 +125,15 @@ fn decl_name(ctx: &mut ClangParserCtx, cursor: &Cursor) -> Global {
                     let ei = Rc::new(RefCell::new(EnumInfo::new(spelling, kind, vec![], layout)));
                     GEnumDecl(ei)
                 }
-                CXCursorKind::TypedefDecl => {
+                CXCursor_TypedefDecl => {
                     let ti = Rc::new(RefCell::new(TypeInfo::new(spelling, TVoid, layout)));
                     GType(ti)
                 }
-                CXCursorKind::VarDecl => {
+                CXCursor_VarDecl => {
                     let vi = Rc::new(RefCell::new(VarInfo::new(spelling, TVoid)));
                     GVar(vi)
                 }
-                CXCursorKind::FunctionDecl => {
+                CXCursor_FunctionDecl => {
                     let vi = Rc::new(RefCell::new(VarInfo::new(spelling, TVoid)));
                     GFunc(vi)
                 }
@@ -163,18 +163,18 @@ fn fwd_decl<F: FnOnce(&mut ClangParserCtx) -> ()>(ctx: &mut ClangParserCtx,
     let def = &cursor.definition();
     if cursor == def {
         f(ctx);
-    } else if def.kind() == CXCursorKind::NoDeclFound || def.kind() == CXCursorKind::InvalidFile {
+    } else if def.kind() == CXCursor_NoDeclFound || def.kind() == CXCursor_InvalidFile {
         opaque_decl(ctx, cursor);
     }
 }
 
 fn get_abi(cc: CXCallingConv) -> abi::Abi {
     match cc {
-        CXCallingConv::Default | CXCallingConv::C => abi::Abi::C,
-        CXCallingConv::X86StdCall => abi::Abi::Stdcall,
-        CXCallingConv::X86FastCall => abi::Abi::Fastcall,
-        CXCallingConv::AAPCS => abi::Abi::Aapcs,
-        CXCallingConv::X86_64Win64 => abi::Abi::Win64,
+        CXCallingConv_Default | CXCallingConv_C => abi::Abi::C,
+        CXCallingConv_X86StdCall => abi::Abi::Stdcall,
+        CXCallingConv_X86FastCall => abi::Abi::Fastcall,
+        CXCallingConv_AAPCS => abi::Abi::Aapcs,
+        CXCallingConv_X86_64Win64 => abi::Abi::Win64,
         other => panic!("unsupported calling convention: {:?}", other),
     }
 }
@@ -186,16 +186,16 @@ fn conv_ptr_ty(ctx: &mut ClangParserCtx,
                -> il::Type {
     let is_const = ty.is_const();
     match ty.kind() {
-        CXTypeKind::Unexposed |
-        CXTypeKind::FunctionProto |
-        CXTypeKind::FunctionNoProto => {
+        CXType_Unexposed |
+        CXType_FunctionProto |
+        CXType_FunctionNoProto => {
             let ret_ty = ty.ret_type();
             let decl = ty.declaration();
-            if ret_ty.kind() != CXTypeKind::Invalid {
+            if ret_ty.kind() != CXType_Invalid {
                 TFuncPtr(mk_fn_sig(ctx, ty, cursor), layout)
-            } else if decl.kind() != CXCursorKind::NoDeclFound {
+            } else if decl.kind() != CXCursor_NoDeclFound {
                 TPtr(Box::new(conv_decl_ty(ctx, &decl)), ty.is_const(), layout)
-            } else if cursor.kind() == CXCursorKind::VarDecl {
+            } else if cursor.kind() == CXCursor_VarDecl {
                 let can_ty = ty.canonical_type();
                 conv_ty(ctx, &can_ty, cursor)
             } else {
@@ -208,8 +208,8 @@ fn conv_ptr_ty(ctx: &mut ClangParserCtx,
 
 fn mk_fn_sig(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::FuncSig {
     let args_lst: Vec<(String, il::Type)> = match cursor.kind() {
-        CXCursorKind::FunctionDecl => {
-            // For CXCursorKind::FunctionDecl, cursor.args() is the reliable way to
+        CXCursor_FunctionDecl => {
+            // For CXCursor_FunctionDecl, cursor.args() is the reliable way to
             // get parameter names and types.
             cursor.args()
                   .iter()
@@ -220,14 +220,14 @@ fn mk_fn_sig(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Fu
                   .collect()
         }
         _ => {
-            // For non-CXCursorKind::FunctionDecl, visiting the cursor's children is
+            // For non-CXCursor_FunctionDecl, visiting the cursor's children is
             // the only reliable way to get parameter names.
             let mut args_lst = vec![];
             cursor.visit(|c: &Cursor, _: &Cursor| {
-                if c.kind() == CXCursorKind::ParmDecl {
+                if c.kind() == CXCursor_ParmDecl {
                     args_lst.push((c.spelling(), conv_ty(ctx, &c.cur_type(), c)));
                 }
-                CXChildVisitResult::Continue
+                CXChildVisit_Continue
             });
             args_lst
         }
@@ -255,17 +255,17 @@ fn mk_fn_sig(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Fu
 
 fn conv_decl_ty(ctx: &mut ClangParserCtx, cursor: &Cursor) -> il::Type {
     match cursor.kind() {
-        CXCursorKind::StructDecl | CXCursorKind::UnionDecl => {
+        CXCursor_StructDecl | CXCursor_UnionDecl => {
             let decl = decl_name(ctx, cursor);
             let ci = decl.compinfo();
             TComp(ci)
         }
-        CXCursorKind::EnumDecl => {
+        CXCursor_EnumDecl => {
             let decl = decl_name(ctx, cursor);
             let ei = decl.enuminfo();
             TEnum(ei)
         }
-        CXCursorKind::TypedefDecl => {
+        CXCursor_TypedefDecl => {
             let decl = decl_name(ctx, cursor);
             let ti = decl.typeinfo();
             TNamed(ti)
@@ -285,47 +285,47 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
     let layout = Layout::new(ty.size(), ty.align());
 
     match ty.kind() {
-        CXTypeKind::Void | CXTypeKind::Invalid => TVoid,
-        CXTypeKind::Bool => TInt(IBool, layout),
-        CXTypeKind::SChar |
-        CXTypeKind::Char_S => TInt(ISChar, layout),
-        CXTypeKind::UChar |
-        CXTypeKind::Char_U => TInt(IUChar, layout),
-        CXTypeKind::UShort => TInt(IUShort, layout),
-        CXTypeKind::UInt => TInt(IUInt, layout),
-        CXTypeKind::ULong => TInt(IULong, layout),
-        CXTypeKind::ULongLong => TInt(IULongLong, layout),
-        CXTypeKind::Short => TInt(IShort, layout),
-        CXTypeKind::Int => TInt(IInt, layout),
-        CXTypeKind::Long => TInt(ILong, layout),
-        CXTypeKind::LongLong => TInt(ILongLong, layout),
-        CXTypeKind::WChar => TInt(IWChar, layout),
-        CXTypeKind::Float => TFloat(FFloat, layout),
-        CXTypeKind::Double | CXTypeKind::LongDouble => TFloat(FDouble, layout),
-        CXTypeKind::Pointer => conv_ptr_ty(ctx, &ty.pointee_type(), cursor, layout),
-        CXTypeKind::VariableArray => unreachable!(),
-        CXTypeKind::DependentSizedArray | CXTypeKind::IncompleteArray => {
+        CXType_Void | CXType_Invalid => TVoid,
+        CXType_Bool => TInt(IBool, layout),
+        CXType_SChar |
+        CXType_Char_S => TInt(ISChar, layout),
+        CXType_UChar |
+        CXType_Char_U => TInt(IUChar, layout),
+        CXType_UShort => TInt(IUShort, layout),
+        CXType_UInt => TInt(IUInt, layout),
+        CXType_ULong => TInt(IULong, layout),
+        CXType_ULongLong => TInt(IULongLong, layout),
+        CXType_Short => TInt(IShort, layout),
+        CXType_Int => TInt(IInt, layout),
+        CXType_Long => TInt(ILong, layout),
+        CXType_LongLong => TInt(ILongLong, layout),
+        CXType_WChar => TInt(IWChar, layout),
+        CXType_Float => TFloat(FFloat, layout),
+        CXType_Double | CXType_LongDouble => TFloat(FDouble, layout),
+        CXType_Pointer => conv_ptr_ty(ctx, &ty.pointee_type(), cursor, layout),
+        CXType_VariableArray => unreachable!(),
+        CXType_DependentSizedArray | CXType_IncompleteArray => {
             TArray(Box::new(conv_ty(ctx, &ty.elem_type(), cursor)), 0, layout)
         }
-        CXTypeKind::FunctionProto | CXTypeKind::FunctionNoProto => {
+        CXType_FunctionProto | CXType_FunctionNoProto => {
             TFuncProto(mk_fn_sig(ctx, ty, cursor), layout)
         }
-        CXTypeKind::Record |
-        CXTypeKind::Typedef |
-        CXTypeKind::Unexposed |
-        CXTypeKind::Enum => conv_decl_ty(ctx, &ty.declaration()),
-        CXTypeKind::ConstantArray => {
+        CXType_Record |
+        CXType_Typedef |
+        CXType_Unexposed |
+        CXType_Enum => conv_decl_ty(ctx, &ty.declaration()),
+        CXType_ConstantArray => {
             TArray(Box::new(conv_ty(ctx, &ty.elem_type(), cursor)),
                    ty.array_size(),
                    layout)
         }
-        CXTypeKind::Vector => {
+        CXType_Vector => {
             log_err_warn(ctx,
                          "Vector types are not supported, see https://github.com/crabtw/rust-bindgen/issues/356",
                          true);
             TVoid
         }
-        CXTypeKind::Int128 | CXTypeKind::UInt128 => {
+        CXType_Int128 | CXType_UInt128 => {
             log_err_warn(ctx,
                          "128-bits integers are not supported, see https://github.com/crabtw/rust-bindgen/issues/355",
                          true);
@@ -344,10 +344,10 @@ fn conv_ty(ctx: &mut ClangParserCtx, ty: &cx::Type, cursor: &Cursor) -> il::Type
 }
 
 fn opaque_ty(ctx: &mut ClangParserCtx, ty: &cx::Type) {
-    if ty.kind() == CXTypeKind::Record || ty.kind() == CXTypeKind::Enum {
+    if ty.kind() == CXType_Record || ty.kind() == CXType_Enum {
         let decl = ty.declaration();
         let def = decl.definition();
-        if def.kind() == CXCursorKind::NoDeclFound || def.kind() == CXCursorKind::InvalidFile {
+        if def.kind() == CXCursor_NoDeclFound || def.kind() == CXCursor_InvalidFile {
             opaque_decl(ctx, &decl);
         }
     }
@@ -429,7 +429,7 @@ fn visit_composite(cursor: &Cursor,
     let members = &mut compinfo.members;
 
     match cursor.kind() {
-        CXCursorKind::FieldDecl => {
+        CXCursor_FieldDecl => {
             let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
 
             let (name, bitfields) = match (cursor.bit_width(), members.last_mut()) {
@@ -442,7 +442,7 @@ fn visit_composite(cursor: &Cursor,
                     } else {
                         unreachable!()
                     }
-                    return CXChildVisitResult::Continue;
+                    return CXChildVisit_Continue;
                 }
                 // The field is the start of a new bitfield
                 (Some(width), _) => {
@@ -531,7 +531,7 @@ fn visit_composite(cursor: &Cursor,
                 members.push(CompMember::Field(field));
             }
         }
-        CXCursorKind::StructDecl | CXCursorKind::UnionDecl => {
+        CXCursor_StructDecl | CXCursor_UnionDecl => {
             fwd_decl(ctx, cursor, |ctx_| {
                 // If the struct is anonymous (i.e. declared here) then it
                 // cannot be used elsewhere and so does not need to be added
@@ -545,7 +545,7 @@ fn visit_composite(cursor: &Cursor,
                 members.push(CompMember::Comp(decl.compinfo()));
             });
         }
-        CXCursorKind::EnumDecl => {
+        CXCursor_EnumDecl => {
             fwd_decl(ctx, cursor, |ctx_| {
                 // If the enum is anonymous (i.e. declared here) then it
                 // cannot be used elsewhere and so does not need to be added
@@ -559,10 +559,10 @@ fn visit_composite(cursor: &Cursor,
                 members.push(CompMember::Enum(decl.enuminfo()));
             });
         }
-        CXCursorKind::PackedAttr => {
+        CXCursor_PackedAttr => {
             compinfo.layout.packed = true;
         }
-        CXCursorKind::UnexposedAttr => {
+        CXCursor_UnexposedAttr => {
             // skip unknown attributes
         }
         _ => {
@@ -577,25 +577,25 @@ fn visit_composite(cursor: &Cursor,
                          false);
         }
     }
-    CXChildVisitResult::Continue
+    CXChildVisit_Continue
 }
 
 fn visit_enum(cursor: &Cursor, items: &mut Vec<EnumItem>) -> CXChildVisitResult {
-    if cursor.kind() == CXCursorKind::EnumConstantDecl {
+    if cursor.kind() == CXCursor_EnumConstantDecl {
         let name = cursor.spelling();
         let val = cursor.enum_val();
         let item = EnumItem::new(name, val);
         items.push(item);
     }
-    CXChildVisitResult::Continue
+    CXChildVisit_Continue
 }
 
 fn visit_literal(cursor: &Cursor, unit: &TranslationUnit) -> Option<i64> {
-    if cursor.kind() == CXCursorKind::IntegerLiteral {
+    if cursor.kind() == CXCursor_IntegerLiteral {
         match unit.tokens(cursor) {
             None => None,
             Some(tokens) => {
-                if tokens.is_empty() || tokens[0].kind != CXTokenKind::Literal {
+                if tokens.is_empty() || tokens[0].kind != CXToken_Literal {
                     None
                 } else {
                     let s = &tokens[0].spelling;
@@ -624,12 +624,12 @@ fn visit_top(cursor: &Cursor,
              unit: &TranslationUnit)
              -> CXChildVisitResult {
     if !match_pattern(ctx, cursor) {
-        return CXChildVisitResult::Continue;
+        return CXChildVisit_Continue;
     }
 
     match cursor.kind() {
-        CXCursorKind::UnexposedDecl => CXChildVisitResult::Recurse,
-        CXCursorKind::StructDecl | CXCursorKind::UnionDecl => {
+        CXCursor_UnexposedDecl => CXChildVisit_Recurse,
+        CXCursor_StructDecl | CXCursor_UnionDecl => {
             fwd_decl(ctx, cursor, |ctx_| {
                 let decl = decl_name(ctx_, cursor);
                 let ci = decl.compinfo();
@@ -639,9 +639,9 @@ fn visit_top(cursor: &Cursor,
                 });
                 ctx_.globals.push(GComp(ci));
             });
-            CXChildVisitResult::Continue
+            CXChildVisit_Continue
         }
-        CXCursorKind::EnumDecl => {
+        CXCursor_EnumDecl => {
             fwd_decl(ctx, cursor, |ctx_| {
                 let decl = decl_name(ctx_, cursor);
                 let ei = decl.enuminfo();
@@ -651,12 +651,12 @@ fn visit_top(cursor: &Cursor,
                 });
                 ctx_.globals.push(GEnum(ei));
             });
-            CXChildVisitResult::Continue
+            CXChildVisit_Continue
         }
-        CXCursorKind::FunctionDecl => {
+        CXCursor_FunctionDecl => {
             let linkage = cursor.linkage();
-            if linkage != CXLinkageKind::External && linkage != CXLinkageKind::UniqueExternal {
-                return CXChildVisitResult::Continue;
+            if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
+                return CXChildVisit_Continue;
             }
 
             let func = decl_name(ctx, cursor);
@@ -669,12 +669,12 @@ fn visit_top(cursor: &Cursor,
             vi.ty = TFuncPtr(mk_fn_sig(ctx, &ty, cursor), layout);
             ctx.globals.push(func);
 
-            CXChildVisitResult::Continue
+            CXChildVisit_Continue
         }
-        CXCursorKind::VarDecl => {
+        CXCursor_VarDecl => {
             let linkage = cursor.linkage();
-            if linkage != CXLinkageKind::External && linkage != CXLinkageKind::UniqueExternal {
-                return CXChildVisitResult::Continue;
+            if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
+                return CXChildVisit_Continue;
             }
 
             let ty = conv_ty(ctx, &cursor.cur_type(), cursor);
@@ -685,15 +685,15 @@ fn visit_top(cursor: &Cursor,
             vi.is_const = cursor.cur_type().is_const();
             cursor.visit(|c, _: &Cursor| {
                 vi.val = visit_literal(c, unit);
-                CXChildVisitResult::Continue
+                CXChildVisit_Continue
             });
             ctx.globals.push(var);
 
-            CXChildVisitResult::Continue
+            CXChildVisit_Continue
         }
-        CXCursorKind::TypedefDecl => {
+        CXCursor_TypedefDecl => {
             let mut under_ty = cursor.typedef_type();
-            if under_ty.kind() == CXTypeKind::Unexposed {
+            if under_ty.kind() == CXType_Unexposed {
                 under_ty = under_ty.canonical_type();
             }
 
@@ -706,12 +706,12 @@ fn visit_top(cursor: &Cursor,
 
             opaque_ty(ctx, &under_ty);
 
-            CXChildVisitResult::Continue
+            CXChildVisit_Continue
         }
-        CXCursorKind::MacroDefinition if ctx.options.macros => {
+        CXCursor_MacroDefinition if ctx.options.macros => {
             use cexpr::*;
             let tokens: Vec<_>=unit.tokens(cursor).unwrap().into_iter().filter_map(|t|
-                if t.kind!=CXTokenKind::Comment {
+                if t.kind!=CXToken_Comment {
                     Some(t.into())
                 } else {
                     None
@@ -733,9 +733,9 @@ fn visit_top(cursor: &Cursor,
 
                 ctx.defined_macros.insert(id,val);
             }
-            CXChildVisitResult::Continue
+            CXChildVisit_Continue
         }
-        _ => CXChildVisitResult::Continue,
+        _ => CXChildVisit_Continue,
     }
 }
 
@@ -779,7 +779,7 @@ pub fn parse(options: ClangParserOptions, logger: &Logger) -> Result<Vec<Global>
     let diags = unit.diags();
     for d in &diags {
         let msg = d.format(Diagnostic::default_opts());
-        let is_err = d.severity() >= CXDiagnosticSeverity::Error;
+        let is_err = d.severity() >= CXDiagnostic_Error;
         log_err_warn(&mut ctx, &msg[..], is_err);
     }
 

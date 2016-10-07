@@ -15,7 +15,7 @@ doc = false
 name = "bindgen"
 
 [dependencies]
-clang-sys = "~0.8"
+clang-sys = "~0.11.0"
 # only for main, see https://github.com/rust-lang/cargo/issues/1982
 docopt = "~0.6.80"
 # only for main, see https://github.com/rust-lang/cargo/issues/1982
