@@ -224,18 +224,8 @@ pub enum IKind {
 impl IKind {
     pub fn is_signed(self) -> bool {
         match self {
-            IBool => false,
-            ISChar => true,
-            IUChar => false,
-            IShort => true,
-            IUShort => false,
-            IInt => true,
-            IUInt => false,
-            ILong => true,
-            IULong => false,
-            ILongLong => true,
-            IULongLong => false,
-            IWChar => false,
+            IBool | IUChar | IWChar | IUShort | IUInt | IULong | IULongLong => false,
+            ISChar | IShort | IInt | ILong | ILongLong => true,
         }
     }
 }

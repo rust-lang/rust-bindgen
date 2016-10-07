@@ -368,16 +368,14 @@ impl MacroTypes {
                     } else {
                         self.t_u64
                     }
+                } else if i>=(::std::i8::MIN as i64) {
+                    self.t_i8
+                } else if i>=(::std::i16::MIN as i64) {
+                    self.t_i16
+                } else if i>=(::std::i32::MIN as i64) {
+                    self.t_i32
                 } else {
-                    if i>=(::std::i8::MIN as i64) {
-                        self.t_i8
-                    } else if i>=(::std::i16::MIN as i64) {
-                        self.t_i16
-                    } else if i>=(::std::i32::MIN as i64) {
-                        self.t_i32
-                    } else {
-                        self.t_i64
-                    }
+                    self.t_i64
                 };
                 Some((Type::TInt(kind,Layout::default()),Some(i)))
             },

@@ -29,7 +29,7 @@ cexpr = "0.1.1"
 
 [dependencies.clippy]
 optional = true
-version = "0.0.72"
+version = "0.0.95"
 
 [dev-dependencies]
 diff = "~0.1.9"
