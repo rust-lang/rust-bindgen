@@ -72,8 +72,18 @@ impl Builder {
         self
     }
 
-    pub fn whitelisted_type<T: Borrow<str>>(mut self, arg: &T) -> Builder {
-        self.options.whitelisted_types.insert(arg);
+    pub fn whitelisted_type<T: Borrow<str>>(mut self, arg: T) -> Builder {
+        self.options.whitelisted_types.insert(&arg);
+        self
+    }
+
+    pub fn whitelisted_function<T: Borrow<str>>(mut self, arg: T) -> Builder {
+        self.options.whitelisted_functions.insert(&arg);
+        self
+    }
+
+    pub fn whitelisted_var<T: Borrow<str>>(mut self, arg: T) -> Builder {
+        self.options.whitelisted_vars.insert(&arg);
         self
     }
 
