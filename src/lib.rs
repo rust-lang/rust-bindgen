@@ -77,6 +77,11 @@ impl Builder {
         self
     }
 
+    pub fn whitelisted_function<T: Into<String>>(mut self, arg: T) -> Builder {
+        self.options.whitelisted_functions.insert(&arg.into());
+        self
+    }
+
     pub fn raw_line<T: Into<String>>(mut self, arg: T) -> Builder {
         self.options.raw_lines.push(arg.into());
         self
