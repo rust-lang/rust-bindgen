@@ -670,10 +670,8 @@ fn cstruct_to_rs(ctx: &mut GenCtx,
 
             if padding_size > mem::size_of::<u64>() {
                 let mut padding_fields = gen_padding_fields(ctx, paddings, padding_size);
-
-                fields.append(&mut padding_fields);
-
                 paddings += padding_fields.len();
+                fields.append(&mut padding_fields);
             }
 
             offset += padding_size;
