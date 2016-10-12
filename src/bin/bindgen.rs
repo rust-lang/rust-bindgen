@@ -60,9 +60,6 @@ Options:
 
     --no-type-renaming            Don't rename types.
 
-    --allow-unknown-types         Don't fail if we encounter types we do not
-                                  support, instead treat them as void
-
     --emit-clang-ast              Output the ast (for debugging purposes)
 
     --use-msvc-mangling           Handle MSVC C++ ABI mangling; requires that
