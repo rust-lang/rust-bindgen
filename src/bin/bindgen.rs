@@ -66,17 +66,24 @@ Options:
                                   target be set to (i686|x86_64)-pc-win32
 
     --raw-line=<raw>              Add a raw line at the beginning of the output.
+
     --no-unstable-rust            Avoid generating unstable rust.
+
     --no-bitfield-methods         Avoid generating methods for bitfield access.
+
     --opaque-type=<type>          Mark a type as opaque.
+
     --blacklist-type=<type>       Mark a type as hidden.
+
     --whitelist-type=<type>       Whitelist the type. If this set or any other
                                   of the whitelisting sets is not empty, then
                                   all the non-whitelisted types (or dependant)
                                   won't be generated.
+
     --whitelist-function=<regex>  Whitelist all the free-standing functions
                                   matching <regex>.  Same behavior on emptyness
                                   than the type whitelisting.
+
     --whitelist-var=<regex>       Whitelist all the free-standing variables
                                   matching <regex>.  Same behavior on emptyness
                                   than the type whitelisting.
