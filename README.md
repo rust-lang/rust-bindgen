@@ -59,18 +59,20 @@ Options:
 ### Generate a Lua binding with the plugin
 
 `Cargo.toml`
-
-    [dependencies]
-    bindgen = "*"
+```rust
+[dependencies]
+bindgen = "*"
+```
 
 `main.rs`
+```rust
+#![feature(plugin)]
+#![plugin(bindgen)]
 
-    #![feature(plugin)]
-    #![plugin(bindgen)]
-
-    mod lua_bindings {
-        bindgen!("/usr/include/lua.h", link="lua", builtins=true)
-    }
+mod lua_bindings {
+    bindgen!("/usr/include/lua.h", link="lua", builtins=true)
+}
+```
 
 ### Using a build script to generate bindings at compile time
 
