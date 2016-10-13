@@ -247,7 +247,7 @@ impl Item {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         self.annotations.hide() ||
-            ctx.hidden_by_name(&self.real_canonical_name(ctx, false))
+            ctx.hidden_by_name(&self.real_canonical_name(ctx, false), self.id)
     }
 
     pub fn is_opaque(&self, ctx: &BindgenContext) -> bool {
