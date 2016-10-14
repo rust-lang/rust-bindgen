@@ -278,10 +278,16 @@ impl Item {
                     TypeKind::Named(ref name, _) => {
                         return name.to_owned();
                     }
-                    // We really codegen and use the inner type, so use an empty
-                    // base name so codegen doesn't get confused.
+                    // We call codegen on the inner type, but we do not want
+                    // this alias's name to appear in the canonical name just
+                    // because it is in the inner type's parent chain, so we use
+                    // an empty base name.
                     //
-                    // We should never have this in another kind of type, so...
+                    // Note that this would be incorrect if this type could be
+                    // referenced from, let's say, a member variable, but in
+                    // that case the referenced type is the inner alias, so
+                    // we're good there. If we wouldn't, a more complex solution
+                    // would be needed.
                     TypeKind::TemplateAlias(..) => {
                         Some("")
                     }
