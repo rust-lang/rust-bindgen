@@ -167,6 +167,20 @@ impl Item {
         self.kind().expect_function()
     }
 
+    // This check is needed because even though the type might not contain the
+    // applicable template args itself, they might apply transitively via, for
+    // example, the parent.
+    //
+    // It's kind of unfortunate (in the sense that it's a sort of complex
+    // process, but I think it gets all the cases).
+    fn signature_contains_named_type(&self, ctx: &BindgenContext, ty: &Type) -> bool {
+        debug_assert!(ty.is_named());
+        self.expect_type().signature_contains_named_type(ctx, ty) ||
+            self.applicable_template_args(ctx).iter().any(|template| {
+                ctx.resolve_type(*template).signature_contains_named_type(ctx, ty)
+            })
+    }
+
     pub fn applicable_template_args(&self, ctx: &BindgenContext) -> Vec<ItemId> {
         let ty = match *self.kind() {
             ItemKind::Type(ref ty) => ty,
@@ -197,7 +211,8 @@ impl Item {
             TypeKind::Alias(_, inner) => {
                 let parent_args = ctx.resolve_item(self.parent_id())
                    .applicable_template_args(ctx);
-                let inner = ctx.resolve_type(inner);
+                let inner = ctx.resolve_item(inner);
+
                 // Avoid unused type parameters, sigh.
                 parent_args.iter().cloned().filter(|arg| {
                     let arg = ctx.resolve_type(*arg);
