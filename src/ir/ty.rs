@@ -146,13 +146,14 @@ impl Type {
                 type_resolver.resolve_type(t).can_derive_debug(type_resolver)
             }
             TypeKind::ResolvedTypeRef(t) |
+            TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(_, t) => {
                 type_resolver.resolve_type(t).can_derive_debug(type_resolver)
             }
             TypeKind::Comp(ref info) => {
                 info.can_derive_debug(type_resolver, self.layout(type_resolver))
             }
-            _   => true,
+            _ => true,
         }
     }
 
@@ -177,6 +178,7 @@ impl Type {
     pub fn can_derive_copy_in_array(&self, type_resolver: &BindgenContext, item: &Item) -> bool {
         match self.kind {
             TypeKind::ResolvedTypeRef(t) |
+            TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(_, t) |
             TypeKind::Array(t, _) => {
                 type_resolver.resolve_item(t)
@@ -194,6 +196,7 @@ impl Type {
                 type_resolver.resolve_item(t).can_derive_copy_in_array(type_resolver)
             }
             TypeKind::ResolvedTypeRef(t) |
+            TypeKind::TemplateAlias(t, _) |
             TypeKind::TemplateRef(t, _) |
             TypeKind::Alias(_, t) => {
                 type_resolver.resolve_item(t).can_derive_copy(type_resolver)
@@ -209,6 +212,7 @@ impl Type {
         // FIXME: Can we do something about template parameters? Huh...
         match self.kind {
             TypeKind::TemplateRef(t, _) |
+            TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(_, t) |
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::Array(t, _) => {
@@ -225,6 +229,7 @@ impl Type {
     pub fn has_destructor(&self, type_resolver: &BindgenContext) -> bool {
         self.is_opaque(type_resolver) || match self.kind {
             TypeKind::TemplateRef(t, _) |
+            TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(_, t) |
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::Array(t, _) => {
@@ -263,7 +268,8 @@ impl Type {
                 type_resolver.resolve_type(sig.return_type())
                              .signature_contains_named_type(type_resolver, ty)
             },
-            TypeKind::TemplateRef(_inner, ref template_args) => {
+            TypeKind::TemplateAlias(_, ref template_args) |
+            TypeKind::TemplateRef(_, ref template_args) => {
                 template_args.iter().any(|arg| {
                     type_resolver.resolve_type(*arg)
                                  .signature_contains_named_type(type_resolver, ty)
@@ -292,6 +298,7 @@ impl Type {
 
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(_, inner) |
+            TypeKind::TemplateAlias(inner, _) |
             TypeKind::TemplateRef(inner, _)
                 => type_resolver.resolve_type(inner).canonical_type(type_resolver),
 
@@ -327,6 +334,9 @@ pub enum TypeKind {
     Float(FloatKind),
     /// A type alias, with a name, that points to another type.
     Alias(String, ItemId),
+    /// A templated alias, pointing to an inner Alias type, with template
+    /// parameters.
+    TemplateAlias(ItemId, Vec<ItemId>),
     /// An array of a type and a lenght.
     Array(ItemId, usize),
     /// A function type, with a given signature.
@@ -371,6 +381,7 @@ impl Type {
             }
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(_, inner) |
+            TypeKind::TemplateAlias(inner, _) |
             TypeKind::TemplateRef(inner, _)
                 => type_resolver.resolve_type(inner).is_unsized(type_resolver),
             TypeKind::Named(..) |
@@ -443,6 +454,51 @@ impl Type {
                                 CompInfo::from_ty(potential_id, ty, Some(location), ctx)
                                         .expect("C'mon");
                             TypeKind::Comp(complex)
+                        }
+                        CXCursor_TypeAliasTemplateDecl => {
+                            debug!("TypeAliasTemplateDecl");
+
+                            // We need to manually unwind this one.
+                            let mut inner = Err(ParseError::Continue);
+                            let mut args = vec![];
+
+                            location.visit(|cur, _| {
+                                match cur.kind() {
+                                    CXCursor_TypeAliasDecl => {
+                                        debug_assert!(cur.cur_type().kind() == CXType_Typedef);
+                                        inner = Item::from_ty(&cur.cur_type(),
+                                                              Some(*cur),
+                                                              Some(potential_id),
+                                                              ctx);
+                                    }
+                                    CXCursor_TemplateTypeParameter => {
+                                        let default_type =
+                                            Item::from_ty(&cur.cur_type(),
+                                                          Some(*cur),
+                                                          Some(potential_id),
+                                                          ctx).ok();
+                                        let param =
+                                            Item::named_type(cur.spelling(),
+                                                             default_type,
+                                                             potential_id, ctx);
+                                        args.push(param);
+                                    }
+                                    _ => {}
+                                }
+                                CXChildVisit_Continue
+                            });
+
+                            if inner.is_err() {
+                                error!("Failed to parse templated type alias {:?}", location);
+                                return Err(ParseError::Continue);
+                            }
+
+                            if args.is_empty() {
+                                error!("Failed to get any template parameter, maybe a specialization? {:?}", location);
+                                return Err(ParseError::Continue);
+                            }
+
+                            TypeKind::TemplateAlias(inner.unwrap(), args)
                         }
                         CXCursor_TemplateRef => {
                             let referenced = location.referenced();
@@ -521,7 +577,7 @@ impl Type {
                 let signature = try!(FunctionSig::from_ty(ty, &location.unwrap_or(cursor), ctx));
                 TypeKind::Function(signature)
             }
-            CXType_Typedef  => {
+            CXType_Typedef => {
                 let inner = cursor.typedef_type();
                 let inner =
                     Item::from_ty_or_ref(inner, location, parent_id, ctx);

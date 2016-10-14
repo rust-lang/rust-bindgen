@@ -206,6 +206,7 @@ impl Item {
             }
             // XXX Is this completely correct? Partial template specialization
             // is hard anyways, sigh...
+            TypeKind::TemplateAlias(_, ref args) |
             TypeKind::TemplateRef(_, ref args) => {
                 args.clone()
             }
@@ -277,11 +278,20 @@ impl Item {
                     TypeKind::Named(ref name, _) => {
                         return name.to_owned();
                     }
-                    _ => {}
-                }
-
-                ty.name().map(ToOwned::to_owned)
-                         .unwrap_or_else(|| format!("_bindgen_ty{}", self.id()))
+                    // We really codegen and use the inner type, so use an empty
+                    // base name so codegen doesn't get confused.
+                    //
+                    // We should never have this in another kind of type, so...
+                    TypeKind::TemplateAlias(..) => {
+                        Some("")
+                    }
+                    // Else use the proper name, or fallback to a name with an
+                    // id.
+                    _ => {
+                        ty.name()
+                    }
+                }.map(ToOwned::to_owned)
+                 .unwrap_or_else(|| format!("_bindgen_ty{}", self.id()))
             }
             ItemKind::Function(ref fun) => {
                 let mut base = fun.name().to_owned();
@@ -329,7 +339,12 @@ impl Item {
 
         // TODO: allow modification of the mangling functions, maybe even per
         // item type?
-        format!("{}_{}", parent.canonical_name(ctx), base_name)
+        let parent = parent.canonical_name(ctx);
+        if parent.is_empty() {
+            base_name.to_owned()
+        } else {
+            format!("{}_{}", parent, base_name)
+        }
     }
 
     pub fn as_module_mut(&mut self) -> Option<&mut Module> {
@@ -444,7 +459,7 @@ impl ClangItemParser for Item {
         if cursor.kind() == clangll::CXCursor_UnexposedDecl {
             Err(ParseError::Recurse)
         } else {
-            error!("Unhandled cursor kind: {}", ::clang::kind_to_str(cursor.kind()));
+            error!("Unhandled cursor kind: {} ({})", ::clang::kind_to_str(cursor.kind()), cursor.kind());
             Err(ParseError::Continue)
         }
     }
