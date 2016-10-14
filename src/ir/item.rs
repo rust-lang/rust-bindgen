@@ -713,6 +713,17 @@ impl ItemCanonicalPath for Item {
         }
 
         let mut parent_path = self.parent_id().canonical_path(&ctx);
+        if parent_path.last().map_or(false, |parent_name| parent_name.is_empty()) {
+            // This only happens (or should only happen) when we're an alias,
+            // and our parent is a templated alias, in which case the last
+            // component of the path will be empty.
+            let is_alias = match *self.expect_type().kind() {
+                TypeKind::Alias(..) => true,
+                _ => false,
+            };
+            debug_assert!(is_alias, "How can this ever happen?");
+            parent_path.pop().unwrap();
+        }
         parent_path.push(self.real_canonical_name(ctx, true));
 
         parent_path
