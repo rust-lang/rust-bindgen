@@ -248,19 +248,22 @@ impl Item {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         self.annotations.hide() ||
-            ctx.hidden_by_name(&self.real_canonical_name(ctx, false), self.id)
+            ctx.hidden_by_name(&self.real_canonical_name(ctx, false, true), self.id)
     }
 
     pub fn is_opaque(&self, ctx: &BindgenContext) -> bool {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         self.annotations.opaque() ||
-            ctx.opaque_by_name(&self.real_canonical_name(ctx, false))
+            ctx.opaque_by_name(&self.real_canonical_name(ctx, false, true))
     }
 
     /// Get the canonical name without taking into account the replaces
     /// annotation.
-    fn real_canonical_name(&self, ctx: &BindgenContext, count_namespaces: bool) -> String {
+    fn real_canonical_name(&self,
+                           ctx: &BindgenContext,
+                           count_namespaces: bool,
+                           for_name_checking: bool) -> String {
         let base_name = match *self.kind() {
             ItemKind::Type(ref ty) => {
                 match *ty.kind() {
@@ -288,7 +291,10 @@ impl Item {
                     // that case the referenced type is the inner alias, so
                     // we're good there. If we wouldn't, a more complex solution
                     // would be needed.
-                    TypeKind::TemplateAlias(..) => {
+                    TypeKind::TemplateAlias(inner, _) => {
+                        if for_name_checking {
+                            return ctx.resolve_item(inner).real_canonical_name(ctx, count_namespaces, false);
+                        }
                         Some("")
                     }
                     // Else use the proper name, or fallback to a name with an
@@ -682,7 +688,7 @@ impl ItemCanonicalName for Item {
         if let Some(other_canon_type) = self.annotations.use_instead_of() {
             return other_canon_type.to_owned();
         }
-        self.real_canonical_name(ctx, ctx.options().enable_cxx_namespaces)
+        self.real_canonical_name(ctx, ctx.options().enable_cxx_namespaces, false)
     }
 }
 
@@ -730,7 +736,7 @@ impl ItemCanonicalPath for Item {
             debug_assert!(is_alias, "How can this ever happen?");
             parent_path.pop().unwrap();
         }
-        parent_path.push(self.real_canonical_name(ctx, true));
+        parent_path.push(self.real_canonical_name(ctx, true, false));
 
         parent_path
     }
