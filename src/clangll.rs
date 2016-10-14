@@ -313,8 +313,11 @@ pub const CXCursor_InclusionDirective: c_uint = 503;
 pub const CXCursor_FirstPreprocessing: c_uint = 500;
 pub const CXCursor_LastPreprocessing: c_uint = 503;
 pub const CXCursor_ModuleImportDecl: c_uint = 600;
+pub const CXCursor_TypeAliasTemplateDecl: c_uint = 601;
+pub const CXCursor_StaticAssert: c_uint = 602;
 pub const CXCursor_FirstExtraDecl: c_uint = 600;
-pub const CXCursor_LastExtraDecl: c_uint = 600;
+pub const CXCursor_LastExtraDecl: c_uint = 602;
+pub const CXCursor_OverloadCandidate: c_uint = 700;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CXCursor {
