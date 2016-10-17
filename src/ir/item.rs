@@ -28,7 +28,7 @@ pub trait ItemCanonicalName {
 ///
 /// To contrast with canonical_name, here's an example:
 ///
-/// ```
+/// ```c++
 /// namespace foo {
 ///     const BAR = 3;
 /// }

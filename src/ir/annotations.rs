@@ -87,7 +87,7 @@ impl Annotations {
     ///
     /// the generated code would look something like:
     ///
-    /// ```rust
+    /// ```c++
     /// /** <div rustbindgen replaces="Bar"></div> */
     /// struct Bar {
     ///     int x;

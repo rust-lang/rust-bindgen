@@ -294,20 +294,6 @@ impl Bindings {
     }
 }
 
-#[test]
-fn builder_state() {
-    let logger = DummyLogger;
-    let mut build = builder();
-    {
-        build.header("example.h");
-        build.link_static("m");
-        build.log(&logger);
-    }
-    assert!(build.logger.is_some());
-    assert!(build.options.clang_args.binary_search(&"example.h".to_owned()).is_ok());
-    assert!(build.options.links.binary_search(&("m".to_owned(), LinkType::Static)).is_ok());
-}
-
 /// Determines whether the given cursor is in any of the files matched by the
 /// options.
 fn filter_builtins(ctx: &BindgenContext, cursor: &clang::Cursor) -> bool {
