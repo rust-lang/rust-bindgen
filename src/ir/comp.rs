@@ -1,6 +1,5 @@
 use super::annotations::Annotations;
 use super::context::BindgenContext;
-use super::context::TypeResolver;
 use super::layout::Layout;
 use super::item::{Item, ItemId};
 use super::ty::{Type, RUST_DERIVE_IN_ARRAY_LIMIT};
@@ -206,7 +205,7 @@ impl CompInfo {
         }
     }
 
-    pub fn can_derive_debug(&self, type_resolver: &TypeResolver, layout: Option<Layout>) -> bool {
+    pub fn can_derive_debug(&self, type_resolver: &BindgenContext, layout: Option<Layout>) -> bool {
         // We can reach here recursively via template parameters of a member,
         // for example.
         if self.detect_derive_debug_cycle.get() {
@@ -249,7 +248,7 @@ impl CompInfo {
         can_derive_debug
     }
 
-    pub fn is_unsized(&self, type_resolver: &TypeResolver) -> bool {
+    pub fn is_unsized(&self, type_resolver: &BindgenContext) -> bool {
         !self.has_vtable(type_resolver) && self.fields.is_empty() &&
             self.base_members.iter().all(|base| {
                 type_resolver
@@ -262,7 +261,7 @@ impl CompInfo {
             })
     }
 
-    pub fn has_destructor(&self, type_resolver: &TypeResolver) -> bool {
+    pub fn has_destructor(&self, type_resolver: &BindgenContext) -> bool {
         if self.detect_has_destructor_cycle.get() {
             warn!("Cycle detected looking for destructors");
             // Assume no destructor, since we don't have an explicit one.
@@ -299,7 +298,7 @@ impl CompInfo {
         has_destructor
     }
 
-    pub fn can_derive_copy(&self, type_resolver: &TypeResolver, item: &Item) -> bool {
+    pub fn can_derive_copy(&self, type_resolver: &BindgenContext, item: &Item) -> bool {
         // NOTE: Take into account that while unions in C and C++ are copied by
         // default, the may have an explicit destructor in C++, so we can't
         // defer this check just for the union case.
@@ -349,7 +348,7 @@ impl CompInfo {
     // If we're a union without known layout, we try to compute it from our
     // members. This is not ideal, but clang fails to report the size for
     // these kind of unions, see test/headers/template_union.hpp
-    pub fn layout(&self, type_resolver: &TypeResolver) -> Option<Layout> {
+    pub fn layout(&self, type_resolver: &BindgenContext) -> Option<Layout> {
         use std::cmp;
 
         // We can't do better than clang here, sorry.
@@ -384,7 +383,7 @@ impl CompInfo {
         self.has_non_type_template_params
     }
 
-    pub fn has_vtable(&self, type_resolver: &TypeResolver) -> bool {
+    pub fn has_vtable(&self, type_resolver: &BindgenContext) -> bool {
         self.has_vtable || self.base_members().iter().any(|base| {
             type_resolver
                 .resolve_type(*base)
@@ -688,7 +687,7 @@ impl CompInfo {
     }
 
     pub fn signature_contains_named_type(&self,
-                                         type_resolver: &TypeResolver,
+                                         type_resolver: &BindgenContext,
                                          ty: &Type) -> bool {
         // We don't generate these, so rather don't make the codegen step to
         // think we got it covered.
@@ -719,7 +718,7 @@ impl CompInfo {
 
     /// Returns whether this type needs an explicit vtable because it has
     /// virtual methods and none of its base classes has already a vtable.
-    pub fn needs_explicit_vtable(&self, type_resolver: &TypeResolver) -> bool {
+    pub fn needs_explicit_vtable(&self, type_resolver: &BindgenContext) -> bool {
         self.has_vtable(type_resolver) && !self.base_members.iter().any(|base| {
             // NB: Ideally, we could rely in all these types being `comp`, and
             // life would be beautiful.

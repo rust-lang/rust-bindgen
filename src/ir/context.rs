@@ -713,9 +713,3 @@ impl<'ctx> BindgenContext<'ctx> {
         self.current_module = previous_id;
     }
 }
-
-/// This was originally a type that only exposes the resolve_type operation to
-/// its consumers.
-///
-/// Later a made resolve_type public, so... meh. It should go away soon.
-pub type TypeResolver<'ctx> = BindgenContext<'ctx>;

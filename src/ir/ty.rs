@@ -5,7 +5,6 @@ use super::item::{Item, ItemId};
 use super::int::IntKind;
 use super::layout::Layout;
 use super::context::BindgenContext;
-use super::context::TypeResolver;
 use parse::{ClangItemParser, ParseResult, ParseError};
 use clang::{self, Cursor};
 
@@ -117,7 +116,7 @@ impl Type {
         self.is_const
     }
 
-    pub fn layout(&self, type_resolver: &TypeResolver) -> Option<Layout> {
+    pub fn layout(&self, type_resolver: &BindgenContext) -> Option<Layout> {
         use std::mem;
 
         self.layout.or_else(|| {
@@ -136,11 +135,11 @@ impl Type {
         })
     }
 
-    pub fn is_opaque(&self, _type_resolver: &TypeResolver) -> bool {
+    pub fn is_opaque(&self, _type_resolver: &BindgenContext) -> bool {
         self.opaque
     }
 
-    pub fn can_derive_debug(&self, type_resolver: &TypeResolver) -> bool {
+    pub fn can_derive_debug(&self, type_resolver: &BindgenContext) -> bool {
         !self.is_opaque(type_resolver) && match self.kind {
             TypeKind::Array(t, len) => {
                 len <= RUST_DERIVE_IN_ARRAY_LIMIT &&
@@ -175,7 +174,7 @@ impl Type {
     // is an error.
     //
     // That's the point of the existence of can_derive_copy_in_array().
-    pub fn can_derive_copy_in_array(&self, type_resolver: &TypeResolver, item: &Item) -> bool {
+    pub fn can_derive_copy_in_array(&self, type_resolver: &BindgenContext, item: &Item) -> bool {
         match self.kind {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::Alias(_, t) |
@@ -188,7 +187,7 @@ impl Type {
         }
     }
 
-    pub fn can_derive_copy(&self, type_resolver: &TypeResolver, item: &Item) -> bool {
+    pub fn can_derive_copy(&self, type_resolver: &BindgenContext, item: &Item) -> bool {
         !self.is_opaque(type_resolver) && match self.kind {
             TypeKind::Array(t, len) => {
                 len <= RUST_DERIVE_IN_ARRAY_LIMIT &&
@@ -206,7 +205,7 @@ impl Type {
         }
     }
 
-    pub fn has_vtable(&self, type_resolver: &TypeResolver) -> bool {
+    pub fn has_vtable(&self, type_resolver: &BindgenContext) -> bool {
         // FIXME: Can we do something about template parameters? Huh...
         match self.kind {
             TypeKind::TemplateRef(t, _) |
@@ -223,7 +222,7 @@ impl Type {
 
     }
 
-    pub fn has_destructor(&self, type_resolver: &TypeResolver) -> bool {
+    pub fn has_destructor(&self, type_resolver: &BindgenContext) -> bool {
         self.is_opaque(type_resolver) || match self.kind {
             TypeKind::TemplateRef(t, _) |
             TypeKind::Alias(_, t) |
@@ -239,7 +238,7 @@ impl Type {
     }
 
     pub fn signature_contains_named_type(&self,
-                                         type_resolver: &TypeResolver,
+                                         type_resolver: &BindgenContext,
                                          ty: &Type) -> bool {
         debug_assert!(ty.is_named());
         let name = match *ty.kind() {
@@ -276,7 +275,7 @@ impl Type {
         }
     }
 
-    pub fn canonical_type<'tr>(&'tr self, type_resolver: &'tr TypeResolver) -> &'tr Type {
+    pub fn canonical_type<'tr>(&'tr self, type_resolver: &'tr BindgenContext) -> &'tr Type {
         match self.kind {
             TypeKind::Named(..) |
             TypeKind::Array(..) |
@@ -362,7 +361,7 @@ pub enum TypeKind {
 }
 
 impl Type {
-    pub fn is_unsized(&self, type_resolver: &TypeResolver) -> bool {
+    pub fn is_unsized(&self, type_resolver: &BindgenContext) -> bool {
         match self.kind {
             TypeKind::Void => true,
             TypeKind::Comp(ref ci) => ci.is_unsized(type_resolver),
