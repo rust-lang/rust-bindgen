@@ -12,8 +12,8 @@ $(BINDGEN):
 	[ -f $@ ] || cargo build --features llvm_stable
 
 .PHONY: test
-test: regen-tests
-	@echo > /dev/null
+test:
+	cargo test --features llvm_stable
 
 
 .PHONY: regen-tests
