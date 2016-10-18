@@ -1,3 +1,6 @@
+//! The module where the Intermediate Representation bindgen uses, and the
+//! parsing code that generates it lives.
+
 pub mod annotations;
 pub mod comp;
 pub mod context;

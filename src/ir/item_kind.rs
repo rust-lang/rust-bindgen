@@ -15,6 +15,7 @@ pub enum ItemKind {
 
     /// A function or method declaration.
     Function(Function),
+
     /// A variable declaration, most likely a static.
     Var(Var),
 }
