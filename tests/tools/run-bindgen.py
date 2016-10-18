@@ -40,6 +40,7 @@ env = os.environ.copy()
 # https://forums.developer.apple.com/thread/9233
 if "DYLD_LIBRARY_PATH" not in env and "LIBCLANG_PATH" in env:
     env["DYLD_LIBRARY_PATH"] = env["LIBCLANG_PATH"]
+
 subprocess.check_call(base_command, cwd=os.getcwd(), env=env)
 
 

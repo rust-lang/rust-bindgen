@@ -22,38 +22,16 @@ fn bindgen_test_layout_C() {
     assert_eq!(::std::mem::align_of::<C>() , 8usize);
 }
 extern "C" {
-    #[link_name = "_ZN1C6methodEi"]
-    pub fn C_method(this: *mut C, c: C_MyInt);
-}
-extern "C" {
-    #[link_name = "_ZN1C9methodRefERi"]
-    pub fn C_methodRef(this: *mut C, c: *mut C_MyInt);
-}
-extern "C" {
-    #[link_name = "_ZN1C16complexMethodRefERPKc"]
-    pub fn C_complexMethodRef(this: *mut C, c: *mut C_Lookup);
-}
-extern "C" {
-    #[link_name = "_ZN1C13anotherMethodEi"]
-    pub fn C_anotherMethod(this: *mut C, c: AnotherInt);
+    #[link_name = "_ZN1C16notInlinedMethodEi"]
+    pub fn C_notInlinedMethod(this: *mut C, c: C_MyInt);
 }
 impl Clone for C {
     fn clone(&self) -> Self { *self }
 }
 impl C {
     #[inline]
-    pub unsafe fn method(&mut self, c: C_MyInt) { C_method(&mut *self, c) }
-    #[inline]
-    pub unsafe fn methodRef(&mut self, c: *mut C_MyInt) {
-        C_methodRef(&mut *self, c)
-    }
-    #[inline]
-    pub unsafe fn complexMethodRef(&mut self, c: *mut C_Lookup) {
-        C_complexMethodRef(&mut *self, c)
-    }
-    #[inline]
-    pub unsafe fn anotherMethod(&mut self, c: AnotherInt) {
-        C_anotherMethod(&mut *self, c)
+    pub unsafe fn notInlinedMethod(&mut self, c: C_MyInt) {
+        C_notInlinedMethod(&mut *self, c)
     }
 }
 #[repr(C)]

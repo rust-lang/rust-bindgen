@@ -43,7 +43,6 @@ features = ["with-syntex"]
 version = "0.20"
 
 [features]
-llvm_stable = []
 static = []
 
 [lib]

@@ -2,13 +2,13 @@ language: rust
 addons:
     apt:
       sources:
-        - llvm-toolchain-precise-3.8
+        - llvm-toolchain-precise-3.9
         - ubuntu-toolchain-r-test
       packages:
-        - libclang-3.8-dev
-        - llvm-3.8-dev
+        - libclang-3.9-dev
+        - llvm-3.9-dev
 env:
-  - LLVM_VERSION=3.8
+  - LLVM_VERSION=3.9
 rust:
   - stable
   - nightly
@@ -39,7 +39,7 @@ before_script:
   - echo $LIBCLANG_PATH
 
 script:
-  - cargo build --verbose --features llvm_stable
+  - cargo build --verbose
   - make test
   - git add -A
   - git diff @

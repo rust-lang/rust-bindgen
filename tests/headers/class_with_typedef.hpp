@@ -16,6 +16,7 @@ public:
     void methodRef(MyInt& c) {};
     void complexMethodRef(Lookup& c) {};
     void anotherMethod(AnotherInt c) {};
+    void notInlinedMethod(MyInt c);
 };
 
 class D: public C {
