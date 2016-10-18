@@ -647,10 +647,18 @@ impl<'ctx> BindgenContext<'ctx> {
         self.replacements.insert(name.into(), potential_ty);
     }
 
-    pub fn hidden_by_name(&self, name: &str) -> bool {
+    pub fn hidden_by_name(&self, name: &str, id: ItemId) -> bool {
         debug_assert!(self.in_codegen_phase(),
                       "You're not supposed to call this yet");
-        self.options.hidden_types.contains(name)
+        self.options.hidden_types.contains(name) ||
+            self.is_replaced_type(name, id)
+    }
+
+    pub fn is_replaced_type(&self, name: &str, id: ItemId) -> bool {
+        match self.replacements.get(name) {
+            Some(replaced_by) if *replaced_by != id => true,
+            _ => false,
+        }
     }
 
     pub fn opaque_by_name(&self, name: &str) -> bool {
