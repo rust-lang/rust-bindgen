@@ -1,3 +1,9 @@
+// We add this `extern crate` here to ensure that bindgen is up-to-date and
+// rebuilt, even though we aren't using any of its types or functions here, only
+// indirectly calling the executable.
+#[allow(dead_code)]
+extern crate bindgen;
+
 use std::env;
 use std::fs;
 use std::io::Read;
