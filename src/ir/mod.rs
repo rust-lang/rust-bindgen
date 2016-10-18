@@ -1,5 +1,7 @@
-//! The module where the Intermediate Representation bindgen uses, and the
-//! parsing code that generates it lives.
+//! The ir module defines bindgen's intermediate representation.
+//!
+//! Parsing C/C++ generates the IR, while code generation outputs Rust code from
+//! the IR.
 
 pub mod annotations;
 pub mod comp;
