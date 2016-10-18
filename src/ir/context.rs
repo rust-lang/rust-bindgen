@@ -421,7 +421,7 @@ impl<'ctx> BindgenContext<'ctx> {
     ///
     /// To see an example of what this handles:
     ///
-    /// ```
+    /// ```c++
     ///     template<typename T>
     ///     class Incomplete {
     ///       T p;

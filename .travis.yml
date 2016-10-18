@@ -40,7 +40,7 @@ before_script:
 
 script:
   - cargo build --verbose --features llvm_stable
-  - make test
+  - cargo test --features llvm_stable
   - git add -A
   - git diff @
   - git diff-index --quiet HEAD

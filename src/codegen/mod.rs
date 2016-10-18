@@ -41,7 +41,7 @@ struct CodegenResult {
     /// The set of generated function/var names, needed because in C/C++ is legal to
     /// do something like:
     ///
-    /// ```
+    /// ```c++
     /// extern "C" {
     ///   void foo();
     ///   extern int bar;
