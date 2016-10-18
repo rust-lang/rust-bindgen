@@ -444,7 +444,7 @@ impl ClangItemParser for Item {
         if cursor.kind() == clangll::CXCursor_UnexposedDecl {
             Err(ParseError::Recurse)
         } else {
-            error!("Unhandled cursor kind: {}", ::clang::kind_to_str(cursor.kind()));
+            warn!("Unhandled cursor kind: {}", ::clang::kind_to_str(cursor.kind()));
             Err(ParseError::Continue)
         }
     }

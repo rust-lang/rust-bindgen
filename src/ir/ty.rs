@@ -467,7 +467,7 @@ impl Type {
                                 return Err(ParseError::Recurse);
                             }
 
-                            error!("invalid type {:?}", ty);
+                            warn!("invalid type {:?}", ty);
                             return Err(ParseError::Continue);
                         }
                     }
