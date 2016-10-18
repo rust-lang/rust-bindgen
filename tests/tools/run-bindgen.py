@@ -9,7 +9,8 @@ import sys
 import subprocess
 import tempfile
 
-BINDGEN_FLAGS_PREFIX = "// bindgen-flags: ";
+BINDGEN_FLAGS_PREFIX = "// bindgen-flags: "
+BINDGEN_FEATURES_PREFIX = "// bindgen-features: "
 
 COMMON_PRELUDE = """
 #![allow(non_snake_case)]
@@ -35,6 +36,12 @@ def make_parser():
                               at this path already exists, the newly generated \
                               bindings will be checked against those extant \
                               expected bindings.")
+    parser.add_argument("--feature",
+                        dest="features",
+                        action="append",
+                        nargs=1,
+                        help="Run tests that depend on bindgen being built with \
+                              the given feature.")
     return parser
 
 def usage_and_exit(*args):
@@ -48,6 +55,9 @@ def parse_args():
     """Get, parse, and validate commandline arguments."""
     parser = make_parser()
     args = parser.parse_args()
+
+    if args.features is None:
+        args.features = []
 
     if not os.path.isfile(args.bindgen):
         usage_and_exit("error: bindgen is not a file:", args.bindgen)
@@ -68,21 +78,34 @@ def make_bindgen_env():
 
     return env
 
-def get_bindgen_flags_for_header(header_path):
-    """Get the flags to pass to bindgen for this header."""
-    flags = ["--no-unstable-rust"]
+def get_bindgen_flags_and_features(header_path):
+    """
+    Return the bindgen flags and features required for this header as a tuple
+    (flags, features).
+    """
+    found_flags = False
+    found_features = False
 
+    features = []
+    flags = ["--no-unstable-rust"]
     for line in COMMON_PRELUDE.split("\n"):
         flags.append("--raw-line")
         flags.append(line)
 
     with open(header_path) as f:
         for line in f:
-            if line.startswith(BINDGEN_FLAGS_PREFIX):
+            if not found_flags and line.startswith(BINDGEN_FLAGS_PREFIX):
                 flags.extend(line.strip().split(BINDGEN_FLAGS_PREFIX)[1].split(" "))
+                found_flags = True
+
+            if not found_features and line.startswith(BINDGEN_FEATURES_PREFIX):
+                features.extend(line.strip().split(BINDGEN_FEATURES_PREFIX)[1].split(" "))
+                found_features = True
+
+            if found_flags and found_features:
                 break
 
-    return flags
+    return (flags, features)
 
 def get_expected_bindings(rust_bindings_path):
     """
@@ -106,10 +129,10 @@ def run_cmd(command, **kwargs):
     print("run-bindgen.py: running", command)
     subprocess.check_call(command, **kwargs)
 
-def generate_bindings(bindgen, header, output):
+def generate_bindings(bindgen, flags, header, output):
     """Generate the rust bindings."""
     command = [bindgen, "-o", output]
-    command.extend(get_bindgen_flags_for_header(header))
+    command.extend(flags)
     command.append(header)
     run_cmd(command, cwd=os.getcwd(), env=make_bindgen_env())
 
@@ -152,8 +175,13 @@ def check_actual_vs_expected(expected_bindings, rust_bindings_path):
         
 def main():
     args = parse_args()
+
+    (test_flags, test_features) = get_bindgen_flags_and_features(args.header)
+    if not all(f in args.features for f in test_features):
+        sys.exit(0)
+
     expected_bindings = get_expected_bindings(args.rust_bindings)
-    generate_bindings(args.bindgen, args.header, args.rust_bindings)
+    generate_bindings(args.bindgen, test_flags, args.header, args.rust_bindings)
     test_generated_bindings(args.rust_bindings)
     check_actual_vs_expected(expected_bindings, args.rust_bindings)
     sys.exit(0)

@@ -1,4 +1,5 @@
 // bindgen-flags: --no-type-renaming
+// bindgen-features: llvm_stable
 
 typedef int AnotherInt;
 
