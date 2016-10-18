@@ -167,6 +167,20 @@ impl Item {
         self.kind().expect_function()
     }
 
+    // This check is needed because even though the type might not contain the
+    // applicable template args itself, they might apply transitively via, for
+    // example, the parent.
+    //
+    // It's kind of unfortunate (in the sense that it's a sort of complex
+    // process, but I think it gets all the cases).
+    fn signature_contains_named_type(&self, ctx: &BindgenContext, ty: &Type) -> bool {
+        debug_assert!(ty.is_named());
+        self.expect_type().signature_contains_named_type(ctx, ty) ||
+            self.applicable_template_args(ctx).iter().any(|template| {
+                ctx.resolve_type(*template).signature_contains_named_type(ctx, ty)
+            })
+    }
+
     pub fn applicable_template_args(&self, ctx: &BindgenContext) -> Vec<ItemId> {
         let ty = match *self.kind() {
             ItemKind::Type(ref ty) => ty,
@@ -197,7 +211,8 @@ impl Item {
             TypeKind::Alias(_, inner) => {
                 let parent_args = ctx.resolve_item(self.parent_id())
                    .applicable_template_args(ctx);
-                let inner = ctx.resolve_type(inner);
+                let inner = ctx.resolve_item(inner);
+
                 // Avoid unused type parameters, sigh.
                 parent_args.iter().cloned().filter(|arg| {
                     let arg = ctx.resolve_type(*arg);
@@ -206,6 +221,7 @@ impl Item {
             }
             // XXX Is this completely correct? Partial template specialization
             // is hard anyways, sigh...
+            TypeKind::TemplateAlias(_, ref args) |
             TypeKind::TemplateRef(_, ref args) => {
                 args.clone()
             }
@@ -247,19 +263,22 @@ impl Item {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         self.annotations.hide() ||
-            ctx.hidden_by_name(&self.real_canonical_name(ctx, false), self.id)
+            ctx.hidden_by_name(&self.real_canonical_name(ctx, false, true), self.id)
     }
 
     pub fn is_opaque(&self, ctx: &BindgenContext) -> bool {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         self.annotations.opaque() ||
-            ctx.opaque_by_name(&self.real_canonical_name(ctx, false))
+            ctx.opaque_by_name(&self.real_canonical_name(ctx, false, true))
     }
 
     /// Get the canonical name without taking into account the replaces
     /// annotation.
-    fn real_canonical_name(&self, ctx: &BindgenContext, count_namespaces: bool) -> String {
+    fn real_canonical_name(&self,
+                           ctx: &BindgenContext,
+                           count_namespaces: bool,
+                           for_name_checking: bool) -> String {
         let base_name = match *self.kind() {
             ItemKind::Type(ref ty) => {
                 match *ty.kind() {
@@ -277,11 +296,29 @@ impl Item {
                     TypeKind::Named(ref name, _) => {
                         return name.to_owned();
                     }
-                    _ => {}
-                }
-
-                ty.name().map(ToOwned::to_owned)
-                         .unwrap_or_else(|| format!("_bindgen_ty{}", self.id()))
+                    // We call codegen on the inner type, but we do not want
+                    // this alias's name to appear in the canonical name just
+                    // because it is in the inner type's parent chain, so we use
+                    // an empty base name.
+                    //
+                    // Note that this would be incorrect if this type could be
+                    // referenced from, let's say, a member variable, but in
+                    // that case the referenced type is the inner alias, so
+                    // we're good there. If we wouldn't, a more complex solution
+                    // would be needed.
+                    TypeKind::TemplateAlias(inner, _) => {
+                        if for_name_checking {
+                            return ctx.resolve_item(inner).real_canonical_name(ctx, count_namespaces, false);
+                        }
+                        Some("")
+                    }
+                    // Else use the proper name, or fallback to a name with an
+                    // id.
+                    _ => {
+                        ty.name()
+                    }
+                }.map(ToOwned::to_owned)
+                 .unwrap_or_else(|| format!("_bindgen_ty{}", self.id()))
             }
             ItemKind::Function(ref fun) => {
                 let mut base = fun.name().to_owned();
@@ -329,7 +366,12 @@ impl Item {
 
         // TODO: allow modification of the mangling functions, maybe even per
         // item type?
-        format!("{}_{}", parent.canonical_name(ctx), base_name)
+        let parent = parent.canonical_name(ctx);
+        if parent.is_empty() {
+            base_name.to_owned()
+        } else {
+            format!("{}_{}", parent, base_name)
+        }
     }
 
     pub fn as_module_mut(&mut self) -> Option<&mut Module> {
@@ -444,7 +486,7 @@ impl ClangItemParser for Item {
         if cursor.kind() == clangll::CXCursor_UnexposedDecl {
             Err(ParseError::Recurse)
         } else {
-            error!("Unhandled cursor kind: {}", ::clang::kind_to_str(cursor.kind()));
+            error!("Unhandled cursor kind: {} ({})", ::clang::kind_to_str(cursor.kind()), cursor.kind());
             Err(ParseError::Continue)
         }
     }
@@ -661,7 +703,7 @@ impl ItemCanonicalName for Item {
         if let Some(other_canon_type) = self.annotations.use_instead_of() {
             return other_canon_type.to_owned();
         }
-        self.real_canonical_name(ctx, ctx.options().enable_cxx_namespaces)
+        self.real_canonical_name(ctx, ctx.options().enable_cxx_namespaces, false)
     }
 }
 
@@ -698,7 +740,18 @@ impl ItemCanonicalPath for Item {
         }
 
         let mut parent_path = self.parent_id().canonical_path(&ctx);
-        parent_path.push(self.real_canonical_name(ctx, true));
+        if parent_path.last().map_or(false, |parent_name| parent_name.is_empty()) {
+            // This only happens (or should only happen) when we're an alias,
+            // and our parent is a templated alias, in which case the last
+            // component of the path will be empty.
+            let is_alias = match *self.expect_type().kind() {
+                TypeKind::Alias(..) => true,
+                _ => false,
+            };
+            debug_assert!(is_alias, "How can this ever happen?");
+            parent_path.pop().unwrap();
+        }
+        parent_path.push(self.real_canonical_name(ctx, true, false));
 
         parent_path
     }

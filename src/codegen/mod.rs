@@ -341,6 +341,12 @@ impl CodeGenerator for Type {
                 return;
             }
             TypeKind::Comp(ref ci) => ci.codegen(ctx, result, item),
+            TypeKind::TemplateAlias(inner, _) => {
+                // NB: The inner Alias will pick the correct
+                // applicable_template_args.
+                let inner_item = ctx.resolve_item(inner);
+                inner_item.expect_type().codegen(ctx, result, inner_item);
+            }
             TypeKind::Alias(ref spelling, inner) => {
                 let inner_item = ctx.resolve_item(inner);
                 let name = item.canonical_name(ctx);
@@ -1361,6 +1367,7 @@ impl ToRustTy for Type {
                 let path = item.canonical_path(ctx);
                 aster::AstBuilder::new().ty().path().ids(path).build()
             }
+            TypeKind::TemplateAlias(inner, ref template_args) |
             TypeKind::TemplateRef(inner, ref template_args) => {
                 // PS: Sorry for the duplication here.
                 let mut inner_ty = inner.to_rust_ty(ctx).unwrap();
@@ -1618,6 +1625,7 @@ impl TypeCollector for Type {
             TypeKind::Pointer(inner) |
             TypeKind::Reference(inner) |
             TypeKind::Array(inner, _) |
+            TypeKind::TemplateAlias(inner, _) |
             TypeKind::Alias(_, inner) |
             TypeKind::Named(_, Some(inner)) |
             TypeKind::ResolvedTypeRef(inner)

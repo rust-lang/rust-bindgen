@@ -1050,7 +1050,9 @@ pub fn kind_to_str(x: Enum_CXCursorKind) -> &'static str {
         //CXCursor_FirstPreprocessing => "FirstPreprocessing",
         //CXCursor_LastPreprocessing => "LastPreprocessing",
         CXCursor_PackedAttr => "PackedAttr",
-
+        CXCursor_ModuleImportDecl => "ModuleImportDecl",
+        CXCursor_TypeAliasTemplateDecl => "TypeAliasTemplateDecl",
+        CXCursor_StaticAssert => "StaticAssert",
         _ => "?",
     }
 }
