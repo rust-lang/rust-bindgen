@@ -1,3 +1,9 @@
+// We add this `extern crate` here to ensure that bindgen is up-to-date and
+// rebuilt, even though we aren't using any of its types or functions here, only
+// indirectly calling the executable.
+#[allow(dead_code)]
+extern crate bindgen;
+
 use std::env;
 use std::fs;
 use std::io::Read;
@@ -28,13 +34,19 @@ fn spawn_run_bindgen<P, Q, R>(run_bindgen: P, bindgen: Q, header: R) -> process:
     expected.push(file_name);
     expected.set_extension("rs");
 
-    process::Command::new(run_bindgen)
+    let mut cmd = process::Command::new(run_bindgen);
+    cmd.stdout(process::Stdio::piped())
+        .stderr(process::Stdio::piped())
         .arg(bindgen)
         .arg(header)
-        .stdout(process::Stdio::piped())
-        .stderr(process::Stdio::piped())
-        .arg(expected)
-        .spawn()
+        .arg(expected);
+
+    if cfg!(feature = "llvm_stable") {
+        cmd.arg("--feature")
+            .arg("llvm_stable");
+    }
+
+    cmd.spawn()
         .expect("Should be able to spawn run-bindgen.py child process")
 }
 

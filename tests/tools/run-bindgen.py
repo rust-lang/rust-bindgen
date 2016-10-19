@@ -1,69 +1,190 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
+import argparse
+import difflib
 import os
 import sys
 import subprocess
 import tempfile
 
-BINDGEN_FLAGS_PREFIX = "// bindgen-flags: ";
-CLANG_FLAGS_SEPARATOR = "-- "
+BINDGEN_FLAGS_PREFIX = "// bindgen-flags: "
+BINDGEN_FEATURES_PREFIX = "// bindgen-features: "
+
 COMMON_PRELUDE = """
 #![allow(non_snake_case)]
 """
 
-if len(sys.argv) != 4:
-    print("Usage: {} [bindgen-path] [c-path] [rust-path]\n".format(sys.argv[0]))
+DESCRIPTION = """
+Run bindgen on a test header and check the generated bindings against expected
+output.
+"""
+
+def make_parser():
+    """Make the commandline parser"""
+    parser = argparse.ArgumentParser(description=DESCRIPTION)
+    parser.add_argument("bindgen",
+                        metavar="BINDGEN",
+                        help="The path to the bindgen executable")
+    parser.add_argument("header",
+                        metavar="HEADER",
+                        help="The path to the input header")
+    parser.add_argument("rust_bindings",
+                        metavar="RUST_BINDINGS",
+                        help="The path to the generated rust output. If a file \
+                              at this path already exists, the newly generated \
+                              bindings will be checked against those extant \
+                              expected bindings.")
+    parser.add_argument("--feature",
+                        dest="features",
+                        action="append",
+                        nargs=1,
+                        help="Run tests that depend on bindgen being built with \
+                              the given feature.")
+    return parser
+
+def usage_and_exit(*args):
+    """Print the program usage and exit. If args are given, print them first"""
+    if len(args) > 0:
+        print(*args)
+    make_parser().print_help()
     sys.exit(1)
 
-[_, bindgen_path, c_path, rust_path] = sys.argv
+def parse_args():
+    """Get, parse, and validate commandline arguments."""
+    parser = make_parser()
+    args = parser.parse_args()
 
-flags = ["--no-unstable-rust"]
+    if args.features is None:
+        args.features = []
 
-with open(c_path) as f:
-    for line in f:
-        if line.startswith(BINDGEN_FLAGS_PREFIX):
-            flags.extend(line.strip().split(BINDGEN_FLAGS_PREFIX)[1].split(" "))
-            break
+    if not os.path.isfile(args.bindgen):
+        usage_and_exit("error: bindgen is not a file:", args.bindgen)
 
-base_command = [bindgen_path, "-o", rust_path]
+    if not os.path.isfile(args.header):
+        usage_and_exit("error: header is not a file:", args.header)
 
-for line in COMMON_PRELUDE.split("\n"):
-    base_command.append("--raw-line")
-    base_command.append(line)
+    return args
 
-base_command.extend(flags)
-base_command.append(c_path)
+def make_bindgen_env():
+    """Build the environment to run bindgen in."""
+    env = os.environ.copy()
 
-env = os.environ.copy()
-
-# El Capitan likes to unset dyld variables
-# https://forums.developer.apple.com/thread/9233
-if "DYLD_LIBRARY_PATH" not in env and "LIBCLANG_PATH" in env:
+    # El Capitan likes to unset dyld variables
+    # https://forums.developer.apple.com/thread/9233
+    if "DYLD_LIBRARY_PATH" not in env and "LIBCLANG_PATH" in env:
         env["DYLD_LIBRARY_PATH"] = env["LIBCLANG_PATH"]
 
-# If the rust file already exists, read it now so we can compare its contents
-# before and after.
-original_rust_contents = None
-if os.path.isfile(rust_path):
-    with open(rust_path) as f:
-        original_rust_contents = f.read()
+    return env
 
-subprocess.check_call(base_command, cwd=os.getcwd(), env=env)
+def get_bindgen_flags_and_features(header_path):
+    """
+    Return the bindgen flags and features required for this header as a tuple
+    (flags, features).
+    """
+    found_flags = False
+    found_features = False
 
-name = None
-with tempfile.NamedTemporaryFile(delete=False) as tests:
-    name = tests.name
-    subprocess.check_call(["rustc", "--test", sys.argv[3], "-o", tests.name])
-subprocess.check_call([tests.name])
+    features = []
+    flags = ["--no-unstable-rust"]
+    for line in COMMON_PRELUDE.split("\n"):
+        flags.append("--raw-line")
+        flags.append(line)
 
-if original_rust_contents is not None:
-    new_rust_contents = None
-    with open(rust_path) as f:
-        new_rust_contents = f.read()
-    if new_rust_contents != original_rust_contents:
-        print("Generated rust bindings do not match expectation!")
-        print("Expected rust bindings:")
-        print(original_rust_contents)
-        print("Actual rust bindings:")
-        print(new_rust_contents)
-        sys.exit(1)
+    with open(header_path) as f:
+        for line in f:
+            if not found_flags and line.startswith(BINDGEN_FLAGS_PREFIX):
+                flags.extend(line.strip().split(BINDGEN_FLAGS_PREFIX)[1].split(" "))
+                found_flags = True
+
+            if not found_features and line.startswith(BINDGEN_FEATURES_PREFIX):
+                features.extend(line.strip().split(BINDGEN_FEATURES_PREFIX)[1].split(" "))
+                found_features = True
+
+            if found_flags and found_features:
+                break
+
+    return (flags, features)
+
+def get_expected_bindings(rust_bindings_path):
+    """
+    Get the expected, generated rust bindings output, or None if there is no
+    expected output yet.
+    """
+    expected_bindings = None
+    if os.path.isfile(rust_bindings_path):
+        with open(rust_bindings_path) as f:
+            expected_bindings = f.read()
+    return expected_bindings
+
+def get_actual_bindings(rust_bindings_path):
+    """Get the actual generated rust bindings output."""
+    assert os.path.isfile(rust_bindings_path)
+    with open(rust_bindings_path) as f:
+        return f.read()
+
+def run_cmd(command, **kwargs):
+    """Run the given command, passing through **kwargs to subprocess.check_call"""
+    print("run-bindgen.py: running", command)
+    subprocess.check_call(command, **kwargs)
+
+def generate_bindings(bindgen, flags, header, output):
+    """Generate the rust bindings."""
+    command = [bindgen, "-o", output]
+    command.extend(flags)
+    command.append(header)
+    run_cmd(command, cwd=os.getcwd(), env=make_bindgen_env())
+
+def test_generated_bindings(bindings):
+    """Run the generated bindings's #[test]s."""
+    name = None
+    # Do not delete the temp file, because we need to end the with block before
+    # we can run the tests.
+    with tempfile.NamedTemporaryFile(delete=False) as tests:
+        name = tests.name
+        run_cmd(["rustc", "--test", bindings, "-o", name])
+    run_cmd([name])
+
+def check_actual_vs_expected(expected_bindings, rust_bindings_path):
+    """
+    Check the actual generated rust bindings versus our expected generated rust
+    bindings. If they don't match up, print a diff between them and exit with a
+    failure.
+    """
+    if expected_bindings is None:
+        return
+
+    actual_bindings = get_actual_bindings(rust_bindings_path)
+    if actual_bindings == expected_bindings:
+        return
+
+    print("error: actual generated bindings do not match expected generated bindings!")
+
+    def to_diffable(s):
+        return map(lambda l: l + "\n", s.split("\n"))
+    
+    diff = difflib.unified_diff(to_diffable(expected_bindings),
+                                to_diffable(actual_bindings),
+                                fromfile="expected_bindings.rs",
+                                tofile="actual_bindings.rs")
+    sys.stderr.writelines(diff)
+    sys.stderr.write("\n")
+
+    sys.exit(1)
+        
+def main():
+    args = parse_args()
+
+    (test_flags, test_features) = get_bindgen_flags_and_features(args.header)
+    if not all(f in args.features for f in test_features):
+        sys.exit(0)
+
+    expected_bindings = get_expected_bindings(args.rust_bindings)
+    generate_bindings(args.bindgen, test_flags, args.header, args.rust_bindings)
+    test_generated_bindings(args.rust_bindings)
+    check_actual_vs_expected(expected_bindings, args.rust_bindings)
+    sys.exit(0)
+
+if __name__ == "__main__":
+    main()
