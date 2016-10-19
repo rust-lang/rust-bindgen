@@ -10,6 +10,8 @@ pub struct Test {
     pub foo: ::std::os::raw::c_int,
     pub bar: f32,
 }
+pub const Test_T_NONE: Test__bindgen_ty_bindgen_id_6 =
+    Test__bindgen_ty_bindgen_id_6::T_NONE;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Test__bindgen_ty_bindgen_id_6 { T_NONE = 0, }

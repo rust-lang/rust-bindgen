@@ -16,6 +16,7 @@ use ir::layout::Layout;
 use ir::annotations::FieldAccessorKind;
 
 use std::ops;
+use std::borrow::Cow;
 use std::mem;
 use std::collections::BTreeSet;
 use std::collections::HashSet;
@@ -1232,6 +1233,9 @@ impl CodeGenerator for Enum {
             result.push(constant);
         }
 
+        // Used to mangle the constants we generate in the unnamed-enum case.
+        let mut parent_canonical_name = None;
+
         // A map where we keep a value -> variant relation.
         let mut seen_values = HashMap::<_, String>::new();
         let enum_ty = item.expect_type();
@@ -1264,11 +1268,21 @@ impl CodeGenerator for Enum {
                     if enum_ty.name().is_none() {
                         // NB: if we want to do this for other kind of nested
                         // enums we can probably mangle the name.
-                        if item.is_toplevel(ctx) {
-                            add_constant(enum_ty, &name, &variant_name,
-                                         &variant_name, enum_rust_ty.clone(),
-                                         result);
-                        }
+                        let mangled_name = if item.is_toplevel(ctx) {
+                            variant_name.clone()
+                        } else {
+                            if parent_canonical_name.is_none() {
+                                parent_canonical_name = Some(item.parent_id().canonical_name(ctx));
+                            }
+
+                            Cow::Owned(
+                                format!("{}_{}", parent_canonical_name.as_ref().unwrap(),
+                                                 variant_name))
+                        };
+
+                        add_constant(enum_ty, &name, &mangled_name,
+                                     &variant_name, enum_rust_ty.clone(),
+                                     result);
                     }
 
                     entry.insert(variant_name.into_owned());
