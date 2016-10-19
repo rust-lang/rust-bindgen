@@ -8,16 +8,17 @@ use super::context::BindgenContext;
 use parse::{ClangItemParser, ParseResult, ParseError};
 use clang::{self, Cursor};
 
+/// The base representation of a type in bindgen.
+///
+/// A type has an optional name, that can't be empty, a `layout` (size,
+/// alignment and packedness) if known, a `Kind`, which determines which kind of
+/// type it is, and whether the type is const.
 #[derive(Debug)]
 pub struct Type {
     /// The name of the type, or None if it was an unnamed struct or union.
     name: Option<String>,
     /// The layout of the type, if known.
     layout: Option<Layout>,
-    /// Whether this type is marked as opaque.
-    opaque: bool,
-    /// Whether this type is marked as hidden.
-    hide: bool,
     /// The inner kind of the type
     kind: TypeKind,
     /// Whether this type is const-qualified.
@@ -41,8 +42,6 @@ impl Type {
         Type {
             name: name,
             layout: layout,
-            opaque: false,
-            hide: false,
             kind: kind,
             is_const: is_const,
         }
@@ -116,134 +115,142 @@ impl Type {
         self.is_const
     }
 
-    pub fn layout(&self, type_resolver: &BindgenContext) -> Option<Layout> {
+    pub fn layout(&self, ctx: &BindgenContext) -> Option<Layout> {
         use std::mem;
 
         self.layout.or_else(|| {
             match self.kind {
                 TypeKind::Comp(ref ci)
-                    => ci.layout(type_resolver),
+                    => ci.layout(ctx),
                 // FIXME(emilio): This is a hack for anonymous union templates.
                 // Use the actual pointer size!
                 TypeKind::Pointer(..) |
                 TypeKind::BlockPointer
                     => Some(Layout::new(mem::size_of::<*mut ()>(), mem::align_of::<*mut ()>())),
                 TypeKind::ResolvedTypeRef(inner)
-                    => type_resolver.resolve_type(inner).layout(type_resolver),
+                    => ctx.resolve_type(inner).layout(ctx),
                 _ => None,
             }
         })
     }
 
-    pub fn is_opaque(&self, _type_resolver: &BindgenContext) -> bool {
-        self.opaque
-    }
-
-    pub fn can_derive_debug(&self, type_resolver: &BindgenContext) -> bool {
-        !self.is_opaque(type_resolver) && match self.kind {
+    /// Wether we can derive rust's `Debug` annotation in Rust. This should
+    /// ideally be a no-op that just returns `true`, but instead needs to be a
+    /// recursive method that checks whether all the proper members can derive
+    /// debug or not, because of the limit rust has on 32 items as max in the
+    /// array.
+    pub fn can_derive_debug(&self, ctx: &BindgenContext) -> bool {
+        match self.kind {
             TypeKind::Array(t, len) => {
                 len <= RUST_DERIVE_IN_ARRAY_LIMIT &&
-                type_resolver.resolve_type(t).can_derive_debug(type_resolver)
+                ctx.resolve_type(t).can_derive_debug(ctx)
             }
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(_, t) => {
-                type_resolver.resolve_type(t).can_derive_debug(type_resolver)
+                ctx.resolve_type(t).can_derive_debug(ctx)
             }
             TypeKind::Comp(ref info) => {
-                info.can_derive_debug(type_resolver, self.layout(type_resolver))
+                info.can_derive_debug(ctx, self.layout(ctx))
             }
             _ => true,
         }
     }
 
-    // For some reason, deriving copies of an array of a type that is not known
-    // to be copy is a compile error. e.g.:
-    //
-    // #[derive(Copy)]
-    // struct A<T> {
-    //     member: T,
-    // }
-    //
-    // is fine, while:
-    //
-    // #[derive(Copy)]
-    // struct A<T> {
-    //     member: [T; 1],
-    // }
-    //
-    // is an error.
-    //
-    // That's the point of the existence of can_derive_copy_in_array().
-    pub fn can_derive_copy_in_array(&self, type_resolver: &BindgenContext, item: &Item) -> bool {
+    /// For some reason, deriving copies of an array of a type that is not known
+    /// to be copy is a compile error. e.g.:
+    ///
+    /// ```rust
+    /// #[derive(Copy, Clone)]
+    /// struct A<T> {
+    ///     member: T,
+    /// }
+    /// ```
+    ///
+    /// is fine, while:
+    ///
+    /// ```rust,ignore
+    /// #[derive(Copy, Clone)]
+    /// struct A<T> {
+    ///     member: [T; 1],
+    /// }
+    /// ```
+    ///
+    /// is an error.
+    ///
+    /// That's the whole point of the existence of `can_derive_copy_in_array`.
+    pub fn can_derive_copy_in_array(&self, ctx: &BindgenContext, item: &Item) -> bool {
         match self.kind {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(_, t) |
             TypeKind::Array(t, _) => {
-                type_resolver.resolve_item(t)
-                             .can_derive_copy_in_array(type_resolver)
+                ctx.resolve_item(t)
+                             .can_derive_copy_in_array(ctx)
             }
             TypeKind::Named(..) => false,
-            _ => self.can_derive_copy(type_resolver, item),
+            _ => self.can_derive_copy(ctx, item),
         }
     }
 
-    pub fn can_derive_copy(&self, type_resolver: &BindgenContext, item: &Item) -> bool {
-        !self.is_opaque(type_resolver) && match self.kind {
+    /// Wether we'd be able to derive the `Copy` trait in Rust or not. Same
+    /// rationale than `can_derive_debug`.
+    pub fn can_derive_copy(&self, ctx: &BindgenContext, item: &Item) -> bool {
+        match self.kind {
             TypeKind::Array(t, len) => {
                 len <= RUST_DERIVE_IN_ARRAY_LIMIT &&
-                type_resolver.resolve_item(t).can_derive_copy_in_array(type_resolver)
+                ctx.resolve_item(t).can_derive_copy_in_array(ctx)
             }
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::TemplateRef(t, _) |
             TypeKind::Alias(_, t) => {
-                type_resolver.resolve_item(t).can_derive_copy(type_resolver)
+                ctx.resolve_item(t).can_derive_copy(ctx)
             }
             TypeKind::Comp(ref info) => {
-                info.can_derive_copy(type_resolver, item)
+                info.can_derive_copy(ctx, item)
             }
             _ => true,
         }
     }
 
-    pub fn has_vtable(&self, type_resolver: &BindgenContext) -> bool {
+    /// Whether this type has a vtable.
+    pub fn has_vtable(&self, ctx: &BindgenContext) -> bool {
         // FIXME: Can we do something about template parameters? Huh...
         match self.kind {
             TypeKind::TemplateRef(t, _) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(_, t) |
-            TypeKind::ResolvedTypeRef(t) |
-            TypeKind::Array(t, _) => {
-                type_resolver.resolve_type(t).has_vtable(type_resolver)
+            TypeKind::ResolvedTypeRef(t) => {
+                ctx.resolve_type(t).has_vtable(ctx)
             }
             TypeKind::Comp(ref info) => {
-                info.has_vtable(type_resolver)
+                info.has_vtable(ctx)
             }
             _ => false,
         }
 
     }
 
-    pub fn has_destructor(&self, type_resolver: &BindgenContext) -> bool {
-        self.is_opaque(type_resolver) || match self.kind {
+    /// Returns whether this type has a destructor.
+    pub fn has_destructor(&self, ctx: &BindgenContext) -> bool {
+        match self.kind {
             TypeKind::TemplateRef(t, _) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(_, t) |
-            TypeKind::ResolvedTypeRef(t) |
-            TypeKind::Array(t, _) => {
-                type_resolver.resolve_type(t).has_destructor(type_resolver)
+            TypeKind::ResolvedTypeRef(t) => {
+                ctx.resolve_type(t).has_destructor(ctx)
             }
             TypeKind::Comp(ref info) => {
-                info.has_destructor(type_resolver)
+                info.has_destructor(ctx)
             }
             _ => false,
         }
     }
 
+    /// See the comment in `Item::signature_contains_named_type`.
     pub fn signature_contains_named_type(&self,
-                                         type_resolver: &BindgenContext,
+                                         ctx: &BindgenContext,
                                          ty: &Type) -> bool {
         debug_assert!(ty.is_named());
         let name = match *ty.kind() {
@@ -258,30 +265,35 @@ impl Type {
             TypeKind::Array(t, _) |
             TypeKind::Pointer(t) |
             TypeKind::Alias(_, t)
-                => type_resolver.resolve_type(t)
-                                .signature_contains_named_type(type_resolver, ty),
+                => ctx.resolve_type(t)
+                                .signature_contains_named_type(ctx, ty),
             TypeKind::Function(ref sig) => {
                 sig.argument_types().iter().any(|&(_, arg)| {
-                    type_resolver.resolve_type(arg)
-                                 .signature_contains_named_type(type_resolver, ty)
+                    ctx.resolve_type(arg)
+                                 .signature_contains_named_type(ctx, ty)
                 }) ||
-                type_resolver.resolve_type(sig.return_type())
-                             .signature_contains_named_type(type_resolver, ty)
+                ctx.resolve_type(sig.return_type())
+                             .signature_contains_named_type(ctx, ty)
             },
             TypeKind::TemplateAlias(_, ref template_args) |
             TypeKind::TemplateRef(_, ref template_args) => {
                 template_args.iter().any(|arg| {
-                    type_resolver.resolve_type(*arg)
-                                 .signature_contains_named_type(type_resolver, ty)
+                    ctx.resolve_type(*arg)
+                                 .signature_contains_named_type(ctx, ty)
                 })
             }
             TypeKind::Comp(ref ci)
-                => ci.signature_contains_named_type(type_resolver, ty),
+                => ci.signature_contains_named_type(ctx, ty),
             _   => false,
         }
     }
 
-    pub fn canonical_type<'tr>(&'tr self, type_resolver: &'tr BindgenContext) -> &'tr Type {
+    /// Returns the canonical type of this type, that is, the "inner type".
+    ///
+    /// For example, for a `typedef`, the canonical type would be the
+    /// `typedef`ed type, for a template specialization, would be the template
+    /// its specializing, and so on.
+    pub fn canonical_type<'tr>(&'tr self, ctx: &'tr BindgenContext) -> &'tr Type {
         match self.kind {
             TypeKind::Named(..) |
             TypeKind::Array(..) |
@@ -300,7 +312,7 @@ impl Type {
             TypeKind::Alias(_, inner) |
             TypeKind::TemplateAlias(inner, _) |
             TypeKind::TemplateRef(inner, _)
-                => type_resolver.resolve_type(inner).canonical_type(type_resolver),
+                => ctx.resolve_type(inner).canonical_type(ctx),
 
             TypeKind::UnresolvedTypeRef(..)
                 => unreachable!("Should have been resolved after parsing!"),
@@ -308,6 +320,7 @@ impl Type {
     }
 }
 
+/// The kind of float this type represents.
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum FloatKind {
     Float,
@@ -316,9 +329,6 @@ pub enum FloatKind {
 }
 
 /// The different kinds of types that we can parse.
-///
-/// TODO: The name in the Alias and Named kinds is a bit unsound, should be in
-/// type.name?
 #[derive(Debug)]
 pub enum TypeKind {
     /// The void type.
@@ -371,19 +381,25 @@ pub enum TypeKind {
 }
 
 impl Type {
-    pub fn is_unsized(&self, type_resolver: &BindgenContext) -> bool {
+    /// Whether this type is unsized, that is, has no members. This is used to
+    /// derive whether we should generate a dummy `_address` field for structs,
+    /// to comply to the C and C++ layouts, that specify that every type needs
+    /// to be addressable.
+    pub fn is_unsized(&self, ctx: &BindgenContext) -> bool {
+        debug_assert!(ctx.in_codegen_phase(), "Not yet");
+
         match self.kind {
             TypeKind::Void => true,
-            TypeKind::Comp(ref ci) => ci.is_unsized(type_resolver),
+            TypeKind::Comp(ref ci) => ci.is_unsized(ctx),
             TypeKind::Array(inner, size) => {
                 size == 0 ||
-                type_resolver.resolve_type(inner).is_unsized(type_resolver)
+                ctx.resolve_type(inner).is_unsized(ctx)
             }
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(_, inner) |
             TypeKind::TemplateAlias(inner, _) |
             TypeKind::TemplateRef(inner, _)
-                => type_resolver.resolve_type(inner).is_unsized(type_resolver),
+                => ctx.resolve_type(inner).is_unsized(ctx),
             TypeKind::Named(..) |
             TypeKind::Int(..) |
             TypeKind::Float(..) |
@@ -399,6 +415,11 @@ impl Type {
         }
     }
 
+    /// This is another of the nasty methods. This one is the one that takes
+    /// care of the core logic of converting a clang type to a `Type`.
+    ///
+    /// It's sort of nasty and full of special-casing, but hopefully the
+    /// comments in every special case justify why they're there.
     pub fn from_clang_ty(potential_id: ItemId,
                          ty: &clang::Type,
                          location: Option<Cursor>,
