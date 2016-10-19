@@ -10,9 +10,9 @@ use clang::{self, Cursor};
 
 /// The base representation of a type in bindgen.
 ///
-/// A type has an optional name, that can't be empty, a `layout` (size,
-/// alignment and packedness) if known, a `Kind`, which determines which kind of
-/// type it is, and whether the type is const.
+/// A type has an optional name, which if present cannot be empty, a `layout`
+/// (size, alignment and packedness) if known, a `Kind`, which determines which
+/// kind of type it is, and whether the type is const.
 #[derive(Debug)]
 pub struct Type {
     /// The name of the type, or None if it was an unnamed struct or union.
