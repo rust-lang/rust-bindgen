@@ -631,6 +631,13 @@ impl Type {
                                 .expect("Not able to resolve array element?");
                 TypeKind::Array(inner, ty.num_elements())
             }
+            // A complex number is always a real and an imaginary part, so
+            // represent that as a two-item array.
+            CXType_Complex => {
+                let inner = Item::from_ty(&ty.elem_type(), location, parent_id, ctx)
+                                .expect("Not able to resolve array element?");
+                TypeKind::Array(inner, 2)
+            }
             #[cfg(not(feature="llvm_stable"))]
             CXType_Elaborated => {
                 return Self::from_clang_ty(potential_id, &ty.named(),
