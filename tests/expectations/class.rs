@@ -72,3 +72,52 @@ fn bindgen_test_layout_WithUnion() {
 impl Clone for WithUnion {
     fn clone(&self) -> Self { *self }
 }
+#[repr(C)]
+#[derive(Debug, Copy)]
+pub struct RealAbstractionWithTonsOfMethods {
+    pub _address: u8,
+}
+#[test]
+fn bindgen_test_layout_RealAbstractionWithTonsOfMethods() {
+    assert_eq!(::std::mem::size_of::<RealAbstractionWithTonsOfMethods>() ,
+               1usize);
+    assert_eq!(::std::mem::align_of::<RealAbstractionWithTonsOfMethods>() ,
+               1usize);
+}
+extern "C" {
+    #[link_name = "_ZNK32RealAbstractionWithTonsOfMethods3barEv"]
+    pub fn RealAbstractionWithTonsOfMethods_bar(this:
+                                                    *const RealAbstractionWithTonsOfMethods);
+}
+extern "C" {
+    #[link_name = "_ZN32RealAbstractionWithTonsOfMethods3barEv"]
+    pub fn RealAbstractionWithTonsOfMethods_bar1(this:
+                                                     *mut RealAbstractionWithTonsOfMethods);
+}
+extern "C" {
+    #[link_name = "_ZN32RealAbstractionWithTonsOfMethods3barEi"]
+    pub fn RealAbstractionWithTonsOfMethods_bar2(this:
+                                                     *mut RealAbstractionWithTonsOfMethods,
+                                                 foo: ::std::os::raw::c_int);
+}
+extern "C" {
+    #[link_name = "_ZN32RealAbstractionWithTonsOfMethods3staEv"]
+    pub fn RealAbstractionWithTonsOfMethods_sta();
+}
+impl Clone for RealAbstractionWithTonsOfMethods {
+    fn clone(&self) -> Self { *self }
+}
+impl RealAbstractionWithTonsOfMethods {
+    #[inline]
+    pub unsafe fn bar(&self) { RealAbstractionWithTonsOfMethods_bar(&*self) }
+    #[inline]
+    pub unsafe fn bar1(&mut self) {
+        RealAbstractionWithTonsOfMethods_bar1(&mut *self)
+    }
+    #[inline]
+    pub unsafe fn bar2(&mut self, foo: ::std::os::raw::c_int) {
+        RealAbstractionWithTonsOfMethods_bar2(&mut *self, foo)
+    }
+    #[inline]
+    pub unsafe fn sta() { RealAbstractionWithTonsOfMethods_sta() }
+}

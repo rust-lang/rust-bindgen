@@ -7,5 +7,6 @@
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct C<T> {
-    pub foo: *mut T,
+    pub foo: *const T,
+    pub bar: *mut T,
 }

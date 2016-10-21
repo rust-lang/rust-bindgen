@@ -18,3 +18,12 @@ union Union {
 class WithUnion {
     Union data;
 };
+
+class RealAbstractionWithTonsOfMethods {
+  void foo();
+public:
+  void bar() const;
+  void bar();
+  void bar(int foo);
+  static void sta();
+};

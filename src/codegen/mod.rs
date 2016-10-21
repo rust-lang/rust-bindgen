@@ -1444,7 +1444,8 @@ impl ToRustTy for Type {
                 if inner_ty.canonical_type(ctx).is_function() {
                     ty
                 } else {
-                    ty.to_ptr(inner.expect_type().is_const(), ctx.span())
+                    let is_const = self.is_const() || inner.expect_type().is_const();
+                    ty.to_ptr(is_const, ctx.span())
                 }
             }
             TypeKind::Named(..) => {

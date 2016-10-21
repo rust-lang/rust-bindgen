@@ -547,8 +547,8 @@ impl CompInfo {
 
                     let default_type =
                         Item::from_ty(&cur.cur_type(), Some(*cur), Some(potential_id), ctx).ok();
-
-                    let param = Item::named_type(cur.spelling(), default_type, potential_id, ctx);
+                    let param = Item::named_type(cur.spelling(), default_type,
+                                                 potential_id, ctx);
                     ci.template_args.push(param);
                 }
                 CXCursor_CXXBaseSpecifier => {
