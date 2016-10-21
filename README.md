@@ -76,12 +76,6 @@ $ LIBCLANG_PATH=path/to/clang-3.9/build/lib \
     cargo build
 ```
 
-## Running Tests
-
-```
-$ make test
-```
-
 # Command Line Usage
 
 There are a few options documented when running `./bindgen --help`. Other
