@@ -471,7 +471,8 @@ impl Type {
                          parent_id: Option<ItemId>,
                          ctx: &mut BindgenContext) -> Result<ParseResult<Self>, ParseError> {
         use clangll::*;
-        if let Some(ty) = ctx.builtin_or_resolved_ty(parent_id, ty, location) {
+        if let Some(ty) = ctx.builtin_or_resolved_ty(potential_id, parent_id,
+                                                     ty, location) {
             debug!("{:?} already resolved: {:?}", ty, location);
             return Ok(ParseResult::AlreadyResolved(ty));
         }

@@ -717,7 +717,9 @@ impl ClangItemParser for Item {
                         .expect("Unable to resolve type");
         }
 
-        if let Some(ty) = context.builtin_or_resolved_ty(parent_id, &ty, location) {
+        if let Some(ty) = context.builtin_or_resolved_ty(potential_id,
+                                                         parent_id, &ty,
+                                                         location) {
             debug!("{:?} already resolved: {:?}", ty, location);
             return ty;
         }
@@ -779,7 +781,8 @@ impl ClangItemParser for Item {
             context.replace(replaced, id);
         }
 
-        if let Some(ty) = context.builtin_or_resolved_ty(parent_id, ty, location) {
+        if let Some(ty) = context.builtin_or_resolved_ty(id, parent_id,
+                                                         ty, location) {
             return Ok(ty);
         }
 
