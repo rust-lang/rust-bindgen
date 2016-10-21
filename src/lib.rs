@@ -57,11 +57,6 @@ impl Builder {
         self.clang_arg(header)
     }
 
-    pub fn match_pat<T: Into<String>>(mut self, arg: T) -> Builder {
-        self.options.match_pat.insert(arg.into());
-        self
-    }
-
     pub fn hide_type<T: Into<String>>(mut self, arg: T) -> Builder {
         self.options.hidden_types.insert(arg.into());
         self
@@ -159,7 +154,6 @@ impl Builder {
 /// Deprecated - use a `Builder` instead
 #[derive(Debug)]
 pub struct BindgenOptions {
-    pub match_pat: HashSet<String>,
     pub hidden_types: HashSet<String>,
     pub opaque_types: HashSet<String>,
     pub whitelisted_types: RegexSet,
@@ -194,7 +188,6 @@ pub struct BindgenOptions {
 impl Default for BindgenOptions {
     fn default() -> BindgenOptions {
         BindgenOptions {
-            match_pat: Default::default(),
             hidden_types: Default::default(),
             opaque_types: Default::default(),
             whitelisted_types: Default::default(),
