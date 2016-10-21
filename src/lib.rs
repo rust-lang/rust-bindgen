@@ -107,11 +107,6 @@ impl Builder {
         self
     }
 
-    pub fn dtor_attr<T: Into<String>>(mut self, attr: T) -> Builder {
-        self.options.dtor_attrs.push(attr.into());
-        self
-    }
-
     pub fn forbid_unknown_types(mut self) -> Builder {
         self.options.fail_on_unknown_type = true;
         self
@@ -180,8 +175,6 @@ pub struct BindgenOptions {
     pub msvc_mangling: bool,
     pub override_enum_ty: String,
     pub raw_lines: Vec<String>,
-    /// Attributes for a type with destructor
-    pub dtor_attrs: Vec<String>,
     pub clang_args: Vec<String>,
 }
 
@@ -210,7 +203,6 @@ impl Default for BindgenOptions {
             namespaced_constants: true,
             msvc_mangling: false,
             raw_lines: vec![],
-            dtor_attrs: vec![],
             clang_args: vec![],
         }
     }
