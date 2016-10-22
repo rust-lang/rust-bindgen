@@ -566,11 +566,17 @@ impl Type {
                                 return Err(ParseError::Continue);
                             }
 
-                            if args.is_empty() {
-                                error!("Failed to get any template parameter, maybe a specialization? {:?}", location);
-                                return Err(ParseError::Continue);
-                            }
-
+                            // NB: `args` may be empty here (if for example the
+                            // template parameters are constants).
+                            //
+                            // We can't reject it here then because inner points
+                            // to `potential_id` now, so either we remove
+                            // `inner` and return an error, or carry on.
+                            //
+                            // In this case, we just carry on, since it seems
+                            // easier if than removing every possible reference
+                            // to `item` from `ctx`, and it doesn't give any
+                            // problems that we didn't have anyway.
                             TypeKind::TemplateAlias(inner.unwrap(), args)
                         }
                         CXCursor_TemplateRef => {

@@ -4,6 +4,7 @@
 #![allow(non_snake_case)]
 
 
+pub type __void_t = ::std::os::raw::c_void;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct __iterator_traits<_Iterator> {
