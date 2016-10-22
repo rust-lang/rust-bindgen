@@ -94,8 +94,8 @@ pub enum JSWhyMagic {
 #[derive(Debug, Copy)]
 pub struct jsval_layout {
     pub asBits: __BindgenUnionField<u64>,
-    pub debugView: __BindgenUnionField<jsval_layout__bindgen_ty_bindgen_id_90>,
-    pub s: __BindgenUnionField<jsval_layout__bindgen_ty_bindgen_id_97>,
+    pub debugView: __BindgenUnionField<jsval_layout__bindgen_ty_1>,
+    pub s: __BindgenUnionField<jsval_layout__bindgen_ty_2>,
     pub asDouble: __BindgenUnionField<f64>,
     pub asPtr: __BindgenUnionField<*mut ::std::os::raw::c_void>,
     pub asWord: __BindgenUnionField<usize>,
@@ -104,20 +104,18 @@ pub struct jsval_layout {
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct jsval_layout__bindgen_ty_bindgen_id_90 {
+pub struct jsval_layout__bindgen_ty_1 {
     pub _bitfield_1: u64,
 }
 #[test]
-fn bindgen_test_layout_jsval_layout__bindgen_ty_bindgen_id_90() {
-    assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_bindgen_id_90>()
-               , 8usize);
-    assert_eq!(::std::mem::align_of::<jsval_layout__bindgen_ty_bindgen_id_90>()
-               , 8usize);
+fn bindgen_test_layout_jsval_layout__bindgen_ty_1() {
+    assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_1>() , 8usize);
+    assert_eq!(::std::mem::align_of::<jsval_layout__bindgen_ty_1>() , 8usize);
 }
-impl Clone for jsval_layout__bindgen_ty_bindgen_id_90 {
+impl Clone for jsval_layout__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
-impl jsval_layout__bindgen_ty_bindgen_id_90 {
+impl jsval_layout__bindgen_ty_1 {
     #[inline]
     pub fn payload47(&self) -> u64 {
         unsafe {
@@ -150,36 +148,33 @@ impl jsval_layout__bindgen_ty_bindgen_id_90 {
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct jsval_layout__bindgen_ty_bindgen_id_97 {
-    pub payload: jsval_layout__bindgen_ty_bindgen_id_97__bindgen_ty_bindgen_id_98,
+pub struct jsval_layout__bindgen_ty_2 {
+    pub payload: jsval_layout__bindgen_ty_2_1,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct jsval_layout__bindgen_ty_bindgen_id_97__bindgen_ty_bindgen_id_98 {
+pub struct jsval_layout__bindgen_ty_2_1 {
     pub i32: __BindgenUnionField<i32>,
     pub u32: __BindgenUnionField<u32>,
     pub why: __BindgenUnionField<JSWhyMagic>,
     pub bindgen_union_field: u32,
 }
 #[test]
-fn bindgen_test_layout_jsval_layout__bindgen_ty_bindgen_id_97__bindgen_ty_bindgen_id_98() {
-    assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_bindgen_id_97__bindgen_ty_bindgen_id_98>()
-               , 4usize);
-    assert_eq!(::std::mem::align_of::<jsval_layout__bindgen_ty_bindgen_id_97__bindgen_ty_bindgen_id_98>()
-               , 4usize);
+fn bindgen_test_layout_jsval_layout__bindgen_ty_2_1() {
+    assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_2_1>() ,
+               4usize);
+    assert_eq!(::std::mem::align_of::<jsval_layout__bindgen_ty_2_1>() ,
+               4usize);
 }
-impl Clone for
- jsval_layout__bindgen_ty_bindgen_id_97__bindgen_ty_bindgen_id_98 {
+impl Clone for jsval_layout__bindgen_ty_2_1 {
     fn clone(&self) -> Self { *self }
 }
 #[test]
-fn bindgen_test_layout_jsval_layout__bindgen_ty_bindgen_id_97() {
-    assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_bindgen_id_97>()
-               , 4usize);
-    assert_eq!(::std::mem::align_of::<jsval_layout__bindgen_ty_bindgen_id_97>()
-               , 4usize);
+fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
+    assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_2>() , 4usize);
+    assert_eq!(::std::mem::align_of::<jsval_layout__bindgen_ty_2>() , 4usize);
 }
-impl Clone for jsval_layout__bindgen_ty_bindgen_id_97 {
+impl Clone for jsval_layout__bindgen_ty_2 {
     fn clone(&self) -> Self { *self }
 }
 impl Clone for jsval_layout {

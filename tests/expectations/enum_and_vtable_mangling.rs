@@ -4,19 +4,18 @@
 #![allow(non_snake_case)]
 
 
-pub const match_: _bindgen_ty_bindgen_id_1 = _bindgen_ty_bindgen_id_1::match_;
-pub const whatever_else: _bindgen_ty_bindgen_id_1 =
-    _bindgen_ty_bindgen_id_1::whatever_else;
+pub const match_: _bindgen_ty_1 = _bindgen_ty_1::match_;
+pub const whatever_else: _bindgen_ty_1 = _bindgen_ty_1::whatever_else;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_bindgen_id_1 { match_ = 0, whatever_else = 1, }
+pub enum _bindgen_ty_1 { match_ = 0, whatever_else = 1, }
 #[repr(C)]
-pub struct bindgen_vtable__bindgen_id_4 {
+pub struct C__bindgen_vtable {
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct C {
-    pub vtable_: *const bindgen_vtable__bindgen_id_4,
+    pub vtable_: *const C__bindgen_vtable,
     pub i: ::std::os::raw::c_int,
 }
 #[test]

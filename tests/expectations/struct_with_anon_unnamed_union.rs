@@ -27,23 +27,21 @@ impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct foo {
-    pub __bindgen_anon_1: foo__bindgen_ty_bindgen_id_2,
+    pub __bindgen_anon_1: foo__bindgen_ty_1,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct foo__bindgen_ty_bindgen_id_2 {
+pub struct foo__bindgen_ty_1 {
     pub a: __BindgenUnionField<::std::os::raw::c_uint>,
     pub b: __BindgenUnionField<::std::os::raw::c_ushort>,
     pub bindgen_union_field: u32,
 }
 #[test]
-fn bindgen_test_layout_foo__bindgen_ty_bindgen_id_2() {
-    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_bindgen_id_2>() ,
-               4usize);
-    assert_eq!(::std::mem::align_of::<foo__bindgen_ty_bindgen_id_2>() ,
-               4usize);
+fn bindgen_test_layout_foo__bindgen_ty_1() {
+    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_1>() , 4usize);
+    assert_eq!(::std::mem::align_of::<foo__bindgen_ty_1>() , 4usize);
 }
-impl Clone for foo__bindgen_ty_bindgen_id_2 {
+impl Clone for foo__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[test]

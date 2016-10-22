@@ -445,8 +445,8 @@ impl<'a> CodeGenerator for Vtable<'a> {
 }
 
 impl<'a> ItemCanonicalName for Vtable<'a> {
-    fn canonical_name(&self, _ctx: &BindgenContext) -> String {
-        format!("bindgen_vtable_{}", self.item_id)
+    fn canonical_name(&self, ctx: &BindgenContext) -> String {
+        format!("{}__bindgen_vtable", self.item_id.canonical_name(ctx))
     }
 }
 

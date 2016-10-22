@@ -28,58 +28,52 @@ impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
 #[derive(Debug, Copy)]
 pub struct foo {
     pub a: ::std::os::raw::c_uint,
-    pub __bindgen_anon_1: foo__bindgen_ty_bindgen_id_4,
+    pub __bindgen_anon_1: foo__bindgen_ty_1,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct foo__bindgen_ty_bindgen_id_4 {
+pub struct foo__bindgen_ty_1 {
     pub b: __BindgenUnionField<::std::os::raw::c_uint>,
-    pub __bindgen_anon_1: __BindgenUnionField<foo__bindgen_ty_bindgen_id_4__bindgen_ty_bindgen_id_7>,
-    pub __bindgen_anon_2: __BindgenUnionField<foo__bindgen_ty_bindgen_id_4__bindgen_ty_bindgen_id_12>,
+    pub __bindgen_anon_1: __BindgenUnionField<foo__bindgen_ty_1_1>,
+    pub __bindgen_anon_2: __BindgenUnionField<foo__bindgen_ty_1_2>,
     pub bindgen_union_field: u32,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct foo__bindgen_ty_bindgen_id_4__bindgen_ty_bindgen_id_7 {
+pub struct foo__bindgen_ty_1_1 {
     pub c1: ::std::os::raw::c_ushort,
     pub c2: ::std::os::raw::c_ushort,
 }
 #[test]
-fn bindgen_test_layout_foo__bindgen_ty_bindgen_id_4__bindgen_ty_bindgen_id_7() {
-    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_bindgen_id_4__bindgen_ty_bindgen_id_7>()
-               , 4usize);
-    assert_eq!(::std::mem::align_of::<foo__bindgen_ty_bindgen_id_4__bindgen_ty_bindgen_id_7>()
-               , 2usize);
+fn bindgen_test_layout_foo__bindgen_ty_1_1() {
+    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_1_1>() , 4usize);
+    assert_eq!(::std::mem::align_of::<foo__bindgen_ty_1_1>() , 2usize);
 }
-impl Clone for foo__bindgen_ty_bindgen_id_4__bindgen_ty_bindgen_id_7 {
+impl Clone for foo__bindgen_ty_1_1 {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct foo__bindgen_ty_bindgen_id_4__bindgen_ty_bindgen_id_12 {
+pub struct foo__bindgen_ty_1_2 {
     pub d1: ::std::os::raw::c_uchar,
     pub d2: ::std::os::raw::c_uchar,
     pub d3: ::std::os::raw::c_uchar,
     pub d4: ::std::os::raw::c_uchar,
 }
 #[test]
-fn bindgen_test_layout_foo__bindgen_ty_bindgen_id_4__bindgen_ty_bindgen_id_12() {
-    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_bindgen_id_4__bindgen_ty_bindgen_id_12>()
-               , 4usize);
-    assert_eq!(::std::mem::align_of::<foo__bindgen_ty_bindgen_id_4__bindgen_ty_bindgen_id_12>()
-               , 1usize);
+fn bindgen_test_layout_foo__bindgen_ty_1_2() {
+    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_1_2>() , 4usize);
+    assert_eq!(::std::mem::align_of::<foo__bindgen_ty_1_2>() , 1usize);
 }
-impl Clone for foo__bindgen_ty_bindgen_id_4__bindgen_ty_bindgen_id_12 {
+impl Clone for foo__bindgen_ty_1_2 {
     fn clone(&self) -> Self { *self }
 }
 #[test]
-fn bindgen_test_layout_foo__bindgen_ty_bindgen_id_4() {
-    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_bindgen_id_4>() ,
-               4usize);
-    assert_eq!(::std::mem::align_of::<foo__bindgen_ty_bindgen_id_4>() ,
-               4usize);
+fn bindgen_test_layout_foo__bindgen_ty_1() {
+    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_1>() , 4usize);
+    assert_eq!(::std::mem::align_of::<foo__bindgen_ty_1>() , 4usize);
 }
-impl Clone for foo__bindgen_ty_bindgen_id_4 {
+impl Clone for foo__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[test]
