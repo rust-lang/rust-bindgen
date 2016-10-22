@@ -57,11 +57,6 @@ impl Builder {
         self.clang_arg(header)
     }
 
-    pub fn match_pat<T: Into<String>>(mut self, arg: T) -> Builder {
-        self.options.match_pat.insert(arg.into());
-        self
-    }
-
     pub fn hide_type<T: Into<String>>(mut self, arg: T) -> Builder {
         self.options.hidden_types.insert(arg.into());
         self
@@ -112,11 +107,6 @@ impl Builder {
         self
     }
 
-    pub fn dtor_attr<T: Into<String>>(mut self, attr: T) -> Builder {
-        self.options.dtor_attrs.push(attr.into());
-        self
-    }
-
     pub fn forbid_unknown_types(mut self) -> Builder {
         self.options.fail_on_unknown_type = true;
         self
@@ -159,7 +149,6 @@ impl Builder {
 /// Deprecated - use a `Builder` instead
 #[derive(Debug)]
 pub struct BindgenOptions {
-    pub match_pat: HashSet<String>,
     pub hidden_types: HashSet<String>,
     pub opaque_types: HashSet<String>,
     pub whitelisted_types: RegexSet,
@@ -186,15 +175,12 @@ pub struct BindgenOptions {
     pub msvc_mangling: bool,
     pub override_enum_ty: String,
     pub raw_lines: Vec<String>,
-    /// Attributes for a type with destructor
-    pub dtor_attrs: Vec<String>,
     pub clang_args: Vec<String>,
 }
 
 impl Default for BindgenOptions {
     fn default() -> BindgenOptions {
         BindgenOptions {
-            match_pat: Default::default(),
             hidden_types: Default::default(),
             opaque_types: Default::default(),
             whitelisted_types: Default::default(),
@@ -217,7 +203,6 @@ impl Default for BindgenOptions {
             namespaced_constants: true,
             msvc_mangling: false,
             raw_lines: vec![],
-            dtor_attrs: vec![],
             clang_args: vec![],
         }
     }
