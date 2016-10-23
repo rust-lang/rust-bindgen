@@ -18,12 +18,12 @@ impl Clone for Derived {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-pub struct bindgen_vtable__bindgen_id_2 {
+pub struct Base__bindgen_vtable {
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct Base {
-    pub vtable_: *const bindgen_vtable__bindgen_id_2,
+    pub vtable_: *const Base__bindgen_vtable,
 }
 #[test]
 fn bindgen_test_layout_Base() {

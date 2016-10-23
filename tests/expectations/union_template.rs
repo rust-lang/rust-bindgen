@@ -28,13 +28,13 @@ impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
 #[derive(Debug, Copy, Clone)]
 pub struct NastyStruct<T> {
     pub mIsSome: bool,
-    pub mStorage: NastyStruct__bindgen_ty_bindgen_id_6<T>,
-    pub __bindgen_anon_1: NastyStruct__bindgen_ty_bindgen_id_12<T>,
+    pub mStorage: NastyStruct__bindgen_ty_1<T>,
+    pub __bindgen_anon_1: NastyStruct__bindgen_ty_2<T>,
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct NastyStruct__bindgen_ty_bindgen_id_6<T> {
+pub struct NastyStruct__bindgen_ty_1<T> {
     pub mFoo: __BindgenUnionField<*mut ::std::os::raw::c_void>,
     pub mDummy: __BindgenUnionField<::std::os::raw::c_ulong>,
     pub bindgen_union_field: u64,
@@ -42,7 +42,7 @@ pub struct NastyStruct__bindgen_ty_bindgen_id_6<T> {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct NastyStruct__bindgen_ty_bindgen_id_12<T> {
+pub struct NastyStruct__bindgen_ty_2<T> {
     pub wat: __BindgenUnionField<::std::os::raw::c_short>,
     pub wut: __BindgenUnionField<*mut ::std::os::raw::c_int>,
     pub bindgen_union_field: u64,

@@ -4,23 +4,20 @@
 #![allow(non_snake_case)]
 
 
-pub const FOO_BAR: _bindgen_ty_bindgen_id_1 =
-    _bindgen_ty_bindgen_id_1::FOO_BAR;
-pub const FOO_BAZ: _bindgen_ty_bindgen_id_1 =
-    _bindgen_ty_bindgen_id_1::FOO_BAZ;
+pub const FOO_BAR: _bindgen_ty_1 = _bindgen_ty_1::FOO_BAR;
+pub const FOO_BAZ: _bindgen_ty_1 = _bindgen_ty_1::FOO_BAZ;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_bindgen_id_1 { FOO_BAR = 0, FOO_BAZ = 1, }
+pub enum _bindgen_ty_1 { FOO_BAR = 0, FOO_BAZ = 1, }
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct Foo {
     pub _address: u8,
 }
-pub const Foo_FOO_BAR: Foo__bindgen_ty_bindgen_id_5 =
-    Foo__bindgen_ty_bindgen_id_5::FOO_BAR;
+pub const Foo_FOO_BAR: Foo__bindgen_ty_1 = Foo__bindgen_ty_1::FOO_BAR;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum Foo__bindgen_ty_bindgen_id_5 { FOO_BAR = 10, }
+pub enum Foo__bindgen_ty_1 { FOO_BAR = 10, }
 #[test]
 fn bindgen_test_layout_Foo() {
     assert_eq!(::std::mem::size_of::<Foo>() , 1usize);

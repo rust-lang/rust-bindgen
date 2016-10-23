@@ -28,7 +28,7 @@ impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
 #[derive(Debug, Copy, Clone)]
 pub struct TErrorResult<T> {
     pub mResult: ::std::os::raw::c_int,
-    pub __bindgen_anon_1: TErrorResult__bindgen_ty_bindgen_id_10<T>,
+    pub __bindgen_anon_1: TErrorResult__bindgen_ty_1<T>,
     pub mMightHaveUnreported: bool,
     pub mUnionState: TErrorResult_UnionState,
     pub _phantom_0: ::std::marker::PhantomData<T>,
@@ -52,7 +52,7 @@ pub struct TErrorResult_DOMExceptionInfo<T> {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct TErrorResult__bindgen_ty_bindgen_id_10<T> {
+pub struct TErrorResult__bindgen_ty_1<T> {
     pub mMessage: __BindgenUnionField<*mut TErrorResult_Message<T>>,
     pub mDOMExceptionInfo: __BindgenUnionField<*mut TErrorResult_DOMExceptionInfo<T>>,
     pub bindgen_union_field: u64,

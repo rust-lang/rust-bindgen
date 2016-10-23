@@ -5,12 +5,12 @@
 
 
 #[repr(C)]
-pub struct bindgen_vtable__bindgen_id_1 {
+pub struct C__bindgen_vtable {
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct C {
-    pub vtable_: *const bindgen_vtable__bindgen_id_1,
+    pub vtable_: *const C__bindgen_vtable,
 }
 #[test]
 fn bindgen_test_layout_C() {

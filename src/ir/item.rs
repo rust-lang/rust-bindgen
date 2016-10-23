@@ -1,10 +1,11 @@
+use regex::Regex;
 use super::context::BindgenContext;
 use super::item_kind::ItemKind;
 use super::ty::{Type, TypeKind};
 use super::function::Function;
 use super::module::Module;
 use super::annotations::Annotations;
-use std::fmt;
+use std::cell::Cell;
 use std::sync::atomic::{AtomicUsize, ATOMIC_USIZE_INIT, Ordering};
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use clang;
@@ -45,13 +46,6 @@ pub trait ItemCanonicalPath {
 /// TODO: Build stronger abstractions on top of this, like TypeId(ItemId)?
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ItemId(usize);
-
-impl fmt::Display for ItemId {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        try!(write!(fmt, "_bindgen_id_"));
-        self.0.fmt(fmt)
-    }
-}
 
 pub static NEXT_ITEM_ID: AtomicUsize = ATOMIC_USIZE_INIT;
 
@@ -96,6 +90,11 @@ impl ItemCanonicalPath for ItemId {
 pub struct Item {
     /// This item's id.
     id: ItemId,
+    /// The item's local id, unique only amongst its siblings.  Only used
+    /// for anonymous items.  Lazily initialized in local_id().
+    local_id: Cell<Option<usize>>,
+    /// The next local id to use for a child.
+    next_child_local_id: Cell<usize>,
     /// A doc comment over the item, if any.
     comment: Option<String>,
     /// Annotations extracted from the doc comment, or the default ones
@@ -120,6 +119,8 @@ impl Item {
         debug_assert!(id != parent_id || kind.is_module());
         Item {
             id: id,
+            local_id: Cell::new(None),
+            next_child_local_id: Cell::new(1),
             parent_id: parent_id,
             comment: comment,
             annotations: annotations.unwrap_or_default(),
@@ -145,6 +146,16 @@ impl Item {
 
     pub fn kind_mut(&mut self) -> &mut ItemKind {
         &mut self.kind
+    }
+
+    pub fn local_id(&self, ctx: &BindgenContext) -> usize {
+        if self.local_id.get().is_none() {
+            let parent = ctx.resolve_item(self.parent_id);
+            let local_id = parent.next_child_local_id.get();
+            parent.next_child_local_id.set(local_id + 1);
+            self.local_id.set(Some(local_id));
+        }
+        self.local_id.get().unwrap()
     }
 
     /// Returns whether this item is a top-level item, from the point of view of
@@ -435,7 +446,6 @@ impl Item {
                         ty.name()
                     }
                 }.map(ToOwned::to_owned)
-                 .unwrap_or_else(|| format!("_bindgen_ty{}", self.id()))
             }
             ItemKind::Function(ref fun) => {
                 let mut base = fun.name().to_owned();
@@ -464,30 +474,68 @@ impl Item {
                         }
                     }
                 }
-                base
+                Some(base)
             }
             ItemKind::Var(ref var) => {
-                var.name().to_owned()
+                Some(var.name().to_owned())
             }
             ItemKind::Module(ref module) => {
                 module.name().map(ToOwned::to_owned)
-                    .unwrap_or_else(|| format!("_bindgen_mod{}", self.id()))
             }
         };
 
         let parent = ctx.resolve_item(self.parent_id());
         let parent_is_namespace = parent.is_module();
+
         if self.is_toplevel(ctx) || (parent_is_namespace && count_namespaces) {
+            let base_name = self.make_exposed_name(None, base_name, ctx);
             return ctx.rust_mangle(&base_name).into_owned();
         }
 
         // TODO: allow modification of the mangling functions, maybe even per
         // item type?
-        let parent = parent.canonical_name(ctx);
-        if parent.is_empty() {
-            base_name.to_owned()
-        } else {
-            format!("{}_{}", parent, base_name)
+        let parent_name = parent.canonical_name(ctx);
+        self.make_exposed_name(Some(parent_name), base_name, ctx)
+    }
+
+    fn exposed_id(&self, ctx: &BindgenContext) -> String {
+        // Only use local ids for enums, classes, structs and union types.  All
+        // other items use their global id.
+        let ty_kind = self.kind().as_type().map(|t| t.kind());
+        if let Some(ty_kind) = ty_kind {
+            match *ty_kind {
+                TypeKind::Comp(..) |
+                TypeKind::Enum(..) => return self.local_id(ctx).to_string(),
+                _ => {}
+            }
+        }
+        format!("id_{}", self.id().0)
+    }
+
+    fn make_exposed_name(&self,
+                         parent_name: Option<String>,
+                         base_name: Option<String>,
+                         ctx: &BindgenContext) -> String {
+        lazy_static! {
+            static ref RE_ENDS_WITH_BINDGEN_TY: Regex = Regex::new(r"_bindgen_ty(_\d+)+$").unwrap();
+            static ref RE_ENDS_WITH_BINDGEN_MOD: Regex = Regex::new(r"_bindgen_mod(_\d+)+$").unwrap();
+        }
+        let (re, kind) = match *self.kind() {
+            ItemKind::Module(..) => (&*RE_ENDS_WITH_BINDGEN_MOD, "mod"),
+            _ => (&*RE_ENDS_WITH_BINDGEN_TY, "ty"),
+        };
+        let parent_name = parent_name.and_then(|n| if n.is_empty() { None } else { Some(n) });
+        match (parent_name, base_name) {
+            (Some(parent), Some(base)) => format!("{}_{}", parent, base),
+            (Some(parent), None) => {
+                if re.is_match(parent.as_str()) {
+                    format!("{}_{}", parent, self.exposed_id(ctx))
+                } else {
+                    format!("{}__bindgen_{}_{}", parent, kind, self.exposed_id(ctx))
+                }
+            }
+            (None, Some(base)) => base,
+            (None, None) => format!("_bindgen_{}_{}", kind, self.exposed_id(ctx)),
         }
     }
 
