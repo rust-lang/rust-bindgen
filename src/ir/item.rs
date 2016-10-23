@@ -97,11 +97,16 @@ impl ItemCanonicalPath for ItemId {
 pub struct Item {
     /// This item's id.
     id: ItemId,
+
     /// The item's local id, unique only amongst its siblings.  Only used for
     /// anonymous items.
     ///
     /// Lazily initialized in local_id().
+    ///
+    /// Note that only structs, unions, and enums get a local type id. In any
+    /// case this is an implementation detail.
     local_id: Cell<Option<usize>>,
+
     /// The next local id to use for a child..
     next_child_local_id: Cell<usize>,
 
@@ -546,6 +551,10 @@ impl Item {
                 _ => {}
             }
         }
+
+        // Note that this `id_` prefix prevents (really unlikely) collisions
+        // between the global id and the local id of an item with the same
+        // parent.
         format!("id_{}", self.id().0)
     }
 
