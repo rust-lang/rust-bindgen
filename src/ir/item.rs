@@ -7,7 +7,7 @@ use super::ty::{Type, TypeKind};
 use super::function::Function;
 use super::module::Module;
 use super::annotations::Annotations;
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::sync::atomic::{AtomicUsize, ATOMIC_USIZE_INIT, Ordering};
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use clang;
@@ -97,11 +97,20 @@ impl ItemCanonicalPath for ItemId {
 pub struct Item {
     /// This item's id.
     id: ItemId,
-    /// The item's local id, unique only amongst its siblings.  Only used
-    /// for anonymous items.  Lazily initialized in local_id().
+    /// The item's local id, unique only amongst its siblings.  Only used for
+    /// anonymous items.
+    ///
+    /// Lazily initialized in local_id().
     local_id: Cell<Option<usize>>,
-    /// The next local id to use for a child.
+    /// The next local id to use for a child..
     next_child_local_id: Cell<usize>,
+
+    /// A cached copy of the canonical name, as returned by `canonical_name`.
+    ///
+    /// This is a fairly used operation during codegen so this makes bindgen
+    /// considerably faster in those cases.
+    canonical_name_cache: RefCell<Option<String>>,
+
     /// A doc comment over the item, if any.
     comment: Option<String>,
     /// Annotations extracted from the doc comment, or the default ones
@@ -129,6 +138,7 @@ impl Item {
             id: id,
             local_id: Cell::new(None),
             next_child_local_id: Cell::new(1),
+            canonical_name_cache: RefCell::new(None),
             parent_id: parent_id,
             comment: comment,
             annotations: annotations.unwrap_or_default(),
@@ -920,7 +930,13 @@ impl ItemCanonicalName for Item {
         if let Some(other_canon_type) = self.annotations.use_instead_of() {
             return other_canon_type.to_owned();
         }
-        self.real_canonical_name(ctx, ctx.options().enable_cxx_namespaces, false)
+        if self.canonical_name_cache.borrow().is_none() {
+            *self.canonical_name_cache.borrow_mut() =
+                Some(self.real_canonical_name(ctx,
+                                              ctx.options().enable_cxx_namespaces,
+                                              false));
+        }
+        return self.canonical_name_cache.borrow().as_ref().unwrap().clone();
     }
 }
 
