@@ -115,7 +115,6 @@ impl MacroArgsVisitor for BindgenArgsVisitor {
     fn visit_bool(&mut self, name: Option<&str>, val: bool) -> bool {
         if name.is_some() { self.seen_named = true; }
         match name {
-            Some("allow_unknown_types") => self.options.fail_on_unknown_type = !val,
             Some("emit_builtins") => self.options.builtins = val,
             _ => return false
         }
