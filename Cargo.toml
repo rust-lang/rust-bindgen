@@ -22,6 +22,7 @@ name = "bindgen"
 quasi_codegen = "0.20"
 
 [dependencies]
+cfg-if = "0.1.0"
 clang-sys = "0.8.0"
 lazy_static = "0.1.*"
 libc = "0.2"
@@ -46,6 +47,8 @@ version = "0.20"
 [features]
 llvm_stable = []
 static = []
+# This feature only exists for CI -- don't use it!
+_docs = []
 
 [lib]
 name = "bindgen"
