@@ -119,11 +119,6 @@ impl Builder {
         self
     }
 
-    pub fn rename_types(mut self, value: bool) -> Builder {
-        self.options.rename_types = value;
-        self
-    }
-
     pub fn disable_class_constants(mut self) -> Builder {
         self.options.class_constants = false;
         self
@@ -148,7 +143,6 @@ pub struct BindgenOptions {
     pub ignore_functions: bool,
     pub ignore_methods: bool,
     pub enable_cxx_namespaces: bool,
-    pub rename_types: bool,
     pub derive_debug: bool,
     /// Generate or not only stable rust.
     pub unstable_rust: bool,
@@ -176,7 +170,6 @@ impl Default for BindgenOptions {
             emit_ast: false,
             ignore_functions: false,
             ignore_methods: false,
-            rename_types: true,
             derive_debug: true,
             enable_cxx_namespaces: false,
             override_enum_ty: "".to_string(),

@@ -58,8 +58,6 @@ Options:
 
     --enable-cxx-namespaces       Enable support for C++ namespaces.
 
-    --no-type-renaming            Don't rename types.
-
     --emit-clang-ast              Output the ast (for debugging purposes)
 
     --use-msvc-mangling           Handle MSVC C++ ABI mangling; requires that
@@ -165,9 +163,6 @@ fn parse_args_or_exit(args: Vec<String>) -> (BindgenOptions, Box<io::Write>) {
             }
             "--enable-cxx-namespaces" => {
                 options.enable_cxx_namespaces = true;
-            }
-            "--no-type-renaming" => {
-                options.rename_types = false;
             }
             "--no-unstable-rust" => {
                 options.unstable_rust = false;

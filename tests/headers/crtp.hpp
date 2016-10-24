@@ -1,5 +1,3 @@
-// bindgen-flags: --no-type-renaming
-
 template<class T>
 class Base {};
 
