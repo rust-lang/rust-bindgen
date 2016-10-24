@@ -109,11 +109,6 @@ impl Builder {
         self
     }
 
-    pub fn forbid_unknown_types(mut self) -> Builder {
-        self.options.fail_on_unknown_type = true;
-        self
-    }
-
     pub fn emit_builtins(mut self) -> Builder {
         self.options.builtins = true;
         self
@@ -163,7 +158,6 @@ pub struct BindgenOptions {
     pub ignore_functions: bool,
     pub ignore_methods: bool,
     pub gen_bitfield_methods: bool,
-    pub fail_on_unknown_type: bool,
     pub enable_cxx_namespaces: bool,
     pub rename_types: bool,
     pub derive_debug: bool,
@@ -195,7 +189,6 @@ impl Default for BindgenOptions {
             ignore_functions: false,
             ignore_methods: false,
             gen_bitfield_methods: true,
-            fail_on_unknown_type: true,
             rename_types: true,
             derive_debug: true,
             enable_cxx_namespaces: false,
