@@ -118,10 +118,6 @@ impl Builder {
         self.options.unstable_rust = false;
         self
     }
-    pub fn rust_enums(mut self, value: bool) -> Builder {
-        self.options.rust_enums = value;
-        self
-    }
 
     pub fn rename_types(mut self, value: bool) -> Builder {
         self.options.rename_types = value;
@@ -147,7 +143,6 @@ pub struct BindgenOptions {
     pub whitelisted_functions: RegexSet,
     pub whitelisted_vars: RegexSet,
     pub builtins: bool,
-    pub rust_enums: bool,
     pub links: Vec<(String, LinkType)>,
     pub emit_ast: bool,
     pub ignore_functions: bool,
@@ -177,7 +172,6 @@ impl Default for BindgenOptions {
             whitelisted_functions: Default::default(),
             whitelisted_vars: Default::default(),
             builtins: false,
-            rust_enums: true,
             links: vec![],
             emit_ast: false,
             ignore_functions: false,
