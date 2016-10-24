@@ -269,6 +269,8 @@ impl Default for BindgenOptions {
 }
 
 /// The linking type to use with a given library.
+///
+/// TODO: #104: This is ignored at the moment, but shouldn't be.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum LinkType {
     /// Use shared library linking. This is the default.
