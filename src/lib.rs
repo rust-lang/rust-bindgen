@@ -119,11 +119,6 @@ impl Builder {
         self
     }
 
-    pub fn disable_class_constants(mut self) -> Builder {
-        self.options.class_constants = false;
-        self
-    }
-
     pub fn generate(self) -> Result<Bindings, ()> {
         Bindings::generate(self.options, None)
     }
@@ -146,8 +141,6 @@ pub struct BindgenOptions {
     pub derive_debug: bool,
     /// Generate or not only stable rust.
     pub unstable_rust: bool,
-    /// Whether to generate C++ class constants.
-    pub class_constants: bool,
     /// Wether to generate names that are **directly** under namespaces.
     pub namespaced_constants: bool,
     /// Whether to use msvc mangling rules
@@ -174,7 +167,6 @@ impl Default for BindgenOptions {
             enable_cxx_namespaces: false,
             override_enum_ty: "".to_string(),
             unstable_rust: true,
-            class_constants: true,
             namespaced_constants: true,
             msvc_mangling: false,
             raw_lines: vec![],
