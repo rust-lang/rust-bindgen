@@ -90,6 +90,9 @@ Options:
 
 // FIXME(emilio): Replace this with docopt if/when they fix their exponential
 // algorithm for argument parsing.
+//
+// FIXME(fitzgen): Switch from `BindgenOptions` to the non-deprecated `Builder`.
+#[allow(deprecated)]
 fn parse_args_or_exit(args: Vec<String>) -> (BindgenOptions, Box<io::Write>) {
     let mut options = BindgenOptions::default();
     let mut dest_file = None;
