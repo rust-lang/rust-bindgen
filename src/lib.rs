@@ -145,7 +145,6 @@ pub struct BindgenOptions {
     pub namespaced_constants: bool,
     /// Whether to use msvc mangling rules
     pub msvc_mangling: bool,
-    pub override_enum_ty: String,
     pub raw_lines: Vec<String>,
     pub clang_args: Vec<String>,
 }
@@ -165,7 +164,6 @@ impl Default for BindgenOptions {
             ignore_methods: false,
             derive_debug: true,
             enable_cxx_namespaces: false,
-            override_enum_ty: "".to_string(),
             unstable_rust: true,
             namespaced_constants: true,
             msvc_mangling: false,
