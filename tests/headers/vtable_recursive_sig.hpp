@@ -1,4 +1,4 @@
-// bindgen-flags: --no-type-renaming -- -std=c++11
+// bindgen-flags: -- -std=c++11
 
 class Derived;
 class Base {

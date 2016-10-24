@@ -114,27 +114,8 @@ impl Builder {
         self
     }
 
-    pub fn no_bitfield_methods(mut self) -> Builder {
-        self.options.gen_bitfield_methods = false;
-        self
-    }
-
     pub fn no_unstable_rust(mut self) -> Builder {
         self.options.unstable_rust = false;
-        self
-    }
-    pub fn rust_enums(mut self, value: bool) -> Builder {
-        self.options.rust_enums = value;
-        self
-    }
-
-    pub fn rename_types(mut self, value: bool) -> Builder {
-        self.options.rename_types = value;
-        self
-    }
-
-    pub fn disable_class_constants(mut self) -> Builder {
-        self.options.class_constants = false;
         self
     }
 
@@ -152,24 +133,18 @@ pub struct BindgenOptions {
     pub whitelisted_functions: RegexSet,
     pub whitelisted_vars: RegexSet,
     pub builtins: bool,
-    pub rust_enums: bool,
     pub links: Vec<(String, LinkType)>,
     pub emit_ast: bool,
     pub ignore_functions: bool,
     pub ignore_methods: bool,
-    pub gen_bitfield_methods: bool,
     pub enable_cxx_namespaces: bool,
-    pub rename_types: bool,
     pub derive_debug: bool,
     /// Generate or not only stable rust.
     pub unstable_rust: bool,
-    /// Whether to generate C++ class constants.
-    pub class_constants: bool,
     /// Wether to generate names that are **directly** under namespaces.
     pub namespaced_constants: bool,
     /// Whether to use msvc mangling rules
     pub msvc_mangling: bool,
-    pub override_enum_ty: String,
     pub raw_lines: Vec<String>,
     pub clang_args: Vec<String>,
 }
@@ -183,18 +158,13 @@ impl Default for BindgenOptions {
             whitelisted_functions: Default::default(),
             whitelisted_vars: Default::default(),
             builtins: false,
-            rust_enums: true,
             links: vec![],
             emit_ast: false,
             ignore_functions: false,
             ignore_methods: false,
-            gen_bitfield_methods: true,
-            rename_types: true,
             derive_debug: true,
             enable_cxx_namespaces: false,
-            override_enum_ty: "".to_string(),
             unstable_rust: true,
-            class_constants: true,
             namespaced_constants: true,
             msvc_mangling: false,
             raw_lines: vec![],
