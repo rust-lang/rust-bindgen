@@ -114,11 +114,6 @@ impl Builder {
         self
     }
 
-    pub fn no_bitfield_methods(mut self) -> Builder {
-        self.options.gen_bitfield_methods = false;
-        self
-    }
-
     pub fn no_unstable_rust(mut self) -> Builder {
         self.options.unstable_rust = false;
         self
@@ -157,7 +152,6 @@ pub struct BindgenOptions {
     pub emit_ast: bool,
     pub ignore_functions: bool,
     pub ignore_methods: bool,
-    pub gen_bitfield_methods: bool,
     pub enable_cxx_namespaces: bool,
     pub rename_types: bool,
     pub derive_debug: bool,
@@ -188,7 +182,6 @@ impl Default for BindgenOptions {
             emit_ast: false,
             ignore_functions: false,
             ignore_methods: false,
-            gen_bitfield_methods: true,
             rename_types: true,
             derive_debug: true,
             enable_cxx_namespaces: false,

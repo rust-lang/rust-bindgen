@@ -69,8 +69,6 @@ Options:
 
     --no-unstable-rust            Avoid generating unstable rust.
 
-    --no-bitfield-methods         Avoid generating methods for bitfield access.
-
     --opaque-type=<type>          Mark a type as opaque.
 
     --blacklist-type=<type>       Mark a type as hidden.
@@ -161,9 +159,6 @@ fn parse_args_or_exit(args: Vec<String>) -> (BindgenOptions, Box<io::Write>) {
             }
             "--ignore-functions" => {
                 options.ignore_functions = true;
-            }
-            "--no-bitfield-methods" => {
-                options.gen_bitfield_methods = false;
             }
             "--ignore-methods" => {
                 options.ignore_methods = true;
