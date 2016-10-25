@@ -112,7 +112,7 @@ impl ClangSubItemParser for Var {
                 // tests/headers/inner_const.hpp
                 //
                 // That's fine because in that case we know it's not a literal.
-                if context.safe_resolve_type(ty).map_or(false, |t| t.is_integer_literal()) {
+                if context.safe_resolve_type(ty).map_or(false, |t| t.is_integer(context)) {
                     // Try to parse a literal token value
                     cursor.visit(|c, _| {
                         if c.kind() == CXCursor_IntegerLiteral {
