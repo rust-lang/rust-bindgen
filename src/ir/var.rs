@@ -106,21 +106,17 @@ impl ClangSubItemParser for Var {
                 let ty = Item::from_ty(&ty, Some(cursor), None, context)
                             .expect("Unable to resolve constant type?");
 
-                let mut value = None;
-
                 // Note: Ty might not be totally resolved yet, see
                 // tests/headers/inner_const.hpp
                 //
                 // That's fine because in that case we know it's not a literal.
-                if context.safe_resolve_type(ty).map_or(false, |t| t.is_integer(context)) {
-                    // Try to parse a literal token value
-                    cursor.visit(|c, _| {
-                        if c.kind() == CXCursor_IntegerLiteral {
-                            value = parse_int_literal_tokens(&c, context.translation_unit());
-                        }
-                        CXChildVisit_Continue
-                    });
-                }
+                let value = context.safe_resolve_type(ty).map_or(None, |t| {
+                    if t.is_integer(context) {
+                        get_integer_literal_from_cursor(&cursor, context.translation_unit())
+                    } else {
+                        None
+                    }
+                });
 
                 let mangling = cursor_mangling(&cursor);
 
@@ -168,4 +164,27 @@ fn parse_int_literal_tokens(cursor: &clang::Cursor,
     } else {
         lit.parse().ok()
     }
+}
+
+fn get_integer_literal_from_cursor(cursor: &clang::Cursor,
+                                   unit: &clang::TranslationUnit) -> Option<i64> {
+    use clangll::*;
+    let mut value = None;
+    cursor.visit(|c, _| {
+        match c.kind() {
+            CXCursor_IntegerLiteral => {
+                value = parse_int_literal_tokens(&c, unit);
+            }
+            CXCursor_UnexposedExpr => {
+                value = get_integer_literal_from_cursor(&c, unit);
+            }
+            _ => ()
+        }
+        if value.is_some() {
+            CXChildVisit_Break
+        } else {
+            CXChildVisit_Continue
+        }
+    });
+    value
 }
