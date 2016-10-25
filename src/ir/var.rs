@@ -106,21 +106,17 @@ impl ClangSubItemParser for Var {
                 let ty = Item::from_ty(&ty, Some(cursor), None, context)
                             .expect("Unable to resolve constant type?");
 
-                let mut value = None;
-
                 // Note: Ty might not be totally resolved yet, see
                 // tests/headers/inner_const.hpp
                 //
                 // That's fine because in that case we know it's not a literal.
-                if context.safe_resolve_type(ty).map_or(false, |t| t.is_integer_literal()) {
-                    // Try to parse a literal token value
-                    cursor.visit(|c, _| {
-                        if c.kind() == CXCursor_IntegerLiteral {
-                            value = parse_int_literal_tokens(&c, context.translation_unit());
-                        }
-                        CXChildVisit_Continue
-                    });
-                }
+                let value = context.safe_resolve_type(ty).map_or(None, |t| {
+                    if t.is_integer(context) {
+                        get_integer_literal_from_cursor(&cursor, context.translation_unit())
+                    } else {
+                        None
+                    }
+                });
 
                 let mangling = cursor_mangling(&cursor);
 
@@ -141,31 +137,64 @@ fn parse_int_literal_tokens(cursor: &clang::Cursor,
                             unit: &clang::TranslationUnit) -> Option<i64> {
     use clangll::{CXToken_Literal, CXToken_Punctuation};
 
-    let mut lit = String::new();
     let tokens = match unit.tokens(cursor) {
         None => return None,
         Some(tokens) => tokens,
     };
 
-    for token in tokens {
+    let mut literal = None;
+    let mut negate = false;
+    for token in tokens.into_iter() {
         match token.kind {
             CXToken_Punctuation if token.spelling == "-" => {
-                // If there's ever any punctuation, we only need to worry about
-                // unary minus '-' (for now)
-                lit.push_str(&token.spelling);
+                negate = !negate;
             },
             CXToken_Literal => {
-                lit.push_str(&token.spelling);
+                literal = Some(token.spelling);
                 break
             },
-            _ => (),
+            _ => {
+                // Reset values if we found anything else
+                negate = false;
+                literal = None;
+            }
         }
     }
 
-    // TODO: try to preserve hex literals?
-    if lit.starts_with("0x") {
-        i64::from_str_radix(&lit[2..], 16).ok()
-    } else {
-        lit.parse().ok()
-    }
+    literal.and_then(|lit| {
+        if lit.starts_with("0x") {
+            // TODO: try to preserve hex literals?
+            i64::from_str_radix(&lit[2..], 16).ok()
+        } else if lit == "0" {
+            Some(0)
+        } else if lit.starts_with("0") {
+            i64::from_str_radix(&lit[1..], 8).ok()
+        } else {
+            lit.parse().ok()
+        }
+    }).map(|lit| if negate { -lit } else { lit })
+}
+
+fn get_integer_literal_from_cursor(cursor: &clang::Cursor,
+                                   unit: &clang::TranslationUnit) -> Option<i64> {
+    use clangll::*;
+    let mut value = None;
+    cursor.visit(|c, _| {
+        match c.kind() {
+            CXCursor_IntegerLiteral |
+            CXCursor_UnaryOperator => {
+                value = parse_int_literal_tokens(&c, unit);
+            }
+            CXCursor_UnexposedExpr => {
+                value = get_integer_literal_from_cursor(&c, unit);
+            }
+            _ => ()
+        }
+        if value.is_some() {
+            CXChildVisit_Break
+        } else {
+            CXChildVisit_Continue
+        }
+    });
+    value
 }

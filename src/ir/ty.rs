@@ -104,10 +104,13 @@ impl Type {
         Self::new(Some(name), None, kind, false)
     }
 
-    pub fn is_integer_literal(&self) -> bool {
-        match *self.kind() {
-            TypeKind::Int(..) => true,
-            _ => false,
+    pub fn is_integer(&self, ctx: &BindgenContext) -> bool {
+        match self.kind {
+            TypeKind::UnresolvedTypeRef(..) => false,
+            _ => match self.canonical_type(ctx).kind {
+                TypeKind::Int(..) => true,
+                _ => false,
+            }
         }
     }
 
