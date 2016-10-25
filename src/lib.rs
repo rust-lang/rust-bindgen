@@ -53,7 +53,7 @@ macro_rules! doc_mod {
 }
 
 mod clangll;
-mod clang;
+doc_mod!(clang);
 mod ir;
 mod parse;
 mod regex_set;
