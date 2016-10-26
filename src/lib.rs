@@ -21,6 +21,8 @@
 // constant.
 #![allow(non_upper_case_globals)]
 
+#[macro_use]
+extern crate cfg_if;
 extern crate syntex_syntax as syntax;
 extern crate aster;
 extern crate quasi;
@@ -32,11 +34,30 @@ extern crate log;
 #[macro_use]
 extern crate lazy_static;
 
+// A macro to declare an internal module for which we *must* provide
+// documentation for. If we are building with the "_docs" feature, then the
+// module is declared public, and our `#![deny(missing_docs)]` pragma applies to
+// it. This feature is used in CI, so we won't let anything slip by
+// undocumented. Normal builds, however, will leave the module private, so that
+// we don't expose internals to library consumers.
+macro_rules! doc_mod {
+    ($m:ident) => {
+        cfg_if! {
+            if #[cfg(feature = "_docs")] {
+                pub mod $m;
+            } else {
+                mod $m;
+            }
+        }
+    };
+}
+
 mod clangll;
-mod clang;
+doc_mod!(clang);
 mod ir;
 mod parse;
 mod regex_set;
+
 mod codegen {
     include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 }

@@ -44,6 +44,7 @@ script:
   - git add -A
   - git diff @
   - git diff-index --quiet HEAD
+  - cargo build --features "llvm_stable _docs"
 
 notifications:
   webhooks: http://build.servo.org:54856/travis
