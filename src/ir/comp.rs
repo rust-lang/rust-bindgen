@@ -205,7 +205,7 @@ impl CompInfo {
         }
     }
 
-    pub fn can_derive_debug(&self, type_resolver: &BindgenContext, layout: Option<Layout>) -> bool {
+    pub fn can_derive_debug(&self, ctx: &BindgenContext, layout: Option<Layout>) -> bool {
         // We can reach here recursively via template parameters of a member,
         // for example.
         if self.detect_derive_debug_cycle.get() {
@@ -214,7 +214,7 @@ impl CompInfo {
         }
 
         if self.kind  == CompKind::Union {
-            if type_resolver.options().unstable_rust {
+            if ctx.options().unstable_rust {
                 return false;
             }
 
@@ -227,20 +227,20 @@ impl CompInfo {
 
         let can_derive_debug =
             self.base_members.iter().all(|ty| {
-                type_resolver.resolve_type(*ty)
-                             .can_derive_debug(type_resolver)
+                ctx.resolve_type(*ty)
+                             .can_derive_debug(ctx)
             }) &&
             self.template_args.iter().all(|ty| {
-                type_resolver.resolve_type(*ty)
-                             .can_derive_debug(type_resolver)
+                ctx.resolve_type(*ty)
+                             .can_derive_debug(ctx)
             }) &&
             self.fields.iter().all(|field| {
-                type_resolver.resolve_type(field.ty)
-                             .can_derive_debug(type_resolver)
+                ctx.resolve_type(field.ty)
+                             .can_derive_debug(ctx)
             }) &&
             self.ref_template.map_or(true, |template| {
-                type_resolver.resolve_type(template)
-                             .can_derive_debug(type_resolver)
+                ctx.resolve_type(template)
+                             .can_derive_debug(ctx)
             });
 
         self.detect_derive_debug_cycle.set(false);
@@ -248,20 +248,20 @@ impl CompInfo {
         can_derive_debug
     }
 
-    pub fn is_unsized(&self, type_resolver: &BindgenContext) -> bool {
-        !self.has_vtable(type_resolver) && self.fields.is_empty() &&
+    pub fn is_unsized(&self, ctx: &BindgenContext) -> bool {
+        !self.has_vtable(ctx) && self.fields.is_empty() &&
             self.base_members.iter().all(|base| {
-                type_resolver
+                ctx
                     .resolve_type(*base)
-                    .canonical_type(type_resolver)
-                    .is_unsized(type_resolver)
+                    .canonical_type(ctx)
+                    .is_unsized(ctx)
             }) &&
             self.ref_template.map_or(true, |template| {
-                type_resolver.resolve_type(template).is_unsized(type_resolver)
+                ctx.resolve_type(template).is_unsized(ctx)
             })
     }
 
-    pub fn has_destructor(&self, type_resolver: &BindgenContext) -> bool {
+    pub fn has_destructor(&self, ctx: &BindgenContext) -> bool {
         if self.detect_has_destructor_cycle.get() {
             warn!("Cycle detected looking for destructors");
             // Assume no destructor, since we don't have an explicit one.
@@ -278,17 +278,17 @@ impl CompInfo {
                 //
                 // This is unfortunate, but...
                 self.ref_template.as_ref().map_or(false, |t| {
-                    type_resolver.resolve_type(*t).has_destructor(type_resolver)
+                    ctx.resolve_type(*t).has_destructor(ctx)
                 }) ||
                 self.template_args.iter().any(|t| {
-                    type_resolver.resolve_type(*t).has_destructor(type_resolver)
+                    ctx.resolve_type(*t).has_destructor(ctx)
                 }) ||
                 self.base_members.iter().any(|t| {
-                    type_resolver.resolve_type(*t).has_destructor(type_resolver)
+                    ctx.resolve_type(*t).has_destructor(ctx)
                 }) ||
                 self.fields.iter().any(|field| {
-                    type_resolver.resolve_type(field.ty)
-                                 .has_destructor(type_resolver)
+                    ctx.resolve_type(field.ty)
+                                 .has_destructor(ctx)
                 })
             }
         };
@@ -298,23 +298,23 @@ impl CompInfo {
         has_destructor
     }
 
-    pub fn can_derive_copy(&self, type_resolver: &BindgenContext, item: &Item) -> bool {
+    pub fn can_derive_copy(&self, ctx: &BindgenContext, item: &Item) -> bool {
         // NOTE: Take into account that while unions in C and C++ are copied by
         // default, the may have an explicit destructor in C++, so we can't
         // defer this check just for the union case.
-        if self.has_destructor(type_resolver) {
+        if self.has_destructor(ctx) {
             return false;
         }
 
         if self.kind == CompKind::Union {
-            if !type_resolver.options().unstable_rust {
+            if !ctx.options().unstable_rust {
                 return true;
             }
 
             // https://github.com/rust-lang/rust/issues/36640
             if !self.template_args.is_empty() ||
                 self.ref_template.is_some() ||
-                !item.applicable_template_args(type_resolver).is_empty() {
+                !item.applicable_template_args(ctx).is_empty() {
                 return false;
             }
         }
@@ -322,14 +322,14 @@ impl CompInfo {
         // With template args, use a safe subset of the types,
         // since copyability depends on the types itself.
         self.ref_template.as_ref().map_or(true, |t| {
-            type_resolver.resolve_item(*t).can_derive_copy(type_resolver)
+            ctx.resolve_item(*t).can_derive_copy(ctx)
         }) &&
         self.base_members.iter().all(|t| {
-            type_resolver.resolve_item(*t).can_derive_copy(type_resolver)
+            ctx.resolve_item(*t).can_derive_copy(ctx)
         }) &&
         self.fields.iter().all(|field| {
-            type_resolver.resolve_item(field.ty)
-                         .can_derive_copy(type_resolver)
+            ctx.resolve_item(field.ty)
+                         .can_derive_copy(ctx)
         })
     }
 
@@ -348,7 +348,7 @@ impl CompInfo {
     // If we're a union without known layout, we try to compute it from our
     // members. This is not ideal, but clang fails to report the size for
     // these kind of unions, see test/headers/template_union.hpp
-    pub fn layout(&self, type_resolver: &BindgenContext) -> Option<Layout> {
+    pub fn layout(&self, ctx: &BindgenContext) -> Option<Layout> {
         use std::cmp;
 
         // We can't do better than clang here, sorry.
@@ -359,8 +359,8 @@ impl CompInfo {
         let mut max_size = 0;
         let mut max_align = 0;
         for field in &self.fields {
-            let field_layout = type_resolver.resolve_type(field.ty)
-                                            .layout(type_resolver);
+            let field_layout = ctx.resolve_type(field.ty)
+                                            .layout(ctx);
 
             if let Some(layout) = field_layout {
                 max_size = cmp::max(max_size, layout.size);
@@ -383,13 +383,13 @@ impl CompInfo {
         self.has_non_type_template_params
     }
 
-    pub fn has_vtable(&self, type_resolver: &BindgenContext) -> bool {
+    pub fn has_vtable(&self, ctx: &BindgenContext) -> bool {
         self.has_vtable || self.base_members().iter().any(|base| {
-            type_resolver
+            ctx
                 .resolve_type(*base)
-                .has_vtable(type_resolver)
+                .has_vtable(ctx)
         }) || self.ref_template.map_or(false, |template| {
-            type_resolver.resolve_type(template).has_vtable(type_resolver)
+            ctx.resolve_type(template).has_vtable(ctx)
         })
     }
 
@@ -687,7 +687,7 @@ impl CompInfo {
     }
 
     pub fn signature_contains_named_type(&self,
-                                         type_resolver: &BindgenContext,
+                                         ctx: &BindgenContext,
                                          ty: &Type) -> bool {
         // We don't generate these, so rather don't make the codegen step to
         // think we got it covered.
@@ -695,8 +695,8 @@ impl CompInfo {
             return false;
         }
         self.template_args.iter().any(|arg| {
-            type_resolver.resolve_type(*arg)
-                         .signature_contains_named_type(type_resolver, ty)
+            ctx.resolve_type(*arg)
+                         .signature_contains_named_type(ctx, ty)
         })
     }
 
@@ -718,19 +718,19 @@ impl CompInfo {
 
     /// Returns whether this type needs an explicit vtable because it has
     /// virtual methods and none of its base classes has already a vtable.
-    pub fn needs_explicit_vtable(&self, type_resolver: &BindgenContext) -> bool {
-        self.has_vtable(type_resolver) && !self.base_members.iter().any(|base| {
+    pub fn needs_explicit_vtable(&self, ctx: &BindgenContext) -> bool {
+        self.has_vtable(ctx) && !self.base_members.iter().any(|base| {
             // NB: Ideally, we could rely in all these types being `comp`, and
             // life would be beautiful.
             //
             // Unfortunately, given the way we implement --match-pat, and also
             // that you can inherit from templated types, we need to handle
             // other cases here too.
-            type_resolver
+            ctx
                 .resolve_type(*base)
-                .canonical_type(type_resolver)
+                .canonical_type(ctx)
                 .as_comp().map_or(false, |ci| {
-                    ci.has_vtable(type_resolver)
+                    ci.has_vtable(ctx)
                 })
         })
     }
