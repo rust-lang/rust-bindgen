@@ -1,10 +1,8 @@
 # Servo's rust-bindgen
 
-A binding generator for the Rust language.
-
+A binding generator for the Rust language.</br>
 This is a fork of [crabtw/rust-bindgen](https://github.com/crabtw/rust-bindgen)
-designed to work on C++ code as well.
-
+designed to work on C++ code as well.</br>
 Currently this is being used for Servo's SpiderMonkey bindings, and also for
 the [Stylo](https://public.etherpad-mozilla.org/p/stylo) project.
 
@@ -38,8 +36,7 @@ with more features (such as detection of inlined functions).
 #### From a package manager
 
 Clang 3.9 has ben released about a month ago, and some package managers already
-provide it.
-
+provide it.</br>
 For example, for MacPorts:
 
 ```
@@ -57,10 +54,10 @@ source. For that, follow the instructions
 
 Those instructions list optional steps. For bindgen:
 
-* Checkout and build clang
-* Checkout and build the extra-clang-tools
-* Checkout and build the compiler-rt
-* You do not need to checkout or build libcxx
+* Checkout and build clang;
+* Checkout and build the extra-clang-tools;
+* Checkout and build the compiler-rt;
+* You do not need to checkout or build libcxx.
 
 ## Building
 
@@ -84,8 +81,7 @@ scripts][stylo-scripts] to see how is it used inside the Servo organisation.
 
 ## C++ Usage
 
-This fork of rust-bindgen can handle a number of C++ features.
-
+This fork of rust-bindgen can handle a number of C++ features.</br>
 When passing in header files, the file will automatically be treated as C++ if
 it ends in ``.hpp``. If it doesn't, ``-x c++`` can be used to force C++ mode.
 
@@ -148,5 +144,5 @@ and `Clone` traits for a type.
 This mode isn't actively maintained, so no promises are made around it. Check
 out the upstream documentation for info about how it *should* work.
 
-[sm-script]: https://github.com/servo/rust-mozjs/blob/master/etc/bindings.sh
-[stylo-scripts]: https://github.com/servo/servo/tree/master/ports/geckolib/gecko_bindings/tools
+[sm-script]: https://github.com/servo/rust-mozjs/blob/master/etc/bindings.sh;
+[stylo-scripts]: https://github.com/servo/servo/tree/master/ports/geckolib/gecko_bindings/tools.
