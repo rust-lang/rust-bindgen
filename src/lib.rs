@@ -54,7 +54,7 @@ macro_rules! doc_mod {
 
 mod clangll;
 doc_mod!(clang);
-mod ir;
+doc_mod!(ir);
 mod parse;
 mod regex_set;
 

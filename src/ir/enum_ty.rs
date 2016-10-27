@@ -1,22 +1,27 @@
+//! Intermediate representation for C/C++ enumerations.
+
 use super::item::{Item, ItemId};
 use super::ty::TypeKind;
 use super::context::BindgenContext;
 use parse::{ClangItemParser, ParseError};
 use clang;
 
+/// A C/C++ enumeration.
 #[derive(Debug)]
 pub struct Enum {
-    /// The representation used for this enum.
-    /// Should be an IntKind type.
+    /// The representation used for this enum; it should be an `IntKind` type or
+    /// an alias to one.
     ///
-    /// It's None if the enum is a forward declaration and isn't defined
-    /// anywhere else, see tests/headers/func_ptr_in_struct.h
+    /// It's `None` if the enum is a forward declaration and isn't defined
+    /// anywhere else, see `tests/headers/func_ptr_in_struct.h`.
     repr: Option<ItemId>,
+
     /// The different variants, with explicit values.
     variants: Vec<EnumVariant>,
 }
 
 impl Enum {
+    /// Construct a new `Enum` with the given representation and variants.
     pub fn new(repr: Option<ItemId>, variants: Vec<EnumVariant>) -> Self {
         Enum {
             repr: repr,
@@ -24,14 +29,17 @@ impl Enum {
         }
     }
 
+    /// Get this enumeration's representation.
     pub fn repr(&self) -> Option<ItemId> {
         self.repr
     }
 
+    /// Get this enumeration's variants.
     pub fn variants(&self) -> &[EnumVariant] {
         &self.variants
     }
 
+    /// Construct an enumeration from the given Clang type.
     pub fn from_ty(ty: &clang::Type,
                    ctx: &mut BindgenContext) -> Result<Self, ParseError> {
         use clangll::*;
@@ -79,19 +87,26 @@ impl Enum {
 pub struct EnumVariant {
     /// The name of the variant.
     name: String,
+
     /// An optional doc comment.
     comment: Option<String>,
+
     /// The integer value of the variant.
     val: EnumVariantValue,
 }
 
+/// A constant value assigned to an enumeration variant.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum EnumVariantValue {
+    /// A signed constant.
     Signed(i64),
+
+    /// An unsigned constant.
     Unsigned(u64),
 }
 
 impl EnumVariant {
+    /// Construct a new enumeration variant from the given parts.
     pub fn new(name: String, comment: Option<String>, val: EnumVariantValue) -> Self {
         EnumVariant {
             name: name,
@@ -100,10 +115,12 @@ impl EnumVariant {
         }
     }
 
+    /// Get this variant's name.
     pub fn name(&self) -> &str {
         &self.name
     }
 
+    /// Get this variant's value.
     pub fn val(&self) -> EnumVariantValue {
         self.val
     }

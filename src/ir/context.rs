@@ -1,3 +1,5 @@
+//! Common context that is passed around during parsing and codegen.
+
 use super::ty::{Type, TypeKind, FloatKind};
 use super::item::{Item, ItemCanonicalName, ItemId};
 use super::item_kind::ItemKind;
@@ -97,6 +99,7 @@ pub struct BindgenContext<'ctx> {
 }
 
 impl<'ctx> BindgenContext<'ctx> {
+    /// Construct the context for the given `options`.
     pub fn new(options: BindgenOptions) -> Self {
         use clangll;
 
@@ -130,6 +133,10 @@ impl<'ctx> BindgenContext<'ctx> {
         me
     }
 
+    /// Define a new item.
+    ///
+    /// This inserts it into the internal items set, and its type into the
+    /// internal types set.
     pub fn add_item(&mut self,
                     item: Item,
                     declaration: Option<Cursor>,
@@ -186,10 +193,13 @@ impl<'ctx> BindgenContext<'ctx> {
     }
 
     // TODO: Move all this syntax crap to other part of the code.
+
+    /// Given that we are in the codegen phase, get the syntex context.
     pub fn ext_cx(&self) -> &ExtCtxt<'ctx> {
         &self.gen_ctx.expect("Not in gen phase").0
     }
 
+    /// Given that we are in the codegen phase, get the current syntex span.
     pub fn span(&self) -> Span {
         self.span
     }
@@ -220,20 +230,24 @@ impl<'ctx> BindgenContext<'ctx> {
         self.rust_ident_raw(&self.rust_mangle(name))
     }
 
+    /// Returns a mangled name as a rust identifier.
     pub fn rust_ident_raw<S>(&self, name: &S) -> Ident
         where S: Borrow<str>,
     {
         self.ext_cx().ident_of(name.borrow())
     }
 
+    /// Iterate over all items that have been defined.
     pub fn items<'a>(&'a self) -> btree_map::Iter<'a, ItemId, Item> {
         self.items.iter()
     }
 
+    /// Have we collected all unresolved type references yet?
     pub fn collected_typerefs(&self) -> bool {
         self.collected_typerefs
     }
 
+    /// Gather all the unresolved type references.
     fn collect_typerefs(&mut self) -> Vec<(ItemId, clang::Type, Option<clang::Cursor>, Option<ItemId>)> {
         debug_assert!(!self.collected_typerefs);
         self.collected_typerefs = true;
@@ -255,6 +269,7 @@ impl<'ctx> BindgenContext<'ctx> {
         typerefs
     }
 
+    /// Collect all of our unresolved type references and resolve them.
     fn resolve_typerefs(&mut self) {
         let typerefs = self.collect_typerefs();
 
@@ -276,6 +291,8 @@ impl<'ctx> BindgenContext<'ctx> {
         }
     }
 
+    /// Iterate over all items and replace any item that has been named in a
+    /// `replaces="SomeType"` annotation with the replacement type.
     fn process_replacements(&mut self) {
         if self.replacements.is_empty() {
             return;
@@ -322,7 +339,8 @@ impl<'ctx> BindgenContext<'ctx> {
         }
     }
 
-    // Enters in the generation phase.
+    /// Enter the code generation phase, invoke the given callback `cb`, and
+    /// leave the code generation phase.
     pub fn gen<F, Out>(&mut self, cb: F) -> Out
         where F: FnOnce(&Self) -> Out
     {
@@ -381,22 +399,36 @@ impl<'ctx> BindgenContext<'ctx> {
         Item::new(id, None, None, id, ItemKind::Module(module))
     }
 
+    /// Get the root module.
     pub fn root_module(&self) -> ItemId {
         self.root_module
     }
 
+    /// Resolve the given `ItemId` as a type.
+    ///
+    /// Panics if there is no item for the given `ItemId` or if the resolved
+    /// item is not a `Type`.
     pub fn resolve_type(&self, type_id: ItemId) -> &Type {
         self.items.get(&type_id).unwrap().kind().expect_type()
     }
 
+    /// Resolve the given `ItemId` as a type, or `None` if there is no item with
+    /// the given id.
+    ///
+    /// Panics if the id resolves to an item that is not a type.
     pub fn safe_resolve_type(&self, type_id: ItemId) -> Option<&Type> {
         self.items.get(&type_id).map(|t| t.kind().expect_type())
     }
 
+    /// Resolve the given `ItemId` into an `Item`, or `None` if no such item
+    /// exists.
     pub fn resolve_item_fallible(&self, item_id: ItemId) -> Option<&Item> {
         self.items.get(&item_id)
     }
 
+    /// Resolve the given `ItemId` into an `Item`.
+    ///
+    /// Panics if the given id does not resolve to any item.
     pub fn resolve_item(&self, item_id: ItemId) -> &Item {
         match self.items.get(&item_id) {
             Some(item) => item,
@@ -404,6 +436,7 @@ impl<'ctx> BindgenContext<'ctx> {
         }
     }
 
+    /// Get the current module.
     pub fn current_module(&self) -> ItemId {
         self.current_module
     }
@@ -625,29 +658,38 @@ impl<'ctx> BindgenContext<'ctx> {
         Some(id)
     }
 
+    /// Get the current Clang translation unit that is being processed.
     pub fn translation_unit(&self) -> &clang::TranslationUnit {
         &self.translation_unit
     }
 
+    /// Have we parsed the macro named `macro_name` already?
     pub fn parsed_macro(&self, macro_name: &str) -> bool {
         self.parsed_macros.contains(macro_name)
     }
 
+    /// Mark the macro named `macro_name` as parsed.
     pub fn note_parsed_macro(&mut self, macro_name: String) {
         debug_assert!(!self.parsed_macros.contains(&macro_name));
         self.parsed_macros.insert(macro_name);
     }
 
+    /// Are we in the codegen phase?
     pub fn in_codegen_phase(&self) -> bool {
         self.gen_ctx.is_some()
     }
 
-    /// This is a bit of a hack, but it's done so using the replaces="xxx"
-    /// annotation implies hide in the other type.
+    /// Mark the type with the given `name` as replaced by the type with id
+    /// `potential_ty`.
+    ///
+    /// Replacement types are declared using the `replaces="xxx"` annotation,
+    /// and implies that the original type is hidden.
     pub fn replace(&mut self, name: &str, potential_ty: ItemId) {
         self.replacements.insert(name.into(), potential_ty);
     }
 
+    /// Is the item with the given `name` hidden? Or is the item with the given
+    /// `name` and `id` replaced by another type, and effectively hidden?
     pub fn hidden_by_name(&self, name: &str, id: ItemId) -> bool {
         debug_assert!(self.in_codegen_phase(),
                       "You're not supposed to call this yet");
@@ -655,6 +697,8 @@ impl<'ctx> BindgenContext<'ctx> {
             self.is_replaced_type(name, id)
     }
 
+    /// Has the item with the given `name` and `id` been replaced by another
+    /// type?
     pub fn is_replaced_type(&self, name: &str, id: ItemId) -> bool {
         match self.replacements.get(name) {
             Some(replaced_by) if *replaced_by != id => true,
@@ -662,12 +706,14 @@ impl<'ctx> BindgenContext<'ctx> {
         }
     }
 
+    /// Is the type with the given `name` marked as opaque?
     pub fn opaque_by_name(&self, name: &str) -> bool {
         debug_assert!(self.in_codegen_phase(),
                       "You're not supposed to call this yet");
         self.options.opaque_types.contains(name)
     }
 
+    /// Get the options used to configure this bindgen context.
     pub fn options(&self) -> &BindgenOptions {
         &self.options
     }
@@ -704,6 +750,8 @@ impl<'ctx> BindgenContext<'ctx> {
         module_id
     }
 
+    /// Start traversing the module with the given `module_id`, invoke the
+    /// callback `cb`, and then return to traversing the original module.
     pub fn with_module<F>(&mut self, module_id: ItemId, cb: F)
         where F: FnOnce(&mut Self, &mut Vec<ItemId>)
     {

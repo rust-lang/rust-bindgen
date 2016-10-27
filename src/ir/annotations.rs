@@ -1,10 +1,21 @@
+//! Types and functions related to bindgen annotation comments.
+//!
+//! Users can add annotations in doc comments to types that they would like to
+//! replace other types with, mark as opaque, etc. This module deals with all of
+//! that stuff.
+
 use clang;
 
+/// What kind of accessor should we provide for a field?
 #[derive(Copy, PartialEq, Clone, Debug)]
 pub enum FieldAccessorKind {
+    /// No accessor.
     None,
+    /// Plain accessor.
     Regular,
+    /// Unsafe accessor.
     Unsafe,
+    /// Immutable accessor.
     Immutable,
 }
 
@@ -53,6 +64,8 @@ impl Default for Annotations {
 }
 
 impl Annotations {
+    /// Construct new annotations for the given cursor and its bindgen comments
+    /// (if any).
     pub fn new(cursor: &clang::Cursor) -> Option<Annotations> {
         let mut anno = Annotations::default();
         let mut matched_one = false;
@@ -65,10 +78,12 @@ impl Annotations {
         }
     }
 
+    /// Should this type be hidden?
     pub fn hide(&self) -> bool {
         self.hide
     }
 
+    /// Should this type be opaque?
     pub fn opaque(&self) -> bool {
         self.opaque
     }
@@ -87,10 +102,10 @@ impl Annotations {
     ///
     /// the generated code would look something like:
     ///
-    /// ```c++
+    /// ```
     /// /** <div rustbindgen replaces="Bar"></div> */
     /// struct Bar {
-    ///     int x;
+    ///     x: ::std::os::raw::c_int,
     /// };
     /// ```
     ///
@@ -99,14 +114,17 @@ impl Annotations {
         self.use_instead_of.as_ref().map(|s| &**s)
     }
 
+    /// Should we avoid implementing the `Copy` trait?
     pub fn disallow_copy(&self) -> bool {
         self.disallow_copy
     }
 
+    /// Should the fields be private?
     pub fn private_fields(&self) -> Option<bool> {
         self.private_fields
     }
 
+    /// What kind of accessors should we provide for this type's fields?
     pub fn accessor_kind(&self) -> Option<FieldAccessorKind> {
         self.accessor_kind
     }

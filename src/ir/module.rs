@@ -1,3 +1,5 @@
+//! Intermediate representation for modules (AKA C++ namespaces).
+
 use super::context::BindgenContext;
 use super::item::ItemId;
 use clang;
@@ -14,6 +16,7 @@ pub struct Module {
 }
 
 impl Module {
+    /// Construct a new `Module`.
     pub fn new(name: Option<String>) -> Self {
         Module {
             name: name,
@@ -21,14 +24,17 @@ impl Module {
         }
     }
 
+    /// Get this module's name.
     pub fn name(&self) -> Option<&str> {
         self.name.as_ref().map(|n| &**n)
     }
 
+    /// Get a mutable reference to this module's children.
     pub fn children_mut(&mut self) -> &mut Vec<ItemId> {
         &mut self.children_ids
     }
 
+    /// Get this module's children.
     pub fn children(&self) -> &[ItemId] {
         &self.children_ids
     }

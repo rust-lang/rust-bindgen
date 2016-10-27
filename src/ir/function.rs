@@ -1,3 +1,5 @@
+//! Intermediate representation for C/C++ functions and methods.
+
 use super::item::{Item, ItemId};
 use super::ty::TypeKind;
 use super::context::BindgenContext;
@@ -6,22 +8,27 @@ use clang;
 use clangll::Enum_CXCallingConv;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 
-/// A function declaration , with a signature, arguments, and argument names.
+/// A function declaration, with a signature, arguments, and argument names.
 ///
 /// The argument names vector must be the same length as the ones in the
 /// signature.
 #[derive(Debug)]
 pub struct Function {
+    /// The name of this function.
     name: String,
+
     /// The mangled name, that is, the symbol.
     mangled_name: Option<String>,
+
     /// The id pointing to the current function signature.
     signature: ItemId,
+
     /// The doc comment on the function, if any.
     comment: Option<String>,
 }
 
 impl Function {
+    /// Construct a new function.
     pub fn new(name: String,
                mangled_name: Option<String>,
                sig: ItemId,
@@ -34,14 +41,17 @@ impl Function {
         }
     }
 
+    /// Get this function's name.
     pub fn name(&self) -> &str {
         &self.name
     }
 
+    /// Get this function's name.
     pub fn mangled_name(&self) -> Option<&str> {
         self.mangled_name.as_ref().map(|n| &**n)
     }
 
+    /// Get this function's signature.
     pub fn signature(&self) -> ItemId {
         self.signature
     }
@@ -52,12 +62,15 @@ impl Function {
 pub struct FunctionSig {
     /// The return type of the function.
     return_type: ItemId,
+
     /// The type of the arguments, optionally with the name of the argument when
     /// declared.
     argument_types: Vec<(Option<String>, ItemId)>,
+
     /// Whether this function is variadic.
     is_variadic: bool,
-    /// The abi of this function.
+
+    /// The ABI of this function.
     abi: abi::Abi,
 }
 
@@ -74,6 +87,7 @@ fn get_abi(cc: Enum_CXCallingConv) -> abi::Abi {
     }
 }
 
+/// Get the mangled name for the cursor's referent.
 pub fn cursor_mangling(cursor: &clang::Cursor) -> Option<String> {
     // We early return here because libclang may crash in some case
     // if we pass in a variable inside a partial specialized template.
@@ -93,6 +107,7 @@ pub fn cursor_mangling(cursor: &clang::Cursor) -> Option<String> {
 }
 
 impl FunctionSig {
+    /// Construct a new function signature.
     pub fn new(return_type: ItemId,
                arguments: Vec<(Option<String>, ItemId)>,
                is_variadic: bool,
@@ -105,6 +120,7 @@ impl FunctionSig {
         }
     }
 
+    /// Construct a new function signature from the given Clang type.
     pub fn from_ty(ty: &clang::Type,
                    cursor: &clang::Cursor,
                    ctx: &mut BindgenContext) -> Result<Self, ParseError> {
@@ -176,18 +192,22 @@ impl FunctionSig {
         Ok(Self::new(ret, args, ty.is_variadic(), abi))
     }
 
+    /// Get this function signature's return type.
     pub fn return_type(&self) -> ItemId {
         self.return_type
     }
 
+    /// Get this function signature's argument (name, type) pairs.
     pub fn argument_types(&self) -> &[(Option<String>, ItemId)] {
         &self.argument_types
     }
 
+    /// Get this function signature's ABI.
     pub fn abi(&self) -> abi::Abi {
         self.abi
     }
 
+    /// Is this function signature variadic?
     pub fn is_variadic(&self) -> bool {
         // Clang reports some functions as variadic when they *might* be
         // variadic. We do the argument check because rust doesn't codegen well
