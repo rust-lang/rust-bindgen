@@ -393,7 +393,7 @@ impl Cursor {
     /// parameters.
     pub fn args(&self) -> Vec<Cursor> {
         unsafe {
-            let num = self.num_args() as usize;
+            let num = self.num_args().expect("expected value, got none") as u32;
             let mut args = vec![];
             for i in 0..num {
                 args.push(Cursor { x: clang_Cursor_getArgument(self.x, i as c_uint) });
@@ -415,9 +415,14 @@ impl Cursor {
     ///
     /// Returns -1 if the cursor's referent is not a function/method call or
     /// declaration.
-    pub fn num_args(&self) -> i32 {
+    pub fn num_args(&self) -> Option<u32> {
         unsafe {
-            clang_Cursor_getNumArguments(self.x)
+            let w = clang_Cursor_getNumArguments(self.x);
+            if w == -1 {
+                None
+            } else {
+                Some(w as u32)
+            }
         }
     }
 
