@@ -919,7 +919,7 @@ impl fmt::Debug for TranslationUnit {
 impl TranslationUnit {
     /// Parse a source file into a translation unit.
     pub fn parse(ix: &Index, file: &str, cmd_args: &[String],
-                 unsaved: &[UnsavedFile], opts: ::libc::c_uint) -> TranslationUnit {
+                 unsaved: &[UnsavedFile], opts: ::libc::c_uint) -> Option<TranslationUnit> {
         let fname = CString::new(file).unwrap();
         let _c_args: Vec<CString> = cmd_args.iter().map(|s| CString::new(s.clone()).unwrap()).collect();
         let c_args: Vec<*const c_char> = _c_args.iter().map(|s| s.as_ptr()).collect();
@@ -932,7 +932,11 @@ impl TranslationUnit {
                                        c_unsaved.len() as c_uint,
                                        opts)
         };
-        TranslationUnit { x: tu }
+        if tu.is_null() {
+            None
+        } else {
+            Some(TranslationUnit { x: tu })
+        }
     }
 
     /// Reparse this translation unit, maybe because the file changed on disk or
