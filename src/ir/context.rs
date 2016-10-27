@@ -104,7 +104,8 @@ impl<'ctx> BindgenContext<'ctx> {
 
         let translation_unit =
             clang::TranslationUnit::parse(&index, "", &options.clang_args, &[],
-                                          clangll::CXTranslationUnit_DetailedPreprocessingRecord);
+                                          clangll::CXTranslationUnit_DetailedPreprocessingRecord)
+                                          .expect("null TranslationUnit received from `clang::TranslationUnit::parse`");
 
         let root_module = Self::build_root_module();
         let mut me = BindgenContext {
