@@ -1,3 +1,5 @@
+//! Intermediate representation of variables.
+
 use super::item::{Item, ItemId};
 use super::context::BindgenContext;
 use super::ty::TypeKind;
@@ -6,6 +8,7 @@ use super::function::cursor_mangling;
 use parse::{ClangItemParser, ClangSubItemParser, ParseResult, ParseError};
 use clang;
 
+/// A `Var` is our intermediate representation of a variable.
 #[derive(Debug)]
 pub struct Var {
     /// The name of the variable.
@@ -22,6 +25,7 @@ pub struct Var {
 }
 
 impl Var {
+    /// Construct a new `Var`.
     pub fn new(name: String,
                mangled: Option<String>,
                ty: ItemId,
@@ -37,22 +41,27 @@ impl Var {
         }
     }
 
+    /// Is this variable `const` qualified?
     pub fn is_const(&self) -> bool {
         self.is_const
     }
 
+    /// The value of this constant variable, if any.
     pub fn val(&self) -> Option<i64> {
         self.val
     }
 
+    /// Get this variable's type.
     pub fn ty(&self) -> ItemId {
         self.ty
     }
 
+    /// Get this variable's name.
     pub fn name(&self) -> &str {
         &self.name
     }
 
+    /// Get this variable's mangled name.
     pub fn mangled_name(&self) -> Option<&str> {
         self.mangled_name.as_ref().map(|n| &**n)
     }

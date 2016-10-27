@@ -1,3 +1,5 @@
+//! Bindgen's core intermediate representation type.
+
 use regex::Regex;
 use super::context::BindgenContext;
 use super::item_kind::ItemKind;
@@ -22,6 +24,7 @@ use clangll;
 /// This name is required to be safe for Rust, that is, is not expected to
 /// return any rust keyword from here.
 pub trait ItemCanonicalName {
+    /// Get the canonical name for this item.
     fn canonical_name(&self, ctx: &BindgenContext) -> String;
 }
 
@@ -35,9 +38,10 @@ pub trait ItemCanonicalName {
 /// }
 /// ```
 ///
-/// For bar, the canonical path is foo::BAR, while the canonical name is just
-/// BAR.
+/// For bar, the canonical path is `foo::BAR`, while the canonical name is just
+/// `BAR`.
 pub trait ItemCanonicalPath {
+    /// Get the canonical path for this item.
     fn canonical_path(&self, ctx: &BindgenContext) -> Vec<String>;
 }
 
@@ -47,10 +51,10 @@ pub trait ItemCanonicalPath {
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ItemId(usize);
 
-pub static NEXT_ITEM_ID: AtomicUsize = ATOMIC_USIZE_INIT;
-
 impl ItemId {
+    /// Allocate the next `ItemId`.
     pub fn next() -> Self {
+        static NEXT_ITEM_ID: AtomicUsize = ATOMIC_USIZE_INIT;
         ItemId(NEXT_ITEM_ID.fetch_add(1, Ordering::Relaxed))
     }
 }
@@ -76,10 +80,13 @@ impl ItemCanonicalPath for ItemId {
 /// module, a type, a function, or a variable (see `ItemKind` for more
 /// information).
 ///
-/// Items form a graph, and each item only stores the id of the parent.
+/// Items refer to each other by `ItemId`. Every item has its parent's
+/// id. Depending on the kind of item this is, it may also refer to other items,
+/// such as a compound type item referring to other types. Collectively, these
+/// references form a graph.
 ///
-/// The entry-point of this graph is the "root module", a meta-item used to hold
-/// all the top-level items.
+/// The entry-point to this graph is the "root module": a meta-item used to hold
+/// all top-level items.
 ///
 /// An item may have a comment, and annotations (see the `annotations` module).
 ///
@@ -111,6 +118,7 @@ pub struct Item {
 }
 
 impl Item {
+    /// Construct a new `Item`.
     pub fn new(id: ItemId,
                comment: Option<String>,
                annotations: Option<Annotations>,
@@ -128,26 +136,38 @@ impl Item {
         }
     }
 
+    /// Get this `Item`'s identifier.
     pub fn id(&self) -> ItemId {
         self.id
     }
 
+    /// Get this `Item`'s parent's identifier.
+    ///
+    /// For the root module, the parent's ID is its own ID.
     pub fn parent_id(&self) -> ItemId {
         self.parent_id
     }
 
+    /// Get this `Item`'s comment, if it has any.
     pub fn comment(&self) -> Option<&str> {
         self.comment.as_ref().map(|c| &**c)
     }
 
+    /// What kind of item is this?
     pub fn kind(&self) -> &ItemKind {
         &self.kind
     }
 
+    /// Get a mutable reference to this item's kind.
     pub fn kind_mut(&mut self) -> &mut ItemKind {
         &mut self.kind
     }
 
+    /// Get an identifier that differentiates this item from its siblings.
+    ///
+    /// This should stay relatively stable in the face of code motion outside or
+    /// below this item's lexical scope, meaning that this can be useful for
+    /// generating relatively stable identifiers within a scope.
     pub fn local_id(&self, ctx: &BindgenContext) -> usize {
         if self.local_id.get().is_none() {
             let parent = ctx.resolve_item(self.parent_id);
@@ -202,10 +222,14 @@ impl Item {
         }
     }
 
+    /// Get a reference to this item's underlying `Type`. Panic if this is some
+    /// other kind of item.
     pub fn expect_type(&self) -> &Type {
         self.kind().expect_type()
     }
 
+    /// Get a reference to this item's underlying `Function`. Panic if this is
+    /// some other kind of item.
     pub fn expect_function(&self) -> &Function {
         self.kind().expect_function()
     }
@@ -214,7 +238,7 @@ impl Item {
     ///
     /// This function is used to avoid unused template parameter errors in Rust
     /// when generating typedef declarations, and also to know whether we need
-    /// to generate a PhantomData member for a template parameter.
+    /// to generate a `PhantomData` member for a template parameter.
     ///
     /// For example, in code like the following:
     ///
@@ -229,13 +253,13 @@ impl Item {
     /// };
     /// ```
     ///
-    /// Both Foo and Baz contain both `T` and `U` template parameters in their
-    /// signature:
+    /// Both `Foo` and `Baz` contain both `T` and `U` template parameters in
+    /// their signature:
     ///
     ///  * `Foo<T, U>`
     ///  * `Bar<T, U>`
     ///
-    /// But the structure for `Foo` would look like:
+    /// But the Rust structure for `Foo` would look like:
     ///
     /// ```rust
     /// struct Foo<T, U> {
@@ -244,7 +268,7 @@ impl Item {
     /// }
     /// ```
     ///
-    /// because non of its member fields contained the `U` type in the
+    /// because none of its member fields contained the `U` type in the
     /// signature. Similarly, `Bar` would contain a `PhantomData<T>` type, for
     /// the same reason.
     ///
@@ -372,12 +396,14 @@ impl Item {
         }
     }
 
+    /// Get this item's annotations.
     pub fn annotations(&self) -> &Annotations {
         &self.annotations
     }
 
-    /// Whether this item should be hidden, either due to annotations, or due to
-    /// other kind of configuration.
+    /// Whether this item should be hidden.
+    ///
+    /// This may be due to either annotations or to other kind of configuration.
     pub fn is_hidden(&self, ctx: &BindgenContext) -> bool {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
@@ -385,6 +411,7 @@ impl Item {
             ctx.hidden_by_name(&self.real_canonical_name(ctx, false, true), self.id)
     }
 
+    /// Is this item opaque?
     pub fn is_opaque(&self, ctx: &BindgenContext) -> bool {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
@@ -520,10 +547,12 @@ impl Item {
             static ref RE_ENDS_WITH_BINDGEN_TY: Regex = Regex::new(r"_bindgen_ty(_\d+)+$").unwrap();
             static ref RE_ENDS_WITH_BINDGEN_MOD: Regex = Regex::new(r"_bindgen_mod(_\d+)+$").unwrap();
         }
+        
         let (re, kind) = match *self.kind() {
             ItemKind::Module(..) => (&*RE_ENDS_WITH_BINDGEN_MOD, "mod"),
             _ => (&*RE_ENDS_WITH_BINDGEN_TY, "ty"),
         };
+        
         let parent_name = parent_name.and_then(|n| if n.is_empty() { None } else { Some(n) });
         match (parent_name, base_name) {
             (Some(parent), Some(base)) => format!("{}_{}", parent, base),
@@ -539,6 +568,8 @@ impl Item {
         }
     }
 
+    /// Get a mutable reference to this item's `Module`, or `None` if this is
+    /// not a `Module` item.
     pub fn as_module_mut(&mut self) -> Option<&mut Module> {
         match self.kind {
             ItemKind::Module(ref mut module) => Some(module),
@@ -546,10 +577,15 @@ impl Item {
         }
     }
 
+    /// Can we derive an implementation of the `Copy` trait for this type?
     pub fn can_derive_copy(&self, ctx: &BindgenContext) -> bool {
         self.expect_type().can_derive_copy(ctx, self)
     }
 
+    /// Can we derive an implementation of the `Copy` trait for an array of this
+    /// type?
+    ///
+    /// See `Type::can_derive_copy_in_array` for details.
     pub fn can_derive_copy_in_array(&self, ctx: &BindgenContext) -> bool {
         self.expect_type().can_derive_copy_in_array(ctx, self)
     }

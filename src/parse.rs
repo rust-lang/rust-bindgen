@@ -16,7 +16,7 @@ pub enum ParseResult<T> {
 }
 
 pub trait ClangSubItemParser : Sized {
-    /// The fact that is a reference guarantees it's holded by the context, and
+    /// The fact that is a reference guarantees it's held by the context, and
     /// allow returning already existing types.
     fn parse(cursor: clang::Cursor, context: &mut BindgenContext) -> Result<ParseResult<Self>, ParseError>;
 }

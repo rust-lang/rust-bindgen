@@ -1,3 +1,5 @@
+//! Everything related to types in our intermediate representation.
+
 use super::comp::CompInfo;
 use super::enum_ty::Enum;
 use super::function::FunctionSig;
@@ -25,9 +27,16 @@ pub struct Type {
     is_const: bool,
 }
 
-pub const RUST_DERIVE_IN_ARRAY_LIMIT: usize = 32usize;
+/// The maximum number of items in an array for which Rust implements common
+/// traits, and so if we have a type containing an array with more than this
+/// many items, we won't be able to derive common traits on that type.
+///
+/// We need type-level integers yesterday :'(
+pub const RUST_DERIVE_IN_ARRAY_LIMIT: usize = 32;
 
 impl Type {
+    /// Get the underlying `CompInfo` for this type, or `None` if this is some
+    /// other kind of type.
     pub fn as_comp(&self) -> Option<&CompInfo> {
         match self.kind {
             TypeKind::Comp(ref ci) => Some(ci),
@@ -35,6 +44,7 @@ impl Type {
         }
     }
 
+    /// Construct a new `Type`.
     pub fn new(name: Option<String>,
                layout: Option<Layout>,
                kind: TypeKind,
@@ -47,18 +57,22 @@ impl Type {
         }
     }
 
+    /// Which kind of type is this?
     pub fn kind(&self) -> &TypeKind {
         &self.kind
     }
 
+    /// Get a mutable reference to this type's kind.
     pub fn kind_mut(&mut self) -> &mut TypeKind {
         &mut self.kind
     }
 
+    /// Get this type's name.
     pub fn name(&self) -> Option<&str> {
         self.name.as_ref().map(|name| &**name)
     }
 
+    /// Is this a compound type?
     pub fn is_comp(&self) -> bool {
         match self.kind {
             TypeKind::Comp(..) => true,
@@ -66,6 +80,7 @@ impl Type {
         }
     }
 
+    /// Is this a named type?
     pub fn is_named(&self) -> bool {
         match self.kind {
             TypeKind::Named(..) => true,
@@ -73,6 +88,7 @@ impl Type {
         }
     }
 
+    /// Is this a function type?
     pub fn is_function(&self) -> bool {
         match self.kind {
             TypeKind::Function(..) => true,
@@ -80,6 +96,7 @@ impl Type {
         }
     }
 
+    /// Is this either a builtin or named type?
     pub fn is_builtin_or_named(&self) -> bool {
         match self.kind {
             TypeKind::Void |
@@ -104,6 +121,7 @@ impl Type {
         Self::new(Some(name), None, kind, false)
     }
 
+    /// Is this an integer type?
     pub fn is_integer(&self, ctx: &BindgenContext) -> bool {
         match self.kind {
             TypeKind::UnresolvedTypeRef(..) => false,
@@ -114,10 +132,12 @@ impl Type {
         }
     }
 
+    /// Is this a `const` qualified type?
     pub fn is_const(&self) -> bool {
         self.is_const
     }
 
+    /// What is the layout of this type?
     pub fn layout(&self, ctx: &BindgenContext) -> Option<Layout> {
         use std::mem;
 
@@ -326,8 +346,11 @@ impl Type {
 /// The kind of float this type represents.
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum FloatKind {
+    /// A `float`.
     Float,
+    /// A `double`.
     Double,
+    /// A `long double`.
     LongDouble,
 }
 
@@ -336,33 +359,46 @@ pub enum FloatKind {
 pub enum TypeKind {
     /// The void type.
     Void,
-    /// The nullptr_t type.
+
+    /// The `nullptr_t` type.
     NullPtr,
+
     /// A compound type, that is, a class, struct, or union.
     Comp(CompInfo),
+
     /// An integer type, of a given kind. `bool` and `char` are also considered
     /// integers.
     Int(IntKind),
+
     /// A floating point type.
     Float(FloatKind),
+
     /// A type alias, with a name, that points to another type.
     Alias(String, ItemId),
-    /// A templated alias, pointing to an inner Alias type, with template
+
+    /// A templated alias, pointing to an inner `Alias` type, with template
     /// parameters.
     TemplateAlias(ItemId, Vec<ItemId>),
+
     /// An array of a type and a lenght.
     Array(ItemId, usize),
+
     /// A function type, with a given signature.
     Function(FunctionSig),
-    /// An enum type.
+
+    /// An `enum` type.
     Enum(Enum),
+
     /// A pointer to a type. The bool field represents whether it's const or
     /// not.
     Pointer(ItemId),
+
     /// A pointer to an Apple block.
     BlockPointer,
+
     /// A reference to a type, as in: int& foo().
     Reference(ItemId),
+
     /// A reference to a template, with different template parameter names. To
     /// see why this is needed, check out the creation of this variant in
     /// `Type::from_clang_ty`.
@@ -376,6 +412,11 @@ pub enum TypeKind {
     ///
     /// see tests/headers/typeref.hpp to see somewhere where this is a problem.
     UnresolvedTypeRef(clang::Type, Option<clang::Cursor>, /* parent_id */ Option<ItemId>),
+
+    /// An indirection to another type.
+    ///
+    /// These are generated after we resolve a forward declaration, or when we
+    /// replace one type with another.
     ResolvedTypeRef(ItemId),
 
     /// A named type, that is, a template parameter, with an optional default
