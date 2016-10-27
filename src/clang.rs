@@ -415,13 +415,13 @@ impl Cursor {
     ///
     /// Returns -1 if the cursor's referent is not a function/method call or
     /// declaration.
-    pub fn num_args(&self) -> Option<u32> {
+    pub fn num_args(&self) -> Result<u32, ()> {
         unsafe {
             let w = clang_Cursor_getNumArguments(self.x);
             if w == -1 {
-                None
+                Err(())
             } else {
-                Some(w as u32)
+                Ok(w as u32)
             }
         }
     }
