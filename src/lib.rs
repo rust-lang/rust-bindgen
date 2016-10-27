@@ -56,7 +56,7 @@ mod clangll;
 doc_mod!(clang);
 doc_mod!(ir);
 doc_mod!(parse);
-mod regex_set;
+doc_mod!(regex_set);
 
 mod codegen {
     include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
