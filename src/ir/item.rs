@@ -695,7 +695,7 @@ impl ClangItemParser for Item {
     }
 
     /// Parse a C++ type. If we find a reference to a type that has not been
-    /// defined yet, use UnresolvedTypeRef as a placeholder.
+    /// defined yet, use `UnresolvedTypeRef` as a placeholder.
     ///
     /// This logic is needed to avoid parsing items with the incorrect parent
     /// and it's sort of complex to explain, so I'll just point to
