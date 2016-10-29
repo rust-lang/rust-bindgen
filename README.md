@@ -26,7 +26,7 @@ with more features (such as detection of inlined functions).
 ```
 # apt-get install llvm-3.8-dev libclang-3.8-dev
 ```
-
+Adding the LLVM repos to get version 3.8 may be necessary, see http://apt.llvm.org/.
 #### Arch
 
 ```
