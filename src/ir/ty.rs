@@ -122,13 +122,10 @@ impl Type {
     }
 
     /// Is this an integer type?
-    pub fn is_integer(&self, ctx: &BindgenContext) -> bool {
+    pub fn is_integer(&self) -> bool {
         match self.kind {
-            TypeKind::UnresolvedTypeRef(..) => false,
-            _ => match self.canonical_type(ctx).kind {
-                TypeKind::Int(..) => true,
-                _ => false,
-            }
+            TypeKind::Int(..) => true,
+            _ => false,
         }
     }
 
@@ -311,12 +308,17 @@ impl Type {
         }
     }
 
+    /// See safe_canonical_type.
+    pub fn canonical_type<'tr>(&'tr self, ctx: &'tr BindgenContext) -> &'tr Type {
+        self.safe_canonical_type(ctx).expect("Should have been resolved after parsing!")
+    }
+
     /// Returns the canonical type of this type, that is, the "inner type".
     ///
     /// For example, for a `typedef`, the canonical type would be the
     /// `typedef`ed type, for a template specialization, would be the template
-    /// its specializing, and so on.
-    pub fn canonical_type<'tr>(&'tr self, ctx: &'tr BindgenContext) -> &'tr Type {
+    /// its specializing, and so on. Return None if the type is unresolved.
+    pub fn safe_canonical_type<'tr>(&'tr self, ctx: &'tr BindgenContext) -> Option<&'tr Type> {
         match self.kind {
             TypeKind::Named(..) |
             TypeKind::Array(..) |
@@ -329,16 +331,15 @@ impl Type {
             TypeKind::Void |
             TypeKind::NullPtr |
             TypeKind::BlockPointer |
-            TypeKind::Pointer(..) => self,
+            TypeKind::Pointer(..) => Some(self),
 
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(_, inner) |
             TypeKind::TemplateAlias(inner, _) |
             TypeKind::TemplateRef(inner, _)
-                => ctx.resolve_type(inner).canonical_type(ctx),
+                => ctx.resolve_type(inner).safe_canonical_type(ctx),
 
-            TypeKind::UnresolvedTypeRef(..)
-                => unreachable!("Should have been resolved after parsing!"),
+            TypeKind::UnresolvedTypeRef(..) => None,
         }
     }
 }
