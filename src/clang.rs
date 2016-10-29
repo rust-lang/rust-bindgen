@@ -817,17 +817,29 @@ impl Comment {
 
     /// Given that this comment is an HTML start tag, get the `idx`th
     /// attribute's name.
-    pub fn get_tag_attr_name(&self, idx: c_uint) -> String {
-        unsafe {
-            String_ { x: clang_HTMLStartTag_getAttrName(self.x, idx) }.to_string()
+    pub fn get_tag_attr_name(&self, idx: c_uint) -> Option<String> {
+        if idx >= self.get_num_tag_attrs() {
+            None
+        } else {
+            unsafe {
+                Some(String_ {
+                    x: clang_HTMLStartTag_getAttrName(self.x, idx)
+                }.to_string())
+            }
         }
     }
 
     /// Given that this comment is an HTML start tag, get the `idx`th
     /// attribute's value.
-    pub fn get_tag_attr_value(&self, idx: c_uint) -> String {
-        unsafe {
-            String_ { x: clang_HTMLStartTag_getAttrValue(self.x, idx) }.to_string()
+    pub fn get_tag_attr_value(&self, idx: c_uint) -> Option<String> {
+        if idx >= self.get_num_tag_attrs() {
+            None
+        } else {
+            unsafe {
+                Some(String_ {
+                    x: clang_HTMLStartTag_getAttrValue(self.x, idx)
+                }.to_string())
+            }
         }
     }
 }
