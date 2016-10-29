@@ -714,9 +714,12 @@ impl Type {
 
     /// Given that this type is a function type, get the type of its return
     /// value.
-    pub fn ret_type(&self) -> Type {
-        unsafe {
-            Type { x: clang_getResultType(self.x) }
+    pub fn ret_type(&self) -> Option<Type> {
+        let rt = Type { x: unsafe { clang_getResultType(self.x) } };
+        if rt.kind() == CXType_Invalid {
+            None
+        } else {
+            Some(rt)
         }
     }
 

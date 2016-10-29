@@ -499,7 +499,7 @@ impl Type {
                 // tests/headers/func_ptr_in_struct.h), so we do a
                 // guess here trying to see if it has a valid return
                 // type.
-                if ty.ret_type().kind() != CXType_Invalid {
+                if ty.ret_type().is_some() {
                     let signature =
                         try!(FunctionSig::from_ty(ty, &location.unwrap_or(cursor), ctx));
                     TypeKind::Function(signature)

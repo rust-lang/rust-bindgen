@@ -186,7 +186,8 @@ impl FunctionSig {
             }
         }
 
-        let ret = try!(Item::from_ty(&ty.ret_type(), None, None, ctx));
+        let ty_ret_type = try!(ty.ret_type().ok_or(ParseError::Continue));
+        let ret = try!(Item::from_ty(&ty_ret_type, None, None, ctx));
         let abi = get_abi(ty.call_conv());
 
         Ok(Self::new(ret, args, ty.is_variadic(), abi))
