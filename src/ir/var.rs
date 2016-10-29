@@ -119,13 +119,14 @@ impl ClangSubItemParser for Var {
                 // tests/headers/inner_const.hpp
                 //
                 // That's fine because in that case we know it's not a literal.
-                let value = context.safe_resolve_type(ty).map_or(None, |t| {
-                    if t.is_integer(context) {
-                        get_integer_literal_from_cursor(&cursor, context.translation_unit())
-                    } else {
-                        None
-                    }
-                });
+                let value = context.safe_resolve_type(ty)
+                    .and_then(|t| t.safe_canonical_type(context)).and_then(|t| {
+                        if t.is_integer() {
+                            get_integer_literal_from_cursor(&cursor, context.translation_unit())
+                        } else {
+                            None
+                        }
+                    });
 
                 let mangling = cursor_mangling(&cursor);
 
