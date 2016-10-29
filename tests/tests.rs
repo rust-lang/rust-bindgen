@@ -85,16 +85,15 @@ fn run_bindgen_tests() {
         }
     });
 
-    // First spawn all child processes and collect them, then wait on each
-    // one. This runs the tests in parallel rather than serially.
+    // Spawn one child at a time and wait on it as number of process
+    // is the number of test files.
 
-    let children: Vec<_> = tests.map(|entry| {
-            let child = spawn_run_bindgen(run_bindgen.clone(), bindgen.clone(), entry.path());
-            (entry.path(), child)
-        })
-        .collect();
+    let children = tests.map(|entry| {
+        let child = spawn_run_bindgen(run_bindgen.clone(), bindgen.clone(), entry.path());
+        (entry.path(), child)
+    });
 
-    let failures: Vec<_> = children.into_iter()
+    let failures: Vec<_> = children
         .filter_map(|(path, mut child)| {
             let passed = child.wait()
                 .expect("Should wait on child process")
