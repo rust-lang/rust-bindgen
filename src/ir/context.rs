@@ -467,6 +467,7 @@ impl<'ctx> BindgenContext<'ctx> {
     ///     };
     /// ```
     fn build_template_wrapper(&mut self,
+                              with_id: ItemId,
                               wrapping: ItemId,
                               parent_id: ItemId,
                               ty: &clang::Type,
@@ -474,7 +475,6 @@ impl<'ctx> BindgenContext<'ctx> {
         use clangll::*;
         let mut args = vec![];
         let mut found_invalid_template_ref = false;
-        let self_id = ItemId::next();
         location.visit(|c, _| {
             if c.kind() == CXCursor_TemplateRef &&
                c.cur_type().kind() == CXType_Invalid {
@@ -482,7 +482,7 @@ impl<'ctx> BindgenContext<'ctx> {
             }
             if c.kind() == CXCursor_TypeRef {
                 let new_ty =
-                    Item::from_ty_or_ref(c.cur_type(), Some(*c), Some(self_id), self);
+                    Item::from_ty_or_ref(c.cur_type(), Some(*c), Some(with_id), self);
                 args.push(new_ty);
             }
             CXChildVisit_Continue
@@ -528,17 +528,18 @@ impl<'ctx> BindgenContext<'ctx> {
             let name = ty.spelling();
             let name = if name.is_empty() { None } else { Some(name) };
             let ty = Type::new(name, ty.fallible_layout().ok(), type_kind, ty.is_const());
-            Item::new(self_id, None, None, parent_id, ItemKind::Type(ty))
+            Item::new(with_id, None, None, parent_id, ItemKind::Type(ty))
         };
 
         // Bypass all the validations in add_item explicitly.
-        self.items.insert(self_id, item);
-        self_id
+        self.items.insert(with_id, item);
+        with_id
     }
 
     /// Looks up for an already resolved type, either because it's builtin, or
     /// because we already have it in the map.
     pub fn builtin_or_resolved_ty(&mut self,
+                                  with_id: ItemId,
                                   parent_id: Option<ItemId>,
                                   ty: &clang::Type,
                                   location: Option<clang::Cursor>) -> Option<ItemId> {
@@ -567,6 +568,7 @@ impl<'ctx> BindgenContext<'ctx> {
             if let Some(id) = id {
                 debug!("Already resolved ty {:?}, {:?}, {:?} {:?}",
                        id, declaration, ty, location);
+
                 // If the declaration existed, we *might* be done, but it's not
                 // the case for class templates, where the template arguments
                 // may vary.
@@ -582,11 +584,12 @@ impl<'ctx> BindgenContext<'ctx> {
                    *ty != canonical_declaration.cur_type() &&
                    location.is_some() && parent_id.is_some() {
                     return Some(
-                        self.build_template_wrapper(id, parent_id.unwrap(), ty,
+                        self.build_template_wrapper(with_id, id,
+                                                    parent_id.unwrap(), ty,
                                                     location.unwrap()));
                 }
 
-                return Some(self.build_ty_wrapper(id, parent_id, ty));
+                return Some(self.build_ty_wrapper(with_id, id, parent_id, ty));
             }
         }
 
@@ -602,19 +605,19 @@ impl<'ctx> BindgenContext<'ctx> {
     // We should probably make the constness tracking separate, so it doesn't
     // bloat that much, but hey, we already bloat the heck out of builtin types.
     fn build_ty_wrapper(&mut self,
+                        with_id: ItemId,
                         wrapped_id: ItemId,
                         parent_id: Option<ItemId>,
                         ty: &clang::Type) -> ItemId {
-        let id = ItemId::next();
         let spelling = ty.spelling();
         let is_const = ty.is_const();
         let layout = ty.fallible_layout().ok();
         let type_kind = TypeKind::ResolvedTypeRef(wrapped_id);
         let ty = Type::new(Some(spelling), layout, type_kind, is_const);
-        let item = Item::new(id, None, None,
+        let item = Item::new(with_id, None, None,
                              parent_id.unwrap_or(self.current_module), ItemKind::Type(ty));
         self.add_builtin_item(item);
-        id
+        with_id
     }
 
     fn build_builtin_ty(&mut self,
