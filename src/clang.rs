@@ -793,9 +793,11 @@ impl Comment {
     }
 
     /// Get this comment's `idx`th child comment
-    pub fn get_child(&self, idx: c_uint) -> Comment {
-        unsafe {
-            Comment { x: clang_Comment_getChild(self.x, idx) }
+    pub fn get_child(&self, idx: c_uint) -> Option<Comment> {
+        if idx  >= self.num_children() {
+            None
+        } else {
+            Some(Comment { x: unsafe { clang_Comment_getChild(self.x, idx) } })
         }
     }
 
