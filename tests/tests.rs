@@ -10,6 +10,8 @@ use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::process;
 
+const TEST_BATCH_DEFAULT_SIZE: usize = 16;
+
 fn spawn_run_bindgen<P, Q, R>(run_bindgen: P, bindgen: Q, header: R) -> process::Child
     where P: AsRef<Path>,
           Q: AsRef<Path>,
@@ -83,25 +85,33 @@ fn run_bindgen_tests() {
             Some(Some("hpp")) => true,
             _ => false,
         }
+    }).collect::<Vec<_>>();
+
+    let batch_size = env::var("BINDGEN_TEST_BATCH_SIZE")
+        .ok()
+        .and_then(|x| x.parse::<usize>().ok())
+        .unwrap_or(TEST_BATCH_DEFAULT_SIZE);
+
+    // Spawn batch_size child to run in parallel
+    // and wait on all of them before processing the next batch
+
+    let children = tests.chunks(batch_size).map(|x| {
+        x.iter().map(|entry| {
+            let child = spawn_run_bindgen(run_bindgen.clone(), bindgen.clone(), entry.path());
+            (entry.path(), child)
+        }).collect::<Vec<_>>()
     });
 
-    // Spawn one child at a time and wait on it as number of process
-    // is the number of test files.
-
-    let children = tests.map(|entry| {
-        let child = spawn_run_bindgen(run_bindgen.clone(), bindgen.clone(), entry.path());
-        (entry.path(), child)
-    });
-
-    let failures: Vec<_> = children
-        .filter_map(|(path, mut child)| {
+    let failures: Vec<_> = children.flat_map(|x| {
+        x.into_iter().filter_map(|(path, mut child)| {
             let passed = child.wait()
                 .expect("Should wait on child process")
                 .success();
 
             if passed { None } else { Some((path, child)) }
         })
-        .collect();
+    })
+    .collect();
 
     let num_failures = failures.len();
 
