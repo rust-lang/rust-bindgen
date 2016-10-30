@@ -153,8 +153,8 @@ impl Annotations {
             }
         }
 
-        for i in 0..comment.num_children() {
-            self.parse(&comment.get_child(i).unwrap(), matched);
+        for child in comment.get_children() {
+            self.parse(&child, matched);
         }
     }
 }

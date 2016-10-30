@@ -791,19 +791,12 @@ impl Comment {
         }
     }
 
-    /// Get the number of children this comment node has.
-    pub fn num_children(&self) -> c_uint {
-        unsafe {
-            clang_Comment_getNumChildren(self.x)
-        }
-    }
-
-    /// Get this comment's `idx`th child comment
-    pub fn get_child(&self, idx: c_uint) -> Option<Comment> {
-        if idx  >= self.num_children() {
-            None
-        } else {
-            Some(Comment { x: unsafe { clang_Comment_getChild(self.x, idx) } })
+    /// Get this comment's children comment
+    pub fn get_children(&self) -> CommentChildrenIterator {
+        CommentChildrenIterator {
+            parent: self.x,
+            length: unsafe { clang_Comment_getNumChildren(self.x) },
+            index: 0
         }
     }
 
@@ -848,6 +841,26 @@ impl Comment {
                     x: clang_HTMLStartTag_getAttrValue(self.x, idx)
                 }.to_string())
             }
+        }
+    }
+}
+
+/// An iterator for a comment's children
+pub struct CommentChildrenIterator {
+    parent: CXComment,
+    length: c_uint,
+    index: c_uint
+}
+
+impl Iterator for CommentChildrenIterator {
+    type Item = Comment;
+    fn next(&mut self) -> Option<Comment> {
+        if self.index < self.length {
+            let idx = self.index;
+            self.index += 1;
+            Some( Comment { x: unsafe { clang_Comment_getChild(self.parent, idx) } } )
+        } else {
+            None
         }
     }
 }
