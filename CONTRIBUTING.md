@@ -39,6 +39,10 @@ Additionally, you may want to build and test with the `_docs` feature to ensure
 that you aren't forgetting to document types and functions. CI will catch it if
 you forget, but the turn around will be a lot slower ;)
 
+```
+$ cargo build --features "llvm_stable _docs"
+```
+
 ## Testing <span id="tests"/>
 
 ### Overview <span id="tests-overview"/>
