@@ -681,7 +681,7 @@ impl Type {
             CXType_ConstantArray => {
                 let inner = Item::from_ty(&ty.elem_type(), location, parent_id, ctx)
                                 .expect("Not able to resolve array element?");
-                TypeKind::Array(inner, ty.num_elements())
+                TypeKind::Array(inner, ty.num_elements().unwrap())
             }
             // A complex number is always a real and an imaginary part, so
             // represent that as a two-item array.

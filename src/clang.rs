@@ -678,9 +678,12 @@ impl Type {
 
     /// Given that this type is an array or vector type, return its number of
     /// elements.
-    pub fn num_elements(&self) -> usize {
-        unsafe {
-            clang_getNumElements(self.x) as usize
+    pub fn num_elements(&self) -> Option<usize> {
+        let num_elements_returned = unsafe { clang_getNumElements(self.x) };
+        if num_elements_returned != -1 {
+            Some(num_elements_returned as usize)
+        } else {
+            None
         }
     }
 
