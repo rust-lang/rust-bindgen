@@ -808,39 +808,12 @@ impl Comment {
         }
     }
 
-    /// Given that this comment is an HTML start tag, get the number of HTML
-    /// attributes it has.
-    pub fn get_num_tag_attrs(&self) -> c_uint {
-        unsafe {
-            clang_HTMLStartTag_getNumAttrs(self.x)
-        }
-    }
-
-    /// Given that this comment is an HTML start tag, get the `idx`th
-    /// attribute's name.
-    pub fn get_tag_attr_name(&self, idx: c_uint) -> Option<String> {
-        if idx >= self.get_num_tag_attrs() {
-            None
-        } else {
-            unsafe {
-                Some(String_ {
-                    x: clang_HTMLStartTag_getAttrName(self.x, idx)
-                }.to_string())
-            }
-        }
-    }
-
-    /// Given that this comment is an HTML start tag, get the `idx`th
-    /// attribute's value.
-    pub fn get_tag_attr_value(&self, idx: c_uint) -> Option<String> {
-        if idx >= self.get_num_tag_attrs() {
-            None
-        } else {
-            unsafe {
-                Some(String_ {
-                    x: clang_HTMLStartTag_getAttrValue(self.x, idx)
-                }.to_string())
-            }
+    /// Given that this comment is an HTML start tag, get its attributes.
+    pub fn get_tag_attrs(&self) -> CommentAttributesIterator {
+        CommentAttributesIterator {
+            x: self.x,
+            length: unsafe { clang_HTMLStartTag_getNumAttrs(self.x) },
+            index: 0
         }
     }
 }
@@ -859,6 +832,37 @@ impl Iterator for CommentChildrenIterator {
             let idx = self.index;
             self.index += 1;
             Some( Comment { x: unsafe { clang_Comment_getChild(self.parent, idx) } } )
+        } else {
+            None
+        }
+    }
+}
+
+/// An HTML start tag comment attribute
+pub struct CommentAttribute {
+    /// HTML start tag attribute name
+    pub name: String,
+    /// HTML start tag attribute value
+    pub value: String
+}
+
+/// An iterator for a comment's attributes
+pub struct CommentAttributesIterator {
+    x: CXComment,
+    length: c_uint,
+    index: c_uint
+}
+
+impl Iterator for CommentAttributesIterator {
+    type Item = CommentAttribute;
+    fn next(&mut self) -> Option<CommentAttribute> {
+        if self.index < self.length {
+            let idx = self.index;
+            self.index += 1;
+            Some( CommentAttribute {
+                name: String_ { x: unsafe { clang_HTMLStartTag_getAttrName(self.x, idx) } }.to_string(),
+                value: String_ { x: unsafe { clang_HTMLStartTag_getAttrValue(self.x, idx) } }.to_string()
+            })
         } else {
             None
         }
