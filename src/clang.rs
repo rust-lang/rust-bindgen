@@ -1047,9 +1047,11 @@ impl Diagnostic {
             clang_getDiagnosticSeverity(self.x)
         }
     }
+}
 
+impl Drop for Diagnostic {
     /// Destroy this diagnostic message.
-    pub fn dispose(&self) {
+    fn drop(&mut self) {
         unsafe {
             clang_disposeDiagnostic(self.x);
         }
