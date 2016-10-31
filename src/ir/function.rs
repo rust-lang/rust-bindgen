@@ -98,13 +98,16 @@ pub fn cursor_mangling(cursor: &clang::Cursor) -> Option<String> {
     }
 
     let mut mangling = cursor.mangling();
+    if mangling.is_empty() {
+        return None;
+    }
 
     // Try to undo backend linkage munging (prepended _, generally)
     if cfg!(target_os = "macos") {
         mangling.remove(0);
     }
 
-    if mangling.is_empty() { None } else { Some(mangling) }
+    Some(mangling)
 }
 
 impl FunctionSig {
