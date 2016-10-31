@@ -12,6 +12,7 @@
 #![cfg_attr(feature = "clippy", plugin(clippy))]
 
 #![deny(missing_docs)]
+#![deny(warnings)]
 
 // We internally use the deprecated BindgenOptions all over the place. Once we
 // remove its `pub` declaration, we can un-deprecate it and remove this pragma.

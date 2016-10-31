@@ -11,7 +11,6 @@ use std::cell::{Cell, RefCell};
 use std::sync::atomic::{AtomicUsize, ATOMIC_USIZE_INIT, Ordering};
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use clang;
-use clangll;
 
 /// A trait to get the canonical name from an item.
 ///
@@ -566,12 +565,12 @@ impl Item {
             static ref RE_ENDS_WITH_BINDGEN_TY: Regex = Regex::new(r"_bindgen_ty(_\d+)+$").unwrap();
             static ref RE_ENDS_WITH_BINDGEN_MOD: Regex = Regex::new(r"_bindgen_mod(_\d+)+$").unwrap();
         }
-        
+
         let (re, kind) = match *self.kind() {
             ItemKind::Module(..) => (&*RE_ENDS_WITH_BINDGEN_MOD, "mod"),
             _ => (&*RE_ENDS_WITH_BINDGEN_TY, "ty"),
         };
-        
+
         let parent_name = parent_name.and_then(|n| if n.is_empty() { None } else { Some(n) });
         match (parent_name, base_name) {
             (Some(parent), Some(base)) => format!("{}_{}", parent, base),
@@ -636,6 +635,7 @@ impl ClangItemParser for Item {
         use ir::function::Function;
         use ir::module::Module;
         use ir::var::Var;
+        use clangll::*;
 
         if !cursor.is_valid() {
             return Err(ParseError::Continue);
@@ -697,11 +697,23 @@ impl ClangItemParser for Item {
         }
 
         // Guess how does clang treat extern "C" blocks?
-        if cursor.kind() == clangll::CXCursor_UnexposedDecl {
+        if cursor.kind() == CXCursor_UnexposedDecl {
             Err(ParseError::Recurse)
         } else {
-            error!("Unhandled cursor kind: {} ({})",
-                   ::clang::kind_to_str(cursor.kind()), cursor.kind());
+            // We whitelist cursors here known to be unhandled, to prevent being
+            // too noisy about this.
+            match cursor.kind() {
+                CXCursor_MacroDefinition |
+                CXCursor_InclusionDirective => {
+                    debug!("Unhandled cursor kind {:?}: {:?}",
+                           cursor.kind(), cursor);
+                },
+                _ =>{
+                    error!("Unhandled cursor kind {:?}: {:?}",
+                           cursor.kind(), cursor);
+                }
+            }
+
             Err(ParseError::Continue)
         }
     }
