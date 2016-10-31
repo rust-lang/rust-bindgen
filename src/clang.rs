@@ -645,19 +645,22 @@ impl Type {
     }
 
     /// If this type is a class template specialization, return its number of
-    /// template arguments. Otherwise, return -1.
-    pub fn num_template_args(&self) -> c_int {
-        unsafe {
-            clang_Type_getNumTemplateArguments(self.x)
+    /// template arguments. Otherwise, return None.
+    pub fn num_template_args(&self) -> Option<u32> {
+        let n = unsafe { clang_Type_getNumTemplateArguments(self.x) };
+        if n >= 0 {
+            Some(n as u32)
+        } else {
+            debug_assert_eq!(n, -1);
+            None
         }
     }
 
     /// Get the type of the `i`th template argument for this template
     /// specialization.
-    pub fn template_arg_type(&self, i: c_int) -> Type {
-        unsafe {
-            Type { x: clang_Type_getTemplateArgumentAsType(self.x, i) }
-        }
+    pub fn template_arg_type(&self, i: u32) -> Type {
+        let n = i as c_int;
+        Type { x: unsafe { clang_Type_getTemplateArgumentAsType(self.x, n) } }
     }
 
     /// Given that this type is a pointer type, return the type that it points

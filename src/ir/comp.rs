@@ -492,8 +492,8 @@ impl CompInfo {
         ci.template_args = match ty.num_template_args() {
             // In forward declarations and not specializations, etc, they are in
             // the ast, we'll meet them in CXCursor_TemplateTypeParameter
-            -1 => vec![],
-            len => {
+            None => vec![],
+            Some(len) => {
                 let mut list = Vec::with_capacity(len as usize);
                 for i in 0..len {
                     let arg_type = ty.template_arg_type(i);
