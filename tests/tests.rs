@@ -92,8 +92,9 @@ fn run_bindgen_tests() {
         .and_then(|x| x.parse::<usize>().ok())
         .unwrap_or(TEST_BATCH_DEFAULT_SIZE);
 
-    // Spawn batch_size child to run in parallel
-    // and wait on all of them before processing the next batch
+    // Spawn `batch_size` children to run in parallel and wait on all of them
+    // before processing the next batch. This puts a limit on the resources
+    // consumed when testing, so that we don't overload the system.
 
     let children = tests.chunks(batch_size).map(|x| {
         x.iter().map(|entry| {
