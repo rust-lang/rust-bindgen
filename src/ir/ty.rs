@@ -605,7 +605,7 @@ impl Type {
                             // If the type name is empty we're probably
                             // over-recursing to find a template parameter name
                             // or something like that, so just don't be too
-                            // noisy with it sine it causes confusion, see for
+                            // noisy with it since it causes confusion, see for
                             // example the discussion in:
                             //
                             // https://github.com/jamesmunns/teensy3-rs/issues/9
