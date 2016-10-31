@@ -14,11 +14,11 @@ use ir::item_kind::ItemKind;
 use ir::comp::{CompKind, CompInfo, Field, Method};
 use ir::layout::Layout;
 use ir::annotations::FieldAccessorKind;
+use ir::type_collector::{ItemSet, TypeCollector};
 
 use std::ops;
 use std::borrow::Cow;
 use std::mem;
-use std::collections::BTreeSet;
 use std::collections::HashSet;
 use std::collections::hash_map::{HashMap, Entry};
 
@@ -1581,133 +1581,6 @@ impl CodeGenerator for Function {
             .build(ctx);
 
         result.push(item);
-    }
-}
-
-type ItemSet = BTreeSet<ItemId>;
-
-trait TypeCollector {
-    type Extra;
-
-    fn collect_types(&self,
-                     context: &BindgenContext,
-                     types: &mut ItemSet,
-                     extra: &Self::Extra);
-}
-
-impl TypeCollector for ItemId {
-    type Extra = ();
-
-    fn collect_types(&self,
-                     context: &BindgenContext,
-                     types: &mut ItemSet,
-                     extra: &()) {
-        context.resolve_item(*self).collect_types(context, types, extra);
-    }
-}
-
-impl TypeCollector for Item {
-    type Extra = ();
-
-    fn collect_types(&self,
-                     context: &BindgenContext,
-                     types: &mut ItemSet,
-                     _extra: &()) {
-        if self.is_hidden(context) || types.contains(&self.id()) {
-            return;
-        }
-
-        match *self.kind() {
-            ItemKind::Type(ref ty) => {
-                types.insert(self.id());
-                if !self.is_opaque(context) {
-                    ty.collect_types(context, types, self);
-                }
-            }
-            _ => {}, // FIXME.
-        }
-    }
-}
-
-impl TypeCollector for Type {
-    type Extra = Item;
-
-    fn collect_types(&self,
-                     context: &BindgenContext,
-                     types: &mut ItemSet,
-                     item: &Item) {
-        match *self.kind() {
-            TypeKind::Pointer(inner) |
-            TypeKind::Reference(inner) |
-            TypeKind::Array(inner, _) |
-            TypeKind::TemplateAlias(inner, _) |
-            TypeKind::Alias(_, inner) |
-            TypeKind::Named(_, Some(inner)) |
-            TypeKind::ResolvedTypeRef(inner)
-                => inner.collect_types(context, types, &()),
-
-            TypeKind::TemplateRef(inner, ref template_args) => {
-                inner.collect_types(context, types, &());
-                for item in template_args {
-                    item.collect_types(context, types, &());
-                }
-            }
-            TypeKind::Comp(ref ci) => ci.collect_types(context, types, item),
-            TypeKind::Function(ref sig) => {
-                sig.collect_types(context, types, item)
-            }
-            // FIXME: Pending types!
-            ref other @ _ => {
-                debug!("Ignoring: {:?}", other);
-            },
-        }
-    }
-}
-
-impl TypeCollector for FunctionSig {
-    type Extra = Item;
-
-    fn collect_types(&self,
-                     context: &BindgenContext,
-                     types: &mut ItemSet,
-                     _item: &Item) {
-        self.return_type().collect_types(context, types, &());
-
-        for &(_, ty) in self.argument_types() {
-            ty.collect_types(context, types, &());
-        }
-    }
-}
-
-impl TypeCollector for CompInfo {
-    type Extra = Item;
-
-    fn collect_types(&self,
-                     context: &BindgenContext,
-                     types: &mut ItemSet,
-                     item: &Item) {
-        if let Some(template) = self.specialized_template() {
-            template.collect_types(context, types, &());
-        }
-
-        let applicable_template_args = item.applicable_template_args(context);
-        for arg in applicable_template_args {
-            arg.collect_types(context, types, &());
-        }
-
-        for base in self.base_members() {
-            base.collect_types(context, types, &());
-        }
-
-        for field in self.fields() {
-            field.ty().collect_types(context, types, &());
-        }
-
-        for ty in self.inner_types() {
-            ty.collect_types(context, types, &());
-        }
-
-        // FIXME(emilio): Methods, VTable?
     }
 }
 

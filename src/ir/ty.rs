@@ -7,6 +7,7 @@ use super::item::{Item, ItemId};
 use super::int::IntKind;
 use super::layout::Layout;
 use super::context::BindgenContext;
+use super::type_collector::{ItemSet, TypeCollector};
 use parse::{ClangItemParser, ParseResult, ParseError};
 use clang::{self, Cursor};
 
@@ -707,5 +708,40 @@ impl Type {
         let ty = Type::new(name, layout, kind, is_const);
         // TODO: maybe declaration.canonical()?
         Ok(ParseResult::New(ty, Some(cursor.canonical())))
+    }
+}
+
+impl TypeCollector for Type {
+    type Extra = Item;
+
+    fn collect_types(&self,
+                     context: &BindgenContext,
+                     types: &mut ItemSet,
+                     item: &Item) {
+        match *self.kind() {
+            TypeKind::Pointer(inner) |
+            TypeKind::Reference(inner) |
+            TypeKind::Array(inner, _) |
+            TypeKind::TemplateAlias(inner, _) |
+            TypeKind::Alias(_, inner) |
+            TypeKind::Named(_, Some(inner)) |
+            TypeKind::ResolvedTypeRef(inner)
+                => inner.collect_types(context, types, &()),
+
+            TypeKind::TemplateRef(inner, ref template_args) => {
+                inner.collect_types(context, types, &());
+                for item in template_args {
+                    item.collect_types(context, types, &());
+                }
+            }
+            TypeKind::Comp(ref ci) => ci.collect_types(context, types, item),
+            TypeKind::Function(ref sig) => {
+                sig.collect_types(context, types, item)
+            }
+            // FIXME: Pending types!
+            ref other @ _ => {
+                debug!("Ignoring: {:?}", other);
+            },
+        }
     }
 }

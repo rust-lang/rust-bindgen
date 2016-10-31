@@ -1,8 +1,9 @@
 //! Intermediate representation for C/C++ functions and methods.
 
+use super::context::BindgenContext;
 use super::item::{Item, ItemId};
 use super::ty::TypeKind;
-use super::context::BindgenContext;
+use super::type_collector::{ItemSet, TypeCollector};
 use syntax::abi;
 use clang;
 use clangll::Enum_CXCallingConv;
@@ -244,5 +245,20 @@ impl ClangSubItemParser for Function {
 
         let function = Self::new(name, mangled_name, sig, comment);
         Ok(ParseResult::New(function, Some(cursor)))
+    }
+}
+
+impl TypeCollector for FunctionSig {
+    type Extra = Item;
+
+    fn collect_types(&self,
+                     context: &BindgenContext,
+                     types: &mut ItemSet,
+                     _item: &Item) {
+        self.return_type().collect_types(context, types, &());
+
+        for &(_, ty) in self.argument_types() {
+            ty.collect_types(context, types, &());
+        }
     }
 }

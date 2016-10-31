@@ -4,6 +4,7 @@ use regex::Regex;
 use super::context::BindgenContext;
 use super::item_kind::ItemKind;
 use super::ty::{Type, TypeKind};
+use super::type_collector::{ItemSet, TypeCollector};
 use super::function::Function;
 use super::module::Module;
 use super::annotations::Annotations;
@@ -73,6 +74,40 @@ impl ItemCanonicalPath for ItemId {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         ctx.resolve_item(*self).canonical_path(ctx)
+    }
+}
+
+impl TypeCollector for ItemId {
+    type Extra = ();
+
+    fn collect_types(&self,
+                     context: &BindgenContext,
+                     types: &mut ItemSet,
+                     extra: &()) {
+        context.resolve_item(*self).collect_types(context, types, extra);
+    }
+}
+
+impl TypeCollector for Item {
+    type Extra = ();
+
+    fn collect_types(&self,
+                     context: &BindgenContext,
+                     types: &mut ItemSet,
+                     _extra: &()) {
+        if self.is_hidden(context) || types.contains(&self.id()) {
+            return;
+        }
+
+        match *self.kind() {
+            ItemKind::Type(ref ty) => {
+                types.insert(self.id());
+                if !self.is_opaque(context) {
+                    ty.collect_types(context, types, self);
+                }
+            }
+            _ => {}, // FIXME.
+        }
     }
 }
 
@@ -566,12 +601,12 @@ impl Item {
             static ref RE_ENDS_WITH_BINDGEN_TY: Regex = Regex::new(r"_bindgen_ty(_\d+)+$").unwrap();
             static ref RE_ENDS_WITH_BINDGEN_MOD: Regex = Regex::new(r"_bindgen_mod(_\d+)+$").unwrap();
         }
-        
+
         let (re, kind) = match *self.kind() {
             ItemKind::Module(..) => (&*RE_ENDS_WITH_BINDGEN_MOD, "mod"),
             _ => (&*RE_ENDS_WITH_BINDGEN_TY, "ty"),
         };
-        
+
         let parent_name = parent_name.and_then(|n| if n.is_empty() { None } else { Some(n) });
         match (parent_name, base_name) {
             (Some(parent), Some(base)) => format!("{}_{}", parent, base),
