@@ -602,7 +602,18 @@ impl Type {
                                 return Err(ParseError::Recurse);
                             }
 
-                            error!("invalid type {:?}", ty);
+                            // If the type name is empty we're probably
+                            // over-recursing to find a template parameter name
+                            // or something like that, so just don't be too
+                            // noisy with it sine it causes confusion, see for
+                            // example the discussion in:
+                            //
+                            // https://github.com/jamesmunns/teensy3-rs/issues/9
+                            if !ty.spelling().is_empty() {
+                                error!("invalid type {:?}", ty);
+                            } else {
+                                warn!("invalid type {:?}", ty);
+                            }
                             return Err(ParseError::Continue);
                         }
                     }
@@ -613,7 +624,11 @@ impl Type {
                         return Err(ParseError::Recurse);
                     }
 
-                    error!("invalid type `{}`", ty.spelling());
+                    if !ty.spelling().is_empty() {
+                        error!("invalid type {:?}", ty);
+                    } else {
+                        warn!("invalid type {:?}", ty);
+                    }
                     return Err(ParseError::Continue);
                 }
             }
