@@ -384,8 +384,10 @@ impl<'ctx> BindgenContext<'ctx> {
         // because we remove it before the end of this function.
         self.gen_ctx = Some(unsafe { mem::transmute(&ctx) });
 
-        self.resolve_typerefs();
-        self.process_replacements();
+        if !self.collected_typerefs() {
+            self.resolve_typerefs();
+            self.process_replacements();
+        }
 
         let ret = cb(self);
         self.gen_ctx = None;

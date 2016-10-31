@@ -38,11 +38,42 @@ pub trait ItemCanonicalName {
 /// }
 /// ```
 ///
-/// For bar, the canonical path is `foo::BAR`, while the canonical name is just
-/// `BAR`.
+/// For bar, the canonical path is `vec!["foo", "BAR"]`, while the canonical
+/// name is just `"BAR"`.
 pub trait ItemCanonicalPath {
     /// Get the canonical path for this item.
     fn canonical_path(&self, ctx: &BindgenContext) -> Vec<String>;
+}
+
+/// A trait for iterating over an item and its parents and up its ancestor chain
+/// up to (but not including) the implicit root module.
+pub trait ItemAncestors {
+    /// Get an iterable over this item's ancestors.
+    fn ancestors<'a, 'b>(&self, ctx: &'a BindgenContext<'b>) -> ItemAncestorsIter<'a, 'b>;
+}
+
+/// An iterator over an item and its ancestors.
+pub struct ItemAncestorsIter<'a, 'b>
+    where 'b: 'a,
+{
+    item: ItemId,
+    ctx: &'a BindgenContext<'b>,
+}
+
+impl<'a, 'b> Iterator for ItemAncestorsIter<'a, 'b>
+    where 'b: 'a,
+{
+    type Item = ItemId;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let item = self.ctx.resolve_item(self.item);
+        if item.parent_id() == self.item {
+            None
+        } else {
+            self.item = item.parent_id();
+            Some(item.id())
+        }
+    }
 }
 
 /// A single identifier for an item.
@@ -73,6 +104,25 @@ impl ItemCanonicalPath for ItemId {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         ctx.resolve_item(*self).canonical_path(ctx)
+    }
+}
+
+impl ItemAncestors for ItemId {
+    fn ancestors<'a, 'b>(&self,
+                         ctx: &'a BindgenContext<'b>)
+                         -> ItemAncestorsIter<'a, 'b> {
+        ItemAncestorsIter {
+            item: *self,
+            ctx: ctx,
+        }
+    }
+}
+
+impl ItemAncestors for Item {
+    fn ancestors<'a, 'b>(&self,
+                         ctx: &'a BindgenContext<'b>)
+                         -> ItemAncestorsIter<'a, 'b> {
+        self.id().ancestors(ctx)
     }
 }
 
