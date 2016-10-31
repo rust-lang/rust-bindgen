@@ -64,7 +64,11 @@ fn run_bindgen_tests() {
 
     let mut bindgen = PathBuf::from(&crate_root);
     bindgen.push("target");
-    bindgen.push("debug");
+    if cfg!(debug_assertions) {
+        bindgen.push("debug");
+    } else {
+        bindgen.push("release");
+    }
     bindgen.push("bindgen");
     if !bindgen.is_file() {
         panic!("{} is not a file! Build bindgen before running tests.",
