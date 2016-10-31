@@ -644,23 +644,20 @@ impl Type {
         Ok(Layout::new(size, align))
     }
 
-    /// If this type is a class template specialization, return its number of
+    /// If this type is a class template specialization, return its
     /// template arguments. Otherwise, return None.
-    pub fn num_template_args(&self) -> Option<u32> {
+    pub fn template_args(&self) -> Option<TypeTemplateArgIterator> {
         let n = unsafe { clang_Type_getNumTemplateArguments(self.x) };
         if n >= 0 {
-            Some(n as u32)
+            Some(TypeTemplateArgIterator {
+                x: self.x,
+                length: n as u32,
+                index: 0
+            })
         } else {
             debug_assert_eq!(n, -1);
             None
         }
-    }
-
-    /// Get the type of the `i`th template argument for this template
-    /// specialization.
-    pub fn template_arg_type(&self, i: u32) -> Type {
-        let n = i as c_int;
-        Type { x: unsafe { clang_Type_getTemplateArgumentAsType(self.x, n) } }
     }
 
     /// Given that this type is a pointer type, return the type that it points
@@ -744,6 +741,33 @@ impl Type {
         unsafe {
             Type { x: clang_Type_getNamedType(self.x) }
         }
+    }
+}
+
+/// An iterator for a type's template arguments.
+pub struct TypeTemplateArgIterator {
+    x: CXType,
+    length: u32,
+    index: u32
+}
+
+impl Iterator for TypeTemplateArgIterator {
+    type Item = Type;
+    fn next(&mut self) -> Option<Type> {
+        if self.index < self.length {
+            let idx = self.index as c_int;
+            self.index += 1;
+            Some(Type { x: unsafe { clang_Type_getTemplateArgumentAsType(self.x, idx) } })
+        } else {
+            None
+        }
+    }
+}
+
+impl ExactSizeIterator for TypeTemplateArgIterator {
+    fn len(&self) -> usize {
+        assert!(self.index <= self.length);
+        (self.length - self.index) as usize
     }
 }
 
