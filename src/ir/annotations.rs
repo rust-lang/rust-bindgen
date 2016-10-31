@@ -134,19 +134,20 @@ impl Annotations {
         if comment.kind() == CXComment_HTMLStartTag &&
            comment.get_tag_name() == "div" &&
            comment.get_num_tag_attrs() > 1 &&
-           comment.get_tag_attr_name(0) == "rustbindgen" {
+           comment.get_tag_attr_name(0).as_ref().map(|s| s.as_str())
+               == Some("rustbindgen") {
             *matched = true;
             for i in 0..comment.get_num_tag_attrs() {
-                let value = comment.get_tag_attr_value(i);
-                let name = comment.get_tag_attr_name(i);
-                match name.as_str() {
+                let value_opt = comment.get_tag_attr_value(i);
+                match comment.get_tag_attr_name(i).unwrap().as_str() {
                     "opaque" => self.opaque = true,
                     "hide" => self.hide = true,
                     "nocopy" => self.disallow_copy = true,
-                    "replaces" => self.use_instead_of = Some(value),
-                    "private" => self.private_fields = Some(value != "false"),
-                    "accessor"
-                        => self.accessor_kind = Some(parse_accessor(&value)),
+                    "replaces" => self.use_instead_of = value_opt,
+                    "private" => self.private_fields = value_opt.map(|v|
+                        v != "false"),
+                    "accessor" => self.accessor_kind = value_opt.map(|v|
+                        parse_accessor(&v)),
                     _ => {},
                 }
             }
