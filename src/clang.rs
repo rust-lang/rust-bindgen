@@ -673,9 +673,12 @@ impl Type {
 
     /// Given that this type is an array, vector, or complex type, return the
     /// type of its elements.
-    pub fn elem_type(&self) -> Type {
-        unsafe {
-            Type { x: clang_getElementType(self.x) }
+    pub fn elem_type(&self) -> Option<Type> {
+        let current_type = Type { x: unsafe { clang_getElementType(self.x) } };
+        if current_type.kind() != CXType_Invalid {
+            Some(current_type)
+        } else {
+            None
         }
     }
 
