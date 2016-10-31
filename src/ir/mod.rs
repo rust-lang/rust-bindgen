@@ -14,4 +14,5 @@ pub mod item_kind;
 pub mod layout;
 pub mod module;
 pub mod ty;
+pub mod type_collector;
 pub mod var;

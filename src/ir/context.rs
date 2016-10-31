@@ -32,7 +32,7 @@ enum TypeKey {
 // context.
 struct GenContext<'ctx>(ExtCtxt<'ctx>);
 
-impl<'ctx> fmt::Debug for GenContext <'ctx> {
+impl<'ctx> fmt::Debug for GenContext<'ctx> {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         write!(fmt, "GenContext {{ ... }}")
     }

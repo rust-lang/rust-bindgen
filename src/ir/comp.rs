@@ -5,6 +5,7 @@ use super::context::BindgenContext;
 use super::layout::Layout;
 use super::item::{Item, ItemId};
 use super::ty::{Type, RUST_DERIVE_IN_ARRAY_LIMIT};
+use super::type_collector::{ItemSet, TypeCollector};
 use std::cell::Cell;
 use std::cmp;
 use parse::{ClangItemParser, ParseError};
@@ -802,5 +803,37 @@ impl CompInfo {
                     ci.has_vtable(ctx)
                 })
         })
+    }
+}
+
+impl TypeCollector for CompInfo {
+    type Extra = Item;
+
+    fn collect_types(&self,
+                     context: &BindgenContext,
+                     types: &mut ItemSet,
+                     item: &Item) {
+        if let Some(template) = self.specialized_template() {
+            template.collect_types(context, types, &());
+        }
+
+        let applicable_template_args = item.applicable_template_args(context);
+        for arg in applicable_template_args {
+            arg.collect_types(context, types, &());
+        }
+
+        for base in self.base_members() {
+            base.collect_types(context, types, &());
+        }
+
+        for field in self.fields() {
+            field.ty().collect_types(context, types, &());
+        }
+
+        for ty in self.inner_types() {
+            ty.collect_types(context, types, &());
+        }
+
+        // FIXME(emilio): Methods, VTable?
     }
 }
