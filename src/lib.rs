@@ -448,3 +448,15 @@ fn parse(context: &mut BindgenContext) {
     assert!(context.current_module() == context.root_module(),
             "How did this happen?");
 }
+
+/// Get the version number (e.g. 3.9.0) of Clang in String form
+pub fn clang_version() -> String {
+    clang::extract_clang_version()
+        .expect("Could not retrieve Clang version!")
+        .split(' ')
+        .nth(2)
+        .expect("Could not parse Clang version!")
+        .to_string()
+}
+
+

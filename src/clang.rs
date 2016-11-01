@@ -1426,3 +1426,9 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> Enum_CXVisitorResult {
     print_indent(depth, ")");
     CXChildVisit_Continue
 }
+
+pub fn extract_clang_version() -> Option<String> {
+    let s: String =
+        unsafe { clang_getClangVersion().into() };
+    if s.is_empty() { None } else { Some(s) }
+}

@@ -8,7 +8,7 @@ extern crate log;
 extern crate clang_sys;
 extern crate rustc_serialize;
 
-use bindgen::{BindgenOptions, Bindings, LinkType};
+use bindgen::{BindgenOptions, Bindings, LinkType, clang_version};
 use std::default::Default;
 use std::env;
 use std::fs;
@@ -216,6 +216,16 @@ pub fn main() {
         .expect("Failed to set logger.");
 
     let mut bind_args: Vec<_> = env::args().collect();
+
+    let clang_version = clang_version();
+
+    if cfg!(feature = "llvm_stable") {
+        assert_eq!(clang_version, "3.8.0");
+    } else {
+        assert_eq!(clang_version, "3.9.0");
+    }
+
+    debug!("Using Clang Version: {}", clang_version);
 
     if let Some(clang) = clang_sys::support::Clang::find(None) {
         let has_clang_args =
