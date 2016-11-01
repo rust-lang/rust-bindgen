@@ -61,6 +61,9 @@ mod ir;
 mod parse;
 mod regex_set;
 
+#[cfg(rustfmt)]
+mod codegen;
+
 doc_mod!(clang, clang_docs);
 doc_mod!(ir, ir_docs);
 doc_mod!(parse, parse_docs);
