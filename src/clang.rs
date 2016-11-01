@@ -640,7 +640,7 @@ impl Type {
     }
 
     /// If this type is a class template specialization, return its
-    /// template arguments. Otherwise, return None.
+    /// template arguments  . Otherwise, return None.
     pub fn template_args(&self) -> Option<IndexCallIterator<TypeTemplateArgIndexCallable>> {
         IndexCallIterator::new_check_positive(
             TypeTemplateArgIndexCallable { x: self.x } )
@@ -816,12 +816,8 @@ impl Comment {
     }
 
     /// Get this comment's children comment
-    pub fn get_children(&self) -> CommentChildrenIterator {
-        CommentChildrenIterator {
-            parent: self.x,
-            length: unsafe { clang_Comment_getNumChildren(self.x) },
-            index: 0,
-        }
+    pub fn get_children(&self) -> IndexCallIterator<CommentChildrenIndexCallable> {
+        IndexCallIterator::new(CommentChildrenIndexCallable { x: self.x })
     }
 
     /// Given that this comment is the start or end of an HTML tag, get its tag
@@ -841,24 +837,22 @@ impl Comment {
 }
 
 /// An iterator for a comment's children
-pub struct CommentChildrenIterator {
-    parent: CXComment,
-    length: c_uint,
-    index: c_uint,
+pub struct CommentChildrenIndexCallable {
+    x: CXComment
 }
 
-impl Iterator for CommentChildrenIterator {
+impl IndexCallable for CommentChildrenIndexCallable {
     type Item = Comment;
-    fn next(&mut self) -> Option<Comment> {
-        if self.index < self.length {
-            let idx = self.index;
-            self.index += 1;
-            Some(Comment {
-                x: unsafe { clang_Comment_getChild(self.parent, idx) },
-            })
-        } else {
-            None
-        }
+    type ItemNum = c_uint;
+
+    fn fetch_item_num(&self) -> Self::ItemNum {
+        unsafe { clang_Comment_getNumChildren(self.x) }
+    }
+
+    fn fetch_item(&mut self, idx: usize, num: usize) -> Self::Item {
+        assert!(idx < num);
+        let i = idx as Self::ItemNum;
+        Comment { x: unsafe { clang_Comment_getChild(self.x, i) } }
     }
 }
 
