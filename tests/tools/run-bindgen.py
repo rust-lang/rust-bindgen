@@ -69,6 +69,7 @@ def parse_args():
 def make_bindgen_env():
     """Build the environment to run bindgen in."""
     env = os.environ.copy()
+    env["RUST_BACKTRACE"] = "1"
 
     # El Capitan likes to unset dyld variables
     # https://forums.developer.apple.com/thread/9233
