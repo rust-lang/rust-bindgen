@@ -1183,7 +1183,9 @@ pub trait IndexCallable {
     fn fetch_item_num(&self) -> Self::ItemNum;
 
     /// Call the function retreiving the item for the index idx.
-    fn fetch_item(&mut self, idx: usize) -> Self::Item;
+    /// This will always be called with 0 <= idx < num.
+    /// num will always be the value converted from fetch_item_num.
+    fn fetch_item(&mut self, idx: usize, num: usize) -> Self::Item;
 }
 
 /// Tag for unsigned integer type
@@ -1226,7 +1228,7 @@ impl<CxtT: IndexCallable> Iterator for IndexCallIterator<CxtT> {
         if self.index < self.length {
             let idx = self.index;
             self.index += 1;
-            Some(self.cxt.fetch_item(idx))
+            Some(self.cxt.fetch_item(idx, self.length))
         } else {
             None
         }
@@ -1240,6 +1242,9 @@ impl<CxtT: IndexCallable> ExactSizeIterator for IndexCallIterator<CxtT> {
     }
 }
 
+//
+// Start test code
+//
 struct TestIndexCallableProvider {
     cxtu: c_uint,
     cxti: c_int
@@ -1271,7 +1276,8 @@ impl IndexCallable for TestIndexCallable {
         self.cxt // call specific FFI function
     }
 
-    fn fetch_item(&mut self, idx: usize) -> Self::Item {
+    fn fetch_item(&mut self, idx: usize, num: usize) -> Self::Item {
+        assert!(idx < num);
         idx as i32 // call specific FFI function
     }
 }
@@ -1289,7 +1295,8 @@ impl IndexCallable for TestIndexCallableOption {
         return self.cxt // call specific FFI function
     }
 
-    fn fetch_item(&mut self, idx: usize) -> Self::Item {
+    fn fetch_item(&mut self, idx: usize, num: usize) -> Self::Item {
+        assert!(idx < num);
         idx as i32 // call specific FFI function
     }
 }
@@ -1320,6 +1327,10 @@ fn test_optional_index_call_iterator() {
     assert_eq!(len, Some(2));
     assert!(not_values.is_none());
 }
+
+//
+// End test code
+//
 
 /// Convert a cursor kind into a static string.
 pub fn kind_to_str(x: Enum_CXCursorKind) -> &'static str {
