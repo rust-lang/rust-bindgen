@@ -641,18 +641,9 @@ impl Type {
 
     /// If this type is a class template specialization, return its
     /// template arguments. Otherwise, return None.
-    pub fn template_args(&self) -> Option<TypeTemplateArgIterator> {
-        let n = unsafe { clang_Type_getNumTemplateArguments(self.x) };
-        if n >= 0 {
-            Some(TypeTemplateArgIterator {
-                x: self.x,
-                length: n as u32,
-                index: 0,
-            })
-        } else {
-            debug_assert_eq!(n, -1);
-            None
-        }
+    pub fn template_args(&self) -> Option<IndexCallIterator<TypeTemplateArgIndexCallable>> {
+        IndexCallIterator::new_check_positive(
+            TypeTemplateArgIndexCallable { x: self.x } )
     }
 
     /// Given that this type is a pointer type, return the type that it points
@@ -751,31 +742,22 @@ impl Type {
 }
 
 /// An iterator for a type's template arguments.
-pub struct TypeTemplateArgIterator {
-    x: CXType,
-    length: u32,
-    index: u32,
+pub struct TypeTemplateArgIndexCallable {
+    x: CXType
 }
 
-impl Iterator for TypeTemplateArgIterator {
+impl IndexCallable for TypeTemplateArgIndexCallable {
     type Item = Type;
-    fn next(&mut self) -> Option<Type> {
-        if self.index < self.length {
-            let idx = self.index as c_int;
-            self.index += 1;
-            Some(Type {
-                x: unsafe { clang_Type_getTemplateArgumentAsType(self.x, idx) },
-            })
-        } else {
-            None
-        }
-    }
-}
+    type ItemNum = c_int;
 
-impl ExactSizeIterator for TypeTemplateArgIterator {
-    fn len(&self) -> usize {
-        assert!(self.index <= self.length);
-        (self.length - self.index) as usize
+    fn fetch_item_num(&self) -> Self::ItemNum {
+        unsafe { clang_Type_getNumTemplateArguments(self.x) }
+    }
+
+    fn fetch_item(&mut self, idx: usize, num: usize) -> Self::Item {
+        assert!(idx < num);
+        let i = idx as Self::ItemNum;
+        Type { x: unsafe { clang_Type_getTemplateArgumentAsType(self.x, i) } }
     }
 }
 
