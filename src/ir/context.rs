@@ -922,9 +922,8 @@ impl<'ctx, 'gen> Iterator for WhitelistedItemsIter<'ctx, 'gen>
         id.collect_types(self.ctx, &mut sub_types, &());
 
         for id in sub_types {
-            if !self.seen.contains(&id) {
+            if self.seen.insert(id) {
                 self.to_iterate.push(id);
-                self.seen.insert(id);
             }
         }
 
