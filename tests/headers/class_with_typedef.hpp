@@ -1,5 +1,3 @@
-// bindgen-features: llvm_stable
-
 typedef int AnotherInt;
 
 class C {
@@ -12,10 +10,10 @@ public:
     AnotherInt d;
     AnotherInt* other_ptr;
 
-    void method(MyInt c) {};
-    void methodRef(MyInt& c) {};
-    void complexMethodRef(Lookup& c) {};
-    void anotherMethod(AnotherInt c) {};
+    void method(MyInt c);
+    void methodRef(MyInt& c);
+    void complexMethodRef(Lookup& c);
+    void anotherMethod(AnotherInt c);
 };
 
 class D: public C {

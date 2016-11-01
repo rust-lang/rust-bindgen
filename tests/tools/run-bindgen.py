@@ -10,7 +10,6 @@ import subprocess
 import tempfile
 
 BINDGEN_FLAGS_PREFIX = "// bindgen-flags: "
-BINDGEN_FEATURES_PREFIX = "// bindgen-features: "
 
 COMMON_PRELUDE = """
 #![allow(non_snake_case)]
@@ -78,15 +77,10 @@ def make_bindgen_env():
 
     return env
 
-def get_bindgen_flags_and_features(header_path):
+def get_bindgen_flags(header_path):
     """
-    Return the bindgen flags and features required for this header as a tuple
-    (flags, features).
+    Return the bindgen flags required for this header
     """
-    found_flags = False
-    found_features = False
-
-    features = []
     flags = ["--no-unstable-rust"]
     for line in COMMON_PRELUDE.split("\n"):
         flags.append("--raw-line")
@@ -94,18 +88,11 @@ def get_bindgen_flags_and_features(header_path):
 
     with open(header_path) as f:
         for line in f:
-            if not found_flags and line.startswith(BINDGEN_FLAGS_PREFIX):
+            if line.startswith(BINDGEN_FLAGS_PREFIX):
                 flags.extend(line.strip().split(BINDGEN_FLAGS_PREFIX)[1].split(" "))
-                found_flags = True
-
-            if not found_features and line.startswith(BINDGEN_FEATURES_PREFIX):
-                features.extend(line.strip().split(BINDGEN_FEATURES_PREFIX)[1].split(" "))
-                found_features = True
-
-            if found_flags and found_features:
                 break
 
-    return (flags, features)
+    return flags
 
 def get_expected_bindings(rust_bindings_path):
     """
@@ -163,7 +150,7 @@ def check_actual_vs_expected(expected_bindings, rust_bindings_path):
 
     def to_diffable(s):
         return map(lambda l: l + "\n", s.split("\n"))
-    
+
     diff = difflib.unified_diff(to_diffable(expected_bindings),
                                 to_diffable(actual_bindings),
                                 fromfile="expected_bindings.rs",
@@ -172,14 +159,11 @@ def check_actual_vs_expected(expected_bindings, rust_bindings_path):
     sys.stderr.write("\n")
 
     sys.exit(1)
-        
+
 def main():
     args = parse_args()
 
-    (test_flags, test_features) = get_bindgen_flags_and_features(args.header)
-    if not all(f in args.features for f in test_features):
-        sys.exit(0)
-
+    test_flags = get_bindgen_flags(args.header)
     expected_bindings = get_expected_bindings(args.rust_bindings)
     generate_bindings(args.bindgen, test_flags, args.header, args.rust_bindings)
     test_generated_bindings(args.rust_bindings)
