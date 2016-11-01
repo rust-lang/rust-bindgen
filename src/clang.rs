@@ -130,9 +130,14 @@ impl Cursor {
     /// Return the number of template arguments used by this cursor's referent,
     /// if the referent is either a template specialization or
     /// declaration. Returns -1 otherwise.
-    pub fn num_template_args(&self) -> c_int {
-        unsafe {
-            clang_Cursor_getNumTemplateArguments(self.x)
+    pub fn num_template_args(&self) -> Option<u32> {
+        let n : c_int = unsafe { clang_Cursor_getNumTemplateArguments(self.x) };
+
+        if n >= 0 {
+            Some(n as u32)
+        } else {
+            debug_assert_eq!(n, -1);
+            None
         }
     }
 
@@ -192,7 +197,8 @@ impl Cursor {
     /// Is the referent a fully specialized template specialization without any
     /// remaining free template arguments?
     pub fn is_fully_specialized_template(&self) -> bool {
-        self.is_template() && self.num_template_args() > 0
+        self.is_template() && self.num_template_args()
+                              .expect("Not a class template specialization") > 0
     }
 
     /// Is the referent a template specialization that still has remaining free
