@@ -197,8 +197,7 @@ impl Cursor {
     /// Is the referent a fully specialized template specialization without any
     /// remaining free template arguments?
     pub fn is_fully_specialized_template(&self) -> bool {
-        self.is_template() && self.num_template_args()
-                              .expect("Not a class template specialization") > 0
+        self.is_template() && self.num_template_args().unwrap() > 0
     }
 
     /// Is the referent a template specialization that still has remaining free
