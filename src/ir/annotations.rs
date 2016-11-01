@@ -58,7 +58,7 @@ impl Default for Annotations {
             use_instead_of: None,
             disallow_copy: false,
             private_fields: None,
-            accessor_kind: None
+            accessor_kind: None,
         }
     }
 }
@@ -71,11 +71,7 @@ impl Annotations {
         let mut matched_one = false;
         anno.parse(&cursor.comment(), &mut matched_one);
 
-        if matched_one {
-            Some(anno)
-        } else {
-            None
-        }
+        if matched_one { Some(anno) } else { None }
     }
 
     /// Should this type be hidden?
@@ -133,7 +129,9 @@ impl Annotations {
         use clangll::CXComment_HTMLStartTag;
         if comment.kind() == CXComment_HTMLStartTag &&
            comment.get_tag_name() == "div" &&
-           comment.get_tag_attrs().next().map_or(false, |attr| attr.name == "rustbindgen") {
+           comment.get_tag_attrs()
+            .next()
+            .map_or(false, |attr| attr.name == "rustbindgen") {
             *matched = true;
             for attr in comment.get_tag_attrs() {
                 match attr.name.as_str() {
@@ -141,10 +139,13 @@ impl Annotations {
                     "hide" => self.hide = true,
                     "nocopy" => self.disallow_copy = true,
                     "replaces" => self.use_instead_of = Some(attr.value),
-                    "private" => self.private_fields = Some(attr.value != "false"),
-                    "accessor"
-                        => self.accessor_kind = Some(parse_accessor(&attr.value)),
-                    _ => {},
+                    "private" => {
+                        self.private_fields = Some(attr.value != "false")
+                    }
+                    "accessor" => {
+                        self.accessor_kind = Some(parse_accessor(&attr.value))
+                    }
+                    _ => {}
                 }
             }
         }

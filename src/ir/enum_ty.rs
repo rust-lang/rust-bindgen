@@ -1,10 +1,10 @@
 //! Intermediate representation for C/C++ enumerations.
 
+use clang;
+use parse::{ClangItemParser, ParseError};
+use super::context::BindgenContext;
 use super::item::{Item, ItemId};
 use super::ty::TypeKind;
-use super::context::BindgenContext;
-use parse::{ClangItemParser, ParseError};
-use clang;
 
 /// A C/C++ enumeration.
 #[derive(Debug)]
@@ -41,14 +41,16 @@ impl Enum {
 
     /// Construct an enumeration from the given Clang type.
     pub fn from_ty(ty: &clang::Type,
-                   ctx: &mut BindgenContext) -> Result<Self, ParseError> {
+                   ctx: &mut BindgenContext)
+                   -> Result<Self, ParseError> {
         use clangll::*;
         if ty.kind() != CXType_Enum {
             return Err(ParseError::Continue);
         }
 
         let declaration = ty.declaration().canonical();
-        let repr = Item::from_ty(&declaration.enum_type(), None, None, ctx).ok();
+        let repr = Item::from_ty(&declaration.enum_type(), None, None, ctx)
+            .ok();
         let mut variants = vec![];
 
         let is_signed = match repr {
@@ -56,10 +58,14 @@ impl Enum {
                 let repr_type = ctx.resolve_type(repr);
                 match *repr_type.canonical_type(ctx).kind() {
                     TypeKind::Int(ref int_kind) => int_kind.is_signed(),
-                    ref other => panic!("Since when enums can be non-integers? {:?}", other),
+                    ref other => {
+                        panic!("Since when enums can be non-integers? {:?}",
+                               other)
+                    }
                 }
             }
-            // Assume signedness since the default type by the C standard is an
+            // Assume signedness since the default type by the C
+            // standard is an
             // int.
             None => true,
         };
@@ -107,7 +113,10 @@ pub enum EnumVariantValue {
 
 impl EnumVariant {
     /// Construct a new enumeration variant from the given parts.
-    pub fn new(name: String, comment: Option<String>, val: EnumVariantValue) -> Self {
+    pub fn new(name: String,
+               comment: Option<String>,
+               val: EnumVariantValue)
+               -> Self {
         EnumVariant {
             name: name,
             comment: comment,

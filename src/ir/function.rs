@@ -1,13 +1,13 @@
 //! Intermediate representation for C/C++ functions and methods.
 
+use clang;
+use clangll::Enum_CXCallingConv;
+use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use super::context::BindgenContext;
 use super::item::{Item, ItemId};
 use super::ty::TypeKind;
 use super::type_collector::{ItemSet, TypeCollector};
 use syntax::abi;
-use clang;
-use clangll::Enum_CXCallingConv;
-use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 
 /// A function declaration, with a signature, arguments, and argument names.
 ///
@@ -33,7 +33,8 @@ impl Function {
     pub fn new(name: String,
                mangled_name: Option<String>,
                sig: ItemId,
-               comment: Option<String>) -> Self {
+               comment: Option<String>)
+               -> Self {
         Function {
             name: name,
             mangled_name: mangled_name,
@@ -115,7 +116,8 @@ impl FunctionSig {
     pub fn new(return_type: ItemId,
                arguments: Vec<(Option<String>, ItemId)>,
                is_variadic: bool,
-               abi: abi::Abi) -> Self {
+               abi: abi::Abi)
+               -> Self {
         FunctionSig {
             return_type: return_type,
             argument_types: arguments,
@@ -127,7 +129,8 @@ impl FunctionSig {
     /// Construct a new function signature from the given Clang type.
     pub fn from_ty(ty: &clang::Type,
                    cursor: &clang::Cursor,
-                   ctx: &mut BindgenContext) -> Result<Self, ParseError> {
+                   ctx: &mut BindgenContext)
+                   -> Result<Self, ParseError> {
         use clangll::*;
         debug!("FunctionSig::from_ty {:?} {:?}", ty, cursor);
 
@@ -147,14 +150,18 @@ impl FunctionSig {
             CXCursor_CXXMethod => {
                 // For CXCursor_FunctionDecl, cursor.args() is the reliable way
                 // to get parameter names and types.
-                cursor.args().iter().map(|arg| {
-                    let arg_ty = arg.cur_type();
-                    let name = arg.spelling();
-                    let name = if name.is_empty() { None } else { Some(name) };
-                    let ty = Item::from_ty(&arg_ty, Some(*arg), None, ctx)
-                                    .expect("Argument?");
-                    (name, ty)
-                }).collect()
+                cursor.args()
+                    .iter()
+                    .map(|arg| {
+                        let arg_ty = arg.cur_type();
+                        let name = arg.spelling();
+                        let name =
+                            if name.is_empty() { None } else { Some(name) };
+                        let ty = Item::from_ty(&arg_ty, Some(*arg), None, ctx)
+                            .expect("Argument?");
+                        (name, ty)
+                    })
+                    .collect()
             }
             _ => {
                 // For non-CXCursor_FunctionDecl, visiting the cursor's children
@@ -162,10 +169,12 @@ impl FunctionSig {
                 let mut args = vec![];
                 cursor.visit(|c, _| {
                     if c.kind() == CXCursor_ParmDecl {
-                        let ty = Item::from_ty(&c.cur_type(), Some(*c), None, ctx)
-                                    .expect("ParmDecl?");
+                        let ty =
+                            Item::from_ty(&c.cur_type(), Some(*c), None, ctx)
+                                .expect("ParmDecl?");
                         let name = c.spelling();
-                        let name = if name.is_empty() { None } else { Some(name) };
+                        let name =
+                            if name.is_empty() { None } else { Some(name) };
                         args.push((name, ty));
                     }
                     CXChildVisit_Continue
@@ -180,12 +189,14 @@ impl FunctionSig {
             let is_static = cursor.method_is_static();
             if !is_static && !is_virtual {
                 let class = Item::parse(cursor.semantic_parent(), None, ctx)
-                                .expect("Expected to parse the class");
-                let ptr = Item::builtin_type(TypeKind::Pointer(class), is_const, ctx);
+                    .expect("Expected to parse the class");
+                let ptr =
+                    Item::builtin_type(TypeKind::Pointer(class), is_const, ctx);
                 args.insert(0, (Some("this".into()), ptr));
             } else if is_virtual {
                 let void = Item::builtin_type(TypeKind::Void, false, ctx);
-                let ptr = Item::builtin_type(TypeKind::Pointer(void), false, ctx);
+                let ptr =
+                    Item::builtin_type(TypeKind::Pointer(void), false, ctx);
                 args.insert(0, (Some("this".into()), ptr));
             }
         }
@@ -223,18 +234,22 @@ impl FunctionSig {
 
 impl ClangSubItemParser for Function {
     fn parse(cursor: clang::Cursor,
-             context: &mut BindgenContext) -> Result<ParseResult<Self>, ParseError> {
+             context: &mut BindgenContext)
+             -> Result<ParseResult<Self>, ParseError> {
         use clangll::*;
         match cursor.kind() {
             CXCursor_FunctionDecl |
-            CXCursor_CXXMethod => {},
+            CXCursor_CXXMethod => {}
             _ => return Err(ParseError::Continue),
         };
 
         debug!("Function::parse({:?}, {:?})", cursor, cursor.cur_type());
 
         // Grab the signature using Item::from_ty.
-        let sig = try!(Item::from_ty(&cursor.cur_type(), Some(cursor), None, context));
+        let sig = try!(Item::from_ty(&cursor.cur_type(),
+                                     Some(cursor),
+                                     None,
+                                     context));
 
         let name = cursor.spelling();
         assert!(!name.is_empty(), "Empty function name?");

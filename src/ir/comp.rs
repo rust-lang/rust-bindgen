@@ -1,15 +1,15 @@
 //! Compound types (unions and structs) in our intermediate representation.
 
-use super::annotations::Annotations;
-use super::context::BindgenContext;
-use super::layout::Layout;
-use super::item::{Item, ItemId};
-use super::ty::{Type, RUST_DERIVE_IN_ARRAY_LIMIT};
-use super::type_collector::{ItemSet, TypeCollector};
+use clang;
+use parse::{ClangItemParser, ParseError};
 use std::cell::Cell;
 use std::cmp;
-use parse::{ClangItemParser, ParseError};
-use clang;
+use super::annotations::Annotations;
+use super::context::BindgenContext;
+use super::item::{Item, ItemId};
+use super::layout::Layout;
+use super::ty::{RUST_DERIVE_IN_ARRAY_LIMIT, Type};
+use super::type_collector::{ItemSet, TypeCollector};
 
 /// The kind of compound type.
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -103,7 +103,8 @@ impl Field {
                comment: Option<String>,
                annotations: Option<Annotations>,
                bitfield: Option<u32>,
-               mutable: bool) -> Field {
+               mutable: bool)
+               -> Field {
         Field {
             name: name,
             ty: ty,
@@ -199,7 +200,8 @@ pub struct CompInfo {
     /// TODO: We should be able to compute this.
     has_nonempty_base: bool,
 
-    /// If this type has a template parameter which is not a type (e.g.: a size_t)
+    /// If this type has a template parameter which is not a type (e.g.: a
+    /// size_t)
     has_non_type_template_params: bool,
 
     /// Whether this struct layout is packed.
@@ -250,7 +252,10 @@ impl CompInfo {
     }
 
     /// Can we derive the `Debug` trait for this compound type?
-    pub fn can_derive_debug(&self, ctx: &BindgenContext, layout: Option<Layout>) -> bool {
+    pub fn can_derive_debug(&self,
+                            ctx: &BindgenContext,
+                            layout: Option<Layout>)
+                            -> bool {
         // We can reach here recursively via template parameters of a member,
         // for example.
         if self.detect_derive_debug_cycle.get() {
@@ -258,7 +263,7 @@ impl CompInfo {
             return true;
         }
 
-        if self.kind  == CompKind::Union {
+        if self.kind == CompKind::Union {
             if ctx.options().unstable_rust {
                 return false;
             }
@@ -270,23 +275,20 @@ impl CompInfo {
 
         self.detect_derive_debug_cycle.set(true);
 
-        let can_derive_debug =
-            self.base_members.iter().all(|ty| {
-                ctx.resolve_type(*ty)
-                             .can_derive_debug(ctx)
-            }) &&
-            self.template_args.iter().all(|ty| {
-                ctx.resolve_type(*ty)
-                             .can_derive_debug(ctx)
-            }) &&
-            self.fields.iter().all(|field| {
-                ctx.resolve_type(field.ty)
-                             .can_derive_debug(ctx)
-            }) &&
+        let can_derive_debug = {
+            self.base_members
+                .iter()
+                .all(|ty| ctx.resolve_type(*ty).can_derive_debug(ctx)) &&
+            self.template_args
+                .iter()
+                .all(|ty| ctx.resolve_type(*ty).can_derive_debug(ctx)) &&
+            self.fields
+                .iter()
+                .all(|f| ctx.resolve_type(f.ty).can_derive_debug(ctx)) &&
             self.ref_template.map_or(true, |template| {
-                ctx.resolve_type(template)
-                             .can_derive_debug(ctx)
-            });
+                ctx.resolve_type(template).can_derive_debug(ctx)
+            })
+        };
 
         self.detect_derive_debug_cycle.set(false);
 
@@ -296,15 +298,11 @@ impl CompInfo {
     /// Is this compound type unsized?
     pub fn is_unsized(&self, ctx: &BindgenContext) -> bool {
         !self.has_vtable(ctx) && self.fields.is_empty() &&
-            self.base_members.iter().all(|base| {
-                ctx
-                    .resolve_type(*base)
-                    .canonical_type(ctx)
-                    .is_unsized(ctx)
-            }) &&
-            self.ref_template.map_or(true, |template| {
-                ctx.resolve_type(template).is_unsized(ctx)
-            })
+        self.base_members.iter().all(|base| {
+            ctx.resolve_type(*base).canonical_type(ctx).is_unsized(ctx)
+        }) &&
+        self.ref_template
+            .map_or(true, |template| ctx.resolve_type(template).is_unsized(ctx))
     }
 
     /// Does this compound type have a destructor?
@@ -317,7 +315,8 @@ impl CompInfo {
 
         self.detect_has_destructor_cycle.set(true);
 
-        let has_destructor = self.has_destructor || match self.kind {
+        let has_destructor = self.has_destructor ||
+                             match self.kind {
             CompKind::Union => false,
             CompKind::Struct => {
                 // NB: We can't rely on a type with type parameters
@@ -327,15 +326,15 @@ impl CompInfo {
                 self.ref_template.as_ref().map_or(false, |t| {
                     ctx.resolve_type(*t).has_destructor(ctx)
                 }) ||
-                self.template_args.iter().any(|t| {
-                    ctx.resolve_type(*t).has_destructor(ctx)
-                }) ||
-                self.base_members.iter().any(|t| {
-                    ctx.resolve_type(*t).has_destructor(ctx)
-                }) ||
+                self.template_args
+                    .iter()
+                    .any(|t| ctx.resolve_type(*t).has_destructor(ctx)) ||
+                self.base_members
+                    .iter()
+                    .any(|t| ctx.resolve_type(*t).has_destructor(ctx)) ||
                 self.fields.iter().any(|field| {
                     ctx.resolve_type(field.ty)
-                                 .has_destructor(ctx)
+                        .has_destructor(ctx)
                 })
             }
         };
@@ -360,24 +359,23 @@ impl CompInfo {
             }
 
             // https://github.com/rust-lang/rust/issues/36640
-            if !self.template_args.is_empty() ||
-                self.ref_template.is_some() ||
-                !item.applicable_template_args(ctx).is_empty() {
+            if !self.template_args.is_empty() || self.ref_template.is_some() ||
+               !item.applicable_template_args(ctx).is_empty() {
                 return false;
             }
         }
 
         // With template args, use a safe subset of the types,
         // since copyability depends on the types itself.
-        self.ref_template.as_ref().map_or(true, |t| {
-            ctx.resolve_item(*t).can_derive_copy(ctx)
-        }) &&
-        self.base_members.iter().all(|t| {
-            ctx.resolve_item(*t).can_derive_copy(ctx)
-        }) &&
+        self.ref_template
+            .as_ref()
+            .map_or(true, |t| ctx.resolve_item(*t).can_derive_copy(ctx)) &&
+        self.base_members
+            .iter()
+            .all(|t| ctx.resolve_item(*t).can_derive_copy(ctx)) &&
         self.fields.iter().all(|field| {
             ctx.resolve_item(field.ty)
-                         .can_derive_copy(ctx)
+                .can_derive_copy(ctx)
         })
     }
 
@@ -411,7 +409,7 @@ impl CompInfo {
         let mut max_align = 0;
         for field in &self.fields {
             let field_layout = ctx.resolve_type(field.ty)
-                                            .layout(ctx);
+                .layout(ctx);
 
             if let Some(layout) = field_layout {
                 max_size = cmp::max(max_size, layout.size);
@@ -441,11 +439,12 @@ impl CompInfo {
 
     /// Does this type have a virtual table?
     pub fn has_vtable(&self, ctx: &BindgenContext) -> bool {
-        self.has_vtable || self.base_members().iter().any(|base| {
-            ctx
-                .resolve_type(*base)
+        self.has_vtable ||
+        self.base_members().iter().any(|base| {
+            ctx.resolve_type(*base)
                 .has_vtable(ctx)
-        }) || self.ref_template.map_or(false, |template| {
+        }) ||
+        self.ref_template.map_or(false, |template| {
             ctx.resolve_type(template).has_vtable(ctx)
         })
     }
@@ -469,7 +468,8 @@ impl CompInfo {
     pub fn from_ty(potential_id: ItemId,
                    ty: &clang::Type,
                    location: Option<clang::Cursor>,
-                   ctx: &mut BindgenContext) -> Result<Self, ParseError> {
+                   ctx: &mut BindgenContext)
+                   -> Result<Self, ParseError> {
         use clangll::*;
         // Sigh... For class templates we want the location, for
         // specialisations, we want the declaration...  So just try both.
@@ -491,14 +491,15 @@ impl CompInfo {
         let mut ci = CompInfo::new(kind);
         ci.is_anonymous = cursor.is_anonymous();
         ci.template_args = match ty.template_args() {
-            // In forward declarations and not specializations, etc, they are in
-            // the ast, we'll meet them in CXCursor_TemplateTypeParameter
+            // In forward declarations and not specializations,
+            // etc, they are in
+            // the ast, we'll meet them in
+            // CXCursor_TemplateTypeParameter
             None => vec![],
             Some(arg_types) => {
                 let num_arg_types = arg_types.len();
 
-                let args = arg_types
-                    .filter(|t| t.kind() != CXType_Invalid)
+                let args = arg_types.filter(|t| t.kind() != CXType_Invalid)
                     .map(|t| Item::from_ty_or_ref(t, None, None, ctx))
                     .collect::<Vec<_>>();
 
@@ -516,7 +517,7 @@ impl CompInfo {
         let mut maybe_anonymous_struct_field = None;
         cursor.visit(|cur, _other| {
             if cur.kind() != CXCursor_FieldDecl {
-                if let Some((ty, ref _clang_ty)) = maybe_anonymous_struct_field {
+                if let Some((ty, _)) = maybe_anonymous_struct_field {
                     let field = Field::new(None, ty, None, None, None, false);
                     ci.fields.push(field);
                 }
@@ -535,16 +536,24 @@ impl CompInfo {
                                 CXChildVisit_Continue
                             });
                             if !used {
-                                let field = Field::new(None, ty, None, None, None, false);
+                                let field = Field::new(None,
+                                                       ty,
+                                                       None,
+                                                       None,
+                                                       None,
+                                                       false);
                                 ci.fields.push(field);
                             }
-                        },
+                        }
                         None => {}
                     }
 
                     let bit_width = cur.bit_width();
-                    let field_type =
-                        Item::from_ty_or_ref(cur.cur_type(), Some(*cur), Some(potential_id), ctx);
+                    let field_type = Item::from_ty_or_ref(cur.cur_type(),
+                                                          Some(*cur),
+                                                          Some(potential_id),
+                                                          ctx);
+
                     let comment = cur.raw_comment();
                     let annotations = Annotations::new(cur);
                     let name = cur.spelling();
@@ -557,8 +566,12 @@ impl CompInfo {
 
                     let name = if name.is_empty() { None } else { Some(name) };
 
-                    let field = Field::new(name, field_type, comment,
-                                           annotations, bit_width, is_mutable);
+                    let field = Field::new(name,
+                                           field_type,
+                                           comment,
+                                           annotations,
+                                           bit_width,
+                                           is_mutable);
                     ci.fields.push(field);
 
                     // No we look for things like attributes and stuff.
@@ -581,14 +594,16 @@ impl CompInfo {
                 CXCursor_ClassTemplate |
                 CXCursor_ClassDecl => {
                     let inner = Item::parse(*cur, Some(potential_id), ctx)
-                                    .expect("Inner ClassDecl");
+                        .expect("Inner ClassDecl");
                     if !ci.inner_types.contains(&inner) {
                         ci.inner_types.push(inner);
                     }
                     // A declaration of an union or a struct without name could
                     // also be an unnamed field, unfortunately.
-                    if cur.spelling().is_empty() && cur.kind() != CXCursor_EnumDecl {
-                        maybe_anonymous_struct_field = Some((inner, cur.cur_type()));
+                    if cur.spelling().is_empty() &&
+                       cur.kind() != CXCursor_EnumDecl {
+                        let ty = cur.cur_type();
+                        maybe_anonymous_struct_field = Some((inner, ty));
                     }
                 }
                 CXCursor_PackedAttr => {
@@ -603,18 +618,24 @@ impl CompInfo {
                         return CXChildVisit_Continue;
                     }
 
-                    let default_type =
-                        Item::from_ty(&cur.cur_type(), Some(*cur), Some(potential_id), ctx).ok();
-                    let param = Item::named_type(cur.spelling(), default_type,
-                                                 potential_id, ctx);
+                    let default_type = Item::from_ty(&cur.cur_type(),
+                                                     Some(*cur),
+                                                     Some(potential_id),
+                                                     ctx)
+                        .ok();
+                    let param = Item::named_type(cur.spelling(),
+                                                 default_type,
+                                                 potential_id,
+                                                 ctx);
                     ci.template_args.push(param);
                 }
                 CXCursor_CXXBaseSpecifier => {
                     if !ci.has_vtable {
                         ci.has_vtable = cur.is_virtual_base();
                     }
-                    let type_id = Item::from_ty(&cur.cur_type(), None, None, ctx)
-                                        .expect("BaseSpecifier");
+                    let type_id =
+                        Item::from_ty(&cur.cur_type(), None, None, ctx)
+                            .expect("BaseSpecifier");
                     ci.base_members.push(type_id);
                 }
                 CXCursor_CXXMethod => {
@@ -663,9 +684,12 @@ impl CompInfo {
                         return CXChildVisit_Continue;
                     }
 
-                    // NB: This gets us an owned `Function`, not a `FunctionSig`.
-                    let method_signature = Item::parse(*cur, Some(potential_id), ctx)
-                                                .expect("CXXMethod");
+                    // NB: This gets us an owned `Function`, not a
+                    // `FunctionSig`.
+                    let method_signature =
+                        Item::parse(*cur, Some(potential_id), ctx)
+                            .expect("CXXMethod");
+
                     let is_const = cur.method_is_const();
                     let method_kind = if is_static {
                         MethodKind::Static
@@ -674,7 +698,11 @@ impl CompInfo {
                     } else {
                         MethodKind::Normal
                     };
-                    ci.methods.push(Method::new(method_kind, method_signature, is_const));
+
+                    let method =
+                        Method::new(method_kind, method_signature, is_const);
+
+                    ci.methods.push(method);
                 }
                 CXCursor_Destructor => {
                     if cur.method_is_virtual() {
@@ -688,7 +716,8 @@ impl CompInfo {
                 }
                 CXCursor_VarDecl => {
                     let linkage = cur.linkage();
-                    if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
+                    if linkage != CXLinkage_External &&
+                       linkage != CXLinkage_UniqueExternal {
                         return CXChildVisit_Continue;
                     }
 
@@ -698,7 +727,7 @@ impl CompInfo {
                     }
 
                     let item = Item::parse(*cur, Some(potential_id), ctx)
-                                    .expect("VarDecl");
+                        .expect("VarDecl");
                     ci.inner_vars.push(item);
                 }
                 // Intentionally not handled
@@ -708,8 +737,10 @@ impl CompInfo {
                 CXCursor_FunctionTemplate |
                 CXCursor_ConversionFunction => {}
                 _ => {
-                    warn!("unhandled composite member `{}` (kind {}) in `{}` ({})",
-                          cur.spelling(), cur.kind(), cursor.spelling(),
+                    warn!("unhandled comp member `{}` (kind {}) in `{}` ({})",
+                          cur.spelling(),
+                          cur.kind(),
+                          cursor.spelling(),
                           cur.location());
                 }
             }
@@ -724,7 +755,8 @@ impl CompInfo {
         Ok(ci)
     }
 
-    fn kind_from_cursor(cursor: &clang::Cursor) -> Result<CompKind, ParseError> {
+    fn kind_from_cursor(cursor: &clang::Cursor)
+                        -> Result<CompKind, ParseError> {
         use clangll::*;
         Ok(match cursor.kind() {
             CXCursor_UnionDecl => CompKind::Union,
@@ -750,7 +782,8 @@ impl CompInfo {
     /// See also documentation for `ir::Item::signature_contains_named_type`.
     pub fn signature_contains_named_type(&self,
                                          ctx: &BindgenContext,
-                                         ty: &Type) -> bool {
+                                         ty: &Type)
+                                         -> bool {
         // We don't generate these, so rather don't make the codegen step to
         // think we got it covered.
         if self.has_non_type_template_params() {
@@ -758,7 +791,7 @@ impl CompInfo {
         }
         self.template_args.iter().any(|arg| {
             ctx.resolve_type(*arg)
-                         .signature_contains_named_type(ctx, ty)
+                .signature_contains_named_type(ctx, ty)
         })
     }
 
@@ -787,19 +820,18 @@ impl CompInfo {
     /// Returns whether this type needs an explicit vtable because it has
     /// virtual methods and none of its base classes has already a vtable.
     pub fn needs_explicit_vtable(&self, ctx: &BindgenContext) -> bool {
-        self.has_vtable(ctx) && !self.base_members.iter().any(|base| {
+        self.has_vtable(ctx) &&
+        !self.base_members.iter().any(|base| {
             // NB: Ideally, we could rely in all these types being `comp`, and
             // life would be beautiful.
             //
             // Unfortunately, given the way we implement --match-pat, and also
             // that you can inherit from templated types, we need to handle
             // other cases here too.
-            ctx
-                .resolve_type(*base)
+            ctx.resolve_type(*base)
                 .canonical_type(ctx)
-                .as_comp().map_or(false, |ci| {
-                    ci.has_vtable(ctx)
-                })
+                .as_comp()
+                .map_or(false, |ci| ci.has_vtable(ctx))
         })
     }
 }
