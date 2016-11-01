@@ -1,10 +1,10 @@
 //! Intermediate representation for modules (AKA C++ namespaces).
 
-use super::context::BindgenContext;
-use super::item::ItemId;
 use clang;
 use parse::{ClangSubItemParser, ParseError, ParseResult};
 use parse_one;
+use super::context::BindgenContext;
+use super::item::ItemId;
 
 /// A module, as in, a C++ namespace.
 #[derive(Clone, Debug)]
@@ -41,18 +41,22 @@ impl Module {
 }
 
 impl ClangSubItemParser for Module {
-    fn parse(cursor: clang::Cursor, ctx: &mut BindgenContext) -> Result<ParseResult<Self>, ParseError> {
+    fn parse(cursor: clang::Cursor,
+             ctx: &mut BindgenContext)
+             -> Result<ParseResult<Self>, ParseError> {
         use clangll::*;
         match cursor.kind() {
             CXCursor_Namespace => {
                 let module_id = ctx.module(cursor);
                 ctx.with_module(module_id, |ctx, children| {
-                    cursor.visit(|cursor, _| parse_one(ctx, *cursor, Some(module_id), children))
+                    cursor.visit(|cursor, _| {
+                        parse_one(ctx, *cursor, Some(module_id), children)
+                    })
                 });
 
                 Ok(ParseResult::AlreadyResolved(module_id))
             }
-            _ => Err(ParseError::Continue)
+            _ => Err(ParseError::Continue),
         }
     }
 }

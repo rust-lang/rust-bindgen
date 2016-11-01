@@ -1,17 +1,17 @@
 //! Bindgen's core intermediate representation type.
 
+use clang;
+use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use regex::Regex;
+use std::cell::{Cell, RefCell};
+use std::sync::atomic::{ATOMIC_USIZE_INIT, AtomicUsize, Ordering};
+use super::annotations::Annotations;
 use super::context::BindgenContext;
+use super::function::Function;
 use super::item_kind::ItemKind;
+use super::module::Module;
 use super::ty::{Type, TypeKind};
 use super::type_collector::{ItemSet, TypeCollector};
-use super::function::Function;
-use super::module::Module;
-use super::annotations::Annotations;
-use std::cell::{Cell, RefCell};
-use std::sync::atomic::{AtomicUsize, ATOMIC_USIZE_INIT, Ordering};
-use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
-use clang;
 
 /// A trait to get the canonical name from an item.
 ///
@@ -80,10 +80,10 @@ impl TypeCollector for ItemId {
     type Extra = ();
 
     fn collect_types(&self,
-                     context: &BindgenContext,
+                     ctx: &BindgenContext,
                      types: &mut ItemSet,
                      extra: &()) {
-        context.resolve_item(*self).collect_types(context, types, extra);
+        ctx.resolve_item(*self).collect_types(ctx, types, extra);
     }
 }
 
@@ -91,21 +91,21 @@ impl TypeCollector for Item {
     type Extra = ();
 
     fn collect_types(&self,
-                     context: &BindgenContext,
+                     ctx: &BindgenContext,
                      types: &mut ItemSet,
                      _extra: &()) {
-        if self.is_hidden(context) || types.contains(&self.id()) {
+        if self.is_hidden(ctx) || types.contains(&self.id()) {
             return;
         }
 
         match *self.kind() {
             ItemKind::Type(ref ty) => {
                 types.insert(self.id());
-                if !self.is_opaque(context) {
-                    ty.collect_types(context, types, self);
+                if !self.is_opaque(ctx) {
+                    ty.collect_types(ctx, types, self);
                 }
             }
-            _ => {}, // FIXME.
+            _ => {} // FIXME.
         }
     }
 }
@@ -171,7 +171,8 @@ impl Item {
                comment: Option<String>,
                annotations: Option<Annotations>,
                parent_id: ItemId,
-               kind: ItemKind) -> Self {
+               kind: ItemKind)
+               -> Self {
         debug_assert!(id != parent_id || kind.is_module());
         Item {
             id: id,
@@ -248,8 +249,7 @@ impl Item {
     pub fn is_toplevel(&self, ctx: &BindgenContext) -> bool {
         // FIXME: Workaround for some types falling behind when parsing weird
         // stl classes, for example.
-        if ctx.options().enable_cxx_namespaces &&
-           self.kind().is_module() &&
+        if ctx.options().enable_cxx_namespaces && self.kind().is_module() &&
            self.id() != ctx.root_module() {
             return false;
         }
@@ -263,7 +263,8 @@ impl Item {
 
             if parent_item.id() == ctx.root_module() {
                 return true;
-            } else if ctx.options().enable_cxx_namespaces || !parent_item.kind().is_module() {
+            } else if ctx.options().enable_cxx_namespaces ||
+                      !parent_item.kind().is_module() {
                 return false;
             }
 
@@ -328,16 +329,19 @@ impl Item {
     /// Normally we could do this check just in the `Type` kind, but we also
     /// need to check the `applicable_template_args` more generally, since we
     /// could need a type transitively from our parent, see the test added in
-    /// <https://github.com/servo/rust-bindgen/pull/85/commits/2a3f93074dd2898669dbbce6e97e5cc4405d7cb1>
+    /// commit 2a3f93074dd2898669dbbce6e97e5cc4405d7cb1.
     ///
     /// It's kind of unfortunate (in the sense that it's a sort of complex
     /// process), but I think it should get all the cases.
-    fn signature_contains_named_type(&self, ctx: &BindgenContext, ty: &Type) -> bool {
+    fn signature_contains_named_type(&self,
+                                     ctx: &BindgenContext,
+                                     ty: &Type)
+                                     -> bool {
         debug_assert!(ty.is_named());
         self.expect_type().signature_contains_named_type(ctx, ty) ||
-            self.applicable_template_args(ctx).iter().any(|template| {
-                ctx.resolve_type(*template).signature_contains_named_type(ctx, ty)
-            })
+        self.applicable_template_args(ctx).iter().any(|template| {
+            ctx.resolve_type(*template).signature_contains_named_type(ctx, ty)
+        })
     }
 
     /// Returns the template arguments that apply to a struct. This is a concept
@@ -373,7 +377,9 @@ impl Item {
     /// the template parameter type `T`, and that's exactly what this method
     /// represents. The unused template parameters get stripped in the
     /// `signature_contains_named_type` check.
-    pub fn applicable_template_args(&self, ctx: &BindgenContext) -> Vec<ItemId> {
+    pub fn applicable_template_args(&self,
+                                    ctx: &BindgenContext)
+                                    -> Vec<ItemId> {
         let ty = match *self.kind() {
             ItemKind::Type(ref ty) => ty,
             _ => return vec![],
@@ -381,12 +387,14 @@ impl Item {
 
         fn parent_contains(ctx: &BindgenContext,
                            parent_template_args: &[ItemId],
-                           item: ItemId) -> bool {
+                           item: ItemId)
+                           -> bool {
             let item_ty = ctx.resolve_type(item);
             parent_template_args.iter().any(|parent_item| {
                 let parent_ty = ctx.resolve_type(*parent_item);
                 match (parent_ty.kind(), item_ty.kind()) {
-                    (&TypeKind::Named(ref n, _), &TypeKind::Named(ref i, _)) => n == i,
+                    (&TypeKind::Named(ref n, _),
+                     &TypeKind::Named(ref i, _)) => n == i,
                     _ => false,
                 }
             })
@@ -402,21 +410,23 @@ impl Item {
             }
             TypeKind::Alias(_, inner) => {
                 let parent_args = ctx.resolve_item(self.parent_id())
-                   .applicable_template_args(ctx);
+                    .applicable_template_args(ctx);
                 let inner = ctx.resolve_item(inner);
 
                 // Avoid unused type parameters, sigh.
-                parent_args.iter().cloned().filter(|arg| {
-                    let arg = ctx.resolve_type(*arg);
-                    arg.is_named() && inner.signature_contains_named_type(ctx, arg)
-                }).collect()
+                parent_args.iter()
+                    .cloned()
+                    .filter(|arg| {
+                        let arg = ctx.resolve_type(*arg);
+                        arg.is_named() &&
+                        inner.signature_contains_named_type(ctx, arg)
+                    })
+                    .collect()
             }
             // XXX Is this completely correct? Partial template specialization
             // is hard anyways, sigh...
             TypeKind::TemplateAlias(_, ref args) |
-            TypeKind::TemplateRef(_, ref args) => {
-                args.clone()
-            }
+            TypeKind::TemplateRef(_, ref args) => args.clone(),
             // In a template specialization we've got all we want.
             TypeKind::Comp(ref ci) if ci.is_template_specialization() => {
                 ci.template_args().iter().cloned().collect()
@@ -424,7 +434,7 @@ impl Item {
             TypeKind::Comp(ref ci) => {
                 let mut parent_template_args =
                     ctx.resolve_item(self.parent_id())
-                       .applicable_template_args(ctx);
+                        .applicable_template_args(ctx);
 
                 for ty in ci.template_args() {
                     if !parent_contains(ctx, &parent_template_args, *ty) {
@@ -457,7 +467,7 @@ impl Item {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         self.annotations.hide() ||
-            ctx.hidden_by_name(&self.real_canonical_name(ctx, false, true), self.id)
+        ctx.hidden_by_name(&self.real_canonical_name(ctx, false, true), self.id)
     }
 
     /// Is this item opaque?
@@ -465,7 +475,7 @@ impl Item {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         self.annotations.opaque() ||
-            ctx.opaque_by_name(&self.real_canonical_name(ctx, false, true))
+        ctx.opaque_by_name(&self.real_canonical_name(ctx, false, true))
     }
 
     /// Get the canonical name without taking into account the replaces
@@ -482,13 +492,17 @@ impl Item {
     fn real_canonical_name(&self,
                            ctx: &BindgenContext,
                            count_namespaces: bool,
-                           for_name_checking: bool) -> String {
+                           for_name_checking: bool)
+                           -> String {
         let base_name = match *self.kind() {
             ItemKind::Type(ref ty) => {
                 match *ty.kind() {
-                    // If we're a template specialization, our name is our parent's
-                    TypeKind::Comp(ref ci) if ci.is_template_specialization() => {
-                        return ci.specialized_template().unwrap().canonical_name(ctx);
+                    // If we're a template specialization, our name is our
+                    // parent's.
+                    TypeKind::Comp(ref ci)
+                        if ci.is_template_specialization() => {
+                        return ci.specialized_template().unwrap()
+                                 .canonical_name(ctx);
                     },
                     // Same as above
                     TypeKind::ResolvedTypeRef(inner) |
@@ -512,7 +526,10 @@ impl Item {
                     // would be needed.
                     TypeKind::TemplateAlias(inner, _) => {
                         if for_name_checking {
-                            return ctx.resolve_item(inner).real_canonical_name(ctx, count_namespaces, false);
+                            return ctx.resolve_item(inner)
+                                      .real_canonical_name(ctx,
+                                                           count_namespaces,
+                                                           false);
                         }
                         Some("")
                     }
@@ -538,7 +555,7 @@ impl Item {
                                 break;
                             }
                             let fun = ctx.resolve_item(method.signature())
-                                         .expect_function();
+                                .expect_function();
                             if fun.name() == base {
                                 count += 1;
                             }
@@ -552,9 +569,7 @@ impl Item {
                 }
                 Some(base)
             }
-            ItemKind::Var(ref var) => {
-                Some(var.name().to_owned())
-            }
+            ItemKind::Var(ref var) => Some(var.name().to_owned()),
             ItemKind::Module(ref module) => {
                 module.name().map(ToOwned::to_owned)
             }
@@ -595,10 +610,14 @@ impl Item {
     fn make_exposed_name(&self,
                          parent_name: Option<String>,
                          base_name: Option<String>,
-                         ctx: &BindgenContext) -> String {
+                         ctx: &BindgenContext)
+                         -> String {
         lazy_static! {
-            static ref RE_ENDS_WITH_BINDGEN_TY: Regex = Regex::new(r"_bindgen_ty(_\d+)+$").unwrap();
-            static ref RE_ENDS_WITH_BINDGEN_MOD: Regex = Regex::new(r"_bindgen_mod(_\d+)+$").unwrap();
+            static ref RE_ENDS_WITH_BINDGEN_TY: Regex =
+                Regex::new(r"_bindgen_ty(_\d+)+$").unwrap();
+
+            static ref RE_ENDS_WITH_BINDGEN_MOD: Regex =
+                Regex::new(r"_bindgen_mod(_\d+)+$").unwrap();
         }
 
         let (re, kind) = match *self.kind() {
@@ -606,18 +625,24 @@ impl Item {
             _ => (&*RE_ENDS_WITH_BINDGEN_TY, "ty"),
         };
 
-        let parent_name = parent_name.and_then(|n| if n.is_empty() { None } else { Some(n) });
+        let parent_name =
+            parent_name.and_then(|n| if n.is_empty() { None } else { Some(n) });
         match (parent_name, base_name) {
             (Some(parent), Some(base)) => format!("{}_{}", parent, base),
             (Some(parent), None) => {
                 if re.is_match(parent.as_str()) {
                     format!("{}_{}", parent, self.exposed_id(ctx))
                 } else {
-                    format!("{}__bindgen_{}_{}", parent, kind, self.exposed_id(ctx))
+                    format!("{}__bindgen_{}_{}",
+                            parent,
+                            kind,
+                            self.exposed_id(ctx))
                 }
             }
             (None, Some(base)) => base,
-            (None, None) => format!("_bindgen_{}_{}", kind, self.exposed_id(ctx)),
+            (None, None) => {
+                format!("_bindgen_{}_{}", kind, self.exposed_id(ctx))
+            }
         }
     }
 
@@ -645,13 +670,16 @@ impl Item {
 }
 
 impl ClangItemParser for Item {
-    fn builtin_type(kind: TypeKind, is_const: bool, ctx: &mut BindgenContext) -> ItemId {
+    fn builtin_type(kind: TypeKind,
+                    is_const: bool,
+                    ctx: &mut BindgenContext)
+                    -> ItemId {
         // Feel free to add more here, I'm just lazy.
         match kind {
             TypeKind::Void |
             TypeKind::Int(..) |
             TypeKind::Pointer(..) |
-            TypeKind::Float(..) => {},
+            TypeKind::Float(..) => {}
             _ => panic!("Unsupported builtin type"),
         }
 
@@ -659,14 +687,16 @@ impl ClangItemParser for Item {
         let id = ItemId::next();
         let module = ctx.root_module();
         ctx.add_item(Item::new(id, None, None, module, ItemKind::Type(ty)),
-                     None, None);
+                     None,
+                     None);
         id
     }
 
 
     fn parse(cursor: clang::Cursor,
              parent_id: Option<ItemId>,
-             context: &mut BindgenContext) -> Result<ItemId, ParseError> {
+             ctx: &mut BindgenContext)
+             -> Result<ItemId, ParseError> {
         use ir::function::Function;
         use ir::module::Module;
         use ir::var::Var;
@@ -679,15 +709,18 @@ impl ClangItemParser for Item {
         let comment = cursor.raw_comment();
         let annotations = Annotations::new(&cursor);
 
-        let current_module = context.current_module();
+        let current_module = ctx.current_module();
+        let relevant_parent_id = parent_id.unwrap_or(current_module);
+
         macro_rules! try_parse {
             ($what:ident) => {
-                match $what::parse(cursor, context) {
+                match $what::parse(cursor, ctx) {
                     Ok(ParseResult::New(item, declaration)) => {
                         let id = ItemId::next();
-                        context.add_item(Item::new(id, comment, annotations,
-                                                   parent_id.unwrap_or(current_module),
-                                                   ItemKind::$what(item)),
+
+                        ctx.add_item(Item::new(id, comment, annotations,
+                                               relevant_parent_id,
+                                               ItemKind::$what(item)),
                                          declaration,
                                          Some(cursor));
                         return Ok(id);
@@ -723,11 +756,12 @@ impl ClangItemParser for Item {
                 cursor
             };
             match Self::from_ty(&applicable_cursor.cur_type(),
-                                Some(applicable_cursor), parent_id, context)
-            {
+                                Some(applicable_cursor),
+                                parent_id,
+                                ctx) {
                 Ok(ty) => return Ok(ty),
                 Err(ParseError::Recurse) => return Err(ParseError::Recurse),
-                Err(ParseError::Continue) => {},
+                Err(ParseError::Continue) => {}
             }
         }
 
@@ -741,11 +775,13 @@ impl ClangItemParser for Item {
                 CXCursor_MacroDefinition |
                 CXCursor_InclusionDirective => {
                     debug!("Unhandled cursor kind {:?}: {:?}",
-                           cursor.kind(), cursor);
-                },
-                _ =>{
+                           cursor.kind(),
+                           cursor);
+                }
+                _ => {
                     error!("Unhandled cursor kind {:?}: {:?}",
-                           cursor.kind(), cursor);
+                           cursor.kind(),
+                           cursor);
                 }
             }
 
@@ -756,8 +792,13 @@ impl ClangItemParser for Item {
     fn from_ty_or_ref(ty: clang::Type,
                       location: Option<clang::Cursor>,
                       parent_id: Option<ItemId>,
-                      context: &mut BindgenContext) -> ItemId {
-        Self::from_ty_or_ref_with_id(ItemId::next(), ty, location, parent_id, context)
+                      ctx: &mut BindgenContext)
+                      -> ItemId {
+        Self::from_ty_or_ref_with_id(ItemId::next(),
+                                     ty,
+                                     location,
+                                     parent_id,
+                                     ctx)
     }
 
     /// Parse a C++ type. If we find a reference to a type that has not been
@@ -774,18 +815,27 @@ impl ClangItemParser for Item {
                               ty: clang::Type,
                               location: Option<clang::Cursor>,
                               parent_id: Option<ItemId>,
-                              context: &mut BindgenContext) -> ItemId {
-        debug!("from_ty_or_ref_with_id: {:?} {:?}, {:?}, {:?}", potential_id, ty, location, parent_id);
+                              ctx: &mut BindgenContext)
+                              -> ItemId {
+        debug!("from_ty_or_ref_with_id: {:?} {:?}, {:?}, {:?}",
+               potential_id,
+               ty,
+               location,
+               parent_id);
 
-        if context.collected_typerefs() {
+        if ctx.collected_typerefs() {
             debug!("refs already collected, resolving directly");
-            return Self::from_ty_with_id(potential_id, &ty, location, parent_id, context)
-                        .expect("Unable to resolve type");
+            return Self::from_ty_with_id(potential_id,
+                                         &ty,
+                                         location,
+                                         parent_id,
+                                         ctx)
+                .expect("Unable to resolve type");
         }
 
-        if let Some(ty) = context.builtin_or_resolved_ty(potential_id,
-                                                         parent_id, &ty,
-                                                         location) {
+        if let Some(ty) = ctx.builtin_or_resolved_ty(potential_id,
+                                                     parent_id, &ty,
+                                                     location) {
             debug!("{:?} already resolved: {:?}", ty, location);
             return ty;
         }
@@ -794,12 +844,17 @@ impl ClangItemParser for Item {
 
         let is_const = ty.is_const();
         let kind = TypeKind::UnresolvedTypeRef(ty, location, parent_id);
-        let current_module = context.current_module();
-        context.add_item(Item::new(potential_id, None, None,
-                                   parent_id.unwrap_or(current_module),
-                                   ItemKind::Type(Type::new(None, None, kind, is_const))),
-                         Some(clang::Cursor::null()),
-                         None);
+        let current_module = ctx.current_module();
+        ctx.add_item(Item::new(potential_id,
+                               None,
+                               None,
+                               parent_id.unwrap_or(current_module),
+                               ItemKind::Type(Type::new(None,
+                                                        None,
+                                                        kind,
+                                                        is_const))),
+                     Some(clang::Cursor::null()),
+                     None);
         potential_id
     }
 
@@ -807,8 +862,9 @@ impl ClangItemParser for Item {
     fn from_ty(ty: &clang::Type,
                location: Option<clang::Cursor>,
                parent_id: Option<ItemId>,
-               context: &mut BindgenContext) -> Result<ItemId, ParseError> {
-        Self::from_ty_with_id(ItemId::next(), ty, location, parent_id, context)
+               ctx: &mut BindgenContext)
+               -> Result<ItemId, ParseError> {
+        Self::from_ty_with_id(ItemId::next(), ty, location, parent_id, ctx)
     }
 
     /// This is one of the trickiest methods you'll find (probably along with
@@ -823,7 +879,8 @@ impl ClangItemParser for Item {
                        ty: &clang::Type,
                        location: Option<clang::Cursor>,
                        parent_id: Option<ItemId>,
-                       context: &mut BindgenContext) -> Result<ItemId, ParseError> {
+                       ctx: &mut BindgenContext)
+                       -> Result<ItemId, ParseError> {
         use clangll::*;
 
         let decl = {
@@ -836,19 +893,19 @@ impl ClangItemParser for Item {
             }
         };
 
-        let comment =
-            decl.raw_comment()
-                .or_else(|| location.as_ref().and_then(|l| l.raw_comment()));
-        let annotations =
-            Annotations::new(&decl)
-                      .or_else(|| location.as_ref().and_then(|l| Annotations::new(l)));
+        let comment = decl.raw_comment()
+            .or_else(|| location.as_ref().and_then(|l| l.raw_comment()));
+        let annotations = Annotations::new(&decl)
+            .or_else(|| location.as_ref().and_then(|l| Annotations::new(l)));
 
-        if let Some(ref replaced) = annotations.as_ref().and_then(|a| a.use_instead_of()) {
-            context.replace(replaced, id);
+        if let Some(ref annotations) = annotations {
+            if let Some(ref replaced) = annotations.use_instead_of() {
+                ctx.replace(replaced, id);
+            }
         }
 
-        if let Some(ty) = context.builtin_or_resolved_ty(id, parent_id,
-                                                         ty, location) {
+        if let Some(ty) =
+               ctx.builtin_or_resolved_ty(id, parent_id, ty, location) {
             return Ok(ty);
         }
 
@@ -856,7 +913,9 @@ impl ClangItemParser for Item {
         let mut valid_decl = decl.kind() != CXCursor_NoDeclFound;
         let declaration_to_look_for = if valid_decl {
             decl.canonical()
-        } else if location.is_some() && location.unwrap().kind() == CXCursor_ClassTemplate {
+        } else if location.is_some() &&
+                                                location.unwrap().kind() ==
+                                                CXCursor_ClassTemplate {
             valid_decl = true;
             location.unwrap()
         } else {
@@ -864,26 +923,31 @@ impl ClangItemParser for Item {
         };
 
         if valid_decl {
-            if let Some(&(_, item_id)) = context.currently_parsed_types.iter().find(|&&(d, _)| d == declaration_to_look_for) {
+            if let Some(&(_, item_id)) = ctx.currently_parsed_types
+                .iter()
+                .find(|&&(d, _)| d == declaration_to_look_for) {
                 debug!("Avoiding recursion parsing type: {:?}", ty);
                 return Ok(item_id);
             }
         }
 
-        let current_module = context.current_module();
+        let current_module = ctx.current_module();
         if valid_decl {
-            context.currently_parsed_types.push((declaration_to_look_for, id));
+            ctx.currently_parsed_types.push((declaration_to_look_for, id));
         }
 
-        let result = Type::from_clang_ty(id, ty, location, parent_id, context);
+        let result = Type::from_clang_ty(id, ty, location, parent_id, ctx);
+        let relevant_parent_id = parent_id.unwrap_or(current_module);
         let ret = match result {
             Ok(ParseResult::AlreadyResolved(ty)) => Ok(ty),
             Ok(ParseResult::New(item, declaration)) => {
-                context.add_item(Item::new(id, comment, annotations,
-                                           parent_id.unwrap_or(current_module),
-                                           ItemKind::Type(item)),
-                                 declaration,
-                                 location);
+                ctx.add_item(Item::new(id,
+                                       comment,
+                                       annotations,
+                                       relevant_parent_id,
+                                       ItemKind::Type(item)),
+                             declaration,
+                             location);
                 Ok(id)
             }
             Err(ParseError::Continue) => Err(ParseError::Continue),
@@ -897,13 +961,18 @@ impl ClangItemParser for Item {
                     // declaration_to_look_for suspiciously shares a lot of
                     // logic with ir::context, so we should refactor that.
                     if valid_decl {
-                        let (popped_decl, _) = context.currently_parsed_types.pop().unwrap();
+                        let (popped_decl, _) =
+                            ctx.currently_parsed_types.pop().unwrap();
                         assert_eq!(popped_decl, declaration_to_look_for);
                     }
 
                     location.visit(|cur, _other| {
                         use clangll::*;
-                        result = Item::from_ty_with_id(id, ty, Some(*cur), parent_id, context);
+                        result = Item::from_ty_with_id(id,
+                                                       ty,
+                                                       Some(*cur),
+                                                       parent_id,
+                                                       ctx);
                         match result {
                             Ok(..) => CXChildVisit_Break,
                             Err(ParseError::Recurse) => CXChildVisit_Recurse,
@@ -912,7 +981,8 @@ impl ClangItemParser for Item {
                     });
 
                     if valid_decl {
-                        context.currently_parsed_types.push((declaration_to_look_for, id));
+                        ctx.currently_parsed_types
+                            .push((declaration_to_look_for, id));
                     }
                 }
                 // If we have recursed into the AST all we know, and we still
@@ -925,10 +995,11 @@ impl ClangItemParser for Item {
                 // It's harmless, but if we restrict that, then
                 // tests/headers/nsStyleAutoArray.hpp crashes.
                 if let Err(ParseError::Recurse) = result {
-                    Ok(Self::named_type_with_id(id, ty.spelling(),
+                    Ok(Self::named_type_with_id(id,
+                                                ty.spelling(),
                                                 None,
-                                                parent_id.unwrap_or(context.current_module()),
-                                                context))
+                                                relevant_parent_id,
+                                                ctx))
                 } else {
                     result
                 }
@@ -936,7 +1007,7 @@ impl ClangItemParser for Item {
         };
 
         if valid_decl {
-            let (popped_decl, _) = context.currently_parsed_types.pop().unwrap();
+            let (popped_decl, _) = ctx.currently_parsed_types.pop().unwrap();
             assert_eq!(popped_decl, declaration_to_look_for);
         }
 
@@ -954,17 +1025,21 @@ impl ClangItemParser for Item {
                              name: S,
                              default: Option<ItemId>,
                              parent_id: ItemId,
-                             context: &mut BindgenContext) -> ItemId
-        where S: Into<String>
+                             ctx: &mut BindgenContext)
+                             -> ItemId
+        where S: Into<String>,
     {
         // see tests/headers/const_tparam.hpp
         // and tests/headers/variadic_tname.hpp
         let name = name.into().replace("const ", "").replace(".", "");
 
-        context.add_item(Item::new(id, None, None, parent_id,
-                                   ItemKind::Type(Type::named(name, default))),
-                         None,
-                         None);
+        ctx.add_item(Item::new(id,
+                               None,
+                               None,
+                               parent_id,
+                               ItemKind::Type(Type::named(name, default))),
+                     None,
+                     None);
 
         id
     }
@@ -972,10 +1047,11 @@ impl ClangItemParser for Item {
     fn named_type<S>(name: S,
                      default: Option<ItemId>,
                      parent_id: ItemId,
-                     context: &mut BindgenContext) -> ItemId
-        where S: Into<String>
+                     ctx: &mut BindgenContext)
+                     -> ItemId
+        where S: Into<String>,
     {
-        Self::named_type_with_id(ItemId::next(), name, default, parent_id, context)
+        Self::named_type_with_id(ItemId::next(), name, default, parent_id, ctx)
     }
 }
 
@@ -989,7 +1065,8 @@ impl ItemCanonicalName for Item {
         if self.canonical_name_cache.borrow().is_none() {
             *self.canonical_name_cache.borrow_mut() =
                 Some(self.real_canonical_name(ctx,
-                                              ctx.options().enable_cxx_namespaces,
+                                              ctx.options()
+                                                  .enable_cxx_namespaces,
                                               false));
         }
         return self.canonical_name_cache.borrow().as_ref().unwrap().clone();
@@ -1015,8 +1092,10 @@ impl ItemCanonicalPath for Item {
         if let ItemKind::Type(ref ty) = *self.kind() {
             match *ty.kind() {
                 TypeKind::Comp(ref ci) if ci.is_template_specialization() => {
-                    return ci.specialized_template().unwrap().canonical_path(ctx);
-                },
+                    return ci.specialized_template()
+                        .unwrap()
+                        .canonical_path(ctx);
+                }
                 TypeKind::ResolvedTypeRef(inner) |
                 TypeKind::TemplateRef(inner, _) => {
                     return inner.canonical_path(ctx);
@@ -1029,7 +1108,8 @@ impl ItemCanonicalPath for Item {
         }
 
         let mut parent_path = self.parent_id().canonical_path(&ctx);
-        if parent_path.last().map_or(false, |parent_name| parent_name.is_empty()) {
+        if parent_path.last()
+            .map_or(false, |parent_name| parent_name.is_empty()) {
             // This only happens (or should only happen) when we're an alias,
             // and our parent is a templated alias, in which case the last
             // component of the path will be empty.

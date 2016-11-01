@@ -1,4 +1,4 @@
-/// Helpers for code generation that don't need macro expansion.
+//! Helpers for code generation that don't need macro expansion.
 
 use aster;
 use ir::layout::Layout;

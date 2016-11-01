@@ -1,7 +1,7 @@
 //! A type that represents the union of a set of regular expressions.
 
-use std::borrow::Borrow;
 use regex::Regex;
+use std::borrow::Borrow;
 
 // Yeah, I'm aware this is sorta crappy, should be cheaper to compile a regex
 // ORing all the patterns, I guess...
@@ -9,7 +9,7 @@ use regex::Regex;
 /// A dynamic set of regular expressions.
 #[derive(Debug)]
 pub struct RegexSet {
-    items: Vec<Regex>
+    items: Vec<Regex>,
 }
 
 impl RegexSet {
@@ -20,7 +20,7 @@ impl RegexSet {
 
     /// Extend this set with every regex in the iterator.
     pub fn extend<I>(&mut self, iter: I)
-        where I: IntoIterator<Item=String>
+        where I: IntoIterator<Item = String>,
     {
         for s in iter.into_iter() {
             self.insert(&s)
@@ -29,7 +29,7 @@ impl RegexSet {
 
     /// Insert a new regex into this set.
     pub fn insert<S>(&mut self, string: &S)
-        where S: Borrow<str>
+        where S: Borrow<str>,
     {
         let s = string.borrow();
         match Regex::new(&format!("^{}$", s)) {
@@ -44,7 +44,7 @@ impl RegexSet {
 
     /// Does the given `string` match any of the regexes in this set?
     pub fn matches<S>(&self, string: &S) -> bool
-        where S: Borrow<str>
+        where S: Borrow<str>,
     {
         let s = string.borrow();
         for r in &self.items {

@@ -12,6 +12,7 @@ yourself.
   * [Running All Tests](#tests-all)
   * [Running a Single, Specific Test](#tests-one)
   * [Authoring New Tests](#tests-new)
+* [Automatic Code Formatting](#formatting)
 * [Debug Logging](#logs)
 
 ## Code of Conduct <span id="coc"/>
@@ -94,6 +95,27 @@ specify the required features at the top of the test header in a similar manner:
 ```c
 // bingden-features: llvm_stable
 ```
+
+## Automatic code formatting <span id="formatting"/>
+
+There's a `rustfmt.toml` file in the repo. Ideally changes should be consistent
+with the style, though that's not enforced right now.
+
+[`rustfmt`](https://github.com/rust-lang-nursery/rustfmt) can catch and fix
+automatically all the coding style issues it finds. In order to use it it
+suffices to do:
+
+```
+$ cargo fmt
+```
+
+For it to work, you need to have `rustfmt` installed. To do so:
+
+```
+$ cargo install rustfmt
+```
+
+And ensure `~/.cargo/bin` is on your path.
 
 ## Debug Logging <span id="logs"/>
 

@@ -46,9 +46,8 @@ pub enum IntKind {
     I128,
 
     /// A `uint128_t`.
-    U128,
-
-    // Though now we're at it we could add equivalents for the rust types...
+    U128, /* Though now we're at it we could add equivalents for the rust
+           * types... */
 }
 
 impl IntKind {
@@ -56,11 +55,10 @@ impl IntKind {
     pub fn is_signed(&self) -> bool {
         use self::IntKind::*;
         match *self {
-            Bool | UChar | UShort |
-            UInt | ULong | ULongLong | U16 | U32 | U128 => false,
+            Bool | UChar | UShort | UInt | ULong | ULongLong | U16 | U32 |
+            U128 => false,
 
-            Char | Short | Int |
-            Long | LongLong | I128 => true,
+            Char | Short | Int | Long | LongLong | I128 => true,
         }
     }
 }

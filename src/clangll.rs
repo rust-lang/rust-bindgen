@@ -5,6 +5,7 @@
 #![allow(unused_attributes)]
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
+#![cfg_attr(rustfmt, rustfmt_skip)]
 
 use ::std::os::raw::{ c_char, c_int, c_long, c_longlong, c_uint, c_ulong, c_ulonglong, c_void};
 
