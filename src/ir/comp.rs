@@ -490,26 +490,24 @@ impl CompInfo {
 
         let mut ci = CompInfo::new(kind);
         ci.is_anonymous = cursor.is_anonymous();
-        ci.template_args = match ty.num_template_args() {
+        ci.template_args = match ty.template_args() {
             // In forward declarations and not specializations, etc, they are in
             // the ast, we'll meet them in CXCursor_TemplateTypeParameter
             None => vec![],
-            Some(len) => {
-                let mut list = Vec::with_capacity(len as usize);
-                for i in 0..len {
-                    let arg_type = ty.template_arg_type(i);
-                    if arg_type.kind() != CXType_Invalid {
-                        let type_id =
-                            Item::from_ty_or_ref(arg_type, None, None, ctx);
+            Some(arg_types) => {
+                let num_arg_types = arg_types.len();
 
-                        list.push(type_id);
-                    } else {
-                        ci.has_non_type_template_params = true;
-                        warn!("warning: Template parameter is not a type");
-                    }
+                let args = arg_types
+                    .filter(|t| t.kind() != CXType_Invalid)
+                    .map(|t| Item::from_ty_or_ref(t, None, None, ctx))
+                    .collect::<Vec<_>>();
+
+                if args.len() != num_arg_types {
+                    ci.has_non_type_template_params = true;
+                    warn!("warning: Template parameter is not a type");
                 }
 
-                list
+                args
             }
         };
 
