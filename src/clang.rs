@@ -45,10 +45,7 @@ impl Cursor {
     ///
     /// The USR can be used to compare entities across translation units.
     pub fn usr(&self) -> Option<String> {
-        let s = String_ {
-                x: unsafe { clang_getCursorUSR(self.x) },
-            }
-            .to_string();
+        let s: String = unsafe { clang_getCursorUSR(self.x) }.into();
         if s.is_empty() { None } else { Some(s) }
     }
 
@@ -66,12 +63,7 @@ impl Cursor {
 
     /// Get this cursor's referent's spelling.
     pub fn spelling(&self) -> String {
-        unsafe {
-            String_ {
-                    x: clang_getCursorSpelling(self.x),
-                }
-                .to_string()
-        }
+        unsafe { clang_getCursorSpelling(self.x).into() }
     }
 
     /// Get this cursor's referent's display name.
@@ -79,22 +71,12 @@ impl Cursor {
     /// This is not necessarily a valid identifier. It includes extra
     /// information, such as parameters for a function, etc.
     pub fn display_name(&self) -> String {
-        unsafe {
-            String_ {
-                    x: clang_getCursorDisplayName(self.x),
-                }
-                .to_string()
-        }
+        unsafe { clang_getCursorDisplayName(self.x).into() }
     }
 
     /// Get the mangled name of this cursor's referent.
     pub fn mangling(&self) -> String {
-        unsafe {
-            String_ {
-                    x: clang_Cursor_getMangling(self.x),
-                }
-                .to_string()
-        }
+        unsafe { clang_Cursor_getMangling(self.x).into() }
     }
 
     /// Get the `Cursor` for this cursor's referent's lexical parent.
@@ -246,12 +228,8 @@ impl Cursor {
 
     /// Get the raw declaration comment for this referent, if one exists.
     pub fn raw_comment(&self) -> Option<String> {
-        let s = unsafe {
-            String_ {
-                    x: clang_Cursor_getRawCommentText(self.x),
-                }
-                .to_string()
-        };
+        let s: String =
+            unsafe { clang_Cursor_getRawCommentText(self.x).into() };
         if s.is_empty() { None } else { Some(s) }
     }
 
@@ -604,12 +582,7 @@ impl Type {
 
     /// Get a raw display name for this type.
     pub fn spelling(&self) -> String {
-        unsafe {
-            String_ {
-                    x: clang_getTypeSpelling(self.x),
-                }
-                .to_string()
-        }
+        unsafe { clang_getTypeSpelling(self.x).into() }
     }
 
     /// Is this type const qualified?
@@ -872,12 +845,7 @@ impl Comment {
     /// Given that this comment is the start or end of an HTML tag, get its tag
     /// name.
     pub fn get_tag_name(&self) -> String {
-        unsafe {
-            String_ {
-                    x: clang_HTMLTagComment_getTagName(self.x),
-                }
-                .to_string()
-        }
+        unsafe { clang_HTMLTagComment_getTagName(self.x).into() }
     }
 
     /// Given that this comment is an HTML start tag, get its attributes.
@@ -934,18 +902,12 @@ impl Iterator for CommentAttributesIterator {
             let idx = self.index;
             self.index += 1;
             Some(CommentAttribute {
-                name: String_ {
-                        x: unsafe {
-                            clang_HTMLStartTag_getAttrName(self.x, idx)
-                        },
-                    }
-                    .to_string(),
-                value: String_ {
-                        x: unsafe {
-                            clang_HTMLStartTag_getAttrValue(self.x, idx)
-                        },
-                    }
-                    .to_string(),
+                name: unsafe {
+                    clang_HTMLStartTag_getAttrName(self.x, idx).into()
+                },
+                value: unsafe {
+                    clang_HTMLStartTag_getAttrValue(self.x, idx).into()
+                },
             })
         } else {
             None
@@ -964,29 +926,18 @@ impl File {
         if self.x.is_null() {
             return None;
         }
-        unsafe {
-            Some(String_ {
-                    x: clang_getFileName(self.x),
-                }
-                .to_string())
-        }
+        unsafe { Some(clang_getFileName(self.x).into()) }
     }
 }
 
-/// A Clang string.
-pub struct String_ {
-    x: CXString,
-}
-
-impl fmt::Display for String_ {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        if self.x.data.is_null() {
-            return "".fmt(f);
+impl Into<String> for CXString {
+    fn into(self) -> String {
+        if self.data.is_null() {
+            return "".to_owned();
         }
         unsafe {
-            let c_str = clang_getCString(self.x) as *const c_char;
-            let p = c_str as *const _;
-            f.write_str(&String::from_utf8_lossy(CStr::from_ptr(p).to_bytes()))
+            let c_str = CStr::from_ptr(clang_getCString(self) as *const _);
+            c_str.to_string_lossy().into_owned()
         }
     }
 }
@@ -1139,10 +1090,9 @@ impl TranslationUnit {
                                                            num_tokens as usize);
             for &token in token_array.iter() {
                 let kind = clang_getTokenKind(token);
-                let spelling = String_ {
-                        x: clang_getTokenSpelling(self.x, token),
-                    }
-                    .to_string();
+                let spelling: String = clang_getTokenSpelling(self.x, token)
+                    .into();
+
                 tokens.push(Token {
                     kind: kind,
                     spelling: spelling,
@@ -1177,12 +1127,7 @@ impl Diagnostic {
     /// Format this diagnostic message as a string, using the given option bit
     /// flags.
     pub fn format(&self, opts: usize) -> String {
-        unsafe {
-            String_ {
-                    x: clang_formatDiagnostic(self.x, opts as c_uint),
-                }
-                .to_string()
-        }
+        unsafe { clang_formatDiagnostic(self.x, opts as c_uint).into() }
     }
 
     /// What is the severity of this diagnostic message?
