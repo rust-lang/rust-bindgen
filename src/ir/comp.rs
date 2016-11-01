@@ -275,22 +275,20 @@ impl CompInfo {
 
         self.detect_derive_debug_cycle.set(true);
 
-        let can_derive_debug = self.base_members.iter().all(|ty| {
-            ctx.resolve_type(*ty)
-                .can_derive_debug(ctx)
-        }) &&
-                               self.template_args.iter().all(|ty| {
-            ctx.resolve_type(*ty)
-                .can_derive_debug(ctx)
-        }) &&
-                               self.fields.iter().all(|field| {
-            ctx.resolve_type(field.ty)
-                .can_derive_debug(ctx)
-        }) &&
-                               self.ref_template.map_or(true, |template| {
-            ctx.resolve_type(template)
-                .can_derive_debug(ctx)
-        });
+        let can_derive_debug = {
+            self.base_members
+                .iter()
+                .all(|ty| ctx.resolve_type(*ty).can_derive_debug(ctx)) &&
+            self.template_args
+                .iter()
+                .all(|ty| ctx.resolve_type(*ty).can_derive_debug(ctx)) &&
+            self.fields
+                .iter()
+                .all(|f| ctx.resolve_type(f.ty).can_derive_debug(ctx)) &&
+            self.ref_template.map_or(true, |template| {
+                ctx.resolve_type(template).can_derive_debug(ctx)
+            })
+        };
 
         self.detect_derive_debug_cycle.set(false);
 
@@ -301,9 +299,7 @@ impl CompInfo {
     pub fn is_unsized(&self, ctx: &BindgenContext) -> bool {
         !self.has_vtable(ctx) && self.fields.is_empty() &&
         self.base_members.iter().all(|base| {
-            ctx.resolve_type(*base)
-                .canonical_type(ctx)
-                .is_unsized(ctx)
+            ctx.resolve_type(*base).canonical_type(ctx).is_unsized(ctx)
         }) &&
         self.ref_template
             .map_or(true, |template| ctx.resolve_type(template).is_unsized(ctx))
@@ -521,7 +517,7 @@ impl CompInfo {
         let mut maybe_anonymous_struct_field = None;
         cursor.visit(|cur, _other| {
             if cur.kind() != CXCursor_FieldDecl {
-                if let Some((ty, ref _clang_ty)) = maybe_anonymous_struct_field {
+                if let Some((ty, _)) = maybe_anonymous_struct_field {
                     let field = Field::new(None, ty, None, None, None, false);
                     ci.fields.push(field);
                 }
@@ -540,16 +536,24 @@ impl CompInfo {
                                 CXChildVisit_Continue
                             });
                             if !used {
-                                let field = Field::new(None, ty, None, None, None, false);
+                                let field = Field::new(None,
+                                                       ty,
+                                                       None,
+                                                       None,
+                                                       None,
+                                                       false);
                                 ci.fields.push(field);
                             }
-                        },
+                        }
                         None => {}
                     }
 
                     let bit_width = cur.bit_width();
-                    let field_type =
-                        Item::from_ty_or_ref(cur.cur_type(), Some(*cur), Some(potential_id), ctx);
+                    let field_type = Item::from_ty_or_ref(cur.cur_type(),
+                                                          Some(*cur),
+                                                          Some(potential_id),
+                                                          ctx);
+
                     let comment = cur.raw_comment();
                     let annotations = Annotations::new(cur);
                     let name = cur.spelling();
@@ -562,8 +566,12 @@ impl CompInfo {
 
                     let name = if name.is_empty() { None } else { Some(name) };
 
-                    let field = Field::new(name, field_type, comment,
-                                           annotations, bit_width, is_mutable);
+                    let field = Field::new(name,
+                                           field_type,
+                                           comment,
+                                           annotations,
+                                           bit_width,
+                                           is_mutable);
                     ci.fields.push(field);
 
                     // No we look for things like attributes and stuff.
@@ -586,14 +594,16 @@ impl CompInfo {
                 CXCursor_ClassTemplate |
                 CXCursor_ClassDecl => {
                     let inner = Item::parse(*cur, Some(potential_id), ctx)
-                                    .expect("Inner ClassDecl");
+                        .expect("Inner ClassDecl");
                     if !ci.inner_types.contains(&inner) {
                         ci.inner_types.push(inner);
                     }
                     // A declaration of an union or a struct without name could
                     // also be an unnamed field, unfortunately.
-                    if cur.spelling().is_empty() && cur.kind() != CXCursor_EnumDecl {
-                        maybe_anonymous_struct_field = Some((inner, cur.cur_type()));
+                    if cur.spelling().is_empty() &&
+                       cur.kind() != CXCursor_EnumDecl {
+                        let ty = cur.cur_type();
+                        maybe_anonymous_struct_field = Some((inner, ty));
                     }
                 }
                 CXCursor_PackedAttr => {
@@ -608,18 +618,24 @@ impl CompInfo {
                         return CXChildVisit_Continue;
                     }
 
-                    let default_type =
-                        Item::from_ty(&cur.cur_type(), Some(*cur), Some(potential_id), ctx).ok();
-                    let param = Item::named_type(cur.spelling(), default_type,
-                                                 potential_id, ctx);
+                    let default_type = Item::from_ty(&cur.cur_type(),
+                                                     Some(*cur),
+                                                     Some(potential_id),
+                                                     ctx)
+                        .ok();
+                    let param = Item::named_type(cur.spelling(),
+                                                 default_type,
+                                                 potential_id,
+                                                 ctx);
                     ci.template_args.push(param);
                 }
                 CXCursor_CXXBaseSpecifier => {
                     if !ci.has_vtable {
                         ci.has_vtable = cur.is_virtual_base();
                     }
-                    let type_id = Item::from_ty(&cur.cur_type(), None, None, ctx)
-                                        .expect("BaseSpecifier");
+                    let type_id =
+                        Item::from_ty(&cur.cur_type(), None, None, ctx)
+                            .expect("BaseSpecifier");
                     ci.base_members.push(type_id);
                 }
                 CXCursor_CXXMethod => {
@@ -668,9 +684,12 @@ impl CompInfo {
                         return CXChildVisit_Continue;
                     }
 
-                    // NB: This gets us an owned `Function`, not a `FunctionSig`.
-                    let method_signature = Item::parse(*cur, Some(potential_id), ctx)
-                                                .expect("CXXMethod");
+                    // NB: This gets us an owned `Function`, not a
+                    // `FunctionSig`.
+                    let method_signature =
+                        Item::parse(*cur, Some(potential_id), ctx)
+                            .expect("CXXMethod");
+
                     let is_const = cur.method_is_const();
                     let method_kind = if is_static {
                         MethodKind::Static
@@ -679,7 +698,11 @@ impl CompInfo {
                     } else {
                         MethodKind::Normal
                     };
-                    ci.methods.push(Method::new(method_kind, method_signature, is_const));
+
+                    let method =
+                        Method::new(method_kind, method_signature, is_const);
+
+                    ci.methods.push(method);
                 }
                 CXCursor_Destructor => {
                     if cur.method_is_virtual() {
@@ -693,7 +716,8 @@ impl CompInfo {
                 }
                 CXCursor_VarDecl => {
                     let linkage = cur.linkage();
-                    if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
+                    if linkage != CXLinkage_External &&
+                       linkage != CXLinkage_UniqueExternal {
                         return CXChildVisit_Continue;
                     }
 
@@ -703,7 +727,7 @@ impl CompInfo {
                     }
 
                     let item = Item::parse(*cur, Some(potential_id), ctx)
-                                    .expect("VarDecl");
+                        .expect("VarDecl");
                     ci.inner_vars.push(item);
                 }
                 // Intentionally not handled
@@ -713,8 +737,10 @@ impl CompInfo {
                 CXCursor_FunctionTemplate |
                 CXCursor_ConversionFunction => {}
                 _ => {
-                    warn!("unhandled composite member `{}` (kind {}) in `{}` ({})",
-                          cur.spelling(), cur.kind(), cursor.spelling(),
+                    warn!("unhandled comp member `{}` (kind {}) in `{}` ({})",
+                          cur.spelling(),
+                          cur.kind(),
+                          cursor.spelling(),
                           cur.location());
                 }
             }

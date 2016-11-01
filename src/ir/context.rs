@@ -105,10 +105,15 @@ impl<'ctx> BindgenContext<'ctx> {
 
         let index = clang::Index::new(false, true);
 
+        let parse_options =
+            clangll::CXTranslationUnit_DetailedPreprocessingRecord;
         let translation_unit =
-            clang::TranslationUnit::parse(&index, "", &options.clang_args, &[],
-                                          clangll::CXTranslationUnit_DetailedPreprocessingRecord)
-                                          .expect("null TranslationUnit received from `clang::TranslationUnit::parse`");
+            clang::TranslationUnit::parse(&index,
+                                          "",
+                                          &options.clang_args,
+                                          &[],
+                                          parse_options)
+                .expect("TranslationUnit::parse");
 
         let root_module = Self::build_root_module();
         let mut me = BindgenContext {
@@ -531,7 +536,8 @@ impl<'ctx> BindgenContext<'ctx> {
             // That being said, this is not so common, so just error! and hope
             // for the best, returning the previous type, who knows.
             if old_args.len() != args.len() {
-                error!("Found partial template specialization, expect dragons!");
+                error!("Found partial template specialization, \
+                        expect dragons!");
                 return wrapping;
             }
 

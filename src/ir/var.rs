@@ -70,14 +70,17 @@ impl Var {
 
 impl ClangSubItemParser for Var {
     fn parse(cursor: clang::Cursor,
-             context: &mut BindgenContext)
+             ctx: &mut BindgenContext)
              -> Result<ParseResult<Self>, ParseError> {
         use clangll::*;
         match cursor.kind() {
             CXCursor_MacroDefinition => {
-                let value = match parse_int_literal_tokens(&cursor, context.translation_unit()) {
-                    None => return Err(ParseError::Continue),
+                let value = parse_int_literal_tokens(&cursor,
+                                                     ctx.translation_unit());
+
+                let value = match value {
                     Some(v) => v,
+                    None => return Err(ParseError::Continue),
                 };
 
                 let name = cursor.spelling();
@@ -86,24 +89,20 @@ impl ClangSubItemParser for Var {
                     return Err(ParseError::Continue);
                 }
 
-                if context.parsed_macro(&name) {
+                if ctx.parsed_macro(&name) {
                     warn!("Duplicated macro definition: {}", name);
                     return Err(ParseError::Continue);
                 }
-                context.note_parsed_macro(name.clone());
+                ctx.note_parsed_macro(name.clone());
 
                 let ty = if value < 0 {
-                    Item::builtin_type(TypeKind::Int(IntKind::Int),
-                                       true,
-                                       context)
+                    Item::builtin_type(TypeKind::Int(IntKind::Int), true, ctx)
                 } else if value.abs() > u32::max_value() as i64 {
                     Item::builtin_type(TypeKind::Int(IntKind::ULongLong),
                                        true,
-                                       context)
+                                       ctx)
                 } else {
-                    Item::builtin_type(TypeKind::Int(IntKind::UInt),
-                                       true,
-                                       context)
+                    Item::builtin_type(TypeKind::Int(IntKind::UInt), true, ctx)
                 };
 
                 Ok(ParseResult::New(Var::new(name,
@@ -125,20 +124,19 @@ impl ClangSubItemParser for Var {
                 // XXX this is redundant, remove!
                 let is_const = ty.is_const();
 
-                let ty = Item::from_ty(&ty, Some(cursor), None, context)
+                let ty = Item::from_ty(&ty, Some(cursor), None, ctx)
                     .expect("Unable to resolve constant type?");
 
                 // Note: Ty might not be totally resolved yet, see
                 // tests/headers/inner_const.hpp
                 //
                 // That's fine because in that case we know it's not a literal.
-                let value = context.safe_resolve_type(ty)
-                    .and_then(|t| t.safe_canonical_type(context)).and_then(|t| {
-                        if t.is_integer() {
-                            get_integer_literal_from_cursor(&cursor, context.translation_unit())
-                        } else {
-                            None
-                        }
+                let value = ctx.safe_resolve_type(ty)
+                    .and_then(|t| t.safe_canonical_type(ctx))
+                    .and_then(|t| if t.is_integer() { Some(t) } else { None })
+                    .and_then(|_| {
+                        get_integer_literal_from_cursor(&cursor,
+                                                        ctx.translation_unit())
                     });
 
                 let mangling = cursor_mangling(&cursor);

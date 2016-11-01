@@ -460,7 +460,7 @@ impl Type {
             TypeKind::Pointer(..) => false,
 
             TypeKind::UnresolvedTypeRef(..) => {
-                unreachable!("Should have been resolved after parsing!")
+                unreachable!("Should have been resolved after parsing!");
             }
         }
     }
@@ -477,17 +477,26 @@ impl Type {
                          ctx: &mut BindgenContext)
                          -> Result<ParseResult<Self>, ParseError> {
         use clangll::*;
-        if let Some(ty) =
-               ctx.builtin_or_resolved_ty(potential_id, parent_id, ty, location) {
-            debug!("{:?} already resolved: {:?}", ty, location);
-            return Ok(ParseResult::AlreadyResolved(ty));
+        {
+            let already_resolved =
+                ctx.builtin_or_resolved_ty(potential_id,
+                                           parent_id,
+                                           ty,
+                                           location);
+            if let Some(ty) = already_resolved {
+                debug!("{:?} already resolved: {:?}", ty, location);
+                return Ok(ParseResult::AlreadyResolved(ty));
+            }
         }
 
         let layout = ty.fallible_layout().ok();
         let cursor = ty.declaration();
         let mut name = cursor.spelling();
 
-        debug!("from_clang_ty: {:?}, ty: {:?}, loc: {:?}", potential_id, ty, location);
+        debug!("from_clang_ty: {:?}, ty: {:?}, loc: {:?}",
+               potential_id,
+               ty,
+               location);
         debug!("currently_parsed_types: {:?}", ctx.currently_parsed_types);
 
         let canonical_ty = ty.canonical_type();
@@ -502,19 +511,17 @@ impl Type {
                                            ctx);
             }
             CXType_Unexposed | CXType_Invalid => {
-                // For some reason Clang doesn't give us any hint
-                // in some situations where we should generate a
-                // function pointer (see
-                // tests/headers/func_ptr_in_struct.h), so we do a
-                // guess here trying to see if it has a valid return
-                // type.
+                // For some reason Clang doesn't give us any hint in some
+                // situations where we should generate a function pointer (see
+                // tests/headers/func_ptr_in_struct.h), so we do a guess here
+                // trying to see if it has a valid return type.
                 if ty.ret_type().is_some() {
-                    let signature =
-                        try!(FunctionSig::from_ty(ty, &location.unwrap_or(cursor), ctx));
+                    let signature = try!(FunctionSig::from_ty(ty,
+                                                  &location.unwrap_or(cursor),
+                                                  ctx));
                     TypeKind::Function(signature)
                     // Same here, with template specialisations we can safely
-                    // assume
-                    // this is a Comp(..)
+                    // assume this is a Comp(..)
                 } else if ty.template_args().map_or(false, |x| x.len() > 0) {
                     debug!("Template specialization: {:?}", ty);
                     let complex =
@@ -543,11 +550,13 @@ impl Type {
                             location.visit(|cur, _| {
                                 match cur.kind() {
                                     CXCursor_TypeAliasDecl => {
-                                        debug_assert!(cur.cur_type().kind() == CXType_Typedef);
-                                        inner = Item::from_ty(&cur.cur_type(),
-                                                              Some(*cur),
-                                                              Some(potential_id),
-                                                              ctx);
+                                        debug_assert!(cur.cur_type().kind() ==
+                                                      CXType_Typedef);
+                                        inner =
+                                            Item::from_ty(&cur.cur_type(),
+                                                          Some(*cur),
+                                                          Some(potential_id),
+                                                          ctx);
                                     }
                                     CXCursor_TemplateTypeParameter => {
                                         // See the comment in src/ir/comp.rs
@@ -560,11 +569,13 @@ impl Type {
                                             Item::from_ty(&cur.cur_type(),
                                                           Some(*cur),
                                                           Some(potential_id),
-                                                          ctx).ok();
+                                                          ctx)
+                                                .ok();
                                         let param =
                                             Item::named_type(cur.spelling(),
                                                              default_type,
-                                                             potential_id, ctx);
+                                                             potential_id,
+                                                             ctx);
                                         args.push(param);
                                     }
                                     _ => {}
@@ -573,7 +584,8 @@ impl Type {
                             });
 
                             if inner.is_err() {
-                                error!("Failed to parse templated type alias {:?}", location);
+                                error!("Failed to parse templated alias {:?}",
+                                       location);
                                 return Err(ParseError::Continue);
                             }
 
@@ -592,24 +604,37 @@ impl Type {
                         }
                         CXCursor_TemplateRef => {
                             let referenced = location.referenced();
+                            let referenced_ty = referenced.cur_type();
+                            let referenced_declaration =
+                                Some(referenced_ty.declaration());
+
                             return Self::from_clang_ty(potential_id,
-                                                       &referenced.cur_type(),
-                                                       Some(referenced.cur_type().declaration()),
+                                                       &referenced_ty,
+                                                       referenced_declaration,
                                                        parent_id,
                                                        ctx);
                         }
                         CXCursor_TypeRef => {
                             let referenced = location.referenced();
-                            return Ok(ParseResult::AlreadyResolved(
-                                    Item::from_ty_or_ref_with_id(potential_id,
-                                                                 referenced.cur_type(),
-                                                                 Some(referenced.cur_type().declaration()),
-                                                                 parent_id,
-                                                                 ctx)));
+                            let referenced_ty = referenced.cur_type();
+                            let referenced_declaration =
+                                Some(referenced_ty.declaration());
+
+                            let item =
+                                Item::from_ty_or_ref_with_id(
+                                    potential_id,
+                                    referenced_ty,
+                                    referenced_declaration,
+                                    parent_id,
+                                    ctx);
+                            return Ok(ParseResult::AlreadyResolved(item));
                         }
                         _ => {
                             if ty.kind() == CXType_Unexposed {
-                                warn!("Unexposed type {:?}, recursing inside, loc: {:?}", ty, location);
+                                warn!("Unexposed type {:?}, recursing inside, \
+                                      loc: {:?}",
+                                      ty,
+                                      location);
                                 return Err(ParseError::Recurse);
                             }
 
@@ -643,16 +668,12 @@ impl Type {
                     return Err(ParseError::Continue);
                 }
             }
-            // NOTE: We don't resolve pointers eagerly because the
-            // pointee type
-            // might not have been parsed, and if it contains templates
-            // or
-            // something else we might get confused, see the comment
-            // inside
+            // NOTE: We don't resolve pointers eagerly because the pointee type
+            // might not have been parsed, and if it contains templates or
+            // something else we might get confused, see the comment inside
             // TypeRef.
             //
-            // We might need to, though, if the context is already in
-            // the
+            // We might need to, though, if the context is already in the
             // process of resolving them.
             CXType_MemberPointer |
             CXType_Pointer => {
@@ -663,8 +684,7 @@ impl Type {
                 TypeKind::Pointer(inner)
             }
             CXType_BlockPointer => TypeKind::BlockPointer,
-            // XXX: RValueReference is most likely wrong, but I don't
-            // think we
+            // XXX: RValueReference is most likely wrong, but I don't think we
             // can even add bindings for that, so huh.
             CXType_RValueReference |
             CXType_LValueReference => {
@@ -678,19 +698,18 @@ impl Type {
             CXType_VariableArray |
             CXType_DependentSizedArray |
             CXType_IncompleteArray => {
-                let inner =
-                    Item::from_ty(ty.elem_type()
-                                      .as_ref()
-                                      .expect("Not an appropriate type?"),
-                                  location,
-                                  parent_id,
-                                  ctx)
-                        .expect("Not able to resolve array element?");
+                let inner = Item::from_ty(ty.elem_type().as_ref().unwrap(),
+                                          location,
+                                          parent_id,
+                                          ctx)
+                    .expect("Not able to resolve array element?");
                 TypeKind::Pointer(inner)
             }
             CXType_FunctionNoProto |
             CXType_FunctionProto => {
-                let signature = try!(FunctionSig::from_ty(ty, &location.unwrap_or(cursor), ctx));
+                let signature = try!(FunctionSig::from_ty(ty,
+                                              &location.unwrap_or(cursor),
+                                              ctx));
                 TypeKind::Function(signature)
             }
             CXType_Typedef => {
@@ -709,37 +728,29 @@ impl Type {
                         .expect("Not a complex type?");
                 TypeKind::Comp(complex)
             }
-            // FIXME: We stub vectors as arrays since in 99% of the
-            // cases the
-            // layout is going to be correct, and there's no way we can
-            // generate
+            // FIXME: We stub vectors as arrays since in 99% of the cases the
+            // layout is going to be correct, and there's no way we can generate
             // vector types properly in Rust for now.
             //
             // That being said, that should be fixed eventually.
             CXType_Vector |
             CXType_ConstantArray => {
-                let inner =
-                    Item::from_ty(ty.elem_type()
-                                      .as_ref()
-                                      .expect("Not an appropriate type?"),
-                                  location,
-                                  parent_id,
-                                  ctx)
-                        .expect("Not able to resolve array element?");
+                let inner = Item::from_ty(ty.elem_type().as_ref().unwrap(),
+                                          location,
+                                          parent_id,
+                                          ctx)
+                    .expect("Not able to resolve array element?");
                 TypeKind::Array(inner, ty.num_elements().unwrap())
             }
             // A complex number is always a real and an imaginary part,
             // so
             // represent that as a two-item array.
             CXType_Complex => {
-                let inner =
-                    Item::from_ty(ty.elem_type()
-                                      .as_ref()
-                                      .expect("Not an appropriate type?"),
-                                  location,
-                                  parent_id,
-                                  ctx)
-                        .expect("Not able to resolve array element?");
+                let inner = Item::from_ty(ty.elem_type().as_ref().unwrap(),
+                                          location,
+                                          parent_id,
+                                          ctx)
+                    .expect("Not able to resolve array element?");
                 TypeKind::Array(inner, 2)
             }
             #[cfg(not(feature="llvm_stable"))]

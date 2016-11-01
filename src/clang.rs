@@ -1259,7 +1259,12 @@ pub fn kind_to_str(x: Enum_CXCursorKind) -> &'static str {
         CXCursor_TemplateTemplateParameter => "TemplateTemplateParameter",
         CXCursor_FunctionTemplate => "FunctionTemplate",
         CXCursor_ClassTemplate => "ClassTemplate",
-        CXCursor_ClassTemplatePartialSpecialization => "ClassTemplatePartialSpecialization",
+        CXCursor_ClassTemplatePartialSpecialization => {
+            // FIXME: Ugly hack for rustfmt, should go away!
+            //
+            // I plan to convert this into an enum right away anyway, though.
+            return "ClassTemplatePartialSpecialization";
+        }
         CXCursor_NamespaceAlias => "NamespaceAlias",
         CXCursor_UsingDirective => "UsingDirective",
         CXCursor_UsingDeclaration => "UsingDeclaration",

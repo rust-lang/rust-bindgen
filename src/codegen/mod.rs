@@ -1,9 +1,10 @@
 mod helpers;
 
+
 use aster;
+
 use ir::annotations::FieldAccessorKind;
 use ir::comp::{CompInfo, CompKind, Field, Method};
-
 use ir::context::BindgenContext;
 use ir::enum_ty::Enum;
 use ir::function::{Function, FunctionSig};
@@ -16,13 +17,12 @@ use ir::ty::{Type, TypeKind};
 use ir::type_collector::{ItemSet, TypeCollector};
 use ir::var::Var;
 use self::helpers::{BlobTyBuilder, attributes};
+
 use std::borrow::Cow;
 use std::collections::HashSet;
 use std::collections::hash_map::{Entry, HashMap};
 use std::mem;
-
 use std::ops;
-
 use syntax::abi::Abi;
 use syntax::ast;
 use syntax::codemap::{Span, respan};
@@ -40,8 +40,7 @@ struct CodegenResult {
     saw_union: bool,
     items_seen: HashSet<ItemId>,
     /// The set of generated function/var names, needed because in C/C++ is
-    /// legal to
-    /// do something like:
+    /// legal to do something like:
     ///
     /// ```c++
     /// extern "C" {
@@ -400,7 +399,8 @@ impl CodeGenerator for Type {
                     if template_arg.is_named() {
                         let name = template_arg.name().unwrap();
                         if name.contains("typename ") {
-                            error!("Item contained `typename`'d template param: {:?}", item);
+                            error!("Item contained `typename`'d template \
+                                   parameter: {:?}", item);
                             return;
                         }
                         generics =
@@ -541,18 +541,25 @@ impl<'a> Bitfield<'a> {
                     pub fn $getter_name(&self) -> $field_type {
                         unsafe {
                             ::std::mem::transmute(
-                                ((self.$field_ident & ($mask as $bitfield_type)) >> $offset)
-                                as $int_type)
+                                (
+                                    (self.$field_ident &
+                                        ($mask as $bitfield_type))
+                                     >> $offset
+                                ) as $int_type
+                            )
                         }
                     }
 
                     #[inline]
                     pub fn $setter_name(&mut self, val: $field_type) {
                         self.$field_ident &= !($mask as $bitfield_type);
-                        self.$field_ident |= (val as $int_type as $bitfield_type << $offset) & ($mask as $bitfield_type);
+                        self.$field_ident |=
+                            (val as $int_type as $bitfield_type << $offset) &
+                                ($mask as $bitfield_type);
                     }
                 }
-            ).unwrap();
+            )
+                .unwrap();
 
             let items = match item.unwrap().node {
                 ast::ItemKind::Impl(_, _, _, _, _, items) => items,
@@ -639,6 +646,7 @@ impl CodeGenerator for CompInfo {
         };
 
         // Generate the vtable from the method list if appropriate.
+        //
         // TODO: I don't know how this could play with virtual methods that are
         // not in the list of methods found by us, we'll see. Also, could the
         // order of the vtable pointers vary?
@@ -677,8 +685,9 @@ impl CodeGenerator for CompInfo {
                 continue;
             }
 
-            for (i, ty) in applicable_template_args.iter().enumerate() {
-                if base_ty.signature_contains_named_type(ctx, ctx.resolve_type(*ty)) {
+            for (i, ty_id) in applicable_template_args.iter().enumerate() {
+                let template_arg_ty = ctx.resolve_type(*ty_id);
+                if base_ty.signature_contains_named_type(ctx, template_arg_ty) {
                     template_args_used[i] = true;
                 }
             }
@@ -758,8 +767,9 @@ impl CodeGenerator for CompInfo {
                 continue;
             }
 
-            for (i, ty) in applicable_template_args.iter().enumerate() {
-                if field_ty.signature_contains_named_type(ctx, ctx.resolve_type(*ty)) {
+            for (i, ty_id) in applicable_template_args.iter().enumerate() {
+                let template_arg = ctx.resolve_type(*ty_id);
+                if field_ty.signature_contains_named_type(ctx, template_arg) {
                     template_args_used[i] = true;
                 }
             }
@@ -841,7 +851,8 @@ impl CodeGenerator for CompInfo {
                             }
 
                             #[inline]
-                            pub unsafe fn $mutable_getter_name(&mut self) -> &mut $ty {
+                            pub unsafe fn $mutable_getter_name(&mut self)
+                                -> &mut $ty {
                                 &mut self.$field_name
                             }
                         }
@@ -931,9 +942,12 @@ impl CodeGenerator for CompInfo {
             if !template_args_used[i] {
                 let name = ctx.resolve_type(*ty).name().unwrap();
                 let ident = ctx.rust_ident(name);
+                let phantom = quote_ty!(ctx.ext_cx(),
+                                        ::std::marker::PhantomData<$ident>);
                 let field =
-                    StructFieldBuilder::named(format!("_phantom_{}", i)).pub_()
-                            .build_ty(quote_ty!(ctx.ext_cx(), ::std::marker::PhantomData<$ident>));
+                    StructFieldBuilder::named(format!("_phantom_{}", i))
+                        .pub_()
+                        .build_ty(phantom);
                 fields.push(field)
             }
         }
@@ -972,16 +986,18 @@ impl CodeGenerator for CompInfo {
         // affect layout, so we're bad and pray to the gods for avoid sending
         // all the tests to shit when parsing things like max_align_t.
         if self.found_unknown_attr() {
-            warn!("Type {} has an unkown attribute that may affect layout", canonical_name);
+            warn!("Type {} has an unkown attribute that may affect layout",
+                  canonical_name);
         }
+
         if applicable_template_args.is_empty() && !self.found_unknown_attr() {
             for var in self.inner_vars() {
                 ctx.resolve_item(*var).codegen(ctx, result, &());
             }
 
             if let Some(layout) = layout {
-                let fn_name =
-                    ctx.rust_ident_raw(&format!("bindgen_test_layout_{}", canonical_name));
+                let fn_name = format!("bindgen_test_layout_{}", canonical_name);
+                let fn_name = ctx.rust_ident_raw(&fn_name);
                 let ident = ctx.rust_ident_raw(&canonical_name);
                 let size_of_expr =
                     quote_expr!(ctx.ext_cx(), ::std::mem::size_of::<$ident>());
@@ -1107,6 +1123,7 @@ impl MethodCodegen for Method {
             };
 
             assert!(!fndecl.inputs.is_empty());
+
             // FIXME: use aster here.
             fndecl.inputs[0] = ast::Arg {
                 ty: P(ast::Ty {
@@ -1123,9 +1140,11 @@ impl MethodCodegen for Method {
                 }),
                 pat: P(ast::Pat {
                     id: ast::DUMMY_NODE_ID,
-                    node: ast::PatKind::Ident(ast::BindingMode::ByValue(ast::Mutability::Immutable),
-                                              respan(ctx.span(), ctx.ext_cx().ident_of("self")),
-                                              None),
+                    node: ast::PatKind::Ident(
+                        ast::BindingMode::ByValue(ast::Mutability::Immutable),
+                        respan(ctx.span(), ctx.ext_cx().ident_of("self")),
+                        None
+                    ),
                     span: ctx.span(),
                 }),
                 id: ast::DUMMY_NODE_ID,
@@ -1223,7 +1242,8 @@ impl CodeGenerator for Enum {
                 }
             }
             None => {
-                warn!("Guessing type of enum! Forward declarations of enums shouldn't be legal!");
+                warn!("Guessing type of enum! Forward declarations of enums \
+                      shouldn't be legal!");
                 IntKind::Int
             }
         };
@@ -1272,8 +1292,7 @@ impl CodeGenerator for Enum {
                         // Only to avoid recomputing every time.
                         enum_canonical_name: &str,
                         // May be the same as "variant" if it's because the
-                        // enum
-                        // is unnamed and we still haven't seen the value.
+                        // enum is unnamed and we still haven't seen the value.
                         variant_name: &str,
                         referenced_name: &str,
                         enum_rust_ty: P<ast::Ty>,
@@ -1342,9 +1361,11 @@ impl CodeGenerator for Enum {
                                     .canonical_name(ctx));
                             }
 
+                            let parent_name = parent_canonical_name.as_ref()
+                                .unwrap();
+
                             Cow::Owned(
-                                format!("{}_{}", parent_canonical_name.as_ref().unwrap(),
-                                                 variant_name))
+                                format!("{}_{}", parent_name, variant_name))
                         };
 
                         add_constant(enum_ty,
@@ -1464,13 +1485,15 @@ impl ToRustTy for Type {
                 let mut inner_ty = inner.to_rust_ty(ctx).unwrap();
 
                 if let ast::TyKind::Path(_, ref mut path) = inner_ty.node {
+                    let template_args = template_args.iter()
+                        .map(|arg| arg.to_rust_ty(ctx))
+                        .collect();
+
                     path.segments.last_mut().unwrap().parameters =
                         ast::PathParameters::AngleBracketed(
                             ast::AngleBracketedParameterData {
                                 lifetimes: vec![],
-                                types: P::from_vec(template_args.iter().map(|arg| {
-                                    arg.to_rust_ty(ctx)
-                                }).collect()),
+                                types: P::from_vec(template_args),
                                 bindings: P::from_vec(vec![]),
                             }
                         );
@@ -1498,7 +1521,8 @@ impl ToRustTy for Type {
                         Some(layout) => BlobTyBuilder::new(layout).build(),
                         None => {
                             warn!("Couldn't compute layout for a type with non \
-                                  type template params or opaque, expect dragons!");
+                                  type template params or opaque, expect \
+                                  dragons!");
                             aster::AstBuilder::new().ty().unit()
                         }
                     };
@@ -1558,11 +1582,14 @@ impl ToRustTy for FunctionSig {
             let arg_item = ctx.resolve_item(ty);
             let arg_ty = arg_item.kind().expect_type();
 
-            // From the C90 standard (http://c0x.coding-guidelines.com/6.7.5.3.html)
-            // 1598 - A declaration of a parameter as “array of type” shall be
-            // adjusted to “qualified pointer to type”, where the type qualifiers
-            // (if any) are those specified within the [ and ] of the array type
-            // derivation.
+            // From the C90 standard[1]:
+            //
+            //     A declaration of a parameter as "array of type" shall be
+            //     adjusted to "qualified pointer to type", where the type
+            //     qualifiers (if any) are those specified within the [ and ] of
+            //     the array type derivation.
+            //
+            // [1]: http://c0x.coding-guidelines.com/6.7.5.3.html
             let arg_ty = if let TypeKind::Array(t, _) = *arg_ty.kind() {
                 t.to_rust_ty(ctx).to_ptr(arg_ty.is_const(), ctx.span())
             } else {
@@ -1678,8 +1705,7 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
            context.options().whitelisted_vars.is_empty() {
             for (_item_id, item) in context.items() {
                 // Non-toplevel item parents are the responsible one for
-                // generating
-                // them.
+                // generating them.
                 if item.is_toplevel(context) {
                     item.codegen(context, &mut result, &());
                 }
