@@ -663,7 +663,9 @@ impl Type {
             CXType_VariableArray |
             CXType_DependentSizedArray |
             CXType_IncompleteArray => {
-                let inner = Item::from_ty(&ty.elem_type(), location, parent_id, ctx)
+                let inner = Item::from_ty(ty.elem_type().as_ref()
+                                          .expect("Not an appropriate type?"),
+                                          location, parent_id, ctx)
                                 .expect("Not able to resolve array element?");
                 TypeKind::Pointer(inner)
             }
@@ -695,14 +697,18 @@ impl Type {
             // That being said, that should be fixed eventually.
             CXType_Vector |
             CXType_ConstantArray => {
-                let inner = Item::from_ty(&ty.elem_type(), location, parent_id, ctx)
+                let inner = Item::from_ty(ty.elem_type().as_ref()
+                                          .expect("Not an appropriate type?"),
+                                          location, parent_id, ctx)
                                 .expect("Not able to resolve array element?");
                 TypeKind::Array(inner, ty.num_elements().unwrap())
             }
             // A complex number is always a real and an imaginary part, so
             // represent that as a two-item array.
             CXType_Complex => {
-                let inner = Item::from_ty(&ty.elem_type(), location, parent_id, ctx)
+                let inner = Item::from_ty(ty.elem_type().as_ref()
+                                          .expect("Not an appropriate type?"),
+                                          location, parent_id, ctx)
                                 .expect("Not able to resolve array element?");
                 TypeKind::Array(inner, 2)
             }
