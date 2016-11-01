@@ -827,12 +827,8 @@ impl Comment {
     }
 
     /// Given that this comment is an HTML start tag, get its attributes.
-    pub fn get_tag_attrs(&self) -> CommentAttributesIterator {
-        CommentAttributesIterator {
-            x: self.x,
-            length: unsafe { clang_HTMLStartTag_getNumAttrs(self.x) },
-            index: 0,
-        }
+    pub fn get_tag_attrs(&self) -> IndexCallIterator<CommentAttributesIndexCallable> {
+        IndexCallIterator::new(CommentAttributesIndexCallable { x: self.x })
     }
 }
 
@@ -865,28 +861,28 @@ pub struct CommentAttribute {
 }
 
 /// An iterator for a comment's attributes
-pub struct CommentAttributesIterator {
-    x: CXComment,
-    length: c_uint,
-    index: c_uint,
+pub struct CommentAttributesIndexCallable {
+    x: CXComment
 }
 
-impl Iterator for CommentAttributesIterator {
+impl IndexCallable for CommentAttributesIndexCallable {
     type Item = CommentAttribute;
-    fn next(&mut self) -> Option<CommentAttribute> {
-        if self.index < self.length {
-            let idx = self.index;
-            self.index += 1;
-            Some(CommentAttribute {
-                name: unsafe {
-                    clang_HTMLStartTag_getAttrName(self.x, idx).into()
-                },
-                value: unsafe {
-                    clang_HTMLStartTag_getAttrValue(self.x, idx).into()
-                },
-            })
-        } else {
-            None
+    type ItemNum = c_uint;
+
+    fn fetch_item_num(&self) -> Self::ItemNum {
+        unsafe { clang_HTMLStartTag_getNumAttrs(self.x) }
+    }
+
+    fn fetch_item(&mut self, idx: usize, num: usize) -> Self::Item {
+        assert!(idx < num);
+        let i = idx as Self::ItemNum;
+        CommentAttribute {
+            name: unsafe {
+                clang_HTMLStartTag_getAttrName(self.x, i).into()
+            },
+            value: unsafe {
+                clang_HTMLStartTag_getAttrValue(self.x, i).into()
+            }
         }
     }
 }
