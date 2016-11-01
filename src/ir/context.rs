@@ -12,6 +12,7 @@ use super::item::{Item, ItemCanonicalName, ItemId};
 use super::item_kind::ItemKind;
 use super::module::Module;
 use super::ty::{FloatKind, Type, TypeKind};
+use super::type_collector::{ItemSet, TypeCollector};
 use syntax::ast::Ident;
 use syntax::codemap::{DUMMY_SP, Span};
 use syntax::ext::base::ExtCtxt;
@@ -813,5 +814,120 @@ impl<'ctx> BindgenContext<'ctx> {
             .extend(children.into_iter());
 
         self.current_module = previous_id;
+    }
+
+    /// Iterate over all (explicitly or transitively) whitelisted items.
+    ///
+    /// If no items are explicitly whitelisted, then all items are considered
+    /// whitelisted.
+    pub fn whitelisted_items<'me>(&'me self)
+                                  -> WhitelistedItemsIter<'me, 'ctx> {
+        assert!(self.in_codegen_phase());
+        assert!(self.current_module == self.root_module);
+
+        let roots = self.items()
+            .filter(|&(_, item)| {
+                // If nothing is explicitly whitelisted, then everything is fair
+                // game.
+                if self.options().whitelisted_types.is_empty() &&
+                   self.options().whitelisted_functions.is_empty() &&
+                   self.options().whitelisted_vars.is_empty() {
+                    return true;
+                }
+
+                let name = item.canonical_name(self);
+                match *item.kind() {
+                    ItemKind::Module(..) => false,
+                    ItemKind::Function(_) => {
+                        self.options().whitelisted_functions.matches(&name)
+                    }
+                    ItemKind::Var(_) => {
+                        self.options().whitelisted_vars.matches(&name)
+                    }
+                    ItemKind::Type(ref ty) => {
+                        if self.options().whitelisted_types.matches(&name) {
+                            return true;
+                        }
+
+                        // Unnamed top-level enums are special and we whitelist
+                        // them via the `whitelisted_vars` filter, since they're
+                        // effectively top-level constants, and there's no way
+                        // for them to be referenced consistently.
+                        if let TypeKind::Enum(ref enum_) = *ty.kind() {
+                            if ty.name().is_none() &&
+                               enum_.variants().iter().any(|variant| {
+                                self.options()
+                                    .whitelisted_vars
+                                    .matches(&variant.name())
+                            }) {
+                                return true;
+                            }
+                        }
+
+                        false
+                    }
+                }
+            })
+            .map(|(&id, _)| id);
+
+        let seen: ItemSet = roots.collect();
+
+        // The .rev() preserves the expected ordering traversal, resulting in
+        // more stable-ish bindgen-generated names for anonymous types (like
+        // unions).
+        let to_iterate = seen.iter().cloned().rev().collect();
+
+        WhitelistedItemsIter {
+            ctx: self,
+            seen: seen,
+            to_iterate: to_iterate,
+        }
+    }
+}
+
+/// An iterator over whitelisted items.
+///
+/// See `BindgenContext::whitelisted_items` for more information.
+pub struct WhitelistedItemsIter<'ctx, 'gen>
+    where 'gen: 'ctx,
+{
+    ctx: &'ctx BindgenContext<'gen>,
+
+    // The set of whitelisted items we have seen. If you think of traversing
+    // whitelisted items like GC tracing, this is the mark bits, and contains
+    // both black and gray items.
+    seen: ItemSet,
+
+    // The set of whitelisted items that we have seen but have yet to iterate
+    // over and collect transitive references from. To return to the GC analogy,
+    // this is the mark stack, containing the set of gray items which we have
+    // not finished tracing yet.
+    to_iterate: Vec<ItemId>,
+}
+
+impl<'ctx, 'gen> Iterator for WhitelistedItemsIter<'ctx, 'gen>
+    where 'gen: 'ctx,
+{
+    type Item = ItemId;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let id = match self.to_iterate.pop() {
+            None => return None,
+            Some(id) => id,
+        };
+
+        debug_assert!(self.seen.contains(&id));
+
+        let mut sub_types = ItemSet::new();
+        id.collect_types(self.ctx, &mut sub_types, &());
+
+        for id in sub_types {
+            if !self.seen.contains(&id) {
+                self.to_iterate.push(id);
+                self.seen.insert(id);
+            }
+        }
+
+        Some(id)
     }
 }

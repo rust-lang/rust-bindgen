@@ -14,7 +14,7 @@ use ir::item_kind::ItemKind;
 use ir::layout::Layout;
 use ir::module::Module;
 use ir::ty::{Type, TypeKind};
-use ir::type_collector::{ItemSet, TypeCollector};
+use ir::type_collector::ItemSet;
 use ir::var::Var;
 use self::helpers::{BlobTyBuilder, attributes};
 
@@ -1692,108 +1692,48 @@ impl CodeGenerator for Function {
     }
 }
 
+// Return true if any of the ancestors of `id` are in the whitelisted items set,
+// false otherwise.
+fn ancestor_is_whitelisted(ctx: &BindgenContext,
+                           whitelisted_items: &ItemSet,
+                           id: ItemId)
+                           -> bool {
+    let item = ctx.resolve_item(id);
+    let mut last = id;
+    let mut current = item.parent_id();
+
+    while last != current {
+        if whitelisted_items.contains(&current) {
+            return true;
+        }
+        last = current;
+        current = ctx.resolve_item(current).parent_id();
+    }
+
+    false
+}
+
 pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
     context.gen(|context| {
         let mut result = CodegenResult::new();
 
         debug!("codegen: {:?}", context.options());
 
-        // If the whitelisted types and functions sets are empty, just generate
-        // everything.
-        if context.options().whitelisted_types.is_empty() &&
-           context.options().whitelisted_functions.is_empty() &&
-           context.options().whitelisted_vars.is_empty() {
-            for (_item_id, item) in context.items() {
-                // Non-toplevel item parents are the responsible one for
-                // generating them.
-                if item.is_toplevel(context) {
-                    item.codegen(context, &mut result, &());
-                }
-            }
-        } else {
-            // Recursively collect all the types dependent on the whitelisted
-            // types, then generate them.
-            //
-            // FIXME(emilio): This pass is probably slow, but it can't be faster
-            // than docopt anyway :)
-            let mut items = ItemSet::new();
-            for (_item_id, item) in context.items() {
-                // FIXME(emilio): This probably should look only at whether the
-                // parent is a module.
-                if !item.is_toplevel(context) {
-                    continue;
-                }
+        let whitelisted_items: ItemSet = context.whitelisted_items().collect();
 
-                let name = item.canonical_name(context);
-                match *item.kind() {
-                    ItemKind::Type(ref ty) => {
-                        if context.options().whitelisted_types.matches(&name) {
-                            item.collect_types(context, &mut items, &());
-                        }
-                        // Unnamed top-level enums are special and we whitelist
-                        // them via the whitelisted_vars filter, since they're
-                        // effectively top-level constants, and there's no way
-                        // for them to be referenced consistently.
-                        if let TypeKind::Enum(ref enum_) = *ty.kind() {
-                            if ty.name().is_none() {
-                                if enum_.variants().iter().any(|variant| {
-                                    context.options()
-                                        .whitelisted_vars
-                                        .matches(&variant.name())
-                                }) {
-                                    item.collect_types(context,
-                                                       &mut items,
-                                                       &());
-                                }
-                            }
-                        }
-                    }
-                    ItemKind::Function(ref fun) => {
-                        if context.options()
-                            .whitelisted_functions
-                            .matches(&name) {
-                            items.insert(item.id());
-                            fun.signature()
-                                .collect_types(context, &mut items, &());
-                        }
-                    }
-                    ItemKind::Var(ref var) => {
-                        if context.options().whitelisted_vars.matches(&name) {
-                            items.insert(item.id());
-                            var.ty().collect_types(context, &mut items, &());
-                        }
-                    }
-                    ItemKind::Module(..) => {}
-                }
-            }
+        for &id in whitelisted_items.iter() {
+            let item = context.resolve_item(id);
 
-            fn contains_parent(ctx: &BindgenContext,
-                               types: &ItemSet,
-                               id: ItemId)
-                               -> bool {
-                let item = ctx.resolve_item(id);
-                let mut last = id;
-                let mut current = item.parent_id();
-
-                while last != current {
-                    if types.contains(&current) {
-                        return true;
-                    }
-                    last = current;
-                    current = ctx.resolve_item(current).parent_id();
-                }
-
-                false
-            }
-
-            for item_id in items.iter() {
-                let item = context.resolve_item(*item_id);
-                if item.is_toplevel(context) ||
-                   !contains_parent(context, &items, *item_id) {
-                    item.codegen(context, &mut result, &());
-                }
+            // Non-toplevel items' parents are responsible one for generating
+            // their children. However, if we find an orphaned reference to a
+            // non-toplevel item whose parent is not in our whitelisted set, we
+            // need to take responsibility for generating it.
+            if item.is_toplevel(context) ||
+               !ancestor_is_whitelisted(context, &whitelisted_items, id) {
+                item.codegen(context, &mut result, &());
             }
         }
+
         let saw_union = result.saw_union;
         let mut result = result.items;
         if saw_union && !context.options().unstable_rust {
