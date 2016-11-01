@@ -1,12 +1,12 @@
 //! Intermediate representation of variables.
 
-use super::item::{Item, ItemId};
-use super::context::BindgenContext;
-use super::ty::TypeKind;
-use super::int::IntKind;
-use super::function::cursor_mangling;
-use parse::{ClangItemParser, ClangSubItemParser, ParseResult, ParseError};
 use clang;
+use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
+use super::context::BindgenContext;
+use super::function::cursor_mangling;
+use super::int::IntKind;
+use super::item::{Item, ItemId};
+use super::ty::TypeKind;
 
 /// A `Var` is our intermediate representation of a variable.
 #[derive(Debug)]
@@ -30,7 +30,8 @@ impl Var {
                mangled: Option<String>,
                ty: ItemId,
                val: Option<i64>,
-               is_const: bool) -> Var {
+               is_const: bool)
+               -> Var {
         assert!(!name.is_empty());
         Var {
             name: name,
@@ -69,7 +70,8 @@ impl Var {
 
 impl ClangSubItemParser for Var {
     fn parse(cursor: clang::Cursor,
-             context: &mut BindgenContext) -> Result<ParseResult<Self>, ParseError> {
+             context: &mut BindgenContext)
+             -> Result<ParseResult<Self>, ParseError> {
         use clangll::*;
         match cursor.kind() {
             CXCursor_MacroDefinition => {
@@ -91,14 +93,25 @@ impl ClangSubItemParser for Var {
                 context.note_parsed_macro(name.clone());
 
                 let ty = if value < 0 {
-                    Item::builtin_type(TypeKind::Int(IntKind::Int), true, context)
-                } else if value.abs() > u32::max_value() as i64  {
-                    Item::builtin_type(TypeKind::Int(IntKind::ULongLong), true, context)
+                    Item::builtin_type(TypeKind::Int(IntKind::Int),
+                                       true,
+                                       context)
+                } else if value.abs() > u32::max_value() as i64 {
+                    Item::builtin_type(TypeKind::Int(IntKind::ULongLong),
+                                       true,
+                                       context)
                 } else {
-                    Item::builtin_type(TypeKind::Int(IntKind::UInt), true, context)
+                    Item::builtin_type(TypeKind::Int(IntKind::UInt),
+                                       true,
+                                       context)
                 };
 
-                Ok(ParseResult::New(Var::new(name, None, ty, Some(value), true), Some(cursor)))
+                Ok(ParseResult::New(Var::new(name,
+                                             None,
+                                             ty,
+                                             Some(value),
+                                             true),
+                                    Some(cursor)))
             }
             CXCursor_VarDecl => {
                 let name = cursor.spelling();
@@ -113,7 +126,7 @@ impl ClangSubItemParser for Var {
                 let is_const = ty.is_const();
 
                 let ty = Item::from_ty(&ty, Some(cursor), None, context)
-                            .expect("Unable to resolve constant type?");
+                    .expect("Unable to resolve constant type?");
 
                 // Note: Ty might not be totally resolved yet, see
                 // tests/headers/inner_const.hpp
@@ -144,7 +157,8 @@ impl ClangSubItemParser for Var {
 
 /// Try and parse the immediately found tokens from an unit (if any) to integers
 fn parse_int_literal_tokens(cursor: &clang::Cursor,
-                            unit: &clang::TranslationUnit) -> Option<i64> {
+                            unit: &clang::TranslationUnit)
+                            -> Option<i64> {
     use clangll::{CXToken_Literal, CXToken_Punctuation};
 
     let tokens = match unit.tokens(cursor) {
@@ -158,11 +172,11 @@ fn parse_int_literal_tokens(cursor: &clang::Cursor,
         match token.kind {
             CXToken_Punctuation if token.spelling == "-" => {
                 negate = !negate;
-            },
+            }
             CXToken_Literal => {
                 literal = Some(token.spelling);
-                break
-            },
+                break;
+            }
             _ => {
                 // Reset values if we found anything else
                 negate = false;
@@ -172,21 +186,23 @@ fn parse_int_literal_tokens(cursor: &clang::Cursor,
     }
 
     literal.and_then(|lit| {
-        if lit.starts_with("0x") {
-            // TODO: try to preserve hex literals?
-            i64::from_str_radix(&lit[2..], 16).ok()
-        } else if lit == "0" {
-            Some(0)
-        } else if lit.starts_with("0") {
-            i64::from_str_radix(&lit[1..], 8).ok()
-        } else {
-            lit.parse().ok()
-        }
-    }).map(|lit| if negate { -lit } else { lit })
+            if lit.starts_with("0x") {
+                // TODO: try to preserve hex literals?
+                i64::from_str_radix(&lit[2..], 16).ok()
+            } else if lit == "0" {
+                Some(0)
+            } else if lit.starts_with("0") {
+                i64::from_str_radix(&lit[1..], 8).ok()
+            } else {
+                lit.parse().ok()
+            }
+        })
+        .map(|lit| if negate { -lit } else { lit })
 }
 
 fn get_integer_literal_from_cursor(cursor: &clang::Cursor,
-                                   unit: &clang::TranslationUnit) -> Option<i64> {
+                                   unit: &clang::TranslationUnit)
+                                   -> Option<i64> {
     use clangll::*;
     let mut value = None;
     cursor.visit(|c, _| {
@@ -198,7 +214,7 @@ fn get_integer_literal_from_cursor(cursor: &clang::Cursor,
             CXCursor_UnexposedExpr => {
                 value = get_integer_literal_from_cursor(&c, unit);
             }
-            _ => ()
+            _ => (),
         }
         if value.is_some() {
             CXChildVisit_Break

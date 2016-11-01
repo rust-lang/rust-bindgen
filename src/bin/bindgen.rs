@@ -8,13 +8,13 @@ extern crate log;
 extern crate clang_sys;
 extern crate rustc_serialize;
 
-use bindgen::{Bindings, BindgenOptions, LinkType};
+use bindgen::{BindgenOptions, Bindings, LinkType};
 use std::default::Default;
+use std::env;
+use std::fs;
 use std::io;
 use std::path;
 use std::process;
-use std::env;
-use std::fs;
 
 const USAGE: &'static str = "
 Usage:
@@ -119,7 +119,8 @@ fn parse_args_or_exit(args: Vec<String>) -> (BindgenOptions, Box<io::Write>) {
                 options.links.push((lib, LinkType::Static));
             }
             "--framework-link" => {
-                let lib = iter.next().expect("--framework-link needs an argument");
+                let lib = iter.next()
+                    .expect("--framework-link needs an argument");
                 options.links.push((lib, LinkType::Framework));
             }
             "--raw-line" => {
@@ -127,23 +128,28 @@ fn parse_args_or_exit(args: Vec<String>) -> (BindgenOptions, Box<io::Write>) {
                 options.raw_lines.push(line);
             }
             "--opaque-type" => {
-                let ty_canonical_name = iter.next().expect("--opaque-type expects a type");
+                let ty_canonical_name = iter.next()
+                    .expect("--opaque-type expects a type");
                 options.opaque_types.insert(ty_canonical_name);
             }
             "--blacklist-type" => {
-                let ty_canonical_name = iter.next().expect("--blacklist-type expects a type");
+                let ty_canonical_name = iter.next()
+                    .expect("--blacklist-type expects a type");
                 options.hidden_types.insert(ty_canonical_name);
             }
             "--whitelist-type" => {
-                let ty_pat = iter.next().expect("--whitelist-type expects a type pattern");
+                let ty_pat = iter.next()
+                    .expect("--whitelist-type expects a type pattern");
                 options.whitelisted_types.insert(&ty_pat);
             }
             "--whitelist-function" => {
-                let function_pat = iter.next().expect("--whitelist-function expects a pattern");
+                let function_pat = iter.next()
+                    .expect("--whitelist-function expects a pattern");
                 options.whitelisted_functions.insert(&function_pat);
             }
             "--whitelist-var" => {
-                let var_pat = iter.next().expect("--whitelist-var expects a pattern");
+                let var_pat = iter.next()
+                    .expect("--whitelist-var expects a pattern");
                 options.whitelisted_vars.insert(&var_pat);
             }
             "--" => {
@@ -202,25 +208,31 @@ fn parse_args_or_exit(args: Vec<String>) -> (BindgenOptions, Box<io::Write>) {
 
 pub fn main() {
     log::set_logger(|max_log_level| {
-        use env_logger::Logger;
-        let env_logger = Logger::new();
-        max_log_level.set(env_logger.filter());
-        Box::new(env_logger)
-    }).expect("Failed to set logger.");
+            use env_logger::Logger;
+            let env_logger = Logger::new();
+            max_log_level.set(env_logger.filter());
+            Box::new(env_logger)
+        })
+        .expect("Failed to set logger.");
 
     let mut bind_args: Vec<_> = env::args().collect();
 
     if let Some(clang) = clang_sys::support::Clang::find(None) {
-        let has_clang_args = bind_args.iter().rposition(|arg| *arg == "--").is_some();
+        let has_clang_args =
+            bind_args.iter().rposition(|arg| *arg == "--").is_some();
         if !has_clang_args {
             bind_args.push("--".to_owned());
         }
 
-        // If --target is specified, assume caller knows what they're doing and don't mess with
+        // If --target is specified, assume caller knows what they're doing and
+        // don't mess with
         // include paths for them
-        let has_target_arg = bind_args.iter().rposition(|arg| arg.starts_with("--target")).is_some();
+        let has_target_arg = bind_args.iter()
+            .rposition(|arg| arg.starts_with("--target"))
+            .is_some();
         if !has_target_arg {
-            // TODO: distinguish C and C++ paths? C++'s should be enough, I guess.
+            // TODO: distinguish C and C++ paths? C++'s should be enough, I
+            // guess.
             for path in clang.cpp_search_paths.into_iter() {
                 if let Ok(path) = path.into_os_string().into_string() {
                     bind_args.push("-isystem".to_owned());
@@ -233,8 +245,8 @@ pub fn main() {
     let (options, out) = parse_args_or_exit(bind_args);
 
     let bindings = Bindings::generate(options, None)
-                        .expect("Unable to generate bindings");
+        .expect("Unable to generate bindings");
 
     bindings.write(out)
-            .expect("Unable to write bindings to file.");
+        .expect("Unable to write bindings to file.");
 }

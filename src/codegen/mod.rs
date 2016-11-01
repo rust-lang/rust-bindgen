@@ -1,32 +1,32 @@
 mod helpers;
 
-use self::helpers::{attributes, BlobTyBuilder};
+use aster;
+use ir::annotations::FieldAccessorKind;
+use ir::comp::{CompInfo, CompKind, Field, Method};
 
 use ir::context::BindgenContext;
-use ir::item::{Item, ItemId, ItemCanonicalName, ItemCanonicalPath};
-use ir::ty::{Type, TypeKind};
-use ir::int::IntKind;
-use ir::module::Module;
-use ir::var::Var;
 use ir::enum_ty::Enum;
 use ir::function::{Function, FunctionSig};
+use ir::int::IntKind;
+use ir::item::{Item, ItemCanonicalName, ItemCanonicalPath, ItemId};
 use ir::item_kind::ItemKind;
-use ir::comp::{CompKind, CompInfo, Field, Method};
 use ir::layout::Layout;
-use ir::annotations::FieldAccessorKind;
+use ir::module::Module;
+use ir::ty::{Type, TypeKind};
 use ir::type_collector::{ItemSet, TypeCollector};
+use ir::var::Var;
+use self::helpers::{BlobTyBuilder, attributes};
+use std::borrow::Cow;
+use std::collections::HashSet;
+use std::collections::hash_map::{Entry, HashMap};
+use std::mem;
 
 use std::ops;
-use std::borrow::Cow;
-use std::mem;
-use std::collections::HashSet;
-use std::collections::hash_map::{HashMap, Entry};
 
 use syntax::abi::Abi;
 use syntax::ast;
 use syntax::codemap::{Span, respan};
 use syntax::ptr::P;
-use aster;
 
 fn root_import(ctx: &BindgenContext) -> P<ast::Item> {
     assert!(ctx.options().enable_cxx_namespaces, "Somebody messed it up");
@@ -39,7 +39,8 @@ struct CodegenResult {
     items: Vec<P<ast::Item>>,
     saw_union: bool,
     items_seen: HashSet<ItemId>,
-    /// The set of generated function/var names, needed because in C/C++ is legal to
+    /// The set of generated function/var names, needed because in C/C++ is
+    /// legal to
     /// do something like:
     ///
     /// ```c++
@@ -99,7 +100,7 @@ impl CodegenResult {
     }
 
     fn inner<F>(&mut self, cb: F) -> Vec<P<ast::Item>>
-        where F: FnOnce(&mut Self)
+        where F: FnOnce(&mut Self),
     {
         let mut new = Self::new();
 
@@ -135,7 +136,7 @@ impl ForeignModBuilder {
             inner: ast::ForeignMod {
                 abi: abi,
                 items: vec![],
-            }
+            },
         }
     }
 
@@ -146,7 +147,7 @@ impl ForeignModBuilder {
 
     #[allow(dead_code)]
     fn with_foreign_items<I>(mut self, items: I) -> Self
-        where I: IntoIterator<Item=ast::ForeignItem>
+        where I: IntoIterator<Item = ast::ForeignItem>,
     {
         self.inner.items.extend(items.into_iter());
         self
@@ -182,7 +183,7 @@ impl ToPtr for P<ast::Ty> {
                 ast::Mutability::Immutable
             } else {
                 ast::Mutability::Mutable
-            }
+            },
         });
         P(ast::Ty {
             id: ast::DUMMY_NODE_ID,
@@ -217,20 +218,21 @@ impl CodeGenerator for Item {
 
         match *self.kind() {
             ItemKind::Module(ref module) => {
-                if !ctx.options().enable_cxx_namespaces && self.id() == ctx.root_module() {
+                if !ctx.options().enable_cxx_namespaces &&
+                   self.id() == ctx.root_module() {
                     return;
                 }
 
                 module.codegen(ctx, result, self);
-            },
+            }
             ItemKind::Function(ref fun) => {
                 if !ctx.options().ignore_functions {
                     fun.codegen(ctx, result, self);
                 }
-            },
+            }
             ItemKind::Var(ref var) => {
                 var.codegen(ctx, result, self);
-            },
+            }
             ItemKind::Type(ref ty) => {
                 ty.codegen(ctx, result, self);
             }
@@ -265,8 +267,10 @@ impl CodeGenerator for Module {
         });
 
         let name = item.canonical_name(ctx);
-        let item = aster::AstBuilder::new().item().pub_()
-                         .build_item_kind(name, module);
+        let item = aster::AstBuilder::new()
+            .item()
+            .pub_()
+            .build_item_kind(name, module);
 
         result.push(item);
     }
@@ -288,9 +292,13 @@ impl CodeGenerator for Var {
         let ty = self.ty().to_rust_ty(ctx);
 
         if let Some(val) = self.val() {
-            let const_item = aster::AstBuilder::new().item().pub_()
-                                                .const_(canonical_name)
-                                                .expr().int(val).build(ty);
+            let const_item = aster::AstBuilder::new()
+                .item()
+                .pub_()
+                .const_(canonical_name)
+                .expr()
+                .int(val)
+                .build(ty);
             result.push(const_item)
         } else {
             let mut attrs = vec![];
@@ -310,8 +318,8 @@ impl CodeGenerator for Var {
             };
 
             let item = ForeignModBuilder::new(Abi::C)
-                            .with_foreign_item(item)
-                            .build(ctx);
+                .with_foreign_item(item)
+                .build(ctx);
             result.push(item);
         }
     }
@@ -368,7 +376,8 @@ impl CodeGenerator for Type {
                     return;
                 }
 
-                let mut applicable_template_args = item.applicable_template_args(ctx);
+                let mut applicable_template_args =
+                    item.applicable_template_args(ctx);
                 let inner_rust_type = if item.is_opaque(ctx) {
                     applicable_template_args.clear();
                     // Pray if there's no layout.
@@ -394,7 +403,8 @@ impl CodeGenerator for Type {
                             error!("Item contained `typename`'d template param: {:?}", item);
                             return;
                         }
-                        generics = generics.ty_param_id(template_arg.name().unwrap());
+                        generics =
+                            generics.ty_param_id(template_arg.name().unwrap());
                     }
                 }
 
@@ -402,8 +412,9 @@ impl CodeGenerator for Type {
                 result.push(typedef)
             }
             TypeKind::Enum(ref ei) => ei.codegen(ctx, result, item),
-            ref u @ TypeKind::UnresolvedTypeRef(..)
-                => unreachable!("Should have been resolved after parsing {:?}!", u),
+            ref u @ TypeKind::UnresolvedTypeRef(..) => {
+                unreachable!("Should have been resolved after parsing {:?}!", u)
+            }
         }
     }
 }
@@ -417,7 +428,10 @@ struct Vtable<'a> {
 }
 
 impl<'a> Vtable<'a> {
-    fn new(item_id: ItemId, methods: &'a [Method], base_classes: &'a [ItemId]) -> Self {
+    fn new(item_id: ItemId,
+           methods: &'a [Method],
+           base_classes: &'a [ItemId])
+           -> Self {
         Vtable {
             item_id: item_id,
             methods: methods,
@@ -436,10 +450,12 @@ impl<'a> CodeGenerator for Vtable<'a> {
         assert_eq!(item.id(), self.item_id);
         // For now, generate an empty struct, later we should generate function
         // pointers and whatnot.
-        let vtable = aster::AstBuilder::new().item().pub_()
-                            .with_attr(attributes::repr("C"))
-                            .struct_(self.canonical_name(ctx))
-                            .build();
+        let vtable = aster::AstBuilder::new()
+            .item()
+            .pub_()
+            .with_attr(attributes::repr("C"))
+            .struct_(self.canonical_name(ctx))
+            .build();
         result.push(vtable);
     }
 }
@@ -475,8 +491,9 @@ impl<'a> Bitfield<'a> {
                       methods: &mut Vec<ast::ImplItem>) {
         use aster::struct_field::StructFieldBuilder;
         use std::cmp;
-        let mut total_width = self.fields.iter()
-                                     .fold(0u32, |acc, f| acc + f.bitfield().unwrap());
+        let mut total_width = self.fields
+            .iter()
+            .fold(0u32, |acc, f| acc + f.bitfield().unwrap());
 
         if !total_width.is_power_of_two() || total_width < 8 {
             total_width = cmp::max(8, total_width.next_power_of_two());
@@ -485,11 +502,14 @@ impl<'a> Bitfield<'a> {
         let total_width_in_bytes = total_width as usize / 8;
 
         let bitfield_type =
-            BlobTyBuilder::new(Layout::new(total_width_in_bytes, total_width_in_bytes)).build();
+            BlobTyBuilder::new(Layout::new(total_width_in_bytes,
+                                           total_width_in_bytes))
+                .build();
         let field_name = format!("_bitfield_{}", self.index);
         let field_ident = ctx.ext_cx().ident_of(&field_name);
-        let field = StructFieldBuilder::named(&field_name).pub_()
-                        .build_ty(bitfield_type.clone());
+        let field = StructFieldBuilder::named(&field_name)
+            .pub_()
+            .build_ty(bitfield_type.clone());
         fields.push(field);
 
 
@@ -497,19 +517,21 @@ impl<'a> Bitfield<'a> {
         for field in self.fields {
             let width = field.bitfield().unwrap();
             let field_name = field.name()
-                                  .map(ToOwned::to_owned)
-                                  .unwrap_or_else(|| format!("at_offset_{}", offset));
+                .map(ToOwned::to_owned)
+                .unwrap_or_else(|| format!("at_offset_{}", offset));
 
             let field_item = ctx.resolve_item(field.ty());
-            let field_ty_layout = field_item.kind().expect_type()
-                                            .layout(ctx)
-                                            .expect("Bitfield without layout? Gah!");
+            let field_ty_layout = field_item.kind()
+                .expect_type()
+                .layout(ctx)
+                .expect("Bitfield without layout? Gah!");
 
             let field_type = field_item.to_rust_ty(ctx);
             let int_type = BlobTyBuilder::new(field_ty_layout).build();
 
             let getter_name = ctx.ext_cx().ident_of(&field_name);
-            let setter_name = ctx.ext_cx().ident_of(&format!("set_{}", &field_name));
+            let setter_name = ctx.ext_cx()
+                .ident_of(&format!("set_{}", &field_name));
             let mask = ((1usize << width) - 1) << offset;
             // The transmute is unfortunate, but it's needed for enums in
             // bitfields.
@@ -555,7 +577,8 @@ impl CodeGenerator for CompInfo {
         // also don't output template specializations, neither total or partial.
         //
         // TODO: Generate layout tests for template specializations, yay!
-        if self.has_non_type_template_params() || self.is_template_specialization() {
+        if self.has_non_type_template_params() ||
+           self.is_template_specialization() {
             return;
         }
 
@@ -598,16 +621,21 @@ impl CodeGenerator for CompInfo {
             attributes.push(attributes::derives(&derives))
         }
 
-        let mut template_args_used = vec![false; applicable_template_args.len()];
+        let mut template_args_used =
+            vec![false; applicable_template_args.len()];
         let canonical_name = item.canonical_name(ctx);
         let builder = if is_union && ctx.options().unstable_rust {
-            aster::AstBuilder::new().item().pub_()
-                            .with_attrs(attributes)
-                            .union_(&canonical_name)
+            aster::AstBuilder::new()
+                .item()
+                .pub_()
+                .with_attrs(attributes)
+                .union_(&canonical_name)
         } else {
-            aster::AstBuilder::new().item().pub_()
-                            .with_attrs(attributes)
-                            .struct_(&canonical_name)
+            aster::AstBuilder::new()
+                .item()
+                .pub_()
+                .with_attrs(attributes)
+                .struct_(&canonical_name)
         };
 
         // Generate the vtable from the method list if appropriate.
@@ -623,15 +651,15 @@ impl CodeGenerator for CompInfo {
         // the parent too.
         let mut fields = vec![];
         if self.needs_explicit_vtable(ctx) {
-            let vtable = Vtable::new(item.id(),
-                                     self.methods(),
-                                     self.base_members());
+            let vtable =
+                Vtable::new(item.id(), self.methods(), self.base_members());
             vtable.codegen(ctx, result, item);
 
             let vtable_type = vtable.to_rust_ty(ctx).to_ptr(true, ctx.span());
 
-            let vtable_field = StructFieldBuilder::named("vtable_").pub_()
-                                    .build_ty(vtable_type);
+            let vtable_field = StructFieldBuilder::named("vtable_")
+                .pub_()
+                .build_ty(vtable_type);
 
             fields.push(vtable_field);
         }
@@ -663,7 +691,8 @@ impl CodeGenerator for CompInfo {
             };
 
             let field = StructFieldBuilder::named(field_name)
-                                    .pub_().build_ty(inner);
+                .pub_()
+                .build_ty(inner);
             fields.push(field);
         }
         if is_union {
@@ -678,11 +707,11 @@ impl CodeGenerator for CompInfo {
         let mut bitfield_count = 0;
         let struct_fields = self.fields();
         let fields_should_be_private = item.annotations()
-                                           .private_fields()
-                                           .unwrap_or(false);
+            .private_fields()
+            .unwrap_or(false);
         let struct_accessor_kind = item.annotations()
-                                       .accessor_kind()
-                                       .unwrap_or(FieldAccessorKind::None);
+            .accessor_kind()
+            .unwrap_or(FieldAccessorKind::None);
 
         let mut methods = vec![];
         let mut anonymous_field_count = 0;
@@ -695,15 +724,16 @@ impl CodeGenerator for CompInfo {
             let field_ty = ctx.resolve_type(field.ty());
 
             // Try to catch a bitfield contination early.
-            if let (Some(ref mut bitfield_width), Some(width)) = (current_bitfield_width, field.bitfield()) {
+            if let (Some(ref mut bitfield_width), Some(width)) =
+                   (current_bitfield_width, field.bitfield()) {
                 let layout = current_bitfield_layout.unwrap();
                 debug!("Testing bitfield continuation {} {} {:?}",
                        *bitfield_width, width, layout);
-                 if *bitfield_width + width <= (layout.size * 8) as u32 {
-                     *bitfield_width += width;
-                     current_bitfield_fields.push(field);
-                     continue;
-                 }
+                if *bitfield_width + width <= (layout.size * 8) as u32 {
+                    *bitfield_width += width;
+                    current_bitfield_fields.push(field);
+                    continue;
+                }
             }
 
             // Flush the current bitfield.
@@ -721,7 +751,7 @@ impl CodeGenerator for CompInfo {
 
             if let Some(width) = field.bitfield() {
                 let layout = field_ty.layout(ctx)
-                                     .expect("Bitfield type without layout?");
+                    .expect("Bitfield type without layout?");
                 current_bitfield_width = Some(width);
                 current_bitfield_layout = Some(layout);
                 current_bitfield_fields.push(field);
@@ -756,12 +786,12 @@ impl CodeGenerator for CompInfo {
             };
 
             let is_private = field.annotations()
-                                  .private_fields()
-                                  .unwrap_or(fields_should_be_private);
+                .private_fields()
+                .unwrap_or(fields_should_be_private);
 
             let accessor_kind = field.annotations()
-                                     .accessor_kind()
-                                     .unwrap_or(struct_accessor_kind);
+                .accessor_kind()
+                .unwrap_or(struct_accessor_kind);
 
             let mut field = StructFieldBuilder::named(&field_name);
 
@@ -770,7 +800,7 @@ impl CodeGenerator for CompInfo {
             }
 
             let field = field.with_attrs(attrs)
-                             .build_ty(ty.clone());
+                .build_ty(ty.clone());
 
             fields.push(field);
 
@@ -830,9 +860,10 @@ impl CodeGenerator for CompInfo {
             };
 
             match accessor_methods_impl.unwrap().node {
-                ast::ItemKind::Impl(_, _, _, _, _, ref items)
-                    => methods.extend(items.clone()),
-                _   => unreachable!()
+                ast::ItemKind::Impl(_, _, _, _, _, ref items) => {
+                    methods.extend(items.clone())
+                }
+                _ => unreachable!(),
             }
         }
 
@@ -842,7 +873,8 @@ impl CodeGenerator for CompInfo {
         // FIXME: May need to pass current_bitfield_layout too.
         if current_bitfield_width.is_some() {
             debug_assert!(!current_bitfield_fields.is_empty());
-            let bitfield_fields = mem::replace(&mut current_bitfield_fields, vec![]);
+            let bitfield_fields = mem::replace(&mut current_bitfield_fields,
+                                               vec![]);
             bitfield_count += 1;
             Bitfield::new(bitfield_count, bitfield_fields)
                 .codegen_fields(ctx, &mut fields, &mut methods);
@@ -852,8 +884,9 @@ impl CodeGenerator for CompInfo {
         if is_union && !ctx.options().unstable_rust {
             let layout = layout.expect("Unable to get layout information?");
             let ty = BlobTyBuilder::new(layout).build();
-            let field = StructFieldBuilder::named("bindgen_union_field").pub_()
-                             .build_ty(ty);
+            let field = StructFieldBuilder::named("bindgen_union_field")
+                .pub_()
+                .build_ty(ty);
             fields.push(field);
         }
 
@@ -868,8 +901,10 @@ impl CodeGenerator for CompInfo {
             match layout {
                 Some(l) => {
                     let ty = BlobTyBuilder::new(l).build();
-                    let field = StructFieldBuilder::named("_bindgen_opaque_blob").pub_()
-                                     .build_ty(ty);
+                    let field =
+                        StructFieldBuilder::named("_bindgen_opaque_blob")
+                            .pub_()
+                            .build_ty(ty);
                     fields.push(field);
                 }
                 None => {
@@ -885,8 +920,9 @@ impl CodeGenerator for CompInfo {
         // may add for unused template parameters.
         if self.is_unsized(ctx) {
             let ty = BlobTyBuilder::new(Layout::new(1, 1)).build();
-            let field = StructFieldBuilder::named("_address").pub_()
-                            .build_ty(ty);
+            let field = StructFieldBuilder::named("_address")
+                .pub_()
+                .build_ty(ty);
             fields.push(field);
         }
 
@@ -918,7 +954,8 @@ impl CodeGenerator for CompInfo {
         let generics = generics.build();
 
         let rust_struct = builder.with_generics(generics.clone())
-                                 .with_fields(fields).build();
+            .with_fields(fields)
+            .build();
         result.push(rust_struct);
 
         // Generate the inner types and all that stuff.
@@ -957,19 +994,25 @@ impl CodeGenerator for CompInfo {
                     fn $fn_name() {
                         assert_eq!($size_of_expr, $size);
                         assert_eq!($align_of_expr, $align);
-                    }).unwrap();
+                    })
+                    .unwrap();
                 result.push(item);
             }
 
             let mut method_names = Default::default();
             for method in self.methods() {
-                method.codegen_method(ctx, &mut methods, &mut method_names, result, item);
+                method.codegen_method(ctx,
+                                      &mut methods,
+                                      &mut method_names,
+                                      result,
+                                      item);
             }
         }
 
         // NB: We can't use to_rust_ty here since for opaque types this tries to
         // use the specialization knowledge to generate a blob field.
-        let ty_for_impl = aster::AstBuilder::new().ty().path().id(&canonical_name).build();
+        let ty_for_impl =
+            aster::AstBuilder::new().ty().path().id(&canonical_name).build();
         if needs_clone_impl {
             let impl_ = quote_item!(ctx.ext_cx(),
                 impl X {
@@ -982,22 +1025,26 @@ impl CodeGenerator for CompInfo {
                 _ => unreachable!(),
             };
 
-            let clone_impl =
-                aster::AstBuilder::new().item().impl_()
-                                .trait_().id("Clone").build()
-                                .with_generics(generics.clone())
-                                .with_items(impl_)
-                                .build_ty(ty_for_impl.clone());
+            let clone_impl = aster::AstBuilder::new()
+                .item()
+                .impl_()
+                .trait_()
+                .id("Clone")
+                .build()
+                .with_generics(generics.clone())
+                .with_items(impl_)
+                .build_ty(ty_for_impl.clone());
 
             result.push(clone_impl);
         }
 
         if !methods.is_empty() {
-            let methods =
-                aster::AstBuilder::new().item().impl_()
-                                .with_generics(generics)
-                                .with_items(methods)
-                                .build_ty(ty_for_impl);
+            let methods = aster::AstBuilder::new()
+                .item()
+                .impl_()
+                .with_generics(generics)
+                .with_items(methods)
+                .build_ty(ty_for_impl);
             result.push(methods);
         }
     }
@@ -1040,7 +1087,7 @@ impl MethodCodegen for Method {
 
         let count = {
             let mut count = method_names.entry(name.clone())
-                                        .or_insert(0);
+                .or_insert(0);
             *count += 1;
             *count - 1
         };
@@ -1050,7 +1097,8 @@ impl MethodCodegen for Method {
         }
 
         let function_name = function_item.canonical_name(ctx);
-        let mut fndecl = utils::rust_fndecl_from_signature(ctx, signature_item).unwrap();
+        let mut fndecl = utils::rust_fndecl_from_signature(ctx, signature_item)
+            .unwrap();
         if !self.is_static() {
             let mutability = if self.is_const() {
                 ast::Mutability::Immutable
@@ -1095,16 +1143,19 @@ impl MethodCodegen for Method {
         // TODO: We need to keep in sync the argument names, so we should unify
         // this with the other loop that decides them.
         let mut unnamed_arguments = 0;
-        let mut exprs = signature.argument_types().iter().map(|&(ref name, _ty)| {
-            let arg_name = match *name {
-                Some(ref name) => ctx.rust_mangle(name).into_owned(),
-                None => {
-                    unnamed_arguments += 1;
-                    format!("arg{}", unnamed_arguments)
-                }
-            };
-            aster::expr::ExprBuilder::new().id(arg_name)
-        }).collect::<Vec<_>>();
+        let mut exprs = signature.argument_types()
+            .iter()
+            .map(|&(ref name, _ty)| {
+                let arg_name = match *name {
+                    Some(ref name) => ctx.rust_mangle(name).into_owned(),
+                    None => {
+                        unnamed_arguments += 1;
+                        format!("arg{}", unnamed_arguments)
+                    }
+                };
+                aster::expr::ExprBuilder::new().id(arg_name)
+            })
+            .collect::<Vec<_>>();
 
         if !self.is_static() {
             assert!(!exprs.is_empty());
@@ -1115,10 +1166,11 @@ impl MethodCodegen for Method {
             };
         };
 
-        let call = aster::expr::ExprBuilder::new().call()
-                        .id(function_name)
-                        .with_args(exprs)
-                        .build();
+        let call = aster::expr::ExprBuilder::new()
+            .call()
+            .id(function_name)
+            .with_args(exprs)
+            .build();
 
         let block = ast::Block {
             stmts: vec![
@@ -1164,10 +1216,12 @@ impl CodeGenerator for Enum {
 
         let repr = self.repr().map(|repr| ctx.resolve_type(repr));
         let repr = match repr {
-            Some(repr) => match *repr.canonical_type(ctx).kind() {
-                TypeKind::Int(int_kind) => int_kind,
-                _ => panic!("Unexpected type as enum repr"),
-            },
+            Some(repr) => {
+                match *repr.canonical_type(ctx).kind() {
+                    TypeKind::Int(int_kind) => int_kind,
+                    _ => panic!("Unexpected type as enum repr"),
+                }
+            }
             None => {
                 warn!("Guessing type of enum! Forward declarations of enums shouldn't be legal!");
                 IntKind::Int
@@ -1203,8 +1257,12 @@ impl CodeGenerator for Enum {
             builder = builder.with_attr(attributes::doc(comment));
         }
 
-        let derives =
-            attributes::derives(&["Debug", "Copy", "Clone", "PartialEq", "Eq", "Hash"]);
+        let derives = attributes::derives(&["Debug",
+                                            "Copy",
+                                            "Clone",
+                                            "PartialEq",
+                                            "Eq",
+                                            "Hash"]);
 
         builder = builder.with_attr(derives);
 
@@ -1213,7 +1271,8 @@ impl CodeGenerator for Enum {
         fn add_constant(enum_: &Type,
                         // Only to avoid recomputing every time.
                         enum_canonical_name: &str,
-                        // May be the same as "variant" if it's because the enum
+                        // May be the same as "variant" if it's because the
+                        // enum
                         // is unnamed and we still haven't seen the value.
                         variant_name: &str,
                         referenced_name: &str,
@@ -1225,11 +1284,15 @@ impl CodeGenerator for Enum {
                 variant_name.into()
             };
 
-            let constant = aster::AstBuilder::new().item().pub_()
-                                                   .const_(constant_name)
-                                                   .expr().path()
-                                                   .ids(&[&*enum_canonical_name, referenced_name])
-                                                   .build().build(enum_rust_ty);
+            let constant = aster::AstBuilder::new()
+                .item()
+                .pub_()
+                .const_(constant_name)
+                .expr()
+                .path()
+                .ids(&[&*enum_canonical_name, referenced_name])
+                .build()
+                .build(enum_rust_ty);
             result.push(constant);
         }
 
@@ -1245,8 +1308,11 @@ impl CodeGenerator for Enum {
                 Entry::Occupied(ref entry) => {
                     let existing_variant_name = entry.get();
                     let variant_name = ctx.rust_mangle(variant.name());
-                    add_constant(enum_ty, &name, &*variant_name,
-                                 existing_variant_name, enum_rust_ty.clone(),
+                    add_constant(enum_ty,
+                                 &name,
+                                 &*variant_name,
+                                 existing_variant_name,
+                                 enum_rust_ty.clone(),
                                  result);
                 }
                 Entry::Vacant(entry) => {
@@ -1272,7 +1338,8 @@ impl CodeGenerator for Enum {
                             variant_name.clone()
                         } else {
                             if parent_canonical_name.is_none() {
-                                parent_canonical_name = Some(item.parent_id().canonical_name(ctx));
+                                parent_canonical_name = Some(item.parent_id()
+                                    .canonical_name(ctx));
                             }
 
                             Cow::Owned(
@@ -1280,8 +1347,11 @@ impl CodeGenerator for Enum {
                                                  variant_name))
                         };
 
-                        add_constant(enum_ty, &name, &mangled_name,
-                                     &variant_name, enum_rust_ty.clone(),
+                        add_constant(enum_ty,
+                                     &name,
+                                     &mangled_name,
+                                     &variant_name,
+                                     enum_rust_ty.clone(),
                                      result);
                     }
 
@@ -1298,7 +1368,10 @@ impl CodeGenerator for Enum {
 trait ToRustTy {
     type Extra;
 
-    fn to_rust_ty(&self, ctx: &BindgenContext, extra: &Self::Extra) -> P<ast::Ty>;
+    fn to_rust_ty(&self,
+                  ctx: &BindgenContext,
+                  extra: &Self::Extra)
+                  -> P<ast::Ty>;
 }
 
 trait ItemToRustTy {
@@ -1336,7 +1409,9 @@ impl ToRustTy for Type {
             TypeKind::Void => raw!(c_void),
             // TODO: we should do something smart with nullptr, or maybe *const
             // c_void is enough?
-            TypeKind::NullPtr => quote_ty!(ctx.ext_cx(), *const ::std::os::raw::c_void),
+            TypeKind::NullPtr => {
+                quote_ty!(ctx.ext_cx(), *const ::std::os::raw::c_void)
+            }
             TypeKind::Int(ik) => {
                 match ik {
                     IntKind::Bool => aster::ty::TyBuilder::new().bool(),
@@ -1355,8 +1430,9 @@ impl ToRustTy for Type {
                     // FIXME: This doesn't generate the proper alignment, but we
                     // can't do better right now. We should be able to use
                     // i128/u128 when they're available.
-                    IntKind::U128 |
-                    IntKind::I128 => aster::ty::TyBuilder::new().array(2).u64(),
+                    IntKind::U128 | IntKind::I128 => {
+                        aster::ty::TyBuilder::new().array(2).u64()
+                    }
                 }
             }
             TypeKind::Float(fk) => {
@@ -1365,8 +1441,9 @@ impl ToRustTy for Type {
                 // account?
                 match fk {
                     FloatKind::Float => aster::ty::TyBuilder::new().f32(),
-                    FloatKind::Double |
-                    FloatKind::LongDouble => aster::ty::TyBuilder::new().f64(),
+                    FloatKind::Double | FloatKind::LongDouble => {
+                        aster::ty::TyBuilder::new().f64()
+                    }
                 }
             }
             TypeKind::Function(ref fs) => {
@@ -1407,7 +1484,9 @@ impl ToRustTy for Type {
                     // Pray if there's no available layout.
                     let layout = self.layout(ctx).unwrap_or_else(Layout::zero);
                     BlobTyBuilder::new(layout).build()
-                } else if let Some(ty) = utils::type_from_named(ctx, spelling, inner) {
+                } else if let Some(ty) = utils::type_from_named(ctx,
+                                                                spelling,
+                                                                inner) {
                     ty
                 } else {
                     utils::build_templated_path(item, ctx, true)
@@ -1416,22 +1495,22 @@ impl ToRustTy for Type {
             TypeKind::Comp(ref info) => {
                 if item.is_opaque(ctx) || info.has_non_type_template_params() {
                     return match self.layout(ctx) {
-                        Some(layout) => {
-                            BlobTyBuilder::new(layout).build()
-                        }
+                        Some(layout) => BlobTyBuilder::new(layout).build(),
                         None => {
                             warn!("Couldn't compute layout for a type with non \
                                   type template params or opaque, expect dragons!");
                             aster::AstBuilder::new().ty().unit()
                         }
-                    }
+                    };
                 }
 
                 utils::build_templated_path(item, ctx, false)
             }
             TypeKind::BlockPointer => {
                 let void = raw!(c_void);
-                void.to_ptr(/* is_const = */ false, ctx.span())
+                void.to_ptr(/* is_const = */
+                            false,
+                            ctx.span())
             }
             TypeKind::Pointer(inner) |
             TypeKind::Reference(inner) => {
@@ -1444,7 +1523,8 @@ impl ToRustTy for Type {
                 if inner_ty.canonical_type(ctx).is_function() {
                     ty
                 } else {
-                    let is_const = self.is_const() || inner.expect_type().is_const();
+                    let is_const = self.is_const() ||
+                                   inner.expect_type().is_const();
                     ty.to_ptr(is_const, ctx.span())
                 }
             }
@@ -1453,8 +1533,9 @@ impl ToRustTy for Type {
                 let ident = ctx.rust_ident(&name);
                 quote_ty!(ctx.ext_cx(), $ident)
             }
-            ref u @ TypeKind::UnresolvedTypeRef(..)
-                => unreachable!("Should have been resolved after parsing {:?}!", u),
+            ref u @ TypeKind::UnresolvedTypeRef(..) => {
+                unreachable!("Should have been resolved after parsing {:?}!", u)
+            }
         }
     }
 }
@@ -1465,11 +1546,12 @@ impl ToRustTy for FunctionSig {
     fn to_rust_ty(&self, ctx: &BindgenContext, _item: &Item) -> P<ast::Ty> {
         // TODO: we might want to consider ignoring the reference return value.
         let return_item = ctx.resolve_item(self.return_type());
-        let ret = if let TypeKind::Void = *return_item.kind().expect_type().kind() {
-            ast::FunctionRetTy::Default(ctx.span())
-        } else {
-            ast::FunctionRetTy::Ty(return_item.to_rust_ty(ctx))
-        };
+        let ret =
+            if let TypeKind::Void = *return_item.kind().expect_type().kind() {
+                ast::FunctionRetTy::Default(ctx.span())
+            } else {
+                ast::FunctionRetTy::Ty(return_item.to_rust_ty(ctx))
+            };
 
         let mut unnamed_arguments = 0;
         let arguments = self.argument_types().iter().map(|&(ref name, ty)| {
@@ -1566,15 +1648,14 @@ impl CodeGenerator for Function {
         let foreign_item_kind =
             ast::ForeignItemKind::Fn(fndecl, ast::Generics::default());
 
-        let foreign_item =
-            ast::ForeignItem {
-                ident: ctx.rust_ident_raw(&canonical_name),
-                attrs: attributes,
-                node: foreign_item_kind,
-                id: ast::DUMMY_NODE_ID,
-                span: ctx.span(),
-                vis: ast::Visibility::Public,
-            };
+        let foreign_item = ast::ForeignItem {
+            ident: ctx.rust_ident_raw(&canonical_name),
+            attrs: attributes,
+            node: foreign_item_kind,
+            id: ast::DUMMY_NODE_ID,
+            span: ctx.span(),
+            vis: ast::Visibility::Public,
+        };
 
         let item = ForeignModBuilder::new(signature.abi())
             .with_foreign_item(foreign_item)
@@ -1596,7 +1677,8 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
            context.options().whitelisted_functions.is_empty() &&
            context.options().whitelisted_vars.is_empty() {
             for (_item_id, item) in context.items() {
-                // Non-toplevel item parents are the responsible one for generating
+                // Non-toplevel item parents are the responsible one for
+                // generating
                 // them.
                 if item.is_toplevel(context) {
                     item.codegen(context, &mut result, &());
@@ -1629,17 +1711,24 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
                         if let TypeKind::Enum(ref enum_) = *ty.kind() {
                             if ty.name().is_none() {
                                 if enum_.variants().iter().any(|variant| {
-                                    context.options().whitelisted_vars.matches(&variant.name())
+                                    context.options()
+                                        .whitelisted_vars
+                                        .matches(&variant.name())
                                 }) {
-                                    item.collect_types(context, &mut items, &());
+                                    item.collect_types(context,
+                                                       &mut items,
+                                                       &());
                                 }
                             }
                         }
                     }
                     ItemKind::Function(ref fun) => {
-                        if context.options().whitelisted_functions.matches(&name) {
+                        if context.options()
+                            .whitelisted_functions
+                            .matches(&name) {
                             items.insert(item.id());
-                            fun.signature().collect_types(context, &mut items, &());
+                            fun.signature()
+                                .collect_types(context, &mut items, &());
                         }
                     }
                     ItemKind::Var(ref var) => {
@@ -1652,7 +1741,10 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
                 }
             }
 
-            fn contains_parent(ctx: &BindgenContext, types: &ItemSet, id: ItemId) -> bool {
+            fn contains_parent(ctx: &BindgenContext,
+                               types: &ItemSet,
+                               id: ItemId)
+                               -> bool {
                 let item = ctx.resolve_item(id);
                 let mut last = id;
                 let mut current = item.parent_id();
@@ -1670,7 +1762,8 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
 
             for item_id in items.iter() {
                 let item = context.resolve_item(*item_id);
-                if item.is_toplevel(context) || !contains_parent(context, &items, *item_id) {
+                if item.is_toplevel(context) ||
+                   !contains_parent(context, &items, *item_id) {
                     item.codegen(context, &mut result, &());
                 }
             }
@@ -1685,21 +1778,23 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
 }
 
 mod utils {
+    use aster;
     use ir::context::BindgenContext;
     use ir::item::{Item, ItemCanonicalPath, ItemId};
     use ir::ty::TypeKind;
-    use syntax::ast;
-    use syntax::ptr::P;
     use std::mem;
     use super::ItemToRustTy;
-    use aster;
+    use syntax::ast;
+    use syntax::ptr::P;
 
-    pub fn prepend_union_types(ctx: &BindgenContext, result: &mut Vec<P<ast::Item>>) {
+    pub fn prepend_union_types(ctx: &BindgenContext,
+                               result: &mut Vec<P<ast::Item>>) {
         let union_field_decl = quote_item!(ctx.ext_cx(),
             #[derive(Debug)]
             #[repr(C)]
             pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
-        ).unwrap();
+        )
+            .unwrap();
 
         let union_field_impl = quote_item!(&ctx.ext_cx(),
             impl<T> __BindgenUnionField<T> {
@@ -1718,7 +1813,8 @@ mod utils {
                     ::std::mem::transmute(self)
                 }
             }
-        ).unwrap();
+        )
+            .unwrap();
 
         let union_field_default_impl = quote_item!(&ctx.ext_cx(),
             impl<T> ::std::default::Default for __BindgenUnionField<T> {
@@ -1727,7 +1823,8 @@ mod utils {
                     Self::new()
                 }
             }
-        ).unwrap();
+        )
+            .unwrap();
 
         let union_field_clone_impl = quote_item!(&ctx.ext_cx(),
             impl<T> ::std::clone::Clone for __BindgenUnionField<T> {
@@ -1736,11 +1833,13 @@ mod utils {
                     Self::new()
                 }
             }
-        ).unwrap();
+        )
+            .unwrap();
 
         let union_field_copy_impl = quote_item!(&ctx.ext_cx(),
             impl<T> ::std::marker::Copy for __BindgenUnionField<T> {}
-        ).unwrap();
+        )
+            .unwrap();
 
         let items = vec![
             union_field_decl, union_field_impl,
@@ -1754,26 +1853,32 @@ mod utils {
     }
 
 
-    pub fn build_templated_path(item: &Item, ctx: &BindgenContext, only_named: bool) -> P<ast::Ty> {
+    pub fn build_templated_path(item: &Item,
+                                ctx: &BindgenContext,
+                                only_named: bool)
+                                -> P<ast::Ty> {
         let path = item.canonical_path(ctx);
 
         let builder = aster::AstBuilder::new().ty().path();
         let template_args = if only_named {
-            item.applicable_template_args(ctx).iter().filter(|arg| {
-                ctx.resolve_type(**arg).is_named()
-            }).map(|arg| {
-                arg.to_rust_ty(ctx)
-            }).collect::<Vec<_>>()
+            item.applicable_template_args(ctx)
+                .iter()
+                .filter(|arg| ctx.resolve_type(**arg).is_named())
+                .map(|arg| arg.to_rust_ty(ctx))
+                .collect::<Vec<_>>()
         } else {
-            item.applicable_template_args(ctx).iter().map(|arg| {
-                arg.to_rust_ty(ctx)
-            }).collect::<Vec<_>>()
+            item.applicable_template_args(ctx)
+                .iter()
+                .map(|arg| arg.to_rust_ty(ctx))
+                .collect::<Vec<_>>()
         };
 
         // XXX: I suck at aster.
         if path.len() == 1 {
             return builder.segment(&path[0])
-                          .with_tys(template_args).build().build();
+                .with_tys(template_args)
+                .build()
+                .build();
         }
 
         let mut builder = builder.id(&path[0]);
@@ -1782,7 +1887,8 @@ mod utils {
             builder = if i == path.len() - 2 {
                 // XXX Extra clone courtesy of the borrow checker.
                 builder.segment(&segment)
-                       .with_tys(template_args.clone()).build()
+                    .with_tys(template_args.clone())
+                    .build()
             } else {
                 builder.segment(&segment).build()
             }
@@ -1798,7 +1904,8 @@ mod utils {
 
     pub fn type_from_named(ctx: &BindgenContext,
                            name: &str,
-                           _inner: ItemId) -> Option<P<ast::Ty>> {
+                           _inner: ItemId)
+                           -> Option<P<ast::Ty>> {
         // FIXME: We could use the inner item to check this is really a
         // primitive type but, who the heck overrides these anyway?
         macro_rules! ty {
@@ -1816,17 +1923,16 @@ mod utils {
             "int64_t" => ty!(i64),
             "uint64_t" => ty!(u64),
 
-            "uintptr_t" |
-            "size_t" => ty!(usize),
+            "uintptr_t" | "size_t" => ty!(usize),
 
-            "intptr_t" |
-            "ptrdiff_t" |
-            "ssize_t" => ty!(isize),
+            "intptr_t" | "ptrdiff_t" | "ssize_t" => ty!(isize),
             _ => return None,
         })
     }
 
-    pub fn rust_fndecl_from_signature(ctx: &BindgenContext, sig: &Item) -> P<ast::FnDecl> {
+    pub fn rust_fndecl_from_signature(ctx: &BindgenContext,
+                                      sig: &Item)
+                                      -> P<ast::FnDecl> {
         use codegen::ToRustTy;
 
         let signature = sig.kind().expect_type();
