@@ -1170,6 +1170,157 @@ impl UnsavedFile {
     }
 }
 
+/// Provide index results.
+pub trait IndexCallable {
+    /// Item type for Iterator trait.
+    type Item;
+
+    /// Type reprensenting the number of items.
+    /// If signed, only create iterator if positive.
+    type ItemNum;
+
+    /// Call the function retreiving number of items.
+    fn fetch_item_num(&self) -> Self::ItemNum;
+
+    /// Call the function retreiving the item for the index idx.
+    fn fetch_item(&mut self, idx: usize) -> Self::Item;
+}
+
+/// Tag for unsigned integer type
+pub trait UnsignedInteger {}
+impl UnsignedInteger for c_uint {}
+
+/// Tag for signed integer type
+pub trait SignedInteger {}
+impl SignedInteger for c_int {}
+
+/// An iterator for a type's template arguments
+pub struct IndexCallIterator<CxtT> {
+    cxt: CxtT,
+    length: usize,
+    index: usize
+}
+
+impl<CxtT: IndexCallable> IndexCallIterator<CxtT> where CxtT::ItemNum: UnsignedInteger + Into<u32>{
+    fn new(cxt: CxtT) ->  IndexCallIterator<CxtT> {
+        let len: u32 = cxt.fetch_item_num().into();
+        IndexCallIterator { cxt: cxt, length: len as usize, index: 0 }
+    }
+}
+
+impl<CxtT: IndexCallable> IndexCallIterator<CxtT> where CxtT::ItemNum: SignedInteger + Into<i32> {
+    fn new_check_positive(cxt: CxtT) ->  Option<IndexCallIterator<CxtT>> {
+        let len: i32 = cxt.fetch_item_num().into();
+        if len >= 0 {
+            Some( IndexCallIterator { cxt: cxt, length: len as usize, index: 0 } )
+        } else {
+            debug_assert_eq!(len, -1); // only expect -1 as invalid
+            None
+        }
+    }
+}
+
+impl<CxtT: IndexCallable> Iterator for IndexCallIterator<CxtT> {
+    type Item = CxtT::Item;
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.index < self.length {
+            let idx = self.index;
+            self.index += 1;
+            Some(self.cxt.fetch_item(idx))
+        } else {
+            None
+        }
+    }
+}
+
+impl<CxtT: IndexCallable> ExactSizeIterator for IndexCallIterator<CxtT> {
+    fn len(&self) -> usize {
+        assert!(self.index <= self.length);
+        self.length - self.index
+    }
+}
+
+struct TestIndexCallableProvider {
+    cxtu: c_uint,
+    cxti: c_int
+}
+
+impl TestIndexCallableProvider {
+    fn get_unsigned_children(self) -> IndexCallIterator<TestIndexCallable>
+    {
+        let idx_callable = TestIndexCallable { cxt: self.cxtu };
+        IndexCallIterator::new( idx_callable )
+    }
+
+    fn get_signed_children(self) -> Option<IndexCallIterator<TestIndexCallableOption>>
+    {
+        let idx_callable = TestIndexCallableOption { cxt: self.cxti };
+        IndexCallIterator::new_check_positive( idx_callable )
+    }
+}
+
+struct TestIndexCallable {
+    cxt: c_uint // FFI function context
+}
+
+impl IndexCallable for TestIndexCallable {
+    type Item = i32;
+    type ItemNum = c_uint;
+
+    fn fetch_item_num(&self) -> Self::ItemNum {
+        self.cxt // call specific FFI function
+    }
+
+    fn fetch_item(&mut self, idx: usize) -> Self::Item {
+        idx as i32 // call specific FFI function
+    }
+}
+
+
+struct TestIndexCallableOption {
+    cxt: c_int // FFI function context
+}
+
+impl IndexCallable for TestIndexCallableOption {
+    type Item = i32;
+    type ItemNum = c_int;
+    
+    fn fetch_item_num(&self) -> Self::ItemNum {
+        return self.cxt // call specific FFI function
+    }
+
+    fn fetch_item(&mut self, idx: usize) -> Self::Item {
+        idx as i32 // call specific FFI function
+    }
+}
+
+#[test]
+fn test_index_call_iterator() {
+    let provider = TestIndexCallableProvider{ cxti: 3, cxtu: 2};
+
+    let values = provider.get_unsigned_children();
+    let len = values.len();
+    let collected = values.collect::<Vec<_>>();
+
+    assert_eq!(collected, vec![0,1]);
+    assert_eq!(len, 2);
+}
+
+#[test]
+fn test_optional_index_call_iterator() {
+    let provider = TestIndexCallableProvider{ cxti: 2, cxtu: 3};
+    let provider_no_children = TestIndexCallableProvider{ cxti: -1, cxtu: 3};
+    
+    let values = provider.get_signed_children();
+    let not_values = provider_no_children.get_signed_children();
+    let len = values.as_ref().map(|x| x.len());
+    let collected = values.map(|x| x.collect::<Vec<_>>());
+
+    assert_eq!(collected, Some(vec![0,1]));
+    assert_eq!(len, Some(2));
+    assert!(not_values.is_none());
+}
+
 /// Convert a cursor kind into a static string.
 pub fn kind_to_str(x: Enum_CXCursorKind) -> &'static str {
     match x {
