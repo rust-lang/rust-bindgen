@@ -707,14 +707,18 @@ impl Type {
 
     /// Given that this type is a function type, get the types of its
     /// parameters.
-    pub fn arg_types(&self) -> Vec<Type> {
+    pub fn arg_types(&self) -> Option<Vec<Type>> {
         unsafe {
-            let num = clang_getNumArgTypes(self.x) as usize;
-            let mut args = vec!();
-            for i in 0..num {
-                args.push(Type { x: clang_getArgType(self.x, i as c_uint) });
+            let num = clang_getNumArgTypes(self.x) as isize;
+            if num != -1 {
+                let mut args = vec!();
+                for i in 0..num {
+                    args.push(Type { x: clang_getArgType(self.x, i as c_uint) });
+                }
+                Some(args)
+            } else {
+                None
             }
-            args
         }
     }
 
