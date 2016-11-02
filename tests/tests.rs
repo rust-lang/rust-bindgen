@@ -12,10 +12,13 @@ use std::process;
 
 const TEST_BATCH_DEFAULT_SIZE: usize = 16;
 
-fn spawn_run_bindgen<P, Q, R>(run_bindgen: P, bindgen: Q, header: R) -> process::Child
+fn spawn_run_bindgen<P, Q, R>(run_bindgen: P,
+                              bindgen: Q,
+                              header: R)
+                              -> process::Child
     where P: AsRef<Path>,
           Q: AsRef<Path>,
-          R: AsRef<Path>
+          R: AsRef<Path>,
 {
     let run_bindgen = run_bindgen.as_ref();
     let bindgen = bindgen.as_ref();
@@ -36,19 +39,34 @@ fn spawn_run_bindgen<P, Q, R>(run_bindgen: P, bindgen: Q, header: R) -> process:
     expected.push(file_name);
     expected.set_extension("rs");
 
-    let mut cmd = process::Command::new(run_bindgen);
-    cmd.stdout(process::Stdio::piped())
+    // And the same style conversion as above, but for the dummy uses. We assume
+    // that .hpp means we should generate a .cpp uses file, and .h means we
+    // should generate a .c file.
+
+    let mut dummy_uses = PathBuf::from(header);
+    let file_name = dummy_uses.file_name()
+        .expect("Should still have filename")
+        .to_os_string();
+    dummy_uses.pop();
+    dummy_uses.pop();
+    dummy_uses.push("uses");
+    dummy_uses.push(file_name);
+    dummy_uses.set_extension(if header.extension().and_then(|s| s.to_str()) ==
+                                Some("hpp") {
+        "cpp"
+    } else {
+        "c"
+    });
+
+    process::Command::new(run_bindgen)
+        .stdout(process::Stdio::piped())
         .stderr(process::Stdio::piped())
         .arg(bindgen)
         .arg(header)
-        .arg(expected);
-
-    if cfg!(feature = "llvm_stable") {
-        cmd.arg("--feature")
-            .arg("llvm_stable");
-    }
-
-    cmd.spawn()
+        .arg(expected)
+        .arg("--dummy-uses")
+        .arg(dummy_uses)
+        .spawn()
         .expect("Should be able to spawn run-bindgen.py child process")
 }
 
@@ -84,12 +102,12 @@ fn run_bindgen_tests() {
         .map(|result| result.expect("Should read directory entry"));
 
     let tests = entries.filter(|entry| {
-        match entry.path().extension().map(|s| s.to_str()) {
-            Some(Some("h")) |
-            Some(Some("hpp")) => true,
-            _ => false,
-        }
-    }).collect::<Vec<_>>();
+            match entry.path().extension().and_then(|s| s.to_str()) {
+                Some("h") | Some("hpp") => true,
+                _ => false,
+            }
+        })
+        .collect::<Vec<_>>();
 
     let batch_size = env::var("BINDGEN_TEST_BATCH_SIZE")
         .ok()
@@ -101,22 +119,26 @@ fn run_bindgen_tests() {
     // consumed when testing, so that we don't overload the system.
 
     let children = tests.chunks(batch_size).map(|x| {
-        x.iter().map(|entry| {
-            let child = spawn_run_bindgen(run_bindgen.clone(), bindgen.clone(), entry.path());
-            (entry.path(), child)
-        }).collect::<Vec<_>>()
+        x.iter()
+            .map(|entry| {
+                let child = spawn_run_bindgen(run_bindgen.clone(),
+                                              bindgen.clone(),
+                                              entry.path());
+                (entry.path(), child)
+            })
+            .collect::<Vec<_>>()
     });
 
     let failures: Vec<_> = children.flat_map(|x| {
-        x.into_iter().filter_map(|(path, mut child)| {
-            let passed = child.wait()
-                .expect("Should wait on child process")
-                .success();
+            x.into_iter().filter_map(|(path, mut child)| {
+                let passed = child.wait()
+                    .expect("Should wait on child process")
+                    .success();
 
-            if passed { None } else { Some((path, child)) }
+                if passed { None } else { Some((path, child)) }
+            })
         })
-    })
-    .collect();
+        .collect();
 
     let num_failures = failures.len();
 

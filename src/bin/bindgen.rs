@@ -84,6 +84,10 @@ Options:
                                   matching <regex>.  Same behavior on emptyness
                                   than the type whitelisting.
 
+    --dummy-uses=<path>           For testing purposes, generate a C/C++ file
+                                  containing dummy uses of all types defined in
+                                  the input header.
+
     <clang-args>                  Options other than stated above are passed
                                   directly through to clang.
 ";
@@ -182,6 +186,11 @@ fn parse_args_or_exit(args: Vec<String>) -> (BindgenOptions, Box<io::Write>) {
             "--use-msvc-mangling" => {
                 options.msvc_mangling = true;
             }
+            "--dummy-uses" => {
+                let dummy_path = iter.next()
+                    .expect("--dummy-uses expects a file path");
+                options.dummy_uses = Some(dummy_path);
+            }
             other if source_file.is_none() => {
                 source_file = Some(other.into());
             }
@@ -193,6 +202,12 @@ fn parse_args_or_exit(args: Vec<String>) -> (BindgenOptions, Box<io::Write>) {
 
     if let Some(source_file) = source_file.take() {
         options.clang_args.push(source_file);
+        options.input_header = options.clang_args.last().cloned();
+    } else {
+        options.input_header = options.clang_args
+            .iter()
+            .find(|arg| arg.ends_with(".h") || arg.ends_with(".hpp"))
+            .cloned();
     }
 
     let out = if let Some(ref path_name) = dest_file {
@@ -244,8 +259,11 @@ pub fn main() {
 
     let (options, out) = parse_args_or_exit(bind_args);
 
-    let bindings = Bindings::generate(options, None)
+    let mut bindings = Bindings::generate(options, None)
         .expect("Unable to generate bindings");
+
+    bindings.write_dummy_uses()
+        .expect("Unable to write dummy uses to file.");
 
     bindings.write(out)
         .expect("Unable to write bindings to file.");
