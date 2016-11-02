@@ -704,21 +704,6 @@ impl Type {
         unsafe { clang_isFunctionTypeVariadic(self.x) != 0 }
     }
 
-    /// Given that this type is a function type, get the types of its
-    /// parameters.
-    pub fn arg_types(&self) -> Vec<Type> {
-        unsafe {
-            let num = clang_getNumArgTypes(self.x) as usize;
-            let mut args = vec![];
-            for i in 0..num {
-                args.push(Type {
-                    x: clang_getArgType(self.x, i as c_uint),
-                });
-            }
-            args
-        }
-    }
-
     /// Given that this type is a function type, get the type of its return
     /// value.
     pub fn ret_type(&self) -> Option<Type> {
