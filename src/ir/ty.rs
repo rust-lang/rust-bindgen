@@ -547,14 +547,14 @@ impl Type {
                             let mut inner = Err(ParseError::Continue);
                             let mut args = vec![];
 
-                            location.visit(|cur, _| {
+                            location.visit(|cur| {
                                 match cur.kind() {
                                     CXCursor_TypeAliasDecl => {
                                         debug_assert!(cur.cur_type().kind() ==
                                                       CXType_Typedef);
                                         inner =
                                             Item::from_ty(&cur.cur_type(),
-                                                          Some(*cur),
+                                                          Some(cur),
                                                           Some(potential_id),
                                                           ctx);
                                     }
@@ -567,7 +567,7 @@ impl Type {
 
                                         let default_type =
                                             Item::from_ty(&cur.cur_type(),
-                                                          Some(*cur),
+                                                          Some(cur),
                                                           Some(potential_id),
                                                           ctx)
                                                 .ok();

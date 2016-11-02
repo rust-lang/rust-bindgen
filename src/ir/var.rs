@@ -203,7 +203,7 @@ fn get_integer_literal_from_cursor(cursor: &clang::Cursor,
                                    -> Option<i64> {
     use clangll::*;
     let mut value = None;
-    cursor.visit(|c, _| {
+    cursor.visit(|c| {
         match c.kind() {
             CXCursor_IntegerLiteral |
             CXCursor_UnaryOperator => {
