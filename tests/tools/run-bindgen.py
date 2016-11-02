@@ -41,6 +41,10 @@ def make_parser():
                         nargs=1,
                         help="Run tests that depend on bindgen being built with \
                               the given feature.")
+    parser.add_argument("--dummy-uses",
+                        dest="dummy_uses",
+                        help="The path to generate dummy C/C++ uses of the \
+                              whitelisted types from the input header at.")
     return parser
 
 def usage_and_exit(*args):
@@ -117,9 +121,11 @@ def run_cmd(command, **kwargs):
     print("run-bindgen.py: running", command)
     subprocess.check_call(command, **kwargs)
 
-def generate_bindings(bindgen, flags, header, output):
+def generate_bindings(bindgen, dummy_uses, flags, header, output):
     """Generate the rust bindings."""
     command = [bindgen, "-o", output]
+    if dummy_uses:
+        command.extend(["--dummy-uses", dummy_uses])
     command.extend(flags)
     command.append(header)
     run_cmd(command, cwd=os.getcwd(), env=make_bindgen_env())
@@ -166,7 +172,11 @@ def main():
 
     test_flags = get_bindgen_flags(args.header)
     expected_bindings = get_expected_bindings(args.rust_bindings)
-    generate_bindings(args.bindgen, test_flags, args.header, args.rust_bindings)
+    generate_bindings(args.bindgen,
+                      args.dummy_uses,
+                      test_flags,
+                      args.header,
+                      args.rust_bindings)
     test_generated_bindings(args.rust_bindings)
     check_actual_vs_expected(expected_bindings, args.rust_bindings)
     sys.exit(0)
