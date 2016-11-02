@@ -8,7 +8,7 @@ extern crate log;
 extern crate clang_sys;
 extern crate rustc_serialize;
 
-use bindgen::{BindgenOptions, Bindings, LinkType, clang_version};
+use bindgen::{BindgenOptions, Bindings, LinkType, ClangVersion, clang_version};
 use std::default::Default;
 use std::env;
 use std::fs;
@@ -217,15 +217,26 @@ pub fn main() {
 
     let mut bind_args: Vec<_> = env::args().collect();
 
-    let clang_version = clang_version();
-
-    if cfg!(feature = "llvm_stable") {
-        assert_eq!(clang_version, "3.8.0");
-    } else {
-        assert_eq!(clang_version, "3.9.0");
-    }
-
-    debug!("Using Clang Version: {}", clang_version);
+    match clang_version() {
+        None => {
+            error!("Could not retrieve Clang version...")
+        },
+        Some(v) => {
+            if cfg!(feature = "llvm_stable") {
+                if (v.major,v.minor) != (3,8) {
+                    error!("Got Clang {}.{}, expected 3.8", v.major, v.minor)
+                } else {
+                    info!("Using: {}", v.full)
+                }
+            } else {
+                if (v.major, v.minor) != (3,9) {
+                    error!("Got Clang {}.{}, expected 3.9", v.major, v.minor)
+                } else {
+                    info!("Using: {}", v.full)
+                }
+            }
+        }
+    };
 
     if let Some(clang) = clang_sys::support::Clang::find(None) {
         let has_clang_args =

@@ -1427,6 +1427,7 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> Enum_CXVisitorResult {
     CXChildVisit_Continue
 }
 
+/// Try to extract the clang version to a string
 pub fn extract_clang_version() -> Option<String> {
     let s: String =
         unsafe { clang_getClangVersion().into() };

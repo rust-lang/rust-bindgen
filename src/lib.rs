@@ -449,14 +449,33 @@ fn parse(context: &mut BindgenContext) {
             "How did this happen?");
 }
 
-/// Get the version number (e.g. 3.9.0) of Clang in String form
-pub fn clang_version() -> String {
-    clang::extract_clang_version()
-        .expect("Could not retrieve Clang version!")
-        .split(' ')
-        .nth(2)
-        .expect("Could not parse Clang version!")
-        .to_string()
+/// Extracted Clang version data
+#[derive(Debug)]
+pub struct ClangVersion {
+    /// major semvar
+    pub major: u32,
+    /// minor semvar
+    pub minor: u32,
+    /// full version string
+    pub full: String,
+}
+
+/// Get the major and the minor semvar numbers of Clang's version
+pub fn clang_version() -> Option<ClangVersion> {
+    let raw_v: String = match clang::extract_clang_version() {
+        None => return None,
+        Some(v) => v,
+    };
+    let split_v: Vec<&str> = match raw_v.split_whitespace().nth(2) {
+        None => return None,
+        Some(v) => v.split_terminator('.').collect(),
+    };
+    let maybe_major = split_v[0].parse::<u32>();
+    let maybe_minor = split_v[1].parse::<u32>();
+    match (maybe_major,maybe_minor) {
+        (Ok(major),Ok(minor)) => Some(ClangVersion { major: major, minor: minor, full: raw_v.clone() }),
+        _ => None,
+    }
 }
 
 
