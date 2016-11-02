@@ -187,7 +187,7 @@ impl Cursor {
 
     /// Is the referent a template specialization?
     pub fn is_template(&self) -> bool {
-        self.specialized().is_valid()
+        self.specialized().map_or(false, |c| c.is_valid())
     }
 
     /// Is the referent a fully specialized template specialization without any
@@ -287,11 +287,15 @@ impl Cursor {
 
     /// Given that this cursor points to a template specialization, get a cursor
     /// pointing to the template definition that is being specialized.
-    pub fn specialized(&self) -> Cursor {
+    pub fn specialized(&self) -> Option<Cursor> {
+        if !self.is_valid() {
+            return None;
+        }
+
         unsafe {
-            Cursor {
+            Some(Cursor {
                 x: clang_getSpecializedCursorTemplate(self.x),
-            }
+            })
         }
     }
 

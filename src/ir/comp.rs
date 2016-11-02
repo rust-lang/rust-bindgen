@@ -512,7 +512,8 @@ impl CompInfo {
             }
         };
 
-        ci.ref_template = Item::parse(cursor.specialized(), None, ctx).ok();
+        ci.ref_template = cursor.specialized()
+            .and_then(|c| Item::parse(c, None, ctx).ok());
 
         let mut maybe_anonymous_struct_field = None;
         cursor.visit(|cur, _other| {
