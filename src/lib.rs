@@ -452,30 +452,33 @@ fn parse(context: &mut BindgenContext) {
 /// Extracted Clang version data
 #[derive(Debug)]
 pub struct ClangVersion {
-    /// major semvar
-    pub major: u32,
-    /// minor semvar
-    pub minor: u32,
+    /// Major and minor semvar, if parsing was successful
+    pub parsed: Option<(u32,u32)>,
     /// full version string
     pub full: String,
 }
 
 /// Get the major and the minor semvar numbers of Clang's version
-pub fn clang_version() -> Option<ClangVersion> {
-    let raw_v: String = match clang::extract_clang_version() {
-        None => return None,
-        Some(v) => v,
+pub fn clang_version() -> ClangVersion {
+    let raw_v: String = clang::extract_clang_version();
+    let split_v: Option<Vec<&str>> = raw_v
+        .split_whitespace()
+        .nth(2)
+        .map(|v| v.split('.').collect());
+    match split_v {
+        Some(v) => {
+            if v.len() >= 2 {
+                let maybe_major = v[0].parse::<u32>();
+                let maybe_minor = v[1].parse::<u32>();
+                match (maybe_major,maybe_minor) {
+                    (Ok(major),Ok(minor)) => return ClangVersion { parsed: Some((major,minor)), full: raw_v.clone() },
+                    _ => {},
+                }
+            }
+        },
+        None => {},
     };
-    let split_v: Vec<&str> = match raw_v.split_whitespace().nth(2) {
-        None => return None,
-        Some(v) => v.split_terminator('.').collect(),
-    };
-    let maybe_major = split_v[0].parse::<u32>();
-    let maybe_minor = split_v[1].parse::<u32>();
-    match (maybe_major,maybe_minor) {
-        (Ok(major),Ok(minor)) => Some(ClangVersion { major: major, minor: minor, full: raw_v.clone() }),
-        _ => None,
-    }
+    ClangVersion { parsed: None, full: raw_v.clone() }
 }
 
 

@@ -217,26 +217,18 @@ pub fn main() {
 
     let mut bind_args: Vec<_> = env::args().collect();
 
-    match clang_version() {
-        None => {
-            error!("Could not retrieve Clang version...")
-        },
-        Some(v) => {
-            if cfg!(feature = "llvm_stable") {
-                if (v.major,v.minor) != (3,8) {
-                    error!("Got Clang {}.{}, expected 3.8", v.major, v.minor)
-                } else {
-                    info!("Using: {}", v.full)
-                }
-            } else {
-                if (v.major, v.minor) != (3,9) {
-                    error!("Got Clang {}.{}, expected 3.9", v.major, v.minor)
-                } else {
-                    info!("Using: {}", v.full)
-                }
-            }
+    let version = clang_version();
+    let expected_version = if cfg!(feature = "llvm_stable") { (3,8) } else { (3,9) };
+
+    info!("Clang Version: {}", version.full);
+
+    match version.parsed {
+        None => warn!("Couldn't parse libclang version"),
+        Some(version) if version != expected_version => {
+            error!("Using clang {:?}, expected {:?}", version, expected_version);
         }
-    };
+        _ => {}
+    }
 
     if let Some(clang) = clang_sys::support::Clang::find(None) {
         let has_clang_args =
