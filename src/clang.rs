@@ -31,14 +31,6 @@ impl fmt::Debug for Cursor {
     }
 }
 
-/// A cursor visitor function.
-///
-/// The first argument is the AST node currently being visited. The second
-/// argument is the parent of the AST node currently being visited. The return
-/// value informs how traversal should proceed.
-pub type CursorVisitor<'s> = for<'a, 'b> FnMut(&'a Cursor, &'b Cursor)
-                                               -> Enum_CXChildVisitResult + 's;
-
 impl Cursor {
     /// Get the Unified Symbol Resolution for this cursor's referent, if
     /// available.
@@ -306,21 +298,14 @@ impl Cursor {
 
     /// Traverse this cursor's referent and its children.
     ///
-    /// Call the given function on each AST node traversed. See `CursorVisitor`
-    /// for details on arguments passed to the function and how its return value
-    /// is interpreted.
-    pub fn visit<F>(&self, func: F)
-        where F: for<'a, 'b> FnMut(&'a Cursor, &'b Cursor)
-                                   -> Enum_CXChildVisitResult,
+    /// Call the given function on each AST node traversed.
+    pub fn visit<Visitor>(&self, mut visitor: Visitor)
+        where Visitor: FnMut(Cursor) -> Enum_CXChildVisitResult,
     {
-        let mut data: Box<CursorVisitor> = Box::new(func);
-        let opt_visit =
-            Some(visit_children as extern "C" fn(CXCursor,
-                                                 CXCursor,
-                                                 CXClientData)
-                                                 -> Enum_CXChildVisitResult);
         unsafe {
-            clang_visitChildren(self.x, opt_visit, mem::transmute(&mut data));
+            clang_visitChildren(self.x,
+                                Some(visit_children::<Visitor>),
+                                mem::transmute(&mut visitor));
         }
     }
 
@@ -484,17 +469,18 @@ impl Cursor {
     }
 }
 
-extern "C" fn visit_children(cur: CXCursor,
-                             parent: CXCursor,
-                             data: CXClientData)
-                             -> Enum_CXChildVisitResult {
-    let func: &mut Box<CursorVisitor> = unsafe { mem::transmute(data) };
-    (*func)(&Cursor {
-                x: cur,
-            },
-            &Cursor {
-                x: parent,
-            })
+extern "C" fn visit_children<Visitor>(cur: CXCursor,
+                                      _parent: CXCursor,
+                                      data: CXClientData)
+                                      -> Enum_CXChildVisitResult
+    where Visitor: FnMut(Cursor) -> Enum_CXChildVisitResult,
+{
+    let func: &mut Visitor = unsafe { mem::transmute(data) };
+    let child = Cursor {
+        x: cur,
+    };
+
+    (*func)(child)
 }
 
 impl PartialEq for Cursor {
@@ -1184,7 +1170,7 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> Enum_CXVisitorResult {
                           kind_to_str(c.kind()),
                           c.spelling(),
                           type_to_str(ct)));
-    c.visit(|s, _: &Cursor| ast_dump(s, depth + 1));
+    c.visit(|s| ast_dump(&s, depth + 1));
     print_indent(depth, ")");
     CXChildVisit_Continue
 }

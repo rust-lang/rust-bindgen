@@ -167,10 +167,10 @@ impl FunctionSig {
                 // For non-CXCursor_FunctionDecl, visiting the cursor's children
                 // is the only reliable way to get parameter names.
                 let mut args = vec![];
-                cursor.visit(|c, _| {
+                cursor.visit(|c| {
                     if c.kind() == CXCursor_ParmDecl {
                         let ty =
-                            Item::from_ty(&c.cur_type(), Some(*c), None, ctx)
+                            Item::from_ty(&c.cur_type(), Some(c), None, ctx)
                                 .expect("ParmDecl?");
                         let name = c.spelling();
                         let name =

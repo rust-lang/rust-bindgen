@@ -1016,11 +1016,11 @@ impl ClangItemParser for Item {
                         assert_eq!(popped_decl, declaration_to_look_for);
                     }
 
-                    location.visit(|cur, _other| {
+                    location.visit(|cur| {
                         use clangll::*;
                         result = Item::from_ty_with_id(id,
                                                        ty,
-                                                       Some(*cur),
+                                                       Some(cur),
                                                        parent_id,
                                                        ctx);
                         match result {

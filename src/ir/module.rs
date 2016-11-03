@@ -49,8 +49,8 @@ impl ClangSubItemParser for Module {
             CXCursor_Namespace => {
                 let module_id = ctx.module(cursor);
                 ctx.with_module(module_id, |ctx, children| {
-                    cursor.visit(|cursor, _| {
-                        parse_one(ctx, *cursor, Some(module_id), children)
+                    cursor.visit(|cursor| {
+                        parse_one(ctx, cursor, Some(module_id), children)
                     })
                 });
 

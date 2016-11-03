@@ -461,7 +461,7 @@ pub fn parse_one(ctx: &mut BindgenContext,
         Ok(id) => children.push(id),
         Err(ParseError::Continue) => {}
         Err(ParseError::Recurse) => {
-            cursor.visit(|child, _| parse_one(ctx, *child, parent, children));
+            cursor.visit(|child| parse_one(ctx, child, parent, children));
         }
     }
     CXChildVisit_Continue
@@ -480,12 +480,12 @@ fn parse(context: &mut BindgenContext) {
 
     let cursor = context.translation_unit().cursor();
     if context.options().emit_ast {
-        cursor.visit(|cur, _| clang::ast_dump(cur, 0));
+        cursor.visit(|cur| clang::ast_dump(&cur, 0));
     }
 
     let root = context.root_module();
     context.with_module(root, |context, children| {
-        cursor.visit(|cursor, _| parse_one(context, *cursor, None, children))
+        cursor.visit(|cursor| parse_one(context, cursor, None, children))
     });
 
     assert!(context.current_module() == context.root_module(),

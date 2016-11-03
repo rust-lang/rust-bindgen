@@ -70,7 +70,7 @@ impl Enum {
             None => true,
         };
 
-        declaration.visit(|cursor, _| {
+        declaration.visit(|cursor| {
             if cursor.kind() == CXCursor_EnumConstantDecl {
                 let name = cursor.spelling();
                 let comment = cursor.raw_comment();

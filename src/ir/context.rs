@@ -492,14 +492,14 @@ impl<'ctx> BindgenContext<'ctx> {
         use clangll::*;
         let mut args = vec![];
         let mut found_invalid_template_ref = false;
-        location.visit(|c, _| {
+        location.visit(|c| {
             if c.kind() == CXCursor_TemplateRef &&
                c.cur_type().kind() == CXType_Invalid {
                 found_invalid_template_ref = true;
             }
             if c.kind() == CXCursor_TypeRef {
                 let new_ty = Item::from_ty_or_ref(c.cur_type(),
-                                                  Some(*c),
+                                                  Some(c),
                                                   Some(with_id),
                                                   self);
                 args.push(new_ty);
