@@ -289,14 +289,10 @@ impl Cursor {
     /// pointing to the template definition that is being specialized.
     pub fn specialized(&self) -> Option<Cursor> {
         unsafe {
-            let clang_specialized = clang_getSpecializedCursorTemplate(self.x);
-            if clang_isInvalid(clang_getCursorKind(clang_specialized)) == 0 {
-                Some(Cursor {
-                    x: clang_specialized,
-                })
-            } else {
-                None
-            }
+            let ret = Cursor {
+                x: clang_getSpecializedCursorTemplate(self.x)
+            };
+            if ret.is_valid() { Some(ret) } else { None }
         }
     }
 
