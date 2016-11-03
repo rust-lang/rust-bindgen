@@ -149,4 +149,4 @@ This mode isn't actively maintained, so no promises are made around it. Check
 out the upstream documentation for info about how it *should* work.
 
 [sm-script]: https://github.com/servo/rust-mozjs/blob/master/etc/bindings.sh
-[stylo-scripts]: https://github.com/servo/servo/tree/master/ports/geckolib/gecko_bindings/tools
+[stylo-scripts]: https://github.com/servo/servo/tree/master/components/style/binding_tools
