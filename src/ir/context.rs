@@ -4,7 +4,7 @@ use BindgenOptions;
 use clang::{self, Cursor};
 use parse::ClangItemParser;
 use std::borrow::{Borrow, Cow};
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, hash_map};
 use std::collections::btree_map::{self, BTreeMap};
 use std::fmt;
 use super::int::IntKind;
@@ -308,6 +308,7 @@ impl<'ctx> BindgenContext<'ctx> {
     /// `replaces="SomeType"` annotation with the replacement type.
     fn process_replacements(&mut self) {
         if self.replacements.is_empty() {
+            debug!("No replacements to process");
             return;
         }
 
@@ -347,6 +348,8 @@ impl<'ctx> BindgenContext<'ctx> {
         }
 
         for (id, replacement) in replacements {
+            debug!("Replacing {:?} with {:?}", id, replacement);
+
             let mut item = self.items.get_mut(&id).unwrap();
             *item.kind_mut().as_type_mut().unwrap().kind_mut() =
                 TypeKind::ResolvedTypeRef(replacement);
@@ -725,7 +728,21 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Replacement types are declared using the `replaces="xxx"` annotation,
     /// and implies that the original type is hidden.
     pub fn replace(&mut self, name: &str, potential_ty: ItemId) {
-        self.replacements.insert(name.into(), potential_ty);
+        match self.replacements.entry(name.into()) {
+            hash_map::Entry::Vacant(entry) => {
+                debug!("Defining replacement for {} as {:?}",
+                       name,
+                       potential_ty);
+                entry.insert(potential_ty);
+            }
+            hash_map::Entry::Occupied(occupied) => {
+                warn!("Replacement for {} already defined as {:?}; \
+                       ignoring duplicate replacement definition as {:?}}}",
+                      name,
+                      occupied.get(),
+                      potential_ty);
+            }
+        }
     }
 
     /// Is the item with the given `name` hidden? Or is the item with the given
