@@ -1175,3 +1175,8 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> Enum_CXVisitorResult {
     print_indent(depth, ")");
     CXChildVisit_Continue
 }
+
+/// Try to extract the clang version to a string
+pub fn extract_clang_version() -> String {
+    unsafe { clang_getClangVersion().into() }
+}
