@@ -320,23 +320,27 @@ impl<'ctx> BindgenContext<'ctx> {
         let mut replacements = vec![];
 
         for (id, item) in self.items.iter() {
+            // Calls to `canonical_name` are expensive, so eagerly filter out
+            // items that cannot be replaced.
             let ty = match item.kind().as_type() {
                 Some(ty) => ty,
                 None => continue,
             };
 
-            // canonical_name calls are expensive.
-            let ci = match ty.as_comp() {
-                Some(ci) => ci,
-                None => continue,
-            };
-
-            if ci.is_template_specialization() {
-                continue;
+            match *ty.kind() {
+                TypeKind::Comp(ref ci) if !ci.is_template_specialization() => {}
+                TypeKind::TemplateAlias(_, _) |
+                TypeKind::Alias(_, _) => {}
+                _ => continue,
             }
 
-            if let Some(replacement) = self.replacements
-                .get(&item.canonical_name(self)) {
+            let name = item.real_canonical_name(self,
+                                                self.options()
+                                                    .enable_cxx_namespaces,
+                                                true);
+            let replacement = self.replacements.get(&name);
+
+            if let Some(replacement) = replacement {
                 if replacement != id {
                     // We set this just after parsing the annotation. It's
                     // very unlikely, but this can happen.

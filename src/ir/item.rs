@@ -539,11 +539,11 @@ impl Item {
     ///
     /// This name should be derived from the immutable state contained in the
     /// type and the parent chain, since it should be consistent.
-    fn real_canonical_name(&self,
-                           ctx: &BindgenContext,
-                           count_namespaces: bool,
-                           for_name_checking: bool)
-                           -> String {
+    pub fn real_canonical_name(&self,
+                               ctx: &BindgenContext,
+                               count_namespaces: bool,
+                               for_name_checking: bool)
+                               -> String {
         let base_name = match *self.kind() {
             ItemKind::Type(ref ty) => {
                 match *ty.kind() {
