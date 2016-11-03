@@ -1,52 +1,39 @@
 language: rust
+
 addons:
-    apt:
-      sources:
-        - llvm-toolchain-precise-3.8
-        - ubuntu-toolchain-r-test
-      packages:
-        - libclang-3.8-dev
-        - llvm-3.8-dev
-env:
-  - LLVM_VERSION=3.8
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-5
+
+os:
+  - linux
+  - osx
+
 rust:
   - stable
   - nightly
+
+env:
+  - LLVM_VERSION=3.8 BINDGEN_FEATURES=llvm_stable
+  - LLVM_VERSION=3.9 BINDGEN_FEATURES=
+
 cache:
   directories:
     - $HOME/.cargo
 
-before_install:
-  -
-    if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
-      if [ "${LLVM_VERSION}" != "devtools" ]; then
-        brew update >/dev/null;
-        brew install llvm3${LLVM_VERSION#3.};
-      fi
-    fi
-
-before_script:
-  -
-    if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-      export LIBCLANG_PATH=/usr/lib/llvm-${LLVM_VERSION}/lib;
-    elif [ "${TRAVIS_OS_NAME}" = "osx" ]; then
-      if [ "${LLVM_VERSION}" = "devtools" ]; then
-        export LIBCLANG_PATH=/Library/Developer/CommandLineTools/usr/lib;
-      else
-        export LIBCLANG_PATH=`brew --prefix llvm3${LLVM_VERSION#3.}`/lib/llvm-${LLVM_VERSION}/lib;
-      fi
-    fi
-  - echo $LIBCLANG_PATH
+before_install: . ./ci/before_install.sh
 
 script:
-  - cargo build --verbose --features llvm_stable
-  - cargo test --features llvm_stable
-  - cargo build --release --verbose --features llvm_stable
-  - cargo test --release --features llvm_stable
+  - cargo build --verbose --features "$BINDGEN_FEATURES"
+  - cargo test --features "$BINDGEN_FEATURES"
+  - cargo build --release --verbose --features "$BINDGEN_FEATURES"
+  - cargo test --release --features "$BINDGEN_FEATURES"
   - git add -A
   - git diff @
   - git diff-index --quiet HEAD
-  - cargo build --features "llvm_stable _docs"
+  - cargo build --features "$BINDGEN_FEATURES _docs"
 
 notifications:
   webhooks: http://build.servo.org:54856/travis
