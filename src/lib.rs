@@ -301,9 +301,6 @@ pub struct BindgenOptions {
     /// namespaces.
     pub namespaced_constants: bool,
 
-    /// True if we should use MSVC name mangling rules.
-    pub msvc_mangling: bool,
-
     /// The set of raw lines to prepend to the generated Rust code.
     pub raw_lines: Vec<String>,
 
@@ -335,7 +332,6 @@ impl Default for BindgenOptions {
             enable_cxx_namespaces: false,
             unstable_rust: true,
             namespaced_constants: true,
-            msvc_mangling: false,
             raw_lines: vec![],
             clang_args: vec![],
             input_header: None,
