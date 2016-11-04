@@ -285,7 +285,7 @@ impl Cursor {
     pub fn specialized(&self) -> Option<Cursor> {
         unsafe {
             let ret = Cursor {
-                x: clang_getSpecializedCursorTemplate(self.x)
+                x: clang_getSpecializedCursorTemplate(self.x),
             };
             if ret.is_valid() { Some(ret) } else { None }
         }

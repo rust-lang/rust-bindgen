@@ -49,7 +49,9 @@ pub trait ItemCanonicalPath {
 /// up to (but not including) the implicit root module.
 pub trait ItemAncestors {
     /// Get an iterable over this item's ancestors.
-    fn ancestors<'a, 'b>(&self, ctx: &'a BindgenContext<'b>) -> ItemAncestorsIter<'a, 'b>;
+    fn ancestors<'a, 'b>(&self,
+                         ctx: &'a BindgenContext<'b>)
+                         -> ItemAncestorsIter<'a, 'b>;
 }
 
 /// An iterator over an item and its ancestors.
