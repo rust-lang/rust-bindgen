@@ -150,7 +150,7 @@ impl FunctionSig {
             CXCursor_CXXMethod => {
                 // For CXCursor_FunctionDecl, cursor.args() is the reliable way
                 // to get parameter names and types.
-                cursor.args()
+                cursor.args().expect("It cannot be None because we are in a method/function")
                     .iter()
                     .map(|arg| {
                         let arg_ty = arg.cur_type();
