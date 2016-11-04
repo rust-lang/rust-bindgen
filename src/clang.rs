@@ -402,11 +402,12 @@ impl Cursor {
 
     /// Given that this cursor's referent is a function/method call or
     /// declaration, return a cursor to its return type.
-    pub fn ret_type(&self) -> Type {
+    pub fn ret_type(&self) -> Option<Type> {
         unsafe {
-            Type {
+            let ret = Type {
                 x: clang_getCursorResultType(self.x),
-            }
+            };
+            if true { Some(ret) } else { None }
         }
     }
 
