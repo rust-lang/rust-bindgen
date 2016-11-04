@@ -622,19 +622,10 @@ impl Type {
     }
 
     /// If this type is a class template specialization, return its
-    /// template arguments. Otherwise, return None.
-    pub fn template_args(&self) -> Option<TypeTemplateArgIterator> {
-        let n = unsafe { clang_Type_getNumTemplateArguments(self.x) };
-        if n >= 0 {
-            Some(TypeTemplateArgIterator {
-                x: self.x,
-                length: n as u32,
-                index: 0,
-            })
-        } else {
-            debug_assert_eq!(n, -1);
-            None
-        }
+    /// template arguments  . Otherwise, return None.
+    pub fn template_args(&self) -> Option<IndexCallIterator<TypeTemplateArgIndexCallable>> {
+        IndexCallIterator::new_check_positive(
+            TypeTemplateArgIndexCallable { x: self.x } )
     }
 
     /// Given that this type is a pointer type, return the type that it points
@@ -718,31 +709,22 @@ impl Type {
 }
 
 /// An iterator for a type's template arguments.
-pub struct TypeTemplateArgIterator {
-    x: CXType,
-    length: u32,
-    index: u32,
+pub struct TypeTemplateArgIndexCallable {
+    x: CXType
 }
 
-impl Iterator for TypeTemplateArgIterator {
+impl IndexCallable for TypeTemplateArgIndexCallable {
     type Item = Type;
-    fn next(&mut self) -> Option<Type> {
-        if self.index < self.length {
-            let idx = self.index as c_int;
-            self.index += 1;
-            Some(Type {
-                x: unsafe { clang_Type_getTemplateArgumentAsType(self.x, idx) },
-            })
-        } else {
-            None
-        }
-    }
-}
+    type ItemNum = c_int;
 
-impl ExactSizeIterator for TypeTemplateArgIterator {
-    fn len(&self) -> usize {
-        assert!(self.index <= self.length);
-        (self.length - self.index) as usize
+    fn fetch_item_num(&self) -> Self::ItemNum {
+        unsafe { clang_Type_getNumTemplateArguments(self.x) }
+    }
+
+    fn fetch_item(&mut self, idx: usize, num: usize) -> Self::Item {
+        assert!(idx < num);
+        let i = idx as Self::ItemNum;
+        Type { x: unsafe { clang_Type_getTemplateArgumentAsType(self.x, i) } }
     }
 }
 
@@ -801,12 +783,8 @@ impl Comment {
     }
 
     /// Get this comment's children comment
-    pub fn get_children(&self) -> CommentChildrenIterator {
-        CommentChildrenIterator {
-            parent: self.x,
-            length: unsafe { clang_Comment_getNumChildren(self.x) },
-            index: 0,
-        }
+    pub fn get_children(&self) -> IndexCallIterator<CommentChildrenIndexCallable> {
+        IndexCallIterator::new(CommentChildrenIndexCallable { x: self.x })
     }
 
     /// Given that this comment is the start or end of an HTML tag, get its tag
@@ -816,34 +794,28 @@ impl Comment {
     }
 
     /// Given that this comment is an HTML start tag, get its attributes.
-    pub fn get_tag_attrs(&self) -> CommentAttributesIterator {
-        CommentAttributesIterator {
-            x: self.x,
-            length: unsafe { clang_HTMLStartTag_getNumAttrs(self.x) },
-            index: 0,
-        }
+    pub fn get_tag_attrs(&self) -> IndexCallIterator<CommentAttributesIndexCallable> {
+        IndexCallIterator::new(CommentAttributesIndexCallable { x: self.x })
     }
 }
 
 /// An iterator for a comment's children
-pub struct CommentChildrenIterator {
-    parent: CXComment,
-    length: c_uint,
-    index: c_uint,
+pub struct CommentChildrenIndexCallable {
+    x: CXComment
 }
 
-impl Iterator for CommentChildrenIterator {
+impl IndexCallable for CommentChildrenIndexCallable {
     type Item = Comment;
-    fn next(&mut self) -> Option<Comment> {
-        if self.index < self.length {
-            let idx = self.index;
-            self.index += 1;
-            Some(Comment {
-                x: unsafe { clang_Comment_getChild(self.parent, idx) },
-            })
-        } else {
-            None
-        }
+    type ItemNum = c_uint;
+
+    fn fetch_item_num(&self) -> Self::ItemNum {
+        unsafe { clang_Comment_getNumChildren(self.x) }
+    }
+
+    fn fetch_item(&mut self, idx: usize, num: usize) -> Self::Item {
+        assert!(idx < num);
+        let i = idx as Self::ItemNum;
+        Comment { x: unsafe { clang_Comment_getChild(self.x, i) } }
     }
 }
 
@@ -856,28 +828,28 @@ pub struct CommentAttribute {
 }
 
 /// An iterator for a comment's attributes
-pub struct CommentAttributesIterator {
-    x: CXComment,
-    length: c_uint,
-    index: c_uint,
+pub struct CommentAttributesIndexCallable {
+    x: CXComment
 }
 
-impl Iterator for CommentAttributesIterator {
+impl IndexCallable for CommentAttributesIndexCallable {
     type Item = CommentAttribute;
-    fn next(&mut self) -> Option<CommentAttribute> {
-        if self.index < self.length {
-            let idx = self.index;
-            self.index += 1;
-            Some(CommentAttribute {
-                name: unsafe {
-                    clang_HTMLStartTag_getAttrName(self.x, idx).into()
-                },
-                value: unsafe {
-                    clang_HTMLStartTag_getAttrValue(self.x, idx).into()
-                },
-            })
-        } else {
-            None
+    type ItemNum = c_uint;
+
+    fn fetch_item_num(&self) -> Self::ItemNum {
+        unsafe { clang_HTMLStartTag_getNumAttrs(self.x) }
+    }
+
+    fn fetch_item(&mut self, idx: usize, num: usize) -> Self::Item {
+        assert!(idx < num);
+        let i = idx as Self::ItemNum;
+        CommentAttribute {
+            name: unsafe {
+                clang_HTMLStartTag_getAttrName(self.x, i).into()
+            },
+            value: unsafe {
+                clang_HTMLStartTag_getAttrValue(self.x, i).into()
+            }
         }
     }
 }
@@ -1136,6 +1108,168 @@ impl UnsavedFile {
         }
     }
 }
+
+/// Provide index results.
+pub trait IndexCallable {
+    /// Item type for Iterator trait.
+    type Item;
+
+    /// Type reprensenting the number of items.
+    /// If signed, only create iterator if positive.
+    type ItemNum;
+
+    /// Call the function retreiving number of items.
+    fn fetch_item_num(&self) -> Self::ItemNum;
+
+    /// Call the function retreiving the item for the index idx.
+    /// This will always be called with 0 <= idx < num.
+    /// num will always be the value converted from fetch_item_num.
+    fn fetch_item(&mut self, idx: usize, num: usize) -> Self::Item;
+}
+
+/// Tag for unsigned integer type
+pub trait UnsignedInteger {}
+impl UnsignedInteger for c_uint {}
+
+/// Tag for signed integer type
+pub trait SignedInteger {}
+impl SignedInteger for c_int {}
+
+/// An iterator for a type's template arguments
+pub struct IndexCallIterator<CxtT> {
+    cxt: CxtT,
+    length: usize,
+    index: usize
+}
+
+impl<CxtT: IndexCallable> IndexCallIterator<CxtT> where CxtT::ItemNum: UnsignedInteger + Into<u32>{
+    fn new(cxt: CxtT) ->  IndexCallIterator<CxtT> {
+        let len: u32 = cxt.fetch_item_num().into();
+        IndexCallIterator { cxt: cxt, length: len as usize, index: 0 }
+    }
+}
+
+impl<CxtT: IndexCallable> IndexCallIterator<CxtT> where CxtT::ItemNum: SignedInteger + Into<i32> {
+    fn new_check_positive(cxt: CxtT) ->  Option<IndexCallIterator<CxtT>> {
+        let len: i32 = cxt.fetch_item_num().into();
+        if len >= 0 {
+            Some( IndexCallIterator { cxt: cxt, length: len as usize, index: 0 } )
+        } else {
+            debug_assert_eq!(len, -1); // only expect -1 as invalid
+            None
+        }
+    }
+}
+
+impl<CxtT: IndexCallable> Iterator for IndexCallIterator<CxtT> {
+    type Item = CxtT::Item;
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.index < self.length {
+            let idx = self.index;
+            self.index += 1;
+            Some(self.cxt.fetch_item(idx, self.length))
+        } else {
+            None
+        }
+    }
+}
+
+impl<CxtT: IndexCallable> ExactSizeIterator for IndexCallIterator<CxtT> {
+    fn len(&self) -> usize {
+        assert!(self.index <= self.length);
+        self.length - self.index
+    }
+}
+
+//
+// Start test code
+//
+struct TestIndexCallableProvider {
+    cxtu: c_uint,
+    cxti: c_int
+}
+
+impl TestIndexCallableProvider {
+    fn get_unsigned_children(self) -> IndexCallIterator<TestIndexCallable>
+    {
+        let idx_callable = TestIndexCallable { cxt: self.cxtu };
+        IndexCallIterator::new( idx_callable )
+    }
+
+    fn get_signed_children(self) -> Option<IndexCallIterator<TestIndexCallableOption>>
+    {
+        let idx_callable = TestIndexCallableOption { cxt: self.cxti };
+        IndexCallIterator::new_check_positive( idx_callable )
+    }
+}
+
+struct TestIndexCallable {
+    cxt: c_uint // FFI function context
+}
+
+impl IndexCallable for TestIndexCallable {
+    type Item = i32;
+    type ItemNum = c_uint;
+
+    fn fetch_item_num(&self) -> Self::ItemNum {
+        self.cxt // call specific FFI function
+    }
+
+    fn fetch_item(&mut self, idx: usize, num: usize) -> Self::Item {
+        assert!(idx < num);
+        idx as i32 // call specific FFI function
+    }
+}
+
+
+struct TestIndexCallableOption {
+    cxt: c_int // FFI function context
+}
+
+impl IndexCallable for TestIndexCallableOption {
+    type Item = i32;
+    type ItemNum = c_int;
+    
+    fn fetch_item_num(&self) -> Self::ItemNum {
+        return self.cxt // call specific FFI function
+    }
+
+    fn fetch_item(&mut self, idx: usize, num: usize) -> Self::Item {
+        assert!(idx < num);
+        idx as i32 // call specific FFI function
+    }
+}
+
+#[test]
+fn test_index_call_iterator() {
+    let provider = TestIndexCallableProvider{ cxti: 3, cxtu: 2};
+
+    let values = provider.get_unsigned_children();
+    let len = values.len();
+    let collected = values.collect::<Vec<_>>();
+
+    assert_eq!(collected, vec![0,1]);
+    assert_eq!(len, 2);
+}
+
+#[test]
+fn test_optional_index_call_iterator() {
+    let provider = TestIndexCallableProvider{ cxti: 2, cxtu: 3};
+    let provider_no_children = TestIndexCallableProvider{ cxti: -1, cxtu: 3};
+    
+    let values = provider.get_signed_children();
+    let not_values = provider_no_children.get_signed_children();
+    let len = values.as_ref().map(|x| x.len());
+    let collected = values.map(|x| x.collect::<Vec<_>>());
+
+    assert_eq!(collected, Some(vec![0,1]));
+    assert_eq!(len, Some(2));
+    assert!(not_values.is_none());
+}
+
+//
+// End test code
+//
 
 /// Convert a cursor kind into a static string.
 pub fn kind_to_str(x: Enum_CXCursorKind) -> String {
