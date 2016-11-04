@@ -505,9 +505,15 @@ impl<'ctx> BindgenContext<'ctx> {
                 found_invalid_template_ref = true;
             }
             if c.kind() == CXCursor_TypeRef {
+                // The `with_id` id will potentially end up unused if we give up
+                // on this type (for example, its a tricky partial template
+                // specialization), so if we pass `with_id` as the parent, it is
+                // potentially a dangling reference. Instead, use the canonical
+                // template declaration as the parent. It is already parsed and
+                // has a known-resolvable `ItemId`.
                 let new_ty = Item::from_ty_or_ref(c.cur_type(),
                                                   Some(c),
-                                                  Some(with_id),
+                                                  Some(wrapping),
                                                   self);
                 args.push(new_ty);
             }
