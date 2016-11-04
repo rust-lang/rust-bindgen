@@ -88,7 +88,8 @@ impl ItemId {
     /// Allocate the next `ItemId`.
     pub fn next() -> Self {
         static NEXT_ITEM_ID: AtomicUsize = ATOMIC_USIZE_INIT;
-        ItemId(NEXT_ITEM_ID.fetch_add(1, Ordering::Relaxed))
+        let next_id = NEXT_ITEM_ID.fetch_add(1, Ordering::Relaxed);
+        ItemId(next_id)
     }
 }
 
