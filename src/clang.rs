@@ -401,16 +401,6 @@ impl Cursor {
     }
 
     /// Given that this cursor's referent is a function/method call or
-    /// declaration, return a cursor to its return type.
-    pub fn ret_type(&self) -> Type {
-        unsafe {
-            Type {
-                x: clang_getCursorResultType(self.x),
-            }
-        }
-    }
-
-    /// Given that this cursor's referent is a function/method call or
     /// declaration, return the number of arguments it takes.
     ///
     /// Returns -1 if the cursor's referent is not a function/method call or
