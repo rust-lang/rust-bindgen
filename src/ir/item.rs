@@ -801,12 +801,7 @@ impl ClangItemParser for Item {
         // Types are sort of special, so to avoid parsing template classes
         // twice, handle them separately.
         {
-            let definition = cursor.definition();
-            let applicable_cursor = if definition.is_valid() {
-                definition
-            } else {
-                cursor
-            };
+            let applicable_cursor = cursor.definition().unwrap_or(cursor);
             match Self::from_ty(&applicable_cursor.cur_type(),
                                 Some(applicable_cursor),
                                 parent_id,
@@ -937,12 +932,7 @@ impl ClangItemParser for Item {
 
         let decl = {
             let decl = ty.declaration();
-            let definition = decl.definition();
-            if definition.is_valid() {
-                definition
-            } else {
-                decl
-            }
+            decl.definition().unwrap_or(decl)
         };
 
         let comment = decl.raw_comment()

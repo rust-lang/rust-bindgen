@@ -249,11 +249,13 @@ impl Cursor {
     /// Given that this cursor's referent is a reference to another type, or is
     /// a declaration, get the cursor pointing to the referenced type or type of
     /// the declared thing.
-    pub fn definition(&self) -> Cursor {
+    pub fn definition(&self) -> Option<Cursor> {
         unsafe {
-            Cursor {
+            let ret = Cursor {
                 x: clang_getCursorDefinition(self.x),
-            }
+            };
+
+            if ret.is_valid() { Some(ret) } else { None }
         }
     }
 
