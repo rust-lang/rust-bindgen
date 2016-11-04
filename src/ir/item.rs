@@ -822,6 +822,8 @@ impl ClangItemParser for Item {
             match cursor.kind() {
                 CXCursor_MacroDefinition |
                 CXCursor_MacroExpansion |
+                CXCursor_UsingDeclaration |
+                CXCursor_StaticAssert |
                 CXCursor_InclusionDirective => {
                     debug!("Unhandled cursor kind {:?}: {:?}",
                            cursor.kind(),
