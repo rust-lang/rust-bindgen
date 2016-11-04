@@ -2,50 +2,43 @@
 #![crate_type = "bin"]
 
 extern crate bindgen;
+extern crate docopt;
 extern crate env_logger;
 #[macro_use]
 extern crate log;
 extern crate clang_sys;
 extern crate rustc_serialize;
 
-use bindgen::{BindgenOptions, Bindings, ClangVersion, LinkType, clang_version};
-use std::default::Default;
+use bindgen::clang_version;
+use docopt::Docopt;
 use std::env;
 use std::fs;
 use std::io;
 use std::path;
-use std::process;
+
+const PKG_NAME: &'static str = env!("CARGO_PKG_NAME");
+const PKG_VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
 const USAGE: &'static str = "
 Usage:
-    bindgen [options] \
-        [--link=<lib>...] \
-        [--static-link=<lib>...] \
-        [--framework-link=<framework>...] \
-        [--raw-line=<raw>...] \
-        [--opaque-type=<type>...] \
-        [--blacklist-type=<type>...] \
-        [--whitelist-type=<type>...] \
-        [--whitelist-function=<name>...] \
-        [--whitelist-var=<name>...] \
-        <input-header> \
-        [-- <clang-args>...]
-
-    bindgen (-h | --help)
+    bindgen [options] <input-header> [-- <clang-args>...]
+    bindgen (--help | --version)
 
 Options:
-    -h, --help                    Display this help message.
+    --help, -h                    Display this help message.
 
-    -l=<lib>, --link=<lib>        Link to a dynamic library, can be provided
+    --version, -V                 Display version information.
+
+    --link=<lib>, -l <lib> ...    Link to a dynamic library. Can be provided
                                   multiple times.
 
-    --static-link=<lib>           Link to a static library, can be provided
+    --static-link=<lib> ...       Link to a static library. Can be provided
                                   multiple times.
 
-    --framework-link=<framework>  Link to a framework.
+    --framework-link=<lib> ...    Link to a framework. Can be provided
+                                  multiple times.
 
-    -o=<output-rust-file>         Write bindings to <output-rust-file>
-                                  (defaults to stdout)
+    --output=<file>, -o <file>    Write Rust bindings to <file>.
 
     --builtins                    Output bindings for builtin definitions (for
                                   example __builtin_va_list)
@@ -54,172 +47,44 @@ Options:
                                   methods. This is useful when you only care
                                   about struct layouts.
 
-    --ignore-methods              Avoid generating all kind of methods.
+    --ignore-methods              Avoid generating all kinds of methods.
 
     --enable-cxx-namespaces       Enable support for C++ namespaces.
 
-    --emit-clang-ast              Output the ast (for debugging purposes)
+    --emit-clang-ast              Output the Clang AST for debugging purposes.
 
-    --use-msvc-mangling           Handle MSVC C++ ABI mangling; requires that
-                                  target be set to (i686|x86_64)-pc-win32
+    --raw-line=<raw> ...          Add a raw line at the beginning of the output.
 
-    --raw-line=<raw>              Add a raw line at the beginning of the output.
+    --no-unstable-rust            Avoid generating unstable Rust code.
 
-    --no-unstable-rust            Avoid generating unstable rust.
+    --opaque-type=<type> ...      Mark a type as opaque.
 
-    --opaque-type=<type>          Mark a type as opaque.
+    --blacklist-type=<type> ...   Mark a type as hidden.
 
-    --blacklist-type=<type>       Mark a type as hidden.
-
-    --whitelist-type=<type>       Whitelist the type. If this set or any other
+    --whitelist-type=<type> ...   Whitelist the type. If this set or any other
                                   of the whitelisting sets is not empty, then
-                                  all the non-whitelisted types (or dependant)
-                                  won't be generated.
+                                  all the non-whitelisted types (or anything
+                                  that depends on them) won't be generated.
 
-    --whitelist-function=<regex>  Whitelist all the free-standing functions
-                                  matching <regex>.  Same behavior on emptyness
-                                  than the type whitelisting.
+    --whitelist-function=<regex> ...  Whitelist all the free-standing functions
+                                  matching <regex>. Same behavior on emptyness
+                                  as whitelisted types.
 
-    --whitelist-var=<regex>       Whitelist all the free-standing variables
-                                  matching <regex>.  Same behavior on emptyness
-                                  than the type whitelisting.
+    --whitelist-var=<regex> ...   Whitelist all the free-standing variables
+                                  matching <regex>. Same behavior on emptyness
+                                  as whitelisted types.
 
     --dummy-uses=<path>           For testing purposes, generate a C/C++ file
                                   containing dummy uses of all types defined in
                                   the input header.
 
-    <clang-args>                  Options other than stated above are passed
-                                  directly through to clang.
+    <clang-args>                  Pass arguments through to clang.
+
+Deprecated:
+
+    --use-msvc-mangling           Handle MSVC C++ ABI mangling; requires that
+                                  target be set to (i686|x86_64)-pc-win32.
 ";
-
-// FIXME(emilio): Replace this with docopt if/when they fix their exponential
-// algorithm for argument parsing.
-//
-// FIXME(fitzgen): Switch from `BindgenOptions` to the non-deprecated `Builder`.
-#[allow(deprecated)]
-fn parse_args_or_exit(args: Vec<String>) -> (BindgenOptions, Box<io::Write>) {
-    let mut options = BindgenOptions::default();
-    let mut dest_file = None;
-    let mut source_file = None;
-
-    let mut iter = args.into_iter().skip(1);
-    loop {
-        let next = match iter.next() {
-            Some(arg) => arg,
-            _ => break,
-        };
-
-        match &*next {
-            "-h" | "--help" => {
-                println!("{}", USAGE);
-                process::exit(0);
-            }
-            "-l" | "--link" => {
-                let lib = iter.next().expect("--link needs an argument");
-                options.links.push((lib, LinkType::Default));
-            }
-            "--static-link" => {
-                let lib = iter.next().expect("--static-link needs an argument");
-                options.links.push((lib, LinkType::Static));
-            }
-            "--framework-link" => {
-                let lib = iter.next()
-                    .expect("--framework-link needs an argument");
-                options.links.push((lib, LinkType::Framework));
-            }
-            "--raw-line" => {
-                let line = iter.next().expect("--raw-line needs an argument");
-                options.raw_lines.push(line);
-            }
-            "--opaque-type" => {
-                let ty_canonical_name = iter.next()
-                    .expect("--opaque-type expects a type");
-                options.opaque_types.insert(ty_canonical_name);
-            }
-            "--blacklist-type" => {
-                let ty_canonical_name = iter.next()
-                    .expect("--blacklist-type expects a type");
-                options.hidden_types.insert(ty_canonical_name);
-            }
-            "--whitelist-type" => {
-                let ty_pat = iter.next()
-                    .expect("--whitelist-type expects a type pattern");
-                options.whitelisted_types.insert(&ty_pat);
-            }
-            "--whitelist-function" => {
-                let function_pat = iter.next()
-                    .expect("--whitelist-function expects a pattern");
-                options.whitelisted_functions.insert(&function_pat);
-            }
-            "--whitelist-var" => {
-                let var_pat = iter.next()
-                    .expect("--whitelist-var expects a pattern");
-                options.whitelisted_vars.insert(&var_pat);
-            }
-            "--" => {
-                while let Some(clang_arg) = iter.next() {
-                    options.clang_args.push(clang_arg);
-                }
-            }
-            "--output" | "-o" => {
-                let out_name = iter.next().expect("-o expects a file name");
-                dest_file = Some(out_name);
-            }
-            "--builtins" => {
-                options.builtins = true;
-            }
-            "--ignore-functions" => {
-                options.ignore_functions = true;
-            }
-            "--ignore-methods" => {
-                options.ignore_methods = true;
-            }
-            "--enable-cxx-namespaces" => {
-                options.enable_cxx_namespaces = true;
-            }
-            "--no-unstable-rust" => {
-                options.unstable_rust = false;
-            }
-            "--emit-clang-ast" => {
-                options.emit_ast = true;
-            }
-            "--use-msvc-mangling" => {
-                options.msvc_mangling = true;
-            }
-            "--dummy-uses" => {
-                let dummy_path = iter.next()
-                    .expect("--dummy-uses expects a file path");
-                options.dummy_uses = Some(dummy_path);
-            }
-            other if source_file.is_none() => {
-                source_file = Some(other.into());
-            }
-            other => {
-                panic!("Unknown option: \"{}\"", other);
-            }
-        }
-    }
-
-    if let Some(source_file) = source_file.take() {
-        options.clang_args.push(source_file);
-        options.input_header = options.clang_args.last().cloned();
-    } else {
-        options.input_header = options.clang_args
-            .iter()
-            .find(|arg| arg.ends_with(".h") || arg.ends_with(".hpp"))
-            .cloned();
-    }
-
-    let out = if let Some(ref path_name) = dest_file {
-        let path = path::Path::new(path_name);
-        let file = fs::File::create(path).expect("Opening out file failed");
-        Box::new(io::BufWriter::new(file)) as Box<io::Write>
-    } else {
-        Box::new(io::BufWriter::new(io::stdout())) as Box<io::Write>
-    };
-
-    (options, out)
-}
 
 pub fn main() {
     log::set_logger(|max_log_level| {
@@ -276,9 +141,115 @@ pub fn main() {
         }
     }
 
-    let (options, out) = parse_args_or_exit(bind_args);
+    let args = Docopt::new(USAGE)
+        .and_then(|dopt| dopt.parse())
+        .unwrap_or_else(|e| e.exit());
 
-    let mut bindings = Bindings::generate(options, None)
+    if args.get_bool("--version") {
+        println!("{} v{}", PKG_NAME, PKG_VERSION);
+        std::process::exit(0);
+    }
+
+    let mut builder = bindgen::builder();
+
+    // Input header
+    let header = args.get_str("<input-header>");
+    if header != "" {
+        builder = builder.header(header);
+    }
+
+    // Output file or stdout
+    let output = args.get_str("--output");
+    let out = if output != "" {
+        let path = path::Path::new(output);
+        let file = fs::File::create(path).expect("Opening output file failed.");
+        Box::new(io::BufWriter::new(file)) as Box<io::Write>
+    } else {
+        Box::new(io::BufWriter::new(io::stdout())) as Box<io::Write>
+    };
+
+    // Emit C/C++ type uses file for testing
+    let dummy_uses = args.get_str("--dummy-uses");
+    if dummy_uses != "" {
+        builder = builder.dummy_uses(dummy_uses);
+    }
+
+    if args.get_bool("--builtins") {
+        builder = builder.emit_builtins();
+    }
+
+    if args.get_bool("--emit-clang-ast") {
+        builder = builder.emit_clang_ast();
+    }
+
+    if args.get_bool("--enable-cxx-namespaces") {
+        builder = builder.enable_cxx_namespaces();
+    }
+
+    if args.get_bool("--ignore-functions") {
+        builder = builder.ignore_functions();
+    }
+
+    if args.get_bool("--ignore-methods") {
+        builder = builder.ignore_methods();
+    }
+
+    // Do not generate unstable Rust code
+    if args.get_bool("--no-unstable-rust") {
+        builder = builder.no_unstable_rust();
+    }
+
+    // Shared library links
+    for link in args.get_vec("--link") {
+        builder = builder.link(link);
+    }
+
+    // Static library links
+    for link in args.get_vec("--static-link") {
+        builder = builder.link_static(link);
+    }
+
+    // Framework links
+    for link in args.get_vec("--framework-link") {
+        builder = builder.link_framework(link);
+    }
+
+    // Raw lines to add at top of output
+    for line in args.get_vec("--raw-line") {
+        builder = builder.raw_line(line);
+    }
+
+    // Hidden types
+    for arg in args.get_vec("--blacklist-type") {
+        builder = builder.hide_type(arg);
+    }
+
+    // Opaque types
+    for arg in args.get_vec("--opaque-type") {
+        builder = builder.opaque_type(arg);
+    }
+
+    // Whitelisted types
+    for regex in args.get_vec("--whitelist-type") {
+        builder = builder.whitelisted_type(regex);
+    }
+
+    // Whitelisted functions
+    for regex in args.get_vec("--whitelist-function") {
+        builder = builder.whitelisted_function(regex);
+    }
+
+    // Whitelisted variables
+    for regex in args.get_vec("--whitelist-var") {
+        builder = builder.whitelisted_var(regex);
+    }
+
+    // Clang parameters
+    for arg in args.get_vec("<clang-args>") {
+        builder = builder.clang_arg(arg);
+    }
+
+    let mut bindings = builder.generate()
         .expect("Unable to generate bindings");
 
     bindings.write_dummy_uses()
