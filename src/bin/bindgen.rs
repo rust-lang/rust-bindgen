@@ -82,8 +82,8 @@ Options:
 
 Deprecated:
 
-    --use-msvc-mangling           Handle MSVC C++ ABI mangling; requires that
-                                  target be set to (i686|x86_64)-pc-win32.
+    --use-msvc-mangling           MSVC C++ ABI mangling. This is now detected
+                                  automagically.
 ";
 
 pub fn main() {
