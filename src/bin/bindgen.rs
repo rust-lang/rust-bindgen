@@ -154,13 +154,13 @@ pub fn main() {
 
     // Input header
     let header = args.get_str("<input-header>");
-    if header != "" {
+    if !header.is_empty() {
         builder = builder.header(header);
     }
 
     // Output file or stdout
     let output = args.get_str("--output");
-    let out = if output != "" {
+    let out = if !output.is_empty() {
         let path = path::Path::new(output);
         let file = fs::File::create(path).expect("Opening output file failed.");
         Box::new(io::BufWriter::new(file)) as Box<io::Write>
@@ -170,7 +170,7 @@ pub fn main() {
 
     // Emit C/C++ type uses file for testing
     let dummy_uses = args.get_str("--dummy-uses");
-    if dummy_uses != "" {
+    if !dummy_uses.is_empty() {
         builder = builder.dummy_uses(dummy_uses);
     }
 
