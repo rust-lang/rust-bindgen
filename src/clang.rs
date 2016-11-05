@@ -639,11 +639,19 @@ impl Type {
 
     /// Given that this type is a pointer type, return the type that it points
     /// to.
-    pub fn pointee_type(&self) -> Type {
-        unsafe {
-            Type {
-                x: clang_getPointeeType(self.x),
+    pub fn pointee_type(&self) -> Option<Type> {
+        match self.kind() {
+            CXType_Pointer |
+            CXType_RValueReference |
+            CXType_LValueReference |
+            CXType_MemberPointer => {
+                let ret = Type {
+                    x: unsafe { clang_getPointeeType(self.x) },
+                };
+                debug_assert!(ret.kind() != CXType_Invalid);
+                Some(ret)
             }
+            _ => None,
         }
     }
 
