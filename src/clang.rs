@@ -10,7 +10,7 @@ use std::ffi::{CStr, CString};
 use std::fmt;
 use std::hash::Hash;
 use std::hash::Hasher;
-use std::os::raw::{c_char, c_int, c_longlong, c_uint, c_ulong};
+use std::os::raw::{c_char, c_int, c_uint, c_ulong};
 
 /// A cursor into the Clang AST, pointing to an AST node.
 ///
@@ -452,13 +452,6 @@ impl Cursor {
     /// kind is returned.
     pub fn template_arg_kind(&self, i: c_int) -> CXTemplateArgumentKind {
         unsafe { clang_Cursor_getTemplateArgumentKind(self.x, i as c_uint) }
-    }
-
-    /// Given that this cursor's referent is a template specialization, and that
-    /// the `i`th template argument is an integral, get the `i`th template
-    /// argument value.
-    pub fn template_arg_value(&self, i: c_int) -> c_longlong {
-        unsafe { clang_Cursor_getTemplateArgumentValue(self.x, i as c_uint) }
     }
 }
 
