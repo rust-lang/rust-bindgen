@@ -49,9 +49,9 @@ $ cargo build --features "llvm_stable _docs"
 ### Overview <span id="tests-overview"/>
 
 Input C/C++ test headers reside in the `tests/headers` directory. The expected
-output rust bindings live in `tests/expectations`; for example,
+output rust bindings live in `tests/expectations/tests`; for example,
 `tests/headers/my_header.h`'s expected generated rust bindings would be
-`tests/expectations/my_header.rs`.
+`tests/expectations/tests/my_header.rs`.
 
 The `tests/tools/run-bindgen.py` script runs `bindgen` on the test headers and
 compares the results to the expectations.
@@ -94,6 +94,12 @@ specify the required features at the top of the test header in a similar manner:
 
 ```c
 // bingden-features: llvm_stable
+```
+
+Then verify the new rust bindings compile and its tests pass:
+
+```
+$ cargo test -p tests_expectations
 ```
 
 ## Automatic code formatting <span id="formatting"/>

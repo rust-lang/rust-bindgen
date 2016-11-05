@@ -130,16 +130,6 @@ def generate_bindings(bindgen, dummy_uses, flags, header, output):
     command.append(header)
     run_cmd(command, cwd=os.getcwd(), env=make_bindgen_env())
 
-def test_generated_bindings(bindings):
-    """Run the generated bindings's #[test]s."""
-    name = None
-    # Do not delete the temp file, because we need to end the with block before
-    # we can run the tests.
-    with tempfile.NamedTemporaryFile(delete=False) as tests:
-        name = tests.name
-        run_cmd(["rustc", "--test", bindings, "-o", name])
-    run_cmd([name])
-
 def check_actual_vs_expected(expected_bindings, rust_bindings_path):
     """
     Check the actual generated rust bindings versus our expected generated rust
@@ -177,7 +167,6 @@ def main():
                       test_flags,
                       args.header,
                       args.rust_bindings)
-    test_generated_bindings(args.rust_bindings)
     check_actual_vs_expected(expected_bindings, args.rust_bindings)
     sys.exit(0)
 

@@ -54,5 +54,8 @@ _docs = []
 name = "bindgen"
 path = "src/lib.rs"
 
+[dev-dependencies.tests_expectations]
+path = "tests/expectations"
+
 [[test]]
 name = "tests"

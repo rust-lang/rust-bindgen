@@ -24,9 +24,9 @@ fn spawn_run_bindgen<P, Q, R>(run_bindgen: P,
     let bindgen = bindgen.as_ref();
     let header = header.as_ref();
 
-    // Convert from "tests/headers/foo.hpp" to "tests/expectations/foo.rs" by
+    // Convert from "tests/headers/foo.hpp" to "tests/expectations/tests/foo.rs" by
     // saving the filename, popping off "headers/foo.hpp", pushing
-    // "expectations", pushing the saved filename, and finally modifying the
+    // "expectations/tests", pushing the saved filename, and finally modifying the
     // extension.
 
     let mut expected = PathBuf::from(header);
@@ -36,6 +36,7 @@ fn spawn_run_bindgen<P, Q, R>(run_bindgen: P,
     expected.pop();
     expected.pop();
     expected.push("expectations");
+    expected.push("tests");
     expected.push(file_name);
     expected.set_extension("rs");
 
