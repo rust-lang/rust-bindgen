@@ -444,15 +444,6 @@ impl Cursor {
     pub fn is_virtual_base(&self) -> bool {
         unsafe { clang_isVirtualBase(self.x) != 0 }
     }
-
-    /// Given that this cursor's referent is a template specialization or
-    /// declaration, get the `i`th template argument kind.
-    ///
-    /// If the referent is not a template or `i` is out of bounds, an invalid
-    /// kind is returned.
-    pub fn template_arg_kind(&self, i: c_int) -> CXTemplateArgumentKind {
-        unsafe { clang_Cursor_getTemplateArgumentKind(self.x, i as c_uint) }
-    }
 }
 
 extern "C" fn visit_children<Visitor>(cur: CXCursor,
