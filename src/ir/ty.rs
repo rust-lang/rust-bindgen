@@ -677,9 +677,10 @@ impl Type {
             // process of resolving them.
             CXType_MemberPointer |
             CXType_Pointer => {
-                let inner =
-                    Item::from_ty_or_ref(ty.pointee_type().unwrap(), location,
-                                         parent_id, ctx);
+                let inner = Item::from_ty_or_ref(ty.pointee_type().unwrap(),
+                                                 location,
+                                                 parent_id,
+                                                 ctx);
                 TypeKind::Pointer(inner)
             }
             CXType_BlockPointer => TypeKind::BlockPointer,
@@ -687,9 +688,10 @@ impl Type {
             // can even add bindings for that, so huh.
             CXType_RValueReference |
             CXType_LValueReference => {
-                let inner =
-                    Item::from_ty_or_ref(ty.pointee_type().unwrap(), location,
-                                         parent_id, ctx);
+                let inner = Item::from_ty_or_ref(ty.pointee_type().unwrap(),
+                                                 location,
+                                                 parent_id,
+                                                 ctx);
                 TypeKind::Reference(inner)
             }
             // XXX DependentSizedArray is wrong
