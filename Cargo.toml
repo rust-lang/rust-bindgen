@@ -1,14 +1,14 @@
 [package]
-authors = ["Jyun-Yan You <jyyou.tw@gmail.com>"]
+authors = ["Jyun-Yan You <jyyou.tw@gmail.com>", "Yamakaky <yamakaky@yamaworld.fr>"]
 description = "A binding generator for Rust"
-documentation = "https://crabtw.github.io/rust-bindgen/bindgen/index.html"
-homepage = "https://github.com/crabtw/rust-bindgen"
+documentation = "https://docs.rs/bindgen"
+homepage = "https://github.com/Yamakaky/rust-bindgen"
 keywords = ["bindings", "ffi", "code-generation"]
 license = "BSD-3-Clause"
 name = "bindgen"
 readme = "README.md"
-repository = "https://github.com/crabtw/rust-bindgen"
 version = "0.19.0"
+repository = "https://github.com/Yamakaky/rust-bindgen"
 
 [[bin]]
 doc = false
