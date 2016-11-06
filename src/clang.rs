@@ -349,11 +349,15 @@ impl Cursor {
 
     /// Get the signed constant value for this cursor's enum variant referent.
     ///
-    /// Returns `LLONG_MIN` if the cursor's referent is not an enum variant,
-    /// which is also a valid enum value, so callers should check the cursor
-    /// kind before calling this method (see issue #127).
-    pub fn enum_val_signed(&self) -> i64 {
-        unsafe { clang_getEnumConstantDeclValue(self.x) as i64 }
+    /// Returns None if the cursor's referent is not an enum variant.
+    pub fn enum_val_signed(&self) -> Option<i64> {
+        unsafe {
+            if self.kind() == CXCursor_EnumConstantDecl {
+                Some(clang_getEnumConstantDeclValue(self.x) as i64)
+            } else {
+                None
+            }
+        }
     }
 
     /// Get the unsigned constant value for this cursor's enum variant referent.
