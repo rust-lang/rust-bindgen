@@ -362,11 +362,12 @@ impl Cursor {
 
     /// Get the integer representation type used to hold this cursor's referent
     /// enum type.
-    pub fn enum_type(&self) -> Type {
+    pub fn enum_type(&self) -> Option<Type> {
         unsafe {
-            Type {
+            let t = Type {
                 x: clang_getEnumDeclIntegerType(self.x),
-            }
+            };
+            if t.kind() == CXType_Invalid { None } else { Some(t) }
         }
     }
 
