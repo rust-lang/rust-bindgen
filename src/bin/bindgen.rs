@@ -8,7 +8,7 @@ extern crate log;
 extern crate clang_sys;
 extern crate rustc_serialize;
 
-use bindgen::{BindgenOptions, Bindings, ClangVersion, LinkType, clang_version};
+use bindgen::{BindgenOptions, Bindings, LinkType, clang_version};
 use std::default::Default;
 use std::env;
 use std::fs;
