@@ -1,10 +1,11 @@
 //! Common context that is passed around during parsing and codegen.
 
 use BindgenOptions;
+use cexpr;
 use clang::{self, Cursor};
 use parse::ClangItemParser;
 use std::borrow::{Borrow, Cow};
-use std::collections::{HashMap, HashSet, hash_map};
+use std::collections::{HashMap, hash_map};
 use std::collections::btree_map::{self, BTreeMap};
 use std::fmt;
 use super::int::IntKind;
@@ -77,8 +78,9 @@ pub struct BindgenContext<'ctx> {
     pub currently_parsed_types: Vec<(Cursor, ItemId)>,
 
     /// A HashSet with all the already parsed macro names. This is done to avoid
-    /// hard errors while parsing duplicated macros.
-    parsed_macros: HashSet<String>,
+    /// hard errors while parsing duplicated macros, as well to allow macro
+    /// expression parsing.
+    parsed_macros: HashMap<Vec<u8>, cexpr::expr::EvalResult>,
 
     /// The active replacements collected from replaces="xxx" annotations.
     replacements: HashMap<String, ItemId>,
@@ -715,14 +717,21 @@ impl<'ctx> BindgenContext<'ctx> {
     }
 
     /// Have we parsed the macro named `macro_name` already?
-    pub fn parsed_macro(&self, macro_name: &str) -> bool {
-        self.parsed_macros.contains(macro_name)
+    pub fn parsed_macro(&self, macro_name: &[u8]) -> bool {
+        self.parsed_macros.contains_key(macro_name)
+    }
+
+    /// Get the currently parsed macros.
+    pub fn parsed_macros(&self) -> &HashMap<Vec<u8>, cexpr::expr::EvalResult> {
+        debug_assert!(!self.in_codegen_phase());
+        &self.parsed_macros
     }
 
     /// Mark the macro named `macro_name` as parsed.
-    pub fn note_parsed_macro(&mut self, macro_name: String) {
-        debug_assert!(!self.parsed_macros.contains(&macro_name));
-        self.parsed_macros.insert(macro_name);
+    pub fn note_parsed_macro(&mut self,
+                             id: Vec<u8>,
+                             value: cexpr::expr::EvalResult) {
+        self.parsed_macros.insert(id, value);
     }
 
     /// Are we in the codegen phase?

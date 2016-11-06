@@ -24,8 +24,9 @@ impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
     fn clone(&self) -> Self { Self::new() }
 }
 impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
-pub const JSVAL_ALIGNMENT: ::std::os::raw::c_uint = 8;
 pub const JSVAL_TAG_SHIFT: ::std::os::raw::c_uint = 47;
+pub const JSVAL_PAYLOAD_MASK: ::std::os::raw::c_ulonglong = 140737488355327;
+pub const JSVAL_TAG_MASK: ::std::os::raw::c_longlong = -140737488355328;
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum JSValueType {

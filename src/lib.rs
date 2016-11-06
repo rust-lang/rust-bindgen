@@ -24,6 +24,7 @@
 
 #[macro_use]
 extern crate cfg_if;
+extern crate cexpr;
 extern crate syntex_syntax as syntax;
 extern crate aster;
 extern crate quasi;

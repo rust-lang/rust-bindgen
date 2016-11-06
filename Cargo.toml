@@ -31,6 +31,7 @@ env_logger = "0.3"
 rustc-serialize = "0.3.19"
 syntex_syntax = "0.44"
 regex = "0.1"
+cexpr = "0.2"
 
 [dependencies.aster]
 features = ["with-syntex"]
