@@ -63,6 +63,8 @@ Options:
     --use-msvc-mangling           Handle MSVC C++ ABI mangling; requires that
                                   target be set to (i686|x86_64)-pc-win32
 
+    --no-convert-floats           Don't convert floats automatically to f32/f64.
+
     --raw-line=<raw>              Add a raw line at the beginning of the output.
 
     --no-unstable-rust            Avoid generating unstable rust.
@@ -182,6 +184,9 @@ fn parse_args_or_exit(args: Vec<String>) -> (BindgenOptions, Box<io::Write>) {
             }
             "--emit-clang-ast" => {
                 options.emit_ast = true;
+            }
+            "--no-convert-floats" => {
+                options.convert_floats = false;
             }
             "--use-msvc-mangling" => {
                 options.msvc_mangling = true;

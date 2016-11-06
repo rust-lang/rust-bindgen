@@ -1458,12 +1458,25 @@ impl ToRustTy for Type {
             }
             TypeKind::Float(fk) => {
                 use ir::ty::FloatKind;
-                // TODO: we probably should just take the type layout into
-                // account?
-                match fk {
-                    FloatKind::Float => aster::ty::TyBuilder::new().f32(),
-                    FloatKind::Double | FloatKind::LongDouble => {
-                        aster::ty::TyBuilder::new().f64()
+                if ctx.options().convert_floats {
+                    // TODO: we probably should just take the type layout into
+                    // account?
+                    //
+                    // Also, maybe this one shouldn't be the default?
+                    match fk {
+                        FloatKind::Float => aster::ty::TyBuilder::new().f32(),
+                        FloatKind::Double | FloatKind::LongDouble => {
+                            aster::ty::TyBuilder::new().f64()
+                        }
+                    }
+                } else {
+                    // FIXME: `c_longdouble` doesn't seem to be defined in some
+                    // systems, so we use `c_double` directly.
+                    match fk {
+                        FloatKind::Float => raw!(c_float),
+                        FloatKind::Double | FloatKind::LongDouble => {
+                            raw!(c_double)
+                        }
                     }
                 }
             }
