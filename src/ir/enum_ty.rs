@@ -71,23 +71,20 @@ impl Enum {
         };
 
         declaration.visit(|cursor| {
-            let val = if is_signed {
-                cursor.enum_val_signed().map(EnumVariantValue::Signed)
-            } else {
-                if cursor.kind() == CXCursor_EnumConstantDecl {
-                    Some(EnumVariantValue::Unsigned(cursor.enum_val_unsigned()))
+            if cursor.kind() == CXCursor_EnumConstantDecl {
+                let value = if is_signed {
+                    cursor.enum_val_signed().map(EnumVariantValue::Signed)
                 } else {
-                    None
+                    Some(EnumVariantValue::Unsigned(cursor.enum_val_unsigned()))
+                };
+                if let Some(val) = value {
+                    let name = cursor.spelling();
+                    let comment = cursor.raw_comment();
+                    variants.push(EnumVariant::new(name, comment, val));
                 }
-            };
-            if let Some(val) = val {
-                let name = cursor.spelling();
-                let comment = cursor.raw_comment();
-                variants.push(EnumVariant::new(name, comment, val));
             }
             CXChildVisit_Continue
         });
-
         Ok(Enum::new(repr, variants))
     }
 }
