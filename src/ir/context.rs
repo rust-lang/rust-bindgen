@@ -4,7 +4,7 @@ use BindgenOptions;
 use cexpr;
 use clang::{self, Cursor};
 use parse::ClangItemParser;
-use std::borrow::{Borrow, Cow};
+use std::borrow::Cow;
 use std::collections::{HashMap, hash_map};
 use std::collections::btree_map::{self, BTreeMap};
 use std::fmt;
@@ -245,7 +245,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// Returns a mangled name as a rust identifier.
     pub fn rust_ident_raw(&self, name: &str) -> Ident {
-        self.ext_cx().ident_of(name.borrow())
+        self.ext_cx().ident_of(name)
     }
 
     /// Iterate over all items that have been defined.

@@ -1453,8 +1453,19 @@ impl ToRustTy for Type {
                     IntKind::ULong => raw!(c_ulong),
                     IntKind::LongLong => raw!(c_longlong),
                     IntKind::ULongLong => raw!(c_ulonglong),
+
+                    IntKind::I8 => aster::ty::TyBuilder::new().i8(),
+                    IntKind::U8 => aster::ty::TyBuilder::new().u8(),
+                    IntKind::I16 => aster::ty::TyBuilder::new().i16(),
                     IntKind::U16 => aster::ty::TyBuilder::new().u16(),
+                    IntKind::I32 => aster::ty::TyBuilder::new().i32(),
                     IntKind::U32 => aster::ty::TyBuilder::new().u32(),
+                    IntKind::I64 => aster::ty::TyBuilder::new().i64(),
+                    IntKind::U64 => aster::ty::TyBuilder::new().u64(),
+                    IntKind::Custom(name, _signed) => {
+                        let ident = ctx.rust_ident_raw(name);
+                        quote_ty!(ctx.ext_cx(), $ident)
+                    }
                     // FIXME: This doesn't generate the proper alignment, but we
                     // can't do better right now. We should be able to use
                     // i128/u128 when they're available.
