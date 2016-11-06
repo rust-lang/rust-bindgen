@@ -7,7 +7,7 @@ keywords = ["bindings", "ffi", "code-generation"]
 license = "BSD-3-Clause"
 name = "bindgen"
 readme = "README.md"
-version = "0.19.0"
+version = "0.19.1"
 repository = "https://github.com/Yamakaky/rust-bindgen"
 
 [[bin]]
