@@ -533,6 +533,7 @@ impl<'a> Bitfield<'a> {
             let setter_name = ctx.ext_cx()
                 .ident_of(&format!("set_{}", &field_name));
             let mask = ((1usize << width) - 1) << offset;
+            let prefix = ctx.trait_prefix();
             // The transmute is unfortunate, but it's needed for enums in
             // bitfields.
             let item = quote_item!(ctx.ext_cx(),
@@ -540,7 +541,7 @@ impl<'a> Bitfield<'a> {
                     #[inline]
                     pub fn $getter_name(&self) -> $field_type {
                         unsafe {
-                            ::std::mem::transmute(
+                            ::$prefix::mem::transmute(
                                 (
                                     (self.$field_ident &
                                         ($mask as $bitfield_type))
@@ -942,8 +943,9 @@ impl CodeGenerator for CompInfo {
             if !template_args_used[i] {
                 let name = ctx.resolve_type(*ty).name().unwrap();
                 let ident = ctx.rust_ident(name);
+                let prefix = ctx.trait_prefix();
                 let phantom = quote_ty!(ctx.ext_cx(),
-                                        ::std::marker::PhantomData<$ident>);
+                                        ::$prefix::marker::PhantomData<$ident>);
                 let field =
                     StructFieldBuilder::named(format!("_phantom_{}", i))
                         .pub_()
@@ -999,10 +1001,11 @@ impl CodeGenerator for CompInfo {
                 let fn_name = format!("bindgen_test_layout_{}", canonical_name);
                 let fn_name = ctx.rust_ident_raw(&fn_name);
                 let ident = ctx.rust_ident_raw(&canonical_name);
-                let size_of_expr =
-                    quote_expr!(ctx.ext_cx(), ::std::mem::size_of::<$ident>());
-                let align_of_expr =
-                    quote_expr!(ctx.ext_cx(), ::std::mem::align_of::<$ident>());
+                let prefix = ctx.trait_prefix();
+                let size_of_expr = quote_expr!(ctx.ext_cx(),
+                                ::$prefix::mem::size_of::<$ident>());
+                let align_of_expr = quote_expr!(ctx.ext_cx(),
+                                ::$prefix::mem::align_of::<$ident>());
                 let size = layout.size;
                 let align = layout.align;
                 let item = quote_item!(ctx.ext_cx(),
@@ -1414,7 +1417,13 @@ impl ItemToRustTy for Item {
 
 fn raw_type(ctx: &BindgenContext, name: &str) -> P<ast::Ty> {
     let ident = ctx.rust_ident_raw(&name);
-    quote_ty!(ctx.ext_cx(), ::std::os::raw::$ident)
+    match ctx.options().ctypes_prefix {
+        Some(ref prefix) => {
+            let prefix = ctx.rust_ident_raw(prefix);
+            quote_ty!(ctx.ext_cx(), $prefix::$ident)
+        }
+        None => quote_ty!(ctx.ext_cx(), ::std::os::raw::$ident),
+    }
 }
 
 impl ToRustTy for Type {
@@ -1430,9 +1439,7 @@ impl ToRustTy for Type {
             TypeKind::Void => raw!(c_void),
             // TODO: we should do something smart with nullptr, or maybe *const
             // c_void is enough?
-            TypeKind::NullPtr => {
-                quote_ty!(ctx.ext_cx(), *const ::std::os::raw::c_void)
-            }
+            TypeKind::NullPtr => raw!(c_void).to_ptr(true, ctx.span()),
             TypeKind::Int(ik) => {
                 match ik {
                     IntKind::Bool => aster::ty::TyBuilder::new().bool(),
@@ -1755,10 +1762,12 @@ mod utils {
 
     pub fn prepend_union_types(ctx: &BindgenContext,
                                result: &mut Vec<P<ast::Item>>) {
+        let prefix = ctx.trait_prefix();
         let union_field_decl = quote_item!(ctx.ext_cx(),
             #[derive(Debug)]
             #[repr(C)]
-            pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
+            pub struct __BindgenUnionField<T>(
+                ::$prefix::marker::PhantomData<T>);
         )
             .unwrap();
 
@@ -1766,24 +1775,24 @@ mod utils {
             impl<T> __BindgenUnionField<T> {
                 #[inline]
                 pub fn new() -> Self {
-                    __BindgenUnionField(::std::marker::PhantomData)
+                    __BindgenUnionField(::$prefix::marker::PhantomData)
                 }
 
                 #[inline]
                 pub unsafe fn as_ref(&self) -> &T {
-                    ::std::mem::transmute(self)
+                    ::$prefix::mem::transmute(self)
                 }
 
                 #[inline]
                 pub unsafe fn as_mut(&mut self) -> &mut T {
-                    ::std::mem::transmute(self)
+                    ::$prefix::mem::transmute(self)
                 }
             }
         )
             .unwrap();
 
         let union_field_default_impl = quote_item!(&ctx.ext_cx(),
-            impl<T> ::std::default::Default for __BindgenUnionField<T> {
+            impl<T> ::$prefix::default::Default for __BindgenUnionField<T> {
                 #[inline]
                 fn default() -> Self {
                     Self::new()
@@ -1793,7 +1802,7 @@ mod utils {
             .unwrap();
 
         let union_field_clone_impl = quote_item!(&ctx.ext_cx(),
-            impl<T> ::std::clone::Clone for __BindgenUnionField<T> {
+            impl<T> ::$prefix::clone::Clone for __BindgenUnionField<T> {
                 #[inline]
                 fn clone(&self) -> Self {
                     Self::new()
@@ -1803,7 +1812,7 @@ mod utils {
             .unwrap();
 
         let union_field_copy_impl = quote_item!(&ctx.ext_cx(),
-            impl<T> ::std::marker::Copy for __BindgenUnionField<T> {}
+            impl<T> ::$prefix::marker::Copy for __BindgenUnionField<T> {}
         )
             .unwrap();
 

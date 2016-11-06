@@ -221,7 +221,7 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Mangles a name so it doesn't conflict with any keyword.
     pub fn rust_mangle<'a>(&self, name: &'a str) -> Cow<'a, str> {
         use syntax::parse::token;
-        let ident = self.rust_ident_raw(&name);
+        let ident = self.rust_ident_raw(name);
         let token = token::Ident(ident);
         if token.is_any_keyword() || name.contains("@") ||
            name.contains("?") || name.contains("$") ||
@@ -242,9 +242,7 @@ impl<'ctx> BindgenContext<'ctx> {
     }
 
     /// Returns a mangled name as a rust identifier.
-    pub fn rust_ident_raw<S>(&self, name: &S) -> Ident
-        where S: Borrow<str>,
-    {
+    pub fn rust_ident_raw(&self, name: &str) -> Ident {
         self.ext_cx().ident_of(name.borrow())
     }
 
@@ -910,6 +908,16 @@ impl<'ctx> BindgenContext<'ctx> {
             ctx: self,
             seen: seen,
             to_iterate: to_iterate,
+        }
+    }
+
+    /// Convenient method for getting the prefix to use for most traits in
+    /// codegen depending on the `use_core` option.
+    pub fn trait_prefix(&self) -> Ident {
+        if self.options().use_core {
+            self.rust_ident_raw("core")
+        } else {
+            self.rust_ident_raw("std")
         }
     }
 }

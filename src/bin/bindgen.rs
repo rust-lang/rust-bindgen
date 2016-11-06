@@ -67,6 +67,11 @@ Options:
 
     --no-unstable-rust            Avoid generating unstable rust.
 
+    --use-core                    Use built-in types from core instead of std.
+
+    --ctypes-prefix=<prefix>      Use the given prefix before the raw types
+                                  instead of ::std::os::raw::.
+
     --opaque-type=<type>          Mark a type as opaque.
 
     --blacklist-type=<type>       Mark a type as hidden.
@@ -179,6 +184,14 @@ fn parse_args_or_exit(args: Vec<String>) -> (BindgenOptions, Box<io::Write>) {
             }
             "--no-unstable-rust" => {
                 options.unstable_rust = false;
+            }
+            "--use-core" => {
+                options.use_core = true;
+            }
+            "--ctypes-prefix" => {
+                let prefix = iter.next()
+                    .expect("--ctypes-prefix expects a prefix after it");
+                options.ctypes_prefix = Some(prefix);
             }
             "--emit-clang-ast" => {
                 options.emit_ast = true;
