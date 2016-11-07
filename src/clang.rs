@@ -101,7 +101,9 @@ impl Cursor {
     /// See documentation for `lexical_parent` for details on semantic vs
     /// lexical parents.
     pub fn fallible_semantic_parent(&self) -> Option<Cursor> {
-        let sp = self.semantic_parent();
+        let sp = unsafe {
+            Cursor { x: clang_getCursorSemanticParent(self.x) }
+        };
         if sp == *self || !sp.is_valid() {
             return None;
         }
@@ -113,11 +115,7 @@ impl Cursor {
     /// See documentation for `lexical_parent` for details on semantic vs
     /// lexical parents.
     pub fn semantic_parent(&self) -> Cursor {
-        unsafe {
-            Cursor {
-                x: clang_getCursorSemanticParent(self.x),
-            }
-        }
+        self.fallible_semantic_parent().unwrap()
     }
 
     /// Return the number of template arguments used by this cursor's referent,
@@ -157,17 +155,18 @@ impl Cursor {
 
     /// Is the referent a top level construct?
     pub fn is_toplevel(&self) -> bool {
-        let mut semantic_parent = self.semantic_parent();
+        let mut semantic_parent = self.fallible_semantic_parent();
 
-        while semantic_parent.kind() == CXCursor_Namespace ||
-              semantic_parent.kind() == CXCursor_NamespaceAlias ||
-              semantic_parent.kind() == CXCursor_NamespaceRef {
-            semantic_parent = semantic_parent.semantic_parent();
+        while semantic_parent.is_some() &&
+              (semantic_parent.unwrap().kind() == CXCursor_Namespace ||
+               semantic_parent.unwrap().kind() == CXCursor_NamespaceAlias ||
+               semantic_parent.unwrap().kind() == CXCursor_NamespaceRef) {
+            semantic_parent = semantic_parent.unwrap().fallible_semantic_parent();
         }
 
         let tu = self.translation_unit();
-        // Yes, the second can happen with, e.g., macro definitions.
-        semantic_parent == tu || semantic_parent == tu.semantic_parent()
+        // Yes, this can happen with, e.g., macro definitions.
+        semantic_parent == tu.fallible_semantic_parent()
     }
 
     /// Get the kind of referent this cursor is pointing to.
