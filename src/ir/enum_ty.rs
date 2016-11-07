@@ -75,7 +75,7 @@ impl Enum {
                 let value = if is_signed {
                     cursor.enum_val_signed().map(EnumVariantValue::Signed)
                 } else {
-                    Some(EnumVariantValue::Unsigned(cursor.enum_val_unsigned()))
+                    cursor.enum_val_unsigned().map(EnumVariantValue::Unsigned)
                 };
                 if let Some(val) = value {
                     let name = cursor.spelling();
