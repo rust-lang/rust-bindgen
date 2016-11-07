@@ -331,6 +331,12 @@ impl Item {
         self.kind().expect_type()
     }
 
+    /// Get a reference to this item's underlying `Type`, or `None` if this is
+    /// some other kind of item.
+    pub fn as_type(&self) -> Option<&Type> {
+        self.kind().as_type()
+    }
+
     /// Get a reference to this item's underlying `Function`. Panic if this is
     /// some other kind of item.
     pub fn expect_function(&self) -> &Function {
@@ -529,6 +535,11 @@ impl Item {
                       "You're not supposed to call this yet");
         self.annotations.opaque() ||
         ctx.opaque_by_name(&self.real_canonical_name(ctx, false, true))
+    }
+
+    /// Is this a reference to another type?
+    pub fn is_type_ref(&self) -> bool {
+        self.as_type().map_or(false, |ty| ty.is_type_ref())
     }
 
     /// Get the canonical name without taking into account the replaces

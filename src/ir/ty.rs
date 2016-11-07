@@ -136,6 +136,15 @@ impl Type {
         self.is_const
     }
 
+    /// Is this a reference to another type?
+    pub fn is_type_ref(&self) -> bool {
+        match self.kind {
+            TypeKind::ResolvedTypeRef(_) |
+            TypeKind::UnresolvedTypeRef(_, _, _) => true,
+            _ => false,
+        }
+    }
+
     /// What is the layout of this type?
     pub fn layout(&self, ctx: &BindgenContext) -> Option<Layout> {
         use std::mem;
