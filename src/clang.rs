@@ -715,6 +715,11 @@ impl Type {
             }
         }
     }
+
+    /// Is this a valid type?
+    pub fn is_valid(&self) -> bool {
+        self.kind() != CXType_Invalid
+    }
 }
 
 /// An iterator for a type's template arguments.
