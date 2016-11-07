@@ -362,11 +362,15 @@ impl Cursor {
 
     /// Get the unsigned constant value for this cursor's enum variant referent.
     ///
-    /// Returns `ULLONG_MAX` if the cursor's referent is not an enum variant,
-    /// which is also a valid enum value, so callers should check the cursor
-    /// kind before calling this method (see issue #128).
-    pub fn enum_val_unsigned(&self) -> u64 {
-        unsafe { clang_getEnumConstantDeclUnsignedValue(self.x) as u64 }
+    /// Returns None if the cursor's referent is not an enum variant.
+    pub fn enum_val_unsigned(&self) -> Option<u64> {
+        unsafe { 
+            if self.kind() == CXCursor_EnumConstantDecl {
+                Some(clang_getEnumConstantDeclUnsignedValue(self.x) as u64)   
+            } else {
+                None
+            }
+        }
     }
 
     /// Given that this cursor's referent is a `typedef`, get the `Type` that is
