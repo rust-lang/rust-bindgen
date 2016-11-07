@@ -640,7 +640,7 @@ impl Type {
                 let ret = Type {
                     x: unsafe { clang_getPointeeType(self.x) },
                 };
-                debug_assert!(ret.kind() != CXType_Invalid);
+                debug_assert!(ret.is_valid());
                 Some(ret)
             }
             _ => None,
@@ -653,7 +653,7 @@ impl Type {
         let current_type = Type {
             x: unsafe { clang_getElementType(self.x) },
         };
-        if current_type.kind() != CXType_Invalid {
+        if current_type.is_valid() {
             Some(current_type)
         } else {
             None
@@ -692,10 +692,10 @@ impl Type {
         let rt = Type {
             x: unsafe { clang_getResultType(self.x) },
         };
-        if rt.kind() == CXType_Invalid {
-            None
-        } else {
+        if rt.is_valid() {
             Some(rt)
+        } else {
+            None
         }
     }
 
