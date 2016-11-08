@@ -166,6 +166,15 @@ impl Builder {
         self
     }
 
+    /// Mark the given enum (or set of enums, if using a pattern) as being
+    /// bitfield-like.
+    ///
+    /// This makes bindgen generate a type that isn't a rust `enum`.
+    pub fn bitfield_enum<T: Borrow<str>>(mut self, arg: T) -> Builder {
+        self.options.bitfield_enums.insert(&arg);
+        self
+    }
+
     /// Add a string to prepend to the generated bindings. The string is passed
     /// through without any modification.
     pub fn raw_line<T: Into<String>>(mut self, arg: T) -> Builder {
@@ -262,6 +271,9 @@ pub struct BindgenOptions {
     /// Whitelisted variables. See docs for `whitelisted_types` for more.
     pub whitelisted_vars: RegexSet,
 
+    /// The enum patterns to mark an enum as bitfield.
+    pub bitfield_enums: RegexSet,
+
     /// Whether we should generate builtins or not.
     pub builtins: bool,
 
@@ -329,6 +341,7 @@ impl Default for BindgenOptions {
             whitelisted_types: Default::default(),
             whitelisted_functions: Default::default(),
             whitelisted_vars: Default::default(),
+            bitfield_enums: Default::default(),
             builtins: false,
             links: vec![],
             emit_ast: false,
