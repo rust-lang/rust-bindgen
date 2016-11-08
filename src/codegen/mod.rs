@@ -1224,6 +1224,79 @@ impl MethodCodegen for Method {
     }
 }
 
+enum EnumBuilder<'a> {
+    Rust(aster::item::ItemEnumBuilder<aster::invoke::Identity>),
+    Bitfield {
+        canonical_name: &'a str,
+        aster: P<ast::Item>,
+    },
+}
+
+impl<'a> EnumBuilder<'a> {
+    fn new(aster: aster::item::ItemBuilder<aster::invoke::Identity>,
+           name: &'a str,
+           repr_name: &str,
+           is_rust: bool)
+           -> Self {
+        if is_rust {
+            EnumBuilder::Rust(aster.enum_(name))
+        } else {
+            EnumBuilder::Bitfield {
+                canonical_name: name,
+                aster: aster.tuple_struct(name)
+                    .field()
+                    .pub_()
+                    .ty()
+                    .id(repr_name)
+                    .build(),
+            }
+        }
+    }
+
+    fn with_variant_(self,
+                     ctx: &BindgenContext,
+                     name: &str,
+                     expr: P<ast::Expr>,
+                     rust_ty: P<ast::Ty>,
+                     result: &mut CodegenResult)
+                     -> Self {
+        match self {
+            EnumBuilder::Rust(b) => {
+                EnumBuilder::Rust(b.with_variant_(ast::Variant_ {
+                    name: ctx.rust_ident(name),
+                    attrs: vec![],
+                    data: ast::VariantData::Unit(ast::DUMMY_NODE_ID),
+                    disr_expr: Some(expr),
+                }))
+            }
+            EnumBuilder::Bitfield { canonical_name, .. } => {
+                // FIXME: Probably if unnamed we should be smarter! Easy to
+                // improve.
+                let constant_name = format!("{}_{}", canonical_name, name);
+                let constant = aster::AstBuilder::new()
+                    .item()
+                    .const_(constant_name)
+                    .expr()
+                    .call()
+                    .id(canonical_name)
+                    .arg()
+                    .build(expr)
+                    .build()
+                    .build(rust_ty);
+                result.push(constant);
+                self
+            }
+        }
+    }
+
+    fn build(self) -> P<ast::Item> {
+        match self {
+            EnumBuilder::Rust(b) => b.build(),
+            EnumBuilder::Bitfield { aster, .. } => aster,
+        }
+    }
+}
+
 impl CodeGenerator for Enum {
     type Extra = Item;
 
@@ -1234,7 +1307,8 @@ impl CodeGenerator for Enum {
         use ir::enum_ty::EnumVariantValue;
 
         let name = item.canonical_name(ctx);
-        let layout = item.expect_type().layout(ctx);
+        let enum_ty = item.expect_type();
+        let layout = enum_ty.layout(ctx);
 
         let repr = self.repr().map(|repr| ctx.resolve_type(repr));
         let repr = match repr {
@@ -1270,10 +1344,24 @@ impl CodeGenerator for Enum {
 
         let mut builder = aster::AstBuilder::new().item().pub_();
 
+        let is_bitfield = {
+            ctx.options().bitfield_enums.matches(&name) ||
+            (enum_ty.name().is_none() &&
+             self.variants()
+                .iter()
+                .any(|v| ctx.options().bitfield_enums.matches(&v.name())))
+        };
+
+        let is_rust_enum = !is_bitfield;
+
         // FIXME: Rust forbids repr with empty enums. Remove this condition when
         // this is allowed.
-        if !self.variants().is_empty() {
-            builder = builder.with_attr(attributes::repr(repr_name));
+        if is_rust_enum {
+            if !self.variants().is_empty() {
+                builder = builder.with_attr(attributes::repr(repr_name));
+            }
+        } else {
+            builder = builder.with_attr(attributes::repr("C"));
         }
 
         if let Some(comment) = item.comment() {
@@ -1288,8 +1376,6 @@ impl CodeGenerator for Enum {
                                             "Hash"]);
 
         builder = builder.with_attr(derives);
-
-        let mut builder = builder.enum_(&name);
 
         fn add_constant(enum_: &Type,
                         // Only to avoid recomputing every time.
@@ -1321,21 +1407,38 @@ impl CodeGenerator for Enum {
         // Used to mangle the constants we generate in the unnamed-enum case.
         let mut parent_canonical_name = None;
 
+        let mut builder =
+            EnumBuilder::new(builder, &name, repr_name, is_rust_enum);
+
         // A map where we keep a value -> variant relation.
         let mut seen_values = HashMap::<_, String>::new();
-        let enum_ty = item.expect_type();
         let enum_rust_ty = item.to_rust_ty(ctx);
         for variant in self.variants().iter() {
             match seen_values.entry(variant.val()) {
                 Entry::Occupied(ref entry) => {
-                    let existing_variant_name = entry.get();
-                    let variant_name = ctx.rust_mangle(variant.name());
-                    add_constant(enum_ty,
-                                 &name,
-                                 &*variant_name,
-                                 existing_variant_name,
-                                 enum_rust_ty.clone(),
-                                 result);
+                    if is_rust_enum {
+                        let existing_variant_name = entry.get();
+                        let variant_name = ctx.rust_mangle(variant.name());
+                        add_constant(enum_ty,
+                                     &name,
+                                     &*variant_name,
+                                     existing_variant_name,
+                                     enum_rust_ty.clone(),
+                                     result);
+                    } else {
+                        // FIXME: Don't repeat this block below.
+                        let expr = aster::AstBuilder::new().expr();
+                        let expr = match variant.val() {
+                            EnumVariantValue::Signed(val) => expr.int(val),
+                            EnumVariantValue::Unsigned(val) => expr.uint(val),
+                        };
+                        let variant_name = ctx.rust_mangle(variant.name());
+                        builder = builder.with_variant_(ctx,
+                                                        &*variant_name,
+                                                        expr,
+                                                        enum_rust_ty.clone(),
+                                                        result);
+                    }
                 }
                 Entry::Vacant(entry) => {
                     let expr = aster::AstBuilder::new().expr();
@@ -1344,16 +1447,15 @@ impl CodeGenerator for Enum {
                         EnumVariantValue::Unsigned(val) => expr.uint(val),
                     };
                     let variant_name = ctx.rust_mangle(variant.name());
-                    builder = builder.with_variant_(ast::Variant_ {
-                        name: ctx.rust_ident(&*variant_name),
-                        attrs: vec![],
-                        data: ast::VariantData::Unit(ast::DUMMY_NODE_ID),
-                        disr_expr: Some(expr),
-                    });
+                    builder = builder.with_variant_(ctx,
+                                                    &*variant_name,
+                                                    expr,
+                                                    enum_rust_ty.clone(),
+                                                    result);
 
                     // If it's an unnamed enum, we also generate a constant so
                     // it can be properly accessed.
-                    if enum_ty.name().is_none() {
+                    if is_rust_enum && enum_ty.name().is_none() {
                         // NB: if we want to do this for other kind of nested
                         // enums we can probably mangle the name.
                         let mangled_name = if item.is_toplevel(ctx) {
@@ -1383,7 +1485,6 @@ impl CodeGenerator for Enum {
                 }
             }
         }
-
 
         result.push(builder.build());
     }

@@ -28,6 +28,7 @@ Usage:
         [--whitelist-type=<type>...] \
         [--whitelist-function=<name>...] \
         [--whitelist-var=<name>...] \
+        [--bitfield-enum=<name>...] \
         <input-header> \
         [-- <clang-args>...]
 
@@ -90,6 +91,10 @@ Options:
     --whitelist-var=<regex>       Whitelist all the free-standing variables
                                   matching <regex>.  Same behavior on emptyness
                                   than the type whitelisting.
+
+    --bitfield-enum=<regex>       Mark a bitfield as being used as an enum.
+                                  This makes bindgen don't generate a rust enum
+                                  for it, but a bitfield-like wrapper.
 
     --dummy-uses=<path>           For testing purposes, generate a C/C++ file
                                   containing dummy uses of all types defined in
@@ -162,6 +167,11 @@ fn parse_args_or_exit(args: Vec<String>) -> (BindgenOptions, Box<io::Write>) {
                 let var_pat = iter.next()
                     .expect("--whitelist-var expects a pattern");
                 options.whitelisted_vars.insert(&var_pat);
+            }
+            "--bitfield-enum" => {
+                let enum_pat = iter.next()
+                    .expect("--bitfield-enum expects a pattern");
+                options.bitfield_enums.insert(&enum_pat);
             }
             "--" => {
                 while let Some(clang_arg) = iter.next() {
