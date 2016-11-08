@@ -169,7 +169,7 @@ impl Builder {
     /// Mark the given enum (or set of enums, if using a pattern) as being
     /// bitfield-like.
     ///
-    /// This makes bindgen to generate a type for it that isn't a rust `enum`.
+    /// This makes bindgen generate a type that isn't a rust `enum`.
     pub fn bitfield_enum<T: Borrow<str>>(mut self, arg: T) -> Builder {
         self.options.bitfield_enums.insert(&arg);
         self

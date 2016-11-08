@@ -92,9 +92,9 @@ Options:
                                   matching <regex>.  Same behavior on emptyness
                                   than the type whitelisting.
 
-    --bitfield-enum=<regex>       Mark a bitfield as being used as an enum.
-                                  This makes bindgen don't generate a rust enum
-                                  for it, but a bitfield-like wrapper.
+    --bitfield-enum=<regex>       Mark any enum whose name matches <regex> as a
+                                  set of bitfield flags instead of an
+                                  enumeration.
 
     --dummy-uses=<path>           For testing purposes, generate a C/C++ file
                                   containing dummy uses of all types defined in

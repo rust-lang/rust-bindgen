@@ -6,7 +6,7 @@ use aster;
 use ir::annotations::FieldAccessorKind;
 use ir::comp::{CompInfo, CompKind, Field, Method};
 use ir::context::BindgenContext;
-use ir::enum_ty::Enum;
+use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
 use ir::function::{Function, FunctionSig};
 use ir::int::IntKind;
 use ir::item::{Item, ItemCanonicalName, ItemCanonicalPath, ItemId};
@@ -1224,6 +1224,7 @@ impl MethodCodegen for Method {
     }
 }
 
+/// A helper type to construct enums, either bitfield ones or rust-style ones.
 enum EnumBuilder<'a> {
     Rust(aster::item::ItemEnumBuilder<aster::invoke::Identity>),
     Bitfield {
@@ -1233,6 +1234,8 @@ enum EnumBuilder<'a> {
 }
 
 impl<'a> EnumBuilder<'a> {
+    /// Create a new enum given an item builder, a canonical name, a name for
+    /// the representation, and whether it should be represented as a rust enum.
     fn new(aster: aster::item::ItemBuilder<aster::invoke::Identity>,
            name: &'a str,
            repr_name: &str,
@@ -1253,29 +1256,42 @@ impl<'a> EnumBuilder<'a> {
         }
     }
 
-    fn with_variant_(self,
-                     ctx: &BindgenContext,
-                     name: &str,
-                     expr: P<ast::Expr>,
-                     rust_ty: P<ast::Ty>,
-                     result: &mut CodegenResult)
-                     -> Self {
+    /// Add a variant to this enum.
+    fn with_variant(self,
+                    ctx: &BindgenContext,
+                    variant: &EnumVariant,
+                    mangling_prefix: Option<&String>,
+                    rust_ty: P<ast::Ty>,
+                    result: &mut CodegenResult)
+                    -> Self {
+        let variant_name = ctx.rust_mangle(variant.name());
+        let expr = aster::AstBuilder::new().expr();
+        let expr = match variant.val() {
+            EnumVariantValue::Signed(v) => expr.int(v),
+            EnumVariantValue::Unsigned(v) => expr.uint(v),
+        };
+
         match self {
             EnumBuilder::Rust(b) => {
                 EnumBuilder::Rust(b.with_variant_(ast::Variant_ {
-                    name: ctx.rust_ident(name),
+                    name: ctx.rust_ident(&*variant_name),
                     attrs: vec![],
                     data: ast::VariantData::Unit(ast::DUMMY_NODE_ID),
                     disr_expr: Some(expr),
                 }))
             }
             EnumBuilder::Bitfield { canonical_name, .. } => {
-                // FIXME: Probably if unnamed we should be smarter! Easy to
-                // improve.
-                let constant_name = format!("{}_{}", canonical_name, name);
+                let constant_name = match mangling_prefix {
+                    Some(prefix) => {
+                        Cow::Owned(format!("{}_{}", prefix, variant_name))
+                    }
+                    None => variant_name,
+                };
+
                 let constant = aster::AstBuilder::new()
                     .item()
-                    .const_(constant_name)
+                    .pub_()
+                    .const_(&*constant_name)
                     .expr()
                     .call()
                     .id(canonical_name)
@@ -1289,10 +1305,32 @@ impl<'a> EnumBuilder<'a> {
         }
     }
 
-    fn build(self) -> P<ast::Item> {
+    fn build(self,
+             ctx: &BindgenContext,
+             rust_ty: P<ast::Ty>,
+             result: &mut CodegenResult)
+             -> P<ast::Item> {
         match self {
             EnumBuilder::Rust(b) => b.build(),
-            EnumBuilder::Bitfield { aster, .. } => aster,
+            EnumBuilder::Bitfield { canonical_name, aster } => {
+                let rust_ty_name = ctx.rust_ident_raw(canonical_name);
+                let prefix = ctx.trait_prefix();
+
+                let impl_ = quote_item!(ctx.ext_cx(),
+                    impl ::$prefix::ops::BitOr<$rust_ty> for $rust_ty {
+                        type Output = Self;
+
+                        #[inline]
+                        fn bitor(self, other: Self) -> Self {
+                            $rust_ty_name(self.0 | other.0)
+                        }
+                    }
+                )
+                    .unwrap();
+
+                result.push(impl_);
+                aster
+            }
         }
     }
 }
@@ -1304,8 +1342,6 @@ impl CodeGenerator for Enum {
                ctx: &BindgenContext,
                result: &mut CodegenResult,
                item: &Item) {
-        use ir::enum_ty::EnumVariantValue;
-
         let name = item.canonical_name(ctx);
         let enum_ty = item.expect_type();
         let layout = enum_ty.layout(ctx);
@@ -1404,15 +1440,27 @@ impl CodeGenerator for Enum {
             result.push(constant);
         }
 
-        // Used to mangle the constants we generate in the unnamed-enum case.
-        let mut parent_canonical_name = None;
-
         let mut builder =
             EnumBuilder::new(builder, &name, repr_name, is_rust_enum);
 
         // A map where we keep a value -> variant relation.
         let mut seen_values = HashMap::<_, String>::new();
         let enum_rust_ty = item.to_rust_ty(ctx);
+        let is_toplevel = item.is_toplevel(ctx);
+
+        // Used to mangle the constants we generate in the unnamed-enum case.
+        let parent_canonical_name = if is_toplevel {
+            None
+        } else {
+            Some(item.parent_id().canonical_name(ctx))
+        };
+
+        let constant_mangling_prefix = if enum_ty.name().is_none() {
+            parent_canonical_name.as_ref().map(|n| &*n)
+        } else {
+            Some(&name)
+        };
+
         for variant in self.variants().iter() {
             match seen_values.entry(variant.val()) {
                 Entry::Occupied(ref entry) => {
@@ -1426,46 +1474,30 @@ impl CodeGenerator for Enum {
                                      enum_rust_ty.clone(),
                                      result);
                     } else {
-                        // FIXME: Don't repeat this block below.
-                        let expr = aster::AstBuilder::new().expr();
-                        let expr = match variant.val() {
-                            EnumVariantValue::Signed(val) => expr.int(val),
-                            EnumVariantValue::Unsigned(val) => expr.uint(val),
-                        };
-                        let variant_name = ctx.rust_mangle(variant.name());
-                        builder = builder.with_variant_(ctx,
-                                                        &*variant_name,
-                                                        expr,
-                                                        enum_rust_ty.clone(),
-                                                        result);
+                        builder = builder.with_variant(ctx,
+                                          variant,
+                                          constant_mangling_prefix,
+                                          enum_rust_ty.clone(),
+                                          result);
                     }
                 }
                 Entry::Vacant(entry) => {
-                    let expr = aster::AstBuilder::new().expr();
-                    let expr = match variant.val() {
-                        EnumVariantValue::Signed(val) => expr.int(val),
-                        EnumVariantValue::Unsigned(val) => expr.uint(val),
-                    };
+                    builder = builder.with_variant(ctx,
+                                                   variant,
+                                                   constant_mangling_prefix,
+                                                   enum_rust_ty.clone(),
+                                                   result);
+
                     let variant_name = ctx.rust_mangle(variant.name());
-                    builder = builder.with_variant_(ctx,
-                                                    &*variant_name,
-                                                    expr,
-                                                    enum_rust_ty.clone(),
-                                                    result);
 
                     // If it's an unnamed enum, we also generate a constant so
                     // it can be properly accessed.
                     if is_rust_enum && enum_ty.name().is_none() {
                         // NB: if we want to do this for other kind of nested
                         // enums we can probably mangle the name.
-                        let mangled_name = if item.is_toplevel(ctx) {
+                        let mangled_name = if is_toplevel {
                             variant_name.clone()
                         } else {
-                            if parent_canonical_name.is_none() {
-                                parent_canonical_name = Some(item.parent_id()
-                                    .canonical_name(ctx));
-                            }
-
                             let parent_name = parent_canonical_name.as_ref()
                                 .unwrap();
 
@@ -1486,7 +1518,8 @@ impl CodeGenerator for Enum {
             }
         }
 
-        result.push(builder.build());
+        let enum_ = builder.build(ctx, enum_rust_ty, result);
+        result.push(enum_);
     }
 }
 
