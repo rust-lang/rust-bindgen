@@ -1462,7 +1462,7 @@ impl ToRustTy for Type {
                     IntKind::U32 => aster::ty::TyBuilder::new().u32(),
                     IntKind::I64 => aster::ty::TyBuilder::new().i64(),
                     IntKind::U64 => aster::ty::TyBuilder::new().u64(),
-                    IntKind::Custom(name, _signed) => {
+                    IntKind::Custom { name, .. } => {
                         let ident = ctx.rust_ident_raw(name);
                         quote_ty!(ctx.ext_cx(), $ident)
                     }

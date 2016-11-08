@@ -68,9 +68,12 @@ pub enum IntKind {
 
     /// A custom integer type, used to allow custom macro types depending on
     /// range.
-    ///
-    /// The boolean means a whether this is a signed integer type or not.
-    Custom(&'static str, bool),
+    Custom {
+        /// The name of the type, which would be used without modification.
+        name: &'static str,
+        /// Whether the type is signed or not.
+        is_signed: bool,
+    },
 }
 
 impl IntKind {
@@ -84,7 +87,7 @@ impl IntKind {
             Char | Short | Int | Long | LongLong | I8 | I16 | I32 | I64 |
             I128 => true,
 
-            Custom(_, signed) => signed,
+            Custom { is_signed, .. } => is_signed,
         }
     }
 }

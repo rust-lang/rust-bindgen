@@ -111,16 +111,9 @@ impl ClangSubItemParser for Var {
                     EvalResult::Invalid => return Err(ParseError::Continue),
 
                     EvalResult::Int(Wrapping(value)) => {
-                        let kind = match ctx.options().type_chooser {
-                            Some(ref chooser) => {
-                                chooser.int_macro(&name, value)
-                            }
-                            None => None,
-                        };
-
-                        let kind = match kind {
-                            Some(kind) => kind,
-                            None => {
+                        let kind = ctx.options().type_chooser.as_ref()
+                            .and_then(|c| c.int_macro(&name, value))
+                            .unwrap_or_else(|| {
                                 if value < 0 {
                                     if value < i32::min_value() as i64 {
                                         IntKind::LongLong
@@ -132,8 +125,7 @@ impl ClangSubItemParser for Var {
                                 } else {
                                     IntKind::UInt
                                 }
-                            }
-                        };
+                            });
 
                         (kind, value)
                     }
