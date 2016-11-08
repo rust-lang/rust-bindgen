@@ -8,6 +8,7 @@ import os
 import sys
 import subprocess
 import tempfile
+import shlex
 
 BINDGEN_FLAGS_PREFIX = "// bindgen-flags: "
 
@@ -94,7 +95,7 @@ def get_bindgen_flags(header_path):
     with open(header_path) as f:
         for line in f:
             if line.startswith(BINDGEN_FLAGS_PREFIX):
-                flags.extend(line.strip().split(BINDGEN_FLAGS_PREFIX)[1].split(" "))
+                flags.extend(shlex.split(line.strip().split(BINDGEN_FLAGS_PREFIX)[1]))
                 break
 
     return flags

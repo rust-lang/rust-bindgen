@@ -210,6 +210,18 @@ impl Builder {
         self
     }
 
+    /// Use core instead of libstd in the generated bindings.
+    pub fn use_core(mut self) -> Builder {
+        self.options.use_core = true;
+        self
+    }
+
+    /// Use the given prefix for the raw types instead of `::std::os::raw`.
+    pub fn ctypes_prefix<T: Into<String>>(mut self, prefix: T) -> Builder {
+        self.options.ctypes_prefix = Some(prefix.into());
+        self
+    }
+
     /// Generate the Rust bindings using the options built up thus far.
     pub fn generate<'ctx>(self) -> Result<Bindings<'ctx>, ()> {
         Bindings::generate(self.options, None)
@@ -273,6 +285,12 @@ pub struct BindgenOptions {
     /// cannot.
     pub unstable_rust: bool,
 
+    /// True if we should avoid using libstd to use libcore instead.
+    pub use_core: bool,
+
+    /// An optional prefix for the "raw" types, like `c_int`, `c_void`...
+    pub ctypes_prefix: Option<String>,
+
     /// True if we should generate constant names that are **directly** under
     /// namespaces.
     pub namespaced_constants: bool,
@@ -310,6 +328,8 @@ impl Default for BindgenOptions {
             derive_debug: true,
             enable_cxx_namespaces: false,
             unstable_rust: true,
+            use_core: false,
+            ctypes_prefix: None,
             namespaced_constants: true,
             msvc_mangling: false,
             raw_lines: vec![],
