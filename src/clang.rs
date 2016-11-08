@@ -102,7 +102,9 @@ impl Cursor {
     /// lexical parents.
     pub fn fallible_semantic_parent(&self) -> Option<Cursor> {
         let sp = unsafe {
-            Cursor { x: clang_getCursorSemanticParent(self.x) }
+            Cursor {
+                x: clang_getCursorSemanticParent(self.x),
+            }
         };
         if sp == *self || !sp.is_valid() {
             return None;
@@ -161,7 +163,8 @@ impl Cursor {
               (semantic_parent.unwrap().kind() == CXCursor_Namespace ||
                semantic_parent.unwrap().kind() == CXCursor_NamespaceAlias ||
                semantic_parent.unwrap().kind() == CXCursor_NamespaceRef) {
-            semantic_parent = semantic_parent.unwrap().fallible_semantic_parent();
+            semantic_parent = semantic_parent.unwrap()
+                .fallible_semantic_parent();
         }
 
         let tu = self.translation_unit();
@@ -363,9 +366,9 @@ impl Cursor {
     ///
     /// Returns None if the cursor's referent is not an enum variant.
     pub fn enum_val_unsigned(&self) -> Option<u64> {
-        unsafe { 
+        unsafe {
             if self.kind() == CXCursor_EnumConstantDecl {
-                Some(clang_getEnumConstantDeclUnsignedValue(self.x) as u64)   
+                Some(clang_getEnumConstantDeclUnsignedValue(self.x) as u64)
             } else {
                 None
             }
@@ -691,11 +694,7 @@ impl Type {
         let rt = Type {
             x: unsafe { clang_getResultType(self.x) },
         };
-        if rt.is_valid() {
-            Some(rt)
-        } else {
-            None
-        }
+        if rt.is_valid() { Some(rt) } else { None }
     }
 
     /// Given that this type is a function type, get its calling convention. If
