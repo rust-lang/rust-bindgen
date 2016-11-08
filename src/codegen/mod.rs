@@ -1489,7 +1489,8 @@ impl ToRustTy for Type {
             }
             TypeKind::Function(ref fs) => {
                 let ty = fs.to_rust_ty(ctx, item);
-                aster::AstBuilder::new().ty().option().build(ty)
+                let prefix = ctx.trait_prefix();
+                quote_ty!(ctx.ext_cx(), ::$prefix::option::Option<$ty>)
             }
             TypeKind::Array(item, len) => {
                 let inner = item.to_rust_ty(ctx);
