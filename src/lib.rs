@@ -204,6 +204,30 @@ impl Builder {
         self
     }
 
+    /// Emit Clang AST.
+    pub fn emit_clang_ast(mut self) -> Builder {
+        self.options.emit_ast = true;
+        self
+    }
+
+    /// Enable C++ namespaces.
+    pub fn enable_cxx_namespaces(mut self) -> Builder {
+        self.options.enable_cxx_namespaces = true;
+        self
+    }
+
+    /// Ignore functions.
+    pub fn ignore_functions(mut self) -> Builder {
+        self.options.ignore_functions = true;
+        self
+    }
+
+    /// Ignore methods.
+    pub fn ignore_methods(mut self) -> Builder {
+        self.options.ignore_methods = true;
+        self
+    }
+
     /// Avoid generating any unstable Rust in the generated bindings.
     pub fn no_unstable_rust(mut self) -> Builder {
         self.options.unstable_rust = false;
@@ -277,9 +301,6 @@ pub struct BindgenOptions {
     /// namespaces.
     pub namespaced_constants: bool,
 
-    /// True if we should use MSVC name mangling rules.
-    pub msvc_mangling: bool,
-
     /// The set of raw lines to prepend to the generated Rust code.
     pub raw_lines: Vec<String>,
 
@@ -311,7 +332,6 @@ impl Default for BindgenOptions {
             enable_cxx_namespaces: false,
             unstable_rust: true,
             namespaced_constants: true,
-            msvc_mangling: false,
             raw_lines: vec![],
             clang_args: vec![],
             input_header: None,
