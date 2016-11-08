@@ -12,4 +12,5 @@ class WhitelistMe {
 
 struct DontWhitelistMe {
   void* foo;
+  double _Complex noComplexGenerated;
 };

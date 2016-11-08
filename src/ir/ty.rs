@@ -334,6 +334,7 @@ impl Type {
             TypeKind::Comp(..) |
             TypeKind::Int(..) |
             TypeKind::Float(..) |
+            TypeKind::Complex(..) |
             TypeKind::Function(..) |
             TypeKind::Enum(..) |
             TypeKind::Reference(..) |
@@ -385,6 +386,9 @@ pub enum TypeKind {
 
     /// A floating point type.
     Float(FloatKind),
+
+    /// A complex floating point type.
+    Complex(FloatKind),
 
     /// A type alias, with a name, that points to another type.
     Alias(String, ItemId),
@@ -463,6 +467,7 @@ impl Type {
             TypeKind::Named(..) |
             TypeKind::Int(..) |
             TypeKind::Float(..) |
+            TypeKind::Complex(..) |
             TypeKind::Function(..) |
             TypeKind::Enum(..) |
             TypeKind::Reference(..) |
@@ -800,17 +805,6 @@ impl Type {
                                           ctx)
                     .expect("Not able to resolve array element?");
                 TypeKind::Array(inner, ty.num_elements().unwrap())
-            }
-            // A complex number is always a real and an imaginary part,
-            // so
-            // represent that as a two-item array.
-            CXType_Complex => {
-                let inner = Item::from_ty(ty.elem_type().as_ref().unwrap(),
-                                          location,
-                                          parent_id,
-                                          ctx)
-                    .expect("Not able to resolve array element?");
-                TypeKind::Array(inner, 2)
             }
             #[cfg(not(feature="llvm_stable"))]
             CXType_Elaborated => {
