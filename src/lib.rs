@@ -204,6 +204,12 @@ impl Builder {
         self
     }
 
+    /// Avoid converting floats to f32/f64 by default.
+    pub fn no_convert_floats(mut self) -> Self {
+        self.options.convert_floats = false;
+        self
+    }
+
     /// Avoid generating any unstable Rust in the generated bindings.
     pub fn no_unstable_rust(mut self) -> Builder {
         self.options.unstable_rust = false;
@@ -298,6 +304,9 @@ pub struct BindgenOptions {
     /// True if we should use MSVC name mangling rules.
     pub msvc_mangling: bool,
 
+    /// Whether we should convert float types to f32/f64 types.
+    pub convert_floats: bool,
+
     /// The set of raw lines to prepend to the generated Rust code.
     pub raw_lines: Vec<String>,
 
@@ -332,6 +341,7 @@ impl Default for BindgenOptions {
             ctypes_prefix: None,
             namespaced_constants: true,
             msvc_mangling: false,
+            convert_floats: true,
             raw_lines: vec![],
             clang_args: vec![],
             input_header: None,
