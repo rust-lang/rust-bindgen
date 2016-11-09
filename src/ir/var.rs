@@ -1,7 +1,9 @@
 //! Intermediate representation of variables.
 
+use cexpr;
 use clang;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
+use std::num::Wrapping;
 use super::context::BindgenContext;
 use super::function::cursor_mangling;
 use super::int::IntKind;
@@ -73,43 +75,65 @@ impl ClangSubItemParser for Var {
              ctx: &mut BindgenContext)
              -> Result<ParseResult<Self>, ParseError> {
         use clangll::*;
+        use cexpr::expr::EvalResult;
         match cursor.kind() {
             CXCursor_MacroDefinition => {
-                let value = parse_int_literal_tokens(&cursor,
-                                                     ctx.translation_unit());
+                let value = parse_macro(ctx, &cursor, ctx.translation_unit());
 
-                let value = match value {
+                let (id, value) = match value {
                     Some(v) => v,
                     None => return Err(ParseError::Continue),
                 };
 
-                let name = cursor.spelling();
-                if name.is_empty() {
-                    warn!("Empty macro name?");
-                    return Err(ParseError::Continue);
-                }
+                assert!(!id.is_empty(), "Empty macro name?");
 
-                if ctx.parsed_macro(&name) {
+                if ctx.parsed_macro(&id) {
+                    let name = String::from_utf8(id).unwrap();
                     warn!("Duplicated macro definition: {}", name);
                     return Err(ParseError::Continue);
                 }
-                ctx.note_parsed_macro(name.clone());
 
-                let ty = if value < 0 {
-                    Item::builtin_type(TypeKind::Int(IntKind::Int), true, ctx)
-                } else if value.abs() > u32::max_value() as i64 {
-                    Item::builtin_type(TypeKind::Int(IntKind::ULongLong),
-                                       true,
-                                       ctx)
-                } else {
-                    Item::builtin_type(TypeKind::Int(IntKind::UInt), true, ctx)
+                // NB: It's important to "note" the macro even if the result is
+                // not an integer, otherwise we might loose other kind of
+                // derived macros.
+                ctx.note_parsed_macro(id.clone(), value.clone());
+
+                // NOTE: Unwrapping, here and above, is safe, because the
+                // identifier of a token comes straight from clang, and we
+                // enforce utf8 there, so we should have already panicked at
+                // this point.
+                let name = String::from_utf8(id).unwrap();
+                let (int_kind, val) = match value {
+                    // TODO(emilio): Handle the non-invalid ones!
+                    EvalResult::Float(..) |
+                    EvalResult::Char(..) |
+                    EvalResult::Str(..) |
+                    EvalResult::Invalid => return Err(ParseError::Continue),
+
+                    EvalResult::Int(Wrapping(value)) => {
+                        let kind = ctx.options().type_chooser.as_ref()
+                            .and_then(|c| c.int_macro(&name, value))
+                            .unwrap_or_else(|| {
+                                if value < 0 {
+                                    if value < i32::min_value() as i64 {
+                                        IntKind::LongLong
+                                    } else {
+                                        IntKind::Int
+                                    }
+                                } else if value > u32::max_value() as i64 {
+                                    IntKind::ULongLong
+                                } else {
+                                    IntKind::UInt
+                                }
+                            });
+
+                        (kind, value)
+                    }
                 };
 
-                Ok(ParseResult::New(Var::new(name,
-                                             None,
-                                             ty,
-                                             Some(value),
-                                             true),
+                let ty = Item::builtin_type(TypeKind::Int(int_kind), true, ctx);
+
+                Ok(ParseResult::New(Var::new(name, None, ty, Some(val), true),
                                     Some(cursor)))
             }
             CXCursor_VarDecl => {
@@ -153,49 +177,43 @@ impl ClangSubItemParser for Var {
     }
 }
 
-/// Try and parse the immediately found tokens from an unit (if any) to integers
-fn parse_int_literal_tokens(cursor: &clang::Cursor,
-                            unit: &clang::TranslationUnit)
-                            -> Option<i64> {
-    use clangll::{CXToken_Literal, CXToken_Punctuation};
+/// Try and parse a macro using all the macros parsed until now.
+fn parse_macro(ctx: &BindgenContext,
+               cursor: &clang::Cursor,
+               unit: &clang::TranslationUnit)
+               -> Option<(Vec<u8>, cexpr::expr::EvalResult)> {
+    use cexpr::{expr, nom};
 
-    let tokens = match unit.tokens(cursor) {
+    let cexpr_tokens = match unit.cexpr_tokens(cursor) {
         None => return None,
         Some(tokens) => tokens,
     };
 
-    let mut literal = None;
-    let mut negate = false;
-    for token in tokens.into_iter() {
-        match token.kind {
-            CXToken_Punctuation if token.spelling == "-" => {
-                negate = !negate;
-            }
-            CXToken_Literal => {
-                literal = Some(token.spelling);
-                break;
-            }
-            _ => {
-                // Reset values if we found anything else
-                negate = false;
-                literal = None;
-            }
-        }
-    }
+    let parser = expr::IdentifierParser::new(ctx.parsed_macros());
+    let result = parser.macro_definition(&cexpr_tokens);
 
-    literal.and_then(|lit| {
-            if lit.starts_with("0x") {
-                // TODO: try to preserve hex literals?
-                i64::from_str_radix(&lit[2..], 16).ok()
-            } else if lit == "0" {
-                Some(0)
-            } else if lit.starts_with("0") {
-                i64::from_str_radix(&lit[1..], 8).ok()
-            } else {
-                lit.parse().ok()
-            }
-        })
-        .map(|lit| if negate { -lit } else { lit })
+    match result {
+        nom::IResult::Done(_, (id, val)) => Some((id.into(), val)),
+        _ => None,
+    }
+}
+
+fn parse_int_literal_tokens(cursor: &clang::Cursor,
+                            unit: &clang::TranslationUnit)
+                            -> Option<i64> {
+    use cexpr::{expr, nom};
+    use cexpr::expr::EvalResult;
+
+    let cexpr_tokens = match unit.cexpr_tokens(cursor) {
+        None => return None,
+        Some(tokens) => tokens,
+    };
+
+    // TODO(emilio): We can try to parse other kinds of literals.
+    match expr::expr(&cexpr_tokens) {
+        nom::IResult::Done(_, EvalResult::Int(Wrapping(val))) => Some(val),
+        _ => None,
+    }
 }
 
 fn get_integer_literal_from_cursor(cursor: &clang::Cursor,

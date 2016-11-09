@@ -4,8 +4,9 @@
 #![allow(non_upper_case_globals, dead_code)]
 
 
+use cexpr;
 use clangll::*;
-use std::{mem, ptr};
+use std::{mem, ptr, slice};
 use std::ffi::{CStr, CString};
 use std::fmt;
 use std::hash::Hash;
@@ -1050,18 +1051,18 @@ impl TranslationUnit {
         let range = cursor.extent();
         let mut tokens = vec![];
         unsafe {
-            let mut token_ptr = ::std::ptr::null_mut();
+            let mut token_ptr = ptr::null_mut();
             let mut num_tokens: c_uint = 0;
             clang_tokenize(self.x, range, &mut token_ptr, &mut num_tokens);
             if token_ptr.is_null() {
                 return None;
             }
-            let token_array = ::std::slice::from_raw_parts(token_ptr,
-                                                           num_tokens as usize);
+
+            let token_array = slice::from_raw_parts(token_ptr,
+                                                    num_tokens as usize);
             for &token in token_array.iter() {
                 let kind = clang_getTokenKind(token);
-                let spelling: String = clang_getTokenSpelling(self.x, token)
-                    .into();
+                let spelling = clang_getTokenSpelling(self.x, token).into();
 
                 tokens.push(Token {
                     kind: kind,
@@ -1071,6 +1072,62 @@ impl TranslationUnit {
             clang_disposeTokens(self.x, token_ptr, num_tokens);
         }
         Some(tokens)
+    }
+
+    /// Convert a set of tokens from clang into `cexpr` tokens, for further
+    /// processing.
+    pub fn cexpr_tokens(&self,
+                        cursor: &Cursor)
+                        -> Option<Vec<cexpr::token::Token>> {
+        use cexpr::token;
+
+        let mut tokens = match self.tokens(cursor) {
+            Some(tokens) => tokens,
+            None => return None,
+        };
+
+        // FIXME(emilio): LLVM 3.9 at least always include an extra token for no
+        // good reason (except if we're at EOF). So we do this kind of hack,
+        // where we skip known-to-cause problems trailing punctuation and
+        // trailing keywords.
+        //
+        // This is sort of unfortunate, though :(.
+        //
+        // I'll try to get it fixed in LLVM if I have the time to submit a
+        // patch.
+        let mut trim_last_token = false;
+        if let Some(token) = tokens.last() {
+            // The starting of the next macro.
+            trim_last_token |= token.spelling == "#" &&
+                               token.kind == CXToken_Punctuation;
+
+            // A following keyword of any kind, like a following declaration.
+            trim_last_token |= token.kind == CXToken_Keyword;
+        }
+
+        if trim_last_token {
+            tokens.pop().unwrap();
+        }
+
+        Some(tokens.into_iter()
+            .filter_map(|token| {
+                let kind = match token.kind {
+                    CXToken_Punctuation => token::Kind::Punctuation,
+                    CXToken_Literal => token::Kind::Literal,
+                    CXToken_Identifier => token::Kind::Identifier,
+                    CXToken_Keyword => token::Kind::Keyword,
+                    // NB: cexpr is not too happy about comments inside
+                    // expressions, so we strip them down here.
+                    CXToken_Comment => return None,
+                    _ => panic!("Found unexpected token kind: {}", token.kind),
+                };
+
+                Some(token::Token {
+                    kind: kind,
+                    raw: token.spelling.into_bytes().into_boxed_slice(),
+                })
+            })
+            .collect::<Vec<_>>())
     }
 }
 

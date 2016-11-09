@@ -24,6 +24,7 @@
 
 #[macro_use]
 extern crate cfg_if;
+extern crate cexpr;
 extern crate syntex_syntax as syntax;
 extern crate aster;
 extern crate quasi;
@@ -61,6 +62,8 @@ mod ir;
 mod parse;
 mod regex_set;
 mod uses;
+
+pub mod chooser;
 
 #[cfg(rustfmt)]
 mod codegen;
@@ -237,6 +240,13 @@ impl Builder {
         self
     }
 
+    /// Allows configuring types in different situations, see the `TypeChooser`
+    /// documentation.
+    pub fn type_chooser(mut self, cb: Box<chooser::TypeChooser>) -> Self {
+        self.options.type_chooser = Some(cb);
+        self
+    }
+
     /// Generate the Rust bindings using the options built up thus far.
     pub fn generate<'ctx>(self) -> Result<Bindings<'ctx>, ()> {
         Bindings::generate(self.options, None)
@@ -331,6 +341,10 @@ pub struct BindgenOptions {
     /// Generate a dummy C/C++ file that includes the header and has dummy uses
     /// of all types defined therein. See the `uses` module for more.
     pub dummy_uses: Option<String>,
+
+    /// A user-provided type chooser to allow customizing different kinds of
+    /// situations.
+    pub type_chooser: Option<Box<chooser::TypeChooser>>,
 }
 
 impl Default for BindgenOptions {
@@ -359,6 +373,7 @@ impl Default for BindgenOptions {
             clang_args: vec![],
             input_header: None,
             dummy_uses: None,
+            type_chooser: None,
         }
     }
 }
