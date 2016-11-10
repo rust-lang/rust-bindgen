@@ -540,8 +540,56 @@ impl Type {
                 } else if let Some(location) = location {
                     match location.kind() {
                         CXCursor_ClassTemplatePartialSpecialization |
+                        CXCursor_CXXBaseSpecifier |
                         CXCursor_ClassTemplate => {
-                            name = location.spelling();
+                            if location.kind() == CXCursor_CXXBaseSpecifier {
+                                // In the case we're parsing a base specifier
+                                // inside an unexposed or invalid type, it means
+                                // that we're parsing one of two things:
+                                //
+                                //  * A template parameter.
+                                //  * A complex class that isn't exposed.
+                                //
+                                // This means, unfortunately, that there's no
+                                // good way to differentiate between them.
+                                //
+                                // Probably we could try to look at the
+                                // declaration and complicate more this logic,
+                                // but we'll keep it simple... if it's a valid
+                                // C++ identifier, we'll consider it as a
+                                // template parameter.
+                                //
+                                // This is because:
+                                //
+                                //  * We expect every other base that is a
+                                //    proper identifier (that is, a simple
+                                //    struct/union declaration), to be exposed,
+                                //    so this path can't be reached in that
+                                //    case.
+                                //
+                                //  * Quite conveniently, complex base
+                                //    specifiers preserve their full names (that
+                                //    is: Foo<T> instead of Foo). We can take
+                                //    advantage of this.
+                                //
+                                // If we find some edge case where this doesn't
+                                // work (which I guess is unlikely, see the
+                                // different test cases[1][2][3][4]), we'd need
+                                // to find more creative ways of differentiating
+                                // these two cases.
+                                //
+                                // [1]: inherit_named.hpp
+                                // [2]: forward-inherit-struct-with-fields.hpp
+                                // [3]: forward-inherit-struct.hpp
+                                // [4]: inherit-namespaced.hpp
+                                if location.spelling()
+                                    .chars()
+                                    .all(|c| c.is_alphanumeric() || c == '_') {
+                                    return Err(ParseError::Recurse);
+                                }
+                            } else {
+                                name = location.spelling();
+                            }
                             let complex = CompInfo::from_ty(potential_id,
                                                             ty,
                                                             Some(location),

@@ -635,7 +635,7 @@ impl CompInfo {
                         ci.has_vtable = cur.is_virtual_base();
                     }
                     let type_id =
-                        Item::from_ty(&cur.cur_type(), None, None, ctx)
+                        Item::from_ty(&cur.cur_type(), Some(cur), None, ctx)
                             .expect("BaseSpecifier");
                     ci.base_members.push(type_id);
                 }
@@ -763,6 +763,7 @@ impl CompInfo {
             CXCursor_UnionDecl => CompKind::Union,
             CXCursor_ClassDecl |
             CXCursor_StructDecl => CompKind::Struct,
+            CXCursor_CXXBaseSpecifier |
             CXCursor_ClassTemplatePartialSpecialization |
             CXCursor_ClassTemplate => {
                 match cursor.template_kind() {
