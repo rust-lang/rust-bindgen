@@ -697,6 +697,7 @@ impl<'ctx> BindgenContext<'ctx> {
             CXType_Float => TypeKind::Float(FloatKind::Float),
             CXType_Double => TypeKind::Float(FloatKind::Double),
             CXType_LongDouble => TypeKind::Float(FloatKind::LongDouble),
+            CXType_Float128 => TypeKind::Float(FloatKind::Float128),
             _ => return None,
         };
 
