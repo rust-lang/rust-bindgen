@@ -24,6 +24,7 @@ quasi_codegen = "0.20"
 [dependencies]
 cfg-if = "0.1.0"
 clang-sys = "0.8.0"
+clap = "2"
 lazy_static = "0.1.*"
 libc = "0.2"
 log = "0.3"

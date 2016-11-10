@@ -222,6 +222,30 @@ impl Builder {
         self
     }
 
+    /// Emit Clang AST.
+    pub fn emit_clang_ast(mut self) -> Builder {
+        self.options.emit_ast = true;
+        self
+    }
+
+    /// Enable C++ namespaces.
+    pub fn enable_cxx_namespaces(mut self) -> Builder {
+        self.options.enable_cxx_namespaces = true;
+        self
+    }
+
+    /// Ignore functions.
+    pub fn ignore_functions(mut self) -> Builder {
+        self.options.ignore_functions = true;
+        self
+    }
+
+    /// Ignore methods.
+    pub fn ignore_methods(mut self) -> Builder {
+        self.options.ignore_methods = true;
+        self
+    }
+
     /// Avoid generating any unstable Rust in the generated bindings.
     pub fn no_unstable_rust(mut self) -> Builder {
         self.options.unstable_rust = false;
