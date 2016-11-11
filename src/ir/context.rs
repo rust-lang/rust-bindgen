@@ -5,6 +5,7 @@ use cexpr;
 use clang::{self, Cursor};
 use parse::ClangItemParser;
 use std::borrow::Cow;
+use std::cell::Cell;
 use std::collections::{HashMap, hash_map};
 use std::collections::btree_map::{self, BTreeMap};
 use std::fmt;
@@ -99,6 +100,9 @@ pub struct BindgenContext<'ctx> {
 
     /// The options given by the user via cli or other medium.
     options: BindgenOptions,
+
+    /// Whether a bindgen complex was generated
+    generated_bindegen_complex: Cell<bool>,
 }
 
 impl<'ctx> BindgenContext<'ctx> {
@@ -134,6 +138,7 @@ impl<'ctx> BindgenContext<'ctx> {
             index: index,
             translation_unit: translation_unit,
             options: options,
+            generated_bindegen_complex: Cell::new(false),
         };
 
         me.add_item(root_module, None, None);
@@ -698,6 +703,17 @@ impl<'ctx> BindgenContext<'ctx> {
             CXType_Double => TypeKind::Float(FloatKind::Double),
             CXType_LongDouble => TypeKind::Float(FloatKind::LongDouble),
             CXType_Float128 => TypeKind::Float(FloatKind::Float128),
+            CXType_Complex => {
+                let float_type = ty.elem_type()
+                    .expect("Not able to resolve complex type?");
+                let float_kind = match float_type.kind() {
+                    CXType_Float => FloatKind::Float,
+                    CXType_Double => FloatKind::Double,
+                    CXType_LongDouble => FloatKind::LongDouble,
+                    _ => panic!("Non floating-type complex?"),
+                };
+                TypeKind::Complex(float_kind)
+            }
             _ => return None,
         };
 
@@ -929,6 +945,16 @@ impl<'ctx> BindgenContext<'ctx> {
         } else {
             self.rust_ident_raw("std")
         }
+    }
+
+    /// Call if a binden complex is generated
+    pub fn generated_bindegen_complex(&self) {
+        self.generated_bindegen_complex.set(true)
+    }
+
+    /// Whether we need to generate the binden complex type
+    pub fn need_bindegen_complex_type(&self) -> bool {
+        self.generated_bindegen_complex.get()
     }
 }
 

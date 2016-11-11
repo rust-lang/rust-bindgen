@@ -336,6 +336,7 @@ impl CodeGenerator for Type {
             TypeKind::NullPtr |
             TypeKind::Int(..) |
             TypeKind::Float(..) |
+            TypeKind::Complex(..) |
             TypeKind::Array(..) |
             TypeKind::Pointer(..) |
             TypeKind::BlockPointer |
@@ -1549,21 +1550,12 @@ impl ItemToRustTy for Item {
     }
 }
 
-fn raw_type(ctx: &BindgenContext, name: &str) -> P<ast::Ty> {
-    let ident = ctx.rust_ident_raw(&name);
-    match ctx.options().ctypes_prefix {
-        Some(ref prefix) => {
-            let prefix = ctx.rust_ident_raw(prefix);
-            quote_ty!(ctx.ext_cx(), $prefix::$ident)
-        }
-        None => quote_ty!(ctx.ext_cx(), ::std::os::raw::$ident),
-    }
-}
-
 impl ToRustTy for Type {
     type Extra = Item;
 
     fn to_rust_ty(&self, ctx: &BindgenContext, item: &Item) -> P<ast::Ty> {
+        use self::helpers::ast_ty::*;
+
         macro_rules! raw {
             ($ty: ident) => {
                 raw_type(ctx, stringify!($ty))
@@ -1608,24 +1600,12 @@ impl ToRustTy for Type {
                     }
                 }
             }
-            TypeKind::Float(fk) => {
-                // TODO: we probably should just take the type layout into
-                // account?
-                //
-                // Also, maybe this one shouldn't be the default?
-                //
-                // FIXME: `c_longdouble` doesn't seem to be defined in some
-                // systems, so we use `c_double` directly.
-                use ir::ty::FloatKind;
-                match (fk, ctx.options().convert_floats) {
-                    (FloatKind::Float, true) => aster::ty::TyBuilder::new().f32(),
-                    (FloatKind::Double, true) |
-                    (FloatKind::LongDouble, true) => aster::ty::TyBuilder::new().f64(),
-                    (FloatKind::Float, false) => raw!(c_float),
-                    (FloatKind::Double, false) |
-                    (FloatKind::LongDouble, false) => raw!(c_double),
-                    (FloatKind::Float128, _) => aster::ty::TyBuilder::new().array(16).u8(),
-                }
+            TypeKind::Float(fk) => float_kind_rust_type(ctx, fk),
+            TypeKind::Complex(fk) => {
+                let float_path = float_kind_rust_type(ctx, fk);
+
+                ctx.generated_bindegen_complex();
+                quote_ty!(ctx.ext_cx(), __BindgenComplex<$float_path>)
             }
             TypeKind::Function(ref fs) => {
                 let ty = fs.to_rust_ty(ctx, item);
@@ -1900,6 +1880,9 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
         if saw_union && !context.options().unstable_rust {
             utils::prepend_union_types(context, &mut result);
         }
+        if context.need_bindegen_complex_type() {
+            utils::prepend_complex_type(context, &mut result);
+        }
         result
     })
 }
@@ -1981,6 +1964,22 @@ mod utils {
         result.extend(old_items.into_iter());
     }
 
+    pub fn prepend_complex_type(ctx: &BindgenContext,
+                                result: &mut Vec<P<ast::Item>>) {
+        let complex_type = quote_item!(ctx.ext_cx(),
+            #[derive(PartialEq, Copy, Clone, Hash, Debug, Default)]
+            #[repr(C)]
+            pub struct __BindgenComplex<T> {
+                pub re: T,
+                pub im: T
+            }
+        )
+            .unwrap();
+
+        let items = vec![complex_type];
+        let old_items = mem::replace(result, items);
+        result.extend(old_items.into_iter());
+    }
 
     pub fn build_templated_path(item: &Item,
                                 ctx: &BindgenContext,

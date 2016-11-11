@@ -4,81 +4,61 @@
 #![allow(non_snake_case)]
 
 
+#[derive(PartialEq, Copy, Clone, Hash, Debug, Default)]
+#[repr(C)]
+pub struct __BindgenComplex<T> {
+    pub re: T,
+    pub im: T,
+}
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Testdouble {
-    pub mMember: [f64; 2usize],
+pub struct TestDouble {
+    pub mMember: __BindgenComplex<f64>,
 }
 #[test]
-fn bindgen_test_layout_Testdouble() {
-    assert_eq!(::std::mem::size_of::<Testdouble>() , 16usize);
-    assert_eq!(::std::mem::align_of::<Testdouble>() , 8usize);
+fn bindgen_test_layout_TestDouble() {
+    assert_eq!(::std::mem::size_of::<TestDouble>() , 16usize);
+    assert_eq!(::std::mem::align_of::<TestDouble>() , 8usize);
 }
-impl Clone for Testdouble {
+impl Clone for TestDouble {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct TestdoublePtr {
-    pub mMember: *mut [f64; 2usize],
+pub struct TestDoublePtr {
+    pub mMember: *mut __BindgenComplex<f64>,
 }
 #[test]
-fn bindgen_test_layout_TestdoublePtr() {
-    assert_eq!(::std::mem::size_of::<TestdoublePtr>() , 8usize);
-    assert_eq!(::std::mem::align_of::<TestdoublePtr>() , 8usize);
+fn bindgen_test_layout_TestDoublePtr() {
+    assert_eq!(::std::mem::size_of::<TestDoublePtr>() , 8usize);
+    assert_eq!(::std::mem::align_of::<TestDoublePtr>() , 8usize);
 }
-impl Clone for TestdoublePtr {
+impl Clone for TestDoublePtr {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Testfloat {
-    pub mMember: [f32; 2usize],
+pub struct TestFloat {
+    pub mMember: __BindgenComplex<f32>,
 }
 #[test]
-fn bindgen_test_layout_Testfloat() {
-    assert_eq!(::std::mem::size_of::<Testfloat>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Testfloat>() , 4usize);
+fn bindgen_test_layout_TestFloat() {
+    assert_eq!(::std::mem::size_of::<TestFloat>() , 8usize);
+    assert_eq!(::std::mem::align_of::<TestFloat>() , 4usize);
 }
-impl Clone for Testfloat {
+impl Clone for TestFloat {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct TestfloatPtr {
-    pub mMember: *mut [f32; 2usize],
+pub struct TestFloatPtr {
+    pub mMember: *mut __BindgenComplex<f32>,
 }
 #[test]
-fn bindgen_test_layout_TestfloatPtr() {
-    assert_eq!(::std::mem::size_of::<TestfloatPtr>() , 8usize);
-    assert_eq!(::std::mem::align_of::<TestfloatPtr>() , 8usize);
+fn bindgen_test_layout_TestFloatPtr() {
+    assert_eq!(::std::mem::size_of::<TestFloatPtr>() , 8usize);
+    assert_eq!(::std::mem::align_of::<TestFloatPtr>() , 8usize);
 }
-impl Clone for TestfloatPtr {
-    fn clone(&self) -> Self { *self }
-}
-#[repr(C)]
-#[derive(Debug, Copy)]
-pub struct Testint {
-    pub mMember: [::std::os::raw::c_int; 2usize],
-}
-#[test]
-fn bindgen_test_layout_Testint() {
-    assert_eq!(::std::mem::size_of::<Testint>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Testint>() , 4usize);
-}
-impl Clone for Testint {
-    fn clone(&self) -> Self { *self }
-}
-#[repr(C)]
-#[derive(Debug, Copy)]
-pub struct TestintPtr {
-    pub mMember: *mut [::std::os::raw::c_int; 2usize],
-}
-#[test]
-fn bindgen_test_layout_TestintPtr() {
-    assert_eq!(::std::mem::size_of::<TestintPtr>() , 8usize);
-    assert_eq!(::std::mem::align_of::<TestintPtr>() , 8usize);
-}
-impl Clone for TestintPtr {
+impl Clone for TestFloatPtr {
     fn clone(&self) -> Self { *self }
 }

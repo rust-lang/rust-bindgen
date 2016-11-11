@@ -71,3 +71,50 @@ impl BlobTyBuilder {
         }
     }
 }
+
+pub mod ast_ty {
+    use aster;
+    use ir::context::BindgenContext;
+    use ir::ty::FloatKind;
+    use syntax::ast;
+    use syntax::ptr::P;
+
+    pub fn raw_type(ctx: &BindgenContext, name: &str) -> P<ast::Ty> {
+        let ident = ctx.rust_ident_raw(&name);
+        match ctx.options().ctypes_prefix {
+            Some(ref prefix) => {
+                let prefix = ctx.rust_ident_raw(prefix);
+                quote_ty!(ctx.ext_cx(), $prefix::$ident)
+            }
+            None => quote_ty!(ctx.ext_cx(), ::std::os::raw::$ident),
+        }
+    }
+
+    pub fn float_kind_rust_type(ctx: &BindgenContext,
+                                fk: FloatKind)
+                                -> P<ast::Ty> {
+        macro_rules! raw {
+            ($ty: ident) => {
+                raw_type(ctx, stringify!($ty))
+            }
+        }
+        // TODO: we probably should just take the type layout into
+        // account?
+        //
+        // Also, maybe this one shouldn't be the default?
+        //
+        // FIXME: `c_longdouble` doesn't seem to be defined in some
+        // systems, so we use `c_double` directly.
+        match (fk, ctx.options().convert_floats) {
+            (FloatKind::Float, true) => aster::ty::TyBuilder::new().f32(),
+            (FloatKind::Double, true) |
+            (FloatKind::LongDouble, true) => aster::ty::TyBuilder::new().f64(),
+            (FloatKind::Float, false) => raw!(c_float),
+            (FloatKind::Double, false) |
+            (FloatKind::LongDouble, false) => raw!(c_double),
+            (FloatKind::Float128, _) => {
+                aster::ty::TyBuilder::new().array(16).u8()
+            }
+        }
+    }
+}
