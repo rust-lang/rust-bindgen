@@ -14,6 +14,7 @@ yourself.
   * [Authoring New Tests](#tests-new)
 * [Automatic Code Formatting](#formatting)
 * [Debug Logging](#logs)
+* [Using `creduce` to Minimize Test Cases](#creduce)
 
 ## Code of Conduct <span id="coc"/>
 
@@ -138,3 +139,88 @@ This logging can also be used when debugging failing tests under
 ```
 $ RUST_LOG=bindgen ./tests/tools/run-bindgen.py ./target/debug/bindgen tests/headers/whatever.h
 ```
+
+## Using `creduce` to Minimize Test Cases <span id="creduce"/>
+
+If you are hacking on `bindgen` and find a test case that causes an unexpected
+panic, results in bad Rust bindings, or some other incorrectness in `bindgen`,
+then using `creduce` can help reduce the test case to a minimal one.
+
+[Follow these instructions for building and/or installing `creduce`.](https://github.com/csmith-project/creduce/blob/master/INSTALL)
+
+Running `creduce` requires two things:
+
+1. Your isolated test case, and
+
+2. A script to act as a predicate script describing whether the behavior you're
+   trying to isolate occurred.
+
+With those two things in hand, running `creduce` looks like this:
+
+    $ creduce ./predicate.sh ./isolated_test_case.h
+
+### Isolating Your Test Case
+
+Use the `-save-temps` flag to make Clang spit out its intermediate
+representations when compiling the test case into an object file.
+
+    $ clang[++ -x c++ --std=c++14] -save-temps -c my_test_case.h
+
+There should now be a `my_test_case.ii` file, which is the results after the C
+pre-processor has processed all the `#include`s, `#define`s, and `#ifdef`s. This
+is generally what we're looking for.
+
+### Writing a Predicate Script
+
+Writing a `predicate.sh` script for a `bindgen` test case is fairly
+straightforward. One potential gotcha is that `creduce` can and will attempt to
+reduce test cases into invalid C/C++ code. That might be useful for C/C++
+compilers, but we generally only care about valid C/C++ input headers.
+
+Here is a skeleton predicate script:
+
+```bash
+#!/usr/bin/env bash
+
+# Exit the script with a nonzero exit code if:
+# * any individual command finishes with a nonzero exit code, or
+# * we access any undefined variable.
+set -eu
+
+# Print out Rust backtraces on panic. Useful for minimizing a particular panic.
+export RUST_BACKTRACE=1
+
+# If the `libclang.so` you're using for `bindgen` isn't the system
+# `libclang.so`, let the linker find it.
+export LD_LIBRARY_PATH=~/path/to/your/directory/containing/libclang
+
+# Make sure that the reduced test case is valid C/C++ by compiling it. If it
+# isn't valid C/C++, this command will exit with a nonzero exit code and cause
+# the whole script to do the same.
+clang[++ --std=c++14] -c ./pre_processed_header.hpp
+
+# Run `bindgen` and `grep` for the thing your hunting down! Make sure to include
+# `2>&1` to get at stderr if you're hunting down a panic.
+~/src/rust-bindgen/target/debug/bindgen \
+    ./pre_processed_header.hpp \
+    [ <extra flags> ] \
+    2>&1 \
+    | grep "<pattern in generated bindings or a panic string or ...>"
+```
+
+When hunting down a panic, I `grep`ed like this:
+
+    ... | grep "thread main panicked at '<panic error message here>'"
+
+When hunting down bad codegen for a base member, I `grep`ed like this:
+
+    ... | grep "pub _base: MyInvalidBaseTypeThatShouldntBeHere"
+
+That's pretty much it! I want to impress upon you that `creduce` is *really*
+helpful and has enabled me to reduce 30k lines of test case into 5 lines. And it
+works pretty quickly too. Super valuable tool to have in your belt when hacking
+on `bindgen`!
+
+Happy bug hunting and test case reducing!
+
+[More information on using `creduce`.](https://embed.cs.utah.edu/creduce/using/)
