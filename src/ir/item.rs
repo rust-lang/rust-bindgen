@@ -1043,8 +1043,7 @@ impl ClangItemParser for Item {
                     }
                 }
                 // If we have recursed into the AST all we know, and we still
-                // haven't found what we've got, let's
-                // just make a named type.
+                // haven't found what we've got, let's just make a named type.
                 //
                 // This is what happens with some template members, for example.
                 //
