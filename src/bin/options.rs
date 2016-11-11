@@ -1,13 +1,15 @@
+
+
+use bindgen::{Builder, builder};
+
+use clap::{App, Arg};
 use std::fs::File;
 use std::io::{self, Error, ErrorKind};
 
-use clap::{App, Arg};
-
-use bindgen::{builder, Builder};
-
 /// Construct a new [`Builder`](./struct.Builder.html) from command line flags.
-pub fn builder_from_flags<I>(args: I) -> Result<(Builder, Box<io::Write>), io::Error>
-    where I: Iterator<Item=String>
+pub fn builder_from_flags<I>(args: I)
+                             -> Result<(Builder, Box<io::Write>), io::Error>
+    where I: Iterator<Item = String>,
 {
     let matches = App::new("bindgen")
         .version(env!("CARGO_PKG_VERSION"))
@@ -19,7 +21,8 @@ pub fn builder_from_flags<I>(args: I) -> Result<(Builder, Box<io::Write>), io::E
                 .required(true),
             Arg::with_name("bitfield-enum")
                 .long("bitfield-enum")
-                .help("Mark any enum whose name matches <regex> as a set of bitfield flags instead of an enumeration.")
+                .help("Mark any enum whose name matches <regex> as a set of \
+                       bitfield flags instead of an enumeration.")
                 .value_name("regex")
                 .takes_value(true)
                 .multiple(true)
@@ -33,10 +36,12 @@ pub fn builder_from_flags<I>(args: I) -> Result<(Builder, Box<io::Write>), io::E
                 .number_of_values(1),
             Arg::with_name("builtins")
                 .long("builtins")
-                .help("Output bindings for builtin definitions, e.g. __builtin_va_list."),
+                .help("Output bindings for builtin definitions, e.g. \
+                       __builtin_va_list."),
             Arg::with_name("ctypes-prefix")
                 .long("ctypes-prefix")
-                .help("Use the given prefix before raw types instead of ::std::os::raw.")
+                .help("Use the given prefix before raw types instead of \
+                      ::std::os::raw.")
                 .value_name("prefix")
                 .takes_value(true),
             // All positional arguments after the end of options marker, `--`
@@ -44,7 +49,8 @@ pub fn builder_from_flags<I>(args: I) -> Result<(Builder, Box<io::Write>), io::E
                 .multiple(true),
             Arg::with_name("dummy-uses")
                 .long("dummy-uses")
-                .help("For testing purposes, generate a C/C++ file containing dummy uses of all types defined in the input header.")
+                .help("For testing purposes, generate a C/C++ file containing \
+                       dummy uses of all types defined in the input header.")
                 .takes_value(true),
             Arg::with_name("emit-clang-ast")
                 .long("emit-clang-ast")
@@ -60,7 +66,8 @@ pub fn builder_from_flags<I>(args: I) -> Result<(Builder, Box<io::Write>), io::E
                 .number_of_values(1),
             Arg::with_name("ignore-functions")
                 .long("ignore-functions")
-                .help("Do not generate bindings for functions or methods. This is useful when you only care about struct layouts."),
+                .help("Do not generate bindings for functions or methods. This \
+                       is useful when you only care about struct layouts."),
             Arg::with_name("ignore-methods")
                 .long("ignore-methods")
                 .help("Do not generate bindings for methods."),
@@ -110,21 +117,26 @@ pub fn builder_from_flags<I>(args: I) -> Result<(Builder, Box<io::Write>), io::E
                 .help("MSVC C++ ABI mangling. DEPRECATED: Has no effect."),
             Arg::with_name("whitelist-function")
                 .long("whitelist-function")
-                .help("Whitelist all the free-standing functions matching <regex>. Other non-whitelisted functions will not be generated.")
+                .help("Whitelist all the free-standing functions matching \
+                       <regex>. Other non-whitelisted functions will not be \
+                       generated.")
                 .value_name("regex")
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
             Arg::with_name("whitelist-type")
                 .long("whitelist-type")
-                .help("Whitelist the type. Other non-whitelisted types will not be generated.")
+                .help("Whitelist the type. Other non-whitelisted types will \
+                       not be generated.")
                 .value_name("type")
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
             Arg::with_name("whitelist-var")
                 .long("whitelist-var")
-                .help("Whitelist all the free-standing variables matching <regex>. Other non-whitelisted variables will not be generated.")
+                .help("Whitelist all the free-standing variables matching \
+                       <regex>. Other non-whitelisted variables will not be \
+                       generated.")
                 .value_name("regex")
                 .takes_value(true)
                 .multiple(true)

@@ -111,7 +111,9 @@ impl ClangSubItemParser for Var {
                     EvalResult::Invalid => return Err(ParseError::Continue),
 
                     EvalResult::Int(Wrapping(value)) => {
-                        let kind = ctx.options().type_chooser.as_ref()
+                        let kind = ctx.options()
+                            .type_chooser
+                            .as_ref()
                             .and_then(|c| c.int_macro(&name, value))
                             .unwrap_or_else(|| {
                                 if value < 0 {
