@@ -1609,27 +1609,22 @@ impl ToRustTy for Type {
                 }
             }
             TypeKind::Float(fk) => {
+                // TODO: we probably should just take the type layout into
+                // account?
+                //
+                // Also, maybe this one shouldn't be the default?
+                //
+                // FIXME: `c_longdouble` doesn't seem to be defined in some
+                // systems, so we use `c_double` directly.
                 use ir::ty::FloatKind;
-                if ctx.options().convert_floats {
-                    // TODO: we probably should just take the type layout into
-                    // account?
-                    //
-                    // Also, maybe this one shouldn't be the default?
-                    match fk {
-                        FloatKind::Float => aster::ty::TyBuilder::new().f32(),
-                        FloatKind::Double | FloatKind::LongDouble => {
-                            aster::ty::TyBuilder::new().f64()
-                        }
-                    }
-                } else {
-                    // FIXME: `c_longdouble` doesn't seem to be defined in some
-                    // systems, so we use `c_double` directly.
-                    match fk {
-                        FloatKind::Float => raw!(c_float),
-                        FloatKind::Double | FloatKind::LongDouble => {
-                            raw!(c_double)
-                        }
-                    }
+                match (fk, ctx.options().convert_floats) {
+                    (FloatKind::Float, true) => aster::ty::TyBuilder::new().f32(),
+                    (FloatKind::Double, true) |
+                    (FloatKind::LongDouble, true) => aster::ty::TyBuilder::new().f64(),
+                    (FloatKind::Float, false) => raw!(c_float),
+                    (FloatKind::Double, false) |
+                    (FloatKind::LongDouble, false) => raw!(c_double),
+                    (FloatKind::Float128, _) => aster::ty::TyBuilder::new().array(16).u8(),
                 }
             }
             TypeKind::Function(ref fs) => {

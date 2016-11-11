@@ -392,6 +392,7 @@ pub const CXType_Dependent: c_uint = 26;
 pub const CXType_ObjCId: c_uint = 27;
 pub const CXType_ObjCClass: c_uint = 28;
 pub const CXType_ObjCSel: c_uint = 29;
+pub const CXType_Float128: c_uint = 30;
 pub const CXType_FirstBuiltin: c_uint = 2;
 pub const CXType_LastBuiltin: c_uint = 29;
 pub const CXType_Complex: c_uint = 100;

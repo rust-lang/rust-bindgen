@@ -363,6 +363,8 @@ pub enum FloatKind {
     Double,
     /// A `long double`.
     LongDouble,
+    /// A `__float128`.
+    Float128,
 }
 
 /// The different kinds of types that we can parse.
@@ -819,7 +821,10 @@ impl Type {
                                            ctx);
             }
             _ => {
-                error!("unsupported type {:?} at {:?}", ty, location);
+                error!("unsupported type: kind = {:?}; ty = {:?}; at {:?}",
+                       ty.kind(),
+                       ty,
+                       location);
                 return Err(ParseError::Continue);
             }
         };
