@@ -21,6 +21,7 @@ use self::helpers::{BlobTyBuilder, attributes};
 use std::borrow::Cow;
 use std::collections::HashSet;
 use std::collections::hash_map::{Entry, HashMap};
+use std::fmt::Write;
 use std::mem;
 use std::ops;
 use syntax::abi::Abi;
@@ -57,6 +58,11 @@ struct CodegenResult {
     /// Being these two different declarations.
     functions_seen: HashSet<String>,
     vars_seen: HashSet<String>,
+
+    /// Used for making bindings to overloaded functions. Maps from a canonical
+    /// function name to the number of overloads we have already codegen'd for
+    /// that name. This lets us give each overload a unique suffix.
+    overload_counters: HashMap<String, u32>,
 }
 
 impl CodegenResult {
@@ -67,6 +73,7 @@ impl CodegenResult {
             items_seen: Default::default(),
             functions_seen: Default::default(),
             vars_seen: Default::default(),
+            overload_counters: Default::default(),
         }
     }
 
@@ -88,6 +95,16 @@ impl CodegenResult {
 
     fn saw_function(&mut self, name: &str) {
         self.functions_seen.insert(name.into());
+    }
+
+    /// Get the overload number for the given function name. Increments the
+    /// counter internally so the next time we ask for the overload for this
+    /// name, we get the incremented value, and so on.
+    fn overload_number(&mut self, name: &str) -> u32 {
+        let mut counter = self.overload_counters.entry(name.into()).or_insert(0);
+        let number = *counter;
+        *counter += 1;
+        number
     }
 
     fn seen_var(&self, name: &str) -> bool {
@@ -1803,14 +1820,19 @@ impl CodeGenerator for Function {
                result: &mut CodegenResult,
                item: &Item) {
         let name = self.name();
-        let canonical_name = item.canonical_name(ctx);
+        let mut canonical_name = item.canonical_name(ctx);
+        let mangled_name = self.mangled_name();
 
-        // TODO: Maybe warn here if there's a type/argument mismatch, or
-        // something?
-        if result.seen_function(&canonical_name) {
-            return;
+        {
+            let seen_symbol_name = mangled_name.unwrap_or(&canonical_name);
+
+            // TODO: Maybe warn here if there's a type/argument mismatch, or
+            // something?
+            if result.seen_function(seen_symbol_name) {
+                return;
+            }
+            result.saw_function(seen_symbol_name);
         }
-        result.saw_function(&canonical_name);
 
         let signature_item = ctx.resolve_item(self.signature());
         let signature = signature_item.kind().expect_type();
@@ -1827,7 +1849,7 @@ impl CodeGenerator for Function {
             attributes.push(attributes::doc(comment));
         }
 
-        if let Some(mangled) = self.mangled_name() {
+        if let Some(mangled) = mangled_name {
             attributes.push(attributes::link_name(mangled));
         } else if name != canonical_name {
             attributes.push(attributes::link_name(name));
@@ -1835,6 +1857,13 @@ impl CodeGenerator for Function {
 
         let foreign_item_kind =
             ast::ForeignItemKind::Fn(fndecl, ast::Generics::default());
+
+        // Handle overloaded functions by giving each overload its own unique
+        // suffix.
+        let times_seen = result.overload_number(&canonical_name);
+        if times_seen > 0 {
+            write!(&mut canonical_name, "{}", times_seen).unwrap();
+        }
 
         let foreign_item = ast::ForeignItem {
             ident: ctx.rust_ident_raw(&canonical_name),
