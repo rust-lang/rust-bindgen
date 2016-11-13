@@ -19,6 +19,10 @@ enum MuchLong: long {
     MuchLow = -4294967296,
 };
 
-enum MuchLongLong: unsigned long long {
+enum MuchLongLong: long long {
+    I64_MIN = 1ll << 63,
+};
+
+enum MuchULongLong: unsigned long long {
     MuchHigh = 4294967296,
 };

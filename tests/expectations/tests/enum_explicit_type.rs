@@ -16,6 +16,9 @@ pub enum Bigger { Much = 255, Larger = 256, }
 #[repr(i64)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum MuchLong { MuchLow = -4294967296, }
+#[repr(i64)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum MuchLongLong { I64_MIN = -9223372036854775808, }
 #[repr(u64)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum MuchLongLong { MuchHigh = 4294967296, }
+pub enum MuchULongLong { MuchHigh = 4294967296, }
