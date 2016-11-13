@@ -70,7 +70,7 @@ pub fn main() {
         }
     }
 
-    match builder_from_flags(env::args()) {
+    match builder_from_flags(bind_args.into_iter()) {
         Ok((builder, output)) => {
             let mut bindings = builder.generate()
                 .expect("Unable to generate bindings");
