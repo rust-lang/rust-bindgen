@@ -4,7 +4,6 @@
 #![allow(non_snake_case)]
 
 
-#[derive(Debug)]
 #[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
 impl <T> __BindgenUnionField<T> {
@@ -24,6 +23,11 @@ impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
     fn clone(&self) -> Self { Self::new() }
 }
 impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
+impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
+    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        fmt.write_str("__BindgenUnionField")
+    }
+}
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct foo {

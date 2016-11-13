@@ -1930,8 +1930,10 @@ mod utils {
     pub fn prepend_union_types(ctx: &BindgenContext,
                                result: &mut Vec<P<ast::Item>>) {
         let prefix = ctx.trait_prefix();
+
+        // TODO(emilio): The fmt::Debug impl could be way nicer with
+        // std::intrinsics::type_name, but...
         let union_field_decl = quote_item!(ctx.ext_cx(),
-            #[derive(Debug)]
             #[repr(C)]
             pub struct __BindgenUnionField<T>(
                 ::$prefix::marker::PhantomData<T>);
@@ -1983,11 +1985,22 @@ mod utils {
         )
             .unwrap();
 
+        let union_field_debug_impl = quote_item!(ctx.ext_cx(),
+            impl<T> ::std::fmt::Debug for __BindgenUnionField<T> {
+                fn fmt(&self, fmt: &mut ::std::fmt::Formatter)
+                       -> ::std::fmt::Result {
+                    fmt.write_str("__BindgenUnionField")
+                }
+            }
+        )
+            .unwrap();
+
         let items = vec![
             union_field_decl, union_field_impl,
             union_field_default_impl,
             union_field_clone_impl,
             union_field_copy_impl,
+            union_field_debug_impl,
         ];
 
         let old_items = mem::replace(result, items);
