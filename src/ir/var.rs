@@ -87,16 +87,18 @@ impl ClangSubItemParser for Var {
 
                 assert!(!id.is_empty(), "Empty macro name?");
 
-                if ctx.parsed_macro(&id) {
-                    let name = String::from_utf8(id).unwrap();
-                    warn!("Duplicated macro definition: {}", name);
-                    return Err(ParseError::Continue);
-                }
+                let previously_defined = ctx.parsed_macro(&id);
 
                 // NB: It's important to "note" the macro even if the result is
                 // not an integer, otherwise we might loose other kind of
                 // derived macros.
                 ctx.note_parsed_macro(id.clone(), value.clone());
+
+                if previously_defined {
+                    let name = String::from_utf8(id).unwrap();
+                    warn!("Duplicated macro definition: {}", name);
+                    return Err(ParseError::Continue);
+                }
 
                 // NOTE: Unwrapping, here and above, is safe, because the
                 // identifier of a token comes straight from clang, and we
