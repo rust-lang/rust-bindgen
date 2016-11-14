@@ -317,6 +317,24 @@ impl Cursor {
         }
     }
 
+    /// Returns whether the given location contains a cursor with the given
+    /// kind in the first level of nesting underneath (doesn't look
+    /// recursively).
+    pub fn contains_cursor(&self, kind: Enum_CXCursorKind) -> bool {
+        let mut found = false;
+
+        self.visit(|c| {
+            if c.kind() == kind {
+                found = true;
+                CXChildVisit_Break
+            } else {
+                CXChildVisit_Continue
+            }
+        });
+
+        found
+    }
+
     /// Is the referent an inlined function?
     #[cfg(not(feature="llvm_stable"))]
     pub fn is_inlined_function(&self) -> bool {
@@ -720,6 +738,11 @@ impl Type {
     /// Is this a valid type?
     pub fn is_valid(&self) -> bool {
         self.kind() != CXType_Invalid
+    }
+
+    /// Is this a valid and exposed type?
+    pub fn is_valid_and_exposed(&self) -> bool {
+        self.is_valid() && self.kind() != CXType_Unexposed
     }
 }
 
