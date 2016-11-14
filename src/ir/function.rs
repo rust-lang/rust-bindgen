@@ -270,13 +270,13 @@ impl TypeCollector for FunctionSig {
     type Extra = Item;
 
     fn collect_types(&self,
-                     context: &BindgenContext,
+                     _context: &BindgenContext,
                      types: &mut ItemSet,
                      _item: &Item) {
-        self.return_type().collect_types(context, types, &());
+        types.insert(self.return_type());
 
         for &(_, ty) in self.argument_types() {
-            ty.collect_types(context, types, &());
+            types.insert(ty);
         }
     }
 }
