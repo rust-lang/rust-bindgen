@@ -101,7 +101,8 @@ impl CodegenResult {
     /// counter internally so the next time we ask for the overload for this
     /// name, we get the incremented value, and so on.
     fn overload_number(&mut self, name: &str) -> u32 {
-        let mut counter = self.overload_counters.entry(name.into()).or_insert(0);
+        let mut counter =
+            self.overload_counters.entry(name.into()).or_insert(0);
         let number = *counter;
         *counter += 1;
         number
@@ -313,7 +314,7 @@ impl CodeGenerator for Var {
                 .pub_()
                 .const_(canonical_name)
                 .expr()
-                .int(val)
+                .build(helpers::ast_ty::int_expr(val))
                 .build(ty);
             result.push(const_item)
         } else {
@@ -1285,7 +1286,7 @@ impl<'a> EnumBuilder<'a> {
         let variant_name = ctx.rust_mangle(variant.name());
         let expr = aster::AstBuilder::new().expr();
         let expr = match variant.val() {
-            EnumVariantValue::Signed(v) => expr.int(v),
+            EnumVariantValue::Signed(v) => helpers::ast_ty::int_expr(v),
             EnumVariantValue::Unsigned(v) => expr.uint(v),
         };
 

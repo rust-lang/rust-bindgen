@@ -117,4 +117,19 @@ pub mod ast_ty {
             }
         }
     }
+
+    pub fn int_expr(val: i64) -> P<ast::Expr> {
+        use std::i64;
+        let expr = aster::AstBuilder::new().expr();
+
+        // This is not representable as an i64 if it's negative, so we
+        // special-case it.
+        //
+        // Fix in aster incoming.
+        if val == i64::MIN {
+            expr.neg().uint(1u64 << 63)
+        } else {
+            expr.int(val)
+        }
+    }
 }
