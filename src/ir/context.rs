@@ -415,6 +415,7 @@ impl<'ctx> BindgenContext<'ctx> {
     // If at some point we care about the memory here, probably a map TypeKind
     // -> builtin type ItemId would be the best to improve that.
     fn add_builtin_item(&mut self, item: Item) {
+        debug!("add_builtin_item: item = {:?}", item);
         debug_assert!(item.kind().is_type());
         let id = item.id();
         let old_item = self.items.insert(id, item);
@@ -573,6 +574,8 @@ impl<'ctx> BindgenContext<'ctx> {
         };
 
         // Bypass all the validations in add_item explicitly.
+        debug!("build_template_wrapper: inserting item: {:?}", item);
+        debug_assert!(with_id == item.id());
         self.items.insert(with_id, item);
         with_id
     }
@@ -990,6 +993,7 @@ impl<'ctx, 'gen> Iterator for WhitelistedItemsIter<'ctx, 'gen>
         };
 
         debug_assert!(self.seen.contains(&id));
+        debug_assert!(self.ctx.items.contains_key(&id));
 
         let mut sub_types = ItemSet::new();
         id.collect_types(self.ctx, &mut sub_types, &());
