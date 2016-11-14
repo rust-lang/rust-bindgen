@@ -667,7 +667,7 @@ impl Type {
                             TypeKind::TemplateAlias(inner.unwrap(), args)
                         }
                         CXCursor_TemplateRef => {
-                            let referenced = location.referenced();
+                            let referenced = location.referenced().expect("expected value, got none");
                             let referenced_ty = referenced.cur_type();
                             let referenced_declaration =
                                 Some(referenced_ty.declaration());
@@ -679,7 +679,7 @@ impl Type {
                                                        ctx);
                         }
                         CXCursor_TypeRef => {
-                            let referenced = location.referenced();
+                            let referenced = location.referenced().expect("expected value, got none");
                             let referenced_ty = referenced.cur_type();
                             let referenced_declaration =
                                 Some(referenced_ty.declaration());
