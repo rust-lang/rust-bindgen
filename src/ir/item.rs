@@ -153,7 +153,6 @@ impl TypeCollector for Item {
 
         match *self.kind() {
             ItemKind::Type(ref ty) => {
-                types.insert(self.id());
                 if !self.is_opaque(ctx) {
                     ty.collect_types(ctx, types, self);
                 }

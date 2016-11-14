@@ -847,13 +847,13 @@ impl TypeCollector for Type {
             TypeKind::Alias(_, inner) |
             TypeKind::Named(_, Some(inner)) |
             TypeKind::ResolvedTypeRef(inner) => {
-                inner.collect_types(context, types, &())
+                types.insert(inner);
             }
 
             TypeKind::TemplateRef(inner, ref template_args) => {
-                inner.collect_types(context, types, &());
-                for item in template_args {
-                    item.collect_types(context, types, &());
+                types.insert(inner);
+                for &item in template_args {
+                    types.insert(item);
                 }
             }
             TypeKind::Comp(ref ci) => ci.collect_types(context, types, item),
@@ -862,7 +862,7 @@ impl TypeCollector for Type {
             }
             // FIXME: Pending types!
             ref other @ _ => {
-                debug!("Ignoring: {:?}", other);
+                debug!("<Type as TypeCollector>::collect_types: Ignoring: {:?}", other);
             }
         }
     }

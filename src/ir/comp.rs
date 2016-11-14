@@ -846,24 +846,24 @@ impl TypeCollector for CompInfo {
                      types: &mut ItemSet,
                      item: &Item) {
         if let Some(template) = self.specialized_template() {
-            template.collect_types(context, types, &());
+            types.insert(template);
         }
 
         let applicable_template_args = item.applicable_template_args(context);
         for arg in applicable_template_args {
-            arg.collect_types(context, types, &());
+            types.insert(arg);
         }
 
-        for base in self.base_members() {
-            base.collect_types(context, types, &());
+        for &base in self.base_members() {
+            types.insert(base);
         }
 
         for field in self.fields() {
-            field.ty().collect_types(context, types, &());
+            types.insert(field.ty());
         }
 
-        for ty in self.inner_types() {
-            ty.collect_types(context, types, &());
+        for &ty in self.inner_types() {
+            types.insert(ty);
         }
 
         // FIXME(emilio): Methods, VTable?
