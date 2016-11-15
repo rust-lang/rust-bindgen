@@ -8,6 +8,8 @@
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
 
+#![cfg_attr(not(feature = "syntex"), feature(rustc_private))]
+
 #![deny(missing_docs)]
 #![deny(warnings)]
 
@@ -22,7 +24,6 @@
 #[macro_use]
 extern crate cfg_if;
 extern crate cexpr;
-extern crate syntex_syntax as syntax;
 extern crate aster;
 extern crate quasi;
 extern crate clang_sys;
@@ -38,6 +39,12 @@ extern crate log;
 #[cfg(not(feature = "logging"))]
 #[macro_use]
 mod log_stubs;
+
+#[cfg(feature = "syntex")]
+extern crate syntex_syntax as syntax;
+
+#[cfg(not(feature = "syntex"))]
+extern crate syntax;
 
 // A macro to declare an internal module for which we *must* provide
 // documentation for. If we are building with the "_docs" feature, then the
