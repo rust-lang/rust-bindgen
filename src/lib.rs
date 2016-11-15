@@ -78,8 +78,8 @@ mod codegen {
     include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 }
 
-use ir::context::BindgenContext;
-use ir::item::{Item, ItemId};
+use ir::context::{BindgenContext, ItemId};
+use ir::item::Item;
 use parse::{ClangItemParser, ParseError};
 use regex_set::RegexSet;
 

@@ -4,10 +4,10 @@ use cexpr;
 use clang;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use std::num::Wrapping;
-use super::context::BindgenContext;
+use super::context::{BindgenContext, ItemId};
 use super::function::cursor_mangling;
 use super::int::IntKind;
-use super::item::{Item, ItemId};
+use super::item::Item;
 use super::ty::TypeKind;
 
 /// A `Var` is our intermediate representation of a variable.

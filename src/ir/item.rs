@@ -4,9 +4,8 @@ use clang;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use regex::Regex;
 use std::cell::{Cell, RefCell};
-use std::sync::atomic::{ATOMIC_USIZE_INIT, AtomicUsize, Ordering};
 use super::annotations::Annotations;
-use super::context::BindgenContext;
+use super::context::{BindgenContext, ItemId};
 use super::function::Function;
 use super::item_kind::ItemKind;
 use super::module::Module;
@@ -75,21 +74,6 @@ impl<'a, 'b> Iterator for ItemAncestorsIter<'a, 'b>
             self.item = item.parent_id();
             Some(item.id())
         }
-    }
-}
-
-/// A single identifier for an item.
-///
-/// TODO: Build stronger abstractions on top of this, like TypeId(ItemId)?
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct ItemId(usize);
-
-impl ItemId {
-    /// Allocate the next `ItemId`.
-    pub fn next() -> Self {
-        static NEXT_ITEM_ID: AtomicUsize = ATOMIC_USIZE_INIT;
-        let next_id = NEXT_ITEM_ID.fetch_add(1, Ordering::Relaxed);
-        ItemId(next_id)
     }
 }
 
@@ -667,7 +651,7 @@ impl Item {
         // Note that this `id_` prefix prevents (really unlikely) collisions
         // between the global id and the local id of an item with the same
         // parent.
-        format!("id_{}", self.id().0)
+        format!("id_{}", self.id().as_usize())
     }
 
     fn make_exposed_name(&self,
@@ -747,7 +731,7 @@ impl ClangItemParser for Item {
         }
 
         let ty = Type::new(None, None, kind, is_const);
-        let id = ItemId::next();
+        let id = ctx.next_item_id();
         let module = ctx.root_module();
         ctx.add_item(Item::new(id, None, None, module, ItemKind::Type(ty)),
                      None,
@@ -779,7 +763,7 @@ impl ClangItemParser for Item {
             ($what:ident) => {
                 match $what::parse(cursor, ctx) {
                     Ok(ParseResult::New(item, declaration)) => {
-                        let id = ItemId::next();
+                        let id = ctx.next_item_id();
 
                         ctx.add_item(Item::new(id, comment, annotations,
                                                relevant_parent_id,
@@ -855,7 +839,8 @@ impl ClangItemParser for Item {
                       parent_id: Option<ItemId>,
                       ctx: &mut BindgenContext)
                       -> ItemId {
-        Self::from_ty_or_ref_with_id(ItemId::next(),
+        let id = ctx.next_item_id();
+        Self::from_ty_or_ref_with_id(id,
                                      ty,
                                      location,
                                      parent_id,
@@ -925,7 +910,8 @@ impl ClangItemParser for Item {
                parent_id: Option<ItemId>,
                ctx: &mut BindgenContext)
                -> Result<ItemId, ParseError> {
-        Self::from_ty_with_id(ItemId::next(), ty, location, parent_id, ctx)
+        let id = ctx.next_item_id();
+        Self::from_ty_with_id(id, ty, location, parent_id, ctx)
     }
 
     /// This is one of the trickiest methods you'll find (probably along with
@@ -1109,7 +1095,8 @@ impl ClangItemParser for Item {
                      -> ItemId
         where S: Into<String>,
     {
-        Self::named_type_with_id(ItemId::next(), name, default, parent_id, ctx)
+        let id = ctx.next_item_id();
+        Self::named_type_with_id(id, name, default, parent_id, ctx)
     }
 }
 

@@ -3,8 +3,7 @@
 use clang;
 use parse::{ClangSubItemParser, ParseError, ParseResult};
 use parse_one;
-use super::context::BindgenContext;
-use super::item::ItemId;
+use super::context::{BindgenContext, ItemId};
 
 /// A module, as in, a C++ namespace.
 #[derive(Clone, Debug)]

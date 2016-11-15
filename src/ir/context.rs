@@ -10,7 +10,7 @@ use std::collections::{HashMap, hash_map};
 use std::collections::btree_map::{self, BTreeMap};
 use std::fmt;
 use super::int::IntKind;
-use super::item::{Item, ItemCanonicalName, ItemId};
+use super::item::{Item, ItemCanonicalName};
 use super::item_kind::ItemKind;
 use super::module::Module;
 use super::ty::{FloatKind, Type, TypeKind};
@@ -18,6 +18,19 @@ use super::type_collector::{ItemSet, TypeCollector};
 use syntax::ast::Ident;
 use syntax::codemap::{DUMMY_SP, Span};
 use syntax::ext::base::ExtCtxt;
+
+/// A single identifier for an item.
+///
+/// TODO: Build stronger abstractions on top of this, like TypeId(ItemId)?
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct ItemId(usize);
+
+impl ItemId {
+    /// Get a numeric representation of this id.
+    pub fn as_usize(&self) -> usize {
+        self.0
+    }
+}
 
 /// A key used to index a resolved type, so we only process it once.
 ///
@@ -49,6 +62,9 @@ pub struct BindgenContext<'ctx> {
     /// It's a BTreeMap because we want the keys to be sorted to have consistent
     /// output.
     items: BTreeMap<ItemId, Item>,
+
+    /// The next item id to use during this bindings regeneration.
+    next_item_id: ItemId,
 
     /// Clang USR to type map. This is needed to be able to associate types with
     /// item ids during parsing.
@@ -122,11 +138,12 @@ impl<'ctx> BindgenContext<'ctx> {
                                           parse_options)
                 .expect("TranslationUnit::parse");
 
-        let root_module = Self::build_root_module();
+        let root_module = Self::build_root_module(ItemId(0));
         let mut me = BindgenContext {
             items: Default::default(),
             types: Default::default(),
             modules: Default::default(),
+            next_item_id: ItemId(1),
             root_module: root_module.id(),
             current_module: root_module.id(),
             currently_parsed_types: vec![],
@@ -422,9 +439,8 @@ impl<'ctx> BindgenContext<'ctx> {
         assert!(old_item.is_none(), "Inserted type twice?");
     }
 
-    fn build_root_module() -> Item {
+    fn build_root_module(id: ItemId) -> Item {
         let module = Module::new(Some("root".into()));
-        let id = ItemId::next();
         Item::new(id, None, None, id, ItemKind::Module(module))
     }
 
@@ -702,6 +718,13 @@ impl<'ctx> BindgenContext<'ctx> {
         with_id
     }
 
+    /// Returns the next item id to be used for an item.
+    pub fn next_item_id(&mut self) -> ItemId {
+        let ret = self.next_item_id;
+        self.next_item_id = ItemId(self.next_item_id.0 + 1);
+        ret
+    }
+
     fn build_builtin_ty(&mut self,
                         ty: &clang::Type,
                         _declaration: Cursor)
@@ -747,7 +770,7 @@ impl<'ctx> BindgenContext<'ctx> {
         let is_const = ty.is_const();
         let layout = ty.fallible_layout().ok();
         let ty = Type::new(Some(spelling), layout, type_kind, is_const);
-        let id = ItemId::next();
+        let id = self.next_item_id();
         let item =
             Item::new(id, None, None, self.root_module, ItemKind::Type(ty));
         self.add_builtin_item(item);
@@ -841,11 +864,11 @@ impl<'ctx> BindgenContext<'ctx> {
         use clangll::*;
         assert!(cursor.kind() == CXCursor_Namespace, "Be a nice person");
         let cursor = cursor.canonical();
-        let module_id = match self.modules.get(&cursor) {
-            Some(id) => return *id,
-            None => ItemId::next(),
-        };
+        if let Some(id) = self.modules.get(&cursor) {
+            return *id;
+        }
 
+        let module_id = self.next_item_id();
         let module_name = self.translation_unit
             .tokens(&cursor)
             .and_then(|tokens| {
