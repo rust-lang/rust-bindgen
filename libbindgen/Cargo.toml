@@ -28,8 +28,6 @@ cfg-if = "0.1.0"
 clang-sys = "0.8.0"
 lazy_static = "0.1.*"
 libc = "0.2"
-log = "0.3"
-env_logger = "0.3"
 rustc-serialize = "0.3.19"
 syntex_syntax = "0.44"
 regex = "0.1"
@@ -43,12 +41,22 @@ version = "0.28"
 optional = true
 version = "*"
 
+[dependencies.env_logger]
+optional = true
+version = "0.3"
+
+[dependencies.log]
+optional = true
+version = "0.3"
+
 [dependencies.quasi]
 features = ["with-syntex"]
 version = "0.20"
 
 [features]
+default = ["logging"]
 llvm_stable = []
+logging = ["env_logger", "log"]
 static = []
 # This feature only exists for CI -- don't use it!
 _docs = []
