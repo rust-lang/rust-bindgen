@@ -18,6 +18,6 @@ class Rooted {
 
 /// But the replacement type does use T!
 ///
-/// <div rustbindgen replaces="MaybeWrapped" />
+/// <div rustbindgen replaces="JS_detail_MaybeWrapped" />
 template <typename T>
 using replaces_MaybeWrapped = T;

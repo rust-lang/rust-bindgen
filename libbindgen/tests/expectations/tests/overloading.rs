@@ -15,9 +15,9 @@ extern "C" {
 }
 extern "C" {
     #[link_name = "_ZN3foo10MyFunctionEv"]
-    pub fn MyFunction();
+    pub fn foo_MyFunction();
 }
 extern "C" {
     #[link_name = "_ZN3bar10MyFunctionEv"]
-    pub fn MyFunction1();
+    pub fn bar_MyFunction();
 }
