@@ -475,6 +475,11 @@ impl Cursor {
     pub fn is_virtual_base(&self) -> bool {
         unsafe { clang_isVirtualBase(self.x) != 0 }
     }
+
+    /// Try to evaluate this cursor.
+    pub fn evaluate(&self) -> EvalResult {
+        EvalResult::new(*self)
+    }
 }
 
 extern "C" fn visit_children<Visitor>(cur: CXCursor,
@@ -1260,4 +1265,51 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> Enum_CXVisitorResult {
 /// Try to extract the clang version to a string
 pub fn extract_clang_version() -> String {
     unsafe { clang_getClangVersion().into() }
+}
+
+#[derive(Debug)]
+pub struct EvalResult {
+    x: CXEvalResult,
+}
+
+#[cfg(feature = "llvm_stable")]
+impl EvalResult {
+    pub fn new(_: Cursor) -> Self {
+        EvalResult {
+            x: ::std::ptr::null_mut(),
+        }
+    }
+
+    pub fn as_int(&self) -> Option<i32> {
+        None
+    }
+}
+
+#[cfg(not(feature = "llvm_stable"))]
+impl EvalResult {
+    pub fn new(cursor: Cursor) -> Self {
+        EvalResult {
+            x: unsafe { clang_Cursor_Evaluate(cursor.x) },
+        }
+    }
+
+    pub fn kind(&self) -> Enum_CXEvalResultKind {
+        unsafe { clang_EvalResult_getKind(self.x) }
+    }
+
+    pub fn as_int(&self) -> Option<i32> {
+        match self.kind() {
+            CXEval_Int => {
+                Some(unsafe { clang_EvalResult_getAsInt(self.x) } as i32)
+            }
+            _ => None,
+        }
+    }
+}
+
+#[cfg(not(feature = "llvm_stable"))]
+impl Drop for EvalResult {
+    fn drop(&mut self) {
+        unsafe { clang_EvalResult_dispose(self.x) };
+    }
 }
