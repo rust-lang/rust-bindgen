@@ -1447,10 +1447,16 @@ extern "C" {
                                           offset: *mut c_uint);
     pub fn clang_indexLoc_getCXSourceLocation(loc: CXIdxLoc) ->
      CXSourceLocation;
+    #[cfg(not(feature="llvm_stable"))]
     pub fn clang_Cursor_Evaluate(C: CXCursor) -> CXEvalResult;
+    #[cfg(not(feature="llvm_stable"))]
     pub fn clang_EvalResult_getKind(E: CXEvalResult) -> Enum_CXEvalResultKind;
+    #[cfg(not(feature="llvm_stable"))]
     pub fn clang_EvalResult_getAsInt(E: CXEvalResult) -> c_int;
+    #[cfg(not(feature="llvm_stable"))]
     pub fn clang_EvalResult_getAsDouble(E: CXEvalResult) -> c_double;
+    #[cfg(not(feature="llvm_stable"))]
     pub fn clang_EvalResult_getAsStr(E: CXEvalResult) -> *const c_char;
+    #[cfg(not(feature="llvm_stable"))]
     pub fn clang_EvalResult_dispose(E: CXEvalResult);
 }
