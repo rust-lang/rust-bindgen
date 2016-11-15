@@ -5,9 +5,6 @@
 //!
 //! See the [Builder](./struct.Builder.html) struct for usage.
 
-#![crate_name = "bindgen"]
-#![crate_type = "dylib"]
-
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
 
