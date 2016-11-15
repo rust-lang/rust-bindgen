@@ -38,13 +38,14 @@ mod testgen {
                         .replace(|c| !char::is_alphanumeric(c), "_")
                         .replace("__", "_")
                         .to_lowercase();
-                    let _ = writeln!(dst, "test_header!(header_{}, {:?});",
-                        func, entry.path());
+                    writeln!(dst, "test_header!(header_{}, {:?});",
+                             func, entry.path()).unwrap();
                 }
                 _ => {}
             }
         }
-        let _ = dst.flush();
+
+        dst.flush().unwrap();
     }
 }
 
