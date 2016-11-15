@@ -176,11 +176,3 @@ the ones that would be generated for `nsTArray_Simple`.
 
 The `nocopy` annotation is used to prevent bindgen to autoderive the `Copy`
 and `Clone` traits for a type.
-
-# Macro Usage
-
-This mode isn't actively maintained, so no promises are made around it. Check
-out the upstream documentation for info about how it *should* work.
-
-[sm-script]: https://github.com/servo/rust-mozjs/blob/master/etc/bindings.sh
-[stylo-scripts]: https://github.com/servo/servo/tree/master/components/style/binding_tools
