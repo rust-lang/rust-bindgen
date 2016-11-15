@@ -590,8 +590,7 @@ impl<'ctx> BindgenContext<'ctx> {
                                   -> Option<ItemId> {
         use clangll::{CXCursor_ClassTemplate,
                       CXCursor_ClassTemplatePartialSpecialization,
-                      CXCursor_TypeAliasTemplateDecl,
-                      CXCursor_TypeRef};
+                      CXCursor_TypeAliasTemplateDecl, CXCursor_TypeRef};
         debug!("builtin_or_resolved_ty: {:?}, {:?}, {:?}",
                ty,
                location,

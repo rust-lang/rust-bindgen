@@ -264,7 +264,7 @@ impl Cursor {
 
     /// Given that this cursor's referent is reference type, get the cursor
     /// pointing to the referenced type.
-    pub fn referenced(&self) -> Option<Cursor>  {
+    pub fn referenced(&self) -> Option<Cursor> {
         unsafe {
             let ret = Cursor {
                 x: clang_getCursorReferenced(self.x),
