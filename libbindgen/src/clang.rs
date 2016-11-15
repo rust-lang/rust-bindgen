@@ -1235,21 +1235,23 @@ pub fn type_to_str(x: Enum_CXTypeKind) -> String {
 /// Dump the Clang AST to stdout for debugging purposes.
 pub fn ast_dump(c: &Cursor, depth: isize) -> Enum_CXVisitorResult {
     fn print_indent(depth: isize, s: &str) {
-        let mut i = 0;
-        while i < depth {
+        for _ in 0..depth {
             print!("\t");
-            i += 1;
         }
         println!("{}", s);
     }
-    let ct = c.cur_type().kind();
+
     print_indent(depth,
-                 &format!("({} {} {}",
+                 &format!("(kind: {}, spelling: {}, type: {}",
                           kind_to_str(c.kind()),
                           c.spelling(),
-                          type_to_str(ct)));
+                          type_to_str(c.cur_type().kind())));
+
+    // Recurse.
     c.visit(|s| ast_dump(&s, depth + 1));
+
     print_indent(depth, ")");
+
     CXChildVisit_Continue
 }
 
