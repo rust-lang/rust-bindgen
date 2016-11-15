@@ -52,6 +52,9 @@ pub fn builder_from_flags<I>(args: I)
             Arg::with_name("emit-clang-ast")
                 .long("emit-clang-ast")
                 .help("Output the Clang AST for debugging purposes."),
+            Arg::with_name("emit-ir")
+                .long("emit-ir")
+                .help("Output our internal IR for debugging purposes."),
             Arg::with_name("enable-cxx-namespaces")
                 .long("enable-cxx-namespaces")
                 .help("Enable support for C++ namespaces."),
@@ -181,6 +184,10 @@ pub fn builder_from_flags<I>(args: I)
 
     if matches.is_present("emit-clang-ast") {
         builder = builder.emit_clang_ast();
+    }
+
+    if matches.is_present("emit-ir") {
+        builder = builder.emit_ir();
     }
 
     if matches.is_present("enable-cxx-namespaces") {

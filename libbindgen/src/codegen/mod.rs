@@ -1892,6 +1892,13 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
 
         let whitelisted_items: ItemSet = context.whitelisted_items().collect();
 
+        if context.options().emit_ir {
+            for &id in whitelisted_items.iter() {
+                let item = context.resolve_item(id);
+                println!("ir: {:?} = {:#?}", id, item);
+            }
+        }
+
         for &id in whitelisted_items.iter() {
             let item = context.resolve_item(id);
 
