@@ -123,6 +123,14 @@ impl Type {
         Self::new(Some(name), None, kind, false)
     }
 
+    /// Is this an floating point type?
+    pub fn is_float(&self) -> bool {
+        match self.kind {
+            TypeKind::Float(..) => true,
+            _ => false,
+        }
+    }
+
     /// Is this an integer type?
     pub fn is_integer(&self) -> bool {
         match self.kind {

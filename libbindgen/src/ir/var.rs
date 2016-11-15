@@ -8,7 +8,15 @@ use super::context::{BindgenContext, ItemId};
 use super::function::cursor_mangling;
 use super::int::IntKind;
 use super::item::Item;
-use super::ty::TypeKind;
+use super::ty::{FloatKind, TypeKind};
+
+#[derive(Debug)]
+pub enum VarType {
+    Int(i64),
+    Float(f64),
+    Char(u8),
+    String(Vec<u8>),
+}
 
 /// A `Var` is our intermediate representation of a variable.
 #[derive(Debug)]
@@ -19,9 +27,8 @@ pub struct Var {
     mangled_name: Option<String>,
     /// The type of the variable.
     ty: ItemId,
-    /// TODO: support non-integer constants?
-    /// The integer value of the variable.
-    val: Option<i64>,
+    /// The value of the variable, that needs to be suitable for `ty`.
+    val: Option<VarType>,
     /// Whether this variable is const.
     is_const: bool,
 }
@@ -31,7 +38,7 @@ impl Var {
     pub fn new(name: String,
                mangled: Option<String>,
                ty: ItemId,
-               val: Option<i64>,
+               val: Option<VarType>,
                is_const: bool)
                -> Var {
         assert!(!name.is_empty());
@@ -50,8 +57,8 @@ impl Var {
     }
 
     /// The value of this constant variable, if any.
-    pub fn val(&self) -> Option<i64> {
-        self.val
+    pub fn val(&self) -> Option<&VarType> {
+        self.val.as_ref()
     }
 
     /// Get this variable's type.
@@ -76,6 +83,7 @@ impl ClangSubItemParser for Var {
              -> Result<ParseResult<Self>, ParseError> {
         use clangll::*;
         use cexpr::expr::EvalResult;
+        use cexpr::literal::CChar;
         match cursor.kind() {
             CXCursor_MacroDefinition => {
                 let value = parse_macro(ctx, &cursor, ctx.translation_unit());
@@ -105,13 +113,32 @@ impl ClangSubItemParser for Var {
                 // enforce utf8 there, so we should have already panicked at
                 // this point.
                 let name = String::from_utf8(id).unwrap();
-                let (int_kind, val) = match value {
-                    // TODO(emilio): Handle the non-invalid ones!
-                    EvalResult::Float(..) |
-                    EvalResult::Char(..) |
-                    EvalResult::Str(..) |
+                let (type_kind, val) = match value {
                     EvalResult::Invalid => return Err(ParseError::Continue),
+                    EvalResult::Float(f) => {
+                        (TypeKind::Float(FloatKind::Float), VarType::Float(f))
+                    }
+                    EvalResult::Char(c) => {
+                        let c = match c {
+                            CChar::Char(c) => {
+                                assert_eq!(c.len_utf8(), 1);
+                                c as u8
+                            }
+                            CChar::Raw(c) => {
+                                assert!(c <= ::std::u8::MAX as u64);
+                                c as u8
+                            }
+                        };
 
+                        (TypeKind::Int(IntKind::U8), VarType::Char(c))
+                    }
+                    EvalResult::Str(val) => {
+                        let char_ty =
+                            Item::builtin_type(TypeKind::Int(IntKind::U8),
+                                               true,
+                                               ctx);
+                        (TypeKind::Pointer(char_ty), VarType::String(val))
+                    }
                     EvalResult::Int(Wrapping(value)) => {
                         let kind = ctx.options()
                             .type_chooser
@@ -131,11 +158,11 @@ impl ClangSubItemParser for Var {
                                 }
                             });
 
-                        (kind, value)
+                        (TypeKind::Int(kind), VarType::Int(value))
                     }
                 };
 
-                let ty = Item::builtin_type(TypeKind::Int(int_kind), true, ctx);
+                let ty = Item::builtin_type(type_kind, true, ctx);
 
                 Ok(ParseResult::New(Var::new(name, None, ty, Some(val), true),
                                     Some(cursor)))
@@ -159,11 +186,16 @@ impl ClangSubItemParser for Var {
                 // tests/headers/inner_const.hpp
                 //
                 // That's fine because in that case we know it's not a literal.
-                let is_integer = ctx.safe_resolve_type(ty)
-                    .and_then(|t| t.safe_canonical_type(ctx))
-                    .map(|t| t.is_integer())
-                    .unwrap_or(false);
+                let canonical_ty = ctx.safe_resolve_type(ty)
+                    .and_then(|t| t.safe_canonical_type(ctx));
 
+                let is_integer = canonical_ty.map_or(false, |t| t.is_integer());
+                let is_float = canonical_ty.map_or(false, |t| t.is_float());
+
+                // TODO: We could handle `char` more gracefully.
+                // TODO: Strings, though the lookup is a bit more hard (we need
+                // to look at the canonical type of the pointee too, and check
+                // is char, u8, or i8 I guess).
                 let value = if is_integer {
                     cursor.evaluate()
                         .as_int()
@@ -172,16 +204,19 @@ impl ClangSubItemParser for Var {
                             let tu = ctx.translation_unit();
                             get_integer_literal_from_cursor(&cursor, tu)
                         })
+                        .map(VarType::Int)
+                } else if is_float {
+                    cursor.evaluate()
+                        .as_double()
+                        .map(VarType::Float)
                 } else {
                     None
                 };
 
-
                 let mangling = cursor_mangling(&cursor);
-
                 let var = Var::new(name, mangling, ty, value, is_const);
-                Ok(ParseResult::New(var, Some(cursor)))
 
+                Ok(ParseResult::New(var, Some(cursor)))
             }
             _ => {
                 /* TODO */

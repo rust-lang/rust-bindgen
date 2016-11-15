@@ -10,3 +10,6 @@ pub const bar: _bindgen_ty_1 = _bindgen_ty_1::bar;
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum _bindgen_ty_1 { foo = 4, bar = 8, }
 pub const BAZ: ::std::os::raw::c_longlong = 24;
+pub const fuzz: f64 = 51.;
+pub const BAZZ: ::std::os::raw::c_char = 53;
+pub const WAT: ::std::os::raw::c_char = 0;

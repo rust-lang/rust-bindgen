@@ -1267,6 +1267,7 @@ pub fn extract_clang_version() -> String {
     unsafe { clang_getClangVersion().into() }
 }
 
+/// A wrapper for the result of evaluating an expression.
 #[derive(Debug)]
 pub struct EvalResult {
     x: CXEvalResult,
@@ -1274,12 +1275,19 @@ pub struct EvalResult {
 
 #[cfg(feature = "llvm_stable")]
 impl EvalResult {
+    /// Create a dummy EvalResult.
     pub fn new(_: Cursor) -> Self {
         EvalResult {
             x: ::std::ptr::null_mut(),
         }
     }
 
+    /// Not useful in llvm 3.8.
+    pub fn as_double(&self) -> Option<f64> {
+        None
+    }
+
+    /// Not useful in llvm 3.8.
     pub fn as_int(&self) -> Option<i32> {
         None
     }
@@ -1287,16 +1295,28 @@ impl EvalResult {
 
 #[cfg(not(feature = "llvm_stable"))]
 impl EvalResult {
+    /// Evaluate `cursor` and return the result.
     pub fn new(cursor: Cursor) -> Self {
         EvalResult {
             x: unsafe { clang_Cursor_Evaluate(cursor.x) },
         }
     }
 
-    pub fn kind(&self) -> Enum_CXEvalResultKind {
+    fn kind(&self) -> Enum_CXEvalResultKind {
         unsafe { clang_EvalResult_getKind(self.x) }
     }
 
+    /// Try to get back the result as a double.
+    pub fn as_double(&self) -> Option<f64> {
+        match self.kind() {
+            CXEval_Float => {
+                Some(unsafe { clang_EvalResult_getAsDouble(self.x) } as f64)
+            }
+            _ => None,
+        }
+    }
+
+    /// Try to get back the result as an integer.
     pub fn as_int(&self) -> Option<i32> {
         match self.kind() {
             CXEval_Int => {
