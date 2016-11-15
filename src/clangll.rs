@@ -7,7 +7,18 @@
 #![allow(non_upper_case_globals)]
 #![cfg_attr(rustfmt, rustfmt_skip)]
 
-use ::std::os::raw::{ c_char, c_int, c_long, c_longlong, c_uint, c_ulong, c_ulonglong, c_void};
+use ::std::os::raw::{c_char, c_int, c_long, c_longlong, c_uint, c_ulong, c_ulonglong, c_void, c_double};
+
+pub type CXEvalResult = *mut c_void;
+pub type Enum_CXEvalResultKind = c_uint;
+
+pub const CXEval_Int: c_uint = 1;
+pub const CXEval_Float: c_uint = 2;
+pub const CXEval_ObjCStrLiteral: c_uint = 3;
+pub const CXEval_StrLiteral: c_uint = 4;
+pub const CXEval_CFStr: c_uint = 5;
+pub const CXEval_Other: c_uint = 6;
+pub const CXEval_UnExposed: c_uint = 0;
 
 pub type ptrdiff_t = c_long;
 pub type size_t = c_ulong;
@@ -1436,4 +1447,16 @@ extern "C" {
                                           offset: *mut c_uint);
     pub fn clang_indexLoc_getCXSourceLocation(loc: CXIdxLoc) ->
      CXSourceLocation;
+    #[cfg(not(feature="llvm_stable"))]
+    pub fn clang_Cursor_Evaluate(C: CXCursor) -> CXEvalResult;
+    #[cfg(not(feature="llvm_stable"))]
+    pub fn clang_EvalResult_getKind(E: CXEvalResult) -> Enum_CXEvalResultKind;
+    #[cfg(not(feature="llvm_stable"))]
+    pub fn clang_EvalResult_getAsInt(E: CXEvalResult) -> c_int;
+    #[cfg(not(feature="llvm_stable"))]
+    pub fn clang_EvalResult_getAsDouble(E: CXEvalResult) -> c_double;
+    #[cfg(not(feature="llvm_stable"))]
+    pub fn clang_EvalResult_getAsStr(E: CXEvalResult) -> *const c_char;
+    #[cfg(not(feature="llvm_stable"))]
+    pub fn clang_EvalResult_dispose(E: CXEvalResult);
 }
