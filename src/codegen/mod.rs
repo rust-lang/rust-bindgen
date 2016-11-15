@@ -5,11 +5,11 @@ use aster;
 
 use ir::annotations::FieldAccessorKind;
 use ir::comp::{CompInfo, CompKind, Field, Method};
-use ir::context::BindgenContext;
+use ir::context::{BindgenContext, ItemId};
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
 use ir::function::{Function, FunctionSig};
 use ir::int::IntKind;
-use ir::item::{Item, ItemCanonicalName, ItemCanonicalPath, ItemId};
+use ir::item::{Item, ItemCanonicalName, ItemCanonicalPath};
 use ir::item_kind::ItemKind;
 use ir::layout::Layout;
 use ir::module::Module;
@@ -1919,8 +1919,8 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
 
 mod utils {
     use aster;
-    use ir::context::BindgenContext;
-    use ir::item::{Item, ItemCanonicalPath, ItemId};
+    use ir::context::{BindgenContext, ItemId};
+    use ir::item::{Item, ItemCanonicalPath};
     use ir::ty::TypeKind;
     use std::mem;
     use super::ItemToRustTy;

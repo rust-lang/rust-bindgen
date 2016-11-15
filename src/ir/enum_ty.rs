@@ -2,8 +2,8 @@
 
 use clang;
 use parse::{ClangItemParser, ParseError};
-use super::context::BindgenContext;
-use super::item::{Item, ItemId};
+use super::context::{BindgenContext, ItemId};
+use super::item::Item;
 use super::ty::TypeKind;
 
 /// A C/C++ enumeration.

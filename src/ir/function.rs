@@ -3,8 +3,8 @@
 use clang;
 use clangll::Enum_CXCallingConv;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
-use super::context::BindgenContext;
-use super::item::{Item, ItemId};
+use super::context::{BindgenContext, ItemId};
+use super::item::Item;
 use super::ty::TypeKind;
 use super::type_collector::{ItemSet, TypeCollector};
 use syntax::abi;

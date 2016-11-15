@@ -1,8 +1,7 @@
 //! Common traits and types related to parsing our IR from Clang cursors.
 
 use clang;
-use ir::context::BindgenContext;
-use ir::item::ItemId;
+use ir::context::{BindgenContext, ItemId};
 use ir::ty::TypeKind;
 
 /// Not so much an error in the traditional sense, but a control flow message

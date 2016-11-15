@@ -3,11 +3,11 @@
 use clang::{self, Cursor};
 use parse::{ClangItemParser, ParseError, ParseResult};
 use super::comp::CompInfo;
-use super::context::BindgenContext;
+use super::context::{BindgenContext, ItemId};
 use super::enum_ty::Enum;
 use super::function::FunctionSig;
 use super::int::IntKind;
-use super::item::{Item, ItemId};
+use super::item::Item;
 use super::layout::Layout;
 use super::type_collector::{ItemSet, TypeCollector};
 
