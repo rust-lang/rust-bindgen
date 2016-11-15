@@ -12,7 +12,6 @@ os:
 
 rust:
   - stable
-  - nightly
 
 env:
   - LLVM_VERSION=3.8 BINDGEN_FEATURES=llvm_stable
