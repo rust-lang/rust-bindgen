@@ -1,9 +1,5 @@
-bindgen
-libbindgen*
-
 # Cargo
 target/
 Cargo.lock
 *~
 #*#
-

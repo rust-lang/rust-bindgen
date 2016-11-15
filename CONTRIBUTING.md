@@ -42,20 +42,22 @@ that you aren't forgetting to document types and functions. CI will catch it if
 you forget, but the turn around will be a lot slower ;)
 
 ```
-$ cargo build --features "llvm_stable _docs"
+$ cd libbindgen && cargo build --features "llvm_stable _docs"
 ```
 
 ## Testing <span id="tests"/>
 
+Code for binding generation and testing thereof is in the `libbindgen` crate.
+The following sections assume you are working in that subdirectory.
+
 ### Overview <span id="tests-overview"/>
 
-Input C/C++ test headers reside in the `tests/headers` directory. The expected
-output rust bindings live in `tests/expectations/tests`; for example,
-`tests/headers/my_header.h`'s expected generated rust bindings would be
+Input C/C++ test headers reside in the `tests/headers` directory. Expected
+output Rust bindings live in `tests/expectations/tests`. For example,
+`tests/headers/my_header.h`'s expected generated Rust bindings would be
 `tests/expectations/tests/my_header.rs`.
 
-The `tests/tools/run-bindgen.py` script runs `bindgen` on the test headers and
-compares the results to the expectations.
+Run `cargo test` to compare generated Rust bindings to the expectations.
 
 ### Running All Tests <span id="tests-all"/>
 
@@ -63,25 +65,11 @@ compares the results to the expectations.
 $ cargo test [--features llvm_stable]
 ```
 
-This spawns a `tests/tools/run-bindgen.py` subprocess for each test header.
-
-### Running a Single, Specific Test <span id="tests-one"/>
-
-```
-$ ./tests/tools/run-bindgen.py ./target/debug/bindgen ./tests/headers/some_header.h
-```
-
-To learn more about the options available with `run-bindgen.py`:
-
-```
-$ ./tests/tools/run-bindgen.py --help
-```
-
 ### Authoring New Tests <span id="tests-new"/>
 
 To add a new test header to the suite, simply put it in the `tests/headers`
-directory. Next, run the `run-bindgen.py` script with the new test header, which
-will generate the initial expected output rust bindings.
+directory. Next, run `bindgen` to generate the initial expected output Rust
+bindings. Put those in `tests/expectations/tests`.
 
 If your new test requires certain flags to be passed to `bindgen`, you can
 specify them at the top of the test header, with a comment like this:
@@ -90,14 +78,7 @@ specify them at the top of the test header, with a comment like this:
 // bindgen-flags: --enable-cxx-namespaces -- -std=c++14
 ```
 
-If your new test requires `bindgen` to be built with certain features, you can
-specify the required features at the top of the test header in a similar manner:
-
-```c
-// bingden-features: llvm_stable
-```
-
-Then verify the new rust bindings compile and its tests pass:
+Then verify the new Rust bindings compile and pass some basic tests:
 
 ```
 $ cargo test -p tests_expectations
@@ -130,14 +111,13 @@ To help debug what `bindgen` is doing, you can define the environment variable
 `RUST_LOG=bindgen` to get a bunch of debugging log spew.
 
 ```
-$ RUST_LOG=bindgen ./target/debug/bindgen [flags...] ~/path/to/some/header.h
+$ RUST_LOG=libbindgen ./target/debug/bindgen [flags...] ~/path/to/some/header.h
 ```
 
-This logging can also be used when debugging failing tests under
-`run-bindgen.py`:
+This logging can also be used when debugging failing tests:
 
 ```
-$ RUST_LOG=bindgen ./tests/tools/run-bindgen.py ./target/debug/bindgen tests/headers/whatever.h
+$ RUST_LOG=libbindgen cd libbindgen && cargo test
 ```
 
 ## Using `creduce` to Minimize Test Cases <span id="creduce"/>

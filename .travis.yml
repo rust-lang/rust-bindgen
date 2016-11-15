@@ -24,16 +24,19 @@ cache:
 
 before_install: . ./ci/before_install.sh
 
+before_script: cd libbindgen
+
 script:
-  - cargo build --verbose --features "$BINDGEN_FEATURES"
   - cargo test --features "$BINDGEN_FEATURES"
-  - cargo build --release --verbose --features "$BINDGEN_FEATURES"
   - cargo test --release --features "$BINDGEN_FEATURES"
   - git add -A
   - git diff @
   - git diff-index --quiet HEAD
   - cargo test -p tests_expectations
   - cargo build --features "$BINDGEN_FEATURES _docs"
+  - cd ..
+  - cargo test --features "$BINDGEN_FEATURES"
+  - cargo test --release --features "$BINDGEN_FEATURES"
 
 notifications:
   webhooks: http://build.servo.org:54856/travis
