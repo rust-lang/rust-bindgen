@@ -933,7 +933,9 @@ impl Into<String> for CXString {
         }
         unsafe {
             let c_str = CStr::from_ptr(clang_getCString(self) as *const _);
-            c_str.to_string_lossy().into_owned()
+            let ret = c_str.to_string_lossy().into_owned();
+            clang_disposeString(self);
+            ret
         }
     }
 }
