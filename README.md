@@ -76,6 +76,40 @@ $ LIBCLANG_PATH=path/to/clang-3.9/build/lib \
     cargo build
 ```
 
+# Library usage with `build.rs`
+
+In `Cargo.toml`:
+
+```toml
+[package]
+...
+build = "build.rs"
+
+[build-dependencies.libbindgen]
+git = "https://github.com/servo/rust-bindgen"
+features = ["llvm_stable"]
+```
+
+In `build.rs`:
+
+```rust
+extern crate libbindgen;
+
+fn main() {
+  let _ = libbindgen::builder()
+    .header("example.h")
+    .use_core()
+    .generate().unwrap()
+    .write_to_file(concat!(env!("OUT_DIR"), "/example.rs"));
+}
+```
+
+In `src/main.rs`:
+
+```rust
+include!(concat!(env!("OUT_DIR"), "/example.rs"));
+```
+
 # Command Line Usage
 
 There are a few options documented when running `./bindgen --help`. Other
