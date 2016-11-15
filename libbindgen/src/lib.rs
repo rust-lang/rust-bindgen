@@ -225,6 +225,12 @@ impl Builder {
         self
     }
 
+    /// Emit IR.
+    pub fn emit_ir(mut self) -> Builder {
+        self.options.emit_ir = true;
+        self
+    }
+
     /// Enable C++ namespaces.
     pub fn enable_cxx_namespaces(mut self) -> Builder {
         self.options.enable_cxx_namespaces = true;
@@ -314,6 +320,9 @@ pub struct BindgenOptions {
     /// True if we should dump the Clang AST for debugging purposes.
     pub emit_ast: bool,
 
+    /// True if we should dump our internal IR for debugging purposes.
+    pub emit_ir: bool,
+
     /// True if we should ignore functions and only generate bindings for
     /// structures, types, and methods.
     pub ignore_functions: bool,
@@ -380,6 +389,7 @@ impl Default for BindgenOptions {
             builtins: false,
             links: vec![],
             emit_ast: false,
+            emit_ir: false,
             ignore_functions: false,
             ignore_methods: false,
             derive_debug: true,
