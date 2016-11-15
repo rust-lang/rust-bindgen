@@ -500,16 +500,12 @@ impl<'ctx> BindgenContext<'ctx> {
                               wrapping: ItemId,
                               parent_id: ItemId,
                               ty: &clang::Type,
-                              location: clang::Cursor)
+                              location: clang::Cursor,
+                              declaration: clang::Cursor)
                               -> ItemId {
         use clangll::*;
         let mut args = vec![];
-        let mut found_invalid_template_ref = false;
         location.visit(|c| {
-            if c.kind() == CXCursor_TemplateRef &&
-               c.cur_type().kind() == CXType_Invalid {
-                found_invalid_template_ref = true;
-            }
             if c.kind() == CXCursor_TypeRef {
                 // The `with_id` id will potentially end up unused if we give up
                 // on this type (for example, its a tricky partial template
@@ -528,39 +524,46 @@ impl<'ctx> BindgenContext<'ctx> {
 
         let item = {
             let wrapping_type = self.resolve_type(wrapping);
-            let old_args = match *wrapping_type.kind() {
-                TypeKind::Comp(ref ci) => ci.template_args(),
-                _ => panic!("how?"),
-            };
-            // The following assertion actually fails with partial template
-            // specialization. But as far as I know there's no way at all to
-            // grab the specialized types from neither the AST or libclang.
-            //
-            // This flaw was already on the old parser, but I now think it has
-            // no clear solution.
-            //
-            // For an easy example in which there's no way at all of getting the
-            // `int` type, except manually parsing the spelling:
-            //
-            //     template<typename T, typename U>
-            //     class Incomplete {
-            //       T d;
-            //       U p;
-            //     };
-            //
-            //     template<typename U>
-            //     class Foo {
-            //       Incomplete<U, int> bar;
-            //     };
-            //
-            // debug_assert_eq!(old_args.len(), args.len());
-            //
-            // That being said, this is not so common, so just error! and hope
-            // for the best, returning the previous type, who knows.
-            if old_args.len() != args.len() {
-                error!("Found partial template specialization, \
-                        expect dragons!");
-                return wrapping;
+            if let TypeKind::Comp(ref ci) = *wrapping_type.kind() {
+                let old_args = ci.template_args();
+
+                // The following assertion actually fails with partial template
+                // specialization. But as far as I know there's no way at all to
+                // grab the specialized types from neither the AST or libclang,
+                // which sucks. The same happens for specialized type alias
+                // template declarations, where we have that ugly hack up there.
+                //
+                // This flaw was already on the old parser, but I now think it
+                // has no clear solution (apart from patching libclang to
+                // somehow expose them, of course).
+                //
+                // For an easy example in which there's no way at all of getting
+                // the `int` type, except manually parsing the spelling:
+                //
+                //     template<typename T, typename U>
+                //     class Incomplete {
+                //       T d;
+                //       U p;
+                //     };
+                //
+                //     template<typename U>
+                //     class Foo {
+                //       Incomplete<U, int> bar;
+                //     };
+                //
+                // debug_assert_eq!(old_args.len(), args.len());
+                //
+                // That being said, this is not so common, so just error! and
+                // hope for the best, returning the previous type, who knows.
+                if old_args.len() != args.len() {
+                    error!("Found partial template specialization, \
+                            expect dragons!");
+                    return wrapping;
+                }
+            } else {
+                assert_eq!(declaration.kind(),
+                           ::clangll::CXCursor_TypeAliasTemplateDecl,
+                           "Expected wrappable type");
             }
 
             let type_kind = TypeKind::TemplateRef(wrapping, args);
@@ -589,7 +592,9 @@ impl<'ctx> BindgenContext<'ctx> {
                                   location: Option<clang::Cursor>)
                                   -> Option<ItemId> {
         use clangll::{CXCursor_ClassTemplate,
-                      CXCursor_ClassTemplatePartialSpecialization};
+                      CXCursor_ClassTemplatePartialSpecialization,
+                      CXCursor_TypeAliasTemplateDecl,
+                      CXCursor_TypeRef};
         debug!("builtin_or_resolved_ty: {:?}, {:?}, {:?}",
                ty,
                location,
@@ -633,15 +638,33 @@ impl<'ctx> BindgenContext<'ctx> {
                 // argument names don't matter in the global context.
                 if (declaration.kind() == CXCursor_ClassTemplate ||
                     declaration.kind() ==
-                    CXCursor_ClassTemplatePartialSpecialization) &&
+                    CXCursor_ClassTemplatePartialSpecialization ||
+                    declaration.kind() == CXCursor_TypeAliasTemplateDecl) &&
                    *ty != canonical_declaration.cur_type() &&
                    location.is_some() &&
                    parent_id.is_some() {
+                    // For specialized type aliases, there's no way to get the
+                    // template parameters as of this writing (for a struct
+                    // specialization we wouldn't be in this branch anyway).
+                    //
+                    // Explicitly return `None` if there aren't any
+                    // unspecialized parameters (contains any `TypeRef`) so we
+                    // resolve the canonical type if there is one and it's
+                    // exposed.
+                    //
+                    // This is _tricky_, I know :(
+                    if declaration.kind() == CXCursor_TypeAliasTemplateDecl &&
+                       !location.unwrap().contains_cursor(CXCursor_TypeRef) &&
+                       ty.canonical_type().is_valid_and_exposed() {
+                        return None;
+                    }
+
                     return Some(self.build_template_wrapper(with_id,
                                                 id,
                                                 parent_id.unwrap(),
                                                 ty,
-                                                location.unwrap()));
+                                                location.unwrap(),
+                                                declaration));
                 }
 
                 return Some(self.build_ty_wrapper(with_id, id, parent_id, ty));
