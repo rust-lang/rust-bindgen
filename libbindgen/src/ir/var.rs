@@ -10,11 +10,16 @@ use super::int::IntKind;
 use super::item::Item;
 use super::ty::{FloatKind, TypeKind};
 
+/// The type for a constant variable.
 #[derive(Debug)]
 pub enum VarType {
+    /// An integer.
     Int(i64),
+    /// A floating point number.
     Float(f64),
+    /// A character.
     Char(u8),
+    /// A string, not necessarily well-formed utf-8.
     String(Vec<u8>),
 }
 
