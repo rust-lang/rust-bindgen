@@ -14,8 +14,8 @@ rust:
   - stable
 
 env:
-  - LLVM_VERSION=3.8 BINDGEN_FEATURES=llvm_stable
-  - LLVM_VERSION=3.9 BINDGEN_FEATURES=
+  - CARGO_TARGET_DIR=/tmp/bindgen LLVM_VERSION=3.8 BINDGEN_FEATURES=llvm_stable
+  - CARGO_TARGET_DIR=/tmp/bindgen LLVM_VERSION=3.9 BINDGEN_FEATURES=
 
 cache:
   directories:
