@@ -228,8 +228,11 @@ impl CodeGenerator for Item {
                result: &mut CodegenResult,
                _extra: &()) {
         if self.is_hidden(ctx) || result.seen(self.id()) {
+            debug!("<Item as CodeGenerator>::codegen: Ignoring hidden or seen: self = {:?}", self);
             return;
         }
+
+        debug!("<Item as CodeGenerator>::codegen: self = {:?}", self);
 
         result.set_seen(self.id());
 
@@ -264,6 +267,8 @@ impl CodeGenerator for Module {
                ctx: &BindgenContext,
                result: &mut CodegenResult,
                item: &Item) {
+        debug!("<Module as CodeGenerator>::codegen: item = {:?}", item);
+
         if !ctx.options().enable_cxx_namespaces {
             for child in self.children() {
                 ctx.resolve_item(*child).codegen(ctx, result, &());
@@ -299,6 +304,8 @@ impl CodeGenerator for Var {
                ctx: &BindgenContext,
                result: &mut CodegenResult,
                item: &Item) {
+        debug!("<Var as CodeGenerator>::codegen: item = {:?}", item);
+
         let canonical_name = item.canonical_name(ctx);
 
         if result.seen_var(&canonical_name) {
@@ -349,6 +356,8 @@ impl CodeGenerator for Type {
                ctx: &BindgenContext,
                result: &mut CodegenResult,
                item: &Item) {
+        debug!("<Type as CodeGenerator>::codegen: item = {:?}", item);
+
         match *self.kind() {
             TypeKind::Void |
             TypeKind::NullPtr |
@@ -600,6 +609,9 @@ impl CodeGenerator for CompInfo {
                result: &mut CodegenResult,
                item: &Item) {
         use aster::struct_field::StructFieldBuilder;
+
+        debug!("<CompInfo as CodeGenerator>::codegen: item = {:?}", item);
+
         // Don't output classes with template parameters that aren't types, and
         // also don't output template specializations, neither total or partial.
         //
@@ -1361,6 +1373,8 @@ impl CodeGenerator for Enum {
                ctx: &BindgenContext,
                result: &mut CodegenResult,
                item: &Item) {
+        debug!("<Enum as CodeGenerator>::codegen: item = {:?}", item);
+
         let name = item.canonical_name(ctx);
         let enum_ty = item.expect_type();
         let layout = enum_ty.layout(ctx);
@@ -1800,6 +1814,8 @@ impl CodeGenerator for Function {
                ctx: &BindgenContext,
                result: &mut CodegenResult,
                item: &Item) {
+        debug!("<Function as CodeGenerator>::codegen: item = {:?}", item);
+
         let name = self.name();
         let mut canonical_name = item.canonical_name(ctx);
         let mangled_name = self.mangled_name();
