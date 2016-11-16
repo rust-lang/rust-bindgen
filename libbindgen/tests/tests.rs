@@ -1,9 +1,6 @@
 extern crate clap;
 extern crate diff;
-#[macro_use]
-extern crate env_logger;
 extern crate libbindgen;
-extern crate log;
 extern crate shlex;
 
 use std::fs;

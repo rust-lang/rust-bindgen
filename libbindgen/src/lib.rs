@@ -29,9 +29,15 @@ extern crate clang_sys;
 extern crate libc;
 extern crate regex;
 #[macro_use]
-extern crate log;
-#[macro_use]
 extern crate lazy_static;
+
+#[cfg(feature = "logging")]
+#[macro_use]
+extern crate log;
+
+#[cfg(not(feature = "logging"))]
+#[macro_use]
+mod log_stubs;
 
 // A macro to declare an internal module for which we *must* provide
 // documentation for. If we are building with the "_docs" feature, then the
