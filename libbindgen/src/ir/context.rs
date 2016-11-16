@@ -222,7 +222,7 @@ impl<'ctx> BindgenContext<'ctx> {
                 error!("Valid declaration with no USR: {:?}, {:?}",
                        declaration,
                        location);
-                return;
+                TypeKey::Declaration(declaration)
             };
 
             let old = self.types.insert(key, id);
