@@ -490,7 +490,8 @@ impl Item {
         }
     }
 
-    fn is_module(&self) -> bool {
+    /// Is this item a module?
+    pub fn is_module(&self) -> bool {
         match self.kind {
             ItemKind::Module(..) => true,
             _ => false,
