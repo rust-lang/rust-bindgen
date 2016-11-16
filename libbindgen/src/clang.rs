@@ -1278,7 +1278,7 @@ impl EvalResult {
     /// Create a dummy EvalResult.
     pub fn new(_: Cursor) -> Self {
         EvalResult {
-            x: ::std::ptr::null_mut(),
+            x: ptr::null_mut(),
         }
     }
 
