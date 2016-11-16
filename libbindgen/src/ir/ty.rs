@@ -123,6 +123,14 @@ impl Type {
         Self::new(Some(name), None, kind, false)
     }
 
+    /// Is this a floating point type?
+    pub fn is_float(&self) -> bool {
+        match self.kind {
+            TypeKind::Float(..) => true,
+            _ => false,
+        }
+    }
+
     /// Is this an integer type?
     pub fn is_integer(&self) -> bool {
         match self.kind {
@@ -667,7 +675,7 @@ impl Type {
                             TypeKind::TemplateAlias(inner.unwrap(), args)
                         }
                         CXCursor_TemplateRef => {
-                            let referenced = location.referenced().expect("expected value, got none");
+                            let referenced = location.referenced().unwrap();
                             let referenced_ty = referenced.cur_type();
                             let referenced_declaration =
                                 Some(referenced_ty.declaration());
@@ -679,7 +687,7 @@ impl Type {
                                                        ctx);
                         }
                         CXCursor_TypeRef => {
-                            let referenced = location.referenced().expect("expected value, got none");
+                            let referenced = location.referenced().unwrap();
                             let referenced_ty = referenced.cur_type();
                             let referenced_declaration =
                                 Some(referenced_ty.declaration());

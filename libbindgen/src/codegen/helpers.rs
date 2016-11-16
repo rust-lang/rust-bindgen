@@ -132,4 +132,37 @@ pub mod ast_ty {
             expr.int(val)
         }
     }
+
+    pub fn byte_array_expr(bytes: &[u8]) -> P<ast::Expr> {
+        let mut vec = Vec::with_capacity(bytes.len() + 1);
+        for byte in bytes {
+            vec.push(int_expr(*byte as i64));
+        }
+        vec.push(int_expr(0));
+
+        let kind = ast::ExprKind::Vec(vec);
+
+        aster::AstBuilder::new().expr().build_expr_kind(kind)
+    }
+
+    pub fn cstr_expr(mut string: String) -> P<ast::Expr> {
+        string.push('\0');
+        aster::AstBuilder::new()
+            .expr()
+            .build_lit(aster::AstBuilder::new().lit().byte_str(string))
+    }
+
+    pub fn float_expr(f: f64) -> P<ast::Expr> {
+        use aster::str::ToInternedString;
+        let mut string = f.to_string();
+
+        // So it gets properly recognised as a floating point constant.
+        if !string.contains('.') {
+            string.push('.');
+        }
+
+        let interned_str = string.as_str().to_interned_string();
+        let kind = ast::LitKind::FloatUnsuffixed(interned_str);
+        aster::AstBuilder::new().expr().lit().build_lit(kind)
+    }
 }

@@ -4,7 +4,7 @@ extern crate libbindgen;
 extern crate shlex;
 
 use std::fs;
-use std::io::{BufRead, BufReader, Error, ErrorKind, Read};
+use std::io::{BufRead, BufReader, Error, ErrorKind, Read, Write};
 use std::path::PathBuf;
 
 #[path="../../src/options.rs"]
@@ -32,11 +32,18 @@ fn compare_generated_header(header: &PathBuf,
     };
 
     let mut buffer = String::new();
-    let f = try!(fs::File::open(&expected));
-    let _ = try!(BufReader::new(f).read_to_string(&mut buffer));
+    {
+        if let Ok(expected_file) = fs::File::open(&expected) {
+            try!(BufReader::new(expected_file).read_to_string(&mut buffer));
+        }
+    }
 
     if output == buffer {
-        return Ok(());
+        if !output.is_empty() {
+            return Ok(());
+        }
+        return Err(Error::new(ErrorKind::Other,
+                              "Something's gone really wrong!"))
     }
 
     println!("diff expected generated");
@@ -50,21 +57,34 @@ fn compare_generated_header(header: &PathBuf,
             diff::Result::Right(r) => println!("+{}", r),
         }
     }
+
+    // Override the diff.
+    {
+        let mut expected_file = try!(fs::File::create(&expected));
+        try!(expected_file.write_all(output.as_bytes()));
+    }
+
     Err(Error::new(ErrorKind::Other, "Header and binding differ!"))
 }
 
 fn create_bindgen_builder(header: &PathBuf)
-                          -> Result<libbindgen::Builder, Error> {
+                          -> Result<Option<libbindgen::Builder>, Error> {
     let source = try!(fs::File::open(header));
     let reader = BufReader::new(source);
 
     // Scoop up bindgen-flags from test header
-    let line: String = try!(reader.lines().take(1).collect());
-    let flags: Vec<String> = if line.contains("bindgen-flags:") {
-        line.split("bindgen-flags:").last().and_then(shlex::split)
-    } else {
-        None
-    }.unwrap_or(Vec::with_capacity(2));
+    let mut flags = Vec::with_capacity(2);
+
+    for line in reader.lines().take(2) {
+        let line = try!(line);
+        if line.contains("bindgen-flags: ") {
+            let extra_flags = line.split("bindgen-flags: ")
+                .last().and_then(shlex::split).unwrap();
+            flags.extend(extra_flags.into_iter());
+        } else if line.contains("bindgen-unstable") && cfg!(feature = "llvm_stable") {
+            return Ok(None)
+        }
+    }
 
     // Fool builder_from_flags() into believing it has real env::args_os...
     // - add "bindgen" as executable name 0th element
@@ -86,7 +106,8 @@ fn create_bindgen_builder(header: &PathBuf)
         .map(ToString::to_string)
         .chain(flags.into_iter());
 
-    builder_from_flags(args).map(|(builder, _)| builder.no_unstable_rust())
+    builder_from_flags(args)
+        .map(|(builder, _)| Some(builder.no_unstable_rust()))
 }
 
 macro_rules! test_header {
@@ -94,9 +115,18 @@ macro_rules! test_header {
         #[test]
         fn $function() {
             let header = PathBuf::from($header);
-            let _ = create_bindgen_builder(&header)
-                .and_then(|builder| compare_generated_header(&header, builder))
-                .map_err(|err| panic!(format!("{}", err)) );
+            let result = create_bindgen_builder(&header)
+                .and_then(|builder| {
+                    if let Some(builder) = builder {
+                        compare_generated_header(&header, builder)
+                    } else {
+                        Ok(())
+                    }
+                });
+
+            if let Err(err) = result {
+                panic!("{}", err);
+            }
         }
     )
 }

@@ -840,11 +840,7 @@ impl ClangItemParser for Item {
                       ctx: &mut BindgenContext)
                       -> ItemId {
         let id = ctx.next_item_id();
-        Self::from_ty_or_ref_with_id(id,
-                                     ty,
-                                     location,
-                                     parent_id,
-                                     ctx)
+        Self::from_ty_or_ref_with_id(id, ty, location, parent_id, ctx)
     }
 
     /// Parse a C++ type. If we find a reference to a type that has not been

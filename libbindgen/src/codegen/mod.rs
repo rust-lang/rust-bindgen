@@ -304,6 +304,7 @@ impl CodeGenerator for Var {
                ctx: &BindgenContext,
                result: &mut CodegenResult,
                item: &Item) {
+        use ir::var::VarType;
         debug!("<Var as CodeGenerator>::codegen: item = {:?}", item);
 
         let canonical_name = item.canonical_name(ctx);
@@ -320,10 +321,44 @@ impl CodeGenerator for Var {
                 .item()
                 .pub_()
                 .const_(canonical_name)
-                .expr()
-                .build(helpers::ast_ty::int_expr(val))
-                .build(ty);
-            result.push(const_item)
+                .expr();
+            let item = match *val {
+                VarType::Int(val) => {
+                    const_item.build(helpers::ast_ty::int_expr(val))
+                        .build(ty)
+                }
+                VarType::String(ref bytes) => {
+                    // Account the trailing zero.
+                    //
+                    // TODO: Here we ignore the type we just made up, probably
+                    // we should refactor how the variable type and ty id work.
+                    let len = bytes.len() + 1;
+                    let ty = quote_ty!(ctx.ext_cx(), [u8; $len]);
+
+                    match String::from_utf8(bytes.clone()) {
+                        Ok(string) => {
+                            const_item.build(helpers::ast_ty::cstr_expr(string))
+                                .build(quote_ty!(ctx.ext_cx(), &'static $ty))
+                        }
+                        Err(..) => {
+                            const_item
+                                .build(helpers::ast_ty::byte_array_expr(bytes))
+                                .build(ty)
+                        }
+                    }
+                }
+                VarType::Float(f) => {
+                    const_item.build(helpers::ast_ty::float_expr(f))
+                        .build(ty)
+                }
+                VarType::Char(c) => {
+                    const_item
+                        .build(aster::AstBuilder::new().expr().lit().byte(c))
+                        .build(ty)
+                }
+            };
+
+            result.push(item);
         } else {
             let mut attrs = vec![];
             if let Some(mangled) = self.mangled_name() {
