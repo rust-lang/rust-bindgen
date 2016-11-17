@@ -228,7 +228,8 @@ impl CodeGenerator for Item {
                result: &mut CodegenResult,
                _extra: &()) {
         if self.is_hidden(ctx) || result.seen(self.id()) {
-            debug!("<Item as CodeGenerator>::codegen: Ignoring hidden or seen: self = {:?}", self);
+            debug!("<Item as CodeGenerator>::codegen: Ignoring hidden or seen: \
+                   self = {:?}", self);
             return;
         }
 
@@ -328,8 +329,7 @@ impl CodeGenerator for Var {
                         .build(ty)
                 }
                 VarType::Int(val) => {
-                    const_item.build(helpers::ast_ty::int_expr(val))
-                        .build(ty)
+                    const_item.build(helpers::ast_ty::int_expr(val)).build(ty)
                 }
                 VarType::String(ref bytes) => {
                     // Account the trailing zero.
