@@ -323,6 +323,10 @@ impl CodeGenerator for Var {
                 .const_(canonical_name)
                 .expr();
             let item = match *val {
+                VarType::Bool(val) => {
+                    const_item.build(helpers::ast_ty::bool_expr(val))
+                        .build(ty)
+                }
                 VarType::Int(val) => {
                     const_item.build(helpers::ast_ty::int_expr(val))
                         .build(ty)

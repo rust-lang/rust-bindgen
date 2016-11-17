@@ -133,6 +133,10 @@ pub mod ast_ty {
         }
     }
 
+    pub fn bool_expr(val: bool) -> P<ast::Expr> {
+        aster::AstBuilder::new().expr().bool(val)
+    }
+
     pub fn byte_array_expr(bytes: &[u8]) -> P<ast::Expr> {
         let mut vec = Vec::with_capacity(bytes.len() + 1);
         for byte in bytes {

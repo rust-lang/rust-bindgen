@@ -131,6 +131,14 @@ impl Type {
         }
     }
 
+    /// Is this a boolean type?
+    pub fn is_bool(&self) -> bool {
+        match self.kind {
+            TypeKind::Int(IntKind::Bool) => true,
+            _ => false,
+        }
+    }
+
     /// Is this an integer type?
     pub fn is_integer(&self) -> bool {
         match self.kind {
