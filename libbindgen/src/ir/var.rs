@@ -13,7 +13,7 @@ use super::ty::{FloatKind, TypeKind};
 /// The type for a constant variable.
 #[derive(Debug)]
 pub enum VarType {
-    /// An boolean.
+    /// A boolean.
     Bool(bool),
     /// An integer.
     Int(i64),
@@ -196,7 +196,6 @@ impl ClangSubItemParser for Var {
                 let canonical_ty = ctx.safe_resolve_type(ty)
                     .and_then(|t| t.safe_canonical_type(ctx));
 
-                let is_bool = canonical_ty.map_or(false, |t| t.is_bool());
                 let is_integer = canonical_ty.map_or(false, |t| t.is_integer());
                 let is_float = canonical_ty.map_or(false, |t| t.is_float());
 
@@ -204,18 +203,26 @@ impl ClangSubItemParser for Var {
                 // TODO: Strings, though the lookup is a bit more hard (we need
                 // to look at the canonical type of the pointee too, and check
                 // is char, u8, or i8 I guess).
-                let value = if is_bool {
-                    cursor.evaluate().as_int()
-                        .map(|val| VarType::Bool(val != 0))
-                } else if is_integer {
-                    cursor.evaluate()
-                        .as_int()
-                        .map(|val| val as i64)
-                        .or_else(|| {
-                            let tu = ctx.translation_unit();
-                            get_integer_literal_from_cursor(&cursor, tu)
-                        })
-                        .map(VarType::Int)
+                let value = if is_integer {
+                    let kind = match *canonical_ty.unwrap().kind() {
+                        TypeKind::Int(kind) => kind,
+                        _ => unreachable!(),
+                    };
+
+                    let mut val =
+                        cursor.evaluate().as_int().map(|val| val as i64);
+                    if val.is_none() || !kind.signedness_matches(val.unwrap()) {
+                        let tu = ctx.translation_unit();
+                        val = get_integer_literal_from_cursor(&cursor, tu);
+                    }
+
+                    val.map(|val| {
+                        if kind == IntKind::Bool {
+                            VarType::Bool(val != 0)
+                        } else {
+                            VarType::Int(val)
+                        }
+                    })
                 } else if is_float {
                     cursor.evaluate()
                         .as_double()

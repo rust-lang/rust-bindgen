@@ -1032,7 +1032,8 @@ impl ClangItemParser for Item {
                 // It's harmless, but if we restrict that, then
                 // tests/headers/nsStyleAutoArray.hpp crashes.
                 if let Err(ParseError::Recurse) = result {
-                    warn!("Unknown type, assuming named template type: id = {:?}; spelling = {}",
+                    warn!("Unknown type, assuming named template type: \
+                          id = {:?}; spelling = {}",
                           id,
                           ty.spelling());
                     Ok(Self::named_type_with_id(id,

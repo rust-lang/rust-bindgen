@@ -878,7 +878,9 @@ impl TypeCollector for Type {
             }
             // FIXME: Pending types!
             ref other @ _ => {
-                debug!("<Type as TypeCollector>::collect_types: Ignoring: {:?}", other);
+                debug!("<Type as TypeCollector>::collect_types: Ignoring: \
+                       {:?}",
+                       other);
             }
         }
     }

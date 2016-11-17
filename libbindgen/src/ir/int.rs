@@ -90,4 +90,9 @@ impl IntKind {
             Custom { is_signed, .. } => is_signed,
         }
     }
+
+    /// Whether this type's signedness matches the value.
+    pub fn signedness_matches(&self, val: i64) -> bool {
+        val >= 0 || self.is_signed()
+    }
 }
