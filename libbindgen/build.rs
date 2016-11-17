@@ -24,6 +24,7 @@ mod testgen {
         let out_dir = Path::new(env!("OUT_DIR"));
         let mut dst = File::create(Path::new(&out_dir).join("tests.rs")).unwrap();
 
+        println!("cargo:rerun-if-changed=tests/headers");
         let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
         let headers_dir = manifest_dir.join("tests").join("headers");
 
