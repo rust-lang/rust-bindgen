@@ -446,7 +446,7 @@ impl<'ctx> Bindings<'ctx> {
         let span = span.unwrap_or(DUMMY_SP);
 
         let mut context = BindgenContext::new(options);
-        parse(&mut context);
+        try!(parse(&mut context));
 
         let module = ast::Mod {
             inner: span,
@@ -563,14 +563,16 @@ pub fn parse_one(ctx: &mut BindgenContext,
 }
 
 /// Parse the Clang AST into our `Item` internal representation.
-fn parse(context: &mut BindgenContext) {
+fn parse(context: &mut BindgenContext) -> Result<(), ()> {
     use clang::Diagnostic;
     use clangll::*;
 
+    let mut fail = false;
     for d in context.translation_unit().diags().iter() {
         let msg = d.format(Diagnostic::default_opts());
         let is_err = d.severity() >= CXDiagnostic_Error;
         println!("{}, err: {}", msg, is_err);
+        if is_err { fail = true; }
     }
 
     let cursor = context.translation_unit().cursor();
@@ -585,6 +587,8 @@ fn parse(context: &mut BindgenContext) {
 
     assert!(context.current_module() == context.root_module(),
             "How did this happen?");
+
+    if fail { Err(()) } else { Ok(()) }
 }
 
 /// Extracted Clang version data
