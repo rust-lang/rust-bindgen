@@ -701,7 +701,13 @@ impl CodeGenerator for CompInfo {
 
         let mut template_args_used =
             vec![false; applicable_template_args.len()];
-        let canonical_name = item.canonical_name(ctx);
+
+        let mut canonical_name = item.canonical_name(ctx);
+        let times_seen = result.overload_number(&canonical_name);
+        if times_seen > 0 {
+            write!(&mut canonical_name, "{}", times_seen).unwrap();
+        }
+
         let builder = if is_union && ctx.options().unstable_rust {
             aster::AstBuilder::new()
                 .item()
