@@ -596,7 +596,7 @@ impl<'a> Bitfield<'a> {
             let field_type = field_item.to_rust_ty(ctx);
             let int_type = BlobTyBuilder::new(field_ty_layout).build();
 
-            let getter_name = ctx.ext_cx().ident_of(&field_name);
+            let getter_name = ctx.rust_ident(&field_name);
             let setter_name = ctx.ext_cx()
                 .ident_of(&format!("set_{}", &field_name));
             let mask = ((1usize << width) - 1) << offset;
