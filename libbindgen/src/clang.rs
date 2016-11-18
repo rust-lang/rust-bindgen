@@ -420,16 +420,26 @@ impl Cursor {
 
     /// Given that this cursor's referent is a function, return cursors to its
     /// parameters.
-    pub fn args(&self) -> Vec<Cursor> {
+    pub fn args(&self) -> Option<Vec<Cursor>> {
+        // XXX: We might want to use and keep num_args
+        // match self.kind() {
+        // CXCursor_FunctionDecl |
+        // CXCursor_CXXMethod => {
         unsafe {
-            let num = self.num_args().expect("expected value, got none") as u32;
-            let mut args = vec![];
-            for i in 0..num {
-                args.push(Cursor {
-                    x: clang_Cursor_getArgument(self.x, i as c_uint),
-                });
+            let w = clang_Cursor_getNumArguments(self.x);
+            if w == -1 {
+                None
+            } else {
+                let num = w as u32;
+
+                let mut args = vec![];
+                for i in 0..num {
+                    args.push(Cursor {
+                        x: clang_Cursor_getArgument(self.x, i as c_uint),
+                    });
+                }
+                Some(args)
             }
-            args
         }
     }
 
