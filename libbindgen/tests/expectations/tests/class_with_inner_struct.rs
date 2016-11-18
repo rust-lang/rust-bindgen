@@ -129,38 +129,42 @@ pub struct C {
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct C__bindgen_ty_1 {
-    pub mFunc: __BindgenUnionField<C__bindgen_ty_1_1>,
-    pub __bindgen_anon_1: __BindgenUnionField<C__bindgen_ty_1_2>,
+    pub mFunc: __BindgenUnionField<C__bindgen_ty_1__bindgen_ty_1>,
+    pub __bindgen_anon_1: __BindgenUnionField<C__bindgen_ty_1__bindgen_ty_2>,
     pub bindgen_union_field: [u32; 4usize],
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct C__bindgen_ty_1_1 {
+pub struct C__bindgen_ty_1__bindgen_ty_1 {
     pub mX1: f32,
     pub mY1: f32,
     pub mX2: f32,
     pub mY2: f32,
 }
 #[test]
-fn bindgen_test_layout_C__bindgen_ty_1_1() {
-    assert_eq!(::std::mem::size_of::<C__bindgen_ty_1_1>() , 16usize);
-    assert_eq!(::std::mem::align_of::<C__bindgen_ty_1_1>() , 4usize);
+fn bindgen_test_layout_C__bindgen_ty_1__bindgen_ty_1() {
+    assert_eq!(::std::mem::size_of::<C__bindgen_ty_1__bindgen_ty_1>() ,
+               16usize);
+    assert_eq!(::std::mem::align_of::<C__bindgen_ty_1__bindgen_ty_1>() ,
+               4usize);
 }
-impl Clone for C__bindgen_ty_1_1 {
+impl Clone for C__bindgen_ty_1__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct C__bindgen_ty_1_2 {
+pub struct C__bindgen_ty_1__bindgen_ty_2 {
     pub mStepSyntax: StepSyntax,
     pub mSteps: ::std::os::raw::c_uint,
 }
 #[test]
-fn bindgen_test_layout_C__bindgen_ty_1_2() {
-    assert_eq!(::std::mem::size_of::<C__bindgen_ty_1_2>() , 8usize);
-    assert_eq!(::std::mem::align_of::<C__bindgen_ty_1_2>() , 4usize);
+fn bindgen_test_layout_C__bindgen_ty_1__bindgen_ty_2() {
+    assert_eq!(::std::mem::size_of::<C__bindgen_ty_1__bindgen_ty_2>() ,
+               8usize);
+    assert_eq!(::std::mem::align_of::<C__bindgen_ty_1__bindgen_ty_2>() ,
+               4usize);
 }
-impl Clone for C__bindgen_ty_1_2 {
+impl Clone for C__bindgen_ty_1__bindgen_ty_2 {
     fn clone(&self) -> Self { *self }
 }
 #[test]

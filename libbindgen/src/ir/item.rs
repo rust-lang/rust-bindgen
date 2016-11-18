@@ -2,8 +2,8 @@
 
 use clang;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
-use regex::Regex;
 use std::cell::{Cell, RefCell};
+use std::fmt::Write;
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId};
 use super::function::Function;
@@ -490,7 +490,8 @@ impl Item {
         }
     }
 
-    fn is_module(&self) -> bool {
+    /// Is this item a module?
+    pub fn is_module(&self) -> bool {
         match self.kind {
             ItemKind::Module(..) => true,
             _ => false,
@@ -525,6 +526,108 @@ impl Item {
         self.as_type().map_or(false, |ty| ty.is_type_ref())
     }
 
+    /// Get the target item id for name generation.
+    fn name_target(&self, ctx: &BindgenContext, for_name_checking: bool) -> ItemId {
+        let mut item = self;
+        loop {
+            match *item.kind() {
+                ItemKind::Type(ref ty) => {
+                    match *ty.kind() {
+                        // If we're a template specialization, our name is our
+                        // parent's name.
+                        TypeKind::Comp(ref ci) if ci.is_template_specialization() => {
+                            item = ctx.resolve_item(ci.specialized_template().unwrap());
+                        },
+                        // Same as above.
+                        TypeKind::ResolvedTypeRef(inner) |
+                        TypeKind::TemplateRef(inner, _) => {
+                            item = ctx.resolve_item(inner);
+                        }
+                        // Template aliases use their inner alias type's name if we
+                        // are checking names for whitelisting/replacement/etc.
+                        TypeKind::TemplateAlias(inner, _) if for_name_checking => {
+                            item = ctx.resolve_item(inner);
+                            assert_eq!(item.id(), item.name_target(ctx, for_name_checking));
+                            return item.id();
+                        }
+                        _ => return item.id(),
+                    }
+                },
+                _ => return item.id(),
+            }
+        }
+    }
+
+    /// Get this function item's name, or `None` if this item is not a function.
+    fn func_name(&self) -> Option<&str> {
+        match *self.kind() {
+            ItemKind::Function(ref func) => Some(func.name()),
+            _ => None,
+        }
+    }
+
+    /// Get the overload index for this method. If this is not a method, return
+    /// `None`.
+    fn method_overload_index(&self, ctx: &BindgenContext) -> Option<usize> {
+        self.func_name().and_then(|func_name| {
+            let parent = ctx.resolve_item(self.parent_id());
+            if let ItemKind::Type(ref ty) = *parent.kind() {
+                if let TypeKind::Comp(ref ci) = *ty.kind() {
+                    return ci.methods()
+                        .iter()
+                        .filter(|method| {
+                            let item = ctx.resolve_item(method.signature());
+                            let func = item.expect_function();
+                            func.name() == func_name
+                        })
+                        .enumerate()
+                        .find(|&(_, ref method)| method.signature() == self.id())
+                        .map(|(idx, _)| idx);
+                }
+            }
+
+            None
+        })
+    }
+
+    /// Get this item's base name (aka non-namespaced name).
+    ///
+    /// The `for_name_checking` boolean parameter informs us whether we are
+    /// asking for the name in order to do a whitelisting/replacement/etc check
+    /// or if we are instead using it for code generation.
+    fn base_name(&self, ctx: &BindgenContext, for_name_checking: bool) -> String {
+        match *self.kind() {
+            ItemKind::Var(ref var) => var.name().to_owned(),
+            ItemKind::Module(ref module) => {
+                module.name()
+                    .map(ToOwned::to_owned)
+                    .unwrap_or_else(|| format!("_bindgen_mod_{}", self.exposed_id(ctx)))
+            },
+            ItemKind::Type(ref ty) => {
+                let name = match *ty.kind() {
+                    TypeKind::ResolvedTypeRef(..) =>
+                        panic!("should have resolved this in name_target()"),
+                    TypeKind::TemplateAlias(..) if !for_name_checking => Some(""),
+                    TypeKind::TemplateAlias(..) => None,
+                    _ => ty.name(),
+                };
+                name.map(ToOwned::to_owned)
+                    .unwrap_or_else(|| format!("_bindgen_ty_{}", self.exposed_id(ctx)))
+            }
+            ItemKind::Function(ref fun) => {
+                let mut name = fun.name().to_owned();
+
+                if let Some(idx) = self.method_overload_index(ctx) {
+                    if idx > 0 {
+                        write!(&mut name, "{}", idx).unwrap();
+                    }
+                }
+
+                name
+            },
+        }
+    }
+
     /// Get the canonical name without taking into account the replaces
     /// annotation.
     ///
@@ -538,102 +641,38 @@ impl Item {
     /// type and the parent chain, since it should be consistent.
     pub fn real_canonical_name(&self,
                                ctx: &BindgenContext,
-                               count_namespaces: bool,
+                               within_namespace: bool,
                                for_name_checking: bool)
                                -> String {
-        let base_name = match *self.kind() {
-            ItemKind::Type(ref ty) => {
-                match *ty.kind() {
-                    // If we're a template specialization, our name is our
-                    // parent's.
-                    TypeKind::Comp(ref ci)
-                        if ci.is_template_specialization() => {
-                        return ci.specialized_template().unwrap()
-                                 .canonical_name(ctx);
-                    },
-                    // Same as above
-                    TypeKind::ResolvedTypeRef(inner) |
-                    TypeKind::TemplateRef(inner, _) => {
-                        return inner.canonical_name(ctx);
-                    }
-                    // If we're a named type, we don't need to mangle it, and we
-                    // should be able to assert we're not top level.
-                    TypeKind::Named(ref name, _) => {
-                        return name.to_owned();
-                    }
-                    // We call codegen on the inner type, but we do not want
-                    // this alias's name to appear in the canonical name just
-                    // because it is in the inner type's parent chain, so we use
-                    // an empty base name.
-                    //
-                    // Note that this would be incorrect if this type could be
-                    // referenced from, let's say, a member variable, but in
-                    // that case the referenced type is the inner alias, so
-                    // we're good there. If we wouldn't, a more complex solution
-                    // would be needed.
-                    TypeKind::TemplateAlias(inner, _) => {
-                        if for_name_checking {
-                            return ctx.resolve_item(inner)
-                                      .real_canonical_name(ctx,
-                                                           count_namespaces,
-                                                           false);
-                        }
-                        Some("")
-                    }
-                    // Else use the proper name, or fallback to a name with an
-                    // id.
-                    _ => {
-                        ty.name()
-                    }
-                }.map(ToOwned::to_owned)
-            }
-            ItemKind::Function(ref fun) => {
-                let mut base = fun.name().to_owned();
+        let target = ctx.resolve_item(self.name_target(ctx, for_name_checking));
+        let base_name = target.base_name(ctx, for_name_checking);
 
-                // We might need to deduplicate if we're a method.
-                let parent = ctx.resolve_item(self.parent_id());
-                if let ItemKind::Type(ref ty) = *parent.kind() {
-                    if let TypeKind::Comp(ref ci) = *ty.kind() {
-                        let mut count = 0;
-                        let mut found = false;
-                        for method in ci.methods() {
-                            if method.signature() == self.id() {
-                                found = true;
-                                break;
-                            }
-                            let fun = ctx.resolve_item(method.signature())
-                                .expect_function();
-                            if fun.name() == base {
-                                count += 1;
-                            }
-                        }
+        // Named template type arguments are never namespaced, and never
+        // mangled.
+        if target.as_type().map_or(false, |ty| ty.is_named()) {
+            return base_name;
+        }
 
-                        assert!(found, "Method not found?");
-                        if count != 0 {
-                            base.push_str(&count.to_string());
-                        }
-                    }
-                }
-                Some(base)
-            }
-            ItemKind::Var(ref var) => Some(var.name().to_owned()),
-            ItemKind::Module(ref module) => {
-                module.name().map(ToOwned::to_owned)
-            }
-        };
-
-        let parent = ctx.resolve_item(self.parent_id());
-        let parent_is_namespace = parent.is_module();
-
-        if self.is_toplevel(ctx) || (parent_is_namespace && count_namespaces) {
-            let base_name = self.make_exposed_name(None, base_name, ctx);
+        if within_namespace {
             return ctx.rust_mangle(&base_name).into_owned();
         }
 
-        // TODO: allow modification of the mangling functions, maybe even per
-        // item type?
-        let parent_name = parent.canonical_name(ctx);
-        self.make_exposed_name(Some(parent_name), base_name, ctx)
+        // Concatenate this item's ancestors' names together.
+        let mut names: Vec<_> = target.parent_id()
+            .ancestors(ctx)
+            .filter(|id| *id != ctx.root_module())
+            .map(|id| {
+                let item = ctx.resolve_item(id);
+                let target = ctx.resolve_item(item.name_target(ctx, false));
+                target.base_name(ctx, false)
+            })
+            .filter(|name| !name.is_empty())
+            .collect();
+        names.reverse();
+        names.push(base_name);
+        let name = names.join("_");
+
+        ctx.rust_mangle(&name).into_owned()
     }
 
     fn exposed_id(&self, ctx: &BindgenContext) -> String {
@@ -652,45 +691,6 @@ impl Item {
         // between the global id and the local id of an item with the same
         // parent.
         format!("id_{}", self.id().as_usize())
-    }
-
-    fn make_exposed_name(&self,
-                         parent_name: Option<String>,
-                         base_name: Option<String>,
-                         ctx: &BindgenContext)
-                         -> String {
-        lazy_static! {
-            static ref RE_ENDS_WITH_BINDGEN_TY: Regex =
-                Regex::new(r"_bindgen_ty(_\d+)+$").unwrap();
-
-            static ref RE_ENDS_WITH_BINDGEN_MOD: Regex =
-                Regex::new(r"_bindgen_mod(_\d+)+$").unwrap();
-        }
-
-        let (re, kind) = match *self.kind() {
-            ItemKind::Module(..) => (&*RE_ENDS_WITH_BINDGEN_MOD, "mod"),
-            _ => (&*RE_ENDS_WITH_BINDGEN_TY, "ty"),
-        };
-
-        let parent_name =
-            parent_name.and_then(|n| if n.is_empty() { None } else { Some(n) });
-        match (parent_name, base_name) {
-            (Some(parent), Some(base)) => format!("{}_{}", parent, base),
-            (Some(parent), None) => {
-                if re.is_match(parent.as_str()) {
-                    format!("{}_{}", parent, self.exposed_id(ctx))
-                } else {
-                    format!("{}__bindgen_{}_{}",
-                            parent,
-                            kind,
-                            self.exposed_id(ctx))
-                }
-            }
-            (None, Some(base)) => base,
-            (None, None) => {
-                format!("_bindgen_{}_{}", kind, self.exposed_id(ctx))
-            }
-        }
     }
 
     /// Get a mutable reference to this item's `Module`, or `None` if this is

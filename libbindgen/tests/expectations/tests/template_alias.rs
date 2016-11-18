@@ -4,9 +4,9 @@
 #![allow(non_snake_case)]
 
 
-pub type Wrapped<T> = T;
+pub type JS_detail_Wrapped<T> = T;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Rooted<T> {
-    pub ptr: Wrapped<T>,
+pub struct JS_Rooted<T> {
+    pub ptr: JS_detail_Wrapped<T>,
 }

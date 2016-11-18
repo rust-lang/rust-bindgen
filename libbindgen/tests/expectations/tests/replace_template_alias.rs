@@ -6,10 +6,10 @@
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Rooted<T> {
-    pub ptr: MaybeWrapped<T>,
+pub struct JS_Rooted<T> {
+    pub ptr: JS_detail_MaybeWrapped<T>,
 }
 /// But the replacement type does use T!
 ///
-/// <div rustbindgen replaces="MaybeWrapped" />
-pub type MaybeWrapped<T> = T;
+/// <div rustbindgen replaces="JS_detail_MaybeWrapped" />
+pub type JS_detail_MaybeWrapped<T> = T;

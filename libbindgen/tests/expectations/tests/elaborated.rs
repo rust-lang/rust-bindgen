@@ -4,8 +4,8 @@
 #![allow(non_snake_case)]
 
 
-pub type whatever_t = ::std::os::raw::c_int;
+pub type whatever_whatever_t = ::std::os::raw::c_int;
 extern "C" {
     #[link_name = "_Z9somethingPKi"]
-    pub fn something(wat: *const whatever_t);
+    pub fn something(wat: *const whatever_whatever_t);
 }

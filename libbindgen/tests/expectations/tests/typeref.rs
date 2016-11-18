@@ -31,7 +31,7 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct nsFoo {
-    pub mBar: StyleShapeSource<::std::os::raw::c_int>,
+    pub mBar: mozilla_StyleShapeSource<::std::os::raw::c_int>,
 }
 #[test]
 fn bindgen_test_layout_nsFoo() {
@@ -43,28 +43,28 @@ impl Clone for nsFoo {
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct FragmentOrURL {
+pub struct mozilla_FragmentOrURL {
     pub mIsLocalRef: bool,
 }
 #[test]
-fn bindgen_test_layout_FragmentOrURL() {
-    assert_eq!(::std::mem::size_of::<FragmentOrURL>() , 1usize);
-    assert_eq!(::std::mem::align_of::<FragmentOrURL>() , 1usize);
+fn bindgen_test_layout_mozilla_FragmentOrURL() {
+    assert_eq!(::std::mem::size_of::<mozilla_FragmentOrURL>() , 1usize);
+    assert_eq!(::std::mem::align_of::<mozilla_FragmentOrURL>() , 1usize);
 }
-impl Clone for FragmentOrURL {
+impl Clone for mozilla_FragmentOrURL {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct Position {
+pub struct mozilla_Position {
     pub _address: u8,
 }
 #[test]
-fn bindgen_test_layout_Position() {
-    assert_eq!(::std::mem::size_of::<Position>() , 1usize);
-    assert_eq!(::std::mem::align_of::<Position>() , 1usize);
+fn bindgen_test_layout_mozilla_Position() {
+    assert_eq!(::std::mem::size_of::<mozilla_Position>() , 1usize);
+    assert_eq!(::std::mem::align_of::<mozilla_Position>() , 1usize);
 }
-impl Clone for Position {
+impl Clone for mozilla_Position {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
@@ -82,15 +82,15 @@ impl Clone for Bar {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct StyleShapeSource<ReferenceBox> {
-    pub __bindgen_anon_1: StyleShapeSource__bindgen_ty_1<ReferenceBox>,
+pub struct mozilla_StyleShapeSource<ReferenceBox> {
+    pub __bindgen_anon_1: mozilla_StyleShapeSource__bindgen_ty_1<ReferenceBox>,
     pub _phantom_0: ::std::marker::PhantomData<ReferenceBox>,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct StyleShapeSource__bindgen_ty_1<ReferenceBox> {
-    pub mPosition: __BindgenUnionField<*mut Position>,
-    pub mFragmentOrURL: __BindgenUnionField<*mut FragmentOrURL>,
+pub struct mozilla_StyleShapeSource__bindgen_ty_1<ReferenceBox> {
+    pub mPosition: __BindgenUnionField<*mut mozilla_Position>,
+    pub mFragmentOrURL: __BindgenUnionField<*mut mozilla_FragmentOrURL>,
     pub bindgen_union_field: u64,
     pub _phantom_0: ::std::marker::PhantomData<ReferenceBox>,
 }

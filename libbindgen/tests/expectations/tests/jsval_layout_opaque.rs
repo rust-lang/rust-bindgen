@@ -154,24 +154,24 @@ impl jsval_layout__bindgen_ty_1 {
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct jsval_layout__bindgen_ty_2 {
-    pub payload: jsval_layout__bindgen_ty_2_1,
+    pub payload: jsval_layout__bindgen_ty_2__bindgen_ty_1,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct jsval_layout__bindgen_ty_2_1 {
+pub struct jsval_layout__bindgen_ty_2__bindgen_ty_1 {
     pub i32: __BindgenUnionField<i32>,
     pub u32: __BindgenUnionField<u32>,
     pub why: __BindgenUnionField<JSWhyMagic>,
     pub bindgen_union_field: u32,
 }
 #[test]
-fn bindgen_test_layout_jsval_layout__bindgen_ty_2_1() {
-    assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_2_1>() ,
-               4usize);
-    assert_eq!(::std::mem::align_of::<jsval_layout__bindgen_ty_2_1>() ,
-               4usize);
+fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
+    assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()
+               , 4usize);
+    assert_eq!(::std::mem::align_of::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()
+               , 4usize);
 }
-impl Clone for jsval_layout__bindgen_ty_2_1 {
+impl Clone for jsval_layout__bindgen_ty_2__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[test]
