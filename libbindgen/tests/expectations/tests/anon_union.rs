@@ -75,3 +75,10 @@ fn bindgen_test_layout_ErrorResult() {
 impl Clone for ErrorResult {
     fn clone(&self) -> Self { *self }
 }
+#[test]
+fn bindgen_test_layout_template_TErrorResult_int() {
+    assert_eq!(::std::mem::size_of::<TErrorResult<::std::os::raw::c_int>>() ,
+               24usize);
+    assert_eq!(::std::mem::align_of::<TErrorResult<::std::os::raw::c_int>>() ,
+               8usize);
+}

@@ -669,11 +669,11 @@ impl CodeGenerator for CompInfo {
                     for arg in self.template_args() {
                         if let Some(name) = ctx.resolve_type(*arg).name() {
                             // hope this isn't bad
-                            types.push_str(format!("{}_", name).as_str());
+                            types.push_str(format!("_{}", name).as_str());
                         }
                     }
 
-                    let fn_name = format!("bindgen_test_layout_template_{}_{}", canonical_name, types);
+                    let fn_name = format!("bindgen_test_layout_template_{}{}", canonical_name, types);
                     let fn_name = ctx.rust_ident_raw(&fn_name);
                     let ident = item.to_rust_ty(ctx);
                     let prefix = ctx.trait_prefix();
