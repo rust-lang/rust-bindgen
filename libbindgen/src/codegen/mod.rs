@@ -655,13 +655,25 @@ impl CodeGenerator for CompInfo {
         // also don't output template specializations, neither total or partial.
         //
         // TODO: Generate layout tests for template specializations, yay!
+
+        // TODO (imp): I will keep it like that right now and move it to function later
         if self.has_non_type_template_params() ||
             self.is_template_specialization() {
                 let layout = item.kind().expect_type().layout(ctx);
                 let canonical_name = item.canonical_name(ctx);
 
                 if let Some(layout) = layout {
-                    let fn_name = format!("bindgen_test_layout_template_{}", canonical_name);
+
+                    let mut types = String::new();
+
+                    for arg in self.template_args() {
+                        if let Some(name) = ctx.resolve_type(*arg).name() {
+                            // hope this isn't bad
+                            types.push_str(format!("{}_", name).as_str());
+                        }
+                    }
+
+                    let fn_name = format!("bindgen_test_layout_template_{}_{}", canonical_name, types);
                     let fn_name = ctx.rust_ident_raw(&fn_name);
                     let ident = item.to_rust_ty(ctx);
                     let prefix = ctx.trait_prefix();
