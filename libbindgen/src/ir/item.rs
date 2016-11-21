@@ -1,6 +1,7 @@
 //! Bindgen's core intermediate representation type.
 
 use clang;
+use clangll;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use std::cell::{Cell, RefCell};
 use std::fmt::Write;
@@ -733,6 +734,31 @@ impl Item {
     }
 }
 
+// An utility function to handle recursing inside nested types.
+fn visit_child(cur: clang::Cursor,
+               id: ItemId,
+               ty: &clang::Type,
+               parent_id: Option<ItemId>,
+               ctx: &mut BindgenContext,
+               result: &mut Result<ItemId, ParseError>)
+               -> clangll::Enum_CXChildVisitResult {
+    use clangll::*;
+    if result.is_ok() {
+        return CXChildVisit_Break;
+    }
+
+    *result = Item::from_ty_with_id(id, ty, Some(cur), parent_id, ctx);
+
+    match *result {
+        Ok(..) => CXChildVisit_Break,
+        Err(ParseError::Recurse) => {
+            cur.visit(|c| visit_child(c, id, ty, parent_id, ctx, result));
+            CXChildVisit_Continue
+        }
+        Err(ParseError::Continue) => CXChildVisit_Continue,
+    }
+}
+
 impl ClangItemParser for Item {
     fn builtin_type(kind: TypeKind,
                     is_const: bool,
@@ -1022,17 +1048,7 @@ impl ClangItemParser for Item {
                     }
 
                     location.visit(|cur| {
-                        use clangll::*;
-                        result = Item::from_ty_with_id(id,
-                                                       ty,
-                                                       Some(cur),
-                                                       parent_id,
-                                                       ctx);
-                        match result {
-                            Ok(..) => CXChildVisit_Break,
-                            Err(ParseError::Recurse) => CXChildVisit_Recurse,
-                            Err(ParseError::Continue) => CXChildVisit_Continue,
-                        }
+                        visit_child(cur, id, ty, parent_id, ctx, &mut result)
                     });
 
                     if valid_decl {
