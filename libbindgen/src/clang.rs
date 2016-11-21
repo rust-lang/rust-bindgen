@@ -487,7 +487,7 @@ impl Cursor {
     }
 
     /// Try to evaluate this cursor.
-    pub fn evaluate(&self) -> EvalResult {
+    pub fn evaluate(&self) -> Option<EvalResult> {
         EvalResult::new(*self)
     }
 }
@@ -1286,10 +1286,8 @@ pub struct EvalResult {
 #[cfg(feature = "llvm_stable")]
 impl EvalResult {
     /// Create a dummy EvalResult.
-    pub fn new(_: Cursor) -> Self {
-        EvalResult {
-            x: ptr::null_mut(),
-        }
+    pub fn new(_: Cursor) -> Option<Self> {
+        None
     }
 
     /// Not useful in llvm 3.8.
@@ -1306,10 +1304,31 @@ impl EvalResult {
 #[cfg(not(feature = "llvm_stable"))]
 impl EvalResult {
     /// Evaluate `cursor` and return the result.
-    pub fn new(cursor: Cursor) -> Self {
-        EvalResult {
-            x: unsafe { clang_Cursor_Evaluate(cursor.x) },
+    pub fn new(cursor: Cursor) -> Option<Self> {
+        // Clang has an internal assertion we can trigger if we try to evaluate
+        // a cursor containing a variadic template type reference. Triggering
+        // the assertion aborts the process, and we don't want that. Clang
+        // *also* doesn't expose any API for finding variadic vs non-variadic
+        // template type references, let alone whether a type referenced is a
+        // template type, instead they seem to show up as type references to an
+        // unexposed type. Our solution is to just flat out ban all
+        // `CXType_Unexposed` from evaluation.
+        let mut found_cant_eval = false;
+        cursor.visit(|c| {
+            if c.kind() == CXCursor_TypeRef && c.cur_type().kind() == CXType_Unexposed {
+                found_cant_eval = true;
+                CXChildVisit_Break
+            } else {
+                CXChildVisit_Recurse
+            }
+        });
+        if found_cant_eval {
+            return None;
         }
+
+        Some(EvalResult {
+            x: unsafe { clang_Cursor_Evaluate(cursor.x) },
+        })
     }
 
     fn kind(&self) -> Enum_CXEvalResultKind {

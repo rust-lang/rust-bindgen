@@ -209,8 +209,9 @@ impl ClangSubItemParser for Var {
                         _ => unreachable!(),
                     };
 
-                    let mut val =
-                        cursor.evaluate().as_int().map(|val| val as i64);
+                    let mut val = cursor.evaluate()
+                        .and_then(|v| v.as_int())
+                        .map(|val| val as i64);
                     if val.is_none() || !kind.signedness_matches(val.unwrap()) {
                         let tu = ctx.translation_unit();
                         val = get_integer_literal_from_cursor(&cursor, tu);
@@ -225,7 +226,7 @@ impl ClangSubItemParser for Var {
                     })
                 } else if is_float {
                     cursor.evaluate()
-                        .as_double()
+                        .and_then(|v| v.as_double())
                         .map(VarType::Float)
                 } else {
                     None
