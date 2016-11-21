@@ -1,6 +1,7 @@
 //! Bindgen's core intermediate representation type.
 
 use clang;
+use clangll;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use std::cell::{Cell, RefCell};
 use std::fmt::Write;
@@ -1021,19 +1022,35 @@ impl ClangItemParser for Item {
                         assert_eq!(popped_decl, declaration_to_look_for);
                     }
 
-                    location.visit(|cur| {
+                    fn visit_child(cur: clang::Cursor,
+                                   id: ItemId,
+                                   ty: &clang::Type,
+                                   parent_id: Option<ItemId>,
+                                   ctx: &mut BindgenContext,
+                                   result: &mut Result<ItemId, ParseError>)
+                                   -> clangll::Enum_CXChildVisitResult {
                         use clangll::*;
-                        result = Item::from_ty_with_id(id,
-                                                       ty,
-                                                       Some(cur),
-                                                       parent_id,
-                                                       ctx);
-                        match result {
+                        if result.is_ok() {
+                            return CXChildVisit_Break;
+                        }
+
+                        *result = Item::from_ty_with_id(id,
+                                                        ty,
+                                                        Some(cur),
+                                                        parent_id,
+                                                        ctx);
+
+                        match *result {
                             Ok(..) => CXChildVisit_Break,
-                            Err(ParseError::Recurse) => CXChildVisit_Recurse,
+                            Err(ParseError::Recurse) => {
+                                cur.visit(|c| visit_child(c, id, ty, parent_id, ctx, result));
+                                CXChildVisit_Continue
+                            }
                             Err(ParseError::Continue) => CXChildVisit_Continue,
                         }
-                    });
+                    }
+
+                    location.visit(|cur| visit_child(cur, id, ty, parent_id, ctx, &mut result));
 
                     if valid_decl {
                         ctx.currently_parsed_types
