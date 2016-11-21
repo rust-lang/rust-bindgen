@@ -13,7 +13,7 @@ pub struct Foo<T, U> {
     pub _phantom_1: ::std::marker::PhantomData<U>,
 }
 #[test]
-fn bindgen_test_layout_template_Foo_int_int() {
+fn __bindgen_test_layout_template_10() {
     assert_eq!(::std::mem::size_of::<Foo<::std::os::raw::c_int, ::std::os::raw::c_int>>()
                , 24usize);
     assert_eq!(::std::mem::align_of::<Foo<::std::os::raw::c_int, ::std::os::raw::c_int>>()
@@ -176,7 +176,7 @@ pub struct TemplateWithVar<T> {
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[test]
-fn bindgen_test_layout_template_WithDtor_int() {
+fn __bindgen_test_layout_template_132() {
     assert_eq!(::std::mem::size_of::<WithDtor<::std::os::raw::c_int>>() ,
                4usize);
     assert_eq!(::std::mem::align_of::<WithDtor<::std::os::raw::c_int>>() ,

@@ -24,7 +24,7 @@ impl Clone for Derived {
     fn clone(&self) -> Self { *self }
 }
 #[test]
-fn bindgen_test_layout_template_Base() {
+fn __bindgen_test_layout_template_5() {
     assert_eq!(::std::mem::size_of::<Base<Derived>>() , 1usize);
     assert_eq!(::std::mem::align_of::<Base<Derived>>() , 1usize);
 }
@@ -47,7 +47,7 @@ fn bindgen_test_layout_DerivedFromBaseWithDestructor() {
                1usize);
 }
 #[test]
-fn bindgen_test_layout_template_BaseWithDestructor() {
+fn __bindgen_test_layout_template_12() {
     assert_eq!(::std::mem::size_of::<BaseWithDestructor<DerivedFromBaseWithDestructor>>()
                , 1usize);
     assert_eq!(::std::mem::align_of::<BaseWithDestructor<DerivedFromBaseWithDestructor>>()
