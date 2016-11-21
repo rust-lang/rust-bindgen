@@ -3,6 +3,10 @@
 use clang;
 use parse::{ClangSubItemParser, ParseError, ParseResult};
 use parse_one;
+use std::borrow::Borrow;
+use std::cell::RefCell;
+use std::collections::HashMap;
+use std::hash::Hash;
 use super::context::{BindgenContext, ItemId};
 
 /// A module, as in, a C++ namespace.
@@ -12,6 +16,9 @@ pub struct Module {
     name: Option<String>,
     /// The children of this module, just here for convenience.
     children_ids: Vec<ItemId>,
+    /// The set of submodules for this module. We use this to make sure that
+    /// there are never duplicate submodules with the same name.
+    submodules: RefCell<HashMap<Option<String>, ItemId>>,
 }
 
 impl Module {
@@ -20,6 +27,7 @@ impl Module {
         Module {
             name: name,
             children_ids: vec![],
+            submodules: RefCell::new(HashMap::new()),
         }
     }
 
@@ -36,6 +44,20 @@ impl Module {
     /// Get this module's children.
     pub fn children(&self) -> &[ItemId] {
         &self.children_ids
+    }
+
+    /// Get the submodule named `submodule`, if one exists.
+    pub fn submodule<Q>(&self, submodule: &Q) -> Option<ItemId>
+        where Option<String>: Borrow<Q>,
+              Q: Hash + Eq
+    {
+        self.submodules.borrow().get(submodule).cloned()
+    }
+
+    /// Add a new submodule with the given `name` and `id`.
+    pub fn add_submodule(&self, name: Option<String>, id: ItemId) {
+        let mut submodules = self.submodules.borrow_mut();
+        submodules.insert(name.into(), id);
     }
 }
 
