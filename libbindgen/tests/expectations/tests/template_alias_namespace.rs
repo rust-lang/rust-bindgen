@@ -5,10 +5,13 @@
 
 
 pub mod root {
+    #[allow(unused_imports)]
     use root;
     pub mod JS {
+        #[allow(unused_imports)]
         use root;
         pub mod detail {
+            #[allow(unused_imports)]
             use root;
             pub type Wrapped<T> = T;
         }

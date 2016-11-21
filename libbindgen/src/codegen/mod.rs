@@ -33,7 +33,8 @@ fn root_import(ctx: &BindgenContext) -> P<ast::Item> {
     assert!(ctx.options().enable_cxx_namespaces, "Somebody messed it up");
     let root = ctx.root_module().canonical_name(ctx);
     let root_ident = ctx.rust_ident(&root);
-    quote_item!(ctx.ext_cx(), use $root_ident;).unwrap()
+    quote_item!(ctx.ext_cx(), #[allow(unused_imports)] use $root_ident;)
+        .unwrap()
 }
 
 struct CodegenResult {
@@ -217,6 +218,7 @@ trait CodeGenerator {
     fn codegen(&self,
                ctx: &BindgenContext,
                result: &mut CodegenResult,
+               whitelisted_items: &ItemSet,
                extra: &Self::Extra);
 }
 
@@ -226,6 +228,7 @@ impl CodeGenerator for Item {
     fn codegen(&self,
                ctx: &BindgenContext,
                result: &mut CodegenResult,
+               whitelisted_items: &ItemSet,
                _extra: &()) {
         if self.is_hidden(ctx) || result.seen(self.id()) {
             debug!("<Item as CodeGenerator>::codegen: Ignoring hidden or seen: \
@@ -244,18 +247,18 @@ impl CodeGenerator for Item {
                     return;
                 }
 
-                module.codegen(ctx, result, self);
+                module.codegen(ctx, result, whitelisted_items, self);
             }
             ItemKind::Function(ref fun) => {
                 if !ctx.options().ignore_functions {
-                    fun.codegen(ctx, result, self);
+                    fun.codegen(ctx, result, whitelisted_items, self);
                 }
             }
             ItemKind::Var(ref var) => {
-                var.codegen(ctx, result, self);
+                var.codegen(ctx, result, whitelisted_items, self);
             }
             ItemKind::Type(ref ty) => {
-                ty.codegen(ctx, result, self);
+                ty.codegen(ctx, result, whitelisted_items, self);
             }
         }
     }
@@ -267,12 +270,14 @@ impl CodeGenerator for Module {
     fn codegen(&self,
                ctx: &BindgenContext,
                result: &mut CodegenResult,
+               whitelisted_items: &ItemSet,
                item: &Item) {
         debug!("<Module as CodeGenerator>::codegen: item = {:?}", item);
 
         if !ctx.options().enable_cxx_namespaces {
             for child in self.children() {
-                ctx.resolve_item(*child).codegen(ctx, result, &());
+                ctx.resolve_item(*child)
+                    .codegen(ctx, result, whitelisted_items, &());
             }
             return;
         }
@@ -280,7 +285,10 @@ impl CodeGenerator for Module {
         let inner_items = result.inner(|result| {
             result.push(root_import(ctx));
             for child in self.children() {
-                ctx.resolve_item(*child).codegen(ctx, result, &());
+                if whitelisted_items.contains(child) {
+                    ctx.resolve_item(*child)
+                        .codegen(ctx, result, whitelisted_items, &());
+                }
             }
         });
 
@@ -304,6 +312,7 @@ impl CodeGenerator for Var {
     fn codegen(&self,
                ctx: &BindgenContext,
                result: &mut CodegenResult,
+               _whitelisted_items: &ItemSet,
                item: &Item) {
         use ir::var::VarType;
         debug!("<Var as CodeGenerator>::codegen: item = {:?}", item);
@@ -394,6 +403,7 @@ impl CodeGenerator for Type {
     fn codegen(&self,
                ctx: &BindgenContext,
                result: &mut CodegenResult,
+               whitelisted_items: &ItemSet,
                item: &Item) {
         debug!("<Type as CodeGenerator>::codegen: item = {:?}", item);
 
@@ -415,12 +425,15 @@ impl CodeGenerator for Type {
                 // converted to rust types in fields, arguments, and such.
                 return;
             }
-            TypeKind::Comp(ref ci) => ci.codegen(ctx, result, item),
+            TypeKind::Comp(ref ci) => {
+                ci.codegen(ctx, result, whitelisted_items, item)
+            }
             TypeKind::TemplateAlias(inner, _) => {
                 // NB: The inner Alias will pick the correct
                 // applicable_template_args.
                 let inner_item = ctx.resolve_item(inner);
-                inner_item.expect_type().codegen(ctx, result, inner_item);
+                inner_item.expect_type()
+                    .codegen(ctx, result, whitelisted_items, inner_item);
             }
             TypeKind::Alias(ref spelling, inner) => {
                 let inner_item = ctx.resolve_item(inner);
@@ -478,7 +491,9 @@ impl CodeGenerator for Type {
                 let typedef = generics.build().build_ty(inner_rust_type);
                 result.push(typedef)
             }
-            TypeKind::Enum(ref ei) => ei.codegen(ctx, result, item),
+            TypeKind::Enum(ref ei) => {
+                ei.codegen(ctx, result, whitelisted_items, item)
+            }
             ref u @ TypeKind::UnresolvedTypeRef(..) => {
                 unreachable!("Should have been resolved after parsing {:?}!", u)
             }
@@ -513,6 +528,7 @@ impl<'a> CodeGenerator for Vtable<'a> {
     fn codegen(&self,
                ctx: &BindgenContext,
                result: &mut CodegenResult,
+               _whitelisted_items: &ItemSet,
                item: &Item) {
         assert_eq!(item.id(), self.item_id);
         // For now, generate an empty struct, later we should generate function
@@ -646,6 +662,7 @@ impl CodeGenerator for CompInfo {
     fn codegen(&self,
                ctx: &BindgenContext,
                result: &mut CodegenResult,
+               whitelisted_items: &ItemSet,
                item: &Item) {
         use aster::struct_field::StructFieldBuilder;
 
@@ -732,7 +749,7 @@ impl CodeGenerator for CompInfo {
         if self.needs_explicit_vtable(ctx) {
             let vtable =
                 Vtable::new(item.id(), self.methods(), self.base_members());
-            vtable.codegen(ctx, result, item);
+            vtable.codegen(ctx, result, whitelisted_items, item);
 
             let vtable_type = vtable.to_rust_ty(ctx).to_ptr(true, ctx.span());
 
@@ -1051,7 +1068,7 @@ impl CodeGenerator for CompInfo {
         for ty in self.inner_types() {
             let child_item = ctx.resolve_item(*ty);
             // assert_eq!(child_item.parent_id(), item.id());
-            child_item.codegen(ctx, result, &());
+            child_item.codegen(ctx, result, whitelisted_items, &());
         }
 
         // NOTE: Some unexposed attributes (like alignment attributes) may
@@ -1064,7 +1081,8 @@ impl CodeGenerator for CompInfo {
 
         if applicable_template_args.is_empty() && !self.found_unknown_attr() {
             for var in self.inner_vars() {
-                ctx.resolve_item(*var).codegen(ctx, result, &());
+                ctx.resolve_item(*var)
+                    .codegen(ctx, result, whitelisted_items, &());
             }
 
             if let Some(layout) = layout {
@@ -1094,6 +1112,7 @@ impl CodeGenerator for CompInfo {
                                       &mut methods,
                                       &mut method_names,
                                       result,
+                                      whitelisted_items,
                                       item);
             }
         }
@@ -1145,6 +1164,7 @@ trait MethodCodegen {
                       methods: &mut Vec<ast::ImplItem>,
                       method_names: &mut HashMap<String, usize>,
                       result: &mut CodegenResult,
+                      whitelisted_items: &ItemSet,
                       parent: &Item);
 }
 
@@ -1154,6 +1174,7 @@ impl MethodCodegen for Method {
                       methods: &mut Vec<ast::ImplItem>,
                       method_names: &mut HashMap<String, usize>,
                       result: &mut CodegenResult,
+                      whitelisted_items: &ItemSet,
                       _parent: &Item) {
         if ctx.options().ignore_methods {
             return;
@@ -1163,7 +1184,8 @@ impl MethodCodegen for Method {
             return; // FIXME
         }
         // First of all, output the actual function.
-        ctx.resolve_item(self.signature()).codegen(ctx, result, &());
+        ctx.resolve_item(self.signature())
+            .codegen(ctx, result, whitelisted_items, &());
 
         let function_item = ctx.resolve_item(self.signature());
         let function = function_item.expect_function();
@@ -1411,6 +1433,7 @@ impl CodeGenerator for Enum {
     fn codegen(&self,
                ctx: &BindgenContext,
                result: &mut CodegenResult,
+               _whitelisted_items: &ItemSet,
                item: &Item) {
         debug!("<Enum as CodeGenerator>::codegen: item = {:?}", item);
 
@@ -1852,6 +1875,7 @@ impl CodeGenerator for Function {
     fn codegen(&self,
                ctx: &BindgenContext,
                result: &mut CodegenResult,
+               _whitelisted_items: &ItemSet,
                item: &Item) {
         debug!("<Function as CodeGenerator>::codegen: item = {:?}", item);
 
@@ -1963,7 +1987,7 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
             // need to take responsibility for generating it.
             if item.is_toplevel(context) ||
                !ancestor_is_whitelisted(context, &whitelisted_items, id) {
-                item.codegen(context, &mut result, &());
+                item.codegen(context, &mut result, &whitelisted_items, &());
             }
         }
 

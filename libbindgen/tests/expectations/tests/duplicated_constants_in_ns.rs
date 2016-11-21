@@ -5,12 +5,15 @@
 
 
 pub mod root {
+    #[allow(unused_imports)]
     use root;
     pub mod foo {
+        #[allow(unused_imports)]
         use root;
         pub const FOO: ::std::os::raw::c_int = 4;
     }
     pub mod bar {
+        #[allow(unused_imports)]
         use root;
         pub const FOO: ::std::os::raw::c_int = 5;
     }

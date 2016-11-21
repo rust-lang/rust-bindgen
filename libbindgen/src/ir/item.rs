@@ -527,7 +527,10 @@ impl Item {
     }
 
     /// Get the target item id for name generation.
-    fn name_target(&self, ctx: &BindgenContext, for_name_checking: bool) -> ItemId {
+    fn name_target(&self,
+                   ctx: &BindgenContext,
+                   for_name_checking: bool)
+                   -> ItemId {
         let mut item = self;
         loop {
             match *item.kind() {
@@ -535,24 +538,31 @@ impl Item {
                     match *ty.kind() {
                         // If we're a template specialization, our name is our
                         // parent's name.
-                        TypeKind::Comp(ref ci) if ci.is_template_specialization() => {
-                            item = ctx.resolve_item(ci.specialized_template().unwrap());
-                        },
+                        TypeKind::Comp(ref ci)
+                            if ci.is_template_specialization() => {
+                            let specialized =
+                                ci.specialized_template().unwrap();
+                            item = ctx.resolve_item(specialized);
+                        }
                         // Same as above.
                         TypeKind::ResolvedTypeRef(inner) |
                         TypeKind::TemplateRef(inner, _) => {
                             item = ctx.resolve_item(inner);
                         }
-                        // Template aliases use their inner alias type's name if we
-                        // are checking names for whitelisting/replacement/etc.
-                        TypeKind::TemplateAlias(inner, _) if for_name_checking => {
+                        // Template aliases use their inner alias type's name if
+                        // we are checking names for
+                        // whitelisting/replacement/etc.
+                        TypeKind::TemplateAlias(inner, _)
+                            if for_name_checking => {
                             item = ctx.resolve_item(inner);
-                            assert_eq!(item.id(), item.name_target(ctx, for_name_checking));
+                            assert_eq!(item.id(),
+                                       item.name_target(ctx,
+                                                        for_name_checking));
                             return item.id();
                         }
                         _ => return item.id(),
                     }
-                },
+                }
                 _ => return item.id(),
             }
         }
@@ -580,9 +590,7 @@ impl Item {
                             let func = item.expect_function();
                             func.name() == func_name
                         })
-                        .enumerate()
-                        .find(|&(_, ref method)| method.signature() == self.id())
-                        .map(|(idx, _)| idx);
+                        .position(|method| method.signature() == self.id());
                 }
             }
 
@@ -595,24 +603,33 @@ impl Item {
     /// The `for_name_checking` boolean parameter informs us whether we are
     /// asking for the name in order to do a whitelisting/replacement/etc check
     /// or if we are instead using it for code generation.
-    fn base_name(&self, ctx: &BindgenContext, for_name_checking: bool) -> String {
+    fn base_name(&self,
+                 ctx: &BindgenContext,
+                 for_name_checking: bool)
+                 -> String {
         match *self.kind() {
             ItemKind::Var(ref var) => var.name().to_owned(),
             ItemKind::Module(ref module) => {
                 module.name()
                     .map(ToOwned::to_owned)
-                    .unwrap_or_else(|| format!("_bindgen_mod_{}", self.exposed_id(ctx)))
-            },
+                    .unwrap_or_else(|| {
+                        format!("_bindgen_mod_{}", self.exposed_id(ctx))
+                    })
+            }
             ItemKind::Type(ref ty) => {
                 let name = match *ty.kind() {
-                    TypeKind::ResolvedTypeRef(..) =>
-                        panic!("should have resolved this in name_target()"),
-                    TypeKind::TemplateAlias(..) if !for_name_checking => Some(""),
-                    TypeKind::TemplateAlias(..) => None,
+                    TypeKind::ResolvedTypeRef(..) => {
+                        panic!("should have resolved this in name_target()")
+                    }
+                    TypeKind::TemplateAlias(..) => {
+                        if for_name_checking { None } else { Some("") }
+                    }
                     _ => ty.name(),
                 };
                 name.map(ToOwned::to_owned)
-                    .unwrap_or_else(|| format!("_bindgen_ty_{}", self.exposed_id(ctx)))
+                    .unwrap_or_else(|| {
+                        format!("_bindgen_ty_{}", self.exposed_id(ctx))
+                    })
             }
             ItemKind::Function(ref fun) => {
                 let mut name = fun.name().to_owned();
@@ -624,7 +641,7 @@ impl Item {
                 }
 
                 name
-            },
+            }
         }
     }
 
