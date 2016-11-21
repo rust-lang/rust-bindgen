@@ -686,7 +686,8 @@ impl Type {
                             let referenced = location.referenced().unwrap();
                             let referenced_ty = referenced.cur_type();
 
-                            debug!("TemplateRef {:?} {:?} {:?}",
+                            debug!("TemplateRef: location = {:?}; referenced = \
+                                    {:?}; referenced_ty = {:?}",
                                     location,
                                     referenced,
                                     referenced_ty);
@@ -702,18 +703,18 @@ impl Type {
                             let referenced_ty = referenced.cur_type();
                             let declaration = referenced_ty.declaration();
 
-                            debug!("TypeRef {:?} {:?} {:?}",
+                            debug!("TypeRef: location = {:?}; referenced = \
+                                    {:?}; referenced_ty = {:?}",
                                     location,
                                     referenced,
                                     referenced_ty);
 
                             let item =
-                                Item::from_ty_or_ref_with_id(
-                                    potential_id,
-                                    referenced_ty,
-                                    Some(declaration),
-                                    parent_id,
-                                    ctx);
+                                Item::from_ty_or_ref_with_id(potential_id,
+                                                             referenced_ty,
+                                                             Some(declaration),
+                                                             parent_id,
+                                                             ctx);
                             return Ok(ParseResult::AlreadyResolved(item));
                         }
                         CXCursor_NamespaceRef => {
