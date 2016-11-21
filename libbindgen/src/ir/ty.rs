@@ -685,26 +685,33 @@ impl Type {
                         CXCursor_TemplateRef => {
                             let referenced = location.referenced().unwrap();
                             let referenced_ty = referenced.cur_type();
-                            let referenced_declaration =
-                                Some(referenced_ty.declaration());
+
+                            debug!("TemplateRef {:?} {:?} {:?}",
+                                    location,
+                                    referenced,
+                                    referenced_ty);
 
                             return Self::from_clang_ty(potential_id,
                                                        &referenced_ty,
-                                                       referenced_declaration,
+                                                       Some(referenced),
                                                        parent_id,
                                                        ctx);
                         }
                         CXCursor_TypeRef => {
                             let referenced = location.referenced().unwrap();
                             let referenced_ty = referenced.cur_type();
-                            let referenced_declaration =
-                                Some(referenced_ty.declaration());
+                            let declaration = referenced_ty.declaration();
+
+                            debug!("TypeRef {:?} {:?} {:?}",
+                                    location,
+                                    referenced,
+                                    referenced_ty);
 
                             let item =
                                 Item::from_ty_or_ref_with_id(
                                     potential_id,
                                     referenced_ty,
-                                    referenced_declaration,
+                                    Some(declaration),
                                     parent_id,
                                     ctx);
                             return Ok(ParseResult::AlreadyResolved(item));
