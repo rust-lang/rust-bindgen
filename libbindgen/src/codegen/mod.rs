@@ -670,10 +670,32 @@ impl CodeGenerator for CompInfo {
 
         // Don't output classes with template parameters that aren't types, and
         // also don't output template specializations, neither total or partial.
-        //
-        // TODO: Generate layout tests for template specializations, yay!
-        if self.has_non_type_template_params() ||
-           self.is_template_specialization() {
+        if self.has_non_type_template_params() {
+            return;
+        }
+
+        if self.is_template_specialization() {
+            let layout = item.kind().expect_type().layout(ctx);
+
+            if let Some(layout) = layout {
+                let fn_name = format!("__bindgen_test_layout_template_{}", item.id().as_usize());
+                let fn_name = ctx.rust_ident_raw(&fn_name);
+                let ident = item.to_rust_ty(ctx);
+                let prefix = ctx.trait_prefix();
+                let size_of_expr = quote_expr!(ctx.ext_cx(),
+                                               ::$prefix::mem::size_of::<$ident>());
+                let align_of_expr = quote_expr!(ctx.ext_cx(),
+                                                ::$prefix::mem::align_of::<$ident>());
+                let size = layout.size;
+                let align = layout.align;
+                let item = quote_item!(ctx.ext_cx(),
+                                       #[test]
+                                       fn $fn_name() {
+                                           assert_eq!($size_of_expr, $size);
+                                           assert_eq!($align_of_expr, $align);
+                                       }).unwrap();
+                result.push(item);
+            }
             return;
         }
 
