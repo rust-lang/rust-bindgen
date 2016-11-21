@@ -709,6 +709,9 @@ impl Type {
                                     ctx);
                             return Ok(ParseResult::AlreadyResolved(item));
                         }
+                        CXCursor_NamespaceRef => {
+                            return Err(ParseError::Continue);
+                        }
                         _ => {
                             if ty.kind() == CXType_Unexposed {
                                 warn!("Unexposed type {:?}, recursing inside, \
