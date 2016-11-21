@@ -142,6 +142,11 @@ impl TypeCollector for Item {
                     ty.collect_types(ctx, types, self);
                 }
             }
+            ItemKind::Function(ref fun) => {
+                if !self.is_opaque(ctx) {
+                    types.insert(fun.signature());
+                }
+            }
             _ => {} // FIXME.
         }
     }
