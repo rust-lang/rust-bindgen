@@ -938,7 +938,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
                 let name = item.canonical_name(self);
                 match *item.kind() {
-                    ItemKind::Module(..) => false,
+                    ItemKind::Module(..) => self.options().enable_cxx_namespaces,
                     ItemKind::Function(_) => {
                         self.options().whitelisted_functions.matches(&name)
                     }

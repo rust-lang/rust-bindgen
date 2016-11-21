@@ -5,12 +5,14 @@
 
 
 pub mod root {
+    #[allow(unused_imports)]
     use root;
     extern "C" {
         #[link_name = "_Z9top_levelv"]
         pub fn top_level();
     }
     pub mod whatever {
+        #[allow(unused_imports)]
         use root;
         pub type whatever_int_t = ::std::os::raw::c_int;
         extern "C" {
@@ -19,8 +21,10 @@ pub mod root {
         }
     }
     pub mod _bindgen_mod_id_13 {
+        #[allow(unused_imports)]
         use root;
         pub mod empty {
+            #[allow(unused_imports)]
             use root;
         }
         extern "C" {
@@ -50,6 +54,7 @@ pub mod root {
         pub m_c_arr: [T; 10usize],
     }
     pub mod w {
+        #[allow(unused_imports)]
         use root;
         pub type whatever_int_t = ::std::os::raw::c_uint;
         #[repr(C)]
