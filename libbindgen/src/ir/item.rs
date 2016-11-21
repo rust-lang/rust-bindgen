@@ -556,10 +556,6 @@ impl Item {
                         TypeKind::TemplateAlias(inner, _)
                             if for_name_checking => {
                             item = ctx.resolve_item(inner);
-                            assert_eq!(item.id(),
-                                       item.name_target(ctx,
-                                                        for_name_checking));
-                            return item.id();
                         }
                         _ => return item.id(),
                     }
