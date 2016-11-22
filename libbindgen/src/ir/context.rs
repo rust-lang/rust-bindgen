@@ -184,6 +184,17 @@ impl<'ctx> BindgenContext<'ctx> {
         let id = item.id();
         let is_type = item.kind().is_type();
         let is_unnamed = is_type && item.expect_type().name().is_none();
+
+        // Be sure to track all the generated children under namespace, even
+        // those generated after resolving typerefs, etc.
+        if item.id() != item.parent_id() {
+            if let Some(mut parent) = self.items.get_mut(&item.parent_id()) {
+                if let Some(mut module) = parent.as_module_mut() {
+                    module.children_mut().push(item.id());
+                }
+            }
+        }
+
         let old_item = self.items.insert(id, item);
         assert!(old_item.is_none(), "Inserted type twice?");
 
@@ -898,23 +909,14 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Start traversing the module with the given `module_id`, invoke the
     /// callback `cb`, and then return to traversing the original module.
     pub fn with_module<F>(&mut self, module_id: ItemId, cb: F)
-        where F: FnOnce(&mut Self, &mut Vec<ItemId>),
+        where F: FnOnce(&mut Self),
     {
         debug_assert!(self.resolve_item(module_id).kind().is_module(), "Wat");
 
         let previous_id = self.current_module;
         self.current_module = module_id;
 
-        let mut children = vec![];
-        cb(self, &mut children);
-
-        self.items
-            .get_mut(&module_id)
-            .unwrap()
-            .as_module_mut()
-            .expect("Not a module?")
-            .children_mut()
-            .extend(children.into_iter());
+        cb(self);
 
         self.current_module = previous_id;
     }

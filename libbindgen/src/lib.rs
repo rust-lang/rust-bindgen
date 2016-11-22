@@ -544,8 +544,7 @@ fn filter_builtins(ctx: &BindgenContext, cursor: &clang::Cursor) -> bool {
 /// Parse one `Item` from the Clang cursor.
 pub fn parse_one(ctx: &mut BindgenContext,
                  cursor: clang::Cursor,
-                 parent: Option<ItemId>,
-                 children: &mut Vec<ItemId>)
+                 parent: Option<ItemId>)
                  -> clangll::Enum_CXVisitorResult {
     if !filter_builtins(ctx, &cursor) {
         return CXChildVisit_Continue;
@@ -553,10 +552,10 @@ pub fn parse_one(ctx: &mut BindgenContext,
 
     use clangll::CXChildVisit_Continue;
     match Item::parse(cursor, parent, ctx) {
-        Ok(id) => children.push(id),
+        Ok(..) => {},
         Err(ParseError::Continue) => {}
         Err(ParseError::Recurse) => {
-            cursor.visit(|child| parse_one(ctx, child, parent, children));
+            cursor.visit(|child| parse_one(ctx, child, parent));
         }
     }
     CXChildVisit_Continue
@@ -579,8 +578,8 @@ fn parse(context: &mut BindgenContext) {
     }
 
     let root = context.root_module();
-    context.with_module(root, |context, children| {
-        cursor.visit(|cursor| parse_one(context, cursor, None, children))
+    context.with_module(root, |context| {
+        cursor.visit(|cursor| parse_one(context, cursor, None))
     });
 
     assert!(context.current_module() == context.root_module(),
