@@ -3,8 +3,8 @@
 
 #![allow(non_snake_case)]
 
+pub enum Test {}
 
-pub mod root {
-    #[allow(unused_imports)]
-    use root;
+extern "C" {
+    pub fn Servo_Test(a: *mut Test);
 }

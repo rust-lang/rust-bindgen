@@ -23,10 +23,6 @@ pub mod root {
     pub mod _bindgen_mod_id_13 {
         #[allow(unused_imports)]
         use root;
-        pub mod empty {
-            #[allow(unused_imports)]
-            use root;
-        }
         extern "C" {
             #[link_name = "_ZN12_GLOBAL__N_13fooEv"]
             pub fn foo();
@@ -75,16 +71,4 @@ pub mod root {
             pub fn barr() -> root::C<f32>;
         }
     }
-}
-extern "C" {
-    #[link_name = "_Z9top_levelv"]
-    pub fn top_level();
-}
-#[repr(C)]
-#[derive(Debug)]
-pub struct C<T> {
-    pub _base: root::_bindgen_mod_id_13::A,
-    pub m_c: T,
-    pub m_c_ptr: *mut T,
-    pub m_c_arr: [T; 10usize],
 }
