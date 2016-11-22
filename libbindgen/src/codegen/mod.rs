@@ -242,11 +242,6 @@ impl CodeGenerator for Item {
 
         match *self.kind() {
             ItemKind::Module(ref module) => {
-                if !ctx.options().enable_cxx_namespaces &&
-                   self.id() == ctx.root_module() {
-                    return;
-                }
-
                 module.codegen(ctx, result, whitelisted_items, self);
             }
             ItemKind::Function(ref fun) => {
@@ -274,22 +269,28 @@ impl CodeGenerator for Module {
                item: &Item) {
         debug!("<Module as CodeGenerator>::codegen: item = {:?}", item);
 
-        if !ctx.options().enable_cxx_namespaces {
-            for child in self.children() {
-                ctx.resolve_item(*child)
-                    .codegen(ctx, result, whitelisted_items, &());
+        let codegen_self = |result: &mut CodegenResult| {
+            // FIXME: This could be less expensive, I guess.
+            for &whitelisted_item in whitelisted_items {
+                if whitelisted_item == item.id() {
+                    continue;
+                }
+
+                let child = ctx.resolve_item(whitelisted_item);
+                if child.parent_id() == item.id() {
+                    child.codegen(ctx, result, whitelisted_items, &());
+                }
             }
+        };
+
+        if !ctx.options().enable_cxx_namespaces {
+            codegen_self(result);
             return;
         }
 
         let inner_items = result.inner(|result| {
             result.push(root_import(ctx));
-            for child in self.children() {
-                if whitelisted_items.contains(child) {
-                    ctx.resolve_item(*child)
-                        .codegen(ctx, result, whitelisted_items, &());
-                }
-            }
+            codegen_self(result);
         });
 
         let module = ast::ItemKind::Mod(ast::Mod {
@@ -428,13 +429,12 @@ impl CodeGenerator for Type {
             TypeKind::Comp(ref ci) => {
                 ci.codegen(ctx, result, whitelisted_items, item)
             }
+            // NB: The inner Alias will be generated and pick the correct
+            // applicable_template_args.
             TypeKind::TemplateAlias(inner, _) => {
-                // NB: The inner Alias will pick the correct
-                // applicable_template_args.
-                let inner_item = ctx.resolve_item(inner);
-                inner_item.expect_type()
-                    .codegen(ctx, result, whitelisted_items, inner_item);
-            }
+                ctx.resolve_item(inner)
+                    .codegen(ctx, result, whitelisted_items, &())
+            },
             TypeKind::Alias(ref spelling, inner) => {
                 let inner_item = ctx.resolve_item(inner);
                 let name = item.canonical_name(ctx);
@@ -1964,27 +1964,6 @@ impl CodeGenerator for Function {
     }
 }
 
-// Return true if any of the ancestors of `id` are in the whitelisted items set,
-// false otherwise.
-fn ancestor_is_whitelisted(ctx: &BindgenContext,
-                           whitelisted_items: &ItemSet,
-                           id: ItemId)
-                           -> bool {
-    let item = ctx.resolve_item(id);
-    let mut last = id;
-    let mut current = item.parent_id();
-
-    while last != current {
-        if whitelisted_items.contains(&current) {
-            return true;
-        }
-        last = current;
-        current = ctx.resolve_item(current).parent_id();
-    }
-
-    false
-}
-
 pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
     context.gen(|context| {
         let mut result = CodegenResult::new();
@@ -2000,18 +1979,8 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
             }
         }
 
-        for &id in whitelisted_items.iter() {
-            let item = context.resolve_item(id);
-
-            // Non-toplevel items' parents are responsible one for generating
-            // their children. However, if we find an orphaned reference to a
-            // non-toplevel item whose parent is not in our whitelisted set, we
-            // need to take responsibility for generating it.
-            if item.is_toplevel(context) ||
-               !ancestor_is_whitelisted(context, &whitelisted_items, id) {
-                item.codegen(context, &mut result, &whitelisted_items, &());
-            }
-        }
+        context.resolve_item(context.root_module())
+            .codegen(context, &mut result, &whitelisted_items, &());
 
         let saw_union = result.saw_union;
         let mut result = result.items;

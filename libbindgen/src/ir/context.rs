@@ -10,7 +10,7 @@ use std::collections::{HashMap, hash_map};
 use std::collections::btree_map::{self, BTreeMap};
 use std::fmt;
 use super::int::IntKind;
-use super::item::{Item, ItemCanonicalName};
+use super::item::Item;
 use super::item_kind::ItemKind;
 use super::module::Module;
 use super::ty::{FloatKind, Type, TypeKind};
@@ -938,11 +938,9 @@ impl<'ctx> BindgenContext<'ctx> {
                     return true;
                 }
 
-                let name = item.canonical_name(self);
+                let name = item.real_canonical_name(self, false, true);
                 match *item.kind() {
-                    ItemKind::Module(..) => {
-                        self.options().enable_cxx_namespaces
-                    }
+                    ItemKind::Module(..) => true,
                     ItemKind::Function(_) => {
                         self.options().whitelisted_functions.matches(&name)
                     }
@@ -954,18 +952,21 @@ impl<'ctx> BindgenContext<'ctx> {
                             return true;
                         }
 
-                        // Unnamed top-level enums are special and we whitelist
-                        // them via the `whitelisted_vars` filter, since they're
-                        // effectively top-level constants, and there's no way
-                        // for them to be referenced consistently.
-                        if let TypeKind::Enum(ref enum_) = *ty.kind() {
-                            if ty.name().is_none() &&
-                               enum_.variants().iter().any(|variant| {
-                                self.options()
-                                    .whitelisted_vars
-                                    .matches(&variant.name())
-                            }) {
-                                return true;
+                        if self.resolve_item(item.parent_id()).is_module() {
+                            // Unnamed top-level enums are special and we
+                            // whitelist them via the `whitelisted_vars` filter,
+                            // since they're effectively top-level constants,
+                            // and there's no way for them to be referenced
+                            // consistently.
+                            if let TypeKind::Enum(ref enum_) = *ty.kind() {
+                                if ty.name().is_none() &&
+                                   enum_.variants().iter().any(|variant| {
+                                    self.options()
+                                        .whitelisted_vars
+                                        .matches(&variant.name())
+                                }) {
+                                    return true;
+                                }
                             }
                         }
 
