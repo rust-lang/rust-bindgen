@@ -270,16 +270,11 @@ impl CodeGenerator for Module {
         debug!("<Module as CodeGenerator>::codegen: item = {:?}", item);
 
         let codegen_self = |result: &mut CodegenResult, found_any: &mut bool| {
-            // FIXME: This could be less expensive, I guess.
-            for &whitelisted_item in whitelisted_items {
-                if whitelisted_item == item.id() {
-                    continue;
-                }
-
-                let child = ctx.resolve_item(whitelisted_item);
-                if child.parent_id() == item.id() {
+            for child in self.children() {
+                if whitelisted_items.contains(child) {
                     *found_any = true;
-                    child.codegen(ctx, result, whitelisted_items, &());
+                    ctx.resolve_item(*child)
+                        .codegen(ctx, result, whitelisted_items, &());
                 }
             }
         };
