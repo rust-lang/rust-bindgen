@@ -367,7 +367,7 @@ impl Cursor {
             let t = Type {
                 x: clang_getEnumDeclIntegerType(self.x),
             };
-            if t.kind() == CXType_Invalid { None } else { Some(t) }
+            if t.is_valid() { Some(t) } else { None }
         }
     }
 
