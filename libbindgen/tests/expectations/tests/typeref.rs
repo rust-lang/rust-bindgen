@@ -68,19 +68,6 @@ impl Clone for mozilla_Position {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
-pub struct Bar {
-    pub mFoo: *mut nsFoo,
-}
-#[test]
-fn bindgen_test_layout_Bar() {
-    assert_eq!(::std::mem::size_of::<Bar>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Bar>() , 8usize);
-}
-impl Clone for Bar {
-    fn clone(&self) -> Self { *self }
-}
-#[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct mozilla_StyleShapeSource<ReferenceBox> {
     pub __bindgen_anon_1: mozilla_StyleShapeSource__bindgen_ty_1<ReferenceBox>,
@@ -93,4 +80,17 @@ pub struct mozilla_StyleShapeSource__bindgen_ty_1<ReferenceBox> {
     pub mFragmentOrURL: __BindgenUnionField<*mut mozilla_FragmentOrURL>,
     pub bindgen_union_field: u64,
     pub _phantom_0: ::std::marker::PhantomData<ReferenceBox>,
+}
+#[repr(C)]
+#[derive(Debug, Copy)]
+pub struct Bar {
+    pub mFoo: *mut nsFoo,
+}
+#[test]
+fn bindgen_test_layout_Bar() {
+    assert_eq!(::std::mem::size_of::<Bar>() , 8usize);
+    assert_eq!(::std::mem::align_of::<Bar>() , 8usize);
+}
+impl Clone for Bar {
+    fn clone(&self) -> Self { *self }
 }

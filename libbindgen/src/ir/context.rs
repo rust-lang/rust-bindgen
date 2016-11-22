@@ -888,6 +888,8 @@ impl<'ctx> BindgenContext<'ctx> {
                                self.current_module,
                                ItemKind::Module(module));
 
+        self.modules.insert(cursor, module.id());
+
         self.add_item(module, None, None);
 
         module_id
