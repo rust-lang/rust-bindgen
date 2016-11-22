@@ -23,10 +23,6 @@ pub mod root {
     pub mod _bindgen_mod_id_13 {
         #[allow(unused_imports)]
         use root;
-        pub mod empty {
-            #[allow(unused_imports)]
-            use root;
-        }
         extern "C" {
             #[link_name = "_ZN12_GLOBAL__N_13fooEv"]
             pub fn foo();

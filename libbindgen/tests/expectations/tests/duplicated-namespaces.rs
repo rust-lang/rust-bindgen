@@ -7,8 +7,4 @@
 pub mod root {
     #[allow(unused_imports)]
     use root;
-    pub mod std {
-        #[allow(unused_imports)]
-        use root;
-    }
 }

@@ -269,7 +269,7 @@ impl CodeGenerator for Module {
                item: &Item) {
         debug!("<Module as CodeGenerator>::codegen: item = {:?}", item);
 
-        let codegen_self = |result: &mut CodegenResult| {
+        let codegen_self = |result: &mut CodegenResult, found_any: &mut bool| {
             // FIXME: This could be less expensive, I guess.
             for &whitelisted_item in whitelisted_items {
                 if whitelisted_item == item.id() {
@@ -278,20 +278,27 @@ impl CodeGenerator for Module {
 
                 let child = ctx.resolve_item(whitelisted_item);
                 if child.parent_id() == item.id() {
+                    *found_any = true;
                     child.codegen(ctx, result, whitelisted_items, &());
                 }
             }
         };
 
         if !ctx.options().enable_cxx_namespaces {
-            codegen_self(result);
+            codegen_self(result, &mut false);
             return;
         }
 
+        let mut found_any = false;
         let inner_items = result.inner(|result| {
             result.push(root_import(ctx));
-            codegen_self(result);
+            codegen_self(result, &mut found_any);
         });
+
+        // Don't bother creating an empty module.
+        if !found_any {
+            return;
+        }
 
         let module = ast::ItemKind::Mod(ast::Mod {
             inner: ctx.span(),
