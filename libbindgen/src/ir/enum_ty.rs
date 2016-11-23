@@ -49,11 +49,9 @@ impl Enum {
         }
 
         let declaration = ty.declaration().canonical();
-        let et = declaration.enum_type();
-        if et.is_none() {
-            return Err(ParseError::Continue);
-        }
-        let repr = Item::from_ty(&et.unwrap(), None, None, ctx).ok();
+        let repr = declaration.enum_type().and_then(|et| {
+            Item::from_ty(&et, None, None, ctx).ok()
+        });
         let mut variants = vec![];
 
         let is_signed = match repr {
