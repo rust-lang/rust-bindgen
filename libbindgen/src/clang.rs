@@ -760,6 +760,19 @@ impl Type {
     pub fn is_valid_and_exposed(&self) -> bool {
         self.is_valid() && self.kind() != CXType_Unexposed
     }
+
+    /// Is this type a fully specialized template?
+    pub fn is_fully_specialized_template(&self) -> bool {
+        // Yep, the spelling of this containing type-parameter is extremely
+        // nasty... But can happen in <type_traits>. Unfortunately I couldn't
+        // reduce it enough :(
+        !self.spelling().contains("type-parameter") &&
+        self.template_args()
+            .map_or(false, |mut args| {
+                args.len() > 0 &&
+                !args.any(|t| t.spelling().contains("type-parameter"))
+            })
+    }
 }
 
 /// An iterator for a type's template arguments.
