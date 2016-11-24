@@ -1152,11 +1152,11 @@ impl ItemCanonicalName for Item {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         if self.canonical_name_cache.borrow().is_none() {
+            let in_namespace = ctx.options().enable_cxx_namespaces ||
+                               ctx.options().disable_name_namespacing;
+
             *self.canonical_name_cache.borrow_mut() =
-                Some(self.real_canonical_name(ctx,
-                                              ctx.options()
-                                                  .enable_cxx_namespaces,
-                                              false));
+                Some(self.real_canonical_name(ctx, in_namespace, false));
         }
         return self.canonical_name_cache.borrow().as_ref().unwrap().clone();
     }

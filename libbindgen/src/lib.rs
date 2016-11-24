@@ -243,6 +243,22 @@ impl Builder {
         self
     }
 
+    /// Disable auto-namespacing of names if namespaces are disabled.
+    ///
+    /// By default, if namespaces are disabled, bindgen tries to mangle the
+    /// names to from `foo::bar::Baz` to look like `foo_bar_Baz`, instead of
+    /// just `Baz`.
+    ///
+    /// This option disables that behavior.
+    ///
+    /// Note that this intentionally doesn't change the names using for
+    /// whitelisting and blacklisting, that should still be mangled with the
+    /// namespaces.
+    pub fn disable_name_namespacing(mut self) -> Builder {
+        self.options.disable_name_namespacing = true;
+        self
+    }
+
     /// Ignore functions.
     pub fn ignore_functions(mut self) -> Builder {
         self.options.ignore_functions = true;
@@ -341,6 +357,9 @@ pub struct BindgenOptions {
     /// generated bindings.
     pub enable_cxx_namespaces: bool,
 
+    /// True if we should avoid mangling names with namespaces.
+    pub disable_name_namespacing: bool,
+
     /// True if we shold derive Debug trait implementations for C/C++ structures
     /// and types.
     pub derive_debug: bool,
@@ -400,6 +419,7 @@ impl Default for BindgenOptions {
             ignore_methods: false,
             derive_debug: true,
             enable_cxx_namespaces: false,
+            disable_name_namespacing: false,
             unstable_rust: true,
             use_core: false,
             ctypes_prefix: None,

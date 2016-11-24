@@ -58,6 +58,9 @@ pub fn builder_from_flags<I>(args: I)
             Arg::with_name("enable-cxx-namespaces")
                 .long("enable-cxx-namespaces")
                 .help("Enable support for C++ namespaces."),
+            Arg::with_name("disable-name-namespacing")
+                .long("disable-name-namespacing")
+                .help("Disable name namespacing if namespaces are disabled."),
             Arg::with_name("framework")
                 .long("framework-link")
                 .help("Link to framework.")
@@ -192,6 +195,10 @@ pub fn builder_from_flags<I>(args: I)
 
     if matches.is_present("enable-cxx-namespaces") {
         builder = builder.enable_cxx_namespaces();
+    }
+
+    if matches.is_present("disable-name-namespacing") {
+        builder = builder.disable_name_namespacing();
     }
 
     if let Some(links) = matches.values_of("framework") {
