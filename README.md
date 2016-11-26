@@ -116,6 +116,9 @@ There are a few options documented when running `./bindgen --help`. Other
 options might exist (see [the SpiderMonkey script][sm-script] and [the Stylo
 scripts][stylo-scripts] to see how is it used inside the Servo organisation.
 
+[sm-script]: https://github.com/servo/rust-mozjs/blob/master/etc/bindings.sh
+[stylo-scripts]: https://github.com/servo/servo/tree/master/components/style/binding_tools
+
 ## C++ Usage
 
 This fork of rust-bindgen can handle a number of C++ features.
