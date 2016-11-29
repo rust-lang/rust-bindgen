@@ -554,7 +554,7 @@ impl Type {
                     TypeKind::Function(signature)
                     // Same here, with template specialisations we can safely
                     // assume this is a Comp(..)
-                } else if ty.template_args().map_or(false, |x| x.len() > 0) {
+                } else if ty.is_fully_specialized_template() {
                     debug!("Template specialization: {:?}", ty);
                     let complex =
                         CompInfo::from_ty(potential_id, ty, location, ctx)

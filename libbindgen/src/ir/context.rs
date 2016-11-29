@@ -367,10 +367,8 @@ impl<'ctx> BindgenContext<'ctx> {
                 _ => continue,
             }
 
-            let name = item.real_canonical_name(self,
-                                                self.options()
-                                                    .enable_cxx_namespaces,
-                                                true);
+            let in_namespace = self.options().enable_cxx_namespaces;
+            let name = item.real_canonical_name(self, in_namespace, true);
             let replacement = self.replacements.get(&name);
 
             if let Some(replacement) = replacement {

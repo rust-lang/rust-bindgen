@@ -498,17 +498,29 @@ impl CompInfo {
             None => vec![],
             Some(arg_types) => {
                 let num_arg_types = arg_types.len();
+                let mut specialization = true;
 
                 let args = arg_types.filter(|t| t.kind() != CXType_Invalid)
-                    .map(|t| Item::from_ty_or_ref(t, None, None, ctx))
+                    .filter_map(|t| {
+                        if t.spelling().starts_with("type-parameter") {
+                            specialization = false;
+                            None
+                        } else {
+                            Some(Item::from_ty_or_ref(t, None, None, ctx))
+                        }
+                    })
                     .collect::<Vec<_>>();
 
-                if args.len() != num_arg_types {
+                if specialization && args.len() != num_arg_types {
                     ci.has_non_type_template_params = true;
                     warn!("warning: Template parameter is not a type");
                 }
 
-                args
+                if specialization {
+                    args
+                } else {
+                    vec![]
+                }
             }
         };
 

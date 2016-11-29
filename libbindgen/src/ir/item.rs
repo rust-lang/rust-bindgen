@@ -688,14 +688,14 @@ impl Item {
             return base_name;
         }
 
-        if within_namespace {
-            return ctx.rust_mangle(&base_name).into_owned();
-        }
-
         // Concatenate this item's ancestors' names together.
         let mut names: Vec<_> = target.parent_id()
             .ancestors(ctx)
             .filter(|id| *id != ctx.root_module())
+            .take_while(|id| {
+                // Stop iterating ancestors once we reach a namespace.
+                !within_namespace || !ctx.resolve_item(*id).is_module()
+            })
             .map(|id| {
                 let item = ctx.resolve_item(id);
                 let target = ctx.resolve_item(item.name_target(ctx, false));
@@ -703,8 +703,13 @@ impl Item {
             })
             .filter(|name| !name.is_empty())
             .collect();
+
         names.reverse();
-        names.push(base_name);
+
+        if !base_name.is_empty() {
+            names.push(base_name);
+        }
+
         let name = names.join("_");
 
         ctx.rust_mangle(&name).into_owned()
@@ -1152,11 +1157,11 @@ impl ItemCanonicalName for Item {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         if self.canonical_name_cache.borrow().is_none() {
+            let in_namespace = ctx.options().enable_cxx_namespaces ||
+                               ctx.options().disable_name_namespacing;
+
             *self.canonical_name_cache.borrow_mut() =
-                Some(self.real_canonical_name(ctx,
-                                              ctx.options()
-                                                  .enable_cxx_namespaces,
-                                              false));
+                Some(self.real_canonical_name(ctx, in_namespace, false));
         }
         return self.canonical_name_cache.borrow().as_ref().unwrap().clone();
     }
