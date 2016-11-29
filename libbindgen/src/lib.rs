@@ -254,6 +254,9 @@ impl Builder {
     /// Note that this intentionally doesn't change the names using for
     /// whitelisting and blacklisting, that should still be mangled with the
     /// namespaces.
+    ///
+    /// Note, also, that using this option may cause duplicated names to be
+    /// generated.
     pub fn disable_name_namespacing(mut self) -> Builder {
         self.options.disable_name_namespacing = true;
         self
