@@ -6,14 +6,14 @@
 
 pub mod root {
     #[allow(unused_imports)]
-    use root;
+    use self::super::root;
     extern "C" {
         #[link_name = "_Z9top_levelv"]
         pub fn top_level();
     }
     pub mod whatever {
         #[allow(unused_imports)]
-        use root;
+        use self::super::super::root;
         pub type whatever_int_t = ::std::os::raw::c_int;
         extern "C" {
             #[link_name = "_ZN8whatever11in_whateverEv"]
@@ -22,7 +22,7 @@ pub mod root {
     }
     pub mod _bindgen_mod_id_13 {
         #[allow(unused_imports)]
-        use root;
+        use self::super::super::root;
         extern "C" {
             #[link_name = "_ZN12_GLOBAL__N_13fooEv"]
             pub fn foo();
@@ -51,7 +51,7 @@ pub mod root {
     }
     pub mod w {
         #[allow(unused_imports)]
-        use root;
+        use self::super::super::root;
         pub type whatever_int_t = ::std::os::raw::c_uint;
         #[repr(C)]
         #[derive(Debug)]

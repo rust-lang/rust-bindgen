@@ -6,15 +6,15 @@
 
 pub mod root {
     #[allow(unused_imports)]
-    use root;
+    use self::super::root;
     pub mod foo {
         #[allow(unused_imports)]
-        use root;
+        use self::super::super::root;
         pub const FOO: ::std::os::raw::c_int = 4;
     }
     pub mod bar {
         #[allow(unused_imports)]
-        use root;
+        use self::super::super::root;
         pub const FOO: ::std::os::raw::c_int = 5;
     }
 }

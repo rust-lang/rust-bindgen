@@ -9,7 +9,7 @@ use ir::context::{BindgenContext, ItemId};
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
 use ir::function::{Function, FunctionSig};
 use ir::int::IntKind;
-use ir::item::{Item, ItemCanonicalName, ItemCanonicalPath};
+use ir::item::{Item, ItemAncestors, ItemCanonicalName, ItemCanonicalPath};
 use ir::item_kind::ItemKind;
 use ir::layout::Layout;
 use ir::module::Module;
@@ -22,6 +22,7 @@ use std::borrow::Cow;
 use std::collections::HashSet;
 use std::collections::hash_map::{Entry, HashMap};
 use std::fmt::Write;
+use std::iter;
 use std::mem;
 use std::ops;
 use syntax::abi::Abi;
@@ -29,12 +30,33 @@ use syntax::ast;
 use syntax::codemap::{Span, respan};
 use syntax::ptr::P;
 
-fn root_import(ctx: &BindgenContext) -> P<ast::Item> {
+fn root_import(ctx: &BindgenContext, module: &Item) -> P<ast::Item> {
     assert!(ctx.options().enable_cxx_namespaces, "Somebody messed it up");
+    assert!(module.is_module());
+
     let root = ctx.root_module().canonical_name(ctx);
     let root_ident = ctx.rust_ident(&root);
-    quote_item!(ctx.ext_cx(), #[allow(unused_imports)] use $root_ident;)
-        .unwrap()
+
+    let super_ = aster::AstBuilder::new().id("super");
+    let supers = module
+        .ancestors(ctx)
+        .filter(|id| ctx.resolve_item(*id).is_module())
+        .map(|_| super_.clone())
+        .chain(iter::once(super_));
+
+    let self_ = iter::once(aster::AstBuilder::new().id("self"));
+    let root_ident = iter::once(root_ident);
+
+    let path = self_.chain(supers).chain(root_ident);
+
+    let use_root = aster::AstBuilder::new()
+        .item()
+        .use_()
+        .ids(path)
+        .build()
+        .build();
+
+    quote_item!(ctx.ext_cx(), #[allow(unused_imports)] $use_root).unwrap()
 }
 
 struct CodegenResult {
@@ -286,7 +308,7 @@ impl CodeGenerator for Module {
 
         let mut found_any = false;
         let inner_items = result.inner(|result| {
-            result.push(root_import(ctx));
+            result.push(root_import(ctx, item));
             codegen_self(result, &mut found_any);
         });
 

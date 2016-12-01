@@ -6,10 +6,10 @@
 
 pub mod root {
     #[allow(unused_imports)]
-    use root;
+    use self::super::root;
     pub mod foo {
         #[allow(unused_imports)]
-        use root;
+        use self::super::super::root;
         #[repr(C)]
         #[derive(Debug, Copy)]
         pub struct Bar {
