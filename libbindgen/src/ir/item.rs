@@ -57,13 +57,13 @@ pub trait ItemAncestors {
 
 cfg_if! {
     if #[cfg(debug_assertions)] {
-        type AncestorsSeen = ItemSet;
+        type DebugOnlyItemSet = ItemSet;
     } else {
-        struct AncestorsSeen;
+        struct DebugOnlyItemSet;
 
-        impl AncestorsSeen {
+        impl DebugOnlyItemSet {
             fn new() -> Self {
-                AncestorsSeen
+                DebugOnlyItemSet
             }
 
             fn contains(&self,_id: &ItemId) -> bool {
@@ -81,7 +81,7 @@ pub struct ItemAncestorsIter<'a, 'b>
 {
     item: ItemId,
     ctx: &'a BindgenContext<'b>,
-    seen: AncestorsSeen,
+    seen: DebugOnlyItemSet,
 }
 
 impl <'a, 'b> ItemAncestorsIter<'a, 'b>
@@ -91,7 +91,7 @@ impl <'a, 'b> ItemAncestorsIter<'a, 'b>
         ItemAncestorsIter {
             item: item,
             ctx: ctx,
-            seen: AncestorsSeen::new(),
+            seen: DebugOnlyItemSet::new(),
         }
     }
 }
@@ -588,7 +588,7 @@ impl Item {
                    ctx: &BindgenContext,
                    for_name_checking: bool)
                    -> ItemId {
-        let mut targets_seen = AncestorsSeen::new();
+        let mut targets_seen = DebugOnlyItemSet::new();
         let mut item = self;
 
         loop {
