@@ -516,7 +516,7 @@ impl Item {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         self.annotations.hide() ||
-        ctx.hidden_by_name(&self.real_canonical_name(ctx, false, true), self.id)
+        ctx.hidden_by_name(&self.name(ctx).for_name_checking().get(), self.id)
     }
 
     /// Is this item opaque?
@@ -524,7 +524,7 @@ impl Item {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         self.annotations.opaque() ||
-        ctx.opaque_by_name(&self.real_canonical_name(ctx, false, true))
+        ctx.opaque_by_name(&self.name(ctx).for_name_checking().get())
     }
 
     /// Is this a reference to another type?
@@ -538,6 +538,13 @@ impl Item {
             ItemKind::Var(..) => true,
             _ => false,
         }
+    }
+
+    /// Take out item NameOptions
+    pub fn name<'item, 'ctx>(&'item self,
+                             ctx: &'item BindgenContext<'ctx>)
+                             -> NameOptions<'item, 'ctx> {
+        NameOptions::new(self, ctx)
     }
 
     /// Get the target item id for name generation.
@@ -628,9 +635,7 @@ impl Item {
             }
             ItemKind::Type(ref ty) => {
                 let name = match *ty.kind() {
-                    TypeKind::ResolvedTypeRef(..) => {
-                        panic!("should have resolved this in name_target()")
-                    }
+                    TypeKind::ResolvedTypeRef(..) => panic!("should have resolved this in name_target()"),
                     TypeKind::TemplateAlias(..) => {
                         if for_name_checking { None } else { Some("") }
                     }
@@ -668,19 +673,19 @@ impl Item {
     /// type and the parent chain, since it should be consistent.
     pub fn real_canonical_name(&self,
                                ctx: &BindgenContext,
-                               within_namespace: bool,
-                               for_name_checking: bool)
+                               opt: &NameOptions)
                                -> String {
-        let target = ctx.resolve_item(self.name_target(ctx, for_name_checking));
+        let target =
+            ctx.resolve_item(self.name_target(ctx, opt.for_name_checking));
 
         // Short-circuit if the target has an override, and just use that.
-        if !for_name_checking {
+        if !opt.for_name_checking {
             if let Some(other) = target.annotations.use_instead_of() {
                 return other.to_owned();
             }
         }
 
-        let base_name = target.base_name(ctx, for_name_checking);
+        let base_name = target.base_name(ctx, opt.for_name_checking);
 
         // Named template type arguments are never namespaced, and never
         // mangled.
@@ -694,7 +699,7 @@ impl Item {
             .filter(|id| *id != ctx.root_module())
             .take_while(|id| {
                 // Stop iterating ancestors once we reach a namespace.
-                !within_namespace || !ctx.resolve_item(*id).is_module()
+                !opt.within_namespaces || !ctx.resolve_item(*id).is_module()
             })
             .map(|id| {
                 let item = ctx.resolve_item(id);
@@ -940,9 +945,8 @@ impl ClangItemParser for Item {
                 .expect("Unable to resolve type");
         }
 
-        if let Some(ty) = ctx.builtin_or_resolved_ty(potential_id,
-                                                     parent_id, &ty,
-                                                     location) {
+        if let Some(ty) =
+            ctx.builtin_or_resolved_ty(potential_id, parent_id, &ty, location) {
             debug!("{:?} already resolved: {:?}", ty, location);
             return ty;
         }
@@ -1008,7 +1012,7 @@ impl ClangItemParser for Item {
         }
 
         if let Some(ty) =
-               ctx.builtin_or_resolved_ty(id, parent_id, ty, location) {
+            ctx.builtin_or_resolved_ty(id, parent_id, ty, location) {
             return Ok(ty);
         }
 
@@ -1026,9 +1030,10 @@ impl ClangItemParser for Item {
         };
 
         if valid_decl {
-            if let Some(&(_, item_id)) = ctx.currently_parsed_types
-                .iter()
-                .find(|&&(d, _)| d == declaration_to_look_for) {
+            if let Some(&(_, item_id)) =
+                ctx.currently_parsed_types
+                    .iter()
+                    .find(|&&(d, _)| d == declaration_to_look_for) {
                 debug!("Avoiding recursion parsing type: {:?}", ty);
                 return Ok(item_id);
             }
@@ -1160,8 +1165,11 @@ impl ItemCanonicalName for Item {
             let in_namespace = ctx.options().enable_cxx_namespaces ||
                                ctx.options().disable_name_namespacing;
 
-            *self.canonical_name_cache.borrow_mut() =
-                Some(self.real_canonical_name(ctx, in_namespace, false));
+            *self.canonical_name_cache.borrow_mut() = if in_namespace {
+                Some(self.name(ctx).within_namespaces().get())
+            } else {
+                Some(self.name(ctx).get())
+            };
         }
         return self.canonical_name_cache.borrow().as_ref().unwrap().clone();
     }
@@ -1214,8 +1222,51 @@ impl ItemCanonicalPath for Item {
             debug_assert!(is_alias, "How can this ever happen?");
             parent_path.pop().unwrap();
         }
-        parent_path.push(self.real_canonical_name(ctx, true, false));
+        parent_path.push(self.name(ctx).within_namespaces().get());
 
         parent_path
+    }
+}
+
+/// Builder struct for naming variations, which hold inside different
+/// flags for naming options.
+#[derive(Debug)]
+pub struct NameOptions<'item, 'ctx>
+    where 'ctx: 'item,
+{
+    item: &'item Item,
+    ctx: &'item BindgenContext<'ctx>,
+    for_name_checking: bool,
+    within_namespaces: bool,
+}
+
+impl<'item, 'ctx> NameOptions<'item, 'ctx> {
+    /// Construct a new `NameOptions`
+    pub fn new(item: &'item Item, ctx: &'item BindgenContext<'ctx>) -> Self {
+        NameOptions {
+            item: item,
+            ctx: ctx,
+            for_name_checking: false,
+            within_namespaces: false,
+        }
+    }
+
+    /// Construct a name that is suitable for replacements/whitelisting/opaque-
+    /// ness look ups.
+    pub fn for_name_checking(&mut self) -> &mut Self {
+        self.for_name_checking = true;
+        self
+    }
+
+    /// Construct the name without the item's containing C++ namespaces mangled
+    /// into it. In other words, the item's name within the item's namespace.
+    pub fn within_namespaces(&mut self) -> &mut Self {
+        self.within_namespaces = true;
+        self
+    }
+
+    /// Construct a name `String`
+    pub fn get(&self) -> String {
+        self.item.real_canonical_name(self.ctx, self)
     }
 }

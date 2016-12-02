@@ -368,7 +368,16 @@ impl<'ctx> BindgenContext<'ctx> {
             }
 
             let in_namespace = self.options().enable_cxx_namespaces;
-            let name = item.real_canonical_name(self, in_namespace, true);
+
+            let name = if in_namespace {
+                item.name(self)
+                    .within_namespaces()
+                    .get()
+            } else {
+                item.name(self)
+                    .for_name_checking()
+                    .get()
+            };
             let replacement = self.replacements.get(&name);
 
             if let Some(replacement) = replacement {
@@ -938,7 +947,7 @@ impl<'ctx> BindgenContext<'ctx> {
                     return true;
                 }
 
-                let name = item.real_canonical_name(self, false, true);
+                let name = item.name(self).for_name_checking().get();
                 match *item.kind() {
                     ItemKind::Module(..) => true,
                     ItemKind::Function(_) => {
