@@ -6,5 +6,5 @@
 
 pub mod root {
     #[allow(unused_imports)]
-    use root;
+    use self::super::root;
 }

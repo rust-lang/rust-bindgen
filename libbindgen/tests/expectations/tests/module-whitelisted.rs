@@ -6,7 +6,7 @@
 
 pub mod root {
     #[allow(unused_imports)]
-    use root;
+    use self::super::root;
     #[repr(C)]
     #[derive(Debug, Copy)]
     pub struct Test {
