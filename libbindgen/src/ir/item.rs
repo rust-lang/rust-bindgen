@@ -55,12 +55,45 @@ pub trait ItemAncestors {
                          -> ItemAncestorsIter<'a, 'b>;
 }
 
+cfg_if! {
+    if #[cfg(debug_assertions)] {
+        type AncestorsSeen = ItemSet;
+    } else {
+        struct AncestorsSeen;
+
+        impl AncestorsSeen {
+            fn new() -> Self {
+                AncestorsSeen
+            }
+
+            fn contains(&self,_id: &ItemId) -> bool {
+                false
+            }
+
+            fn insert(&mut self, _id: ItemId) {}
+        }
+    }
+}
+
 /// An iterator over an item and its ancestors.
 pub struct ItemAncestorsIter<'a, 'b>
     where 'b: 'a,
 {
     item: ItemId,
     ctx: &'a BindgenContext<'b>,
+    seen: AncestorsSeen,
+}
+
+impl <'a, 'b> ItemAncestorsIter<'a, 'b>
+    where 'b: 'a
+{
+    fn new(ctx: &'a BindgenContext<'b>, item: ItemId) -> Self {
+        ItemAncestorsIter {
+            item: item,
+            ctx: ctx,
+            seen: AncestorsSeen::new(),
+        }
+    }
 }
 
 impl<'a, 'b> Iterator for ItemAncestorsIter<'a, 'b>
@@ -70,10 +103,15 @@ impl<'a, 'b> Iterator for ItemAncestorsIter<'a, 'b>
 
     fn next(&mut self) -> Option<Self::Item> {
         let item = self.ctx.resolve_item(self.item);
+
         if item.parent_id() == self.item {
             None
         } else {
             self.item = item.parent_id();
+
+            debug_assert!(!self.seen.contains(&item.id()));
+            self.seen.insert(item.id());
+
             Some(item.id())
         }
     }
@@ -100,10 +138,7 @@ impl ItemAncestors for ItemId {
     fn ancestors<'a, 'b>(&self,
                          ctx: &'a BindgenContext<'b>)
                          -> ItemAncestorsIter<'a, 'b> {
-        ItemAncestorsIter {
-            item: *self,
-            ctx: ctx,
-        }
+        ItemAncestorsIter::new(ctx, *self)
     }
 }
 
