@@ -588,8 +588,13 @@ impl Item {
                    ctx: &BindgenContext,
                    for_name_checking: bool)
                    -> ItemId {
+        let mut targets_seen = AncestorsSeen::new();
         let mut item = self;
+
         loop {
+            debug_assert!(!targets_seen.contains(&item.id()));
+            targets_seen.insert(item.id());
+
             match *item.kind() {
                 ItemKind::Type(ref ty) => {
                     match *ty.kind() {
