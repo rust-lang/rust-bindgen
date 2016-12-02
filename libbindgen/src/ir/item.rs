@@ -5,6 +5,7 @@ use clangll;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use std::cell::{Cell, RefCell};
 use std::fmt::Write;
+use std::iter;
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId};
 use super::function::Function;
@@ -1181,50 +1182,15 @@ impl ItemCanonicalPath for Item {
             return vec![self.canonical_name(ctx)];
         }
 
-        if self.id() == ctx.root_module() {
-            match self.kind {
-                ItemKind::Module(ref module) => {
-                    return vec![module.name().unwrap().into()]
-                }
-                _ => panic!("Something has wrong horribly wrong"),
-            }
-        }
-
-        // TODO: This duplicates too much logic with real_canonical_name.
-        if let ItemKind::Type(ref ty) = *self.kind() {
-            match *ty.kind() {
-                TypeKind::Comp(ref ci) if ci.is_template_specialization() => {
-                    return ci.specialized_template()
-                        .unwrap()
-                        .canonical_path(ctx);
-                }
-                TypeKind::ResolvedTypeRef(inner) |
-                TypeKind::TemplateRef(inner, _) => {
-                    return inner.canonical_path(ctx);
-                }
-                TypeKind::Named(ref name, _) => {
-                    return vec![name.clone()];
-                }
-                _ => {}
-            }
-        }
-
-        let mut parent_path = self.parent_id().canonical_path(&ctx);
-        if parent_path.last()
-            .map_or(false, |parent_name| parent_name.is_empty()) {
-            // This only happens (or should only happen) when we're an alias,
-            // and our parent is a templated alias, in which case the last
-            // component of the path will be empty.
-            let is_alias = match *self.expect_type().kind() {
-                TypeKind::Alias(..) => true,
-                _ => false,
-            };
-            debug_assert!(is_alias, "How can this ever happen?");
-            parent_path.pop().unwrap();
-        }
-        parent_path.push(self.name(ctx).within_namespaces().get());
-
-        parent_path
+        let target = ctx.resolve_item(self.name_target(ctx, false));
+        let mut path: Vec<_> = target.ancestors(ctx)
+            .chain(iter::once(ctx.root_module()))
+            .map(|id| ctx.resolve_item(id))
+            .filter(|item| item.is_module() || item.id() == target.id())
+            .map(|item| item.name(ctx).within_namespaces().get())
+            .collect();
+        path.reverse();
+        path
     }
 }
 
