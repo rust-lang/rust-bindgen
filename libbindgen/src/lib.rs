@@ -98,6 +98,49 @@ use syntax::print::pp::eof;
 use syntax::print::pprust;
 use syntax::ptr::P;
 
+/// A type used to indicate which kind of items do we have to generate.
+///
+/// TODO(emilio): Use `bitflags!`
+#[derive(Debug, Clone)]
+pub struct CodegenConfig {
+    /// Whether to generate functions.
+    pub functions: bool,
+    /// Whether to generate types.
+    pub types: bool,
+    /// Whether to generate constants.
+    pub vars: bool,
+    /// Whether to generate methods.
+    pub methods: bool,
+}
+
+impl CodegenConfig {
+    /// Generate all kinds of items.
+    pub fn all() -> Self {
+        CodegenConfig {
+            functions: true,
+            types: true,
+            vars: true,
+            methods: true,
+        }
+    }
+
+    /// Generate nothing.
+    pub fn nothing() -> Self {
+        CodegenConfig {
+            functions: false,
+            types: false,
+            vars: false,
+            methods: false,
+        }
+    }
+}
+
+impl Default for CodegenConfig {
+    fn default() -> Self {
+        CodegenConfig::all()
+    }
+}
+
 /// Configure and generate Rust bindings for a C/C++ header.
 ///
 /// This is the main entry point to the library.
@@ -264,13 +307,13 @@ impl Builder {
 
     /// Ignore functions.
     pub fn ignore_functions(mut self) -> Builder {
-        self.options.ignore_functions = true;
+        self.options.codegen_config.functions = false;
         self
     }
 
     /// Ignore methods.
     pub fn ignore_methods(mut self) -> Builder {
-        self.options.ignore_methods = true;
+        self.options.codegen_config.methods = false;
         self
     }
 
@@ -296,6 +339,12 @@ impl Builder {
     /// documentation.
     pub fn type_chooser(mut self, cb: Box<chooser::TypeChooser>) -> Self {
         self.options.type_chooser = Some(cb);
+        self
+    }
+
+    /// Choose what to generate using a CodegenConfig.
+    pub fn with_codegen_config(mut self, config: CodegenConfig) -> Self {
+        self.options.codegen_config = config;
         self
     }
 
@@ -348,14 +397,6 @@ pub struct BindgenOptions {
     /// True if we should dump our internal IR for debugging purposes.
     pub emit_ir: bool,
 
-    /// True if we should ignore functions and only generate bindings for
-    /// structures, types, and methods.
-    pub ignore_functions: bool,
-
-    /// True if we should avoid generating bindings for methods, and instead
-    /// just generate code for structures and types.
-    pub ignore_methods: bool,
-
     /// True if we should emulate C++ namespaces with Rust modules in the
     /// generated bindings.
     pub enable_cxx_namespaces: bool,
@@ -403,6 +444,10 @@ pub struct BindgenOptions {
     /// A user-provided type chooser to allow customizing different kinds of
     /// situations.
     pub type_chooser: Option<Box<chooser::TypeChooser>>,
+
+    /// Which kind of items should we generate? By default, we'll generate all
+    /// of them.
+    pub codegen_config: CodegenConfig,
 }
 
 impl Default for BindgenOptions {
@@ -418,8 +463,6 @@ impl Default for BindgenOptions {
             links: vec![],
             emit_ast: false,
             emit_ir: false,
-            ignore_functions: false,
-            ignore_methods: false,
             derive_debug: true,
             enable_cxx_namespaces: false,
             disable_name_namespacing: false,
@@ -434,6 +477,7 @@ impl Default for BindgenOptions {
             input_header: None,
             dummy_uses: None,
             type_chooser: None,
+            codegen_config: CodegenConfig::all(),
         }
     }
 }
