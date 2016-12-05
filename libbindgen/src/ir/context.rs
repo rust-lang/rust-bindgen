@@ -947,6 +947,12 @@ impl<'ctx> BindgenContext<'ctx> {
                     return true;
                 }
 
+                // If this is a type that explicitly replaces another, we assume
+                // you know what you're doing.
+                if item.annotations().use_instead_of().is_some() {
+                    return true;
+                }
+
                 let name = item.name(self).for_name_checking().get();
                 match *item.kind() {
                     ItemKind::Module(..) => true,
