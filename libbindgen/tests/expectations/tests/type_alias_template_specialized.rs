@@ -17,3 +17,5 @@ fn bindgen_test_layout_Rooted() {
 impl Clone for Rooted {
     fn clone(&self) -> Self { *self }
 }
+/// <div rustbindgen replaces="MaybeWrapped"></div>
+pub type MaybeWrapped<a> = a;

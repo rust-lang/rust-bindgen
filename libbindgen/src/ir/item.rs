@@ -42,6 +42,12 @@ pub trait ItemCanonicalName {
 /// For bar, the canonical path is `vec!["foo", "BAR"]`, while the canonical
 /// name is just `"BAR"`.
 pub trait ItemCanonicalPath {
+    /// Get the namespace-aware canonical path for this item. This means that if
+    /// namespaces are disabled, you'll
+    fn namespace_aware_canonical_path(&self,
+                                      ctx: &BindgenContext)
+                                      -> Vec<String>;
+
     /// Get the canonical path for this item.
     fn canonical_path(&self, ctx: &BindgenContext) -> Vec<String>;
 }
@@ -127,6 +133,14 @@ impl ItemCanonicalName for ItemId {
 }
 
 impl ItemCanonicalPath for ItemId {
+    fn namespace_aware_canonical_path(&self,
+                                      ctx: &BindgenContext)
+                                      -> Vec<String> {
+        debug_assert!(ctx.in_codegen_phase(),
+                      "You're not supposed to call this yet");
+        ctx.resolve_item(*self).namespace_aware_canonical_path(ctx)
+    }
+
     fn canonical_path(&self, ctx: &BindgenContext) -> Vec<String> {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
@@ -274,6 +288,13 @@ impl Item {
     /// For the root module, the parent's ID is its own ID.
     pub fn parent_id(&self) -> ItemId {
         self.parent_id
+    }
+
+    /// Set this item's parent id.
+    ///
+    /// This is only used so replacements get generated in the proper module.
+    pub fn set_parent_for_replacement(&mut self, id: ItemId) {
+        self.parent_id = id;
     }
 
     /// Get this `Item`'s comment, if it has any.
@@ -509,7 +530,7 @@ impl Item {
             }
             // XXX Is this completely correct? Partial template specialization
             // is hard anyways, sigh...
-            TypeKind::TemplateAlias(_, ref args) |
+            TypeKind::TemplateAlias(_, _, ref args) |
             TypeKind::TemplateRef(_, ref args) => args.clone(),
             // In a template specialization we've got all we want.
             TypeKind::Comp(ref ci) if ci.is_template_specialization() => {
@@ -552,7 +573,7 @@ impl Item {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         self.annotations.hide() ||
-        ctx.hidden_by_name(&self.name(ctx).for_name_checking().get(), self.id)
+        ctx.hidden_by_name(&self.canonical_path(ctx), self.id)
     }
 
     /// Is this item opaque?
@@ -560,7 +581,7 @@ impl Item {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         self.annotations.opaque() ||
-        ctx.opaque_by_name(&self.name(ctx).for_name_checking().get())
+        ctx.opaque_by_name(&self.canonical_path(ctx))
     }
 
     /// Is this a reference to another type?
@@ -585,8 +606,7 @@ impl Item {
 
     /// Get the target item id for name generation.
     fn name_target(&self,
-                   ctx: &BindgenContext,
-                   for_name_checking: bool)
+                   ctx: &BindgenContext)
                    -> ItemId {
         let mut targets_seen = DebugOnlyItemSet::new();
         let mut item = self;
@@ -594,6 +614,10 @@ impl Item {
         loop {
             debug_assert!(!targets_seen.contains(&item.id()));
             targets_seen.insert(item.id());
+
+            if self.annotations().use_instead_of().is_some() {
+                return self.id();
+            }
 
             match *item.kind() {
                 ItemKind::Type(ref ty) => {
@@ -609,13 +633,6 @@ impl Item {
                         // Same as above.
                         TypeKind::ResolvedTypeRef(inner) |
                         TypeKind::TemplateRef(inner, _) => {
-                            item = ctx.resolve_item(inner);
-                        }
-                        // Template aliases use their inner alias type's name if
-                        // we are checking names for
-                        // whitelisting/replacement/etc.
-                        TypeKind::TemplateAlias(inner, _)
-                            if for_name_checking => {
                             item = ctx.resolve_item(inner);
                         }
                         _ => return item.id(),
@@ -657,14 +674,13 @@ impl Item {
     }
 
     /// Get this item's base name (aka non-namespaced name).
-    ///
-    /// The `for_name_checking` boolean parameter informs us whether we are
-    /// asking for the name in order to do a whitelisting/replacement/etc check
-    /// or if we are instead using it for code generation.
     fn base_name(&self,
-                 ctx: &BindgenContext,
-                 for_name_checking: bool)
+                 ctx: &BindgenContext)
                  -> String {
+        if let Some(path) = self.annotations().use_instead_of() {
+            return path.last().unwrap().clone();
+        }
+
         match *self.kind() {
             ItemKind::Var(ref var) => var.name().to_owned(),
             ItemKind::Module(ref module) => {
@@ -677,9 +693,6 @@ impl Item {
             ItemKind::Type(ref ty) => {
                 let name = match *ty.kind() {
                     TypeKind::ResolvedTypeRef(..) => panic!("should have resolved this in name_target()"),
-                    TypeKind::TemplateAlias(..) => {
-                        if for_name_checking { None } else { Some("") }
-                    }
                     _ => ty.name(),
                 };
                 name.map(ToOwned::to_owned)
@@ -717,16 +730,17 @@ impl Item {
                                opt: &NameOptions)
                                -> String {
         let target =
-            ctx.resolve_item(self.name_target(ctx, opt.for_name_checking));
+            ctx.resolve_item(self.name_target(ctx));
 
         // Short-circuit if the target has an override, and just use that.
-        if !opt.for_name_checking {
-            if let Some(other) = target.annotations.use_instead_of() {
-                return other.to_owned();
+        if let Some(path) = target.annotations.use_instead_of() {
+            if ctx.options().enable_cxx_namespaces {
+                return path.last().unwrap().clone();
             }
+            return path.join("_").to_owned();
         }
 
-        let base_name = target.base_name(ctx, opt.for_name_checking);
+        let base_name = target.base_name(ctx);
 
         // Named template type arguments are never namespaced, and never
         // mangled.
@@ -744,8 +758,8 @@ impl Item {
             })
             .map(|id| {
                 let item = ctx.resolve_item(id);
-                let target = ctx.resolve_item(item.name_target(ctx, false));
-                target.base_name(ctx, false)
+                let target = ctx.resolve_item(item.name_target(ctx));
+                target.base_name(ctx)
             })
             .filter(|name| !name.is_empty())
             .collect();
@@ -1217,17 +1231,34 @@ impl ItemCanonicalName for Item {
 }
 
 impl ItemCanonicalPath for Item {
+    fn namespace_aware_canonical_path(&self,
+                                      ctx: &BindgenContext)
+                                      -> Vec<String> {
+        if ctx.options().enable_cxx_namespaces {
+            return self.canonical_path(ctx);
+        }
+        return vec![self.canonical_path(ctx)[1..].join("_")];
+    }
+
     fn canonical_path(&self, ctx: &BindgenContext) -> Vec<String> {
-        if !ctx.options().enable_cxx_namespaces {
-            return vec![self.canonical_name(ctx)];
+        if let Some(path) = self.annotations().use_instead_of() {
+            let mut ret =
+                vec![ctx.resolve_item(ctx.root_module()).name(ctx).get()];
+            ret.extend_from_slice(path);
+            return ret;
         }
 
-        let target = ctx.resolve_item(self.name_target(ctx, false));
+        let target = ctx.resolve_item(self.name_target(ctx));
         let mut path: Vec<_> = target.ancestors(ctx)
             .chain(iter::once(ctx.root_module()))
             .map(|id| ctx.resolve_item(id))
             .filter(|item| item.is_module() || item.id() == target.id())
-            .map(|item| item.name(ctx).within_namespaces().get())
+            .map(|item| {
+                ctx.resolve_item(item.name_target(ctx))
+                   .name(ctx)
+                   .within_namespaces()
+                   .get()
+            })
             .collect();
         path.reverse();
         path
@@ -1242,7 +1273,6 @@ pub struct NameOptions<'item, 'ctx>
 {
     item: &'item Item,
     ctx: &'item BindgenContext<'ctx>,
-    for_name_checking: bool,
     within_namespaces: bool,
 }
 
@@ -1252,16 +1282,8 @@ impl<'item, 'ctx> NameOptions<'item, 'ctx> {
         NameOptions {
             item: item,
             ctx: ctx,
-            for_name_checking: false,
             within_namespaces: false,
         }
-    }
-
-    /// Construct a name that is suitable for replacements/whitelisting/opaque-
-    /// ness look ups.
-    pub fn for_name_checking(&mut self) -> &mut Self {
-        self.for_name_checking = true;
-        self
     }
 
     /// Construct the name without the item's containing C++ namespaces mangled

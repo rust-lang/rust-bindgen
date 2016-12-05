@@ -4,12 +4,12 @@
 #![allow(non_snake_case)]
 
 
+/// But the replacement type does use T!
+///
+/// <div rustbindgen replaces="JS::detail::MaybeWrapped" />
+pub type JS_detail_MaybeWrapped<T> = T;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct JS_Rooted<T> {
     pub ptr: JS_detail_MaybeWrapped<T>,
 }
-/// But the replacement type does use T!
-///
-/// <div rustbindgen replaces="JS_detail_MaybeWrapped" />
-pub type JS_detail_MaybeWrapped<T> = T;

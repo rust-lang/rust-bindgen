@@ -1,4 +1,4 @@
-// bindgen-flags: --enable-cxx-namespaces --whitelist-type outer_inner_Helper
+// bindgen-flags: --enable-cxx-namespaces --whitelist-type outer::inner::Helper
 
 namespace outer {
   namespace inner {

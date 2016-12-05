@@ -27,9 +27,9 @@ pub struct Annotations {
     /// Whether this item should be hidden from the output. Only applies to
     /// types.
     hide: bool,
-    /// Whether this type should be replaced by another. The name must be the
-    /// canonical name that that type would get.
-    use_instead_of: Option<String>,
+    /// Whether this type should be replaced by another. The name is a
+    /// namespace-aware path.
+    use_instead_of: Option<Vec<String>>,
     /// Manually disable deriving copy/clone on this type. Only applies to
     /// struct or union types.
     disallow_copy: bool,
@@ -106,7 +106,7 @@ impl Annotations {
     /// ```
     ///
     /// That is, code for `Foo` is used to generate `Bar`.
-    pub fn use_instead_of(&self) -> Option<&str> {
+    pub fn use_instead_of(&self) -> Option<&[String]> {
         self.use_instead_of.as_ref().map(|s| &**s)
     }
 
@@ -138,7 +138,12 @@ impl Annotations {
                     "opaque" => self.opaque = true,
                     "hide" => self.hide = true,
                     "nocopy" => self.disallow_copy = true,
-                    "replaces" => self.use_instead_of = Some(attr.value),
+                    "replaces" => {
+                        self.use_instead_of =
+                            Some(attr.value.split("::")
+                                 .map(Into::into)
+                                 .collect())
+                    },
                     "private" => {
                         self.private_fields = Some(attr.value != "false")
                     }
