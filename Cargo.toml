@@ -14,7 +14,7 @@ repository = "https://github.com/servo/rust-bindgen"
 version = "0.17.0"
 
 [dependencies]
-clang-sys = "0.8.0"
+clang-sys = "0.11.1"
 clap = "2"
 libbindgen = { path = "libbindgen" }
 log = "0.3"
