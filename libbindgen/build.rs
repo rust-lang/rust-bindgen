@@ -1,9 +1,10 @@
 mod codegen {
     extern crate quasi_codegen;
-    use std::path::Path;
+    use std::env;
+    use std::path::{Path, PathBuf};
 
     pub fn main() {
-        let out_dir = Path::new(env!("OUT_DIR"));
+        let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
         let src = Path::new("src/codegen/mod.rs");
         let dst = Path::new(&out_dir).join("codegen.rs");
 
@@ -15,17 +16,18 @@ mod codegen {
 
 mod testgen {
     use std::char;
+    use std::env;
     use std::ffi::OsStr;
     use std::fs::{self, File};
     use std::io::Write;
-    use std::path::Path;
+    use std::path::{Path, PathBuf};
 
     pub fn main() {
-        let out_dir = Path::new(env!("OUT_DIR"));
+        let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
         let mut dst = File::create(Path::new(&out_dir).join("tests.rs")).unwrap();
 
         println!("cargo:rerun-if-changed=tests/headers");
-        let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
+        let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
         let headers_dir = manifest_dir.join("tests").join("headers");
 
         let entries = fs::read_dir(headers_dir)
