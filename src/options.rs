@@ -1,5 +1,5 @@
 use clap::{App, Arg};
-use libbindgen::{Builder, builder};
+use libbindgen::{Builder, builder, CodegenConfig};
 use std::fs::File;
 use std::io::{self, Error, ErrorKind};
 
@@ -71,6 +71,12 @@ pub fn builder_from_flags<I>(args: I)
                 .long("ignore-functions")
                 .help("Do not generate bindings for functions or methods. This \
                        is useful when you only care about struct layouts."),
+            Arg::with_name("generate")
+                .long("generate")
+                .help("Generate a given kind of items, split by commas. \
+                       Valid values are \"functions\",\"types\", \"vars\" and \
+                       \"methods\".")
+                .takes_value(true),
             Arg::with_name("ignore-methods")
                 .long("ignore-methods")
                 .help("Do not generate bindings for methods."),
@@ -183,6 +189,23 @@ pub fn builder_from_flags<I>(args: I)
         for library in links {
             builder = builder.link(library);
         }
+    }
+
+    if let Some(what_to_generate) = matches.value_of("generate") {
+        let mut config = CodegenConfig::nothing();
+        for what in what_to_generate.split(",") {
+            match what {
+                "functions" => config.functions = true,
+                "types" => config.types = true,
+                "vars" => config.vars = true,
+                "methods" => config.methods = true,
+                _ => {
+                    return Err(
+                        Error::new(ErrorKind::Other, "Unknown generate item"));
+                }
+            }
+        }
+        builder = builder.with_codegen_config(config);
     }
 
     if matches.is_present("emit-clang-ast") {

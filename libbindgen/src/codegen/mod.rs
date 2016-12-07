@@ -267,15 +267,19 @@ impl CodeGenerator for Item {
                 module.codegen(ctx, result, whitelisted_items, self);
             }
             ItemKind::Function(ref fun) => {
-                if !ctx.options().ignore_functions {
+                if ctx.options().codegen_config.functions {
                     fun.codegen(ctx, result, whitelisted_items, self);
                 }
             }
             ItemKind::Var(ref var) => {
-                var.codegen(ctx, result, whitelisted_items, self);
+                if ctx.options().codegen_config.vars {
+                    var.codegen(ctx, result, whitelisted_items, self);
+                }
             }
             ItemKind::Type(ref ty) => {
-                ty.codegen(ctx, result, whitelisted_items, self);
+                if ctx.options().codegen_config.types {
+                    ty.codegen(ctx, result, whitelisted_items, self);
+                }
             }
         }
     }
@@ -1152,14 +1156,16 @@ impl CodeGenerator for CompInfo {
                 result.push(item);
             }
 
-            let mut method_names = Default::default();
-            for method in self.methods() {
-                method.codegen_method(ctx,
-                                      &mut methods,
-                                      &mut method_names,
-                                      result,
-                                      whitelisted_items,
-                                      item);
+            if ctx.options().codegen_config.methods {
+                let mut method_names = Default::default();
+                for method in self.methods() {
+                    method.codegen_method(ctx,
+                                          &mut methods,
+                                          &mut method_names,
+                                          result,
+                                          whitelisted_items,
+                                          item);
+                }
             }
         }
 
@@ -1222,10 +1228,6 @@ impl MethodCodegen for Method {
                       result: &mut CodegenResult,
                       whitelisted_items: &ItemSet,
                       _parent: &Item) {
-        if ctx.options().ignore_methods {
-            return;
-        }
-
         if self.is_virtual() {
             return; // FIXME
         }
