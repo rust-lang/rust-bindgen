@@ -43,7 +43,8 @@ pub trait ItemCanonicalName {
 /// name is just `"BAR"`.
 pub trait ItemCanonicalPath {
     /// Get the namespace-aware canonical path for this item. This means that if
-    /// namespaces are disabled, you'll
+    /// namespaces are disabled, you'll get a single item, and otherwise you get
+    /// the whole path.
     fn namespace_aware_canonical_path(&self,
                                       ctx: &BindgenContext)
                                       -> Vec<String>;

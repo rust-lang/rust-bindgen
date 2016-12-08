@@ -171,9 +171,6 @@ impl<'ctx> BindgenContext<'ctx> {
                     item: Item,
                     declaration: Option<Cursor>,
                     location: Option<Cursor>) {
-        use clangll::{CXCursor_ClassTemplate,
-                      CXCursor_ClassTemplatePartialSpecialization,
-                      CXCursor_TypeAliasTemplateDecl};
         debug!("BindgenContext::add_item({:?}, declaration: {:?}, loc: {:?}",
                item,
                declaration,
@@ -206,10 +203,7 @@ impl<'ctx> BindgenContext<'ctx> {
             let mut declaration = declaration.unwrap();
             if !declaration.is_valid() {
                 if let Some(location) = location {
-                    if location.kind() == CXCursor_ClassTemplate ||
-                       location.kind() ==
-                       CXCursor_ClassTemplatePartialSpecialization ||
-                       location.kind() == CXCursor_TypeAliasTemplateDecl {
+                    if location.is_template_like() {
                         declaration = location;
                     }
                 }
@@ -645,9 +639,7 @@ impl<'ctx> BindgenContext<'ctx> {
                                   ty: &clang::Type,
                                   location: Option<clang::Cursor>)
                                   -> Option<ItemId> {
-        use clangll::{CXCursor_ClassTemplate,
-                      CXCursor_ClassTemplatePartialSpecialization,
-                      CXCursor_TypeAliasTemplateDecl, CXCursor_TypeRef};
+        use clangll::{CXCursor_TypeAliasTemplateDecl, CXCursor_TypeRef};
         debug!("builtin_or_resolved_ty: {:?}, {:?}, {:?}",
                ty,
                location,
@@ -655,10 +647,7 @@ impl<'ctx> BindgenContext<'ctx> {
         let mut declaration = ty.declaration();
         if !declaration.is_valid() {
             if let Some(location) = location {
-                if location.kind() == CXCursor_ClassTemplate ||
-                   location.kind() ==
-                   CXCursor_ClassTemplatePartialSpecialization ||
-                   location.kind() == CXCursor_TypeAliasTemplateDecl {
+                if location.is_template_like() {
                     declaration = location;
                 }
             }
@@ -690,10 +679,7 @@ impl<'ctx> BindgenContext<'ctx> {
                 // Note that we only do it if parent_id is some, and we have a
                 // location for building the new arguments, the template
                 // argument names don't matter in the global context.
-                if (declaration.kind() == CXCursor_ClassTemplate ||
-                    declaration.kind() ==
-                    CXCursor_ClassTemplatePartialSpecialization ||
-                    declaration.kind() == CXCursor_TypeAliasTemplateDecl) &&
+                if declaration.is_template_like() &&
                    *ty != canonical_declaration.cur_type() &&
                    location.is_some() &&
                    parent_id.is_some() {
