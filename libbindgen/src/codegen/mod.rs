@@ -19,6 +19,7 @@ use ir::var::Var;
 use self::helpers::{BlobTyBuilder, attributes};
 
 use std::borrow::Cow;
+use std::cell::Cell;
 use std::collections::HashSet;
 use std::collections::hash_map::{Entry, HashMap};
 use std::fmt::Write;
@@ -59,9 +60,16 @@ fn root_import(ctx: &BindgenContext, module: &Item) -> P<ast::Item> {
     quote_item!(ctx.ext_cx(), #[allow(unused_imports)] $use_root).unwrap()
 }
 
-struct CodegenResult {
+struct CodegenResult<'a> {
     items: Vec<P<ast::Item>>,
+
+    /// A monotonic counter used to add stable unique id's to stuff that doesn't
+    /// need to be referenced by anything.
+    codegen_id: &'a Cell<usize>,
+
+    /// Whether an union has been generated at least once.
     saw_union: bool,
+
     items_seen: HashSet<ItemId>,
     /// The set of generated function/var names, needed because in C/C++ is
     /// legal to do something like:
@@ -88,16 +96,22 @@ struct CodegenResult {
     overload_counters: HashMap<String, u32>,
 }
 
-impl CodegenResult {
-    fn new() -> Self {
+impl<'a> CodegenResult<'a> {
+    fn new(codegen_id: &'a Cell<usize>) -> Self {
         CodegenResult {
             items: vec![],
             saw_union: false,
+            codegen_id: codegen_id,
             items_seen: Default::default(),
             functions_seen: Default::default(),
             vars_seen: Default::default(),
             overload_counters: Default::default(),
         }
+    }
+
+    fn next_id(&mut self) -> usize {
+        self.codegen_id.set(self.codegen_id.get() + 1);
+        self.codegen_id.get()
     }
 
     fn saw_union(&mut self) {
@@ -142,7 +156,7 @@ impl CodegenResult {
     fn inner<F>(&mut self, cb: F) -> Vec<P<ast::Item>>
         where F: FnOnce(&mut Self),
     {
-        let mut new = Self::new();
+        let mut new = Self::new(self.codegen_id);
 
         cb(&mut new);
 
@@ -152,7 +166,7 @@ impl CodegenResult {
     }
 }
 
-impl ops::Deref for CodegenResult {
+impl<'a> ops::Deref for CodegenResult<'a> {
     type Target = Vec<P<ast::Item>>;
 
     fn deref(&self) -> &Self::Target {
@@ -160,7 +174,7 @@ impl ops::Deref for CodegenResult {
     }
 }
 
-impl ops::DerefMut for CodegenResult {
+impl<'a> ops::DerefMut for CodegenResult<'a> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.items
     }
@@ -237,21 +251,21 @@ trait CodeGenerator {
     /// Extra information from the caller.
     type Extra;
 
-    fn codegen(&self,
-               ctx: &BindgenContext,
-               result: &mut CodegenResult,
-               whitelisted_items: &ItemSet,
-               extra: &Self::Extra);
+    fn codegen<'a>(&self,
+                   ctx: &BindgenContext,
+                   result: &mut CodegenResult<'a>,
+                   whitelisted_items: &ItemSet,
+                   extra: &Self::Extra);
 }
 
 impl CodeGenerator for Item {
     type Extra = ();
 
-    fn codegen(&self,
-               ctx: &BindgenContext,
-               result: &mut CodegenResult,
-               whitelisted_items: &ItemSet,
-               _extra: &()) {
+    fn codegen<'a>(&self,
+                   ctx: &BindgenContext,
+                   result: &mut CodegenResult<'a>,
+                   whitelisted_items: &ItemSet,
+                   _extra: &()) {
         if self.is_hidden(ctx) || result.seen(self.id()) {
             debug!("<Item as CodeGenerator>::codegen: Ignoring hidden or seen: \
                    self = {:?}", self);
@@ -288,11 +302,11 @@ impl CodeGenerator for Item {
 impl CodeGenerator for Module {
     type Extra = Item;
 
-    fn codegen(&self,
-               ctx: &BindgenContext,
-               result: &mut CodegenResult,
-               whitelisted_items: &ItemSet,
-               item: &Item) {
+    fn codegen<'a>(&self,
+                   ctx: &BindgenContext,
+                   result: &mut CodegenResult<'a>,
+                   whitelisted_items: &ItemSet,
+                   item: &Item) {
         debug!("<Module as CodeGenerator>::codegen: item = {:?}", item);
 
         let codegen_self = |result: &mut CodegenResult, found_any: &mut bool| {
@@ -348,11 +362,11 @@ impl CodeGenerator for Module {
 
 impl CodeGenerator for Var {
     type Extra = Item;
-    fn codegen(&self,
-               ctx: &BindgenContext,
-               result: &mut CodegenResult,
-               _whitelisted_items: &ItemSet,
-               item: &Item) {
+    fn codegen<'a>(&self,
+                   ctx: &BindgenContext,
+                   result: &mut CodegenResult<'a>,
+                   _whitelisted_items: &ItemSet,
+                   item: &Item) {
         use ir::var::VarType;
         debug!("<Var as CodeGenerator>::codegen: item = {:?}", item);
 
@@ -439,11 +453,11 @@ impl CodeGenerator for Var {
 impl CodeGenerator for Type {
     type Extra = Item;
 
-    fn codegen(&self,
-               ctx: &BindgenContext,
-               result: &mut CodegenResult,
-               whitelisted_items: &ItemSet,
-               item: &Item) {
+    fn codegen<'a>(&self,
+                   ctx: &BindgenContext,
+                   result: &mut CodegenResult<'a>,
+                   whitelisted_items: &ItemSet,
+                   item: &Item) {
         debug!("<Type as CodeGenerator>::codegen: item = {:?}", item);
 
         match *self.kind() {
@@ -560,11 +574,11 @@ impl<'a> Vtable<'a> {
 impl<'a> CodeGenerator for Vtable<'a> {
     type Extra = Item;
 
-    fn codegen(&self,
-               ctx: &BindgenContext,
-               result: &mut CodegenResult,
-               _whitelisted_items: &ItemSet,
-               item: &Item) {
+    fn codegen<'b>(&self,
+                   ctx: &BindgenContext,
+                   result: &mut CodegenResult<'b>,
+                   _whitelisted_items: &ItemSet,
+                   item: &Item) {
         assert_eq!(item.id(), self.item_id);
         // For now, generate an empty struct, later we should generate function
         // pointers and whatnot.
@@ -694,11 +708,11 @@ impl<'a> Bitfield<'a> {
 impl CodeGenerator for CompInfo {
     type Extra = Item;
 
-    fn codegen(&self,
-               ctx: &BindgenContext,
-               result: &mut CodegenResult,
-               whitelisted_items: &ItemSet,
-               item: &Item) {
+    fn codegen<'a>(&self,
+                   ctx: &BindgenContext,
+                   result: &mut CodegenResult<'a>,
+                   whitelisted_items: &ItemSet,
+                   item: &Item) {
         use aster::struct_field::StructFieldBuilder;
 
         debug!("<CompInfo as CodeGenerator>::codegen: item = {:?}", item);
@@ -713,7 +727,7 @@ impl CodeGenerator for CompInfo {
             let layout = item.kind().expect_type().layout(ctx);
 
             if let Some(layout) = layout {
-                let fn_name = format!("__bindgen_test_layout_template_{}", item.id().as_usize());
+                let fn_name = format!("__bindgen_test_layout_template_{}", result.next_id());
                 let fn_name = ctx.rust_ident_raw(&fn_name);
                 let ident = item.to_rust_ty(ctx);
                 let prefix = ctx.trait_prefix();
@@ -1222,23 +1236,23 @@ impl CodeGenerator for CompInfo {
 }
 
 trait MethodCodegen {
-    fn codegen_method(&self,
-                      ctx: &BindgenContext,
-                      methods: &mut Vec<ast::ImplItem>,
-                      method_names: &mut HashMap<String, usize>,
-                      result: &mut CodegenResult,
-                      whitelisted_items: &ItemSet,
-                      parent: &Item);
+    fn codegen_method<'a>(&self,
+                          ctx: &BindgenContext,
+                          methods: &mut Vec<ast::ImplItem>,
+                          method_names: &mut HashMap<String, usize>,
+                          result: &mut CodegenResult<'a>,
+                          whitelisted_items: &ItemSet,
+                          parent: &Item);
 }
 
 impl MethodCodegen for Method {
-    fn codegen_method(&self,
-                      ctx: &BindgenContext,
-                      methods: &mut Vec<ast::ImplItem>,
-                      method_names: &mut HashMap<String, usize>,
-                      result: &mut CodegenResult,
-                      whitelisted_items: &ItemSet,
-                      _parent: &Item) {
+    fn codegen_method<'a>(&self,
+                          ctx: &BindgenContext,
+                          methods: &mut Vec<ast::ImplItem>,
+                          method_names: &mut HashMap<String, usize>,
+                          result: &mut CodegenResult<'a>,
+                          whitelisted_items: &ItemSet,
+                          _parent: &Item) {
         if self.is_virtual() {
             return; // FIXME
         }
@@ -1408,13 +1422,13 @@ impl<'a> EnumBuilder<'a> {
     }
 
     /// Add a variant to this enum.
-    fn with_variant(self,
-                    ctx: &BindgenContext,
-                    variant: &EnumVariant,
-                    mangling_prefix: Option<&String>,
-                    rust_ty: P<ast::Ty>,
-                    result: &mut CodegenResult)
-                    -> Self {
+    fn with_variant<'b>(self,
+                        ctx: &BindgenContext,
+                        variant: &EnumVariant,
+                        mangling_prefix: Option<&String>,
+                        rust_ty: P<ast::Ty>,
+                        result: &mut CodegenResult<'b>)
+                        -> Self {
         let variant_name = ctx.rust_mangle(variant.name());
         let expr = aster::AstBuilder::new().expr();
         let expr = match variant.val() {
@@ -1456,11 +1470,11 @@ impl<'a> EnumBuilder<'a> {
         }
     }
 
-    fn build(self,
-             ctx: &BindgenContext,
-             rust_ty: P<ast::Ty>,
-             result: &mut CodegenResult)
-             -> P<ast::Item> {
+    fn build<'b>(self,
+                 ctx: &BindgenContext,
+                 rust_ty: P<ast::Ty>,
+                 result: &mut CodegenResult<'b>)
+                 -> P<ast::Item> {
         match self {
             EnumBuilder::Rust(b) => b.build(),
             EnumBuilder::Bitfield { canonical_name, aster } => {
@@ -1489,11 +1503,11 @@ impl<'a> EnumBuilder<'a> {
 impl CodeGenerator for Enum {
     type Extra = Item;
 
-    fn codegen(&self,
-               ctx: &BindgenContext,
-               result: &mut CodegenResult,
-               _whitelisted_items: &ItemSet,
-               item: &Item) {
+    fn codegen<'a>(&self,
+                   ctx: &BindgenContext,
+                   result: &mut CodegenResult<'a>,
+                   _whitelisted_items: &ItemSet,
+                   item: &Item) {
         debug!("<Enum as CodeGenerator>::codegen: item = {:?}", item);
 
         let name = item.canonical_name(ctx);
@@ -1567,15 +1581,15 @@ impl CodeGenerator for Enum {
 
         builder = builder.with_attr(derives);
 
-        fn add_constant(enum_: &Type,
-                        // Only to avoid recomputing every time.
-                        enum_canonical_name: &str,
-                        // May be the same as "variant" if it's because the
-                        // enum is unnamed and we still haven't seen the value.
-                        variant_name: &str,
-                        referenced_name: &str,
-                        enum_rust_ty: P<ast::Ty>,
-                        result: &mut CodegenResult) {
+        fn add_constant<'a>(enum_: &Type,
+                            // Only to avoid recomputing every time.
+                            enum_canonical_name: &str,
+                            // May be the same as "variant" if it's because the
+                            // enum is unnamed and we still haven't seen the value.
+                            variant_name: &str,
+                            referenced_name: &str,
+                            enum_rust_ty: P<ast::Ty>,
+                            result: &mut CodegenResult<'a>) {
             let constant_name = if enum_.name().is_some() {
                 format!("{}_{}", enum_canonical_name, variant_name)
             } else {
@@ -1935,11 +1949,11 @@ impl ToRustTy for FunctionSig {
 impl CodeGenerator for Function {
     type Extra = Item;
 
-    fn codegen(&self,
-               ctx: &BindgenContext,
-               result: &mut CodegenResult,
-               _whitelisted_items: &ItemSet,
-               item: &Item) {
+    fn codegen<'a>(&self,
+                   ctx: &BindgenContext,
+                   result: &mut CodegenResult<'a>,
+                   _whitelisted_items: &ItemSet,
+                   item: &Item) {
         debug!("<Function as CodeGenerator>::codegen: item = {:?}", item);
 
         let name = self.name();
@@ -2007,7 +2021,8 @@ impl CodeGenerator for Function {
 
 pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
     context.gen(|context| {
-        let mut result = CodegenResult::new();
+        let counter = Cell::new(0);
+        let mut result = CodegenResult::new(&counter);
 
         debug!("codegen: {:?}", context.options());
 

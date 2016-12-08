@@ -63,7 +63,7 @@ pub struct TErrorResult__bindgen_ty_1<T> {
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[test]
-fn __bindgen_test_layout_template_17() {
+fn __bindgen_test_layout_template_1() {
     assert_eq!(::std::mem::size_of::<TErrorResult<::std::os::raw::c_int>>() ,
                24usize);
     assert_eq!(::std::mem::align_of::<TErrorResult<::std::os::raw::c_int>>() ,
