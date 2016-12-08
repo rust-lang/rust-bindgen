@@ -303,6 +303,16 @@ impl CodeGenerator for Module {
                         .codegen(ctx, result, whitelisted_items, &());
                 }
             }
+
+            if item.id() == ctx.root_module() {
+                let saw_union = result.saw_union;
+                if saw_union && !ctx.options().unstable_rust {
+                    utils::prepend_union_types(ctx, &mut *result);
+                }
+                if ctx.need_bindegen_complex_type() {
+                    utils::prepend_complex_type(ctx, &mut *result);
+                }
+            }
         };
 
         if !ctx.options().enable_cxx_namespaces {
@@ -916,7 +926,11 @@ impl CodeGenerator for CompInfo {
 
             // NB: In unstable rust we use proper `union` types.
             let ty = if is_union && !ctx.options().unstable_rust {
-                quote_ty!(ctx.ext_cx(), __BindgenUnionField<$ty>)
+                if ctx.options().enable_cxx_namespaces {
+                    quote_ty!(ctx.ext_cx(), root::__BindgenUnionField<$ty>)
+                } else {
+                    quote_ty!(ctx.ext_cx(), __BindgenUnionField<$ty>)
+                }
             } else {
                 ty
             };
@@ -1747,7 +1761,11 @@ impl ToRustTy for Type {
                 let float_path = float_kind_rust_type(ctx, fk);
 
                 ctx.generated_bindegen_complex();
-                quote_ty!(ctx.ext_cx(), __BindgenComplex<$float_path>)
+                if ctx.options().enable_cxx_namespaces {
+                    quote_ty!(ctx.ext_cx(), root::__BindgenComplex<$float_path>)
+                } else {
+                    quote_ty!(ctx.ext_cx(), __BindgenComplex<$float_path>)
+                }
             }
             TypeKind::Function(ref fs) => {
                 let ty = fs.to_rust_ty(ctx, item);
@@ -2008,15 +2026,7 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
         context.resolve_item(context.root_module())
             .codegen(context, &mut result, &whitelisted_items, &());
 
-        let saw_union = result.saw_union;
-        let mut result = result.items;
-        if saw_union && !context.options().unstable_rust {
-            utils::prepend_union_types(context, &mut result);
-        }
-        if context.need_bindegen_complex_type() {
-            utils::prepend_complex_type(context, &mut result);
-        }
-        result
+        result.items
     })
 }
 
