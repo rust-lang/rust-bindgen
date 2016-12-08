@@ -1235,10 +1235,14 @@ impl ItemCanonicalPath for Item {
     fn namespace_aware_canonical_path(&self,
                                       ctx: &BindgenContext)
                                       -> Vec<String> {
+        let path = self.canonical_path(ctx);
         if ctx.options().enable_cxx_namespaces {
-            return self.canonical_path(ctx);
+            return path;
         }
-        return vec![self.canonical_path(ctx)[1..].join("_")];
+        if ctx.options().disable_name_namespacing {
+            return vec![path.last().unwrap().clone()];
+        }
+        return vec![path[1..].join("_")];
     }
 
     fn canonical_path(&self, ctx: &BindgenContext) -> Vec<String> {
