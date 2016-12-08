@@ -21,7 +21,7 @@ fn bindgen_test_layout_WithoutDtor() {
     assert_eq!(::std::mem::align_of::<WithoutDtor>() , 8usize);
 }
 #[test]
-fn __bindgen_test_layout_template_11() {
+fn __bindgen_test_layout_template_1() {
     assert_eq!(::std::mem::size_of::<HandleWithDtor<::std::os::raw::c_int>>()
                , 8usize);
     assert_eq!(::std::mem::align_of::<HandleWithDtor<::std::os::raw::c_int>>()
