@@ -467,12 +467,9 @@ impl CodeGenerator for Type {
             TypeKind::Comp(ref ci) => {
                 ci.codegen(ctx, result, whitelisted_items, item)
             }
-            // NB: The inner Alias will be generated and pick the correct
+            // NB: The code below will pick the correct
             // applicable_template_args.
-            TypeKind::TemplateAlias(inner, _) => {
-                ctx.resolve_item(inner)
-                    .codegen(ctx, result, whitelisted_items, &())
-            },
+            TypeKind::TemplateAlias(ref spelling, inner, _) |
             TypeKind::Alias(ref spelling, inner) => {
                 let inner_item = ctx.resolve_item(inner);
                 let name = item.canonical_name(ctx);
@@ -1777,10 +1774,9 @@ impl ToRustTy for Type {
                 aster::ty::TyBuilder::new().array(len).build(inner)
             }
             TypeKind::Enum(..) => {
-                let path = item.canonical_path(ctx);
+                let path = item.namespace_aware_canonical_path(ctx);
                 aster::AstBuilder::new().ty().path().ids(path).build()
             }
-            TypeKind::TemplateAlias(inner, ref template_args) |
             TypeKind::TemplateRef(inner, ref template_args) => {
                 // PS: Sorry for the duplication here.
                 let mut inner_ty = inner.to_rust_ty(ctx).unwrap();
@@ -1803,6 +1799,7 @@ impl ToRustTy for Type {
                 P(inner_ty)
             }
             TypeKind::ResolvedTypeRef(inner) => inner.to_rust_ty(ctx),
+            TypeKind::TemplateAlias(ref spelling, inner, _) |
             TypeKind::Alias(ref spelling, inner) => {
                 if item.is_opaque(ctx) {
                     // Pray if there's no available layout.
@@ -2141,7 +2138,7 @@ mod utils {
                                 ctx: &BindgenContext,
                                 only_named: bool)
                                 -> P<ast::Ty> {
-        let path = item.canonical_path(ctx);
+        let path = item.namespace_aware_canonical_path(ctx);
 
         let builder = aster::AstBuilder::new().ty().path();
         let template_args = if only_named {

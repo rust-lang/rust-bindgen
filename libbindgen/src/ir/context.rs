@@ -10,7 +10,7 @@ use std::collections::{HashMap, hash_map};
 use std::collections::btree_map::{self, BTreeMap};
 use std::fmt;
 use super::int::IntKind;
-use super::item::Item;
+use super::item::{Item, ItemCanonicalPath};
 use super::item_kind::ItemKind;
 use super::module::Module;
 use super::ty::{FloatKind, Type, TypeKind};
@@ -100,7 +100,7 @@ pub struct BindgenContext<'ctx> {
     parsed_macros: HashMap<Vec<u8>, cexpr::expr::EvalResult>,
 
     /// The active replacements collected from replaces="xxx" annotations.
-    replacements: HashMap<String, ItemId>,
+    replacements: HashMap<Vec<String>, ItemId>,
 
     collected_typerefs: bool,
 
@@ -171,8 +171,6 @@ impl<'ctx> BindgenContext<'ctx> {
                     item: Item,
                     declaration: Option<Cursor>,
                     location: Option<Cursor>) {
-        use clangll::{CXCursor_ClassTemplate,
-                      CXCursor_ClassTemplatePartialSpecialization};
         debug!("BindgenContext::add_item({:?}, declaration: {:?}, loc: {:?}",
                item,
                declaration,
@@ -205,9 +203,7 @@ impl<'ctx> BindgenContext<'ctx> {
             let mut declaration = declaration.unwrap();
             if !declaration.is_valid() {
                 if let Some(location) = location {
-                    if location.kind() == CXCursor_ClassTemplate ||
-                       location.kind() ==
-                       CXCursor_ClassTemplatePartialSpecialization {
+                    if location.is_template_like() {
                         declaration = location;
                     }
                 }
@@ -353,6 +349,10 @@ impl<'ctx> BindgenContext<'ctx> {
         let mut replacements = vec![];
 
         for (id, item) in self.items.iter() {
+            if item.annotations().use_instead_of().is_some() {
+                continue;
+            }
+
             // Calls to `canonical_name` are expensive, so eagerly filter out
             // items that cannot be replaced.
             let ty = match item.kind().as_type() {
@@ -362,23 +362,13 @@ impl<'ctx> BindgenContext<'ctx> {
 
             match *ty.kind() {
                 TypeKind::Comp(ref ci) if !ci.is_template_specialization() => {}
-                TypeKind::TemplateAlias(_, _) |
-                TypeKind::Alias(_, _) => {}
+                TypeKind::TemplateAlias(..) |
+                TypeKind::Alias(..) => {}
                 _ => continue,
             }
 
-            let in_namespace = self.options().enable_cxx_namespaces;
-
-            let name = if in_namespace {
-                item.name(self)
-                    .within_namespaces()
-                    .get()
-            } else {
-                item.name(self)
-                    .for_name_checking()
-                    .get()
-            };
-            let replacement = self.replacements.get(&name);
+            let path = item.canonical_path(self);
+            let replacement = self.replacements.get(&path[1..]);
 
             if let Some(replacement) = replacement {
                 if replacement != id {
@@ -394,9 +384,33 @@ impl<'ctx> BindgenContext<'ctx> {
         for (id, replacement) in replacements {
             debug!("Replacing {:?} with {:?}", id, replacement);
 
-            let mut item = self.items.get_mut(&id).unwrap();
-            *item.kind_mut().as_type_mut().unwrap().kind_mut() =
-                TypeKind::ResolvedTypeRef(replacement);
+            let new_parent = {
+                let mut item = self.items.get_mut(&id).unwrap();
+                *item.kind_mut().as_type_mut().unwrap().kind_mut() =
+                    TypeKind::ResolvedTypeRef(replacement);
+                item.parent_id()
+            };
+
+
+            // Reparent the item.
+            let old_parent = self.resolve_item(replacement).parent_id();
+
+            if new_parent == old_parent {
+                continue;
+            }
+
+            if let Some(mut module) = self.items.get_mut(&old_parent).unwrap().as_module_mut() {
+                // Deparent the replacement.
+                let position = module.children().iter().position(|id| *id == replacement).unwrap();
+                module.children_mut().remove(position);
+            }
+
+            if let Some(mut module) = self.items.get_mut(&new_parent).unwrap().as_module_mut() {
+                module.children_mut().push(replacement);
+            }
+
+            self.items.get_mut(&replacement).unwrap().set_parent_for_replacement(new_parent);
+            self.items.get_mut(&id).unwrap().set_parent_for_replacement(old_parent);
         }
     }
 
@@ -625,9 +639,7 @@ impl<'ctx> BindgenContext<'ctx> {
                                   ty: &clang::Type,
                                   location: Option<clang::Cursor>)
                                   -> Option<ItemId> {
-        use clangll::{CXCursor_ClassTemplate,
-                      CXCursor_ClassTemplatePartialSpecialization,
-                      CXCursor_TypeAliasTemplateDecl, CXCursor_TypeRef};
+        use clangll::{CXCursor_TypeAliasTemplateDecl, CXCursor_TypeRef};
         debug!("builtin_or_resolved_ty: {:?}, {:?}, {:?}",
                ty,
                location,
@@ -635,9 +647,7 @@ impl<'ctx> BindgenContext<'ctx> {
         let mut declaration = ty.declaration();
         if !declaration.is_valid() {
             if let Some(location) = location {
-                if location.kind() == CXCursor_ClassTemplate ||
-                   location.kind() ==
-                   CXCursor_ClassTemplatePartialSpecialization {
+                if location.is_template_like() {
                     declaration = location;
                 }
             }
@@ -669,10 +679,7 @@ impl<'ctx> BindgenContext<'ctx> {
                 // Note that we only do it if parent_id is some, and we have a
                 // location for building the new arguments, the template
                 // argument names don't matter in the global context.
-                if (declaration.kind() == CXCursor_ClassTemplate ||
-                    declaration.kind() ==
-                    CXCursor_ClassTemplatePartialSpecialization ||
-                    declaration.kind() == CXCursor_TypeAliasTemplateDecl) &&
+                if declaration.is_template_like() &&
                    *ty != canonical_declaration.cur_type() &&
                    location.is_some() &&
                    parent_id.is_some() {
@@ -827,17 +834,17 @@ impl<'ctx> BindgenContext<'ctx> {
     ///
     /// Replacement types are declared using the `replaces="xxx"` annotation,
     /// and implies that the original type is hidden.
-    pub fn replace(&mut self, name: &str, potential_ty: ItemId) {
+    pub fn replace(&mut self, name: &[String], potential_ty: ItemId) {
         match self.replacements.entry(name.into()) {
             hash_map::Entry::Vacant(entry) => {
-                debug!("Defining replacement for {} as {:?}",
+                debug!("Defining replacement for {:?} as {:?}",
                        name,
                        potential_ty);
                 entry.insert(potential_ty);
             }
             hash_map::Entry::Occupied(occupied) => {
-                warn!("Replacement for {} already defined as {:?}; \
-                       ignoring duplicate replacement definition as {:?}}}",
+                warn!("Replacement for {:?} already defined as {:?}; \
+                       ignoring duplicate replacement definition as {:?}",
                       name,
                       occupied.get(),
                       potential_ty);
@@ -847,27 +854,27 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// Is the item with the given `name` hidden? Or is the item with the given
     /// `name` and `id` replaced by another type, and effectively hidden?
-    pub fn hidden_by_name(&self, name: &str, id: ItemId) -> bool {
+    pub fn hidden_by_name(&self, path: &[String], id: ItemId) -> bool {
         debug_assert!(self.in_codegen_phase(),
                       "You're not supposed to call this yet");
-        self.options.hidden_types.contains(name) ||
-        self.is_replaced_type(name, id)
+        self.options.hidden_types.contains(&path[1..].join("::")) ||
+        self.is_replaced_type(path, id)
     }
 
     /// Has the item with the given `name` and `id` been replaced by another
     /// type?
-    pub fn is_replaced_type(&self, name: &str, id: ItemId) -> bool {
-        match self.replacements.get(name) {
+    pub fn is_replaced_type(&self, path: &[String], id: ItemId) -> bool {
+        match self.replacements.get(path) {
             Some(replaced_by) if *replaced_by != id => true,
             _ => false,
         }
     }
 
     /// Is the type with the given `name` marked as opaque?
-    pub fn opaque_by_name(&self, name: &str) -> bool {
+    pub fn opaque_by_name(&self, path: &[String]) -> bool {
         debug_assert!(self.in_codegen_phase(),
                       "You're not supposed to call this yet");
-        self.options.opaque_types.contains(name)
+        self.options.opaque_types.contains(&path[1..].join("::"))
     }
 
     /// Get the options used to configure this bindgen context.
@@ -947,7 +954,14 @@ impl<'ctx> BindgenContext<'ctx> {
                     return true;
                 }
 
-                let name = item.name(self).for_name_checking().get();
+                // If this is a type that explicitly replaces another, we assume
+                // you know what you're doing.
+                if item.annotations().use_instead_of().is_some() {
+                    return true;
+                }
+
+                let name = item.canonical_path(self)[1..].join("::");
+                debug!("whitelisted_items: testing {:?}", name);
                 match *item.kind() {
                     ItemKind::Module(..) => true,
                     ItemKind::Function(_) => {
@@ -961,7 +975,10 @@ impl<'ctx> BindgenContext<'ctx> {
                             return true;
                         }
 
-                        if self.resolve_item(item.parent_id()).is_module() {
+                        let parent = self.resolve_item(item.parent_id());
+                        if parent.is_module() {
+                            let mut prefix_path = parent.canonical_path(self);
+
                             // Unnamed top-level enums are special and we
                             // whitelist them via the `whitelisted_vars` filter,
                             // since they're effectively top-level constants,
@@ -970,9 +987,12 @@ impl<'ctx> BindgenContext<'ctx> {
                             if let TypeKind::Enum(ref enum_) = *ty.kind() {
                                 if ty.name().is_none() &&
                                    enum_.variants().iter().any(|variant| {
+                                    prefix_path.push(variant.name().into());
+                                    let name = prefix_path[1..].join("::");
+                                    prefix_path.pop().unwrap();
                                     self.options()
                                         .whitelisted_vars
-                                        .matches(&variant.name())
+                                        .matches(&name)
                                 }) {
                                     return true;
                                 }

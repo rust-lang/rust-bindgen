@@ -173,6 +173,18 @@ impl Cursor {
         semantic_parent == tu.fallible_semantic_parent()
     }
 
+    /// There are a few kinds of types that we need to treat specially, mainly
+    /// not tracking the type declaration but the location of the cursor, given
+    /// clang doesn't expose a proper declaration for these types.
+    pub fn is_template_like(&self) -> bool {
+        match self.kind() {
+            CXCursor_ClassTemplate |
+            CXCursor_ClassTemplatePartialSpecialization |
+            CXCursor_TypeAliasTemplateDecl => true,
+            _ => false,
+        }
+    }
+
     /// Get the kind of referent this cursor is pointing to.
     pub fn kind(&self) -> Enum_CXCursorKind {
         unsafe { clang_getCursorKind(self.x) }
