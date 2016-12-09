@@ -12,13 +12,13 @@ license = "BSD-3-Clause"
 name = "libbindgen"
 readme = "README.md"
 repository = "https://github.com/servo/rust-bindgen"
-version = "0.17.0"
+version = "0.1.0"
+workspace = ".."
 
 [dev-dependencies]
 diff = "0.1"
 clap = "2"
 shlex = "0.1"
-tests_expectations = { path = "tests/expectations" }
 
 [build-dependencies]
 quasi_codegen = "0.21"

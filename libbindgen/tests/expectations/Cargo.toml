@@ -7,5 +7,6 @@ authors = [
   "Emilio Cobos Álvarez <ecoal95@gmail.com>",
   "The Servo project developers",
 ]
+workspace = "../../.."
 
 [dependencies]

@@ -31,9 +31,10 @@ script:
   - git add -A
   - git diff @
   - git diff-index --quiet HEAD
-  - cargo test -p tests_expectations
   - cargo build --features "$BINDGEN_FEATURES _docs"
-  - cd ..
+  - cd tests/expectations
+  - cargo test
+  - cd ../../../bindgen
   - cargo test --features "$BINDGEN_FEATURES"
   - cargo test --release --features "$BINDGEN_FEATURES"
 

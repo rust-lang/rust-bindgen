@@ -1,0 +1,26 @@
+[package]
+authors = [
+  "Jyun-Yan You <jyyou.tw@gmail.com>",
+  "Emilio Cobos Álvarez <ecoal95@gmail.com>",
+  "The Servo project developers",
+]
+description = "A binding generator for Rust"
+homepage = "https://github.com/servo/rust-bindgen"
+keywords = ["bindings", "ffi", "code-generation"]
+license = "BSD-3-Clause"
+name = "bindgen"
+readme = "README.md"
+repository = "https://github.com/servo/rust-bindgen"
+version = "0.17.0"
+workspace = ".."
+
+[dependencies]
+clang-sys = "0.11.1"
+clap = "2"
+libbindgen = { path = "../libbindgen" }
+log = "0.3"
+env_logger = "0.3"
+rustc-serialize = "0.3.19"
+
+[features]
+llvm_stable = ["libbindgen/llvm_stable"]

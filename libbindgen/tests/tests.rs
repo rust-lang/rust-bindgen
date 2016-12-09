@@ -7,7 +7,7 @@ use std::fs;
 use std::io::{BufRead, BufReader, Error, ErrorKind, Read, Write};
 use std::path::PathBuf;
 
-#[path="../../src/options.rs"]
+#[path="../../bindgen/src/options.rs"]
 mod options;
 use options::builder_from_flags;
 
