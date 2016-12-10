@@ -12,7 +12,7 @@ license = "BSD-3-Clause"
 name = "libbindgen"
 readme = "README.md"
 repository = "https://github.com/servo/rust-bindgen"
-version = "0.1.0"
+version = "0.1.1"
 workspace = ".."
 
 [dev-dependencies]
@@ -37,10 +37,6 @@ cexpr = "0.2"
 features = ["with-syntex"]
 version = "0.34"
 
-[dependencies.clippy]
-optional = true
-version = "*"
-
 [dependencies.env_logger]
 optional = true
 version = "0.3"
@@ -59,4 +55,4 @@ llvm_stable = []
 logging = ["env_logger", "log"]
 static = []
 # This feature only exists for CI -- don't use it!
-_docs = []
+docs_ = []
