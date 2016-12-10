@@ -37,10 +37,6 @@ cexpr = "0.2"
 features = ["with-syntex"]
 version = "0.34"
 
-[dependencies.clippy]
-optional = true
-version = "*"
-
 [dependencies.env_logger]
 optional = true
 version = "0.3"
