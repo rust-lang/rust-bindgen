@@ -1,6 +1,6 @@
 [workspace]
 members = [
-        "bindgen",
-        "libbindgen",
-        "libbindgen/tests/expectations",
+  "bindgen",
+  "libbindgen",
+  "libbindgen/tests/expectations",
 ]
