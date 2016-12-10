@@ -59,4 +59,4 @@ llvm_stable = []
 logging = ["env_logger", "log"]
 static = []
 # This feature only exists for CI -- don't use it!
-_docs = []
+docs_ = []
