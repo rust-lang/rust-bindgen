@@ -429,7 +429,7 @@ impl<'ctx> BindgenContext<'ctx> {
         let sess = parse::ParseSess::new();
         let mut loader = base::DummyResolver;
         let mut ctx =
-            GenContext(base::ExtCtxt::new(&sess, vec![], cfg, &mut loader));
+            GenContext(base::ExtCtxt::new(&sess, cfg, &mut loader));
 
         ctx.0.bt_push(ExpnInfo {
             call_site: self.span,

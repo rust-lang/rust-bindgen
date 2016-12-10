@@ -93,11 +93,6 @@ pub mod ast_ty {
     pub fn float_kind_rust_type(ctx: &BindgenContext,
                                 fk: FloatKind)
                                 -> P<ast::Ty> {
-        macro_rules! raw {
-            ($ty: ident) => {
-                raw_type(ctx, stringify!($ty))
-            }
-        }
         // TODO: we probably should just take the type layout into
         // account?
         //
@@ -109,9 +104,9 @@ pub mod ast_ty {
             (FloatKind::Float, true) => aster::ty::TyBuilder::new().f32(),
             (FloatKind::Double, true) |
             (FloatKind::LongDouble, true) => aster::ty::TyBuilder::new().f64(),
-            (FloatKind::Float, false) => raw!(c_float),
+            (FloatKind::Float, false) => raw_type(ctx, "c_float"),
             (FloatKind::Double, false) |
-            (FloatKind::LongDouble, false) => raw!(c_double),
+            (FloatKind::LongDouble, false) => raw_type(ctx, "c_double"),
             (FloatKind::Float128, _) => {
                 aster::ty::TyBuilder::new().array(16).u8()
             }

@@ -1723,29 +1723,24 @@ impl ToRustTy for Type {
     fn to_rust_ty(&self, ctx: &BindgenContext, item: &Item) -> P<ast::Ty> {
         use self::helpers::ast_ty::*;
 
-        macro_rules! raw {
-            ($ty: ident) => {
-                raw_type(ctx, stringify!($ty))
-            }
-        }
         match *self.kind() {
-            TypeKind::Void => raw!(c_void),
+            TypeKind::Void => raw_type(ctx, "c_void"),
             // TODO: we should do something smart with nullptr, or maybe *const
             // c_void is enough?
-            TypeKind::NullPtr => raw!(c_void).to_ptr(true, ctx.span()),
+            TypeKind::NullPtr => raw_type(ctx, "c_void").to_ptr(true, ctx.span()),
             TypeKind::Int(ik) => {
                 match ik {
                     IntKind::Bool => aster::ty::TyBuilder::new().bool(),
-                    IntKind::Char => raw!(c_char),
-                    IntKind::UChar => raw!(c_uchar),
-                    IntKind::Short => raw!(c_short),
-                    IntKind::UShort => raw!(c_ushort),
-                    IntKind::Int => raw!(c_int),
-                    IntKind::UInt => raw!(c_uint),
-                    IntKind::Long => raw!(c_long),
-                    IntKind::ULong => raw!(c_ulong),
-                    IntKind::LongLong => raw!(c_longlong),
-                    IntKind::ULongLong => raw!(c_ulonglong),
+                    IntKind::Char => raw_type(ctx, "c_char"),
+                    IntKind::UChar => raw_type(ctx, "c_uchar"),
+                    IntKind::Short => raw_type(ctx, "c_short"),
+                    IntKind::UShort => raw_type(ctx, "c_ushort"),
+                    IntKind::Int => raw_type(ctx, "c_int"),
+                    IntKind::UInt => raw_type(ctx, "c_uint"),
+                    IntKind::Long => raw_type(ctx, "c_long"),
+                    IntKind::ULong => raw_type(ctx, "c_ulong"),
+                    IntKind::LongLong => raw_type(ctx, "c_longlong"),
+                    IntKind::ULongLong => raw_type(ctx, "c_ulonglong"),
 
                     IntKind::I8 => aster::ty::TyBuilder::new().i8(),
                     IntKind::U8 => aster::ty::TyBuilder::new().u8(),
@@ -1843,7 +1838,7 @@ impl ToRustTy for Type {
                 utils::build_templated_path(item, ctx, false)
             }
             TypeKind::BlockPointer => {
-                let void = raw!(c_void);
+                let void = raw_type(ctx, "c_void");
                 void.to_ptr(/* is_const = */
                             false,
                             ctx.span())
@@ -2204,24 +2199,19 @@ mod utils {
                            -> Option<P<ast::Ty>> {
         // FIXME: We could use the inner item to check this is really a
         // primitive type but, who the heck overrides these anyway?
-        macro_rules! ty {
-            ($which:ident) => {{
-                primitive_ty(ctx, stringify!($which))
-            }}
-        }
         Some(match name {
-            "int8_t" => ty!(i8),
-            "uint8_t" => ty!(u8),
-            "int16_t" => ty!(i16),
-            "uint16_t" => ty!(u16),
-            "int32_t" => ty!(i32),
-            "uint32_t" => ty!(u32),
-            "int64_t" => ty!(i64),
-            "uint64_t" => ty!(u64),
+            "int8_t" => primitive_ty(ctx, "i8"),
+            "uint8_t" => primitive_ty(ctx, "u8"),
+            "int16_t" => primitive_ty(ctx, "i16"),
+            "uint16_t" => primitive_ty(ctx, "u16"),
+            "int32_t" => primitive_ty(ctx, "i32"),
+            "uint32_t" => primitive_ty(ctx, "u32"),
+            "int64_t" => primitive_ty(ctx, "i64"),
+            "uint64_t" => primitive_ty(ctx, "u64"),
 
-            "uintptr_t" | "size_t" => ty!(usize),
+            "uintptr_t" | "size_t" => primitive_ty(ctx, "usize"),
 
-            "intptr_t" | "ptrdiff_t" | "ssize_t" => ty!(isize),
+            "intptr_t" | "ptrdiff_t" | "ssize_t" => primitive_ty(ctx, "isize"),
             _ => return None,
         })
     }
