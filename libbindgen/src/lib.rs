@@ -168,8 +168,8 @@ impl Builder {
     /// Set the input C/C++ header.
     pub fn header<T: Into<String>>(mut self, header: T) -> Builder {
         let header = header.into();
-        self.options.input_header = Some(header.clone());
-        self.clang_arg(header)
+        self.options.input_header = Some(header);
+        self
     }
 
     /// Generate a C/C++ file that includes the header and has dummy uses of
@@ -504,10 +504,14 @@ impl<'ctx> Bindings<'ctx> {
     ///
     /// Deprecated - use a `Builder` instead
     #[deprecated]
-    pub fn generate(options: BindgenOptions,
+    pub fn generate(mut options: BindgenOptions,
                     span: Option<Span>)
                     -> Result<Bindings<'ctx>, ()> {
         let span = span.unwrap_or(DUMMY_SP);
+
+        if let Some(h) = options.input_header.as_ref() {
+            options.clang_args.push(h.clone())
+        }
 
         let mut context = BindgenContext::new(options);
         try!(parse(&mut context));
