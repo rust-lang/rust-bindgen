@@ -42,31 +42,6 @@ pub fn main() {
         _ => {}
     }
 
-    if let Some(clang) = clang_sys::support::Clang::find(None) {
-        let has_clang_args =
-            bind_args.iter().rposition(|arg| *arg == "--").is_some();
-        if !has_clang_args {
-            bind_args.push("--".to_owned());
-        }
-
-        // If --target is specified, assume caller knows what they're doing and
-        // don't mess with
-        // include paths for them
-        let has_target_arg = bind_args.iter()
-            .rposition(|arg| arg.starts_with("--target"))
-            .is_some();
-        if !has_target_arg {
-            // TODO: distinguish C and C++ paths? C++'s should be enough, I
-            // guess.
-            for path in clang.cpp_search_paths.into_iter() {
-                if let Ok(path) = path.into_os_string().into_string() {
-                    bind_args.push("-isystem".to_owned());
-                    bind_args.push(path);
-                }
-            }
-        }
-    }
-
     match builder_from_flags(bind_args.into_iter()) {
         Ok((builder, output)) => {
             let mut bindings = builder.generate()

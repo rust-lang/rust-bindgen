@@ -509,6 +509,25 @@ impl<'ctx> Bindings<'ctx> {
                     -> Result<Bindings<'ctx>, ()> {
         let span = span.unwrap_or(DUMMY_SP);
 
+        // TODO: Make this path fixup configurable?
+        if let Some(clang) = clang_sys::support::Clang::find(None) {
+            // If --target is specified, assume caller knows what they're doing
+            // and don't mess with include paths for them
+            let has_target_arg = options.clang_args.iter()
+                .rposition(|arg| arg.starts_with("--target"))
+                .is_some();
+            if !has_target_arg {
+                // TODO: distinguish C and C++ paths? C++'s should be enough, I
+                // guess.
+                for path in clang.cpp_search_paths.into_iter() {
+                    if let Ok(path) = path.into_os_string().into_string() {
+                        options.clang_args.push("-isystem".to_owned());
+                        options.clang_args.push(path);
+                    }
+                }
+            }
+        }
+
         if let Some(h) = options.input_header.as_ref() {
             options.clang_args.push(h.clone())
         }
