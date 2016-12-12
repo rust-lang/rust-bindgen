@@ -168,8 +168,8 @@ impl Builder {
     /// Set the input C/C++ header.
     pub fn header<T: Into<String>>(mut self, header: T) -> Builder {
         let header = header.into();
-        self.options.input_header = Some(header.clone());
-        self.clang_arg(header)
+        self.options.input_header = Some(header);
+        self
     }
 
     /// Generate a C/C++ file that includes the header and has dummy uses of
@@ -504,13 +504,36 @@ impl<'ctx> Bindings<'ctx> {
     ///
     /// Deprecated - use a `Builder` instead
     #[deprecated]
-    pub fn generate(options: BindgenOptions,
+    pub fn generate(mut options: BindgenOptions,
                     span: Option<Span>)
                     -> Result<Bindings<'ctx>, ()> {
         let span = span.unwrap_or(DUMMY_SP);
 
+        // TODO: Make this path fixup configurable?
+        if let Some(clang) = clang_sys::support::Clang::find(None) {
+            // If --target is specified, assume caller knows what they're doing
+            // and don't mess with include paths for them
+            let has_target_arg = options.clang_args.iter()
+                .rposition(|arg| arg.starts_with("--target"))
+                .is_some();
+            if !has_target_arg {
+                // TODO: distinguish C and C++ paths? C++'s should be enough, I
+                // guess.
+                for path in clang.cpp_search_paths.into_iter() {
+                    if let Ok(path) = path.into_os_string().into_string() {
+                        options.clang_args.push("-isystem".to_owned());
+                        options.clang_args.push(path);
+                    }
+                }
+            }
+        }
+
+        if let Some(h) = options.input_header.as_ref() {
+            options.clang_args.push(h.clone())
+        }
+
         let mut context = BindgenContext::new(options);
-        parse(&mut context);
+        try!(parse(&mut context));
 
         let module = ast::Mod {
             inner: span,
@@ -624,14 +647,20 @@ pub fn parse_one(ctx: &mut BindgenContext,
 }
 
 /// Parse the Clang AST into our `Item` internal representation.
-fn parse(context: &mut BindgenContext) {
+fn parse(context: &mut BindgenContext) -> Result<(), ()> {
     use clang::Diagnostic;
     use clangll::*;
 
+    let mut any_error = false;
     for d in context.translation_unit().diags().iter() {
         let msg = d.format(Diagnostic::default_opts());
         let is_err = d.severity() >= CXDiagnostic_Error;
         println!("{}, err: {}", msg, is_err);
+        any_error |= is_err;
+    }
+
+    if any_error {
+        return Err(());
     }
 
     let cursor = context.translation_unit().cursor();
@@ -646,6 +675,7 @@ fn parse(context: &mut BindgenContext) {
 
     assert!(context.current_module() == context.root_module(),
             "How did this happen?");
+    Ok(())
 }
 
 /// Extracted Clang version data
