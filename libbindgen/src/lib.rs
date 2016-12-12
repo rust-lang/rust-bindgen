@@ -108,6 +108,8 @@ pub struct CodegenConfig {
     pub vars: bool,
     /// Whether to generate methods.
     pub methods: bool,
+    /// Whether to generate constructors.
+    pub constructors: bool,
 }
 
 impl CodegenConfig {
@@ -118,6 +120,7 @@ impl CodegenConfig {
             types: true,
             vars: true,
             methods: true,
+            constructors: true,
         }
     }
 
@@ -128,6 +131,7 @@ impl CodegenConfig {
             types: false,
             vars: false,
             methods: false,
+            constructors: false,
         }
     }
 }

@@ -4,7 +4,7 @@ mod helpers;
 use aster;
 
 use ir::annotations::FieldAccessorKind;
-use ir::comp::{CompInfo, CompKind, Field, Method};
+use ir::comp::{CompInfo, CompKind, Field, Method, MethodKind};
 use ir::context::{BindgenContext, ItemId};
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
 use ir::function::{Function, FunctionSig};
@@ -1181,15 +1181,28 @@ impl CodeGenerator for CompInfo {
                 result.push(item);
             }
 
+            let mut method_names = Default::default();
             if ctx.options().codegen_config.methods {
-                let mut method_names = Default::default();
                 for method in self.methods() {
+                    assert!(method.kind() != MethodKind::Constructor);
                     method.codegen_method(ctx,
                                           &mut methods,
                                           &mut method_names,
                                           result,
                                           whitelisted_items,
-                                          item);
+                                          self);
+                }
+            }
+
+            if ctx.options().codegen_config.constructors {
+                for sig in self.constructors() {
+                    Method::new(MethodKind::Constructor, *sig, /* const */ false)
+                        .codegen_method(ctx,
+                                        &mut methods,
+                                        &mut method_names,
+                                        result,
+                                        whitelisted_items,
+                                        self);
                 }
             }
         }
@@ -1242,7 +1255,7 @@ trait MethodCodegen {
                           method_names: &mut HashMap<String, usize>,
                           result: &mut CodegenResult<'a>,
                           whitelisted_items: &ItemSet,
-                          parent: &Item);
+                          parent: &CompInfo);
 }
 
 impl MethodCodegen for Method {
@@ -1252,18 +1265,21 @@ impl MethodCodegen for Method {
                           method_names: &mut HashMap<String, usize>,
                           result: &mut CodegenResult<'a>,
                           whitelisted_items: &ItemSet,
-                          _parent: &Item) {
+                          _parent: &CompInfo) {
         if self.is_virtual() {
             return; // FIXME
         }
         // First of all, output the actual function.
-        ctx.resolve_item(self.signature())
-            .codegen(ctx, result, whitelisted_items, &());
-
         let function_item = ctx.resolve_item(self.signature());
+        function_item.codegen(ctx, result, whitelisted_items, &());
+
         let function = function_item.expect_function();
-        let mut name = function.name().to_owned();
         let signature_item = ctx.resolve_item(function.signature());
+        let mut name = match self.kind() {
+            MethodKind::Constructor => "new".into(),
+            _ => function.name().to_owned(),
+        };
+
         let signature = match *signature_item.expect_type().kind() {
             TypeKind::Function(ref sig) => sig,
             _ => panic!("How in the world?"),
@@ -1283,7 +1299,7 @@ impl MethodCodegen for Method {
         let function_name = function_item.canonical_name(ctx);
         let mut fndecl = utils::rust_fndecl_from_signature(ctx, signature_item)
             .unwrap();
-        if !self.is_static() {
+        if !self.is_static() && !self.is_constructor() {
             let mutability = if self.is_const() {
                 ast::Mutability::Immutable
             } else {
@@ -1319,32 +1335,38 @@ impl MethodCodegen for Method {
             };
         }
 
+        // If it's a constructor, we always return `Self`, and we inject the
+        // "this" parameter, so there's no need to ask the user for it.
+        //
+        // Note that constructors in Clang are represented as functions with
+        // return-type = void.
+        if self.is_constructor() {
+            fndecl.inputs.remove(0);
+            fndecl.output = ast::FunctionRetTy::Ty(quote_ty!(ctx.ext_cx(), Self));
+        }
+
         let sig = ast::MethodSig {
             unsafety: ast::Unsafety::Unsafe,
             abi: Abi::Rust,
-            decl: P(fndecl.clone()),
+            decl: P(fndecl),
             generics: ast::Generics::default(),
             constness: respan(ctx.span(), ast::Constness::NotConst),
         };
 
-        // TODO: We need to keep in sync the argument names, so we should unify
-        // this with the other loop that decides them.
-        let mut unnamed_arguments = 0;
-        let mut exprs = signature.argument_types()
-            .iter()
-            .map(|&(ref name, _ty)| {
-                let arg_name = match *name {
-                    Some(ref name) => ctx.rust_mangle(name).into_owned(),
-                    None => {
-                        unnamed_arguments += 1;
-                        format!("arg{}", unnamed_arguments)
-                    }
-                };
-                aster::expr::ExprBuilder::new().id(arg_name)
-            })
-            .collect::<Vec<_>>();
+        let mut exprs =
+            helpers::ast_ty::arguments_from_signature(&signature, ctx);
 
-        if !self.is_static() {
+        let mut stmts = vec![];
+
+        // If it's a constructor, we need to insert an extra parameter with a
+        // variable called `tmp` we're going to create.
+        if self.is_constructor() {
+            let tmp_variable_decl =
+                quote_stmt!(ctx.ext_cx(), let mut tmp = ::std::mem::uninitialized())
+                .unwrap();
+            stmts.push(tmp_variable_decl);
+            exprs[0] = quote_expr!(ctx.ext_cx(), &mut tmp);
+        } else if !self.is_static() {
             assert!(!exprs.is_empty());
             exprs[0] = if self.is_const() {
                 quote_expr!(ctx.ext_cx(), &*self)
@@ -1359,14 +1381,18 @@ impl MethodCodegen for Method {
             .with_args(exprs)
             .build();
 
+        stmts.push(ast::Stmt {
+            id: ast::DUMMY_NODE_ID,
+            node: ast::StmtKind::Expr(call),
+            span: ctx.span(),
+        });
+
+        if self.is_constructor() {
+            stmts.push(quote_stmt!(ctx.ext_cx(), tmp).unwrap());
+        }
+
         let block = ast::Block {
-            stmts: vec![
-                ast::Stmt {
-                    id: ast::DUMMY_NODE_ID,
-                    node: ast::StmtKind::Expr(call),
-                    span: ctx.span(),
-                }
-            ],
+            stmts: stmts,
             id: ast::DUMMY_NODE_ID,
             rules: ast::BlockCheckMode::Default,
             span: ctx.span(),
