@@ -38,7 +38,8 @@ script:
   - cargo test --features "$BINDGEN_FEATURES"
   - cargo test --release --features "$BINDGEN_FEATURES"
   - cd ../bindgen-integration
-  - cargo test
+  - cargo test --features "$BINDGEN_FEATURES"
+  - cargo test --release --features "$BINDGEN_FEATURES"
 
 notifications:
   webhooks: http://build.servo.org:54856/travis

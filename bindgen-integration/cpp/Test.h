@@ -1,6 +1,6 @@
 #pragma once
 
-class Test final {
+class Test {
   int m_int;
   double m_double;
 public:
