@@ -666,18 +666,18 @@ impl Type {
 
     /// If this type is a class template specialization, return its
     /// template arguments. Otherwise, return None.
-    pub fn template_args(&self) -> Option<TypeTemplateArgIterator> {
-        let n = unsafe { clang_Type_getNumTemplateArguments(self.x) };
-        if n >= 0 {
-            Some(TypeTemplateArgIterator {
-                x: self.x,
-                length: n as u32,
-                index: 0,
-            })
-        } else {
-            debug_assert_eq!(n, -1);
-            None
-        }
+    pub fn template_args<'a>
+        (&'a self)
+         -> Option<Box<ExactSizeIterator<Item = Type> + 'a>> {
+        let f_len =
+            move || unsafe { clang_Type_getNumTemplateArguments(self.x) };
+        let f = move |i| {
+            Type {
+                x: unsafe { clang_Type_getTemplateArgumentAsType(self.x, i) },
+            }
+        };
+
+        ffi_call_index_iterator_check_positive(f_len, f)
     }
 
     /// Given that this type is a pointer type, return the type that it points
@@ -787,35 +787,6 @@ impl Type {
     }
 }
 
-/// An iterator for a type's template arguments.
-pub struct TypeTemplateArgIterator {
-    x: CXType,
-    length: u32,
-    index: u32,
-}
-
-impl Iterator for TypeTemplateArgIterator {
-    type Item = Type;
-    fn next(&mut self) -> Option<Type> {
-        if self.index < self.length {
-            let idx = self.index as c_int;
-            self.index += 1;
-            Some(Type {
-                x: unsafe { clang_Type_getTemplateArgumentAsType(self.x, idx) },
-            })
-        } else {
-            None
-        }
-    }
-}
-
-impl ExactSizeIterator for TypeTemplateArgIterator {
-    fn len(&self) -> usize {
-        assert!(self.index <= self.length);
-        (self.length - self.index) as usize
-    }
-}
-
 /// A `SourceLocation` is a file, line, column, and byte offset location for
 /// some source text.
 pub struct SourceLocation {
@@ -871,12 +842,16 @@ impl Comment {
     }
 
     /// Get this comment's children comment
-    pub fn get_children(&self) -> CommentChildrenIterator {
-        CommentChildrenIterator {
-            parent: self.x,
-            length: unsafe { clang_Comment_getNumChildren(self.x) },
-            index: 0,
-        }
+    pub fn get_children<'a>(&'a self)
+                            -> Box<ExactSizeIterator<Item = Comment> + 'a> {
+        let f_len = move || unsafe { clang_Comment_getNumChildren(self.x) };
+        let f = move |i| {
+            Comment {
+                x: unsafe { clang_Comment_getChild(self.x, i) },
+            }
+        };
+
+        ffi_call_index_iterator(f_len, f)
     }
 
     /// Given that this comment is the start or end of an HTML tag, get its tag
@@ -886,34 +861,22 @@ impl Comment {
     }
 
     /// Given that this comment is an HTML start tag, get its attributes.
-    pub fn get_tag_attrs(&self) -> CommentAttributesIterator {
-        CommentAttributesIterator {
-            x: self.x,
-            length: unsafe { clang_HTMLStartTag_getNumAttrs(self.x) },
-            index: 0,
-        }
-    }
-}
+    pub fn get_tag_attrs<'a>
+        (&'a self)
+         -> Box<ExactSizeIterator<Item = CommentAttribute> + 'a> {
+        let f_len = move || unsafe { clang_HTMLStartTag_getNumAttrs(self.x) };
+        let f = move |i| {
+            CommentAttribute {
+                name: unsafe {
+                    clang_HTMLStartTag_getAttrName(self.x, i).into()
+                },
+                value: unsafe {
+                    clang_HTMLStartTag_getAttrValue(self.x, i).into()
+                },
+            }
+        };
 
-/// An iterator for a comment's children
-pub struct CommentChildrenIterator {
-    parent: CXComment,
-    length: c_uint,
-    index: c_uint,
-}
-
-impl Iterator for CommentChildrenIterator {
-    type Item = Comment;
-    fn next(&mut self) -> Option<Comment> {
-        if self.index < self.length {
-            let idx = self.index;
-            self.index += 1;
-            Some(Comment {
-                x: unsafe { clang_Comment_getChild(self.parent, idx) },
-            })
-        } else {
-            None
-        }
+        ffi_call_index_iterator(f_len, f)
     }
 }
 
@@ -923,33 +886,6 @@ pub struct CommentAttribute {
     pub name: String,
     /// HTML start tag attribute value
     pub value: String,
-}
-
-/// An iterator for a comment's attributes
-pub struct CommentAttributesIterator {
-    x: CXComment,
-    length: c_uint,
-    index: c_uint,
-}
-
-impl Iterator for CommentAttributesIterator {
-    type Item = CommentAttribute;
-    fn next(&mut self) -> Option<CommentAttribute> {
-        if self.index < self.length {
-            let idx = self.index;
-            self.index += 1;
-            Some(CommentAttribute {
-                name: unsafe {
-                    clang_HTMLStartTag_getAttrName(self.x, idx).into()
-                },
-                value: unsafe {
-                    clang_HTMLStartTag_getAttrValue(self.x, idx).into()
-                },
-            })
-        } else {
-            None
-        }
-    }
 }
 
 /// A source file.
@@ -1386,5 +1322,38 @@ impl EvalResult {
 impl Drop for EvalResult {
     fn drop(&mut self) {
         unsafe { clang_EvalResult_dispose(self.x) };
+    }
+}
+
+/// Provide a boxed iterator for foreign function call
+/// Iterate over 0..f_len() and map using f
+/// This function can be used with c_uint index
+fn ffi_call_index_iterator<'a, FLen, F, T>
+    (f_len: FLen,
+     f: F)
+     -> Box<ExactSizeIterator<Item = T> + 'a>
+    where FLen: Fn() -> c_uint + 'a,
+          F: Fn(c_uint) -> T + 'a,
+{
+    Box::new((0..f_len()).map(f))
+}
+
+/// Provide an option boxed iterator for foreign function call
+/// Iterate over 0..f_len() and map using f
+/// This function can be used with c_int index and only
+/// returns an iterator if f_len() is positive.
+fn ffi_call_index_iterator_check_positive<'a, FLen, F, T>
+    (f_len: FLen,
+     f: F)
+     -> Option<Box<ExactSizeIterator<Item = T> + 'a>>
+    where FLen: Fn() -> c_int + 'a,
+          F: Fn(c_int) -> T + 'a,
+{
+    let len = f_len();
+    if len >= 0 {
+        Some(Box::new((0..len).map(f)))
+    } else {
+        assert_eq!(len, -1); // only expect -1 as invalid
+        None
     }
 }
