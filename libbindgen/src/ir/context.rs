@@ -513,9 +513,29 @@ impl<'ctx> BindgenContext<'ctx> {
         }
     }
 
-    /// Get the current module.
+    /// Resolve the `Module` item with the given id.
+    ///
+    /// If there is not an item with the given id, or there is an item with the
+    /// given id that is not a module, then panic.
+    pub fn resolve_module(&self, module_id: ItemId) -> &Module {
+        match *self.resolve_item(module_id).kind() {
+            ItemKind::Module(ref module) => module,
+            ref otherwise => {
+                panic!("Expected module with id {:?}, found {:?}",
+                       module_id,
+                       otherwise)
+            }
+        }
+    }
+
+    /// Get the id of the current module.
     pub fn current_module(&self) -> ItemId {
         self.current_module
+    }
+
+    /// Get a reference to the current module.
+    pub fn current_module_ref(&self) -> &Module {
+        self.resolve_module(self.current_module)
     }
 
     /// This is one of the hackiest methods in all the parsing code. This method
@@ -892,7 +912,6 @@ impl<'ctx> BindgenContext<'ctx> {
             return *id;
         }
 
-        let module_id = self.next_item_id();
         let module_name = self.translation_unit
             .tokens(&cursor)
             .and_then(|tokens| {
@@ -906,7 +925,15 @@ impl<'ctx> BindgenContext<'ctx> {
                 }
             });
 
-        let module = Module::new(module_name);
+        // If we already have a submodule with this name, reuse it.
+        if let Some(module) = self.current_module_ref()
+            .submodule(&module_name) {
+            return module;
+        }
+
+        // Otherwise, create it.
+        let module_id = self.next_item_id();
+        let module = Module::new(module_name.clone());
         let module = Item::new(module_id,
                                None,
                                None,
@@ -916,6 +943,7 @@ impl<'ctx> BindgenContext<'ctx> {
         self.modules.insert(cursor, module.id());
 
         self.add_item(module, None, None);
+        self.current_module_ref().add_submodule(module_name, module_id);
 
         module_id
     }
