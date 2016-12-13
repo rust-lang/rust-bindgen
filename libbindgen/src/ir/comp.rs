@@ -466,6 +466,7 @@ impl CompInfo {
         &self.methods
     }
 
+    /// Get this type's set of constructors.
     pub fn constructors(&self) -> &[ItemId] {
         &self.constructors
     }
