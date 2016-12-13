@@ -23,6 +23,9 @@ pub enum CompKind {
 /// The kind of C++ method.
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum MethodKind {
+    /// A constructor. We represent it as method for convenience, to avoid code
+    /// duplication.
+    Constructor,
     /// A static method.
     Static,
     /// A normal method.
@@ -45,7 +48,7 @@ pub struct Method {
 
 impl Method {
     /// Construct a new `Method`.
-    fn new(kind: MethodKind, signature: ItemId, is_const: bool) -> Self {
+    pub fn new(kind: MethodKind, signature: ItemId, is_const: bool) -> Self {
         Method {
             kind: kind,
             signature: signature,
@@ -56,6 +59,11 @@ impl Method {
     /// What kind of method is this?
     pub fn kind(&self) -> MethodKind {
         self.kind
+    }
+
+    /// Is this a constructor?
+    pub fn is_constructor(&self) -> bool {
+        self.kind == MethodKind::Constructor
     }
 
     /// Is this a virtual method?
@@ -167,6 +175,9 @@ pub struct CompInfo {
     /// The method declarations inside this class, if in C++ mode.
     methods: Vec<Method>,
 
+    /// The different constructors this struct or class contains.
+    constructors: Vec<ItemId>,
+
     /// Vector of classes this one inherits from.
     base_members: Vec<ItemId>,
 
@@ -235,6 +246,7 @@ impl CompInfo {
             fields: vec![],
             template_args: vec![],
             methods: vec![],
+            constructors: vec![],
             base_members: vec![],
             ref_template: None,
             inner_types: vec![],
@@ -454,6 +466,11 @@ impl CompInfo {
         &self.methods
     }
 
+    /// Get this type's set of constructors.
+    pub fn constructors(&self) -> &[ItemId] {
+        &self.constructors
+    }
+
     /// What kind of compound type is this?
     pub fn kind(&self) -> CompKind {
         self.kind
@@ -651,14 +668,15 @@ impl CompInfo {
                             .expect("BaseSpecifier");
                     ci.base_members.push(type_id);
                 }
+                CXCursor_Constructor |
+                CXCursor_Destructor |
                 CXCursor_CXXMethod => {
                     let is_virtual = cur.method_is_virtual();
                     let is_static = cur.method_is_static();
                     debug_assert!(!(is_static && is_virtual), "How?");
 
-                    if !ci.has_vtable {
-                        ci.has_vtable = is_virtual;
-                    }
+                    ci.has_destructor |= cur.kind() == CXCursor_Destructor;
+                    ci.has_vtable |= is_virtual;
 
                     let linkage = cur.linkage();
                     if linkage != CXLinkage_External {
@@ -699,30 +717,34 @@ impl CompInfo {
 
                     // NB: This gets us an owned `Function`, not a
                     // `FunctionSig`.
-                    let method_signature =
+                    let signature =
                         Item::parse(cur, Some(potential_id), ctx)
                             .expect("CXXMethod");
 
-                    let is_const = cur.method_is_const();
-                    let method_kind = if is_static {
-                        MethodKind::Static
-                    } else if is_virtual {
-                        MethodKind::Virtual
-                    } else {
-                        MethodKind::Normal
-                    };
+                    match cur.kind() {
+                        CXCursor_Constructor => {
+                            ci.constructors.push(signature);
+                        }
+                        // TODO(emilio): Bind the destructor?
+                        CXCursor_Destructor => {},
+                        CXCursor_CXXMethod => {
+                            let is_const = cur.method_is_const();
+                            let method_kind = if is_static {
+                                MethodKind::Static
+                            } else if is_virtual {
+                                MethodKind::Virtual
+                            } else {
+                                MethodKind::Normal
+                            };
 
-                    let method =
-                        Method::new(method_kind, method_signature, is_const);
+                            let method = Method::new(method_kind,
+                                                     signature,
+                                                     is_const);
 
-                    ci.methods.push(method);
-                }
-                CXCursor_Destructor => {
-                    if cur.method_is_virtual() {
-                        // FIXME: Push to the method list?
-                        ci.has_vtable = true;
+                            ci.methods.push(method);
+                        }
+                        _ => unreachable!("How can we see this here?"),
                     }
-                    ci.has_destructor = true;
                 }
                 CXCursor_NonTypeTemplateParameter => {
                     ci.has_non_type_template_params = true;
@@ -746,7 +768,6 @@ impl CompInfo {
                 // Intentionally not handled
                 CXCursor_CXXAccessSpecifier |
                 CXCursor_CXXFinalAttr |
-                CXCursor_Constructor |
                 CXCursor_FunctionTemplate |
                 CXCursor_ConversionFunction => {}
                 _ => {

@@ -75,6 +75,7 @@ impl BlobTyBuilder {
 pub mod ast_ty {
     use aster;
     use ir::context::BindgenContext;
+    use ir::function::FunctionSig;
     use ir::ty::FloatKind;
     use syntax::ast;
     use syntax::ptr::P;
@@ -163,5 +164,26 @@ pub mod ast_ty {
         let interned_str = string.as_str().to_interned_string();
         let kind = ast::LitKind::FloatUnsuffixed(interned_str);
         aster::AstBuilder::new().expr().lit().build_lit(kind)
+    }
+
+    pub fn arguments_from_signature(signature: &FunctionSig,
+                                    ctx: &BindgenContext)
+                                    -> Vec<P<ast::Expr>> {
+        // TODO: We need to keep in sync the argument names, so we should unify
+        // this with the other loop that decides them.
+        let mut unnamed_arguments = 0;
+        signature.argument_types()
+            .iter()
+            .map(|&(ref name, _ty)| {
+                let arg_name = match *name {
+                    Some(ref name) => ctx.rust_mangle(name).into_owned(),
+                    None => {
+                        unnamed_arguments += 1;
+                        format!("arg{}", unnamed_arguments)
+                    }
+                };
+                aster::expr::ExprBuilder::new().id(arg_name)
+            })
+            .collect::<Vec<_>>()
     }
 }

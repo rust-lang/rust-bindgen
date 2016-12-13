@@ -654,19 +654,26 @@ impl Item {
 
     /// Get the overload index for this method. If this is not a method, return
     /// `None`.
-    fn method_overload_index(&self, ctx: &BindgenContext) -> Option<usize> {
+    fn overload_index(&self, ctx: &BindgenContext) -> Option<usize> {
         self.func_name().and_then(|func_name| {
             let parent = ctx.resolve_item(self.parent_id());
             if let ItemKind::Type(ref ty) = *parent.kind() {
                 if let TypeKind::Comp(ref ci) = *ty.kind() {
-                    return ci.methods()
+                    // All the constructors have the same name, so no need to
+                    // resolve and check.
+                    return ci.constructors()
                         .iter()
-                        .filter(|method| {
-                            let item = ctx.resolve_item(method.signature());
-                            let func = item.expect_function();
-                            func.name() == func_name
+                        .position(|c| *c == self.id())
+                        .or_else(|| {
+                            ci.methods()
+                                .iter()
+                                .filter(|m| {
+                                    let item = ctx.resolve_item(m.signature());
+                                    let func = item.expect_function();
+                                    func.name() == func_name
+                                })
+                                .position(|m| m.signature() == self.id())
                         })
-                        .position(|method| method.signature() == self.id());
                 }
             }
 
@@ -704,7 +711,7 @@ impl Item {
             ItemKind::Function(ref fun) => {
                 let mut name = fun.name().to_owned();
 
-                if let Some(idx) = self.method_overload_index(ctx) {
+                if let Some(idx) = self.overload_index(ctx) {
                     if idx > 0 {
                         write!(&mut name, "{}", idx).unwrap();
                     }

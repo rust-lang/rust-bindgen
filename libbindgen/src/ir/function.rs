@@ -147,6 +147,7 @@ impl FunctionSig {
         };
         let mut args: Vec<_> = match cursor.kind() {
             CXCursor_FunctionDecl |
+            CXCursor_Constructor |
             CXCursor_CXXMethod => {
                 // For CXCursor_FunctionDecl, cursor.args() is the reliable way
                 // to get parameter names and types.
@@ -184,10 +185,12 @@ impl FunctionSig {
             }
         };
 
-        if cursor.kind() == CXCursor_CXXMethod {
-            let is_const = cursor.method_is_const();
-            let is_virtual = cursor.method_is_virtual();
-            let is_static = cursor.method_is_static();
+        let is_method = cursor.kind() == CXCursor_CXXMethod;
+
+        if is_method || cursor.kind() == CXCursor_Constructor {
+            let is_const = is_method && cursor.method_is_const();
+            let is_virtual = is_method && cursor.method_is_virtual();
+            let is_static = is_method && cursor.method_is_static();
             if !is_static && !is_virtual {
                 let class = Item::parse(cursor.semantic_parent(), None, ctx)
                     .expect("Expected to parse the class");
@@ -240,6 +243,8 @@ impl ClangSubItemParser for Function {
         use clangll::*;
         match cursor.kind() {
             CXCursor_FunctionDecl |
+            CXCursor_Constructor |
+            CXCursor_Destructor |
             CXCursor_CXXMethod => {}
             _ => return Err(ParseError::Continue),
         };

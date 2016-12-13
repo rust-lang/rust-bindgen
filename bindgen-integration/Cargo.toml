@@ -1,0 +1,15 @@
+[package]
+name = "bindgen-integration"
+description = "A package to test various bindgen features"
+version = "0.1.0"
+authors = ["Emilio Cobos Álvarez <emilio@crisal.io>"]
+workspace = ".."
+publish = false
+build = "build.rs"
+
+[build-dependencies]
+libbindgen = { path = "../libbindgen" }
+gcc = "0.3"
+
+[features]
+llvm_stable = ["libbindgen/llvm_stable"]
