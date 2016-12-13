@@ -349,19 +349,9 @@ impl Cursor {
     }
 
     /// Is the referent an inlined function?
-    #[cfg(not(feature="llvm_stable"))]
     pub fn is_inlined_function(&self) -> bool {
-        unsafe { clang_Cursor_isFunctionInlined(self.x) != 0 }
-    }
-
-    // TODO: Remove this when LLVM 3.9 is released.
-    //
-    // This is currently used for CI purposes.
-
-    /// Is the referent an inlined function?
-    #[cfg(feature="llvm_stable")]
-    pub fn is_inlined_function(&self) -> bool {
-        false
+        clang_Cursor_isFunctionInlined::is_loaded() &&
+            unsafe { clang_Cursor_isFunctionInlined(self.x) != 0 }
     }
 
     /// Get the width of this cursor's referent bit field, or `None` if the
@@ -762,7 +752,6 @@ impl Type {
 
     /// For elaborated types (types which use `class`, `struct`, or `union` to
     /// disambiguate types from local bindings), get the underlying type.
-    #[cfg(not(feature="llvm_stable"))]
     pub fn named(&self) -> Type {
         unsafe {
             Type {
@@ -1306,28 +1295,13 @@ pub struct EvalResult {
     x: CXEvalResult,
 }
 
-#[cfg(feature = "llvm_stable")]
-impl EvalResult {
-    /// Create a dummy EvalResult.
-    pub fn new(_: Cursor) -> Option<Self> {
-        None
-    }
-
-    /// Not useful in llvm 3.8.
-    pub fn as_double(&self) -> Option<f64> {
-        None
-    }
-
-    /// Not useful in llvm 3.8.
-    pub fn as_int(&self) -> Option<i32> {
-        None
-    }
-}
-
-#[cfg(not(feature = "llvm_stable"))]
 impl EvalResult {
     /// Evaluate `cursor` and return the result.
     pub fn new(cursor: Cursor) -> Option<Self> {
+        if !clang_Cursor_Evaluate::is_loaded() {
+            return None;
+        }
+
         // Clang has an internal assertion we can trigger if we try to evaluate
         // a cursor containing a variadic template type reference. Triggering
         // the assertion aborts the process, and we don't want that. Clang
@@ -1379,7 +1353,6 @@ impl EvalResult {
     }
 }
 
-#[cfg(not(feature = "llvm_stable"))]
 impl Drop for EvalResult {
     fn drop(&mut self) {
         unsafe { clang_EvalResult_dispose(self.x) };

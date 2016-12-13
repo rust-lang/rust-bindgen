@@ -854,7 +854,6 @@ impl Type {
                     .expect("Not able to resolve array element?");
                 TypeKind::Array(inner, ty.num_elements().unwrap())
             }
-            #[cfg(not(feature="llvm_stable"))]
             CXType_Elaborated => {
                 return Self::from_clang_ty(potential_id,
                                            &ty.named(),
