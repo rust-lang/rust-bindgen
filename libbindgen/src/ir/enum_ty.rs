@@ -43,7 +43,7 @@ impl Enum {
     pub fn from_ty(ty: &clang::Type,
                    ctx: &mut BindgenContext)
                    -> Result<Self, ParseError> {
-        use clangll::*;
+        use clang_sys::*;
         if ty.kind() != CXType_Enum {
             return Err(ParseError::Continue);
         }

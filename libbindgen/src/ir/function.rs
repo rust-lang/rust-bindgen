@@ -1,7 +1,7 @@
 //! Intermediate representation for C/C++ functions and methods.
 
 use clang;
-use clangll::Enum_CXCallingConv;
+use clang_sys::CXCallingConv;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use super::context::{BindgenContext, ItemId};
 use super::item::Item;
@@ -76,8 +76,8 @@ pub struct FunctionSig {
     abi: abi::Abi,
 }
 
-fn get_abi(cc: Enum_CXCallingConv) -> abi::Abi {
-    use clangll::*;
+fn get_abi(cc: CXCallingConv) -> abi::Abi {
+    use clang_sys::*;
     match cc {
         CXCallingConv_Default => abi::Abi::C,
         CXCallingConv_C => abi::Abi::C,
@@ -85,7 +85,7 @@ fn get_abi(cc: Enum_CXCallingConv) -> abi::Abi {
         CXCallingConv_X86FastCall => abi::Abi::Fastcall,
         CXCallingConv_AAPCS => abi::Abi::Aapcs,
         CXCallingConv_X86_64Win64 => abi::Abi::Win64,
-        other => panic!("unsupported calling convention: {}", other),
+        other => panic!("unsupported calling convention: {:?}", other),
     }
 }
 
@@ -131,7 +131,7 @@ impl FunctionSig {
                    cursor: &clang::Cursor,
                    ctx: &mut BindgenContext)
                    -> Result<Self, ParseError> {
-        use clangll::*;
+        use clang_sys::*;
         debug!("FunctionSig::from_ty {:?} {:?}", ty, cursor);
 
         // Don't parse operatorxx functions in C++
@@ -237,7 +237,7 @@ impl ClangSubItemParser for Function {
     fn parse(cursor: clang::Cursor,
              context: &mut BindgenContext)
              -> Result<ParseResult<Self>, ParseError> {
-        use clangll::*;
+        use clang_sys::*;
         match cursor.kind() {
             CXCursor_FunctionDecl |
             CXCursor_CXXMethod => {}

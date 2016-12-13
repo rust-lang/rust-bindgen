@@ -531,7 +531,7 @@ impl Type {
                          parent_id: Option<ItemId>,
                          ctx: &mut BindgenContext)
                          -> Result<ParseResult<Self>, ParseError> {
-        use clangll::*;
+        use clang_sys::*;
         {
             let already_resolved =
                 ctx.builtin_or_resolved_ty(potential_id,

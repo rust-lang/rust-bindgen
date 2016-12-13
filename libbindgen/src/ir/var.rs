@@ -88,7 +88,7 @@ impl ClangSubItemParser for Var {
     fn parse(cursor: clang::Cursor,
              ctx: &mut BindgenContext)
              -> Result<ParseResult<Self>, ParseError> {
-        use clangll::*;
+        use clang_sys::*;
         use cexpr::expr::EvalResult;
         use cexpr::literal::CChar;
         match cursor.kind() {
@@ -287,7 +287,7 @@ fn parse_int_literal_tokens(cursor: &clang::Cursor,
 fn get_integer_literal_from_cursor(cursor: &clang::Cursor,
                                    unit: &clang::TranslationUnit)
                                    -> Option<i64> {
-    use clangll::*;
+    use clang_sys::*;
     let mut value = None;
     cursor.visit(|c| {
         match c.kind() {
