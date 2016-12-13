@@ -487,7 +487,7 @@ impl CompInfo {
                    location: Option<clang::Cursor>,
                    ctx: &mut BindgenContext)
                    -> Result<Self, ParseError> {
-        use clangll::*;
+        use clang_sys::*;
         // Sigh... For class templates we want the location, for
         // specialisations, we want the declaration...  So just try both.
         //
@@ -771,7 +771,7 @@ impl CompInfo {
                 CXCursor_FunctionTemplate |
                 CXCursor_ConversionFunction => {}
                 _ => {
-                    warn!("unhandled comp member `{}` (kind {}) in `{}` ({})",
+                    warn!("unhandled comp member `{}` (kind {:?}) in `{}` ({})",
                           cur.spelling(),
                           cur.kind(),
                           cursor.spelling(),
@@ -791,7 +791,7 @@ impl CompInfo {
 
     fn kind_from_cursor(cursor: &clang::Cursor)
                         -> Result<CompKind, ParseError> {
-        use clangll::*;
+        use clang_sys::*;
         Ok(match cursor.kind() {
             CXCursor_UnionDecl => CompKind::Union,
             CXCursor_ClassDecl |

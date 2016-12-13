@@ -126,7 +126,7 @@ impl Annotations {
     }
 
     fn parse(&mut self, comment: &clang::Comment, matched: &mut bool) {
-        use clangll::CXComment_HTMLStartTag;
+        use clang_sys::CXComment_HTMLStartTag;
         if comment.kind() == CXComment_HTMLStartTag &&
            comment.get_tag_name() == "div" &&
            comment.get_tag_attrs()

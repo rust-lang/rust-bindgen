@@ -124,12 +124,12 @@ pub struct BindgenContext<'ctx> {
 impl<'ctx> BindgenContext<'ctx> {
     /// Construct the context for the given `options`.
     pub fn new(options: BindgenOptions) -> Self {
-        use clangll;
+        use clang_sys;
 
         let index = clang::Index::new(false, true);
 
         let parse_options =
-            clangll::CXTranslationUnit_DetailedPreprocessingRecord;
+            clang_sys::CXTranslationUnit_DetailedPreprocessingRecord;
         let translation_unit =
             clang::TranslationUnit::parse(&index,
                                           "",
@@ -551,7 +551,7 @@ impl<'ctx> BindgenContext<'ctx> {
                               location: clang::Cursor,
                               declaration: clang::Cursor)
                               -> ItemId {
-        use clangll::*;
+        use clang_sys::*;
         let mut args = vec![];
         location.visit(|c| {
             if c.kind() == CXCursor_TypeRef {
@@ -610,7 +610,7 @@ impl<'ctx> BindgenContext<'ctx> {
                 }
             } else {
                 assert_eq!(declaration.kind(),
-                           ::clangll::CXCursor_TypeAliasTemplateDecl,
+                           ::clang_sys::CXCursor_TypeAliasTemplateDecl,
                            "Expected wrappable type");
             }
 
@@ -639,7 +639,7 @@ impl<'ctx> BindgenContext<'ctx> {
                                   ty: &clang::Type,
                                   location: Option<clang::Cursor>)
                                   -> Option<ItemId> {
-        use clangll::{CXCursor_TypeAliasTemplateDecl, CXCursor_TypeRef};
+        use clang_sys::{CXCursor_TypeAliasTemplateDecl, CXCursor_TypeRef};
         debug!("builtin_or_resolved_ty: {:?}, {:?}, {:?}",
                ty,
                location,
@@ -753,7 +753,7 @@ impl<'ctx> BindgenContext<'ctx> {
                         ty: &clang::Type,
                         _declaration: Cursor)
                         -> Option<ItemId> {
-        use clangll::*;
+        use clang_sys::*;
         let type_kind = match ty.kind() {
             CXType_NullPtr => TypeKind::NullPtr,
             CXType_Void => TypeKind::Void,
@@ -885,7 +885,7 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Given a CXCursor_Namespace cursor, return the item id of the
     /// corresponding module, or create one on the fly.
     pub fn module(&mut self, cursor: clang::Cursor) -> ItemId {
-        use clangll::*;
+        use clang_sys::*;
         assert!(cursor.kind() == CXCursor_Namespace, "Be a nice person");
         let cursor = cursor.canonical();
         if let Some(id) = self.modules.get(&cursor) {

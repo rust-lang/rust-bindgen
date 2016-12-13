@@ -56,7 +56,6 @@ macro_rules! doc_mod {
     };
 }
 
-mod clangll;
 mod clang;
 mod ir;
 mod parse;
@@ -634,12 +633,12 @@ fn filter_builtins(ctx: &BindgenContext, cursor: &clang::Cursor) -> bool {
 pub fn parse_one(ctx: &mut BindgenContext,
                  cursor: clang::Cursor,
                  parent: Option<ItemId>)
-                 -> clangll::Enum_CXVisitorResult {
+                 -> clang_sys::CXChildVisitResult {
     if !filter_builtins(ctx, &cursor) {
         return CXChildVisit_Continue;
     }
 
-    use clangll::CXChildVisit_Continue;
+    use clang_sys::CXChildVisit_Continue;
     match Item::parse(cursor, parent, ctx) {
         Ok(..) => {},
         Err(ParseError::Continue) => {}
@@ -652,12 +651,11 @@ pub fn parse_one(ctx: &mut BindgenContext,
 
 /// Parse the Clang AST into our `Item` internal representation.
 fn parse(context: &mut BindgenContext) -> Result<(), ()> {
-    use clang::Diagnostic;
-    use clangll::*;
+    use clang_sys::*;
 
     let mut any_error = false;
     for d in context.translation_unit().diags().iter() {
-        let msg = d.format(Diagnostic::default_opts());
+        let msg = d.format();
         let is_err = d.severity() >= CXDiagnostic_Error;
         println!("{}, err: {}", msg, is_err);
         any_error |= is_err;

@@ -1,7 +1,7 @@
 //! Bindgen's core intermediate representation type.
 
 use clang;
-use clangll;
+use clang_sys;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use std::cell::{Cell, RefCell};
 use std::fmt::Write;
@@ -831,8 +831,8 @@ fn visit_child(cur: clang::Cursor,
                parent_id: Option<ItemId>,
                ctx: &mut BindgenContext,
                result: &mut Result<ItemId, ParseError>)
-               -> clangll::Enum_CXChildVisitResult {
-    use clangll::*;
+               -> clang_sys::CXChildVisitResult {
+    use clang_sys::*;
     if result.is_ok() {
         return CXChildVisit_Break;
     }
@@ -880,7 +880,7 @@ impl ClangItemParser for Item {
         use ir::function::Function;
         use ir::module::Module;
         use ir::var::Var;
-        use clangll::*;
+        use clang_sys::*;
 
         if !cursor.is_valid() {
             return Err(ParseError::Continue);
@@ -1056,7 +1056,7 @@ impl ClangItemParser for Item {
                        parent_id: Option<ItemId>,
                        ctx: &mut BindgenContext)
                        -> Result<ItemId, ParseError> {
-        use clangll::*;
+        use clang_sys::*;
 
         let decl = {
             let decl = ty.declaration();

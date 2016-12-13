@@ -24,14 +24,14 @@ shlex = "0.1"
 quasi_codegen = "0.26"
 
 [dependencies]
+cexpr = "0.2"
 cfg-if = "0.1.0"
-clang-sys = "0.11.1"
+clang-sys = { version = "0.11.1", features = ["gte_clang_3_6", "gte_clang_3_7", "gte_clang_3_8", "gte_clang_3_9"] }
 lazy_static = "0.1.*"
 libc = "0.2"
 rustc-serialize = "0.3.19"
 syntex_syntax = "0.50"
 regex = "0.1"
-cexpr = "0.2"
 
 [dependencies.aster]
 features = ["with-syntex"]

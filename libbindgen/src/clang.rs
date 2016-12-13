@@ -1,11 +1,11 @@
 //! A higher level Clang API built on top of the generated bindings in the
-//! `clangll` module.
+//! `clang_sys` module.
 
 #![allow(non_upper_case_globals, dead_code)]
 
 
 use cexpr;
-use clangll::*;
+use clang_sys::*;
 use std::{mem, ptr, slice};
 use std::ffi::{CStr, CString};
 use std::fmt;
@@ -38,7 +38,7 @@ impl Cursor {
     ///
     /// The USR can be used to compare entities across translation units.
     pub fn usr(&self) -> Option<String> {
-        let s: String = unsafe { clang_getCursorUSR(self.x) }.into();
+        let s = unsafe { cxstring_into_string(clang_getCursorUSR(self.x)) };
         if s.is_empty() { None } else { Some(s) }
     }
 
@@ -56,7 +56,7 @@ impl Cursor {
 
     /// Get this cursor's referent's spelling.
     pub fn spelling(&self) -> String {
-        unsafe { clang_getCursorSpelling(self.x).into() }
+        unsafe { cxstring_into_string(clang_getCursorSpelling(self.x)) }
     }
 
     /// Get this cursor's referent's display name.
@@ -64,12 +64,12 @@ impl Cursor {
     /// This is not necessarily a valid identifier. It includes extra
     /// information, such as parameters for a function, etc.
     pub fn display_name(&self) -> String {
-        unsafe { clang_getCursorDisplayName(self.x).into() }
+        unsafe { cxstring_into_string(clang_getCursorDisplayName(self.x)) }
     }
 
     /// Get the mangled name of this cursor's referent.
     pub fn mangling(&self) -> String {
-        unsafe { clang_Cursor_getMangling(self.x).into() }
+        unsafe { cxstring_into_string(clang_Cursor_getMangling(self.x)) }
     }
 
     /// Get the `Cursor` for this cursor's referent's lexical parent.
@@ -186,7 +186,7 @@ impl Cursor {
     }
 
     /// Get the kind of referent this cursor is pointing to.
-    pub fn kind(&self) -> Enum_CXCursorKind {
+    pub fn kind(&self) -> CXCursorKind {
         unsafe { clang_getCursorKind(self.x) }
     }
 
@@ -238,8 +238,9 @@ impl Cursor {
 
     /// Get the raw declaration comment for this referent, if one exists.
     pub fn raw_comment(&self) -> Option<String> {
-        let s: String =
-            unsafe { clang_Cursor_getRawCommentText(self.x).into() };
+        let s = unsafe {
+            cxstring_into_string(clang_Cursor_getRawCommentText(self.x))
+        };
         if s.is_empty() { None } else { Some(s) }
     }
 
@@ -312,7 +313,7 @@ impl Cursor {
 
     /// Assuming that this cursor's referent is a template declaration, get the
     /// kind of cursor that would be generated for its specializations.
-    pub fn template_kind(&self) -> Enum_CXCursorKind {
+    pub fn template_kind(&self) -> CXCursorKind {
         unsafe { clang_getTemplateCursorKind(self.x) }
     }
 
@@ -320,11 +321,11 @@ impl Cursor {
     ///
     /// Call the given function on each AST node traversed.
     pub fn visit<Visitor>(&self, mut visitor: Visitor)
-        where Visitor: FnMut(Cursor) -> Enum_CXChildVisitResult,
+        where Visitor: FnMut(Cursor) -> CXChildVisitResult,
     {
         unsafe {
             clang_visitChildren(self.x,
-                                Some(visit_children::<Visitor>),
+                                visit_children::<Visitor>,
                                 mem::transmute(&mut visitor));
         }
     }
@@ -332,7 +333,7 @@ impl Cursor {
     /// Returns whether the given location contains a cursor with the given
     /// kind in the first level of nesting underneath (doesn't look
     /// recursively).
-    pub fn contains_cursor(&self, kind: Enum_CXCursorKind) -> bool {
+    pub fn contains_cursor(&self, kind: CXCursorKind) -> bool {
         let mut found = false;
 
         self.visit(|c| {
@@ -422,12 +423,12 @@ impl Cursor {
     /// Get the linkage kind for this cursor's referent.
     ///
     /// This only applies to functions and variables.
-    pub fn linkage(&self) -> Enum_CXLinkageKind {
+    pub fn linkage(&self) -> CXLinkageKind {
         unsafe { clang_getCursorLinkage(self.x) }
     }
 
     /// Get the visibility of this cursor's referent.
-    pub fn visibility(&self) -> Enum_CXVisibilityKind {
+    pub fn visibility(&self) -> CXVisibilityKind {
         unsafe { clang_getCursorVisibility(self.x) }
     }
 
@@ -469,7 +470,7 @@ impl Cursor {
     }
 
     /// Get the access specifier for this cursor's referent.
-    pub fn access_specifier(&self) -> Enum_CX_CXXAccessSpecifier {
+    pub fn access_specifier(&self) -> CX_CXXAccessSpecifier {
         unsafe { clang_getCXXAccessSpecifier(self.x) }
     }
 
@@ -508,8 +509,8 @@ impl Cursor {
 extern "C" fn visit_children<Visitor>(cur: CXCursor,
                                       _parent: CXCursor,
                                       data: CXClientData)
-                                      -> Enum_CXChildVisitResult
-    where Visitor: FnMut(Cursor) -> Enum_CXChildVisitResult,
+                                      -> CXChildVisitResult
+    where Visitor: FnMut(Cursor) -> CXChildVisitResult,
 {
     let func: &mut Visitor = unsafe { mem::transmute(data) };
     let child = Cursor {
@@ -534,7 +535,7 @@ impl Hash for Cursor {
 }
 
 /// The type of a node in clang's AST.
-#[derive(Clone, Hash)]
+#[derive(Clone)]
 pub struct Type {
     x: CXType,
 }
@@ -579,6 +580,11 @@ pub enum LayoutError {
 impl ::std::convert::From<i32> for LayoutError {
     fn from(val: i32) -> Self {
         use self::LayoutError::*;
+        let val = match CXTypeLayoutError::from_raw(val) {
+            Some(val) => val,
+            None => return Unknown,
+        };
+
         match val {
             CXTypeLayoutError_Invalid => Invalid,
             CXTypeLayoutError_Incomplete => Incomplete,
@@ -592,7 +598,7 @@ impl ::std::convert::From<i32> for LayoutError {
 
 impl Type {
     /// Get this type's kind.
-    pub fn kind(&self) -> Enum_CXTypeKind {
+    pub fn kind(&self) -> CXTypeKind {
         self.x.kind
     }
 
@@ -607,7 +613,9 @@ impl Type {
 
     /// Get a raw display name for this type.
     pub fn spelling(&self) -> String {
-        unsafe { clang_getTypeSpelling(self.x).into() }
+        unsafe {
+            cxstring_into_string(clang_getTypeSpelling(self.x))
+        }
     }
 
     /// Is this type const qualified?
@@ -748,7 +756,7 @@ impl Type {
 
     /// Given that this type is a function type, get its calling convention. If
     /// this is not a function type, `CXCallingConv_Invalid` is returned.
-    pub fn call_conv(&self) -> Enum_CXCallingConv {
+    pub fn call_conv(&self) -> CXCallingConv {
         unsafe { clang_getFunctionTypeCallingConv(self.x) }
     }
 
@@ -798,7 +806,7 @@ impl Iterator for TypeTemplateArgIterator {
     type Item = Type;
     fn next(&mut self) -> Option<Type> {
         if self.index < self.length {
-            let idx = self.index as c_int;
+            let idx = self.index as c_uint;
             self.index += 1;
             Some(Type {
                 x: unsafe { clang_Type_getTemplateArgumentAsType(self.x, idx) },
@@ -827,7 +835,7 @@ impl SourceLocation {
     /// location.
     pub fn location(&self) -> (File, usize, usize, usize) {
         unsafe {
-            let mut file = ptr::null_mut();
+            let mut file = mem::zeroed();
             let mut line = 0;
             let mut col = 0;
             let mut off = 0;
@@ -866,7 +874,7 @@ pub struct Comment {
 
 impl Comment {
     /// What kind of comment is this?
-    pub fn kind(&self) -> Enum_CXCommentKind {
+    pub fn kind(&self) -> CXCommentKind {
         unsafe { clang_Comment_getKind(self.x) }
     }
 
@@ -882,7 +890,9 @@ impl Comment {
     /// Given that this comment is the start or end of an HTML tag, get its tag
     /// name.
     pub fn get_tag_name(&self) -> String {
-        unsafe { clang_HTMLTagComment_getTagName(self.x).into() }
+        unsafe {
+            cxstring_into_string(clang_HTMLTagComment_getTagName(self.x))
+        }
     }
 
     /// Given that this comment is an HTML start tag, get its attributes.
@@ -940,10 +950,12 @@ impl Iterator for CommentAttributesIterator {
             self.index += 1;
             Some(CommentAttribute {
                 name: unsafe {
-                    clang_HTMLStartTag_getAttrName(self.x, idx).into()
+                    cxstring_into_string(
+                        clang_HTMLStartTag_getAttrName(self.x, idx))
                 },
                 value: unsafe {
-                    clang_HTMLStartTag_getAttrValue(self.x, idx).into()
+                    cxstring_into_string(
+                        clang_HTMLStartTag_getAttrValue(self.x, idx))
                 },
             })
         } else {
@@ -963,21 +975,21 @@ impl File {
         if self.x.is_null() {
             return None;
         }
-        unsafe { Some(clang_getFileName(self.x).into()) }
+        Some(unsafe {
+            cxstring_into_string(clang_getFileName(self.x))
+        })
     }
 }
 
-impl Into<String> for CXString {
-    fn into(self) -> String {
-        if self.data.is_null() {
-            return "".to_owned();
-        }
-        unsafe {
-            let c_str = CStr::from_ptr(clang_getCString(self) as *const _);
-            let ret = c_str.to_string_lossy().into_owned();
-            clang_disposeString(self);
-            ret
-        }
+fn cxstring_into_string(s: CXString) -> String {
+    if s.data.is_null() {
+        return "".to_owned();
+    }
+    unsafe {
+        let c_str = CStr::from_ptr(clang_getCString(s) as *const _);
+        let ret = c_str.to_string_lossy().into_owned();
+        clang_disposeString(s);
+        ret
     }
 }
 
@@ -1043,14 +1055,14 @@ impl TranslationUnit {
                  file: &str,
                  cmd_args: &[String],
                  unsaved: &[UnsavedFile],
-                 opts: ::libc::c_uint)
+                 opts: CXTranslationUnit_Flags)
                  -> Option<TranslationUnit> {
         let fname = CString::new(file).unwrap();
         let _c_args: Vec<CString> =
             cmd_args.iter().map(|s| CString::new(s.clone()).unwrap()).collect();
         let c_args: Vec<*const c_char> =
             _c_args.iter().map(|s| s.as_ptr()).collect();
-        let mut c_unsaved: Vec<Struct_CXUnsavedFile> =
+        let mut c_unsaved: Vec<CXUnsavedFile> =
             unsaved.iter().map(|f| f.x).collect();
         let tu = unsafe {
             clang_parseTranslationUnit(ix.x,
@@ -1067,20 +1079,6 @@ impl TranslationUnit {
             Some(TranslationUnit {
                 x: tu,
             })
-        }
-    }
-
-    /// Reparse this translation unit, maybe because the file changed on disk or
-    /// something like that.
-    pub fn reparse(&self, unsaved: &[UnsavedFile], opts: usize) -> bool {
-        let mut c_unsaved: Vec<Struct_CXUnsavedFile> =
-            unsaved.iter().map(|f| f.x).collect();
-
-        unsafe {
-            clang_reparseTranslationUnit(self.x,
-                                         c_unsaved.len() as c_uint,
-                                         c_unsaved.as_mut_ptr(),
-                                         opts as c_uint) == 0
         }
     }
 
@@ -1130,7 +1128,8 @@ impl TranslationUnit {
                                                     num_tokens as usize);
             for &token in token_array.iter() {
                 let kind = clang_getTokenKind(token);
-                let spelling = clang_getTokenSpelling(self.x, token).into();
+                let spelling = cxstring_into_string(
+                    clang_getTokenSpelling(self.x, token));
 
                 tokens.push(Token {
                     kind: kind,
@@ -1187,7 +1186,7 @@ impl TranslationUnit {
                     // NB: cexpr is not too happy about comments inside
                     // expressions, so we strip them down here.
                     CXToken_Comment => return None,
-                    _ => panic!("Found unexpected token kind: {}", token.kind),
+                    _ => panic!("Found unexpected token kind: {:?}", token.kind),
                 };
 
                 Some(token::Token {
@@ -1214,19 +1213,17 @@ pub struct Diagnostic {
 }
 
 impl Diagnostic {
-    /// Get the default diagnostic display option bit flags.
-    pub fn default_opts() -> usize {
-        unsafe { clang_defaultDiagnosticDisplayOptions() as usize }
-    }
-
     /// Format this diagnostic message as a string, using the given option bit
     /// flags.
-    pub fn format(&self, opts: usize) -> String {
-        unsafe { clang_formatDiagnostic(self.x, opts as c_uint).into() }
+    pub fn format(&self) -> String {
+        unsafe {
+            let opts = clang_defaultDiagnosticDisplayOptions();
+            cxstring_into_string(
+                clang_formatDiagnostic(self.x, opts)) }
     }
 
     /// What is the severity of this diagnostic message?
-    pub fn severity(&self) -> Enum_CXDiagnosticSeverity {
+    pub fn severity(&self) -> CXDiagnosticSeverity {
         unsafe { clang_getDiagnosticSeverity(self.x) }
     }
 }
@@ -1242,7 +1239,7 @@ impl Drop for Diagnostic {
 
 /// A file which has not been saved to disk.
 pub struct UnsavedFile {
-    x: Struct_CXUnsavedFile,
+    x: CXUnsavedFile,
     name: CString,
     contents: CString,
 }
@@ -1252,7 +1249,7 @@ impl UnsavedFile {
     pub fn new(name: &str, contents: &str) -> UnsavedFile {
         let name = CString::new(name).unwrap();
         let contents = CString::new(contents).unwrap();
-        let x = Struct_CXUnsavedFile {
+        let x = CXUnsavedFile {
             Filename: name.as_ptr(),
             Contents: contents.as_ptr(),
             Length: contents.as_bytes().len() as c_ulong,
@@ -1266,17 +1263,17 @@ impl UnsavedFile {
 }
 
 /// Convert a cursor kind into a static string.
-pub fn kind_to_str(x: Enum_CXCursorKind) -> String {
-    unsafe { clang_getCursorKindSpelling(x) }.into()
+pub fn kind_to_str(x: CXCursorKind) -> String {
+    unsafe { cxstring_into_string(clang_getCursorKindSpelling(x)) }
 }
 
 /// Convert a type kind to a static string.
-pub fn type_to_str(x: Enum_CXTypeKind) -> String {
-    unsafe { clang_getTypeKindSpelling(x).into() }
+pub fn type_to_str(x: CXTypeKind) -> String {
+    unsafe { cxstring_into_string(clang_getTypeKindSpelling(x)) }
 }
 
 /// Dump the Clang AST to stdout for debugging purposes.
-pub fn ast_dump(c: &Cursor, depth: isize) -> Enum_CXVisitorResult {
+pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
     fn print_indent(depth: isize, s: &str) {
         for _ in 0..depth {
             print!("\t");
@@ -1300,7 +1297,7 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> Enum_CXVisitorResult {
 
 /// Try to extract the clang version to a string
 pub fn extract_clang_version() -> String {
-    unsafe { clang_getClangVersion().into() }
+    unsafe { cxstring_into_string(clang_getClangVersion()) }
 }
 
 /// A wrapper for the result of evaluating an expression.
@@ -1357,7 +1354,7 @@ impl EvalResult {
         })
     }
 
-    fn kind(&self) -> Enum_CXEvalResultKind {
+    fn kind(&self) -> CXEvalResultKind {
         unsafe { clang_EvalResult_getKind(self.x) }
     }
 
