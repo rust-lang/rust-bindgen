@@ -950,6 +950,7 @@ impl ClangItemParser for Item {
                 CXCursor_MacroDefinition |
                 CXCursor_MacroExpansion |
                 CXCursor_UsingDeclaration |
+                CXCursor_UsingDirective |
                 CXCursor_StaticAssert |
                 CXCursor_InclusionDirective => {
                     debug!("Unhandled cursor kind {:?}: {:?}",
@@ -957,9 +958,13 @@ impl ClangItemParser for Item {
                            cursor);
                 }
                 _ => {
-                    error!("Unhandled cursor kind {:?}: {:?}",
-                           cursor.kind(),
-                           cursor);
+                    // ignore toplevel operator overloads
+                    let spelling = cursor.spelling();
+                    if !spelling.starts_with("operator") {
+                        error!("Unhandled cursor kind {:?}: {:?}",
+                               cursor.kind(),
+                               cursor);
+                    }
                 }
             }
 
