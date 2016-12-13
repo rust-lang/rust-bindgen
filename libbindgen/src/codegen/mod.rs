@@ -1359,13 +1359,14 @@ impl MethodCodegen for Method {
         let mut stmts = vec![];
 
         // If it's a constructor, we need to insert an extra parameter with a
-        // variable called `tmp` we're going to create.
+        // variable called `__bindgen_tmp` we're going to create.
         if self.is_constructor() {
             let tmp_variable_decl =
-                quote_stmt!(ctx.ext_cx(), let mut tmp = ::std::mem::uninitialized())
+                quote_stmt!(ctx.ext_cx(),
+                            let mut __bindgen_tmp = ::std::mem::uninitialized())
                 .unwrap();
             stmts.push(tmp_variable_decl);
-            exprs[0] = quote_expr!(ctx.ext_cx(), &mut tmp);
+            exprs[0] = quote_expr!(ctx.ext_cx(), &mut __bindgen_tmp);
         } else if !self.is_static() {
             assert!(!exprs.is_empty());
             exprs[0] = if self.is_const() {
@@ -1388,7 +1389,7 @@ impl MethodCodegen for Method {
         });
 
         if self.is_constructor() {
-            stmts.push(quote_stmt!(ctx.ext_cx(), tmp).unwrap());
+            stmts.push(quote_stmt!(ctx.ext_cx(), __bindgen_tmp).unwrap());
         }
 
         let block = ast::Block {
