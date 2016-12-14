@@ -511,6 +511,10 @@ impl<'ctx> Bindings<'ctx> {
                     span: Option<Span>)
                     -> Result<Bindings<'ctx>, ()> {
         let span = span.unwrap_or(DUMMY_SP);
+        if !clang_sys::is_loaded() {
+            // TODO(emilio): Return meaningful error (breaking).
+            clang_sys::load().expect("Unable to find libclang");
+        }
 
         // TODO: Make this path fixup configurable?
         if let Some(clang) = clang_sys::support::Clang::find(None) {
@@ -691,6 +695,11 @@ pub struct ClangVersion {
 
 /// Get the major and the minor semvar numbers of Clang's version
 pub fn clang_version() -> ClangVersion {
+    if !clang_sys::is_loaded() {
+        // TODO(emilio): Return meaningful error (breaking).
+        clang_sys::load().expect("Unable to find libclang");
+    }
+
     let raw_v: String = clang::extract_clang_version();
     let split_v: Option<Vec<&str>> = raw_v.split_whitespace()
         .nth(2)

@@ -15,7 +15,7 @@ version = "0.17.0"
 workspace = ".."
 
 [dependencies]
-clang-sys = "0.11.1"
+clang-sys = "0.12"
 clap = "2"
 libbindgen = { path = "../libbindgen" }
 log = "0.3"
