@@ -187,7 +187,8 @@ impl FunctionSig {
 
         let is_method = cursor.kind() == CXCursor_CXXMethod;
         let is_constructor = cursor.kind() == CXCursor_Constructor;
-        if is_constructor && cursor.lexical_parent() != cursor.semantic_parent() {
+        if (is_constructor || is_method) &&
+            cursor.lexical_parent() != cursor.semantic_parent() {
             // Only parse constructors once.
             return Err(ParseError::Continue);
         }
