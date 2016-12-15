@@ -6,7 +6,7 @@ use clang::{self, Cursor};
 use parse::ClangItemParser;
 use std::borrow::Cow;
 use std::cell::Cell;
-use std::collections::{HashMap, hash_map};
+use std::collections::{HashMap, VecDeque, hash_map};
 use std::collections::btree_map::{self, BTreeMap};
 use std::fmt;
 use super::int::IntKind;
@@ -399,18 +399,33 @@ impl<'ctx> BindgenContext<'ctx> {
                 continue;
             }
 
-            if let Some(mut module) = self.items.get_mut(&old_parent).unwrap().as_module_mut() {
+            if let Some(mut module) = self.items
+                .get_mut(&old_parent)
+                .unwrap()
+                .as_module_mut() {
                 // Deparent the replacement.
-                let position = module.children().iter().position(|id| *id == replacement).unwrap();
+                let position = module.children()
+                    .iter()
+                    .position(|id| *id == replacement)
+                    .unwrap();
                 module.children_mut().remove(position);
             }
 
-            if let Some(mut module) = self.items.get_mut(&new_parent).unwrap().as_module_mut() {
+            if let Some(mut module) = self.items
+                .get_mut(&new_parent)
+                .unwrap()
+                .as_module_mut() {
                 module.children_mut().push(replacement);
             }
 
-            self.items.get_mut(&replacement).unwrap().set_parent_for_replacement(new_parent);
-            self.items.get_mut(&id).unwrap().set_parent_for_replacement(old_parent);
+            self.items
+                .get_mut(&replacement)
+                .unwrap()
+                .set_parent_for_replacement(new_parent);
+            self.items
+                .get_mut(&id)
+                .unwrap()
+                .set_parent_for_replacement(old_parent);
         }
     }
 
@@ -428,8 +443,7 @@ impl<'ctx> BindgenContext<'ctx> {
         let cfg = ExpansionConfig::default("xxx".to_owned());
         let sess = parse::ParseSess::new();
         let mut loader = base::DummyResolver;
-        let mut ctx =
-            GenContext(base::ExtCtxt::new(&sess, cfg, &mut loader));
+        let mut ctx = GenContext(base::ExtCtxt::new(&sess, cfg, &mut loader));
 
         ctx.0.bt_push(ExpnInfo {
             call_site: self.span,
@@ -445,6 +459,8 @@ impl<'ctx> BindgenContext<'ctx> {
         // because we remove it before the end of this function.
         self.gen_ctx = Some(unsafe { mem::transmute(&ctx) });
 
+        self.assert_no_dangling_references();
+
         if !self.collected_typerefs() {
             self.resolve_typerefs();
             self.process_replacements();
@@ -453,6 +469,36 @@ impl<'ctx> BindgenContext<'ctx> {
         let ret = cb(self);
         self.gen_ctx = None;
         ret
+    }
+
+    /// This function trying to find any dangling references inside of `items`
+    fn assert_no_dangling_references(&self) {
+        if cfg!(debug_assertions) {
+            for _ in self.assert_no_dangling_item_traversal() {
+                // The iterator's next method does the asserting for us.
+            }
+        }
+    }
+
+    fn assert_no_dangling_item_traversal<'me>
+        (&'me self)
+         -> AssertNoDanglingItemIter<'me, 'ctx> {
+        assert!(self.in_codegen_phase());
+        assert!(self.current_module == self.root_module);
+
+        let mut roots = self.items().map(|(&id, _)| id);
+
+        let mut seen = BTreeMap::<ItemId, ItemId>::new();
+        let next_child = roots.next().map(|id| id).unwrap();
+        seen.insert(next_child, next_child);
+
+        let to_iterate = seen.iter().map(|(&id, _)| id).rev().collect();
+
+        AssertNoDanglingItemIter {
+            ctx: self,
+            seen: seen,
+            to_iterate: to_iterate,
+        }
     }
 
     // This deserves a comment. Builtin types don't get a valid declaration, so
@@ -1080,6 +1126,74 @@ impl<'ctx, 'gen> Iterator for WhitelistedItemsIter<'ctx, 'gen>
         for id in sub_types {
             if self.seen.insert(id) {
                 self.to_iterate.push(id);
+            }
+        }
+
+        Some(id)
+    }
+}
+
+/// An iterator to find any dangling items.
+///
+/// See `BindgenContext::assert_no_dangling_item_traversal` for more information.
+pub struct AssertNoDanglingItemIter<'ctx, 'gen>
+    where 'gen: 'ctx,
+{
+    ctx: &'ctx BindgenContext<'gen>,
+    seen: BTreeMap<ItemId, ItemId>,
+    to_iterate: VecDeque<ItemId>,
+}
+
+impl<'ctx, 'gen> Iterator for AssertNoDanglingItemIter<'ctx, 'gen>
+    where 'gen: 'ctx,
+{
+    type Item = ItemId;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let id = match self.to_iterate.pop_front() {
+            None => {
+                // We've traversed everything reachable from the previous root(s), see if
+                // we have any more roots.
+                match self.ctx
+                    .items()
+                    .filter(|&(id, _)| !self.seen.contains_key(id))
+                    .next()
+                    .map(|(id, _)| *id) {
+                    None => return None,
+                    Some(id) => {
+                        // This is a new root.
+                        self.seen.insert(id, id);
+                        id
+                    }
+                }
+            }
+            Some(id) => id,
+        };
+
+        let mut sub_types = ItemSet::new();
+        id.collect_types(self.ctx, &mut sub_types, &());
+
+        if self.ctx.resolve_item_fallible(id).is_none() {
+            let mut path = vec![];
+            let mut current = id;
+            loop {
+                let predecessor = *self.seen.get(&current)
+                    .expect("We know we found this item id, so it must have a predecessor");
+                if predecessor == current {
+                    break;
+                }
+                path.push(predecessor);
+                current = predecessor;
+            }
+            path.reverse();
+            panic!("Found reference to dangling id = {:?}\nvia path = {:?}",
+                   id,
+                   path);
+        }
+
+        for sub_id in sub_types {
+            if let Some(value) = self.seen.insert(id, sub_id) {
+                self.to_iterate.push_back(value);
             }
         }
 
