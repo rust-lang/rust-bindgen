@@ -21,7 +21,7 @@ pub fn main() {
         })
         .expect("Failed to set logger.");
 
-    let mut bind_args: Vec<_> = env::args().collect();
+    let bind_args: Vec<_> = env::args().collect();
 
     let version = clang_version();
     let expected_version = if cfg!(feature = "llvm_stable") {
