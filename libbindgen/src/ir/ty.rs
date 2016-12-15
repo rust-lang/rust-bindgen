@@ -660,7 +660,7 @@ impl Type {
 
                                         name = current.spelling();
 
-                                        let inner_ty = cur.typedef_type();
+                                        let inner_ty = cur.typedef_type().expect("Not valid Type?");
                                         inner = Item::from_ty(
                                             &inner_ty,
                                             Some(cur),
@@ -825,7 +825,7 @@ impl Type {
                 TypeKind::Function(signature)
             }
             CXType_Typedef => {
-                let inner = cursor.typedef_type();
+                let inner = cursor.typedef_type().expect("Not valid Type?");
                 let inner =
                     Item::from_ty_or_ref(inner, location, parent_id, ctx);
                 TypeKind::Alias(ty.spelling(), inner)

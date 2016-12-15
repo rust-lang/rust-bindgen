@@ -402,12 +402,12 @@ impl Cursor {
 
     /// Given that this cursor's referent is a `typedef`, get the `Type` that is
     /// being aliased.
-    pub fn typedef_type(&self) -> Type {
-        unsafe {
-            Type {
-                x: clang_getTypedefDeclUnderlyingType(self.x),
-            }
-        }
+    pub fn typedef_type(&self) -> Option<Type> {
+        let inner = Type {
+            x: unsafe { clang_getTypedefDeclUnderlyingType(self.x) }
+        };
+
+        if inner.is_valid() { Some(inner) } else { None }
     }
 
     /// Get the linkage kind for this cursor's referent.
