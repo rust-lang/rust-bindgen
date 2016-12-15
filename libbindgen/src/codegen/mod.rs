@@ -1660,11 +1660,21 @@ impl CodeGenerator for Enum {
             match seen_values.entry(variant.val()) {
                 Entry::Occupied(ref entry) => {
                     if is_rust_enum {
-                        let existing_variant_name = entry.get();
                         let variant_name = ctx.rust_mangle(variant.name());
+                        let mangled_name = if is_toplevel || enum_ty.name().is_some() {
+                            variant_name
+                        } else {
+                            let parent_name = parent_canonical_name.as_ref()
+                                .unwrap();
+
+                            Cow::Owned(
+                                format!("{}_{}", parent_name, variant_name))
+                        };
+
+                        let existing_variant_name = entry.get();
                         add_constant(enum_ty,
                                      &name,
-                                     &*variant_name,
+                                     &*mangled_name,
                                      existing_variant_name,
                                      enum_rust_ty.clone(),
                                      result);
@@ -1688,8 +1698,6 @@ impl CodeGenerator for Enum {
                     // If it's an unnamed enum, we also generate a constant so
                     // it can be properly accessed.
                     if is_rust_enum && enum_ty.name().is_none() {
-                        // NB: if we want to do this for other kind of nested
-                        // enums we can probably mangle the name.
                         let mangled_name = if is_toplevel {
                             variant_name.clone()
                         } else {
