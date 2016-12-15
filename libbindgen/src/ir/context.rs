@@ -473,7 +473,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// This function trying to find any dangling references inside of `items`
     fn assert_no_dangling_references(&self) {
-        if cfg!(debug_assertions) {
+        if cfg!(feature = "assert_no_dangling_items") {
             for _ in self.assert_no_dangling_item_traversal() {
                 // The iterator's next method does the asserting for us.
             }

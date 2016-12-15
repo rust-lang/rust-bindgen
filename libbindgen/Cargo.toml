@@ -50,6 +50,7 @@ features = ["with-syntex"]
 version = "0.26"
 
 [features]
+assert_no_dangling_items = []
 default = ["logging"]
 llvm_stable = []
 logging = ["env_logger", "log"]

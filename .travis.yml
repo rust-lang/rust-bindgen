@@ -26,8 +26,8 @@ before_install: . ./ci/before_install.sh
 before_script: cd libbindgen
 
 script:
-  - cargo test --features "$BINDGEN_FEATURES"
-  - cargo test --release --features "$BINDGEN_FEATURES"
+  - cargo test --features "$BINDGEN_FEATURES assert_no_dangling_items"
+  - cargo test --release --features "$BINDGEN_FEATURES assert_no_dangling_items"
   - git add -A
   - git diff @
   - git diff-index --quiet HEAD
