@@ -1404,7 +1404,7 @@ impl MethodCodegen for Method {
 
         let item = ast::ImplItem {
             id: ast::DUMMY_NODE_ID,
-            ident: ctx.ext_cx().ident_of(&name),
+            ident: ctx.rust_ident(&name),
             vis: ast::Visibility::Public,
             attrs: attrs,
             node: ast::ImplItemKind::Method(sig, P(block)),
