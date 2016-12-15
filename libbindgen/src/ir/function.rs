@@ -242,9 +242,9 @@ impl ClangSubItemParser for Function {
              -> Result<ParseResult<Self>, ParseError> {
         use clang_sys::*;
         match cursor.kind() {
+            // FIXME(emilio): Generate destructors properly.
             CXCursor_FunctionDecl |
             CXCursor_Constructor |
-            CXCursor_Destructor |
             CXCursor_CXXMethod => {}
             _ => return Err(ParseError::Continue),
         };
