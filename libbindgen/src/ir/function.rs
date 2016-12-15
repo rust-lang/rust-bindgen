@@ -186,8 +186,14 @@ impl FunctionSig {
         };
 
         let is_method = cursor.kind() == CXCursor_CXXMethod;
+        let is_constructor = cursor.kind() == CXCursor_Constructor;
+        if (is_constructor || is_method) &&
+            cursor.lexical_parent() != cursor.semantic_parent() {
+            // Only parse constructors once.
+            return Err(ParseError::Continue);
+        }
 
-        if is_method || cursor.kind() == CXCursor_Constructor {
+        if is_method || is_constructor {
             let is_const = is_method && cursor.method_is_const();
             let is_virtual = is_method && cursor.method_is_virtual();
             let is_static = is_method && cursor.method_is_static();
