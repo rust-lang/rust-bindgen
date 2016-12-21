@@ -2005,7 +2005,11 @@ impl CodeGenerator for Function {
         let signature = signature_item.kind().expect_type();
         let signature = match *signature.kind() {
             TypeKind::Function(ref sig) => sig,
-            _ => panic!("How?"),
+            TypeKind::ResolvedTypeRef(ref item_id) => {
+                let item = ctx.resolve_item(*item_id);
+                return self.codegen(ctx, result, _whitelisted_items, item);
+            },
+            _ => panic!("How?")
         };
 
         let fndecl = utils::rust_fndecl_from_signature(ctx, signature_item);
