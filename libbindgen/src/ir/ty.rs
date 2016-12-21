@@ -780,6 +780,15 @@ impl Type {
                     return Err(ParseError::Continue);
                 }
             }
+            CXType_Auto => {
+                // We don't want to blow the stack.
+                assert!(canonical_ty != *ty, "Couldn't find deduced type");
+                return Self::from_clang_ty(potential_id,
+                                           &canonical_ty,
+                                           location,
+                                           parent_id,
+                                           ctx);
+            }
             // NOTE: We don't resolve pointers eagerly because the pointee type
             // might not have been parsed, and if it contains templates or
             // something else we might get confused, see the comment inside
