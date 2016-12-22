@@ -2010,14 +2010,10 @@ impl CodeGenerator for Function {
         }
 
         let signature_item = ctx.resolve_item(self.signature());
-        let signature = signature_item.kind().expect_type();
+        let signature = signature_item.kind().expect_type().canonical_type(ctx);
         let signature = match *signature.kind() {
             TypeKind::Function(ref sig) => sig,
-            TypeKind::ResolvedTypeRef(ref item_id) => {
-                let item = ctx.resolve_item(*item_id);
-                return self.codegen(ctx, result, _whitelisted_items, item);
-            },
-            _ => panic!("How?")
+            _ => panic!("Signature kind is not a Function: {:?}", signature),
         };
 
         let fndecl = utils::rust_fndecl_from_signature(ctx, signature_item);
@@ -2268,7 +2264,7 @@ mod utils {
                                       -> P<ast::FnDecl> {
         use codegen::ToRustTy;
 
-        let signature = sig.kind().expect_type();
+        let signature = sig.kind().expect_type().canonical_type(ctx);
         let signature = match *signature.kind() {
             TypeKind::Function(ref sig) => sig,
             _ => panic!("How?"),
