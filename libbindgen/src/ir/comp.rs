@@ -533,11 +533,7 @@ impl CompInfo {
                     warn!("warning: Template parameter is not a type");
                 }
 
-                if specialization {
-                    args
-                } else {
-                    vec![]
-                }
+                if specialization { args } else { vec![] }
             }
         };
 
@@ -717,16 +713,15 @@ impl CompInfo {
 
                     // NB: This gets us an owned `Function`, not a
                     // `FunctionSig`.
-                    let signature =
-                        Item::parse(cur, Some(potential_id), ctx)
-                            .expect("CXXMethod");
+                    let signature = Item::parse(cur, Some(potential_id), ctx)
+                        .expect("CXXMethod");
 
                     match cur.kind() {
                         CXCursor_Constructor => {
                             ci.constructors.push(signature);
                         }
                         // TODO(emilio): Bind the destructor?
-                        CXCursor_Destructor => {},
+                        CXCursor_Destructor => {}
                         CXCursor_CXXMethod => {
                             let is_const = cur.method_is_const();
                             let method_kind = if is_static {
@@ -737,9 +732,8 @@ impl CompInfo {
                                 MethodKind::Normal
                             };
 
-                            let method = Method::new(method_kind,
-                                                     signature,
-                                                     is_const);
+                            let method =
+                                Method::new(method_kind, signature, is_const);
 
                             ci.methods.push(method);
                         }

@@ -546,7 +546,8 @@ impl<'ctx> Bindings<'ctx> {
         if let Some(clang) = clang_sys::support::Clang::find(None) {
             // If --target is specified, assume caller knows what they're doing
             // and don't mess with include paths for them
-            let has_target_arg = options.clang_args.iter()
+            let has_target_arg = options.clang_args
+                .iter()
                 .rposition(|arg| arg.starts_with("--target"))
                 .is_some();
             if !has_target_arg {
@@ -670,7 +671,7 @@ pub fn parse_one(ctx: &mut BindgenContext,
 
     use clang_sys::CXChildVisit_Continue;
     match Item::parse(cursor, parent, ctx) {
-        Ok(..) => {},
+        Ok(..) => {}
         Err(ParseError::Continue) => {}
         Err(ParseError::Recurse) => {
             cursor.visit(|child| parse_one(ctx, child, parent));
