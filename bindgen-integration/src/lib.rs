@@ -7,9 +7,7 @@ use std::ffi::CStr;
 #[test]
 fn test_static_method() {
     let c_str = unsafe { bindings::Test::name() };
-    let name = unsafe {
-        CStr::from_ptr(c_str).to_string_lossy().into_owned()
-    };
+    let name = unsafe { CStr::from_ptr(c_str).to_string_lossy().into_owned() };
     assert_eq!(name, "Test", "Calling a static C++ method works!");
 }
 
