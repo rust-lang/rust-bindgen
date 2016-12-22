@@ -91,6 +91,21 @@ impl IntKind {
         }
     }
 
+    /// If this type has a known size, return it (in bytes). This is to
+    /// alleviate libclang sometimes not giving us a layout (like in the case
+    /// when an enum is defined inside a class with template parameters).
+    pub fn known_size(&self) -> Option<usize> {
+        use self::IntKind::*;
+        Some(match *self {
+            Bool | UChar | Char | U8 | I8 => 1,
+            U16 | I16 => 2,
+            U32 | I32 => 4,
+            U64 | I64 => 8,
+            I128 | U128 => 16,
+            _ => return None,
+        })
+    }
+
     /// Whether this type's signedness matches the value.
     pub fn signedness_matches(&self, val: i64) -> bool {
         val >= 0 || self.is_signed()

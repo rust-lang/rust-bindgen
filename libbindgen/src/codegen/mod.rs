@@ -1562,7 +1562,11 @@ impl CodeGenerator for Enum {
         };
 
         let signed = repr.is_signed();
-        let size = layout.map(|l| l.size).unwrap_or(0);
+        let size = layout
+            .map(|l| l.size)
+            .or_else(|| repr.known_size())
+            .unwrap_or(0);
+
         let repr_name = match (signed, size) {
             (true, 1) => "i8",
             (false, 1) => "u8",
