@@ -351,7 +351,7 @@ impl Cursor {
     /// Is the referent an inlined function?
     pub fn is_inlined_function(&self) -> bool {
         clang_Cursor_isFunctionInlined::is_loaded() &&
-            unsafe { clang_Cursor_isFunctionInlined(self.x) != 0 }
+        unsafe { clang_Cursor_isFunctionInlined(self.x) != 0 }
     }
 
     /// Get the width of this cursor's referent bit field, or `None` if the
@@ -404,7 +404,7 @@ impl Cursor {
     /// being aliased.
     pub fn typedef_type(&self) -> Option<Type> {
         let inner = Type {
-            x: unsafe { clang_getTypedefDeclUnderlyingType(self.x) }
+            x: unsafe { clang_getTypedefDeclUnderlyingType(self.x) },
         };
 
         if inner.is_valid() { Some(inner) } else { None }
@@ -603,9 +603,7 @@ impl Type {
 
     /// Get a raw display name for this type.
     pub fn spelling(&self) -> String {
-        unsafe {
-            cxstring_into_string(clang_getTypeSpelling(self.x))
-        }
+        unsafe { cxstring_into_string(clang_getTypeSpelling(self.x)) }
     }
 
     /// Is this type const qualified?
@@ -879,9 +877,7 @@ impl Comment {
     /// Given that this comment is the start or end of an HTML tag, get its tag
     /// name.
     pub fn get_tag_name(&self) -> String {
-        unsafe {
-            cxstring_into_string(clang_HTMLTagComment_getTagName(self.x))
-        }
+        unsafe { cxstring_into_string(clang_HTMLTagComment_getTagName(self.x)) }
     }
 
     /// Given that this comment is an HTML start tag, get its attributes.
@@ -964,9 +960,7 @@ impl File {
         if self.x.is_null() {
             return None;
         }
-        Some(unsafe {
-            cxstring_into_string(clang_getFileName(self.x))
-        })
+        Some(unsafe { cxstring_into_string(clang_getFileName(self.x)) })
     }
 }
 
@@ -1117,8 +1111,8 @@ impl TranslationUnit {
                                                     num_tokens as usize);
             for &token in token_array.iter() {
                 let kind = clang_getTokenKind(token);
-                let spelling = cxstring_into_string(
-                    clang_getTokenSpelling(self.x, token));
+                let spelling =
+                    cxstring_into_string(clang_getTokenSpelling(self.x, token));
 
                 tokens.push(Token {
                     kind: kind,
@@ -1175,7 +1169,9 @@ impl TranslationUnit {
                     // NB: cexpr is not too happy about comments inside
                     // expressions, so we strip them down here.
                     CXToken_Comment => return None,
-                    _ => panic!("Found unexpected token kind: {:?}", token.kind),
+                    _ => {
+                        panic!("Found unexpected token kind: {:?}", token.kind)
+                    }
                 };
 
                 Some(token::Token {
@@ -1207,8 +1203,8 @@ impl Diagnostic {
     pub fn format(&self) -> String {
         unsafe {
             let opts = clang_defaultDiagnosticDisplayOptions();
-            cxstring_into_string(
-                clang_formatDiagnostic(self.x, opts)) }
+            cxstring_into_string(clang_formatDiagnostic(self.x, opts))
+        }
     }
 
     /// What is the severity of this diagnostic message?
@@ -1312,7 +1308,8 @@ impl EvalResult {
         // `CXType_Unexposed` from evaluation.
         let mut found_cant_eval = false;
         cursor.visit(|c| {
-            if c.kind() == CXCursor_TypeRef && c.cur_type().kind() == CXType_Unexposed {
+            if c.kind() == CXCursor_TypeRef &&
+               c.cur_type().kind() == CXType_Unexposed {
                 found_cant_eval = true;
                 CXChildVisit_Break
             } else {

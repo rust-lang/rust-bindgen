@@ -91,8 +91,8 @@ pub struct ItemAncestorsIter<'a, 'b>
     seen: DebugOnlyItemSet,
 }
 
-impl <'a, 'b> ItemAncestorsIter<'a, 'b>
-    where 'b: 'a
+impl<'a, 'b> ItemAncestorsIter<'a, 'b>
+    where 'b: 'a,
 {
     fn new(ctx: &'a BindgenContext<'b>, item: ItemId) -> Self {
         ItemAncestorsIter {
@@ -606,9 +606,7 @@ impl Item {
     }
 
     /// Get the target item id for name generation.
-    fn name_target(&self,
-                   ctx: &BindgenContext)
-                   -> ItemId {
+    fn name_target(&self, ctx: &BindgenContext) -> ItemId {
         let mut targets_seen = DebugOnlyItemSet::new();
         let mut item = self;
 
@@ -673,7 +671,7 @@ impl Item {
                                     func.name() == func_name
                                 })
                                 .position(|m| m.signature() == self.id())
-                        })
+                        });
                 }
             }
 
@@ -682,9 +680,7 @@ impl Item {
     }
 
     /// Get this item's base name (aka non-namespaced name).
-    fn base_name(&self,
-                 ctx: &BindgenContext)
-                 -> String {
+    fn base_name(&self, ctx: &BindgenContext) -> String {
         if let Some(path) = self.annotations().use_instead_of() {
             return path.last().unwrap().clone();
         }
@@ -737,8 +733,7 @@ impl Item {
                                ctx: &BindgenContext,
                                opt: &NameOptions)
                                -> String {
-        let target =
-            ctx.resolve_item(self.name_target(ctx));
+        let target = ctx.resolve_item(self.name_target(ctx));
 
         // Short-circuit if the target has an override, and just use that.
         if let Some(path) = target.annotations.use_instead_of() {
@@ -1080,7 +1075,7 @@ impl ClangItemParser for Item {
         }
 
         if let Some(ty) =
-            ctx.builtin_or_resolved_ty(id, parent_id, ty, location) {
+               ctx.builtin_or_resolved_ty(id, parent_id, ty, location) {
             return Ok(ty);
         }
 
@@ -1098,10 +1093,9 @@ impl ClangItemParser for Item {
         };
 
         if valid_decl {
-            if let Some(&(_, item_id)) =
-                ctx.currently_parsed_types
-                    .iter()
-                    .find(|&&(d, _)| d == declaration_to_look_for) {
+            if let Some(&(_, item_id)) = ctx.currently_parsed_types
+                .iter()
+                .find(|&&(d, _)| d == declaration_to_look_for) {
                 debug!("Avoiding recursion parsing type: {:?}", ty);
                 return Ok(item_id);
             }
@@ -1272,9 +1266,9 @@ impl ItemCanonicalPath for Item {
             .filter(|item| item.is_module() || item.id() == target.id())
             .map(|item| {
                 ctx.resolve_item(item.name_target(ctx))
-                   .name(ctx)
-                   .within_namespaces()
-                   .get()
+                    .name(ctx)
+                    .within_namespaces()
+                    .get()
             })
             .collect();
         path.reverse();

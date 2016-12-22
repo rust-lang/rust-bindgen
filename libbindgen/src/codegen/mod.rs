@@ -39,8 +39,7 @@ fn root_import(ctx: &BindgenContext, module: &Item) -> P<ast::Item> {
     let root_ident = ctx.rust_ident(&root);
 
     let super_ = aster::AstBuilder::new().id("super");
-    let supers = module
-        .ancestors(ctx)
+    let supers = module.ancestors(ctx)
         .filter(|id| ctx.resolve_item(*id).is_module())
         .map(|_| super_.clone())
         .chain(iter::once(super_));
@@ -309,7 +308,8 @@ impl CodeGenerator for Module {
                    item: &Item) {
         debug!("<Module as CodeGenerator>::codegen: item = {:?}", item);
 
-        let codegen_self = |result: &mut CodegenResult, found_any: &mut bool| {
+        let codegen_self = |result: &mut CodegenResult,
+                            found_any: &mut bool| {
             for child in self.children() {
                 if whitelisted_items.contains(child) {
                     *found_any = true;
@@ -742,7 +742,8 @@ impl CodeGenerator for CompInfo {
                                        fn $fn_name() {
                                            assert_eq!($size_of_expr, $size);
                                            assert_eq!($align_of_expr, $align);
-                                       }).unwrap();
+                                       })
+                    .unwrap();
                 result.push(item);
             }
             return;
@@ -1196,7 +1197,10 @@ impl CodeGenerator for CompInfo {
 
             if ctx.options().codegen_config.constructors {
                 for sig in self.constructors() {
-                    Method::new(MethodKind::Constructor, *sig, /* const */ false)
+                    Method::new(MethodKind::Constructor,
+                                *sig,
+                                /* const */
+                                false)
                         .codegen_method(ctx,
                                         &mut methods,
                                         &mut method_names,
@@ -1342,7 +1346,8 @@ impl MethodCodegen for Method {
         // return-type = void.
         if self.is_constructor() {
             fndecl.inputs.remove(0);
-            fndecl.output = ast::FunctionRetTy::Ty(quote_ty!(ctx.ext_cx(), Self));
+            fndecl.output =
+                ast::FunctionRetTy::Ty(quote_ty!(ctx.ext_cx(), Self));
         }
 
         let sig = ast::MethodSig {
@@ -1353,8 +1358,8 @@ impl MethodCodegen for Method {
             constness: respan(ctx.span(), ast::Constness::NotConst),
         };
 
-        let mut exprs =
-            helpers::ast_ty::arguments_from_signature(&signature, ctx);
+        let mut exprs = helpers::ast_ty::arguments_from_signature(&signature,
+                                                                  ctx);
 
         let mut stmts = vec![];
 
@@ -1661,7 +1666,8 @@ impl CodeGenerator for Enum {
                 Entry::Occupied(ref entry) => {
                     if is_rust_enum {
                         let variant_name = ctx.rust_mangle(variant.name());
-                        let mangled_name = if is_toplevel || enum_ty.name().is_some() {
+                        let mangled_name = if is_toplevel ||
+                                              enum_ty.name().is_some() {
                             variant_name
                         } else {
                             let parent_name = parent_canonical_name.as_ref()
@@ -1762,7 +1768,9 @@ impl ToRustTy for Type {
             TypeKind::Void => raw_type(ctx, "c_void"),
             // TODO: we should do something smart with nullptr, or maybe *const
             // c_void is enough?
-            TypeKind::NullPtr => raw_type(ctx, "c_void").to_ptr(true, ctx.span()),
+            TypeKind::NullPtr => {
+                raw_type(ctx, "c_void").to_ptr(true, ctx.span())
+            }
             TypeKind::Int(ik) => {
                 match ik {
                     IntKind::Bool => aster::ty::TyBuilder::new().bool(),

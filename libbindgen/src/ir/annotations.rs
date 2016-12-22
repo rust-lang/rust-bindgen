@@ -139,11 +139,11 @@ impl Annotations {
                     "hide" => self.hide = true,
                     "nocopy" => self.disallow_copy = true,
                     "replaces" => {
-                        self.use_instead_of =
-                            Some(attr.value.split("::")
-                                 .map(Into::into)
-                                 .collect())
-                    },
+                        self.use_instead_of = Some(attr.value
+                            .split("::")
+                            .map(Into::into)
+                            .collect())
+                    }
                     "private" => {
                         self.private_fields = Some(attr.value != "false")
                     }

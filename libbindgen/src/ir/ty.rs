@@ -660,12 +660,13 @@ impl Type {
 
                                         name = current.spelling();
 
-                                        let inner_ty = cur.typedef_type().expect("Not valid Type?");
-                                        inner = Item::from_ty(
-                                            &inner_ty,
-                                            Some(cur),
-                                            Some(potential_id),
-                                            ctx);
+                                        let inner_ty = cur.typedef_type()
+                                            .expect("Not valid Type?");
+                                        inner =
+                                            Item::from_ty(&inner_ty,
+                                                          Some(cur),
+                                                          Some(potential_id),
+                                                          ctx);
                                     }
                                     CXCursor_TemplateTypeParameter => {
                                         // See the comment in src/ir/comp.rs
@@ -701,7 +702,9 @@ impl Type {
                                 }
                             };
 
-                            TypeKind::TemplateAlias(name.clone(), inner_type, args)
+                            TypeKind::TemplateAlias(name.clone(),
+                                                    inner_type,
+                                                    args)
                         }
                         CXCursor_TemplateRef => {
                             let referenced = location.referenced().unwrap();
@@ -709,9 +712,9 @@ impl Type {
 
                             debug!("TemplateRef: location = {:?}; referenced = \
                                     {:?}; referenced_ty = {:?}",
-                                    location,
-                                    referenced,
-                                    referenced_ty);
+                                   location,
+                                   referenced,
+                                   referenced_ty);
 
                             return Self::from_clang_ty(potential_id,
                                                        &referenced_ty,
@@ -726,9 +729,9 @@ impl Type {
 
                             debug!("TypeRef: location = {:?}; referenced = \
                                     {:?}; referenced_ty = {:?}",
-                                    location,
-                                    referenced,
-                                    referenced_ty);
+                                   location,
+                                   referenced,
+                                   referenced_ty);
 
                             let item =
                                 Item::from_ty_or_ref_with_id(potential_id,

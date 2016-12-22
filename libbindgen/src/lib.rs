@@ -87,6 +87,7 @@ use std::collections::HashSet;
 use std::fs::OpenOptions;
 use std::io::{self, Write};
 use std::path::Path;
+use std::sync::{Arc, Mutex};
 
 use syntax::ast;
 use syntax::codemap::{DUMMY_SP, Span};
@@ -495,6 +496,34 @@ pub enum LinkType {
     Framework,
 }
 
+fn ensure_libclang_is_loaded() {
+    if clang_sys::is_loaded() {
+        return;
+    }
+
+    // XXX (issue #350): Ensure that our dynamically loaded `libclang`
+    // doesn't get dropped prematurely, nor is loaded multiple times
+    // across different threads.
+
+    lazy_static! {
+        static ref LIBCLANG: Mutex<Option<Arc<clang_sys::SharedLibrary>>> = {
+            Mutex::new(None)
+        };
+    }
+
+    let mut libclang = LIBCLANG.lock().unwrap();
+    if !clang_sys::is_loaded() {
+        if libclang.is_none() {
+            // TODO(emilio): Return meaningful error (breaking).
+            clang_sys::load().expect("Unable to find libclang");
+            *libclang = Some(clang_sys::get_library()
+                             .expect("We just loaded libclang and it had better still be here!"));
+        } else {
+            clang_sys::set_library(libclang.clone());
+        }
+    }
+}
+
 /// Generated Rust bindings.
 #[derive(Debug)]
 pub struct Bindings<'ctx> {
@@ -511,16 +540,14 @@ impl<'ctx> Bindings<'ctx> {
                     span: Option<Span>)
                     -> Result<Bindings<'ctx>, ()> {
         let span = span.unwrap_or(DUMMY_SP);
-        if !clang_sys::is_loaded() {
-            // TODO(emilio): Return meaningful error (breaking).
-            clang_sys::load().expect("Unable to find libclang");
-        }
+        ensure_libclang_is_loaded();
 
         // TODO: Make this path fixup configurable?
         if let Some(clang) = clang_sys::support::Clang::find(None) {
             // If --target is specified, assume caller knows what they're doing
             // and don't mess with include paths for them
-            let has_target_arg = options.clang_args.iter()
+            let has_target_arg = options.clang_args
+                .iter()
                 .rposition(|arg| arg.starts_with("--target"))
                 .is_some();
             if !has_target_arg {
@@ -644,7 +671,7 @@ pub fn parse_one(ctx: &mut BindgenContext,
 
     use clang_sys::CXChildVisit_Continue;
     match Item::parse(cursor, parent, ctx) {
-        Ok(..) => {},
+        Ok(..) => {}
         Err(ParseError::Continue) => {}
         Err(ParseError::Recurse) => {
             cursor.visit(|child| parse_one(ctx, child, parent));
