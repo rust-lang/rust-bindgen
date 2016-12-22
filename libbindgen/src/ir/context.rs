@@ -1135,7 +1135,8 @@ impl<'ctx, 'gen> Iterator for WhitelistedItemsIter<'ctx, 'gen>
 
 /// An iterator to find any dangling items.
 ///
-/// See `BindgenContext::assert_no_dangling_item_traversal` for more information.
+/// See `BindgenContext::assert_no_dangling_item_traversal` for more
+/// information.
 pub struct AssertNoDanglingItemIter<'ctx, 'gen>
     where 'gen: 'ctx,
 {
@@ -1152,8 +1153,8 @@ impl<'ctx, 'gen> Iterator for AssertNoDanglingItemIter<'ctx, 'gen>
     fn next(&mut self) -> Option<Self::Item> {
         let id = match self.to_iterate.pop_front() {
             None => {
-                // We've traversed everything reachable from the previous root(s), see if
-                // we have any more roots.
+                // We've traversed everything reachable from the previous
+                // root(s), see if we have any more roots.
                 match self.ctx
                     .items()
                     .filter(|&(id, _)| !self.seen.contains_key(id))
@@ -1177,8 +1178,10 @@ impl<'ctx, 'gen> Iterator for AssertNoDanglingItemIter<'ctx, 'gen>
             let mut path = vec![];
             let mut current = id;
             loop {
-                let predecessor = *self.seen.get(&current)
-                    .expect("We know we found this item id, so it must have a predecessor");
+                let predecessor = *self.seen
+                    .get(&current)
+                    .expect("We know we found this item id, so it must have a \
+                            predecessor");
                 if predecessor == current {
                     break;
                 }

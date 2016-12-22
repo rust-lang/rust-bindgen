@@ -54,17 +54,17 @@ impl Enum {
         let mut variants = vec![];
 
         // Assume signedness since the default type by the C standard is an int.
-        let is_signed = repr
-            .and_then(|r| ctx.resolve_type(r).safe_canonical_type(ctx))
-            .map_or(true, |ty| {
-                match *ty.kind() {
-                    TypeKind::Int(ref int_kind) => int_kind.is_signed(),
-                    ref other => {
-                        panic!("Since when enums can be non-integers? {:?}",
+        let is_signed =
+            repr.and_then(|r| ctx.resolve_type(r).safe_canonical_type(ctx))
+                .map_or(true, |ty| {
+                    match *ty.kind() {
+                        TypeKind::Int(ref int_kind) => int_kind.is_signed(),
+                        ref other => {
+                            panic!("Since when enums can be non-integers? {:?}",
                                other)
+                        }
                     }
-                }
-            });
+                });
 
         declaration.visit(|cursor| {
             if cursor.kind() == CXCursor_EnumConstantDecl {

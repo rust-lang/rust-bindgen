@@ -696,8 +696,8 @@ impl Type {
                             let inner_type = match inner {
                                 Ok(inner) => inner,
                                 Err(..) => {
-                                    error!("Failed to parse template alias {:?}",
-                                           location);
+                                    error!("Failed to parse template alias \
+                                           {:?}", location);
                                     return Err(ParseError::Continue);
                                 }
                             };

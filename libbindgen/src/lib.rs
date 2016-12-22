@@ -517,7 +517,8 @@ fn ensure_libclang_is_loaded() {
             // TODO(emilio): Return meaningful error (breaking).
             clang_sys::load().expect("Unable to find libclang");
             *libclang = Some(clang_sys::get_library()
-                             .expect("We just loaded libclang and it had better still be here!"));
+                .expect("We just loaded libclang and it had \
+                                     better still be here!"));
         } else {
             clang_sys::set_library(libclang.clone());
         }
@@ -630,16 +631,16 @@ impl<'ctx> Bindings<'ctx> {
     ///
     /// See the `uses` module for more information.
     pub fn write_dummy_uses(&mut self) -> io::Result<()> {
-        let file =
-            if let Some(ref dummy_path) = self.context.options().dummy_uses {
-                Some(try!(OpenOptions::new()
-                    .write(true)
-                    .truncate(true)
-                    .create(true)
-                    .open(dummy_path)))
-            } else {
-                None
-            };
+        let file = if let Some(ref dummy_path) =
+            self.context.options().dummy_uses {
+            Some(try!(OpenOptions::new()
+                .write(true)
+                .truncate(true)
+                .create(true)
+                .open(dummy_path)))
+        } else {
+            None
+        };
 
         if let Some(file) = file {
             try!(uses::generate_dummy_uses(&mut self.context, file));

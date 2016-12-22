@@ -1,5 +1,5 @@
 use clap::{App, Arg};
-use libbindgen::{Builder, builder, CodegenConfig};
+use libbindgen::{Builder, CodegenConfig, builder};
 use std::fs::File;
 use std::io::{self, Error, ErrorKind};
 
@@ -200,8 +200,8 @@ pub fn builder_from_flags<I>(args: I)
                 "vars" => config.vars = true,
                 "methods" => config.methods = true,
                 _ => {
-                    return Err(
-                        Error::new(ErrorKind::Other, "Unknown generate item"));
+                    return Err(Error::new(ErrorKind::Other,
+                                          "Unknown generate item"));
                 }
             }
         }

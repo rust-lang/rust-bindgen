@@ -43,7 +43,7 @@ fn compare_generated_header(header: &PathBuf,
             return Ok(());
         }
         return Err(Error::new(ErrorKind::Other,
-                              "Something's gone really wrong!"))
+                              "Something's gone really wrong!"));
     }
 
     println!("diff expected generated");
@@ -79,10 +79,13 @@ fn create_bindgen_builder(header: &PathBuf)
         let line = try!(line);
         if line.contains("bindgen-flags: ") {
             let extra_flags = line.split("bindgen-flags: ")
-                .last().and_then(shlex::split).unwrap();
+                .last()
+                .and_then(shlex::split)
+                .unwrap();
             flags.extend(extra_flags.into_iter());
-        } else if line.contains("bindgen-unstable") && cfg!(feature = "llvm_stable") {
-            return Ok(None)
+        } else if line.contains("bindgen-unstable") &&
+                  cfg!(feature = "llvm_stable") {
+            return Ok(None);
         }
     }
 
@@ -94,13 +97,14 @@ fn create_bindgen_builder(header: &PathBuf)
     let header_str = try!(header.to_str()
         .ok_or(Error::new(ErrorKind::Other, "Invalid header file name")));
 
-    let prepend = [
-        "bindgen",
-        header_str,
-        "--raw-line", "",
-        "--raw-line", "#![allow(non_snake_case)]",
-        "--raw-line", "",
-    ];
+    let prepend = ["bindgen",
+                   header_str,
+                   "--raw-line",
+                   "",
+                   "--raw-line",
+                   "#![allow(non_snake_case)]",
+                   "--raw-line",
+                   ""];
 
     let args = prepend.into_iter()
         .map(ToString::to_string)

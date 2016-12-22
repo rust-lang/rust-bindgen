@@ -696,7 +696,9 @@ impl Item {
             }
             ItemKind::Type(ref ty) => {
                 let name = match *ty.kind() {
-                    TypeKind::ResolvedTypeRef(..) => panic!("should have resolved this in name_target()"),
+                    TypeKind::ResolvedTypeRef(..) => {
+                        panic!("should have resolved this in name_target()")
+                    }
                     _ => ty.name(),
                 };
                 name.map(ToOwned::to_owned)
@@ -1075,7 +1077,7 @@ impl ClangItemParser for Item {
         }
 
         if let Some(ty) =
-               ctx.builtin_or_resolved_ty(id, parent_id, ty, location) {
+            ctx.builtin_or_resolved_ty(id, parent_id, ty, location) {
             return Ok(ty);
         }
 
@@ -1093,9 +1095,10 @@ impl ClangItemParser for Item {
         };
 
         if valid_decl {
-            if let Some(&(_, item_id)) = ctx.currently_parsed_types
-                .iter()
-                .find(|&&(d, _)| d == declaration_to_look_for) {
+            if let Some(&(_, item_id)) =
+                ctx.currently_parsed_types
+                    .iter()
+                    .find(|&&(d, _)| d == declaration_to_look_for) {
                 debug!("Avoiding recursion parsing type: {:?}", ty);
                 return Ok(item_id);
             }
