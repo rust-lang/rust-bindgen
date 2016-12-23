@@ -6,12 +6,12 @@
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct RootedBase<T> {
-    pub foo: *mut T,
-    pub next: *mut Rooted<T>,
+pub struct Rooted<T> {
+    pub _base: js_RootedBase<T>,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Rooted<T> {
-    pub _base: RootedBase<T>,
+pub struct js_RootedBase<T> {
+    pub foo: *mut T,
+    pub next: *mut Rooted<T>,
 }

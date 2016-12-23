@@ -10,11 +10,6 @@ pub struct Base<T> {
     pub _address: u8,
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
-#[test]
-fn __bindgen_test_layout_template_1() {
-    assert_eq!(::std::mem::size_of::<Base<Derived>>() , 1usize);
-    assert_eq!(::std::mem::align_of::<Base<Derived>>() , 1usize);
-}
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct Derived {
@@ -34,13 +29,6 @@ pub struct BaseWithDestructor<T> {
     pub _address: u8,
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
-#[test]
-fn __bindgen_test_layout_template_2() {
-    assert_eq!(::std::mem::size_of::<BaseWithDestructor<DerivedFromBaseWithDestructor>>()
-               , 1usize);
-    assert_eq!(::std::mem::align_of::<BaseWithDestructor<DerivedFromBaseWithDestructor>>()
-               , 1usize);
-}
 #[repr(C)]
 #[derive(Debug)]
 pub struct DerivedFromBaseWithDestructor {
@@ -52,4 +40,16 @@ fn bindgen_test_layout_DerivedFromBaseWithDestructor() {
                1usize);
     assert_eq!(::std::mem::align_of::<DerivedFromBaseWithDestructor>() ,
                1usize);
+}
+#[test]
+fn __bindgen_test_layout_template_1() {
+    assert_eq!(::std::mem::size_of::<Base<Derived>>() , 1usize);
+    assert_eq!(::std::mem::align_of::<Base<Derived>>() , 1usize);
+}
+#[test]
+fn __bindgen_test_layout_template_2() {
+    assert_eq!(::std::mem::size_of::<BaseWithDestructor<DerivedFromBaseWithDestructor>>()
+               , 1usize);
+    assert_eq!(::std::mem::align_of::<BaseWithDestructor<DerivedFromBaseWithDestructor>>()
+               , 1usize);
 }

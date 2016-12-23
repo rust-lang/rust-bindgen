@@ -654,8 +654,7 @@ impl CompInfo {
                         ci.has_vtable = cur.is_virtual_base();
                     }
                     let type_id =
-                        Item::from_ty(&cur.cur_type(), Some(cur), None, ctx)
-                            .expect("BaseSpecifier");
+                        Item::from_ty_or_ref(cur.cur_type(), Some(cur), None, ctx);
                     ci.base_members.push(type_id);
                 }
                 CXCursor_Constructor |
