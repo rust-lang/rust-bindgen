@@ -727,14 +727,15 @@ impl CodeGenerator for CompInfo {
             let layout = item.kind().expect_type().layout(ctx);
 
             if let Some(layout) = layout {
-                let fn_name = format!("__bindgen_test_layout_template_{}", result.next_id());
+                let fn_name = format!("__bindgen_test_layout_template_{}",
+                                      result.next_id());
                 let fn_name = ctx.rust_ident_raw(&fn_name);
                 let ident = item.to_rust_ty(ctx);
                 let prefix = ctx.trait_prefix();
                 let size_of_expr = quote_expr!(ctx.ext_cx(),
-                                               ::$prefix::mem::size_of::<$ident>());
+                                ::$prefix::mem::size_of::<$ident>());
                 let align_of_expr = quote_expr!(ctx.ext_cx(),
-                                                ::$prefix::mem::align_of::<$ident>());
+                                ::$prefix::mem::align_of::<$ident>());
                 let size = layout.size;
                 let align = layout.align;
                 let item = quote_item!(ctx.ext_cx(),
@@ -894,7 +895,7 @@ impl CodeGenerator for CompInfo {
 
             // Try to catch a bitfield contination early.
             if let (Some(ref mut bitfield_width), Some(width)) =
-                   (current_bitfield_width, field.bitfield()) {
+                (current_bitfield_width, field.bitfield()) {
                 let layout = current_bitfield_layout.unwrap();
                 debug!("Testing bitfield continuation {} {} {:?}",
                        *bitfield_width, width, layout);
@@ -1562,7 +1563,10 @@ impl CodeGenerator for Enum {
         };
 
         let signed = repr.is_signed();
-        let size = layout.map(|l| l.size).unwrap_or(0);
+        let size = layout.map(|l| l.size)
+            .or_else(|| repr.known_size())
+            .unwrap_or(0);
+
         let repr_name = match (signed, size) {
             (true, 1) => "i8",
             (false, 1) => "u8",
@@ -1617,7 +1621,8 @@ impl CodeGenerator for Enum {
                             // Only to avoid recomputing every time.
                             enum_canonical_name: &str,
                             // May be the same as "variant" if it's because the
-                            // enum is unnamed and we still haven't seen the value.
+                            // enum is unnamed and we still haven't seen the
+                            // value.
                             variant_name: &str,
                             referenced_name: &str,
                             enum_rust_ty: P<ast::Ty>,
@@ -2010,14 +2015,10 @@ impl CodeGenerator for Function {
         }
 
         let signature_item = ctx.resolve_item(self.signature());
-        let signature = signature_item.kind().expect_type();
+        let signature = signature_item.kind().expect_type().canonical_type(ctx);
         let signature = match *signature.kind() {
             TypeKind::Function(ref sig) => sig,
-            TypeKind::ResolvedTypeRef(ref item_id) => {
-                let item = ctx.resolve_item(*item_id);
-                return self.codegen(ctx, result, _whitelisted_items, item);
-            },
-            _ => panic!("How?")
+            _ => panic!("Signature kind is not a Function: {:?}", signature),
         };
 
         let fndecl = utils::rust_fndecl_from_signature(ctx, signature_item);
@@ -2268,7 +2269,7 @@ mod utils {
                                       -> P<ast::FnDecl> {
         use codegen::ToRustTy;
 
-        let signature = sig.kind().expect_type();
+        let signature = sig.kind().expect_type().canonical_type(ctx);
         let signature = match *signature.kind() {
             TypeKind::Function(ref sig) => sig,
             _ => panic!("How?"),
