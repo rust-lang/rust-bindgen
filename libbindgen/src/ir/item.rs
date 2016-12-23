@@ -499,8 +499,8 @@ impl Item {
             parent_template_args.iter().any(|parent_item| {
                 let parent_ty = ctx.resolve_type(*parent_item);
                 match (parent_ty.kind(), item_ty.kind()) {
-                    (&TypeKind::Named(ref n, _),
-                     &TypeKind::Named(ref i, _)) => n == i,
+                    (&TypeKind::Named(ref n),
+                     &TypeKind::Named(ref i)) => n == i,
                     _ => false,
                 }
             })
@@ -1163,7 +1163,6 @@ impl ClangItemParser for Item {
                           ty.spelling());
                     Ok(Self::named_type_with_id(id,
                                                 ty.spelling(),
-                                                None,
                                                 relevant_parent_id,
                                                 ctx))
                 } else {
@@ -1189,7 +1188,6 @@ impl ClangItemParser for Item {
     /// available yet.
     fn named_type_with_id<S>(id: ItemId,
                              name: S,
-                             default: Option<ItemId>,
                              parent_id: ItemId,
                              ctx: &mut BindgenContext)
                              -> ItemId
@@ -1203,7 +1201,7 @@ impl ClangItemParser for Item {
                                None,
                                None,
                                parent_id,
-                               ItemKind::Type(Type::named(name, default))),
+                               ItemKind::Type(Type::named(name))),
                      None,
                      None);
 
@@ -1211,14 +1209,13 @@ impl ClangItemParser for Item {
     }
 
     fn named_type<S>(name: S,
-                     default: Option<ItemId>,
                      parent_id: ItemId,
                      ctx: &mut BindgenContext)
                      -> ItemId
         where S: Into<String>,
     {
         let id = ctx.next_item_id();
-        Self::named_type_with_id(id, name, default, parent_id, ctx)
+        Self::named_type_with_id(id, name, parent_id, ctx)
     }
 }
 

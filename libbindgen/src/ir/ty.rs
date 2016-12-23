@@ -140,10 +140,10 @@ impl Type {
     }
 
     /// Creates a new named type, with name `name`.
-    pub fn named(name: String, default: Option<ItemId>) -> Self {
+    pub fn named(name: String) -> Self {
         assert!(!name.is_empty());
         // TODO: stop duplicating the name, it's stupid.
-        let kind = TypeKind::Named(name.clone(), default);
+        let kind = TypeKind::Named(name.clone());
         Self::new(Some(name), None, kind, false)
     }
 
@@ -318,12 +318,12 @@ impl Type {
                                          ty: &Type)
                                          -> bool {
         let name = match *ty.kind() {
-            TypeKind::Named(ref name, _) => name,
+            TypeKind::Named(ref name) => name,
             ref other @ _ => unreachable!("Not a named type: {:?}", other),
         };
 
         match self.kind {
-            TypeKind::Named(ref this_name, _) => this_name == name,
+            TypeKind::Named(ref this_name) => this_name == name,
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::Array(t, _) |
             TypeKind::Pointer(t) |
@@ -478,9 +478,8 @@ pub enum TypeKind {
     /// replace one type with another.
     ResolvedTypeRef(ItemId),
 
-    /// A named type, that is, a template parameter, with an optional default
-    /// type.
-    Named(String, Option<ItemId>),
+    /// A named type, that is, a template parameter.
+    Named(String),
 }
 
 impl Type {
@@ -675,15 +674,8 @@ impl Type {
                                             return CXChildVisit_Continue;
                                         }
 
-                                        let default_type =
-                                            Item::from_ty(&cur.cur_type(),
-                                                          Some(cur),
-                                                          Some(potential_id),
-                                                          ctx)
-                                                .ok();
                                         let param =
                                             Item::named_type(cur.spelling(),
-                                                             default_type,
                                                              potential_id,
                                                              ctx);
                                         args.push(param);
@@ -903,7 +895,6 @@ impl TypeCollector for Type {
             TypeKind::Reference(inner) |
             TypeKind::Array(inner, _) |
             TypeKind::Alias(_, inner) |
-            TypeKind::Named(_, Some(inner)) |
             TypeKind::ResolvedTypeRef(inner) => {
                 types.insert(inner);
             }
@@ -919,6 +910,7 @@ impl TypeCollector for Type {
             TypeKind::Function(ref sig) => {
                 sig.collect_types(context, types, item)
             }
+            TypeKind::Named(_) => {},
             // FIXME: Pending types!
             ref other @ _ => {
                 debug!("<Type as TypeCollector>::collect_types: Ignoring: \
