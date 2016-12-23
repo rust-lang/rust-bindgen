@@ -82,7 +82,6 @@ pub trait ClangItemParser: Sized {
 
     /// Create a named template type.
     fn named_type<S>(name: S,
-                     default: Option<ItemId>,
                      parent: ItemId,
                      context: &mut BindgenContext)
                      -> ItemId
@@ -92,7 +91,6 @@ pub trait ClangItemParser: Sized {
     /// `ItemId`.
     fn named_type_with_id<S>(id: ItemId,
                              name: S,
-                             default: Option<ItemId>,
                              parent: ItemId,
                              context: &mut BindgenContext)
                              -> ItemId

@@ -6,13 +6,13 @@
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct RootedBase<T> {
+pub struct Rooted<T> {
     pub _address: u8,
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Rooted<T> {
+pub struct js_RootedBase<T> {
     pub _address: u8,
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }

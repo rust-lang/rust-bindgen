@@ -644,13 +644,7 @@ impl CompInfo {
                         return CXChildVisit_Continue;
                     }
 
-                    let default_type = Item::from_ty(&cur.cur_type(),
-                                                     Some(cur),
-                                                     Some(potential_id),
-                                                     ctx)
-                        .ok();
                     let param = Item::named_type(cur.spelling(),
-                                                 default_type,
                                                  potential_id,
                                                  ctx);
                     ci.template_args.push(param);
@@ -660,8 +654,7 @@ impl CompInfo {
                         ci.has_vtable = cur.is_virtual_base();
                     }
                     let type_id =
-                        Item::from_ty(&cur.cur_type(), Some(cur), None, ctx)
-                            .expect("BaseSpecifier");
+                        Item::from_ty_or_ref(cur.cur_type(), Some(cur), None, ctx);
                     ci.base_members.push(type_id);
                 }
                 CXCursor_Constructor |

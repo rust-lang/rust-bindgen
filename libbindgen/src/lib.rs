@@ -7,6 +7,7 @@
 
 #![deny(missing_docs)]
 #![deny(warnings)]
+#![deny(unused_extern_crates)]
 
 // We internally use the deprecated BindgenOptions all over the place. Once we
 // remove its `pub` declaration, we can un-deprecate it and remove this pragma.
@@ -17,13 +18,13 @@
 #![allow(non_upper_case_globals)]
 
 #[macro_use]
+#[allow(unused_extern_crates)]
 extern crate cfg_if;
 extern crate cexpr;
 extern crate syntex_syntax as syntax;
 extern crate aster;
 extern crate quasi;
 extern crate clang_sys;
-extern crate libc;
 extern crate regex;
 #[macro_use]
 extern crate lazy_static;
