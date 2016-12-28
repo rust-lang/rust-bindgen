@@ -748,9 +748,9 @@ impl CompInfo {
                         return CXChildVisit_Continue;
                     }
 
-                    let item = Item::parse(cur, Some(potential_id), ctx)
-                        .expect("VarDecl");
-                    ci.inner_vars.push(item);
+                    if let Ok(item) = Item::parse(cur, Some(potential_id), ctx) {
+                        ci.inner_vars.push(item);
+                    }
                 }
                 // Intentionally not handled
                 CXCursor_CXXAccessSpecifier |

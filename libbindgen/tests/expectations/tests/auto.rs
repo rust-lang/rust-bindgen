@@ -9,7 +9,7 @@
 pub struct Foo {
     pub _address: u8,
 }
-pub const Foo_kBar: bool = true;
+pub const Foo_kFoo: bool = true;
 #[test]
 fn bindgen_test_layout_Foo() {
     assert_eq!(::std::mem::size_of::<Foo>() , 1usize);
@@ -17,4 +17,14 @@ fn bindgen_test_layout_Foo() {
 }
 impl Clone for Foo {
     fn clone(&self) -> Self { *self }
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct Bar<T> {
+    pub _address: u8,
+    pub _phantom_0: ::std::marker::PhantomData<T>,
+}
+extern "C" {
+    #[link_name = "_Z5Test2v"]
+    pub fn Test2() -> ::std::os::raw::c_uint;
 }

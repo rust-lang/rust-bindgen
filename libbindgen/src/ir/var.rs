@@ -186,8 +186,15 @@ impl ClangSubItemParser for Var {
                 // XXX this is redundant, remove!
                 let is_const = ty.is_const();
 
-                let ty = Item::from_ty(&ty, Some(cursor), None, ctx)
-                    .expect("Unable to resolve constant type?");
+                let ty = match Item::from_ty(&ty, Some(cursor), None, ctx) {
+                    Ok(ty) => ty,
+                    Err(e) => {
+                        assert_eq!(ty.kind(), CXType_Auto,
+                                   "Couldn't resolve constant type, and it \
+                                   wasn't an nondeductible auto type!");
+                        return Err(e);
+                    }
+                };
 
                 // Note: Ty might not be totally resolved yet, see
                 // tests/headers/inner_const.hpp

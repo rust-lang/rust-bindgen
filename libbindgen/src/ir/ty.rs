@@ -776,8 +776,11 @@ impl Type {
                 }
             }
             CXType_Auto => {
-                // We don't want to blow the stack.
-                assert!(canonical_ty != *ty, "Couldn't find deduced type");
+                if canonical_ty == *ty {
+                    debug!("Couldn't find deduced type: {:?}", ty);
+                    return Err(ParseError::Continue);
+                }
+
                 return Self::from_clang_ty(potential_id,
                                            &canonical_ty,
                                            location,
