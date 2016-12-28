@@ -37,7 +37,7 @@ impl RegexSet {
                 self.items.push(r);
             }
             Err(err) => {
-                error!("Invalid pattern provided: {}, {:?}", s, err);
+                warn!("Invalid pattern provided: {}, {:?}", s, err);
             }
         }
     }

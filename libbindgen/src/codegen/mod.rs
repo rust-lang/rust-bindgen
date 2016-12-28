@@ -528,7 +528,7 @@ impl CodeGenerator for Type {
                     if template_arg.is_named() {
                         let name = template_arg.name().unwrap();
                         if name.contains("typename ") {
-                            error!("Item contained `typename`'d template \
+                            warn!("Item contained `typename`'d template \
                                    parameter: {:?}", item);
                             return;
                         }
