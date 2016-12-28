@@ -10,43 +10,42 @@ the [Stylo](https://public.etherpad-mozilla.org/p/stylo) project.
 
 ## Requirements
 
-The current generator runs on with clang 3.8, but can also run with clang 3.9
-with more features (such as detection of inlined functions).
+It is recommended to use clang 3.9 with the current generator. It can run with
+clang 3.8 with some features disabled.
 
-### Installing clang 3.8
+### Installing Clang 3.9
+
+#### Windows
+
+Download and install the official pre-built binary from
+[LLVM download page](http://releases.llvm.org/download.html).
 
 #### OSX
 
+If you use Homebrew:
 ```
-# brew install llvm38
+$ brew install llvm
 ```
 
-#### On Debian-based Linuxes
+If you use MacPorts:
+```
+$ port install clang-3.9
+```
+
+#### Debian-based Linuxes
 
 ```
-# apt-get install llvm-3.8-dev libclang-3.8-dev
+# apt-get install llvm-3.9-dev libclang-3.9-dev
 ```
-Adding the LLVM repos to get version 3.8 may be necessary, see http://apt.llvm.org/.
+
+Ubuntu 16.10 provides the necessary packages directly. If you are using older
+version of Ubuntu or other Debian-based distros, you may need to add the LLVM
+repos to get version 3.9. See http://apt.llvm.org/.
+
 #### Arch
 
 ```
-# pacman -S clang clang-tools-extra
-```
-
-### Getting clang 3.9
-
-#### From a package manager
-
-Clang 3.9 has ben released about a month ago, and some package managers already
-provide it.
-
-For example, for MacPorts:
-
-```
-$ port install clang-3.9
-$ LIBCLANG_PATH=/opt/local/libexec/llvm-3.9/lib \
-  LD_LIBRARY_PATH=/opt/local/libexec/llvm-3.9/lib \
-  cargo build
+# pacman -S clang
 ```
 
 #### From source
@@ -65,18 +64,30 @@ Those instructions list optional steps. For bindgen:
 ## Building
 
 ```
-$ cargo build --features llvm_stable
+$ cd bindgen
+$ cargo build
 ```
 
-If you want a build with extra features (llvm 3.9) then you can use:
-
+If you installed multiple versions of llvm, it may not be able to locate the
+latest version of libclang. In that case, you may want to either uninstall
+other versions of llvm, or specify the path of the desired libclang explicitly:
 ```
-$ LIBCLANG_PATH=path/to/clang-3.9/build/lib \
-  LD_LIBRARY_PATH=path/to/clang-3.9/build/lib \
-    cargo build
+$ export LIBCLANG_PATH=path/to/clang-3.9/lib
+```
+
+On Linux and macOS, you may also need to add a path to `libclang.so` (usually
+the same path as above) to library search path. This can be done as below:
+```
+$ export LD_LIBRARY_PATH=path/to/clang-3.9/lib # for Linux
+$ export DYLD_LIBRARY_PATH=path/to/clang-3.9/lib # for macOS
 ```
 
 # Library usage with `build.rs`
+
+See [the Stylo build script][stylo-script] to see how it is used inside the
+Servo organisation.
+
+[stylo-script]: https://github.com/servo/servo/blob/master/components/style/build_gecko.rs
 
 In `Cargo.toml`:
 
@@ -85,9 +96,8 @@ In `Cargo.toml`:
 # ...
 build = "build.rs"
 
-[build-dependencies.libbindgen]
-git = "https://github.com/servo/rust-bindgen"
-features = ["llvm_stable"]
+[build-dependencies]
+libbindgen = "0.1"
 ```
 
 In `build.rs`:
@@ -117,11 +127,10 @@ include!(concat!(env!("OUT_DIR"), "/example.rs"));
 # Command Line Usage
 
 There are a few options documented when running `./bindgen --help`. Other
-options might exist (see [the SpiderMonkey script][sm-script] and [the Stylo
-scripts][stylo-scripts] to see how is it used inside the Servo organisation.
+options might exist (see [the SpiderMonkey script][sm-script] to see how it
+is used inside the Servo organisation.
 
 [sm-script]: https://github.com/servo/rust-mozjs/blob/master/etc/bindings.sh
-[stylo-scripts]: https://github.com/servo/servo/tree/master/components/style/binding_tools
 
 ## C++ Usage
 
