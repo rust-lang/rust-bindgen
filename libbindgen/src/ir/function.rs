@@ -134,6 +134,11 @@ impl FunctionSig {
         use clang_sys::*;
         debug!("FunctionSig::from_ty {:?} {:?}", ty, cursor);
 
+        // Skip function templates
+        if cursor.kind() == CXCursor_FunctionTemplate {
+            return Err(ParseError::Continue);
+        }
+
         // Don't parse operatorxx functions in C++
         let spelling = cursor.spelling();
         if spelling.starts_with("operator") {
