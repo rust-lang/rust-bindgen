@@ -753,7 +753,7 @@ impl Type {
                             //
                             // https://github.com/jamesmunns/teensy3-rs/issues/9
                             if !ty.spelling().is_empty() {
-                                error!("invalid type {:?}", ty);
+                                warn!("invalid type {:?}", ty);
                             } else {
                                 warn!("invalid type {:?}", ty);
                             }
@@ -768,7 +768,7 @@ impl Type {
                     }
 
                     if !ty.spelling().is_empty() {
-                        error!("invalid type {:?}", ty);
+                        warn!("invalid type {:?}", ty);
                     } else {
                         warn!("invalid type {:?}", ty);
                     }

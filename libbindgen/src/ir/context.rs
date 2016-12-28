@@ -226,7 +226,7 @@ impl<'ctx> BindgenContext<'ctx> {
             } else if let Some(usr) = declaration.usr() {
                 TypeKey::USR(usr)
             } else {
-                error!("Valid declaration with no USR: {:?}, {:?}",
+                warn!("Valid declaration with no USR: {:?}, {:?}",
                        declaration,
                        location);
                 TypeKey::Declaration(declaration)
