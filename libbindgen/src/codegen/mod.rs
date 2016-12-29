@@ -1945,7 +1945,7 @@ impl ToRustTy for FunctionSig {
             //     the array type derivation.
             //
             // [1]: http://c0x.coding-guidelines.com/6.7.5.3.html
-            let arg_ty = if let TypeKind::Array(t, _) = *arg_ty.kind() {
+            let arg_ty = if let TypeKind::Array(t, _) = *arg_ty.canonical_type(ctx).kind() {
                 t.to_rust_ty(ctx).to_ptr(arg_ty.is_const(), ctx.span())
             } else {
                 arg_item.to_rust_ty(ctx)
