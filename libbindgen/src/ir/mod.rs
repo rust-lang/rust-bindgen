@@ -6,6 +6,7 @@
 pub mod annotations;
 pub mod comp;
 pub mod context;
+pub mod derive;
 pub mod enum_ty;
 pub mod function;
 pub mod int;

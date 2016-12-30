@@ -832,8 +832,8 @@ impl SourceLocation {
                                       &mut col,
                                       &mut off);
             (File {
-                 x: file,
-             },
+                x: file,
+            },
              line as usize,
              col as usize,
              off as usize)
