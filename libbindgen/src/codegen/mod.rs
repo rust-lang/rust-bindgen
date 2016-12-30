@@ -6,6 +6,7 @@ use aster;
 use ir::annotations::FieldAccessorKind;
 use ir::comp::{CompInfo, CompKind, Field, Method, MethodKind};
 use ir::context::{BindgenContext, ItemId};
+use ir::derive::{CanDeriveCopy, CanDeriveDebug};
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
 use ir::function::{Function, FunctionSig};
 use ir::int::IntKind;
@@ -765,12 +766,11 @@ impl CodeGenerator for CompInfo {
 
         let is_union = self.kind() == CompKind::Union;
         let mut derives = vec![];
-        let ty = item.expect_type();
-        if ty.can_derive_debug(ctx) {
+        if item.can_derive_debug(ctx, ()) {
             derives.push("Debug");
         }
 
-        if item.can_derive_copy(ctx) && !item.annotations().disallow_copy() {
+        if item.can_derive_copy(ctx, ()) && !item.annotations().disallow_copy() {
             derives.push("Copy");
             if !applicable_template_args.is_empty() {
                 // FIXME: This requires extra logic if you have a big array in a

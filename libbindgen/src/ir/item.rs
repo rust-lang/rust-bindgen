@@ -8,6 +8,7 @@ use std::fmt::Write;
 use std::iter;
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId};
+use super::derive::{CanDeriveCopy, CanDeriveDebug};
 use super::function::Function;
 use super::item_kind::ItemKind;
 use super::module::Module;
@@ -199,6 +200,56 @@ impl TypeCollector for Item {
                 }
             }
             _ => {} // FIXME.
+        }
+    }
+}
+
+impl CanDeriveDebug for Item {
+    type Extra = ();
+
+    fn can_derive_debug(&self, ctx: &BindgenContext, _: ()) -> bool {
+        match self.kind {
+            ItemKind::Type(ref ty) => {
+                if self.is_opaque(ctx) {
+                    ty.layout(ctx)
+                        .map_or(true, |l| l.opaque().can_derive_debug(ctx, ()))
+                } else {
+                    ty.can_derive_debug(ctx, ())
+                }
+            },
+            _ => false,
+        }
+    }
+}
+
+impl<'a> CanDeriveCopy<'a> for Item {
+    type Extra = ();
+
+    fn can_derive_copy(&self, ctx: &BindgenContext, _: ()) -> bool {
+        match self.kind {
+            ItemKind::Type(ref ty) => {
+                if self.is_opaque(ctx) {
+                    ty.layout(ctx)
+                        .map_or(true, |l| l.opaque().can_derive_copy(ctx, ()))
+                } else {
+                    ty.can_derive_copy(ctx, self)
+                }
+            }
+            _ => false,
+        }
+    }
+
+    fn can_derive_copy_in_array(&self, ctx: &BindgenContext, _: ()) -> bool {
+        match self.kind {
+            ItemKind::Type(ref ty) => {
+                if self.is_opaque(ctx) {
+                    ty.layout(ctx)
+                        .map_or(true, |l| l.opaque().can_derive_copy_in_array(ctx, ()))
+                } else {
+                    ty.can_derive_copy_in_array(ctx, self)
+                }
+            }
+            _ => false,
         }
     }
 }
@@ -805,19 +856,6 @@ impl Item {
             ItemKind::Module(ref mut module) => Some(module),
             _ => None,
         }
-    }
-
-    /// Can we derive an implementation of the `Copy` trait for this type?
-    pub fn can_derive_copy(&self, ctx: &BindgenContext) -> bool {
-        self.expect_type().can_derive_copy(ctx, self)
-    }
-
-    /// Can we derive an implementation of the `Copy` trait for an array of this
-    /// type?
-    ///
-    /// See `Type::can_derive_copy_in_array` for details.
-    pub fn can_derive_copy_in_array(&self, ctx: &BindgenContext) -> bool {
-        self.expect_type().can_derive_copy_in_array(ctx, self)
     }
 }
 

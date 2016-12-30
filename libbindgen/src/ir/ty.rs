@@ -4,6 +4,7 @@ use clang::{self, Cursor};
 use parse::{ClangItemParser, ParseError, ParseResult};
 use super::comp::CompInfo;
 use super::context::{BindgenContext, ItemId};
+use super::derive::{CanDeriveCopy, CanDeriveDebug};
 use super::enum_ty::Enum;
 use super::function::FunctionSig;
 use super::int::IntKind;
@@ -207,83 +208,6 @@ impl Type {
         })
     }
 
-    /// Wether we can derive rust's `Debug` annotation in Rust. This should
-    /// ideally be a no-op that just returns `true`, but instead needs to be a
-    /// recursive method that checks whether all the proper members can derive
-    /// debug or not, because of the limit rust has on 32 items as max in the
-    /// array.
-    pub fn can_derive_debug(&self, ctx: &BindgenContext) -> bool {
-        match self.kind {
-            TypeKind::Array(t, len) => {
-                len <= RUST_DERIVE_IN_ARRAY_LIMIT &&
-                ctx.resolve_type(t).can_derive_debug(ctx)
-            }
-            TypeKind::ResolvedTypeRef(t) |
-            TypeKind::TemplateAlias(_, t, _) |
-            TypeKind::Alias(_, t) => ctx.resolve_type(t).can_derive_debug(ctx),
-            TypeKind::Comp(ref info) => {
-                info.can_derive_debug(ctx, self.layout(ctx))
-            }
-            _ => true,
-        }
-    }
-
-    /// For some reason, deriving copies of an array of a type that is not known
-    /// to be copy is a compile error. e.g.:
-    ///
-    /// ```rust
-    /// #[derive(Copy, Clone)]
-    /// struct A<T> {
-    ///     member: T,
-    /// }
-    /// ```
-    ///
-    /// is fine, while:
-    ///
-    /// ```rust,ignore
-    /// #[derive(Copy, Clone)]
-    /// struct A<T> {
-    ///     member: [T; 1],
-    /// }
-    /// ```
-    ///
-    /// is an error.
-    ///
-    /// That's the whole point of the existence of `can_derive_copy_in_array`.
-    pub fn can_derive_copy_in_array(&self,
-                                    ctx: &BindgenContext,
-                                    item: &Item)
-                                    -> bool {
-        match self.kind {
-            TypeKind::ResolvedTypeRef(t) |
-            TypeKind::TemplateAlias(_, t, _) |
-            TypeKind::Alias(_, t) |
-            TypeKind::Array(t, _) => {
-                ctx.resolve_item(t)
-                    .can_derive_copy_in_array(ctx)
-            }
-            TypeKind::Named(..) => false,
-            _ => self.can_derive_copy(ctx, item),
-        }
-    }
-
-    /// Wether we'd be able to derive the `Copy` trait in Rust or not. Same
-    /// rationale than `can_derive_debug`.
-    pub fn can_derive_copy(&self, ctx: &BindgenContext, item: &Item) -> bool {
-        match self.kind {
-            TypeKind::Array(t, len) => {
-                len <= RUST_DERIVE_IN_ARRAY_LIMIT &&
-                ctx.resolve_item(t).can_derive_copy_in_array(ctx)
-            }
-            TypeKind::ResolvedTypeRef(t) |
-            TypeKind::TemplateAlias(_, t, _) |
-            TypeKind::TemplateRef(t, _) |
-            TypeKind::Alias(_, t) => ctx.resolve_item(t).can_derive_copy(ctx),
-            TypeKind::Comp(ref info) => info.can_derive_copy(ctx, item),
-            _ => true,
-        }
-    }
-
     /// Whether this type has a vtable.
     pub fn has_vtable(&self, ctx: &BindgenContext) -> bool {
         // FIXME: Can we do something about template parameters? Huh...
@@ -390,6 +314,61 @@ impl Type {
             }
 
             TypeKind::UnresolvedTypeRef(..) => None,
+        }
+    }
+}
+
+impl CanDeriveDebug for Type {
+    type Extra = ();
+
+    fn can_derive_debug(&self, ctx: &BindgenContext, _: ()) -> bool {
+        match self.kind {
+            TypeKind::Array(t, len) => {
+                len <= RUST_DERIVE_IN_ARRAY_LIMIT &&
+                    t.can_derive_debug(ctx, ())
+            }
+            TypeKind::ResolvedTypeRef(t) |
+            TypeKind::TemplateAlias(_, t, _) |
+            TypeKind::Alias(_, t) => t.can_derive_debug(ctx, ()),
+            TypeKind::Comp(ref info) => {
+                info.can_derive_debug(ctx, self.layout(ctx))
+            }
+            _ => true,
+        }
+    }
+}
+
+impl<'a> CanDeriveCopy<'a> for Type {
+    type Extra = &'a Item;
+
+    fn can_derive_copy(&self, ctx: &BindgenContext, item: &Item) -> bool {
+        match self.kind {
+            TypeKind::Array(t, len) => {
+                len <= RUST_DERIVE_IN_ARRAY_LIMIT &&
+                t.can_derive_copy_in_array(ctx, ())
+            }
+            TypeKind::ResolvedTypeRef(t) |
+            TypeKind::TemplateAlias(_, t, _) |
+            TypeKind::TemplateRef(t, _) |
+            TypeKind::Alias(_, t) => t.can_derive_copy(ctx, ()),
+            TypeKind::Comp(ref info) => info.can_derive_copy(ctx, (item, self.layout(ctx))),
+            _ => true,
+        }
+    }
+
+    fn can_derive_copy_in_array(&self,
+                                ctx: &BindgenContext,
+                                item: &Item)
+                                -> bool {
+        match self.kind {
+            TypeKind::ResolvedTypeRef(t) |
+            TypeKind::TemplateAlias(_, t, _) |
+            TypeKind::Alias(_, t) |
+            TypeKind::Array(t, _) => {
+                t.can_derive_copy_in_array(ctx, ())
+            }
+            TypeKind::Named(..) => false,
+            _ => self.can_derive_copy(ctx, item),
         }
     }
 }
@@ -689,7 +668,8 @@ impl Type {
                                 Ok(inner) => inner,
                                 Err(..) => {
                                     error!("Failed to parse template alias \
-                                           {:?}", location);
+                                           {:?}",
+                                           location);
                                     return Err(ParseError::Continue);
                                 }
                             };
@@ -913,7 +893,7 @@ impl TypeCollector for Type {
             TypeKind::Function(ref sig) => {
                 sig.collect_types(context, types, item)
             }
-            TypeKind::Named(_) => {},
+            TypeKind::Named(_) => {}
             // FIXME: Pending types!
             ref other @ _ => {
                 debug!("<Type as TypeCollector>::collect_types: Ignoring: \

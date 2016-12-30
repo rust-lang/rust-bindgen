@@ -1,5 +1,9 @@
 //! Intermediate representation for the physical layout of some type.
 
+use super::context::BindgenContext;
+use super::derive::{CanDeriveCopy, CanDeriveDebug};
+use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
+
 /// A type that represents the struct layout of a type.
 #[derive(Debug, Clone, Copy)]
 pub struct Layout {
@@ -30,5 +34,33 @@ impl Layout {
     /// Construct a zero-sized layout.
     pub fn zero() -> Self {
         Self::new(0, 0)
+    }
+
+    /// Get this layout as an opaque type.
+    pub fn opaque(&self) -> Opaque {
+        Opaque(*self)
+    }
+}
+
+/// When we are treating a type as opaque, it is just a blob with a `Layout`.
+pub struct Opaque(pub Layout);
+
+impl CanDeriveDebug for Opaque {
+    type Extra = ();
+
+    fn can_derive_debug(&self, _: &BindgenContext, _: ()) -> bool {
+        self.0.size < RUST_DERIVE_IN_ARRAY_LIMIT
+    }
+}
+
+impl<'a> CanDeriveCopy<'a> for Opaque {
+    type Extra = ();
+
+    fn can_derive_copy(&self, _: &BindgenContext, _: ()) -> bool {
+        self.0.size < RUST_DERIVE_IN_ARRAY_LIMIT
+    }
+
+    fn can_derive_copy_in_array(&self, ctx: &BindgenContext, _: ()) -> bool {
+        self.can_derive_copy(ctx, ())
     }
 }

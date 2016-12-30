@@ -9,6 +9,7 @@ use std::cell::Cell;
 use std::collections::{HashMap, VecDeque, hash_map};
 use std::collections::btree_map::{self, BTreeMap};
 use std::fmt;
+use super::derive::{CanDeriveCopy, CanDeriveDebug};
 use super::int::IntKind;
 use super::item::{Item, ItemCanonicalPath};
 use super::item_kind::ItemKind;
@@ -29,6 +30,26 @@ impl ItemId {
     /// Get a numeric representation of this id.
     pub fn as_usize(&self) -> usize {
         self.0
+    }
+}
+
+impl CanDeriveDebug for ItemId {
+    type Extra = ();
+
+    fn can_derive_debug(&self, ctx: &BindgenContext, _: ()) -> bool {
+        ctx.resolve_item(*self).can_derive_debug(ctx, ())
+    }
+}
+
+impl<'a> CanDeriveCopy<'a> for ItemId {
+    type Extra = ();
+
+    fn can_derive_copy(&self, ctx: &BindgenContext, _: ()) -> bool {
+        ctx.resolve_item(*self).can_derive_copy(ctx, ())
+    }
+
+    fn can_derive_copy_in_array(&self, ctx: &BindgenContext, _: ()) -> bool {
+        ctx.resolve_item(*self).can_derive_copy_in_array(ctx, ())
     }
 }
 

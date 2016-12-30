@@ -6,6 +6,7 @@ use std::cell::Cell;
 use std::cmp;
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId};
+use super::derive::{CanDeriveCopy, CanDeriveDebug};
 use super::item::Item;
 use super::layout::Layout;
 use super::ty::{RUST_DERIVE_IN_ARRAY_LIMIT, Type};
@@ -154,6 +155,26 @@ impl Field {
     }
 }
 
+impl CanDeriveDebug for Field {
+    type Extra = ();
+
+    fn can_derive_debug(&self, ctx: &BindgenContext, _: ()) -> bool {
+        self.ty.can_derive_debug(ctx, ())
+    }
+}
+
+impl<'a> CanDeriveCopy<'a> for Field {
+    type Extra = ();
+
+    fn can_derive_copy(&self, ctx: &BindgenContext, _: ()) -> bool {
+        self.ty.can_derive_copy(ctx, ())
+    }
+
+    fn can_derive_copy_in_array(&self, ctx: &BindgenContext, _: ()) -> bool {
+        self.ty.can_derive_copy_in_array(ctx, ())
+    }
+}
+
 /// A compound type.
 ///
 /// Either a struct or union, a compound type is built up from the combination
@@ -263,50 +284,6 @@ impl CompInfo {
         }
     }
 
-    /// Can we derive the `Debug` trait for this compound type?
-    pub fn can_derive_debug(&self,
-                            ctx: &BindgenContext,
-                            layout: Option<Layout>)
-                            -> bool {
-        // We can reach here recursively via template parameters of a member,
-        // for example.
-        if self.detect_derive_debug_cycle.get() {
-            warn!("Derive debug cycle detected!");
-            return true;
-        }
-
-        if self.kind == CompKind::Union {
-            if ctx.options().unstable_rust {
-                return false;
-            }
-
-            let layout = layout.unwrap_or_else(Layout::zero);
-            let size_divisor = cmp::max(1, layout.align);
-            return layout.size / size_divisor <= RUST_DERIVE_IN_ARRAY_LIMIT;
-        }
-
-        self.detect_derive_debug_cycle.set(true);
-
-        let can_derive_debug = {
-            self.base_members
-                .iter()
-                .all(|ty| ctx.resolve_type(*ty).can_derive_debug(ctx)) &&
-            self.template_args
-                .iter()
-                .all(|ty| ctx.resolve_type(*ty).can_derive_debug(ctx)) &&
-            self.fields
-                .iter()
-                .all(|f| ctx.resolve_type(f.ty).can_derive_debug(ctx)) &&
-            self.ref_template.map_or(true, |template| {
-                ctx.resolve_type(template).can_derive_debug(ctx)
-            })
-        };
-
-        self.detect_derive_debug_cycle.set(false);
-
-        can_derive_debug
-    }
-
     /// Is this compound type unsized?
     pub fn is_unsized(&self, ctx: &BindgenContext) -> bool {
         !self.has_vtable(ctx) && self.fields.is_empty() &&
@@ -354,41 +331,6 @@ impl CompInfo {
         self.detect_has_destructor_cycle.set(false);
 
         has_destructor
-    }
-
-    /// Can we derive the `Copy` trait for this type?
-    pub fn can_derive_copy(&self, ctx: &BindgenContext, item: &Item) -> bool {
-        // NOTE: Take into account that while unions in C and C++ are copied by
-        // default, the may have an explicit destructor in C++, so we can't
-        // defer this check just for the union case.
-        if self.has_destructor(ctx) {
-            return false;
-        }
-
-        if self.kind == CompKind::Union {
-            if !ctx.options().unstable_rust {
-                return true;
-            }
-
-            // https://github.com/rust-lang/rust/issues/36640
-            if !self.template_args.is_empty() || self.ref_template.is_some() ||
-               !item.applicable_template_args(ctx).is_empty() {
-                return false;
-            }
-        }
-
-        // With template args, use a safe subset of the types,
-        // since copyability depends on the types itself.
-        self.ref_template
-            .as_ref()
-            .map_or(true, |t| ctx.resolve_item(*t).can_derive_copy(ctx)) &&
-        self.base_members
-            .iter()
-            .all(|t| ctx.resolve_item(*t).can_derive_copy(ctx)) &&
-        self.fields.iter().all(|field| {
-            ctx.resolve_item(field.ty)
-                .can_derive_copy(ctx)
-        })
     }
 
     /// Is this type a template specialization?
@@ -855,6 +797,108 @@ impl CompInfo {
                 .as_comp()
                 .map_or(false, |ci| ci.has_vtable(ctx))
         })
+    }
+}
+
+impl CanDeriveDebug for CompInfo {
+    type Extra = Option<Layout>;
+
+    fn can_derive_debug(&self,
+                        ctx: &BindgenContext,
+                        layout: Option<Layout>)
+                        -> bool {
+        if self.has_non_type_template_params() {
+            return layout.map_or(false, |l| l.opaque().can_derive_debug(ctx, ()));
+        }
+
+        // We can reach here recursively via template parameters of a member,
+        // for example.
+        if self.detect_derive_debug_cycle.get() {
+            warn!("Derive debug cycle detected!");
+            return true;
+        }
+
+        if self.kind == CompKind::Union {
+            if ctx.options().unstable_rust {
+                return false;
+            }
+
+            let layout = layout.unwrap_or_else(Layout::zero);
+            let size_divisor = cmp::max(1, layout.align);
+            return layout.size / size_divisor <= RUST_DERIVE_IN_ARRAY_LIMIT;
+        }
+
+        self.detect_derive_debug_cycle.set(true);
+
+        let can_derive_debug = {
+            self.base_members
+                .iter()
+                .all(|id| id.can_derive_debug(ctx, ())) &&
+            self.template_args
+                .iter()
+                .all(|id| id.can_derive_debug(ctx, ())) &&
+            self.fields
+                .iter()
+                .all(|f| f.can_derive_debug(ctx, ())) &&
+            self.ref_template.map_or(true, |id| {
+                id.can_derive_debug(ctx, ())
+            })
+        };
+
+        self.detect_derive_debug_cycle.set(false);
+
+        can_derive_debug
+    }
+}
+
+impl<'a> CanDeriveCopy<'a> for CompInfo {
+    type Extra = (&'a Item, Option<Layout>);
+
+    fn can_derive_copy(&self,
+                       ctx: &BindgenContext,
+                       (item, layout): (&Item, Option<Layout>))
+                       -> bool {
+        if self.has_non_type_template_params() {
+            return layout.map_or(false, |l| l.opaque().can_derive_copy(ctx, ()));
+        }
+
+        // NOTE: Take into account that while unions in C and C++ are copied by
+        // default, the may have an explicit destructor in C++, so we can't
+        // defer this check just for the union case.
+        if self.has_destructor(ctx) {
+            return false;
+        }
+
+        if self.kind == CompKind::Union {
+            if !ctx.options().unstable_rust {
+                return true;
+            }
+
+            // https://github.com/rust-lang/rust/issues/36640
+            if !self.template_args.is_empty() || self.ref_template.is_some() ||
+               !item.applicable_template_args(ctx).is_empty() {
+                return false;
+            }
+        }
+
+        // With template args, use a safe subset of the types,
+        // since copyability depends on the types itself.
+        self.ref_template
+            .as_ref()
+            .map_or(true, |t| t.can_derive_copy(ctx, ())) &&
+        self.base_members
+            .iter()
+            .all(|t| t.can_derive_copy(ctx, ())) &&
+        self.fields.iter().all(|field| {
+            field.can_derive_copy(ctx, ())
+        })
+    }
+
+    fn can_derive_copy_in_array(&self,
+                                ctx: &BindgenContext,
+                                extra: (&Item, Option<Layout>))
+                                -> bool {
+        self.can_derive_copy(ctx, extra)
     }
 }
 
