@@ -586,17 +586,18 @@ impl CompInfo {
                         return CXChildVisit_Continue;
                     }
 
-                    let param = Item::named_type(cur.spelling(),
-                                                 potential_id,
-                                                 ctx);
+                    let param =
+                        Item::named_type(cur.spelling(), potential_id, ctx);
                     ci.template_args.push(param);
                 }
                 CXCursor_CXXBaseSpecifier => {
                     if !ci.has_vtable {
                         ci.has_vtable = cur.is_virtual_base();
                     }
-                    let type_id =
-                        Item::from_ty_or_ref(cur.cur_type(), Some(cur), None, ctx);
+                    let type_id = Item::from_ty_or_ref(cur.cur_type(),
+                                                       Some(cur),
+                                                       None,
+                                                       ctx);
                     ci.base_members.push(type_id);
                 }
                 CXCursor_Constructor |
@@ -690,7 +691,9 @@ impl CompInfo {
                         return CXChildVisit_Continue;
                     }
 
-                    if let Ok(item) = Item::parse(cur, Some(potential_id), ctx) {
+                    if let Ok(item) = Item::parse(cur,
+                                                  Some(potential_id),
+                                                  ctx) {
                         ci.inner_vars.push(item);
                     }
                 }
@@ -840,9 +843,7 @@ impl CanDeriveDebug for CompInfo {
             self.fields
                 .iter()
                 .all(|f| f.can_derive_debug(ctx, ())) &&
-            self.ref_template.map_or(true, |id| {
-                id.can_derive_debug(ctx, ())
-            })
+            self.ref_template.map_or(true, |id| id.can_derive_debug(ctx, ()))
         };
 
         self.detect_derive_debug_cycle.set(false);
@@ -889,9 +890,7 @@ impl<'a> CanDeriveCopy<'a> for CompInfo {
         self.base_members
             .iter()
             .all(|t| t.can_derive_copy(ctx, ())) &&
-        self.fields.iter().all(|field| {
-            field.can_derive_copy(ctx, ())
-        })
+        self.fields.iter().all(|field| field.can_derive_copy(ctx, ()))
     }
 
     fn can_derive_copy_in_array(&self,

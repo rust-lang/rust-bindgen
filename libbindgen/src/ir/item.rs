@@ -216,7 +216,7 @@ impl CanDeriveDebug for Item {
                 } else {
                     ty.can_derive_debug(ctx, ())
                 }
-            },
+            }
             _ => false,
         }
     }
@@ -550,8 +550,9 @@ impl Item {
             parent_template_args.iter().any(|parent_item| {
                 let parent_ty = ctx.resolve_type(*parent_item);
                 match (parent_ty.kind(), item_ty.kind()) {
-                    (&TypeKind::Named(ref n),
-                     &TypeKind::Named(ref i)) => n == i,
+                    (&TypeKind::Named(ref n), &TypeKind::Named(ref i)) => {
+                        n == i
+                    }
                     _ => false,
                 }
             })
@@ -1115,7 +1116,7 @@ impl ClangItemParser for Item {
         }
 
         if let Some(ty) =
-            ctx.builtin_or_resolved_ty(id, parent_id, ty, location) {
+               ctx.builtin_or_resolved_ty(id, parent_id, ty, location) {
             return Ok(ty);
         }
 
@@ -1133,10 +1134,9 @@ impl ClangItemParser for Item {
         };
 
         if valid_decl {
-            if let Some(&(_, item_id)) =
-                ctx.currently_parsed_types
-                    .iter()
-                    .find(|&&(d, _)| d == declaration_to_look_for) {
+            if let Some(&(_, item_id)) = ctx.currently_parsed_types
+                .iter()
+                .find(|&&(d, _)| d == declaration_to_look_for) {
                 debug!("Avoiding recursion parsing type: {:?}", ty);
                 return Ok(item_id);
             }

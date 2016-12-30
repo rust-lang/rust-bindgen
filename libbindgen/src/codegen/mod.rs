@@ -770,7 +770,8 @@ impl CodeGenerator for CompInfo {
             derives.push("Debug");
         }
 
-        if item.can_derive_copy(ctx, ()) && !item.annotations().disallow_copy() {
+        if item.can_derive_copy(ctx, ()) &&
+           !item.annotations().disallow_copy() {
             derives.push("Copy");
             if !applicable_template_args.is_empty() {
                 // FIXME: This requires extra logic if you have a big array in a
@@ -895,7 +896,7 @@ impl CodeGenerator for CompInfo {
 
             // Try to catch a bitfield contination early.
             if let (Some(ref mut bitfield_width), Some(width)) =
-                (current_bitfield_width, field.bitfield()) {
+                   (current_bitfield_width, field.bitfield()) {
                 let layout = current_bitfield_layout.unwrap();
                 debug!("Testing bitfield continuation {} {} {:?}",
                        *bitfield_width, width, layout);

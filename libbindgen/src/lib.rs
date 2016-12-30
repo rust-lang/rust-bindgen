@@ -632,16 +632,16 @@ impl<'ctx> Bindings<'ctx> {
     ///
     /// See the `uses` module for more information.
     pub fn write_dummy_uses(&mut self) -> io::Result<()> {
-        let file = if let Some(ref dummy_path) =
-            self.context.options().dummy_uses {
-            Some(try!(OpenOptions::new()
+        let file =
+            if let Some(ref dummy_path) = self.context.options().dummy_uses {
+                Some(try!(OpenOptions::new()
                 .write(true)
                 .truncate(true)
                 .create(true)
                 .open(dummy_path)))
-        } else {
-            None
-        };
+            } else {
+                None
+            };
 
         if let Some(file) = file {
             try!(uses::generate_dummy_uses(&mut self.context, file));

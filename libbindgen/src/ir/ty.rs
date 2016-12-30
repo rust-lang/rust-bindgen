@@ -324,8 +324,7 @@ impl CanDeriveDebug for Type {
     fn can_derive_debug(&self, ctx: &BindgenContext, _: ()) -> bool {
         match self.kind {
             TypeKind::Array(t, len) => {
-                len <= RUST_DERIVE_IN_ARRAY_LIMIT &&
-                    t.can_derive_debug(ctx, ())
+                len <= RUST_DERIVE_IN_ARRAY_LIMIT && t.can_derive_debug(ctx, ())
             }
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(_, t, _) |
@@ -351,7 +350,9 @@ impl<'a> CanDeriveCopy<'a> for Type {
             TypeKind::TemplateAlias(_, t, _) |
             TypeKind::TemplateRef(t, _) |
             TypeKind::Alias(_, t) => t.can_derive_copy(ctx, ()),
-            TypeKind::Comp(ref info) => info.can_derive_copy(ctx, (item, self.layout(ctx))),
+            TypeKind::Comp(ref info) => {
+                info.can_derive_copy(ctx, (item, self.layout(ctx)))
+            }
             _ => true,
         }
     }
@@ -364,9 +365,7 @@ impl<'a> CanDeriveCopy<'a> for Type {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(_, t, _) |
             TypeKind::Alias(_, t) |
-            TypeKind::Array(t, _) => {
-                t.can_derive_copy_in_array(ctx, ())
-            }
+            TypeKind::Array(t, _) => t.can_derive_copy_in_array(ctx, ()),
             TypeKind::Named(..) => false,
             _ => self.can_derive_copy(ctx, item),
         }
