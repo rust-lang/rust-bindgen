@@ -3,13 +3,12 @@
 use clang;
 use parse::{ClangItemParser, ParseError};
 use std::cell::Cell;
-use std::cmp;
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId};
 use super::derive::{CanDeriveCopy, CanDeriveDebug};
 use super::item::Item;
 use super::layout::Layout;
-use super::ty::{RUST_DERIVE_IN_ARRAY_LIMIT, Type};
+use super::ty::Type;
 use super::type_collector::{ItemSet, TypeCollector};
 
 /// The kind of compound type.
@@ -826,9 +825,9 @@ impl CanDeriveDebug for CompInfo {
                 return false;
             }
 
-            let layout = layout.unwrap_or_else(Layout::zero);
-            let size_divisor = cmp::max(1, layout.align);
-            return layout.size / size_divisor <= RUST_DERIVE_IN_ARRAY_LIMIT;
+            return layout.unwrap_or_else(Layout::zero)
+                .opaque()
+                .can_derive_debug(ctx, ());
         }
 
         self.detect_derive_debug_cycle.set(true);

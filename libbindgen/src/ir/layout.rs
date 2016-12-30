@@ -1,5 +1,6 @@
 //! Intermediate representation for the physical layout of some type.
 
+use std::cmp;
 use super::context::BindgenContext;
 use super::derive::{CanDeriveCopy, CanDeriveDebug};
 use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
@@ -49,7 +50,8 @@ impl CanDeriveDebug for Opaque {
     type Extra = ();
 
     fn can_derive_debug(&self, _: &BindgenContext, _: ()) -> bool {
-        self.0.size < RUST_DERIVE_IN_ARRAY_LIMIT
+        let size_divisor = cmp::max(1, self.0.align);
+        self.0.size / size_divisor <= RUST_DERIVE_IN_ARRAY_LIMIT
     }
 }
 
@@ -57,7 +59,8 @@ impl<'a> CanDeriveCopy<'a> for Opaque {
     type Extra = ();
 
     fn can_derive_copy(&self, _: &BindgenContext, _: ()) -> bool {
-        self.0.size < RUST_DERIVE_IN_ARRAY_LIMIT
+        let size_divisor = cmp::max(1, self.0.align);
+        self.0.size / size_divisor <= RUST_DERIVE_IN_ARRAY_LIMIT
     }
 
     fn can_derive_copy_in_array(&self, ctx: &BindgenContext, _: ()) -> bool {
