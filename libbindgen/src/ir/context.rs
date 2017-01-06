@@ -924,7 +924,7 @@ impl<'ctx> BindgenContext<'ctx> {
     pub fn hidden_by_name(&self, path: &[String], id: ItemId) -> bool {
         debug_assert!(self.in_codegen_phase(),
                       "You're not supposed to call this yet");
-        self.options.hidden_types.contains(&path[1..].join("::")) ||
+        self.options.hidden_types.matches(&path[1..].join("::")) ||
         self.is_replaced_type(path, id)
     }
 
@@ -941,7 +941,7 @@ impl<'ctx> BindgenContext<'ctx> {
     pub fn opaque_by_name(&self, path: &[String]) -> bool {
         debug_assert!(self.in_codegen_phase(),
                       "You're not supposed to call this yet");
-        self.options.opaque_types.contains(&path[1..].join("::"))
+        self.options.opaque_types.matches(&path[1..].join("::"))
     }
 
     /// Get the options used to configure this bindgen context.
