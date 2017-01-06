@@ -549,6 +549,26 @@ impl CodeGenerator for Type {
                     inner_item.to_rust_ty(ctx)
                 };
 
+                {
+                    // FIXME(emilio): This is a workaround to avoid generating
+                    // incorrect type aliases because of types that we haven't
+                    // been able to resolve (because, eg, they depend on a
+                    // template parameter).
+                    //
+                    // It's kind of a shame not generating them even when they
+                    // could be referenced, but we already do the same for items
+                    // with invalid template parameters, and at least this way
+                    // they can be replaced, instead of generating plain invalid
+                    // code.
+                    let inner_canon_type =
+                        inner_item.expect_type().canonical_type(ctx);
+                    if inner_canon_type.is_invalid_named_type() {
+                        warn!("Item contained invalid named type, skipping: \
+                              {:?}, {:?}", item, inner_item);
+                        return;
+                    }
+                }
+
                 let rust_name = ctx.rust_ident(&name);
                 let mut typedef = aster::AstBuilder::new().item().pub_();
 
@@ -586,9 +606,8 @@ impl CodeGenerator for Type {
                     for template_arg in applicable_template_args.iter() {
                         let template_arg = ctx.resolve_type(*template_arg);
                         if template_arg.is_named() {
-                            let name = template_arg.name().unwrap();
-                            if name.contains("typename ") {
-                                warn!("Item contained `typename`'d template \
+                            if template_arg.is_invalid_named_type() {
+                                warn!("Item contained invalid template \
                                        parameter: {:?}", item);
                                 return;
                             }
