@@ -176,7 +176,7 @@ impl<'a> CanDeriveCopy<'a> for Field {
 
 
 /// The kind of inheritance a base class is using.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum BaseKind {
     /// Normal inheritance, like:
     ///
@@ -199,6 +199,13 @@ pub struct Base {
     pub ty: ItemId,
     /// The kind of inheritance we're doing.
     pub kind: BaseKind,
+}
+
+impl Base {
+    /// Whether this base class is inheriting virtually.
+    pub fn is_virtual(&self) -> bool {
+        self.kind == BaseKind::Virtual
+    }
 }
 
 /// A compound type.

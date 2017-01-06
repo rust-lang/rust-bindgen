@@ -835,14 +835,18 @@ impl CodeGenerator for CompInfo {
         }
 
         for (i, base) in self.base_members().iter().enumerate() {
+            // Virtual bases are already taken into account by the vtable
+            // pointer.
+            //
+            // FIXME(emilio): Is this always right?
+            if base.is_virtual() {
+                continue;
+            }
+
             let base_ty = ctx.resolve_type(base.ty);
             // NB: We won't include unsized types in our base chain because they
             // would contribute to our size given the dummy field we insert for
             // unsized types.
-            //
-            // NB: Canonical type is here because it could be inheriting from a
-            // typedef, for example, and the lack of `unwrap()` is because we
-            // can inherit from a template parameter, yes.
             if base_ty.is_unsized(ctx) {
                 continue;
             }
