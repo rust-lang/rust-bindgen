@@ -83,7 +83,6 @@ use ir::item::Item;
 use parse::{ClangItemParser, ParseError};
 use regex_set::RegexSet;
 
-use std::borrow::Borrow;
 use std::fs::OpenOptions;
 use std::io::{self, Write};
 use std::path::Path;
@@ -184,35 +183,35 @@ impl Builder {
     }
 
     /// Hide the given type from the generated bindings.
-    pub fn hide_type<T: Borrow<str>>(mut self, arg: T) -> Builder {
-        self.options.hidden_types.insert(&arg);
+    pub fn hide_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.hidden_types.insert(arg);
         self
     }
 
     /// Treat the given type as opaque in the generated bindings.
-    pub fn opaque_type<T: Borrow<str>>(mut self, arg: T) -> Builder {
-        self.options.opaque_types.insert(&arg);
+    pub fn opaque_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.opaque_types.insert(arg);
         self
     }
 
     /// Whitelist the given type so that it (and all types that it transitively
     /// refers to) appears in the generated bindings.
-    pub fn whitelisted_type<T: Borrow<str>>(mut self, arg: T) -> Builder {
-        self.options.whitelisted_types.insert(&arg);
+    pub fn whitelisted_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.whitelisted_types.insert(arg);
         self
     }
 
     /// Whitelist the given function so that it (and all types that it
     /// transitively refers to) appears in the generated bindings.
-    pub fn whitelisted_function<T: Borrow<str>>(mut self, arg: T) -> Builder {
-        self.options.whitelisted_functions.insert(&arg);
+    pub fn whitelisted_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.whitelisted_functions.insert(arg);
         self
     }
 
     /// Whitelist the given variable so that it (and all types that it
     /// transitively refers to) appears in the generated bindings.
-    pub fn whitelisted_var<T: Borrow<str>>(mut self, arg: T) -> Builder {
-        self.options.whitelisted_vars.insert(&arg);
+    pub fn whitelisted_var<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.whitelisted_vars.insert(arg);
         self
     }
 
@@ -220,8 +219,8 @@ impl Builder {
     /// bitfield-like.
     ///
     /// This makes bindgen generate a type that isn't a rust `enum`.
-    pub fn bitfield_enum<T: Borrow<str>>(mut self, arg: T) -> Builder {
-        self.options.bitfield_enums.insert(&arg);
+    pub fn bitfield_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.bitfield_enums.insert(arg);
         self
     }
 
@@ -451,6 +450,17 @@ pub struct BindgenOptions {
     pub codegen_config: CodegenConfig,
 }
 
+impl BindgenOptions {
+    fn build(&mut self) {
+        self.whitelisted_vars.build();
+        self.whitelisted_types.build();
+        self.whitelisted_functions.build();
+        self.hidden_types.build();
+        self.opaque_types.build();
+        self.bitfield_enums.build();
+    }
+}
+
 impl Default for BindgenOptions {
     fn default() -> BindgenOptions {
         BindgenOptions {
@@ -542,6 +552,8 @@ impl<'ctx> Bindings<'ctx> {
                     -> Result<Bindings<'ctx>, ()> {
         let span = span.unwrap_or(DUMMY_SP);
         ensure_libclang_is_loaded();
+
+        options.build();
 
         // TODO: Make this path fixup configurable?
         if let Some(clang) = clang_sys::support::Clang::find(None) {
