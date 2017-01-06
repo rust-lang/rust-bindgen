@@ -84,7 +84,6 @@ use parse::{ClangItemParser, ParseError};
 use regex_set::RegexSet;
 
 use std::borrow::Borrow;
-use std::collections::HashSet;
 use std::fs::OpenOptions;
 use std::io::{self, Write};
 use std::path::Path;
@@ -185,14 +184,14 @@ impl Builder {
     }
 
     /// Hide the given type from the generated bindings.
-    pub fn hide_type<T: Into<String>>(mut self, arg: T) -> Builder {
-        self.options.hidden_types.insert(arg.into());
+    pub fn hide_type<T: Borrow<str>>(mut self, arg: T) -> Builder {
+        self.options.hidden_types.insert(&arg);
         self
     }
 
     /// Treat the given type as opaque in the generated bindings.
-    pub fn opaque_type<T: Into<String>>(mut self, arg: T) -> Builder {
-        self.options.opaque_types.insert(arg.into());
+    pub fn opaque_type<T: Borrow<str>>(mut self, arg: T) -> Builder {
+        self.options.opaque_types.insert(&arg);
         self
     }
 
@@ -364,11 +363,11 @@ impl Builder {
 pub struct BindgenOptions {
     /// The set of types that have been blacklisted and should not appear
     /// anywhere in the generated code.
-    pub hidden_types: HashSet<String>,
+    pub hidden_types: RegexSet,
 
     /// The set of types that should be treated as opaque structures in the
     /// generated code.
-    pub opaque_types: HashSet<String>,
+    pub opaque_types: RegexSet,
 
     /// The set of types that we should have bindings for in the generated
     /// code.
