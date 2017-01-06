@@ -617,16 +617,22 @@ impl CompInfo {
                     ci.template_args.push(param);
                 }
                 CXCursor_CXXBaseSpecifier => {
-                    if !ci.has_vtable {
-                        ci.has_vtable = cur.is_virtual_base();
-                    }
+                    let is_virtual_base = cur.is_virtual_base();
+                    ci.has_vtable |= is_virtual_base;
+
+                    let kind = if is_virtual_base {
+                        BaseKind::Virtual
+                    } else {
+                        BaseKind::Normal
+                    };
+
                     let type_id = Item::from_ty_or_ref(cur.cur_type(),
                                                        Some(cur),
                                                        None,
                                                        ctx);
                     ci.base_members.push(Base {
                         ty: type_id,
-                        kind: BaseKind::Normal
+                        kind: kind,
                     });
                 }
                 CXCursor_Constructor |
