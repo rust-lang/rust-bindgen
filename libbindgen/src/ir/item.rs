@@ -853,6 +853,15 @@ impl Item {
         format!("id_{}", self.id().as_usize())
     }
 
+    /// Get a reference to this item's `Module`, or `None` if this is not a
+    /// `Module` item.
+    pub fn as_module(&self) -> Option<&Module> {
+        match self.kind {
+            ItemKind::Module(ref module) => Some(module),
+            _ => None,
+        }
+    }
+
     /// Get a mutable reference to this item's `Module`, or `None` if this is
     /// not a `Module` item.
     pub fn as_module_mut(&mut self) -> Option<&mut Module> {
@@ -1304,7 +1313,13 @@ impl ItemCanonicalPath for Item {
         let mut path: Vec<_> = target.ancestors(ctx)
             .chain(iter::once(ctx.root_module()))
             .map(|id| ctx.resolve_item(id))
-            .filter(|item| item.is_module() || item.id() == target.id())
+            .filter(|item| {
+                item.id() == target.id() ||
+                item.as_module().map_or(false, |module| {
+                    !module.is_inline() ||
+                        ctx.options().conservative_inline_namespaces
+                })
+            })
             .map(|item| {
                 ctx.resolve_item(item.name_target(ctx))
                     .name(ctx)

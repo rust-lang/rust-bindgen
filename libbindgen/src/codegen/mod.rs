@@ -329,7 +329,8 @@ impl CodeGenerator for Module {
             }
         };
 
-        if !ctx.options().enable_cxx_namespaces {
+        if !ctx.options().enable_cxx_namespaces ||
+            (self.is_inline() && !ctx.options().conservative_inline_namespaces) {
             codegen_self(result, &mut false);
             return;
         }

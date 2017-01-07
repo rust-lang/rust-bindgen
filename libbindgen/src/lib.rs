@@ -305,6 +305,39 @@ impl Builder {
         self
     }
 
+    /// Treat inline namespaces conservatively.
+    ///
+    /// This is tricky, because in C++ is technically legal to override an item
+    /// defined in an inline namespace:
+    ///
+    /// ```cpp
+    /// inline namespace foo {
+    ///     using Bar = int;
+    /// }
+    /// using Bar = long;
+    /// ```
+    ///
+    /// Even though referencing `Bar` is a compiler error.
+    ///
+    /// We want to support this (arguably esoteric) use case, but we don't want
+    /// to make the rest of bindgen users pay an usability penalty for that.
+    ///
+    /// To support this, we need to keep all the inline namespaces around, but
+    /// then bindgen usage is a bit more difficult, because you cannot
+    /// reference, e.g., `std::string` (you'd need to use the proper inline
+    /// namespace).
+    ///
+    /// We could complicate a lot of the logic to detect name collisions, and if
+    /// not detected generate a `pub use inline_ns::*` or something like that.
+    ///
+    /// That's probably something we can do if we see this option is needed in a
+    /// lot of cases, to improve it's usability, but my guess is that this is
+    /// not going to be too useful.
+    pub fn conservative_inline_namespaces(mut self) -> Builder {
+        self.options.conservative_inline_namespaces = true;
+        self
+    }
+
     /// Ignore functions.
     pub fn ignore_functions(mut self) -> Builder {
         self.options.codegen_config.functions = false;
@@ -448,6 +481,11 @@ pub struct BindgenOptions {
     /// Which kind of items should we generate? By default, we'll generate all
     /// of them.
     pub codegen_config: CodegenConfig,
+
+    /// Whether to treat inline namespaces conservatively.
+    ///
+    /// See the builder method description for more details.
+    pub conservative_inline_namespaces: bool,
 }
 
 impl BindgenOptions {
@@ -489,6 +527,7 @@ impl Default for BindgenOptions {
             dummy_uses: None,
             type_chooser: None,
             codegen_config: CodegenConfig::all(),
+            conservative_inline_namespaces: false,
         }
     }
 }
