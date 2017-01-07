@@ -190,14 +190,17 @@ impl TypeCollector for Item {
 
         match *self.kind() {
             ItemKind::Type(ref ty) => {
-                if !self.is_opaque(ctx) {
+                // There are some types, like resolved type references, where we
+                // don't want to stop collecting types even though they may be
+                // opaque.
+                if ty.should_be_traced_unconditionally() || !self.is_opaque(ctx) {
                     ty.collect_types(ctx, types, self);
                 }
             }
             ItemKind::Function(ref fun) => {
-                if !self.is_opaque(ctx) {
-                    types.insert(fun.signature());
-                }
+                // Just the same way, it has not real meaning for a function to
+                // be opaque, so we trace across it.
+                types.insert(fun.signature());
             }
             _ => {} // FIXME.
         }
