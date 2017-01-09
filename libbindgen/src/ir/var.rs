@@ -236,7 +236,9 @@ impl ClangSubItemParser for Var {
                         .and_then(|v| v.as_double())
                         .map(VarType::Float)
                 } else {
-                    None
+                    cursor.evaluate()
+                        .and_then(|v| v.as_literal_string())
+                        .map(VarType::String)
                 };
 
                 let mangling = cursor_mangling(&cursor);

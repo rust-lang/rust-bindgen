@@ -1348,6 +1348,20 @@ impl EvalResult {
             _ => None,
         }
     }
+
+    /// Evaluates the expression as a literal string, that may or may not be
+    /// valid utf-8.
+    pub fn as_literal_string(&self) -> Option<Vec<u8>> {
+        match self.kind() {
+            CXEval_StrLiteral => {
+                let ret = unsafe {
+                    CStr::from_ptr(clang_EvalResult_getAsStr(self.x))
+                };
+                Some(ret.to_bytes().to_vec())
+            }
+            _ => None,
+        }
+    }
 }
 
 impl Drop for EvalResult {
