@@ -39,6 +39,20 @@ pub struct Annotations {
     /// The kind of accessor this field will have. Also can be applied to
     /// structs so all the fields inside share it by default.
     accessor_kind: Option<FieldAccessorKind>,
+    /// Whether this enum variant should be constified.
+    ///
+    /// This is controlled by the `constant` attribute, this way:
+    ///
+    /// ```cpp
+    /// enum Foo {
+    ///     Bar = 0, //< <div rustbindgen constant></div>
+    ///     Baz = 0,
+    /// };
+    /// ```
+    ///
+    /// In that case, bindgen will generate a constant for `Bar` instead of
+    /// `Baz`.
+    constify_enum_variant: bool,
 }
 
 fn parse_accessor(s: &str) -> FieldAccessorKind {
@@ -59,6 +73,7 @@ impl Default for Annotations {
             disallow_copy: false,
             private_fields: None,
             accessor_kind: None,
+            constify_enum_variant: false,
         }
     }
 }
@@ -150,6 +165,7 @@ impl Annotations {
                     "accessor" => {
                         self.accessor_kind = Some(parse_accessor(&attr.value))
                     }
+                    "constant" => self.constify_enum_variant = true,
                     _ => {}
                 }
             }
@@ -158,5 +174,10 @@ impl Annotations {
         for child in comment.get_children() {
             self.parse(&child, matched);
         }
+    }
+
+    /// Returns whether we've parsed a "constant" attribute.
+    pub fn constify_enum_variant(&self) -> bool {
+        self.constify_enum_variant
     }
 }
