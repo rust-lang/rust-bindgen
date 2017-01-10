@@ -1,6 +1,7 @@
 //! Intermediate representation for C/C++ enumerations.
 
 use clang;
+use ir::annotations::Annotations;
 use parse::{ClangItemParser, ParseError};
 use super::context::{BindgenContext, ItemId};
 use super::item::Item;
@@ -66,6 +67,10 @@ impl Enum {
                     }
                 });
 
+        let type_name = ty.spelling();
+        let type_name = if type_name.is_empty() { None } else { Some(type_name) };
+        let type_name = type_name.as_ref().map(String::as_str);
+
         declaration.visit(|cursor| {
             if cursor.kind() == CXCursor_EnumConstantDecl {
                 let value = if is_signed {
@@ -75,8 +80,16 @@ impl Enum {
                 };
                 if let Some(val) = value {
                     let name = cursor.spelling();
+                    let should_constify = ctx.type_chooser()
+                        .map_or(false, |c| {
+                            c.constify_enum_variant(type_name, &name, value)
+                        }) ||
+                        Annotations::new(&cursor).map_or(false, |anno| {
+                            anno.constify_enum_variant()
+                        });
                     let comment = cursor.raw_comment();
-                    variants.push(EnumVariant::new(name, comment, val));
+                    variants.push(
+                        EnumVariant::new(name, comment, val, should_constify));
                 }
             }
             CXChildVisit_Continue
@@ -96,6 +109,11 @@ pub struct EnumVariant {
 
     /// The integer value of the variant.
     val: EnumVariantValue,
+
+    /// Whether this value should explicitly be constified.
+    ///
+    /// This allows us to solve situations as described in #392.
+    force_constify: bool,
 }
 
 /// A constant value assigned to an enumeration variant.
@@ -112,12 +130,14 @@ impl EnumVariant {
     /// Construct a new enumeration variant from the given parts.
     pub fn new(name: String,
                comment: Option<String>,
-               val: EnumVariantValue)
+               val: EnumVariantValue,
+               force_constify: bool)
                -> Self {
         EnumVariant {
             name: name,
             comment: comment,
             val: val,
+            force_constify: force_constify,
         }
     }
 
@@ -129,5 +149,11 @@ impl EnumVariant {
     /// Get this variant's value.
     pub fn val(&self) -> EnumVariantValue {
         self.val
+    }
+
+    /// Returns whether this variant should be enforced to be a constant by code
+    /// generation.
+    pub fn force_constification(&self) -> bool {
+        self.force_constify
     }
 }
