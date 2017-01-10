@@ -19,7 +19,7 @@ pub trait TypeChooser: fmt::Debug {
     fn constify_enum_variant(&self,
                              _enum_name: Option<&str>,
                              _variant_name: &str,
-                             _variant_value: Option<EnumVariantValue>) -> bool {
+                             _variant_value: EnumVariantValue) -> bool {
         false
     }
 }

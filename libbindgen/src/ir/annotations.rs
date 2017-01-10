@@ -45,13 +45,18 @@ pub struct Annotations {
     ///
     /// ```cpp
     /// enum Foo {
-    ///     Bar = 0, //< <div rustbindgen constant></div>
+    ///     Bar = 0, /**< <div rustbindgen constant></div> */
     ///     Baz = 0,
     /// };
     /// ```
     ///
     /// In that case, bindgen will generate a constant for `Bar` instead of
     /// `Baz`.
+    ///
+    /// You can see the kind of comments that are accepted in the Doxygen
+    /// documentation:
+    ///
+    /// http://www.stack.nl/~dimitri/doxygen/manual/docblocks.html
     constify_enum_variant: bool,
 }
 

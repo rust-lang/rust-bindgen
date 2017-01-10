@@ -82,7 +82,7 @@ impl Enum {
                     let name = cursor.spelling();
                     let should_constify = ctx.type_chooser()
                         .map_or(false, |c| {
-                            c.constify_enum_variant(type_name, &name, value)
+                            c.constify_enum_variant(type_name, &name, val)
                         }) ||
                         Annotations::new(&cursor).map_or(false, |anno| {
                             anno.constify_enum_variant()
