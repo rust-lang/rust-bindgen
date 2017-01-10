@@ -20,12 +20,17 @@ pub enum FieldAccessorKind {
 }
 
 /// Annotations for a given item, or a field.
+///
+/// You can see the kind of comments that are accepted in the Doxygen
+/// documentation:
+///
+/// http://www.stack.nl/~dimitri/doxygen/manual/docblocks.html
 #[derive(Clone, PartialEq, Debug)]
 pub struct Annotations {
     /// Whether this item is marked as opaque. Only applies to types.
     opaque: bool,
     /// Whether this item should be hidden from the output. Only applies to
-    /// types.
+    /// types, or enum variants.
     hide: bool,
     /// Whether this type should be replaced by another. The name is a
     /// namespace-aware path.
@@ -52,11 +57,6 @@ pub struct Annotations {
     ///
     /// In that case, bindgen will generate a constant for `Bar` instead of
     /// `Baz`.
-    ///
-    /// You can see the kind of comments that are accepted in the Doxygen
-    /// documentation:
-    ///
-    /// http://www.stack.nl/~dimitri/doxygen/manual/docblocks.html
     constify_enum_variant: bool,
 }
 

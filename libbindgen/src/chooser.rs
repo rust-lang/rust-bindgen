@@ -1,7 +1,7 @@
 //! A public API for more fine-grained customization of bindgen behavior.
 
 pub use ir::int::IntKind;
-pub use ir::enum_ty::EnumVariantValue;
+pub use ir::enum_ty::{EnumVariantValue, EnumVariantCustomBehavior};
 use std::fmt;
 
 /// A trait to allow configuring different kinds of types in different
@@ -16,10 +16,11 @@ pub trait TypeChooser: fmt::Debug {
     /// This function should return whether, given the a given enum variant
     /// name, and value, returns whether this enum variant will forcibly be a
     /// constant.
-    fn constify_enum_variant(&self,
+    fn enum_variant_behavior(&self,
                              _enum_name: Option<&str>,
                              _variant_name: &str,
-                             _variant_value: EnumVariantValue) -> bool {
-        false
+                             _variant_value: EnumVariantValue)
+                             -> Option<EnumVariantCustomBehavior> {
+        None
     }
 }

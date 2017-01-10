@@ -1673,6 +1673,9 @@ impl CodeGenerator for Enum {
 
         let mut iter = self.variants().iter().peekable();
         while let Some(variant) = iter.next().or_else(|| constified_variants.pop_front()) {
+            if variant.hidden() {
+                continue;
+            }
 
             if variant.force_constification() && iter.peek().is_some() {
                 constified_variants.push_back(variant);

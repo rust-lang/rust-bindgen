@@ -9,8 +9,6 @@ pub const nsCSSPropertyID_eCSSProperty_COUNT_unexistingVariantValue:
     nsCSSPropertyID::eCSSProperty_COUNT_unexistingVariantValue;
 pub const nsCSSPropertyID_eCSSProperty_COUNT: nsCSSPropertyID =
     nsCSSPropertyID::eCSSPropertyAlias_aa;
-pub const nsCSSPropertyID_eCSSProperty_COUNT_DUMMY2: nsCSSPropertyID =
-    nsCSSPropertyID::eCSSProperty_b;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum nsCSSPropertyID {

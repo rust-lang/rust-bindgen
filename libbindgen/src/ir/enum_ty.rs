@@ -7,6 +7,15 @@ use super::context::{BindgenContext, ItemId};
 use super::item::Item;
 use super::ty::TypeKind;
 
+/// An enum representing custom handling that can be given to a variant.
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum EnumVariantCustomBehavior {
+    /// This variant will be constified, that is, forced to generate a constant.
+    Constify,
+    /// This variant will be hidden entirely from the resulting enum.
+    Hide,
+}
+
 /// A C/C++ enumeration.
 #[derive(Debug)]
 pub struct Enum {
@@ -80,16 +89,25 @@ impl Enum {
                 };
                 if let Some(val) = value {
                     let name = cursor.spelling();
-                    let should_constify = ctx.type_chooser()
-                        .map_or(false, |c| {
-                            c.constify_enum_variant(type_name, &name, val)
-                        }) ||
-                        Annotations::new(&cursor).map_or(false, |anno| {
-                            anno.constify_enum_variant()
+                    let custom_behavior = ctx.type_chooser()
+                        .and_then(|t| {
+                            t.enum_variant_behavior(type_name, &name, val)
+                        })
+                        .or_else(|| {
+                            Annotations::new(&cursor).and_then(|anno| {
+                                if anno.hide() {
+                                    Some(EnumVariantCustomBehavior::Hide)
+                                } else if anno.constify_enum_variant() {
+                                    Some(EnumVariantCustomBehavior::Constify)
+                                } else {
+                                    None
+                                }
+                            })
                         });
+
                     let comment = cursor.raw_comment();
                     variants.push(
-                        EnumVariant::new(name, comment, val, should_constify));
+                        EnumVariant::new(name, comment, val, custom_behavior));
                 }
             }
             CXChildVisit_Continue
@@ -110,10 +128,8 @@ pub struct EnumVariant {
     /// The integer value of the variant.
     val: EnumVariantValue,
 
-    /// Whether this value should explicitly be constified.
-    ///
-    /// This allows us to solve situations as described in #392.
-    force_constify: bool,
+    /// The custom behavior this variant may have, if any.
+    custom_behavior: Option<EnumVariantCustomBehavior>,
 }
 
 /// A constant value assigned to an enumeration variant.
@@ -131,13 +147,13 @@ impl EnumVariant {
     pub fn new(name: String,
                comment: Option<String>,
                val: EnumVariantValue,
-               force_constify: bool)
+               custom_behavior: Option<EnumVariantCustomBehavior>)
                -> Self {
         EnumVariant {
             name: name,
             comment: comment,
             val: val,
-            force_constify: force_constify,
+            custom_behavior: custom_behavior,
         }
     }
 
@@ -154,6 +170,14 @@ impl EnumVariant {
     /// Returns whether this variant should be enforced to be a constant by code
     /// generation.
     pub fn force_constification(&self) -> bool {
-        self.force_constify
+        self.custom_behavior
+            .map_or(false, |b| b == EnumVariantCustomBehavior::Constify)
+    }
+
+    /// Returns whether the current variant should be hidden completely from the
+    /// resulting rust enum.
+    pub fn hidden(&self) -> bool {
+        self.custom_behavior
+            .map_or(false, |b| b == EnumVariantCustomBehavior::Hide)
     }
 }
