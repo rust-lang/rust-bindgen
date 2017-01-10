@@ -147,9 +147,7 @@ impl ClangSubItemParser for Var {
                         (TypeKind::Pointer(char_ty), VarType::String(val))
                     }
                     EvalResult::Int(Wrapping(value)) => {
-                        let kind = ctx.options()
-                            .type_chooser
-                            .as_ref()
+                        let kind = ctx.type_chooser()
                             .and_then(|c| c.int_macro(&name, value))
                             .unwrap_or_else(|| {
                                 if value < 0 {

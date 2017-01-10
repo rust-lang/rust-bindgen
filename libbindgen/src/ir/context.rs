@@ -2,6 +2,7 @@
 
 use BindgenOptions;
 use cexpr;
+use chooser::TypeChooser;
 use clang::{self, Cursor};
 use parse::ClangItemParser;
 use std::borrow::Cow;
@@ -182,6 +183,11 @@ impl<'ctx> BindgenContext<'ctx> {
         me.add_item(root_module, None, None);
 
         me
+    }
+
+    /// Get the user-provided type chooser by reference, if any.
+    pub fn type_chooser(&self) -> Option<&TypeChooser> {
+        self.options().type_chooser.as_ref().map(|t| &**t)
     }
 
     /// Define a new item.
