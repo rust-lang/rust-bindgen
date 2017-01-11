@@ -14,7 +14,7 @@ use super::derive::{CanDeriveCopy, CanDeriveDebug};
 use super::int::IntKind;
 use super::item::{Item, ItemCanonicalPath};
 use super::item_kind::ItemKind;
-use super::module::Module;
+use super::module::{Module, ModuleKind};
 use super::ty::{FloatKind, Type, TypeKind};
 use super::type_collector::{ItemSet, TypeCollector};
 use syntax::ast::Ident;
@@ -545,7 +545,7 @@ impl<'ctx> BindgenContext<'ctx> {
     }
 
     fn build_root_module(id: ItemId) -> Item {
-        let module = Module::new(Some("root".into()));
+        let module = Module::new(Some("root".into()), ModuleKind::Normal);
         Item::new(id, None, None, id, ItemKind::Module(module))
     }
 
@@ -955,31 +955,64 @@ impl<'ctx> BindgenContext<'ctx> {
         &self.options
     }
 
+    /// Tokenizes a namespace cursor in order to get the name and kind of the
+    /// namespace,
+    fn tokenize_namespace(&self,
+                          cursor: &clang::Cursor)
+                          -> (Option<String>, ModuleKind) {
+        assert_eq!(cursor.kind(), ::clang_sys::CXCursor_Namespace,
+                   "Be a nice person");
+        let tokens = match self.translation_unit.tokens(&cursor) {
+            Some(tokens) => tokens,
+            None => return (None, ModuleKind::Normal),
+        };
+
+        let mut iter = tokens.iter();
+        let mut kind = ModuleKind::Normal;
+        let mut found_namespace_keyword = false;
+        let mut module_name = None;
+        while let Some(token) = iter.next() {
+            match &*token.spelling {
+                "inline" => {
+                    assert!(!found_namespace_keyword);
+                    assert!(kind != ModuleKind::Inline);
+                    kind = ModuleKind::Inline;
+                }
+                "namespace" => {
+                    found_namespace_keyword = true;
+                }
+                "{" => {
+                    assert!(found_namespace_keyword);
+                    break;
+                }
+                name if found_namespace_keyword => {
+                    module_name = Some(name.to_owned());
+                    break;
+                }
+                _ => {
+                    panic!("Unknown token while processing namespace: {:?}",
+                           token);
+                }
+            }
+        };
+
+        (module_name, kind)
+    }
+
     /// Given a CXCursor_Namespace cursor, return the item id of the
     /// corresponding module, or create one on the fly.
     pub fn module(&mut self, cursor: clang::Cursor) -> ItemId {
         use clang_sys::*;
-        assert!(cursor.kind() == CXCursor_Namespace, "Be a nice person");
+        assert_eq!(cursor.kind(), CXCursor_Namespace, "Be a nice person");
         let cursor = cursor.canonical();
         if let Some(id) = self.modules.get(&cursor) {
             return *id;
         }
 
-        let module_id = self.next_item_id();
-        let module_name = self.translation_unit
-            .tokens(&cursor)
-            .and_then(|tokens| {
-                if tokens.len() <= 1 {
-                    None
-                } else {
-                    match &*tokens[1].spelling {
-                        "{" => None,
-                        s => Some(s.to_owned()),
-                    }
-                }
-            });
+        let (module_name, kind) = self.tokenize_namespace(&cursor);
 
-        let module = Module::new(module_name);
+        let module_id = self.next_item_id();
+        let module = Module::new(module_name, kind);
         let module = Item::new(module_id,
                                None,
                                None,

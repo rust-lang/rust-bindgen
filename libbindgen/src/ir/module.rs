@@ -5,20 +5,32 @@ use parse::{ClangSubItemParser, ParseError, ParseResult};
 use parse_one;
 use super::context::{BindgenContext, ItemId};
 
+/// Whether this module is inline or not.
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum ModuleKind {
+    /// This module is not inline.
+    Normal,
+    /// This module is inline, as in `inline namespace foo {}`.
+    Inline,
+}
+
 /// A module, as in, a C++ namespace.
 #[derive(Clone, Debug)]
 pub struct Module {
     /// The name of the module, or none if it's anonymous.
     name: Option<String>,
+    /// The kind of module this is.
+    kind: ModuleKind,
     /// The children of this module, just here for convenience.
     children_ids: Vec<ItemId>,
 }
 
 impl Module {
     /// Construct a new `Module`.
-    pub fn new(name: Option<String>) -> Self {
+    pub fn new(name: Option<String>, kind: ModuleKind) -> Self {
         Module {
             name: name,
+            kind: kind,
             children_ids: vec![],
         }
     }
@@ -36,6 +48,11 @@ impl Module {
     /// Get this module's children.
     pub fn children(&self) -> &[ItemId] {
         &self.children_ids
+    }
+
+    /// Whether this namespace is inline.
+    pub fn is_inline(&self) -> bool {
+        self.kind == ModuleKind::Inline
     }
 }
 

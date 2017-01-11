@@ -121,6 +121,10 @@ pub fn builder_from_flags<I>(args: I)
             Arg::with_name("use-core")
                 .long("use-core")
                 .help("Use types from Rust core instead of std."),
+            Arg::with_name("conservative-inline-namespaces")
+                .long("conservative-inline-namespaces")
+                .help("Conservatively generate inline namespaces to avoid name \
+                       conflicts."),
             Arg::with_name("use-msvc-mangling")
                 .long("use-msvc-mangling")
                 .help("MSVC C++ ABI mangling. DEPRECATED: Has no effect."),
@@ -266,6 +270,10 @@ pub fn builder_from_flags<I>(args: I)
 
     if matches.is_present("use-core") {
         builder = builder.use_core();
+    }
+
+    if matches.is_present("conservative-inline-namespaces") {
+        builder = builder.conservative_inline_namespaces();
     }
 
     if let Some(whitelist) = matches.values_of("whitelist-function") {
