@@ -20,12 +20,17 @@ pub enum FieldAccessorKind {
 }
 
 /// Annotations for a given item, or a field.
+///
+/// You can see the kind of comments that are accepted in the Doxygen
+/// documentation:
+///
+/// http://www.stack.nl/~dimitri/doxygen/manual/docblocks.html
 #[derive(Clone, PartialEq, Debug)]
 pub struct Annotations {
     /// Whether this item is marked as opaque. Only applies to types.
     opaque: bool,
     /// Whether this item should be hidden from the output. Only applies to
-    /// types.
+    /// types, or enum variants.
     hide: bool,
     /// Whether this type should be replaced by another. The name is a
     /// namespace-aware path.
@@ -39,6 +44,20 @@ pub struct Annotations {
     /// The kind of accessor this field will have. Also can be applied to
     /// structs so all the fields inside share it by default.
     accessor_kind: Option<FieldAccessorKind>,
+    /// Whether this enum variant should be constified.
+    ///
+    /// This is controlled by the `constant` attribute, this way:
+    ///
+    /// ```cpp
+    /// enum Foo {
+    ///     Bar = 0, /**< <div rustbindgen constant></div> */
+    ///     Baz = 0,
+    /// };
+    /// ```
+    ///
+    /// In that case, bindgen will generate a constant for `Bar` instead of
+    /// `Baz`.
+    constify_enum_variant: bool,
 }
 
 fn parse_accessor(s: &str) -> FieldAccessorKind {
@@ -59,6 +78,7 @@ impl Default for Annotations {
             disallow_copy: false,
             private_fields: None,
             accessor_kind: None,
+            constify_enum_variant: false,
         }
     }
 }
@@ -150,6 +170,7 @@ impl Annotations {
                     "accessor" => {
                         self.accessor_kind = Some(parse_accessor(&attr.value))
                     }
+                    "constant" => self.constify_enum_variant = true,
                     _ => {}
                 }
             }
@@ -158,5 +179,10 @@ impl Annotations {
         for child in comment.get_children() {
             self.parse(&child, matched);
         }
+    }
+
+    /// Returns whether we've parsed a "constant" attribute.
+    pub fn constify_enum_variant(&self) -> bool {
+        self.constify_enum_variant
     }
 }

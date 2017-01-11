@@ -1,6 +1,5 @@
 mod helpers;
 
-
 use aster;
 
 use ir::annotations::FieldAccessorKind;
@@ -21,7 +20,7 @@ use self::helpers::{BlobTyBuilder, attributes};
 
 use std::borrow::Cow;
 use std::cell::Cell;
-use std::collections::HashSet;
+use std::collections::{HashSet, VecDeque};
 use std::collections::hash_map::{Entry, HashMap};
 use std::fmt::Write;
 use std::iter;
@@ -1671,7 +1670,22 @@ impl CodeGenerator for Enum {
             Some(&name)
         };
 
-        for variant in self.variants().iter() {
+        // NB: We defer the creation of constified variants, in case we find
+        // another variant with the same value (which is the common thing to
+        // do).
+        let mut constified_variants = VecDeque::new();
+
+        let mut iter = self.variants().iter().peekable();
+        while let Some(variant) = iter.next().or_else(|| constified_variants.pop_front()) {
+            if variant.hidden() {
+                continue;
+            }
+
+            if variant.force_constification() && iter.peek().is_some() {
+                constified_variants.push_back(variant);
+                continue;
+            }
+
             match seen_values.entry(variant.val()) {
                 Entry::Occupied(ref entry) => {
                     if is_rust_enum {
@@ -1711,9 +1725,11 @@ impl CodeGenerator for Enum {
 
                     let variant_name = ctx.rust_mangle(variant.name());
 
-                    // If it's an unnamed enum, we also generate a constant so
-                    // it can be properly accessed.
-                    if is_rust_enum && enum_ty.name().is_none() {
+                    // If it's an unnamed enum, or constification is enforced,
+                    // we also generate a constant so it can be properly
+                    // accessed.
+                    if (is_rust_enum && enum_ty.name().is_none()) ||
+                        variant.force_constification() {
                         let mangled_name = if is_toplevel {
                             variant_name.clone()
                         } else {
