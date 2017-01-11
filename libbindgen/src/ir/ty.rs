@@ -316,6 +316,20 @@ impl Type {
             TypeKind::UnresolvedTypeRef(..) => None,
         }
     }
+
+    /// There are some types we don't want to stop at when finding an opaque
+    /// item, so we can arrive to the proper item that needs to be generated.
+    pub fn should_be_traced_unconditionally(&self) -> bool {
+        match self.kind {
+            TypeKind::Function(..) |
+            TypeKind::Pointer(..) |
+            TypeKind::Array(..) |
+            TypeKind::Reference(..) |
+            TypeKind::TemplateRef(..) |
+            TypeKind::ResolvedTypeRef(..) => true,
+            _ => false,
+        }
+    }
 }
 
 impl CanDeriveDebug for Type {

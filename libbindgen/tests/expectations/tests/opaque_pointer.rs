@@ -33,7 +33,7 @@ pub struct Opaque<T> {
 pub struct WithOpaquePtr {
     pub whatever: *mut Opaque<::std::os::raw::c_int>,
     pub other: u32,
-    pub t: u32,
+    pub t: OtherOpaque,
 }
 #[test]
 fn bindgen_test_layout_WithOpaquePtr() {

@@ -21,7 +21,7 @@ impl Clone for opaque {
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct container {
-    pub contained: u32,
+    pub contained: opaque,
 }
 #[test]
 fn bindgen_test_layout_container() {

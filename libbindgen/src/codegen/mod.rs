@@ -1879,7 +1879,13 @@ impl ToRustTy for Type {
             TypeKind::ResolvedTypeRef(inner) => inner.to_rust_ty(ctx),
             TypeKind::TemplateAlias(ref spelling, inner, _) |
             TypeKind::Alias(ref spelling, inner) => {
-                if item.is_opaque(ctx) {
+                let applicable_named_args =
+                    item.applicable_template_args(ctx)
+                        .into_iter()
+                        .filter(|arg| ctx.resolve_type(*arg).is_named())
+                        .collect::<Vec<_>>();
+
+                if item.is_opaque(ctx) && !applicable_named_args.is_empty() {
                     // Pray if there's no available layout.
                     let layout = self.layout(ctx).unwrap_or_else(Layout::zero);
                     BlobTyBuilder::new(layout).build()
@@ -1888,11 +1894,15 @@ impl ToRustTy for Type {
                                                                 inner) {
                     ty
                 } else {
-                    utils::build_templated_path(item, ctx, true)
+                    utils::build_templated_path(item,
+                                                ctx,
+                                                applicable_named_args)
                 }
             }
             TypeKind::Comp(ref info) => {
-                if item.is_opaque(ctx) || info.has_non_type_template_params() {
+                let template_args = item.applicable_template_args(ctx);
+                if info.has_non_type_template_params() ||
+                    (item.is_opaque(ctx) && !template_args.is_empty()) {
                     return match self.layout(ctx) {
                         Some(layout) => BlobTyBuilder::new(layout).build(),
                         None => {
@@ -1904,7 +1914,7 @@ impl ToRustTy for Type {
                     };
                 }
 
-                utils::build_templated_path(item, ctx, false)
+                utils::build_templated_path(item, ctx, template_args)
             }
             TypeKind::BlockPointer => {
                 let void = raw_type(ctx, "c_void");
@@ -2215,23 +2225,15 @@ mod utils {
 
     pub fn build_templated_path(item: &Item,
                                 ctx: &BindgenContext,
-                                only_named: bool)
+                                template_args: Vec<ItemId>)
                                 -> P<ast::Ty> {
         let path = item.namespace_aware_canonical_path(ctx);
-
         let builder = aster::AstBuilder::new().ty().path();
-        let template_args = if only_named {
-            item.applicable_template_args(ctx)
-                .iter()
-                .filter(|arg| ctx.resolve_type(**arg).is_named())
-                .map(|arg| arg.to_rust_ty(ctx))
-                .collect::<Vec<_>>()
-        } else {
-            item.applicable_template_args(ctx)
-                .iter()
-                .map(|arg| arg.to_rust_ty(ctx))
-                .collect::<Vec<_>>()
-        };
+
+        let template_args = template_args
+            .iter()
+            .map(|arg| arg.to_rust_ty(ctx))
+            .collect::<Vec<_>>();
 
         // XXX: I suck at aster.
         if path.len() == 1 {
