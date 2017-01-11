@@ -174,6 +174,40 @@ impl<'a> CanDeriveCopy<'a> for Field {
     }
 }
 
+
+/// The kind of inheritance a base class is using.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum BaseKind {
+    /// Normal inheritance, like:
+    ///
+    /// ```cpp
+    /// class A : public B {};
+    /// ```
+    Normal,
+    /// Virtual inheritance, like:
+    ///
+    /// ```cpp
+    /// class A: public virtual B {};
+    /// ```
+    Virtual,
+}
+
+/// A base class.
+#[derive(Clone, Debug)]
+pub struct Base {
+    /// The type of this base class.
+    pub ty: ItemId,
+    /// The kind of inheritance we're doing.
+    pub kind: BaseKind,
+}
+
+impl Base {
+    /// Whether this base class is inheriting virtually.
+    pub fn is_virtual(&self) -> bool {
+        self.kind == BaseKind::Virtual
+    }
+}
+
 /// A compound type.
 ///
 /// Either a struct or union, a compound type is built up from the combination
@@ -199,7 +233,7 @@ pub struct CompInfo {
     constructors: Vec<ItemId>,
 
     /// Vector of classes this one inherits from.
-    base_members: Vec<ItemId>,
+    base_members: Vec<Base>,
 
     /// The parent reference template if any.
     ref_template: Option<ItemId>,
@@ -287,7 +321,7 @@ impl CompInfo {
     pub fn is_unsized(&self, ctx: &BindgenContext) -> bool {
         !self.has_vtable(ctx) && self.fields.is_empty() &&
         self.base_members.iter().all(|base| {
-            ctx.resolve_type(*base).canonical_type(ctx).is_unsized(ctx)
+            ctx.resolve_type(base.ty).canonical_type(ctx).is_unsized(ctx)
         }) &&
         self.ref_template
             .map_or(true, |template| ctx.resolve_type(template).is_unsized(ctx))
@@ -314,12 +348,12 @@ impl CompInfo {
                 self.ref_template.as_ref().map_or(false, |t| {
                     ctx.resolve_type(*t).has_destructor(ctx)
                 }) ||
-                self.template_args
-                    .iter()
-                    .any(|t| ctx.resolve_type(*t).has_destructor(ctx)) ||
-                self.base_members
-                    .iter()
-                    .any(|t| ctx.resolve_type(*t).has_destructor(ctx)) ||
+                self.template_args.iter().any(|t| {
+                    ctx.resolve_type(*t).has_destructor(ctx)
+                }) ||
+                self.base_members.iter().any(|base| {
+                    ctx.resolve_type(base.ty).has_destructor(ctx)
+                }) ||
                 self.fields.iter().any(|field| {
                     ctx.resolve_type(field.ty)
                         .has_destructor(ctx)
@@ -394,7 +428,7 @@ impl CompInfo {
     pub fn has_vtable(&self, ctx: &BindgenContext) -> bool {
         self.has_vtable ||
         self.base_members().iter().any(|base| {
-            ctx.resolve_type(*base)
+            ctx.resolve_type(base.ty)
                 .has_vtable(ctx)
         }) ||
         self.ref_template.map_or(false, |template| {
@@ -418,7 +452,7 @@ impl CompInfo {
     }
 
     /// The set of types that this one inherits from.
-    pub fn base_members(&self) -> &[ItemId] {
+    pub fn base_members(&self) -> &[Base] {
         &self.base_members
     }
 
@@ -590,14 +624,23 @@ impl CompInfo {
                     ci.template_args.push(param);
                 }
                 CXCursor_CXXBaseSpecifier => {
-                    if !ci.has_vtable {
-                        ci.has_vtable = cur.is_virtual_base();
-                    }
+                    let is_virtual_base = cur.is_virtual_base();
+                    ci.has_vtable |= is_virtual_base;
+
+                    let kind = if is_virtual_base {
+                        BaseKind::Virtual
+                    } else {
+                        BaseKind::Normal
+                    };
+
                     let type_id = Item::from_ty_or_ref(cur.cur_type(),
                                                        Some(cur),
                                                        None,
                                                        ctx);
-                    ci.base_members.push(type_id);
+                    ci.base_members.push(Base {
+                        ty: type_id,
+                        kind: kind,
+                    });
                 }
                 CXCursor_Constructor |
                 CXCursor_Destructor |
@@ -794,7 +837,7 @@ impl CompInfo {
             // Unfortunately, given the way we implement --match-pat, and also
             // that you can inherit from templated types, we need to handle
             // other cases here too.
-            ctx.resolve_type(*base)
+            ctx.resolve_type(base.ty)
                 .canonical_type(ctx)
                 .as_comp()
                 .map_or(false, |ci| ci.has_vtable(ctx))
@@ -835,7 +878,7 @@ impl CanDeriveDebug for CompInfo {
         let can_derive_debug = {
             self.base_members
                 .iter()
-                .all(|id| id.can_derive_debug(ctx, ())) &&
+                .all(|base| base.ty.can_derive_debug(ctx, ())) &&
             self.template_args
                 .iter()
                 .all(|id| id.can_derive_debug(ctx, ())) &&
@@ -888,7 +931,7 @@ impl<'a> CanDeriveCopy<'a> for CompInfo {
             .map_or(true, |t| t.can_derive_copy(ctx, ())) &&
         self.base_members
             .iter()
-            .all(|t| t.can_derive_copy(ctx, ())) &&
+            .all(|base| base.ty.can_derive_copy(ctx, ())) &&
         self.fields.iter().all(|field| field.can_derive_copy(ctx, ()))
     }
 
@@ -916,8 +959,8 @@ impl TypeCollector for CompInfo {
             types.insert(arg);
         }
 
-        for &base in self.base_members() {
-            types.insert(base);
+        for base in self.base_members() {
+            types.insert(base.ty);
         }
 
         for field in self.fields() {
