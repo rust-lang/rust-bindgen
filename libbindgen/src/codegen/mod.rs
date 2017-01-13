@@ -523,22 +523,40 @@ impl CodeGenerator for Type {
                     typedef = typedef.attr().doc(comment);
                 }
 
-                let mut generics = typedef.type_(rust_name).generics();
-                for template_arg in applicable_template_args.iter() {
-                    let template_arg = ctx.resolve_type(*template_arg);
-                    if template_arg.is_named() {
-                        let name = template_arg.name().unwrap();
-                        if name.contains("typename ") {
-                            warn!("Item contained `typename`'d template \
-                                   parameter: {:?}", item);
-                            return;
+                // We prefer using `pub use` over `pub type` because of:
+                // https://github.com/rust-lang/rust/issues/26264
+                let simple_enum_path = match inner_rust_type.node {
+                    ast::TyKind::Path(None, ref p) => {
+                        if applicable_template_args.is_empty() &&
+                            !inner_item.expect_type().canonical_type(ctx).is_builtin_or_named() &&
+                            p.segments.iter().all(|p| p.parameters.is_none()) {
+                            Some(p.clone())
+                        } else {
+                            None
                         }
-                        generics =
-                            generics.ty_param_id(template_arg.name().unwrap());
-                    }
-                }
+                    },
+                    _ => None,
+                };
 
-                let typedef = generics.build().build_ty(inner_rust_type);
+                let typedef = if let Some(p) = simple_enum_path {
+                    typedef.use_().build(p).as_(rust_name)
+                } else {
+                    let mut generics = typedef.type_(rust_name).generics();
+                    for template_arg in applicable_template_args.iter() {
+                        let template_arg = ctx.resolve_type(*template_arg);
+                        if template_arg.is_named() {
+                            let name = template_arg.name().unwrap();
+                            if name.contains("typename ") {
+                                warn!("Item contained `typename`'d template \
+                                       parameter: {:?}", item);
+                                return;
+                            }
+                            generics =
+                                generics.ty_param_id(template_arg.name().unwrap());
+                        }
+                    }
+                    generics.build().build_ty(inner_rust_type)
+                };
                 result.push(typedef)
             }
             TypeKind::Enum(ref ei) => {

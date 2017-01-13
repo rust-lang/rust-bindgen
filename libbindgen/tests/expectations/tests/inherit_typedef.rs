@@ -17,7 +17,7 @@ fn bindgen_test_layout_Foo() {
 impl Clone for Foo {
     fn clone(&self) -> Self { *self }
 }
-pub type TypedefedFoo = Foo;
+pub use Foo as TypedefedFoo;
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct Bar {
