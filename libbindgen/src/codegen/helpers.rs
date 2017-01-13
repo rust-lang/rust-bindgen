@@ -153,7 +153,7 @@ pub mod ast_ty {
     }
 
     pub fn float_expr(f: f64) -> P<ast::Expr> {
-        use aster::str::ToInternedString;
+        use aster::symbol::ToSymbol;
         let mut string = f.to_string();
 
         // So it gets properly recognised as a floating point constant.
@@ -161,8 +161,7 @@ pub mod ast_ty {
             string.push('.');
         }
 
-        let interned_str = string.as_str().to_interned_string();
-        let kind = ast::LitKind::FloatUnsuffixed(interned_str);
+        let kind = ast::LitKind::FloatUnsuffixed(string.as_str().to_symbol());
         aster::AstBuilder::new().expr().lit().build_lit(kind)
     }
 

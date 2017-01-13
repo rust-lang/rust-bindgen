@@ -1863,16 +1863,19 @@ impl ToRustTy for Type {
                 if let ast::TyKind::Path(_, ref mut path) = inner_ty.node {
                     let template_args = template_args.iter()
                         .map(|arg| arg.to_rust_ty(ctx))
-                        .collect();
+                        .collect::<Vec<_>>();
 
-                    path.segments.last_mut().unwrap().parameters =
-                        ast::PathParameters::AngleBracketed(
+                    path.segments.last_mut().unwrap().parameters = if template_args.is_empty() {
+                        None
+                    } else {
+                        Some(P(ast::PathParameters::AngleBracketed(
                             ast::AngleBracketedParameterData {
                                 lifetimes: vec![],
                                 types: P::from_vec(template_args),
                                 bindings: P::from_vec(vec![]),
                             }
-                        );
+                        )))
+                    }
                 }
 
                 P(inner_ty)
