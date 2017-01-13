@@ -259,10 +259,12 @@ fn parse_macro(ctx: &BindgenContext,
                -> Option<(Vec<u8>, cexpr::expr::EvalResult)> {
     use cexpr::{expr, nom};
 
-    let cexpr_tokens = match unit.cexpr_tokens(cursor) {
+    let mut cexpr_tokens = match unit.cexpr_tokens(cursor) {
         None => return None,
         Some(tokens) => tokens,
     };
+
+    let _ctype = parse_macro_cast(&mut cexpr_tokens);
 
     let parser = expr::IdentifierParser::new(ctx.parsed_macros());
     let result = parser.macro_definition(&cexpr_tokens);
@@ -271,6 +273,40 @@ fn parse_macro(ctx: &BindgenContext,
         nom::IResult::Done(_, (id, val)) => Some((id.into(), val)),
         _ => None,
     }
+}
+
+// try to detect the following pattern:
+// #define constant ((int)1)
+fn parse_macro_cast(tokens: &mut Vec<cexpr::token::Token>) ->  Option<cexpr::token::Token> {
+    // Strip parentheses
+    loop {
+        // Match against the first token after the identifier (= #define)
+        // and the last token. If they are matching parentheses, remove them.
+        match (tokens.get(1), tokens.last()) {
+            // matching parentheses
+            (Some(t1), Some(t2)) if t1.raw[0] == 40 && t2.raw[0] == 41 => {}
+            _ => break,
+        }
+
+        tokens.remove(1);
+        tokens.pop();
+    }
+
+    let ctype;
+    // Match a cast `(type)`
+    match (tokens.get(1), tokens.get(2), tokens.get(3)) {
+        (Some(t1), Some(t2), Some(t3))
+            if t1.raw[0] == 40
+            && t3.raw[0] == 41
+            && t2.kind == cexpr::token::Kind::Keyword
+            => ctype = t2.clone(),
+        _ => return None,
+    }
+
+    // remove the tokens
+    tokens.drain(1..4);
+
+    Some(ctype)
 }
 
 fn parse_int_literal_tokens(cursor: &clang::Cursor,
