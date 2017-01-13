@@ -13,4 +13,4 @@ pub struct _bindgen_ty_1 {
 impl Clone for _bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
-pub use _bindgen_ty_1 as max_align_t;
+pub use self::_bindgen_ty_1 as max_align_t;

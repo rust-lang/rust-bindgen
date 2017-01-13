@@ -27,4 +27,4 @@ pub const Bar: _bindgen_ty_1 = _bindgen_ty_1::Bar;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum _bindgen_ty_1 { Foo = 0, Bar = 1, }
-pub use _bindgen_ty_1 as Baz;
+pub use self::_bindgen_ty_1 as Baz;

@@ -8,3 +8,5 @@ public:
   Test(int foo);
   Test(double foo);
 };
+
+typedef Test TypeAlias;
