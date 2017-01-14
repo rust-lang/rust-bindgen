@@ -971,6 +971,10 @@ impl TypeCollector for CompInfo {
             types.insert(ty);
         }
 
+        for &var in self.inner_vars() {
+            types.insert(var);
+        }
+
         // FIXME(emilio): Methods, VTable?
     }
 }

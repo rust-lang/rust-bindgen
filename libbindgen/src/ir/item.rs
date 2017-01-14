@@ -202,6 +202,9 @@ impl TypeCollector for Item {
                 // be opaque, so we trace across it.
                 types.insert(fun.signature());
             }
+            ItemKind::Var(ref var) => {
+                types.insert(var.ty());
+            }
             _ => {} // FIXME.
         }
     }
