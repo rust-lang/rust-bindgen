@@ -652,29 +652,6 @@ impl CompInfo {
                     ci.has_destructor |= cur.kind() == CXCursor_Destructor;
                     ci.has_vtable |= is_virtual;
 
-                    let linkage = cur.linkage();
-                    if linkage != CXLinkage_External {
-                        return CXChildVisit_Continue;
-                    }
-
-                    if cur.access_specifier() == CX_CXXPrivate {
-                        return CXChildVisit_Continue;
-                    }
-
-                    let visibility = cur.visibility();
-                    if visibility != CXVisibility_Default {
-                        return CXChildVisit_Continue;
-                    }
-
-                    if cur.is_inlined_function() {
-                        return CXChildVisit_Continue;
-                    }
-
-                    let spelling = cur.spelling();
-                    if spelling.starts_with("operator") {
-                        return CXChildVisit_Continue;
-                    }
-
                     // This used to not be here, but then I tried generating
                     // stylo bindings with this (without path filters), and
                     // cried a lot with a method in gfx/Point.h
@@ -691,8 +668,10 @@ impl CompInfo {
 
                     // NB: This gets us an owned `Function`, not a
                     // `FunctionSig`.
-                    let signature = Item::parse(cur, Some(potential_id), ctx)
-                        .expect("CXXMethod");
+                    let signature = match Item::parse(cur, Some(potential_id), ctx) {
+                        Ok(item) if ctx.resolve_item(item).kind().is_function() => item,
+                        _ => return CXChildVisit_Continue,
+                    };
 
                     match cur.kind() {
                         CXCursor_Constructor => {

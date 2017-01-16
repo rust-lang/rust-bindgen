@@ -37,8 +37,21 @@ pub mod root {
             assert_eq!(::std::mem::size_of::<A>() , 4usize);
             assert_eq!(::std::mem::align_of::<A>() , 4usize);
         }
+        extern "C" {
+            #[link_name = "_ZN12_GLOBAL__N_11A20lets_hope_this_worksEv"]
+            pub fn A_lets_hope_this_works(this:
+                                              *mut root::_bindgen_mod_id_13::A)
+             -> ::std::os::raw::c_int;
+        }
         impl Clone for A {
             fn clone(&self) -> Self { *self }
+        }
+        impl A {
+            #[inline]
+            pub unsafe fn lets_hope_this_works(&mut self)
+             -> ::std::os::raw::c_int {
+                A_lets_hope_this_works(&mut *self)
+            }
         }
     }
     #[repr(C)]

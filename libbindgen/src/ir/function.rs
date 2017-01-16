@@ -150,6 +150,7 @@ impl FunctionSig {
         } else {
             ty.declaration()
         };
+
         let mut args: Vec<_> = match cursor.kind() {
             CXCursor_FunctionDecl |
             CXCursor_Constructor |
@@ -261,6 +262,24 @@ impl ClangSubItemParser for Function {
         };
 
         debug!("Function::parse({:?}, {:?})", cursor, cursor.cur_type());
+
+        let visibility = cursor.visibility();
+        if visibility != CXVisibility_Default {
+            return Err(ParseError::Continue);
+        }
+
+        if cursor.access_specifier() == CX_CXXPrivate {
+            return Err(ParseError::Continue);
+        }
+
+        if cursor.is_inlined_function() {
+            return Err(ParseError::Continue);
+        }
+
+        let linkage = cursor.linkage();
+        if linkage != CXLinkage_External && linkage != CXLinkage_UniqueExternal {
+            return Err(ParseError::Continue);
+        }
 
         // Grab the signature using Item::from_ty.
         let sig = try!(Item::from_ty(&cursor.cur_type(),
