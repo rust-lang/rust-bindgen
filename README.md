@@ -1,38 +1,63 @@
-# Servo's rust-bindgen
+# `bindgen`
 
-A binding generator for the Rust language.
+Automatically generates Rust FFI bindings to C and C++ libraries.
 
-This is a fork of [crabtw/rust-bindgen](https://github.com/crabtw/rust-bindgen)
-designed to work on C++ code as well.
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-Currently this is being used for Servo's SpiderMonkey bindings, and also for
-the [Stylo](https://public.etherpad-mozilla.org/p/stylo) project.
 
-## Requirements
+- [Usage](#usage)
+  - [Requirements](#requirements)
+    - [Installing Clang 3.9](#installing-clang-39)
+      - [Windows](#windows)
+      - [OSX](#osx)
+      - [Debian-based Linuxes](#debian-based-linuxes)
+      - [Arch](#arch)
+      - [From source](#from-source)
+  - [Library usage with `build.rs`](#library-usage-with-buildrs)
+    - [`build.rs` Tutorial](#buildrs-tutorial)
+    - [Simple Example: `./bindgen-integration`](#simple-example-bindgen-integration)
+    - [Real World Example: Stylo](#real-world-example-stylo)
+  - [Command Line Usage](#command-line-usage)
+  - [C++](#c)
+  - [Annotations](#annotations)
+    - [`opaque`](#opaque)
+    - [`hide`](#hide)
+    - [`replaces`](#replaces)
+    - [`nocopy`](#nocopy)
+- [Building From Source](#building-from-source)
 
-It is recommended to use clang 3.9 with the current generator. It can run with
-clang 3.8 with some features disabled.
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-### Installing Clang 3.9
+## Usage
 
-#### Windows
+### Requirements
+
+It is recommended to use Clang 3.9 or greater, however `bindgen` can run with
+older Clangs with some features disabled.
+
+#### Installing Clang 3.9
+
+##### Windows
 
 Download and install the official pre-built binary from
 [LLVM download page](http://releases.llvm.org/download.html).
 
-#### OSX
+##### OSX
 
 If you use Homebrew:
+
 ```
 $ brew install llvm
 ```
 
 If you use MacPorts:
+
 ```
 $ port install clang-3.9
 ```
 
-#### Debian-based Linuxes
+##### Debian-based Linuxes
 
 ```
 # apt-get install llvm-3.9-dev libclang-3.9-dev
@@ -42,13 +67,13 @@ Ubuntu 16.10 provides the necessary packages directly. If you are using older
 version of Ubuntu or other Debian-based distros, you may need to add the LLVM
 repos to get version 3.9. See http://apt.llvm.org/.
 
-#### Arch
+##### Arch
 
 ```
 # pacman -S clang
 ```
 
-#### From source
+##### From source
 
 If your package manager doesn't yet offer Clang 3.9, you'll need to build from
 source. For that, follow the instructions
@@ -61,31 +86,26 @@ Those instructions list optional steps. For bindgen:
 * Checkout and build the compiler-rt
 * You do not need to checkout or build libcxx
 
-## Building
+### Library usage with `build.rs`
 
-```
-$ cd bindgen
-$ cargo build
-```
+#### `build.rs` Tutorial
 
-If you installed multiple versions of llvm, it may not be able to locate the
-latest version of libclang. In that case, you may want to either uninstall
-other versions of llvm, or specify the path of the desired libclang explicitly:
-```
-$ export LIBCLANG_PATH=path/to/clang-3.9/lib
-```
+[Here is a step-by-step tutorial for generating FFI bindings to the `bzip2` C library.][tutorial]
 
-On Linux and macOS, you may also need to add a path to `libclang.so` (usually
-the same path as above) to library search path. This can be done as below:
-```
-$ export LD_LIBRARY_PATH=path/to/clang-3.9/lib # for Linux
-$ export DYLD_LIBRARY_PATH=path/to/clang-3.9/lib # for macOS
-```
+[tutorial]: http://fitzgeraldnick.com/2016/12/14/using-libbindgen-in-build-rs.html
 
-# Library usage with `build.rs`
+#### Simple Example: `./bindgen-integration`
 
-See [the Stylo build script][stylo-script] to see how it is used inside the
-Servo organisation.
+The [`./bindgen-integration`][integration] directory has an example crate that
+generates FFI bindings in `build.rs` and can be used a template for new
+projects.
+
+[integration]: ./bindgen-integration
+
+#### Real World Example: Stylo
+
+A real world example is [the Stylo build script][stylo-script] used for
+integrating Servo's layout system into Gecko.
 
 [stylo-script]: https://github.com/servo/servo/blob/master/components/style/build_gecko.rs
 
@@ -124,28 +144,28 @@ In `src/main.rs`:
 include!(concat!(env!("OUT_DIR"), "/example.rs"));
 ```
 
-# Command Line Usage
+### Command Line Usage
 
-There are a few options documented when running `./bindgen --help`. Other
-options might exist (see [the SpiderMonkey script][sm-script] to see how it
-is used inside the Servo organisation.
+```
+$ cargo install bindgen
+```
 
-[sm-script]: https://github.com/servo/rust-mozjs/blob/master/etc/bindings.sh
+There are a few options documented when running `./bindgen --help`.
 
-## C++ Usage
+### C++
 
 This fork of rust-bindgen can handle a number of C++ features.
 
 When passing in header files, the file will automatically be treated as C++ if
 it ends in ``.hpp``. If it doesn't, ``-x c++`` can be used to force C++ mode.
 
-## Annotations
+### Annotations
 
 The translation of classes, structs, enums, and typedefs can be adjusted using
 annotations. Annotations are specifically formatted html tags inside doxygen
 style comments.
 
-### `opaque`
+#### `opaque`
 
 The `opaque` annotation instructs bindgen to ignore all fields defined in
 a struct/class.
@@ -154,7 +174,7 @@ a struct/class.
 /// <div rustbindgen opaque></div>
 ```
 
-### `hide`
+#### `hide`
 
 The `hide` annotation instructs bindgen to ignore the struct/class/field/enum
 completely.
@@ -163,7 +183,7 @@ completely.
 /// <div rustbindgen hide></div>
 ```
 
-### `replaces`
+#### `replaces`
 
 The `replaces` annotation can be used to use a type as a replacement for other
 (presumably more complex) type. This is used in Stylo to generate bindings for
@@ -188,7 +208,7 @@ public:
 That way, after code generation, the bindings for the `nsTArray` type are
 the ones that would be generated for `nsTArray_Simple`.
 
-### `nocopy`
+#### `nocopy`
 
 The `nocopy` annotation is used to prevent bindgen to autoderive the `Copy`
 and `Clone` traits for a type.
