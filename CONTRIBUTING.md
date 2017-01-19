@@ -42,9 +42,37 @@ issue, provide us with:
 
 ## Building
 
-Build instructions are in the [README](./README.md).
+To build `libbindgen`:
 
-Additionally, you may want to build and test with the `_docs` feature to ensure
+```
+$ cd bindgen/libbindgen
+$ cargo build
+```
+
+To build the `bindgen` executable:
+
+```
+$ cd bindgen/bindgen
+$ cargo build
+```
+
+If you installed multiple versions of llvm, it may not be able to locate the
+latest version of libclang. In that case, you may want to either uninstall other
+versions of llvm, or specify the path of the desired libclang explicitly:
+
+```
+$ export LIBCLANG_PATH=path/to/clang-3.9/lib
+```
+
+On Linux and macOS, you may also need to add a path to `libclang.so` (usually
+the same path as above) to library search path. This can be done as below:
+
+```
+$ export LD_LIBRARY_PATH=path/to/clang-3.9/lib # for Linux
+$ export DYLD_LIBRARY_PATH=path/to/clang-3.9/lib # for macOS
+```
+
+Additionally, you may want to build and test with the `docs_` feature to ensure
 that you aren't forgetting to document types and functions. CI will catch it if
 you forget, but the turn around will be a lot slower ;)
 
@@ -59,10 +87,11 @@ The following sections assume you are working in that subdirectory.
 
 ### Overview
 
-Input C/C++ test headers reside in the `tests/headers` directory. Expected
-output Rust bindings live in `tests/expectations/tests`. For example,
-`tests/headers/my_header.h`'s expected generated Rust bindings would be
-`tests/expectations/tests/my_header.rs`.
+Input C/C++ test headers reside in the `libbindgen/tests/headers`
+directory. Expected output Rust bindings live in
+`libbindgen/tests/expectations/tests`. For example,
+`libbindgen/tests/headers/my_header.h`'s expected generated Rust bindings would
+be `libbindgen/tests/expectations/tests/my_header.rs`.
 
 Run `cargo test` to compare generated Rust bindings to the expectations.
 
@@ -115,7 +144,7 @@ And ensure `~/.cargo/bin` is on your path.
 ## Debug Logging
 
 To help debug what `bindgen` is doing, you can define the environment variable
-`RUST_LOG=bindgen` to get a bunch of debugging log spew.
+`RUST_LOG=libbindgen` to get a bunch of debugging log spew.
 
 ```
 $ RUST_LOG=libbindgen ./target/debug/bindgen [flags...] ~/path/to/some/header.h
@@ -124,7 +153,8 @@ $ RUST_LOG=libbindgen ./target/debug/bindgen [flags...] ~/path/to/some/header.h
 This logging can also be used when debugging failing tests:
 
 ```
-$ RUST_LOG=libbindgen cd libbindgen && cargo test
+$ cd libbindgen
+$ RUST_LOG=libbindgen cargo test
 ```
 
 ## Using `creduce` to Minimize Test Cases

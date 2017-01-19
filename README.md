@@ -212,24 +212,3 @@ the ones that would be generated for `nsTArray_Simple`.
 
 The `nocopy` annotation is used to prevent bindgen to autoderive the `Copy`
 and `Clone` traits for a type.
-
-## Building From Source
-
-```
-$ cd bindgen
-$ cargo build
-```
-
-If you installed multiple versions of llvm, it may not be able to locate the
-latest version of libclang. In that case, you may want to either uninstall
-other versions of llvm, or specify the path of the desired libclang explicitly:
-```
-$ export LIBCLANG_PATH=path/to/clang-3.9/lib
-```
-
-On Linux and macOS, you may also need to add a path to `libclang.so` (usually
-the same path as above) to library search path. This can be done as below:
-```
-$ export LD_LIBRARY_PATH=path/to/clang-3.9/lib # for Linux
-$ export DYLD_LIBRARY_PATH=path/to/clang-3.9/lib # for macOS
-```
