@@ -1319,6 +1319,12 @@ impl MethodCodegen for Method {
             _ => panic!("How in the world?"),
         };
 
+        // Do not generate variadic methods, since rust does not allow
+        // implementing them, and we don't do a good job at it anyway.
+        if signature.is_variadic() {
+            return;
+        }
+
         let count = {
             let mut count = method_names.entry(name.clone())
                 .or_insert(0);
