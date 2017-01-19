@@ -1255,8 +1255,9 @@ impl<'ctx, 'gen> Iterator for AssertNoDanglingItemIter<'ctx, 'gen>
         }
 
         for sub_id in sub_types {
-            if let Some(value) = self.seen.insert(id, sub_id) {
-                self.to_iterate.push_back(value);
+            if self.seen.insert(sub_id, id).is_none() {
+                // We've never visited this sub item before.
+                self.to_iterate.push_back(sub_id);
             }
         }
 
