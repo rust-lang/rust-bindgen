@@ -461,6 +461,7 @@ impl<'ctx> BindgenContext<'ctx> {
     pub fn gen<F, Out>(&mut self, cb: F) -> Out
         where F: FnOnce(&Self) -> Out,
     {
+        use aster::symbol::ToSymbol;
         use syntax::ext::expand::ExpansionConfig;
         use syntax::codemap::{ExpnInfo, MacroBang, NameAndSpan};
         use syntax::ext::base;
@@ -475,7 +476,7 @@ impl<'ctx> BindgenContext<'ctx> {
         ctx.0.bt_push(ExpnInfo {
             call_site: self.span,
             callee: NameAndSpan {
-                format: MacroBang(parse::token::intern("")),
+                format: MacroBang("".to_symbol()),
                 allow_internal_unstable: false,
                 span: None,
             },

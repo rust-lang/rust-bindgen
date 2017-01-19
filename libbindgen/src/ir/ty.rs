@@ -123,6 +123,14 @@ impl Type {
         }
     }
 
+    /// Is this an enum type?
+    pub fn is_enum(&self) -> bool {
+        match self.kind {
+            TypeKind::Enum(..) => true,
+            _ => false,
+        }
+    }
+
     /// Is this either a builtin or named type?
     pub fn is_builtin_or_named(&self) -> bool {
         match self.kind {

@@ -523,22 +523,46 @@ impl CodeGenerator for Type {
                     typedef = typedef.attr().doc(comment);
                 }
 
-                let mut generics = typedef.type_(rust_name).generics();
-                for template_arg in applicable_template_args.iter() {
-                    let template_arg = ctx.resolve_type(*template_arg);
-                    if template_arg.is_named() {
-                        let name = template_arg.name().unwrap();
-                        if name.contains("typename ") {
-                            warn!("Item contained `typename`'d template \
-                                   parameter: {:?}", item);
-                            return;
+                // We prefer using `pub use` over `pub type` because of:
+                // https://github.com/rust-lang/rust/issues/26264
+                let simple_enum_path = match inner_rust_type.node {
+                    ast::TyKind::Path(None, ref p) => {
+                        if applicable_template_args.is_empty() &&
+                            !inner_item.expect_type().canonical_type(ctx).is_builtin_or_named() &&
+                            p.segments.iter().all(|p| p.parameters.is_none()) {
+                            Some(p.clone())
+                        } else {
+                            None
                         }
-                        generics =
-                            generics.ty_param_id(template_arg.name().unwrap());
-                    }
-                }
+                    },
+                    _ => None,
+                };
 
-                let typedef = generics.build().build_ty(inner_rust_type);
+                let typedef = if let Some(mut p) = simple_enum_path {
+                    if p.segments.len() == 1 {
+                        p.segments.insert(0, ast::PathSegment {
+                            identifier: ctx.ext_cx().ident_of("self"),
+                            parameters: None,
+                        });
+                    }
+                    typedef.use_().build(p).as_(rust_name)
+                } else {
+                    let mut generics = typedef.type_(rust_name).generics();
+                    for template_arg in applicable_template_args.iter() {
+                        let template_arg = ctx.resolve_type(*template_arg);
+                        if template_arg.is_named() {
+                            let name = template_arg.name().unwrap();
+                            if name.contains("typename ") {
+                                warn!("Item contained `typename`'d template \
+                                       parameter: {:?}", item);
+                                return;
+                            }
+                            generics =
+                                generics.ty_param_id(template_arg.name().unwrap());
+                        }
+                    }
+                    generics.build().build_ty(inner_rust_type)
+                };
                 result.push(typedef)
             }
             TypeKind::Enum(ref ei) => {
@@ -1863,16 +1887,19 @@ impl ToRustTy for Type {
                 if let ast::TyKind::Path(_, ref mut path) = inner_ty.node {
                     let template_args = template_args.iter()
                         .map(|arg| arg.to_rust_ty(ctx))
-                        .collect();
+                        .collect::<Vec<_>>();
 
-                    path.segments.last_mut().unwrap().parameters =
-                        ast::PathParameters::AngleBracketed(
+                    path.segments.last_mut().unwrap().parameters = if template_args.is_empty() {
+                        None
+                    } else {
+                        Some(P(ast::PathParameters::AngleBracketed(
                             ast::AngleBracketedParameterData {
                                 lifetimes: vec![],
                                 types: P::from_vec(template_args),
                                 bindings: P::from_vec(vec![]),
                             }
-                        );
+                        )))
+                    }
                 }
 
                 P(inner_ty)

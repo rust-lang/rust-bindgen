@@ -3,3 +3,8 @@ struct Test {
   float bar;
   enum { T_NONE };
 };
+
+typedef enum {
+  Foo,
+  Bar,
+} Baz;

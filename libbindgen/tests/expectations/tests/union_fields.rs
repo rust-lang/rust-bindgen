@@ -44,4 +44,4 @@ fn bindgen_test_layout__bindgen_ty_1() {
 impl Clone for _bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
-pub type nsStyleUnion = _bindgen_ty_1;
+pub use self::_bindgen_ty_1 as nsStyleUnion;
