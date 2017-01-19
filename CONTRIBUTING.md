@@ -1,28 +1,35 @@
-# Contributing to `servo/rust-bindgen`
+# Contributing to `bindgen`
 
 Hi! We'd love to have your contributions! If you want help or mentorship, reach
-out to us in a GitHub issue, or stop by #servo on irc.mozilla.org and introduce
-yourself.
+out to us in a GitHub issue, or stop by
+[#servo on irc.mozilla.org](irc://irc.mozilla.org#servo) and introduce yourself.
 
-* [Code of Conduct](#coc)
-* [Filing an Issue](#issue)
-* [Building](#building)
-* [Testing](#tests)
-  * [Overview](#tests-overview)
-  * [Running All Tests](#tests-all)
-  * [Running a Single, Specific Test](#tests-one)
-  * [Authoring New Tests](#tests-new)
-* [Automatic Code Formatting](#formatting)
-* [Debug Logging](#logs)
-* [Using `creduce` to Minimize Test Cases](#creduce)
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-## Code of Conduct <span id="coc"/>
+
+- [Code of Conduct](#code-of-conduct)
+- [Filing an Issue](#filing-an-issue)
+- [Building](#building)
+- [Testing](#testing)
+  - [Overview](#overview)
+  - [Running All Tests](#running-all-tests)
+  - [Authoring New Tests](#authoring-new-tests)
+- [Automatic code formatting](#automatic-code-formatting)
+- [Debug Logging](#debug-logging)
+- [Using `creduce` to Minimize Test Cases](#using-creduce-to-minimize-test-cases)
+  - [Isolating Your Test Case](#isolating-your-test-case)
+  - [Writing a Predicate Script](#writing-a-predicate-script)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## Code of Conduct
 
 We abide by the [Rust Code of Conduct][coc] and ask that you do as well.
 
 [coc]: https://www.rust-lang.org/en-US/conduct.html
 
-## Filing an Issue <span id="issue"/>
+## Filing an Issue
 
 Think you've found a bug? File an issue! To help us understand and reproduce the
 issue, provide us with:
@@ -33,7 +40,7 @@ issue, provide us with:
 * The actual `bindgen` output
 * The [debugging logs](#logs) generated when running `bindgen` on this testcase
 
-## Building <span id="building"/>
+## Building
 
 Build instructions are in the [README](./README.md).
 
@@ -45,12 +52,12 @@ you forget, but the turn around will be a lot slower ;)
 $ cd libbindgen && cargo build --features "llvm_stable _docs"
 ```
 
-## Testing <span id="tests"/>
+## Testing
 
 Code for binding generation and testing thereof is in the `libbindgen` crate.
 The following sections assume you are working in that subdirectory.
 
-### Overview <span id="tests-overview"/>
+### Overview
 
 Input C/C++ test headers reside in the `tests/headers` directory. Expected
 output Rust bindings live in `tests/expectations/tests`. For example,
@@ -59,13 +66,13 @@ output Rust bindings live in `tests/expectations/tests`. For example,
 
 Run `cargo test` to compare generated Rust bindings to the expectations.
 
-### Running All Tests <span id="tests-all"/>
+### Running All Tests
 
 ```
 $ cargo test [--features llvm_stable]
 ```
 
-### Authoring New Tests <span id="tests-new"/>
+### Authoring New Tests
 
 To add a new test header to the suite, simply put it in the `tests/headers`
 directory. Next, run `bindgen` to generate the initial expected output Rust
@@ -84,7 +91,7 @@ Then verify the new Rust bindings compile and pass some basic tests:
 $ cargo test -p tests_expectations
 ```
 
-## Automatic code formatting <span id="formatting"/>
+## Automatic code formatting
 
 There's a `rustfmt.toml` file in the repo. Ideally changes should be consistent
 with the style, though that's not enforced right now.
@@ -105,7 +112,7 @@ $ cargo install rustfmt
 
 And ensure `~/.cargo/bin` is on your path.
 
-## Debug Logging <span id="logs"/>
+## Debug Logging
 
 To help debug what `bindgen` is doing, you can define the environment variable
 `RUST_LOG=bindgen` to get a bunch of debugging log spew.
@@ -120,7 +127,7 @@ This logging can also be used when debugging failing tests:
 $ RUST_LOG=libbindgen cd libbindgen && cargo test
 ```
 
-## Using `creduce` to Minimize Test Cases <span id="creduce"/>
+## Using `creduce` to Minimize Test Cases
 
 If you are hacking on `bindgen` and find a test case that causes an unexpected
 panic, results in bad Rust bindings, or some other incorrectness in `bindgen`,
