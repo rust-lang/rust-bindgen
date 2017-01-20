@@ -957,6 +957,10 @@ impl TypeCollector for CompInfo {
             types.insert(var);
         }
 
-        // FIXME(emilio): Methods, VTable?
+        for method in self.methods() {
+            types.insert(method.signature);
+        }
+
+        // FIXME(emilio): VTable?
     }
 }
