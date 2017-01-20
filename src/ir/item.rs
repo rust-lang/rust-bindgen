@@ -205,7 +205,12 @@ impl TypeCollector for Item {
             ItemKind::Var(ref var) => {
                 types.insert(var.ty());
             }
-            _ => {} // FIXME.
+            ItemKind::Module(_) => {
+                // Module -> children edges are "weak", and we do not want to
+                // trace them. If we did, then whitelisting wouldn't work as
+                // expected: everything in every module would end up
+                // whitelisted.
+            }
         }
     }
 }
