@@ -46,12 +46,35 @@ impl Layout {
 /// When we are treating a type as opaque, it is just a blob with a `Layout`.
 pub struct Opaque(pub Layout);
 
+impl Opaque {
+    /// Return the known rust type we should use to create a correctly-aligned
+    /// field with this layout.
+    pub fn known_rust_type_for_array(&self) -> Option<&'static str> {
+        Some(match self.0.align {
+            8 => "u64",
+            4 => "u32",
+            2 => "u16",
+            1 => "u8",
+            _ => return None,
+        })
+    }
+
+    /// Return the array size that an opaque type for this layout should have if
+    /// we know the correct type for it, or `None` otherwise.
+    pub fn array_size(&self) -> Option<usize> {
+        if self.known_rust_type_for_array().is_some() {
+            Some(self.0.size / cmp::max(self.0.align, 1))
+        } else {
+            None
+        }
+    }
+}
+
 impl CanDeriveDebug for Opaque {
     type Extra = ();
 
     fn can_derive_debug(&self, _: &BindgenContext, _: ()) -> bool {
-        let size_divisor = cmp::max(1, self.0.align);
-        self.0.size / size_divisor <= RUST_DERIVE_IN_ARRAY_LIMIT
+        self.array_size().map_or(false, |size| size <= RUST_DERIVE_IN_ARRAY_LIMIT)
     }
 }
 
@@ -59,8 +82,7 @@ impl<'a> CanDeriveCopy<'a> for Opaque {
     type Extra = ();
 
     fn can_derive_copy(&self, _: &BindgenContext, _: ()) -> bool {
-        let size_divisor = cmp::max(1, self.0.align);
-        self.0.size / size_divisor <= RUST_DERIVE_IN_ARRAY_LIMIT
+        self.array_size().map_or(false, |size| size <= RUST_DERIVE_IN_ARRAY_LIMIT)
     }
 
     fn can_derive_copy_in_array(&self, ctx: &BindgenContext, _: ()) -> bool {
