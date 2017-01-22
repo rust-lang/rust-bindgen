@@ -4,9 +4,8 @@ description = "bindgen results when ran on ../headers/*"
 version = "0.1.0"
 authors = [
   "Jyun-Yan You <jyyou.tw@gmail.com>",
-  "Emilio Cobos Álvarez <ecoal95@gmail.com>",
+  "Emilio Cobos Álvarez <emilio@crisal.io>",
   "The Servo project developers",
 ]
-workspace = "../../.."
 
 [dependencies]

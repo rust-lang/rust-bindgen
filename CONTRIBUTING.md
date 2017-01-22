@@ -42,10 +42,9 @@ issue, provide us with:
 
 ## Building
 
-To build `libbindgen`:
+To build `bindgen`:
 
 ```
-$ cd bindgen/libbindgen
 $ cargo build
 ```
 
@@ -77,21 +76,21 @@ that you aren't forgetting to document types and functions. CI will catch it if
 you forget, but the turn around will be a lot slower ;)
 
 ```
-$ cd libbindgen && cargo build --features "llvm_stable _docs"
+$ cargo build --features "llvm_stable _docs"
 ```
 
 ## Testing
 
-Code for binding generation and testing thereof is in the `libbindgen` crate.
+Code for binding generation and testing thereof is in the `bindgen` crate.
 The following sections assume you are working in that subdirectory.
 
 ### Overview
 
-Input C/C++ test headers reside in the `libbindgen/tests/headers`
-directory. Expected output Rust bindings live in
-`libbindgen/tests/expectations/tests`. For example,
-`libbindgen/tests/headers/my_header.h`'s expected generated Rust bindings would
-be `libbindgen/tests/expectations/tests/my_header.rs`.
+Input C/C++ test headers reside in the `tests/headers` directory. Expected
+output Rust bindings live in `tests/expectations/tests`.
+
+For example, `tests/headers/my_header.h`'s expected generated Rust bindings
+would be `tests/expectations/tests/my_header.rs`.
 
 Run `cargo test` to compare generated Rust bindings to the expectations.
 
@@ -144,17 +143,16 @@ And ensure `~/.cargo/bin` is on your path.
 ## Debug Logging
 
 To help debug what `bindgen` is doing, you can define the environment variable
-`RUST_LOG=libbindgen` to get a bunch of debugging log spew.
+`RUST_LOG=bindgen` to get a bunch of debugging log spew.
 
 ```
-$ RUST_LOG=libbindgen ./target/debug/bindgen [flags...] ~/path/to/some/header.h
+$ RUST_LOG=bindgen ./target/debug/bindgen [flags...] ~/path/to/some/header.h
 ```
 
 This logging can also be used when debugging failing tests:
 
 ```
-$ cd libbindgen
-$ RUST_LOG=libbindgen cargo test
+$ RUST_LOG=bindgen cargo test
 ```
 
 ## Using `creduce` to Minimize Test Cases
