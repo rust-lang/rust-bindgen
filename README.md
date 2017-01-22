@@ -117,7 +117,7 @@ In `Cargo.toml`:
 build = "build.rs"
 
 [build-dependencies]
-bindgen = "0.1"
+bindgen = "0.20"
 ```
 
 In `build.rs`:
