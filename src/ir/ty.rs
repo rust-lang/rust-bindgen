@@ -914,13 +914,24 @@ impl TypeCollector for Type {
             TypeKind::Function(ref sig) => {
                 sig.collect_types(context, types, item)
             }
-            TypeKind::Named(_) => {}
-            // FIXME: Pending types!
-            ref other @ _ => {
-                debug!("<Type as TypeCollector>::collect_types: Ignoring: \
-                       {:?}",
-                       other);
+            TypeKind::Enum(ref en) => {
+                if let Some(repr) = en.repr() {
+                    types.insert(repr);
+                }
             }
+            TypeKind::UnresolvedTypeRef(_, _, Some(id)) => {
+                types.insert(id);
+            }
+
+            // None of these variants have edges to other items and types.
+            TypeKind::UnresolvedTypeRef(_, _, None) |
+            TypeKind::Named(_) |
+            TypeKind::Void |
+            TypeKind::NullPtr |
+            TypeKind::Int(_) |
+            TypeKind::Float(_) |
+            TypeKind::Complex(_) |
+            TypeKind::BlockPointer => {}
         }
     }
 }
