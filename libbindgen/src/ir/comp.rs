@@ -893,6 +893,9 @@ impl<'a> CanDeriveCopy<'a> for CompInfo {
 
         if self.kind == CompKind::Union {
             if !ctx.options().unstable_rust {
+                // NOTE: If there's no template parameters we can derive copy
+                // unconditionally, since arrays are magical for rustc, and
+                // __BindgenUnionField always implements copy.
                 return true;
             }
 
