@@ -192,7 +192,7 @@ a struct/class.
 The `hide` annotation instructs bindgen to ignore the struct/class/field/enum
 completely.
 
-```
+```cpp
 /// <div rustbindgen hide></div>
 ```
 
