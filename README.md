@@ -156,10 +156,22 @@ There are a few options documented when running `./bindgen --help`.
 
 ### C++
 
-This fork of rust-bindgen can handle a number of C++ features.
+`bindgen` can handle most C++ features, but not all of them (C++ is hard!)
+
+Notable C++ features that are unsupported or only partially supported:
+
+* Partial template specialization
+* Traits templates
+* SFINAE
+* Instantiating new template specializations
 
 When passing in header files, the file will automatically be treated as C++ if
 it ends in ``.hpp``. If it doesn't, ``-x c++`` can be used to force C++ mode.
+
+You must use whitelisting when working with C++ to avoid pulling in all of the
+`std::*` types, some of which `bindgen` cannot handle. Additionally, you may
+want to blacklist other types that `bindgen` stumbles on, or make `bindgen`
+treat certain types as opaque.
 
 ### Annotations
 
