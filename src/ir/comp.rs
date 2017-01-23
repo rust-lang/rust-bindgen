@@ -960,7 +960,5 @@ impl TypeCollector for CompInfo {
         for method in self.methods() {
             types.insert(method.signature);
         }
-
-        // FIXME(emilio): VTable?
     }
 }
