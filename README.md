@@ -25,7 +25,6 @@ Automatically generates Rust FFI bindings to C and C++ libraries.
     - [`hide`](#hide)
     - [`replaces`](#replaces)
     - [`nocopy`](#nocopy)
-- [Building From Source](#building-from-source)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
