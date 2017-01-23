@@ -42,16 +42,9 @@ issue, provide us with:
 
 ## Building
 
-To build `bindgen`:
+To build the `bindgen` library and the `bindgen` executable:
 
 ```
-$ cargo build
-```
-
-To build the `bindgen` executable:
-
-```
-$ cd bindgen/bindgen
 $ cargo build
 ```
 
