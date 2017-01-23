@@ -5,14 +5,18 @@ authors = [
   "The Servo project developers",
 ]
 description = "A binding generator for Rust"
-homepage = "https://github.com/servo/rust-bindgen"
 keywords = ["bindings", "ffi", "code-generation"]
+categories = ["external-ffi-bindings"]
 license = "BSD-3-Clause"
 name = "bindgen"
 readme = "README.md"
 repository = "https://github.com/servo/rust-bindgen"
+documentation = "https://docs.rs/bindgen"
 version = "0.20.0"
 build = "build.rs"
+
+[badges]
+travis-ci = { repository = "servo/rust-bindgen" }
 
 [lib]
 path = "src/lib.rs"
