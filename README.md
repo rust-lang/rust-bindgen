@@ -88,6 +88,8 @@ Those instructions list optional steps. For bindgen:
 
 ### Library usage with `build.rs`
 
+💡 This is the recommended way to use `bindgen`. 💡
+
 #### `build.rs` Tutorial
 
 [Here is a step-by-step tutorial for generating FFI bindings to the `bzip2` C library.][tutorial]
