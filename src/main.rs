@@ -1,4 +1,4 @@
-extern crate libbindgen;
+extern crate bindgen;
 extern crate env_logger;
 #[macro_use]
 extern crate log;
@@ -6,7 +6,7 @@ extern crate clang_sys;
 extern crate clap;
 extern crate rustc_serialize;
 
-use libbindgen::clang_version;
+use bindgen::clang_version;
 use std::env;
 
 mod options;

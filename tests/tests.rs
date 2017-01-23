@@ -1,18 +1,19 @@
 extern crate clap;
 extern crate diff;
-extern crate libbindgen;
+extern crate bindgen;
 extern crate shlex;
 
+use bindgen::Builder;
 use std::fs;
 use std::io::{BufRead, BufReader, Error, ErrorKind, Read, Write};
 use std::path::PathBuf;
 
-#[path="../../bindgen/src/options.rs"]
+#[path="../src/options.rs"]
 mod options;
 use options::builder_from_flags;
 
 fn compare_generated_header(header: &PathBuf,
-                            builder: libbindgen::Builder)
+                            builder: Builder)
                             -> Result<(), Error> {
     let file_name = try!(header.file_name()
         .ok_or(Error::new(ErrorKind::Other, "spawn_bindgen expects a file")));
@@ -68,7 +69,7 @@ fn compare_generated_header(header: &PathBuf,
 }
 
 fn create_bindgen_builder(header: &PathBuf)
-                          -> Result<Option<libbindgen::Builder>, Error> {
+                          -> Result<Option<Builder>, Error> {
     let source = try!(fs::File::open(header));
     let reader = BufReader::new(source);
 

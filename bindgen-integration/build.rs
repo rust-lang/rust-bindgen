@@ -1,9 +1,9 @@
-extern crate libbindgen;
+extern crate bindgen;
 extern crate gcc;
 
 use std::env;
 use std::path::PathBuf;
-use libbindgen::Builder;
+use bindgen::Builder;
 
 fn main() {
     gcc::Config::new()

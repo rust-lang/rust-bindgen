@@ -117,20 +117,20 @@ In `Cargo.toml`:
 build = "build.rs"
 
 [build-dependencies]
-libbindgen = "0.1"
+bindgen = "0.20"
 ```
 
 In `build.rs`:
 
 ```rust
-extern crate libbindgen;
+extern crate bindgen;
 
 use std::env;
 use std::path::Path;
 
 fn main() {
   let out_dir = env::var("OUT_DIR").unwrap();
-  let _ = libbindgen::builder()
+  let _ = bindgen::builder()
     .header("example.h")
     .use_core()
     .generate().unwrap()
