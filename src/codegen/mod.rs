@@ -23,7 +23,6 @@ use std::cell::Cell;
 use std::collections::{HashSet, VecDeque};
 use std::collections::hash_map::{Entry, HashMap};
 use std::fmt::Write;
-use std::iter;
 use std::mem;
 use std::ops;
 use syntax::abi::Abi;
@@ -31,23 +30,39 @@ use syntax::ast;
 use syntax::codemap::{Span, respan};
 use syntax::ptr::P;
 
+fn root_import_depth(ctx: &BindgenContext, item: &Item) -> usize {
+    if !ctx.options().enable_cxx_namespaces {
+        return 0;
+    }
+
+    item.ancestors(ctx)
+        .filter(|id| ctx.resolve_item(*id).is_module())
+        .fold(1, |i, _| i + 1)
+}
+
+fn top_level_path(ctx: &BindgenContext, item: &Item) -> Vec<ast::Ident> {
+    let mut path = vec![ctx.rust_ident_raw("self")];
+
+    if ctx.options().enable_cxx_namespaces {
+        let super_ = ctx.rust_ident_raw("super");
+
+        for _ in 0..root_import_depth(ctx, item) {
+            path.push(super_.clone());
+        }
+    }
+
+    path
+}
+
 fn root_import(ctx: &BindgenContext, module: &Item) -> P<ast::Item> {
     assert!(ctx.options().enable_cxx_namespaces, "Somebody messed it up");
     assert!(module.is_module());
 
+    let mut path = top_level_path(ctx, module);
+
     let root = ctx.root_module().canonical_name(ctx);
     let root_ident = ctx.rust_ident(&root);
-
-    let super_ = aster::AstBuilder::new().id("super");
-    let supers = module.ancestors(ctx)
-        .filter(|id| ctx.resolve_item(*id).is_module())
-        .map(|_| super_.clone())
-        .chain(iter::once(super_));
-
-    let self_ = iter::once(aster::AstBuilder::new().id("self"));
-    let root_ident = iter::once(root_ident);
-
-    let path = self_.chain(supers).chain(root_ident);
+    path.push(root_ident);
 
     let use_root = aster::AstBuilder::new()
         .item()
@@ -528,7 +543,7 @@ impl CodeGenerator for Type {
                 let simple_enum_path = match inner_rust_type.node {
                     ast::TyKind::Path(None, ref p) => {
                         if applicable_template_args.is_empty() &&
-                            !inner_item.expect_type().canonical_type(ctx).is_builtin_or_named() &&
+                            inner_item.expect_type().canonical_type(ctx).is_enum() &&
                             p.segments.iter().all(|p| p.parameters.is_none()) {
                             Some(p.clone())
                         } else {
@@ -539,9 +554,9 @@ impl CodeGenerator for Type {
                 };
 
                 let typedef = if let Some(mut p) = simple_enum_path {
-                    if p.segments.len() == 1 {
+                    for ident in top_level_path(ctx, item).into_iter().rev() {
                         p.segments.insert(0, ast::PathSegment {
-                            identifier: ctx.ext_cx().ident_of("self"),
+                            identifier: ident,
                             parameters: None,
                         });
                     }

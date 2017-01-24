@@ -25,5 +25,5 @@ pub mod root {
             fn clone(&self) -> Self { *self }
         }
     }
-    pub use root::foo::Bar as ReferencesBar;
+    pub type ReferencesBar = root::foo::Bar;
 }

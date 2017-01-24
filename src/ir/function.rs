@@ -165,8 +165,7 @@ impl FunctionSig {
                         let name = arg.spelling();
                         let name =
                             if name.is_empty() { None } else { Some(name) };
-                        let ty = Item::from_ty(&arg_ty, Some(*arg), None, ctx)
-                            .expect("Argument?");
+                        let ty = Item::from_ty_or_ref(arg_ty, Some(*arg), None, ctx);
                         (name, ty)
                     })
                     .collect()
@@ -178,8 +177,7 @@ impl FunctionSig {
                 cursor.visit(|c| {
                     if c.kind() == CXCursor_ParmDecl {
                         let ty =
-                            Item::from_ty(&c.cur_type(), Some(c), None, ctx)
-                                .expect("ParmDecl?");
+                            Item::from_ty_or_ref(c.cur_type(), Some(c), None, ctx);
                         let name = c.spelling();
                         let name =
                             if name.is_empty() { None } else { Some(name) };
@@ -218,7 +216,7 @@ impl FunctionSig {
         }
 
         let ty_ret_type = try!(ty.ret_type().ok_or(ParseError::Continue));
-        let ret = try!(Item::from_ty(&ty_ret_type, None, None, ctx));
+        let ret = Item::from_ty_or_ref(ty_ret_type, None, None, ctx);
         let abi = get_abi(ty.call_conv());
 
         Ok(Self::new(ret, args, ty.is_variadic(), abi))
