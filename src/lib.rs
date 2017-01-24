@@ -268,6 +268,12 @@ impl Builder {
         self
     }
 
+    /// Set whether `Debug` should be derived by default.
+    pub fn derive_debug(mut self, doit: bool) -> Self {
+        self.options.derive_debug = doit;
+        self
+    }
+
     /// Emit Clang AST.
     pub fn emit_clang_ast(mut self) -> Builder {
         self.options.emit_ast = true;

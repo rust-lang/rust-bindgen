@@ -31,6 +31,9 @@ pub fn builder_from_flags<I>(args: I)
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("no-derive-debug")
+                .long("no-derive-debug")
+                .help("Avoid deriving Debug on any type."),
             Arg::with_name("builtins")
                 .long("builtins")
                 .help("Output bindings for builtin definitions, e.g. \
@@ -179,6 +182,10 @@ pub fn builder_from_flags<I>(args: I)
 
     if matches.is_present("builtins") {
         builder = builder.emit_builtins();
+    }
+
+    if matches.is_present("no-derive-debug") {
+        builder = builder.derive_debug(false);
     }
 
     if let Some(prefix) = matches.value_of("ctypes-prefix") {

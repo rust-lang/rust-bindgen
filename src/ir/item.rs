@@ -219,7 +219,7 @@ impl CanDeriveDebug for Item {
     type Extra = ();
 
     fn can_derive_debug(&self, ctx: &BindgenContext, _: ()) -> bool {
-        match self.kind {
+        ctx.options().derive_debug && match self.kind {
             ItemKind::Type(ref ty) => {
                 if self.is_opaque(ctx) {
                     ty.layout(ctx)
