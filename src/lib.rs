@@ -182,34 +182,39 @@ impl Builder {
         self
     }
 
-    /// Hide the given type from the generated bindings. Regular expressions are supported.
+    /// Hide the given type from the generated bindings. Regular expressions are
+    /// supported.
     pub fn hide_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.hidden_types.insert(arg);
         self
     }
 
-    /// Treat the given type as opaque in the generated bindings. Regular expressions are supported.
+    /// Treat the given type as opaque in the generated bindings. Regular
+    /// expressions are supported.
     pub fn opaque_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.opaque_types.insert(arg);
         self
     }
 
     /// Whitelist the given type so that it (and all types that it transitively
-    /// refers to) appears in the generated bindings. Regular expressions are supported.
+    /// refers to) appears in the generated bindings. Regular expressions are
+    /// supported.
     pub fn whitelisted_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.whitelisted_types.insert(arg);
         self
     }
 
     /// Whitelist the given function so that it (and all types that it
-    /// transitively refers to) appears in the generated bindings. Regular expressions are supported.
+    /// transitively refers to) appears in the generated bindings. Regular
+    /// expressions are supported.
     pub fn whitelisted_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.whitelisted_functions.insert(arg);
         self
     }
 
     /// Whitelist the given variable so that it (and all types that it
-    /// transitively refers to) appears in the generated bindings. Regular expressions are supported.
+    /// transitively refers to) appears in the generated bindings. Regular
+    /// expressions are supported.
     pub fn whitelisted_var<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.whitelisted_vars.insert(arg);
         self
@@ -218,9 +223,20 @@ impl Builder {
     /// Mark the given enum (or set of enums, if using a pattern) as being
     /// bitfield-like. Regular expressions are supported.
     ///
-    /// This makes bindgen generate a type that isn't a rust `enum`.
+    /// This makes bindgen generate a type that isn't a rust `enum`. Regular
+    /// expressions are supported.
     pub fn bitfield_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.bitfield_enums.insert(arg);
+        self
+    }
+
+    /// Mark the given enum (or set of enums, if using a pattern) as being
+    /// constant.
+    ///
+    /// This makes bindgen generate constants instead of enums. Regular
+    /// expressions are supported.
+    pub fn constified_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.constified_enums.insert(arg);
         self
     }
 
@@ -418,6 +434,9 @@ pub struct BindgenOptions {
     /// The enum patterns to mark an enum as bitfield.
     pub bitfield_enums: RegexSet,
 
+    /// The enum patterns to mark an enum as constant.
+    pub constified_enums: RegexSet,
+
     /// Whether we should generate builtins or not.
     pub builtins: bool,
 
@@ -496,6 +515,7 @@ impl BindgenOptions {
         self.hidden_types.build();
         self.opaque_types.build();
         self.bitfield_enums.build();
+        self.constified_enums.build();
     }
 }
 
@@ -508,6 +528,7 @@ impl Default for BindgenOptions {
             whitelisted_functions: Default::default(),
             whitelisted_vars: Default::default(),
             bitfield_enums: Default::default(),
+            constified_enums: Default::default(),
             builtins: false,
             links: vec![],
             emit_ast: false,

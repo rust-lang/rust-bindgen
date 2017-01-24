@@ -18,7 +18,7 @@ impl ::std::ops::BitOr<Foo> for Foo {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub struct Foo(pub i32);
+pub struct Foo(pub ::std::os::raw::c_int);
 pub const Buz_Bar: Buz = Buz(2);
 pub const Buz_Baz: Buz = Buz(4);
 pub const Buz_Duplicated: Buz = Buz(4);
@@ -33,7 +33,7 @@ impl ::std::ops::BitOr<Buz> for Buz {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub struct Buz(pub i8);
+pub struct Buz(pub ::std::os::raw::c_char);
 pub const NS_FOO: _bindgen_ty_1 = _bindgen_ty_1(1);
 pub const NS_BAR: _bindgen_ty_1 = _bindgen_ty_1(2);
 impl ::std::ops::BitOr<_bindgen_ty_1> for _bindgen_ty_1 {
@@ -46,7 +46,7 @@ impl ::std::ops::BitOr<_bindgen_ty_1> for _bindgen_ty_1 {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub struct _bindgen_ty_1(pub u32);
+pub struct _bindgen_ty_1(pub ::std::os::raw::c_uint);
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct Dummy {
@@ -66,7 +66,7 @@ impl ::std::ops::BitOr<Dummy__bindgen_ty_1> for Dummy__bindgen_ty_1 {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub struct Dummy__bindgen_ty_1(pub u32);
+pub struct Dummy__bindgen_ty_1(pub ::std::os::raw::c_uint);
 #[test]
 fn bindgen_test_layout_Dummy() {
     assert_eq!(::std::mem::size_of::<Dummy>() , 1usize);

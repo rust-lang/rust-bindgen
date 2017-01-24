@@ -24,6 +24,14 @@ pub fn builder_from_flags<I>(args: I)
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("constified-enum")
+                .long("constified-enum")
+                .help("Mark any enum whose name matches <regex> as a set of \
+                       constants instead of an enumeration.")
+                .value_name("regex")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
             Arg::with_name("blacklist-type")
                 .long("blacklist-type")
                 .help("Mark a type as hidden.")
@@ -168,6 +176,12 @@ pub fn builder_from_flags<I>(args: I)
     if let Some(bitfields) = matches.values_of("bitfield-enum") {
         for regex in bitfields {
             builder = builder.bitfield_enum(regex);
+        }
+    }
+
+    if let Some(bitfields) = matches.values_of("constified-enum") {
+        for regex in bitfields {
+            builder = builder.constified_enum(regex);
         }
     }
 
