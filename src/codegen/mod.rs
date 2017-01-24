@@ -539,12 +539,10 @@ impl CodeGenerator for Type {
                 };
 
                 let typedef = if let Some(mut p) = simple_enum_path {
-                    if p.segments.len() == 1 {
-                        p.segments.insert(0, ast::PathSegment {
-                            identifier: ctx.ext_cx().ident_of("self"),
-                            parameters: None,
-                        });
-                    }
+                    p.segments.insert(0, ast::PathSegment {
+                        identifier: ctx.ext_cx().ident_of("self"),
+                        parameters: None,
+                    });
                     typedef.use_().build(p).as_(rust_name)
                 } else {
                     let mut generics = typedef.type_(rust_name).generics();

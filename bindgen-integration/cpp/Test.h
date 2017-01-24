@@ -9,4 +9,10 @@ public:
   Test(double foo);
 };
 
+namespace testing {
+
 typedef Test TypeAlias;
+
+} // namespace testing
+
+typedef testing::TypeAlias TypeAlias;

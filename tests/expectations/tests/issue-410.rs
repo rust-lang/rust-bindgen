@@ -10,7 +10,7 @@ pub mod root {
     pub mod JS {
         #[allow(unused_imports)]
         use self::super::super::root;
-        pub use root::_bindgen_ty_1 as JSWhyMagic;
+        pub use self::root::_bindgen_ty_1 as JSWhyMagic;
         #[repr(C)]
         #[derive(Debug, Copy)]
         pub struct Value {
