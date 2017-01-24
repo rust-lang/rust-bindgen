@@ -543,7 +543,7 @@ impl CodeGenerator for Type {
                 let simple_enum_path = match inner_rust_type.node {
                     ast::TyKind::Path(None, ref p) => {
                         if applicable_template_args.is_empty() &&
-                            !inner_item.expect_type().canonical_type(ctx).is_builtin_or_named() &&
+                            inner_item.expect_type().canonical_type(ctx).is_enum() &&
                             p.segments.iter().all(|p| p.parameters.is_none()) {
                             Some(p.clone())
                         } else {

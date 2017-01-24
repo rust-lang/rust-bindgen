@@ -46,4 +46,4 @@ impl _bindgen_ty_1 {
             ((val as u32 as u32) << 24u32) & (4278190080usize as u32);
     }
 }
-pub use self::_bindgen_ty_1 as mach_msg_type_descriptor_t;
+pub type mach_msg_type_descriptor_t = _bindgen_ty_1;
