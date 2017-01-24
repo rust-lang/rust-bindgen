@@ -40,19 +40,17 @@ fn root_import_depth(ctx: &BindgenContext, item: &Item) -> usize {
         .fold(1, |i, _| i + 1)
 }
 
-fn top_level_module_path(ctx: &BindgenContext, item: &Item) -> Vec<ast::Ident> {
+fn top_level_path(ctx: &BindgenContext, item: &Item) -> Vec<ast::Ident> {
     let mut path = vec![ctx.rust_ident_raw("self")];
 
-    let super_ = ctx.rust_ident_raw("super");
+    if ctx.options().enable_cxx_namespaces {
+        let super_ = ctx.rust_ident_raw("super");
 
-    for _ in 0..root_import_depth(ctx, item) {
-        path.push(super_.clone());
+        for _ in 0..root_import_depth(ctx, item) {
+            path.push(super_.clone());
+        }
     }
 
-    let root = ctx.root_module().canonical_name(ctx);
-    let root_ident = ctx.rust_ident(&root);
-
-    path.push(root_ident);
     path
 }
 
@@ -60,10 +58,16 @@ fn root_import(ctx: &BindgenContext, module: &Item) -> P<ast::Item> {
     assert!(ctx.options().enable_cxx_namespaces, "Somebody messed it up");
     assert!(module.is_module());
 
+    let mut path = top_level_path(ctx, module);
+
+    let root = ctx.root_module().canonical_name(ctx);
+    let root_ident = ctx.rust_ident(&root);
+    path.push(root_ident);
+
     let use_root = aster::AstBuilder::new()
         .item()
         .use_()
-        .ids(top_level_module_path(ctx, module))
+        .ids(path)
         .build()
         .build();
 
@@ -550,10 +554,12 @@ impl CodeGenerator for Type {
                 };
 
                 let typedef = if let Some(mut p) = simple_enum_path {
-                    p.segments.insert(0, ast::PathSegment {
-                        identifier: ctx.ext_cx().ident_of("self"),
-                        parameters: None,
-                    });
+                    for ident in top_level_path(ctx, item).into_iter().rev() {
+                        p.segments.insert(0, ast::PathSegment {
+                            identifier: ident,
+                            parameters: None,
+                        });
+                    }
                     typedef.use_().build(p).as_(rust_name)
                 } else {
                     let mut generics = typedef.type_(rust_name).generics();

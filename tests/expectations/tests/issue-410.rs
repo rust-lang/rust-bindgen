@@ -10,7 +10,6 @@ pub mod root {
     pub mod JS {
         #[allow(unused_imports)]
         use self::super::super::root;
-        pub use self::root::_bindgen_ty_1 as JSWhyMagic;
         #[repr(C)]
         #[derive(Debug, Copy)]
         pub struct Value {
@@ -24,18 +23,19 @@ pub mod root {
         extern "C" {
             #[link_name = "_ZN2JS5Value1aE10JSWhyMagic"]
             pub fn Value_a(this: *mut root::JS::Value,
-                           arg1: root::JS::JSWhyMagic);
+                           arg1: root::JSWhyMagic);
         }
         impl Clone for Value {
             fn clone(&self) -> Self { *self }
         }
         impl Value {
             #[inline]
-            pub unsafe fn a(&mut self, arg1: root::JS::JSWhyMagic) {
+            pub unsafe fn a(&mut self, arg1: root::JSWhyMagic) {
                 Value_a(&mut *self, arg1)
             }
         }
     }
     #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
     pub enum _bindgen_ty_1 { }
+    pub use self::super::root::_bindgen_ty_1 as JSWhyMagic;
 }

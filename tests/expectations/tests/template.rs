@@ -12,13 +12,6 @@ pub struct Foo<T, U> {
     pub m_member_arr: [T; 1usize],
     pub _phantom_1: ::std::marker::PhantomData<U>,
 }
-#[test]
-fn __bindgen_test_layout_template_1() {
-    assert_eq!(::std::mem::size_of::<Foo<::std::os::raw::c_int, ::std::os::raw::c_int>>()
-               , 24usize);
-    assert_eq!(::std::mem::align_of::<Foo<::std::os::raw::c_int, ::std::os::raw::c_int>>()
-               , 8usize);
-}
 extern "C" {
     #[link_name = "_Z3bar3FooIiiE"]
     pub fn bar(foo: Foo<::std::os::raw::c_int, ::std::os::raw::c_int>);
@@ -174,6 +167,13 @@ pub struct ReplacedWithoutDestructorFwd<T> {
 pub struct TemplateWithVar<T> {
     pub _address: u8,
     pub _phantom_0: ::std::marker::PhantomData<T>,
+}
+#[test]
+fn __bindgen_test_layout_template_1() {
+    assert_eq!(::std::mem::size_of::<Foo<::std::os::raw::c_int, ::std::os::raw::c_int>>()
+               , 24usize);
+    assert_eq!(::std::mem::align_of::<Foo<::std::os::raw::c_int, ::std::os::raw::c_int>>()
+               , 8usize);
 }
 #[test]
 fn __bindgen_test_layout_template_2() {
