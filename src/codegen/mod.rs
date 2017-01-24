@@ -1479,6 +1479,7 @@ enum EnumBuilder<'a> {
         canonical_name: &'a str,
         aster: P<ast::Item>,
     },
+    Consts { aster: P<ast::Item>, }
 }
 
 impl<'a> EnumBuilder<'a> {
@@ -1486,21 +1487,25 @@ impl<'a> EnumBuilder<'a> {
     /// the representation, and whether it should be represented as a rust enum.
     fn new(aster: aster::item::ItemBuilder<aster::invoke::Identity>,
            name: &'a str,
-           repr_name: &str,
-           is_rust: bool)
+           repr: P<ast::Ty>,
+           bitfield_like: bool,
+           constify: bool)
            -> Self {
-        if is_rust {
-            EnumBuilder::Rust(aster.enum_(name))
-        } else {
+        if bitfield_like {
             EnumBuilder::Bitfield {
                 canonical_name: name,
                 aster: aster.tuple_struct(name)
                     .field()
                     .pub_()
-                    .ty()
-                    .id(repr_name)
+                    .build_ty(repr)
                     .build(),
             }
+        } else if constify {
+            EnumBuilder::Consts {
+                aster: aster.type_(name).build_ty(repr),
+            }
+        } else {
+            EnumBuilder::Rust(aster.enum_(name))
         }
     }
 
@@ -1550,6 +1555,25 @@ impl<'a> EnumBuilder<'a> {
                 result.push(constant);
                 self
             }
+            EnumBuilder::Consts { .. } => {
+                let constant_name = match mangling_prefix {
+                    Some(prefix) => {
+                        Cow::Owned(format!("{}_{}", prefix, variant_name))
+                    }
+                    None => variant_name,
+                };
+
+                let constant = aster::AstBuilder::new()
+                    .item()
+                    .pub_()
+                    .const_(&*constant_name)
+                    .expr()
+                    .build(expr)
+                    .build(rust_ty);
+
+                result.push(constant);
+                self
+            }
         }
     }
 
@@ -1579,6 +1603,7 @@ impl<'a> EnumBuilder<'a> {
                 result.push(impl_);
                 aster
             }
+            EnumBuilder::Consts { aster, .. } => aster,
         }
     }
 }
@@ -1634,6 +1659,8 @@ impl CodeGenerator for Enum {
 
         let mut builder = aster::AstBuilder::new().item().pub_();
 
+        // FIXME(emilio): These should probably use the path so it can
+        // disambiguate between namespaces, just like is_opaque etc.
         let is_bitfield = {
             ctx.options().bitfield_enums.matches(&name) ||
             (enum_ty.name().is_none() &&
@@ -1642,15 +1669,25 @@ impl CodeGenerator for Enum {
                 .any(|v| ctx.options().bitfield_enums.matches(&v.name())))
         };
 
-        let is_rust_enum = !is_bitfield;
+        let is_constified_enum = {
+            ctx.options().constified_enums.matches(&name) ||
+            (enum_ty.name().is_none() &&
+             self.variants()
+                .iter()
+                .any(|v| ctx.options().constified_enums.matches(&v.name())))
+        };
+
+        let is_rust_enum = !is_bitfield && !is_constified_enum;
 
         // FIXME: Rust forbids repr with empty enums. Remove this condition when
         // this is allowed.
+        //
+        // TODO(emilio): Delegate this to the builders?
         if is_rust_enum {
             if !self.variants().is_empty() {
                 builder = builder.with_attr(attributes::repr(repr_name));
             }
-        } else {
+        } else if is_bitfield {
             builder = builder.with_attr(attributes::repr("C"));
         }
 
@@ -1658,14 +1695,16 @@ impl CodeGenerator for Enum {
             builder = builder.with_attr(attributes::doc(comment));
         }
 
-        let derives = attributes::derives(&["Debug",
-                                            "Copy",
-                                            "Clone",
-                                            "PartialEq",
-                                            "Eq",
-                                            "Hash"]);
+        if !is_constified_enum {
+            let derives = attributes::derives(&["Debug",
+                                                "Copy",
+                                                "Clone",
+                                                "PartialEq",
+                                                "Eq",
+                                                "Hash"]);
 
-        builder = builder.with_attr(derives);
+            builder = builder.with_attr(derives);
+        }
 
         fn add_constant<'a>(enum_: &Type,
                             // Only to avoid recomputing every time.
@@ -1695,8 +1734,16 @@ impl CodeGenerator for Enum {
             result.push(constant);
         }
 
+        let repr = self.repr()
+            .map(|repr| repr.to_rust_ty(ctx))
+            .unwrap_or_else(|| helpers::ast_ty::raw_type(ctx, repr_name));
+
         let mut builder =
-            EnumBuilder::new(builder, &name, repr_name, is_rust_enum);
+            EnumBuilder::new(builder,
+                             &name,
+                             repr,
+                             is_bitfield,
+                             is_constified_enum);
 
         // A map where we keep a value -> variant relation.
         let mut seen_values = HashMap::<_, String>::new();
