@@ -23,7 +23,6 @@ use std::cell::Cell;
 use std::collections::{HashSet, VecDeque};
 use std::collections::hash_map::{Entry, HashMap};
 use std::fmt::Write;
-use std::iter;
 use std::mem;
 use std::ops;
 use syntax::abi::Abi;
@@ -31,28 +30,40 @@ use syntax::ast;
 use syntax::codemap::{Span, respan};
 use syntax::ptr::P;
 
-fn root_import(ctx: &BindgenContext, module: &Item) -> P<ast::Item> {
-    assert!(ctx.options().enable_cxx_namespaces, "Somebody messed it up");
-    assert!(module.is_module());
+fn root_import_depth(ctx: &BindgenContext, item: &Item) -> usize {
+    if !ctx.options().enable_cxx_namespaces {
+        return 0;
+    }
+
+    item.ancestors(ctx)
+        .filter(|id| ctx.resolve_item(*id).is_module())
+        .fold(1, |i, _| i + 1)
+}
+
+fn top_level_module_path(ctx: &BindgenContext, item: &Item) -> Vec<ast::Ident> {
+    let mut path = vec![ctx.rust_ident_raw("self")];
+
+    let super_ = ctx.rust_ident_raw("super");
+
+    for _ in 0..root_import_depth(ctx, item) {
+        path.push(super_.clone());
+    }
 
     let root = ctx.root_module().canonical_name(ctx);
     let root_ident = ctx.rust_ident(&root);
 
-    let super_ = aster::AstBuilder::new().id("super");
-    let supers = module.ancestors(ctx)
-        .filter(|id| ctx.resolve_item(*id).is_module())
-        .map(|_| super_.clone())
-        .chain(iter::once(super_));
+    path.push(root_ident);
+    path
+}
 
-    let self_ = iter::once(aster::AstBuilder::new().id("self"));
-    let root_ident = iter::once(root_ident);
-
-    let path = self_.chain(supers).chain(root_ident);
+fn root_import(ctx: &BindgenContext, module: &Item) -> P<ast::Item> {
+    assert!(ctx.options().enable_cxx_namespaces, "Somebody messed it up");
+    assert!(module.is_module());
 
     let use_root = aster::AstBuilder::new()
         .item()
         .use_()
-        .ids(path)
+        .ids(top_level_module_path(ctx, module))
         .build()
         .build();
 
