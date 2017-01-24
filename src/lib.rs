@@ -182,41 +182,41 @@ impl Builder {
         self
     }
 
-    /// Hide the given type from the generated bindings.
+    /// Hide the given type from the generated bindings. Regular expressions are supported.
     pub fn hide_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.hidden_types.insert(arg);
         self
     }
 
-    /// Treat the given type as opaque in the generated bindings.
+    /// Treat the given type as opaque in the generated bindings. Regular expressions are supported.
     pub fn opaque_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.opaque_types.insert(arg);
         self
     }
 
     /// Whitelist the given type so that it (and all types that it transitively
-    /// refers to) appears in the generated bindings.
+    /// refers to) appears in the generated bindings. Regular expressions are supported.
     pub fn whitelisted_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.whitelisted_types.insert(arg);
         self
     }
 
     /// Whitelist the given function so that it (and all types that it
-    /// transitively refers to) appears in the generated bindings.
+    /// transitively refers to) appears in the generated bindings. Regular expressions are supported.
     pub fn whitelisted_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.whitelisted_functions.insert(arg);
         self
     }
 
     /// Whitelist the given variable so that it (and all types that it
-    /// transitively refers to) appears in the generated bindings.
+    /// transitively refers to) appears in the generated bindings. Regular expressions are supported.
     pub fn whitelisted_var<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.whitelisted_vars.insert(arg);
         self
     }
 
     /// Mark the given enum (or set of enums, if using a pattern) as being
-    /// bitfield-like.
+    /// bitfield-like. Regular expressions are supported.
     ///
     /// This makes bindgen generate a type that isn't a rust `enum`.
     pub fn bitfield_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
@@ -350,7 +350,7 @@ impl Builder {
         self
     }
 
-    /// Avoid generating any unstable Rust in the generated bindings.
+    /// Avoid generating any unstable Rust, such as Rust unions, in the generated bindings.
     pub fn no_unstable_rust(mut self) -> Builder {
         self.options.unstable_rust = false;
         self
