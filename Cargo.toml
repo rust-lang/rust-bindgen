@@ -13,7 +13,7 @@ name = "bindgen"
 readme = "README.md"
 repository = "https://github.com/servo/rust-bindgen"
 documentation = "https://docs.rs/bindgen"
-version = "0.20.1"
+version = "0.20.2"
 build = "build.rs"
 
 [badges]
@@ -32,7 +32,7 @@ clap = "2"
 shlex = "0.1"
 
 [build-dependencies]
-quasi_codegen = "0.26"
+quasi_codegen = "0.29"
 
 [dependencies]
 cexpr = "0.2"
