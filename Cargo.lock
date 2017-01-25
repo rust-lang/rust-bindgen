@@ -1,6 +1,6 @@
 [root]
 name = "bindgen"
-version = "0.20.1"
+version = "0.20.2"
 dependencies = [
  "aster 0.38.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "cexpr 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -12,7 +12,7 @@ dependencies = [
  "lazy_static 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "quasi 0.29.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "quasi_codegen 0.26.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quasi_codegen 0.29.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.22 (registry+https://github.com/rust-lang/crates.io-index)",
  "shlex 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -31,14 +31,6 @@ dependencies = [
 name = "ansi_term"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "aster"
-version = "0.34.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "syntex_syntax 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)",
-]
 
 [[package]]
 name = "aster"
@@ -206,7 +198,7 @@ name = "phf_shared"
 version = "0.7.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "siphasher 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "siphasher 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -220,13 +212,13 @@ dependencies = [
 
 [[package]]
 name = "quasi_codegen"
-version = "0.26.0"
+version = "0.29.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "aster 0.34.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "syntex 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "syntex_errors 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "syntex_syntax 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "aster 0.38.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syntex 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syntex_errors 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syntex_syntax 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -282,7 +274,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "siphasher"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -292,24 +284,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "syntex"
-version = "0.50.0"
+version = "0.54.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "syntex_errors 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "syntex_syntax 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "syntex_errors"
-version = "0.50.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "libc 0.2.20 (registry+https://github.com/rust-lang/crates.io-index)",
- "log 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "rustc-serialize 0.3.22 (registry+https://github.com/rust-lang/crates.io-index)",
- "syntex_pos 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "term 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "unicode-xid 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syntex_errors 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syntex_syntax 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -327,33 +306,10 @@ dependencies = [
 
 [[package]]
 name = "syntex_pos"
-version = "0.50.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "rustc-serialize 0.3.22 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "syntex_pos"
 version = "0.54.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "rustc-serialize 0.3.22 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "syntex_syntax"
-version = "0.50.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "bitflags 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "libc 0.2.20 (registry+https://github.com/rust-lang/crates.io-index)",
- "log 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "rustc-serialize 0.3.22 (registry+https://github.com/rust-lang/crates.io-index)",
- "syntex_errors 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "syntex_pos 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "term 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "unicode-xid 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -430,11 +386,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "unicode-xid"
-version = "0.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "unicode-xid"
 version = "0.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
@@ -474,7 +425,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [metadata]
 "checksum aho-corasick 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)" = "4f660b942762979b56c9f07b4b36bb559776fbad102f05d6771e1b629e8fd5bf"
 "checksum ansi_term 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)" = "23ac7c30002a5accbf7e8987d0632fa6de155b7c3d39d0067317a391e00a2ef6"
-"checksum aster 0.34.0 (registry+https://github.com/rust-lang/crates.io-index)" = "88bb8ecdf6a7eaddb7bfd872ebf5e085d343ca42ce98c582dba8046e3450b524"
 "checksum aster 0.38.0 (registry+https://github.com/rust-lang/crates.io-index)" = "2c9b49e42a449c0b79d8acb91db37621de0978064dca7d3288ddcf030123e5b3"
 "checksum bitflags 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "aad18937a628ec6abcd26d1489012cc0e18c21798210f491af69ded9b881106d"
 "checksum cexpr 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "393a5f0088efbe41f9d1fcd062f24e83c278608420e62109feb2c8abee07de7d"
@@ -499,7 +449,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum phf_generator 0.7.21 (registry+https://github.com/rust-lang/crates.io-index)" = "6b07ffcc532ccc85e3afc45865469bf5d9e4ef5bfcf9622e3cfe80c2d275ec03"
 "checksum phf_shared 0.7.21 (registry+https://github.com/rust-lang/crates.io-index)" = "07e24b0ca9643bdecd0632f2b3da6b1b89bbb0030e0b992afc1113b23a7bc2f2"
 "checksum quasi 0.29.0 (registry+https://github.com/rust-lang/crates.io-index)" = "dcbf815446dc6a0afbc72d88f9a8aa71b608d10b168e09437c80c0fd6fd410c9"
-"checksum quasi_codegen 0.26.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d52e5e2c92ffdad67a9b86ad27ad999bf1a652723f1d4cc93b7cf6c272b5f8e0"
+"checksum quasi_codegen 0.29.0 (registry+https://github.com/rust-lang/crates.io-index)" = "b06172e92ab0099427609854ffb1512c377be5fc4beaf572ae5d5a01b8359596"
 "checksum rand 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)" = "022e0636ec2519ddae48154b028864bdce4eaf7d35226ab8e65c611be97b189d"
 "checksum regex 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "4278c17d0f6d62dfef0ab00028feb45bd7d2102843f80763474eeb1be8a10c01"
 "checksum regex-syntax 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "2f9191b1f57603095f105d317e375d19b1c9c5c3185ea9633a99a6dcbed04457"
@@ -507,14 +457,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum serde 0.8.23 (registry+https://github.com/rust-lang/crates.io-index)" = "9dad3f759919b92c3068c696c15c3d17238234498bbdcc80f2c469606f948ac8"
 "checksum serde_json 0.8.6 (registry+https://github.com/rust-lang/crates.io-index)" = "67f7d2e9edc3523a9c8ec8cd6ec481b3a27810aafee3e625d311febd3e656b4c"
 "checksum shlex 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "7fdf1b9db47230893d76faad238fd6097fd6d6a9245cd7a4d90dbd639536bbd2"
-"checksum siphasher 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "3922130881aed4b3ee4549cd586eaf4d272544021656e084d626cccbae7fb338"
+"checksum siphasher 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "2ffc669b726f2bc9a3bcff66e5e23b56ba6bf70e22a34c3d7b6d0b3450b65b84"
 "checksum strsim 0.5.2 (registry+https://github.com/rust-lang/crates.io-index)" = "67f84c44fbb2f91db7fef94554e6b2ac05909c9c0b0bc23bb98d3a1aebfe7f7c"
-"checksum syntex 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)" = "3bd253b0d7d787723a33384d426f0ebec7f8edccfaeb2022d0177162bb134da0"
-"checksum syntex_errors 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)" = "84822a1178204a191239ad844599f8c85c128cf9f4173397def4eb46b55b0aa1"
+"checksum syntex 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)" = "bb3f52553a966675982404dc34028291b347e0c9a9c0b0b34f2da6be8a0443f8"
 "checksum syntex_errors 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)" = "dee2f6e49c075f71332bb775219d5982bee6732d26227fa1ae1b53cdb12f5cc5"
-"checksum syntex_pos 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)" = "a43abded5057c75bac8555e46ec913ce502efb418267b1ab8e9783897470c7db"
 "checksum syntex_pos 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)" = "8df3921c7945dfb9ffc53aa35adb2cf4313b5ab5f079c3619b3d4eb82a0efc2b"
-"checksum syntex_syntax 0.50.0 (registry+https://github.com/rust-lang/crates.io-index)" = "6ef781e4b60f03431f1b5b59843546ce60ae029a787770cf8e0969ac1fd063a5"
 "checksum syntex_syntax 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)" = "dc960085bae44591e22d01f6c0e82a8aec832f8659aca556cdf8ecbdac2bb47b"
 "checksum target_build_utils 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "54c550e226618cd35334b75e92bfa5437c61474bdb75c38bf330ab5a8037b77c"
 "checksum term 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)" = "3deff8a2b3b6607d6d7cc32ac25c0b33709453ca9cceac006caac51e963cf94a"
@@ -523,7 +470,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum thread_local 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)" = "7793b722f0f77ce716e7f1acf416359ca32ff24d04ffbac4269f44a4a83be05d"
 "checksum unicode-segmentation 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)" = "c3bc443ded17b11305ffffe6b37e2076f328a5a8cb6aa877b1b98f77699e98b5"
 "checksum unicode-width 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)" = "bf3a113775714a22dcb774d8ea3655c53a32debae63a063acc00a91cc586245f"
-"checksum unicode-xid 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)" = "36dff09cafb4ec7c8cf0023eb0b686cb6ce65499116a12201c9e11840ca01beb"
 "checksum unicode-xid 0.0.4 (registry+https://github.com/rust-lang/crates.io-index)" = "8c1f860d7d29cf02cb2f3f359fd35991af3d30bac52c57d265a3c461074cb4dc"
 "checksum unreachable 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "1f2ae5ddb18e1c92664717616dd9549dde73f539f01bd7b77c2edb2446bdff91"
 "checksum utf8-ranges 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "662fab6525a98beff2921d7f61a39e7d59e0b425ebc7d0d9e66d316e55124122"
