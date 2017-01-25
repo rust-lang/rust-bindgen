@@ -2,4 +2,5 @@
 target/
 *~
 ./bindgen-integration/Cargo.lock
+./tests/expectations/Cargo.lock
 #*#
