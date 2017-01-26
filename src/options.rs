@@ -46,6 +46,9 @@ pub fn builder_from_flags<I>(args: I)
                 .long("no-doc-comments")
                 .help("Avoid including doc comments in the output, see: \
                       https://github.com/servo/rust-bindgen/issues/426"),
+            Arg::with_name("no-recursive-whitelist")
+                .long("no-recursive-whitelist")
+                .help("Avoid whitelisting types recursively"),
             Arg::with_name("builtins")
                 .long("builtins")
                 .help("Output bindings for builtin definitions, e.g. \
@@ -277,6 +280,10 @@ pub fn builder_from_flags<I>(args: I)
 
     if matches.is_present("no-doc-comments") {
         builder = builder.generate_comments(false);
+    }
+
+    if matches.is_present("no-recursive-whitelist") {
+        builder = builder.whitelist_recursively(false);
     }
 
     if let Some(opaque_types) = matches.values_of("opaque-type") {

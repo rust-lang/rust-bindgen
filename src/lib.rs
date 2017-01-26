@@ -188,6 +188,16 @@ impl Builder {
         self
     }
 
+    /// Whether to whitelist types recursively or not. Defaults to true.
+    ///
+    /// This can be used to get bindgen to generate _exactly_ the types you want
+    /// in your bindings, and then import other types manually via other means
+    /// (like `raw_line`).
+    pub fn whitelist_recursively(mut self, doit: bool) -> Self {
+        self.options.whitelist_recursively = doit;
+        self
+    }
+
     /// Generate a C/C++ file that includes the header and has dummy uses of
     /// every type defined in the header.
     pub fn dummy_uses<T: Into<String>>(mut self, dummy_uses: T) -> Builder {
@@ -529,6 +539,9 @@ pub struct BindgenOptions {
     /// Wether to keep documentation comments in the generated output. See the
     /// documentation for more details.
     pub generate_comments: bool,
+
+    /// Wether to whitelist types recursively. Defaults to true.
+    pub whitelist_recursively: bool,
 }
 
 impl BindgenOptions {
@@ -574,6 +587,7 @@ impl Default for BindgenOptions {
             codegen_config: CodegenConfig::all(),
             conservative_inline_namespaces: false,
             generate_comments: true,
+            whitelist_recursively: true,
         }
     }
 }
