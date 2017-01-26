@@ -175,6 +175,19 @@ impl Builder {
         self
     }
 
+    /// Whether the generated bindings should contain documentation comments or
+    /// not.
+    ///
+    /// This ideally will always be true, but it may need to be false until we
+    /// implement some processing on comments to work around issues as described
+    /// in:
+    ///
+    /// https://github.com/servo/rust-bindgen/issues/426
+    pub fn generate_comments(mut self, doit: bool) -> Self {
+        self.options.generate_comments = doit;
+        self
+    }
+
     /// Generate a C/C++ file that includes the header and has dummy uses of
     /// every type defined in the header.
     pub fn dummy_uses<T: Into<String>>(mut self, dummy_uses: T) -> Builder {
@@ -495,6 +508,7 @@ pub struct BindgenOptions {
     /// The input header file.
     pub input_header: Option<String>,
 
+
     /// Generate a dummy C/C++ file that includes the header and has dummy uses
     /// of all types defined therein. See the `uses` module for more.
     pub dummy_uses: Option<String>,
@@ -511,6 +525,10 @@ pub struct BindgenOptions {
     ///
     /// See the builder method description for more details.
     pub conservative_inline_namespaces: bool,
+
+    /// Wether to keep documentation comments in the generated output. See the
+    /// documentation for more details.
+    pub generate_comments: bool,
 }
 
 impl BindgenOptions {
@@ -555,6 +573,7 @@ impl Default for BindgenOptions {
             type_chooser: None,
             codegen_config: CodegenConfig::all(),
             conservative_inline_namespaces: false,
+            generate_comments: true,
         }
     }
 }

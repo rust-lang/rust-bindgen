@@ -42,6 +42,10 @@ pub fn builder_from_flags<I>(args: I)
             Arg::with_name("no-derive-debug")
                 .long("no-derive-debug")
                 .help("Avoid deriving Debug on any type."),
+            Arg::with_name("no-doc-comments")
+                .long("no-doc-comments")
+                .help("Avoid including doc comments in the output, see: \
+                      https://github.com/servo/rust-bindgen/issues/426"),
             Arg::with_name("builtins")
                 .long("builtins")
                 .help("Output bindings for builtin definitions, e.g. \
@@ -269,6 +273,10 @@ pub fn builder_from_flags<I>(args: I)
 
     if matches.is_present("no-convert-floats") {
         builder = builder.no_convert_floats();
+    }
+
+    if matches.is_present("no-doc-comments") {
+        builder = builder.generate_comments(false);
     }
 
     if let Some(opaque_types) = matches.values_of("opaque-type") {
