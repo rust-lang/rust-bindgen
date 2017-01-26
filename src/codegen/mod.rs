@@ -534,8 +534,10 @@ impl CodeGenerator for Type {
                 let rust_name = ctx.rust_ident(&name);
                 let mut typedef = aster::AstBuilder::new().item().pub_();
 
-                if let Some(comment) = item.comment() {
-                    typedef = typedef.attr().doc(comment);
+                if ctx.options().generate_comments {
+                    if let Some(comment) = item.comment() {
+                        typedef = typedef.attr().doc(comment);
+                    }
                 }
 
                 // We prefer using `pub use` over `pub type` because of:
@@ -808,8 +810,10 @@ impl CodeGenerator for CompInfo {
 
         let mut attributes = vec![];
         let mut needs_clone_impl = false;
-        if let Some(comment) = item.comment() {
-            attributes.push(attributes::doc(comment));
+        if ctx.options().generate_comments {
+            if let Some(comment) = item.comment() {
+                attributes.push(attributes::doc(comment));
+            }
         }
         if self.packed() {
             attributes.push(attributes::repr_list(&["C", "packed"]));
@@ -1007,8 +1011,10 @@ impl CodeGenerator for CompInfo {
             };
 
             let mut attrs = vec![];
-            if let Some(comment) = field.comment() {
-                attrs.push(attributes::doc(comment));
+            if ctx.options().generate_comments {
+                if let Some(comment) = field.comment() {
+                    attrs.push(attributes::doc(comment));
+                }
             }
             let field_name = match field.name() {
                 Some(name) => ctx.rust_mangle(name).into_owned(),
@@ -1705,8 +1711,10 @@ impl CodeGenerator for Enum {
             builder = builder.with_attr(attributes::repr("C"));
         }
 
-        if let Some(comment) = item.comment() {
-            builder = builder.with_attr(attributes::doc(comment));
+        if ctx.options().generate_comments {
+            if let Some(comment) = item.comment() {
+                builder = builder.with_attr(attributes::doc(comment));
+            }
         }
 
         if !is_constified_enum {
@@ -2166,8 +2174,10 @@ impl CodeGenerator for Function {
 
         let mut attributes = vec![];
 
-        if let Some(comment) = item.comment() {
-            attributes.push(attributes::doc(comment));
+        if ctx.options().generate_comments {
+            if let Some(comment) = item.comment() {
+                attributes.push(attributes::doc(comment));
+            }
         }
 
         if let Some(mangled) = mangled_name {
