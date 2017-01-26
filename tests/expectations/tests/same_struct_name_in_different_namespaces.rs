@@ -5,13 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
-pub struct JS_Zone {
-    pub _address: u8,
-}
-impl Clone for JS_Zone {
-    fn clone(&self) -> Self { *self }
-}
+pub struct JS_Zone([u8; 0]);
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct JS_shadow_Zone {

@@ -290,6 +290,10 @@ pub struct CompInfo {
     /// Used to detect if we've run in a has_destructor cycle while cycling
     /// around the template arguments.
     detect_has_destructor_cycle: Cell<bool>,
+
+    /// Used to indicate when a struct has been forward declared. Usually used
+    /// in headers so that APIs can't modify them directly.
+    is_forward_declaration: bool,
 }
 
 impl CompInfo {
@@ -314,6 +318,7 @@ impl CompInfo {
             found_unknown_attr: false,
             detect_derive_debug_cycle: Cell::new(false),
             detect_has_destructor_cycle: Cell::new(false),
+            is_forward_declaration: false,
         }
     }
 
@@ -481,6 +486,14 @@ impl CompInfo {
         debug!("CompInfo::from_ty({:?}, {:?})", kind, cursor);
 
         let mut ci = CompInfo::new(kind);
+        ci.is_forward_declaration = location.map_or(true, |cur| {
+            match cur.kind() {
+                CXCursor_StructDecl |
+                CXCursor_UnionDecl |
+                CXCursor_ClassDecl => !cur.is_definition(),
+                _ => false,
+            }
+        });
         ci.is_anonymous = cursor.is_anonymous();
         ci.template_args = match ty.template_args() {
             // In forward declarations and not specializations,
@@ -821,6 +834,11 @@ impl CompInfo {
                 .as_comp()
                 .map_or(false, |ci| ci.has_vtable(ctx))
         })
+    }
+
+    /// Returns true if compound type has been forward declared
+    pub fn is_forward_declaration(&self) -> bool {
+        self.is_forward_declaration
     }
 }
 

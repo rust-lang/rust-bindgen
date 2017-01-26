@@ -190,6 +190,11 @@ impl Cursor {
         unsafe { clang_getCursorKind(self.x) }
     }
 
+    /// Returns true is the cursor is a definition
+    pub fn is_definition(&self) -> bool {
+        unsafe { clang_isCursorDefinition(self.x) != 0 }
+    }
+
     /// Is the referent an anonymous record definition?
     pub fn is_anonymous(&self) -> bool {
         unsafe { clang_Cursor_isAnonymous(self.x) != 0 }

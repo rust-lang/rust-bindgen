@@ -763,6 +763,22 @@ impl CodeGenerator for CompInfo {
             return;
         }
 
+        let applicable_template_args = item.applicable_template_args(ctx);
+
+        // generate tuple struct if struct or union is a forward declaration,
+        // skip for now if template parameters are needed.
+        if self.is_forward_declaration() && applicable_template_args.is_empty(){
+            let struct_name = item.canonical_name(ctx);
+            let struct_name = ctx.rust_ident_raw(&struct_name);
+            let tuple_struct = quote_item!(ctx.ext_cx(),
+                                           #[repr(C)]
+                                           pub struct $struct_name([u8; 0]);
+                                          )
+                .unwrap();
+            result.push(tuple_struct);
+            return;
+        }
+
         if self.is_template_specialization() {
             let layout = item.kind().expect_type().layout(ctx);
 
@@ -789,8 +805,6 @@ impl CodeGenerator for CompInfo {
             }
             return;
         }
-
-        let applicable_template_args = item.applicable_template_args(ctx);
 
         let mut attributes = vec![];
         let mut needs_clone_impl = false;
