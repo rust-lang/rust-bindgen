@@ -5,6 +5,7 @@
 
 
 #[repr(C)]
+#[derive(Debug, Copy, Clone)]
 pub struct JS_Zone([u8; 0]);
 #[repr(C)]
 #[derive(Debug, Copy)]

@@ -775,6 +775,7 @@ impl CodeGenerator for CompInfo {
             let struct_name = ctx.rust_ident_raw(&struct_name);
             let tuple_struct = quote_item!(ctx.ext_cx(),
                                            #[repr(C)]
+                                           #[derive(Debug, Copy, Clone)]
                                            pub struct $struct_name([u8; 0]);
                                           )
                 .unwrap();

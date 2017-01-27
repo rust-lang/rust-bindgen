@@ -18,6 +18,7 @@ impl Clone for Foo_empty {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
+#[derive(Debug, Copy, Clone)]
 pub struct Foo([u8; 0]);
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -37,12 +38,14 @@ extern "C" {
     pub fn baz_struct(f: *mut Foo);
 }
 #[repr(C)]
+#[derive(Debug, Copy, Clone)]
 pub struct Union([u8; 0]);
 extern "C" {
     #[link_name = "_Z9baz_unionP5Union"]
     pub fn baz_union(u: *mut Union);
 }
 #[repr(C)]
+#[derive(Debug, Copy, Clone)]
 pub struct Quux([u8; 0]);
 extern "C" {
     #[link_name = "_Z9baz_classP4Quux"]
