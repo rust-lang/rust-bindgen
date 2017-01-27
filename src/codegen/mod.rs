@@ -287,7 +287,12 @@ impl CodeGenerator for Item {
         }
 
         debug!("<Item as CodeGenerator>::codegen: self = {:?}", self);
-        assert!(whitelisted_items.contains(&self.id()));
+        if !whitelisted_items.contains(&self.id()) {
+            // TODO(emilio, #453): Figure out what to do when this happens
+            // legitimately, we could track the opaque stuff and disable the
+            // assertion there I guess.
+            error!("Found non-whitelisted item in code generation: {:?}", self);
+        }
 
         result.set_seen(self.id());
 
