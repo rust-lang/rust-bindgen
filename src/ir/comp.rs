@@ -978,5 +978,9 @@ impl TypeCollector for CompInfo {
         for method in self.methods() {
             types.insert(method.signature);
         }
+
+        for &ctor in self.constructors() {
+            types.insert(ctor);
+        }
     }
 }
