@@ -1,6 +1,6 @@
 # Cargo
 target/
 *~
-./bindgen-integration/Cargo.lock
-./tests/expectations/Cargo.lock
+bindgen-integration/Cargo.lock
+tests/expectations/Cargo.lock
 #*#
