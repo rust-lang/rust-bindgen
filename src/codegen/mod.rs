@@ -287,6 +287,7 @@ impl CodeGenerator for Item {
         }
 
         debug!("<Item as CodeGenerator>::codegen: self = {:?}", self);
+        assert!(whitelisted_items.contains(&self.id()));
 
         result.set_seen(self.id());
 
