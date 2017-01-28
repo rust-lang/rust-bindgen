@@ -13,6 +13,7 @@ use ir::item::{Item, ItemAncestors, ItemCanonicalName, ItemCanonicalPath};
 use ir::item_kind::ItemKind;
 use ir::layout::Layout;
 use ir::module::Module;
+use ir::objc::ObjCInterface;
 use ir::ty::{Type, TypeKind};
 use ir::type_collector::ItemSet;
 use ir::var::Var;
@@ -87,6 +88,9 @@ struct CodegenResult<'a> {
     /// Whether an incomplete array has been generated at least once.
     saw_incomplete_array: bool,
 
+    /// Whether Objective C types have been seen at least once.
+    saw_objc: bool,
+
     items_seen: HashSet<ItemId>,
     /// The set of generated function/var names, needed because in C/C++ is
     /// legal to do something like:
@@ -119,6 +123,7 @@ impl<'a> CodegenResult<'a> {
             items: vec![],
             saw_union: false,
             saw_incomplete_array: false,
+            saw_objc: false,
             codegen_id: codegen_id,
             items_seen: Default::default(),
             functions_seen: Default::default(),
@@ -138,6 +143,10 @@ impl<'a> CodegenResult<'a> {
 
     fn saw_incomplete_array(&mut self) {
         self.saw_incomplete_array = true;
+    }
+
+    fn saw_objc(&mut self) {
+        self.saw_objc = true;
     }
 
     fn seen(&self, item: ItemId) -> bool {
@@ -184,6 +193,7 @@ impl<'a> CodegenResult<'a> {
 
         self.saw_union |= new.saw_union;
         self.saw_incomplete_array |= new.saw_incomplete_array;
+        self.saw_objc |= new.saw_objc;
 
         new.items
     }
@@ -358,6 +368,9 @@ impl CodeGenerator for Module {
                 }
                 if ctx.need_bindegen_complex_type() {
                     utils::prepend_complex_type(ctx, &mut *result);
+                }
+                if result.saw_objc {
+                    utils::prepend_objc_header(ctx, &mut *result);
                 }
             }
         };
@@ -622,6 +635,9 @@ impl CodeGenerator for Type {
             }
             TypeKind::Enum(ref ei) => {
                 ei.codegen(ctx, result, whitelisted_items, item)
+            }
+            TypeKind::ObjCInterface(ref interface) => {
+                interface.codegen(ctx, result, whitelisted_items, item)
             }
             ref u @ TypeKind::UnresolvedTypeRef(..) => {
                 unreachable!("Should have been resolved after parsing {:?}!", u)
@@ -2111,6 +2127,9 @@ impl ToRustTy for Type {
                 let ident = ctx.rust_ident(&name);
                 quote_ty!(ctx.ext_cx(), $ident)
             }
+            TypeKind::ObjCInterface(..) => {
+                quote_ty!(ctx.ext_cx(), id)
+            },
             ref u @ TypeKind::UnresolvedTypeRef(..) => {
                 unreachable!("Should have been resolved after parsing {:?}!", u)
             }
@@ -2144,10 +2163,22 @@ impl ToRustTy for FunctionSig {
             //     the array type derivation.
             //
             // [1]: http://c0x.coding-guidelines.com/6.7.5.3.html
-            let arg_ty = if let TypeKind::Array(t, _) = *arg_ty.canonical_type(ctx).kind() {
-                t.to_rust_ty(ctx).to_ptr(arg_ty.is_const(), ctx.span())
-            } else {
-                arg_item.to_rust_ty(ctx)
+            let arg_ty = match *arg_ty.canonical_type(ctx).kind() {
+                TypeKind::Array(t, _) => {
+                    t.to_rust_ty(ctx).to_ptr(arg_ty.is_const(), ctx.span())
+                },
+                TypeKind::Pointer(inner) => {
+                    let inner = ctx.resolve_item(inner);
+                    let inner_ty = inner.expect_type();
+                    if let TypeKind::ObjCInterface(_) = *inner_ty.canonical_type(ctx).kind() {
+                        quote_ty!(ctx.ext_cx(), id)
+                    } else {
+                        arg_item.to_rust_ty(ctx)
+                    }
+                },
+                _ => {
+                    arg_item.to_rust_ty(ctx)
+                }
             };
 
             let arg_name = match *name {
@@ -2263,6 +2294,85 @@ impl CodeGenerator for Function {
     }
 }
 
+impl CodeGenerator for ObjCInterface {
+    type Extra = Item;
+    fn codegen<'a>(&self,
+                   ctx: &BindgenContext,
+                   result: &mut CodegenResult<'a>,
+                   _whitelisted_items: &ItemSet,
+                   _: &Item) {
+        let mut impl_items = vec![];
+        let mut trait_items = vec![];
+
+        for method in self.methods() {
+            let method_name = ctx.rust_ident(method.name());
+
+            let body = quote_stmt!(ctx.ext_cx(), msg_send![self, $method_name])
+                .unwrap();
+            let block = ast::Block {
+                stmts: vec![body],
+                id: ast::DUMMY_NODE_ID,
+                rules: ast::BlockCheckMode::Default,
+                span: ctx.span(),
+            };
+
+            let sig = aster::AstBuilder::new()
+                .method_sig()
+                .unsafe_()
+                .fn_decl()
+                .self_()
+                .build(ast::SelfKind::Value(ast::Mutability::Immutable))
+                .build(ast::FunctionRetTy::Default(ctx.span()));
+            let attrs = vec![];
+
+            let impl_item = ast::ImplItem {
+                id: ast::DUMMY_NODE_ID,
+                ident: ctx.rust_ident(method.rust_name()),
+                vis: ast::Visibility::Inherited, // Public,
+                attrs: attrs.clone(),
+                node: ast::ImplItemKind::Method(sig.clone(), P(block)),
+                defaultness: ast::Defaultness::Final,
+                span: ctx.span(),
+            };
+
+            let trait_item = ast::TraitItem {
+                id: ast::DUMMY_NODE_ID,
+                ident: ctx.rust_ident(method.rust_name()),
+                attrs: attrs,
+                node: ast::TraitItemKind::Method(sig, None),
+                span: ctx.span(),
+            };
+
+            impl_items.push(impl_item);
+            trait_items.push(trait_item)
+        }
+
+
+        let trait_block = aster::AstBuilder::new()
+            .item()
+            .pub_()
+            .trait_(self.name())
+            .with_items(trait_items)
+            .build();
+
+        let ty_for_impl = quote_ty!(ctx.ext_cx(), id);
+        let impl_block = aster::AstBuilder::new()
+            .item()
+            .impl_()
+            .trait_()
+            .id(self.name())
+            .build()
+            .with_items(impl_items)
+            .build_ty(ty_for_impl);
+
+        result.push(trait_block);
+        result.push(impl_block);
+        result.saw_objc();
+    }
+}
+
+
+
 pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
     context.gen(|context| {
         let counter = Cell::new(0);
@@ -2295,6 +2405,32 @@ mod utils {
     use super::ItemToRustTy;
     use syntax::ast;
     use syntax::ptr::P;
+
+
+    pub fn prepend_objc_header(ctx: &BindgenContext,
+                               result: &mut Vec<P<ast::Item>>) {
+        let use_objc = if ctx.options().objc_extern_crate {
+            quote_item!(ctx.ext_cx(),
+                use objc;
+            ).unwrap()
+        } else {
+            quote_item!(ctx.ext_cx(),
+                #[macro_use]
+                extern crate objc;
+            ).unwrap()
+        };
+
+
+        let id_type = quote_item!(ctx.ext_cx(),
+            #[allow(non_camel_case_types)]
+            pub type id = *mut objc::runtime::Object;
+        )
+            .unwrap();
+
+        let items = vec![use_objc, id_type];
+        let old_items = mem::replace(result, items);
+        result.extend(old_items.into_iter());
+    }
 
     pub fn prepend_union_types(ctx: &BindgenContext,
                                result: &mut Vec<P<ast::Item>>) {

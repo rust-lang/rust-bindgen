@@ -10,6 +10,7 @@ use super::function::FunctionSig;
 use super::int::IntKind;
 use super::item::Item;
 use super::layout::Layout;
+use super::objc::ObjCInterface;
 use super::type_collector::{ItemSet, TypeCollector};
 
 /// The base representation of a type in bindgen.
@@ -179,8 +180,12 @@ impl Type {
     /// Is this a incomplete array type?
     pub fn is_incomplete_array(&self, ctx: &BindgenContext) -> Option<ItemId> {
         match self.kind {
-            TypeKind::Array(item, len) => if len == 0 { Some(item) } else { None },
-            TypeKind::ResolvedTypeRef(inner) => ctx.resolve_type(inner).is_incomplete_array(ctx),
+            TypeKind::Array(item, len) => {
+                if len == 0 { Some(item) } else { None }
+            }
+            TypeKind::ResolvedTypeRef(inner) => {
+                ctx.resolve_type(inner).is_incomplete_array(ctx)
+            }
             _ => None,
         }
     }
@@ -287,7 +292,7 @@ impl Type {
                 let mut remaining = chars;
 
                 let valid = (first.is_alphabetic() || first == '_') &&
-                    remaining.all(|c| c.is_alphanumeric() || c == '_');
+                            remaining.all(|c| c.is_alphanumeric() || c == '_');
 
                 !valid
             }
@@ -324,7 +329,8 @@ impl Type {
             TypeKind::Void |
             TypeKind::NullPtr |
             TypeKind::BlockPointer |
-            TypeKind::Pointer(..) => Some(self),
+            TypeKind::Pointer(..) |
+            TypeKind::ObjCInterface(..) => Some(self),
 
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(inner) |
@@ -492,6 +498,9 @@ pub enum TypeKind {
 
     /// A named type, that is, a template parameter.
     Named,
+
+    /// Objective C interface. Always referenced through a pointer
+    ObjCInterface(ObjCInterface),
 }
 
 impl Type {
@@ -524,6 +533,8 @@ impl Type {
             TypeKind::NullPtr |
             TypeKind::BlockPointer |
             TypeKind::Pointer(..) => false,
+
+            TypeKind::ObjCInterface(..) => true, // dunno?
 
             TypeKind::UnresolvedTypeRef(..) => {
                 unreachable!("Should have been resolved after parsing!");
@@ -566,7 +577,16 @@ impl Type {
         debug!("currently_parsed_types: {:?}", ctx.currently_parsed_types);
 
         let canonical_ty = ty.canonical_type();
-        let kind = match ty.kind() {
+
+        // Parse objc protocols as if they were interfaces
+        let mut ty_kind = ty.kind();
+        if let Some(loc) = location {
+            if loc.kind() == CXCursor_ObjCProtocolDecl {
+                ty_kind = CXType_ObjCInterface;
+            }
+        }
+
+        let kind = match ty_kind {
             CXType_Unexposed if *ty != canonical_ty &&
                                 canonical_ty.kind() != CXType_Invalid => {
                 debug!("Looking for canonical type: {:?}", canonical_ty);
@@ -707,8 +727,7 @@ impl Type {
                                 }
                             };
 
-                            TypeKind::TemplateAlias(inner_type,
-                                                    args)
+                            TypeKind::TemplateAlias(inner_type, args)
                         }
                         CXCursor_TemplateRef => {
                             let referenced = location.referenced().unwrap();
@@ -806,6 +825,7 @@ impl Type {
             //
             // We might need to, though, if the context is already in the
             // process of resolving them.
+            CXType_ObjCObjectPointer |
             CXType_MemberPointer |
             CXType_Pointer => {
                 let inner = Item::from_ty_or_ref(ty.pointee_type().unwrap(),
@@ -887,6 +907,11 @@ impl Type {
                                            parent_id,
                                            ctx);
             }
+            CXType_ObjCInterface => {
+                let interface = ObjCInterface::from_ty(&location.unwrap(), ctx)
+                    .expect("Not a valid objc interface?");
+                TypeKind::ObjCInterface(interface)
+            }
             _ => {
                 error!("unsupported type: kind = {:?}; ty = {:?}; at {:?}",
                        ty.kind(),
@@ -939,6 +964,10 @@ impl TypeCollector for Type {
             }
             TypeKind::UnresolvedTypeRef(_, _, Some(id)) => {
                 types.insert(id);
+            }
+
+            TypeKind::ObjCInterface(_) => {
+                // TODO:
             }
 
             // None of these variants have edges to other items and types.

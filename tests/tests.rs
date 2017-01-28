@@ -76,7 +76,7 @@ fn create_bindgen_builder(header: &PathBuf)
     // Scoop up bindgen-flags from test header
     let mut flags = Vec::with_capacity(2);
 
-    for line in reader.lines().take(2) {
+    for line in reader.lines().take(3) {
         let line = try!(line);
         if line.contains("bindgen-flags: ") {
             let extra_flags = line.split("bindgen-flags: ")
@@ -87,6 +87,12 @@ fn create_bindgen_builder(header: &PathBuf)
         } else if line.contains("bindgen-unstable") &&
                   cfg!(feature = "llvm_stable") {
             return Ok(None);
+        } else if line.contains("bindgen-osx-only") {
+            let prepend_flags = ["--raw-line", "#![cfg(target_os=\"macos\")]"];
+            flags = prepend_flags.into_iter()
+                .map(ToString::to_string)
+                .chain(flags)
+                .collect();
         }
     }
 

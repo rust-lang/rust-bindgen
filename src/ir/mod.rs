@@ -17,3 +17,4 @@ pub mod module;
 pub mod ty;
 pub mod type_collector;
 pub mod var;
+pub mod objc;
