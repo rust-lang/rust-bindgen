@@ -194,6 +194,15 @@ impl Type {
         }
     }
 
+    /// Is this a incomplete array type?
+    pub fn is_incomplete_array(&self, ctx: &BindgenContext) -> Option<ItemId> {
+        match self.kind {
+            TypeKind::Array(item, len) => if len == 0 { Some(item) } else { None },
+            TypeKind::ResolvedTypeRef(inner) => ctx.resolve_type(inner).is_incomplete_array(ctx),
+            _ => None,
+        }
+    }
+
     /// What is the layout of this type?
     pub fn layout(&self, ctx: &BindgenContext) -> Option<Layout> {
         use std::mem;

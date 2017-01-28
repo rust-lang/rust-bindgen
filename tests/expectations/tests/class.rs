@@ -5,6 +5,27 @@
 
 
 #[repr(C)]
+pub struct __IncompleteArrayField<T>(::std::marker::PhantomData<T>);
+impl <T> __IncompleteArrayField<T> {
+    #[inline]
+    pub fn new() -> Self {
+        __IncompleteArrayField(::std::marker::PhantomData)
+    }
+    #[inline]
+    pub unsafe fn as_slice(&self, len: usize) -> &[T] {
+        ::std::slice::from_raw_parts(::std::mem::transmute(self), len)
+    }
+    #[inline]
+    pub unsafe fn as_mut_slice(&mut self, len: usize) -> &mut [T] {
+        ::std::slice::from_raw_parts_mut(::std::mem::transmute(self), len)
+    }
+}
+impl <T> ::std::fmt::Debug for __IncompleteArrayField<T> {
+    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        fmt.write_str("__IncompleteArrayField")
+    }
+}
+#[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
 impl <T> __BindgenUnionField<T> {
     #[inline]
@@ -32,8 +53,8 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
 pub struct C {
     pub a: ::std::os::raw::c_int,
     pub big_array: [::std::os::raw::c_char; 33usize],
-    pub zero_length_array: [::std::os::raw::c_char; 0usize],
-    pub incomplete_array: [::std::os::raw::c_char; 0usize],
+    pub zero_length_array: __IncompleteArrayField<::std::os::raw::c_char>,
+    pub incomplete_array: __IncompleteArrayField<::std::os::raw::c_char>,
 }
 #[test]
 fn bindgen_test_layout_C() {
