@@ -53,13 +53,47 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
 pub struct C {
     pub a: ::std::os::raw::c_int,
     pub big_array: [::std::os::raw::c_char; 33usize],
-    pub zero_length_array: __IncompleteArrayField<::std::os::raw::c_char>,
-    pub incomplete_array: __IncompleteArrayField<::std::os::raw::c_char>,
 }
 #[test]
 fn bindgen_test_layout_C() {
     assert_eq!(::std::mem::size_of::<C>() , 40usize);
     assert_eq!(::std::mem::align_of::<C>() , 4usize);
+}
+#[repr(C)]
+pub struct C_with_zero_length_array {
+    pub a: ::std::os::raw::c_int,
+    pub big_array: [::std::os::raw::c_char; 33usize],
+    pub zero_length_array: __IncompleteArrayField<::std::os::raw::c_char>,
+}
+#[test]
+fn bindgen_test_layout_C_with_zero_length_array() {
+    assert_eq!(::std::mem::size_of::<C_with_zero_length_array>() , 40usize);
+    assert_eq!(::std::mem::align_of::<C_with_zero_length_array>() , 4usize);
+}
+#[repr(C)]
+pub struct C_with_incomplete_array {
+    pub a: ::std::os::raw::c_int,
+    pub big_array: [::std::os::raw::c_char; 33usize],
+    pub incomplete_array: __IncompleteArrayField<::std::os::raw::c_char>,
+}
+#[test]
+fn bindgen_test_layout_C_with_incomplete_array() {
+    assert_eq!(::std::mem::size_of::<C_with_incomplete_array>() , 40usize);
+    assert_eq!(::std::mem::align_of::<C_with_incomplete_array>() , 4usize);
+}
+#[repr(C)]
+pub struct C_with_zero_length_array_and_incomplete_array {
+    pub a: ::std::os::raw::c_int,
+    pub big_array: [::std::os::raw::c_char; 33usize],
+    pub zero_length_array: __IncompleteArrayField<::std::os::raw::c_char>,
+    pub incomplete_array: __IncompleteArrayField<::std::os::raw::c_char>,
+}
+#[test]
+fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
+    assert_eq!(::std::mem::size_of::<C_with_zero_length_array_and_incomplete_array>()
+               , 40usize);
+    assert_eq!(::std::mem::align_of::<C_with_zero_length_array_and_incomplete_array>()
+               , 4usize);
 }
 #[repr(C)]
 #[derive(Debug)]
