@@ -32,6 +32,8 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
 pub struct C {
     pub a: ::std::os::raw::c_int,
     pub big_array: [::std::os::raw::c_char; 33usize],
+    pub zero_length_array: [::std::os::raw::c_char; 0usize],
+    pub incomplete_array: [::std::os::raw::c_char; 0usize],
 }
 #[test]
 fn bindgen_test_layout_C() {

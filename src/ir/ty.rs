@@ -816,14 +816,21 @@ impl Type {
             }
             // XXX DependentSizedArray is wrong
             CXType_VariableArray |
-            CXType_DependentSizedArray |
-            CXType_IncompleteArray => {
+            CXType_DependentSizedArray => {
                 let inner = Item::from_ty(ty.elem_type().as_ref().unwrap(),
                                           location,
                                           parent_id,
                                           ctx)
                     .expect("Not able to resolve array element?");
                 TypeKind::Pointer(inner)
+            }
+            CXType_IncompleteArray => {
+                let inner = Item::from_ty(ty.elem_type().as_ref().unwrap(),
+                                          location,
+                                          parent_id,
+                                          ctx)
+                    .expect("Not able to resolve array element?");
+                TypeKind::Array(inner, 0)
             }
             CXType_FunctionNoProto |
             CXType_FunctionProto => {

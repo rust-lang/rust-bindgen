@@ -36,7 +36,7 @@ pub struct Baz {
 }
 extern "C" {
     #[link_name = "_ZN3Baz3FOOE"]
-    pub static mut Baz_FOO: *const Bar;
+    pub static mut Baz_FOO: [Bar; 0usize];
 }
 #[test]
 fn bindgen_test_layout_Baz() {

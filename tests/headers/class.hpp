@@ -2,6 +2,8 @@ class C {
     int a;
     // More than rust limits (32)
     char big_array[33];
+    char zero_length_array[0];
+    char incomplete_array[];
 };
 
 class WithDtor {
