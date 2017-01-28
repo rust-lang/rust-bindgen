@@ -12,12 +12,18 @@ impl <T> __IncompleteArrayField<T> {
         __IncompleteArrayField(::std::marker::PhantomData)
     }
     #[inline]
+    pub unsafe fn as_ptr(&self) -> *const T { ::std::mem::transmute(self) }
+    #[inline]
+    pub unsafe fn as_mut_ptr(&mut self) -> *mut T {
+        ::std::mem::transmute(self)
+    }
+    #[inline]
     pub unsafe fn as_slice(&self, len: usize) -> &[T] {
-        ::std::slice::from_raw_parts(::std::mem::transmute(self), len)
+        ::std::slice::from_raw_parts(self.as_ptr(), len)
     }
     #[inline]
     pub unsafe fn as_mut_slice(&mut self, len: usize) -> &mut [T] {
-        ::std::slice::from_raw_parts_mut(::std::mem::transmute(self), len)
+        ::std::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
     }
 }
 impl <T> ::std::fmt::Debug for __IncompleteArrayField<T> {

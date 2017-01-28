@@ -353,8 +353,7 @@ impl CodeGenerator for Module {
                 if saw_union && !ctx.options().unstable_rust {
                     utils::prepend_union_types(ctx, &mut *result);
                 }
-                let saw_incomplete_array = result.saw_incomplete_array;
-                if saw_incomplete_array && !ctx.options().unstable_rust {
+                if result.saw_incomplete_array {
                     utils::prepend_incomplete_array_types(ctx, &mut *result);
                 }
                 if ctx.need_bindegen_complex_type() {
@@ -2360,8 +2359,6 @@ mod utils {
                                           result: &mut Vec<P<ast::Item>>) {
         let prefix = ctx.trait_prefix();
 
-        // TODO(emilio): The fmt::Debug impl could be way nicer with
-        // std::intrinsics::type_name, but...
         let incomplete_array_decl = quote_item!(ctx.ext_cx(),
             #[repr(C)]
             pub struct __IncompleteArrayField<T>(
@@ -2377,13 +2374,23 @@ mod utils {
                 }
 
                 #[inline]
+                pub unsafe fn as_ptr(&self) -> *const T {
+                    ::$prefix::mem::transmute(self)
+                }
+
+                #[inline]
+                pub unsafe fn as_mut_ptr(&mut self) -> *mut T {
+                    ::$prefix::mem::transmute(self)
+                }
+
+                #[inline]
                 pub unsafe fn as_slice(&self, len: usize) -> &[T] {
-                    ::std::slice::from_raw_parts(::std::mem::transmute(self), len)
+                    ::std::slice::from_raw_parts(self.as_ptr(), len)
                 }
 
                 #[inline]
                 pub unsafe fn as_mut_slice(&mut self, len: usize) -> &mut [T] {
-                    ::std::slice::from_raw_parts_mut(::std::mem::transmute(self), len)
+                    ::std::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
                 }
             }
         )
