@@ -4,6 +4,7 @@ use super::context::{BindgenContext, ItemId};
 use super::function::cursor_mangling;
 use super::int::IntKind;
 use super::item::Item;
+use super::attr::Attribute;
 use super::ty::{FloatKind, TypeKind};
 use cexpr;
 use clang;
@@ -38,6 +39,8 @@ pub struct Var {
     val: Option<VarType>,
     /// Whether this variable is const.
     is_const: bool,
+    /// The special attributes of variable.
+    attributes: Vec<Attribute>,
 }
 
 impl Var {
@@ -46,7 +49,8 @@ impl Var {
                mangled: Option<String>,
                ty: ItemId,
                val: Option<VarType>,
-               is_const: bool)
+               is_const: bool,
+               attributes: Vec<Attribute>)
                -> Var {
         assert!(!name.is_empty());
         Var {
@@ -55,6 +59,7 @@ impl Var {
             ty: ty,
             val: val,
             is_const: is_const,
+            attributes: attributes,
         }
     }
 
@@ -81,6 +86,11 @@ impl Var {
     /// Get this variable's mangled name.
     pub fn mangled_name(&self) -> Option<&str> {
         self.mangled_name.as_ref().map(|n| &**n)
+    }
+
+    /// The special attributes of variable.
+    pub fn attributes(&self) -> &[Attribute] {
+        &self.attributes
     }
 }
 
@@ -168,8 +178,9 @@ impl ClangSubItemParser for Var {
                 };
 
                 let ty = Item::builtin_type(type_kind, true, ctx);
+                let attributes = Attribute::extract(&cursor, ctx);
 
-                Ok(ParseResult::New(Var::new(name, None, ty, Some(val), true),
+                Ok(ParseResult::New(Var::new(name, None, ty, Some(val), true, attributes),
                                     Some(cursor)))
             }
             CXCursor_VarDecl => {
@@ -239,7 +250,8 @@ impl ClangSubItemParser for Var {
                 };
 
                 let mangling = cursor_mangling(&cursor);
-                let var = Var::new(name, mangling, ty, value, is_const);
+                let attributes = Attribute::extract(&cursor, ctx);
+                let var = Var::new(name, mangling, ty, value, is_const, attributes);
 
                 Ok(ParseResult::New(var, Some(cursor)))
             }

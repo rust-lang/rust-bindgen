@@ -1059,7 +1059,7 @@ impl Drop for Index {
 }
 
 /// A token emitted by clang's lexer.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Token {
     /// The kind of token this is.
     pub kind: CXTokenKind,

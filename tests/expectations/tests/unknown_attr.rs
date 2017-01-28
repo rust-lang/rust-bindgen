@@ -4,13 +4,15 @@
 #![allow(non_snake_case)]
 
 
+#[doc = "__attribute__(__aligned__(16))"]
 #[repr(C)]
 #[derive(Debug, Copy)]
-pub struct _bindgen_ty_1 {
+pub struct max_align_t {
+    #[doc = "__attribute__(__aligned__(__alignof__(longlong)))"]
     pub __clang_max_align_nonce1: ::std::os::raw::c_longlong,
+    #[doc = "__attribute__(__aligned__(__alignof__(longdouble)))"]
     pub __clang_max_align_nonce2: f64,
 }
-impl Clone for _bindgen_ty_1 {
+impl Clone for max_align_t {
     fn clone(&self) -> Self { *self }
 }
-pub type max_align_t = _bindgen_ty_1;

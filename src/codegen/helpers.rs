@@ -26,12 +26,24 @@ pub mod attributes {
         aster::AstBuilder::new().attr().word("inline")
     }
 
+    pub fn cold() -> ast::Attribute {
+        aster::AstBuilder::new().attr().word("cold")
+    }
+
+    pub fn deprecated(_: Option<&str>) -> ast::Attribute {
+        aster::AstBuilder::new().attr().word("deprecated")
+    }
+
     pub fn doc(comment: &str) -> ast::Attribute {
         aster::AstBuilder::new().attr().doc(comment)
     }
 
     pub fn link_name(name: &str) -> ast::Attribute {
         aster::AstBuilder::new().attr().name_value("link_name").str(name)
+    }
+
+    pub fn allow(rules: Vec<&str>) -> ast::Attribute {
+        aster::AstBuilder::new().attr().allow(rules)
     }
 }
 
@@ -75,12 +87,15 @@ impl BlobTyBuilder {
 }
 
 pub mod ast_ty {
+    use std::str;
     use aster;
     use ir::context::BindgenContext;
     use ir::function::FunctionSig;
     use ir::ty::FloatKind;
+    use ir::attr;
     use syntax::ast;
     use syntax::ptr::P;
+    use super::attributes;
 
     pub fn raw_type(ctx: &BindgenContext, name: &str) -> P<ast::Ty> {
         let ident = ctx.rust_ident_raw(&name);
@@ -186,5 +201,33 @@ pub mod ast_ty {
                 aster::expr::ExprBuilder::new().id(arg_name)
             })
             .collect::<Vec<_>>()
+    }
+
+    pub fn attribute_to_rust(attribute: &attr::Attribute) -> ast::Attribute {
+        match *attribute {
+            attr::Attribute::Deprecated(ref text) => attributes::deprecated(text.as_ref().map(|s| s.as_str())),
+            attr::Attribute::Unused => attributes::allow(vec!["dead_code"]),
+            attr::Attribute::Used => attributes::doc("#[doc = \"__attribute__(unused)\"]"),
+            attr::Attribute::Cold => attributes::cold(),
+            attr::Attribute::Const => attributes::doc("#[doc = \"__attribute__(const)\"]"),
+            attr::Attribute::Constructor(_) => attributes::doc("#[doc = \"__attribute__(constructor)\"]"),
+            attr::Attribute::Destructor(_) => attributes::doc("#[doc = \"__attribute__(destructor)\"]"),
+            attr::Attribute::Aligned(ref tokens) => {
+                let s = tokens.iter()
+                              .map(|ref token| unsafe { str::from_utf8_unchecked(&token.raw) })
+                              .fold(String::new(), |acc, ref s| { acc + &s });
+                let t = format!("#[doc = \"__attribute__(aligned{})\"]", s.as_str());
+
+                attributes::doc(&t)
+            }
+            attr::Attribute::Unexposed(ref name, ref tokens) => {
+                let s = tokens.iter()
+                              .map(|ref token| unsafe { str::from_utf8_unchecked(&token.raw) })
+                              .fold(String::new(), |acc, ref s| { acc + &s });
+                let t = format!("#[doc = \"__attribute__({}{})\"]", name, s);
+
+                attributes::doc(&t)
+            }
+        }
     }
 }

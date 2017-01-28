@@ -426,11 +426,19 @@ impl CodeGenerator for Var {
         result.saw_var(&canonical_name);
 
         let ty = self.ty().to_rust_ty(ctx);
+        let mut attrs = vec![];
+
+        if ctx.options().generate_comments {
+            for attr in self.attributes() {
+                attrs.push(helpers::ast_ty::attribute_to_rust(attr));
+            }
+        }
 
         if let Some(val) = self.val() {
             let const_item = aster::AstBuilder::new()
                 .item()
                 .pub_()
+                .with_attrs(attrs)
                 .const_(canonical_name)
                 .expr();
             let item = match *val {
@@ -474,7 +482,6 @@ impl CodeGenerator for Var {
 
             result.push(item);
         } else {
-            let mut attrs = vec![];
             if let Some(mangled) = self.mangled_name() {
                 attrs.push(attributes::link_name(mangled));
             } else if canonical_name != self.name() {
@@ -877,6 +884,9 @@ impl CodeGenerator for CompInfo {
             if let Some(comment) = item.comment() {
                 attributes.push(attributes::doc(comment));
             }
+            for attr in self.attributes() {
+                attributes.push(helpers::ast_ty::attribute_to_rust(attr));
+            }
         }
         if self.packed() {
             attributes.push(attributes::repr_list(&["C", "packed"]));
@@ -1090,6 +1100,9 @@ impl CodeGenerator for CompInfo {
             if ctx.options().generate_comments {
                 if let Some(comment) = field.comment() {
                     attrs.push(attributes::doc(comment));
+                }
+                for attr in field.attributes() {
+                    attrs.push(helpers::ast_ty::attribute_to_rust(attr));
                 }
             }
             let field_name = match field.name() {
@@ -1791,6 +1804,9 @@ impl CodeGenerator for Enum {
             if let Some(comment) = item.comment() {
                 builder = builder.with_attr(attributes::doc(comment));
             }
+            for attr in self.attributes() {
+                builder = builder.with_attr(helpers::ast_ty::attribute_to_rust(attr));
+            }
         }
 
         if !is_constified_enum {
@@ -2216,6 +2232,9 @@ impl CodeGenerator for Function {
         if ctx.options().generate_comments {
             if let Some(comment) = item.comment() {
                 attributes.push(attributes::doc(comment));
+            }
+            for attr in self.attributes() {
+                attributes.push(helpers::ast_ty::attribute_to_rust(attr));
             }
         }
 

@@ -1,5 +1,6 @@
 //! Intermediate representation for C/C++ enumerations.
 
+use super::attr::Attribute;
 use super::context::{BindgenContext, ItemId};
 use super::item::Item;
 use super::ty::TypeKind;
@@ -28,14 +29,21 @@ pub struct Enum {
 
     /// The different variants, with explicit values.
     variants: Vec<EnumVariant>,
+
+    /// The special attributes of enumeration.
+    attributes: Vec<Attribute>,
 }
 
 impl Enum {
     /// Construct a new `Enum` with the given representation and variants.
-    pub fn new(repr: Option<ItemId>, variants: Vec<EnumVariant>) -> Self {
+    pub fn new(repr: Option<ItemId>,
+               variants: Vec<EnumVariant>,
+               attributes: Vec<Attribute>)
+               -> Self {
         Enum {
             repr: repr,
             variants: variants,
+            attributes: attributes,
         }
     }
 
@@ -47,6 +55,11 @@ impl Enum {
     /// Get this enumeration's variants.
     pub fn variants(&self) -> &[EnumVariant] {
         &self.variants
+    }
+
+    /// The special attributes of enumeration
+    pub fn attributes(&self) -> &[Attribute] {
+        &self.attributes
     }
 
     /// Construct an enumeration from the given Clang type.
@@ -108,15 +121,21 @@ impl Enum {
                         });
 
                     let comment = cursor.raw_comment();
+
+                    let attributes = Attribute::extract(&cursor, ctx);
                     variants.push(EnumVariant::new(name,
                                                    comment,
                                                    val,
-                                                   custom_behavior));
+                                                   custom_behavior,
+                                                   attributes));
                 }
             }
             CXChildVisit_Continue
         });
-        Ok(Enum::new(repr, variants))
+
+        let attributes = Attribute::extract(&declaration, ctx);
+
+        Ok(Enum::new(repr, variants, attributes))
     }
 }
 
@@ -134,6 +153,9 @@ pub struct EnumVariant {
 
     /// The custom behavior this variant may have, if any.
     custom_behavior: Option<EnumVariantCustomBehavior>,
+
+    /// The special attributes of variable
+    attributes: Vec<Attribute>,
 }
 
 /// A constant value assigned to an enumeration variant.
@@ -151,13 +173,15 @@ impl EnumVariant {
     pub fn new(name: String,
                comment: Option<String>,
                val: EnumVariantValue,
-               custom_behavior: Option<EnumVariantCustomBehavior>)
+               custom_behavior: Option<EnumVariantCustomBehavior>,
+               attributes: Vec<Attribute>)
                -> Self {
         EnumVariant {
             name: name,
             comment: comment,
             val: val,
             custom_behavior: custom_behavior,
+            attributes: attributes,
         }
     }
 
@@ -169,6 +193,11 @@ impl EnumVariant {
     /// Get this variant's value.
     pub fn val(&self) -> EnumVariantValue {
         self.val
+    }
+
+    /// The special attributes of enumeration variant
+    pub fn attributes(&self) -> &[Attribute] {
+        &self.attributes
     }
 
     /// Returns whether this variant should be enforced to be a constant by code

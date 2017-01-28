@@ -95,6 +95,7 @@ pub enum JSWhyMagic {
     JS_GENERIC_MAGIC = 17,
     JS_WHY_MAGIC_COUNT = 18,
 }
+#[doc = "__attribute__(aligned(8))"]
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct jsval_layout {
