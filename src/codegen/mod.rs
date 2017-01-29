@@ -84,6 +84,9 @@ struct CodegenResult<'a> {
     /// Whether an union has been generated at least once.
     saw_union: bool,
 
+    /// Whether an incomplete array has been generated at least once.
+    saw_incomplete_array: bool,
+
     items_seen: HashSet<ItemId>,
     /// The set of generated function/var names, needed because in C/C++ is
     /// legal to do something like:
@@ -115,6 +118,7 @@ impl<'a> CodegenResult<'a> {
         CodegenResult {
             items: vec![],
             saw_union: false,
+            saw_incomplete_array: false,
             codegen_id: codegen_id,
             items_seen: Default::default(),
             functions_seen: Default::default(),
@@ -130,6 +134,10 @@ impl<'a> CodegenResult<'a> {
 
     fn saw_union(&mut self) {
         self.saw_union = true;
+    }
+
+    fn saw_incomplete_array(&mut self) {
+        self.saw_incomplete_array = true;
     }
 
     fn seen(&self, item: ItemId) -> bool {
@@ -175,6 +183,7 @@ impl<'a> CodegenResult<'a> {
         cb(&mut new);
 
         self.saw_union |= new.saw_union;
+        self.saw_incomplete_array |= new.saw_incomplete_array;
 
         new.items
     }
@@ -343,6 +352,9 @@ impl CodeGenerator for Module {
                 let saw_union = result.saw_union;
                 if saw_union && !ctx.options().unstable_rust {
                     utils::prepend_union_types(ctx, &mut *result);
+                }
+                if result.saw_incomplete_array {
+                    utils::prepend_incomplete_array_types(ctx, &mut *result);
                 }
                 if ctx.need_bindegen_complex_type() {
                     utils::prepend_complex_type(ctx, &mut *result);
@@ -1012,6 +1024,16 @@ impl CodeGenerator for CompInfo {
                     quote_ty!(ctx.ext_cx(), root::__BindgenUnionField<$ty>)
                 } else {
                     quote_ty!(ctx.ext_cx(), __BindgenUnionField<$ty>)
+                }
+            } else if let Some(item) = field_ty.is_incomplete_array(ctx) {
+                result.saw_incomplete_array();
+
+                let inner = item.to_rust_ty(ctx);
+
+                if ctx.options().enable_cxx_namespaces {
+                    quote_ty!(ctx.ext_cx(), root::__IncompleteArrayField<$inner>)
+                } else {
+                    quote_ty!(ctx.ext_cx(), __IncompleteArrayField<$inner>)
                 }
             } else {
                 ty
@@ -2327,6 +2349,67 @@ mod utils {
             union_field_clone_impl,
             union_field_copy_impl,
             union_field_debug_impl,
+        ];
+
+        let old_items = mem::replace(result, items);
+        result.extend(old_items.into_iter());
+    }
+
+    pub fn prepend_incomplete_array_types(ctx: &BindgenContext,
+                                          result: &mut Vec<P<ast::Item>>) {
+        let prefix = ctx.trait_prefix();
+
+        let incomplete_array_decl = quote_item!(ctx.ext_cx(),
+            #[repr(C)]
+            pub struct __IncompleteArrayField<T>(
+                ::$prefix::marker::PhantomData<T>);
+        )
+            .unwrap();
+
+        let incomplete_array_impl = quote_item!(&ctx.ext_cx(),
+            impl<T> __IncompleteArrayField<T> {
+                #[inline]
+                pub fn new() -> Self {
+                    __IncompleteArrayField(::$prefix::marker::PhantomData)
+                }
+
+                #[inline]
+                pub unsafe fn as_ptr(&self) -> *const T {
+                    ::$prefix::mem::transmute(self)
+                }
+
+                #[inline]
+                pub unsafe fn as_mut_ptr(&mut self) -> *mut T {
+                    ::$prefix::mem::transmute(self)
+                }
+
+                #[inline]
+                pub unsafe fn as_slice(&self, len: usize) -> &[T] {
+                    ::std::slice::from_raw_parts(self.as_ptr(), len)
+                }
+
+                #[inline]
+                pub unsafe fn as_mut_slice(&mut self, len: usize) -> &mut [T] {
+                    ::std::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
+                }
+            }
+        )
+            .unwrap();
+
+        let incomplete_array_debug_impl = quote_item!(ctx.ext_cx(),
+            impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
+                fn fmt(&self, fmt: &mut ::std::fmt::Formatter)
+                       -> ::std::fmt::Result {
+                    fmt.write_str("__IncompleteArrayField")
+                }
+            }
+        )
+            .unwrap();
+
+        let items = vec![
+            incomplete_array_decl,
+            incomplete_array_impl,
+            incomplete_array_debug_impl,
         ];
 
         let old_items = mem::replace(result, items);
