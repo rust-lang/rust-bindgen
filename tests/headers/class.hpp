@@ -32,6 +32,11 @@ class WithDtor {
     ~WithDtor() {}
 };
 
+class IncompleteArrayNonCopiable {
+  void* whatever;
+  C incomplete_array[];
+};
+
 union Union {
     float d;
     int i;

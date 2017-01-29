@@ -2385,24 +2385,39 @@ mod utils {
 
                 #[inline]
                 pub unsafe fn as_slice(&self, len: usize) -> &[T] {
-                    ::std::slice::from_raw_parts(self.as_ptr(), len)
+                    ::$prefix::slice::from_raw_parts(self.as_ptr(), len)
                 }
 
                 #[inline]
                 pub unsafe fn as_mut_slice(&mut self, len: usize) -> &mut [T] {
-                    ::std::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
+                    ::$prefix::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
                 }
             }
         )
             .unwrap();
 
         let incomplete_array_debug_impl = quote_item!(ctx.ext_cx(),
-            impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
-                fn fmt(&self, fmt: &mut ::std::fmt::Formatter)
-                       -> ::std::fmt::Result {
+            impl<T> ::$prefix::fmt::Debug for __IncompleteArrayField<T> {
+                fn fmt(&self, fmt: &mut ::$prefix::fmt::Formatter)
+                       -> ::$prefix::fmt::Result {
                     fmt.write_str("__IncompleteArrayField")
                 }
             }
+        )
+            .unwrap();
+
+        let incomplete_array_clone_impl = quote_item!(&ctx.ext_cx(),
+            impl<T> ::$prefix::clone::Clone for __IncompleteArrayField<T> {
+                #[inline]
+                fn clone(&self) -> Self {
+                    Self::new()
+                }
+            }
+        )
+            .unwrap();
+
+        let incomplete_array_copy_impl = quote_item!(&ctx.ext_cx(),
+            impl<T> ::$prefix::marker::Copy for __IncompleteArrayField<T> {}
         )
             .unwrap();
 
@@ -2410,6 +2425,8 @@ mod utils {
             incomplete_array_decl,
             incomplete_array_impl,
             incomplete_array_debug_impl,
+            incomplete_array_clone_impl,
+            incomplete_array_copy_impl,
         ];
 
         let old_items = mem::replace(result, items);
