@@ -1,5 +1,12 @@
 #include "Test.h"
 
+const int Test::COUNTDOWN[] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 };
+const int* Test::COUNTDOWN_PTR = Test::COUNTDOWN;
+
+const int* Test::countdown() {
+  return COUNTDOWN;
+}
+
 const char* Test::name() {
   return "Test";
 }
