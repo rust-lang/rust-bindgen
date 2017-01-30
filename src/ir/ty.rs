@@ -292,6 +292,27 @@ impl Type {
         }
     }
 
+    /// Whether this named type is an invalid C++ identifier. This is done to
+    /// avoid generating invalid code with some cases we can't handle, see:
+    ///
+    /// tests/headers/381-decltype-alias.hpp
+    pub fn is_invalid_named_type(&self) -> bool {
+        match self.kind {
+            TypeKind::Named(ref name) => {
+                assert!(!name.is_empty());
+                let mut chars = name.chars();
+                let first = chars.next().unwrap();
+                let mut remaining = chars;
+
+                let valid = (first.is_alphabetic() || first == '_') &&
+                    remaining.all(|c| c.is_alphanumeric() || c == '_');
+
+                !valid
+            }
+            _ => false,
+        }
+    }
+
     /// See safe_canonical_type.
     pub fn canonical_type<'tr>(&'tr self,
                                ctx: &'tr BindgenContext)
