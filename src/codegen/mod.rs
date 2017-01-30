@@ -507,7 +507,7 @@ impl CodeGenerator for Type {
             TypeKind::TemplateRef(..) |
             TypeKind::Function(..) |
             TypeKind::ResolvedTypeRef(..) |
-            TypeKind::Named(..) => {
+            TypeKind::Named => {
                 // These items don't need code generation, they only need to be
                 // converted to rust types in fields, arguments, and such.
                 return;
@@ -517,8 +517,8 @@ impl CodeGenerator for Type {
             }
             // NB: The code below will pick the correct
             // applicable_template_args.
-            TypeKind::TemplateAlias(ref spelling, inner, _) |
-            TypeKind::Alias(ref spelling, inner) => {
+            TypeKind::TemplateAlias(inner, _) |
+            TypeKind::Alias(inner) => {
                 let inner_item = ctx.resolve_item(inner);
                 let name = item.canonical_name(ctx);
 
@@ -534,6 +534,7 @@ impl CodeGenerator for Type {
 
                 // If this is a known named type, disallow generating anything
                 // for it too.
+                let spelling = self.name().expect("Unnamed alias?");
                 if utils::type_from_named(ctx, spelling, inner).is_some() {
                     return;
                 }
@@ -2043,14 +2044,15 @@ impl ToRustTy for Type {
                 P(inner_ty)
             }
             TypeKind::ResolvedTypeRef(inner) => inner.to_rust_ty(ctx),
-            TypeKind::TemplateAlias(ref spelling, inner, _) |
-            TypeKind::Alias(ref spelling, inner) => {
+            TypeKind::TemplateAlias(inner, _) |
+            TypeKind::Alias(inner) => {
                 let applicable_named_args =
                     item.applicable_template_args(ctx)
                         .into_iter()
                         .filter(|arg| ctx.resolve_type(*arg).is_named())
                         .collect::<Vec<_>>();
 
+                let spelling = self.name().expect("Unnamed alias?");
                 if item.is_opaque(ctx) && !applicable_named_args.is_empty() {
                     // Pray if there's no available layout.
                     let layout = self.layout(ctx).unwrap_or_else(Layout::zero);
@@ -2104,7 +2106,7 @@ impl ToRustTy for Type {
                     ty.to_ptr(is_const, ctx.span())
                 }
             }
-            TypeKind::Named(..) => {
+            TypeKind::Named => {
                 let name = item.canonical_name(ctx);
                 let ident = ctx.rust_ident(&name);
                 quote_ty!(ctx.ext_cx(), $ident)

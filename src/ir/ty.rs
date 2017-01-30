@@ -65,22 +65,6 @@ impl Type {
         &self.kind
     }
 
-    /// Overrides the kind of the item. This is mostly a template alias
-    /// implementation detail, and debug assertions guard it like so.
-    pub fn set_kind(&mut self, kind: TypeKind) {
-        if cfg!(debug_assertions) {
-            match (&self.kind, &kind) {
-                (&TypeKind::Alias(ref alias_name, alias_inner),
-                 &TypeKind::TemplateAlias(ref name, inner, _)) => {
-                    assert_eq!(alias_name, name);
-                    assert_eq!(alias_inner, inner);
-                }
-                _ => panic!("Unexpected kind in `set_kind`!"),
-            };
-        }
-        self.kind = kind;
-    }
-
     /// Get a mutable reference to this type's kind.
     pub fn kind_mut(&mut self) -> &mut TypeKind {
         &mut self.kind
@@ -102,7 +86,7 @@ impl Type {
     /// Is this a named type?
     pub fn is_named(&self) -> bool {
         match self.kind {
-            TypeKind::Named(..) => true,
+            TypeKind::Named => true,
             _ => false,
         }
     }
@@ -143,7 +127,7 @@ impl Type {
             TypeKind::BlockPointer |
             TypeKind::Int(..) |
             TypeKind::Float(..) |
-            TypeKind::Named(..) => true,
+            TypeKind::Named => true,
             _ => false,
         }
     }
@@ -151,9 +135,7 @@ impl Type {
     /// Creates a new named type, with name `name`.
     pub fn named(name: String) -> Self {
         assert!(!name.is_empty());
-        // TODO: stop duplicating the name, it's stupid.
-        let kind = TypeKind::Named(name.clone());
-        Self::new(Some(name), None, kind, false)
+        Self::new(Some(name), None, TypeKind::Named, false)
     }
 
     /// Is this a floating point type?
@@ -230,8 +212,8 @@ impl Type {
         // FIXME: Can we do something about template parameters? Huh...
         match self.kind {
             TypeKind::TemplateRef(t, _) |
-            TypeKind::TemplateAlias(_, t, _) |
-            TypeKind::Alias(_, t) |
+            TypeKind::TemplateAlias(t, _) |
+            TypeKind::Alias(t) |
             TypeKind::ResolvedTypeRef(t) => ctx.resolve_type(t).has_vtable(ctx),
             TypeKind::Comp(ref info) => info.has_vtable(ctx),
             _ => false,
@@ -243,8 +225,8 @@ impl Type {
     pub fn has_destructor(&self, ctx: &BindgenContext) -> bool {
         match self.kind {
             TypeKind::TemplateRef(t, _) |
-            TypeKind::TemplateAlias(_, t, _) |
-            TypeKind::Alias(_, t) |
+            TypeKind::TemplateAlias(t, _) |
+            TypeKind::Alias(t) |
             TypeKind::ResolvedTypeRef(t) => {
                 ctx.resolve_type(t).has_destructor(ctx)
             }
@@ -259,16 +241,16 @@ impl Type {
                                          ty: &Type)
                                          -> bool {
         let name = match *ty.kind() {
-            TypeKind::Named(ref name) => name,
+            TypeKind::Named => ty.name(),
             ref other @ _ => unreachable!("Not a named type: {:?}", other),
         };
 
         match self.kind {
-            TypeKind::Named(ref this_name) => this_name == name,
+            TypeKind::Named => self.name() == name,
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::Array(t, _) |
             TypeKind::Pointer(t) |
-            TypeKind::Alias(_, t) => {
+            TypeKind::Alias(t) => {
                 ctx.resolve_type(t)
                     .signature_contains_named_type(ctx, ty)
             }
@@ -280,7 +262,7 @@ impl Type {
                 ctx.resolve_type(sig.return_type())
                     .signature_contains_named_type(ctx, ty)
             }
-            TypeKind::TemplateAlias(_, _, ref template_args) |
+            TypeKind::TemplateAlias(_, ref template_args) |
             TypeKind::TemplateRef(_, ref template_args) => {
                 template_args.iter().any(|arg| {
                     ctx.resolve_type(*arg)
@@ -298,8 +280,8 @@ impl Type {
     /// tests/headers/381-decltype-alias.hpp
     pub fn is_invalid_named_type(&self) -> bool {
         match self.kind {
-            TypeKind::Named(ref name) => {
-                assert!(!name.is_empty());
+            TypeKind::Named => {
+                let name = self.name().expect("Unnamed named type?");
                 let mut chars = name.chars();
                 let first = chars.next().unwrap();
                 let mut remaining = chars;
@@ -330,7 +312,7 @@ impl Type {
                                     ctx: &'tr BindgenContext)
                                     -> Option<&'tr Type> {
         match self.kind {
-            TypeKind::Named(..) |
+            TypeKind::Named |
             TypeKind::Array(..) |
             TypeKind::Comp(..) |
             TypeKind::Int(..) |
@@ -345,8 +327,8 @@ impl Type {
             TypeKind::Pointer(..) => Some(self),
 
             TypeKind::ResolvedTypeRef(inner) |
-            TypeKind::Alias(_, inner) |
-            TypeKind::TemplateAlias(_, inner, _) |
+            TypeKind::Alias(inner) |
+            TypeKind::TemplateAlias(inner, _) |
             TypeKind::TemplateRef(inner, _) => {
                 ctx.resolve_type(inner).safe_canonical_type(ctx)
             }
@@ -379,8 +361,8 @@ impl CanDeriveDebug for Type {
                 len <= RUST_DERIVE_IN_ARRAY_LIMIT && t.can_derive_debug(ctx, ())
             }
             TypeKind::ResolvedTypeRef(t) |
-            TypeKind::TemplateAlias(_, t, _) |
-            TypeKind::Alias(_, t) => t.can_derive_debug(ctx, ()),
+            TypeKind::TemplateAlias(t, _) |
+            TypeKind::Alias(t) => t.can_derive_debug(ctx, ()),
             TypeKind::Comp(ref info) => {
                 info.can_derive_debug(ctx, self.layout(ctx))
             }
@@ -399,9 +381,9 @@ impl<'a> CanDeriveCopy<'a> for Type {
                 t.can_derive_copy_in_array(ctx, ())
             }
             TypeKind::ResolvedTypeRef(t) |
-            TypeKind::TemplateAlias(_, t, _) |
+            TypeKind::TemplateAlias(t, _) |
             TypeKind::TemplateRef(t, _) |
-            TypeKind::Alias(_, t) => t.can_derive_copy(ctx, ()),
+            TypeKind::Alias(t) => t.can_derive_copy(ctx, ()),
             TypeKind::Comp(ref info) => {
                 info.can_derive_copy(ctx, (item, self.layout(ctx)))
             }
@@ -415,10 +397,10 @@ impl<'a> CanDeriveCopy<'a> for Type {
                                 -> bool {
         match self.kind {
             TypeKind::ResolvedTypeRef(t) |
-            TypeKind::TemplateAlias(_, t, _) |
-            TypeKind::Alias(_, t) |
+            TypeKind::TemplateAlias(t, _) |
+            TypeKind::Alias(t) |
             TypeKind::Array(t, _) => t.can_derive_copy_in_array(ctx, ()),
-            TypeKind::Named(..) => false,
+            TypeKind::Named => false,
             _ => self.can_derive_copy(ctx, item),
         }
     }
@@ -460,11 +442,11 @@ pub enum TypeKind {
     Complex(FloatKind),
 
     /// A type alias, with a name, that points to another type.
-    Alias(String, ItemId),
+    Alias(ItemId),
 
     /// A templated alias, pointing to an inner type, just as `Alias`, but with
     /// template parameters.
-    TemplateAlias(String, ItemId, Vec<ItemId>),
+    TemplateAlias(ItemId, Vec<ItemId>),
 
     /// An array of a type and a lenght.
     Array(ItemId, usize),
@@ -509,7 +491,7 @@ pub enum TypeKind {
     ResolvedTypeRef(ItemId),
 
     /// A named type, that is, a template parameter.
-    Named(String),
+    Named,
 }
 
 impl Type {
@@ -527,12 +509,12 @@ impl Type {
                 size == 0 || ctx.resolve_type(inner).is_unsized(ctx)
             }
             TypeKind::ResolvedTypeRef(inner) |
-            TypeKind::Alias(_, inner) |
-            TypeKind::TemplateAlias(_, inner, _) |
+            TypeKind::Alias(inner) |
+            TypeKind::TemplateAlias(inner, _) |
             TypeKind::TemplateRef(inner, _) => {
                 ctx.resolve_type(inner).is_unsized(ctx)
             }
-            TypeKind::Named(..) |
+            TypeKind::Named |
             TypeKind::Int(..) |
             TypeKind::Float(..) |
             TypeKind::Complex(..) |
@@ -725,8 +707,7 @@ impl Type {
                                 }
                             };
 
-                            TypeKind::TemplateAlias(name.clone(),
-                                                    inner_type,
+                            TypeKind::TemplateAlias(inner_type,
                                                     args)
                         }
                         CXCursor_TemplateRef => {
@@ -873,7 +854,7 @@ impl Type {
                 let inner = cursor.typedef_type().expect("Not valid Type?");
                 let inner =
                     Item::from_ty_or_ref(inner, location, parent_id, ctx);
-                TypeKind::Alias(ty.spelling(), inner)
+                TypeKind::Alias(inner)
             }
             CXType_Enum => {
                 let enum_ = Enum::from_ty(ty, ctx).expect("Not an enum?");
@@ -935,12 +916,12 @@ impl TypeCollector for Type {
             TypeKind::Pointer(inner) |
             TypeKind::Reference(inner) |
             TypeKind::Array(inner, _) |
-            TypeKind::Alias(_, inner) |
+            TypeKind::Alias(inner) |
             TypeKind::ResolvedTypeRef(inner) => {
                 types.insert(inner);
             }
 
-            TypeKind::TemplateAlias(_, inner, ref template_args) |
+            TypeKind::TemplateAlias(inner, ref template_args) |
             TypeKind::TemplateRef(inner, ref template_args) => {
                 types.insert(inner);
                 for &item in template_args {
@@ -962,7 +943,7 @@ impl TypeCollector for Type {
 
             // None of these variants have edges to other items and types.
             TypeKind::UnresolvedTypeRef(_, _, None) |
-            TypeKind::Named(_) |
+            TypeKind::Named |
             TypeKind::Void |
             TypeKind::NullPtr |
             TypeKind::Int(_) |
