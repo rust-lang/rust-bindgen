@@ -561,8 +561,8 @@ impl Item {
             parent_template_args.iter().any(|parent_item| {
                 let parent_ty = ctx.resolve_type(*parent_item);
                 match (parent_ty.kind(), item_ty.kind()) {
-                    (&TypeKind::Named(ref n), &TypeKind::Named(ref i)) => {
-                        n == i
+                    (&TypeKind::Named, &TypeKind::Named) => {
+                        parent_ty.name() == item_ty.name()
                     }
                     _ => false,
                 }
@@ -570,14 +570,14 @@ impl Item {
         }
 
         match *ty.kind() {
-            TypeKind::Named(..) => vec![self.id()],
+            TypeKind::Named => vec![self.id()],
             TypeKind::Array(inner, _) |
             TypeKind::Pointer(inner) |
             TypeKind::Reference(inner) |
             TypeKind::ResolvedTypeRef(inner) => {
                 ctx.resolve_item(inner).applicable_template_args(ctx)
             }
-            TypeKind::Alias(_, inner) => {
+            TypeKind::Alias(inner) => {
                 let parent_args = ctx.resolve_item(self.parent_id())
                     .applicable_template_args(ctx);
                 let inner = ctx.resolve_item(inner);
@@ -594,7 +594,7 @@ impl Item {
             }
             // XXX Is this completely correct? Partial template specialization
             // is hard anyways, sigh...
-            TypeKind::TemplateAlias(_, _, ref args) |
+            TypeKind::TemplateAlias(_, ref args) |
             TypeKind::TemplateRef(_, ref args) => args.clone(),
             // In a template specialization we've got all we want.
             TypeKind::Comp(ref ci) if ci.is_template_specialization() => {
