@@ -9,6 +9,7 @@ addons:
 
 os:
   - linux
+  - osx
 
 rust:
   - stable
