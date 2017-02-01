@@ -93,7 +93,7 @@ fn get_abi(cc: CXCallingConv) -> abi::Abi {
 pub fn cursor_mangling(cursor: &clang::Cursor) -> Option<String> {
     // We early return here because libclang may crash in some case
     // if we pass in a variable inside a partial specialized template.
-    // See servo/rust-bindgen#67.
+    // See servo/rust-bindgen#67, and servo/rust-bindgen#462.
     if cursor.is_in_non_fully_specialized_template() {
         return None;
     }

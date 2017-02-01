@@ -201,14 +201,14 @@ impl Cursor {
     }
 
     /// Is the referent a template specialization?
-    pub fn is_template(&self) -> bool {
+    pub fn is_template_specialization(&self) -> bool {
         self.specialized().is_some()
     }
 
     /// Is the referent a fully specialized template specialization without any
     /// remaining free template arguments?
     pub fn is_fully_specialized_template(&self) -> bool {
-        self.is_template() && self.num_template_args().unwrap_or(0) > 0
+        self.is_template_specialization() && self.num_template_args().unwrap_or(0) > 0
     }
 
     /// Is the referent a template specialization that still has remaining free
@@ -217,9 +217,17 @@ impl Cursor {
         if self.is_toplevel() {
             return false;
         }
+
         let parent = self.semantic_parent();
-        (parent.is_template() && !parent.is_fully_specialized_template()) ||
-        parent.is_in_non_fully_specialized_template()
+        if parent.is_fully_specialized_template() {
+            return false;
+        }
+
+        if !parent.is_template_like() {
+            return parent.is_in_non_fully_specialized_template();
+        }
+
+        return true;
     }
 
     /// Is this cursor pointing a valid referent?
