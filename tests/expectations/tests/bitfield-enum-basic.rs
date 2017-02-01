@@ -70,7 +70,7 @@ pub struct Dummy__bindgen_ty_1(pub ::std::os::raw::c_uint);
 #[test]
 fn bindgen_test_layout_Dummy() {
     assert_eq!(::std::mem::size_of::<Dummy>() , 1usize);
-    assert_eq!(::std::mem::align_of::<Dummy>() , 1usize);
+    assert_eq! (::std::mem::align_of::<Dummy>() , 1usize);
 }
 impl Clone for Dummy {
     fn clone(&self) -> Self { *self }

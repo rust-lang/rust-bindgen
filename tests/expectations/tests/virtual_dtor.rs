@@ -15,5 +15,5 @@ pub struct nsSlots {
 #[test]
 fn bindgen_test_layout_nsSlots() {
     assert_eq!(::std::mem::size_of::<nsSlots>() , 8usize);
-    assert_eq!(::std::mem::align_of::<nsSlots>() , 8usize);
+    assert_eq! (::std::mem::align_of::<nsSlots>() , 8usize);
 }

@@ -70,7 +70,7 @@ pub struct ErrorResult {
 #[test]
 fn bindgen_test_layout_ErrorResult() {
     assert_eq!(::std::mem::size_of::<ErrorResult>() , 24usize);
-    assert_eq!(::std::mem::align_of::<ErrorResult>() , 8usize);
+    assert_eq! (::std::mem::align_of::<ErrorResult>() , 8usize);
 }
 impl Clone for ErrorResult {
     fn clone(&self) -> Self { *self }

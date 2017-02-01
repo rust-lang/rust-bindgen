@@ -39,7 +39,16 @@ pub struct _bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout__bindgen_ty_1() {
     assert_eq!(::std::mem::size_of::<_bindgen_ty_1>() , 8usize);
-    assert_eq!(::std::mem::align_of::<_bindgen_ty_1>() , 8usize);
+    assert_eq! (::std::mem::align_of::<_bindgen_ty_1>() , 8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const _bindgen_ty_1 ) ) . mInt as * const _ as
+                usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const _bindgen_ty_1 ) ) . mFloat as * const _
+                as usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const _bindgen_ty_1 ) ) . mPointer as * const _
+                as usize } , 0usize);
 }
 impl Clone for _bindgen_ty_1 {
     fn clone(&self) -> Self { *self }

@@ -13,7 +13,7 @@ pub struct opaque {
 #[test]
 fn bindgen_test_layout_opaque() {
     assert_eq!(::std::mem::size_of::<opaque>() , 4usize);
-    assert_eq!(::std::mem::align_of::<opaque>() , 4usize);
+    assert_eq! (::std::mem::align_of::<opaque>() , 4usize);
 }
 impl Clone for opaque {
     fn clone(&self) -> Self { *self }
@@ -26,7 +26,10 @@ pub struct container {
 #[test]
 fn bindgen_test_layout_container() {
     assert_eq!(::std::mem::size_of::<container>() , 4usize);
-    assert_eq!(::std::mem::align_of::<container>() , 4usize);
+    assert_eq! (::std::mem::align_of::<container>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const container ) ) . contained as * const _ as
+                usize } , 0usize);
 }
 impl Clone for container {
     fn clone(&self) -> Self { *self }

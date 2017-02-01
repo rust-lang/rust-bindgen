@@ -12,7 +12,7 @@ pub struct Derived {
 #[test]
 fn bindgen_test_layout_Derived() {
     assert_eq!(::std::mem::size_of::<Derived>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Derived>() , 8usize);
+    assert_eq! (::std::mem::align_of::<Derived>() , 8usize);
 }
 impl Clone for Derived {
     fn clone(&self) -> Self { *self }
@@ -28,7 +28,7 @@ pub struct Base {
 #[test]
 fn bindgen_test_layout_Base() {
     assert_eq!(::std::mem::size_of::<Base>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Base>() , 8usize);
+    assert_eq! (::std::mem::align_of::<Base>() , 8usize);
 }
 impl Clone for Base {
     fn clone(&self) -> Self { *self }

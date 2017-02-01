@@ -12,7 +12,7 @@ pub struct Container {
 #[test]
 fn bindgen_test_layout_Container() {
     assert_eq!(::std::mem::size_of::<Container>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Container>() , 4usize);
+    assert_eq! (::std::mem::align_of::<Container>() , 4usize);
 }
 impl Clone for Container {
     fn clone(&self) -> Self { *self }

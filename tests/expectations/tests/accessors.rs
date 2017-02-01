@@ -18,7 +18,19 @@ pub struct SomeAccessors {
 #[test]
 fn bindgen_test_layout_SomeAccessors() {
     assert_eq!(::std::mem::size_of::<SomeAccessors>() , 16usize);
-    assert_eq!(::std::mem::align_of::<SomeAccessors>() , 4usize);
+    assert_eq! (::std::mem::align_of::<SomeAccessors>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const SomeAccessors ) ) . mNoAccessor as *
+                const _ as usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const SomeAccessors ) ) . mBothAccessors as *
+                const _ as usize } , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const SomeAccessors ) ) . mUnsafeAccessors as *
+                const _ as usize } , 8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const SomeAccessors ) ) . mImmutableAccessor as
+                * const _ as usize } , 12usize);
 }
 impl Clone for SomeAccessors {
     fn clone(&self) -> Self { *self }
@@ -56,7 +68,13 @@ pub struct AllAccessors {
 #[test]
 fn bindgen_test_layout_AllAccessors() {
     assert_eq!(::std::mem::size_of::<AllAccessors>() , 8usize);
-    assert_eq!(::std::mem::align_of::<AllAccessors>() , 4usize);
+    assert_eq! (::std::mem::align_of::<AllAccessors>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const AllAccessors ) ) . mBothAccessors as *
+                const _ as usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const AllAccessors ) ) . mAlsoBothAccessors as
+                * const _ as usize } , 4usize);
 }
 impl Clone for AllAccessors {
     fn clone(&self) -> Self { *self }
@@ -90,7 +108,13 @@ pub struct AllUnsafeAccessors {
 #[test]
 fn bindgen_test_layout_AllUnsafeAccessors() {
     assert_eq!(::std::mem::size_of::<AllUnsafeAccessors>() , 8usize);
-    assert_eq!(::std::mem::align_of::<AllUnsafeAccessors>() , 4usize);
+    assert_eq! (::std::mem::align_of::<AllUnsafeAccessors>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const AllUnsafeAccessors ) ) . mBothAccessors
+                as * const _ as usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const AllUnsafeAccessors ) ) .
+                mAlsoBothAccessors as * const _ as usize } , 4usize);
 }
 impl Clone for AllUnsafeAccessors {
     fn clone(&self) -> Self { *self }
@@ -130,7 +154,19 @@ pub struct ContradictAccessors {
 #[test]
 fn bindgen_test_layout_ContradictAccessors() {
     assert_eq!(::std::mem::size_of::<ContradictAccessors>() , 16usize);
-    assert_eq!(::std::mem::align_of::<ContradictAccessors>() , 4usize);
+    assert_eq! (::std::mem::align_of::<ContradictAccessors>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const ContradictAccessors ) ) . mBothAccessors
+                as * const _ as usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const ContradictAccessors ) ) . mNoAccessors as
+                * const _ as usize } , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const ContradictAccessors ) ) .
+                mUnsafeAccessors as * const _ as usize } , 8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const ContradictAccessors ) ) .
+                mImmutableAccessor as * const _ as usize } , 12usize);
 }
 impl Clone for ContradictAccessors {
     fn clone(&self) -> Self { *self }
@@ -167,7 +203,10 @@ pub struct Replaced {
 #[test]
 fn bindgen_test_layout_Replaced() {
     assert_eq!(::std::mem::size_of::<Replaced>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Replaced>() , 4usize);
+    assert_eq! (::std::mem::align_of::<Replaced>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Replaced ) ) . mAccessor as * const _ as
+                usize } , 0usize);
 }
 impl Clone for Replaced {
     fn clone(&self) -> Self { *self }
@@ -189,7 +228,10 @@ pub struct Wrapper {
 #[test]
 fn bindgen_test_layout_Wrapper() {
     assert_eq!(::std::mem::size_of::<Wrapper>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Wrapper>() , 4usize);
+    assert_eq! (::std::mem::align_of::<Wrapper>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Wrapper ) ) . mReplaced as * const _ as
+                usize } , 0usize);
 }
 impl Clone for Wrapper {
     fn clone(&self) -> Self { *self }

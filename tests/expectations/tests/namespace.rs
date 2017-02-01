@@ -35,7 +35,10 @@ pub mod root {
         #[test]
         fn bindgen_test_layout_A() {
             assert_eq!(::std::mem::size_of::<A>() , 4usize);
-            assert_eq!(::std::mem::align_of::<A>() , 4usize);
+            assert_eq! (::std::mem::align_of::<A>() , 4usize);
+            assert_eq! (unsafe {
+                        & ( * ( 0 as * const A ) ) . b as * const _ as usize }
+                        , 0usize);
         }
         extern "C" {
             #[link_name = "_ZN12_GLOBAL__N_11A20lets_hope_this_worksEv"]

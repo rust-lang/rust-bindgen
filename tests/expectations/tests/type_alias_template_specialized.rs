@@ -12,7 +12,10 @@ pub struct Rooted {
 #[test]
 fn bindgen_test_layout_Rooted() {
     assert_eq!(::std::mem::size_of::<Rooted>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Rooted>() , 4usize);
+    assert_eq! (::std::mem::align_of::<Rooted>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Rooted ) ) . ptr as * const _ as usize }
+                , 0usize);
 }
 impl Clone for Rooted {
     fn clone(&self) -> Self { *self }

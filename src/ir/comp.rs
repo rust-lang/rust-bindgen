@@ -102,6 +102,8 @@ pub struct Field {
     bitfield: Option<u32>,
     /// If the C++ field is marked as `mutable`
     mutable: bool,
+    /// The offset of the field (in bits)
+    offset: Option<usize>,
 }
 
 impl Field {
@@ -111,7 +113,8 @@ impl Field {
                comment: Option<String>,
                annotations: Option<Annotations>,
                bitfield: Option<u32>,
-               mutable: bool)
+               mutable: bool,
+               offset: Option<usize>)
                -> Field {
         Field {
             name: name,
@@ -120,6 +123,7 @@ impl Field {
             annotations: annotations.unwrap_or_default(),
             bitfield: bitfield,
             mutable: mutable,
+            offset: offset,
         }
     }
 
@@ -151,6 +155,11 @@ impl Field {
     /// Get the annotations for this field.
     pub fn annotations(&self) -> &Annotations {
         &self.annotations
+    }
+
+    /// The offset of the field (in bits)
+    pub fn offset(&self) -> Option<usize> {
+        self.offset
     }
 }
 
@@ -390,26 +399,73 @@ impl CompInfo {
     /// members. This is not ideal, but clang fails to report the size for these
     /// kind of unions, see test/headers/template_union.hpp
     pub fn layout(&self, ctx: &BindgenContext) -> Option<Layout> {
-        use std::cmp;
-
         // We can't do better than clang here, sorry.
         if self.kind == CompKind::Struct {
-            return None;
+            None
+        } else {
+            self.calc_layout(ctx)
         }
+    }
 
-        let mut max_size = 0;
-        let mut max_align = 0;
-        for field in &self.fields {
-            let field_layout = ctx.resolve_type(field.ty)
-                .layout(ctx);
+    /// Compute the layout of this type.
+    pub fn calc_layout(&self, ctx: &BindgenContext) -> Option<Layout> {
+        use std::cmp;
+        use std::mem;
 
-            if let Some(layout) = field_layout {
-                max_size = cmp::max(max_size, layout.size);
-                max_align = cmp::max(max_align, layout.align);
+        if self.kind == CompKind::Struct {
+            let mut latest_offset_in_bits = 0;
+            let mut max_align = 0;
+
+            if self.needs_explicit_vtable(ctx) {
+                latest_offset_in_bits += mem::size_of::<*mut ()>() * 8;
+                max_align = mem::size_of::<*mut ()>();
             }
-        }
 
-        Some(Layout::new(max_size, max_align))
+            for field in &self.fields {
+                if let Some(bits) = field.bitfield() {
+                    latest_offset_in_bits += bits as usize;
+                } else {
+                    let field_ty = ctx.resolve_type(field.ty);
+
+                    if let Some(field_layout) =
+                        field_ty.as_comp()
+                            .and_then(|comp| comp.calc_layout(ctx))
+                            .or_else(|| field_ty.layout(ctx)) {
+
+                        let n = (latest_offset_in_bits / 8) %
+                                field_layout.align;
+
+                        if !self.packed && n != 0 {
+                            latest_offset_in_bits += (field_layout.align - n) *
+                                                     8;
+                        }
+
+                        latest_offset_in_bits += field_layout.size * 8;
+                        max_align = cmp::max(max_align, field_layout.align);
+                    }
+                }
+            }
+
+            if latest_offset_in_bits == 0 && max_align == 0 {
+                None
+            } else {
+                Some(Layout::new((latest_offset_in_bits + 7) / 8, max_align))
+            }
+        } else {
+            let mut max_size = 0;
+            let mut max_align = 0;
+            for field in &self.fields {
+                let field_layout = ctx.resolve_type(field.ty)
+                    .layout(ctx);
+
+                if let Some(layout) = field_layout {
+                    max_size = cmp::max(max_size, layout.size);
+                    max_align = cmp::max(max_align, layout.align);
+                }
+            }
+
+            Some(Layout::new(max_size, max_align))
+        }
     }
 
     /// Get this type's set of fields.
@@ -529,35 +585,35 @@ impl CompInfo {
         let mut maybe_anonymous_struct_field = None;
         cursor.visit(|cur| {
             if cur.kind() != CXCursor_FieldDecl {
-                if let Some((ty, _)) = maybe_anonymous_struct_field {
-                    let field = Field::new(None, ty, None, None, None, false);
+                if let Some((ty, _, offset)) =
+                    maybe_anonymous_struct_field.take() {
+                    let field =
+                        Field::new(None, ty, None, None, None, false, offset);
                     ci.fields.push(field);
                 }
-                maybe_anonymous_struct_field = None;
             }
 
             match cur.kind() {
                 CXCursor_FieldDecl => {
-                    match maybe_anonymous_struct_field.take() {
-                        Some((ty, clang_ty)) => {
-                            let mut used = false;
-                            cur.visit(|child| {
-                                if child.cur_type() == clang_ty {
-                                    used = true;
-                                }
-                                CXChildVisit_Continue
-                            });
-                            if !used {
-                                let field = Field::new(None,
-                                                       ty,
-                                                       None,
-                                                       None,
-                                                       None,
-                                                       false);
-                                ci.fields.push(field);
+                    if let Some((ty, clang_ty, offset)) =
+                        maybe_anonymous_struct_field.take() {
+                        let mut used = false;
+                        cur.visit(|child| {
+                            if child.cur_type() == clang_ty {
+                                used = true;
                             }
+                            CXChildVisit_Continue
+                        });
+                        if !used {
+                            let field = Field::new(None,
+                                                   ty,
+                                                   None,
+                                                   None,
+                                                   None,
+                                                   false,
+                                                   offset);
+                            ci.fields.push(field);
                         }
-                        None => {}
                     }
 
                     let bit_width = cur.bit_width();
@@ -570,6 +626,7 @@ impl CompInfo {
                     let annotations = Annotations::new(&cur);
                     let name = cur.spelling();
                     let is_mutable = cursor.is_mutable_field();
+                    let offset = cur.offset_of_field().ok();
 
                     // Name can be empty if there are bitfields, for example,
                     // see tests/headers/struct_with_bitfields.h
@@ -583,7 +640,8 @@ impl CompInfo {
                                            comment,
                                            annotations,
                                            bit_width,
-                                           is_mutable);
+                                           is_mutable,
+                                           offset);
                     ci.fields.push(field);
 
                     // No we look for things like attributes and stuff.
@@ -615,7 +673,9 @@ impl CompInfo {
                     if cur.spelling().is_empty() &&
                        cur.kind() != CXCursor_EnumDecl {
                         let ty = cur.cur_type();
-                        maybe_anonymous_struct_field = Some((inner, ty));
+                        let offset = cur.offset_of_field().ok();
+                        maybe_anonymous_struct_field =
+                            Some((inner, ty, offset));
                     }
                 }
                 CXCursor_PackedAttr => {
@@ -748,8 +808,8 @@ impl CompInfo {
             CXChildVisit_Continue
         });
 
-        if let Some((ty, _)) = maybe_anonymous_struct_field {
-            let field = Field::new(None, ty, None, None, None, false);
+        if let Some((ty, _, offset)) = maybe_anonymous_struct_field {
+            let field = Field::new(None, ty, None, None, None, false, offset);
             ci.fields.push(field);
         }
 

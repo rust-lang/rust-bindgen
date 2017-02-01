@@ -21,7 +21,7 @@ pub mod root {
             #[test]
             fn bindgen_test_layout_Helper() {
                 assert_eq!(::std::mem::size_of::<Helper>() , 1usize);
-                assert_eq!(::std::mem::align_of::<Helper>() , 1usize);
+                assert_eq! (::std::mem::align_of::<Helper>() , 1usize);
             }
             impl Clone for Helper {
                 fn clone(&self) -> Self { *self }

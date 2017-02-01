@@ -23,7 +23,25 @@ pub struct foo {
 #[test]
 fn bindgen_test_layout_foo() {
     assert_eq!(::std::mem::size_of::<foo>() , 48usize);
-    assert_eq!(::std::mem::align_of::<foo>() , 8usize);
+    assert_eq! (::std::mem::align_of::<foo>() , 8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const foo ) ) . bar as * const _ as usize } ,
+                0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const foo ) ) . baz as * const _ as usize } ,
+                4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const foo ) ) . bazz as * const _ as usize } ,
+                8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const foo ) ) . bazzz as * const _ as usize } ,
+                16usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const foo ) ) . complexFloat as * const _ as
+                usize } , 24usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const foo ) ) . complexDouble as * const _ as
+                usize } , 32usize);
 }
 impl Clone for foo {
     fn clone(&self) -> Self { *self }

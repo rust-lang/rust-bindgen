@@ -16,7 +16,7 @@ pub struct nsID {
 #[test]
 fn bindgen_test_layout_nsID() {
     assert_eq!(::std::mem::size_of::<nsID>() , 8usize);
-    assert_eq!(::std::mem::align_of::<nsID>() , 8usize);
+    assert_eq! (::std::mem::align_of::<nsID>() , 8usize);
 }
 impl Clone for nsID {
     fn clone(&self) -> Self { *self }

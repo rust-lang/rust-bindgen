@@ -115,7 +115,8 @@ pub struct jsval_layout__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_1() {
     assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_1>() , 8usize);
-    assert_eq!(::std::mem::align_of::<jsval_layout__bindgen_ty_1>() , 8usize);
+    assert_eq! (::std::mem::align_of::<jsval_layout__bindgen_ty_1>() ,
+                8usize);
 }
 impl Clone for jsval_layout__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
@@ -168,8 +169,20 @@ pub struct jsval_layout__bindgen_ty_2__bindgen_ty_1 {
 fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
     assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()
                , 4usize);
-    assert_eq!(::std::mem::align_of::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()
-               , 4usize);
+    assert_eq! (::std::mem::align_of::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()
+                , 4usize);
+    assert_eq! (unsafe {
+                & (
+                * ( 0 as * const jsval_layout__bindgen_ty_2__bindgen_ty_1 ) )
+                . i32 as * const _ as usize } , 0usize);
+    assert_eq! (unsafe {
+                & (
+                * ( 0 as * const jsval_layout__bindgen_ty_2__bindgen_ty_1 ) )
+                . u32 as * const _ as usize } , 0usize);
+    assert_eq! (unsafe {
+                & (
+                * ( 0 as * const jsval_layout__bindgen_ty_2__bindgen_ty_1 ) )
+                . why as * const _ as usize } , 0usize);
 }
 impl Clone for jsval_layout__bindgen_ty_2__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
@@ -177,10 +190,40 @@ impl Clone for jsval_layout__bindgen_ty_2__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
     assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_2>() , 4usize);
-    assert_eq!(::std::mem::align_of::<jsval_layout__bindgen_ty_2>() , 4usize);
+    assert_eq! (::std::mem::align_of::<jsval_layout__bindgen_ty_2>() ,
+                4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const jsval_layout__bindgen_ty_2 ) ) . payload
+                as * const _ as usize } , 0usize);
 }
 impl Clone for jsval_layout__bindgen_ty_2 {
     fn clone(&self) -> Self { *self }
+}
+#[test]
+fn bindgen_test_layout_jsval_layout() {
+    assert_eq!(::std::mem::size_of::<jsval_layout>() , 8usize);
+    assert_eq! (::std::mem::align_of::<jsval_layout>() , 8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const jsval_layout ) ) . asBits as * const _ as
+                usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const jsval_layout ) ) . debugView as * const _
+                as usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const jsval_layout ) ) . s as * const _ as
+                usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const jsval_layout ) ) . asDouble as * const _
+                as usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const jsval_layout ) ) . asPtr as * const _ as
+                usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const jsval_layout ) ) . asWord as * const _ as
+                usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const jsval_layout ) ) . asUIntPtr as * const _
+                as usize } , 0usize);
 }
 impl Clone for jsval_layout {
     fn clone(&self) -> Self { *self }
@@ -193,7 +236,10 @@ pub struct Value {
 #[test]
 fn bindgen_test_layout_Value() {
     assert_eq!(::std::mem::size_of::<Value>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Value>() , 8usize);
+    assert_eq! (::std::mem::align_of::<Value>() , 8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Value ) ) . data as * const _ as usize }
+                , 0usize);
 }
 impl Clone for Value {
     fn clone(&self) -> Self { *self }

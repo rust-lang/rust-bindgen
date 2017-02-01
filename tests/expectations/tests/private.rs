@@ -14,7 +14,13 @@ pub struct HasPrivate {
 #[test]
 fn bindgen_test_layout_HasPrivate() {
     assert_eq!(::std::mem::size_of::<HasPrivate>() , 8usize);
-    assert_eq!(::std::mem::align_of::<HasPrivate>() , 4usize);
+    assert_eq! (::std::mem::align_of::<HasPrivate>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const HasPrivate ) ) . mNotPrivate as * const _
+                as usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const HasPrivate ) ) . mIsPrivate as * const _
+                as usize } , 4usize);
 }
 impl Clone for HasPrivate {
     fn clone(&self) -> Self { *self }
@@ -29,7 +35,13 @@ pub struct VeryPrivate {
 #[test]
 fn bindgen_test_layout_VeryPrivate() {
     assert_eq!(::std::mem::size_of::<VeryPrivate>() , 8usize);
-    assert_eq!(::std::mem::align_of::<VeryPrivate>() , 4usize);
+    assert_eq! (::std::mem::align_of::<VeryPrivate>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const VeryPrivate ) ) . mIsPrivate as * const _
+                as usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const VeryPrivate ) ) . mIsAlsoPrivate as *
+                const _ as usize } , 4usize);
 }
 impl Clone for VeryPrivate {
     fn clone(&self) -> Self { *self }
@@ -45,7 +57,13 @@ pub struct ContradictPrivate {
 #[test]
 fn bindgen_test_layout_ContradictPrivate() {
     assert_eq!(::std::mem::size_of::<ContradictPrivate>() , 8usize);
-    assert_eq!(::std::mem::align_of::<ContradictPrivate>() , 4usize);
+    assert_eq! (::std::mem::align_of::<ContradictPrivate>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const ContradictPrivate ) ) . mNotPrivate as *
+                const _ as usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const ContradictPrivate ) ) . mIsPrivate as *
+                const _ as usize } , 4usize);
 }
 impl Clone for ContradictPrivate {
     fn clone(&self) -> Self { *self }

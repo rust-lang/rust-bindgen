@@ -17,7 +17,13 @@ pub enum Test__bindgen_ty_1 { T_NONE = 0, }
 #[test]
 fn bindgen_test_layout_Test() {
     assert_eq!(::std::mem::size_of::<Test>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Test>() , 4usize);
+    assert_eq! (::std::mem::align_of::<Test>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Test ) ) . foo as * const _ as usize } ,
+                0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Test ) ) . bar as * const _ as usize } ,
+                4usize);
 }
 impl Clone for Test {
     fn clone(&self) -> Self { *self }

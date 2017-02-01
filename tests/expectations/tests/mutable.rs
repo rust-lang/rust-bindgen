@@ -13,7 +13,13 @@ pub struct C {
 #[test]
 fn bindgen_test_layout_C() {
     assert_eq!(::std::mem::size_of::<C>() , 8usize);
-    assert_eq!(::std::mem::align_of::<C>() , 4usize);
+    assert_eq! (::std::mem::align_of::<C>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C ) ) . m_member as * const _ as usize }
+                , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C ) ) . m_other as * const _ as usize } ,
+                4usize);
 }
 impl Clone for C {
     fn clone(&self) -> Self { *self }
@@ -26,7 +32,10 @@ pub struct NonCopiable {
 #[test]
 fn bindgen_test_layout_NonCopiable() {
     assert_eq!(::std::mem::size_of::<NonCopiable>() , 4usize);
-    assert_eq!(::std::mem::align_of::<NonCopiable>() , 4usize);
+    assert_eq! (::std::mem::align_of::<NonCopiable>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const NonCopiable ) ) . m_member as * const _
+                as usize } , 0usize);
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -37,6 +46,9 @@ pub struct NonCopiableWithNonCopiableMutableMember {
 fn bindgen_test_layout_NonCopiableWithNonCopiableMutableMember() {
     assert_eq!(::std::mem::size_of::<NonCopiableWithNonCopiableMutableMember>()
                , 4usize);
-    assert_eq!(::std::mem::align_of::<NonCopiableWithNonCopiableMutableMember>()
-               , 4usize);
+    assert_eq! (::std::mem::align_of::<NonCopiableWithNonCopiableMutableMember>()
+                , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const NonCopiableWithNonCopiableMutableMember )
+                ) . m_member as * const _ as usize } , 0usize);
 }

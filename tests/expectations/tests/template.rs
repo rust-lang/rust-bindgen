@@ -45,7 +45,10 @@ pub struct RootedContainer {
 #[test]
 fn bindgen_test_layout_RootedContainer() {
     assert_eq!(::std::mem::size_of::<RootedContainer>() , 24usize);
-    assert_eq!(::std::mem::align_of::<RootedContainer>() , 8usize);
+    assert_eq! (::std::mem::align_of::<RootedContainer>() , 8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const RootedContainer ) ) . root as * const _
+                as usize } , 0usize);
 }
 impl Clone for RootedContainer {
     fn clone(&self) -> Self { *self }
@@ -64,7 +67,10 @@ pub struct PODButContainsDtor {
 #[test]
 fn bindgen_test_layout_PODButContainsDtor() {
     assert_eq!(::std::mem::size_of::<PODButContainsDtor>() , 4usize);
-    assert_eq!(::std::mem::align_of::<PODButContainsDtor>() , 4usize);
+    assert_eq! (::std::mem::align_of::<PODButContainsDtor>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const PODButContainsDtor ) ) . member as *
+                const _ as usize } , 0usize);
 }
 /** <div rustbindgen opaque> */
 #[repr(C)]
@@ -80,7 +86,10 @@ pub struct POD {
 #[test]
 fn bindgen_test_layout_POD() {
     assert_eq!(::std::mem::size_of::<POD>() , 4usize);
-    assert_eq!(::std::mem::align_of::<POD>() , 4usize);
+    assert_eq! (::std::mem::align_of::<POD>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const POD ) ) . opaque_member as * const _ as
+                usize } , 0usize);
 }
 impl Clone for POD {
     fn clone(&self) -> Self { *self }
@@ -119,7 +128,7 @@ pub struct Untemplated {
 #[test]
 fn bindgen_test_layout_Untemplated() {
     assert_eq!(::std::mem::size_of::<Untemplated>() , 1usize);
-    assert_eq!(::std::mem::align_of::<Untemplated>() , 1usize);
+    assert_eq! (::std::mem::align_of::<Untemplated>() , 1usize);
 }
 impl Clone for Untemplated {
     fn clone(&self) -> Self { *self }

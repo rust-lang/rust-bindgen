@@ -18,7 +18,7 @@ pub struct Derived {
 #[test]
 fn bindgen_test_layout_Derived() {
     assert_eq!(::std::mem::size_of::<Derived>() , 1usize);
-    assert_eq!(::std::mem::align_of::<Derived>() , 1usize);
+    assert_eq! (::std::mem::align_of::<Derived>() , 1usize);
 }
 impl Clone for Derived {
     fn clone(&self) -> Self { *self }
@@ -38,8 +38,8 @@ pub struct DerivedFromBaseWithDestructor {
 fn bindgen_test_layout_DerivedFromBaseWithDestructor() {
     assert_eq!(::std::mem::size_of::<DerivedFromBaseWithDestructor>() ,
                1usize);
-    assert_eq!(::std::mem::align_of::<DerivedFromBaseWithDestructor>() ,
-               1usize);
+    assert_eq! (::std::mem::align_of::<DerivedFromBaseWithDestructor>() ,
+                1usize);
 }
 #[test]
 fn __bindgen_test_layout_template_1() {
