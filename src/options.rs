@@ -49,6 +49,9 @@ pub fn builder_from_flags<I>(args: I)
             Arg::with_name("no-recursive-whitelist")
                 .long("no-recursive-whitelist")
                 .help("Avoid whitelisting types recursively"),
+            Arg::with_name("objc-extern-crate")
+                .long("objc-extern-crate")
+                .help("Use extern crate instead of use for objc"),
             Arg::with_name("builtins")
                 .long("builtins")
                 .help("Output bindings for builtin definitions, e.g. \

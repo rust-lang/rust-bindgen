@@ -198,6 +198,13 @@ impl Builder {
         self
     }
 
+    /// Generate '#[macro_use] extern crate objc;' instead of 'use objc;'
+    /// in the prologue of the files generated from objective-c files
+    pub fn objc_extern_crate(mut self, doit: bool) -> Self {
+        self.options.objc_extern_crate = doit;
+        self
+    }
+
     /// Generate a C/C++ file that includes the header and has dummy uses of
     /// every type defined in the header.
     pub fn dummy_uses<T: Into<String>>(mut self, dummy_uses: T) -> Builder {
@@ -542,6 +549,10 @@ pub struct BindgenOptions {
 
     /// Wether to whitelist types recursively. Defaults to true.
     pub whitelist_recursively: bool,
+
+    /// Intead of emitting 'use objc;' to files generated from objective c files,
+    /// generate '#[macro_use] extern crate objc;'
+    pub objc_extern_crate: bool,
 }
 
 impl BindgenOptions {
@@ -588,6 +599,7 @@ impl Default for BindgenOptions {
             conservative_inline_namespaces: false,
             generate_comments: true,
             whitelist_recursively: true,
+            objc_extern_crate: false,
         }
     }
 }
