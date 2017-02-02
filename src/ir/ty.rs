@@ -588,7 +588,20 @@ impl Type {
 
         let kind = match ty_kind {
             CXType_Unexposed if *ty != canonical_ty &&
-                                canonical_ty.kind() != CXType_Invalid => {
+                                canonical_ty.kind() != CXType_Invalid &&
+                                // Sometime clang desugars some types more than
+                                // what we need, specially with function
+                                // pointers.
+                                //
+                                // We should also try the solution of inverting
+                                // those checks instead of doing this, that is,
+                                // something like:
+                                //
+                                // CXType_Unexposed if ty.ret_type().is_some()
+                                //   => { ... }
+                                //
+                                // etc.
+                                !canonical_ty.spelling().contains("type-parameter") => {
                 debug!("Looking for canonical type: {:?}", canonical_ty);
                 return Self::from_clang_ty(potential_id,
                                            &canonical_ty,
