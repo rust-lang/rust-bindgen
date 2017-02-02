@@ -46,19 +46,16 @@ pub fn main() {
     match builder_from_flags(bind_args.into_iter()) {
         Ok((builder, output)) => {
 
+            let verbose = (&builder).is_verbose();
             let builder_result =
                 panic::catch_unwind(||
                     builder.generate().expect("Unable to generate bindings")
                 );
 
             if builder_result.is_err() {
-                println!("Bindgen unexpectedly panicked");
-                println!("This may be caused by one of the known-unsupported \
-                          things (https://github.com/servo/rust-bindgen#c), \
-                          please modify the bindgen flags to work around it as \
-                          described in https://github.com/servo/rust-bindgen#c");
-                println!("Otherwise, please file an issue at \
-                         https://github.com/servo/rust-bindgen/issues/new");
+                if verbose {
+                    print_verbose_err();
+                }
                 std::process::exit(1);
             }
 
@@ -73,4 +70,14 @@ pub fn main() {
             std::process::exit(1);
         }
     };
+}
+
+fn print_verbose_err() {
+    println!("Bindgen unexpectedly panicked");
+    println!("This may be caused by one of the known-unsupported \
+              things (https://github.com/servo/rust-bindgen#c), \
+              please modify the bindgen flags to work around it as \
+              described in https://github.com/servo/rust-bindgen#c");
+    println!("Otherwise, please file an issue at \
+              https://github.com/servo/rust-bindgen/issues/new");
 }

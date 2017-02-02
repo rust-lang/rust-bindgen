@@ -433,6 +433,17 @@ impl Builder {
         self
     }
 
+    /// Set to output verbose messages
+    pub fn verbose(mut self) -> Self {
+        self.options.verbose = true;
+        self
+    }
+
+    /// Is set to output verbose messages
+    pub fn is_verbose(&self) -> bool {
+        return self.options.verbose;
+    }
+
     /// Generate the Rust bindings using the options built up thus far.
     pub fn generate<'ctx>(self) -> Result<Bindings<'ctx>, ()> {
         Bindings::generate(self.options, None)
@@ -543,16 +554,19 @@ pub struct BindgenOptions {
     /// See the builder method description for more details.
     pub conservative_inline_namespaces: bool,
 
-    /// Wether to keep documentation comments in the generated output. See the
+    /// Whether to keep documentation comments in the generated output. See the
     /// documentation for more details.
     pub generate_comments: bool,
 
-    /// Wether to whitelist types recursively. Defaults to true.
+    /// Whether to whitelist types recursively. Defaults to true.
     pub whitelist_recursively: bool,
 
     /// Intead of emitting 'use objc;' to files generated from objective c files,
     /// generate '#[macro_use] extern crate objc;'
     pub objc_extern_crate: bool,
+
+    /// Whether we should print verbose messages.
+    pub verbose: bool,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -605,6 +619,7 @@ impl Default for BindgenOptions {
             generate_comments: true,
             whitelist_recursively: true,
             objc_extern_crate: false,
+            verbose: false,
         }
     }
 }

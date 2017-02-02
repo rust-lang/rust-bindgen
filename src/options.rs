@@ -175,6 +175,9 @@ pub fn builder_from_flags<I>(args: I)
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("verbose")
+                .long("verbose")
+                .help("Print verbose error messages"),
         ]) // .args()
         .get_matches_from(args);
 
@@ -345,6 +348,10 @@ pub fn builder_from_flags<I>(args: I)
     } else {
         Box::new(io::BufWriter::new(io::stdout())) as Box<io::Write>
     };
+
+    if matches.is_present("verbose") {
+        builder = builder.verbose();
+    }
 
     Ok((builder, output))
 }
