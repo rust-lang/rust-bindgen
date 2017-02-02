@@ -1316,13 +1316,6 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
             print_indent(depth, format!(" {}typedef-type = {}", prefix, type_to_str(ty.kind())));
         }
 
-        if let Some(def) = c.definition() {
-            if def != *c {
-                println!();
-                print_cursor(depth, String::from(prefix) + "definition.", &def);
-            }
-        }
-
         if let Some(refd) = c.referenced() {
             if refd != *c {
                 println!();
