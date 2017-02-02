@@ -1273,21 +1273,156 @@ pub fn type_to_str(x: CXTypeKind) -> String {
 
 /// Dump the Clang AST to stdout for debugging purposes.
 pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
-    fn print_indent(depth: isize, s: &str) {
+    fn print_indent<S: AsRef<str>>(depth: isize, s: S) {
         for _ in 0..depth {
-            print!("\t");
+            print!("    ");
         }
-        println!("{}", s);
+        println!("{}", s.as_ref());
     }
 
-    print_indent(depth,
-                 &format!("(kind: {}, spelling: {}, type: {}",
-                          kind_to_str(c.kind()),
-                          c.spelling(),
-                          type_to_str(c.cur_type().kind())));
+    fn print_cursor<S: AsRef<str>>(depth: isize, prefix: S, c: &Cursor) {
+        let prefix = prefix.as_ref();
+        print_indent(depth, format!(" {}kind = {}", prefix, kind_to_str(c.kind())));
+        print_indent(depth, format!(" {}spelling = \"{}\"", prefix, c.spelling()));
+        print_indent(depth, format!(" {}location = {}", prefix, c.location()));
+        print_indent(depth, format!(" {}is-definition? {}", prefix, c.is_definition()));
+        print_indent(depth, format!(" {}is-declaration? {}", prefix, c.is_declaration()));
+        print_indent(depth, format!(" {}is-anonymous? {}", prefix, c.is_anonymous()));
+        print_indent(depth, format!(" {}is-inlined-function? {}", prefix, c.is_inlined_function()));
+
+        let templ_kind = c.template_kind();
+        if templ_kind != CXCursor_NoDeclFound {
+            print_indent(depth, format!(" {}template-kind = {}", prefix, kind_to_str(templ_kind)));
+        }
+        if let Some(usr) = c.usr() {
+            print_indent(depth, format!(" {}usr = \"{}\"", prefix, usr));
+        }
+        if let Ok(num) = c.num_args() {
+            print_indent(depth, format!(" {}number-of-args = {}", prefix, num));
+        }
+        if let Some(num) = c.num_template_args() {
+            print_indent(depth, format!(" {}number-of-template-args = {}", prefix, num));
+        }
+        if let Some(width) = c.bit_width() {
+            print_indent(depth, format!(" {}bit-width = {}", prefix, width));
+        }
+        if let Some(ty) = c.enum_type() {
+            print_indent(depth, format!(" {}enum-type = {}", prefix, type_to_str(ty.kind())));
+        }
+        if let Some(val) = c.enum_val_signed() {
+            print_indent(depth, format!(" {}enum-val = {}", prefix, val));
+        }
+        if let Some(ty) = c.typedef_type() {
+            print_indent(depth, format!(" {}typedef-type = {}", prefix, type_to_str(ty.kind())));
+        }
+
+        if let Some(def) = c.definition() {
+            if def != *c {
+                println!();
+                print_cursor(depth, String::from(prefix) + "definition.", &def);
+            }
+        }
+
+        if let Some(refd) = c.referenced() {
+            if refd != *c {
+                println!();
+                print_cursor(depth, String::from(prefix) + "referenced.", &refd);
+            }
+        }
+
+        let canonical = c.canonical();
+        if canonical != *c {
+            println!();
+            print_cursor(depth, String::from(prefix) + "canonical.", &canonical);
+        }
+
+        if let Some(specialized) = c.specialized() {
+            if specialized != *c {
+                println!();
+                print_cursor(depth, String::from(prefix) + "specialized.", &specialized);
+            }
+        }
+    }
+
+    fn print_type<S: AsRef<str>>(depth: isize, prefix: S, ty: &Type) {
+        let prefix = prefix.as_ref();
+
+        let kind = ty.kind();
+        print_indent(depth, format!(" {}kind = {}", prefix, type_to_str(kind)));
+        if kind == CXType_Invalid {
+            return;
+        }
+
+        print_indent(depth, format!(" {}spelling = \"{}\"", prefix, ty.spelling()));
+        let num_template_args = unsafe {
+            clang_Type_getNumTemplateArguments(ty.x)
+        };
+        if num_template_args >= 0 {
+            print_indent(depth, format!(" {}number-of-template-args = {}",
+                                        prefix,
+                                        num_template_args));
+        }
+        if let Some(num) = ty.num_elements() {
+            print_indent(depth, format!(" {}number-of-elements = {}", prefix, num));
+        }
+        print_indent(depth, format!(" {}is-variadic? {}", prefix, ty.is_variadic()));
+
+        let canonical = ty.canonical_type();
+        if canonical != *ty {
+            println!();
+            print_type(depth, String::from(prefix) + "canonical.", &canonical);
+        }
+
+        if let Some(pointee) = ty.pointee_type() {
+            if pointee != *ty {
+                println!();
+                print_type(depth, String::from(prefix) + "pointee.", &pointee);
+            }
+        }
+
+        if let Some(elem) = ty.elem_type() {
+            if elem != *ty {
+                println!();
+                print_type(depth, String::from(prefix) + "elements.", &elem);
+            }
+        }
+
+        if let Some(ret) = ty.ret_type() {
+            if ret != *ty {
+                println!();
+                print_type(depth, String::from(prefix) + "return.", &ret);
+            }
+        }
+
+        let named = ty.named();
+        if named != *ty && named.is_valid() {
+            println!();
+            print_type(depth, String::from(prefix) + "named.", &named);
+        }
+    }
+
+    print_indent(depth, "(");
+    print_cursor(depth, "", c);
+
+    println!();
+    let ty = c.cur_type();
+    print_type(depth, "type.", &ty);
+
+    let declaration = ty.declaration();
+    if declaration != *c && declaration.kind() != CXCursor_NoDeclFound {
+        println!();
+        print_cursor(depth, "type.declaration.", &declaration);
+    }
 
     // Recurse.
-    c.visit(|s| ast_dump(&s, depth + 1));
+    let mut found_children = false;
+    c.visit(|s| {
+        if !found_children {
+            println!();
+            found_children = true;
+        }
+        ast_dump(&s, depth + 1)
+    });
 
     print_indent(depth, ")");
 
