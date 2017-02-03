@@ -1,7 +1,7 @@
 //! A public API for more fine-grained customization of bindgen behavior.
 
+pub use ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
 pub use ir::int::IntKind;
-pub use ir::enum_ty::{EnumVariantValue, EnumVariantCustomBehavior};
 use std::fmt;
 
 /// A trait to allow configuring different kinds of types in different

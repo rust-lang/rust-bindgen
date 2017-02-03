@@ -1,9 +1,9 @@
 //! Intermediate representation for modules (AKA C++ namespaces).
 
+use super::context::{BindgenContext, ItemId};
 use clang;
 use parse::{ClangSubItemParser, ParseError, ParseResult};
 use parse_one;
-use super::context::{BindgenContext, ItemId};
 
 /// Whether this module is inline or not.
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]

@@ -1,11 +1,11 @@
 //! Intermediate representation for C/C++ enumerations.
 
-use clang;
-use ir::annotations::Annotations;
-use parse::{ClangItemParser, ParseError};
 use super::context::{BindgenContext, ItemId};
 use super::item::Item;
 use super::ty::TypeKind;
+use clang;
+use ir::annotations::Annotations;
+use parse::{ClangItemParser, ParseError};
 
 /// An enum representing custom handling that can be given to a variant.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -66,18 +66,20 @@ impl Enum {
         // Assume signedness since the default type by the C standard is an int.
         let is_signed =
             repr.and_then(|r| ctx.resolve_type(r).safe_canonical_type(ctx))
-                .map_or(true, |ty| {
-                    match *ty.kind() {
-                        TypeKind::Int(ref int_kind) => int_kind.is_signed(),
-                        ref other => {
-                            panic!("Since when enums can be non-integers? {:?}",
+                .map_or(true, |ty| match *ty.kind() {
+                    TypeKind::Int(ref int_kind) => int_kind.is_signed(),
+                    ref other => {
+                        panic!("Since when enums can be non-integers? {:?}",
                                other)
-                        }
                     }
                 });
 
         let type_name = ty.spelling();
-        let type_name = if type_name.is_empty() { None } else { Some(type_name) };
+        let type_name = if type_name.is_empty() {
+            None
+        } else {
+            Some(type_name)
+        };
         let type_name = type_name.as_ref().map(String::as_str);
 
         declaration.visit(|cursor| {
@@ -94,20 +96,22 @@ impl Enum {
                             t.enum_variant_behavior(type_name, &name, val)
                         })
                         .or_else(|| {
-                            Annotations::new(&cursor).and_then(|anno| {
-                                if anno.hide() {
+                            Annotations::new(&cursor)
+                                .and_then(|anno| if anno.hide() {
                                     Some(EnumVariantCustomBehavior::Hide)
-                                } else if anno.constify_enum_variant() {
+                                } else if 
+                                    anno.constify_enum_variant() {
                                     Some(EnumVariantCustomBehavior::Constify)
                                 } else {
                                     None
-                                }
-                            })
+                                })
                         });
 
                     let comment = cursor.raw_comment();
-                    variants.push(
-                        EnumVariant::new(name, comment, val, custom_behavior));
+                    variants.push(EnumVariant::new(name,
+                                                   comment,
+                                                   val,
+                                                   custom_behavior));
                 }
             }
             CXChildVisit_Continue

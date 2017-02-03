@@ -1,7 +1,7 @@
 //! Collecting type items.
 
-use std::collections::BTreeSet;
 use super::context::{BindgenContext, ItemId};
+use std::collections::BTreeSet;
 
 /// A set of items.
 pub type ItemSet = BTreeSet<ItemId>;

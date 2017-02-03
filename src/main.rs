@@ -35,9 +35,7 @@ pub fn main() {
     match version.parsed {
         None => warn!("Couldn't parse libclang version"),
         Some(version) if version != expected_version => {
-            warn!("Using clang {:?}, expected {:?}",
-                   version,
-                   expected_version);
+            warn!("Using clang {:?}, expected {:?}", version, expected_version);
         }
         _ => {}
     }

@@ -1,14 +1,14 @@
 //! Intermediate representation of variables.
 
-use cexpr;
-use clang;
-use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
-use std::num::Wrapping;
 use super::context::{BindgenContext, ItemId};
 use super::function::cursor_mangling;
 use super::int::IntKind;
 use super::item::Item;
 use super::ty::{FloatKind, TypeKind};
+use cexpr;
+use clang;
+use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
+use std::num::Wrapping;
 
 /// The type for a constant variable.
 #[derive(Debug)]
@@ -149,18 +149,18 @@ impl ClangSubItemParser for Var {
                     EvalResult::Int(Wrapping(value)) => {
                         let kind = ctx.type_chooser()
                             .and_then(|c| c.int_macro(&name, value))
-                            .unwrap_or_else(|| {
-                                if value < 0 {
-                                    if value < i32::min_value() as i64 {
-                                        IntKind::LongLong
-                                    } else {
-                                        IntKind::Int
-                                    }
-                                } else if value > u32::max_value() as i64 {
-                                    IntKind::ULongLong
+                            .unwrap_or_else(|| if value < 0 {
+                                if value < i32::min_value() as i64 {
+                                    IntKind::LongLong
                                 } else {
-                                    IntKind::UInt
+                                    IntKind::Int
                                 }
+                            } else if value >
+                                                         u32::max_value() as
+                                                         i64 {
+                                IntKind::ULongLong
+                            } else {
+                                IntKind::UInt
                             });
 
                         (TypeKind::Int(kind), VarType::Int(value))
@@ -187,7 +187,8 @@ impl ClangSubItemParser for Var {
                 let ty = match Item::from_ty(&ty, Some(cursor), None, ctx) {
                     Ok(ty) => ty,
                     Err(e) => {
-                        assert_eq!(ty.kind(), CXType_Auto,
+                        assert_eq!(ty.kind(),
+                                   CXType_Auto,
                                    "Couldn't resolve constant type, and it \
                                    wasn't an nondeductible auto type!");
                         return Err(e);
@@ -222,12 +223,10 @@ impl ClangSubItemParser for Var {
                         val = get_integer_literal_from_cursor(&cursor, tu);
                     }
 
-                    val.map(|val| {
-                        if kind == IntKind::Bool {
-                            VarType::Bool(val != 0)
-                        } else {
-                            VarType::Int(val)
-                        }
+                    val.map(|val| if kind == IntKind::Bool {
+                        VarType::Bool(val != 0)
+                    } else {
+                        VarType::Int(val)
                     })
                 } else if is_float {
                     cursor.evaluate()

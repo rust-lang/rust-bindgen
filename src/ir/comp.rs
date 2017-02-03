@@ -1,8 +1,5 @@
 //! Compound types (unions and structs) in our intermediate representation.
 
-use clang;
-use parse::{ClangItemParser, ParseError};
-use std::cell::Cell;
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId};
 use super::derive::{CanDeriveCopy, CanDeriveDebug};
@@ -10,6 +7,9 @@ use super::item::Item;
 use super::layout::Layout;
 use super::ty::Type;
 use super::type_collector::{ItemSet, TypeCollector};
+use clang;
+use parse::{ClangItemParser, ParseError};
+use std::cell::Cell;
 
 /// The kind of compound type.
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -486,14 +486,13 @@ impl CompInfo {
         debug!("CompInfo::from_ty({:?}, {:?})", kind, cursor);
 
         let mut ci = CompInfo::new(kind);
-        ci.is_forward_declaration = location.map_or(true, |cur| {
-            match cur.kind() {
+        ci.is_forward_declaration =
+            location.map_or(true, |cur| match cur.kind() {
                 CXCursor_StructDecl |
                 CXCursor_UnionDecl |
                 CXCursor_ClassDecl => !cur.is_definition(),
                 _ => false,
-            }
-        });
+            });
         ci.is_anonymous = cursor.is_anonymous();
         ci.template_args = match ty.template_args() {
             // In forward declarations and not specializations,
@@ -506,13 +505,12 @@ impl CompInfo {
                 let mut specialization = true;
 
                 let args = arg_types.filter(|t| t.kind() != CXType_Invalid)
-                    .filter_map(|t| {
-                        if t.spelling().starts_with("type-parameter") {
-                            specialization = false;
-                            None
-                        } else {
-                            Some(Item::from_ty_or_ref(t, None, None, ctx))
-                        }
+                    .filter_map(|t| if t.spelling()
+                        .starts_with("type-parameter") {
+                        specialization = false;
+                        None
+                    } else {
+                        Some(Item::from_ty_or_ref(t, None, None, ctx))
                     })
                     .collect::<Vec<_>>();
 
@@ -681,10 +679,13 @@ impl CompInfo {
 
                     // NB: This gets us an owned `Function`, not a
                     // `FunctionSig`.
-                    let signature = match Item::parse(cur, Some(potential_id), ctx) {
-                        Ok(item) if ctx.resolve_item(item).kind().is_function() => item,
-                        _ => return CXChildVisit_Continue,
-                    };
+                    let signature =
+                        match Item::parse(cur, Some(potential_id), ctx) {
+                            Ok(item) if ctx.resolve_item(item)
+                                .kind()
+                                .is_function() => item,
+                            _ => return CXChildVisit_Continue,
+                        };
 
                     match cur.kind() {
                         CXCursor_Constructor => {

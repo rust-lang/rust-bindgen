@@ -208,7 +208,8 @@ impl Cursor {
     /// Is the referent a fully specialized template specialization without any
     /// remaining free template arguments?
     pub fn is_fully_specialized_template(&self) -> bool {
-        self.is_template_specialization() && self.num_template_args().unwrap_or(0) > 0
+        self.is_template_specialization() &&
+        self.num_template_args().unwrap_or(0) > 0
     }
 
     /// Is the referent a template specialization that still has remaining free
@@ -349,13 +350,11 @@ impl Cursor {
     pub fn contains_cursor(&self, kind: CXCursorKind) -> bool {
         let mut found = false;
 
-        self.visit(|c| {
-            if c.kind() == kind {
-                found = true;
-                CXChildVisit_Break
-            } else {
-                CXChildVisit_Continue
-            }
+        self.visit(|c| if c.kind() == kind {
+            found = true;
+            CXChildVisit_Break
+        } else {
+            CXChildVisit_Continue
         });
 
         found
@@ -846,8 +845,8 @@ impl SourceLocation {
                                       &mut col,
                                       &mut off);
             (File {
-                x: file,
-            },
+                 x: file,
+             },
              line as usize,
              col as usize,
              off as usize)
@@ -1282,17 +1281,32 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
 
     fn print_cursor<S: AsRef<str>>(depth: isize, prefix: S, c: &Cursor) {
         let prefix = prefix.as_ref();
-        print_indent(depth, format!(" {}kind = {}", prefix, kind_to_str(c.kind())));
-        print_indent(depth, format!(" {}spelling = \"{}\"", prefix, c.spelling()));
+        print_indent(depth,
+                     format!(" {}kind = {}", prefix, kind_to_str(c.kind())));
+        print_indent(depth,
+                     format!(" {}spelling = \"{}\"", prefix, c.spelling()));
         print_indent(depth, format!(" {}location = {}", prefix, c.location()));
-        print_indent(depth, format!(" {}is-definition? {}", prefix, c.is_definition()));
-        print_indent(depth, format!(" {}is-declaration? {}", prefix, c.is_declaration()));
-        print_indent(depth, format!(" {}is-anonymous? {}", prefix, c.is_anonymous()));
-        print_indent(depth, format!(" {}is-inlined-function? {}", prefix, c.is_inlined_function()));
+        print_indent(depth,
+                     format!(" {}is-definition? {}",
+                             prefix,
+                             c.is_definition()));
+        print_indent(depth,
+                     format!(" {}is-declaration? {}",
+                             prefix,
+                             c.is_declaration()));
+        print_indent(depth,
+                     format!(" {}is-anonymous? {}", prefix, c.is_anonymous()));
+        print_indent(depth,
+                     format!(" {}is-inlined-function? {}",
+                             prefix,
+                             c.is_inlined_function()));
 
         let templ_kind = c.template_kind();
         if templ_kind != CXCursor_NoDeclFound {
-            print_indent(depth, format!(" {}template-kind = {}", prefix, kind_to_str(templ_kind)));
+            print_indent(depth,
+                         format!(" {}template-kind = {}",
+                                 prefix,
+                                 kind_to_str(templ_kind)));
         }
         if let Some(usr) = c.usr() {
             print_indent(depth, format!(" {}usr = \"{}\"", prefix, usr));
@@ -1301,38 +1315,53 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
             print_indent(depth, format!(" {}number-of-args = {}", prefix, num));
         }
         if let Some(num) = c.num_template_args() {
-            print_indent(depth, format!(" {}number-of-template-args = {}", prefix, num));
+            print_indent(depth,
+                         format!(" {}number-of-template-args = {}",
+                                 prefix,
+                                 num));
         }
         if let Some(width) = c.bit_width() {
             print_indent(depth, format!(" {}bit-width = {}", prefix, width));
         }
         if let Some(ty) = c.enum_type() {
-            print_indent(depth, format!(" {}enum-type = {}", prefix, type_to_str(ty.kind())));
+            print_indent(depth,
+                         format!(" {}enum-type = {}",
+                                 prefix,
+                                 type_to_str(ty.kind())));
         }
         if let Some(val) = c.enum_val_signed() {
             print_indent(depth, format!(" {}enum-val = {}", prefix, val));
         }
         if let Some(ty) = c.typedef_type() {
-            print_indent(depth, format!(" {}typedef-type = {}", prefix, type_to_str(ty.kind())));
+            print_indent(depth,
+                         format!(" {}typedef-type = {}",
+                                 prefix,
+                                 type_to_str(ty.kind())));
         }
 
         if let Some(refd) = c.referenced() {
             if refd != *c {
                 println!();
-                print_cursor(depth, String::from(prefix) + "referenced.", &refd);
+                print_cursor(depth,
+                             String::from(prefix) + "referenced.",
+                             &refd);
             }
         }
 
         let canonical = c.canonical();
         if canonical != *c {
             println!();
-            print_cursor(depth, String::from(prefix) + "canonical.", &canonical);
+            print_cursor(depth,
+                         String::from(prefix) + "canonical.",
+                         &canonical);
         }
 
         if let Some(specialized) = c.specialized() {
             if specialized != *c {
                 println!();
-                print_cursor(depth, String::from(prefix) + "specialized.", &specialized);
+                print_cursor(depth,
+                             String::from(prefix) + "specialized.",
+                             &specialized);
             }
         }
     }
@@ -1346,19 +1375,22 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
             return;
         }
 
-        print_indent(depth, format!(" {}spelling = \"{}\"", prefix, ty.spelling()));
-        let num_template_args = unsafe {
-            clang_Type_getNumTemplateArguments(ty.x)
-        };
+        print_indent(depth,
+                     format!(" {}spelling = \"{}\"", prefix, ty.spelling()));
+        let num_template_args =
+            unsafe { clang_Type_getNumTemplateArguments(ty.x) };
         if num_template_args >= 0 {
-            print_indent(depth, format!(" {}number-of-template-args = {}",
-                                        prefix,
-                                        num_template_args));
+            print_indent(depth,
+                         format!(" {}number-of-template-args = {}",
+                                 prefix,
+                                 num_template_args));
         }
         if let Some(num) = ty.num_elements() {
-            print_indent(depth, format!(" {}number-of-elements = {}", prefix, num));
+            print_indent(depth,
+                         format!(" {}number-of-elements = {}", prefix, num));
         }
-        print_indent(depth, format!(" {}is-variadic? {}", prefix, ty.is_variadic()));
+        print_indent(depth,
+                     format!(" {}is-variadic? {}", prefix, ty.is_variadic()));
 
         let canonical = ty.canonical_type();
         if canonical != *ty {
@@ -1449,14 +1481,12 @@ impl EvalResult {
         // unexposed type. Our solution is to just flat out ban all
         // `CXType_Unexposed` from evaluation.
         let mut found_cant_eval = false;
-        cursor.visit(|c| {
-            if c.kind() == CXCursor_TypeRef &&
-               c.cur_type().kind() == CXType_Unexposed {
-                found_cant_eval = true;
-                CXChildVisit_Break
-            } else {
-                CXChildVisit_Recurse
-            }
+        cursor.visit(|c| if c.kind() == CXCursor_TypeRef &&
+                            c.cur_type().kind() == CXType_Unexposed {
+            found_cant_eval = true;
+            CXChildVisit_Break
+        } else {
+            CXChildVisit_Recurse
         });
         if found_cant_eval {
             return None;

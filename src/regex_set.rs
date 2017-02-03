@@ -21,7 +21,7 @@ impl RegexSet {
     /// Extend this set with every regex in the iterator.
     pub fn extend<I, S>(&mut self, iter: I)
         where I: IntoIterator<Item = S>,
-              S: AsRef<str>
+              S: AsRef<str>,
     {
         for s in iter.into_iter() {
             self.insert(s)
@@ -30,7 +30,7 @@ impl RegexSet {
 
     /// Insert a new regex into this set.
     pub fn insert<S>(&mut self, string: S)
-        where S: AsRef<str>
+        where S: AsRef<str>,
     {
         self.items.push(format!("^{}$", string.as_ref()));
         self.set = None;
@@ -46,13 +46,13 @@ impl RegexSet {
             Err(e) => {
                 error!("Invalid regex in {:?}: {:?}", self.items, e);
                 None
-            },
+            }
         }
     }
 
     /// Does the given `string` match any of the regexes in this set?
     pub fn matches<S>(&self, string: S) -> bool
-        where S: AsRef<str>
+        where S: AsRef<str>,
     {
         let s = string.as_ref();
         self.set.as_ref().map(|set| set.is_match(s)).unwrap_or(false)

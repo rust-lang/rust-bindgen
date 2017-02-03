@@ -1,7 +1,5 @@
 //! Everything related to types in our intermediate representation.
 
-use clang::{self, Cursor};
-use parse::{ClangItemParser, ParseError, ParseResult};
 use super::comp::CompInfo;
 use super::context::{BindgenContext, ItemId};
 use super::derive::{CanDeriveCopy, CanDeriveDebug};
@@ -12,6 +10,8 @@ use super::item::Item;
 use super::layout::Layout;
 use super::objc::ObjCInterface;
 use super::type_collector::{ItemSet, TypeCollector};
+use clang::{self, Cursor};
+use parse::{ClangItemParser, ParseError, ParseResult};
 
 /// The base representation of a type in bindgen.
 ///
