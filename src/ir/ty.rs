@@ -622,7 +622,8 @@ impl Type {
                     // Same here, with template specialisations we can safely
                     // assume this is a Comp(..)
                 } else if ty.is_fully_specialized_template() {
-                    debug!("Template specialization: {:?}", ty);
+                    debug!("Template specialization: {:?}, {:?} {:?}",
+                           ty, location, canonical_ty);
                     let complex =
                         CompInfo::from_ty(potential_id, ty, location, ctx)
                             .expect("C'mon");
