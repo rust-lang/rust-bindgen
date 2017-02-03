@@ -778,12 +778,14 @@ impl Type {
         // Yep, the spelling of this containing type-parameter is extremely
         // nasty... But can happen in <type_traits>. Unfortunately I couldn't
         // reduce it enough :(
-        !self.spelling().contains("type-parameter") &&
-        self.template_args()
-            .map_or(false, |mut args| {
-                args.len() > 0 &&
-                !args.any(|t| t.spelling().contains("type-parameter"))
-            })
+        self.template_args().map_or(false, |args| {
+            args.len() > 0
+        }) && match self.declaration().kind() {
+            CXCursor_ClassTemplatePartialSpecialization |
+            CXCursor_TypeAliasTemplateDecl |
+            CXCursor_TemplateTemplateParameter => false,
+            _ => true,
+        }
     }
 }
 
