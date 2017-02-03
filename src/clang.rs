@@ -122,20 +122,37 @@ impl Cursor {
     }
 
     /// Return the number of template arguments used by this cursor's referent,
-    /// if the referent is either a template specialization or
-    /// declaration. Returns -1 otherwise.
+    /// if the referent is either a template specialization or declaration.
+    /// Returns `None` otherwise.
     ///
     /// NOTE: This may not return `Some` for some non-fully specialized
     /// templates, see #193 and #194.
     pub fn num_template_args(&self) -> Option<u32> {
-        let n: c_int = unsafe { clang_Cursor_getNumTemplateArguments(self.x) };
+        // XXX: `clang_Type_getNumTemplateArguments` is sort of reliable, while
+        // `clang_Cursor_getNumTemplateArguments` is totally unreliable.
+        // Therefore, try former first, and only fallback to the latter if we
+        // have to.
+        self.cur_type().num_template_args()
+            .or_else(|| {
+                let n: c_int = unsafe {
+                    clang_Cursor_getNumTemplateArguments(self.x)
+                };
 
-        if n >= 0 {
-            Some(n as u32)
-        } else {
-            debug_assert_eq!(n, -1);
-            None
-        }
+                if n >= 0 {
+                    Some(n as u32)
+                } else {
+                    debug_assert_eq!(n, -1);
+                    None
+                }
+            })
+            .or_else(|| {
+                let canonical = self.canonical();
+                if canonical != *self {
+                    canonical.num_template_args()
+                } else {
+                    None
+                }
+            })
     }
 
     /// Get a cursor pointing to this referent's containing translation unit.
@@ -673,20 +690,26 @@ impl Type {
         Ok(Layout::new(size, align))
     }
 
-    /// If this type is a class template specialization, return its
-    /// template arguments. Otherwise, return None.
-    pub fn template_args(&self) -> Option<TypeTemplateArgIterator> {
+    /// Get the number of template arguments this type has, or `None` if it is
+    /// not some kind of template.
+    pub fn num_template_args(&self) -> Option<u32> {
         let n = unsafe { clang_Type_getNumTemplateArguments(self.x) };
         if n >= 0 {
-            Some(TypeTemplateArgIterator {
-                x: self.x,
-                length: n as u32,
-                index: 0,
-            })
+            Some(n as u32)
         } else {
             debug_assert_eq!(n, -1);
             None
         }
+    }
+
+    /// If this type is a class template specialization, return its
+    /// template arguments. Otherwise, return None.
+    pub fn template_args(&self) -> Option<TypeTemplateArgIterator> {
+        self.num_template_args().map(|n| TypeTemplateArgIterator {
+            x: self.x,
+            length: n,
+            index: 0,
+        })
     }
 
     /// Given that this type is a pointer type, return the type that it points
