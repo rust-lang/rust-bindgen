@@ -573,7 +573,7 @@ impl Hash for Cursor {
 }
 
 /// The type of a node in clang's AST.
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Type {
     x: CXType,
 }
