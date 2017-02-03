@@ -25,9 +25,9 @@ cache:
 before_install: . ./ci/before_install.sh
 
 script:
-  - ./ci/assert-rustfmt.sh
-  - ./ci/assert-docs.sh
-  - ./ci/test.sh
+  - . ./ci/assert-rustfmt.sh
+  - . ./ci/assert-docs.sh
+  - . ./ci/test.sh
 
 notifications:
   webhooks: http://build.servo.org:54856/travis
