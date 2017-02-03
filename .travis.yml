@@ -25,17 +25,9 @@ cache:
 before_install: . ./ci/before_install.sh
 
 script:
-  - cargo test --features "$BINDGEN_FEATURES assert_no_dangling_items"
-  - cargo test --release --features "$BINDGEN_FEATURES assert_no_dangling_items"
-  - git add -A
-  - git diff @
-  - git diff-index --quiet HEAD
-  - cargo build --features "$BINDGEN_FEATURES docs_"
-  - cd tests/expectations
-  - cargo test
-  - cd ../../bindgen-integration
-  - cargo test --features "$BINDGEN_FEATURES"
-  - cargo test --release --features "$BINDGEN_FEATURES"
+  - ./ci/assert-rustfmt.sh
+  - ./ci/assert-docs.sh
+  - ./ci/test.sh
 
 notifications:
   webhooks: http://build.servo.org:54856/travis
