@@ -1,11 +1,5 @@
 //! Bindgen's core intermediate representation type.
 
-use clang;
-use clang_sys;
-use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
-use std::cell::{Cell, RefCell};
-use std::fmt::Write;
-use std::iter;
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId};
 use super::derive::{CanDeriveCopy, CanDeriveDebug};
@@ -14,6 +8,12 @@ use super::item_kind::ItemKind;
 use super::module::Module;
 use super::ty::{Type, TypeKind};
 use super::type_collector::{ItemSet, TypeCollector};
+use clang;
+use clang_sys;
+use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
+use std::cell::{Cell, RefCell};
+use std::fmt::Write;
+use std::iter;
 
 /// A trait to get the canonical name from an item.
 ///
@@ -193,7 +193,8 @@ impl TypeCollector for Item {
                 // There are some types, like resolved type references, where we
                 // don't want to stop collecting types even though they may be
                 // opaque.
-                if ty.should_be_traced_unconditionally() || !self.is_opaque(ctx) {
+                if ty.should_be_traced_unconditionally() ||
+                   !self.is_opaque(ctx) {
                     ty.collect_types(ctx, types, self);
                 }
             }
@@ -219,7 +220,8 @@ impl CanDeriveDebug for Item {
     type Extra = ();
 
     fn can_derive_debug(&self, ctx: &BindgenContext, _: ()) -> bool {
-        ctx.options().derive_debug && match self.kind {
+        ctx.options().derive_debug &&
+        match self.kind {
             ItemKind::Type(ref ty) => {
                 if self.is_opaque(ctx) {
                     ty.layout(ctx)
@@ -255,7 +257,9 @@ impl<'a> CanDeriveCopy<'a> for Item {
             ItemKind::Type(ref ty) => {
                 if self.is_opaque(ctx) {
                     ty.layout(ctx)
-                        .map_or(true, |l| l.opaque().can_derive_copy_in_array(ctx, ()))
+                        .map_or(true, |l| {
+                            l.opaque().can_derive_copy_in_array(ctx, ())
+                        })
                 } else {
                     ty.can_derive_copy_in_array(ctx, self)
                 }
@@ -759,9 +763,7 @@ impl Item {
             }
             ItemKind::Type(ref ty) => {
                 let name = match *ty.kind() {
-                    TypeKind::ResolvedTypeRef(..) => {
-                        panic!("should have resolved this in name_target()")
-                    }
+                    TypeKind::ResolvedTypeRef(..) => panic!("should have resolved this in name_target()"),
                     _ => ty.name(),
                 };
                 name.map(ToOwned::to_owned)
@@ -1136,7 +1138,7 @@ impl ClangItemParser for Item {
         }
 
         if let Some(ty) =
-               ctx.builtin_or_resolved_ty(id, parent_id, ty, location) {
+            ctx.builtin_or_resolved_ty(id, parent_id, ty, location) {
             return Ok(ty);
         }
 
@@ -1154,9 +1156,10 @@ impl ClangItemParser for Item {
         };
 
         if valid_decl {
-            if let Some(&(_, item_id)) = ctx.currently_parsed_types
-                .iter()
-                .find(|&&(d, _)| d == declaration_to_look_for) {
+            if let Some(&(_, item_id)) =
+                ctx.currently_parsed_types
+                    .iter()
+                    .find(|&&(d, _)| d == declaration_to_look_for) {
                 debug!("Avoiding recursion parsing type: {:?}", ty);
                 return Ok(item_id);
             }
@@ -1325,7 +1328,7 @@ impl ItemCanonicalPath for Item {
                 item.id() == target.id() ||
                 item.as_module().map_or(false, |module| {
                     !module.is_inline() ||
-                        ctx.options().conservative_inline_namespaces
+                    ctx.options().conservative_inline_namespaces
                 })
             })
             .map(|item| {

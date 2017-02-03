@@ -68,8 +68,7 @@ fn compare_generated_header(header: &PathBuf,
     Err(Error::new(ErrorKind::Other, "Header and binding differ!"))
 }
 
-fn create_bindgen_builder(header: &PathBuf)
-                          -> Result<Option<Builder>, Error> {
+fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
     let source = try!(fs::File::open(header));
     let reader = BufReader::new(source);
 

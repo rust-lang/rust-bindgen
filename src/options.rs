@@ -1,5 +1,5 @@
-use clap::{App, Arg};
 use bindgen::{Builder, CodegenConfig, builder};
+use clap::{App, Arg};
 use std::fs::File;
 use std::io::{self, Error, ErrorKind};
 

@@ -1,5 +1,12 @@
 //! Common context that is passed around during parsing and codegen.
 
+use super::derive::{CanDeriveCopy, CanDeriveDebug};
+use super::int::IntKind;
+use super::item::{Item, ItemCanonicalPath};
+use super::item_kind::ItemKind;
+use super::module::{Module, ModuleKind};
+use super::ty::{FloatKind, Type, TypeKind};
+use super::type_collector::{ItemSet, TypeCollector};
 use BindgenOptions;
 use cexpr;
 use chooser::TypeChooser;
@@ -10,13 +17,6 @@ use std::cell::Cell;
 use std::collections::{HashMap, VecDeque, hash_map};
 use std::collections::btree_map::{self, BTreeMap};
 use std::fmt;
-use super::derive::{CanDeriveCopy, CanDeriveDebug};
-use super::int::IntKind;
-use super::item::{Item, ItemCanonicalPath};
-use super::item_kind::ItemKind;
-use super::module::{Module, ModuleKind};
-use super::ty::{FloatKind, Type, TypeKind};
-use super::type_collector::{ItemSet, TypeCollector};
 use syntax::ast::Ident;
 use syntax::codemap::{DUMMY_SP, Span};
 use syntax::ext::base::ExtCtxt;
@@ -254,8 +254,8 @@ impl<'ctx> BindgenContext<'ctx> {
                 TypeKey::USR(usr)
             } else {
                 warn!("Valid declaration with no USR: {:?}, {:?}",
-                       declaration,
-                       location);
+                      declaration,
+                      location);
                 TypeKey::Declaration(declaration)
             };
 
@@ -961,7 +961,8 @@ impl<'ctx> BindgenContext<'ctx> {
     fn tokenize_namespace(&self,
                           cursor: &clang::Cursor)
                           -> (Option<String>, ModuleKind) {
-        assert_eq!(cursor.kind(), ::clang_sys::CXCursor_Namespace,
+        assert_eq!(cursor.kind(),
+                   ::clang_sys::CXCursor_Namespace,
                    "Be a nice person");
         let tokens = match self.translation_unit.tokens(&cursor) {
             Some(tokens) => tokens,
@@ -995,7 +996,7 @@ impl<'ctx> BindgenContext<'ctx> {
                            token);
                 }
             }
-        };
+        }
 
         (module_name, kind)
     }

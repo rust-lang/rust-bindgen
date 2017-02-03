@@ -1,10 +1,10 @@
 //! Objective C types
 
+// use clang_sys::CXCursor_ObjCSuperClassRef;
+use super::context::BindgenContext;
 use clang;
 use clang_sys::CXChildVisit_Continue;
 use clang_sys::CXCursor_ObjCInstanceMethodDecl;
-// use clang_sys::CXCursor_ObjCSuperClassRef;
-use super::context::BindgenContext;
 
 /// Objective C interface as used in TypeKind
 ///
