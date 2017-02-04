@@ -1366,27 +1366,30 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
 
         if let Some(refd) = c.referenced() {
             if refd != *c {
-                println!();
+                println!("");
                 print_cursor(depth,
                              String::from(prefix) + "referenced.",
                              &refd);
+                print_cursor(depth, String::from(prefix) + "referenced.", &refd);
             }
         }
 
         let canonical = c.canonical();
         if canonical != *c {
-            println!();
+            println!("");
             print_cursor(depth,
                          String::from(prefix) + "canonical.",
                          &canonical);
+            print_cursor(depth, String::from(prefix) + "canonical.", &canonical);
         }
 
         if let Some(specialized) = c.specialized() {
             if specialized != *c {
-                println!();
+                println!("");
                 print_cursor(depth,
                              String::from(prefix) + "specialized.",
                              &specialized);
+                print_cursor(depth, String::from(prefix) + "specialized.", &specialized);
             }
         }
     }
@@ -1419,34 +1422,34 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
 
         let canonical = ty.canonical_type();
         if canonical != *ty {
-            println!();
+            println!("");
             print_type(depth, String::from(prefix) + "canonical.", &canonical);
         }
 
         if let Some(pointee) = ty.pointee_type() {
             if pointee != *ty {
-                println!();
+                println!("");
                 print_type(depth, String::from(prefix) + "pointee.", &pointee);
             }
         }
 
         if let Some(elem) = ty.elem_type() {
             if elem != *ty {
-                println!();
+                println!("");
                 print_type(depth, String::from(prefix) + "elements.", &elem);
             }
         }
 
         if let Some(ret) = ty.ret_type() {
             if ret != *ty {
-                println!();
+                println!("");
                 print_type(depth, String::from(prefix) + "return.", &ret);
             }
         }
 
         let named = ty.named();
         if named != *ty && named.is_valid() {
-            println!();
+            println!("");
             print_type(depth, String::from(prefix) + "named.", &named);
         }
     }
@@ -1454,13 +1457,13 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
     print_indent(depth, "(");
     print_cursor(depth, "", c);
 
-    println!();
+    println!("");
     let ty = c.cur_type();
     print_type(depth, "type.", &ty);
 
     let declaration = ty.declaration();
     if declaration != *c && declaration.kind() != CXCursor_NoDeclFound {
-        println!();
+        println!("");
         print_cursor(depth, "type.declaration.", &declaration);
     }
 
@@ -1468,7 +1471,7 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
     let mut found_children = false;
     c.visit(|s| {
         if !found_children {
-            println!();
+            println!("");
             found_children = true;
         }
         ast_dump(&s, depth + 1)
