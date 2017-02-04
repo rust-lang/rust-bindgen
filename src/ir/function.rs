@@ -85,6 +85,7 @@ fn get_abi(cc: CXCallingConv) -> abi::Abi {
         CXCallingConv_X86FastCall => abi::Abi::Fastcall,
         CXCallingConv_AAPCS => abi::Abi::Aapcs,
         CXCallingConv_X86_64Win64 => abi::Abi::Win64,
+        CXCallingConv_Invalid => abi::Abi::C, // TODO:
         other => panic!("unsupported calling convention: {:?}", other),
     }
 }
@@ -154,7 +155,8 @@ impl FunctionSig {
         let mut args: Vec<_> = match cursor.kind() {
             CXCursor_FunctionDecl |
             CXCursor_Constructor |
-            CXCursor_CXXMethod => {
+            CXCursor_CXXMethod |
+            CXCursor_ObjCInstanceMethodDecl => {
                 // For CXCursor_FunctionDecl, cursor.args() is the reliable way
                 // to get parameter names and types.
                 cursor.args()
@@ -218,7 +220,11 @@ impl FunctionSig {
             }
         }
 
-        let ty_ret_type = try!(ty.ret_type().ok_or(ParseError::Continue));
+        let ty_ret_type = if cursor.kind() == CXCursor_ObjCInstanceMethodDecl {
+            try!(cursor.ret_type().ok_or(ParseError::Continue))
+        } else {
+            try!(ty.ret_type().ok_or(ParseError::Continue))
+        };
         let ret = Item::from_ty_or_ref(ty_ret_type, None, None, ctx);
         let abi = get_abi(ty.call_conv());
 

@@ -523,6 +523,14 @@ impl Cursor {
     pub fn evaluate(&self) -> Option<EvalResult> {
         EvalResult::new(*self)
     }
+
+    /// Return the result type for this cursor
+    pub fn ret_type(&self) -> Option<Type> {
+        let rt = Type {
+            x: unsafe { clang_getCursorResultType(self.x) },
+        };
+        if rt.is_valid() { Some(rt) } else { None }
+    }
 }
 
 extern "C" fn visit_children<Visitor>(cur: CXCursor,
@@ -1362,6 +1370,9 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
                          format!(" {}typedef-type = {}",
                                  prefix,
                                  type_to_str(ty.kind())));
+        }
+        if let Some(ty) = c.ret_type() {
+            print_indent(depth, format!(" {}ret-type = {}", prefix, type_to_str(ty.kind())));
         }
 
         if let Some(refd) = c.referenced() {

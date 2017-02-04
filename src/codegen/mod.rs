@@ -2153,61 +2153,8 @@ impl ToRustTy for FunctionSig {
 
     fn to_rust_ty(&self, ctx: &BindgenContext, _item: &Item) -> P<ast::Ty> {
         // TODO: we might want to consider ignoring the reference return value.
-        let return_item = ctx.resolve_item(self.return_type());
-        let ret =
-            if let TypeKind::Void = *return_item.kind().expect_type().kind() {
-                ast::FunctionRetTy::Default(ctx.span())
-            } else {
-                ast::FunctionRetTy::Ty(return_item.to_rust_ty(ctx))
-            };
-
-        let mut unnamed_arguments = 0;
-        let arguments = self.argument_types().iter().map(|&(ref name, ty)| {
-            let arg_item = ctx.resolve_item(ty);
-            let arg_ty = arg_item.kind().expect_type();
-
-            // From the C90 standard[1]:
-            //
-            //     A declaration of a parameter as "array of type" shall be
-            //     adjusted to "qualified pointer to type", where the type
-            //     qualifiers (if any) are those specified within the [ and ] of
-            //     the array type derivation.
-            //
-            // [1]: http://c0x.coding-guidelines.com/6.7.5.3.html
-            let arg_ty = match *arg_ty.canonical_type(ctx).kind() {
-                TypeKind::Array(t, _) => {
-                    t.to_rust_ty(ctx).to_ptr(arg_ty.is_const(), ctx.span())
-                },
-                TypeKind::Pointer(inner) => {
-                    let inner = ctx.resolve_item(inner);
-                    let inner_ty = inner.expect_type();
-                    if let TypeKind::ObjCInterface(_) = *inner_ty.canonical_type(ctx).kind() {
-                        quote_ty!(ctx.ext_cx(), id)
-                    } else {
-                        arg_item.to_rust_ty(ctx)
-                    }
-                },
-                _ => {
-                    arg_item.to_rust_ty(ctx)
-                }
-            };
-
-            let arg_name = match *name {
-                Some(ref name) => ctx.rust_mangle(name).into_owned(),
-                None => {
-                    unnamed_arguments += 1;
-                    format!("arg{}", unnamed_arguments)
-                }
-            };
-
-            assert!(!arg_name.is_empty());
-
-            ast::Arg {
-                ty: arg_ty,
-                pat: aster::AstBuilder::new().pat().id(arg_name),
-                id: ast::DUMMY_NODE_ID,
-            }
-        }).collect::<Vec<_>>();
+        let ret = utils::fnsig_return_ty(ctx, &self);
+        let arguments = utils::fnsig_arguments(ctx, &self);
 
         let decl = P(ast::FnDecl {
             inputs: arguments,
@@ -2316,9 +2263,36 @@ impl CodeGenerator for ObjCInterface {
         let mut trait_items = vec![];
 
         for method in self.methods() {
-            let method_name = ctx.rust_ident(method.name());
+            let signature = method.signature();
+            let fn_args = utils::fnsig_arguments(ctx, signature);
+            let fn_ret = utils::fnsig_return_ty(ctx, signature);
+            let sig = aster::AstBuilder::new()
+                .method_sig()
+                .unsafe_()
+                .fn_decl()
+                .self_()
+                .build(ast::SelfKind::Value(ast::Mutability::Immutable))
+                .with_args(fn_args.clone())
+                .build(fn_ret);
 
-            let body = quote_stmt!(ctx.ext_cx(), msg_send![self, $method_name])
+            // Collect the actual used argument names
+            let arg_names: Vec<_> = fn_args.iter()
+                .map(|ref arg| {
+                    match arg.pat.node {
+                        ast::PatKind::Ident(_, ref spanning, _) => {
+                            spanning.node.name.as_str().to_string()
+                        }
+                        _ => {
+                            panic!("odd argument!");
+                        }
+                    }
+                })
+                .collect();
+
+            let methods_and_args =
+                ctx.rust_ident(&method.format_method_call(&arg_names));
+            let body =
+                quote_stmt!(ctx.ext_cx(), msg_send![self, $methods_and_args])
                 .unwrap();
             let block = ast::Block {
                 stmts: vec![body],
@@ -2327,13 +2301,6 @@ impl CodeGenerator for ObjCInterface {
                 span: ctx.span(),
             };
 
-            let sig = aster::AstBuilder::new()
-                .method_sig()
-                .unsafe_()
-                .fn_decl()
-                .self_()
-                .build(ast::SelfKind::Value(ast::Mutability::Immutable))
-                .build(ast::FunctionRetTy::Default(ctx.span()));
             let attrs = vec![];
 
             let impl_item = ast::ImplItem {
@@ -2697,4 +2664,69 @@ mod utils {
             _ => panic!("How did this happen exactly?"),
         }
     }
+
+    pub fn fnsig_return_ty(ctx: &BindgenContext,
+                           sig: &super::FunctionSig)
+                           -> ast::FunctionRetTy {
+        let return_item = ctx.resolve_item(sig.return_type());
+        if let TypeKind::Void = *return_item.kind().expect_type().kind() {
+            ast::FunctionRetTy::Default(ctx.span())
+        } else {
+            ast::FunctionRetTy::Ty(return_item.to_rust_ty(ctx))
+        }
+    }
+
+    pub fn fnsig_arguments(ctx: &BindgenContext,
+                           sig: &super::FunctionSig)
+                           -> Vec<ast::Arg> {
+        use super::ToPtr;
+        let mut unnamed_arguments = 0;
+        sig.argument_types().iter().map(|&(ref name, ty)| {
+            let arg_item = ctx.resolve_item(ty);
+            let arg_ty = arg_item.kind().expect_type();
+
+            // From the C90 standard[1]:
+            //
+            //     A declaration of a parameter as "array of type" shall be
+            //     adjusted to "qualified pointer to type", where the type
+            //     qualifiers (if any) are those specified within the [ and ] of
+            //     the array type derivation.
+            //
+            // [1]: http://c0x.coding-guidelines.com/6.7.5.3.html
+            let arg_ty = match *arg_ty.canonical_type(ctx).kind() {
+                TypeKind::Array(t, _) => {
+                    t.to_rust_ty(ctx).to_ptr(arg_ty.is_const(), ctx.span())
+                },
+                TypeKind::Pointer(inner) => {
+                    let inner = ctx.resolve_item(inner);
+                    let inner_ty = inner.expect_type();
+                    if let TypeKind::ObjCInterface(_) = *inner_ty.canonical_type(ctx).kind() {
+                        quote_ty!(ctx.ext_cx(), id)
+                    } else {
+                        arg_item.to_rust_ty(ctx)
+                    }
+                },
+                _ => {
+                    arg_item.to_rust_ty(ctx)
+                }
+            };
+
+            let arg_name = match *name {
+                Some(ref name) => ctx.rust_mangle(name).into_owned(),
+                None => {
+                    unnamed_arguments += 1;
+                    format!("arg{}", unnamed_arguments)
+                }
+            };
+
+            assert!(!arg_name.is_empty());
+
+            ast::Arg {
+                ty: arg_ty,
+                pat: aster::AstBuilder::new().pat().id(arg_name),
+                id: ast::DUMMY_NODE_ID,
+            }
+        }).collect::<Vec<_>>()
+    }
+
 }
