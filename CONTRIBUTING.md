@@ -114,24 +114,26 @@ $ cargo test -p tests_expectations
 
 ## Automatic code formatting
 
-There's a `rustfmt.toml` file in the repo. Ideally changes should be consistent
-with the style, though that's not enforced right now.
+We use [`rustfmt`](https://github.com/rust-lang-nursery/rustfmt) to enforce a
+consistent code style across the whole `bindgen` code base. This is enforced in
+CI, and your pull requests will get automatically rejected if you don't
+re-format with the latest `rustfmt` before pushing.
 
-[`rustfmt`](https://github.com/rust-lang-nursery/rustfmt) can catch and fix
-automatically all the coding style issues it finds. In order to use it it
-suffices to do:
+You can install the latest version of `rustfmt` with this command:
+
+```
+$ cargo install -f rustfmt
+```
+
+Ensure that `~/.cargo/bin` is on your path.
+
+Once that is taken care of, you can (re)format all code by running this command:
 
 ```
 $ cargo fmt
 ```
 
-For it to work, you need to have `rustfmt` installed. To do so:
-
-```
-$ cargo install rustfmt
-```
-
-And ensure `~/.cargo/bin` is on your path.
+The code style is described in the `rustfmt.toml` file in top level of the repo.
 
 ## Debug Logging
 

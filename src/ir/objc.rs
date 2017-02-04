@@ -1,6 +1,7 @@
 //! Objective C types
 
 // use clang_sys::CXCursor_ObjCSuperClassRef;
+
 use super::context::BindgenContext;
 use clang;
 use clang_sys::CXChildVisit_Continue;
