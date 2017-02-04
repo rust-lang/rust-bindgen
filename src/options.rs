@@ -5,7 +5,7 @@ use std::io::{self, Error, ErrorKind};
 
 /// Construct a new [`Builder`](./struct.Builder.html) from command line flags.
 pub fn builder_from_flags<I>(args: I)
-                             -> Result<(Builder, Box<io::Write>), io::Error>
+                             -> Result<(Builder, Box<io::Write>, bool), io::Error>
     where I: Iterator<Item = String>,
 {
     let matches = App::new("bindgen")
@@ -349,9 +349,7 @@ pub fn builder_from_flags<I>(args: I)
         Box::new(io::BufWriter::new(io::stdout())) as Box<io::Write>
     };
 
-    if matches.is_present("verbose") {
-        builder = builder.verbose();
-    }
+    let verbose = matches.is_present("verbose");
 
-    Ok((builder, output))
+    Ok((builder, output, verbose))
 }
