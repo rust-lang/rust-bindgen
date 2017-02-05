@@ -2164,7 +2164,7 @@ impl ToRustTy for FunctionSig {
 
         let fnty = ast::TyKind::BareFn(P(ast::BareFnTy {
             unsafety: ast::Unsafety::Unsafe,
-            abi: self.abi(),
+            abi: self.abi().expect("Invalid abi for function!"),
             lifetimes: vec![],
             decl: decl,
         }));
@@ -2244,7 +2244,8 @@ impl CodeGenerator for Function {
             vis: ast::Visibility::Public,
         };
 
-        let item = ForeignModBuilder::new(signature.abi())
+        let item = ForeignModBuilder::new(signature.abi()
+                .expect("Invalid abi for function!"))
             .with_foreign_item(foreign_item)
             .build(ctx);
 

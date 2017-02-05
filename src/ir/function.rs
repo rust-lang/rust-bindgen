@@ -73,19 +73,19 @@ pub struct FunctionSig {
     is_variadic: bool,
 
     /// The ABI of this function.
-    abi: abi::Abi,
+    abi: Option<abi::Abi>,
 }
 
-fn get_abi(cc: CXCallingConv) -> abi::Abi {
+fn get_abi(cc: CXCallingConv) -> Option<abi::Abi> {
     use clang_sys::*;
     match cc {
-        CXCallingConv_Default => abi::Abi::C,
-        CXCallingConv_C => abi::Abi::C,
-        CXCallingConv_X86StdCall => abi::Abi::Stdcall,
-        CXCallingConv_X86FastCall => abi::Abi::Fastcall,
-        CXCallingConv_AAPCS => abi::Abi::Aapcs,
-        CXCallingConv_X86_64Win64 => abi::Abi::Win64,
-        CXCallingConv_Invalid => abi::Abi::C, // TODO:
+        CXCallingConv_Default => Some(abi::Abi::C),
+        CXCallingConv_C => Some(abi::Abi::C),
+        CXCallingConv_X86StdCall => Some(abi::Abi::Stdcall),
+        CXCallingConv_X86FastCall => Some(abi::Abi::Fastcall),
+        CXCallingConv_AAPCS => Some(abi::Abi::Aapcs),
+        CXCallingConv_X86_64Win64 => Some(abi::Abi::Win64),
+        CXCallingConv_Invalid => None,
         other => panic!("unsupported calling convention: {:?}", other),
     }
 }
@@ -117,7 +117,7 @@ impl FunctionSig {
     pub fn new(return_type: ItemId,
                arguments: Vec<(Option<String>, ItemId)>,
                is_variadic: bool,
-               abi: abi::Abi)
+               abi: Option<abi::Abi>)
                -> Self {
         FunctionSig {
             return_type: return_type,
@@ -228,6 +228,11 @@ impl FunctionSig {
         let ret = Item::from_ty_or_ref(ty_ret_type, None, None, ctx);
         let abi = get_abi(ty.call_conv());
 
+        if abi.is_none() {
+            assert_eq!(cursor.kind(), CXCursor_ObjCInstanceMethodDecl,
+                    "Invalid ABI for function signature")
+        }
+
         Ok(Self::new(ret, args, ty.is_variadic(), abi))
     }
 
@@ -242,7 +247,7 @@ impl FunctionSig {
     }
 
     /// Get this function signature's ABI.
-    pub fn abi(&self) -> abi::Abi {
+    pub fn abi(&self) -> Option<abi::Abi> {
         self.abi
     }
 
