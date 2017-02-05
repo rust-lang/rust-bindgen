@@ -10,7 +10,7 @@ pub struct a {
     pub val_a: *mut a_b,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct a_b {
     pub val_b: ::std::os::raw::c_int,
 }
@@ -43,4 +43,7 @@ fn bindgen_test_layout_a() {
 }
 impl Clone for a {
     fn clone(&self) -> Self { *self }
+}
+impl Default for a {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

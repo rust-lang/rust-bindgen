@@ -37,7 +37,7 @@ pub struct NastyStruct<T> {
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct NastyStruct__bindgen_ty_1<T> {
     pub mFoo: __BindgenUnionField<*mut ::std::os::raw::c_void>,
     pub mDummy: __BindgenUnionField<::std::os::raw::c_ulong>,
@@ -45,15 +45,18 @@ pub struct NastyStruct__bindgen_ty_1<T> {
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct NastyStruct__bindgen_ty_2<T> {
     pub wat: __BindgenUnionField<::std::os::raw::c_short>,
     pub wut: __BindgenUnionField<*mut ::std::os::raw::c_int>,
     pub bindgen_union_field: u64,
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
+impl <T> Default for NastyStruct<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Whatever<T> {
     pub mTPtr: __BindgenUnionField<*mut ::std::os::raw::c_void>,
     pub mInt: __BindgenUnionField<::std::os::raw::c_int>,

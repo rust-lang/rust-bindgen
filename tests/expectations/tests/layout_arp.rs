@@ -24,7 +24,7 @@ pub const ARP_OP_INVREPLY: ::std::os::raw::c_uint = 9;
  * See http://standards.ieee.org/regauth/groupmac/tutorial.html
  */
 #[repr(C, packed)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct ether_addr {
     /**< Addr bytes in tx order */
     pub addr_bytes: [u8; 6usize],
@@ -48,7 +48,7 @@ impl Clone for ether_addr {
  * ARP header IPv4 payload.
  */
 #[repr(C, packed)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct arp_ipv4 {
     /**< sender hardware address */
     pub arp_sha: ether_addr,
@@ -93,7 +93,7 @@ impl Clone for arp_ipv4 {
  * ARP header.
  */
 #[repr(C, packed)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct arp_hdr {
     pub arp_hrd: u16,
     pub arp_pro: u16,

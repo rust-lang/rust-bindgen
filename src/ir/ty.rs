@@ -2,7 +2,7 @@
 
 use super::comp::CompInfo;
 use super::context::{BindgenContext, ItemId};
-use super::derive::{CanDeriveCopy, CanDeriveDebug};
+use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::enum_ty::Enum;
 use super::function::FunctionSig;
 use super::int::IntKind;
@@ -408,6 +408,39 @@ impl CanDeriveDebug for Type {
                 info.can_derive_debug(ctx, self.layout(ctx))
             }
             _ => true,
+        }
+    }
+}
+
+impl CanDeriveDefault for Type {
+    type Extra = ();
+
+    fn can_derive_default(&self, ctx: &BindgenContext, _: ()) -> bool {
+        match self.kind {
+            TypeKind::Array(t, len) => {
+                len <= RUST_DERIVE_IN_ARRAY_LIMIT &&
+                t.can_derive_default(ctx, ())
+            }
+            TypeKind::ResolvedTypeRef(t) |
+            TypeKind::TemplateAlias(t, _) |
+            TypeKind::Alias(t) => t.can_derive_default(ctx, ()),
+            TypeKind::Comp(ref info) => {
+                info.can_derive_default(ctx, self.layout(ctx))
+            }
+            TypeKind::Void |
+            TypeKind::Named |
+            TypeKind::TemplateRef(..) |
+            TypeKind::Reference(..) |
+            TypeKind::NullPtr |
+            TypeKind::Pointer(..) |
+            TypeKind::BlockPointer |
+            TypeKind::ObjCInterface(..) |
+            TypeKind::Enum(..) => false,
+            TypeKind::Function(..) |
+            TypeKind::Int(..) |
+            TypeKind::Float(..) |
+            TypeKind::Complex(..) => true,
+            TypeKind::UnresolvedTypeRef(..) => unreachable!(),
         }
     }
 }

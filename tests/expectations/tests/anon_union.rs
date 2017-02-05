@@ -43,24 +43,27 @@ pub const TErrorResult_UnionState_HasException: TErrorResult_UnionState =
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum TErrorResult_UnionState { HasMessage = 0, }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct TErrorResult_Message<T> {
     pub _address: u8,
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct TErrorResult_DOMExceptionInfo<T> {
     pub _address: u8,
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct TErrorResult__bindgen_ty_1<T> {
     pub mMessage: __BindgenUnionField<*mut TErrorResult_Message<T>>,
     pub mDOMExceptionInfo: __BindgenUnionField<*mut TErrorResult_DOMExceptionInfo<T>>,
     pub bindgen_union_field: u64,
     pub _phantom_0: ::std::marker::PhantomData<T>,
+}
+impl <T> Default for TErrorResult<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -76,6 +79,9 @@ fn bindgen_test_layout_ErrorResult() {
 }
 impl Clone for ErrorResult {
     fn clone(&self) -> Self { *self }
+}
+impl Default for ErrorResult {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
 fn __bindgen_test_layout_template_1() {

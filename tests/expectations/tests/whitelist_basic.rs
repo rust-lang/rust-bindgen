@@ -16,3 +16,9 @@ pub struct WhitelistMe<T> {
 pub struct WhitelistMe_Inner<T> {
     pub bar: T,
 }
+impl <T> Default for WhitelistMe_Inner<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+impl <T> Default for WhitelistMe<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}

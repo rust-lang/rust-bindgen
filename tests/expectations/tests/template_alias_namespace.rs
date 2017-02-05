@@ -20,5 +20,8 @@ pub mod root {
         pub struct Rooted<T> {
             pub ptr: root::JS::detail::Wrapped<T>,
         }
+        impl <T> Default for Rooted<T> {
+            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        }
     }
 }

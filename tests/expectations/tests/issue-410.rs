@@ -11,7 +11,7 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Copy)]
+        #[derive(Debug, Default, Copy)]
         pub struct Value {
             pub _address: u8,
         }

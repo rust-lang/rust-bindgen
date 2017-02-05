@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Container {
     pub _bindgen_opaque_blob: [u32; 2usize],
 }

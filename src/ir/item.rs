@@ -2,7 +2,7 @@
 
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId};
-use super::derive::{CanDeriveCopy, CanDeriveDebug};
+use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::function::Function;
 use super::item_kind::ItemKind;
 use super::module::Module;
@@ -228,6 +228,26 @@ impl CanDeriveDebug for Item {
                         .map_or(true, |l| l.opaque().can_derive_debug(ctx, ()))
                 } else {
                     ty.can_derive_debug(ctx, ())
+                }
+            }
+            _ => false,
+        }
+    }
+}
+
+impl CanDeriveDefault for Item {
+    type Extra = ();
+
+    fn can_derive_default(&self, ctx: &BindgenContext, _: ()) -> bool {
+        ctx.options().derive_default &&
+        match self.kind {
+            ItemKind::Type(ref ty) => {
+                if self.is_opaque(ctx) {
+                    ty.layout(ctx)
+                        .map_or(false,
+                                |l| l.opaque().can_derive_default(ctx, ()))
+                } else {
+                    ty.can_derive_default(ctx, ())
                 }
             }
             _ => false,

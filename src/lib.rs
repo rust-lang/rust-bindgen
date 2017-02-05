@@ -320,6 +320,12 @@ impl Builder {
         self
     }
 
+    /// Set whether `Default` should be derived by default.
+    pub fn derive_default(mut self, doit: bool) -> Self {
+        self.options.derive_default = doit;
+        self
+    }
+
     /// Emit Clang AST.
     pub fn emit_clang_ast(mut self) -> Builder {
         self.options.emit_ast = true;
@@ -496,6 +502,10 @@ pub struct BindgenOptions {
     /// and types.
     pub derive_debug: bool,
 
+    /// True if we shold derive Default trait implementations for C/C++ structures
+    /// and types.
+    pub derive_default: bool,
+
     /// True if we can use unstable Rust code in the bindings, false if we
     /// cannot.
     pub unstable_rust: bool,
@@ -581,6 +591,7 @@ impl Default for BindgenOptions {
             emit_ast: false,
             emit_ir: false,
             derive_debug: true,
+            derive_default: false,
             enable_cxx_namespaces: false,
             disable_name_namespacing: false,
             unstable_rust: true,

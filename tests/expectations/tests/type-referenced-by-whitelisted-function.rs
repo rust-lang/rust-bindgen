@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct dl_phdr_info {
     pub x: ::std::os::raw::c_int,
 }

@@ -5,12 +5,12 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct foo {
     pub bar: foo__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct foo__bindgen_ty_1 {
     pub x: ::std::os::raw::c_uint,
     pub y: ::std::os::raw::c_uint,

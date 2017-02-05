@@ -11,3 +11,6 @@ pub struct CopiableButWait<T> {
     pub whatever: ::std::os::raw::c_int,
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
+impl <T> Default for CopiableButWait<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}

@@ -8,7 +8,7 @@
  * <div rustbindgen opaque></div>
  */
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct OtherOpaque {
     pub _bindgen_opaque_blob: u32,
 }
@@ -29,6 +29,9 @@ impl Clone for OtherOpaque {
 #[derive(Debug, Copy, Clone)]
 pub struct Opaque<T> {
     pub _phantom_0: ::std::marker::PhantomData<T>,
+}
+impl <T> Default for Opaque<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -61,4 +64,7 @@ fn bindgen_test_layout_WithOpaquePtr() {
 }
 impl Clone for WithOpaquePtr {
     fn clone(&self) -> Self { *self }
+}
+impl Default for WithOpaquePtr {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

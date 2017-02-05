@@ -5,6 +5,7 @@
 
 
 #[repr(C)]
+#[derive(Default)]
 pub struct nsSlots__bindgen_vtable {
 }
 #[repr(C)]
@@ -18,4 +19,7 @@ fn bindgen_test_layout_nsSlots() {
                "Size of: " , stringify ! ( nsSlots ) ));
     assert_eq! (::std::mem::align_of::<nsSlots>() , 8usize , concat ! (
                 "Alignment of " , stringify ! ( nsSlots ) ));
+}
+impl Default for nsSlots {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

@@ -10,6 +10,7 @@ pub const whatever_else: _bindgen_ty_1 = _bindgen_ty_1::whatever_else;
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum _bindgen_ty_1 { match_ = 0, whatever_else = 1, }
 #[repr(C)]
+#[derive(Default)]
 pub struct C__bindgen_vtable {
 }
 #[repr(C)]
@@ -31,4 +32,7 @@ fn bindgen_test_layout_C() {
 }
 impl Clone for C {
     fn clone(&self) -> Self { *self }
+}
+impl Default for C {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

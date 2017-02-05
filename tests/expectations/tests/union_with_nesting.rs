@@ -29,20 +29,20 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct foo {
     pub a: __BindgenUnionField<::std::os::raw::c_uint>,
     pub __bindgen_anon_1: __BindgenUnionField<foo__bindgen_ty_1>,
     pub bindgen_union_field: u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct foo__bindgen_ty_1 {
     pub __bindgen_anon_1: foo__bindgen_ty_1__bindgen_ty_1,
     pub __bindgen_anon_2: foo__bindgen_ty_1__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct foo__bindgen_ty_1__bindgen_ty_1 {
     pub b1: __BindgenUnionField<::std::os::raw::c_ushort>,
     pub b2: __BindgenUnionField<::std::os::raw::c_ushort>,
@@ -75,7 +75,7 @@ impl Clone for foo__bindgen_ty_1__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct foo__bindgen_ty_1__bindgen_ty_2 {
     pub c1: __BindgenUnionField<::std::os::raw::c_ushort>,
     pub c2: __BindgenUnionField<::std::os::raw::c_ushort>,

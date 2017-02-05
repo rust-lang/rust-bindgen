@@ -5,6 +5,7 @@
 
 
 #[repr(C)]
+#[derive(Default)]
 pub struct __IncompleteArrayField<T>(::std::marker::PhantomData<T>);
 impl <T> __IncompleteArrayField<T> {
     #[inline]
@@ -61,8 +62,11 @@ fn bindgen_test_layout_rte_kni_fifo() {
 impl Clone for rte_kni_fifo {
     fn clone(&self) -> Self { *self }
 }
+impl Default for rte_kni_fifo {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_eth_link {
     /**< ETH_SPEED_NUM_ */
     pub link_speed: u32,

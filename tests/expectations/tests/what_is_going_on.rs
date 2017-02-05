@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct UnknownUnits {
     pub _address: u8,
 }
@@ -26,5 +26,8 @@ pub struct PointTyped<units, F> {
     pub x: F,
     pub y: F,
     pub _phantom_0: ::std::marker::PhantomData<units>,
+}
+impl <units, F> Default for PointTyped<units, F> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 pub type IntPoint = PointTyped<UnknownUnits, f32>;

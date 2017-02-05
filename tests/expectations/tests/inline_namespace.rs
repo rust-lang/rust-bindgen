@@ -13,7 +13,7 @@ pub mod root {
         pub type Ty = ::std::os::raw::c_int;
     }
     #[repr(C)]
-    #[derive(Debug, Copy)]
+    #[derive(Debug, Default, Copy)]
     pub struct Bar {
         pub baz: root::foo::Ty,
     }

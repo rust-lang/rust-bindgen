@@ -10,3 +10,6 @@ pub struct VariadicFunctionObject<T> {
     pub _address: u8,
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
+impl <T> Default for VariadicFunctionObject<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}

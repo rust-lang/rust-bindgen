@@ -9,9 +9,15 @@
 pub struct Rooted<T> {
     pub _base: js_RootedBase<T>,
 }
+impl <T> Default for Rooted<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct js_RootedBase<T> {
     pub foo: *mut T,
     pub next: *mut Rooted<T>,
+}
+impl <T> Default for js_RootedBase<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

@@ -5,13 +5,13 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct foo {
     pub bar: [foo__bindgen_ty_1; 2usize],
     pub baz: [[[foo__bindgen_ty_2; 4usize]; 3usize]; 2usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct foo__bindgen_ty_1 {
     pub a: ::std::os::raw::c_int,
     pub b: ::std::os::raw::c_int,
@@ -37,7 +37,7 @@ impl Clone for foo__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct foo__bindgen_ty_2 {
     pub a: ::std::os::raw::c_int,
     pub b: ::std::os::raw::c_int,

@@ -12,6 +12,9 @@ pub struct Foo([u8; 0]);
 pub struct RefPtr<T> {
     pub m_inner: *mut T,
 }
+impl <T> Default for RefPtr<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct Bar {
@@ -31,4 +34,7 @@ fn bindgen_test_layout_Bar() {
 }
 impl Clone for Bar {
     fn clone(&self) -> Self { *self }
+}
+impl Default for Bar {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

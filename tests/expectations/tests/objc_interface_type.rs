@@ -31,6 +31,9 @@ fn bindgen_test_layout_FooStruct() {
 impl Clone for FooStruct {
     fn clone(&self) -> Self { *self }
 }
+impl Default for FooStruct {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 extern "C" {
     pub fn fooFunc(foo: id);
 }

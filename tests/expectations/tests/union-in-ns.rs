@@ -36,7 +36,7 @@ pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]
-    #[derive(Debug, Copy)]
+    #[derive(Debug, Default, Copy)]
     pub struct bar {
         pub baz: root::__BindgenUnionField<::std::os::raw::c_int>,
         pub bindgen_union_field: u32,

@@ -29,21 +29,21 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_ipv4_tuple {
     pub src_addr: u32,
     pub dst_addr: u32,
     pub __bindgen_anon_1: rte_ipv4_tuple__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_ipv4_tuple__bindgen_ty_1 {
     pub __bindgen_anon_1: __BindgenUnionField<rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1>,
     pub sctp_tag: __BindgenUnionField<u32>,
     pub bindgen_union_field: u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1 {
     pub dport: u16,
     pub sport: u16,
@@ -116,21 +116,21 @@ impl Clone for rte_ipv4_tuple {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_ipv6_tuple {
     pub src_addr: [u8; 16usize],
     pub dst_addr: [u8; 16usize],
     pub __bindgen_anon_1: rte_ipv6_tuple__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_ipv6_tuple__bindgen_ty_1 {
     pub __bindgen_anon_1: __BindgenUnionField<rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1>,
     pub sctp_tag: __BindgenUnionField<u32>,
     pub bindgen_union_field: u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1 {
     pub dport: u16,
     pub sport: u16,
@@ -226,4 +226,7 @@ fn bindgen_test_layout_rte_thash_tuple() {
 }
 impl Clone for rte_thash_tuple {
     fn clone(&self) -> Self { *self }
+}
+impl Default for rte_thash_tuple {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

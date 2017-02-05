@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct cv_String {
     pub _address: u8,
 }

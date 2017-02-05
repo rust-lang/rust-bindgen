@@ -65,6 +65,9 @@ extern "C" {
 impl Clone for C {
     fn clone(&self) -> Self { *self }
 }
+impl Default for C {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 impl C {
     #[inline]
     pub unsafe fn method(&mut self, c: C_MyInt) { C_method(&mut *self, c) }
@@ -101,4 +104,7 @@ fn bindgen_test_layout_D() {
 }
 impl Clone for D {
     fn clone(&self) -> Self { *self }
+}
+impl Default for D {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

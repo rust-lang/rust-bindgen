@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct LittleArray {
     pub a: [::std::os::raw::c_int; 32usize],
 }
@@ -40,8 +40,11 @@ fn bindgen_test_layout_BigArray() {
                 "Alignment of field: " , stringify ! ( BigArray ) , "::" ,
                 stringify ! ( a ) ));
 }
+impl Default for BigArray {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct WithLittleArray {
     pub a: LittleArray,
 }
@@ -75,4 +78,7 @@ fn bindgen_test_layout_WithBigArray() {
                 usize } , 0usize , concat ! (
                 "Alignment of field: " , stringify ! ( WithBigArray ) , "::" ,
                 stringify ! ( a ) ));
+}
+impl Default for WithBigArray {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

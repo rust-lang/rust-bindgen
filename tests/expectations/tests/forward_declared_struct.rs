@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct a {
     pub b: ::std::os::raw::c_int,
 }
@@ -24,7 +24,7 @@ impl Clone for a {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct c {
     pub d: ::std::os::raw::c_int,
 }

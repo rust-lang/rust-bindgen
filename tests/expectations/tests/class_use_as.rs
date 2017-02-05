@@ -8,7 +8,7 @@
  * <div rustbindgen="true" replaces="whatever"></div>
  */
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct whatever {
     pub replacement: ::std::os::raw::c_int,
 }
@@ -28,7 +28,7 @@ impl Clone for whatever {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct container {
     pub c: whatever,
 }

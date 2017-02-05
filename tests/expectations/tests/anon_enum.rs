@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Test {
     pub foo: ::std::os::raw::c_int,
     pub bar: f32,

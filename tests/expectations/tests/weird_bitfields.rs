@@ -99,6 +99,9 @@ fn bindgen_test_layout_Weird() {
 impl Clone for Weird {
     fn clone(&self) -> Self { *self }
 }
+impl Default for Weird {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 impl Weird {
     #[inline]
     pub fn bitTest(&self) -> ::std::os::raw::c_uint {

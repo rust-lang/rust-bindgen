@@ -10,8 +10,14 @@ pub struct Wohoo<T> {
     pub _address: u8,
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
+impl <T> Default for Wohoo<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Weeee<T> {
     pub _base: T,
+}
+impl <T> Default for Weeee<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

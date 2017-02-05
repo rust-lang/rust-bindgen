@@ -28,3 +28,6 @@ fn bindgen_test_layout_bar() {
 impl Clone for bar {
     fn clone(&self) -> Self { *self }
 }
+impl Default for bar {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}

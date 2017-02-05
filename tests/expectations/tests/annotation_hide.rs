@@ -8,7 +8,7 @@
  * <div rustbindgen opaque></div>
  */
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct D {
     pub _bindgen_opaque_blob: u32,
 }
@@ -23,7 +23,7 @@ impl Clone for D {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct NotAnnotated {
     pub f: ::std::os::raw::c_int,
 }

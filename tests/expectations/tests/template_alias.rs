@@ -10,3 +10,6 @@ pub type JS_detail_Wrapped<T> = T;
 pub struct JS_Rooted<T> {
     pub ptr: JS_detail_Wrapped<T>,
 }
+impl <T> Default for JS_Rooted<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}

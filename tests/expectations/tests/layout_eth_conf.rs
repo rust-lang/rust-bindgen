@@ -115,6 +115,9 @@ fn bindgen_test_layout_rte_eth_rxmode() {
 impl Clone for rte_eth_rxmode {
     fn clone(&self) -> Self { *self }
 }
+impl Default for rte_eth_rxmode {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 impl rte_eth_rxmode {
     #[inline]
     pub fn header_split(&self) -> u16 {
@@ -268,6 +271,9 @@ fn bindgen_test_layout_rte_eth_txmode() {
 impl Clone for rte_eth_txmode {
     fn clone(&self) -> Self { *self }
 }
+impl Default for rte_eth_txmode {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 impl rte_eth_txmode {
     #[inline]
     pub fn hw_vlan_reject_tagged(&self) -> u8 {
@@ -358,6 +364,9 @@ fn bindgen_test_layout_rte_eth_rss_conf() {
 impl Clone for rte_eth_rss_conf {
     fn clone(&self) -> Self { *self }
 }
+impl Default for rte_eth_rss_conf {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(u32)]
 /**
  * This enum indicates the possible number of traffic classes
@@ -403,7 +412,7 @@ pub struct rte_eth_vmdq_dcb_conf {
     pub dcb_tc: [u8; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_eth_vmdq_dcb_conf__bindgen_ty_1 {
     /**< The vlan id of the received frame */
     pub vlan_id: u16,
@@ -476,6 +485,9 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
                 "Alignment of field: " , stringify ! ( rte_eth_vmdq_dcb_conf )
                 , "::" , stringify ! ( dcb_tc ) ));
 }
+impl Default for rte_eth_vmdq_dcb_conf {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct rte_eth_dcb_rx_conf {
@@ -504,6 +516,9 @@ fn bindgen_test_layout_rte_eth_dcb_rx_conf() {
 }
 impl Clone for rte_eth_dcb_rx_conf {
     fn clone(&self) -> Self { *self }
+}
+impl Default for rte_eth_dcb_rx_conf {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -536,6 +551,9 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_tx_conf() {
 impl Clone for rte_eth_vmdq_dcb_tx_conf {
     fn clone(&self) -> Self { *self }
 }
+impl Default for rte_eth_vmdq_dcb_tx_conf {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct rte_eth_dcb_tx_conf {
@@ -565,6 +583,9 @@ fn bindgen_test_layout_rte_eth_dcb_tx_conf() {
 impl Clone for rte_eth_dcb_tx_conf {
     fn clone(&self) -> Self { *self }
 }
+impl Default for rte_eth_dcb_tx_conf {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct rte_eth_vmdq_tx_conf {
@@ -587,6 +608,9 @@ fn bindgen_test_layout_rte_eth_vmdq_tx_conf() {
 impl Clone for rte_eth_vmdq_tx_conf {
     fn clone(&self) -> Self { *self }
 }
+impl Default for rte_eth_vmdq_tx_conf {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
 pub struct rte_eth_vmdq_rx_conf {
     /**< VMDq only mode, 8 or 64 pools */
@@ -605,7 +629,7 @@ pub struct rte_eth_vmdq_rx_conf {
     pub pool_map: [rte_eth_vmdq_rx_conf__bindgen_ty_1; 64usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_eth_vmdq_rx_conf__bindgen_ty_1 {
     /**< The vlan id of the received frame */
     pub vlan_id: u16,
@@ -683,6 +707,9 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
                 "Alignment of field: " , stringify ! ( rte_eth_vmdq_rx_conf )
                 , "::" , stringify ! ( pool_map ) ));
 }
+impl Default for rte_eth_vmdq_rx_conf {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(u32)]
 /**
  *  Flow Director setting modes: none, signature or perfect.
@@ -720,7 +747,7 @@ pub enum rte_fdir_status_mode {
  * A structure used to define the input for IPV4 flow
  */
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_eth_ipv4_flow {
     /**< IPv4 source address in big endian. */
     pub src_ip: u32,
@@ -772,7 +799,7 @@ impl Clone for rte_eth_ipv4_flow {
  * A structure used to define the input for IPV6 flow
  */
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_eth_ipv6_flow {
     /**< IPv6 source address in big endian. */
     pub src_ip: [u32; 4usize],
@@ -825,7 +852,7 @@ impl Clone for rte_eth_ipv6_flow {
  *  to match the various fields of RX packet headers.
  */
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_eth_fdir_masks {
     /**< Bit mask for vlan_tci in big endian */
     pub vlan_tci_mask: u16,
@@ -944,12 +971,15 @@ fn bindgen_test_layout_rte_eth_flex_payload_cfg() {
 impl Clone for rte_eth_flex_payload_cfg {
     fn clone(&self) -> Self { *self }
 }
+impl Default for rte_eth_flex_payload_cfg {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 /**
  * A structure used to define FDIR masks for flexible payload
  * for each flow type
  */
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_eth_fdir_flex_mask {
     pub flow_type: u16,
     pub mask: [u8; 16usize],
@@ -1022,6 +1052,9 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
 impl Clone for rte_eth_fdir_flex_conf {
     fn clone(&self) -> Self { *self }
 }
+impl Default for rte_eth_fdir_flex_conf {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 /**
  * A structure used to configure the Flow Director (FDIR) feature
  * of an Ethernet port.
@@ -1082,11 +1115,14 @@ fn bindgen_test_layout_rte_fdir_conf() {
 impl Clone for rte_fdir_conf {
     fn clone(&self) -> Self { *self }
 }
+impl Default for rte_fdir_conf {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 /**
  * A structure used to enable/disable specific device interrupts.
  */
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_intr_conf {
     /** enable/disable lsc interrupt. 0 (default) - disable, 1 enable */
     pub lsc: u16,
@@ -1192,8 +1228,11 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
                 rte_eth_conf__bindgen_ty_1 ) , "::" , stringify ! (
                 vmdq_rx_conf ) ));
 }
+impl Default for rte_eth_conf__bindgen_ty_1 {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_eth_conf__bindgen_ty_2 {
     pub vmdq_dcb_tx_conf: __BindgenUnionField<rte_eth_vmdq_dcb_tx_conf>,
     pub dcb_tx_conf: __BindgenUnionField<rte_eth_dcb_tx_conf>,
@@ -1282,4 +1321,7 @@ fn bindgen_test_layout_rte_eth_conf() {
                 as usize } , 2940usize , concat ! (
                 "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
                 stringify ! ( intr_conf ) ));
+}
+impl Default for rte_eth_conf {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

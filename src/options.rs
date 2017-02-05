@@ -42,6 +42,13 @@ pub fn builder_from_flags<I>(args: I)
             Arg::with_name("no-derive-debug")
                 .long("no-derive-debug")
                 .help("Avoid deriving Debug on any type."),
+            Arg::with_name("no-derive-default")
+                .long("no-derive-default")
+                .hidden(true)
+                .help("Avoid deriving Default on any type."),
+            Arg::with_name("with-derive-default")
+                .long("with-derive-default")
+                .help("Deriving Default on any type."),
             Arg::with_name("no-doc-comments")
                 .long("no-doc-comments")
                 .help("Avoid including doc comments in the output, see: \
@@ -210,6 +217,14 @@ pub fn builder_from_flags<I>(args: I)
 
     if matches.is_present("no-derive-debug") {
         builder = builder.derive_debug(false);
+    }
+
+    if matches.is_present("with-derive-default") {
+        builder = builder.derive_default(true);
+    }
+
+    if matches.is_present("no-derive-default") {
+        builder = builder.derive_default(false);
     }
 
     if let Some(prefix) = matches.value_of("ctypes-prefix") {

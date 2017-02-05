@@ -19,7 +19,11 @@ fn bindgen_test_layout_Derived() {
 impl Clone for Derived {
     fn clone(&self) -> Self { *self }
 }
+impl Default for Derived {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
+#[derive(Default)]
 pub struct Base__bindgen_vtable {
 }
 #[repr(C)]
@@ -36,4 +40,7 @@ fn bindgen_test_layout_Base() {
 }
 impl Clone for Base {
     fn clone(&self) -> Self { *self }
+}
+impl Default for Base {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

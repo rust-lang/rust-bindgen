@@ -15,4 +15,10 @@ pub struct Wrapper<T> {
 pub struct Wrapper_Wrapped<T> {
     pub t: T,
 }
+impl <T> Default for Wrapper_Wrapped<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 pub type Wrapper_Type<T> = Wrapper_Wrapped<T>;
+impl <T> Default for Wrapper<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}

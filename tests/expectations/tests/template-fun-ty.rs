@@ -12,6 +12,9 @@ pub struct Foo<T> {
 }
 pub type Foo_FunctionPtr<T> =
     ::std::option::Option<unsafe extern "C" fn() -> T>;
+impl <T> Default for Foo<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct RefPtr<T> {
@@ -28,4 +31,10 @@ pub struct RefPtr_Proxy<T, R, Args> {
 }
 pub type RefPtr_Proxy_member_function<R, Args> =
     ::std::option::Option<unsafe extern "C" fn(arg1: Args) -> R>;
+impl <T, R, Args> Default for RefPtr_Proxy<T, R, Args> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+impl <T> Default for RefPtr<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 pub type Returner<T> = ::std::option::Option<unsafe extern "C" fn() -> T>;

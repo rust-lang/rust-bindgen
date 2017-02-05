@@ -29,14 +29,14 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct pixel {
     pub rgba: __BindgenUnionField<::std::os::raw::c_uint>,
     pub __bindgen_anon_1: __BindgenUnionField<pixel__bindgen_ty_1>,
     pub bindgen_union_field: u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct pixel__bindgen_ty_1 {
     pub r: ::std::os::raw::c_uchar,
     pub g: ::std::os::raw::c_uchar,

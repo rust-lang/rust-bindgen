@@ -104,6 +104,7 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
         .ok_or(Error::new(ErrorKind::Other, "Invalid header file name")));
 
     let prepend = ["bindgen",
+                   "--with-derive-default",
                    header_str,
                    "--raw-line",
                    "",

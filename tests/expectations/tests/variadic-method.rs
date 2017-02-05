@@ -9,7 +9,7 @@ extern "C" {
     pub fn foo(fmt: *const ::std::os::raw::c_char, ...);
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Bar {
     pub _address: u8,
 }

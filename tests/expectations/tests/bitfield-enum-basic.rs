@@ -48,7 +48,7 @@ impl ::std::ops::BitOr<_bindgen_ty_1> for _bindgen_ty_1 {
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct _bindgen_ty_1(pub ::std::os::raw::c_uint);
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Dummy {
     pub _address: u8,
 }

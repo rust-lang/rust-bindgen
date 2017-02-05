@@ -37,5 +37,8 @@ fn bindgen_test_layout_foo() {
 impl Clone for foo {
     fn clone(&self) -> Self { *self }
 }
+impl Default for foo {
+    fn default() -> Self { unsafe { ::core::mem::zeroed() } }
+}
 pub type fooFunction =
     ::core::option::Option<unsafe extern "C" fn(bar: ::std::os::raw::c_int)>;

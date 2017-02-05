@@ -9,6 +9,9 @@
 pub struct HandleWithDtor<T> {
     pub ptr: *mut T,
 }
+impl <T> Default for HandleWithDtor<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 pub type HandleValue = HandleWithDtor<::std::os::raw::c_int>;
 #[repr(C)]
 #[derive(Debug)]
@@ -26,6 +29,9 @@ fn bindgen_test_layout_WithoutDtor() {
                 const _ as usize } , 0usize , concat ! (
                 "Alignment of field: " , stringify ! ( WithoutDtor ) , "::" ,
                 stringify ! ( shouldBeWithDtor ) ));
+}
+impl Default for WithoutDtor {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
 fn __bindgen_test_layout_template_1() {

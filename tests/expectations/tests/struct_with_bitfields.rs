@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct bitfield {
     pub _bitfield_1: u8,
     pub e: ::std::os::raw::c_int,

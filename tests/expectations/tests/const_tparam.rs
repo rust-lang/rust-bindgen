@@ -10,3 +10,6 @@ pub struct C<T> {
     pub foo: *const T,
     pub bar: *mut T,
 }
+impl <T> Default for C<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
