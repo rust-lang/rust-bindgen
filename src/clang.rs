@@ -132,11 +132,11 @@ impl Cursor {
         // `clang_Cursor_getNumTemplateArguments` is totally unreliable.
         // Therefore, try former first, and only fallback to the latter if we
         // have to.
-        self.cur_type().num_template_args()
+        self.cur_type()
+            .num_template_args()
             .or_else(|| {
-                let n: c_int = unsafe {
-                    clang_Cursor_getNumTemplateArguments(self.x)
-                };
+                let n: c_int =
+                    unsafe { clang_Cursor_getNumTemplateArguments(self.x) };
 
                 if n >= 0 {
                     Some(n as u32)
@@ -783,10 +783,12 @@ impl Type {
     /// If this type is a class template specialization, return its
     /// template arguments. Otherwise, return None.
     pub fn template_args(&self) -> Option<TypeTemplateArgIterator> {
-        self.num_template_args().map(|n| TypeTemplateArgIterator {
-            x: self.x,
-            length: n,
-            index: 0,
+        self.num_template_args().map(|n| {
+            TypeTemplateArgIterator {
+                x: self.x,
+                length: n,
+                index: 0,
+            }
         })
     }
 
@@ -888,9 +890,8 @@ impl Type {
         // Yep, the spelling of this containing type-parameter is extremely
         // nasty... But can happen in <type_traits>. Unfortunately I couldn't
         // reduce it enough :(
-        self.template_args().map_or(false, |args| {
-            args.len() > 0
-        }) && match self.declaration().kind() {
+        self.template_args().map_or(false, |args| args.len() > 0) &&
+        match self.declaration().kind() {
             CXCursor_ClassTemplatePartialSpecialization |
             CXCursor_TypeAliasTemplateDecl |
             CXCursor_TemplateTemplateParameter => false,
