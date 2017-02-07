@@ -490,9 +490,6 @@ impl Clone for rte_mbuf__bindgen_ty_4 {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct rte_mbuf_rte_mempool([u8; 0]);
-#[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct rte_mbuf__bindgen_ty_5 {
     /**< combined for easy fetch */

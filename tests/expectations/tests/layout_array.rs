@@ -202,9 +202,6 @@ pub struct malloc_heap {
 pub struct malloc_heap__bindgen_ty_1 {
     pub lh_first: *mut malloc_heap__bindgen_ty_1_malloc_elem,
 }
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct malloc_heap__bindgen_ty_1_malloc_elem([u8; 0]);
 #[test]
 fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
     assert_eq!(::std::mem::size_of::<malloc_heap__bindgen_ty_1>() , 8usize ,
