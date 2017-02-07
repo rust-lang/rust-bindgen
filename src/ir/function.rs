@@ -2,6 +2,7 @@
 
 use super::context::{BindgenContext, ItemId};
 use super::item::Item;
+use super::attr::Attribute;
 use super::ty::TypeKind;
 use super::type_collector::{ItemSet, TypeCollector};
 use clang;
@@ -26,6 +27,9 @@ pub struct Function {
 
     /// The doc comment on the function, if any.
     comment: Option<String>,
+
+    /// The special attributes of the function.
+    attributes: Vec<Attribute>,
 }
 
 impl Function {
@@ -33,13 +37,15 @@ impl Function {
     pub fn new(name: String,
                mangled_name: Option<String>,
                sig: ItemId,
-               comment: Option<String>)
+               comment: Option<String>,
+               attributes: Vec<Attribute>)
                -> Self {
         Function {
             name: name,
             mangled_name: mangled_name,
             signature: sig,
             comment: comment,
+            attributes: attributes,
         }
     }
 
@@ -56,6 +62,11 @@ impl Function {
     /// Get this function's signature.
     pub fn signature(&self) -> ItemId {
         self.signature
+    }
+
+    /// The special attributes of this function.
+    pub fn attributes(&self) -> &[Attribute] {
+        &self.attributes
     }
 }
 
@@ -310,7 +321,9 @@ impl ClangSubItemParser for Function {
 
         let comment = cursor.raw_comment();
 
-        let function = Self::new(name, mangled_name, sig, comment);
+        let attributes = Attribute::extract(&cursor, context);
+
+        let function = Self::new(name, mangled_name, sig, comment, attributes);
         Ok(ParseResult::New(function, Some(cursor)))
     }
 }

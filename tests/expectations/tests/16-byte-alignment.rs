@@ -124,6 +124,7 @@ fn bindgen_test_layout_rte_ipv6_tuple() {
 impl Clone for rte_ipv6_tuple {
     fn clone(&self) -> Self { *self }
 }
+#[doc = "__attribute__(aligned(16))"]
 #[repr(C)]
 #[derive(Copy)]
 pub struct rte_thash_tuple {

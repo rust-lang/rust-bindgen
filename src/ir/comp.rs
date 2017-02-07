@@ -1,6 +1,7 @@
 //! Compound types (unions and structs) in our intermediate representation.
 
 use super::annotations::Annotations;
+use super::attr::Attribute;
 use super::context::{BindgenContext, ItemId};
 use super::derive::{CanDeriveCopy, CanDeriveDebug};
 use super::item::Item;
@@ -102,6 +103,8 @@ pub struct Field {
     bitfield: Option<u32>,
     /// If the C++ field is marked as `mutable`
     mutable: bool,
+    /// The special attributes of field
+    attributes: Vec<Attribute>,
 }
 
 impl Field {
@@ -111,7 +114,8 @@ impl Field {
                comment: Option<String>,
                annotations: Option<Annotations>,
                bitfield: Option<u32>,
-               mutable: bool)
+               mutable: bool,
+               attributes: Vec<Attribute>)
                -> Field {
         Field {
             name: name,
@@ -120,6 +124,7 @@ impl Field {
             annotations: annotations.unwrap_or_default(),
             bitfield: bitfield,
             mutable: mutable,
+            attributes: attributes,
         }
     }
 
@@ -151,6 +156,11 @@ impl Field {
     /// Get the annotations for this field.
     pub fn annotations(&self) -> &Annotations {
         &self.annotations
+    }
+
+    /// The special attributes of field
+    pub fn attributes(&self) -> &[Attribute] {
+        &self.attributes
     }
 }
 
@@ -275,13 +285,8 @@ pub struct CompInfo {
     /// Whether this struct is anonymous.
     is_anonymous: bool,
 
-    /// Used to know if we've found an opaque attribute that could cause us to
-    /// generate a type with invalid layout. This is explicitly used to avoid us
-    /// generating bad alignments when parsing types like max_align_t.
-    ///
-    /// It's not clear what the behavior should be here, if generating the item
-    /// and pray, or behave as an opaque type.
-    found_unknown_attr: bool,
+    /// The special attributes of types
+    attributes: Vec<Attribute>,
 
     /// Used to detect if we've run in a can_derive_debug cycle while cycling
     /// around the template arguments.
@@ -315,7 +320,7 @@ impl CompInfo {
             has_non_type_template_params: false,
             packed: false,
             is_anonymous: false,
-            found_unknown_attr: false,
+            attributes: vec![],
             detect_derive_debug_cycle: Cell::new(false),
             detect_has_destructor_cycle: Cell::new(false),
             is_forward_declaration: false,
@@ -530,7 +535,8 @@ impl CompInfo {
         cursor.visit(|cur| {
             if cur.kind() != CXCursor_FieldDecl {
                 if let Some((ty, _)) = maybe_anonymous_struct_field {
-                    let field = Field::new(None, ty, None, None, None, false);
+                    let field =
+                        Field::new(None, ty, None, None, None, false, vec![]);
                     ci.fields.push(field);
                 }
                 maybe_anonymous_struct_field = None;
@@ -553,7 +559,8 @@ impl CompInfo {
                                                        None,
                                                        None,
                                                        None,
-                                                       false);
+                                                       false,
+                                                       vec![]);
                                 ci.fields.push(field);
                             }
                         }
@@ -578,25 +585,22 @@ impl CompInfo {
 
                     let name = if name.is_empty() { None } else { Some(name) };
 
+                    // No we look for things like attributes and stuff.
+
+                    let attributes = Attribute::extract(&cur, ctx);
+
                     let field = Field::new(name,
                                            field_type,
                                            comment,
                                            annotations,
                                            bit_width,
-                                           is_mutable);
+                                           is_mutable,
+                                           attributes);
+
                     ci.fields.push(field);
-
-                    // No we look for things like attributes and stuff.
-                    cur.visit(|cur| {
-                        if cur.kind() == CXCursor_UnexposedAttr {
-                            ci.found_unknown_attr = true;
-                        }
-                        CXChildVisit_Continue
-                    });
-
                 }
                 CXCursor_UnexposedAttr => {
-                    ci.found_unknown_attr = true;
+                    ci.attributes.append(&mut Attribute::parse(&cur, ctx));
                 }
                 CXCursor_EnumDecl |
                 CXCursor_TypeAliasDecl |
@@ -749,7 +753,7 @@ impl CompInfo {
         });
 
         if let Some((ty, _)) = maybe_anonymous_struct_field {
-            let field = Field::new(None, ty, None, None, None, false);
+            let field = Field::new(None, ty, None, None, None, false, vec![]);
             ci.fields.push(field);
         }
 
@@ -811,7 +815,15 @@ impl CompInfo {
     /// Have we found a field with an opaque type that could potentially mess up
     /// the layout of this compound type?
     pub fn found_unknown_attr(&self) -> bool {
-        self.found_unknown_attr
+        self.attributes.iter().any(|attr| attr.is_unexposed()) ||
+        self.fields.iter().any(|field| {
+            field.attributes().iter().any(|attr| attr.is_unexposed())
+        })
+    }
+
+    /// The special attributes of this compound type
+    pub fn attributes(&self) -> &[Attribute] {
+        &self.attributes
     }
 
     /// Is this compound type packed?
