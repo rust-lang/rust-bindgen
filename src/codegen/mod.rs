@@ -2458,11 +2458,11 @@ mod utils {
     use aster;
     use ir::context::{BindgenContext, ItemId};
     use ir::item::{Item, ItemCanonicalPath};
+    use ir::function::FunctionSig;
     use ir::ty::TypeKind;
     use std::mem;
     use syntax::ast;
     use syntax::ptr::P;
-
 
     pub fn prepend_objc_header(ctx: &BindgenContext,
                                result: &mut Vec<P<ast::Item>>) {
@@ -2745,7 +2745,7 @@ mod utils {
     }
 
     pub fn fnsig_return_ty(ctx: &BindgenContext,
-                           sig: &super::FunctionSig)
+                           sig: &FunctionSig)
                            -> ast::FunctionRetTy {
         let return_item = ctx.resolve_item(sig.return_type());
         if let TypeKind::Void = *return_item.kind().expect_type().kind() {
@@ -2756,7 +2756,7 @@ mod utils {
     }
 
     pub fn fnsig_arguments(ctx: &BindgenContext,
-                           sig: &super::FunctionSig)
+                           sig: &FunctionSig)
                            -> Vec<ast::Arg> {
         use super::ToPtr;
         let mut unnamed_arguments = 0;
