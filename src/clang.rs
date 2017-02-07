@@ -684,6 +684,31 @@ impl Type {
         }
     }
 
+    /// Get the canonical declaration of this type, if it is available.
+    pub fn canonical_declaration(&self,
+                                 location: Option<&Cursor>)
+                                 -> Option<CanonicalTypeDeclaration> {
+        let mut declaration = self.declaration();
+        if !declaration.is_valid() {
+            if let Some(location) = location {
+                let mut location = *location;
+                if let Some(referenced) = location.referenced() {
+                    location = referenced;
+                }
+                if location.is_template_like() {
+                    declaration = location;
+                }
+            }
+        }
+
+        let canonical = declaration.canonical();
+        if canonical.is_valid() && canonical.kind() != CXCursor_NoDeclFound {
+            Some(CanonicalTypeDeclaration(*self, canonical))
+        } else {
+            None
+        }
+    }
+
     /// Get a raw display name for this type.
     pub fn spelling(&self) -> String {
         unsafe { cxstring_into_string(clang_getTypeSpelling(self.x)) }
@@ -871,6 +896,26 @@ impl Type {
             CXCursor_TemplateTemplateParameter => false,
             _ => true,
         }
+    }
+}
+
+/// The `CanonicalTypeDeclaration` type exists as proof-by-construction that its
+/// cursor is the canonical declaration for its type. If you have a
+/// `CanonicalTypeDeclaration` instance, you know for sure that the type and
+/// cursor match up in a canonical declaration relationship, and it simply
+/// cannot be otherwise.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct CanonicalTypeDeclaration(Type, Cursor);
+
+impl CanonicalTypeDeclaration {
+    /// Get the type.
+    pub fn ty(&self) -> &Type {
+        &self.0
+    }
+
+    /// Get the type's canonical declaration cursor.
+    pub fn cursor(&self) -> &Cursor {
+        &self.1
     }
 }
 
