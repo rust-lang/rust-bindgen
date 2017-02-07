@@ -11,8 +11,10 @@ pub struct whatever {
 }
 #[test]
 fn bindgen_test_layout_whatever() {
-    assert_eq!(::std::mem::size_of::<whatever>() , 1usize);
-    assert_eq! (::std::mem::align_of::<whatever>() , 1usize);
+    assert_eq!(::std::mem::size_of::<whatever>() , 1usize , concat ! (
+               "Size of: " , stringify ! ( whatever ) ));
+    assert_eq! (::std::mem::align_of::<whatever>() , 1usize , concat ! (
+                "Alignment of " , stringify ! ( whatever ) ));
 }
 impl Clone for whatever {
     fn clone(&self) -> Self { *self }
@@ -24,8 +26,10 @@ pub struct whatever_child {
 }
 #[test]
 fn bindgen_test_layout_whatever_child() {
-    assert_eq!(::std::mem::size_of::<whatever_child>() , 1usize);
-    assert_eq! (::std::mem::align_of::<whatever_child>() , 1usize);
+    assert_eq!(::std::mem::size_of::<whatever_child>() , 1usize , concat ! (
+               "Size of: " , stringify ! ( whatever_child ) ));
+    assert_eq! (::std::mem::align_of::<whatever_child>() , 1usize , concat ! (
+                "Alignment of " , stringify ! ( whatever_child ) ));
 }
 impl Clone for whatever_child {
     fn clone(&self) -> Self { *self }
@@ -37,12 +41,19 @@ pub struct whatever_child_with_member {
 }
 #[test]
 fn bindgen_test_layout_whatever_child_with_member() {
-    assert_eq!(::std::mem::size_of::<whatever_child_with_member>() , 4usize);
-    assert_eq! (::std::mem::align_of::<whatever_child_with_member>() ,
-                4usize);
+    assert_eq!(::std::mem::size_of::<whatever_child_with_member>() , 4usize ,
+               concat ! (
+               "Size of: " , stringify ! ( whatever_child_with_member ) ));
+    assert_eq! (::std::mem::align_of::<whatever_child_with_member>() , 4usize
+                , concat ! (
+                "Alignment of " , stringify ! ( whatever_child_with_member )
+                ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const whatever_child_with_member ) ) . m_member
-                as * const _ as usize } , 0usize);
+                as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                whatever_child_with_member ) , "::" , stringify ! ( m_member )
+                ));
 }
 impl Clone for whatever_child_with_member {
     fn clone(&self) -> Self { *self }

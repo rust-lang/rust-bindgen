@@ -31,44 +31,70 @@ pub struct Weird {
 }
 #[test]
 fn bindgen_test_layout_Weird() {
-    assert_eq!(::std::mem::size_of::<Weird>() , 24usize);
-    assert_eq! (::std::mem::align_of::<Weird>() , 4usize);
+    assert_eq!(::std::mem::size_of::<Weird>() , 24usize , concat ! (
+               "Size of: " , stringify ! ( Weird ) ));
+    assert_eq! (::std::mem::align_of::<Weird>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( Weird ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const Weird ) ) . mStrokeDasharrayLength as *
-                const _ as usize } , 0usize);
+                const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
+                stringify ! ( mStrokeDasharrayLength ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const Weird ) ) . mClipRule as * const _ as
-                usize } , 8usize);
+                usize } , 8usize , concat ! (
+                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
+                stringify ! ( mClipRule ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const Weird ) ) . mColorInterpolation as *
-                const _ as usize } , 9usize);
+                const _ as usize } , 9usize , concat ! (
+                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
+                stringify ! ( mColorInterpolation ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const Weird ) ) . mColorInterpolationFilters as
-                * const _ as usize } , 10usize);
+                * const _ as usize } , 10usize , concat ! (
+                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
+                stringify ! ( mColorInterpolationFilters ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const Weird ) ) . mFillRule as * const _ as
-                usize } , 11usize);
+                usize } , 11usize , concat ! (
+                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
+                stringify ! ( mFillRule ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const Weird ) ) . mImageRendering as * const _
-                as usize } , 12usize);
+                as usize } , 12usize , concat ! (
+                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
+                stringify ! ( mImageRendering ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const Weird ) ) . mPaintOrder as * const _ as
-                usize } , 13usize);
+                usize } , 13usize , concat ! (
+                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
+                stringify ! ( mPaintOrder ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const Weird ) ) . mShapeRendering as * const _
-                as usize } , 14usize);
+                as usize } , 14usize , concat ! (
+                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
+                stringify ! ( mShapeRendering ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const Weird ) ) . mStrokeLinecap as * const _
-                as usize } , 15usize);
+                as usize } , 15usize , concat ! (
+                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
+                stringify ! ( mStrokeLinecap ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const Weird ) ) . mStrokeLinejoin as * const _
-                as usize } , 16usize);
+                as usize } , 16usize , concat ! (
+                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
+                stringify ! ( mStrokeLinejoin ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const Weird ) ) . mTextAnchor as * const _ as
-                usize } , 17usize);
+                usize } , 17usize , concat ! (
+                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
+                stringify ! ( mTextAnchor ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const Weird ) ) . mTextRendering as * const _
-                as usize } , 18usize);
+                as usize } , 18usize , concat ! (
+                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
+                stringify ! ( mTextRendering ) ));
 }
 impl Clone for Weird {
     fn clone(&self) -> Self { *self }

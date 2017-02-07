@@ -12,8 +12,10 @@ pub struct opaque {
 }
 #[test]
 fn bindgen_test_layout_opaque() {
-    assert_eq!(::std::mem::size_of::<opaque>() , 4usize);
-    assert_eq! (::std::mem::align_of::<opaque>() , 4usize);
+    assert_eq!(::std::mem::size_of::<opaque>() , 4usize , concat ! (
+               "Size of: " , stringify ! ( opaque ) ));
+    assert_eq! (::std::mem::align_of::<opaque>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( opaque ) ));
 }
 impl Clone for opaque {
     fn clone(&self) -> Self { *self }
@@ -25,11 +27,15 @@ pub struct container {
 }
 #[test]
 fn bindgen_test_layout_container() {
-    assert_eq!(::std::mem::size_of::<container>() , 4usize);
-    assert_eq! (::std::mem::align_of::<container>() , 4usize);
+    assert_eq!(::std::mem::size_of::<container>() , 4usize , concat ! (
+               "Size of: " , stringify ! ( container ) ));
+    assert_eq! (::std::mem::align_of::<container>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( container ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const container ) ) . contained as * const _ as
-                usize } , 0usize);
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( container ) , "::" ,
+                stringify ! ( contained ) ));
 }
 impl Clone for container {
     fn clone(&self) -> Self { *self }

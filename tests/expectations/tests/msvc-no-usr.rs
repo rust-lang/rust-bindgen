@@ -11,11 +11,15 @@ pub struct A {
 }
 #[test]
 fn bindgen_test_layout_A() {
-    assert_eq!(::std::mem::size_of::<A>() , 8usize);
-    assert_eq! (::std::mem::align_of::<A>() , 8usize);
+    assert_eq!(::std::mem::size_of::<A>() , 8usize , concat ! (
+               "Size of: " , stringify ! ( A ) ));
+    assert_eq! (::std::mem::align_of::<A>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( A ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const A ) ) . foo as * const _ as usize } ,
-                0usize);
+                0usize , concat ! (
+                "Alignment of field: " , stringify ! ( A ) , "::" , stringify
+                ! ( foo ) ));
 }
 impl Clone for A {
     fn clone(&self) -> Self { *self }

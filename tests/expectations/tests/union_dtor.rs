@@ -37,12 +37,18 @@ pub struct UnionWithDtor {
 }
 #[test]
 fn bindgen_test_layout_UnionWithDtor() {
-    assert_eq!(::std::mem::size_of::<UnionWithDtor>() , 8usize);
-    assert_eq! (::std::mem::align_of::<UnionWithDtor>() , 8usize);
+    assert_eq!(::std::mem::size_of::<UnionWithDtor>() , 8usize , concat ! (
+               "Size of: " , stringify ! ( UnionWithDtor ) ));
+    assert_eq! (::std::mem::align_of::<UnionWithDtor>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( UnionWithDtor ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const UnionWithDtor ) ) . mFoo as * const _ as
-                usize } , 0usize);
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( UnionWithDtor ) , "::"
+                , stringify ! ( mFoo ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const UnionWithDtor ) ) . mBar as * const _ as
-                usize } , 0usize);
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( UnionWithDtor ) , "::"
+                , stringify ! ( mBar ) ));
 }

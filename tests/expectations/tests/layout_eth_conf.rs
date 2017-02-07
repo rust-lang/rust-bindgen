@@ -92,17 +92,25 @@ pub struct rte_eth_rxmode {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_rxmode() {
-    assert_eq!(::std::mem::size_of::<rte_eth_rxmode>() , 12usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_rxmode>() , 4usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_rxmode>() , 12usize , concat ! (
+               "Size of: " , stringify ! ( rte_eth_rxmode ) ));
+    assert_eq! (::std::mem::align_of::<rte_eth_rxmode>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( rte_eth_rxmode ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_rxmode ) ) . mq_mode as * const _
-                as usize } , 0usize);
+                as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_rxmode ) , "::"
+                , stringify ! ( mq_mode ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_rxmode ) ) . max_rx_pkt_len as *
-                const _ as usize } , 4usize);
+                const _ as usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_rxmode ) , "::"
+                , stringify ! ( max_rx_pkt_len ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_rxmode ) ) . split_hdr_size as *
-                const _ as usize } , 8usize);
+                const _ as usize } , 8usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_rxmode ) , "::"
+                , stringify ! ( split_hdr_size ) ));
 }
 impl Clone for rte_eth_rxmode {
     fn clone(&self) -> Self { *self }
@@ -242,14 +250,20 @@ pub struct rte_eth_txmode {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_txmode() {
-    assert_eq!(::std::mem::size_of::<rte_eth_txmode>() , 8usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_txmode>() , 4usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_txmode>() , 8usize , concat ! (
+               "Size of: " , stringify ! ( rte_eth_txmode ) ));
+    assert_eq! (::std::mem::align_of::<rte_eth_txmode>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( rte_eth_txmode ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_txmode ) ) . mq_mode as * const _
-                as usize } , 0usize);
+                as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_txmode ) , "::"
+                , stringify ! ( mq_mode ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_txmode ) ) . pvid as * const _ as
-                usize } , 4usize);
+                usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_txmode ) , "::"
+                , stringify ! ( pvid ) ));
 }
 impl Clone for rte_eth_txmode {
     fn clone(&self) -> Self { *self }
@@ -321,17 +335,25 @@ pub struct rte_eth_rss_conf {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_rss_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_rss_conf>() , 24usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_rss_conf>() , 8usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_rss_conf>() , 24usize , concat !
+               ( "Size of: " , stringify ! ( rte_eth_rss_conf ) ));
+    assert_eq! (::std::mem::align_of::<rte_eth_rss_conf>() , 8usize , concat !
+                ( "Alignment of " , stringify ! ( rte_eth_rss_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_rss_conf ) ) . rss_key as * const
-                _ as usize } , 0usize);
+                _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_rss_conf ) ,
+                "::" , stringify ! ( rss_key ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_rss_conf ) ) . rss_key_len as *
-                const _ as usize } , 8usize);
+                const _ as usize } , 8usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_rss_conf ) ,
+                "::" , stringify ! ( rss_key_len ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_rss_conf ) ) . rss_hf as * const
-                _ as usize } , 16usize);
+                _ as usize } , 16usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_rss_conf ) ,
+                "::" , stringify ! ( rss_hf ) ));
 }
 impl Clone for rte_eth_rss_conf {
     fn clone(&self) -> Self { *self }
@@ -391,41 +413,68 @@ pub struct rte_eth_vmdq_dcb_conf__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout_rte_eth_vmdq_dcb_conf__bindgen_ty_1() {
     assert_eq!(::std::mem::size_of::<rte_eth_vmdq_dcb_conf__bindgen_ty_1>() ,
-               16usize);
+               16usize , concat ! (
+               "Size of: " , stringify ! ( rte_eth_vmdq_dcb_conf__bindgen_ty_1
+               ) ));
     assert_eq! (::std::mem::align_of::<rte_eth_vmdq_dcb_conf__bindgen_ty_1>()
-                , 8usize);
+                , 8usize , concat ! (
+                "Alignment of " , stringify ! (
+                rte_eth_vmdq_dcb_conf__bindgen_ty_1 ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_dcb_conf__bindgen_ty_1 ) ) .
-                vlan_id as * const _ as usize } , 0usize);
+                vlan_id as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_eth_vmdq_dcb_conf__bindgen_ty_1 ) , "::" , stringify ! (
+                vlan_id ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_dcb_conf__bindgen_ty_1 ) ) .
-                pools as * const _ as usize } , 8usize);
+                pools as * const _ as usize } , 8usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_eth_vmdq_dcb_conf__bindgen_ty_1 ) , "::" , stringify ! (
+                pools ) ));
 }
 impl Clone for rte_eth_vmdq_dcb_conf__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[test]
 fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_vmdq_dcb_conf>() , 1040usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_vmdq_dcb_conf>() , 8usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_vmdq_dcb_conf>() , 1040usize ,
+               concat ! ( "Size of: " , stringify ! ( rte_eth_vmdq_dcb_conf )
+               ));
+    assert_eq! (::std::mem::align_of::<rte_eth_vmdq_dcb_conf>() , 8usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( rte_eth_vmdq_dcb_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_dcb_conf ) ) .
-                nb_queue_pools as * const _ as usize } , 0usize);
+                nb_queue_pools as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_vmdq_dcb_conf )
+                , "::" , stringify ! ( nb_queue_pools ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_dcb_conf ) ) .
-                enable_default_pool as * const _ as usize } , 4usize);
+                enable_default_pool as * const _ as usize } , 4usize , concat
+                ! (
+                "Alignment of field: " , stringify ! ( rte_eth_vmdq_dcb_conf )
+                , "::" , stringify ! ( enable_default_pool ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_dcb_conf ) ) . default_pool
-                as * const _ as usize } , 5usize);
+                as * const _ as usize } , 5usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_vmdq_dcb_conf )
+                , "::" , stringify ! ( default_pool ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_dcb_conf ) ) . nb_pool_maps
-                as * const _ as usize } , 6usize);
+                as * const _ as usize } , 6usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_vmdq_dcb_conf )
+                , "::" , stringify ! ( nb_pool_maps ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_dcb_conf ) ) . pool_map as *
-                const _ as usize } , 8usize);
+                const _ as usize } , 8usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_vmdq_dcb_conf )
+                , "::" , stringify ! ( pool_map ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_dcb_conf ) ) . dcb_tc as *
-                const _ as usize } , 1032usize);
+                const _ as usize } , 1032usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_vmdq_dcb_conf )
+                , "::" , stringify ! ( dcb_tc ) ));
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -437,14 +486,21 @@ pub struct rte_eth_dcb_rx_conf {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_dcb_rx_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_dcb_rx_conf>() , 12usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_dcb_rx_conf>() , 4usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_dcb_rx_conf>() , 12usize , concat
+               ! ( "Size of: " , stringify ! ( rte_eth_dcb_rx_conf ) ));
+    assert_eq! (::std::mem::align_of::<rte_eth_dcb_rx_conf>() , 4usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( rte_eth_dcb_rx_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_dcb_rx_conf ) ) . nb_tcs as *
-                const _ as usize } , 0usize);
+                const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_dcb_rx_conf ) ,
+                "::" , stringify ! ( nb_tcs ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_dcb_rx_conf ) ) . dcb_tc as *
-                const _ as usize } , 4usize);
+                const _ as usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_dcb_rx_conf ) ,
+                "::" , stringify ! ( dcb_tc ) ));
 }
 impl Clone for rte_eth_dcb_rx_conf {
     fn clone(&self) -> Self { *self }
@@ -459,14 +515,23 @@ pub struct rte_eth_vmdq_dcb_tx_conf {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_vmdq_dcb_tx_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_vmdq_dcb_tx_conf>() , 12usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_vmdq_dcb_tx_conf>() , 4usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_vmdq_dcb_tx_conf>() , 12usize ,
+               concat ! (
+               "Size of: " , stringify ! ( rte_eth_vmdq_dcb_tx_conf ) ));
+    assert_eq! (::std::mem::align_of::<rte_eth_vmdq_dcb_tx_conf>() , 4usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( rte_eth_vmdq_dcb_tx_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_dcb_tx_conf ) ) .
-                nb_queue_pools as * const _ as usize } , 0usize);
+                nb_queue_pools as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_eth_vmdq_dcb_tx_conf ) , "::" , stringify ! (
+                nb_queue_pools ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_dcb_tx_conf ) ) . dcb_tc as
-                * const _ as usize } , 4usize);
+                * const _ as usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_eth_vmdq_dcb_tx_conf ) , "::" , stringify ! ( dcb_tc ) ));
 }
 impl Clone for rte_eth_vmdq_dcb_tx_conf {
     fn clone(&self) -> Self { *self }
@@ -481,14 +546,21 @@ pub struct rte_eth_dcb_tx_conf {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_dcb_tx_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_dcb_tx_conf>() , 12usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_dcb_tx_conf>() , 4usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_dcb_tx_conf>() , 12usize , concat
+               ! ( "Size of: " , stringify ! ( rte_eth_dcb_tx_conf ) ));
+    assert_eq! (::std::mem::align_of::<rte_eth_dcb_tx_conf>() , 4usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( rte_eth_dcb_tx_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_dcb_tx_conf ) ) . nb_tcs as *
-                const _ as usize } , 0usize);
+                const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_dcb_tx_conf ) ,
+                "::" , stringify ! ( nb_tcs ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_dcb_tx_conf ) ) . dcb_tc as *
-                const _ as usize } , 4usize);
+                const _ as usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_dcb_tx_conf ) ,
+                "::" , stringify ! ( dcb_tc ) ));
 }
 impl Clone for rte_eth_dcb_tx_conf {
     fn clone(&self) -> Self { *self }
@@ -501,11 +573,16 @@ pub struct rte_eth_vmdq_tx_conf {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_vmdq_tx_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_vmdq_tx_conf>() , 4usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_vmdq_tx_conf>() , 4usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_vmdq_tx_conf>() , 4usize , concat
+               ! ( "Size of: " , stringify ! ( rte_eth_vmdq_tx_conf ) ));
+    assert_eq! (::std::mem::align_of::<rte_eth_vmdq_tx_conf>() , 4usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( rte_eth_vmdq_tx_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_tx_conf ) ) . nb_queue_pools
-                as * const _ as usize } , 0usize);
+                as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_vmdq_tx_conf )
+                , "::" , stringify ! ( nb_queue_pools ) ));
 }
 impl Clone for rte_eth_vmdq_tx_conf {
     fn clone(&self) -> Self { *self }
@@ -538,44 +615,73 @@ pub struct rte_eth_vmdq_rx_conf__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout_rte_eth_vmdq_rx_conf__bindgen_ty_1() {
     assert_eq!(::std::mem::size_of::<rte_eth_vmdq_rx_conf__bindgen_ty_1>() ,
-               16usize);
+               16usize , concat ! (
+               "Size of: " , stringify ! ( rte_eth_vmdq_rx_conf__bindgen_ty_1
+               ) ));
     assert_eq! (::std::mem::align_of::<rte_eth_vmdq_rx_conf__bindgen_ty_1>() ,
-                8usize);
+                8usize , concat ! (
+                "Alignment of " , stringify ! (
+                rte_eth_vmdq_rx_conf__bindgen_ty_1 ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_rx_conf__bindgen_ty_1 ) ) .
-                vlan_id as * const _ as usize } , 0usize);
+                vlan_id as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_eth_vmdq_rx_conf__bindgen_ty_1 ) , "::" , stringify ! (
+                vlan_id ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_rx_conf__bindgen_ty_1 ) ) .
-                pools as * const _ as usize } , 8usize);
+                pools as * const _ as usize } , 8usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_eth_vmdq_rx_conf__bindgen_ty_1 ) , "::" , stringify ! (
+                pools ) ));
 }
 impl Clone for rte_eth_vmdq_rx_conf__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[test]
 fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_vmdq_rx_conf>() , 1040usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_vmdq_rx_conf>() , 8usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_vmdq_rx_conf>() , 1040usize ,
+               concat ! ( "Size of: " , stringify ! ( rte_eth_vmdq_rx_conf )
+               ));
+    assert_eq! (::std::mem::align_of::<rte_eth_vmdq_rx_conf>() , 8usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( rte_eth_vmdq_rx_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_rx_conf ) ) . nb_queue_pools
-                as * const _ as usize } , 0usize);
+                as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_vmdq_rx_conf )
+                , "::" , stringify ! ( nb_queue_pools ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_rx_conf ) ) .
-                enable_default_pool as * const _ as usize } , 4usize);
+                enable_default_pool as * const _ as usize } , 4usize , concat
+                ! (
+                "Alignment of field: " , stringify ! ( rte_eth_vmdq_rx_conf )
+                , "::" , stringify ! ( enable_default_pool ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_rx_conf ) ) . default_pool
-                as * const _ as usize } , 5usize);
+                as * const _ as usize } , 5usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_vmdq_rx_conf )
+                , "::" , stringify ! ( default_pool ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_rx_conf ) ) .
-                enable_loop_back as * const _ as usize } , 6usize);
+                enable_loop_back as * const _ as usize } , 6usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_vmdq_rx_conf )
+                , "::" , stringify ! ( enable_loop_back ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_rx_conf ) ) . nb_pool_maps
-                as * const _ as usize } , 7usize);
+                as * const _ as usize } , 7usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_vmdq_rx_conf )
+                , "::" , stringify ! ( nb_pool_maps ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_rx_conf ) ) . rx_mode as *
-                const _ as usize } , 8usize);
+                const _ as usize } , 8usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_vmdq_rx_conf )
+                , "::" , stringify ! ( rx_mode ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_vmdq_rx_conf ) ) . pool_map as *
-                const _ as usize } , 16usize);
+                const _ as usize } , 16usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_vmdq_rx_conf )
+                , "::" , stringify ! ( pool_map ) ));
 }
 #[repr(u32)]
 /**
@@ -629,23 +735,35 @@ pub struct rte_eth_ipv4_flow {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_ipv4_flow() {
-    assert_eq!(::std::mem::size_of::<rte_eth_ipv4_flow>() , 12usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_ipv4_flow>() , 4usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_ipv4_flow>() , 12usize , concat !
+               ( "Size of: " , stringify ! ( rte_eth_ipv4_flow ) ));
+    assert_eq! (::std::mem::align_of::<rte_eth_ipv4_flow>() , 4usize , concat
+                ! ( "Alignment of " , stringify ! ( rte_eth_ipv4_flow ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_ipv4_flow ) ) . src_ip as * const
-                _ as usize } , 0usize);
+                _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_ipv4_flow ) ,
+                "::" , stringify ! ( src_ip ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_ipv4_flow ) ) . dst_ip as * const
-                _ as usize } , 4usize);
+                _ as usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_ipv4_flow ) ,
+                "::" , stringify ! ( dst_ip ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_ipv4_flow ) ) . tos as * const _
-                as usize } , 8usize);
+                as usize } , 8usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_ipv4_flow ) ,
+                "::" , stringify ! ( tos ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_ipv4_flow ) ) . ttl as * const _
-                as usize } , 9usize);
+                as usize } , 9usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_ipv4_flow ) ,
+                "::" , stringify ! ( ttl ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_ipv4_flow ) ) . proto as * const
-                _ as usize } , 10usize);
+                _ as usize } , 10usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_ipv4_flow ) ,
+                "::" , stringify ! ( proto ) ));
 }
 impl Clone for rte_eth_ipv4_flow {
     fn clone(&self) -> Self { *self }
@@ -669,23 +787,35 @@ pub struct rte_eth_ipv6_flow {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_ipv6_flow() {
-    assert_eq!(::std::mem::size_of::<rte_eth_ipv6_flow>() , 36usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_ipv6_flow>() , 4usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_ipv6_flow>() , 36usize , concat !
+               ( "Size of: " , stringify ! ( rte_eth_ipv6_flow ) ));
+    assert_eq! (::std::mem::align_of::<rte_eth_ipv6_flow>() , 4usize , concat
+                ! ( "Alignment of " , stringify ! ( rte_eth_ipv6_flow ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_ipv6_flow ) ) . src_ip as * const
-                _ as usize } , 0usize);
+                _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_ipv6_flow ) ,
+                "::" , stringify ! ( src_ip ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_ipv6_flow ) ) . dst_ip as * const
-                _ as usize } , 16usize);
+                _ as usize } , 16usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_ipv6_flow ) ,
+                "::" , stringify ! ( dst_ip ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_ipv6_flow ) ) . tc as * const _
-                as usize } , 32usize);
+                as usize } , 32usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_ipv6_flow ) ,
+                "::" , stringify ! ( tc ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_ipv6_flow ) ) . proto as * const
-                _ as usize } , 33usize);
+                _ as usize } , 33usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_ipv6_flow ) ,
+                "::" , stringify ! ( proto ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_ipv6_flow ) ) . hop_limits as *
-                const _ as usize } , 34usize);
+                const _ as usize } , 34usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_ipv6_flow ) ,
+                "::" , stringify ! ( hop_limits ) ));
 }
 impl Clone for rte_eth_ipv6_flow {
     fn clone(&self) -> Self { *self }
@@ -718,32 +848,51 @@ pub struct rte_eth_fdir_masks {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_fdir_masks() {
-    assert_eq!(::std::mem::size_of::<rte_eth_fdir_masks>() , 68usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_fdir_masks>() , 4usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_fdir_masks>() , 68usize , concat
+               ! ( "Size of: " , stringify ! ( rte_eth_fdir_masks ) ));
+    assert_eq! (::std::mem::align_of::<rte_eth_fdir_masks>() , 4usize , concat
+                ! ( "Alignment of " , stringify ! ( rte_eth_fdir_masks ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_fdir_masks ) ) . vlan_tci_mask as
-                * const _ as usize } , 0usize);
+                * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_fdir_masks ) ,
+                "::" , stringify ! ( vlan_tci_mask ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_fdir_masks ) ) . ipv4_mask as *
-                const _ as usize } , 4usize);
+                const _ as usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_fdir_masks ) ,
+                "::" , stringify ! ( ipv4_mask ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_fdir_masks ) ) . ipv6_mask as *
-                const _ as usize } , 16usize);
+                const _ as usize } , 16usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_fdir_masks ) ,
+                "::" , stringify ! ( ipv6_mask ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_fdir_masks ) ) . src_port_mask as
-                * const _ as usize } , 52usize);
+                * const _ as usize } , 52usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_fdir_masks ) ,
+                "::" , stringify ! ( src_port_mask ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_fdir_masks ) ) . dst_port_mask as
-                * const _ as usize } , 54usize);
+                * const _ as usize } , 54usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_fdir_masks ) ,
+                "::" , stringify ! ( dst_port_mask ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_fdir_masks ) ) .
-                mac_addr_byte_mask as * const _ as usize } , 56usize);
+                mac_addr_byte_mask as * const _ as usize } , 56usize , concat
+                ! (
+                "Alignment of field: " , stringify ! ( rte_eth_fdir_masks ) ,
+                "::" , stringify ! ( mac_addr_byte_mask ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_fdir_masks ) ) . tunnel_id_mask
-                as * const _ as usize } , 60usize);
+                as * const _ as usize } , 60usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_fdir_masks ) ,
+                "::" , stringify ! ( tunnel_id_mask ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_fdir_masks ) ) . tunnel_type_mask
-                as * const _ as usize } , 64usize);
+                as * const _ as usize } , 64usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_fdir_masks ) ,
+                "::" , stringify ! ( tunnel_type_mask ) ));
 }
 impl Clone for rte_eth_fdir_masks {
     fn clone(&self) -> Self { *self }
@@ -774,14 +923,23 @@ pub struct rte_eth_flex_payload_cfg {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_flex_payload_cfg() {
-    assert_eq!(::std::mem::size_of::<rte_eth_flex_payload_cfg>() , 36usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_flex_payload_cfg>() , 4usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_flex_payload_cfg>() , 36usize ,
+               concat ! (
+               "Size of: " , stringify ! ( rte_eth_flex_payload_cfg ) ));
+    assert_eq! (::std::mem::align_of::<rte_eth_flex_payload_cfg>() , 4usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( rte_eth_flex_payload_cfg ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_flex_payload_cfg ) ) . type_ as *
-                const _ as usize } , 0usize);
+                const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_eth_flex_payload_cfg ) , "::" , stringify ! ( type_ ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_flex_payload_cfg ) ) . src_offset
-                as * const _ as usize } , 4usize);
+                as * const _ as usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_eth_flex_payload_cfg ) , "::" , stringify ! ( src_offset )
+                ));
 }
 impl Clone for rte_eth_flex_payload_cfg {
     fn clone(&self) -> Self { *self }
@@ -798,14 +956,22 @@ pub struct rte_eth_fdir_flex_mask {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_fdir_flex_mask() {
-    assert_eq!(::std::mem::size_of::<rte_eth_fdir_flex_mask>() , 18usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_fdir_flex_mask>() , 2usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_fdir_flex_mask>() , 18usize ,
+               concat ! ( "Size of: " , stringify ! ( rte_eth_fdir_flex_mask )
+               ));
+    assert_eq! (::std::mem::align_of::<rte_eth_fdir_flex_mask>() , 2usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( rte_eth_fdir_flex_mask ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_fdir_flex_mask ) ) . flow_type as
-                * const _ as usize } , 0usize);
+                * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_fdir_flex_mask
+                ) , "::" , stringify ! ( flow_type ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_fdir_flex_mask ) ) . mask as *
-                const _ as usize } , 2usize);
+                const _ as usize } , 2usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_fdir_flex_mask
+                ) , "::" , stringify ! ( mask ) ));
 }
 impl Clone for rte_eth_fdir_flex_mask {
     fn clone(&self) -> Self { *self }
@@ -826,20 +992,32 @@ pub struct rte_eth_fdir_flex_conf {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_fdir_flex_conf>() , 688usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_fdir_flex_conf>() , 4usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_fdir_flex_conf>() , 688usize ,
+               concat ! ( "Size of: " , stringify ! ( rte_eth_fdir_flex_conf )
+               ));
+    assert_eq! (::std::mem::align_of::<rte_eth_fdir_flex_conf>() , 4usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( rte_eth_fdir_flex_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_fdir_flex_conf ) ) . nb_payloads
-                as * const _ as usize } , 0usize);
+                as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_fdir_flex_conf
+                ) , "::" , stringify ! ( nb_payloads ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_fdir_flex_conf ) ) . nb_flexmasks
-                as * const _ as usize } , 2usize);
+                as * const _ as usize } , 2usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_fdir_flex_conf
+                ) , "::" , stringify ! ( nb_flexmasks ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_fdir_flex_conf ) ) . flex_set as
-                * const _ as usize } , 4usize);
+                * const _ as usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_fdir_flex_conf
+                ) , "::" , stringify ! ( flex_set ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_fdir_flex_conf ) ) . flex_mask as
-                * const _ as usize } , 292usize);
+                * const _ as usize } , 292usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_fdir_flex_conf
+                ) , "::" , stringify ! ( flex_mask ) ));
 }
 impl Clone for rte_eth_fdir_flex_conf {
     fn clone(&self) -> Self { *self }
@@ -866,26 +1044,40 @@ pub struct rte_fdir_conf {
 }
 #[test]
 fn bindgen_test_layout_rte_fdir_conf() {
-    assert_eq!(::std::mem::size_of::<rte_fdir_conf>() , 772usize);
-    assert_eq! (::std::mem::align_of::<rte_fdir_conf>() , 4usize);
+    assert_eq!(::std::mem::size_of::<rte_fdir_conf>() , 772usize , concat ! (
+               "Size of: " , stringify ! ( rte_fdir_conf ) ));
+    assert_eq! (::std::mem::align_of::<rte_fdir_conf>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( rte_fdir_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_fdir_conf ) ) . mode as * const _ as
-                usize } , 0usize);
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_fdir_conf ) , "::"
+                , stringify ! ( mode ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_fdir_conf ) ) . pballoc as * const _
-                as usize } , 4usize);
+                as usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_fdir_conf ) , "::"
+                , stringify ! ( pballoc ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_fdir_conf ) ) . status as * const _
-                as usize } , 8usize);
+                as usize } , 8usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_fdir_conf ) , "::"
+                , stringify ! ( status ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_fdir_conf ) ) . drop_queue as * const
-                _ as usize } , 12usize);
+                _ as usize } , 12usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_fdir_conf ) , "::"
+                , stringify ! ( drop_queue ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_fdir_conf ) ) . mask as * const _ as
-                usize } , 16usize);
+                usize } , 16usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_fdir_conf ) , "::"
+                , stringify ! ( mask ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_fdir_conf ) ) . flex_conf as * const
-                _ as usize } , 84usize);
+                _ as usize } , 84usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_fdir_conf ) , "::"
+                , stringify ! ( flex_conf ) ));
 }
 impl Clone for rte_fdir_conf {
     fn clone(&self) -> Self { *self }
@@ -903,14 +1095,20 @@ pub struct rte_intr_conf {
 }
 #[test]
 fn bindgen_test_layout_rte_intr_conf() {
-    assert_eq!(::std::mem::size_of::<rte_intr_conf>() , 4usize);
-    assert_eq! (::std::mem::align_of::<rte_intr_conf>() , 2usize);
+    assert_eq!(::std::mem::size_of::<rte_intr_conf>() , 4usize , concat ! (
+               "Size of: " , stringify ! ( rte_intr_conf ) ));
+    assert_eq! (::std::mem::align_of::<rte_intr_conf>() , 2usize , concat ! (
+                "Alignment of " , stringify ! ( rte_intr_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_intr_conf ) ) . lsc as * const _ as
-                usize } , 0usize);
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_intr_conf ) , "::"
+                , stringify ! ( lsc ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_intr_conf ) ) . rxq as * const _ as
-                usize } , 2usize);
+                usize } , 2usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_intr_conf ) , "::"
+                , stringify ! ( rxq ) ));
 }
 impl Clone for rte_intr_conf {
     fn clone(&self) -> Self { *self }
@@ -962,22 +1160,37 @@ pub struct rte_eth_conf__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<rte_eth_conf__bindgen_ty_1>() ,
-               2120usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_conf__bindgen_ty_1>() ,
-                8usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_conf__bindgen_ty_1>() , 2120usize
+               , concat ! (
+               "Size of: " , stringify ! ( rte_eth_conf__bindgen_ty_1 ) ));
+    assert_eq! (::std::mem::align_of::<rte_eth_conf__bindgen_ty_1>() , 8usize
+                , concat ! (
+                "Alignment of " , stringify ! ( rte_eth_conf__bindgen_ty_1 )
+                ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_conf__bindgen_ty_1 ) ) . rss_conf
-                as * const _ as usize } , 0usize);
+                as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_eth_conf__bindgen_ty_1 ) , "::" , stringify ! ( rss_conf )
+                ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_conf__bindgen_ty_1 ) ) .
-                vmdq_dcb_conf as * const _ as usize } , 24usize);
+                vmdq_dcb_conf as * const _ as usize } , 24usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_eth_conf__bindgen_ty_1 ) , "::" , stringify ! (
+                vmdq_dcb_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_conf__bindgen_ty_1 ) ) .
-                dcb_rx_conf as * const _ as usize } , 1064usize);
+                dcb_rx_conf as * const _ as usize } , 1064usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_eth_conf__bindgen_ty_1 ) , "::" , stringify ! (
+                dcb_rx_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_conf__bindgen_ty_1 ) ) .
-                vmdq_rx_conf as * const _ as usize } , 1080usize);
+                vmdq_rx_conf as * const _ as usize } , 1080usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_eth_conf__bindgen_ty_1 ) , "::" , stringify ! (
+                vmdq_rx_conf ) ));
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -989,51 +1202,84 @@ pub struct rte_eth_conf__bindgen_ty_2 {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
-    assert_eq!(::std::mem::size_of::<rte_eth_conf__bindgen_ty_2>() , 12usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_conf__bindgen_ty_2>() ,
-                4usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_conf__bindgen_ty_2>() , 12usize ,
+               concat ! (
+               "Size of: " , stringify ! ( rte_eth_conf__bindgen_ty_2 ) ));
+    assert_eq! (::std::mem::align_of::<rte_eth_conf__bindgen_ty_2>() , 4usize
+                , concat ! (
+                "Alignment of " , stringify ! ( rte_eth_conf__bindgen_ty_2 )
+                ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_conf__bindgen_ty_2 ) ) .
-                vmdq_dcb_tx_conf as * const _ as usize } , 0usize);
+                vmdq_dcb_tx_conf as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_eth_conf__bindgen_ty_2 ) , "::" , stringify ! (
+                vmdq_dcb_tx_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_conf__bindgen_ty_2 ) ) .
-                dcb_tx_conf as * const _ as usize } , 0usize);
+                dcb_tx_conf as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_eth_conf__bindgen_ty_2 ) , "::" , stringify ! (
+                dcb_tx_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_conf__bindgen_ty_2 ) ) .
-                vmdq_tx_conf as * const _ as usize } , 0usize);
+                vmdq_tx_conf as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_eth_conf__bindgen_ty_2 ) , "::" , stringify ! (
+                vmdq_tx_conf ) ));
 }
 impl Clone for rte_eth_conf__bindgen_ty_2 {
     fn clone(&self) -> Self { *self }
 }
 #[test]
 fn bindgen_test_layout_rte_eth_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_conf>() , 2944usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_conf>() , 8usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_conf>() , 2944usize , concat ! (
+               "Size of: " , stringify ! ( rte_eth_conf ) ));
+    assert_eq! (::std::mem::align_of::<rte_eth_conf>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( rte_eth_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_conf ) ) . link_speeds as * const
-                _ as usize } , 0usize);
+                _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
+                stringify ! ( link_speeds ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_conf ) ) . rxmode as * const _ as
-                usize } , 4usize);
+                usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
+                stringify ! ( rxmode ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_conf ) ) . txmode as * const _ as
-                usize } , 16usize);
+                usize } , 16usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
+                stringify ! ( txmode ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_conf ) ) . lpbk_mode as * const _
-                as usize } , 24usize);
+                as usize } , 24usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
+                stringify ! ( lpbk_mode ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_conf ) ) . rx_adv_conf as * const
-                _ as usize } , 32usize);
+                _ as usize } , 32usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
+                stringify ! ( rx_adv_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_conf ) ) . tx_adv_conf as * const
-                _ as usize } , 2152usize);
+                _ as usize } , 2152usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
+                stringify ! ( tx_adv_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_conf ) ) . dcb_capability_en as *
-                const _ as usize } , 2164usize);
+                const _ as usize } , 2164usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
+                stringify ! ( dcb_capability_en ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_conf ) ) . fdir_conf as * const _
-                as usize } , 2168usize);
+                as usize } , 2168usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
+                stringify ! ( fdir_conf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_conf ) ) . intr_conf as * const _
-                as usize } , 2940usize);
+                as usize } , 2940usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
+                stringify ! ( intr_conf ) ));
 }

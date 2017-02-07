@@ -19,11 +19,15 @@ pub struct Bar {
 }
 #[test]
 fn bindgen_test_layout_Bar() {
-    assert_eq!(::std::mem::size_of::<Bar>() , 8usize);
-    assert_eq! (::std::mem::align_of::<Bar>() , 8usize);
+    assert_eq!(::std::mem::size_of::<Bar>() , 8usize , concat ! (
+               "Size of: " , stringify ! ( Bar ) ));
+    assert_eq! (::std::mem::align_of::<Bar>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( Bar ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const Bar ) ) . m_member as * const _ as usize
-                } , 0usize);
+                } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( Bar ) , "::" ,
+                stringify ! ( m_member ) ));
 }
 impl Clone for Bar {
     fn clone(&self) -> Self { *self }

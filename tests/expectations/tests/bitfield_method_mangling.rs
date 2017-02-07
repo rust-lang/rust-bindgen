@@ -11,8 +11,10 @@ pub struct _bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<_bindgen_ty_1>() , 4usize);
-    assert_eq! (::std::mem::align_of::<_bindgen_ty_1>() , 4usize);
+    assert_eq!(::std::mem::size_of::<_bindgen_ty_1>() , 4usize , concat ! (
+               "Size of: " , stringify ! ( _bindgen_ty_1 ) ));
+    assert_eq! (::std::mem::align_of::<_bindgen_ty_1>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( _bindgen_ty_1 ) ));
 }
 impl Clone for _bindgen_ty_1 {
     fn clone(&self) -> Self { *self }

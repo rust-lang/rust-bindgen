@@ -11,11 +11,15 @@ pub struct LittleArray {
 }
 #[test]
 fn bindgen_test_layout_LittleArray() {
-    assert_eq!(::std::mem::size_of::<LittleArray>() , 128usize);
-    assert_eq! (::std::mem::align_of::<LittleArray>() , 4usize);
+    assert_eq!(::std::mem::size_of::<LittleArray>() , 128usize , concat ! (
+               "Size of: " , stringify ! ( LittleArray ) ));
+    assert_eq! (::std::mem::align_of::<LittleArray>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( LittleArray ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const LittleArray ) ) . a as * const _ as usize
-                } , 0usize);
+                } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( LittleArray ) , "::" ,
+                stringify ! ( a ) ));
 }
 impl Clone for LittleArray {
     fn clone(&self) -> Self { *self }
@@ -26,11 +30,15 @@ pub struct BigArray {
 }
 #[test]
 fn bindgen_test_layout_BigArray() {
-    assert_eq!(::std::mem::size_of::<BigArray>() , 132usize);
-    assert_eq! (::std::mem::align_of::<BigArray>() , 4usize);
+    assert_eq!(::std::mem::size_of::<BigArray>() , 132usize , concat ! (
+               "Size of: " , stringify ! ( BigArray ) ));
+    assert_eq! (::std::mem::align_of::<BigArray>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( BigArray ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const BigArray ) ) . a as * const _ as usize }
-                , 0usize);
+                , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( BigArray ) , "::" ,
+                stringify ! ( a ) ));
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -39,11 +47,15 @@ pub struct WithLittleArray {
 }
 #[test]
 fn bindgen_test_layout_WithLittleArray() {
-    assert_eq!(::std::mem::size_of::<WithLittleArray>() , 128usize);
-    assert_eq! (::std::mem::align_of::<WithLittleArray>() , 4usize);
+    assert_eq!(::std::mem::size_of::<WithLittleArray>() , 128usize , concat !
+               ( "Size of: " , stringify ! ( WithLittleArray ) ));
+    assert_eq! (::std::mem::align_of::<WithLittleArray>() , 4usize , concat !
+                ( "Alignment of " , stringify ! ( WithLittleArray ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const WithLittleArray ) ) . a as * const _ as
-                usize } , 0usize);
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( WithLittleArray ) ,
+                "::" , stringify ! ( a ) ));
 }
 impl Clone for WithLittleArray {
     fn clone(&self) -> Self { *self }
@@ -54,9 +66,13 @@ pub struct WithBigArray {
 }
 #[test]
 fn bindgen_test_layout_WithBigArray() {
-    assert_eq!(::std::mem::size_of::<WithBigArray>() , 132usize);
-    assert_eq! (::std::mem::align_of::<WithBigArray>() , 4usize);
+    assert_eq!(::std::mem::size_of::<WithBigArray>() , 132usize , concat ! (
+               "Size of: " , stringify ! ( WithBigArray ) ));
+    assert_eq! (::std::mem::align_of::<WithBigArray>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( WithBigArray ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const WithBigArray ) ) . a as * const _ as
-                usize } , 0usize);
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( WithBigArray ) , "::" ,
+                stringify ! ( a ) ));
 }

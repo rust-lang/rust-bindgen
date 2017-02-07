@@ -34,11 +34,15 @@ pub mod root {
         }
         #[test]
         fn bindgen_test_layout_A() {
-            assert_eq!(::std::mem::size_of::<A>() , 4usize);
-            assert_eq! (::std::mem::align_of::<A>() , 4usize);
+            assert_eq!(::std::mem::size_of::<A>() , 4usize , concat ! (
+                       "Size of: " , stringify ! ( A ) ));
+            assert_eq! (::std::mem::align_of::<A>() , 4usize , concat ! (
+                        "Alignment of " , stringify ! ( A ) ));
             assert_eq! (unsafe {
                         & ( * ( 0 as * const A ) ) . b as * const _ as usize }
-                        , 0usize);
+                        , 0usize , concat ! (
+                        "Alignment of field: " , stringify ! ( A ) , "::" ,
+                        stringify ! ( b ) ));
         }
         extern "C" {
             #[link_name = "_ZN12_GLOBAL__N_11A20lets_hope_this_worksEv"]

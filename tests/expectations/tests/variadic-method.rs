@@ -15,8 +15,10 @@ pub struct Bar {
 }
 #[test]
 fn bindgen_test_layout_Bar() {
-    assert_eq!(::std::mem::size_of::<Bar>() , 1usize);
-    assert_eq! (::std::mem::align_of::<Bar>() , 1usize);
+    assert_eq!(::std::mem::size_of::<Bar>() , 1usize , concat ! (
+               "Size of: " , stringify ! ( Bar ) ));
+    assert_eq! (::std::mem::align_of::<Bar>() , 1usize , concat ! (
+                "Alignment of " , stringify ! ( Bar ) ));
 }
 extern "C" {
     #[link_name = "_ZN3Bar3fooEPKcz"]

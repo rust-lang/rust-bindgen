@@ -18,21 +18,33 @@ pub type C_MyInt = ::std::os::raw::c_int;
 pub type C_Lookup = *const ::std::os::raw::c_char;
 #[test]
 fn bindgen_test_layout_C() {
-    assert_eq!(::std::mem::size_of::<C>() , 72usize);
-    assert_eq! (::std::mem::align_of::<C>() , 8usize);
+    assert_eq!(::std::mem::size_of::<C>() , 72usize , concat ! (
+               "Size of: " , stringify ! ( C ) ));
+    assert_eq! (::std::mem::align_of::<C>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( C ) ));
     assert_eq! (unsafe { & ( * ( 0 as * const C ) ) . c as * const _ as usize
-                } , 0usize);
+                } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
+                ! ( c ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const C ) ) . ptr as * const _ as usize } ,
-                8usize);
+                8usize , concat ! (
+                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
+                ! ( ptr ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const C ) ) . arr as * const _ as usize } ,
-                16usize);
+                16usize , concat ! (
+                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
+                ! ( arr ) ));
     assert_eq! (unsafe { & ( * ( 0 as * const C ) ) . d as * const _ as usize
-                } , 56usize);
+                } , 56usize , concat ! (
+                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
+                ! ( d ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const C ) ) . other_ptr as * const _ as usize }
-                , 64usize);
+                , 64usize , concat ! (
+                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
+                ! ( other_ptr ) ));
 }
 extern "C" {
     #[link_name = "_ZN1C6methodEi"]
@@ -77,11 +89,15 @@ pub struct D {
 }
 #[test]
 fn bindgen_test_layout_D() {
-    assert_eq!(::std::mem::size_of::<D>() , 80usize);
-    assert_eq! (::std::mem::align_of::<D>() , 8usize);
+    assert_eq!(::std::mem::size_of::<D>() , 80usize , concat ! (
+               "Size of: " , stringify ! ( D ) ));
+    assert_eq! (::std::mem::align_of::<D>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( D ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const D ) ) . ptr as * const _ as usize } ,
-                72usize);
+                72usize , concat ! (
+                "Alignment of field: " , stringify ! ( D ) , "::" , stringify
+                ! ( ptr ) ));
 }
 impl Clone for D {
     fn clone(&self) -> Self { *self }

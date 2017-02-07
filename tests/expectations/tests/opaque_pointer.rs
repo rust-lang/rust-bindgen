@@ -14,8 +14,10 @@ pub struct OtherOpaque {
 }
 #[test]
 fn bindgen_test_layout_OtherOpaque() {
-    assert_eq!(::std::mem::size_of::<OtherOpaque>() , 4usize);
-    assert_eq! (::std::mem::align_of::<OtherOpaque>() , 4usize);
+    assert_eq!(::std::mem::size_of::<OtherOpaque>() , 4usize , concat ! (
+               "Size of: " , stringify ! ( OtherOpaque ) ));
+    assert_eq! (::std::mem::align_of::<OtherOpaque>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( OtherOpaque ) ));
 }
 impl Clone for OtherOpaque {
     fn clone(&self) -> Self { *self }
@@ -37,17 +39,25 @@ pub struct WithOpaquePtr {
 }
 #[test]
 fn bindgen_test_layout_WithOpaquePtr() {
-    assert_eq!(::std::mem::size_of::<WithOpaquePtr>() , 16usize);
-    assert_eq! (::std::mem::align_of::<WithOpaquePtr>() , 8usize);
+    assert_eq!(::std::mem::size_of::<WithOpaquePtr>() , 16usize , concat ! (
+               "Size of: " , stringify ! ( WithOpaquePtr ) ));
+    assert_eq! (::std::mem::align_of::<WithOpaquePtr>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( WithOpaquePtr ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const WithOpaquePtr ) ) . whatever as * const _
-                as usize } , 0usize);
+                as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( WithOpaquePtr ) , "::"
+                , stringify ! ( whatever ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const WithOpaquePtr ) ) . other as * const _ as
-                usize } , 8usize);
+                usize } , 8usize , concat ! (
+                "Alignment of field: " , stringify ! ( WithOpaquePtr ) , "::"
+                , stringify ! ( other ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const WithOpaquePtr ) ) . t as * const _ as
-                usize } , 12usize);
+                usize } , 12usize , concat ! (
+                "Alignment of field: " , stringify ! ( WithOpaquePtr ) , "::"
+                , stringify ! ( t ) ));
 }
 impl Clone for WithOpaquePtr {
     fn clone(&self) -> Self { *self }

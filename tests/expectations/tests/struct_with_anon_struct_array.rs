@@ -18,14 +18,20 @@ pub struct foo__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_foo__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_1>() , 8usize);
-    assert_eq! (::std::mem::align_of::<foo__bindgen_ty_1>() , 4usize);
+    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_1>() , 8usize , concat !
+               ( "Size of: " , stringify ! ( foo__bindgen_ty_1 ) ));
+    assert_eq! (::std::mem::align_of::<foo__bindgen_ty_1>() , 4usize , concat
+                ! ( "Alignment of " , stringify ! ( foo__bindgen_ty_1 ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const foo__bindgen_ty_1 ) ) . a as * const _ as
-                usize } , 0usize);
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( foo__bindgen_ty_1 ) ,
+                "::" , stringify ! ( a ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const foo__bindgen_ty_1 ) ) . b as * const _ as
-                usize } , 4usize);
+                usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! ( foo__bindgen_ty_1 ) ,
+                "::" , stringify ! ( b ) ));
 }
 impl Clone for foo__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
@@ -38,28 +44,40 @@ pub struct foo__bindgen_ty_2 {
 }
 #[test]
 fn bindgen_test_layout_foo__bindgen_ty_2() {
-    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_2>() , 8usize);
-    assert_eq! (::std::mem::align_of::<foo__bindgen_ty_2>() , 4usize);
+    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_2>() , 8usize , concat !
+               ( "Size of: " , stringify ! ( foo__bindgen_ty_2 ) ));
+    assert_eq! (::std::mem::align_of::<foo__bindgen_ty_2>() , 4usize , concat
+                ! ( "Alignment of " , stringify ! ( foo__bindgen_ty_2 ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const foo__bindgen_ty_2 ) ) . a as * const _ as
-                usize } , 0usize);
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( foo__bindgen_ty_2 ) ,
+                "::" , stringify ! ( a ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const foo__bindgen_ty_2 ) ) . b as * const _ as
-                usize } , 4usize);
+                usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! ( foo__bindgen_ty_2 ) ,
+                "::" , stringify ! ( b ) ));
 }
 impl Clone for foo__bindgen_ty_2 {
     fn clone(&self) -> Self { *self }
 }
 #[test]
 fn bindgen_test_layout_foo() {
-    assert_eq!(::std::mem::size_of::<foo>() , 208usize);
-    assert_eq! (::std::mem::align_of::<foo>() , 4usize);
+    assert_eq!(::std::mem::size_of::<foo>() , 208usize , concat ! (
+               "Size of: " , stringify ! ( foo ) ));
+    assert_eq! (::std::mem::align_of::<foo>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( foo ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const foo ) ) . bar as * const _ as usize } ,
-                0usize);
+                0usize , concat ! (
+                "Alignment of field: " , stringify ! ( foo ) , "::" ,
+                stringify ! ( bar ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const foo ) ) . baz as * const _ as usize } ,
-                16usize);
+                16usize , concat ! (
+                "Alignment of field: " , stringify ! ( foo ) , "::" ,
+                stringify ! ( baz ) ));
 }
 impl Clone for foo {
     fn clone(&self) -> Self { *self }
