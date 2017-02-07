@@ -6,7 +6,7 @@ use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::function::Function;
 use super::item_kind::ItemKind;
 use super::module::Module;
-use super::ty::{Type, TypeKind};
+use super::ty::{TemplateDeclaration, Type, TypeKind};
 use super::type_collector::{ItemSet, TypeCollector};
 use clang;
 use clang_sys;
@@ -898,6 +898,32 @@ impl Item {
         match self.kind {
             ItemKind::Module(ref mut module) => Some(module),
             _ => None,
+        }
+    }
+}
+
+impl TemplateDeclaration for ItemId {
+    fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
+        ctx.resolve_item_fallible(*self)
+            .and_then(|item| item.template_params(ctx))
+    }
+}
+
+impl TemplateDeclaration for Item {
+    fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
+        self.kind.template_params(ctx)
+    }
+}
+
+impl TemplateDeclaration for ItemKind {
+    fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
+        match *self {
+            ItemKind::Type(ref ty) => ty.template_params(ctx),
+            // TODO FITZGEN: shouldn't functions be able to have free template
+            // params?
+            ItemKind::Module(_) |
+            ItemKind::Function(_) |
+            ItemKind::Var(_) => None,
         }
     }
 }

@@ -5,7 +5,7 @@ use super::int::IntKind;
 use super::item::{Item, ItemCanonicalPath};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
-use super::ty::{FloatKind, Type, TypeKind};
+use super::ty::{FloatKind, TemplateDeclaration, Type, TypeKind};
 use super::type_collector::{ItemSet, TypeCollector};
 use BindgenOptions;
 use cexpr;

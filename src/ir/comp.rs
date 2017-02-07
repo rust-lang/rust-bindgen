@@ -5,7 +5,7 @@ use super::context::{BindgenContext, ItemId};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::item::Item;
 use super::layout::Layout;
-use super::ty::Type;
+use super::ty::{TemplateDeclaration, Type};
 use super::type_collector::{ItemSet, TypeCollector};
 use clang;
 use parse::{ClangItemParser, ParseError};
@@ -564,10 +564,8 @@ impl CompInfo {
             });
         ci.is_anonymous = cursor.is_anonymous();
         ci.template_args = match ty.template_args() {
-            // In forward declarations and not specializations,
-            // etc, they are in
-            // the ast, we'll meet them in
-            // CXCursor_TemplateTypeParameter
+            // In forward declarations and not specializations, etc, they are in
+            // the ast, we'll meet them in CXCursor_TemplateTypeParameter
             None => vec![],
             Some(arg_types) => {
                 let num_arg_types = arg_types.len();
@@ -913,6 +911,16 @@ impl CompInfo {
     /// Returns true if compound type has been forward declared
     pub fn is_forward_declaration(&self) -> bool {
         self.is_forward_declaration
+    }
+}
+
+impl TemplateDeclaration for CompInfo {
+    fn template_params(&self, _ctx: &BindgenContext) -> Option<Vec<ItemId>> {
+        if self.template_args.is_empty() {
+            None
+        } else {
+            Some(self.template_args.clone())
+        }
     }
 }
 
