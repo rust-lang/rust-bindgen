@@ -1464,7 +1464,10 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
                                  type_to_str(ty.kind())));
         }
         if let Some(ty) = c.ret_type() {
-            print_indent(depth, format!(" {}ret-type = {}", prefix, type_to_str(ty.kind())));
+            print_indent(depth,
+                         format!(" {}ret-type = {}",
+                                 prefix,
+                                 type_to_str(ty.kind())));
         }
 
         if let Some(refd) = c.referenced() {
@@ -1473,7 +1476,9 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
                 print_cursor(depth,
                              String::from(prefix) + "referenced.",
                              &refd);
-                print_cursor(depth, String::from(prefix) + "referenced.", &refd);
+                print_cursor(depth,
+                             String::from(prefix) + "referenced.",
+                             &refd);
             }
         }
 
@@ -1483,7 +1488,9 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
             print_cursor(depth,
                          String::from(prefix) + "canonical.",
                          &canonical);
-            print_cursor(depth, String::from(prefix) + "canonical.", &canonical);
+            print_cursor(depth,
+                         String::from(prefix) + "canonical.",
+                         &canonical);
         }
 
         if let Some(specialized) = c.specialized() {
@@ -1492,7 +1499,9 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
                 print_cursor(depth,
                              String::from(prefix) + "specialized.",
                              &specialized);
-                print_cursor(depth, String::from(prefix) + "specialized.", &specialized);
+                print_cursor(depth,
+                             String::from(prefix) + "specialized.",
+                             &specialized);
             }
         }
     }

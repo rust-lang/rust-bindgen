@@ -229,8 +229,9 @@ impl FunctionSig {
         let abi = get_abi(ty.call_conv());
 
         if abi.is_none() {
-            assert_eq!(cursor.kind(), CXCursor_ObjCInstanceMethodDecl,
-                    "Invalid ABI for function signature")
+            assert_eq!(cursor.kind(),
+                       CXCursor_ObjCInstanceMethodDecl,
+                       "Invalid ABI for function signature")
         }
 
         Ok(Self::new(ret, args, ty.is_variadic(), abi))
