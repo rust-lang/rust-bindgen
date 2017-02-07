@@ -755,7 +755,7 @@ impl Type {
                potential_id,
                ty,
                location);
-        debug!("currently_parsed_types: {:?}", ctx.currently_parsed_types);
+        debug!("currently_parsed_types: {:?}", ctx.currently_parsed_types());
 
         let canonical_ty = ty.canonical_type();
 

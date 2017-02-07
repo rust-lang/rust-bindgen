@@ -120,9 +120,7 @@ pub struct BindgenContext<'ctx> {
     /// We could also use the `types` HashMap, but my intention with it is that
     /// only valid types and declarations end up there, and this could
     /// potentially break that assumption.
-    ///
-    /// FIXME: Should not be public, though... meh.
-    pub currently_parsed_types: Vec<(Cursor, ItemId)>,
+    currently_parsed_types: Vec<PartialType>,
 
     /// A HashSet with all the already parsed macro names. This is done to avoid
     /// hard errors while parsing duplicated macros, as well to allow macro
@@ -191,6 +189,26 @@ impl<'ctx> BindgenContext<'ctx> {
         me.add_item(root_module, None, None);
 
         me
+    }
+
+    /// Get the stack of partially parsed types that we are in the middle of
+    /// parsing.
+    pub fn currently_parsed_types(&self) -> &[PartialType] {
+        &self.currently_parsed_types[..]
+    }
+
+    /// Begin parsing the given partial type, and push it onto the
+    /// `currently_parsed_types` stack so that we won't infinite recurse if we
+    /// run into a reference to it while parsing it.
+    pub fn begin_parsing(&mut self, partial_ty: PartialType) {
+        self.currently_parsed_types.push(partial_ty);
+    }
+
+    /// Finish parsing the current partial type, pop it off the
+    /// `currently_parsed_types` stack, and return it.
+    pub fn finish_parsing(&mut self) -> PartialType {
+        self.currently_parsed_types.pop()
+            .expect("should have been parsing a type, if we finished parsing a type")
     }
 
     /// Get the user-provided type chooser by reference, if any.
@@ -1153,6 +1171,68 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Whether we need to generate the binden complex type
     pub fn need_bindegen_complex_type(&self) -> bool {
         self.generated_bindegen_complex.get()
+    }
+}
+
+/// A type that we are in the middle of parsing.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct PartialType {
+    decl: Cursor,
+    id: ItemId,
+}
+
+impl PartialType {
+    /// Construct a new `PartialType`.
+    pub fn new(decl: Cursor, id: ItemId) -> PartialType {
+        // assert!(decl == decl.canonical());
+        PartialType {
+            decl: decl,
+            id: id,
+        }
+    }
+
+    /// The cursor pointing to this partial type's declaration location.
+    pub fn decl(&self) -> &Cursor {
+        &self.decl
+    }
+
+    /// The item ID allocated for this type. This is *NOT* a key for an entry in
+    /// the context's item set yet!
+    pub fn id(&self) -> ItemId {
+        self.id
+    }
+}
+
+impl TemplateDeclaration for PartialType {
+    fn template_params(&self, _ctx: &BindgenContext) -> Option<Vec<ItemId>> {
+        // Maybe at some point we will eagerly parse named types, but for now we
+        // don't and this information is unavailable.
+        None
+    }
+
+    fn num_template_params(&self, _ctx: &BindgenContext) -> Option<usize> {
+        // Wouldn't it be nice if libclang would reliably give us this
+        // information‽
+        match self.decl().kind() {
+            clang_sys::CXCursor_ClassTemplate |
+            clang_sys::CXCursor_FunctionTemplate |
+            clang_sys::CXCursor_TypeAliasTemplateDecl => {
+                let mut num_params = 0;
+                self.decl().visit(|c| {
+                    match c.kind() {
+                        clang_sys::CXCursor_TemplateTypeParameter |
+                        clang_sys::CXCursor_TemplateTemplateParameter |
+                        clang_sys::CXCursor_NonTypeTemplateParameter => {
+                            num_params += 1;
+                        }
+                        _ => {}
+                    };
+                    clang_sys::CXChildVisit_Continue
+                });
+                Some(num_params)
+            }
+            _ => None,
+        }
     }
 }
 

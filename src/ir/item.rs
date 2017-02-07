@@ -1,7 +1,7 @@
 //! Bindgen's core intermediate representation type.
 
 use super::annotations::Annotations;
-use super::context::{BindgenContext, ItemId};
+use super::context::{BindgenContext, ItemId, PartialType};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::function::Function;
 use super::item_kind::ItemKind;
@@ -1202,18 +1202,18 @@ impl ClangItemParser for Item {
         };
 
         if valid_decl {
-            if let Some(&(_, item_id)) =
-                ctx.currently_parsed_types
-                    .iter()
-                    .find(|&&(d, _)| d == declaration_to_look_for) {
+            if let Some(partial) = ctx.currently_parsed_types()
+                .iter()
+                .find(|ty| *ty.decl() == declaration_to_look_for) {
                 debug!("Avoiding recursion parsing type: {:?}", ty);
-                return Ok(item_id);
+                return Ok(partial.id());
             }
         }
 
         let current_module = ctx.current_module();
+        let partial_ty = PartialType::new(declaration_to_look_for, id);
         if valid_decl {
-            ctx.currently_parsed_types.push((declaration_to_look_for, id));
+            ctx.begin_parsing(partial_ty);
         }
 
         let result = Type::from_clang_ty(id, ty, location, parent_id, ctx);
@@ -1241,9 +1241,8 @@ impl ClangItemParser for Item {
                     // declaration_to_look_for suspiciously shares a lot of
                     // logic with ir::context, so we should refactor that.
                     if valid_decl {
-                        let (popped_decl, _) =
-                            ctx.currently_parsed_types.pop().unwrap();
-                        assert_eq!(popped_decl, declaration_to_look_for);
+                        let finished = ctx.finish_parsing();
+                        assert_eq!(*finished.decl(), declaration_to_look_for);
                     }
 
                     location.visit(|cur| {
@@ -1251,8 +1250,9 @@ impl ClangItemParser for Item {
                     });
 
                     if valid_decl {
-                        ctx.currently_parsed_types
-                            .push((declaration_to_look_for, id));
+                        let partial_ty =
+                            PartialType::new(declaration_to_look_for, id);
+                        ctx.begin_parsing(partial_ty);
                     }
                 }
                 // If we have recursed into the AST all we know, and we still
@@ -1279,8 +1279,8 @@ impl ClangItemParser for Item {
         };
 
         if valid_decl {
-            let (popped_decl, _) = ctx.currently_parsed_types.pop().unwrap();
-            assert_eq!(popped_decl, declaration_to_look_for);
+            let partial_ty = ctx.finish_parsing();
+            assert_eq!(*partial_ty.decl(), declaration_to_look_for);
         }
 
         ret
