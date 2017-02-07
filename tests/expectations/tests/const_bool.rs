@@ -14,7 +14,7 @@ pub const A_k: bool = false;
 #[test]
 fn bindgen_test_layout_A() {
     assert_eq!(::std::mem::size_of::<A>() , 1usize);
-    assert_eq!(::std::mem::align_of::<A>() , 1usize);
+    assert_eq! (::std::mem::align_of::<A>() , 1usize);
 }
 impl Clone for A {
     fn clone(&self) -> Self { *self }

@@ -15,7 +15,7 @@ pub struct nsISupports {
 #[test]
 fn bindgen_test_layout_nsISupports() {
     assert_eq!(::std::mem::size_of::<nsISupports>() , 8usize);
-    assert_eq!(::std::mem::align_of::<nsISupports>() , 8usize);
+    assert_eq! (::std::mem::align_of::<nsISupports>() , 8usize);
 }
 impl Clone for nsISupports {
     fn clone(&self) -> Self { *self }
@@ -28,7 +28,7 @@ pub struct nsIRunnable {
 #[test]
 fn bindgen_test_layout_nsIRunnable() {
     assert_eq!(::std::mem::size_of::<nsIRunnable>() , 8usize);
-    assert_eq!(::std::mem::align_of::<nsIRunnable>() , 8usize);
+    assert_eq! (::std::mem::align_of::<nsIRunnable>() , 8usize);
 }
 impl Clone for nsIRunnable {
     fn clone(&self) -> Self { *self }
@@ -41,7 +41,7 @@ pub struct Runnable {
 #[test]
 fn bindgen_test_layout_Runnable() {
     assert_eq!(::std::mem::size_of::<Runnable>() , 8usize);
-    assert_eq!(::std::mem::align_of::<Runnable>() , 8usize);
+    assert_eq! (::std::mem::align_of::<Runnable>() , 8usize);
 }
 impl Clone for Runnable {
     fn clone(&self) -> Self { *self }

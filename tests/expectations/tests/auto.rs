@@ -13,7 +13,7 @@ pub const Foo_kFoo: bool = true;
 #[test]
 fn bindgen_test_layout_Foo() {
     assert_eq!(::std::mem::size_of::<Foo>() , 1usize);
-    assert_eq!(::std::mem::align_of::<Foo>() , 1usize);
+    assert_eq! (::std::mem::align_of::<Foo>() , 1usize);
 }
 impl Clone for Foo {
     fn clone(&self) -> Self { *self }

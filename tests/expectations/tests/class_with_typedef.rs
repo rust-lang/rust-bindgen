@@ -19,7 +19,20 @@ pub type C_Lookup = *const ::std::os::raw::c_char;
 #[test]
 fn bindgen_test_layout_C() {
     assert_eq!(::std::mem::size_of::<C>() , 72usize);
-    assert_eq!(::std::mem::align_of::<C>() , 8usize);
+    assert_eq! (::std::mem::align_of::<C>() , 8usize);
+    assert_eq! (unsafe { & ( * ( 0 as * const C ) ) . c as * const _ as usize
+                } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C ) ) . ptr as * const _ as usize } ,
+                8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C ) ) . arr as * const _ as usize } ,
+                16usize);
+    assert_eq! (unsafe { & ( * ( 0 as * const C ) ) . d as * const _ as usize
+                } , 56usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C ) ) . other_ptr as * const _ as usize }
+                , 64usize);
 }
 extern "C" {
     #[link_name = "_ZN1C6methodEi"]
@@ -65,7 +78,10 @@ pub struct D {
 #[test]
 fn bindgen_test_layout_D() {
     assert_eq!(::std::mem::size_of::<D>() , 80usize);
-    assert_eq!(::std::mem::align_of::<D>() , 8usize);
+    assert_eq! (::std::mem::align_of::<D>() , 8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const D ) ) . ptr as * const _ as usize } ,
+                72usize);
 }
 impl Clone for D {
     fn clone(&self) -> Self { *self }

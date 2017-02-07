@@ -18,7 +18,10 @@ pub struct TestDouble {
 #[test]
 fn bindgen_test_layout_TestDouble() {
     assert_eq!(::std::mem::size_of::<TestDouble>() , 16usize);
-    assert_eq!(::std::mem::align_of::<TestDouble>() , 8usize);
+    assert_eq! (::std::mem::align_of::<TestDouble>() , 8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const TestDouble ) ) . mMember as * const _ as
+                usize } , 0usize);
 }
 impl Clone for TestDouble {
     fn clone(&self) -> Self { *self }
@@ -31,7 +34,10 @@ pub struct TestDoublePtr {
 #[test]
 fn bindgen_test_layout_TestDoublePtr() {
     assert_eq!(::std::mem::size_of::<TestDoublePtr>() , 8usize);
-    assert_eq!(::std::mem::align_of::<TestDoublePtr>() , 8usize);
+    assert_eq! (::std::mem::align_of::<TestDoublePtr>() , 8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const TestDoublePtr ) ) . mMember as * const _
+                as usize } , 0usize);
 }
 impl Clone for TestDoublePtr {
     fn clone(&self) -> Self { *self }
@@ -44,7 +50,10 @@ pub struct TestFloat {
 #[test]
 fn bindgen_test_layout_TestFloat() {
     assert_eq!(::std::mem::size_of::<TestFloat>() , 8usize);
-    assert_eq!(::std::mem::align_of::<TestFloat>() , 4usize);
+    assert_eq! (::std::mem::align_of::<TestFloat>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const TestFloat ) ) . mMember as * const _ as
+                usize } , 0usize);
 }
 impl Clone for TestFloat {
     fn clone(&self) -> Self { *self }
@@ -57,7 +66,10 @@ pub struct TestFloatPtr {
 #[test]
 fn bindgen_test_layout_TestFloatPtr() {
     assert_eq!(::std::mem::size_of::<TestFloatPtr>() , 8usize);
-    assert_eq!(::std::mem::align_of::<TestFloatPtr>() , 8usize);
+    assert_eq! (::std::mem::align_of::<TestFloatPtr>() , 8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const TestFloatPtr ) ) . mMember as * const _
+                as usize } , 0usize);
 }
 impl Clone for TestFloatPtr {
     fn clone(&self) -> Self { *self }

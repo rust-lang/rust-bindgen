@@ -15,7 +15,10 @@ pub struct bitfield {
 #[test]
 fn bindgen_test_layout_bitfield() {
     assert_eq!(::std::mem::size_of::<bitfield>() , 16usize);
-    assert_eq!(::std::mem::align_of::<bitfield>() , 4usize);
+    assert_eq! (::std::mem::align_of::<bitfield>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const bitfield ) ) . e as * const _ as usize }
+                , 4usize);
 }
 impl Clone for bitfield {
     fn clone(&self) -> Self { *self }

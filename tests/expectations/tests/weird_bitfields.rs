@@ -32,7 +32,43 @@ pub struct Weird {
 #[test]
 fn bindgen_test_layout_Weird() {
     assert_eq!(::std::mem::size_of::<Weird>() , 24usize);
-    assert_eq!(::std::mem::align_of::<Weird>() , 4usize);
+    assert_eq! (::std::mem::align_of::<Weird>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Weird ) ) . mStrokeDasharrayLength as *
+                const _ as usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Weird ) ) . mClipRule as * const _ as
+                usize } , 8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Weird ) ) . mColorInterpolation as *
+                const _ as usize } , 9usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Weird ) ) . mColorInterpolationFilters as
+                * const _ as usize } , 10usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Weird ) ) . mFillRule as * const _ as
+                usize } , 11usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Weird ) ) . mImageRendering as * const _
+                as usize } , 12usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Weird ) ) . mPaintOrder as * const _ as
+                usize } , 13usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Weird ) ) . mShapeRendering as * const _
+                as usize } , 14usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Weird ) ) . mStrokeLinecap as * const _
+                as usize } , 15usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Weird ) ) . mStrokeLinejoin as * const _
+                as usize } , 16usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Weird ) ) . mTextAnchor as * const _ as
+                usize } , 17usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Weird ) ) . mTextRendering as * const _
+                as usize } , 18usize);
 }
 impl Clone for Weird {
     fn clone(&self) -> Self { *self }

@@ -8,7 +8,19 @@
 #[derive(Debug, Copy)]
 pub struct _bindgen_ty_1 {
     pub __clang_max_align_nonce1: ::std::os::raw::c_longlong,
+    pub __bindgen_padding_0: u64,
     pub __clang_max_align_nonce2: f64,
+    pub __bindgen_padding_1: u64,
+}
+#[test]
+fn bindgen_test_layout__bindgen_ty_1() {
+    assert_eq!(::std::mem::size_of::<_bindgen_ty_1>() , 32usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const _bindgen_ty_1 ) ) .
+                __clang_max_align_nonce1 as * const _ as usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const _bindgen_ty_1 ) ) .
+                __clang_max_align_nonce2 as * const _ as usize } , 16usize);
 }
 impl Clone for _bindgen_ty_1 {
     fn clone(&self) -> Self { *self }

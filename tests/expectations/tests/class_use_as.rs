@@ -15,7 +15,10 @@ pub struct whatever {
 #[test]
 fn bindgen_test_layout_whatever() {
     assert_eq!(::std::mem::size_of::<whatever>() , 4usize);
-    assert_eq!(::std::mem::align_of::<whatever>() , 4usize);
+    assert_eq! (::std::mem::align_of::<whatever>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const whatever ) ) . replacement as * const _
+                as usize } , 0usize);
 }
 impl Clone for whatever {
     fn clone(&self) -> Self { *self }
@@ -28,7 +31,10 @@ pub struct container {
 #[test]
 fn bindgen_test_layout_container() {
     assert_eq!(::std::mem::size_of::<container>() , 4usize);
-    assert_eq!(::std::mem::align_of::<container>() , 4usize);
+    assert_eq! (::std::mem::align_of::<container>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const container ) ) . c as * const _ as usize }
+                , 0usize);
 }
 impl Clone for container {
     fn clone(&self) -> Self { *self }

@@ -38,7 +38,13 @@ pub struct WithBigArray {
 #[test]
 fn bindgen_test_layout_WithBigArray() {
     assert_eq!(::std::mem::size_of::<WithBigArray>() , 132usize);
-    assert_eq!(::std::mem::align_of::<WithBigArray>() , 4usize);
+    assert_eq! (::std::mem::align_of::<WithBigArray>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const WithBigArray ) ) . a as * const _ as
+                usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const WithBigArray ) ) . b as * const _ as
+                usize } , 0usize);
 }
 impl Clone for WithBigArray {
     fn clone(&self) -> Self { *self }
@@ -53,7 +59,13 @@ pub struct WithBigArray2 {
 #[test]
 fn bindgen_test_layout_WithBigArray2() {
     assert_eq!(::std::mem::size_of::<WithBigArray2>() , 36usize);
-    assert_eq!(::std::mem::align_of::<WithBigArray2>() , 4usize);
+    assert_eq! (::std::mem::align_of::<WithBigArray2>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const WithBigArray2 ) ) . a as * const _ as
+                usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const WithBigArray2 ) ) . b as * const _ as
+                usize } , 0usize);
 }
 impl Clone for WithBigArray2 {
     fn clone(&self) -> Self { *self }
@@ -68,7 +80,13 @@ pub struct WithBigMember {
 #[test]
 fn bindgen_test_layout_WithBigMember() {
     assert_eq!(::std::mem::size_of::<WithBigMember>() , 132usize);
-    assert_eq!(::std::mem::align_of::<WithBigMember>() , 4usize);
+    assert_eq! (::std::mem::align_of::<WithBigMember>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const WithBigMember ) ) . a as * const _ as
+                usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const WithBigMember ) ) . b as * const _ as
+                usize } , 0usize);
 }
 impl Clone for WithBigMember {
     fn clone(&self) -> Self { *self }

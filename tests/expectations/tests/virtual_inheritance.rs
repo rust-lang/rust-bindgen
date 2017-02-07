@@ -12,7 +12,10 @@ pub struct A {
 #[test]
 fn bindgen_test_layout_A() {
     assert_eq!(::std::mem::size_of::<A>() , 4usize);
-    assert_eq!(::std::mem::align_of::<A>() , 4usize);
+    assert_eq! (::std::mem::align_of::<A>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const A ) ) . foo as * const _ as usize } ,
+                0usize);
 }
 impl Clone for A {
     fn clone(&self) -> Self { *self }
@@ -29,7 +32,10 @@ pub struct B {
 #[test]
 fn bindgen_test_layout_B() {
     assert_eq!(::std::mem::size_of::<B>() , 16usize);
-    assert_eq!(::std::mem::align_of::<B>() , 8usize);
+    assert_eq! (::std::mem::align_of::<B>() , 8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const B ) ) . bar as * const _ as usize } ,
+                8usize);
 }
 impl Clone for B {
     fn clone(&self) -> Self { *self }
@@ -46,7 +52,10 @@ pub struct C {
 #[test]
 fn bindgen_test_layout_C() {
     assert_eq!(::std::mem::size_of::<C>() , 16usize);
-    assert_eq!(::std::mem::align_of::<C>() , 8usize);
+    assert_eq! (::std::mem::align_of::<C>() , 8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C ) ) . baz as * const _ as usize } ,
+                8usize);
 }
 impl Clone for C {
     fn clone(&self) -> Self { *self }
@@ -61,7 +70,7 @@ pub struct D {
 #[test]
 fn bindgen_test_layout_D() {
     assert_eq!(::std::mem::size_of::<D>() , 40usize);
-    assert_eq!(::std::mem::align_of::<D>() , 8usize);
+    assert_eq! (::std::mem::align_of::<D>() , 8usize);
 }
 impl Clone for D {
     fn clone(&self) -> Self { *self }

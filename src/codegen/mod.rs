@@ -1,6 +1,8 @@
 mod helpers;
+mod struct_layout;
 
 use self::helpers::{BlobTyBuilder, attributes};
+use self::struct_layout::StructLayoutTracker;
 use aster;
 
 use ir::annotations::FieldAccessorKind;
@@ -21,6 +23,7 @@ use ir::var::Var;
 
 use std::borrow::Cow;
 use std::cell::Cell;
+use std::cmp;
 use std::collections::{HashSet, VecDeque};
 use std::collections::hash_map::{Entry, HashMap};
 use std::fmt::Write;
@@ -723,9 +726,9 @@ impl<'a> Bitfield<'a> {
     fn codegen_fields(self,
                       ctx: &BindgenContext,
                       fields: &mut Vec<ast::StructField>,
-                      methods: &mut Vec<ast::ImplItem>) {
+                      methods: &mut Vec<ast::ImplItem>)
+                      -> Layout {
         use aster::struct_field::StructFieldBuilder;
-        use std::cmp;
         let mut total_width = self.fields
             .iter()
             .fold(0u32, |acc, f| acc + f.bitfield().unwrap());
@@ -736,10 +739,9 @@ impl<'a> Bitfield<'a> {
         debug_assert_eq!(total_width % 8, 0);
         let total_width_in_bytes = total_width as usize / 8;
 
-        let bitfield_type =
-            BlobTyBuilder::new(Layout::new(total_width_in_bytes,
-                                           total_width_in_bytes))
-                .build();
+        let bitfield_layout = Layout::new(total_width_in_bytes,
+                                          total_width_in_bytes);
+        let bitfield_type = BlobTyBuilder::new(bitfield_layout).build();
         let field_name = format!("_bitfield_{}", self.index);
         let field_ident = ctx.ext_cx().ident_of(&field_name);
         let field = StructFieldBuilder::named(&field_name)
@@ -805,6 +807,8 @@ impl<'a> Bitfield<'a> {
             methods.extend(items.into_iter());
             offset += width;
         }
+
+        bitfield_layout
     }
 }
 
@@ -940,6 +944,7 @@ impl CodeGenerator for CompInfo {
         // Also, we need to generate the vtable in such a way it "inherits" from
         // the parent too.
         let mut fields = vec![];
+        let mut struct_layout = StructLayoutTracker::new(ctx, self);
         if self.needs_explicit_vtable(ctx) {
             let vtable =
                 Vtable::new(item.id(), self.methods(), self.base_members());
@@ -950,6 +955,8 @@ impl CodeGenerator for CompInfo {
             let vtable_field = StructFieldBuilder::named("vtable_")
                 .pub_()
                 .build_ty(vtable_type);
+
+            struct_layout.saw_vtable();
 
             fields.push(vtable_field);
         }
@@ -984,6 +991,8 @@ impl CodeGenerator for CompInfo {
             } else {
                 format!("_base_{}", i)
             };
+
+            struct_layout.saw_base(base_ty);
 
             let field = StructFieldBuilder::named(field_name)
                 .pub_()
@@ -1039,8 +1048,12 @@ impl CodeGenerator for CompInfo {
                 let bitfield_fields =
                     mem::replace(&mut current_bitfield_fields, vec![]);
                 bitfield_count += 1;
-                Bitfield::new(bitfield_count, bitfield_fields)
+                let bitfield_layout = Bitfield::new(bitfield_count,
+                                                    bitfield_fields)
                     .codegen_fields(ctx, &mut fields, &mut methods);
+
+                struct_layout.saw_bitfield(bitfield_layout);
+
                 current_bitfield_width = None;
                 current_bitfield_layout = None;
             }
@@ -1099,6 +1112,11 @@ impl CodeGenerator for CompInfo {
                     format!("__bindgen_anon_{}", anonymous_field_count)
                 }
             };
+
+            if let Some(padding_field) =
+                struct_layout.pad_field(&field_name, field_ty, field.offset()) {
+                fields.push(padding_field);
+            }
 
             let is_private = field.annotations()
                 .private_fields()
@@ -1192,8 +1210,11 @@ impl CodeGenerator for CompInfo {
             let bitfield_fields = mem::replace(&mut current_bitfield_fields,
                                                vec![]);
             bitfield_count += 1;
-            Bitfield::new(bitfield_count, bitfield_fields)
+            let bitfield_layout = Bitfield::new(bitfield_count,
+                                                bitfield_fields)
                 .codegen_fields(ctx, &mut fields, &mut methods);
+
+            struct_layout.saw_bitfield(bitfield_layout);
         }
         debug_assert!(current_bitfield_fields.is_empty());
 
@@ -1203,6 +1224,9 @@ impl CodeGenerator for CompInfo {
             let field = StructFieldBuilder::named("bindgen_union_field")
                 .pub_()
                 .build_ty(ty);
+
+            struct_layout.saw_union(layout);
+
             fields.push(field);
         }
 
@@ -1226,6 +1250,16 @@ impl CodeGenerator for CompInfo {
                 None => {
                     warn!("Opaque type without layout! Expect dragons!");
                 }
+            }
+        } else if !is_union && !self.is_unsized(ctx) {
+            if let Some(padding_field) =
+                layout.and_then(|layout| struct_layout.pad_struct(layout)) {
+                fields.push(padding_field);
+            }
+
+            if let Some(align_field) =
+                layout.and_then(|layout| struct_layout.align_struct(layout)) {
+                fields.push(align_field);
             }
         }
 
@@ -1296,7 +1330,7 @@ impl CodeGenerator for CompInfo {
                   canonical_name);
         }
 
-        if applicable_template_args.is_empty() && !self.found_unknown_attr() {
+        if applicable_template_args.is_empty() {
             for var in self.inner_vars() {
                 ctx.resolve_item(*var)
                     .codegen(ctx, result, whitelisted_items, &());
@@ -1313,11 +1347,57 @@ impl CodeGenerator for CompInfo {
                                 ::$prefix::mem::align_of::<$ident>());
                 let size = layout.size;
                 let align = layout.align;
+
+                let check_struct_align = if align > mem::size_of::<*mut ()>() {
+                    // FIXME when [RFC 1358](https://github.com/rust-lang/rust/issues/33626) ready
+                    None
+                } else {
+                    quote_item!(ctx.ext_cx(),
+                        assert_eq!($align_of_expr, $align);
+                    )
+                };
+
+                // FIXME when [issue #465](https://github.com/servo/rust-bindgen/issues/465) ready
+                let too_many_base_vtables = self.base_members()
+                    .iter()
+                    .filter(|base| ctx.resolve_type(base.ty).has_vtable(ctx))
+                    .count() >
+                                            1;
+
+                let should_skip_field_offset_checks = item.is_opaque(ctx) ||
+                                                      too_many_base_vtables;
+
+                let check_field_offset = if should_skip_field_offset_checks {
+                    None
+                } else {
+                    let type_name = ctx.rust_ident(&canonical_name);
+
+                    let asserts = self.fields()
+                    .iter()
+                    .filter(|field| field.bitfield().is_none())
+                    .flat_map(|field| {
+                        field.name().and_then(|name| {
+                            field.offset().and_then(|offset| {
+                                let field_offset = offset / 8;
+                                let field_name = ctx.rust_ident(name);
+
+                                quote_item!(ctx.ext_cx(),
+                                    assert_eq!(unsafe { &(*(0 as *const $type_name)).$field_name as *const _ as usize }, $field_offset);
+                                )
+                            })
+                        })
+                    }).collect::<Vec<P<ast::Item>>>();
+
+                    Some(asserts)
+                };
+
                 let item = quote_item!(ctx.ext_cx(),
                     #[test]
                     fn $fn_name() {
                         assert_eq!($size_of_expr, $size);
-                        assert_eq!($align_of_expr, $align);
+
+                        $check_struct_align
+                        $check_field_offset
                     })
                     .unwrap();
                 result.push(item);
@@ -2278,22 +2358,20 @@ impl CodeGenerator for ObjCInterface {
 
             // Collect the actual used argument names
             let arg_names: Vec<_> = fn_args.iter()
-                .map(|ref arg| {
-                    match arg.pat.node {
-                        ast::PatKind::Ident(_, ref spanning, _) => {
-                            spanning.node.name.as_str().to_string()
-                        }
-                        _ => {
-                            panic!("odd argument!");
-                        }
+                .map(|ref arg| match arg.pat.node {
+                    ast::PatKind::Ident(_, ref spanning, _) => {
+                        spanning.node.name.as_str().to_string()
+                    }
+                    _ => {
+                        panic!("odd argument!");
                     }
                 })
                 .collect();
 
             let methods_and_args =
                 ctx.rust_ident(&method.format_method_call(&arg_names));
-            let body =
-                quote_stmt!(ctx.ext_cx(), msg_send![self, $methods_and_args])
+            let body = quote_stmt!(ctx.ext_cx(),
+                                   msg_send![self, $methods_and_args])
                 .unwrap();
             let block = ast::Block {
                 stmts: vec![body],
@@ -2729,5 +2807,4 @@ mod utils {
             }
         }).collect::<Vec<_>>()
     }
-
 }

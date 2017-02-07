@@ -12,6 +12,7 @@ use super::objc::ObjCInterface;
 use super::type_collector::{ItemSet, TypeCollector};
 use clang::{self, Cursor};
 use parse::{ClangItemParser, ParseError, ParseResult};
+use std::mem;
 
 /// The base representation of a type in bindgen.
 ///
@@ -356,6 +357,40 @@ impl Type {
             _ => false,
         }
     }
+
+    /// If this type has a known size, return it (in bytes).
+    pub fn calc_size(&self, ctx: &BindgenContext) -> Option<usize> {
+        match self.kind {
+            TypeKind::Comp(ref ci) => {
+                ci.calc_layout(ctx).map(|layout| layout.size)
+            }
+            TypeKind::Enum(ref enum_ty) => {
+                enum_ty.calc_layout(ctx).map(|layout| layout.size)
+            }
+            TypeKind::Int(int_kind) => int_kind.known_size(),
+            TypeKind::Float(float_kind) => Some(float_kind.known_size()),
+            TypeKind::Complex(float_kind) => Some(float_kind.known_size() * 2),
+            TypeKind::Reference(..) |
+            TypeKind::NullPtr |
+            TypeKind::Pointer(..) |
+            TypeKind::BlockPointer |
+            TypeKind::Function(..) |
+            TypeKind::ObjCInterface(..) => Some(mem::size_of::<*mut ()>()),
+            TypeKind::ResolvedTypeRef(inner) |
+            TypeKind::Alias(inner) |
+            TypeKind::TemplateAlias(inner, _) |
+            TypeKind::TemplateRef(inner, _) => {
+                ctx.resolve_type(inner).calc_size(ctx)
+            }
+            TypeKind::Array(inner, len) => {
+                ctx.resolve_type(inner)
+                    .layout(ctx)
+                    .map(|layout| layout.size * len)
+            }
+            TypeKind::Void | TypeKind::Named => None,
+            TypeKind::UnresolvedTypeRef(..) => unreachable!(),
+        }
+    }
 }
 
 impl CanDeriveDebug for Type {
@@ -423,6 +458,17 @@ pub enum FloatKind {
     LongDouble,
     /// A `__float128`.
     Float128,
+}
+
+impl FloatKind {
+    /// If this type has a known size, return it (in bytes).
+    pub fn known_size(&self) -> usize {
+        match *self {
+            FloatKind::Float => mem::size_of::<f32>(),
+            FloatKind::Double | FloatKind::LongDouble => mem::size_of::<f64>(),
+            FloatKind::Float128 => mem::size_of::<f64>() * 2,
+        }
+    }
 }
 
 /// The different kinds of types that we can parse.
@@ -623,7 +669,9 @@ impl Type {
                     // assume this is a Comp(..)
                 } else if ty.is_fully_specialized_template() {
                     debug!("Template specialization: {:?}, {:?} {:?}",
-                           ty, location, canonical_ty);
+                           ty,
+                           location,
+                           canonical_ty);
                     let complex =
                         CompInfo::from_ty(potential_id, ty, location, ctx)
                             .expect("C'mon");

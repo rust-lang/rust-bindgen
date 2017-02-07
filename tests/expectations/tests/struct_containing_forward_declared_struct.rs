@@ -17,7 +17,10 @@ pub struct a_b {
 #[test]
 fn bindgen_test_layout_a_b() {
     assert_eq!(::std::mem::size_of::<a_b>() , 4usize);
-    assert_eq!(::std::mem::align_of::<a_b>() , 4usize);
+    assert_eq! (::std::mem::align_of::<a_b>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const a_b ) ) . val_b as * const _ as usize } ,
+                0usize);
 }
 impl Clone for a_b {
     fn clone(&self) -> Self { *self }
@@ -25,7 +28,10 @@ impl Clone for a_b {
 #[test]
 fn bindgen_test_layout_a() {
     assert_eq!(::std::mem::size_of::<a>() , 8usize);
-    assert_eq!(::std::mem::align_of::<a>() , 8usize);
+    assert_eq! (::std::mem::align_of::<a>() , 8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const a ) ) . val_a as * const _ as usize } ,
+                0usize);
 }
 impl Clone for a {
     fn clone(&self) -> Self { *self }

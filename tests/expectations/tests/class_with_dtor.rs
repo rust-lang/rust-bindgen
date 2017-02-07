@@ -18,7 +18,10 @@ pub struct WithoutDtor {
 #[test]
 fn bindgen_test_layout_WithoutDtor() {
     assert_eq!(::std::mem::size_of::<WithoutDtor>() , 8usize);
-    assert_eq!(::std::mem::align_of::<WithoutDtor>() , 8usize);
+    assert_eq! (::std::mem::align_of::<WithoutDtor>() , 8usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const WithoutDtor ) ) . shouldBeWithDtor as *
+                const _ as usize } , 0usize);
 }
 #[test]
 fn __bindgen_test_layout_template_1() {

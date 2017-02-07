@@ -19,7 +19,10 @@ pub mod root {
         #[test]
         fn bindgen_test_layout_Bar() {
             assert_eq!(::std::mem::size_of::<Bar>() , 4usize);
-            assert_eq!(::std::mem::align_of::<Bar>() , 4usize);
+            assert_eq! (::std::mem::align_of::<Bar>() , 4usize);
+            assert_eq! (unsafe {
+                        & ( * ( 0 as * const Bar ) ) . bazz as * const _ as
+                        usize } , 0usize);
         }
         impl Clone for Bar {
             fn clone(&self) -> Self { *self }

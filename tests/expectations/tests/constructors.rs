@@ -12,7 +12,7 @@ pub struct TestOverload {
 #[test]
 fn bindgen_test_layout_TestOverload() {
     assert_eq!(::std::mem::size_of::<TestOverload>() , 1usize);
-    assert_eq!(::std::mem::align_of::<TestOverload>() , 1usize);
+    assert_eq! (::std::mem::align_of::<TestOverload>() , 1usize);
 }
 extern "C" {
     #[link_name = "_ZN12TestOverloadC1Ei"]
@@ -48,7 +48,7 @@ pub struct TestPublicNoArgs {
 #[test]
 fn bindgen_test_layout_TestPublicNoArgs() {
     assert_eq!(::std::mem::size_of::<TestPublicNoArgs>() , 1usize);
-    assert_eq!(::std::mem::align_of::<TestPublicNoArgs>() , 1usize);
+    assert_eq! (::std::mem::align_of::<TestPublicNoArgs>() , 1usize);
 }
 extern "C" {
     #[link_name = "_ZN16TestPublicNoArgsC1Ev"]

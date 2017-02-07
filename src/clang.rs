@@ -499,6 +499,17 @@ impl Cursor {
         unsafe { clang_CXXField_isMutable(self.x) != 0 }
     }
 
+    /// Get the offset of the field represented by the Cursor.
+    pub fn offset_of_field(&self) -> Result<usize, LayoutError> {
+        let offset = unsafe { clang_Cursor_getOffsetOfField(self.x) };
+
+        if offset < 0 {
+            Err(LayoutError::from(offset as i32))
+        } else {
+            Ok(offset as usize)
+        }
+    }
+
     /// Is this cursor's referent a member function that is declared `static`?
     pub fn method_is_static(&self) -> bool {
         unsafe { clang_CXXMethod_isStatic(self.x) != 0 }

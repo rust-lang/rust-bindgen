@@ -46,7 +46,19 @@ pub struct pixel__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout_pixel__bindgen_ty_1() {
     assert_eq!(::std::mem::size_of::<pixel__bindgen_ty_1>() , 4usize);
-    assert_eq!(::std::mem::align_of::<pixel__bindgen_ty_1>() , 1usize);
+    assert_eq! (::std::mem::align_of::<pixel__bindgen_ty_1>() , 1usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const pixel__bindgen_ty_1 ) ) . r as * const _
+                as usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const pixel__bindgen_ty_1 ) ) . g as * const _
+                as usize } , 1usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const pixel__bindgen_ty_1 ) ) . b as * const _
+                as usize } , 2usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const pixel__bindgen_ty_1 ) ) . a as * const _
+                as usize } , 3usize);
 }
 impl Clone for pixel__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
@@ -54,7 +66,10 @@ impl Clone for pixel__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout_pixel() {
     assert_eq!(::std::mem::size_of::<pixel>() , 4usize);
-    assert_eq!(::std::mem::align_of::<pixel>() , 4usize);
+    assert_eq! (::std::mem::align_of::<pixel>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const pixel ) ) . rgba as * const _ as usize }
+                , 0usize);
 }
 impl Clone for pixel {
     fn clone(&self) -> Self { *self }

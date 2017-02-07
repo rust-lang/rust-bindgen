@@ -68,7 +68,12 @@ pub struct C {
 #[test]
 fn bindgen_test_layout_C() {
     assert_eq!(::std::mem::size_of::<C>() , 40usize);
-    assert_eq!(::std::mem::align_of::<C>() , 4usize);
+    assert_eq! (::std::mem::align_of::<C>() , 4usize);
+    assert_eq! (unsafe { & ( * ( 0 as * const C ) ) . a as * const _ as usize
+                } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C ) ) . big_array as * const _ as usize }
+                , 4usize);
 }
 #[repr(C)]
 pub struct C_with_zero_length_array {
@@ -79,7 +84,16 @@ pub struct C_with_zero_length_array {
 #[test]
 fn bindgen_test_layout_C_with_zero_length_array() {
     assert_eq!(::std::mem::size_of::<C_with_zero_length_array>() , 40usize);
-    assert_eq!(::std::mem::align_of::<C_with_zero_length_array>() , 4usize);
+    assert_eq! (::std::mem::align_of::<C_with_zero_length_array>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C_with_zero_length_array ) ) . a as *
+                const _ as usize } , 0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C_with_zero_length_array ) ) . big_array
+                as * const _ as usize } , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C_with_zero_length_array ) ) .
+                zero_length_array as * const _ as usize } , 37usize);
 }
 #[repr(C)]
 pub struct C_with_incomplete_array {
@@ -90,7 +104,7 @@ pub struct C_with_incomplete_array {
 #[test]
 fn bindgen_test_layout_C_with_incomplete_array() {
     assert_eq!(::std::mem::size_of::<C_with_incomplete_array>() , 40usize);
-    assert_eq!(::std::mem::align_of::<C_with_incomplete_array>() , 4usize);
+    assert_eq! (::std::mem::align_of::<C_with_incomplete_array>() , 4usize);
 }
 #[repr(C)]
 pub struct C_with_zero_length_array_and_incomplete_array {
@@ -103,8 +117,8 @@ pub struct C_with_zero_length_array_and_incomplete_array {
 fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
     assert_eq!(::std::mem::size_of::<C_with_zero_length_array_and_incomplete_array>()
                , 40usize);
-    assert_eq!(::std::mem::align_of::<C_with_zero_length_array_and_incomplete_array>()
-               , 4usize);
+    assert_eq! (::std::mem::align_of::<C_with_zero_length_array_and_incomplete_array>()
+                , 4usize);
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -114,7 +128,10 @@ pub struct WithDtor {
 #[test]
 fn bindgen_test_layout_WithDtor() {
     assert_eq!(::std::mem::size_of::<WithDtor>() , 4usize);
-    assert_eq!(::std::mem::align_of::<WithDtor>() , 4usize);
+    assert_eq! (::std::mem::align_of::<WithDtor>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const WithDtor ) ) . b as * const _ as usize }
+                , 0usize);
 }
 #[repr(C)]
 pub struct IncompleteArrayNonCopiable {
@@ -124,7 +141,8 @@ pub struct IncompleteArrayNonCopiable {
 #[test]
 fn bindgen_test_layout_IncompleteArrayNonCopiable() {
     assert_eq!(::std::mem::size_of::<IncompleteArrayNonCopiable>() , 8usize);
-    assert_eq!(::std::mem::align_of::<IncompleteArrayNonCopiable>() , 8usize);
+    assert_eq! (::std::mem::align_of::<IncompleteArrayNonCopiable>() ,
+                8usize);
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -136,7 +154,13 @@ pub struct Union {
 #[test]
 fn bindgen_test_layout_Union() {
     assert_eq!(::std::mem::size_of::<Union>() , 4usize);
-    assert_eq!(::std::mem::align_of::<Union>() , 4usize);
+    assert_eq! (::std::mem::align_of::<Union>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Union ) ) . d as * const _ as usize } ,
+                0usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Union ) ) . i as * const _ as usize } ,
+                0usize);
 }
 impl Clone for Union {
     fn clone(&self) -> Self { *self }
@@ -149,7 +173,10 @@ pub struct WithUnion {
 #[test]
 fn bindgen_test_layout_WithUnion() {
     assert_eq!(::std::mem::size_of::<WithUnion>() , 4usize);
-    assert_eq!(::std::mem::align_of::<WithUnion>() , 4usize);
+    assert_eq! (::std::mem::align_of::<WithUnion>() , 4usize);
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const WithUnion ) ) . data as * const _ as
+                usize } , 0usize);
 }
 impl Clone for WithUnion {
     fn clone(&self) -> Self { *self }
@@ -163,8 +190,8 @@ pub struct RealAbstractionWithTonsOfMethods {
 fn bindgen_test_layout_RealAbstractionWithTonsOfMethods() {
     assert_eq!(::std::mem::size_of::<RealAbstractionWithTonsOfMethods>() ,
                1usize);
-    assert_eq!(::std::mem::align_of::<RealAbstractionWithTonsOfMethods>() ,
-               1usize);
+    assert_eq! (::std::mem::align_of::<RealAbstractionWithTonsOfMethods>() ,
+                1usize);
 }
 extern "C" {
     #[link_name = "_ZNK32RealAbstractionWithTonsOfMethods3barEv"]
