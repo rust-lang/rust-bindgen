@@ -18,11 +18,15 @@ pub struct FooStruct {
 }
 #[test]
 fn bindgen_test_layout_FooStruct() {
-    assert_eq!(::std::mem::size_of::<FooStruct>() , 8usize);
-    assert_eq! (::std::mem::align_of::<FooStruct>() , 8usize);
+    assert_eq!(::std::mem::size_of::<FooStruct>() , 8usize , concat ! (
+               "Size of: " , stringify ! ( FooStruct ) ));
+    assert_eq! (::std::mem::align_of::<FooStruct>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( FooStruct ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const FooStruct ) ) . foo as * const _ as usize
-                } , 0usize);
+                } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( FooStruct ) , "::" ,
+                stringify ! ( foo ) ));
 }
 impl Clone for FooStruct {
     fn clone(&self) -> Self { *self }

@@ -44,11 +44,15 @@ pub struct RootedContainer {
 }
 #[test]
 fn bindgen_test_layout_RootedContainer() {
-    assert_eq!(::std::mem::size_of::<RootedContainer>() , 24usize);
-    assert_eq! (::std::mem::align_of::<RootedContainer>() , 8usize);
+    assert_eq!(::std::mem::size_of::<RootedContainer>() , 24usize , concat ! (
+               "Size of: " , stringify ! ( RootedContainer ) ));
+    assert_eq! (::std::mem::align_of::<RootedContainer>() , 8usize , concat !
+                ( "Alignment of " , stringify ! ( RootedContainer ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const RootedContainer ) ) . root as * const _
-                as usize } , 0usize);
+                as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( RootedContainer ) ,
+                "::" , stringify ! ( root ) ));
 }
 impl Clone for RootedContainer {
     fn clone(&self) -> Self { *self }
@@ -66,11 +70,15 @@ pub struct PODButContainsDtor {
 }
 #[test]
 fn bindgen_test_layout_PODButContainsDtor() {
-    assert_eq!(::std::mem::size_of::<PODButContainsDtor>() , 4usize);
-    assert_eq! (::std::mem::align_of::<PODButContainsDtor>() , 4usize);
+    assert_eq!(::std::mem::size_of::<PODButContainsDtor>() , 4usize , concat !
+               ( "Size of: " , stringify ! ( PODButContainsDtor ) ));
+    assert_eq! (::std::mem::align_of::<PODButContainsDtor>() , 4usize , concat
+                ! ( "Alignment of " , stringify ! ( PODButContainsDtor ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const PODButContainsDtor ) ) . member as *
-                const _ as usize } , 0usize);
+                const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( PODButContainsDtor ) ,
+                "::" , stringify ! ( member ) ));
 }
 /** <div rustbindgen opaque> */
 #[repr(C)]
@@ -85,11 +93,15 @@ pub struct POD {
 }
 #[test]
 fn bindgen_test_layout_POD() {
-    assert_eq!(::std::mem::size_of::<POD>() , 4usize);
-    assert_eq! (::std::mem::align_of::<POD>() , 4usize);
+    assert_eq!(::std::mem::size_of::<POD>() , 4usize , concat ! (
+               "Size of: " , stringify ! ( POD ) ));
+    assert_eq! (::std::mem::align_of::<POD>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( POD ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const POD ) ) . opaque_member as * const _ as
-                usize } , 0usize);
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( POD ) , "::" ,
+                stringify ! ( opaque_member ) ));
 }
 impl Clone for POD {
     fn clone(&self) -> Self { *self }
@@ -127,8 +139,10 @@ pub struct Untemplated {
 }
 #[test]
 fn bindgen_test_layout_Untemplated() {
-    assert_eq!(::std::mem::size_of::<Untemplated>() , 1usize);
-    assert_eq! (::std::mem::align_of::<Untemplated>() , 1usize);
+    assert_eq!(::std::mem::size_of::<Untemplated>() , 1usize , concat ! (
+               "Size of: " , stringify ! ( Untemplated ) ));
+    assert_eq! (::std::mem::align_of::<Untemplated>() , 1usize , concat ! (
+                "Alignment of " , stringify ! ( Untemplated ) ));
 }
 impl Clone for Untemplated {
     fn clone(&self) -> Self { *self }
@@ -180,14 +194,22 @@ pub struct TemplateWithVar<T> {
 #[test]
 fn __bindgen_test_layout_template_1() {
     assert_eq!(::std::mem::size_of::<Foo<::std::os::raw::c_int, ::std::os::raw::c_int>>()
-               , 24usize);
+               , 24usize , concat ! (
+               "Size of template specialization: " , stringify ! (
+               Foo<::std::os::raw::c_int, ::std::os::raw::c_int> ) ));
     assert_eq!(::std::mem::align_of::<Foo<::std::os::raw::c_int, ::std::os::raw::c_int>>()
-               , 8usize);
+               , 8usize , concat ! (
+               "Alignment of template specialization: " , stringify ! (
+               Foo<::std::os::raw::c_int, ::std::os::raw::c_int> ) ));
 }
 #[test]
 fn __bindgen_test_layout_template_2() {
     assert_eq!(::std::mem::size_of::<WithDtor<::std::os::raw::c_int>>() ,
-               4usize);
+               4usize , concat ! (
+               "Size of template specialization: " , stringify ! (
+               WithDtor<::std::os::raw::c_int> ) ));
     assert_eq!(::std::mem::align_of::<WithDtor<::std::os::raw::c_int>>() ,
-               4usize);
+               4usize , concat ! (
+               "Alignment of template specialization: " , stringify ! (
+               WithDtor<::std::os::raw::c_int> ) ));
 }

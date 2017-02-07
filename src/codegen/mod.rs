@@ -866,8 +866,10 @@ impl CodeGenerator for CompInfo {
                 let item = quote_item!(ctx.ext_cx(),
                                        #[test]
                                        fn $fn_name() {
-                                           assert_eq!($size_of_expr, $size);
-                                           assert_eq!($align_of_expr, $align);
+                                           assert_eq!($size_of_expr, $size,
+                                                      concat!("Size of template specialization: ", stringify!($ident)));
+                                           assert_eq!($align_of_expr, $align,
+                                                      concat!("Alignment of template specialization: ", stringify!($ident)));
                                        })
                     .unwrap();
                 result.push(item);
@@ -1339,12 +1341,12 @@ impl CodeGenerator for CompInfo {
             if let Some(layout) = layout {
                 let fn_name = format!("bindgen_test_layout_{}", canonical_name);
                 let fn_name = ctx.rust_ident_raw(&fn_name);
-                let ident = ctx.rust_ident_raw(&canonical_name);
+                let type_name = ctx.rust_ident_raw(&canonical_name);
                 let prefix = ctx.trait_prefix();
                 let size_of_expr = quote_expr!(ctx.ext_cx(),
-                                ::$prefix::mem::size_of::<$ident>());
+                                ::$prefix::mem::size_of::<$type_name>());
                 let align_of_expr = quote_expr!(ctx.ext_cx(),
-                                ::$prefix::mem::align_of::<$ident>());
+                                ::$prefix::mem::align_of::<$type_name>());
                 let size = layout.size;
                 let align = layout.align;
 
@@ -1353,7 +1355,9 @@ impl CodeGenerator for CompInfo {
                     None
                 } else {
                     quote_item!(ctx.ext_cx(),
-                        assert_eq!($align_of_expr, $align);
+                        assert_eq!($align_of_expr,
+                                   $align,
+                                   concat!("Alignment of ", stringify!($type_name)));
                     )
                 };
 
@@ -1370,8 +1374,6 @@ impl CodeGenerator for CompInfo {
                 let check_field_offset = if should_skip_field_offset_checks {
                     None
                 } else {
-                    let type_name = ctx.rust_ident(&canonical_name);
-
                     let asserts = self.fields()
                     .iter()
                     .filter(|field| field.bitfield().is_none())
@@ -1382,7 +1384,9 @@ impl CodeGenerator for CompInfo {
                                 let field_name = ctx.rust_ident(name);
 
                                 quote_item!(ctx.ext_cx(),
-                                    assert_eq!(unsafe { &(*(0 as *const $type_name)).$field_name as *const _ as usize }, $field_offset);
+                                    assert_eq!(unsafe { &(*(0 as *const $type_name)).$field_name as *const _ as usize },
+                                               $field_offset,
+                                               concat!("Alignment of field: ", stringify!($type_name), "::", stringify!($field_name)));
                                 )
                             })
                         })
@@ -1394,7 +1398,9 @@ impl CodeGenerator for CompInfo {
                 let item = quote_item!(ctx.ext_cx(),
                     #[test]
                     fn $fn_name() {
-                        assert_eq!($size_of_expr, $size);
+                        assert_eq!($size_of_expr,
+                                   $size,
+                                   concat!("Size of: ", stringify!($type_name)));
 
                         $check_struct_align
                         $check_field_offset
@@ -2137,7 +2143,7 @@ impl ToRustTy for Type {
                         .map(|arg| arg.to_rust_ty(ctx))
                         .collect::<Vec<_>>();
 
-                    path.segments.last_mut().unwrap().parameters = if 
+                    path.segments.last_mut().unwrap().parameters = if
                         template_args.is_empty() {
                         None
                     } else {
@@ -2458,11 +2464,11 @@ mod utils {
     use aster;
     use ir::context::{BindgenContext, ItemId};
     use ir::item::{Item, ItemCanonicalPath};
+    use ir::function::FunctionSig;
     use ir::ty::TypeKind;
     use std::mem;
     use syntax::ast;
     use syntax::ptr::P;
-
 
     pub fn prepend_objc_header(ctx: &BindgenContext,
                                result: &mut Vec<P<ast::Item>>) {
@@ -2745,7 +2751,7 @@ mod utils {
     }
 
     pub fn fnsig_return_ty(ctx: &BindgenContext,
-                           sig: &super::FunctionSig)
+                           sig: &FunctionSig)
                            -> ast::FunctionRetTy {
         let return_item = ctx.resolve_item(sig.return_type());
         if let TypeKind::Void = *return_item.kind().expect_type().kind() {
@@ -2756,7 +2762,7 @@ mod utils {
     }
 
     pub fn fnsig_arguments(ctx: &BindgenContext,
-                           sig: &super::FunctionSig)
+                           sig: &FunctionSig)
                            -> Vec<ast::Arg> {
         use super::ToPtr;
         let mut unnamed_arguments = 0;

@@ -72,35 +72,58 @@ pub struct cmdline_token_hdr_cmdline_token_ops {
 #[test]
 fn bindgen_test_layout_cmdline_token_hdr_cmdline_token_ops() {
     assert_eq!(::std::mem::size_of::<cmdline_token_hdr_cmdline_token_ops>() ,
-               32usize);
+               32usize , concat ! (
+               "Size of: " , stringify ! ( cmdline_token_hdr_cmdline_token_ops
+               ) ));
     assert_eq! (::std::mem::align_of::<cmdline_token_hdr_cmdline_token_ops>()
-                , 8usize);
+                , 8usize , concat ! (
+                "Alignment of " , stringify ! (
+                cmdline_token_hdr_cmdline_token_ops ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const cmdline_token_hdr_cmdline_token_ops ) ) .
-                parse as * const _ as usize } , 0usize);
+                parse as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                cmdline_token_hdr_cmdline_token_ops ) , "::" , stringify ! (
+                parse ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const cmdline_token_hdr_cmdline_token_ops ) ) .
-                complete_get_nb as * const _ as usize } , 8usize);
+                complete_get_nb as * const _ as usize } , 8usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                cmdline_token_hdr_cmdline_token_ops ) , "::" , stringify ! (
+                complete_get_nb ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const cmdline_token_hdr_cmdline_token_ops ) ) .
-                complete_get_elt as * const _ as usize } , 16usize);
+                complete_get_elt as * const _ as usize } , 16usize , concat !
+                (
+                "Alignment of field: " , stringify ! (
+                cmdline_token_hdr_cmdline_token_ops ) , "::" , stringify ! (
+                complete_get_elt ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const cmdline_token_hdr_cmdline_token_ops ) ) .
-                get_help as * const _ as usize } , 24usize);
+                get_help as * const _ as usize } , 24usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                cmdline_token_hdr_cmdline_token_ops ) , "::" , stringify ! (
+                get_help ) ));
 }
 impl Clone for cmdline_token_hdr_cmdline_token_ops {
     fn clone(&self) -> Self { *self }
 }
 #[test]
 fn bindgen_test_layout_cmdline_token_hdr() {
-    assert_eq!(::std::mem::size_of::<cmdline_token_hdr>() , 16usize);
-    assert_eq! (::std::mem::align_of::<cmdline_token_hdr>() , 8usize);
+    assert_eq!(::std::mem::size_of::<cmdline_token_hdr>() , 16usize , concat !
+               ( "Size of: " , stringify ! ( cmdline_token_hdr ) ));
+    assert_eq! (::std::mem::align_of::<cmdline_token_hdr>() , 8usize , concat
+                ! ( "Alignment of " , stringify ! ( cmdline_token_hdr ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const cmdline_token_hdr ) ) . ops as * const _
-                as usize } , 0usize);
+                as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( cmdline_token_hdr ) ,
+                "::" , stringify ! ( ops ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const cmdline_token_hdr ) ) . offset as * const
-                _ as usize } , 8usize);
+                _ as usize } , 8usize , concat ! (
+                "Alignment of field: " , stringify ! ( cmdline_token_hdr ) ,
+                "::" , stringify ! ( offset ) ));
 }
 impl Clone for cmdline_token_hdr {
     fn clone(&self) -> Self { *self }
@@ -125,11 +148,17 @@ pub struct cmdline_token_num_data {
 }
 #[test]
 fn bindgen_test_layout_cmdline_token_num_data() {
-    assert_eq!(::std::mem::size_of::<cmdline_token_num_data>() , 4usize);
-    assert_eq! (::std::mem::align_of::<cmdline_token_num_data>() , 4usize);
+    assert_eq!(::std::mem::size_of::<cmdline_token_num_data>() , 4usize ,
+               concat ! ( "Size of: " , stringify ! ( cmdline_token_num_data )
+               ));
+    assert_eq! (::std::mem::align_of::<cmdline_token_num_data>() , 4usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( cmdline_token_num_data ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const cmdline_token_num_data ) ) . type_ as *
-                const _ as usize } , 0usize);
+                const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( cmdline_token_num_data
+                ) , "::" , stringify ! ( type_ ) ));
 }
 impl Clone for cmdline_token_num_data {
     fn clone(&self) -> Self { *self }
@@ -142,14 +171,20 @@ pub struct cmdline_token_num {
 }
 #[test]
 fn bindgen_test_layout_cmdline_token_num() {
-    assert_eq!(::std::mem::size_of::<cmdline_token_num>() , 24usize);
-    assert_eq! (::std::mem::align_of::<cmdline_token_num>() , 8usize);
+    assert_eq!(::std::mem::size_of::<cmdline_token_num>() , 24usize , concat !
+               ( "Size of: " , stringify ! ( cmdline_token_num ) ));
+    assert_eq! (::std::mem::align_of::<cmdline_token_num>() , 8usize , concat
+                ! ( "Alignment of " , stringify ! ( cmdline_token_num ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const cmdline_token_num ) ) . hdr as * const _
-                as usize } , 0usize);
+                as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( cmdline_token_num ) ,
+                "::" , stringify ! ( hdr ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const cmdline_token_num ) ) . num_data as *
-                const _ as usize } , 16usize);
+                const _ as usize } , 16usize , concat ! (
+                "Alignment of field: " , stringify ! ( cmdline_token_num ) ,
+                "::" , stringify ! ( num_data ) ));
 }
 impl Clone for cmdline_token_num {
     fn clone(&self) -> Self { *self }

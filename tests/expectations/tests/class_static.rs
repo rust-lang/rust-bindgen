@@ -20,8 +20,10 @@ extern "C" {
 }
 #[test]
 fn bindgen_test_layout_MyClass() {
-    assert_eq!(::std::mem::size_of::<MyClass>() , 1usize);
-    assert_eq! (::std::mem::align_of::<MyClass>() , 1usize);
+    assert_eq!(::std::mem::size_of::<MyClass>() , 1usize , concat ! (
+               "Size of: " , stringify ! ( MyClass ) ));
+    assert_eq! (::std::mem::align_of::<MyClass>() , 1usize , concat ! (
+                "Alignment of " , stringify ! ( MyClass ) ));
 }
 impl Clone for MyClass {
     fn clone(&self) -> Self { *self }

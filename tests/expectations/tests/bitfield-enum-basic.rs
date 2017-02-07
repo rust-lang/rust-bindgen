@@ -69,8 +69,10 @@ impl ::std::ops::BitOr<Dummy__bindgen_ty_1> for Dummy__bindgen_ty_1 {
 pub struct Dummy__bindgen_ty_1(pub ::std::os::raw::c_uint);
 #[test]
 fn bindgen_test_layout_Dummy() {
-    assert_eq!(::std::mem::size_of::<Dummy>() , 1usize);
-    assert_eq! (::std::mem::align_of::<Dummy>() , 1usize);
+    assert_eq!(::std::mem::size_of::<Dummy>() , 1usize , concat ! (
+               "Size of: " , stringify ! ( Dummy ) ));
+    assert_eq! (::std::mem::align_of::<Dummy>() , 1usize , concat ! (
+                "Alignment of " , stringify ! ( Dummy ) ));
 }
 impl Clone for Dummy {
     fn clone(&self) -> Self { *self }

@@ -53,8 +53,10 @@ pub struct rte_kni_fifo {
 }
 #[test]
 fn bindgen_test_layout_rte_kni_fifo() {
-    assert_eq!(::std::mem::size_of::<rte_kni_fifo>() , 16usize);
-    assert_eq! (::std::mem::align_of::<rte_kni_fifo>() , 8usize);
+    assert_eq!(::std::mem::size_of::<rte_kni_fifo>() , 16usize , concat ! (
+               "Size of: " , stringify ! ( rte_kni_fifo ) ));
+    assert_eq! (::std::mem::align_of::<rte_kni_fifo>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( rte_kni_fifo ) ));
 }
 impl Clone for rte_kni_fifo {
     fn clone(&self) -> Self { *self }
@@ -69,11 +71,15 @@ pub struct rte_eth_link {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_link() {
-    assert_eq!(::std::mem::size_of::<rte_eth_link>() , 8usize);
-    assert_eq! (::std::mem::align_of::<rte_eth_link>() , 8usize);
+    assert_eq!(::std::mem::size_of::<rte_eth_link>() , 8usize , concat ! (
+               "Size of: " , stringify ! ( rte_eth_link ) ));
+    assert_eq! (::std::mem::align_of::<rte_eth_link>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( rte_eth_link ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_eth_link ) ) . link_speed as * const
-                _ as usize } , 0usize);
+                _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_eth_link ) , "::" ,
+                stringify ! ( link_speed ) ));
 }
 impl Clone for rte_eth_link {
     fn clone(&self) -> Self { *self }

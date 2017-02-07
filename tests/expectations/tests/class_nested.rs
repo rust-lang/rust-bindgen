@@ -16,22 +16,30 @@ pub struct A_B {
 }
 #[test]
 fn bindgen_test_layout_A_B() {
-    assert_eq!(::std::mem::size_of::<A_B>() , 4usize);
-    assert_eq! (::std::mem::align_of::<A_B>() , 4usize);
+    assert_eq!(::std::mem::size_of::<A_B>() , 4usize , concat ! (
+               "Size of: " , stringify ! ( A_B ) ));
+    assert_eq! (::std::mem::align_of::<A_B>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( A_B ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const A_B ) ) . member_b as * const _ as usize
-                } , 0usize);
+                } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( A_B ) , "::" ,
+                stringify ! ( member_b ) ));
 }
 impl Clone for A_B {
     fn clone(&self) -> Self { *self }
 }
 #[test]
 fn bindgen_test_layout_A() {
-    assert_eq!(::std::mem::size_of::<A>() , 4usize);
-    assert_eq! (::std::mem::align_of::<A>() , 4usize);
+    assert_eq!(::std::mem::size_of::<A>() , 4usize , concat ! (
+               "Size of: " , stringify ! ( A ) ));
+    assert_eq! (::std::mem::align_of::<A>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( A ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const A ) ) . member_a as * const _ as usize }
-                , 0usize);
+                , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( A ) , "::" , stringify
+                ! ( member_a ) ));
 }
 impl Clone for A {
     fn clone(&self) -> Self { *self }
@@ -47,11 +55,15 @@ pub struct D {
 }
 #[test]
 fn bindgen_test_layout_D() {
-    assert_eq!(::std::mem::size_of::<D>() , 4usize);
-    assert_eq! (::std::mem::align_of::<D>() , 4usize);
+    assert_eq!(::std::mem::size_of::<D>() , 4usize , concat ! (
+               "Size of: " , stringify ! ( D ) ));
+    assert_eq! (::std::mem::align_of::<D>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( D ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const D ) ) . member as * const _ as usize } ,
-                0usize);
+                0usize , concat ! (
+                "Alignment of field: " , stringify ! ( D ) , "::" , stringify
+                ! ( member ) ));
 }
 impl Clone for D {
     fn clone(&self) -> Self { *self }

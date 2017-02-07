@@ -69,8 +69,10 @@ pub struct ErrorResult {
 }
 #[test]
 fn bindgen_test_layout_ErrorResult() {
-    assert_eq!(::std::mem::size_of::<ErrorResult>() , 24usize);
-    assert_eq! (::std::mem::align_of::<ErrorResult>() , 8usize);
+    assert_eq!(::std::mem::size_of::<ErrorResult>() , 24usize , concat ! (
+               "Size of: " , stringify ! ( ErrorResult ) ));
+    assert_eq! (::std::mem::align_of::<ErrorResult>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( ErrorResult ) ));
 }
 impl Clone for ErrorResult {
     fn clone(&self) -> Self { *self }
@@ -78,7 +80,11 @@ impl Clone for ErrorResult {
 #[test]
 fn __bindgen_test_layout_template_1() {
     assert_eq!(::std::mem::size_of::<TErrorResult<::std::os::raw::c_int>>() ,
-               24usize);
+               24usize , concat ! (
+               "Size of template specialization: " , stringify ! (
+               TErrorResult<::std::os::raw::c_int> ) ));
     assert_eq!(::std::mem::align_of::<TErrorResult<::std::os::raw::c_int>>() ,
-               8usize);
+               8usize , concat ! (
+               "Alignment of template specialization: " , stringify ! (
+               TErrorResult<::std::os::raw::c_int> ) ));
 }

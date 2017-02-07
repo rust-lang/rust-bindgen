@@ -73,25 +73,38 @@ pub struct rte_mempool_ops {
 }
 #[test]
 fn bindgen_test_layout_rte_mempool_ops() {
-    assert_eq!(::std::mem::size_of::<rte_mempool_ops>() , 128usize);
+    assert_eq!(::std::mem::size_of::<rte_mempool_ops>() , 128usize , concat !
+               ( "Size of: " , stringify ! ( rte_mempool_ops ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mempool_ops ) ) . name as * const _
-                as usize } , 0usize);
+                as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mempool_ops ) ,
+                "::" , stringify ! ( name ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mempool_ops ) ) . alloc as * const _
-                as usize } , 32usize);
+                as usize } , 32usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mempool_ops ) ,
+                "::" , stringify ! ( alloc ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mempool_ops ) ) . free as * const _
-                as usize } , 40usize);
+                as usize } , 40usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mempool_ops ) ,
+                "::" , stringify ! ( free ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mempool_ops ) ) . enqueue as * const
-                _ as usize } , 48usize);
+                _ as usize } , 48usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mempool_ops ) ,
+                "::" , stringify ! ( enqueue ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mempool_ops ) ) . dequeue as * const
-                _ as usize } , 56usize);
+                _ as usize } , 56usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mempool_ops ) ,
+                "::" , stringify ! ( dequeue ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mempool_ops ) ) . get_count as *
-                const _ as usize } , 64usize);
+                const _ as usize } , 64usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mempool_ops ) ,
+                "::" , stringify ! ( get_count ) ));
 }
 impl Clone for rte_mempool_ops {
     fn clone(&self) -> Self { *self }
@@ -107,11 +120,15 @@ pub struct _bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<_bindgen_ty_1>() , 4usize);
-    assert_eq! (::std::mem::align_of::<_bindgen_ty_1>() , 4usize);
+    assert_eq!(::std::mem::size_of::<_bindgen_ty_1>() , 4usize , concat ! (
+               "Size of: " , stringify ! ( _bindgen_ty_1 ) ));
+    assert_eq! (::std::mem::align_of::<_bindgen_ty_1>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( _bindgen_ty_1 ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const _bindgen_ty_1 ) ) . locked as * const _
-                as usize } , 0usize);
+                as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( _bindgen_ty_1 ) , "::"
+                , stringify ! ( locked ) ));
 }
 impl Clone for _bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
@@ -141,16 +158,24 @@ pub struct rte_mempool_ops_table {
 }
 #[test]
 fn bindgen_test_layout_rte_mempool_ops_table() {
-    assert_eq!(::std::mem::size_of::<rte_mempool_ops_table>() , 2112usize);
+    assert_eq!(::std::mem::size_of::<rte_mempool_ops_table>() , 2112usize ,
+               concat ! ( "Size of: " , stringify ! ( rte_mempool_ops_table )
+               ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mempool_ops_table ) ) . sl as * const
-                _ as usize } , 0usize);
+                _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mempool_ops_table )
+                , "::" , stringify ! ( sl ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mempool_ops_table ) ) . num_ops as *
-                const _ as usize } , 4usize);
+                const _ as usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mempool_ops_table )
+                , "::" , stringify ! ( num_ops ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mempool_ops_table ) ) . ops as *
-                const _ as usize } , 64usize);
+                const _ as usize } , 64usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mempool_ops_table )
+                , "::" , stringify ! ( ops ) ));
 }
 impl Clone for rte_mempool_ops_table {
     fn clone(&self) -> Self { *self }
@@ -176,30 +201,47 @@ pub struct malloc_heap__bindgen_ty_1 {
 pub struct malloc_heap__bindgen_ty_1_malloc_elem([u8; 0]);
 #[test]
 fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<malloc_heap__bindgen_ty_1>() , 8usize);
-    assert_eq! (::std::mem::align_of::<malloc_heap__bindgen_ty_1>() , 8usize);
+    assert_eq!(::std::mem::size_of::<malloc_heap__bindgen_ty_1>() , 8usize ,
+               concat ! (
+               "Size of: " , stringify ! ( malloc_heap__bindgen_ty_1 ) ));
+    assert_eq! (::std::mem::align_of::<malloc_heap__bindgen_ty_1>() , 8usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( malloc_heap__bindgen_ty_1 )
+                ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const malloc_heap__bindgen_ty_1 ) ) . lh_first
-                as * const _ as usize } , 0usize);
+                as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                malloc_heap__bindgen_ty_1 ) , "::" , stringify ! ( lh_first )
+                ));
 }
 impl Clone for malloc_heap__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[test]
 fn bindgen_test_layout_malloc_heap() {
-    assert_eq!(::std::mem::size_of::<malloc_heap>() , 128usize);
+    assert_eq!(::std::mem::size_of::<malloc_heap>() , 128usize , concat ! (
+               "Size of: " , stringify ! ( malloc_heap ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const malloc_heap ) ) . lock as * const _ as
-                usize } , 0usize);
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( malloc_heap ) , "::" ,
+                stringify ! ( lock ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const malloc_heap ) ) . free_head as * const _
-                as usize } , 8usize);
+                as usize } , 8usize , concat ! (
+                "Alignment of field: " , stringify ! ( malloc_heap ) , "::" ,
+                stringify ! ( free_head ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const malloc_heap ) ) . alloc_count as * const
-                _ as usize } , 112usize);
+                _ as usize } , 112usize , concat ! (
+                "Alignment of field: " , stringify ! ( malloc_heap ) , "::" ,
+                stringify ! ( alloc_count ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const malloc_heap ) ) . total_size as * const _
-                as usize } , 120usize);
+                as usize } , 120usize , concat ! (
+                "Alignment of field: " , stringify ! ( malloc_heap ) , "::" ,
+                stringify ! ( total_size ) ));
 }
 impl Clone for malloc_heap {
     fn clone(&self) -> Self { *self }

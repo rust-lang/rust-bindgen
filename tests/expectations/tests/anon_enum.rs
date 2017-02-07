@@ -16,14 +16,20 @@ pub const Test_T_NONE: Test__bindgen_ty_1 = Test__bindgen_ty_1::T_NONE;
 pub enum Test__bindgen_ty_1 { T_NONE = 0, }
 #[test]
 fn bindgen_test_layout_Test() {
-    assert_eq!(::std::mem::size_of::<Test>() , 8usize);
-    assert_eq! (::std::mem::align_of::<Test>() , 4usize);
+    assert_eq!(::std::mem::size_of::<Test>() , 8usize , concat ! (
+               "Size of: " , stringify ! ( Test ) ));
+    assert_eq! (::std::mem::align_of::<Test>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( Test ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const Test ) ) . foo as * const _ as usize } ,
-                0usize);
+                0usize , concat ! (
+                "Alignment of field: " , stringify ! ( Test ) , "::" ,
+                stringify ! ( foo ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const Test ) ) . bar as * const _ as usize } ,
-                4usize);
+                4usize , concat ! (
+                "Alignment of field: " , stringify ! ( Test ) , "::" ,
+                stringify ! ( bar ) ));
 }
 impl Clone for Test {
     fn clone(&self) -> Self { *self }

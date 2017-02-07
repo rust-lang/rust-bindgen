@@ -15,14 +15,20 @@ pub struct JS_shadow_Zone {
 }
 #[test]
 fn bindgen_test_layout_JS_shadow_Zone() {
-    assert_eq!(::std::mem::size_of::<JS_shadow_Zone>() , 8usize);
-    assert_eq! (::std::mem::align_of::<JS_shadow_Zone>() , 4usize);
+    assert_eq!(::std::mem::size_of::<JS_shadow_Zone>() , 8usize , concat ! (
+               "Size of: " , stringify ! ( JS_shadow_Zone ) ));
+    assert_eq! (::std::mem::align_of::<JS_shadow_Zone>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( JS_shadow_Zone ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const JS_shadow_Zone ) ) . x as * const _ as
-                usize } , 0usize);
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( JS_shadow_Zone ) , "::"
+                , stringify ! ( x ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const JS_shadow_Zone ) ) . y as * const _ as
-                usize } , 4usize);
+                usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! ( JS_shadow_Zone ) , "::"
+                , stringify ! ( y ) ));
 }
 impl Clone for JS_shadow_Zone {
     fn clone(&self) -> Self { *self }

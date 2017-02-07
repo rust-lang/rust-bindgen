@@ -14,8 +14,10 @@ pub struct C {
 }
 #[test]
 fn bindgen_test_layout_C() {
-    assert_eq!(::std::mem::size_of::<C>() , 8usize);
-    assert_eq! (::std::mem::align_of::<C>() , 8usize);
+    assert_eq!(::std::mem::size_of::<C>() , 8usize , concat ! (
+               "Size of: " , stringify ! ( C ) ));
+    assert_eq! (::std::mem::align_of::<C>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( C ) ));
 }
 impl Clone for C {
     fn clone(&self) -> Self { *self }

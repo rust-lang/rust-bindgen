@@ -17,8 +17,10 @@ pub mod root {
         }
         #[test]
         fn bindgen_test_layout_Value() {
-            assert_eq!(::std::mem::size_of::<Value>() , 1usize);
-            assert_eq! (::std::mem::align_of::<Value>() , 1usize);
+            assert_eq!(::std::mem::size_of::<Value>() , 1usize , concat ! (
+                       "Size of: " , stringify ! ( Value ) ));
+            assert_eq! (::std::mem::align_of::<Value>() , 1usize , concat ! (
+                        "Alignment of " , stringify ! ( Value ) ));
         }
         extern "C" {
             #[link_name = "_ZN2JS5Value1aE10JSWhyMagic"]

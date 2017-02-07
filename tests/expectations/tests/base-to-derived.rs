@@ -11,8 +11,10 @@ pub struct false_type {
 }
 #[test]
 fn bindgen_test_layout_false_type() {
-    assert_eq!(::std::mem::size_of::<false_type>() , 1usize);
-    assert_eq! (::std::mem::align_of::<false_type>() , 1usize);
+    assert_eq!(::std::mem::size_of::<false_type>() , 1usize , concat ! (
+               "Size of: " , stringify ! ( false_type ) ));
+    assert_eq! (::std::mem::align_of::<false_type>() , 1usize , concat ! (
+                "Alignment of " , stringify ! ( false_type ) ));
 }
 impl Clone for false_type {
     fn clone(&self) -> Self { *self }

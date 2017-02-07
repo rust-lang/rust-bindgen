@@ -46,7 +46,8 @@ pub struct header {
 }
 #[test]
 fn bindgen_test_layout_header() {
-    assert_eq!(::std::mem::size_of::<header>() , 16usize);
+    assert_eq!(::std::mem::size_of::<header>() , 16usize , concat ! (
+               "Size of: " , stringify ! ( header ) ));
 }
 impl Clone for header {
     fn clone(&self) -> Self { *self }

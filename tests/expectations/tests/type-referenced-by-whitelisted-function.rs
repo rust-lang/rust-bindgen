@@ -11,11 +11,15 @@ pub struct dl_phdr_info {
 }
 #[test]
 fn bindgen_test_layout_dl_phdr_info() {
-    assert_eq!(::std::mem::size_of::<dl_phdr_info>() , 4usize);
-    assert_eq! (::std::mem::align_of::<dl_phdr_info>() , 4usize);
+    assert_eq!(::std::mem::size_of::<dl_phdr_info>() , 4usize , concat ! (
+               "Size of: " , stringify ! ( dl_phdr_info ) ));
+    assert_eq! (::std::mem::align_of::<dl_phdr_info>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( dl_phdr_info ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const dl_phdr_info ) ) . x as * const _ as
-                usize } , 0usize);
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( dl_phdr_info ) , "::" ,
+                stringify ! ( x ) ));
 }
 impl Clone for dl_phdr_info {
     fn clone(&self) -> Self { *self }

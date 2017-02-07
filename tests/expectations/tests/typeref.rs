@@ -35,11 +35,15 @@ pub struct nsFoo {
 }
 #[test]
 fn bindgen_test_layout_nsFoo() {
-    assert_eq!(::std::mem::size_of::<nsFoo>() , 8usize);
-    assert_eq! (::std::mem::align_of::<nsFoo>() , 8usize);
+    assert_eq!(::std::mem::size_of::<nsFoo>() , 8usize , concat ! (
+               "Size of: " , stringify ! ( nsFoo ) ));
+    assert_eq! (::std::mem::align_of::<nsFoo>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( nsFoo ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const nsFoo ) ) . mBar as * const _ as usize }
-                , 0usize);
+                , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( nsFoo ) , "::" ,
+                stringify ! ( mBar ) ));
 }
 impl Clone for nsFoo {
     fn clone(&self) -> Self { *self }
@@ -51,11 +55,17 @@ pub struct mozilla_FragmentOrURL {
 }
 #[test]
 fn bindgen_test_layout_mozilla_FragmentOrURL() {
-    assert_eq!(::std::mem::size_of::<mozilla_FragmentOrURL>() , 1usize);
-    assert_eq! (::std::mem::align_of::<mozilla_FragmentOrURL>() , 1usize);
+    assert_eq!(::std::mem::size_of::<mozilla_FragmentOrURL>() , 1usize ,
+               concat ! ( "Size of: " , stringify ! ( mozilla_FragmentOrURL )
+               ));
+    assert_eq! (::std::mem::align_of::<mozilla_FragmentOrURL>() , 1usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( mozilla_FragmentOrURL ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const mozilla_FragmentOrURL ) ) . mIsLocalRef
-                as * const _ as usize } , 0usize);
+                as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( mozilla_FragmentOrURL )
+                , "::" , stringify ! ( mIsLocalRef ) ));
 }
 impl Clone for mozilla_FragmentOrURL {
     fn clone(&self) -> Self { *self }
@@ -67,8 +77,10 @@ pub struct mozilla_Position {
 }
 #[test]
 fn bindgen_test_layout_mozilla_Position() {
-    assert_eq!(::std::mem::size_of::<mozilla_Position>() , 1usize);
-    assert_eq! (::std::mem::align_of::<mozilla_Position>() , 1usize);
+    assert_eq!(::std::mem::size_of::<mozilla_Position>() , 1usize , concat ! (
+               "Size of: " , stringify ! ( mozilla_Position ) ));
+    assert_eq! (::std::mem::align_of::<mozilla_Position>() , 1usize , concat !
+                ( "Alignment of " , stringify ! ( mozilla_Position ) ));
 }
 impl Clone for mozilla_Position {
     fn clone(&self) -> Self { *self }
@@ -94,11 +106,15 @@ pub struct Bar {
 }
 #[test]
 fn bindgen_test_layout_Bar() {
-    assert_eq!(::std::mem::size_of::<Bar>() , 8usize);
-    assert_eq! (::std::mem::align_of::<Bar>() , 8usize);
+    assert_eq!(::std::mem::size_of::<Bar>() , 8usize , concat ! (
+               "Size of: " , stringify ! ( Bar ) ));
+    assert_eq! (::std::mem::align_of::<Bar>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( Bar ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const Bar ) ) . mFoo as * const _ as usize } ,
-                0usize);
+                0usize , concat ! (
+                "Alignment of field: " , stringify ! ( Bar ) , "::" ,
+                stringify ! ( mFoo ) ));
 }
 impl Clone for Bar {
     fn clone(&self) -> Self { *self }

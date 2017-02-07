@@ -45,11 +45,15 @@ pub struct _bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<_bindgen_ty_1>() , 2usize);
-    assert_eq! (::std::mem::align_of::<_bindgen_ty_1>() , 2usize);
+    assert_eq!(::std::mem::size_of::<_bindgen_ty_1>() , 2usize , concat ! (
+               "Size of: " , stringify ! ( _bindgen_ty_1 ) ));
+    assert_eq! (::std::mem::align_of::<_bindgen_ty_1>() , 2usize , concat ! (
+                "Alignment of " , stringify ! ( _bindgen_ty_1 ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const _bindgen_ty_1 ) ) . cnt as * const _ as
-                usize } , 0usize);
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( _bindgen_ty_1 ) , "::"
+                , stringify ! ( cnt ) ));
 }
 impl Clone for _bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
@@ -124,14 +128,22 @@ pub struct rte_mbuf__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_1>() , 2usize);
-    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_1>() , 2usize);
+    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_1>() , 2usize ,
+               concat ! ( "Size of: " , stringify ! ( rte_mbuf__bindgen_ty_1 )
+               ));
+    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_1>() , 2usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( rte_mbuf__bindgen_ty_1 ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf__bindgen_ty_1 ) ) .
-                refcnt_atomic as * const _ as usize } , 0usize);
+                refcnt_atomic as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_1
+                ) , "::" , stringify ! ( refcnt_atomic ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf__bindgen_ty_1 ) ) . refcnt as *
-                const _ as usize } , 0usize);
+                const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_1
+                ) , "::" , stringify ! ( refcnt ) ));
 }
 impl Clone for rte_mbuf__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
@@ -152,9 +164,13 @@ pub struct rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_2__bindgen_ty_1() {
     assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_2__bindgen_ty_1>() ,
-               4usize);
+               4usize , concat ! (
+               "Size of: " , stringify ! (
+               rte_mbuf__bindgen_ty_2__bindgen_ty_1 ) ));
     assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_2__bindgen_ty_1>()
-                , 4usize);
+                , 4usize , concat ! (
+                "Alignment of " , stringify ! (
+                rte_mbuf__bindgen_ty_2__bindgen_ty_1 ) ));
 }
 impl Clone for rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
@@ -253,11 +269,17 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_2() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_2>() , 4usize);
-    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_2>() , 4usize);
+    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_2>() , 4usize ,
+               concat ! ( "Size of: " , stringify ! ( rte_mbuf__bindgen_ty_2 )
+               ));
+    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_2>() , 4usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( rte_mbuf__bindgen_ty_2 ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf__bindgen_ty_2 ) ) . packet_type
-                as * const _ as usize } , 0usize);
+                as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_2
+                ) , "::" , stringify ! ( packet_type ) ));
 }
 impl Clone for rte_mbuf__bindgen_ty_2 {
     fn clone(&self) -> Self { *self }
@@ -297,21 +319,33 @@ pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1() {
     assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1>()
-               , 4usize);
+               , 4usize , concat ! (
+               "Size of: " , stringify ! (
+               rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1
+               ) ));
     assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1>()
-                , 2usize);
+                , 2usize , concat ! (
+                "Alignment of " , stringify ! (
+                rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1
+                ) ));
     assert_eq! (unsafe {
                 & (
                 * (
                 0 as * const
                 rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1
-                ) ) . hash as * const _ as usize } , 0usize);
+                ) ) . hash as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1
+                ) , "::" , stringify ! ( hash ) ));
     assert_eq! (unsafe {
                 & (
                 * (
                 0 as * const
                 rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1
-                ) ) . id as * const _ as usize } , 2usize);
+                ) ) . id as * const _ as usize } , 2usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1
+                ) , "::" , stringify ! ( id ) ));
 }
 impl Clone for
  rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {
@@ -320,15 +354,22 @@ impl Clone for
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1() {
     assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1>()
-               , 4usize);
+               , 4usize , concat ! (
+               "Size of: " , stringify ! (
+               rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 ) ));
     assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1>()
-                , 4usize);
+                , 4usize , concat ! (
+                "Alignment of " , stringify ! (
+                rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 ) ));
     assert_eq! (unsafe {
                 & (
                 * (
                 0 as * const
                 rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 ) ) . lo as
-                * const _ as usize } , 0usize);
+                * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 ) , "::" ,
+                stringify ! ( lo ) ));
 }
 impl Clone for rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
@@ -336,12 +377,19 @@ impl Clone for rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1() {
     assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1>() ,
-               8usize);
+               8usize , concat ! (
+               "Size of: " , stringify ! (
+               rte_mbuf__bindgen_ty_3__bindgen_ty_1 ) ));
     assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1>()
-                , 4usize);
+                , 4usize , concat ! (
+                "Alignment of " , stringify ! (
+                rte_mbuf__bindgen_ty_3__bindgen_ty_1 ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf__bindgen_ty_3__bindgen_ty_1 ) )
-                . hi as * const _ as usize } , 4usize);
+                . hi as * const _ as usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_mbuf__bindgen_ty_3__bindgen_ty_1 ) , "::" , stringify ! (
+                hi ) ));
 }
 impl Clone for rte_mbuf__bindgen_ty_3__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
@@ -355,35 +403,57 @@ pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_2 {
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_2() {
     assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_2>() ,
-               8usize);
+               8usize , concat ! (
+               "Size of: " , stringify ! (
+               rte_mbuf__bindgen_ty_3__bindgen_ty_2 ) ));
     assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_2>()
-                , 4usize);
+                , 4usize , concat ! (
+                "Alignment of " , stringify ! (
+                rte_mbuf__bindgen_ty_3__bindgen_ty_2 ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf__bindgen_ty_3__bindgen_ty_2 ) )
-                . lo as * const _ as usize } , 0usize);
+                . lo as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_mbuf__bindgen_ty_3__bindgen_ty_2 ) , "::" , stringify ! (
+                lo ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf__bindgen_ty_3__bindgen_ty_2 ) )
-                . hi as * const _ as usize } , 4usize);
+                . hi as * const _ as usize } , 4usize , concat ! (
+                "Alignment of field: " , stringify ! (
+                rte_mbuf__bindgen_ty_3__bindgen_ty_2 ) , "::" , stringify ! (
+                hi ) ));
 }
 impl Clone for rte_mbuf__bindgen_ty_3__bindgen_ty_2 {
     fn clone(&self) -> Self { *self }
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_3() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_3>() , 8usize);
-    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_3>() , 4usize);
+    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_3>() , 8usize ,
+               concat ! ( "Size of: " , stringify ! ( rte_mbuf__bindgen_ty_3 )
+               ));
+    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_3>() , 4usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( rte_mbuf__bindgen_ty_3 ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf__bindgen_ty_3 ) ) . rss as *
-                const _ as usize } , 0usize);
+                const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_3
+                ) , "::" , stringify ! ( rss ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf__bindgen_ty_3 ) ) . fdir as *
-                const _ as usize } , 0usize);
+                const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_3
+                ) , "::" , stringify ! ( fdir ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf__bindgen_ty_3 ) ) . sched as *
-                const _ as usize } , 0usize);
+                const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_3
+                ) , "::" , stringify ! ( sched ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf__bindgen_ty_3 ) ) . usr as *
-                const _ as usize } , 0usize);
+                const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_3
+                ) , "::" , stringify ! ( usr ) ));
 }
 impl Clone for rte_mbuf__bindgen_ty_3 {
     fn clone(&self) -> Self { *self }
@@ -399,14 +469,22 @@ pub struct rte_mbuf__bindgen_ty_4 {
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_4() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_4>() , 8usize);
-    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_4>() , 8usize);
+    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_4>() , 8usize ,
+               concat ! ( "Size of: " , stringify ! ( rte_mbuf__bindgen_ty_4 )
+               ));
+    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_4>() , 8usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( rte_mbuf__bindgen_ty_4 ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf__bindgen_ty_4 ) ) . userdata as
-                * const _ as usize } , 0usize);
+                * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_4
+                ) , "::" , stringify ! ( userdata ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf__bindgen_ty_4 ) ) . udata64 as *
-                const _ as usize } , 0usize);
+                const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_4
+                ) , "::" , stringify ! ( udata64 ) ));
 }
 impl Clone for rte_mbuf__bindgen_ty_4 {
     fn clone(&self) -> Self { *self }
@@ -430,9 +508,13 @@ pub struct rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_5__bindgen_ty_1() {
     assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_5__bindgen_ty_1>() ,
-               8usize);
+               8usize , concat ! (
+               "Size of: " , stringify ! (
+               rte_mbuf__bindgen_ty_5__bindgen_ty_1 ) ));
     assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_5__bindgen_ty_1>()
-                , 8usize);
+                , 8usize , concat ! (
+                "Alignment of " , stringify ! (
+                rte_mbuf__bindgen_ty_5__bindgen_ty_1 ) ));
 }
 impl Clone for rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
@@ -521,81 +603,130 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_5() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_5>() , 8usize);
-    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_5>() , 8usize);
+    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_5>() , 8usize ,
+               concat ! ( "Size of: " , stringify ! ( rte_mbuf__bindgen_ty_5 )
+               ));
+    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_5>() , 8usize ,
+                concat ! (
+                "Alignment of " , stringify ! ( rte_mbuf__bindgen_ty_5 ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf__bindgen_ty_5 ) ) . tx_offload
-                as * const _ as usize } , 0usize);
+                as * const _ as usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_5
+                ) , "::" , stringify ! ( tx_offload ) ));
 }
 impl Clone for rte_mbuf__bindgen_ty_5 {
     fn clone(&self) -> Self { *self }
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf>() , 128usize);
+    assert_eq!(::std::mem::size_of::<rte_mbuf>() , 128usize , concat ! (
+               "Size of: " , stringify ! ( rte_mbuf ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . cacheline0 as * const _ as
-                usize } , 0usize);
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( cacheline0 ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . buf_addr as * const _ as
-                usize } , 0usize);
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( buf_addr ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . buf_physaddr as * const _
-                as usize } , 8usize);
+                as usize } , 8usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( buf_physaddr ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . buf_len as * const _ as
-                usize } , 16usize);
+                usize } , 16usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( buf_len ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . rearm_data as * const _ as
-                usize } , 18usize);
+                usize } , 18usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( rearm_data ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . data_off as * const _ as
-                usize } , 18usize);
+                usize } , 18usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( data_off ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . nb_segs as * const _ as
-                usize } , 22usize);
+                usize } , 22usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( nb_segs ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . port as * const _ as usize
-                } , 23usize);
+                } , 23usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( port ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . ol_flags as * const _ as
-                usize } , 24usize);
+                usize } , 24usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( ol_flags ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . rx_descriptor_fields1 as *
-                const _ as usize } , 32usize);
+                const _ as usize } , 32usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( rx_descriptor_fields1 ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . pkt_len as * const _ as
-                usize } , 36usize);
+                usize } , 36usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( pkt_len ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . data_len as * const _ as
-                usize } , 40usize);
+                usize } , 40usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( data_len ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . vlan_tci as * const _ as
-                usize } , 42usize);
+                usize } , 42usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( vlan_tci ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . hash as * const _ as usize
-                } , 44usize);
+                } , 44usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( hash ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . seqn as * const _ as usize
-                } , 52usize);
+                } , 52usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( seqn ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . vlan_tci_outer as * const
-                _ as usize } , 56usize);
+                _ as usize } , 56usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( vlan_tci_outer ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . cacheline1 as * const _ as
-                usize } , 64usize);
+                usize } , 64usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( cacheline1 ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . pool as * const _ as usize
-                } , 72usize);
+                } , 72usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( pool ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . next as * const _ as usize
-                } , 80usize);
+                } , 80usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( next ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . priv_size as * const _ as
-                usize } , 96usize);
+                usize } , 96usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( priv_size ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const rte_mbuf ) ) . timesync as * const _ as
-                usize } , 98usize);
+                usize } , 98usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
+                stringify ! ( timesync ) ));
 }
 impl Clone for rte_mbuf {
     fn clone(&self) -> Self { *self }
