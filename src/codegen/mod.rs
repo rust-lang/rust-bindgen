@@ -521,7 +521,7 @@ impl CodeGenerator for Type {
             TypeKind::Pointer(..) |
             TypeKind::BlockPointer |
             TypeKind::Reference(..) |
-            TypeKind::TemplateRef(..) |
+            TypeKind::TemplateInstantiation(..) |
             TypeKind::Function(..) |
             TypeKind::ResolvedTypeRef(..) |
             TypeKind::Named => {
@@ -2180,7 +2180,7 @@ impl ToRustTy for Type {
                 let path = item.namespace_aware_canonical_path(ctx);
                 aster::AstBuilder::new().ty().path().ids(path).build()
             }
-            TypeKind::TemplateRef(inner, ref template_args) => {
+            TypeKind::TemplateInstantiation(inner, ref template_args) => {
                 // PS: Sorry for the duplication here.
                 let mut inner_ty = inner.to_rust_ty(ctx).unwrap();
 

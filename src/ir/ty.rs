@@ -217,7 +217,7 @@ impl Type {
     pub fn has_vtable(&self, ctx: &BindgenContext) -> bool {
         // FIXME: Can we do something about template parameters? Huh...
         match self.kind {
-            TypeKind::TemplateRef(t, _) |
+            TypeKind::TemplateInstantiation(t, _) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) |
             TypeKind::ResolvedTypeRef(t) => ctx.resolve_type(t).has_vtable(ctx),
@@ -230,7 +230,7 @@ impl Type {
     /// Returns whether this type has a destructor.
     pub fn has_destructor(&self, ctx: &BindgenContext) -> bool {
         match self.kind {
-            TypeKind::TemplateRef(t, _) |
+            TypeKind::TemplateInstantiation(t, _) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) |
             TypeKind::ResolvedTypeRef(t) => {
@@ -269,7 +269,7 @@ impl Type {
                     .signature_contains_named_type(ctx, ty)
             }
             TypeKind::TemplateAlias(_, ref template_args) |
-            TypeKind::TemplateRef(_, ref template_args) => {
+            TypeKind::TemplateInstantiation(_, ref template_args) => {
                 template_args.iter().any(|arg| {
                     ctx.resolve_type(*arg)
                         .signature_contains_named_type(ctx, ty)
@@ -336,7 +336,7 @@ impl Type {
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(inner) |
             TypeKind::TemplateAlias(inner, _) |
-            TypeKind::TemplateRef(inner, _) => {
+            TypeKind::TemplateInstantiation(inner, _) => {
                 ctx.resolve_type(inner).safe_canonical_type(ctx)
             }
 
@@ -352,7 +352,7 @@ impl Type {
             TypeKind::Pointer(..) |
             TypeKind::Array(..) |
             TypeKind::Reference(..) |
-            TypeKind::TemplateRef(..) |
+            TypeKind::TemplateInstantiation(..) |
             TypeKind::ResolvedTypeRef(..) => true,
             _ => false,
         }
@@ -379,7 +379,7 @@ impl Type {
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(inner) |
             TypeKind::TemplateAlias(inner, _) |
-            TypeKind::TemplateRef(inner, _) => {
+            TypeKind::TemplateInstantiation(inner, _) => {
                 ctx.resolve_type(inner).calc_size(ctx)
             }
             TypeKind::Array(inner, len) => {
@@ -474,7 +474,7 @@ impl CanDeriveDefault for Type {
             }
             TypeKind::Void |
             TypeKind::Named |
-            TypeKind::TemplateRef(..) |
+            TypeKind::TemplateInstantiation(..) |
             TypeKind::Reference(..) |
             TypeKind::NullPtr |
             TypeKind::Pointer(..) |
@@ -501,7 +501,7 @@ impl<'a> CanDeriveCopy<'a> for Type {
             }
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
-            TypeKind::TemplateRef(t, _) |
+            TypeKind::TemplateInstantiation(t, _) |
             TypeKind::Alias(t) => t.can_derive_copy(ctx, ()),
             TypeKind::Comp(ref info) => {
                 info.can_derive_copy(ctx, (item, self.layout(ctx)))
@@ -597,10 +597,9 @@ pub enum TypeKind {
     /// A reference to a type, as in: int& foo().
     Reference(ItemId),
 
-    /// A reference to a template, with different template parameter names. To
-    /// see why this is needed, check out the creation of this variant in
-    /// `Type::from_clang_ty`.
-    TemplateRef(ItemId, Vec<ItemId>),
+    /// An instantiation of an abstract template declaration (first tuple
+    /// member) with a set of concrete template arguments (second tuple member).
+    TemplateInstantiation(ItemId, Vec<ItemId>),
 
     /// A reference to a yet-to-resolve type. This stores the clang cursor
     /// itself, and postpones its resolution.
@@ -644,7 +643,7 @@ impl Type {
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(inner) |
             TypeKind::TemplateAlias(inner, _) |
-            TypeKind::TemplateRef(inner, _) => {
+            TypeKind::TemplateInstantiation(inner, _) => {
                 ctx.resolve_type(inner).is_unsized(ctx)
             }
             TypeKind::Named |
@@ -1087,7 +1086,7 @@ impl TypeCollector for Type {
             }
 
             TypeKind::TemplateAlias(inner, ref template_args) |
-            TypeKind::TemplateRef(inner, ref template_args) => {
+            TypeKind::TemplateInstantiation(inner, ref template_args) => {
                 types.insert(inner);
                 for &item in template_args {
                     types.insert(item);

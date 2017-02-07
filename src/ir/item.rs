@@ -619,7 +619,7 @@ impl Item {
             // XXX Is this completely correct? Partial template specialization
             // is hard anyways, sigh...
             TypeKind::TemplateAlias(_, ref args) |
-            TypeKind::TemplateRef(_, ref args) => args.clone(),
+            TypeKind::TemplateInstantiation(_, ref args) => args.clone(),
             // In a template specialization we've got all we want.
             TypeKind::Comp(ref ci) if ci.is_template_specialization() => {
                 ci.template_args().iter().cloned().collect()
@@ -718,7 +718,7 @@ impl Item {
                         }
                         // Same as above.
                         TypeKind::ResolvedTypeRef(inner) |
-                        TypeKind::TemplateRef(inner, _) => {
+                        TypeKind::TemplateInstantiation(inner, _) => {
                             item = ctx.resolve_item(inner);
                         }
                         _ => return item.id(),
