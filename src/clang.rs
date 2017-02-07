@@ -361,6 +361,41 @@ impl Cursor {
         }
     }
 
+    /// Collect all of this cursor's children into a vec and return them.
+    pub fn collect_children(&self) -> Vec<Cursor> {
+        let mut children = vec![];
+        self.visit(|c| {
+            children.push(c);
+            CXChildVisit_Continue
+        });
+        children
+    }
+
+    /// Does this cursor have any children?
+    pub fn has_children(&self) -> bool {
+        let mut has_children = false;
+        self.visit(|_| {
+            has_children = true;
+            CXChildVisit_Break
+        });
+        has_children
+    }
+
+    /// Does this cursor have at least `n` children?
+    pub fn has_at_least_num_children(&self, n: usize) -> bool {
+        assert!(n > 0);
+        let mut num_left = n;
+        self.visit(|_| {
+            num_left -= 1;
+            if num_left == 0 {
+                CXChildVisit_Break
+            } else {
+                CXChildVisit_Continue
+            }
+        });
+        num_left == 0
+    }
+
     /// Returns whether the given location contains a cursor with the given
     /// kind in the first level of nesting underneath (doesn't look
     /// recursively).
