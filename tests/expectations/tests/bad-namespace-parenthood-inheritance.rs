@@ -10,8 +10,11 @@ pub struct std_char_traits<_CharT> {
     pub _address: u8,
     pub _phantom_0: ::std::marker::PhantomData<_CharT>,
 }
+impl <_CharT> Default for std_char_traits<_CharT> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct __gnu_cxx_char_traits {
     pub _address: u8,
 }

@@ -10,6 +10,9 @@ pub struct Test<Args> {
     pub _address: u8,
     pub _phantom_0: ::std::marker::PhantomData<Args>,
 }
+impl <Args> Default for Test<Args> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Outer<T> {
@@ -17,8 +20,11 @@ pub struct Outer<T> {
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Outer_Inner<T> {
     pub _address: u8,
     pub _phantom_0: ::std::marker::PhantomData<T>,
+}
+impl <T> Default for Outer<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

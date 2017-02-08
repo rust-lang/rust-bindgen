@@ -8,7 +8,7 @@ use aster;
 use ir::annotations::FieldAccessorKind;
 use ir::comp::{Base, CompInfo, CompKind, Field, Method, MethodKind};
 use ir::context::{BindgenContext, ItemId};
-use ir::derive::{CanDeriveCopy, CanDeriveDebug};
+use ir::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
 use ir::function::{Function, FunctionSig};
 use ir::int::IntKind;
@@ -688,10 +688,16 @@ impl<'a> CodeGenerator for Vtable<'a> {
         assert_eq!(item.id(), self.item_id);
         // For now, generate an empty struct, later we should generate function
         // pointers and whatnot.
+        let mut attributes = vec![attributes::repr("C")];
+
+        if ctx.options().derive_default {
+            attributes.push(attributes::derives(&["Default"]))
+        }
+
         let vtable = aster::AstBuilder::new()
             .item()
             .pub_()
-            .with_attr(attributes::repr("C"))
+            .with_attrs(attributes)
             .struct_(self.canonical_name(ctx))
             .build();
         result.push(vtable);
@@ -879,6 +885,7 @@ impl CodeGenerator for CompInfo {
 
         let mut attributes = vec![];
         let mut needs_clone_impl = false;
+        let mut needs_default_impl = false;
         if ctx.options().generate_comments {
             if let Some(comment) = item.comment() {
                 attributes.push(attributes::doc(comment));
@@ -894,6 +901,12 @@ impl CodeGenerator for CompInfo {
         let mut derives = vec![];
         if item.can_derive_debug(ctx, ()) {
             derives.push("Debug");
+        }
+
+        if item.can_derive_default(ctx, ()) {
+            derives.push("Default");
+        } else {
+            needs_default_impl = ctx.options().derive_default;
         }
 
         if item.can_derive_copy(ctx, ()) &&
@@ -1440,8 +1453,14 @@ impl CodeGenerator for CompInfo {
 
         // NB: We can't use to_rust_ty here since for opaque types this tries to
         // use the specialization knowledge to generate a blob field.
-        let ty_for_impl =
-            aster::AstBuilder::new().ty().path().id(&canonical_name).build();
+        let ty_for_impl = aster::AstBuilder::new()
+            .ty()
+            .path()
+            .segment(&canonical_name)
+            .with_generics(generics.clone())
+            .build()
+            .build();
+
         if needs_clone_impl {
             let impl_ = quote_item!(ctx.ext_cx(),
                 impl X {
@@ -1465,6 +1484,32 @@ impl CodeGenerator for CompInfo {
                 .build_ty(ty_for_impl.clone());
 
             result.push(clone_impl);
+        }
+
+        if needs_default_impl {
+            let prefix = ctx.trait_prefix();
+            let impl_ = quote_item!(ctx.ext_cx(),
+                impl X {
+                    fn default() -> Self { unsafe { ::$prefix::mem::zeroed() } }
+                }
+            );
+
+            let impl_ = match impl_.unwrap().node {
+                ast::ItemKind::Impl(_, _, _, _, _, ref items) => items.clone(),
+                _ => unreachable!(),
+            };
+
+            let default_impl = aster::AstBuilder::new()
+                .item()
+                .impl_()
+                .trait_()
+                .id("Default")
+                .build()
+                .with_generics(generics.clone())
+                .with_items(impl_)
+                .build_ty(ty_for_impl.clone());
+
+            result.push(default_impl);
         }
 
         if !methods.is_empty() {
@@ -2582,6 +2627,7 @@ mod utils {
 
         let incomplete_array_decl = quote_item!(ctx.ext_cx(),
             #[repr(C)]
+            #[derive(Default)]
             pub struct __IncompleteArrayField<T>(
                 ::$prefix::marker::PhantomData<T>);
         )

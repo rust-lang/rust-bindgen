@@ -108,6 +108,9 @@ fn bindgen_test_layout_cmdline_token_hdr_cmdline_token_ops() {
 impl Clone for cmdline_token_hdr_cmdline_token_ops {
     fn clone(&self) -> Self { *self }
 }
+impl Default for cmdline_token_hdr_cmdline_token_ops {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[test]
 fn bindgen_test_layout_cmdline_token_hdr() {
     assert_eq!(::std::mem::size_of::<cmdline_token_hdr>() , 16usize , concat !
@@ -127,6 +130,9 @@ fn bindgen_test_layout_cmdline_token_hdr() {
 }
 impl Clone for cmdline_token_hdr {
     fn clone(&self) -> Self { *self }
+}
+impl Default for cmdline_token_hdr {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 pub type cmdline_parse_token_hdr_t = cmdline_token_hdr;
 #[repr(u32)]
@@ -163,6 +169,9 @@ fn bindgen_test_layout_cmdline_token_num_data() {
 impl Clone for cmdline_token_num_data {
     fn clone(&self) -> Self { *self }
 }
+impl Default for cmdline_token_num_data {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct cmdline_token_num {
@@ -188,5 +197,8 @@ fn bindgen_test_layout_cmdline_token_num() {
 }
 impl Clone for cmdline_token_num {
     fn clone(&self) -> Self { *self }
+}
+impl Default for cmdline_token_num {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 pub type cmdline_parse_token_num_t = cmdline_token_num;

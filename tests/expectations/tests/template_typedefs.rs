@@ -20,3 +20,6 @@ pub type Foo_nsCOMArrayEnumFunc<T> =
                                                aData:
                                                    *mut ::std::os::raw::c_void)
                               -> bool>;
+impl <T, U> Default for Foo<T, U> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}

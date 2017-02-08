@@ -13,3 +13,6 @@ pub struct Rooted<T> {
      * <div rustbindgen replaces="Rooted_MaybeWrapped"></div>
      */
 pub type Rooted_MaybeWrapped<T> = T;
+impl <T> Default for Rooted<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}

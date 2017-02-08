@@ -29,7 +29,7 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct UnionWithDtor {
     pub mFoo: __BindgenUnionField<::std::os::raw::c_int>,
     pub mBar: __BindgenUnionField<*mut ::std::os::raw::c_void>,

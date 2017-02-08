@@ -11,3 +11,6 @@ pub struct __iterator_traits<_Iterator> {
     pub _address: u8,
     pub _phantom_0: ::std::marker::PhantomData<_Iterator>,
 }
+impl <_Iterator> Default for __iterator_traits<_Iterator> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}

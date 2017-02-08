@@ -5,6 +5,7 @@
 
 
 #[repr(C)]
+#[derive(Default)]
 pub struct __IncompleteArrayField<T>(::std::marker::PhantomData<T>);
 impl <T> __IncompleteArrayField<T> {
     #[inline]
@@ -37,7 +38,7 @@ impl <T> ::std::clone::Clone for __IncompleteArrayField<T> {
 }
 impl <T> ::std::marker::Copy for __IncompleteArrayField<T> { }
 #[repr(C, packed)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct header {
     pub proto: ::std::os::raw::c_char,
     pub size: ::std::os::raw::c_uint,

@@ -8,12 +8,12 @@ pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]
-    #[derive(Debug, Copy)]
+    #[derive(Debug, Default, Copy)]
     pub struct jsval_layout {
         pub __bindgen_anon_1: root::jsval_layout__bindgen_ty_1,
     }
     #[repr(C)]
-    #[derive(Debug, Copy)]
+    #[derive(Debug, Default, Copy)]
     pub struct jsval_layout__bindgen_ty_1 {
         pub _address: u8,
     }

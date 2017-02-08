@@ -14,7 +14,7 @@ pub mod root {
             #[allow(unused_imports)]
             use self::super::super::super::root;
             #[repr(C)]
-            #[derive(Debug, Copy)]
+            #[derive(Debug, Default, Copy)]
             pub struct Helper {
                 pub _address: u8,
             }

@@ -10,6 +10,9 @@ pub struct LinkedList<T> {
     pub next: *mut LinkedList<T>,
     pub prev: *mut LinkedList<T>,
 }
+impl <T> Default for LinkedList<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct InstantiateIt {
@@ -29,4 +32,7 @@ fn bindgen_test_layout_InstantiateIt() {
 }
 impl Clone for InstantiateIt {
     fn clone(&self) -> Self { *self }
+}
+impl Default for InstantiateIt {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

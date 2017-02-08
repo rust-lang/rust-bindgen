@@ -18,3 +18,9 @@ pub struct RefPtr_Proxy<T, R, Args> {
     pub _phantom_1: ::std::marker::PhantomData<R>,
     pub _phantom_2: ::std::marker::PhantomData<Args>,
 }
+impl <T, R, Args> Default for RefPtr_Proxy<T, R, Args> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+impl <T> Default for RefPtr<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}

@@ -13,3 +13,6 @@ pub struct Proxy<T, Args> {
 }
 pub type Proxy_foo<T> =
     ::std::option::Option<unsafe extern "C" fn(bar: *mut T)>;
+impl <T, Args> Default for Proxy<T, Args> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}

@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct false_type {
     pub _address: u8,
 }

@@ -13,6 +13,9 @@ pub struct nsTArray<T> {
     pub y: ::std::os::raw::c_uint,
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
+impl <T> Default for nsTArray<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct Test {
@@ -32,4 +35,7 @@ fn bindgen_test_layout_Test() {
 }
 impl Clone for Test {
     fn clone(&self) -> Self { *self }
+}
+impl Default for Test {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

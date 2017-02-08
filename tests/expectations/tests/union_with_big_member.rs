@@ -55,8 +55,11 @@ fn bindgen_test_layout_WithBigArray() {
 impl Clone for WithBigArray {
     fn clone(&self) -> Self { *self }
 }
+impl Default for WithBigArray {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct WithBigArray2 {
     pub a: __BindgenUnionField<::std::os::raw::c_int>,
     pub b: __BindgenUnionField<[::std::os::raw::c_char; 33usize]>,
@@ -108,4 +111,7 @@ fn bindgen_test_layout_WithBigMember() {
 }
 impl Clone for WithBigMember {
     fn clone(&self) -> Self { *self }
+}
+impl Default for WithBigMember {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

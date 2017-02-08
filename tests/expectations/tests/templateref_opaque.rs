@@ -11,6 +11,9 @@ pub struct detail_PointerType<T> {
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 pub type detail_PointerType_Type<T> = *mut T;
+impl <T> Default for detail_PointerType<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct UniquePtr<T> {
@@ -18,3 +21,6 @@ pub struct UniquePtr<T> {
     pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 pub type UniquePtr_Pointer<T> = detail_PointerType<T>;
+impl <T> Default for UniquePtr<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}

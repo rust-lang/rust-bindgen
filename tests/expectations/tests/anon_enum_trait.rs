@@ -27,8 +27,11 @@ pub const DataType_type_: DataType__bindgen_ty_1 =
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum DataType__bindgen_ty_1 { generic_type = 0, }
+impl <_Tp> Default for DataType<_Tp> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Foo {
     pub _address: u8,
 }

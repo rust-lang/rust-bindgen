@@ -109,3 +109,6 @@ fn bindgen_test_layout_rte_kni_mbuf() {
 impl Clone for rte_kni_mbuf {
     fn clone(&self) -> Self { *self }
 }
+impl Default for rte_kni_mbuf {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}

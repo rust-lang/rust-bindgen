@@ -6,6 +6,7 @@
 
 pub const NSID_LENGTH: ::std::os::raw::c_uint = 10;
 #[repr(C)]
+#[derive(Default)]
 pub struct nsID__bindgen_vtable {
 }
 #[repr(C)]
@@ -22,4 +23,7 @@ fn bindgen_test_layout_nsID() {
 }
 impl Clone for nsID {
     fn clone(&self) -> Self { *self }
+}
+impl Default for nsID {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

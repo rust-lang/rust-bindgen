@@ -29,14 +29,14 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct A {
     pub c: ::std::os::raw::c_uint,
     pub named_union: A__bindgen_ty_1,
     pub __bindgen_anon_1: A__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct A_Segment {
     pub begin: ::std::os::raw::c_int,
     pub end: ::std::os::raw::c_int,
@@ -62,7 +62,7 @@ impl Clone for A_Segment {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct A__bindgen_ty_1 {
     pub f: __BindgenUnionField<::std::os::raw::c_int>,
     pub bindgen_union_field: u32,
@@ -83,7 +83,7 @@ impl Clone for A__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct A__bindgen_ty_2 {
     pub d: __BindgenUnionField<::std::os::raw::c_int>,
     pub bindgen_union_field: u32,
@@ -123,12 +123,12 @@ impl Clone for A {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct B {
     pub d: ::std::os::raw::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct B_Segment {
     pub begin: ::std::os::raw::c_int,
     pub end: ::std::os::raw::c_int,
@@ -176,20 +176,20 @@ pub enum StepSyntax {
     FunctionalWithEndKeyword = 3,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct C {
     pub d: ::std::os::raw::c_uint,
     pub __bindgen_anon_1: C__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct C__bindgen_ty_1 {
     pub mFunc: __BindgenUnionField<C__bindgen_ty_1__bindgen_ty_1>,
     pub __bindgen_anon_1: __BindgenUnionField<C__bindgen_ty_1__bindgen_ty_2>,
     pub bindgen_union_field: [u32; 4usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct C__bindgen_ty_1__bindgen_ty_1 {
     pub mX1: f32,
     pub mY1: f32,
@@ -264,6 +264,9 @@ fn bindgen_test_layout_C__bindgen_ty_1__bindgen_ty_2() {
 impl Clone for C__bindgen_ty_1__bindgen_ty_2 {
     fn clone(&self) -> Self { *self }
 }
+impl Default for C__bindgen_ty_1__bindgen_ty_2 {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[test]
 fn bindgen_test_layout_C__bindgen_ty_1() {
     assert_eq!(::std::mem::size_of::<C__bindgen_ty_1>() , 16usize , concat ! (
@@ -280,7 +283,7 @@ impl Clone for C__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct C_Segment {
     pub begin: ::std::os::raw::c_int,
     pub end: ::std::os::raw::c_int,

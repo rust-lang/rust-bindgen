@@ -1,6 +1,6 @@
 //! Common context that is passed around during parsing and codegen.
 
-use super::derive::{CanDeriveCopy, CanDeriveDebug};
+use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::int::IntKind;
 use super::item::{Item, ItemCanonicalPath};
 use super::item_kind::ItemKind;
@@ -39,6 +39,14 @@ impl CanDeriveDebug for ItemId {
 
     fn can_derive_debug(&self, ctx: &BindgenContext, _: ()) -> bool {
         ctx.resolve_item(*self).can_derive_debug(ctx, ())
+    }
+}
+
+impl CanDeriveDefault for ItemId {
+    type Extra = ();
+
+    fn can_derive_default(&self, ctx: &BindgenContext, _: ()) -> bool {
+        ctx.resolve_item(*self).can_derive_default(ctx, ())
     }
 }
 

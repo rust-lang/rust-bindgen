@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct _bindgen_ty_1 {
     pub _bitfield_1: u32,
 }

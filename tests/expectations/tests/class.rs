@@ -5,6 +5,7 @@
 
 
 #[repr(C)]
+#[derive(Default)]
 pub struct __IncompleteArrayField<T>(::std::marker::PhantomData<T>);
 impl <T> __IncompleteArrayField<T> {
     #[inline]
@@ -81,6 +82,9 @@ fn bindgen_test_layout_C() {
                 "Alignment of field: " , stringify ! ( C ) , "::" , stringify
                 ! ( big_array ) ));
 }
+impl Default for C {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
 pub struct C_with_zero_length_array {
     pub a: ::std::os::raw::c_int,
@@ -114,6 +118,9 @@ fn bindgen_test_layout_C_with_zero_length_array() {
                 C_with_zero_length_array ) , "::" , stringify ! (
                 zero_length_array ) ));
 }
+impl Default for C_with_zero_length_array {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
 pub struct C_with_incomplete_array {
     pub a: ::std::os::raw::c_int,
@@ -128,6 +135,9 @@ fn bindgen_test_layout_C_with_incomplete_array() {
     assert_eq! (::std::mem::align_of::<C_with_incomplete_array>() , 4usize ,
                 concat ! (
                 "Alignment of " , stringify ! ( C_with_incomplete_array ) ));
+}
+impl Default for C_with_incomplete_array {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 pub struct C_with_zero_length_array_and_incomplete_array {
@@ -147,8 +157,11 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
                 "Alignment of " , stringify ! (
                 C_with_zero_length_array_and_incomplete_array ) ));
 }
+impl Default for C_with_zero_length_array_and_incomplete_array {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct WithDtor {
     pub b: ::std::os::raw::c_int,
 }
@@ -179,8 +192,11 @@ fn bindgen_test_layout_IncompleteArrayNonCopiable() {
                 "Alignment of " , stringify ! ( IncompleteArrayNonCopiable )
                 ));
 }
+impl Default for IncompleteArrayNonCopiable {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Union {
     pub d: __BindgenUnionField<f32>,
     pub i: __BindgenUnionField<::std::os::raw::c_int>,
@@ -207,7 +223,7 @@ impl Clone for Union {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct WithUnion {
     pub data: Union,
 }
@@ -227,7 +243,7 @@ impl Clone for WithUnion {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct RealAbstractionWithTonsOfMethods {
     pub _address: u8,
 }

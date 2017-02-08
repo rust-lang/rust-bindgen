@@ -2,7 +2,7 @@
 
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId};
-use super::derive::{CanDeriveCopy, CanDeriveDebug};
+use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::item::Item;
 use super::layout::Layout;
 use super::ty::Type;
@@ -171,6 +171,14 @@ impl CanDeriveDebug for Field {
     }
 }
 
+impl CanDeriveDefault for Field {
+    type Extra = ();
+
+    fn can_derive_default(&self, ctx: &BindgenContext, _: ()) -> bool {
+        self.ty.can_derive_default(ctx, ())
+    }
+}
+
 impl<'a> CanDeriveCopy<'a> for Field {
     type Extra = ();
 
@@ -296,6 +304,10 @@ pub struct CompInfo {
     /// around the template arguments.
     detect_derive_debug_cycle: Cell<bool>,
 
+    /// Used to detect if we've run in a can_derive_default cycle while cycling
+    /// around the template arguments.
+    detect_derive_default_cycle: Cell<bool>,
+
     /// Used to detect if we've run in a has_destructor cycle while cycling
     /// around the template arguments.
     detect_has_destructor_cycle: Cell<bool>,
@@ -326,6 +338,7 @@ impl CompInfo {
             is_anonymous: false,
             found_unknown_attr: false,
             detect_derive_debug_cycle: Cell::new(false),
+            detect_derive_default_cycle: Cell::new(false),
             detect_has_destructor_cycle: Cell::new(false),
             is_forward_declaration: false,
         }
@@ -949,6 +962,52 @@ impl CanDeriveDebug for CompInfo {
         self.detect_derive_debug_cycle.set(false);
 
         can_derive_debug
+    }
+}
+
+impl CanDeriveDefault for CompInfo {
+    type Extra = Option<Layout>;
+
+    fn can_derive_default(&self,
+                          ctx: &BindgenContext,
+                          layout: Option<Layout>)
+                          -> bool {
+        // We can reach here recursively via template parameters of a member,
+        // for example.
+        if self.detect_derive_default_cycle.get() {
+            warn!("Derive default cycle detected!");
+            return true;
+        }
+
+        if self.kind == CompKind::Union {
+            if ctx.options().unstable_rust {
+                return false;
+            }
+
+            return layout.unwrap_or_else(Layout::zero)
+                .opaque()
+                .can_derive_debug(ctx, ());
+        }
+
+        self.detect_derive_default_cycle.set(true);
+
+        let can_derive_default = !self.has_vtable(ctx) &&
+                                 !self.needs_explicit_vtable(ctx) &&
+                                 self.base_members
+            .iter()
+            .all(|base| base.ty.can_derive_default(ctx, ())) &&
+                                 self.template_args
+            .iter()
+            .all(|id| id.can_derive_default(ctx, ())) &&
+                                 self.fields
+            .iter()
+            .all(|f| f.can_derive_default(ctx, ())) &&
+                                 self.ref_template
+            .map_or(true, |id| id.can_derive_default(ctx, ()));
+
+        self.detect_derive_default_cycle.set(false);
+
+        can_derive_default
     }
 }
 

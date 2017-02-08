@@ -12,7 +12,7 @@ pub mod root {
         use self::super::super::root;
         /// <div rustbindgen replaces="foo::Bar"></div>
         #[repr(C)]
-        #[derive(Debug, Copy)]
+        #[derive(Debug, Default, Copy)]
         pub struct Bar {
             pub bazz: ::std::os::raw::c_int,
         }

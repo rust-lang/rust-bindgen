@@ -29,7 +29,7 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct _bindgen_ty_1 {
     pub mInt: __BindgenUnionField<::std::os::raw::c_int>,
     pub mFloat: __BindgenUnionField<f32>,

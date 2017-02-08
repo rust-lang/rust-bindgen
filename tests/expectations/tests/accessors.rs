@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct SomeAccessors {
     pub mNoAccessor: ::std::os::raw::c_int,
     /** <div rustbindgen accessor></div> */
@@ -70,7 +70,7 @@ impl SomeAccessors {
 }
 /** <div rustbindgen accessor></div> */
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct AllAccessors {
     pub mBothAccessors: ::std::os::raw::c_int,
     pub mAlsoBothAccessors: ::std::os::raw::c_int,
@@ -116,7 +116,7 @@ impl AllAccessors {
 }
 /** <div rustbindgen accessor="unsafe"></div> */
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct AllUnsafeAccessors {
     pub mBothAccessors: ::std::os::raw::c_int,
     pub mAlsoBothAccessors: ::std::os::raw::c_int,
@@ -164,7 +164,7 @@ impl AllUnsafeAccessors {
 }
 /** <div rustbindgen accessor></div> */
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct ContradictAccessors {
     pub mBothAccessors: ::std::os::raw::c_int,
     /** <div rustbindgen accessor="false"></div> */
@@ -231,7 +231,7 @@ impl ContradictAccessors {
 }
 /** <div rustbindgen accessor replaces="Replaced"></div> */
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Replaced {
     pub mAccessor: ::std::os::raw::c_int,
 }
@@ -260,7 +260,7 @@ impl Replaced {
 }
 /** <div rustbindgen accessor></div> */
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Wrapper {
     pub mReplaced: Replaced,
 }

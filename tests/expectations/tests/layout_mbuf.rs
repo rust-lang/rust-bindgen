@@ -38,7 +38,7 @@ pub type MARKER64 = [u64; 0usize];
  * The atomic counter structure.
  */
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct _bindgen_ty_1 {
     /**< An internal counter value. */
     pub cnt: i16,
@@ -118,7 +118,7 @@ pub struct rte_mbuf {
 	 * config option.
 	 */
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_mbuf__bindgen_ty_1 {
     /**< Atomically accessed refcnt */
     pub refcnt_atomic: __BindgenUnionField<rte_atomic16_t>,
@@ -149,7 +149,7 @@ impl Clone for rte_mbuf__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_mbuf__bindgen_ty_2 {
     /**< L2/L3/L4 and tunnel information. */
     pub packet_type: __BindgenUnionField<u32>,
@@ -157,7 +157,7 @@ pub struct rte_mbuf__bindgen_ty_2 {
     pub bindgen_union_field: u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     pub _bitfield_1: u32,
 }
@@ -285,7 +285,7 @@ impl Clone for rte_mbuf__bindgen_ty_2 {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_mbuf__bindgen_ty_3 {
     /**< RSS hash result if RSS enabled */
     pub rss: __BindgenUnionField<u32>,
@@ -298,20 +298,20 @@ pub struct rte_mbuf__bindgen_ty_3 {
     pub bindgen_union_field: [u32; 2usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_1 {
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1,
     pub hi: u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 {
     pub __bindgen_anon_1: __BindgenUnionField<rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1>,
     pub lo: __BindgenUnionField<u32>,
     pub bindgen_union_field: u32,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {
     pub hash: u16,
     pub id: u16,
@@ -395,7 +395,7 @@ impl Clone for rte_mbuf__bindgen_ty_3__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_2 {
     pub lo: u32,
     pub hi: u32,
@@ -459,7 +459,7 @@ impl Clone for rte_mbuf__bindgen_ty_3 {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_mbuf__bindgen_ty_4 {
     /**< Can be used for external metadata */
     pub userdata: __BindgenUnionField<*mut ::std::os::raw::c_void>,
@@ -493,7 +493,7 @@ impl Clone for rte_mbuf__bindgen_ty_4 {
 #[derive(Debug, Copy, Clone)]
 pub struct rte_mbuf_rte_mempool([u8; 0]);
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_mbuf__bindgen_ty_5 {
     /**< combined for easy fetch */
     pub tx_offload: __BindgenUnionField<u64>,
@@ -501,7 +501,7 @@ pub struct rte_mbuf__bindgen_ty_5 {
     pub bindgen_union_field: u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     pub _bitfield_1: u64,
 }
@@ -730,4 +730,7 @@ fn bindgen_test_layout_rte_mbuf() {
 }
 impl Clone for rte_mbuf {
     fn clone(&self) -> Self { *self }
+}
+impl Default for rte_mbuf {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

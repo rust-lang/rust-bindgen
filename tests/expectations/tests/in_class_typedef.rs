@@ -13,9 +13,12 @@ pub struct Foo<T> {
 pub type Foo_elem_type<T> = T;
 pub type Foo_ptr_type<T> = *mut T;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Foo_Bar<T> {
     pub x: ::std::os::raw::c_int,
     pub y: ::std::os::raw::c_int,
     pub _phantom_0: ::std::marker::PhantomData<T>,
+}
+impl <T> Default for Foo<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

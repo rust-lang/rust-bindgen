@@ -109,11 +109,14 @@ fn bindgen_test_layout_rte_mempool_ops() {
 impl Clone for rte_mempool_ops {
     fn clone(&self) -> Self { *self }
 }
+impl Default for rte_mempool_ops {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 /**
  * The rte_spinlock_t type.
  */
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct _bindgen_ty_1 {
     /**< lock status 0 = unlocked, 1 = locked */
     pub locked: ::std::os::raw::c_int,
@@ -180,6 +183,9 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
 impl Clone for rte_mempool_ops_table {
     fn clone(&self) -> Self { *self }
 }
+impl Default for rte_mempool_ops_table {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 /**
  * Structure to hold malloc heap
  */
@@ -218,6 +224,9 @@ fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
 impl Clone for malloc_heap__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
+impl Default for malloc_heap__bindgen_ty_1 {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[test]
 fn bindgen_test_layout_malloc_heap() {
     assert_eq!(::std::mem::size_of::<malloc_heap>() , 128usize , concat ! (
@@ -245,4 +254,7 @@ fn bindgen_test_layout_malloc_heap() {
 }
 impl Clone for malloc_heap {
     fn clone(&self) -> Self { *self }
+}
+impl Default for malloc_heap {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

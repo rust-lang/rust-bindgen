@@ -29,12 +29,12 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct foo {
     pub bar: foo__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct foo__bindgen_ty_1 {
     pub a: __BindgenUnionField<::std::os::raw::c_uint>,
     pub b: __BindgenUnionField<::std::os::raw::c_ushort>,

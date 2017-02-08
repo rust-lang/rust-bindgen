@@ -27,6 +27,9 @@ pub mod root {
     impl Clone for d {
         fn clone(&self) -> Self { *self }
     }
+    impl Default for d {
+        fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    }
     #[repr(C)]
     #[derive(Debug, Copy)]
     pub struct i {
@@ -59,6 +62,9 @@ pub mod root {
     impl Clone for i {
         fn clone(&self) -> Self { *self }
     }
+    impl Default for i {
+        fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    }
     #[repr(u32)]
     #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
     pub enum n {
@@ -90,5 +96,8 @@ pub mod root {
                     0usize , concat ! (
                     "Alignment of field: " , stringify ! ( F ) , "::" ,
                     stringify ! ( w ) ));
+    }
+    impl Default for F {
+        fn default() -> Self { unsafe { ::std::mem::zeroed() } }
     }
 }

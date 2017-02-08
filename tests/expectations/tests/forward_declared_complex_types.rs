@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Foo_empty {
     pub _address: u8,
 }
@@ -41,6 +41,9 @@ fn bindgen_test_layout_Bar() {
 }
 impl Clone for Bar {
     fn clone(&self) -> Self { *self }
+}
+impl Default for Bar {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 extern "C" {
     #[link_name = "_Z10baz_structP3Foo"]

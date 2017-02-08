@@ -3,15 +3,15 @@
 
 #![allow(non_snake_case)]
 
-#[repr(C)] #[derive(Copy, Clone, Default)] pub struct foo { bar: ::std::os::raw::c_int, }
+#[repr(C)] #[derive(Copy, Clone, Debug)] pub struct foo { bar: ::std::os::raw::c_int, }
 
 /**
- * bar should compile. It will normally derive debug, but our blacklist of foo
+ * bar should compile. It will normally derive default, but our blacklist of foo
  * and replacement for another type that doesn't implement it would prevent it
- * from building if --no-derive-debug didn't work.
+ * from building if --no-derive-default didn't work.
  */
 #[repr(C)]
-#[derive(Default, Copy)]
+#[derive(Debug, Copy)]
 pub struct bar {
     pub foo: foo,
     pub baz: ::std::os::raw::c_int,

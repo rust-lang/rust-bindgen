@@ -11,12 +11,12 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Copy)]
+        #[derive(Debug, Default, Copy)]
         pub struct Bar {
             pub foo: ::std::os::raw::c_int,
         }
         #[repr(C)]
-        #[derive(Debug, Copy)]
+        #[derive(Debug, Default, Copy)]
         pub struct Bar_Baz {
             pub foo: ::std::os::raw::c_int,
         }
@@ -51,7 +51,7 @@ pub mod root {
             fn clone(&self) -> Self { *self }
         }
         #[repr(C)]
-        #[derive(Debug, Copy)]
+        #[derive(Debug, Default, Copy)]
         pub struct Baz {
             pub baz: ::std::os::raw::c_int,
         }

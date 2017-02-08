@@ -8,7 +8,7 @@
 #[derive(Debug, Copy, Clone)]
 pub struct JS_Zone([u8; 0]);
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct JS_shadow_Zone {
     pub x: ::std::os::raw::c_int,
     pub y: ::std::os::raw::c_int,

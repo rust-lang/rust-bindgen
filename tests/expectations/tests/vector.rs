@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct foo {
     pub mMember: [::std::os::raw::c_longlong; 1usize],
 }

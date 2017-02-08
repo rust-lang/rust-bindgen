@@ -5,12 +5,12 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct A {
     pub member_a: ::std::os::raw::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct A_B {
     pub member_b: ::std::os::raw::c_int,
 }
@@ -49,7 +49,7 @@ extern "C" {
     pub static mut var: A_B;
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct D {
     pub member: A_B,
 }
@@ -77,4 +77,10 @@ pub struct Templated<T> {
 #[derive(Debug, Copy, Clone)]
 pub struct Templated_Templated_inner<T> {
     pub member_ptr: *mut T,
+}
+impl <T> Default for Templated_Templated_inner<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+impl <T> Default for Templated<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

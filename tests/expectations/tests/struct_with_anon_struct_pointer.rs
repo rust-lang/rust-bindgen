@@ -10,7 +10,7 @@ pub struct foo {
     pub bar: *mut foo__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct foo__bindgen_ty_1 {
     pub a: ::std::os::raw::c_int,
     pub b: ::std::os::raw::c_int,
@@ -49,4 +49,7 @@ fn bindgen_test_layout_foo() {
 }
 impl Clone for foo {
     fn clone(&self) -> Self { *self }
+}
+impl Default for foo {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

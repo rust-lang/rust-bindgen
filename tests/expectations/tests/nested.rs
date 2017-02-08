@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Calc {
     pub w: ::std::os::raw::c_int,
 }
@@ -25,18 +25,18 @@ impl Clone for Calc {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Test {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Test_Size {
     pub mWidth: Test_Size_Dimension,
     pub mHeight: Test_Size_Dimension,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Test_Size_Dimension {
     pub _base: Calc,
 }

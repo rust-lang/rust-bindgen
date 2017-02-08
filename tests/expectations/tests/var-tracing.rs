@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Bar {
     pub m_baz: ::std::os::raw::c_int,
 }
@@ -37,7 +37,7 @@ impl Bar {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Baz {
     pub _address: u8,
 }
