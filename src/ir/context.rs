@@ -630,7 +630,7 @@ impl<'ctx> BindgenContext<'ctx> {
     fn get_declaration_info_for_template_instantiation
         (&self,
          instantiation: &Cursor)
-         -> (Cursor, ItemId, usize) {
+         -> Option<(Cursor, ItemId, usize)> {
         instantiation.cur_type()
             .canonical_declaration(Some(instantiation))
             .and_then(|canon_decl| {
@@ -643,7 +643,7 @@ impl<'ctx> BindgenContext<'ctx> {
                             })
                     })
             })
-            .unwrap_or_else(|| {
+            .or_else(|| {
                 // If we haven't already parsed the declaration of
                 // the template being instantiated, then it *must*
                 // be on the stack of types we are currently
@@ -651,17 +651,19 @@ impl<'ctx> BindgenContext<'ctx> {
                 // already errored out before we started
                 // constructing our IR because you can't instantiate
                 // a template until it is fully defined.
-                let referenced = instantiation.referenced()
-                    .expect("TemplateRefs should reference a template declaration");
-                let template_decl = self.currently_parsed_types()
-                    .iter()
-                    .find(|partial_ty| *partial_ty.decl() == referenced)
-                    .cloned()
-                    .expect("template decl must be on the parse stack");
-                let num_template_params = template_decl
-                    .num_template_params(self)
-                    .expect("and it had better be a template declaration");
-                (*template_decl.decl(), template_decl.id(), num_template_params)
+                instantiation.referenced()
+                    .and_then(|referenced| {
+                        self.currently_parsed_types()
+                            .iter()
+                            .find(|partial_ty| *partial_ty.decl() == referenced)
+                            .cloned()
+                    })
+                    .and_then(|template_decl| {
+                        template_decl.num_template_params(self)
+                            .map(|num_template_params| {
+                                (*template_decl.decl(), template_decl.id(), num_template_params)
+                            })
+                    })
             })
     }
 
@@ -699,16 +701,20 @@ impl<'ctx> BindgenContext<'ctx> {
                             parent_id: ItemId,
                             ty: &clang::Type,
                             location: clang::Cursor)
-                            -> ItemId {
+                            -> Option<ItemId> {
         use clang_sys;
 
-        let num_expected_args = self.resolve_type(template)
-            .num_template_params(self)
-            .expect("template types should have template params");
+        let num_expected_args = match self.resolve_type(template).num_template_params(self) {
+            Some(n) => n,
+            None => {
+                warn!("Tried to instantiate a template for which we could not \
+                       determine any template parameters");
+                return None;
+            }
+        };
 
         let mut args = vec![];
         let mut found_const_arg = false;
-
         let mut children = location.collect_children();
 
         if children.iter().all(|c| !c.has_children()) {
@@ -735,7 +741,9 @@ impl<'ctx> BindgenContext<'ctx> {
 
         for child in children.iter().rev() {
             match child.kind() {
-                clang_sys::CXCursor_TypeRef => {
+                clang_sys::CXCursor_TypeRef |
+                clang_sys::CXCursor_TypedefDecl |
+                clang_sys::CXCursor_TypeAliasDecl => {
                     // The `with_id` id will potentially end up unused if we give up
                     // on this type (for example, because it has const value
                     // template args), so if we pass `with_id` as the parent, it is
@@ -750,7 +758,10 @@ impl<'ctx> BindgenContext<'ctx> {
                 }
                 clang_sys::CXCursor_TemplateRef => {
                     let (template_decl_cursor, template_decl_id, num_expected_template_args) =
-                        self.get_declaration_info_for_template_instantiation(child);
+                        match self.get_declaration_info_for_template_instantiation(child) {
+                            Some(info) => info,
+                            None => return None,
+                        };
 
                     if num_expected_template_args == 0 ||
                        child.has_at_least_num_children(num_expected_template_args) {
@@ -767,7 +778,12 @@ impl<'ctx> BindgenContext<'ctx> {
                         // reconstruct which template arguments go to which
                         // instantiation :(
                         let args_len = args.len();
-                        assert!(args_len >= num_expected_template_args);
+                        if args_len < num_expected_template_args {
+                            warn!("Found a template instantiation without \
+                                   enough template arguments");
+                            return None;
+                        }
+
                         let mut sub_args: Vec<_> =
                             args.drain(args_len - num_expected_template_args..)
                                 .collect();
@@ -807,8 +823,7 @@ impl<'ctx> BindgenContext<'ctx> {
             }
         }
 
-        assert!(args.len() <= num_expected_args);
-        if found_const_arg || args.len() < num_expected_args {
+        if found_const_arg {
             // This is a dependently typed template instantiation. That is, an
             // instantiation of a template with one or more const values as
             // template arguments, rather than only types as template
@@ -817,7 +832,13 @@ impl<'ctx> BindgenContext<'ctx> {
             // situation...
             warn!("Found template instantiated with a const value; \
                    bindgen can't handle this kind of template instantiation!");
-            return template;
+            return None;
+        }
+
+        if args.len() != num_expected_args {
+            warn!("Found a template with an unexpected number of template \
+                   arguments");
+            return None;
         }
 
         args.reverse();
@@ -835,7 +856,7 @@ impl<'ctx> BindgenContext<'ctx> {
         debug!("instantiate_template: inserting item: {:?}", item);
         debug_assert!(with_id == item.id());
         self.items.insert(with_id, item);
-        with_id
+        Some(with_id)
     }
 
     /// If we have already resolved the type for the given type declaration,
@@ -908,11 +929,12 @@ impl<'ctx> BindgenContext<'ctx> {
                         return None;
                     }
 
-                    return Some(self.instantiate_template(with_id,
-                                                          id,
-                                                          parent_id,
-                                                          ty,
-                                                          location));
+                       return self.instantiate_template(with_id,
+                                                        id,
+                                                        parent_id,
+                                                        ty,
+                                                        location)
+                           .or_else(|| Some(id));
                 }
 
                 return Some(self.build_ty_wrapper(with_id, id, parent_id, ty));
