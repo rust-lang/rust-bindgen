@@ -1377,9 +1377,10 @@ impl CodeGenerator for CompInfo {
                 // FIXME when [issue #465](https://github.com/servo/rust-bindgen/issues/465) ready
                 let too_many_base_vtables = self.base_members()
                     .iter()
-                    .filter(|base| ctx.resolve_type(base.ty).has_vtable(ctx))
-                    .count() >
-                                            1;
+                    .filter(|base| {
+                        ctx.resolve_type(base.ty).has_vtable(ctx)
+                    })
+                    .count() > 1;
 
                 let should_skip_field_offset_checks = item.is_opaque(ctx) ||
                                                       too_many_base_vtables;
@@ -2189,7 +2190,7 @@ impl ToRustTy for Type {
                         .map(|arg| arg.to_rust_ty(ctx))
                         .collect::<Vec<_>>();
 
-                    path.segments.last_mut().unwrap().parameters = if
+                    path.segments.last_mut().unwrap().parameters = if 
                         template_args.is_empty() {
                         None
                     } else {
@@ -2509,8 +2510,8 @@ mod utils {
     use super::ItemToRustTy;
     use aster;
     use ir::context::{BindgenContext, ItemId};
-    use ir::item::{Item, ItemCanonicalPath};
     use ir::function::FunctionSig;
+    use ir::item::{Item, ItemCanonicalPath};
     use ir::ty::TypeKind;
     use std::mem;
     use syntax::ast;

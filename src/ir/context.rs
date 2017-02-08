@@ -636,10 +636,11 @@ impl<'ctx> BindgenContext<'ctx> {
             .and_then(|canon_decl| {
                 self.get_resolved_type(&canon_decl)
                     .and_then(|template_decl_id| {
-                        template_decl_id
-                            .num_template_params(self)
+                        template_decl_id.num_template_params(self)
                             .map(|num_params| {
-                                (*canon_decl.cursor(), template_decl_id, num_params)
+                                (*canon_decl.cursor(),
+                                 template_decl_id,
+                                 num_params)
                             })
                     })
             })
@@ -661,7 +662,9 @@ impl<'ctx> BindgenContext<'ctx> {
                     .and_then(|template_decl| {
                         template_decl.num_template_params(self)
                             .map(|num_template_params| {
-                                (*template_decl.decl(), template_decl.id(), num_template_params)
+                                (*template_decl.decl(),
+                                 template_decl.id(),
+                                 num_template_params)
                             })
                     })
             })
@@ -704,7 +707,8 @@ impl<'ctx> BindgenContext<'ctx> {
                             -> Option<ItemId> {
         use clang_sys;
 
-        let num_expected_args = match self.resolve_type(template).num_template_params(self) {
+        let num_expected_args = match self.resolve_type(template)
+            .num_template_params(self) {
             Some(n) => n,
             None => {
                 warn!("Tried to instantiate a template for which we could not \
@@ -929,12 +933,12 @@ impl<'ctx> BindgenContext<'ctx> {
                         return None;
                     }
 
-                       return self.instantiate_template(with_id,
-                                                        id,
-                                                        parent_id,
-                                                        ty,
-                                                        location)
-                           .or_else(|| Some(id));
+                    return self.instantiate_template(with_id,
+                                              id,
+                                              parent_id,
+                                              ty,
+                                              location)
+                        .or_else(|| Some(id));
                 }
 
                 return Some(self.build_ty_wrapper(with_id, id, parent_id, ty));

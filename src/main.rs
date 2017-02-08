@@ -44,10 +44,9 @@ pub fn main() {
     match builder_from_flags(bind_args.into_iter()) {
         Ok((builder, output, verbose)) => {
 
-            let builder_result =
-                panic::catch_unwind(||
-                    builder.generate().expect("Unable to generate bindings")
-                );
+            let builder_result = panic::catch_unwind(|| {
+                builder.generate().expect("Unable to generate bindings")
+            });
 
             if builder_result.is_err() {
                 if verbose {
