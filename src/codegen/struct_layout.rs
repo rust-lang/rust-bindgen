@@ -89,8 +89,11 @@ impl<'a, 'ctx> StructLayoutTracker<'a, 'ctx> {
                     Some(offset) if offset / 8  > self.latest_offset => {
                         (offset / 8  - self.latest_offset, true)
                     }
-                    _ => {
+                    _ if field_layout.align != 0 => {
                         (self.padding_bytes(field_layout), (self.latest_offset % field_layout.align) != 0)
+                    }
+                    _ => {
+                        (0, false)
                     }
                 };
 
