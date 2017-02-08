@@ -1644,9 +1644,10 @@ impl MethodCodegen for Method {
         // If it's a constructor, we need to insert an extra parameter with a
         // variable called `__bindgen_tmp` we're going to create.
         if self.is_constructor() {
+            let prefix = ctx.trait_prefix();
             let tmp_variable_decl =
                 quote_stmt!(ctx.ext_cx(),
-                            let mut __bindgen_tmp = ::std::mem::uninitialized())
+                            let mut __bindgen_tmp = ::$prefix::mem::uninitialized())
                 .unwrap();
             stmts.push(tmp_variable_decl);
             exprs[0] = quote_expr!(ctx.ext_cx(), &mut __bindgen_tmp);
@@ -2601,9 +2602,9 @@ mod utils {
             .unwrap();
 
         let union_field_debug_impl = quote_item!(ctx.ext_cx(),
-            impl<T> ::std::fmt::Debug for __BindgenUnionField<T> {
-                fn fmt(&self, fmt: &mut ::std::fmt::Formatter)
-                       -> ::std::fmt::Result {
+            impl<T> ::$prefix::fmt::Debug for __BindgenUnionField<T> {
+                fn fmt(&self, fmt: &mut ::$prefix::fmt::Formatter)
+                       -> ::$prefix::fmt::Result {
                     fmt.write_str("__BindgenUnionField")
                 }
             }
