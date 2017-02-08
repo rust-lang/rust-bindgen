@@ -554,6 +554,11 @@ pub struct BindgenOptions {
     pub objc_extern_crate: bool,
 }
 
+/// TODO(emilio): This is sort of a lie (see the error message that results from
+/// removing this), but since we don't share references across panic boundaries
+/// it's ok.
+impl ::std::panic::UnwindSafe for BindgenOptions {}
+
 impl BindgenOptions {
     fn build(&mut self) {
         self.whitelisted_vars.build();
