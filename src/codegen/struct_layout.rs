@@ -163,7 +163,11 @@ impl<'a, 'ctx> StructLayoutTracker<'a, 'ctx> {
     }
 
     fn padding_bytes(&self, layout: Layout) -> usize {
-        if self.latest_offset % layout.align == 0 {
+        if layout.align == 0 {
+            warn!("try to padding bytes without layout");
+
+            0
+        } else if self.latest_offset % layout.align == 0 {
             0
         } else {
             layout.align - (self.latest_offset % layout.align)
