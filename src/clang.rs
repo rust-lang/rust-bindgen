@@ -448,7 +448,11 @@ impl Cursor {
 
     /// Get the visibility of this cursor's referent.
     pub fn visibility(&self) -> CXVisibilityKind {
-        unsafe { clang_getCursorVisibility(self.x) }
+        if clang_getCursorVisibility::is_loaded() {
+            unsafe { clang_getCursorVisibility(self.x) }
+        } else {
+            CXVisibility_Default
+        }
     }
 
     /// Given that this cursor's referent is a function, return cursors to its
@@ -496,11 +500,16 @@ impl Cursor {
     /// Is this cursor's referent a field declaration that is marked as
     /// `mutable`?
     pub fn is_mutable_field(&self) -> bool {
+        clang_CXXField_isMutable::is_loaded() &&
         unsafe { clang_CXXField_isMutable(self.x) != 0 }
     }
 
     /// Get the offset of the field represented by the Cursor.
     pub fn offset_of_field(&self) -> Result<usize, LayoutError> {
+        if !clang_Cursor_getOffsetOfField::is_loaded() {
+            return Err(LayoutError::from(-1));
+        }
+
         let offset = unsafe { clang_Cursor_getOffsetOfField(self.x) };
 
         if offset < 0 {
