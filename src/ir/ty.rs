@@ -392,6 +392,51 @@ impl Type {
         }
     }
 }
+#[test]
+fn is_invalid_named_type_valid() {
+    let ty = Type::new(Some("foo".into()), None, TypeKind::Named, false);
+    assert!(!ty.is_invalid_named_type())
+}
+
+#[test]
+fn is_invalid_named_type_valid_underscore_and_numbers() {
+    let ty =
+        Type::new(Some("_foo123456789_".into()), None, TypeKind::Named, false);
+    assert!(!ty.is_invalid_named_type())
+}
+
+#[test]
+fn is_invalid_named_type_valid_unnamed_kind() {
+    let ty = Type::new(Some("foo".into()), None, TypeKind::Void, false);
+    assert!(!ty.is_invalid_named_type())
+}
+
+#[test]
+fn is_invalid_named_type_invalid_start() {
+    let ty = Type::new(Some("1foo".into()), None, TypeKind::Named, false);
+    assert!(ty.is_invalid_named_type())
+}
+
+#[test]
+fn is_invalid_named_type_invalid_remaing() {
+    let ty = Type::new(Some("foo-".into()), None, TypeKind::Named, false);
+    assert!(ty.is_invalid_named_type())
+}
+
+#[test]
+#[should_panic]
+fn is_invalid_named_type_unnamed() {
+    let ty = Type::new(None, None, TypeKind::Named, false);
+    assert!(ty.is_invalid_named_type())
+}
+
+#[test]
+#[should_panic]
+fn is_invalid_named_type_empty_name() {
+    let ty = Type::new(Some("".into()), None, TypeKind::Named, false);
+    assert!(ty.is_invalid_named_type())
+}
+
 
 impl CanDeriveDebug for Type {
     type Extra = ();
