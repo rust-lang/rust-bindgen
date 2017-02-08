@@ -69,7 +69,11 @@ impl Cursor {
 
     /// Get the mangled name of this cursor's referent.
     pub fn mangling(&self) -> String {
-        unsafe { cxstring_into_string(clang_Cursor_getMangling(self.x)) }
+        if clang_Cursor_getMangling::is_loaded() {
+            unsafe { cxstring_into_string(clang_Cursor_getMangling(self.x)) }
+        } else {
+            self.spelling()
+        }
     }
 
     /// Get the `Cursor` for this cursor's referent's lexical parent.
