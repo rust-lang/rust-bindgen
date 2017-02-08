@@ -212,11 +212,6 @@ impl Cursor {
         unsafe { clang_isCursorDefinition(self.x) != 0 }
     }
 
-    /// Is the referent an anonymous record definition?
-    pub fn is_anonymous(&self) -> bool {
-        unsafe { clang_Cursor_isAnonymous(self.x) != 0 }
-    }
-
     /// Is the referent a template specialization?
     pub fn is_template_specialization(&self) -> bool {
         self.specialized().is_some()
@@ -1338,8 +1333,6 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
                      format!(" {}is-declaration? {}",
                              prefix,
                              c.is_declaration()));
-        print_indent(depth,
-                     format!(" {}is-anonymous? {}", prefix, c.is_anonymous()));
         print_indent(depth,
                      format!(" {}is-inlined-function? {}",
                              prefix,
