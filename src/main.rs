@@ -25,7 +25,7 @@ pub fn main() {
     let bind_args: Vec<_> = env::args().collect();
 
     let version = clang_version();
-    let expected_version = if cfg!(feature = "llvm_stable") {
+    let expected_version = if cfg!(feature = "__testing_only_llvm_stable") {
         (3, 8)
     } else {
         (3, 9)

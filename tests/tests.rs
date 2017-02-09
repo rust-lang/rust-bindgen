@@ -84,7 +84,7 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
                 .unwrap();
             flags.extend(extra_flags.into_iter());
         } else if line.contains("bindgen-unstable") &&
-                  cfg!(feature = "llvm_stable") {
+                  cfg!(feature = "__testing_only_llvm_stable") {
             return Ok(None);
         } else if line.contains("bindgen-osx-only") {
             let prepend_flags = ["--raw-line", "#![cfg(target_os=\"macos\")]"];
