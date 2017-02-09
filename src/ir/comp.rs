@@ -871,7 +871,7 @@ impl CompInfo {
 }
 
 impl TemplateDeclaration for CompInfo {
-    fn template_params(&self, _ctx: &BindgenContext) -> Option<Vec<ItemId>> {
+    fn self_template_params(&self, _ctx: &BindgenContext) -> Option<Vec<ItemId>> {
         if self.template_args.is_empty() {
             None
         } else {

@@ -930,22 +930,22 @@ impl DotAttributes for Item {
 }
 
 impl TemplateDeclaration for ItemId {
-    fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
+    fn self_template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
         ctx.resolve_item_fallible(*self)
-            .and_then(|item| item.template_params(ctx))
+            .and_then(|item| item.self_template_params(ctx))
     }
 }
 
 impl TemplateDeclaration for Item {
-    fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
-        self.kind.template_params(ctx)
+    fn self_template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
+        self.kind.self_template_params(ctx)
     }
 }
 
 impl TemplateDeclaration for ItemKind {
-    fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
+    fn self_template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
         match *self {
-            ItemKind::Type(ref ty) => ty.template_params(ctx),
+            ItemKind::Type(ref ty) => ty.self_template_params(ctx),
             // If we start emitting bindings to explicitly instantiated
             // functions, then we'll need to check ItemKind::Function for
             // template params.

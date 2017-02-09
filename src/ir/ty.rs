@@ -22,10 +22,11 @@ pub trait TemplateDeclaration {
     /// template parameters.
     ///
     /// Note that these might *not* all be named types: C++ allows
-    /// constant-value template parameters. Of course, Rust does not allow
-    /// generic parameters to be anything but types, so we must treat them as
-    /// opaque, and avoid instantiating them.
-    fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>>;
+    /// constant-value template parameters as well as template-template
+    /// parameters. Of course, Rust does not allow generic parameters to be
+    /// anything but types, so we must treat them as opaque, and avoid
+    /// instantiating them.
+    fn self_template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>>;
 
     /// Get the number of free template parameters this template declaration
     /// has.
@@ -34,8 +35,8 @@ pub trait TemplateDeclaration {
     /// `template_params` returns `None`. This is useful when we only have
     /// partial information about the template declaration, such as when we are
     /// in the middle of parsing it.
-    fn num_template_params(&self, ctx: &BindgenContext) -> Option<usize> {
-        self.template_params(ctx).map(|params| params.len())
+    fn num_self_template_params(&self, ctx: &BindgenContext) -> Option<usize> {
+        self.self_template_params(ctx).map(|params| params.len())
     }
 }
 
@@ -487,18 +488,18 @@ fn is_invalid_named_type_empty_name() {
 
 
 impl TemplateDeclaration for Type {
-    fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
-        self.kind.template_params(ctx)
+    fn self_template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
+        self.kind.self_template_params(ctx)
     }
 }
 
 impl TemplateDeclaration for TypeKind {
-    fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
+    fn self_template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
         match *self {
             TypeKind::ResolvedTypeRef(id) => {
-                ctx.resolve_type(id).template_params(ctx)
+                ctx.resolve_type(id).self_template_params(ctx)
             }
-            TypeKind::Comp(ref comp) => comp.template_params(ctx),
+            TypeKind::Comp(ref comp) => comp.self_template_params(ctx),
             TypeKind::TemplateAlias(_, ref args) => Some(args.clone()),
 
             TypeKind::TemplateInstantiation(..) |

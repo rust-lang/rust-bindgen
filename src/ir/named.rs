@@ -208,7 +208,7 @@ impl<'a> MonotoneFramework for UsedTemplateParameters<'a> {
                 .map(|ty| match ty.kind() {
                     &TypeKind::TemplateInstantiation(decl, ref args) => {
                         let decl = ctx.resolve_type(decl);
-                        let params = decl.template_params(ctx)
+                        let params = decl.self_template_params(ctx)
                             .expect("a template instantiation's referenced \
                                      template declaration should have template \
                                      parameters");
@@ -255,7 +255,7 @@ impl<'a> MonotoneFramework for UsedTemplateParameters<'a> {
                     // only used if the template declaration uses the
                     // corresponding template parameter.
                     let decl = self.ctx.resolve_type(decl);
-                    let params = decl.template_params(self.ctx)
+                    let params = decl.self_template_params(self.ctx)
                         .expect("a template instantiation's referenced \
                                  template declaration should have template \
                                  parameters");
