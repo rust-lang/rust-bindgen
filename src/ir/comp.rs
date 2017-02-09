@@ -289,9 +289,6 @@ pub struct CompInfo {
     /// Whether this struct layout is packed.
     packed: bool,
 
-    /// Whether this struct is anonymous.
-    is_anonymous: bool,
-
     /// Used to know if we've found an opaque attribute that could cause us to
     /// generate a type with invalid layout. This is explicitly used to avoid us
     /// generating bad alignments when parsing types like max_align_t.
@@ -335,7 +332,6 @@ impl CompInfo {
             has_nonempty_base: false,
             has_non_type_template_params: false,
             packed: false,
-            is_anonymous: false,
             found_unknown_attr: false,
             detect_derive_debug_cycle: Cell::new(false),
             detect_derive_default_cycle: Cell::new(false),
@@ -562,7 +558,6 @@ impl CompInfo {
                 CXCursor_ClassDecl => !cur.is_definition(),
                 _ => false,
             });
-        ci.is_anonymous = cursor.is_anonymous();
         ci.template_args = match ty.template_args() {
             // In forward declarations and not specializations,
             // etc, they are in
