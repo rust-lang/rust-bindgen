@@ -4,8 +4,9 @@ use std::fs::File;
 use std::io::{self, Error, ErrorKind};
 
 /// Construct a new [`Builder`](./struct.Builder.html) from command line flags.
-pub fn builder_from_flags<I>(args: I)
-                             -> Result<(Builder, Box<io::Write>, bool), io::Error>
+pub fn builder_from_flags<I>
+    (args: I)
+     -> Result<(Builder, Box<io::Write>, bool), io::Error>
     where I: Iterator<Item = String>,
 {
     let matches = App::new("bindgen")

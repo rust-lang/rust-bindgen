@@ -89,9 +89,7 @@ pub mod ast_ty {
                 let prefix = ctx.rust_ident_raw(prefix);
                 quote_ty!(ctx.ext_cx(), $prefix::$ident)
             }
-            None => {
-                quote_ty!(ctx.ext_cx(), ::std::os::raw::$ident)
-            }
+            None => quote_ty!(ctx.ext_cx(), ::std::os::raw::$ident),
         }
     }
 

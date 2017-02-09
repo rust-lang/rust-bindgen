@@ -1,12 +1,12 @@
 //! Bindgen's core intermediate representation type.
 
 use super::annotations::Annotations;
-use super::context::{BindgenContext, ItemId};
+use super::context::{BindgenContext, ItemId, PartialType};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::function::Function;
 use super::item_kind::ItemKind;
 use super::module::Module;
-use super::ty::{Type, TypeKind};
+use super::ty::{TemplateDeclaration, Type, TypeKind};
 use super::type_collector::{ItemSet, TypeCollector};
 use clang;
 use clang_sys;
@@ -619,7 +619,7 @@ impl Item {
             // XXX Is this completely correct? Partial template specialization
             // is hard anyways, sigh...
             TypeKind::TemplateAlias(_, ref args) |
-            TypeKind::TemplateRef(_, ref args) => args.clone(),
+            TypeKind::TemplateInstantiation(_, ref args) => args.clone(),
             // In a template specialization we've got all we want.
             TypeKind::Comp(ref ci) if ci.is_template_specialization() => {
                 ci.template_args().iter().cloned().collect()
@@ -718,7 +718,7 @@ impl Item {
                         }
                         // Same as above.
                         TypeKind::ResolvedTypeRef(inner) |
-                        TypeKind::TemplateRef(inner, _) => {
+                        TypeKind::TemplateInstantiation(inner, _) => {
                             item = ctx.resolve_item(inner);
                         }
                         _ => return item.id(),
@@ -898,6 +898,32 @@ impl Item {
         match self.kind {
             ItemKind::Module(ref mut module) => Some(module),
             _ => None,
+        }
+    }
+}
+
+impl TemplateDeclaration for ItemId {
+    fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
+        ctx.resolve_item_fallible(*self)
+            .and_then(|item| item.template_params(ctx))
+    }
+}
+
+impl TemplateDeclaration for Item {
+    fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
+        self.kind.template_params(ctx)
+    }
+}
+
+impl TemplateDeclaration for ItemKind {
+    fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
+        match *self {
+            ItemKind::Type(ref ty) => ty.template_params(ctx),
+            // TODO FITZGEN: shouldn't functions be able to have free template
+            // params?
+            ItemKind::Module(_) |
+            ItemKind::Function(_) |
+            ItemKind::Var(_) => None,
         }
     }
 }
@@ -1176,18 +1202,18 @@ impl ClangItemParser for Item {
         };
 
         if valid_decl {
-            if let Some(&(_, item_id)) =
-                ctx.currently_parsed_types
-                    .iter()
-                    .find(|&&(d, _)| d == declaration_to_look_for) {
+            if let Some(partial) = ctx.currently_parsed_types()
+                .iter()
+                .find(|ty| *ty.decl() == declaration_to_look_for) {
                 debug!("Avoiding recursion parsing type: {:?}", ty);
-                return Ok(item_id);
+                return Ok(partial.id());
             }
         }
 
         let current_module = ctx.current_module();
+        let partial_ty = PartialType::new(declaration_to_look_for, id);
         if valid_decl {
-            ctx.currently_parsed_types.push((declaration_to_look_for, id));
+            ctx.begin_parsing(partial_ty);
         }
 
         let result = Type::from_clang_ty(id, ty, location, parent_id, ctx);
@@ -1215,9 +1241,8 @@ impl ClangItemParser for Item {
                     // declaration_to_look_for suspiciously shares a lot of
                     // logic with ir::context, so we should refactor that.
                     if valid_decl {
-                        let (popped_decl, _) =
-                            ctx.currently_parsed_types.pop().unwrap();
-                        assert_eq!(popped_decl, declaration_to_look_for);
+                        let finished = ctx.finish_parsing();
+                        assert_eq!(*finished.decl(), declaration_to_look_for);
                     }
 
                     location.visit(|cur| {
@@ -1225,8 +1250,9 @@ impl ClangItemParser for Item {
                     });
 
                     if valid_decl {
-                        ctx.currently_parsed_types
-                            .push((declaration_to_look_for, id));
+                        let partial_ty =
+                            PartialType::new(declaration_to_look_for, id);
+                        ctx.begin_parsing(partial_ty);
                     }
                 }
                 // If we have recursed into the AST all we know, and we still
@@ -1253,8 +1279,8 @@ impl ClangItemParser for Item {
         };
 
         if valid_decl {
-            let (popped_decl, _) = ctx.currently_parsed_types.pop().unwrap();
-            assert_eq!(popped_decl, declaration_to_look_for);
+            let partial_ty = ctx.finish_parsing();
+            assert_eq!(*partial_ty.decl(), declaration_to_look_for);
         }
 
         ret

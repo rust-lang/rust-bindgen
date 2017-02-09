@@ -136,11 +136,11 @@ impl Cursor {
         // `clang_Cursor_getNumTemplateArguments` is totally unreliable.
         // Therefore, try former first, and only fallback to the latter if we
         // have to.
-        self.cur_type().num_template_args()
+        self.cur_type()
+            .num_template_args()
             .or_else(|| {
-                let n: c_int = unsafe {
-                    clang_Cursor_getNumTemplateArguments(self.x)
-                };
+                let n: c_int =
+                    unsafe { clang_Cursor_getNumTemplateArguments(self.x) };
 
                 if n >= 0 {
                     Some(n as u32)
@@ -358,6 +358,41 @@ impl Cursor {
                                 visit_children::<Visitor>,
                                 mem::transmute(&mut visitor));
         }
+    }
+
+    /// Collect all of this cursor's children into a vec and return them.
+    pub fn collect_children(&self) -> Vec<Cursor> {
+        let mut children = vec![];
+        self.visit(|c| {
+            children.push(c);
+            CXChildVisit_Continue
+        });
+        children
+    }
+
+    /// Does this cursor have any children?
+    pub fn has_children(&self) -> bool {
+        let mut has_children = false;
+        self.visit(|_| {
+            has_children = true;
+            CXChildVisit_Break
+        });
+        has_children
+    }
+
+    /// Does this cursor have at least `n` children?
+    pub fn has_at_least_num_children(&self, n: usize) -> bool {
+        assert!(n > 0);
+        let mut num_left = n;
+        self.visit(|_| {
+            num_left -= 1;
+            if num_left == 0 {
+                CXChildVisit_Break
+            } else {
+                CXChildVisit_Continue
+            }
+        });
+        num_left == 0
     }
 
     /// Returns whether the given location contains a cursor with the given
@@ -581,7 +616,7 @@ impl Hash for Cursor {
 }
 
 /// The type of a node in clang's AST.
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Type {
     x: CXType,
 }
@@ -654,6 +689,31 @@ impl Type {
             Cursor {
                 x: clang_getTypeDeclaration(self.x),
             }
+        }
+    }
+
+    /// Get the canonical declaration of this type, if it is available.
+    pub fn canonical_declaration(&self,
+                                 location: Option<&Cursor>)
+                                 -> Option<CanonicalTypeDeclaration> {
+        let mut declaration = self.declaration();
+        if !declaration.is_valid() {
+            if let Some(location) = location {
+                let mut location = *location;
+                if let Some(referenced) = location.referenced() {
+                    location = referenced;
+                }
+                if location.is_template_like() {
+                    declaration = location;
+                }
+            }
+        }
+
+        let canonical = declaration.canonical();
+        if canonical.is_valid() && canonical.kind() != CXCursor_NoDeclFound {
+            Some(CanonicalTypeDeclaration(*self, canonical))
+        } else {
+            None
         }
     }
 
@@ -731,10 +791,12 @@ impl Type {
     /// If this type is a class template specialization, return its
     /// template arguments. Otherwise, return None.
     pub fn template_args(&self) -> Option<TypeTemplateArgIterator> {
-        self.num_template_args().map(|n| TypeTemplateArgIterator {
-            x: self.x,
-            length: n,
-            index: 0,
+        self.num_template_args().map(|n| {
+            TypeTemplateArgIterator {
+                x: self.x,
+                length: n,
+                index: 0,
+            }
         })
     }
 
@@ -836,14 +898,33 @@ impl Type {
         // Yep, the spelling of this containing type-parameter is extremely
         // nasty... But can happen in <type_traits>. Unfortunately I couldn't
         // reduce it enough :(
-        self.template_args().map_or(false, |args| {
-            args.len() > 0
-        }) && match self.declaration().kind() {
+        self.template_args().map_or(false, |args| args.len() > 0) &&
+        match self.declaration().kind() {
             CXCursor_ClassTemplatePartialSpecialization |
             CXCursor_TypeAliasTemplateDecl |
             CXCursor_TemplateTemplateParameter => false,
             _ => true,
         }
+    }
+}
+
+/// The `CanonicalTypeDeclaration` type exists as proof-by-construction that its
+/// cursor is the canonical declaration for its type. If you have a
+/// `CanonicalTypeDeclaration` instance, you know for sure that the type and
+/// cursor match up in a canonical declaration relationship, and it simply
+/// cannot be otherwise.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct CanonicalTypeDeclaration(Type, Cursor);
+
+impl CanonicalTypeDeclaration {
+    /// Get the type.
+    pub fn ty(&self) -> &Type {
+        &self.0
+    }
+
+    /// Get the type's canonical declaration cursor.
+    pub fn cursor(&self) -> &Cursor {
+        &self.1
     }
 }
 
@@ -1389,7 +1470,10 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
                                  type_to_str(ty.kind())));
         }
         if let Some(ty) = c.ret_type() {
-            print_indent(depth, format!(" {}ret-type = {}", prefix, type_to_str(ty.kind())));
+            print_indent(depth,
+                         format!(" {}ret-type = {}",
+                                 prefix,
+                                 type_to_str(ty.kind())));
         }
 
         if let Some(refd) = c.referenced() {
@@ -1398,7 +1482,9 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
                 print_cursor(depth,
                              String::from(prefix) + "referenced.",
                              &refd);
-                print_cursor(depth, String::from(prefix) + "referenced.", &refd);
+                print_cursor(depth,
+                             String::from(prefix) + "referenced.",
+                             &refd);
             }
         }
 
@@ -1408,7 +1494,9 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
             print_cursor(depth,
                          String::from(prefix) + "canonical.",
                          &canonical);
-            print_cursor(depth, String::from(prefix) + "canonical.", &canonical);
+            print_cursor(depth,
+                         String::from(prefix) + "canonical.",
+                         &canonical);
         }
 
         if let Some(specialized) = c.specialized() {
@@ -1417,7 +1505,9 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
                 print_cursor(depth,
                              String::from(prefix) + "specialized.",
                              &specialized);
-                print_cursor(depth, String::from(prefix) + "specialized.", &specialized);
+                print_cursor(depth,
+                             String::from(prefix) + "specialized.",
+                             &specialized);
             }
         }
     }

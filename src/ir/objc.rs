@@ -1,10 +1,10 @@
 //! Objective C types
 
+use super::context::BindgenContext;
+use super::function::FunctionSig;
 use clang;
 use clang_sys::CXChildVisit_Continue;
 use clang_sys::CXCursor_ObjCInstanceMethodDecl;
-use super::context::BindgenContext;
-use super::function::FunctionSig;
 
 /// Objective C interface as used in TypeKind
 ///
