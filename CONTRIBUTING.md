@@ -69,7 +69,7 @@ that you aren't forgetting to document types and functions. CI will catch it if
 you forget, but the turn around will be a lot slower ;)
 
 ```
-$ cargo build --features _docs
+$ cargo build --features docs_
 ```
 
 ## Testing
