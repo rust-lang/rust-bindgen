@@ -90,7 +90,7 @@ Run `cargo test` to compare generated Rust bindings to the expectations.
 ### Running All Tests
 
 ```
-$ cargo test
+$ cargo test --all-features
 ```
 
 ### Authoring New Tests
