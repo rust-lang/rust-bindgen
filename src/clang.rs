@@ -225,6 +225,7 @@ impl Cursor {
     /// remaining free template arguments?
     pub fn is_fully_specialized_template(&self) -> bool {
         self.is_template_specialization() &&
+        self.kind() != CXCursor_ClassTemplatePartialSpecialization &&
         self.num_template_args().unwrap_or(0) > 0
     }
 
