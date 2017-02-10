@@ -6,7 +6,7 @@ use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::item::{Item, ItemSet};
 use super::layout::Layout;
 use super::ty::{TemplateDeclaration, Type};
-use super::traversal::TypeCollector;
+use super::traversal::Trace;
 use clang;
 use parse::{ClangItemParser, ParseError};
 use std::cell::Cell;
@@ -1075,10 +1075,10 @@ impl<'a> CanDeriveCopy<'a> for CompInfo {
     }
 }
 
-impl TypeCollector for CompInfo {
+impl Trace for CompInfo {
     type Extra = Item;
 
-    fn collect_types(&self,
+    fn trace(&self,
                      context: &BindgenContext,
                      types: &mut ItemSet,
                      item: &Item) {

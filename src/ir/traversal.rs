@@ -4,7 +4,7 @@ use super::context::{BindgenContext, ItemId};
 use super::item::ItemSet;
 
 /// Collect all the type items referenced by this item.
-pub trait TypeCollector {
+pub trait Trace {
     /// If a particular type needs extra information beyond what it has in
     /// `self` and `context` to find its referenced type items, its
     /// implementation can define this associated type, forcing callers to pass
@@ -12,7 +12,7 @@ pub trait TypeCollector {
     type Extra;
 
     /// Add each type item referenced by `self` into the `types` set.
-    fn collect_types(&self,
+    fn trace(&self,
                      context: &BindgenContext,
                      types: &mut ItemSet,
                      extra: &Self::Extra);
@@ -78,7 +78,7 @@ impl<'ctx, 'gen> Iterator for ItemTraversal<'ctx, 'gen>
 
         if self.ctx.options().whitelist_recursively {
             let mut sub_types = ItemSet::new();
-            id.collect_types(self.ctx, &mut sub_types, &());
+            id.trace(self.ctx, &mut sub_types, &());
 
             for id in sub_types {
                 if self.seen.insert(id) {

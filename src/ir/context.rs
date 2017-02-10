@@ -5,7 +5,7 @@ use super::int::IntKind;
 use super::item::{Item, ItemSet, ItemCanonicalPath};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
-use super::traversal::{ItemTraversal, TypeCollector};
+use super::traversal::{ItemTraversal, Trace};
 use super::ty::{FloatKind, TemplateDeclaration, Type, TypeKind};
 use BindgenOptions;
 use cexpr;
@@ -1393,7 +1393,7 @@ impl<'ctx, 'gen> Iterator for AssertNoDanglingItemIter<'ctx, 'gen>
         };
 
         let mut sub_types = ItemSet::new();
-        id.collect_types(self.ctx, &mut sub_types, &());
+        id.trace(self.ctx, &mut sub_types, &());
 
         if self.ctx.resolve_item_fallible(id).is_none() {
             let mut path = vec![];

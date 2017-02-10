@@ -3,7 +3,7 @@
 use super::context::{BindgenContext, ItemId};
 use super::item::{Item, ItemSet};
 use super::ty::TypeKind;
-use super::traversal::TypeCollector;
+use super::traversal::Trace;
 use clang;
 use clang_sys::CXCallingConv;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
@@ -316,10 +316,10 @@ impl ClangSubItemParser for Function {
     }
 }
 
-impl TypeCollector for FunctionSig {
+impl Trace for FunctionSig {
     type Extra = Item;
 
-    fn collect_types(&self,
+    fn trace(&self,
                      _context: &BindgenContext,
                      types: &mut ItemSet,
                      _item: &Item) {

@@ -7,7 +7,7 @@ use super::function::Function;
 use super::item_kind::ItemKind;
 use super::module::Module;
 use super::ty::{TemplateDeclaration, Type, TypeKind};
-use super::traversal::TypeCollector;
+use super::traversal::Trace;
 use clang;
 use clang_sys;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
@@ -167,21 +167,21 @@ impl ItemAncestors for Item {
     }
 }
 
-impl TypeCollector for ItemId {
+impl Trace for ItemId {
     type Extra = ();
 
-    fn collect_types(&self,
+    fn trace(&self,
                      ctx: &BindgenContext,
                      types: &mut ItemSet,
                      extra: &()) {
-        ctx.resolve_item(*self).collect_types(ctx, types, extra);
+        ctx.resolve_item(*self).trace(ctx, types, extra);
     }
 }
 
-impl TypeCollector for Item {
+impl Trace for Item {
     type Extra = ();
 
-    fn collect_types(&self,
+    fn trace(&self,
                      ctx: &BindgenContext,
                      types: &mut ItemSet,
                      _extra: &()) {
@@ -196,7 +196,7 @@ impl TypeCollector for Item {
                 // opaque.
                 if ty.should_be_traced_unconditionally() ||
                    !self.is_opaque(ctx) {
-                    ty.collect_types(ctx, types, self);
+                    ty.trace(ctx, types, self);
                 }
             }
             ItemKind::Function(ref fun) => {

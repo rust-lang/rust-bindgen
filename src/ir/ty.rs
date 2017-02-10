@@ -9,7 +9,7 @@ use super::int::IntKind;
 use super::item::{Item, ItemSet};
 use super::layout::Layout;
 use super::objc::ObjCInterface;
-use super::traversal::TypeCollector;
+use super::traversal::Trace;
 use clang::{self, Cursor};
 use parse::{ClangItemParser, ParseError, ParseResult};
 use std::mem;
@@ -1125,10 +1125,10 @@ impl Type {
     }
 }
 
-impl TypeCollector for Type {
+impl Trace for Type {
     type Extra = Item;
 
-    fn collect_types(&self,
+    fn trace(&self,
                      context: &BindgenContext,
                      types: &mut ItemSet,
                      item: &Item) {
@@ -1148,9 +1148,9 @@ impl TypeCollector for Type {
                     types.insert(item);
                 }
             }
-            TypeKind::Comp(ref ci) => ci.collect_types(context, types, item),
+            TypeKind::Comp(ref ci) => ci.trace(context, types, item),
             TypeKind::Function(ref sig) => {
-                sig.collect_types(context, types, item)
+                sig.trace(context, types, item)
             }
             TypeKind::Enum(ref en) => {
                 if let Some(repr) = en.repr() {
