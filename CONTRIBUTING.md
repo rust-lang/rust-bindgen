@@ -69,7 +69,7 @@ that you aren't forgetting to document types and functions. CI will catch it if
 you forget, but the turn around will be a lot slower ;)
 
 ```
-$ cargo build --features "llvm_stable _docs"
+$ cargo build --features docs_
 ```
 
 ## Testing
@@ -90,7 +90,7 @@ Run `cargo test` to compare generated Rust bindings to the expectations.
 ### Running All Tests
 
 ```
-$ cargo test [--features llvm_stable]
+$ cargo test [--all-features]
 ```
 
 ### Authoring New Tests
