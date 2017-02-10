@@ -3,7 +3,7 @@
 use super::context::{BindgenContext, ItemId};
 use super::item::{Item, ItemSet};
 use super::ty::TypeKind;
-use super::type_collector::TypeCollector;
+use super::traversal::TypeCollector;
 use clang;
 use clang_sys::CXCallingConv;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};

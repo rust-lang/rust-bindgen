@@ -9,7 +9,7 @@ use super::int::IntKind;
 use super::item::{Item, ItemSet};
 use super::layout::Layout;
 use super::objc::ObjCInterface;
-use super::type_collector::TypeCollector;
+use super::traversal::TypeCollector;
 use clang::{self, Cursor};
 use parse::{ClangItemParser, ParseError, ParseResult};
 use std::mem;

@@ -7,7 +7,7 @@ use super::function::Function;
 use super::item_kind::ItemKind;
 use super::module::Module;
 use super::ty::{TemplateDeclaration, Type, TypeKind};
-use super::type_collector::TypeCollector;
+use super::traversal::TypeCollector;
 use clang;
 use clang_sys;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};

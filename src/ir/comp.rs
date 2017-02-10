@@ -6,7 +6,7 @@ use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::item::{Item, ItemSet};
 use super::layout::Layout;
 use super::ty::{TemplateDeclaration, Type};
-use super::type_collector::TypeCollector;
+use super::traversal::TypeCollector;
 use clang;
 use parse::{ClangItemParser, ParseError};
 use std::cell::Cell;
