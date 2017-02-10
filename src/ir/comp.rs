@@ -669,11 +669,20 @@ impl CompInfo {
                 CXCursor_UnionDecl |
                 CXCursor_ClassTemplate |
                 CXCursor_ClassDecl => {
+                    // We can find non-semantic children here, clang uses a
+                    // StructDecl to note incomplete structs that hasn't been
+                    // forward-declared before, see:
+                    //
+                    // https://github.com/servo/rust-bindgen/issues/482
+                    if cur.semantic_parent() != cursor {
+                        return CXChildVisit_Continue;
+                    }
+
                     let inner = Item::parse(cur, Some(potential_id), ctx)
                         .expect("Inner ClassDecl");
-                    if !ci.inner_types.contains(&inner) {
-                        ci.inner_types.push(inner);
-                    }
+
+                    ci.inner_types.push(inner);
+
                     // A declaration of an union or a struct without name could
                     // also be an unnamed field, unfortunately.
                     if cur.spelling().is_empty() &&

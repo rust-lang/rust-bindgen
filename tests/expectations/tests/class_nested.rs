@@ -29,6 +29,34 @@ fn bindgen_test_layout_A_B() {
 impl Clone for A_B {
     fn clone(&self) -> Self { *self }
 }
+#[repr(C)]
+#[derive(Debug, Default, Copy)]
+pub struct A_C {
+    pub baz: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_A_C() {
+    assert_eq!(::std::mem::size_of::<A_C>() , 4usize , concat ! (
+               "Size of: " , stringify ! ( A_C ) ));
+    assert_eq! (::std::mem::align_of::<A_C>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( A_C ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const A_C ) ) . baz as * const _ as usize } ,
+                0usize , concat ! (
+                "Alignment of field: " , stringify ! ( A_C ) , "::" ,
+                stringify ! ( baz ) ));
+}
+impl Clone for A_C {
+    fn clone(&self) -> Self { *self }
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct A_D<T> {
+    pub foo: T,
+}
+impl <T> Default for A_D<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[test]
 fn bindgen_test_layout_A() {
     assert_eq!(::std::mem::size_of::<A>() , 4usize , concat ! (
@@ -47,6 +75,21 @@ impl Clone for A {
 extern "C" {
     #[link_name = "var"]
     pub static mut var: A_B;
+}
+#[test]
+fn __bindgen_test_layout_template_1() {
+    assert_eq!(::std::mem::size_of::<A_D<::std::os::raw::c_int>>() , 4usize ,
+               concat ! (
+               "Size of template specialization: " , stringify ! (
+               A_D<::std::os::raw::c_int> ) ));
+    assert_eq!(::std::mem::align_of::<A_D<::std::os::raw::c_int>>() , 4usize ,
+               concat ! (
+               "Alignment of template specialization: " , stringify ! (
+               A_D<::std::os::raw::c_int> ) ));
+}
+extern "C" {
+    #[link_name = "baz"]
+    pub static mut baz: A_D<::std::os::raw::c_int>;
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]

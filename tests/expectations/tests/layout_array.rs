@@ -200,11 +200,8 @@ pub struct malloc_heap {
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct malloc_heap__bindgen_ty_1 {
-    pub lh_first: *mut malloc_heap__bindgen_ty_1_malloc_elem,
+    pub lh_first: *mut malloc_elem,
 }
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct malloc_heap__bindgen_ty_1_malloc_elem([u8; 0]);
 #[test]
 fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
     assert_eq!(::std::mem::size_of::<malloc_heap__bindgen_ty_1>() , 8usize ,
@@ -257,4 +254,12 @@ impl Clone for malloc_heap {
 }
 impl Default for malloc_heap {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy)]
+pub struct malloc_elem {
+    pub _address: u8,
+}
+impl Clone for malloc_elem {
+    fn clone(&self) -> Self { *self }
 }

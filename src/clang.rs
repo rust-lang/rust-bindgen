@@ -1482,9 +1482,6 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
                 print_cursor(depth,
                              String::from(prefix) + "referenced.",
                              &refd);
-                print_cursor(depth,
-                             String::from(prefix) + "referenced.",
-                             &refd);
             }
         }
 
@@ -1494,17 +1491,11 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
             print_cursor(depth,
                          String::from(prefix) + "canonical.",
                          &canonical);
-            print_cursor(depth,
-                         String::from(prefix) + "canonical.",
-                         &canonical);
         }
 
         if let Some(specialized) = c.specialized() {
             if specialized != *c {
                 println!("");
-                print_cursor(depth,
-                             String::from(prefix) + "specialized.",
-                             &specialized);
                 print_cursor(depth,
                              String::from(prefix) + "specialized.",
                              &specialized);

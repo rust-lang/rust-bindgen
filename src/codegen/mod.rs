@@ -2190,7 +2190,7 @@ impl ToRustTy for Type {
                         .map(|arg| arg.to_rust_ty(ctx))
                         .collect::<Vec<_>>();
 
-                    path.segments.last_mut().unwrap().parameters = if 
+                    path.segments.last_mut().unwrap().parameters = if
                         template_args.is_empty() {
                         None
                     } else {

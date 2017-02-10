@@ -98,7 +98,7 @@ pub struct rte_mbuf {
     pub cacheline1: MARKER,
     pub __bindgen_anon_3: rte_mbuf__bindgen_ty_4,
     /**< Pool from which mbuf was allocated. */
-    pub pool: *mut rte_mbuf_rte_mempool,
+    pub pool: *mut rte_mempool,
     /**< Next segment of scattered packet. */
     pub next: *mut rte_mbuf,
     pub __bindgen_anon_4: rte_mbuf__bindgen_ty_5,
@@ -490,9 +490,6 @@ impl Clone for rte_mbuf__bindgen_ty_4 {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct rte_mbuf_rte_mempool([u8; 0]);
-#[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct rte_mbuf__bindgen_ty_5 {
     /**< combined for easy fetch */
@@ -733,4 +730,13 @@ impl Clone for rte_mbuf {
 }
 impl Default for rte_mbuf {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+/**< Pool from which mbuf was allocated. */
+#[repr(C)]
+#[derive(Debug, Default, Copy)]
+pub struct rte_mempool {
+    pub _address: u8,
+}
+impl Clone for rte_mempool {
+    fn clone(&self) -> Self { *self }
 }

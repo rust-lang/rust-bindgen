@@ -1026,9 +1026,7 @@ impl Type {
             CXType_MemberPointer |
             CXType_Pointer => {
                 let inner = Item::from_ty_or_ref(ty.pointee_type().unwrap(),
-                                                 location,
-                                                 parent_id,
-                                                 ctx);
+                                                 location, None, ctx);
                 TypeKind::Pointer(inner)
             }
             CXType_BlockPointer => TypeKind::BlockPointer,
@@ -1038,7 +1036,7 @@ impl Type {
             CXType_LValueReference => {
                 let inner = Item::from_ty_or_ref(ty.pointee_type().unwrap(),
                                                  location,
-                                                 parent_id,
+                                                 None,
                                                  ctx);
                 TypeKind::Reference(inner)
             }
@@ -1047,7 +1045,7 @@ impl Type {
             CXType_DependentSizedArray => {
                 let inner = Item::from_ty(ty.elem_type().as_ref().unwrap(),
                                           location,
-                                          parent_id,
+                                          None,
                                           ctx)
                     .expect("Not able to resolve array element?");
                 TypeKind::Pointer(inner)
@@ -1055,7 +1053,7 @@ impl Type {
             CXType_IncompleteArray => {
                 let inner = Item::from_ty(ty.elem_type().as_ref().unwrap(),
                                           location,
-                                          parent_id,
+                                          None,
                                           ctx)
                     .expect("Not able to resolve array element?");
                 TypeKind::Array(inner, 0)
@@ -1070,7 +1068,7 @@ impl Type {
             CXType_Typedef => {
                 let inner = cursor.typedef_type().expect("Not valid Type?");
                 let inner =
-                    Item::from_ty_or_ref(inner, location, parent_id, ctx);
+                    Item::from_ty_or_ref(inner, location, None, ctx);
                 TypeKind::Alias(inner)
             }
             CXType_Enum => {
@@ -1092,7 +1090,7 @@ impl Type {
             CXType_ConstantArray => {
                 let inner = Item::from_ty(ty.elem_type().as_ref().unwrap(),
                                           location,
-                                          parent_id,
+                                          None,
                                           ctx)
                     .expect("Not able to resolve array element?");
                 TypeKind::Array(inner, ty.num_elements().unwrap())
