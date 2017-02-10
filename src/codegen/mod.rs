@@ -12,13 +12,12 @@ use ir::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
 use ir::function::{Function, FunctionSig};
 use ir::int::IntKind;
-use ir::item::{Item, ItemAncestors, ItemCanonicalName, ItemCanonicalPath};
+use ir::item::{Item, ItemSet, ItemAncestors, ItemCanonicalName, ItemCanonicalPath};
 use ir::item_kind::ItemKind;
 use ir::layout::Layout;
 use ir::module::Module;
 use ir::objc::ObjCInterface;
 use ir::ty::{Type, TypeKind};
-use ir::type_collector::ItemSet;
 use ir::var::Var;
 
 use std::borrow::Cow;

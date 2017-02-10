@@ -1,9 +1,9 @@
 //! Intermediate representation for C/C++ functions and methods.
 
 use super::context::{BindgenContext, ItemId};
-use super::item::Item;
+use super::item::{Item, ItemSet};
 use super::ty::TypeKind;
-use super::type_collector::{ItemSet, TypeCollector};
+use super::type_collector::TypeCollector;
 use clang;
 use clang_sys::CXCallingConv;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};

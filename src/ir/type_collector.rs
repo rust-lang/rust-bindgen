@@ -1,10 +1,7 @@
 //! Collecting type items.
 
-use super::context::{BindgenContext, ItemId};
-use std::collections::BTreeSet;
-
-/// A set of items.
-pub type ItemSet = BTreeSet<ItemId>;
+use super::context::BindgenContext;
+use super::item::ItemSet;
 
 /// Collect all the type items referenced by this item.
 pub trait TypeCollector {

@@ -3,10 +3,10 @@
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
-use super::item::Item;
+use super::item::{Item, ItemSet};
 use super::layout::Layout;
 use super::ty::{TemplateDeclaration, Type};
-use super::type_collector::{ItemSet, TypeCollector};
+use super::type_collector::TypeCollector;
 use clang;
 use parse::{ClangItemParser, ParseError};
 use std::cell::Cell;
