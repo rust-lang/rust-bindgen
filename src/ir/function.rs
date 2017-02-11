@@ -1,7 +1,8 @@
 //! Intermediate representation for C/C++ functions and methods.
 
 use super::context::{BindgenContext, ItemId};
-use super::item::{Item, ItemSet};
+use super::item::Item;
+use super::traversal::{Trace, Tracer};
 use super::ty::TypeKind;
 use super::traversal::Trace;
 use clang;
@@ -317,16 +318,18 @@ impl ClangSubItemParser for Function {
 }
 
 impl Trace for FunctionSig {
-    type Extra = Item;
+    type Extra = ();
 
-    fn trace(&self,
-                     _context: &BindgenContext,
-                     types: &mut ItemSet,
-                     _item: &Item) {
-        types.insert(self.return_type());
+    fn trace<T>(&self,
+                _: &BindgenContext,
+                tracer: &mut T,
+                _: &())
+        where T: Tracer
+    {
+        tracer.visit(self.return_type());
 
         for &(_, ty) in self.argument_types() {
-            types.insert(ty);
+            tracer.visit(ty);
         }
     }
 }

@@ -6,10 +6,10 @@ use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::enum_ty::Enum;
 use super::function::FunctionSig;
 use super::int::IntKind;
-use super::item::{Item, ItemSet};
+use super::item::Item;
 use super::layout::Layout;
 use super::objc::ObjCInterface;
-use super::traversal::Trace;
+use super::traversal::{Trace, Tracer};
 use clang::{self, Cursor};
 use parse::{ClangItemParser, ParseError, ParseResult};
 use std::mem;
@@ -1128,37 +1128,37 @@ impl Type {
 impl Trace for Type {
     type Extra = Item;
 
-    fn trace(&self,
-                     context: &BindgenContext,
-                     types: &mut ItemSet,
-                     item: &Item) {
+    fn trace<T>(&self,
+                context: &BindgenContext,
+                tracer: &mut T,
+                item: &Item)
+        where T: Tracer
+    {
         match *self.kind() {
             TypeKind::Pointer(inner) |
             TypeKind::Reference(inner) |
             TypeKind::Array(inner, _) |
             TypeKind::Alias(inner) |
             TypeKind::ResolvedTypeRef(inner) => {
-                types.insert(inner);
+                tracer.visit(inner);
             }
 
             TypeKind::TemplateAlias(inner, ref template_args) |
             TypeKind::TemplateInstantiation(inner, ref template_args) => {
-                types.insert(inner);
+                tracer.visit(inner);
                 for &item in template_args {
-                    types.insert(item);
+                    tracer.visit(item);
                 }
             }
-            TypeKind::Comp(ref ci) => ci.trace(context, types, item),
-            TypeKind::Function(ref sig) => {
-                sig.trace(context, types, item)
-            }
+            TypeKind::Comp(ref ci) => ci.trace(context, tracer, item),
+            TypeKind::Function(ref sig) => sig.trace(context, tracer, &()),
             TypeKind::Enum(ref en) => {
                 if let Some(repr) = en.repr() {
-                    types.insert(repr);
+                    tracer.visit(repr);
                 }
             }
             TypeKind::UnresolvedTypeRef(_, _, Some(id)) => {
-                types.insert(id);
+                tracer.visit(id);
             }
 
             TypeKind::ObjCInterface(_) => {

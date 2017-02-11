@@ -6,6 +6,7 @@ use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::function::Function;
 use super::item_kind::ItemKind;
 use super::module::Module;
+use super::traversal::{Trace, Tracer};
 use super::ty::{TemplateDeclaration, Type, TypeKind};
 use super::traversal::Trace;
 use clang;
@@ -170,22 +171,20 @@ impl ItemAncestors for Item {
 impl Trace for ItemId {
     type Extra = ();
 
-    fn trace(&self,
-                     ctx: &BindgenContext,
-                     types: &mut ItemSet,
-                     extra: &()) {
-        ctx.resolve_item(*self).trace(ctx, types, extra);
+    fn trace<T>(&self, ctx: &BindgenContext, tracer: &mut T, extra: &())
+        where T: Tracer
+    {
+        ctx.resolve_item(*self).trace(ctx, tracer, extra);
     }
 }
 
 impl Trace for Item {
     type Extra = ();
 
-    fn trace(&self,
-                     ctx: &BindgenContext,
-                     types: &mut ItemSet,
-                     _extra: &()) {
-        if self.is_hidden(ctx) || types.contains(&self.id()) {
+    fn trace<T>(&self, ctx: &BindgenContext, tracer: &mut T, _extra: &())
+        where T: Tracer
+    {
+        if self.is_hidden(ctx) {
             return;
         }
 
@@ -196,22 +195,25 @@ impl Trace for Item {
                 // opaque.
                 if ty.should_be_traced_unconditionally() ||
                    !self.is_opaque(ctx) {
-                    ty.trace(ctx, types, self);
+                    ty.trace(ctx, tracer, self);
                 }
             }
             ItemKind::Function(ref fun) => {
                 // Just the same way, it has not real meaning for a function to
                 // be opaque, so we trace across it.
-                types.insert(fun.signature());
+                tracer.visit(fun.signature());
             }
             ItemKind::Var(ref var) => {
-                types.insert(var.ty());
+                tracer.visit(var.ty());
             }
             ItemKind::Module(_) => {
                 // Module -> children edges are "weak", and we do not want to
                 // trace them. If we did, then whitelisting wouldn't work as
                 // expected: everything in every module would end up
                 // whitelisted.
+                //
+                // TODO: make a new edge kind for module -> children edges and
+                // filter them during whitelisting traversals.
             }
         }
     }
@@ -923,10 +925,11 @@ impl TemplateDeclaration for ItemKind {
     fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
         match *self {
             ItemKind::Type(ref ty) => ty.template_params(ctx),
-            // TODO FITZGEN: shouldn't functions be able to have free template
-            // params?
-            ItemKind::Module(_) |
+            // If we start emitting bindings to explicitly instantiated
+            // functions, then we'll need to check ItemKind::Function for
+            // template params.
             ItemKind::Function(_) |
+            ItemKind::Module(_) |
             ItemKind::Var(_) => None,
         }
     }
