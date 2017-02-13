@@ -4,7 +4,6 @@ use super::context::{BindgenContext, ItemId};
 use super::item::Item;
 use super::traversal::{Trace, Tracer};
 use super::ty::TypeKind;
-use super::traversal::Trace;
 use clang;
 use clang_sys::CXCallingConv;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
@@ -320,11 +319,8 @@ impl ClangSubItemParser for Function {
 impl Trace for FunctionSig {
     type Extra = ();
 
-    fn trace<T>(&self,
-                _: &BindgenContext,
-                tracer: &mut T,
-                _: &())
-        where T: Tracer
+    fn trace<T>(&self, _: &BindgenContext, tracer: &mut T, _: &())
+        where T: Tracer,
     {
         tracer.visit(self.return_type());
 

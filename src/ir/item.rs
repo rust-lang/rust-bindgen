@@ -8,7 +8,6 @@ use super::item_kind::ItemKind;
 use super::module::Module;
 use super::traversal::{Trace, Tracer};
 use super::ty::{TemplateDeclaration, Type, TypeKind};
-use super::traversal::Trace;
 use clang;
 use clang_sys;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
@@ -172,7 +171,7 @@ impl Trace for ItemId {
     type Extra = ();
 
     fn trace<T>(&self, ctx: &BindgenContext, tracer: &mut T, extra: &())
-        where T: Tracer
+        where T: Tracer,
     {
         ctx.resolve_item(*self).trace(ctx, tracer, extra);
     }
@@ -182,7 +181,7 @@ impl Trace for Item {
     type Extra = ();
 
     fn trace<T>(&self, ctx: &BindgenContext, tracer: &mut T, _extra: &())
-        where T: Tracer
+        where T: Tracer,
     {
         if self.is_hidden(ctx) {
             return;

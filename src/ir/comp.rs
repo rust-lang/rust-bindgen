@@ -7,7 +7,6 @@ use super::item::Item;
 use super::layout::Layout;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::{TemplateDeclaration, Type};
-use super::traversal::Trace;
 use clang;
 use parse::{ClangItemParser, ParseError};
 use std::cell::Cell;
@@ -1079,11 +1078,8 @@ impl<'a> CanDeriveCopy<'a> for CompInfo {
 impl Trace for CompInfo {
     type Extra = Item;
 
-    fn trace<T>(&self,
-                context: &BindgenContext,
-                tracer: &mut T,
-                item: &Item)
-        where T: Tracer
+    fn trace<T>(&self, context: &BindgenContext, tracer: &mut T, item: &Item)
+        where T: Tracer,
     {
         // TODO: We should properly distinguish template instantiations from
         // template declarations at the type level. Why are some template

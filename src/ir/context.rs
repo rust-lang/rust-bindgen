@@ -2,7 +2,7 @@
 
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::int::IntKind;
-use super::item::{Item, ItemSet, ItemCanonicalPath};
+use super::item::{Item, ItemCanonicalPath, ItemSet};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
 use super::traversal::{self, Edge, ItemTraversal};
@@ -152,8 +152,11 @@ pub struct BindgenContext<'ctx> {
 }
 
 /// A traversal of whitelisted items.
-pub type WhitelistedItems<'ctx, 'gen> =
-    ItemTraversal<'ctx, 'gen, ItemSet, Vec<ItemId>, fn(Edge) -> bool>;
+pub type WhitelistedItems<'ctx, 'gen> = ItemTraversal<'ctx,
+                                                      'gen,
+                                                      ItemSet,
+                                                      Vec<ItemId>,
+                                                      fn(Edge) -> bool>;
 
 impl<'ctx> BindgenContext<'ctx> {
     /// Construct the context for the given `options`.
@@ -547,7 +550,9 @@ impl<'ctx> BindgenContext<'ctx> {
         assert!(self.current_module == self.root_module);
 
         let roots = self.items().map(|(&id, _)| id);
-        traversal::AssertNoDanglingItemsTraversal::new(self, roots, traversal::all_edges)
+        traversal::AssertNoDanglingItemsTraversal::new(self,
+                                                       roots,
+                                                       traversal::all_edges)
     }
 
     // This deserves a comment. Builtin types don't get a valid declaration, so

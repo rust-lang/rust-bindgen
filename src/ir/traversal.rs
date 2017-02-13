@@ -1,8 +1,8 @@
 //! Traversal of the graph of IR items and types.
 
-use std::collections::{BTreeMap, VecDeque};
 use super::context::{BindgenContext, ItemId};
 use super::item::ItemSet;
+use std::collections::{BTreeMap, VecDeque};
 
 /// An outgoing edge in the IR graph is a reference from some item to another
 /// item:
@@ -14,7 +14,7 @@ use super::item::ItemSet;
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Edge {
     to: ItemId,
-    kind: EdgeKind
+    kind: EdgeKind,
 }
 
 impl Edge {
@@ -119,18 +119,20 @@ impl<'ctx, 'gen> TraversalStorage<'ctx, 'gen> for ItemSet {
 /// each item. This is useful for providing debug assertions with meaningful
 /// diagnostic messages about dangling items.
 #[derive(Debug)]
-pub struct Paths<'ctx, 'gen>(BTreeMap<ItemId, ItemId>, &'ctx BindgenContext<'gen>)
+pub struct Paths<'ctx, 'gen>(BTreeMap<ItemId, ItemId>,
+                             &'ctx BindgenContext<'gen>)
     where 'gen: 'ctx;
 
 impl<'ctx, 'gen> TraversalStorage<'ctx, 'gen> for Paths<'ctx, 'gen>
-    where 'gen: 'ctx
+    where 'gen: 'ctx,
 {
     fn new(ctx: &'ctx BindgenContext<'gen>) -> Self {
         Paths(BTreeMap::new(), ctx)
     }
 
     fn add(&mut self, from: Option<ItemId>, item: ItemId) -> bool {
-        let newly_discovered = self.0.insert(item, from.unwrap_or(item)).is_none();
+        let newly_discovered =
+            self.0.insert(item, from.unwrap_or(item)).is_none();
 
         if self.1.resolve_item_fallible(item).is_none() {
             let mut path = vec![];
@@ -241,7 +243,11 @@ pub struct ItemTraversal<'ctx, 'gen, Storage, Queue, Predicate>
     currently_traversing: Option<ItemId>,
 }
 
-impl<'ctx, 'gen, Storage, Queue, Predicate> ItemTraversal<'ctx, 'gen, Storage, Queue, Predicate>
+impl<'ctx, 'gen, Storage, Queue, Predicate> ItemTraversal<'ctx,
+                                                          'gen,
+                                                          Storage,
+                                                          Queue,
+                                                          Predicate>
     where 'gen: 'ctx,
           Storage: TraversalStorage<'ctx, 'gen>,
           Queue: TraversalQueue,
@@ -272,7 +278,8 @@ impl<'ctx, 'gen, Storage, Queue, Predicate> ItemTraversal<'ctx, 'gen, Storage, Q
     }
 }
 
-impl<'ctx, 'gen, Storage, Queue, Predicate> Tracer for ItemTraversal<'ctx, 'gen, Storage, Queue, Predicate>
+impl<'ctx, 'gen, Storage, Queue, Predicate> Tracer
+    for ItemTraversal<'ctx, 'gen, Storage, Queue, Predicate>
     where 'gen: 'ctx,
           Storage: TraversalStorage<'ctx, 'gen>,
           Queue: TraversalQueue,
@@ -283,15 +290,17 @@ impl<'ctx, 'gen, Storage, Queue, Predicate> Tracer for ItemTraversal<'ctx, 'gen,
         if !self.predicate.should_follow(edge) {
             return;
         }
-               
-        let is_newly_discovered = self.seen.add(self.currently_traversing, item);
+
+        let is_newly_discovered = self.seen
+            .add(self.currently_traversing, item);
         if is_newly_discovered {
             self.queue.push(item)
         }
     }
 }
 
-impl<'ctx, 'gen, Storage, Queue, Predicate> Iterator for ItemTraversal<'ctx, 'gen, Storage, Queue, Predicate>
+impl<'ctx, 'gen, Storage, Queue, Predicate> Iterator
+    for ItemTraversal<'ctx, 'gen, Storage, Queue, Predicate>
     where 'gen: 'ctx,
           Storage: TraversalStorage<'ctx, 'gen>,
           Queue: TraversalQueue,
@@ -324,7 +333,11 @@ impl<'ctx, 'gen, Storage, Queue, Predicate> Iterator for ItemTraversal<'ctx, 'ge
 /// See `BindgenContext::assert_no_dangling_item_traversal` for more
 /// information.
 pub type AssertNoDanglingItemsTraversal<'ctx, 'gen> =
-    ItemTraversal<'ctx, 'gen, Paths<'ctx, 'gen>, VecDeque<ItemId>, fn(Edge) -> bool>;
+    ItemTraversal<'ctx,
+                  'gen,
+                  Paths<'ctx, 'gen>,
+                  VecDeque<ItemId>,
+                  fn(Edge) -> bool>;
 
 #[cfg(test)]
 mod tests {

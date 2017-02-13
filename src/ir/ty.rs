@@ -1026,7 +1026,9 @@ impl Type {
             CXType_MemberPointer |
             CXType_Pointer => {
                 let inner = Item::from_ty_or_ref(ty.pointee_type().unwrap(),
-                                                 location, None, ctx);
+                                                 location,
+                                                 None,
+                                                 ctx);
                 TypeKind::Pointer(inner)
             }
             CXType_BlockPointer => TypeKind::BlockPointer,
@@ -1067,8 +1069,7 @@ impl Type {
             }
             CXType_Typedef => {
                 let inner = cursor.typedef_type().expect("Not valid Type?");
-                let inner =
-                    Item::from_ty_or_ref(inner, location, None, ctx);
+                let inner = Item::from_ty_or_ref(inner, location, None, ctx);
                 TypeKind::Alias(inner)
             }
             CXType_Enum => {
@@ -1128,11 +1129,8 @@ impl Type {
 impl Trace for Type {
     type Extra = Item;
 
-    fn trace<T>(&self,
-                context: &BindgenContext,
-                tracer: &mut T,
-                item: &Item)
-        where T: Tracer
+    fn trace<T>(&self, context: &BindgenContext, tracer: &mut T, item: &Item)
+        where T: Tracer,
     {
         match *self.kind() {
             TypeKind::Pointer(inner) |
