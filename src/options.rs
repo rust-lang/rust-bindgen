@@ -84,6 +84,11 @@ pub fn builder_from_flags<I>
             Arg::with_name("emit-ir")
                 .long("emit-ir")
                 .help("Output our internal IR for debugging purposes."),
+            Arg::with_name("emit-ir-graphviz")
+                .long("emit-ir-graphviz")
+                .help("Dump graphviz dot file.")
+                .value_name("path")
+                .takes_value(true),
             Arg::with_name("enable-cxx-namespaces")
                 .long("enable-cxx-namespaces")
                 .help("Enable support for C++ namespaces."),
@@ -268,6 +273,10 @@ pub fn builder_from_flags<I>
 
     if matches.is_present("emit-ir") {
         builder = builder.emit_ir();
+    }
+
+    if let Some(path) = matches.value_of("emit-ir-graphviz") {
+        builder = builder.emit_ir_graphviz(path);
     }
 
     if matches.is_present("enable-cxx-namespaces") {

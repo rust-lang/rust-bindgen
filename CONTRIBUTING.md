@@ -15,6 +15,7 @@ out to us in a GitHub issue, or stop by
   - [Overview](#overview)
   - [Running All Tests](#running-all-tests)
   - [Authoring New Tests](#authoring-new-tests)
+- [Generating Graphviz Dot File](#generating-graphviz-dot-file)
 - [Automatic code formatting](#automatic-code-formatting)
 - [Debug Logging](#debug-logging)
 - [Using `creduce` to Minimize Test Cases](#using-creduce-to-minimize-test-cases)
@@ -110,6 +111,27 @@ Then verify the new Rust bindings compile and pass some basic tests:
 
 ```
 $ cargo test -p tests_expectations
+```
+
+## Generating Graphviz Dot Files
+
+We have a special thing which will help you debug your codegen context if something
+will go wrong. It will generate a [`graphviz`](http://graphviz.org/pdf/dotguide.pdf)
+dot file and then you can create a PNG from it with `graphviz` tool in your OS.
+
+Here is an example how it could be done:
+
+```
+$ cargo run -- example.hpp --emit-ir-graphviz output.dot
+```
+
+It will generate your graphviz dot file and then you will need tog
+create a PNG from it with `graphviz`.
+
+Something like this:
+
+```
+$ dot -Tpng output.dot -o output.png
 ```
 
 ## Automatic code formatting

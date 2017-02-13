@@ -2499,6 +2499,13 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
             }
         }
 
+        if let Some(path) = context.options().emit_ir_graphviz.as_ref() {
+            match context.emit_ir_graphviz(path.clone()) {
+                Ok(()) => info!("Your dot file was generated successfully into: {}", path),
+                Err(e) => error!("{}", e),
+            }
+        }
+
         context.resolve_item(context.root_module())
             .codegen(context, &mut result, &whitelisted_items, &());
 

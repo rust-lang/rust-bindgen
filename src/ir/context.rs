@@ -5,7 +5,7 @@ use super::int::IntKind;
 use super::item::{Item, ItemCanonicalPath, ItemSet};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
-use super::traversal::{self, Edge, ItemTraversal};
+use super::traversal::{self, Edge, ItemTraversal, Trace};
 use super::ty::{FloatKind, TemplateDeclaration, Type, TypeKind};
 use BindgenOptions;
 use cexpr;
@@ -18,6 +18,8 @@ use std::cell::Cell;
 use std::collections::{HashMap, hash_map};
 use std::collections::btree_map::{self, BTreeMap};
 use std::fmt;
+use std::fs::File;
+use std::io::{self, Write};
 use std::iter::IntoIterator;
 use syntax::ast::Ident;
 use syntax::codemap::{DUMMY_SP, Span};
@@ -1107,6 +1109,33 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Get the options used to configure this bindgen context.
     pub fn options(&self) -> &BindgenOptions {
         &self.options
+    }
+
+    /// Output graphviz dot file.
+    pub fn emit_ir_graphviz(&self, path: String) -> io::Result<()> {
+        let file = try!(File::create(path));
+        let mut dot_file = io::BufWriter::new(file);
+        writeln!(&mut dot_file, "digraph {{")?;
+
+        let mut err: Option<io::Result<_>> = None;
+
+        for (id, item) in self.items() {
+            writeln!(&mut dot_file, "{} {};", id.0, item.dot_attributes(self))?;
+
+            item.trace(self, &mut |sub_id: ItemId, _edge_kind| {
+                match writeln!(&mut dot_file, "{} -> {};", id.0, sub_id.as_usize()) {
+                    Ok(_) => {},
+                    Err(e) => err = Some(Err(e)),
+                }
+            }, &());
+
+            if err.is_some() {
+                return err.unwrap();
+            }
+        }
+
+        writeln!(&mut dot_file, "}}")?;
+        Ok(())
     }
 
     /// Tokenizes a namespace cursor in order to get the name and kind of the
