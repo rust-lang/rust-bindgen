@@ -408,73 +408,25 @@ impl CompInfo {
     /// members. This is not ideal, but clang fails to report the size for these
     /// kind of unions, see test/headers/template_union.hpp
     pub fn layout(&self, ctx: &BindgenContext) -> Option<Layout> {
+        use std::cmp;
         // We can't do better than clang here, sorry.
         if self.kind == CompKind::Struct {
-            None
-        } else {
-            self.calc_layout(ctx)
+            return None
         }
-    }
 
-    /// Compute the layout of this type.
-    pub fn calc_layout(&self, ctx: &BindgenContext) -> Option<Layout> {
-        use std::cmp;
-        use std::mem;
+        let mut max_size = 0;
+        let mut max_align = 0;
+        for field in &self.fields {
+            let field_layout = ctx.resolve_type(field.ty)
+                .layout(ctx);
 
-        if self.kind == CompKind::Struct {
-            let mut latest_offset_in_bits = 0;
-            let mut max_align = 0;
-
-            if self.needs_explicit_vtable(ctx) {
-                latest_offset_in_bits += mem::size_of::<*mut ()>() * 8;
-                max_align = mem::size_of::<*mut ()>();
+            if let Some(layout) = field_layout {
+                max_size = cmp::max(max_size, layout.size);
+                max_align = cmp::max(max_align, layout.align);
             }
-
-            for field in &self.fields {
-                if let Some(bits) = field.bitfield() {
-                    latest_offset_in_bits += bits as usize;
-                } else {
-                    let field_ty = ctx.resolve_type(field.ty);
-
-                    if let Some(field_layout) =
-                        field_ty.as_comp()
-                            .and_then(|comp| comp.calc_layout(ctx))
-                            .or_else(|| field_ty.layout(ctx)) {
-
-                        let n = (latest_offset_in_bits / 8) %
-                                field_layout.align;
-
-                        if !self.packed && n != 0 {
-                            latest_offset_in_bits += (field_layout.align - n) *
-                                                     8;
-                        }
-
-                        latest_offset_in_bits += field_layout.size * 8;
-                        max_align = cmp::max(max_align, field_layout.align);
-                    }
-                }
-            }
-
-            if latest_offset_in_bits == 0 && max_align == 0 {
-                None
-            } else {
-                Some(Layout::new((latest_offset_in_bits + 7) / 8, max_align))
-            }
-        } else {
-            let mut max_size = 0;
-            let mut max_align = 0;
-            for field in &self.fields {
-                let field_layout = ctx.resolve_type(field.ty)
-                    .layout(ctx);
-
-                if let Some(layout) = field_layout {
-                    max_size = cmp::max(max_size, layout.size);
-                    max_align = cmp::max(max_align, layout.align);
-                }
-            }
-
-            Some(Layout::new(max_size, max_align))
         }
+
+        Some(Layout::new(max_size, max_align))
     }
 
     /// Get this type's set of fields.

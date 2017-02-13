@@ -9,7 +9,7 @@
 pub struct max_align_t {
     pub __clang_max_align_nonce1: ::std::os::raw::c_longlong,
     pub __bindgen_padding_0: u64,
-    pub __clang_max_align_nonce2: f64,
+    pub __clang_max_align_nonce2: ::std::os::raw::c_longlong,
     pub __bindgen_padding_1: u64,
 }
 #[test]

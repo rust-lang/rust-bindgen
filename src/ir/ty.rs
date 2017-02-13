@@ -382,41 +382,8 @@ impl Type {
             _ => false,
         }
     }
-
-    /// If this type has a known size, return it (in bytes).
-    pub fn calc_size(&self, ctx: &BindgenContext) -> Option<usize> {
-        match self.kind {
-            TypeKind::Comp(ref ci) => {
-                ci.calc_layout(ctx).map(|layout| layout.size)
-            }
-            TypeKind::Enum(ref enum_ty) => {
-                enum_ty.calc_layout(ctx).map(|layout| layout.size)
-            }
-            TypeKind::Int(int_kind) => int_kind.known_size(),
-            TypeKind::Float(float_kind) => Some(float_kind.known_size()),
-            TypeKind::Complex(float_kind) => Some(float_kind.known_size() * 2),
-            TypeKind::Reference(..) |
-            TypeKind::NullPtr |
-            TypeKind::Pointer(..) |
-            TypeKind::BlockPointer |
-            TypeKind::Function(..) |
-            TypeKind::ObjCInterface(..) => Some(mem::size_of::<*mut ()>()),
-            TypeKind::ResolvedTypeRef(inner) |
-            TypeKind::Alias(inner) |
-            TypeKind::TemplateAlias(inner, _) |
-            TypeKind::TemplateInstantiation(inner, _) => {
-                ctx.resolve_type(inner).calc_size(ctx)
-            }
-            TypeKind::Array(inner, len) => {
-                ctx.resolve_type(inner)
-                    .layout(ctx)
-                    .map(|layout| layout.size * len)
-            }
-            TypeKind::Void | TypeKind::Named => None,
-            TypeKind::UnresolvedTypeRef(..) => unreachable!(),
-        }
-    }
 }
+
 #[test]
 fn is_invalid_named_type_valid() {
     let ty = Type::new(Some("foo".into()), None, TypeKind::Named, false);

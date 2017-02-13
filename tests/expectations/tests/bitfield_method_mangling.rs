@@ -8,6 +8,7 @@
 #[derive(Debug, Default, Copy)]
 pub struct mach_msg_type_descriptor_t {
     pub _bitfield_1: u32,
+    pub __bindgen_align: [u32; 0usize],
 }
 #[test]
 fn bindgen_test_layout_mach_msg_type_descriptor_t() {
@@ -21,33 +22,4 @@ fn bindgen_test_layout_mach_msg_type_descriptor_t() {
 }
 impl Clone for mach_msg_type_descriptor_t {
     fn clone(&self) -> Self { *self }
-}
-impl mach_msg_type_descriptor_t {
-    #[inline]
-    pub fn pad3(&self) -> ::std::os::raw::c_uint {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (16777215usize as u32))
-                                       >> 0u32) as u32)
-        }
-    }
-    #[inline]
-    pub fn set_pad3(&mut self, val: ::std::os::raw::c_uint) {
-        self._bitfield_1 &= !(16777215usize as u32);
-        self._bitfield_1 |=
-            ((val as u32 as u32) << 0u32) & (16777215usize as u32);
-    }
-    #[inline]
-    pub fn type_(&self) -> ::std::os::raw::c_uint {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 &
-                                        (4278190080usize as u32)) >> 24u32) as
-                                      u32)
-        }
-    }
-    #[inline]
-    pub fn set_type(&mut self, val: ::std::os::raw::c_uint) {
-        self._bitfield_1 &= !(4278190080usize as u32);
-        self._bitfield_1 |=
-            ((val as u32 as u32) << 24u32) & (4278190080usize as u32);
-    }
 }

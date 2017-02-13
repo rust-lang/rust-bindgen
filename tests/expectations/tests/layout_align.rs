@@ -71,6 +71,7 @@ pub struct rte_eth_link {
     /**< ETH_SPEED_NUM_ */
     pub link_speed: u32,
     pub _bitfield_1: u8,
+    pub __bindgen_padding_0: [u8; 3usize],
     pub __bindgen_align: [u64; 0usize],
 }
 #[test]
@@ -87,42 +88,4 @@ fn bindgen_test_layout_rte_eth_link() {
 }
 impl Clone for rte_eth_link {
     fn clone(&self) -> Self { *self }
-}
-impl rte_eth_link {
-    #[inline]
-    pub fn link_duplex(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (1usize as u8)) >>
-                                       0u32) as u16)
-        }
-    }
-    #[inline]
-    pub fn set_link_duplex(&mut self, val: u16) {
-        self._bitfield_1 &= !(1usize as u8);
-        self._bitfield_1 |= ((val as u16 as u8) << 0u32) & (1usize as u8);
-    }
-    #[inline]
-    pub fn link_autoneg(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (2usize as u8)) >>
-                                       1u32) as u16)
-        }
-    }
-    #[inline]
-    pub fn set_link_autoneg(&mut self, val: u16) {
-        self._bitfield_1 &= !(2usize as u8);
-        self._bitfield_1 |= ((val as u16 as u8) << 1u32) & (2usize as u8);
-    }
-    #[inline]
-    pub fn link_status(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (4usize as u8)) >>
-                                       2u32) as u16)
-        }
-    }
-    #[inline]
-    pub fn set_link_status(&mut self, val: u16) {
-        self._bitfield_1 &= !(4usize as u8);
-        self._bitfield_1 |= ((val as u16 as u8) << 2u32) & (4usize as u8);
-    }
 }

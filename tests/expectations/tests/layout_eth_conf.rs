@@ -88,7 +88,7 @@ pub struct rte_eth_rxmode {
     pub max_rx_pkt_len: u32,
     /**< hdr buf size (header_split enabled).*/
     pub split_hdr_size: u16,
-    pub _bitfield_1: u16,
+    pub _bitfield_1: [u8; 2usize],
 }
 #[test]
 fn bindgen_test_layout_rte_eth_rxmode() {
@@ -118,116 +118,6 @@ impl Clone for rte_eth_rxmode {
 impl Default for rte_eth_rxmode {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-impl rte_eth_rxmode {
-    #[inline]
-    pub fn header_split(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (1usize as u16)) >>
-                                       0u32) as u16)
-        }
-    }
-    #[inline]
-    pub fn set_header_split(&mut self, val: u16) {
-        self._bitfield_1 &= !(1usize as u16);
-        self._bitfield_1 |= ((val as u16 as u16) << 0u32) & (1usize as u16);
-    }
-    #[inline]
-    pub fn hw_ip_checksum(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (2usize as u16)) >>
-                                       1u32) as u16)
-        }
-    }
-    #[inline]
-    pub fn set_hw_ip_checksum(&mut self, val: u16) {
-        self._bitfield_1 &= !(2usize as u16);
-        self._bitfield_1 |= ((val as u16 as u16) << 1u32) & (2usize as u16);
-    }
-    #[inline]
-    pub fn hw_vlan_filter(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (4usize as u16)) >>
-                                       2u32) as u16)
-        }
-    }
-    #[inline]
-    pub fn set_hw_vlan_filter(&mut self, val: u16) {
-        self._bitfield_1 &= !(4usize as u16);
-        self._bitfield_1 |= ((val as u16 as u16) << 2u32) & (4usize as u16);
-    }
-    #[inline]
-    pub fn hw_vlan_strip(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (8usize as u16)) >>
-                                       3u32) as u16)
-        }
-    }
-    #[inline]
-    pub fn set_hw_vlan_strip(&mut self, val: u16) {
-        self._bitfield_1 &= !(8usize as u16);
-        self._bitfield_1 |= ((val as u16 as u16) << 3u32) & (8usize as u16);
-    }
-    #[inline]
-    pub fn hw_vlan_extend(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (16usize as u16)) >>
-                                       4u32) as u16)
-        }
-    }
-    #[inline]
-    pub fn set_hw_vlan_extend(&mut self, val: u16) {
-        self._bitfield_1 &= !(16usize as u16);
-        self._bitfield_1 |= ((val as u16 as u16) << 4u32) & (16usize as u16);
-    }
-    #[inline]
-    pub fn jumbo_frame(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (32usize as u16)) >>
-                                       5u32) as u16)
-        }
-    }
-    #[inline]
-    pub fn set_jumbo_frame(&mut self, val: u16) {
-        self._bitfield_1 &= !(32usize as u16);
-        self._bitfield_1 |= ((val as u16 as u16) << 5u32) & (32usize as u16);
-    }
-    #[inline]
-    pub fn hw_strip_crc(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (64usize as u16)) >>
-                                       6u32) as u16)
-        }
-    }
-    #[inline]
-    pub fn set_hw_strip_crc(&mut self, val: u16) {
-        self._bitfield_1 &= !(64usize as u16);
-        self._bitfield_1 |= ((val as u16 as u16) << 6u32) & (64usize as u16);
-    }
-    #[inline]
-    pub fn enable_scatter(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (128usize as u16)) >>
-                                       7u32) as u16)
-        }
-    }
-    #[inline]
-    pub fn set_enable_scatter(&mut self, val: u16) {
-        self._bitfield_1 &= !(128usize as u16);
-        self._bitfield_1 |= ((val as u16 as u16) << 7u32) & (128usize as u16);
-    }
-    #[inline]
-    pub fn enable_lro(&self) -> u16 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (256usize as u16)) >>
-                                       8u32) as u16)
-        }
-    }
-    #[inline]
-    pub fn set_enable_lro(&mut self, val: u16) {
-        self._bitfield_1 &= !(256usize as u16);
-        self._bitfield_1 |= ((val as u16 as u16) << 8u32) & (256usize as u16);
-    }
-}
 #[repr(u32)]
 /**
  * A set of values to identify what method is to be used to transmit
@@ -250,6 +140,7 @@ pub struct rte_eth_txmode {
     pub mq_mode: rte_eth_tx_mq_mode,
     pub pvid: u16,
     pub _bitfield_1: u8,
+    pub __bindgen_padding_0: u8,
 }
 #[test]
 fn bindgen_test_layout_rte_eth_txmode() {
@@ -273,44 +164,6 @@ impl Clone for rte_eth_txmode {
 }
 impl Default for rte_eth_txmode {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
-impl rte_eth_txmode {
-    #[inline]
-    pub fn hw_vlan_reject_tagged(&self) -> u8 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (1usize as u8)) >>
-                                       0u32) as u8)
-        }
-    }
-    #[inline]
-    pub fn set_hw_vlan_reject_tagged(&mut self, val: u8) {
-        self._bitfield_1 &= !(1usize as u8);
-        self._bitfield_1 |= ((val as u8 as u8) << 0u32) & (1usize as u8);
-    }
-    #[inline]
-    pub fn hw_vlan_reject_untagged(&self) -> u8 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (2usize as u8)) >>
-                                       1u32) as u8)
-        }
-    }
-    #[inline]
-    pub fn set_hw_vlan_reject_untagged(&mut self, val: u8) {
-        self._bitfield_1 &= !(2usize as u8);
-        self._bitfield_1 |= ((val as u8 as u8) << 1u32) & (2usize as u8);
-    }
-    #[inline]
-    pub fn hw_vlan_insert_pvid(&self) -> u8 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (4usize as u8)) >>
-                                       2u32) as u8)
-        }
-    }
-    #[inline]
-    pub fn set_hw_vlan_insert_pvid(&mut self, val: u8) {
-        self._bitfield_1 &= !(4usize as u8);
-        self._bitfield_1 |= ((val as u8 as u8) << 2u32) & (4usize as u8);
-    }
 }
 /**
  * A structure used to configure the Receive Side Scaling (RSS) feature

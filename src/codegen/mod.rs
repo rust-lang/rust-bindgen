@@ -2,7 +2,8 @@ mod helpers;
 mod struct_layout;
 
 use self::helpers::{BlobTyBuilder, attributes};
-use self::struct_layout::StructLayoutTracker;
+use self::struct_layout::{align_to, bytes_from_bits};
+use self::struct_layout::{bytes_from_bits_pow2, StructLayoutTracker};
 use aster;
 
 use ir::annotations::FieldAccessorKind;
@@ -363,8 +364,7 @@ impl CodeGenerator for Module {
             }
 
             if item.id() == ctx.root_module() {
-                let saw_union = result.saw_union;
-                if saw_union && !ctx.options().unstable_rust {
+                if result.saw_union && !ctx.options().unstable_rust {
                     utils::prepend_union_types(ctx, &mut *result);
                 }
                 if result.saw_incomplete_array {
@@ -717,12 +717,12 @@ impl<'a> ItemToRustTy for Vtable<'a> {
 }
 
 struct Bitfield<'a> {
-    index: usize,
+    index: &'a mut usize,
     fields: Vec<&'a Field>,
 }
 
 impl<'a> Bitfield<'a> {
-    fn new(index: usize, fields: Vec<&'a Field>) -> Self {
+    fn new(index: &'a mut usize, fields: Vec<&'a Field>) -> Self {
         Bitfield {
             index: index,
             fields: fields,
@@ -732,89 +732,96 @@ impl<'a> Bitfield<'a> {
     fn codegen_fields(self,
                       ctx: &BindgenContext,
                       fields: &mut Vec<ast::StructField>,
-                      methods: &mut Vec<ast::ImplItem>)
+                      _methods: &mut Vec<ast::ImplItem>)
                       -> Layout {
         use aster::struct_field::StructFieldBuilder;
-        let mut total_width = self.fields
-            .iter()
-            .fold(0u32, |acc, f| acc + f.bitfield().unwrap());
 
-        if !total_width.is_power_of_two() || total_width < 8 {
-            total_width = cmp::max(8, total_width.next_power_of_two());
-        }
-        debug_assert_eq!(total_width % 8, 0);
-        let total_width_in_bytes = total_width as usize / 8;
+        // NOTE: What follows is reverse-engineered from LLVM's
+        // lib/AST/RecordLayoutBuilder.cpp
+        //
+        // FIXME(emilio): There are some differences between Microsoft and the
+        // Itanium ABI, but we'll ignore those and stick to Itanium for now.
+        //
+        // Also, we need to handle packed bitfields and stuff.
+        // TODO(emilio): Take into account C++'s wide bitfields, and
+        // packing, sigh.
+        let mut total_size_in_bits = 0;
+        let mut max_align = 0;
+        let mut unfilled_bits_in_last_unit = 0;
+        let mut field_size_in_bits = 0;
+        *self.index += 1;
+        let mut last_field_name = format!("_bitfield_{}", self.index);
+        let mut last_field_align = 0;
 
-        let bitfield_layout = Layout::new(total_width_in_bytes,
-                                          total_width_in_bytes);
-        let bitfield_type = BlobTyBuilder::new(bitfield_layout).build();
-        let field_name = format!("_bitfield_{}", self.index);
-        let field_ident = ctx.ext_cx().ident_of(&field_name);
-        let field = StructFieldBuilder::named(&field_name)
-            .pub_()
-            .build_ty(bitfield_type.clone());
-        fields.push(field);
-
-
-        let mut offset = 0;
         for field in self.fields {
             let width = field.bitfield().unwrap();
-            let field_name = field.name()
-                .map(ToOwned::to_owned)
-                .unwrap_or_else(|| format!("at_offset_{}", offset));
-
             let field_item = ctx.resolve_item(field.ty());
             let field_ty_layout = field_item.kind()
                 .expect_type()
                 .layout(ctx)
                 .expect("Bitfield without layout? Gah!");
 
-            let field_type = field_item.to_rust_ty(ctx);
-            let int_type = BlobTyBuilder::new(field_ty_layout).build();
+            let field_align = field_ty_layout.align;
 
-            let getter_name = ctx.rust_ident(&field_name);
-            let setter_name = ctx.ext_cx()
-                .ident_of(&format!("set_{}", &field_name));
-            let mask = ((1usize << width) - 1) << offset;
-            let prefix = ctx.trait_prefix();
-            // The transmute is unfortunate, but it's needed for enums in
-            // bitfields.
-            let item = quote_item!(ctx.ext_cx(),
-                impl X {
-                    #[inline]
-                    pub fn $getter_name(&self) -> $field_type {
-                        unsafe {
-                            ::$prefix::mem::transmute(
-                                (
-                                    (self.$field_ident &
-                                        ($mask as $bitfield_type))
-                                     >> $offset
-                                ) as $int_type
-                            )
-                        }
-                    }
+            if field_size_in_bits != 0 &&
+                (width == 0 || width as usize > unfilled_bits_in_last_unit) {
+                field_size_in_bits = align_to(field_size_in_bits, field_align);
+                // Push the new field.
+                let ty =
+                    BlobTyBuilder::new(Layout::new(bytes_from_bits_pow2(field_size_in_bits),
+                                                   bytes_from_bits_pow2(last_field_align)))
+                        .build();
 
-                    #[inline]
-                    pub fn $setter_name(&mut self, val: $field_type) {
-                        self.$field_ident &= !($mask as $bitfield_type);
-                        self.$field_ident |=
-                            (val as $int_type as $bitfield_type << $offset) &
-                                ($mask as $bitfield_type);
-                    }
-                }
-            )
-                .unwrap();
+                let field = StructFieldBuilder::named(&last_field_name)
+                    .pub_()
+                    .build_ty(ty);
+                fields.push(field);
 
-            let items = match item.unwrap().node {
-                ast::ItemKind::Impl(_, _, _, _, _, items) => items,
-                _ => unreachable!(),
-            };
+                // TODO(emilio): dedup this.
+                *self.index += 1;
+                last_field_name = format!("_bitfield_{}", self.index);
 
-            methods.extend(items.into_iter());
-            offset += width;
+                // Now reset the size and the rest of stuff.
+                // unfilled_bits_in_last_unit = 0;
+                field_size_in_bits = 0;
+                last_field_align = 0;
+            }
+
+            // TODO(emilio): Create the accessors. Problem here is that we still
+            // don't know which one is going to be the final alignment of the
+            // bitfield, and whether we have to index in it. Thus, we don't know
+            // which integer type do we need.
+            //
+            // We could push them to a Vec or something, but given how buggy
+            // they where maybe it's not a great idea?
+            field_size_in_bits += width as usize;
+            total_size_in_bits += width as usize;
+
+
+            let data_size = align_to(field_size_in_bits, field_align * 8);
+
+            max_align = cmp::max(max_align, field_align);
+
+            // NB: The width here is completely, absolutely intentional.
+            last_field_align = cmp::max(last_field_align, width as usize);
+
+            unfilled_bits_in_last_unit = data_size - field_size_in_bits;
         }
 
-        bitfield_layout
+        if field_size_in_bits != 0 {
+            // Push the last field.
+            let ty =
+                BlobTyBuilder::new(Layout::new(bytes_from_bits_pow2(field_size_in_bits),
+                                               bytes_from_bits_pow2(last_field_align)))
+                    .build();
+
+            let field = StructFieldBuilder::named(&last_field_name)
+                .pub_()
+                .build_ty(ty);
+            fields.push(field);
+        }
+
+        Layout::new(bytes_from_bits(total_size_in_bits), max_align)
     }
 }
 
@@ -1062,12 +1069,10 @@ impl CodeGenerator for CompInfo {
                 debug_assert!(!current_bitfield_fields.is_empty());
                 let bitfield_fields =
                     mem::replace(&mut current_bitfield_fields, vec![]);
-                bitfield_count += 1;
-                let bitfield_layout = Bitfield::new(bitfield_count,
+                let bitfield_layout = Bitfield::new(&mut bitfield_count,
                                                     bitfield_fields)
                     .codegen_fields(ctx, &mut fields, &mut methods);
-
-                struct_layout.saw_bitfield(bitfield_layout);
+                struct_layout.saw_bitfield_batch(bitfield_layout);
 
                 current_bitfield_width = None;
                 current_bitfield_layout = None;
@@ -1099,8 +1104,7 @@ impl CodeGenerator for CompInfo {
                 } else {
                     quote_ty!(ctx.ext_cx(), __BindgenUnionField<$ty>)
                 }
-            } else if let Some(item) =
-                field_ty.is_incomplete_array(ctx) {
+            } else if let Some(item) = field_ty.is_incomplete_array(ctx) {
                 result.saw_incomplete_array();
 
                 let inner = item.to_rust_ty(ctx);
@@ -1224,12 +1228,10 @@ impl CodeGenerator for CompInfo {
             debug_assert!(!current_bitfield_fields.is_empty());
             let bitfield_fields = mem::replace(&mut current_bitfield_fields,
                                                vec![]);
-            bitfield_count += 1;
-            let bitfield_layout = Bitfield::new(bitfield_count,
+            let bitfield_layout = Bitfield::new(&mut bitfield_count,
                                                 bitfield_fields)
                 .codegen_fields(ctx, &mut fields, &mut methods);
-
-            struct_layout.saw_bitfield(bitfield_layout);
+            struct_layout.saw_bitfield_batch(bitfield_layout);
         }
         debug_assert!(current_bitfield_fields.is_empty());
 
@@ -1268,7 +1270,7 @@ impl CodeGenerator for CompInfo {
             }
         } else if !is_union && !self.is_unsized(ctx) {
             if let Some(padding_field) =
-                layout.and_then(|layout| struct_layout.pad_struct(layout)) {
+                layout.and_then(|layout| struct_layout.pad_struct(&canonical_name, layout)) {
                 fields.push(padding_field);
             }
 
@@ -2174,8 +2176,8 @@ impl ToRustTy for Type {
                 quote_ty!(ctx.ext_cx(), ::$prefix::option::Option<$ty>)
             }
             TypeKind::Array(item, len) => {
-                let inner = item.to_rust_ty(ctx);
-                aster::ty::TyBuilder::new().array(len).build(inner)
+                let ty = item.to_rust_ty(ctx);
+                aster::ty::TyBuilder::new().array(len).build(ty)
             }
             TypeKind::Enum(..) => {
                 let path = item.namespace_aware_canonical_path(ctx);
@@ -2190,7 +2192,7 @@ impl ToRustTy for Type {
                         .map(|arg| arg.to_rust_ty(ctx))
                         .collect::<Vec<_>>();
 
-                    path.segments.last_mut().unwrap().parameters = if 
+                    path.segments.last_mut().unwrap().parameters = if
                         template_args.is_empty() {
                         None
                     } else {

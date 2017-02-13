@@ -158,7 +158,8 @@ pub struct rte_mbuf__bindgen_ty_2 {
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
-    pub _bitfield_1: u32,
+    pub _bitfield_1: [u8; 4usize],
+    pub __bindgen_align: [u32; 0usize],
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_2__bindgen_ty_1() {
@@ -173,98 +174,6 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_2__bindgen_ty_1() {
 }
 impl Clone for rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
-}
-impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
-    #[inline]
-    pub fn l2_type(&self) -> u32 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (15usize as u32)) >>
-                                       0u32) as u32)
-        }
-    }
-    #[inline]
-    pub fn set_l2_type(&mut self, val: u32) {
-        self._bitfield_1 &= !(15usize as u32);
-        self._bitfield_1 |= ((val as u32 as u32) << 0u32) & (15usize as u32);
-    }
-    #[inline]
-    pub fn l3_type(&self) -> u32 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (240usize as u32)) >>
-                                       4u32) as u32)
-        }
-    }
-    #[inline]
-    pub fn set_l3_type(&mut self, val: u32) {
-        self._bitfield_1 &= !(240usize as u32);
-        self._bitfield_1 |= ((val as u32 as u32) << 4u32) & (240usize as u32);
-    }
-    #[inline]
-    pub fn l4_type(&self) -> u32 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (3840usize as u32)) >>
-                                       8u32) as u32)
-        }
-    }
-    #[inline]
-    pub fn set_l4_type(&mut self, val: u32) {
-        self._bitfield_1 &= !(3840usize as u32);
-        self._bitfield_1 |=
-            ((val as u32 as u32) << 8u32) & (3840usize as u32);
-    }
-    #[inline]
-    pub fn tun_type(&self) -> u32 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (61440usize as u32)) >>
-                                       12u32) as u32)
-        }
-    }
-    #[inline]
-    pub fn set_tun_type(&mut self, val: u32) {
-        self._bitfield_1 &= !(61440usize as u32);
-        self._bitfield_1 |=
-            ((val as u32 as u32) << 12u32) & (61440usize as u32);
-    }
-    #[inline]
-    pub fn inner_l2_type(&self) -> u32 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (983040usize as u32))
-                                       >> 16u32) as u32)
-        }
-    }
-    #[inline]
-    pub fn set_inner_l2_type(&mut self, val: u32) {
-        self._bitfield_1 &= !(983040usize as u32);
-        self._bitfield_1 |=
-            ((val as u32 as u32) << 16u32) & (983040usize as u32);
-    }
-    #[inline]
-    pub fn inner_l3_type(&self) -> u32 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (15728640usize as u32))
-                                       >> 20u32) as u32)
-        }
-    }
-    #[inline]
-    pub fn set_inner_l3_type(&mut self, val: u32) {
-        self._bitfield_1 &= !(15728640usize as u32);
-        self._bitfield_1 |=
-            ((val as u32 as u32) << 20u32) & (15728640usize as u32);
-    }
-    #[inline]
-    pub fn inner_l4_type(&self) -> u32 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 &
-                                        (251658240usize as u32)) >> 24u32) as
-                                      u32)
-        }
-    }
-    #[inline]
-    pub fn set_inner_l4_type(&mut self, val: u32) {
-        self._bitfield_1 &= !(251658240usize as u32);
-        self._bitfield_1 |=
-            ((val as u32 as u32) << 24u32) & (251658240usize as u32);
-    }
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_2() {
@@ -499,7 +408,8 @@ pub struct rte_mbuf__bindgen_ty_5 {
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
-    pub _bitfield_1: u64,
+    pub _bitfield_1: [u16; 4usize],
+    pub __bindgen_align: [u64; 0usize],
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_5__bindgen_ty_1() {
@@ -514,88 +424,6 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_5__bindgen_ty_1() {
 }
 impl Clone for rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
-}
-impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
-    #[inline]
-    pub fn l2_len(&self) -> u64 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (127usize as u64)) >>
-                                       0u32) as u64)
-        }
-    }
-    #[inline]
-    pub fn set_l2_len(&mut self, val: u64) {
-        self._bitfield_1 &= !(127usize as u64);
-        self._bitfield_1 |= ((val as u64 as u64) << 0u32) & (127usize as u64);
-    }
-    #[inline]
-    pub fn l3_len(&self) -> u64 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (65408usize as u64)) >>
-                                       7u32) as u64)
-        }
-    }
-    #[inline]
-    pub fn set_l3_len(&mut self, val: u64) {
-        self._bitfield_1 &= !(65408usize as u64);
-        self._bitfield_1 |=
-            ((val as u64 as u64) << 7u32) & (65408usize as u64);
-    }
-    #[inline]
-    pub fn l4_len(&self) -> u64 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (16711680usize as u64))
-                                       >> 16u32) as u64)
-        }
-    }
-    #[inline]
-    pub fn set_l4_len(&mut self, val: u64) {
-        self._bitfield_1 &= !(16711680usize as u64);
-        self._bitfield_1 |=
-            ((val as u64 as u64) << 16u32) & (16711680usize as u64);
-    }
-    #[inline]
-    pub fn tso_segsz(&self) -> u64 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 &
-                                        (1099494850560usize as u64)) >> 24u32)
-                                      as u64)
-        }
-    }
-    #[inline]
-    pub fn set_tso_segsz(&mut self, val: u64) {
-        self._bitfield_1 &= !(1099494850560usize as u64);
-        self._bitfield_1 |=
-            ((val as u64 as u64) << 24u32) & (1099494850560usize as u64);
-    }
-    #[inline]
-    pub fn outer_l3_len(&self) -> u64 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 &
-                                        (561850441793536usize as u64)) >>
-                                       40u32) as u64)
-        }
-    }
-    #[inline]
-    pub fn set_outer_l3_len(&mut self, val: u64) {
-        self._bitfield_1 &= !(561850441793536usize as u64);
-        self._bitfield_1 |=
-            ((val as u64 as u64) << 40u32) & (561850441793536usize as u64);
-    }
-    #[inline]
-    pub fn outer_l2_len(&self) -> u64 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 &
-                                        (71494644084506624usize as u64)) >>
-                                       49u32) as u64)
-        }
-    }
-    #[inline]
-    pub fn set_outer_l2_len(&mut self, val: u64) {
-        self._bitfield_1 &= !(71494644084506624usize as u64);
-        self._bitfield_1 |=
-            ((val as u64 as u64) << 49u32) & (71494644084506624usize as u64);
-    }
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_5() {

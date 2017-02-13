@@ -39,6 +39,7 @@ pub struct foo {
 #[derive(Debug, Default, Copy)]
 pub struct foo__bindgen_ty_1 {
     pub _bitfield_1: u32,
+    pub __bindgen_align: [u32; 0usize],
 }
 #[test]
 fn bindgen_test_layout_foo__bindgen_ty_1() {
@@ -49,34 +50,6 @@ fn bindgen_test_layout_foo__bindgen_ty_1() {
 }
 impl Clone for foo__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
-}
-impl foo__bindgen_ty_1 {
-    #[inline]
-    pub fn b(&self) -> ::std::os::raw::c_int {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 & (127usize as u32)) >>
-                                       0u32) as u32)
-        }
-    }
-    #[inline]
-    pub fn set_b(&mut self, val: ::std::os::raw::c_int) {
-        self._bitfield_1 &= !(127usize as u32);
-        self._bitfield_1 |= ((val as u32 as u32) << 0u32) & (127usize as u32);
-    }
-    #[inline]
-    pub fn c(&self) -> ::std::os::raw::c_int {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 &
-                                        (4294967168usize as u32)) >> 7u32) as
-                                      u32)
-        }
-    }
-    #[inline]
-    pub fn set_c(&mut self, val: ::std::os::raw::c_int) {
-        self._bitfield_1 &= !(4294967168usize as u32);
-        self._bitfield_1 |=
-            ((val as u32 as u32) << 7u32) & (4294967168usize as u32);
-    }
 }
 #[test]
 fn bindgen_test_layout_foo() {
