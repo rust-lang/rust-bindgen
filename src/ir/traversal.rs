@@ -202,6 +202,14 @@ pub trait Tracer {
     }
 }
 
+impl<F> Tracer for F
+    where F: FnMut(ItemId, EdgeKind)
+{
+    fn visit_kind(&mut self, item: ItemId, kind: EdgeKind) {
+        (*self)(item, kind)
+    }
+}
+
 /// Trace all of the outgoing edges to other items. Implementations should call
 /// `tracer.visit(edge)` for each of their outgoing edges.
 pub trait Trace {
