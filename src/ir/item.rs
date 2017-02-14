@@ -472,6 +472,13 @@ impl Item {
         self.kind().as_type()
     }
 
+    /// Is this item a named template type parameter?
+    pub fn is_named(&self) -> bool {
+        self.as_type()
+            .map(|ty| ty.is_named())
+            .unwrap_or(false)
+    }
+
     /// Get a reference to this item's underlying `Function`. Panic if this is
     /// some other kind of item.
     pub fn expect_function(&self) -> &Function {
