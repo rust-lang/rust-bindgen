@@ -2828,7 +2828,7 @@ mod utils {
             // [1]: http://c0x.coding-guidelines.com/6.7.5.3.html
             let arg_ty = match *arg_ty.canonical_type(ctx).kind() {
                 TypeKind::Array(t, _) => {
-                    t.to_rust_ty(ctx).to_ptr(arg_ty.is_const(), ctx.span())
+                    t.to_rust_ty(ctx).to_ptr(ctx.resolve_type(t).is_const(), ctx.span())
                 },
                 TypeKind::Pointer(inner) => {
                     let inner = ctx.resolve_item(inner);
