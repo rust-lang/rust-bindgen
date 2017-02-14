@@ -14,7 +14,7 @@ pub mod item;
 pub mod item_kind;
 pub mod layout;
 pub mod module;
+pub mod traversal;
 pub mod ty;
-pub mod type_collector;
 pub mod var;
 pub mod objc;

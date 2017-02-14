@@ -5,8 +5,8 @@ use super::context::{BindgenContext, ItemId};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::item::Item;
 use super::layout::Layout;
+use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::{TemplateDeclaration, Type};
-use super::type_collector::{ItemSet, TypeCollector};
 use clang;
 use parse::{ClangItemParser, ParseError};
 use std::cell::Cell;
@@ -1075,44 +1075,55 @@ impl<'a> CanDeriveCopy<'a> for CompInfo {
     }
 }
 
-impl TypeCollector for CompInfo {
+impl Trace for CompInfo {
     type Extra = Item;
 
-    fn collect_types(&self,
-                     context: &BindgenContext,
-                     types: &mut ItemSet,
-                     item: &Item) {
+    fn trace<T>(&self, context: &BindgenContext, tracer: &mut T, item: &Item)
+        where T: Tracer,
+    {
+        // TODO: We should properly distinguish template instantiations from
+        // template declarations at the type level. Why are some template
+        // instantiations represented here instead of as
+        // TypeKind::TemplateInstantiation?
         if let Some(template) = self.specialized_template() {
-            types.insert(template);
-        }
-
-        let applicable_template_args = item.applicable_template_args(context);
-        for arg in applicable_template_args {
-            types.insert(arg);
+            // This is an instantiation of a template declaration with concrete
+            // template type arguments.
+            tracer.visit(template);
+            let args = item.applicable_template_args(context);
+            for a in args {
+                tracer.visit(a);
+            }
+        } else {
+            let params = item.applicable_template_args(context);
+            // This is a template declaration with abstract template type
+            // parameters.
+            for p in params {
+                tracer.visit_kind(p, EdgeKind::TemplateParameterDefinition);
+            }
         }
 
         for base in self.base_members() {
-            types.insert(base.ty);
+            tracer.visit(base.ty);
         }
 
         for field in self.fields() {
-            types.insert(field.ty());
+            tracer.visit(field.ty());
         }
 
         for &ty in self.inner_types() {
-            types.insert(ty);
+            tracer.visit(ty);
         }
 
         for &var in self.inner_vars() {
-            types.insert(var);
+            tracer.visit(var);
         }
 
         for method in self.methods() {
-            types.insert(method.signature);
+            tracer.visit(method.signature);
         }
 
         for &ctor in self.constructors() {
-            types.insert(ctor);
+            tracer.visit(ctor);
         }
     }
 }

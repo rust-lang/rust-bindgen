@@ -2,11 +2,11 @@
 
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::int::IntKind;
-use super::item::{Item, ItemCanonicalPath};
+use super::item::{Item, ItemCanonicalPath, ItemSet};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
+use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, TemplateDeclaration, Type, TypeKind};
-use super::type_collector::{ItemSet, TypeCollector};
 use BindgenOptions;
 use cexpr;
 use chooser::TypeChooser;
@@ -15,7 +15,7 @@ use clang_sys;
 use parse::ClangItemParser;
 use std::borrow::Cow;
 use std::cell::Cell;
-use std::collections::{HashMap, VecDeque, hash_map};
+use std::collections::{HashMap, hash_map};
 use std::collections::btree_map::{self, BTreeMap};
 use std::fmt;
 use std::iter::IntoIterator;
@@ -150,6 +150,13 @@ pub struct BindgenContext<'ctx> {
     /// Whether a bindgen complex was generated
     generated_bindegen_complex: Cell<bool>,
 }
+
+/// A traversal of whitelisted items.
+pub type WhitelistedItems<'ctx, 'gen> = ItemTraversal<'ctx,
+                                                      'gen,
+                                                      ItemSet,
+                                                      Vec<ItemId>,
+                                                      fn(Edge) -> bool>;
 
 impl<'ctx> BindgenContext<'ctx> {
     /// Construct the context for the given `options`.
@@ -538,23 +545,14 @@ impl<'ctx> BindgenContext<'ctx> {
 
     fn assert_no_dangling_item_traversal<'me>
         (&'me self)
-         -> AssertNoDanglingItemIter<'me, 'ctx> {
+         -> traversal::AssertNoDanglingItemsTraversal<'me, 'ctx> {
         assert!(self.in_codegen_phase());
         assert!(self.current_module == self.root_module);
 
-        let mut roots = self.items().map(|(&id, _)| id);
-
-        let mut seen = BTreeMap::<ItemId, ItemId>::new();
-        let next_child = roots.next().map(|id| id).unwrap();
-        seen.insert(next_child, next_child);
-
-        let to_iterate = seen.iter().map(|(&id, _)| id).rev().collect();
-
-        AssertNoDanglingItemIter {
-            ctx: self,
-            seen: seen,
-            to_iterate: to_iterate,
-        }
+        let roots = self.items().map(|(&id, _)| id);
+        traversal::AssertNoDanglingItemsTraversal::new(self,
+                                                       roots,
+                                                       traversal::all_edges)
     }
 
     // This deserves a comment. Builtin types don't get a valid declaration, so
@@ -1202,8 +1200,7 @@ impl<'ctx> BindgenContext<'ctx> {
     ///
     /// If no items are explicitly whitelisted, then all items are considered
     /// whitelisted.
-    pub fn whitelisted_items<'me>(&'me self)
-                                  -> WhitelistedItemsIter<'me, 'ctx> {
+    pub fn whitelisted_items<'me>(&'me self) -> WhitelistedItems<'me, 'ctx> {
         assert!(self.in_codegen_phase());
         assert!(self.current_module == self.root_module);
 
@@ -1268,18 +1265,19 @@ impl<'ctx> BindgenContext<'ctx> {
             })
             .map(|(&id, _)| id);
 
-        let seen: ItemSet = roots.collect();
-
-        // The .rev() preserves the expected ordering traversal, resulting in
-        // more stable-ish bindgen-generated names for anonymous types (like
+        // The reversal preserves the expected ordering of traversal, resulting
+        // in more stable-ish bindgen-generated names for anonymous types (like
         // unions).
-        let to_iterate = seen.iter().cloned().rev().collect();
+        let mut roots: Vec<_> = roots.collect();
+        roots.reverse();
 
-        WhitelistedItemsIter {
-            ctx: self,
-            seen: seen,
-            to_iterate: to_iterate,
-        }
+        let predicate = if self.options().whitelist_recursively {
+            traversal::all_edges
+        } else {
+            traversal::no_edges
+        };
+
+        WhitelistedItems::new(self, roots, predicate)
     }
 
     /// Convenient method for getting the prefix to use for most traits in
@@ -1362,126 +1360,5 @@ impl TemplateDeclaration for PartialType {
             }
             _ => None,
         }
-    }
-}
-
-/// An iterator over whitelisted items.
-///
-/// See `BindgenContext::whitelisted_items` for more information.
-pub struct WhitelistedItemsIter<'ctx, 'gen>
-    where 'gen: 'ctx,
-{
-    ctx: &'ctx BindgenContext<'gen>,
-
-    /// The set of whitelisted items we have seen. If you think of traversing
-    /// whitelisted items like GC tracing, this is the mark bits, and contains
-    /// both black and gray items.
-    seen: ItemSet,
-
-    /// The set of whitelisted items that we have seen but have yet to iterate
-    /// over and collect transitive references from. To return to the GC analogy,
-    /// this is the mark stack, containing the set of gray items which we have
-    /// not finished tracing yet.
-    to_iterate: Vec<ItemId>,
-}
-
-impl<'ctx, 'gen> Iterator for WhitelistedItemsIter<'ctx, 'gen>
-    where 'gen: 'ctx,
-{
-    type Item = ItemId;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let id = match self.to_iterate.pop() {
-            None => return None,
-            Some(id) => id,
-        };
-
-        debug_assert!(self.seen.contains(&id));
-        debug_assert!(self.ctx.items.contains_key(&id));
-
-        if self.ctx.options().whitelist_recursively {
-            let mut sub_types = ItemSet::new();
-            id.collect_types(self.ctx, &mut sub_types, &());
-
-            for id in sub_types {
-                if self.seen.insert(id) {
-                    self.to_iterate.push(id);
-                }
-            }
-        }
-
-        Some(id)
-    }
-}
-
-/// An iterator to find any dangling items.
-///
-/// See `BindgenContext::assert_no_dangling_item_traversal` for more
-/// information.
-pub struct AssertNoDanglingItemIter<'ctx, 'gen>
-    where 'gen: 'ctx,
-{
-    ctx: &'ctx BindgenContext<'gen>,
-    seen: BTreeMap<ItemId, ItemId>,
-    to_iterate: VecDeque<ItemId>,
-}
-
-impl<'ctx, 'gen> Iterator for AssertNoDanglingItemIter<'ctx, 'gen>
-    where 'gen: 'ctx,
-{
-    type Item = ItemId;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let id = match self.to_iterate.pop_front() {
-            None => {
-                // We've traversed everything reachable from the previous
-                // root(s), see if we have any more roots.
-                match self.ctx
-                    .items()
-                    .filter(|&(id, _)| !self.seen.contains_key(id))
-                    .next()
-                    .map(|(id, _)| *id) {
-                    None => return None,
-                    Some(id) => {
-                        // This is a new root.
-                        self.seen.insert(id, id);
-                        id
-                    }
-                }
-            }
-            Some(id) => id,
-        };
-
-        let mut sub_types = ItemSet::new();
-        id.collect_types(self.ctx, &mut sub_types, &());
-
-        if self.ctx.resolve_item_fallible(id).is_none() {
-            let mut path = vec![];
-            let mut current = id;
-            loop {
-                let predecessor = *self.seen
-                    .get(&current)
-                    .expect("We know we found this item id, so it must have a \
-                            predecessor");
-                if predecessor == current {
-                    break;
-                }
-                path.push(predecessor);
-                current = predecessor;
-            }
-            path.reverse();
-            panic!("Found reference to dangling id = {:?}\nvia path = {:?}",
-                   id,
-                   path);
-        }
-
-        for sub_id in sub_types {
-            if self.seen.insert(sub_id, id).is_none() {
-                // We've never visited this sub item before.
-                self.to_iterate.push_back(sub_id);
-            }
-        }
-
-        Some(id)
     }
 }

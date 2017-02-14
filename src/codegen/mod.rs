@@ -12,13 +12,13 @@ use ir::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
 use ir::function::{Function, FunctionSig};
 use ir::int::IntKind;
-use ir::item::{Item, ItemAncestors, ItemCanonicalName, ItemCanonicalPath};
+use ir::item::{Item, ItemAncestors, ItemCanonicalName, ItemCanonicalPath,
+               ItemSet};
 use ir::item_kind::ItemKind;
 use ir::layout::Layout;
 use ir::module::Module;
 use ir::objc::ObjCInterface;
 use ir::ty::{Type, TypeKind};
-use ir::type_collector::ItemSet;
 use ir::var::Var;
 
 use std::borrow::Cow;
@@ -2190,7 +2190,7 @@ impl ToRustTy for Type {
                         .map(|arg| arg.to_rust_ty(ctx))
                         .collect::<Vec<_>>();
 
-                    path.segments.last_mut().unwrap().parameters = if
+                    path.segments.last_mut().unwrap().parameters = if 
                         template_args.is_empty() {
                         None
                     } else {
