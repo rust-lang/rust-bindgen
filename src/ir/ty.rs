@@ -311,17 +311,16 @@ impl Type {
         match self.kind {
             TypeKind::Named => {
                 let name = self.name().expect("Unnamed named type?");
-                let mut chars = name.chars();
-                let first = chars.next().unwrap();
-                let mut remaining = chars;
-
-                let valid = (first.is_alphabetic() || first == '_') &&
-                            remaining.all(|c| c.is_alphanumeric() || c == '_');
-
-                !valid
+                !Self::is_valid_identifier(&name)
             }
             _ => false,
         }
+    }
+    pub fn is_valid_identifier(name: &str) -> bool {
+        let mut chars = name.chars();
+        let first_valid = chars.next().map(|c| c.is_alphabetic() || c == '_').unwrap_or(false);
+
+        first_valid && chars.all(|c| c.is_alphanumeric() || c == '_')
     }
 
     /// See safe_canonical_type.
@@ -454,7 +453,6 @@ fn is_invalid_named_type_unnamed() {
 }
 
 #[test]
-#[should_panic]
 fn is_invalid_named_type_empty_name() {
     let ty = Type::new(Some("".into()), None, TypeKind::Named, false);
     assert!(ty.is_invalid_named_type())
@@ -1141,11 +1139,6 @@ impl Type {
         let ty = Type::new(name, layout, kind, is_const);
         // TODO: maybe declaration.canonical()?
         Ok(ParseResult::New(ty, Some(cursor.canonical())))
-    }
-
-    fn is_valid_identifier(name: &str) -> bool {
-        name.chars().next().map(|first|first.is_alphabetic()).unwrap_or(false) &&
-        name.chars().all(|ch|ch.is_alphanumeric() || ch == '_')
     }
 }
 
