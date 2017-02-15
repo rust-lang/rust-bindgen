@@ -316,6 +316,9 @@ impl Type {
             _ => false,
         }
     }
+
+    /// Checks whether the name looks like an identifier,
+    /// i.e. is alphanumeric (including '_') and does not start with a digit.
     pub fn is_valid_identifier(name: &str) -> bool {
         let mut chars = name.chars();
         let first_valid = chars.next().map(|c| c.is_alphabetic() || c == '_').unwrap_or(false);
