@@ -1074,6 +1074,14 @@ impl Type {
             }
             CXType_Enum => {
                 let enum_ = Enum::from_ty(ty, ctx).expect("Not an enum?");
+
+                if name.is_empty() {
+                    let pretty_name = ty.spelling();
+                    if Self::is_valid_identifier(&pretty_name) {
+                        name = pretty_name;
+                    }
+                }
+
                 TypeKind::Enum(enum_)
             }
             CXType_Record => {

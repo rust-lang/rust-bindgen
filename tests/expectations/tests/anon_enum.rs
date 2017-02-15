@@ -34,9 +34,6 @@ fn bindgen_test_layout_Test() {
 impl Clone for Test {
     fn clone(&self) -> Self { *self }
 }
-pub const Foo: _bindgen_ty_1 = _bindgen_ty_1::Foo;
-pub const Bar: _bindgen_ty_1 = _bindgen_ty_1::Bar;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum _bindgen_ty_1 { Foo = 0, Bar = 1, }
-pub use self::_bindgen_ty_1 as Baz;
+pub enum Baz { Foo = 0, Bar = 1, }

@@ -38,6 +38,5 @@ pub mod root {
         }
     }
     #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-    pub enum _bindgen_ty_1 { }
-    pub use self::super::root::_bindgen_ty_1 as JSWhyMagic;
+    pub enum JSWhyMagic { }
 }
