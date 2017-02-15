@@ -117,26 +117,25 @@ impl Default for rte_mempool_ops {
  */
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
-pub struct _bindgen_ty_1 {
+pub struct rte_spinlock_t {
     /**< lock status 0 = unlocked, 1 = locked */
     pub locked: ::std::os::raw::c_int,
 }
 #[test]
-fn bindgen_test_layout__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<_bindgen_ty_1>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( _bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<_bindgen_ty_1>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( _bindgen_ty_1 ) ));
+fn bindgen_test_layout_rte_spinlock_t() {
+    assert_eq!(::std::mem::size_of::<rte_spinlock_t>() , 4usize , concat ! (
+               "Size of: " , stringify ! ( rte_spinlock_t ) ));
+    assert_eq! (::std::mem::align_of::<rte_spinlock_t>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( rte_spinlock_t ) ));
     assert_eq! (unsafe {
-                & ( * ( 0 as * const _bindgen_ty_1 ) ) . locked as * const _
+                & ( * ( 0 as * const rte_spinlock_t ) ) . locked as * const _
                 as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( _bindgen_ty_1 ) , "::"
+                "Alignment of field: " , stringify ! ( rte_spinlock_t ) , "::"
                 , stringify ! ( locked ) ));
 }
-impl Clone for _bindgen_ty_1 {
+impl Clone for rte_spinlock_t {
     fn clone(&self) -> Self { *self }
 }
-pub type rte_spinlock_t = _bindgen_ty_1;
 /**
  * Structure storing the table of registered ops structs, each of which contain
  * the function pointers for the mempool ops functions.

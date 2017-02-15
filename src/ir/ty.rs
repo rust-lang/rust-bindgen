@@ -1080,6 +1080,16 @@ impl Type {
                 let complex =
                     CompInfo::from_ty(potential_id, ty, location, ctx)
                         .expect("Not a complex type?");
+
+                if name.is_empty() {
+                    // The pretty-printed name may contain typedefed name,
+                    // but may also be "struct (anonymous at .h:1)"
+                    let pretty_name = ty.spelling();
+                    if Self::is_valid_identifier(&pretty_name) {
+                        name = pretty_name;
+                    }
+                }
+
                 TypeKind::Comp(complex)
             }
             // FIXME: We stub vectors as arrays since in 99% of the cases the
@@ -1123,6 +1133,11 @@ impl Type {
         let ty = Type::new(name, layout, kind, is_const);
         // TODO: maybe declaration.canonical()?
         Ok(ParseResult::New(ty, Some(cursor.canonical())))
+    }
+
+    fn is_valid_identifier(name: &str) -> bool {
+        name.chars().next().map(|first|first.is_alphabetic()).unwrap_or(false) &&
+        name.chars().all(|ch|ch.is_alphanumeric() || ch == '_')
     }
 }
 
