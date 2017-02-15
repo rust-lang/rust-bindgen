@@ -372,6 +372,20 @@ impl Item {
         self.id
     }
 
+    /// Get this `Item`'s dot attributes.
+    pub fn dot_attributes(&self, ctx: &BindgenContext) -> String {
+        format!("[fontname=\"courier\", label=< \
+                 <table border=\"0\"> \
+                 <tr><td>ItemId({})</td></tr> \
+                 <tr><td>name</td><td>{}</td></tr> \
+                 <tr><td>kind</td><td>{}</td></tr> \
+                 </table> \
+                 >]",
+                self.id.as_usize(),
+                self.name(ctx).get(),
+                self.kind.kind_name())
+    }
+
     /// Get this `Item`'s parent's identifier.
     ///
     /// For the root module, the parent's ID is its own ID.

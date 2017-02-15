@@ -175,6 +175,13 @@ impl Builder {
         self
     }
 
+    /// Set the output graphviz file.
+    pub fn emit_ir_graphviz<T: Into<String>>(mut self, path: T) -> Builder {
+        let path = path.into();
+        self.options.emit_ir_graphviz = Some(path);
+        self
+    }
+
     /// Whether the generated bindings should contain documentation comments or
     /// not.
     ///
@@ -491,6 +498,9 @@ pub struct BindgenOptions {
     /// True if we should dump our internal IR for debugging purposes.
     pub emit_ir: bool,
 
+    /// Output graphviz dot file.
+    pub emit_ir_graphviz: Option<String>,
+
     /// True if we should emulate C++ namespaces with Rust modules in the
     /// generated bindings.
     pub enable_cxx_namespaces: bool,
@@ -595,6 +605,7 @@ impl Default for BindgenOptions {
             links: vec![],
             emit_ast: false,
             emit_ir: false,
+            emit_ir_graphviz: None,
             derive_debug: true,
             derive_default: false,
             enable_cxx_namespaces: false,
