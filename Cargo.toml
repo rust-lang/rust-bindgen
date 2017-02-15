@@ -13,7 +13,7 @@ name = "bindgen"
 readme = "README.md"
 repository = "https://github.com/servo/rust-bindgen"
 documentation = "https://docs.rs/bindgen"
-version = "0.21.3"
+version = "0.22.0"
 build = "build.rs"
 
 exclude = ["tests/headers", "tests/expectations", "bindgen-integration", "ci"]
