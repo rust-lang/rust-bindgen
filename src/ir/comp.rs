@@ -1040,10 +1040,10 @@ impl Trace for CompInfo {
         if let Some(template) = self.specialized_template() {
             // This is an instantiation of a template declaration with concrete
             // template type arguments.
-            tracer.visit(template);
+            tracer.visit_kind(template, EdgeKind::TemplateDeclaration);
             let args = item.applicable_template_args(context);
             for a in args {
-                tracer.visit(a);
+                tracer.visit_kind(a, EdgeKind::TemplateArgument);
             }
         } else {
             let params = item.applicable_template_args(context);
@@ -1055,27 +1055,27 @@ impl Trace for CompInfo {
         }
 
         for base in self.base_members() {
-            tracer.visit(base.ty);
+            tracer.visit_kind(base.ty, EdgeKind::BaseMember);
         }
 
         for field in self.fields() {
-            tracer.visit(field.ty());
+            tracer.visit_kind(field.ty(), EdgeKind::Field);
         }
 
         for &ty in self.inner_types() {
-            tracer.visit(ty);
+            tracer.visit_kind(ty, EdgeKind::InnerType);
         }
 
         for &var in self.inner_vars() {
-            tracer.visit(var);
+            tracer.visit_kind(var, EdgeKind::InnerVar);
         }
 
         for method in self.methods() {
-            tracer.visit(method.signature);
+            tracer.visit_kind(method.signature, EdgeKind::Method);
         }
 
         for &ctor in self.constructors() {
-            tracer.visit(ctor);
+            tracer.visit_kind(ctor, EdgeKind::Constructor);
         }
     }
 }

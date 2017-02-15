@@ -7,7 +7,7 @@ use super::dot::{DotAttributes};
 use super::function::Function;
 use super::item_kind::ItemKind;
 use super::module::Module;
-use super::traversal::{Trace, Tracer};
+use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::{TemplateDeclaration, Type, TypeKind};
 use clang;
 use clang_sys;
@@ -205,7 +205,7 @@ impl Trace for Item {
                 tracer.visit(fun.signature());
             }
             ItemKind::Var(ref var) => {
-                tracer.visit(var.ty());
+                tracer.visit_kind(var.ty(), EdgeKind::VarType);
             }
             ItemKind::Module(_) => {
                 // Module -> children edges are "weak", and we do not want to

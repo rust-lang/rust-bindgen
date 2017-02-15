@@ -10,7 +10,7 @@ use super::int::IntKind;
 use super::item::{Item, ItemAncestors};
 use super::layout::Layout;
 use super::objc::ObjCInterface;
-use super::traversal::{Trace, Tracer};
+use super::traversal::{EdgeKind, Trace, Tracer};
 use clang::{self, Cursor};
 use parse::{ClangItemParser, ParseError, ParseResult};
 use std::io;
@@ -1245,14 +1245,18 @@ impl Trace for Type {
             TypeKind::Array(inner, _) |
             TypeKind::Alias(inner) |
             TypeKind::ResolvedTypeRef(inner) => {
-                tracer.visit(inner);
+                tracer.visit_kind(inner, EdgeKind::TypeReference);
             }
-
-            TypeKind::TemplateAlias(inner, ref template_args) |
+            TypeKind::TemplateAlias(inner, ref template_params) => {
+                tracer.visit_kind(inner, EdgeKind::TypeReference);
+                for &item in template_params {
+                    tracer.visit_kind(item, EdgeKind::TemplateParameterDefinition);
+                }
+            }
             TypeKind::TemplateInstantiation(inner, ref template_args) => {
-                tracer.visit(inner);
+                tracer.visit_kind(inner, EdgeKind::TemplateDeclaration);
                 for &item in template_args {
-                    tracer.visit(item);
+                    tracer.visit_kind(item, EdgeKind::TemplateArgument);
                 }
             }
             TypeKind::Comp(ref ci) => ci.trace(context, tracer, item),
