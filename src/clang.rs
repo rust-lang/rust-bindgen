@@ -662,10 +662,6 @@ pub enum LayoutError {
 impl ::std::convert::From<i32> for LayoutError {
     fn from(val: i32) -> Self {
         use self::LayoutError::*;
-        let val = match CXTypeLayoutError::from_raw(val) {
-            Some(val) => val,
-            None => return Unknown,
-        };
 
         match val {
             CXTypeLayoutError_Invalid => Invalid,

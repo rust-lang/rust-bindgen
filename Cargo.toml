@@ -39,7 +39,7 @@ quasi_codegen = "0.29"
 [dependencies]
 cexpr = "0.2"
 cfg-if = "0.1.0"
-clang-sys = { version = "0.12", features = ["runtime", "clang_3_9"] }
+clang-sys = { version = "0.14", features = ["runtime", "clang_3_9"] }
 lazy_static = "0.2.1"
 rustc-serialize = "0.3.19"
 syntex_syntax = "0.54"
