@@ -76,11 +76,50 @@
 //! fixed-point.
 //!
 //! We use the "monotone framework" for this fix-point analysis where our
-//! lattice is the powerset of the template parameters that appear in the input
-//! C++ header, our join function is set union, and we use the
-//! `ir::traversal::Trace` trait to implement the work-list optimization so we
-//! don't have to revisit every node in the graph when for every iteration
-//! towards the fix-point.
+//! lattice is the mapping from each IR item to the powerset of the template
+//! parameters that appear in the input C++ header, our join function is set
+//! union, and we use the `ir::traversal::Trace` trait to implement the
+//! work-list optimization so we don't have to revisit every node in the graph
+//! when for every iteration towards the fix-point.
+//!
+//! A lattice is a set with a partial ordering between elements, where there is
+//! a single least upper bound and a single greatest least bound for every
+//! subset. We are dealing with finite lattices, which means that it has a
+//! finite number of elements, and it follows that there exists a single top and
+//! a single bottom member of the lattice. For example, the power set of a
+//! finite set forms a finite lattice where partial ordering is defined by set
+//! inclusion, that is `a <= b` if `a` is a subset of `b`. Here is the finite
+//! lattice constructed from the set {0,1,2}:
+//!
+//! ```text
+//!                    .----- Top = {0,1,2} -----.
+//!                   /            |              \
+//!                  /             |               \
+//!                 /              |                \
+//!              {0,1} -------.  {0,2}  .--------- {1,2}
+//!                |           \ /   \ /             |
+//!                |            /     \              |
+//!                |           / \   / \             |
+//!               {0} --------'   {1}   `---------- {2}
+//!                 \              |                /
+//!                  \             |               /
+//!                   \            |              /
+//!                    `------ Bottom = {} ------'
+//! ```
+//!
+//! A monotone function `f` is a function where if `x <= y`, then it holds that
+//! `f(x) <= f(y)`. It should be clear that running a monotone function to a
+//! fix-point on a finite lattice will always terminate: `f` can only "move"
+//! along the lattice in a single direction, and therefore can only either find
+//! a fix-point in the middle of the lattice or continue to the top or bottom
+//! depending if it is ascending or descending the lattice respectively.
+//!
+//! For our analysis, we are collecting the set of template parameters used by
+//! any given IR node. The set of template parameters appearing in the program
+//! is finite. Our lattice is their powerset. We start at the bottom element,
+//! the empty set. Our analysis only adds members to the set of used template
+//! parameters, never removes them, so it is monotone, and therefore iteration
+//! to a fix-point will terminate.
 //!
 //! For a deeper introduction to the general form of this kind of analysis, see
 //! [Static Program Analysis by Anders Møller and Michael I. Schwartzbach][spa].
@@ -173,38 +212,119 @@ pub fn analyze<Analysis>(extra: Analysis::Extra) -> Analysis::Output
     analysis.into()
 }
 
-/// An analysis that finds the set of template parameters that actually end up
-/// used in our generated bindings.
+/// An analysis that finds for each IR item its set of template parameters that
+/// it uses.
+///
+/// We use the following monotone constraint function:
+///
+/// ```ignore
+/// template_param_usage(v) =
+///     self_template_param_usage(v) union
+///     template_param_usage(w_0) union
+///     template_param_usage(w_1) union
+///     ...
+///     template_param_usage(w_n)
+/// ```
+///
+/// Where `v` has direct edges in the IR graph to each of `w_0`, `w_1`,
+/// ..., `w_n` (for example, if `v` were a struct type and `x` and `y`
+/// were the types of two of `v`'s fields). We ignore certain edges, such
+/// as edges from a template declaration to its template parameters'
+/// definitions for this analysis. If we didn't, then we would mistakenly
+/// determine that ever template parameter is always used.
+///
+/// Finally, `self_template_param_usage` is defined with the following cases:
+///
+/// * If `T` is a template parameter:
+///
+/// ```ignore
+/// self_template_param_usage(T) = { T }
+/// ```
+///
+/// * If `inst` is a template instantiation, `inst.args` are the template
+///   instantiation's template arguments, and `inst.decl` is the template
+///   declaration being instantiated:
+///
+/// ```ignore
+/// self_template_param_usage(inst) =
+///     { T: for T in inst.args, if T in template_param_usage(inst.decl) }
+/// ```
+///
+/// * And for all other IR items, the result is the empty set:
+///
+/// ```ignore
+/// self_template_param_usage(_) = { }
+/// ```
 #[derive(Debug, Clone)]
 pub struct UsedTemplateParameters<'a> {
     ctx: &'a BindgenContext<'a>,
-    used: ItemSet,
+    used: HashMap<ItemId, ItemSet>,
     dependencies: HashMap<ItemId, Vec<ItemId>>,
+}
+
+impl<'a> UsedTemplateParameters<'a> {
+    fn consider_edge(kind: EdgeKind) -> bool {
+        match kind {
+            // For each of these kinds of edges, if the referent uses a template
+            // parameter, then it should be considered that the origin of the
+            // edge also uses the template parameter.
+            EdgeKind::TemplateArgument |
+            EdgeKind::BaseMember |
+            EdgeKind::Field |
+            EdgeKind::InnerType |
+            EdgeKind::InnerVar |
+            EdgeKind::Constructor |
+            EdgeKind::VarType |
+            EdgeKind::TypeReference => true,
+
+            // We can't emit machine code for new instantiations of function
+            // templates and class templates' methods (and don't detect explicit
+            // instantiations) so we must ignore template parameters that are
+            // only used by functions.
+            EdgeKind::Method |
+            EdgeKind::FunctionReturn |
+            EdgeKind::FunctionParameter => false,
+
+            // If we considered these edges, we would end up mistakenly claiming
+            // that every template parameter always used.
+            EdgeKind::TemplateDeclaration |
+            EdgeKind::TemplateParameterDefinition => false,
+
+            // Since we have to be careful about which edges we consider for
+            // this analysis to be correct, we ignore generic edges. We also
+            // avoid a `_` wild card to force authors of new edge kinds to
+            // determine whether they need to be considered by this analysis.
+            EdgeKind::Generic => false,
+        }
+    }
 }
 
 impl<'a> MonotoneFramework for UsedTemplateParameters<'a> {
     type Node = ItemId;
     type Extra = &'a BindgenContext<'a>;
-    type Output = ItemSet;
+    type Output = HashMap<ItemId, ItemSet>;
 
     fn new(ctx: &'a BindgenContext<'a>) -> UsedTemplateParameters<'a> {
+        let mut used = HashMap::new();
         let mut dependencies = HashMap::new();
 
         for item in ctx.whitelisted_items() {
+            dependencies.entry(item).or_insert(vec![]);
+            used.insert(item, ItemSet::new());
+
             {
                 // We reverse our natural IR graph edges to find dependencies
                 // between nodes.
-                let mut add_reverse_edge = |sub_item, _| {
+                item.trace(ctx, &mut |sub_item, _| {
                     dependencies.entry(sub_item).or_insert(vec![]).push(item);
-                };
-                item.trace(ctx, &mut add_reverse_edge, &());
+                }, &());
             }
 
             // Additionally, whether a template instantiation's template
             // arguments are used depends on whether the template declaration's
             // generic template parameters are used.
-            ctx.resolve_item_fallible(item)
-                .and_then(|item| item.as_type())
+            ctx.resolve_item(item)
+                .as_type()
                 .map(|ty| match ty.kind() {
                     &TypeKind::TemplateInstantiation(decl, ref args) => {
                         let decl = ctx.resolve_type(decl);
@@ -222,57 +342,65 @@ impl<'a> MonotoneFramework for UsedTemplateParameters<'a> {
 
         UsedTemplateParameters {
             ctx: ctx,
-            used: ItemSet::new(),
+            used: used,
             dependencies: dependencies,
         }
     }
 
-    fn initial_worklist(&self) -> Vec<Self::Node> {
+    fn initial_worklist(&self) -> Vec<ItemId> {
         self.ctx.whitelisted_items().collect()
     }
 
-    fn constrain(&mut self, item: ItemId) -> bool {
-        let original_size = self.used.len();
+    fn constrain(&mut self, id: ItemId) -> bool {
+        let original_len = self.used[&id].len();
 
-        item.trace(self.ctx, &mut |item, edge_kind| {
-            if edge_kind == EdgeKind::TemplateParameterDefinition {
-                // The definition of a template parameter is not considered a
-                // use of said template parameter. Ignore this edge.
+        // First, add this item's self template parameter usage.
+        let item = self.ctx.resolve_item(id);
+        let ty_kind = item.as_type().map(|ty| ty.kind());
+        match ty_kind {
+            Some(&TypeKind::Named) => {
+                // This is a trivial use of the template type parameter.
+                self.used.get_mut(&id).unwrap().insert(id);
+            }
+            Some(&TypeKind::TemplateInstantiation(decl, ref args)) => {
+                // A template instantiation's concrete template argument is
+                // only used if the template declaration uses the
+                // corresponding template parameter.
+                let params = decl.self_template_params(self.ctx)
+                    .expect("a template instantiation's referenced \
+                             template declaration should have template \
+                             parameters");
+                for (arg, param) in args.iter().zip(params.iter()) {
+                    if self.used[&decl].contains(param) {
+                        if self.ctx.resolve_item(*arg).is_named() {
+                            self.used.get_mut(&id).unwrap().insert(*arg);
+                        }
+                    }
+                }
+            }
+            _ => {}
+        }
+
+        // Second, add the union of each of its referent item's template
+        // parameter usage.
+        item.trace(self.ctx, &mut |sub_id, edge_kind| {
+            if sub_id == id || !Self::consider_edge(edge_kind) {
                 return;
             }
 
-            let ty_kind = self.ctx.resolve_item(item)
-                .as_type()
-                .map(|ty| ty.kind());
-
-            match ty_kind {
-                Some(&TypeKind::Named) => {
-                    // This is a "trivial" use of the template type parameter.
-                    self.used.insert(item);
-                },
-                Some(&TypeKind::TemplateInstantiation(decl, ref args)) => {
-                    // A template instantiation's concrete template argument is
-                    // only used if the template declaration uses the
-                    // corresponding template parameter.
-                    let decl = self.ctx.resolve_type(decl);
-                    let params = decl.self_template_params(self.ctx)
-                        .expect("a template instantiation's referenced \
-                                 template declaration should have template \
-                                 parameters");
-                    for (arg, param) in args.iter().zip(params.iter()) {
-                        if self.used.contains(param) {
-                            if self.ctx.resolve_item(*arg).is_named() {
-                                self.used.insert(*arg);
-                            }
-                        }
-                    }
-                },
-                _ => return,
-            }
+            // This clone is unfortunate because we are potentially thrashing
+            // malloc. We could investigate replacing the ItemSet values with
+            // Rc<RefCell<ItemSet>> to make the borrow checker happy, but it
+            // isn't clear that the added indirection wouldn't outweigh the cost
+            // of malloc'ing a new ItemSet here. Ideally, `HashMap` would have a
+            // `split_entries` method analogous to `slice::split_at_mut`...
+            let to_add = self.used[&sub_id].clone();
+            self.used.get_mut(&id).unwrap().extend(to_add);
         }, &());
 
-        let new_size = self.used.len();
-        new_size != original_size
+        let new_len = self.used[&id].len();
+        assert!(new_len >= original_len);
+        new_len != original_len
     }
 
     fn each_depending_on<F>(&self, item: ItemId, mut f: F)
@@ -286,8 +414,8 @@ impl<'a> MonotoneFramework for UsedTemplateParameters<'a> {
     }
 }
 
-impl<'a> From<UsedTemplateParameters<'a>> for ItemSet {
-    fn from(used_templ_params: UsedTemplateParameters) -> ItemSet {
+impl<'a> From<UsedTemplateParameters<'a>> for HashMap<ItemId, ItemSet> {
+    fn from(used_templ_params: UsedTemplateParameters) -> Self {
         used_templ_params.used
     }
 }
