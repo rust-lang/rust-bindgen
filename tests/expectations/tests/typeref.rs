@@ -31,7 +31,7 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct nsFoo {
-    pub mBar: mozilla_StyleShapeSource<::std::os::raw::c_int>,
+    pub mBar: mozilla_StyleShapeSource,
 }
 #[test]
 fn bindgen_test_layout_nsFoo() {
@@ -89,21 +89,16 @@ impl Clone for mozilla_Position {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct mozilla_StyleShapeSource<ReferenceBox> {
-    pub __bindgen_anon_1: mozilla_StyleShapeSource__bindgen_ty_1<ReferenceBox>,
-    pub _phantom_0: ::std::marker::PhantomData<ReferenceBox>,
+#[derive(Debug, Default, Copy, Clone)]
+pub struct mozilla_StyleShapeSource {
+    pub __bindgen_anon_1: mozilla_StyleShapeSource__bindgen_ty_1,
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
-pub struct mozilla_StyleShapeSource__bindgen_ty_1<ReferenceBox> {
+pub struct mozilla_StyleShapeSource__bindgen_ty_1 {
     pub mPosition: __BindgenUnionField<*mut mozilla_Position>,
     pub mFragmentOrURL: __BindgenUnionField<*mut mozilla_FragmentOrURL>,
     pub bindgen_union_field: u64,
-    pub _phantom_0: ::std::marker::PhantomData<ReferenceBox>,
-}
-impl <ReferenceBox> Default for mozilla_StyleShapeSource<ReferenceBox> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]

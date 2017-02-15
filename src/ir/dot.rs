@@ -1,23 +1,26 @@
 //! Generating Graphviz `dot` files from our IR.
 
+use super::context::{BindgenContext, ItemId};
+use super::traversal::Trace;
 use std::fs::File;
 use std::io::{self, Write};
 use std::path::Path;
-use super::context::{BindgenContext, ItemId};
-use super::traversal::Trace;
 
 /// A trait for anything that can write attributes as `<table>` rows to a dot
 /// file.
 pub trait DotAttributes {
     /// Write this thing's attributes to the given output. Each attribute must
     /// be its own `<tr>...</tr>`.
-    fn dot_attributes<W>(&self, ctx: &BindgenContext, out: &mut W) -> io::Result<()>
+    fn dot_attributes<W>(&self,
+                         ctx: &BindgenContext,
+                         out: &mut W)
+                         -> io::Result<()>
         where W: io::Write;
 }
 
 /// Write a graphviz dot file containing our IR.
 pub fn write_dot_file<P>(ctx: &BindgenContext, path: P) -> io::Result<()>
-    where P: AsRef<Path>
+    where P: AsRef<Path>,
 {
     let file = try!(File::create(path));
     let mut dot_file = io::BufWriter::new(file);
@@ -32,16 +35,21 @@ pub fn write_dot_file<P>(ctx: &BindgenContext, path: P) -> io::Result<()>
         try!(item.dot_attributes(ctx, &mut dot_file));
         try!(writeln!(&mut dot_file, r#"</table> >];"#));
 
-        item.trace(ctx, &mut |sub_id: ItemId, _edge_kind| {
+        item.trace(ctx,
+                   &mut |sub_id: ItemId, _edge_kind| {
             if err.is_some() {
                 return;
             }
 
-            match writeln!(&mut dot_file, "{} -> {};", id.as_usize(), sub_id.as_usize()) {
-                Ok(_) => {},
+            match writeln!(&mut dot_file,
+                           "{} -> {};",
+                           id.as_usize(),
+                           sub_id.as_usize()) {
+                Ok(_) => {}
                 Err(e) => err = Some(Err(e)),
             }
-        }, &());
+        },
+                   &());
 
         if let Some(err) = err {
             return err;

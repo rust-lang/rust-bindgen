@@ -9,7 +9,6 @@
 pub struct WhitelistMe<T> {
     pub foo: ::std::os::raw::c_int,
     pub bar: WhitelistMe_Inner<T>,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

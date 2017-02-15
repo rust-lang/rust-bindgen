@@ -5,20 +5,15 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct Foo<T> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct Foo {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 pub type Foo_elem_type<T> = T;
 pub type Foo_ptr_type<T> = *mut T;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
-pub struct Foo_Bar<T> {
+pub struct Foo_Bar {
     pub x: ::std::os::raw::c_int,
     pub y: ::std::os::raw::c_int,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
-}
-impl <T> Default for Foo<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

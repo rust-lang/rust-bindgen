@@ -30,12 +30,11 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct TErrorResult<T> {
+pub struct TErrorResult {
     pub mResult: ::std::os::raw::c_int,
-    pub __bindgen_anon_1: TErrorResult__bindgen_ty_1<T>,
+    pub __bindgen_anon_1: TErrorResult__bindgen_ty_1,
     pub mMightHaveUnreported: bool,
     pub mUnionState: TErrorResult_UnionState,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 pub const TErrorResult_UnionState_HasException: TErrorResult_UnionState =
     TErrorResult_UnionState::HasMessage;
@@ -44,31 +43,28 @@ pub const TErrorResult_UnionState_HasException: TErrorResult_UnionState =
 pub enum TErrorResult_UnionState { HasMessage = 0, }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
-pub struct TErrorResult_Message<T> {
+pub struct TErrorResult_Message {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
-pub struct TErrorResult_DOMExceptionInfo<T> {
+pub struct TErrorResult_DOMExceptionInfo {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
-pub struct TErrorResult__bindgen_ty_1<T> {
-    pub mMessage: __BindgenUnionField<*mut TErrorResult_Message<T>>,
-    pub mDOMExceptionInfo: __BindgenUnionField<*mut TErrorResult_DOMExceptionInfo<T>>,
+pub struct TErrorResult__bindgen_ty_1 {
+    pub mMessage: __BindgenUnionField<*mut TErrorResult_Message>,
+    pub mDOMExceptionInfo: __BindgenUnionField<*mut TErrorResult_DOMExceptionInfo>,
     pub bindgen_union_field: u64,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
-impl <T> Default for TErrorResult<T> {
+impl Default for TErrorResult {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct ErrorResult {
-    pub _base: TErrorResult<::std::os::raw::c_int>,
+    pub _base: TErrorResult,
 }
 #[test]
 fn bindgen_test_layout_ErrorResult() {
@@ -84,13 +80,11 @@ impl Default for ErrorResult {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
-fn __bindgen_test_layout_template_1() {
-    assert_eq!(::std::mem::size_of::<TErrorResult<::std::os::raw::c_int>>() ,
-               24usize , concat ! (
+fn __bindgen_test_layout_TErrorResult_instantiation_21() {
+    assert_eq!(::std::mem::size_of::<TErrorResult>() , 24usize , concat ! (
                "Size of template specialization: " , stringify ! (
-               TErrorResult<::std::os::raw::c_int> ) ));
-    assert_eq!(::std::mem::align_of::<TErrorResult<::std::os::raw::c_int>>() ,
-               8usize , concat ! (
+               TErrorResult ) ));
+    assert_eq!(::std::mem::align_of::<TErrorResult>() , 8usize , concat ! (
                "Alignment of template specialization: " , stringify ! (
-               TErrorResult<::std::os::raw::c_int> ) ));
+               TErrorResult ) ));
 }

@@ -6,19 +6,14 @@
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Rooted<T> {
+pub struct Rooted {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
-impl <T> Default for Rooted<T> {
+impl Default for Rooted {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct js_RootedBase<T> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct js_RootedBase {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
-}
-impl <T> Default for js_RootedBase<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

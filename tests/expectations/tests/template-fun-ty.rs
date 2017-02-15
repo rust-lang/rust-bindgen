@@ -5,36 +5,22 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct Foo<T> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct Foo {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 pub type Foo_FunctionPtr<T> =
     ::std::option::Option<unsafe extern "C" fn() -> T>;
-impl <T> Default for Foo<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct RefPtr {
+    pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct RefPtr<T> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct RefPtr_Proxy {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct RefPtr_Proxy<T, R, Args> {
-    pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
-    pub _phantom_1: ::std::marker::PhantomData<R>,
-    pub _phantom_2: ::std::marker::PhantomData<Args>,
 }
 pub type RefPtr_Proxy_member_function<R, Args> =
     ::std::option::Option<unsafe extern "C" fn(arg1: Args) -> R>;
-impl <T, R, Args> Default for RefPtr_Proxy<T, R, Args> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
-impl <T> Default for RefPtr<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
 pub type Returner<T> = ::std::option::Option<unsafe extern "C" fn() -> T>;

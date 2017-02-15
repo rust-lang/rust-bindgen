@@ -22,12 +22,11 @@ impl Clone for UnknownUnits {
 pub type Float = f32;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct PointTyped<units, F> {
+pub struct PointTyped<F> {
     pub x: F,
     pub y: F,
-    pub _phantom_0: ::std::marker::PhantomData<units>,
 }
-impl <units, F> Default for PointTyped<units, F> {
+impl <F> Default for PointTyped<F> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-pub type IntPoint = PointTyped<UnknownUnits, f32>;
+pub type IntPoint = PointTyped<f32>;

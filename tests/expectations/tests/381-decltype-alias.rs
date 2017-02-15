@@ -5,11 +5,8 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct std_allocator_traits<_Alloc> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct std_allocator_traits {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<_Alloc>,
 }
-impl <_Alloc> Default for std_allocator_traits<_Alloc> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
+pub type std_allocator_traits___size_type<_Alloc> = _Alloc;

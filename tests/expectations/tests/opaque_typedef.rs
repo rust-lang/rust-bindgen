@@ -5,14 +5,10 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct RandomTemplate<T> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct RandomTemplate {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
-}
-impl <T> Default for RandomTemplate<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 /** <div rustbindgen opaque></div> */
 pub type ShouldBeOpaque = [u8; 0usize];
-pub type ShouldNotBeOpaque = RandomTemplate<f32>;
+pub type ShouldNotBeOpaque = RandomTemplate;

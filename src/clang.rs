@@ -6,6 +6,7 @@
 
 use cexpr;
 use clang_sys::*;
+use regex;
 use std::{mem, ptr, slice};
 use std::ffi::{CStr, CString};
 use std::fmt;
@@ -126,11 +127,11 @@ impl Cursor {
     }
 
     /// Return the number of template arguments used by this cursor's referent,
-    /// if the referent is either a template specialization or declaration.
-    /// Returns `None` otherwise.
+    /// if the referent is either a template instantiation. Returns `None`
+    /// otherwise.
     ///
-    /// NOTE: This may not return `Some` for some non-fully specialized
-    /// templates, see #193 and #194.
+    /// NOTE: This may not return `Some` for partial template specializations,
+    /// see #193 and #194.
     pub fn num_template_args(&self) -> Option<u32> {
         // XXX: `clang_Type_getNumTemplateArguments` is sort of reliable, while
         // `clang_Cursor_getNumTemplateArguments` is totally unreliable.
@@ -302,7 +303,11 @@ impl Cursor {
                 x: clang_getCursorDefinition(self.x),
             };
 
-            if ret.is_valid() { Some(ret) } else { None }
+            if ret.is_valid() && ret.kind() != CXCursor_NoDeclFound {
+                Some(ret)
+            } else {
+                None
+            }
         }
     }
 
@@ -331,8 +336,9 @@ impl Cursor {
         }
     }
 
-    /// Given that this cursor points to a template specialization, get a cursor
-    /// pointing to the template definition that is being specialized.
+    /// Given that this cursor points to either a template specialization or a
+    /// template instantiation, get a cursor pointing to the template definition
+    /// that is being specialized.
     pub fn specialized(&self) -> Option<Cursor> {
         unsafe {
             let ret = Cursor {
@@ -895,8 +901,8 @@ impl Type {
         self.is_valid() && self.kind() != CXType_Unexposed
     }
 
-    /// Is this type a fully specialized template?
-    pub fn is_fully_specialized_template(&self) -> bool {
+    /// Is this type a fully instantiated template?
+    pub fn is_fully_instantiated_template(&self) -> bool {
         // Yep, the spelling of this containing type-parameter is extremely
         // nasty... But can happen in <type_traits>. Unfortunately I couldn't
         // reduce it enough :(
@@ -907,6 +913,30 @@ impl Type {
             CXCursor_TemplateTemplateParameter => false,
             _ => true,
         }
+    }
+
+    /// Is this type an associated template type? Eg `T::Associated` in
+    /// this example:
+    ///
+    /// ```c++
+    /// template <typename T>
+    /// class Foo {
+    ///     typename T::Associated member;
+    /// };
+    /// ```
+    pub fn is_associated_type(&self) -> bool {
+        // This is terrible :(
+        fn hacky_parse_associated_type<S: AsRef<str>>(spelling: S) -> bool {
+            lazy_static! {
+                static ref ASSOC_TYPE_RE: regex::Regex =
+                    regex::Regex::new(r"typename type\-parameter\-\d+\-\d+::.+").unwrap();
+            }
+            ASSOC_TYPE_RE.is_match(spelling.as_ref())
+        }
+
+        self.kind() == CXType_Unexposed &&
+        (hacky_parse_associated_type(self.spelling()) ||
+         hacky_parse_associated_type(self.canonical_type().spelling()))
     }
 }
 

@@ -6,37 +6,34 @@
 
 #[repr(C)]
 #[derive(Debug)]
-pub struct Foo<T, U> {
+pub struct Foo<T> {
     pub m_member: T,
     pub m_member_ptr: *mut T,
     pub m_member_arr: [T; 1usize],
-    pub _phantom_1: ::std::marker::PhantomData<U>,
 }
-impl <T, U> Default for Foo<T, U> {
+impl <T> Default for Foo<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 extern "C" {
     #[link_name = "_Z3bar3FooIiiE"]
-    pub fn bar(foo: Foo<::std::os::raw::c_int, ::std::os::raw::c_int>);
+    pub fn bar(foo: Foo<::std::os::raw::c_int>);
 }
 #[repr(C)]
 #[derive(Debug)]
-pub struct D<T> {
+pub struct D {
     pub m_foo: D_MyFoo,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
-pub type D_MyFoo = Foo<::std::os::raw::c_int, ::std::os::raw::c_int>;
+pub type D_MyFoo = Foo<::std::os::raw::c_int>;
 #[repr(C)]
 #[derive(Debug)]
-pub struct D_U<T, Z> {
+pub struct D_U<Z> {
     pub m_nested_foo: D_MyFoo,
     pub m_baz: Z,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
-impl <T, Z> Default for D_U<T, Z> {
+impl <Z> Default for D_U<Z> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-impl <T> Default for D<T> {
+impl Default for D {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
@@ -104,10 +101,9 @@ impl Default for PODButContainsDtor {
 /** <div rustbindgen opaque> */
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Opaque<T> {
-    pub _phantom_0: ::std::marker::PhantomData<T>,
+pub struct Opaque {
 }
-impl <T> Default for Opaque<T> {
+impl Default for Opaque {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
@@ -143,11 +139,10 @@ impl <T> Default for NestedReplaced<T> {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct NestedBase<T, U> {
+pub struct NestedBase<T> {
     pub buff: *mut T,
-    pub _phantom_1: ::std::marker::PhantomData<U>,
 }
-impl <T, U> Default for NestedBase<T, U> {
+impl <T> Default for NestedBase<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
@@ -184,13 +179,9 @@ impl Clone for Untemplated {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct Templated<T> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct Templated {
     pub m_untemplated: Untemplated,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
-}
-impl <T> Default for Templated<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 /**
  * If the replacement doesn't happen at the parse level the container would be
@@ -237,27 +228,23 @@ impl <T> Default for ReplacedWithoutDestructorFwd<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct TemplateWithVar<T> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct TemplateWithVar {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
-}
-impl <T> Default for TemplateWithVar<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
-fn __bindgen_test_layout_template_1() {
-    assert_eq!(::std::mem::size_of::<Foo<::std::os::raw::c_int, ::std::os::raw::c_int>>()
-               , 24usize , concat ! (
+fn __bindgen_test_layout_Foo_instantiation_95() {
+    assert_eq!(::std::mem::size_of::<Foo<::std::os::raw::c_int>>() , 24usize ,
+               concat ! (
                "Size of template specialization: " , stringify ! (
-               Foo<::std::os::raw::c_int, ::std::os::raw::c_int> ) ));
-    assert_eq!(::std::mem::align_of::<Foo<::std::os::raw::c_int, ::std::os::raw::c_int>>()
-               , 8usize , concat ! (
+               Foo<::std::os::raw::c_int> ) ));
+    assert_eq!(::std::mem::align_of::<Foo<::std::os::raw::c_int>>() , 8usize ,
+               concat ! (
                "Alignment of template specialization: " , stringify ! (
-               Foo<::std::os::raw::c_int, ::std::os::raw::c_int> ) ));
+               Foo<::std::os::raw::c_int> ) ));
 }
 #[test]
-fn __bindgen_test_layout_template_2() {
+fn __bindgen_test_layout_Rooted_instantiation_106() {
     assert_eq!(::std::mem::size_of::<Rooted<*mut ::std::os::raw::c_void>>() ,
                24usize , concat ! (
                "Size of template specialization: " , stringify ! (
@@ -268,7 +255,7 @@ fn __bindgen_test_layout_template_2() {
                Rooted<*mut ::std::os::raw::c_void> ) ));
 }
 #[test]
-fn __bindgen_test_layout_template_3() {
+fn __bindgen_test_layout_WithDtor_instantiation_114() {
     assert_eq!(::std::mem::size_of::<WithDtor<::std::os::raw::c_int>>() ,
                4usize , concat ! (
                "Size of template specialization: " , stringify ! (

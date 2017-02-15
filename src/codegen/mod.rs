@@ -2,8 +2,8 @@ mod helpers;
 mod struct_layout;
 
 use self::helpers::{BlobTyBuilder, attributes};
+use self::struct_layout::{StructLayoutTracker, bytes_from_bits_pow2};
 use self::struct_layout::{align_to, bytes_from_bits};
-use self::struct_layout::{bytes_from_bits_pow2, StructLayoutTracker};
 use aster;
 
 use ir::annotations::FieldAccessorKind;
@@ -20,7 +20,8 @@ use ir::item_kind::ItemKind;
 use ir::layout::Layout;
 use ir::module::Module;
 use ir::objc::ObjCInterface;
-use ir::ty::{Type, TypeKind};
+use ir::template::{AsNamed, TemplateInstantiation};
+use ir::ty::{TemplateDeclaration, Type, TypeKind};
 use ir::var::Var;
 
 use std::borrow::Cow;
@@ -135,11 +136,6 @@ impl<'a> CodegenResult<'a> {
             vars_seen: Default::default(),
             overload_counters: Default::default(),
         }
-    }
-
-    fn next_id(&mut self) -> usize {
-        self.codegen_id.set(self.codegen_id.get() + 1);
-        self.codegen_id.get()
     }
 
     fn saw_union(&mut self) {
@@ -522,19 +518,20 @@ impl CodeGenerator for Type {
             TypeKind::Pointer(..) |
             TypeKind::BlockPointer |
             TypeKind::Reference(..) |
-            TypeKind::TemplateInstantiation(..) |
             TypeKind::Function(..) |
             TypeKind::ResolvedTypeRef(..) |
+            TypeKind::Opaque |
             TypeKind::Named => {
                 // These items don't need code generation, they only need to be
                 // converted to rust types in fields, arguments, and such.
                 return;
             }
+            TypeKind::TemplateInstantiation(ref inst) => {
+                inst.codegen(ctx, result, whitelisted_items, item)
+            }
             TypeKind::Comp(ref ci) => {
                 ci.codegen(ctx, result, whitelisted_items, item)
             }
-            // NB: The code below will pick the correct
-            // applicable_template_args.
             TypeKind::TemplateAlias(inner, _) |
             TypeKind::Alias(inner) => {
                 let inner_item = ctx.resolve_item(inner);
@@ -557,10 +554,9 @@ impl CodeGenerator for Type {
                     return;
                 }
 
-                let mut applicable_template_args =
-                    item.applicable_template_args(ctx);
+                let mut used_template_params = item.used_template_params(ctx);
                 let inner_rust_type = if item.is_opaque(ctx) {
-                    applicable_template_args.clear();
+                    used_template_params = None;
                     // Pray if there's no layout.
                     let layout = self.layout(ctx).unwrap_or_else(Layout::zero);
                     BlobTyBuilder::new(layout).build()
@@ -603,7 +599,7 @@ impl CodeGenerator for Type {
                 // https://github.com/rust-lang/rust/issues/26264
                 let simple_enum_path = match inner_rust_type.node {
                     ast::TyKind::Path(None, ref p) => {
-                        if applicable_template_args.is_empty() &&
+                        if used_template_params.is_none() &&
                            inner_item.expect_type()
                             .canonical_type(ctx)
                             .is_enum() &&
@@ -627,17 +623,21 @@ impl CodeGenerator for Type {
                     typedef.use_().build(p).as_(rust_name)
                 } else {
                     let mut generics = typedef.type_(rust_name).generics();
-                    for template_arg in applicable_template_args.iter() {
-                        let template_arg = ctx.resolve_type(*template_arg);
-                        if template_arg.is_named() {
-                            if template_arg.is_invalid_named_type() {
-                                warn!("Item contained invalid template \
-                                       parameter: {:?}",
-                                      item);
-                                return;
+                    if let Some(ref params) = used_template_params {
+                        for template_param in params {
+                            if let Some(id) =
+                                template_param.as_named(ctx, &()) {
+                                let template_param = ctx.resolve_type(id);
+                                if template_param.is_invalid_named_type() {
+                                    warn!("Item contained invalid template \
+                                           parameter: {:?}",
+                                          item);
+                                    return;
+                                }
+                                generics =
+                                    generics.ty_param_id(template_param.name()
+                                        .unwrap());
                             }
-                            generics =
-                                generics.ty_param_id(template_arg.name().unwrap());
                         }
                     }
                     generics.build().build_ty(inner_rust_type)
@@ -768,7 +768,7 @@ impl<'a> Bitfield<'a> {
             let field_align = field_ty_layout.align;
 
             if field_size_in_bits != 0 &&
-                (width == 0 || width as usize > unfilled_bits_in_last_unit) {
+               (width == 0 || width as usize > unfilled_bits_in_last_unit) {
                 field_size_in_bits = align_to(field_size_in_bits, field_align);
                 // Push the new field.
                 let ty =
@@ -829,6 +829,53 @@ impl<'a> Bitfield<'a> {
     }
 }
 
+impl CodeGenerator for TemplateInstantiation {
+    type Extra = Item;
+
+    fn codegen<'a>(&self,
+                   ctx: &BindgenContext,
+                   result: &mut CodegenResult<'a>,
+                   _whitelisted_items: &ItemSet,
+                   item: &Item) {
+        // Although uses of instantiations don't need code generation, and are
+        // just converted to rust types in fields, vars, etc, we take this
+        // opportunity to generate tests for their layout here.
+
+        let layout = item.kind().expect_type().layout(ctx);
+
+        if let Some(layout) = layout {
+            let size = layout.size;
+            let align = layout.align;
+
+            let name = item.canonical_name(ctx);
+            let fn_name = format!("__bindgen_test_layout_{}_instantiation_{}",
+                                  name,
+                                  item.id().as_usize());
+            let fn_name = ctx.rust_ident_raw(&fn_name);
+
+            let prefix = ctx.trait_prefix();
+            let ident = item.to_rust_ty(ctx);
+            let size_of_expr = quote_expr!(ctx.ext_cx(),
+                                           ::$prefix::mem::size_of::<$ident>());
+            let align_of_expr = quote_expr!(ctx.ext_cx(),
+                                            ::$prefix::mem::align_of::<$ident>());
+
+            let item = quote_item!(
+                ctx.ext_cx(),
+                #[test]
+                fn $fn_name() {
+                    assert_eq!($size_of_expr, $size,
+                               concat!("Size of template specialization: ", stringify!($ident)));
+                    assert_eq!($align_of_expr, $align,
+                               concat!("Alignment of template specialization: ", stringify!($ident)));
+                })
+                .unwrap();
+
+            result.push(item);
+        }
+    }
+}
+
 impl CodeGenerator for CompInfo {
     type Extra = Item;
 
@@ -847,12 +894,11 @@ impl CodeGenerator for CompInfo {
             return;
         }
 
-        let applicable_template_args = item.applicable_template_args(ctx);
+        let used_template_params = item.used_template_params(ctx);
 
         // generate tuple struct if struct or union is a forward declaration,
         // skip for now if template parameters are needed.
-        if self.is_forward_declaration() &&
-           applicable_template_args.is_empty() {
+        if self.is_forward_declaration() && used_template_params.is_none() {
             let struct_name = item.canonical_name(ctx);
             let struct_name = ctx.rust_ident_raw(&struct_name);
             let tuple_struct = quote_item!(ctx.ext_cx(),
@@ -862,35 +908,6 @@ impl CodeGenerator for CompInfo {
                                           )
                 .unwrap();
             result.push(tuple_struct);
-            return;
-        }
-
-        if self.is_template_specialization() {
-            let layout = item.kind().expect_type().layout(ctx);
-
-            if let Some(layout) = layout {
-                let fn_name = format!("__bindgen_test_layout_template_{}",
-                                      result.next_id());
-                let fn_name = ctx.rust_ident_raw(&fn_name);
-                let ident = item.to_rust_ty(ctx);
-                let prefix = ctx.trait_prefix();
-                let size_of_expr = quote_expr!(ctx.ext_cx(),
-                                ::$prefix::mem::size_of::<$ident>());
-                let align_of_expr = quote_expr!(ctx.ext_cx(),
-                                ::$prefix::mem::align_of::<$ident>());
-                let size = layout.size;
-                let align = layout.align;
-                let item = quote_item!(ctx.ext_cx(),
-                                       #[test]
-                                       fn $fn_name() {
-                                           assert_eq!($size_of_expr, $size,
-                                                      concat!("Size of template specialization: ", stringify!($ident)));
-                                           assert_eq!($align_of_expr, $align,
-                                                      concat!("Alignment of template specialization: ", stringify!($ident)));
-                                       })
-                    .unwrap();
-                result.push(item);
-            }
             return;
         }
 
@@ -923,7 +940,7 @@ impl CodeGenerator for CompInfo {
         if item.can_derive_copy(ctx, ()) &&
            !item.annotations().disallow_copy() {
             derives.push("Copy");
-            if !applicable_template_args.is_empty() {
+            if used_template_params.is_some() {
                 // FIXME: This requires extra logic if you have a big array in a
                 // templated struct. The reason for this is that the magic:
                 //     fn clone(&self) -> Self { *self }
@@ -940,8 +957,6 @@ impl CodeGenerator for CompInfo {
             attributes.push(attributes::derives(&derives))
         }
 
-        let mut template_args_used =
-            vec![false; applicable_template_args.len()];
         let canonical_name = item.canonical_name(ctx);
         let builder = if is_union && ctx.options().unstable_rust {
             aster::AstBuilder::new()
@@ -1002,13 +1017,6 @@ impl CodeGenerator for CompInfo {
             // unsized types.
             if base_ty.is_unsized(ctx) {
                 continue;
-            }
-
-            for (i, ty_id) in applicable_template_args.iter().enumerate() {
-                let template_arg_ty = ctx.resolve_type(*ty_id);
-                if base_ty.signature_contains_named_type(ctx, template_arg_ty) {
-                    template_args_used[i] = true;
-                }
             }
 
             let inner = base.ty.to_rust_ty(ctx);
@@ -1092,13 +1100,6 @@ impl CodeGenerator for CompInfo {
                 continue;
             }
 
-            for (i, ty_id) in applicable_template_args.iter().enumerate() {
-                let template_arg = ctx.resolve_type(*ty_id);
-                if field_ty.signature_contains_named_type(ctx, template_arg) {
-                    template_args_used[i] = true;
-                }
-            }
-
             let ty = field.ty().to_rust_ty(ctx);
 
             // NB: In unstable rust we use proper `union` types.
@@ -1108,7 +1109,8 @@ impl CodeGenerator for CompInfo {
                 } else {
                     quote_ty!(ctx.ext_cx(), __BindgenUnionField<$ty>)
                 }
-            } else if let Some(item) = field_ty.is_incomplete_array(ctx) {
+            } else if let Some(item) =
+                field_ty.is_incomplete_array(ctx) {
                 result.saw_incomplete_array();
 
                 let inner = item.to_rust_ty(ctx);
@@ -1257,9 +1259,6 @@ impl CodeGenerator for CompInfo {
         if item.is_opaque(ctx) {
             fields.clear();
             methods.clear();
-            for i in 0..template_args_used.len() {
-                template_args_used[i] = false;
-            }
 
             match layout {
                 Some(l) => {
@@ -1276,7 +1275,9 @@ impl CodeGenerator for CompInfo {
             }
         } else if !is_union && !self.is_unsized(ctx) {
             if let Some(padding_field) =
-                layout.and_then(|layout| struct_layout.pad_struct(&canonical_name, layout)) {
+                layout.and_then(|layout| {
+                    struct_layout.pad_struct(&canonical_name, layout)
+                }) {
                 fields.push(padding_field);
             }
 
@@ -1299,33 +1300,15 @@ impl CodeGenerator for CompInfo {
             fields.push(field);
         }
 
-        // Append any extra template arguments that nobody has used so far.
-        for (i, ty) in applicable_template_args.iter().enumerate() {
-            if !template_args_used[i] {
-                let name = ctx.resolve_type(*ty).name().unwrap();
-                let ident = ctx.rust_ident(name);
-                let prefix = ctx.trait_prefix();
-                let phantom = quote_ty!(ctx.ext_cx(),
-                                        ::$prefix::marker::PhantomData<$ident>);
-                let field = StructFieldBuilder::named(format!("_phantom_{}",
-                                                              i))
-                    .pub_()
-                    .build_ty(phantom);
-                fields.push(field)
-            }
-        }
-
-
         let mut generics = aster::AstBuilder::new().generics();
-        for template_arg in applicable_template_args.iter() {
-            // Take into account that here only arrive named types, not
-            // template specialisations that would need to be
-            // instantiated.
-            //
-            // TODO: Add template args from the parent, here and in
-            // `to_rust_ty`!!
-            let template_arg = ctx.resolve_type(*template_arg);
-            generics = generics.ty_param_id(template_arg.name().unwrap());
+
+        if let Some(ref params) = used_template_params {
+            for ty in params.iter() {
+                let param = ctx.resolve_type(*ty);
+                let name = param.name().unwrap();
+                let ident = ctx.rust_ident(name);
+                generics = generics.ty_param_id(ident);
+            }
         }
 
         let generics = generics.build();
@@ -1353,7 +1336,7 @@ impl CodeGenerator for CompInfo {
                   canonical_name);
         }
 
-        if applicable_template_args.is_empty() {
+        if used_template_params.is_none() {
             for var in self.inner_vars() {
                 ctx.resolve_item(*var)
                     .codegen(ctx, result, whitelisted_items, &());
@@ -2193,16 +2176,54 @@ impl ToRustTy for Type {
                 let path = item.namespace_aware_canonical_path(ctx);
                 aster::AstBuilder::new().ty().path().ids(path).build()
             }
-            TypeKind::TemplateInstantiation(inner, ref template_args) => {
-                // PS: Sorry for the duplication here.
-                let mut inner_ty = inner.to_rust_ty(ctx).unwrap();
+            TypeKind::TemplateInstantiation(ref inst) => {
+                let decl = inst.template_definition();
+                let mut ty = decl.to_rust_ty(ctx).unwrap();
 
-                if let ast::TyKind::Path(_, ref mut path) = inner_ty.node {
-                    let template_args = template_args.iter()
-                        .map(|arg| arg.to_rust_ty(ctx))
+                // If we gave up when making a type for the template definition,
+                // check if maybe we can make a better opaque blob for the
+                // instantiation.
+                if ty == aster::AstBuilder::new().ty().unit().unwrap() {
+                    if let Some(layout) = self.layout(ctx) {
+                        ty = BlobTyBuilder::new(layout).build().unwrap()
+                    }
+                }
+
+                let decl_params = if let Some(params) =
+                    decl.self_template_params(ctx) {
+                    params
+                } else {
+                    // This can happen if we generated an opaque type for a
+                    // partial template specialization, in which case we just
+                    // use the opaque type's layout. If we don't have a layout,
+                    // we cross our fingers and hope for the best :-/
+                    debug_assert!(ctx.resolve_type_through_type_refs(decl)
+                        .is_opaque());
+                    let layout = self.layout(ctx).unwrap_or(Layout::zero());
+                    ty = BlobTyBuilder::new(layout).build().unwrap();
+
+                    vec![]
+                };
+
+                // TODO: If the decl type is a template class/struct
+                // declaration's member template declaration, it could rely on
+                // generic template parameters from its outer template
+                // class/struct. When we emit bindings for it, it could require
+                // *more* type arguments than we have here, and we will need to
+                // reconstruct them somehow. We don't have any means of doing
+                // that reconstruction at this time.
+
+                if let ast::TyKind::Path(_, ref mut path) = ty.node {
+                    let template_args = inst.template_arguments()
+                        .iter()
+                        .zip(decl_params.iter())
+                        // Only pass type arguments for the type parameters that
+                        // the decl uses.
+                        .filter(|&(_, param)| ctx.uses_template_parameter(decl, *param))
+                        .map(|(arg, _)| arg.to_rust_ty(ctx))
                         .collect::<Vec<_>>();
 
-                    path.segments.last_mut().unwrap().parameters = if
+                    path.segments.last_mut().unwrap().parameters = if 
                         template_args.is_empty() {
                         None
                     } else {
@@ -2216,18 +2237,19 @@ impl ToRustTy for Type {
                     }
                 }
 
-                P(inner_ty)
+                P(ty)
             }
             TypeKind::ResolvedTypeRef(inner) => inner.to_rust_ty(ctx),
             TypeKind::TemplateAlias(inner, _) |
             TypeKind::Alias(inner) => {
-                let applicable_named_args = item.applicable_template_args(ctx)
+                let template_params = item.used_template_params(ctx)
+                    .unwrap_or(vec![])
                     .into_iter()
-                    .filter(|arg| ctx.resolve_type(*arg).is_named())
+                    .filter(|param| param.is_named(ctx, &()))
                     .collect::<Vec<_>>();
 
                 let spelling = self.name().expect("Unnamed alias?");
-                if item.is_opaque(ctx) && !applicable_named_args.is_empty() {
+                if item.is_opaque(ctx) && !template_params.is_empty() {
                     // Pray if there's no available layout.
                     let layout = self.layout(ctx).unwrap_or_else(Layout::zero);
                     BlobTyBuilder::new(layout).build()
@@ -2236,15 +2258,13 @@ impl ToRustTy for Type {
                                                                 inner) {
                     ty
                 } else {
-                    utils::build_templated_path(item,
-                                                ctx,
-                                                applicable_named_args)
+                    utils::build_templated_path(item, ctx, template_params)
                 }
             }
             TypeKind::Comp(ref info) => {
-                let template_args = item.applicable_template_args(ctx);
+                let template_params = item.used_template_params(ctx);
                 if info.has_non_type_template_params() ||
-                   (item.is_opaque(ctx) && !template_args.is_empty()) {
+                   (item.is_opaque(ctx) && template_params.is_some()) {
                     return match self.layout(ctx) {
                         Some(layout) => BlobTyBuilder::new(layout).build(),
                         None => {
@@ -2256,7 +2276,13 @@ impl ToRustTy for Type {
                     };
                 }
 
-                utils::build_templated_path(item, ctx, template_args)
+                utils::build_templated_path(item,
+                                            ctx,
+                                            template_params.unwrap_or(vec![]))
+            }
+            TypeKind::Opaque => {
+                BlobTyBuilder::new(self.layout(ctx).unwrap_or(Layout::zero()))
+                    .build()
             }
             TypeKind::BlockPointer => {
                 let void = raw_type(ctx, "c_void");
@@ -2742,19 +2768,19 @@ mod utils {
 
     pub fn build_templated_path(item: &Item,
                                 ctx: &BindgenContext,
-                                template_args: Vec<ItemId>)
+                                template_params: Vec<ItemId>)
                                 -> P<ast::Ty> {
         let path = item.namespace_aware_canonical_path(ctx);
         let builder = aster::AstBuilder::new().ty().path();
 
-        let template_args = template_args.iter()
-            .map(|arg| arg.to_rust_ty(ctx))
+        let template_params = template_params.iter()
+            .map(|param| param.to_rust_ty(ctx))
             .collect::<Vec<_>>();
 
         // XXX: I suck at aster.
         if path.len() == 1 {
             return builder.segment(&path[0])
-                .with_tys(template_args)
+                .with_tys(template_params)
                 .build()
                 .build();
         }
@@ -2765,7 +2791,7 @@ mod utils {
             builder = if i == path.len() - 2 {
                 // XXX Extra clone courtesy of the borrow checker.
                 builder.segment(&segment)
-                    .with_tys(template_args.clone())
+                    .with_tys(template_params.clone())
                     .build()
             } else {
                 builder.segment(&segment).build()

@@ -318,7 +318,7 @@ pub trait Tracer {
 }
 
 impl<F> Tracer for F
-    where F: FnMut(ItemId, EdgeKind)
+    where F: FnMut(ItemId, EdgeKind),
 {
     fn visit_kind(&mut self, item: ItemId, kind: EdgeKind) {
         (*self)(item, kind)

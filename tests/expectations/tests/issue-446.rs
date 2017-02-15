@@ -6,17 +6,17 @@
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct List<Elem> {
-    pub next: *mut List<Elem>,
+pub struct List {
+    pub next: *mut List,
 }
-impl <Elem> Default for List<Elem> {
+impl Default for List {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct PersistentRooted<GcThing> {
-    pub root_list: List<PersistentRooted<GcThing>>,
+pub struct PersistentRooted {
+    pub root_list: List,
 }
-impl <GcThing> Default for PersistentRooted<GcThing> {
+impl Default for PersistentRooted {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

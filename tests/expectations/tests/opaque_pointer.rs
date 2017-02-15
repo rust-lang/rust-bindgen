@@ -27,16 +27,15 @@ impl Clone for OtherOpaque {
  */
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Opaque<T> {
-    pub _phantom_0: ::std::marker::PhantomData<T>,
+pub struct Opaque {
 }
-impl <T> Default for Opaque<T> {
+impl Default for Opaque {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct WithOpaquePtr {
-    pub whatever: *mut Opaque<::std::os::raw::c_int>,
+    pub whatever: *mut (),
     pub other: u32,
     pub t: OtherOpaque,
 }

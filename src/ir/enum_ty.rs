@@ -60,7 +60,7 @@ impl Enum {
 
         let declaration = ty.declaration().canonical();
         let repr = declaration.enum_type()
-            .and_then(|et| Item::from_ty(&et, None, None, ctx).ok());
+            .and_then(|et| Item::from_ty(&et, declaration, None, ctx).ok());
         let mut variants = vec![];
 
         // Assume signedness since the default type by the C standard is an int.
@@ -99,7 +99,7 @@ impl Enum {
                             Annotations::new(&cursor)
                                 .and_then(|anno| if anno.hide() {
                                     Some(EnumVariantCustomBehavior::Hide)
-                                } else if
+                                } else if 
                                     anno.constify_enum_variant() {
                                     Some(EnumVariantCustomBehavior::Constify)
                                 } else {

@@ -5,10 +5,9 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct Wrapper<T> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct Wrapper {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -19,6 +18,3 @@ impl <T> Default for Wrapper_Wrapped<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 pub type Wrapper_Type<T> = Wrapper_Wrapped<T>;
-impl <T> Default for Wrapper<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}

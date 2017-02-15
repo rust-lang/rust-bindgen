@@ -5,22 +5,14 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct detail_PointerType<T> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct detail_PointerType {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 pub type detail_PointerType_Type<T> = *mut T;
-impl <T> Default for detail_PointerType<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct UniquePtr<T> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct UniquePtr {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
-pub type UniquePtr_Pointer<T> = detail_PointerType<T>;
-impl <T> Default for UniquePtr<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
+pub type UniquePtr_Pointer = detail_PointerType;

@@ -5,13 +5,9 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct Base<T> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct Base {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
-}
-impl <T> Default for Base<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -32,13 +28,9 @@ impl Default for Derived {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug)]
-pub struct BaseWithDestructor<T> {
+#[derive(Debug, Default)]
+pub struct BaseWithDestructor {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
-}
-impl <T> Default for BaseWithDestructor<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -59,22 +51,21 @@ impl Default for DerivedFromBaseWithDestructor {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
-fn __bindgen_test_layout_template_1() {
-    assert_eq!(::std::mem::size_of::<Base<Derived>>() , 1usize , concat ! (
-               "Size of template specialization: " , stringify ! (
-               Base<Derived> ) ));
-    assert_eq!(::std::mem::align_of::<Base<Derived>>() , 1usize , concat ! (
-               "Alignment of template specialization: " , stringify ! (
-               Base<Derived> ) ));
+fn __bindgen_test_layout_Base_instantiation_9() {
+    assert_eq!(::std::mem::size_of::<Base>() , 1usize , concat ! (
+               "Size of template specialization: " , stringify ! ( Base ) ));
+    assert_eq!(::std::mem::align_of::<Base>() , 1usize , concat ! (
+               "Alignment of template specialization: " , stringify ! ( Base )
+               ));
 }
 #[test]
-fn __bindgen_test_layout_template_2() {
-    assert_eq!(::std::mem::size_of::<BaseWithDestructor<DerivedFromBaseWithDestructor>>()
-               , 1usize , concat ! (
+fn __bindgen_test_layout_BaseWithDestructor_instantiation_12() {
+    assert_eq!(::std::mem::size_of::<BaseWithDestructor>() , 1usize , concat !
+               (
                "Size of template specialization: " , stringify ! (
-               BaseWithDestructor<DerivedFromBaseWithDestructor> ) ));
-    assert_eq!(::std::mem::align_of::<BaseWithDestructor<DerivedFromBaseWithDestructor>>()
-               , 1usize , concat ! (
+               BaseWithDestructor ) ));
+    assert_eq!(::std::mem::align_of::<BaseWithDestructor>() , 1usize , concat
+               ! (
                "Alignment of template specialization: " , stringify ! (
-               BaseWithDestructor<DerivedFromBaseWithDestructor> ) ));
+               BaseWithDestructor ) ));
 }
