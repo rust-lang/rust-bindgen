@@ -5,8 +5,6 @@ use super::item::Item;
 use super::ty::TypeKind;
 use clang;
 use ir::annotations::Annotations;
-use ir::int::IntKind;
-use ir::layout::Layout;
 use parse::{ClangItemParser, ParseError};
 
 /// An enum representing custom handling that can be given to a variant.
@@ -49,19 +47,6 @@ impl Enum {
     /// Get this enumeration's variants.
     pub fn variants(&self) -> &[EnumVariant] {
         &self.variants
-    }
-
-    /// Compute the layout of this type.
-    pub fn calc_layout(&self, ctx: &BindgenContext) -> Option<Layout> {
-        self.repr
-            .map(|repr| ctx.resolve_type(repr))
-            .and_then(|repr| match *repr.canonical_type(ctx).kind() {
-                TypeKind::Int(int_kind) => Some(int_kind),
-                _ => None,
-            })
-            .unwrap_or(IntKind::Int)
-            .known_size()
-            .map(|size| Layout::new(size, size))
     }
 
     /// Construct an enumeration from the given Clang type.
@@ -114,7 +99,7 @@ impl Enum {
                             Annotations::new(&cursor)
                                 .and_then(|anno| if anno.hide() {
                                     Some(EnumVariantCustomBehavior::Hide)
-                                } else if 
+                                } else if
                                     anno.constify_enum_variant() {
                                     Some(EnumVariantCustomBehavior::Constify)
                                 } else {

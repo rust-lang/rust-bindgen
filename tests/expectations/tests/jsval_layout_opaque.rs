@@ -111,6 +111,7 @@ pub struct jsval_layout {
 #[derive(Debug, Copy)]
 pub struct jsval_layout__bindgen_ty_1 {
     pub _bitfield_1: u64,
+    pub __bindgen_align: [u64; 0usize],
 }
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_1() {
@@ -127,37 +128,6 @@ impl Clone for jsval_layout__bindgen_ty_1 {
 }
 impl Default for jsval_layout__bindgen_ty_1 {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
-impl jsval_layout__bindgen_ty_1 {
-    #[inline]
-    pub fn payload47(&self) -> u64 {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 &
-                                        (140737488355327usize as u64)) >>
-                                       0u32) as u64)
-        }
-    }
-    #[inline]
-    pub fn set_payload47(&mut self, val: u64) {
-        self._bitfield_1 &= !(140737488355327usize as u64);
-        self._bitfield_1 |=
-            ((val as u64 as u64) << 0u32) & (140737488355327usize as u64);
-    }
-    #[inline]
-    pub fn tag(&self) -> JSValueTag {
-        unsafe {
-            ::std::mem::transmute(((self._bitfield_1 &
-                                        (18446603336221196288usize as u64)) >>
-                                       47u32) as u32)
-        }
-    }
-    #[inline]
-    pub fn set_tag(&mut self, val: JSValueTag) {
-        self._bitfield_1 &= !(18446603336221196288usize as u64);
-        self._bitfield_1 |=
-            ((val as u32 as u64) << 47u32) &
-                (18446603336221196288usize as u64);
-    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
