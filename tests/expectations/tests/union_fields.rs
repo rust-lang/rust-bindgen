@@ -30,35 +30,34 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
-pub struct _bindgen_ty_1 {
+pub struct nsStyleUnion {
     pub mInt: __BindgenUnionField<::std::os::raw::c_int>,
     pub mFloat: __BindgenUnionField<f32>,
     pub mPointer: __BindgenUnionField<*mut ::std::os::raw::c_void>,
     pub bindgen_union_field: u64,
 }
 #[test]
-fn bindgen_test_layout__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<_bindgen_ty_1>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( _bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<_bindgen_ty_1>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( _bindgen_ty_1 ) ));
+fn bindgen_test_layout_nsStyleUnion() {
+    assert_eq!(::std::mem::size_of::<nsStyleUnion>() , 8usize , concat ! (
+               "Size of: " , stringify ! ( nsStyleUnion ) ));
+    assert_eq! (::std::mem::align_of::<nsStyleUnion>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( nsStyleUnion ) ));
     assert_eq! (unsafe {
-                & ( * ( 0 as * const _bindgen_ty_1 ) ) . mInt as * const _ as
+                & ( * ( 0 as * const nsStyleUnion ) ) . mInt as * const _ as
                 usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( _bindgen_ty_1 ) , "::"
-                , stringify ! ( mInt ) ));
+                "Alignment of field: " , stringify ! ( nsStyleUnion ) , "::" ,
+                stringify ! ( mInt ) ));
     assert_eq! (unsafe {
-                & ( * ( 0 as * const _bindgen_ty_1 ) ) . mFloat as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( _bindgen_ty_1 ) , "::"
-                , stringify ! ( mFloat ) ));
+                & ( * ( 0 as * const nsStyleUnion ) ) . mFloat as * const _ as
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( nsStyleUnion ) , "::" ,
+                stringify ! ( mFloat ) ));
     assert_eq! (unsafe {
-                & ( * ( 0 as * const _bindgen_ty_1 ) ) . mPointer as * const _
+                & ( * ( 0 as * const nsStyleUnion ) ) . mPointer as * const _
                 as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( _bindgen_ty_1 ) , "::"
-                , stringify ! ( mPointer ) ));
+                "Alignment of field: " , stringify ! ( nsStyleUnion ) , "::" ,
+                stringify ! ( mPointer ) ));
 }
-impl Clone for _bindgen_ty_1 {
+impl Clone for nsStyleUnion {
     fn clone(&self) -> Self { *self }
 }
-pub type nsStyleUnion = _bindgen_ty_1;

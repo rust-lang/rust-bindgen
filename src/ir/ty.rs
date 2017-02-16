@@ -311,17 +311,19 @@ impl Type {
         match self.kind {
             TypeKind::Named => {
                 let name = self.name().expect("Unnamed named type?");
-                let mut chars = name.chars();
-                let first = chars.next().unwrap();
-                let mut remaining = chars;
-
-                let valid = (first.is_alphabetic() || first == '_') &&
-                            remaining.all(|c| c.is_alphanumeric() || c == '_');
-
-                !valid
+                !Self::is_valid_identifier(&name)
             }
             _ => false,
         }
+    }
+
+    /// Checks whether the name looks like an identifier,
+    /// i.e. is alphanumeric (including '_') and does not start with a digit.
+    pub fn is_valid_identifier(name: &str) -> bool {
+        let mut chars = name.chars();
+        let first_valid = chars.next().map(|c| c.is_alphabetic() || c == '_').unwrap_or(false);
+
+        first_valid && chars.all(|c| c.is_alphanumeric() || c == '_')
     }
 
     /// See safe_canonical_type.
@@ -454,7 +456,6 @@ fn is_invalid_named_type_unnamed() {
 }
 
 #[test]
-#[should_panic]
 fn is_invalid_named_type_empty_name() {
     let ty = Type::new(Some("".into()), None, TypeKind::Named, false);
     assert!(ty.is_invalid_named_type())
@@ -1074,12 +1075,30 @@ impl Type {
             }
             CXType_Enum => {
                 let enum_ = Enum::from_ty(ty, ctx).expect("Not an enum?");
+
+                if name.is_empty() {
+                    let pretty_name = ty.spelling();
+                    if Self::is_valid_identifier(&pretty_name) {
+                        name = pretty_name;
+                    }
+                }
+
                 TypeKind::Enum(enum_)
             }
             CXType_Record => {
                 let complex =
                     CompInfo::from_ty(potential_id, ty, location, ctx)
                         .expect("Not a complex type?");
+
+                if name.is_empty() {
+                    // The pretty-printed name may contain typedefed name,
+                    // but may also be "struct (anonymous at .h:1)"
+                    let pretty_name = ty.spelling();
+                    if Self::is_valid_identifier(&pretty_name) {
+                        name = pretty_name;
+                    }
+                }
+
                 TypeKind::Comp(complex)
             }
             // FIXME: We stub vectors as arrays since in 99% of the cases the
