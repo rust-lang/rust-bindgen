@@ -3,6 +3,7 @@
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId, PartialType};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
+use super::dot::{DotAttributes};
 use super::function::Function;
 use super::item_kind::ItemKind;
 use super::module::Module;
@@ -15,6 +16,7 @@ use std::cell::{Cell, RefCell};
 use std::collections::BTreeSet;
 use std::fmt::Write;
 use std::iter;
+use std::io;
 
 /// A trait to get the canonical name from an item.
 ///
@@ -370,20 +372,6 @@ impl Item {
     /// Get this `Item`'s identifier.
     pub fn id(&self) -> ItemId {
         self.id
-    }
-
-    /// Get this `Item`'s dot attributes.
-    pub fn dot_attributes(&self, ctx: &BindgenContext) -> String {
-        format!("[fontname=\"courier\", label=< \
-                 <table border=\"0\"> \
-                 <tr><td>ItemId({})</td></tr> \
-                 <tr><td>name</td><td>{}</td></tr> \
-                 <tr><td>kind</td><td>{}</td></tr> \
-                 </table> \
-                 >]",
-                self.id.as_usize(),
-                self.name(ctx).get(),
-                self.kind.kind_name())
     }
 
     /// Get this `Item`'s parent's identifier.
@@ -927,6 +915,20 @@ impl Item {
 
 /// A set of items.
 pub type ItemSet = BTreeSet<ItemId>;
+
+impl DotAttributes for Item {
+    fn dot_attributes<W>(&self, ctx: &BindgenContext, out: &mut W) -> io::Result<()>
+        where W: io::Write
+    {
+        writeln!(out,
+                 "<tr><td>{:?}</td></tr>
+                  <tr><td>name</td><td>{}</td></tr>
+                  <tr><td>kind</td><td>{}</td></tr>",
+                 self.id,
+                 self.name(ctx).get(),
+                 self.kind.kind_name())
+    }
+}
 
 impl TemplateDeclaration for ItemId {
     fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {

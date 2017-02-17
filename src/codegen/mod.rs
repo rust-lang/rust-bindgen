@@ -10,6 +10,7 @@ use ir::annotations::FieldAccessorKind;
 use ir::comp::{Base, CompInfo, CompKind, Field, Method, MethodKind};
 use ir::context::{BindgenContext, ItemId};
 use ir::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
+use ir::dot;
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
 use ir::function::{Function, FunctionSig};
 use ir::int::IntKind;
@@ -2502,7 +2503,7 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
         }
 
         if let Some(path) = context.options().emit_ir_graphviz.as_ref() {
-            match context.emit_ir_graphviz(path.clone()) {
+            match dot::write_dot_file(context, path) {
                 Ok(()) => info!("Your dot file was generated successfully into: {}", path),
                 Err(e) => error!("{}", e),
             }
