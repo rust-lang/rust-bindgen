@@ -15,8 +15,8 @@ out to us in a GitHub issue, or stop by
   - [Overview](#overview)
   - [Running All Tests](#running-all-tests)
   - [Authoring New Tests](#authoring-new-tests)
-- [Generating Graphviz Dot File](#generating-graphviz-dot-file)
 - [Automatic code formatting](#automatic-code-formatting)
+- [Generating Graphviz Dot Files](#generating-graphviz-dot-files)
 - [Debug Logging](#debug-logging)
 - [Using `creduce` to Minimize Test Cases](#using-creduce-to-minimize-test-cases)
   - [Isolating Your Test Case](#isolating-your-test-case)
@@ -113,27 +113,6 @@ Then verify the new Rust bindings compile and pass some basic tests:
 $ cargo test -p tests_expectations
 ```
 
-## Generating Graphviz Dot Files
-
-We have a special thing which will help you debug your codegen context if something
-will go wrong. It will generate a [`graphviz`](http://graphviz.org/pdf/dotguide.pdf)
-dot file and then you can create a PNG from it with `graphviz` tool in your OS.
-
-Here is an example how it could be done:
-
-```
-$ cargo run -- example.hpp --emit-ir-graphviz output.dot
-```
-
-It will generate your graphviz dot file and then you will need tog
-create a PNG from it with `graphviz`.
-
-Something like this:
-
-```
-$ dot -Tpng output.dot -o output.png
-```
-
 ## Automatic code formatting
 
 We use [`rustfmt`](https://github.com/rust-lang-nursery/rustfmt) to enforce a
@@ -156,6 +135,37 @@ $ cargo fmt
 ```
 
 The code style is described in the `rustfmt.toml` file in top level of the repo.
+
+## Generating Graphviz Dot Files
+
+We can generate [Graphviz](http://graphviz.org/pdf/dotguide.pdf) dot files from
+our internal representation of a C/C++ input header, and then you can create a
+PNG or PDF from it with Graphviz's `dot` program. This is very useful when
+debugging bindgen!
+
+First, make sure you have Graphviz and `dot` installed:
+
+```
+$ brew install graphviz         # OS X
+$ sudo dnf install graphviz     # Fedora
+$ # Etc...
+```
+
+Then, use the `--emit-ir-graphviz` flag to generate a `dot` file from our IR:
+
+```
+$ cargo run -- example.hpp --emit-ir-graphviz output.dot
+```
+
+Finally, convert the `dot` file to an image:
+
+```
+$ dot -Tpng output.dot -o output.png
+```
+
+The final result will look something like this:
+
+[![An example graphviz rendering of our IR](./example-graphviz-ir.png)](./example-graphviz-ir.png)
 
 ## Debug Logging
 
