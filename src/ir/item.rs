@@ -920,13 +920,12 @@ impl DotAttributes for Item {
     fn dot_attributes<W>(&self, ctx: &BindgenContext, out: &mut W) -> io::Result<()>
         where W: io::Write
     {
-        writeln!(out,
-                 "<tr><td>{:?}</td></tr>
-                  <tr><td>name</td><td>{}</td></tr>
-                  <tr><td>kind</td><td>{}</td></tr>",
-                 self.id,
-                 self.name(ctx).get(),
-                 self.kind.kind_name())
+        try!(writeln!(out,
+                      "<tr><td>{:?}</td></tr>
+                       <tr><td>name</td><td>{}</td></tr>",
+                      self.id,
+                      self.name(ctx).get()));
+        self.kind.dot_attributes(ctx, out)
     }
 }
 
