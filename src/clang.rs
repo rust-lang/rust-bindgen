@@ -1498,6 +1498,13 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
                              &specialized);
             }
         }
+
+        if let Some(parent) = c.fallible_semantic_parent() {
+            println!("");
+            print_cursor(depth,
+                         String::from(prefix) + "semantic-parent.",
+                         &parent);
+        }
     }
 
     fn print_type<S: AsRef<str>>(depth: isize, prefix: S, ty: &Type) {
