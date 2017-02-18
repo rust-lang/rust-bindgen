@@ -91,7 +91,13 @@ fn get_abi(cc: CXCallingConv) -> Option<abi::Abi> {
 }
 
 /// Get the mangled name for the cursor's referent.
-pub fn cursor_mangling(cursor: &clang::Cursor) -> Option<String> {
+pub fn cursor_mangling(ctx: &BindgenContext,
+                       cursor: &clang::Cursor)
+                       -> Option<String> {
+    if !ctx.options().enable_mangling {
+        return None;
+    }
+
     // We early return here because libclang may crash in some case
     // if we pass in a variable inside a partial specialized template.
     // See servo/rust-bindgen#67, and servo/rust-bindgen#462.
@@ -304,7 +310,7 @@ impl ClangSubItemParser for Function {
         let name = cursor.spelling();
         assert!(!name.is_empty(), "Empty function name?");
 
-        let mut mangled_name = cursor_mangling(&cursor);
+        let mut mangled_name = cursor_mangling(context, &cursor);
         if mangled_name.as_ref() == Some(&name) {
             mangled_name = None;
         }

@@ -238,7 +238,7 @@ impl ClangSubItemParser for Var {
                         .map(VarType::String)
                 };
 
-                let mangling = cursor_mangling(&cursor);
+                let mangling = cursor_mangling(ctx, &cursor);
                 let var = Var::new(name, mangling, ty, value, is_const);
 
                 Ok(ParseResult::New(var, Some(cursor)))
