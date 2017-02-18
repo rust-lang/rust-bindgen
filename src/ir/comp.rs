@@ -630,9 +630,13 @@ impl CompInfo {
                     // anonymous, let's just assume that if the cursor we've
                     // found is a definition it's a valid inner type.
                     //
+                    // Note that doing this could be always ok, but let's just
+                    // keep the union check for now.
+                    //
                     // https://github.com/servo/rust-bindgen/issues/482
                     let is_inner_struct = cur.semantic_parent() == cursor ||
-                                          cur.is_definition();
+                                          (kind == CompKind::Union &&
+                                           cur.is_definition());
                     if !is_inner_struct {
                         return CXChildVisit_Continue;
                     }
