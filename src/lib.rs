@@ -86,7 +86,7 @@ use regex_set::RegexSet;
 use std::fs::OpenOptions;
 use std::io::{self, Write};
 use std::path::Path;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use syntax::ast;
 use syntax::codemap::{DUMMY_SP, Span};
@@ -653,23 +653,15 @@ fn ensure_libclang_is_loaded() {
     // across different threads.
 
     lazy_static! {
-        static ref LIBCLANG: Mutex<Option<Arc<clang_sys::SharedLibrary>>> = {
-            Mutex::new(None)
+        static ref LIBCLANG: Arc<clang_sys::SharedLibrary> = {
+            clang_sys::load().expect("Unable to find libclang");
+            clang_sys::get_library()
+                .expect("We just loaded libclang and it had better still be \
+                        here!")
         };
     }
 
-    let mut libclang = LIBCLANG.lock().unwrap();
-    if !clang_sys::is_loaded() {
-        if libclang.is_none() {
-            // TODO(emilio): Return meaningful error (breaking).
-            clang_sys::load().expect("Unable to find libclang");
-            *libclang = Some(clang_sys::get_library()
-                .expect("We just loaded libclang and it had \
-                                     better still be here!"));
-        } else {
-            clang_sys::set_library(libclang.clone());
-        }
-    }
+    clang_sys::set_library(Some(LIBCLANG.clone()));
 }
 
 /// Generated Rust bindings.
