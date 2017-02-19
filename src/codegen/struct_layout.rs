@@ -197,7 +197,7 @@ impl<'a, 'ctx> StructLayoutTracker<'a, 'ctx> {
             };
 
             // Otherwise the padding is useless.
-            let need_padding = padding_bytes >= field_layout.align;
+            let need_padding = padding_bytes >= field_layout.align || field_layout.align > mem::size_of::<*mut ()>();
 
             self.latest_offset += padding_bytes;
 
@@ -213,7 +213,7 @@ impl<'a, 'ctx> StructLayoutTracker<'a, 'ctx> {
                 field_layout);
 
             if need_padding && padding_bytes != 0 {
-                Some(Layout::new(padding_bytes, field_layout.align))
+                Some(Layout::new(padding_bytes, cmp::min(field_layout.align, mem::size_of::<*mut ()>())))
             } else {
                 None
             }
@@ -261,6 +261,8 @@ impl<'a, 'ctx> StructLayoutTracker<'a, 'ctx> {
             } else {
                 Layout::new(padding_bytes, layout.align)
             };
+
+            debug!("pad bytes to struct {}, {:?}", name, layout);
 
             Some(self.padding_field(layout))
         } else {
