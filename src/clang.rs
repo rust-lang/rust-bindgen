@@ -875,7 +875,11 @@ impl Type {
     pub fn named(&self) -> Type {
         unsafe {
             Type {
-                x: clang_Type_getNamedType(self.x),
+                x: if clang_Type_getNamedType::is_loaded() {
+                    clang_Type_getNamedType(self.x)
+                } else {
+                    self.x
+                },
             }
         }
     }
