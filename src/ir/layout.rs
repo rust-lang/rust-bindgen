@@ -38,7 +38,7 @@ impl Layout {
     /// alignment possible.
     pub fn for_size(size: usize) -> Self {
         let mut next_align = 2;
-        while size % next_align == 0 && next_align <= 2 * mem::size_of::<*mut ()>() {
+        while size % next_align == 0 && next_align <= mem::size_of::<*mut ()>() {
             next_align *= 2;
         }
         Layout {
