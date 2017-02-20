@@ -1,12 +1,14 @@
 //! Intermediate representation for C/C++ functions and methods.
 
 use super::context::{BindgenContext, ItemId};
+use super::dot::DotAttributes;
 use super::item::Item;
 use super::traversal::{Trace, Tracer};
 use super::ty::TypeKind;
 use clang;
 use clang_sys::CXCallingConv;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
+use std::io;
 use syntax::abi;
 
 /// A function declaration, with a signature, arguments, and argument names.
@@ -56,6 +58,18 @@ impl Function {
     /// Get this function's signature.
     pub fn signature(&self) -> ItemId {
         self.signature
+    }
+}
+
+impl DotAttributes for Function {
+    fn dot_attributes<W>(&self, _ctx: &BindgenContext, out: &mut W) -> io::Result<()>
+        where W: io::Write
+    {
+        if let Some(ref mangled) = self.mangled_name {
+            try!(writeln!(out, "<tr><td>mangled name</td><td>{}</td></tr>", mangled));
+        }
+
+        Ok(())
     }
 }
 

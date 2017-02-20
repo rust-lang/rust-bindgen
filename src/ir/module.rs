@@ -1,6 +1,8 @@
 //! Intermediate representation for modules (AKA C++ namespaces).
 
+use std::io;
 use super::context::{BindgenContext, ItemId};
+use super::dot::DotAttributes;
 use clang;
 use parse::{ClangSubItemParser, ParseError, ParseResult};
 use parse_one;
@@ -53,6 +55,16 @@ impl Module {
     /// Whether this namespace is inline.
     pub fn is_inline(&self) -> bool {
         self.kind == ModuleKind::Inline
+    }
+}
+
+impl DotAttributes for Module {
+    fn dot_attributes<W>(&self, _ctx: &BindgenContext, out: &mut W) -> io::Result<()>
+        where W: io::Write
+    {
+        writeln!(out,
+                 "<tr><td>ModuleKind</td><td>{:?}</td></tr>",
+                 self.kind)
     }
 }
 

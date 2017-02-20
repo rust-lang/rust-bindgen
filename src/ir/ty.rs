@@ -3,6 +3,7 @@
 use super::comp::CompInfo;
 use super::context::{BindgenContext, ItemId};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
+use super::dot::DotAttributes;
 use super::enum_ty::Enum;
 use super::function::FunctionSig;
 use super::int::IntKind;
@@ -12,6 +13,7 @@ use super::objc::ObjCInterface;
 use super::traversal::{Trace, Tracer};
 use clang::{self, Cursor};
 use parse::{ClangItemParser, ParseError, ParseResult};
+use std::io;
 use std::mem;
 
 /// Template declaration related methods.
@@ -381,6 +383,61 @@ impl Type {
             TypeKind::ResolvedTypeRef(..) => true,
             _ => false,
         }
+    }
+}
+
+impl DotAttributes for Type {
+    fn dot_attributes<W>(&self, ctx: &BindgenContext, out: &mut W) -> io::Result<()>
+        where W: io::Write
+    {
+        if let Some(ref layout) = self.layout {
+            try!(writeln!(out,
+                          "<tr><td>size</td><td>{}</td></tr>
+                           <tr><td>align</td><td>{}</td></tr>",
+                          layout.size,
+                          layout.align));
+            if layout.packed {
+                try!(writeln!(out, "<tr><td>packed</td><td>true</td></tr>"));
+            }
+        }
+
+        if self.is_const {
+            try!(writeln!(out, "<tr><td>const</td><td>true</td></tr>"));
+        }
+
+        self.kind.dot_attributes(ctx, out)
+    }
+}
+
+impl DotAttributes for TypeKind {
+    fn dot_attributes<W>(&self, _ctx: &BindgenContext, out: &mut W) -> io::Result<()>
+        where W: io::Write
+    {
+        write!(out,
+               "<tr><td>TypeKind</td><td>{}</td></tr>",
+               match *self {
+                   TypeKind::Void => "Void",
+                   TypeKind::NullPtr => "NullPtr",
+                   TypeKind::Comp(..) => "Comp",
+                   TypeKind::Int(..) => "Int",
+                   TypeKind::Float(..) => "Float",
+                   TypeKind::Complex(..) => "Complex",
+                   TypeKind::Alias(..) => "Alias",
+                   TypeKind::TemplateAlias(..) => "TemplateAlias",
+                   TypeKind::Array(..) => "Array",
+                   TypeKind::Function(..) => "Function",
+                   TypeKind::Enum(..) => "Enum",
+                   TypeKind::Pointer(..) => "Pointer",
+                   TypeKind::BlockPointer => "BlockPointer",
+                   TypeKind::Reference(..) => "Reference",
+                   TypeKind::TemplateInstantiation(..) => "TemplateInstantiation",
+                   TypeKind::ResolvedTypeRef(..) => "ResolvedTypeRef",
+                   TypeKind::Named => "Named",
+                   TypeKind::ObjCInterface(..) => "ObjCInterface",
+                   TypeKind::UnresolvedTypeRef(..) => {
+                       unreachable!("there shouldn't be any more of these anymore")
+                   }
+               })
     }
 }
 

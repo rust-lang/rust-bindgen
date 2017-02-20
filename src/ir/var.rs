@@ -1,6 +1,7 @@
 //! Intermediate representation of variables.
 
 use super::context::{BindgenContext, ItemId};
+use super::dot::DotAttributes;
 use super::function::cursor_mangling;
 use super::int::IntKind;
 use super::item::Item;
@@ -8,6 +9,7 @@ use super::ty::{FloatKind, TypeKind};
 use cexpr;
 use clang;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
+use std::io;
 use std::num::Wrapping;
 
 /// The type for a constant variable.
@@ -81,6 +83,22 @@ impl Var {
     /// Get this variable's mangled name.
     pub fn mangled_name(&self) -> Option<&str> {
         self.mangled_name.as_ref().map(|n| &**n)
+    }
+}
+
+impl DotAttributes for Var {
+    fn dot_attributes<W>(&self, _ctx: &BindgenContext, out: &mut W) -> io::Result<()>
+        where W: io::Write
+    {
+        if self.is_const {
+            try!(writeln!(out, "<tr><td>const</td><td>true</td></tr>"));
+        }
+
+        if let Some(ref mangled) = self.mangled_name {
+            try!(writeln!(out, "<tr><td>mangled name</td><td>{}</td></tr>", mangled));
+        }
+
+        Ok(())
     }
 }
 
