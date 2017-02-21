@@ -7,6 +7,7 @@ use clang_sys::CXChildVisit_Continue;
 use clang_sys::CXCursor_ObjCCategoryDecl;
 use clang_sys::CXCursor_ObjCClassRef;
 use clang_sys::CXCursor_ObjCInstanceMethodDecl;
+use clang_sys::CXCursor_ObjCProtocolDecl;
 
 /// Objective C interface as used in TypeKind
 ///
@@ -18,6 +19,8 @@ pub struct ObjCInterface {
     name: String,
 
     category: Option<String>,
+
+    is_protocol: bool,
 
     /// List of the methods defined in this interfae
     methods: Vec<ObjCInstanceMethod>,
@@ -42,6 +45,7 @@ impl ObjCInterface {
         ObjCInterface {
             name: name.to_owned(),
             category: None,
+            is_protocol: false,
             methods: Vec::new(),
         }
     }
@@ -54,11 +58,16 @@ impl ObjCInterface {
 
     /// Formats the name for rust
     /// Can be like NSObject, but with categories might be like NSObject_NSCoderMethods
+    /// and protocols are like protocol_NSObject
     pub fn rust_name(&self) -> String {
         if let Some(ref cat) = self.category {
             format!("{}_{}", self.name(), cat)
         } else {
-            self.name().to_owned()
+            if self.is_protocol {
+                format!("protocol_{}", self.name())
+            } else {
+                self.name().to_owned()
+            }
         }
     }
 
@@ -73,6 +82,10 @@ impl ObjCInterface {
                    -> Option<Self> {
         let name = cursor.spelling();
         let mut interface = Self::new(&name);
+
+        if cursor.kind() == CXCursor_ObjCProtocolDecl {
+            interface.is_protocol = true;
+        }
 
         cursor.visit(|c| {
             match c.kind() {

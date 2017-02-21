@@ -9,7 +9,7 @@
 extern crate objc;
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
+pub trait protocol_Foo { }
+impl protocol_Foo for id { }
 pub trait Foo { }
 impl Foo for id { }
-pub trait protocol_bar { }
-impl protocol_bar for id { }
