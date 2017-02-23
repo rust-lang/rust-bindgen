@@ -7,25 +7,59 @@ use super::dot::DotAttributes;
 use super::enum_ty::Enum;
 use super::function::FunctionSig;
 use super::int::IntKind;
-use super::item::Item;
+use super::item::{Item, ItemAncestors};
 use super::layout::Layout;
 use super::objc::ObjCInterface;
-use super::traversal::{Trace, Tracer};
+use super::traversal::{EdgeKind, Trace, Tracer};
 use clang::{self, Cursor};
 use parse::{ClangItemParser, ParseError, ParseResult};
 use std::io;
 use std::mem;
 
-/// Template declaration related methods.
+/// Template declaration (and such declaration's template parameters) related
+/// methods.
+///
+/// Consider this example:
+///
+/// ```c++
+/// template <typename T, typename U>
+/// class Foo {
+///     template <typename V>
+///     using Bar = V*;
+///
+///     class Inner {
+///         T        x;
+///         U        y;
+///         Bar<int> z;
+///     };
+/// };
+///
+/// class Qux {
+///     int y;
+/// };
+/// ```
+///
+/// The following table depicts the results of each trait method when invoked on
+/// `Foo`, `Bar`, and `Qux`.
+///
+/// +------+----------------------+--------------------------+------------------------+
+/// |Decl. | self_template_params | num_self_template_params | all_template_parameters|
+/// +------+----------------------+--------------------------+------------------------+
+/// |Foo   | Some([T, U])         | Some(2)                  | Some([T, U])           |
+/// |Bar   | Some([V])            | Some(1)                  | Some([T, U, V])        |
+/// |Inner | None                 | None                     | Some([T, U])           |
+/// |Qux   | None                 | None                     | None                   |
+/// +------+----------------------+--------------------------+------------------------+
 pub trait TemplateDeclaration {
     /// Get the set of `ItemId`s that make up this template declaration's free
     /// template parameters.
     ///
     /// Note that these might *not* all be named types: C++ allows
-    /// constant-value template parameters. Of course, Rust does not allow
-    /// generic parameters to be anything but types, so we must treat them as
-    /// opaque, and avoid instantiating them.
-    fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>>;
+    /// constant-value template parameters as well as template-template
+    /// parameters. Of course, Rust does not allow generic parameters to be
+    /// anything but types, so we must treat them as opaque, and avoid
+    /// instantiating them.
+    fn self_template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>>;
 
     /// Get the number of free template parameters this template declaration
     /// has.
@@ -34,8 +68,38 @@ pub trait TemplateDeclaration {
     /// `template_params` returns `None`. This is useful when we only have
     /// partial information about the template declaration, such as when we are
     /// in the middle of parsing it.
-    fn num_template_params(&self, ctx: &BindgenContext) -> Option<usize> {
-        self.template_params(ctx).map(|params| params.len())
+    fn num_self_template_params(&self, ctx: &BindgenContext) -> Option<usize> {
+        self.self_template_params(ctx).map(|params| params.len())
+    }
+
+    /// Get the complete set of template parameters that can affect this
+    /// declaration.
+    ///
+    /// Note that this item doesn't need to be a template declaration itself for
+    /// `Some` to be returned here (in contrast to `self_template_params`). If
+    /// this item is a member of a template declaration, then the parent's
+    /// template parameters are included here.
+    ///
+    /// In the example above, `Inner` depends on both of the `T` and `U` type
+    /// parameters, even though it is not itself a template declaration and
+    /// therefore has no type parameters itself. Perhaps it helps to think about
+    /// how we would fully reference such a member type in C++:
+    /// `Foo<int,char>::Inner`. `Foo` *must* be instantiated with template
+    /// arguments before we can gain access to the `Inner` member type.
+    fn all_template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>>
+        where Self: ItemAncestors
+    {
+        let each_self_params: Vec<Vec<_>> = self.ancestors(ctx)
+            .filter_map(|id| id.self_template_params(ctx))
+            .collect();
+        if each_self_params.is_empty() {
+            None
+        } else {
+            Some(each_self_params.into_iter()
+                 .rev()
+                 .flat_map(|params| params)
+                 .collect())
+        }
     }
 }
 
@@ -491,18 +555,18 @@ fn is_invalid_named_type_empty_name() {
 
 
 impl TemplateDeclaration for Type {
-    fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
-        self.kind.template_params(ctx)
+    fn self_template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
+        self.kind.self_template_params(ctx)
     }
 }
 
 impl TemplateDeclaration for TypeKind {
-    fn template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
+    fn self_template_params(&self, ctx: &BindgenContext) -> Option<Vec<ItemId>> {
         match *self {
             TypeKind::ResolvedTypeRef(id) => {
-                ctx.resolve_type(id).template_params(ctx)
+                ctx.resolve_type(id).self_template_params(ctx)
             }
-            TypeKind::Comp(ref comp) => comp.template_params(ctx),
+            TypeKind::Comp(ref comp) => comp.self_template_params(ctx),
             TypeKind::TemplateAlias(_, ref args) => Some(args.clone()),
 
             TypeKind::TemplateInstantiation(..) |
@@ -1202,14 +1266,18 @@ impl Trace for Type {
             TypeKind::Array(inner, _) |
             TypeKind::Alias(inner) |
             TypeKind::ResolvedTypeRef(inner) => {
-                tracer.visit(inner);
+                tracer.visit_kind(inner, EdgeKind::TypeReference);
             }
-
-            TypeKind::TemplateAlias(inner, ref template_args) |
+            TypeKind::TemplateAlias(inner, ref template_params) => {
+                tracer.visit_kind(inner, EdgeKind::TypeReference);
+                for &item in template_params {
+                    tracer.visit_kind(item, EdgeKind::TemplateParameterDefinition);
+                }
+            }
             TypeKind::TemplateInstantiation(inner, ref template_args) => {
-                tracer.visit(inner);
+                tracer.visit_kind(inner, EdgeKind::TemplateDeclaration);
                 for &item in template_args {
-                    tracer.visit(item);
+                    tracer.visit_kind(item, EdgeKind::TemplateArgument);
                 }
             }
             TypeKind::Comp(ref ci) => ci.trace(context, tracer, item),

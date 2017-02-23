@@ -3,7 +3,7 @@
 use super::context::{BindgenContext, ItemId};
 use super::dot::DotAttributes;
 use super::item::Item;
-use super::traversal::{Trace, Tracer};
+use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::TypeKind;
 use clang;
 use clang_sys::CXCallingConv;
@@ -336,10 +336,10 @@ impl Trace for FunctionSig {
     fn trace<T>(&self, _: &BindgenContext, tracer: &mut T, _: &())
         where T: Tracer,
     {
-        tracer.visit(self.return_type());
+        tracer.visit_kind(self.return_type(), EdgeKind::FunctionReturn);
 
         for &(_, ty) in self.argument_types() {
-            tracer.visit(ty);
+            tracer.visit_kind(ty, EdgeKind::FunctionParameter);
         }
     }
 }
