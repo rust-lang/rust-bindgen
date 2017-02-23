@@ -647,6 +647,9 @@ impl CodeGenerator for Type {
             TypeKind::Enum(ref ei) => {
                 ei.codegen(ctx, result, whitelisted_items, item)
             }
+            TypeKind::ObjCId | TypeKind::ObjCSel => {
+                result.saw_objc();
+            }
             TypeKind::ObjCInterface(ref interface) => {
                 interface.codegen(ctx, result, whitelisted_items, item)
             }
@@ -2276,6 +2279,8 @@ impl ToRustTy for Type {
                 let ident = ctx.rust_ident(&name);
                 quote_ty!(ctx.ext_cx(), $ident)
             }
+            TypeKind::ObjCSel => quote_ty!(ctx.ext_cx(), objc::runtime::Sel),
+            TypeKind::ObjCId |
             TypeKind::ObjCInterface(..) => quote_ty!(ctx.ext_cx(), id),
             ref u @ TypeKind::UnresolvedTypeRef(..) => {
                 unreachable!("Should have been resolved after parsing {:?}!", u)
@@ -2461,10 +2466,12 @@ impl CodeGenerator for ObjCInterface {
         }
 
 
+        let trait_name = self.rust_name();
+
         let trait_block = aster::AstBuilder::new()
             .item()
             .pub_()
-            .trait_(self.name())
+            .trait_(&trait_name)
             .with_items(trait_items)
             .build();
 
@@ -2473,7 +2480,7 @@ impl CodeGenerator for ObjCInterface {
             .item()
             .impl_()
             .trait_()
-            .id(self.name())
+            .id(&trait_name)
             .build()
             .with_items(impl_items)
             .build_ty(ty_for_impl);

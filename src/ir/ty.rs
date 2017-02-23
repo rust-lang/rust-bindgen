@@ -358,6 +358,8 @@ impl Type {
             TypeKind::NullPtr |
             TypeKind::BlockPointer |
             TypeKind::Pointer(..) |
+            TypeKind::ObjCId |
+            TypeKind::ObjCSel |
             TypeKind::ObjCInterface(..) => Some(self),
 
             TypeKind::ResolvedTypeRef(inner) |
@@ -433,6 +435,8 @@ impl DotAttributes for TypeKind {
                    TypeKind::TemplateInstantiation(..) => "TemplateInstantiation",
                    TypeKind::ResolvedTypeRef(..) => "ResolvedTypeRef",
                    TypeKind::Named => "Named",
+                   TypeKind::ObjCId => "ObjCId",
+                   TypeKind::ObjCSel => "ObjCSel",
                    TypeKind::ObjCInterface(..) => "ObjCInterface",
                    TypeKind::UnresolvedTypeRef(..) => {
                        unreachable!("there shouldn't be any more of these anymore")
@@ -516,6 +520,8 @@ impl TemplateDeclaration for TypeKind {
             TypeKind::UnresolvedTypeRef(..) |
             TypeKind::Named |
             TypeKind::Alias(_) |
+            TypeKind::ObjCId |
+            TypeKind::ObjCSel |
             TypeKind::ObjCInterface(_) => None,
         }
     }
@@ -562,6 +568,8 @@ impl CanDeriveDefault for Type {
             TypeKind::NullPtr |
             TypeKind::Pointer(..) |
             TypeKind::BlockPointer |
+            TypeKind::ObjCId |
+            TypeKind::ObjCSel |
             TypeKind::ObjCInterface(..) |
             TypeKind::Enum(..) => false,
             TypeKind::Function(..) |
@@ -707,6 +715,12 @@ pub enum TypeKind {
 
     /// Objective C interface. Always referenced through a pointer
     ObjCInterface(ObjCInterface),
+
+    /// Objective C 'id' type, points to any object
+    ObjCId,
+
+    /// Objective C selector type
+    ObjCSel,
 }
 
 impl Type {
@@ -738,6 +752,8 @@ impl Type {
             TypeKind::Reference(..) |
             TypeKind::NullPtr |
             TypeKind::BlockPointer |
+            TypeKind::ObjCId |
+            TypeKind::ObjCSel |
             TypeKind::Pointer(..) => false,
 
             TypeKind::ObjCInterface(..) => true, // dunno?
@@ -787,8 +803,10 @@ impl Type {
         // Parse objc protocols as if they were interfaces
         let mut ty_kind = ty.kind();
         if let Some(loc) = location {
-            if loc.kind() == CXCursor_ObjCProtocolDecl {
-                ty_kind = CXType_ObjCInterface;
+            match loc.kind() {
+                CXCursor_ObjCProtocolDecl |
+                CXCursor_ObjCCategoryDecl => ty_kind = CXType_ObjCInterface,
+                _ => {}
             }
         }
 
@@ -1146,6 +1164,9 @@ impl Type {
                                            parent_id,
                                            ctx);
             }
+            CXType_ObjCId => TypeKind::ObjCId,
+            CXType_ObjCSel => TypeKind::ObjCSel,
+            CXType_ObjCClass |
             CXType_ObjCInterface => {
                 let interface = ObjCInterface::from_ty(&location.unwrap(), ctx)
                     .expect("Not a valid objc interface?");
@@ -1214,6 +1235,8 @@ impl Trace for Type {
             TypeKind::Int(_) |
             TypeKind::Float(_) |
             TypeKind::Complex(_) |
+            TypeKind::ObjCId |
+            TypeKind::ObjCSel |
             TypeKind::BlockPointer => {}
         }
     }

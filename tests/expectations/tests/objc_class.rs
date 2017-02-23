@@ -9,7 +9,13 @@
 extern crate objc;
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
-pub trait Foo { }
-impl Foo for id { }
-pub trait protocol_bar { }
-impl protocol_bar for id { }
+pub trait Foo {
+    unsafe fn method(self);
+}
+impl Foo for id {
+    unsafe fn method(self) { msg_send!(self , method) }
+}
+extern "C" {
+    #[link_name = "fooVar"]
+    pub static mut fooVar: *mut id;
+}
