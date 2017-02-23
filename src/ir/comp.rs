@@ -625,8 +625,19 @@ impl CompInfo {
                     // StructDecl to note incomplete structs that hasn't been
                     // forward-declared before, see:
                     //
+                    // Also, clang seems to scope struct definitions inside
+                    // unions to the whole translation unit. Since those are
+                    // anonymous, let's just assume that if the cursor we've
+                    // found is a definition it's a valid inner type.
+                    //
+                    // Note that doing this could be always ok, but let's just
+                    // keep the union check for now.
+                    //
                     // https://github.com/servo/rust-bindgen/issues/482
-                    if cur.semantic_parent() != cursor {
+                    let is_inner_struct = cur.semantic_parent() == cursor ||
+                                          (kind == CompKind::Union &&
+                                           cur.is_definition());
+                    if !is_inner_struct {
                         return CXChildVisit_Continue;
                     }
 

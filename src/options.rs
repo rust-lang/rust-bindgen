@@ -60,6 +60,9 @@ pub fn builder_from_flags<I>
             Arg::with_name("objc-extern-crate")
                 .long("objc-extern-crate")
                 .help("Use extern crate instead of use for objc"),
+            Arg::with_name("distrust-clang-mangling")
+                .long("distrust-clang-mangling")
+                .help("Do not trust the libclang-provided mangling"),
             Arg::with_name("builtins")
                 .long("builtins")
                 .help("Output bindings for builtin definitions, e.g. \

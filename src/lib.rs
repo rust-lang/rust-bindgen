@@ -212,6 +212,18 @@ impl Builder {
         self
     }
 
+    /// Whether to use the clang-provided name mangling. This is true and
+    /// probably needed for C++ features.
+    ///
+    /// However, some old libclang versions seem to return incorrect results in
+    /// some cases for non-mangled functions, see [1], so we allow disabling it.
+    ///
+    /// [1]: https://github.com/servo/rust-bindgen/issues/528
+    pub fn trust_clang_mangling(mut self, doit: bool) -> Self {
+        self.options.enable_mangling = doit;
+        self
+    }
+
     /// Generate a C/C++ file that includes the header and has dummy uses of
     /// every type defined in the header.
     pub fn dummy_uses<T: Into<String>>(mut self, dummy_uses: T) -> Builder {
@@ -572,6 +584,15 @@ pub struct BindgenOptions {
     /// Intead of emitting 'use objc;' to files generated from objective c files,
     /// generate '#[macro_use] extern crate objc;'
     pub objc_extern_crate: bool,
+
+    /// Whether to use the clang-provided name mangling. This is true and
+    /// probably needed for C++ features.
+    ///
+    /// However, some old libclang versions seem to return incorrect results in
+    /// some cases for non-mangled functions, see [1], so we allow disabling it.
+    ///
+    /// [1]: https://github.com/servo/rust-bindgen/issues/528
+    pub enable_mangling: bool,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -626,6 +647,7 @@ impl Default for BindgenOptions {
             generate_comments: true,
             whitelist_recursively: true,
             objc_extern_crate: false,
+            enable_mangling: true,
         }
     }
 }
