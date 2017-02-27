@@ -52,3 +52,13 @@ fn bindgen_test_layout_UnionWithDtor() {
                 "Alignment of field: " , stringify ! ( UnionWithDtor ) , "::"
                 , stringify ! ( mBar ) ));
 }
+extern "C" {
+    #[link_name = "_ZN13UnionWithDtorD1Ev"]
+    pub fn UnionWithDtor_UnionWithDtor_destructor(this: *mut UnionWithDtor);
+}
+impl UnionWithDtor {
+    #[inline]
+    pub unsafe fn __bindgen_destructor__(&mut self) {
+        UnionWithDtor_UnionWithDtor_destructor(&mut *self)
+    }
+}
