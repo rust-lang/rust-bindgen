@@ -127,6 +127,9 @@ pub fn builder_from_flags<I>
             Arg::with_name("no-convert-floats")
                 .long("no-convert-floats")
                 .help("Don't automatically convert floats to f32/f64."),
+            Arg::with_name("no-prepend-enum-name")
+                .long("no-prepend-enum-name")
+                .help("Do not prepend the enum name to bitfield or constant variants"),
             Arg::with_name("no-unstable-rust")
                 .long("no-unstable-rust")
                 .help("Do not generate unstable Rust code.")
@@ -237,6 +240,10 @@ pub fn builder_from_flags<I>
 
     if matches.is_present("no-derive-default") {
         builder = builder.derive_default(false);
+    }
+
+    if matches.is_present("no-prepend-enum-name") {
+        builder = builder.prepend_enum_name(false);
     }
 
     if let Some(prefix) = matches.value_of("ctypes-prefix") {
