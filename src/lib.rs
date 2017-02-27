@@ -458,6 +458,12 @@ impl Builder {
         self
     }
 
+    /// Prepend the enum name to constant or bitfield variants.
+    pub fn prepend_enum_name(mut self, doit: bool) -> Self {
+        self.options.prepend_enum_name = doit;
+        self
+    }
+
     /// Generate the Rust bindings using the options built up thus far.
     pub fn generate<'ctx>(self) -> Result<Bindings<'ctx>, ()> {
         Bindings::generate(self.options, None)
@@ -593,6 +599,9 @@ pub struct BindgenOptions {
     ///
     /// [1]: https://github.com/servo/rust-bindgen/issues/528
     pub enable_mangling: bool,
+
+    /// Whether to prepend the enum name to bitfield or constant variants.
+    pub prepend_enum_name: bool,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -648,6 +657,7 @@ impl Default for BindgenOptions {
             whitelist_recursively: true,
             objc_extern_crate: false,
             enable_mangling: true,
+            prepend_enum_name: true,
         }
     }
 }

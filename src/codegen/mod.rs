@@ -1993,10 +1993,14 @@ impl CodeGenerator for Enum {
             Some(item.parent_id().canonical_name(ctx))
         };
 
-        let constant_mangling_prefix = if enum_ty.name().is_none() {
-            parent_canonical_name.as_ref().map(|n| &*n)
+        let constant_mangling_prefix = if ctx.options().prepend_enum_name {
+            if enum_ty.name().is_none() {
+                parent_canonical_name.as_ref().map(|n| &*n)
+            } else {
+                Some(&name)
+            }
         } else {
-            Some(&name)
+            None
         };
 
         // NB: We defer the creation of constified variants, in case we find
