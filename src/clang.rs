@@ -208,7 +208,7 @@ impl Cursor {
 
     /// Get the kind of referent this cursor is pointing to.
     pub fn kind(&self) -> CXCursorKind {
-        unsafe { clang_getCursorKind(self.x) }
+        self.x.kind
     }
 
     /// Returns true is the cursor is a definition
