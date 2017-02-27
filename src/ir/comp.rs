@@ -26,6 +26,8 @@ pub enum MethodKind {
     /// A constructor. We represent it as method for convenience, to avoid code
     /// duplication.
     Constructor,
+    /// A destructor method
+    Destructor,
     /// A static method.
     Static,
     /// A normal method.
@@ -59,6 +61,11 @@ impl Method {
     /// What kind of method is this?
     pub fn kind(&self) -> MethodKind {
         self.kind
+    }
+
+    /// Is this a destructor method?
+    pub fn is_destructor(&self) -> bool {
+        self.kind == MethodKind::Destructor
     }
 
     /// Is this a constructor?
@@ -250,6 +257,9 @@ pub struct CompInfo {
     /// The different constructors this struct or class contains.
     constructors: Vec<ItemId>,
 
+    /// The destructor of this type
+    destructor: Option<ItemId>,
+
     /// Vector of classes this one inherits from.
     base_members: Vec<Base>,
 
@@ -321,6 +331,7 @@ impl CompInfo {
             template_params: vec![],
             methods: vec![],
             constructors: vec![],
+            destructor: None,
             base_members: vec![],
             inner_types: vec![],
             inner_vars: vec![],
@@ -432,6 +443,11 @@ impl CompInfo {
     /// Get this type's set of constructors.
     pub fn constructors(&self) -> &[ItemId] {
         &self.constructors
+    }
+
+    /// Get this type's destructor.
+    pub fn destructor(&self) -> &Option<ItemId> {
+        &self.destructor
     }
 
     /// What kind of compound type is this?
@@ -657,8 +673,9 @@ impl CompInfo {
                         CXCursor_Constructor => {
                             ci.constructors.push(signature);
                         }
-                        // TODO(emilio): Bind the destructor?
-                        CXCursor_Destructor => {}
+                        CXCursor_Destructor => {
+                            ci.destructor = Some(signature);
+                        }
                         CXCursor_CXXMethod => {
                             let is_const = cur.method_is_const();
                             let method_kind = if is_static {
