@@ -1,4 +1,5 @@
 // bindgen-flags: -- -target i686-pc-win32
+// bindgen-unstable
 
 struct JNINativeInterface_ {
   int (__stdcall *GetVersion)(void *env);
