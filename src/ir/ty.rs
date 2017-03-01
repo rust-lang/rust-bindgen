@@ -1268,6 +1268,7 @@ impl Type {
             CXType_ObjCInterface => {
                 let interface = ObjCInterface::from_ty(&location.unwrap(), ctx)
                     .expect("Not a valid objc interface?");
+                name = interface.rust_name();
                 TypeKind::ObjCInterface(interface)
             }
             _ => {
