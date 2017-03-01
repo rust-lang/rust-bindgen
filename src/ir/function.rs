@@ -5,6 +5,7 @@ use super::dot::DotAttributes;
 use super::item::Item;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::TypeKind;
+use ir::derive::CanDeriveDebug;
 use clang;
 use clang_sys::CXCallingConv;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
@@ -346,6 +347,29 @@ impl Trace for FunctionSig {
 
         for &(_, ty) in self.argument_types() {
             tracer.visit_kind(ty, EdgeKind::FunctionParameter);
+        }
+    }
+}
+
+// Function pointers follow special rules, see:
+//
+// https://github.com/servo/rust-bindgen/issues/547,
+// https://github.com/rust-lang/rust/issues/38848,
+// and https://github.com/rust-lang/rust/issues/40158
+//
+// Note that copy is always derived, so we don't need to implement it.
+impl CanDeriveDebug for FunctionSig {
+    type Extra = ();
+
+    fn can_derive_debug(&self, _ctx: &BindgenContext, _: ()) -> bool {
+        const RUST_DERIVE_FUNPTR_LIMIT: usize = 12;
+        if self.argument_types.len() > RUST_DERIVE_FUNPTR_LIMIT {
+            return false;
+        }
+
+        match self.abi {
+            Some(abi::Abi::C) | None => true,
+            _ => false,
         }
     }
 }

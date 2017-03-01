@@ -633,9 +633,10 @@ impl Eq for Type {}
 impl fmt::Debug for Type {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         write!(fmt,
-               "Type({}, kind: {}, decl: {:?}, canon: {:?})",
+               "Type({}, kind: {}, cconv: {}, decl: {:?}, canon: {:?})",
                self.spelling(),
                type_to_str(self.kind()),
+               self.call_conv(),
                self.declaration(),
                self.declaration().canonical())
     }
@@ -1519,6 +1520,8 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
         if kind == CXType_Invalid {
             return;
         }
+
+        print_indent(depth, format!(" {}cconv = {}", prefix, ty.call_conv()));
 
         print_indent(depth,
                      format!(" {}spelling = \"{}\"", prefix, ty.spelling()));
