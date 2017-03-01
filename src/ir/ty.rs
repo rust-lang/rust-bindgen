@@ -605,6 +605,13 @@ impl CanDeriveDebug for Type {
             TypeKind::Comp(ref info) => {
                 info.can_derive_debug(ctx, self.layout(ctx))
             }
+            TypeKind::Pointer(inner) => {
+                let inner = ctx.resolve_type(inner);
+                if let TypeKind::Function(ref sig) = *inner.canonical_type(ctx).kind() {
+                    return sig.can_derive_debug(ctx, ());
+                }
+                return true;
+            }
             _ => true,
         }
     }
@@ -636,6 +643,7 @@ impl CanDeriveDefault for Type {
             TypeKind::ObjCSel |
             TypeKind::ObjCInterface(..) |
             TypeKind::Enum(..) => false,
+
             TypeKind::Function(..) |
             TypeKind::Int(..) |
             TypeKind::Float(..) |

@@ -2,6 +2,8 @@
 
 struct JNINativeInterface_ {
   int (__stdcall *GetVersion)(void *env);
+  unsigned long long __hack; // A hack so the field alignment is the same than
+                             // for 64-bit, where we run CI.
 };
 
 __stdcall void bar();
