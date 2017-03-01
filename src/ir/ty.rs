@@ -1326,8 +1326,8 @@ impl Trace for Type {
                 tracer.visit(id);
             }
 
-            TypeKind::ObjCInterface(_) => {
-                // TODO:
+            TypeKind::ObjCInterface(ref interface) => {
+                interface.trace(context, tracer, &());
             }
 
             // None of these variants have edges to other items and types.

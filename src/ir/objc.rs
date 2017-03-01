@@ -2,6 +2,7 @@
 
 use super::context::BindgenContext;
 use super::function::FunctionSig;
+use super::traversal::{Trace, Tracer};
 use clang;
 use clang_sys::CXChildVisit_Continue;
 use clang_sys::CXCursor_ObjCCategoryDecl;
@@ -166,5 +167,18 @@ impl ObjCInstanceMethod {
             .map(|parts| format!("{}:{} ", parts.0, parts.1))
             .collect::<Vec<_>>()
             .join("")
+    }
+}
+
+impl Trace for ObjCInterface {
+    type Extra = ();
+
+    fn trace<T>(&self, context: &BindgenContext, tracer: &mut T, _: &())
+        where T: Tracer,
+    {
+        for method in &self.methods
+        {
+            method.signature.trace(context, tracer, &());
+        }
     }
 }
