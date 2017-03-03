@@ -1136,9 +1136,11 @@ impl CodeGenerator for CompInfo {
                 }
             };
 
-            if let Some(padding_field) =
-                struct_layout.pad_field(&field_name, field_ty, field.offset()) {
-                fields.push(padding_field);
+            if !is_union {
+                if let Some(padding_field) =
+                    struct_layout.pad_field(&field_name, field_ty, field.offset()) {
+                    fields.push(padding_field);
+                }
             }
 
             let is_private = field.annotations()
