@@ -182,7 +182,8 @@ impl FunctionSig {
             CXCursor_FunctionDecl |
             CXCursor_Constructor |
             CXCursor_CXXMethod |
-            CXCursor_ObjCInstanceMethodDecl => {
+            CXCursor_ObjCInstanceMethodDecl |
+            CXCursor_ObjCClassMethodDecl => {
                 // For CXCursor_FunctionDecl, cursor.args() is the reliable way
                 // to get parameter names and types.
                 cursor.args()
@@ -243,7 +244,8 @@ impl FunctionSig {
             }
         }
 
-        let ty_ret_type = if cursor.kind() == CXCursor_ObjCInstanceMethodDecl {
+        let ty_ret_type = if cursor.kind() == CXCursor_ObjCInstanceMethodDecl ||
+                             cursor.kind() == CXCursor_ObjCClassMethodDecl {
             try!(cursor.ret_type().ok_or(ParseError::Continue))
         } else {
             try!(ty.ret_type().ok_or(ParseError::Continue))
@@ -252,8 +254,8 @@ impl FunctionSig {
         let abi = get_abi(ty.call_conv());
 
         if abi.is_none() {
-            assert_eq!(cursor.kind(),
-                       CXCursor_ObjCInstanceMethodDecl,
+            assert!(cursor.kind() == CXCursor_ObjCInstanceMethodDecl ||
+                    cursor.kind() == CXCursor_ObjCClassMethodDecl,
                        "Invalid ABI for function signature")
         }
 

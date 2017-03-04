@@ -19,7 +19,7 @@ use ir::item::{Item, ItemAncestors, ItemCanonicalName, ItemCanonicalPath,
 use ir::item_kind::ItemKind;
 use ir::layout::Layout;
 use ir::module::Module;
-use ir::objc::ObjCInterface;
+use ir::objc::{ObjCInterface, ObjCMethod};
 use ir::template::{AsNamed, TemplateInstantiation};
 use ir::ty::{TemplateDeclaration, Type, TypeKind};
 use ir::var::Var;
@@ -2434,8 +2434,92 @@ impl CodeGenerator for Function {
     }
 }
 
+
+fn objc_method_codegen(ctx: &BindgenContext,
+                       method: &ObjCMethod,
+                       class_name: Option<&str>)
+                       -> (ast::ImplItem, ast::TraitItem) {
+    let signature = method.signature();
+    let fn_args = utils::fnsig_arguments(ctx, signature);
+    let fn_ret = utils::fnsig_return_ty(ctx, signature);
+
+    let sig = if method.is_class_method() {
+        aster::AstBuilder::new()
+            .method_sig()
+            .unsafe_()
+            .fn_decl()
+            .with_args(fn_args.clone())
+            .build(fn_ret)
+    } else {
+        aster::AstBuilder::new()
+            .method_sig()
+            .unsafe_()
+            .fn_decl()
+            .self_()
+            .build(ast::SelfKind::Value(ast::Mutability::Immutable))
+            .with_args(fn_args.clone())
+            .build(fn_ret)
+    };
+
+    // Collect the actual used argument names
+    let arg_names: Vec<_> = fn_args.iter()
+        .map(|ref arg| match arg.pat.node {
+            ast::PatKind::Ident(_, ref spanning, _) => {
+                spanning.node.name.as_str().to_string()
+            }
+            _ => {
+                panic!("odd argument!");
+            }
+        })
+        .collect();
+
+    let methods_and_args =
+        ctx.rust_ident(&method.format_method_call(&arg_names));
+
+    let body = if method.is_class_method() {
+        let class_name =
+            class_name.expect("Generating a class method without class name?")
+                .to_owned();
+        let expect_msg = format!("Couldn't find {}", class_name);
+        quote_stmt!(ctx.ext_cx(),
+                    msg_send![objc::runtime::Class::get($class_name).expect($expect_msg), $methods_and_args])
+            .unwrap()
+    } else {
+        quote_stmt!(ctx.ext_cx(), msg_send![self, $methods_and_args]).unwrap()
+    };
+    let block = ast::Block {
+        stmts: vec![body],
+        id: ast::DUMMY_NODE_ID,
+        rules: ast::BlockCheckMode::Default,
+        span: ctx.span(),
+    };
+
+    let attrs = vec![];
+
+    let impl_item = ast::ImplItem {
+        id: ast::DUMMY_NODE_ID,
+        ident: ctx.rust_ident(method.rust_name()),
+        vis: ast::Visibility::Inherited, // Public,
+        attrs: attrs.clone(),
+        node: ast::ImplItemKind::Method(sig.clone(), P(block)),
+        defaultness: ast::Defaultness::Final,
+        span: ctx.span(),
+    };
+
+    let trait_item = ast::TraitItem {
+        id: ast::DUMMY_NODE_ID,
+        ident: ctx.rust_ident(method.rust_name()),
+        attrs: attrs,
+        node: ast::TraitItemKind::Method(sig, None),
+        span: ctx.span(),
+    };
+
+    (impl_item, trait_item)
+}
+
 impl CodeGenerator for ObjCInterface {
     type Extra = Item;
+
     fn codegen<'a>(&self,
                    ctx: &BindgenContext,
                    result: &mut CodegenResult<'a>,
@@ -2445,66 +2529,18 @@ impl CodeGenerator for ObjCInterface {
         let mut trait_items = vec![];
 
         for method in self.methods() {
-            let signature = method.signature();
-            let fn_args = utils::fnsig_arguments(ctx, signature);
-            let fn_ret = utils::fnsig_return_ty(ctx, signature);
-            let sig = aster::AstBuilder::new()
-                .method_sig()
-                .unsafe_()
-                .fn_decl()
-                .self_()
-                .build(ast::SelfKind::Value(ast::Mutability::Immutable))
-                .with_args(fn_args.clone())
-                .build(fn_ret);
-
-            // Collect the actual used argument names
-            let arg_names: Vec<_> = fn_args.iter()
-                .map(|ref arg| match arg.pat.node {
-                    ast::PatKind::Ident(_, ref spanning, _) => {
-                        spanning.node.name.as_str().to_string()
-                    }
-                    _ => {
-                        panic!("odd argument!");
-                    }
-                })
-                .collect();
-
-            let methods_and_args =
-                ctx.rust_ident(&method.format_method_call(&arg_names));
-            let body = quote_stmt!(ctx.ext_cx(),
-                                   msg_send![self, $methods_and_args])
-                .unwrap();
-            let block = ast::Block {
-                stmts: vec![body],
-                id: ast::DUMMY_NODE_ID,
-                rules: ast::BlockCheckMode::Default,
-                span: ctx.span(),
-            };
-
-            let attrs = vec![];
-
-            let impl_item = ast::ImplItem {
-                id: ast::DUMMY_NODE_ID,
-                ident: ctx.rust_ident(method.rust_name()),
-                vis: ast::Visibility::Inherited, // Public,
-                attrs: attrs.clone(),
-                node: ast::ImplItemKind::Method(sig.clone(), P(block)),
-                defaultness: ast::Defaultness::Final,
-                span: ctx.span(),
-            };
-
-            let trait_item = ast::TraitItem {
-                id: ast::DUMMY_NODE_ID,
-                ident: ctx.rust_ident(method.rust_name()),
-                attrs: attrs,
-                node: ast::TraitItemKind::Method(sig, None),
-                span: ctx.span(),
-            };
-
+            let (impl_item, trait_item) =
+                objc_method_codegen(ctx, method, None);
             impl_items.push(impl_item);
             trait_items.push(trait_item)
         }
 
+        for class_method in self.class_methods() {
+            let (impl_item, trait_item) =
+                objc_method_codegen(ctx, class_method, Some(self.name()));
+            impl_items.push(impl_item);
+            trait_items.push(trait_item)
+        }
 
         let trait_name = self.rust_name();
 

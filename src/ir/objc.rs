@@ -7,6 +7,7 @@ use super::ty::TypeKind;
 use clang;
 use clang_sys::CXChildVisit_Continue;
 use clang_sys::CXCursor_ObjCCategoryDecl;
+use clang_sys::CXCursor_ObjCClassMethodDecl;
 use clang_sys::CXCursor_ObjCClassRef;
 use clang_sys::CXCursor_ObjCInstanceMethodDecl;
 use clang_sys::CXCursor_ObjCProtocolDecl;
@@ -28,12 +29,14 @@ pub struct ObjCInterface {
     conforms_to: Vec<ItemId>,
 
     /// List of the methods defined in this interfae
-    methods: Vec<ObjCInstanceMethod>,
+    methods: Vec<ObjCMethod>,
+
+    class_methods: Vec<ObjCMethod>,
 }
 
 /// The objective c methods
 #[derive(Debug)]
-pub struct ObjCInstanceMethod {
+pub struct ObjCMethod {
     /// The original method selector name
     /// like, dataWithBytes:length:
     name: String,
@@ -43,6 +46,9 @@ pub struct ObjCInstanceMethod {
     rust_name: String,
 
     signature: FunctionSig,
+
+    /// Is class method?
+    is_class_method: bool,
 }
 
 impl ObjCInterface {
@@ -53,6 +59,7 @@ impl ObjCInterface {
             is_protocol: false,
             conforms_to: Vec::new(),
             methods: Vec::new(),
+            class_methods: Vec::new(),
         }
     }
 
@@ -77,9 +84,14 @@ impl ObjCInterface {
         }
     }
 
-    /// List of the methods defined in this interfae
-    pub fn methods(&self) -> &Vec<ObjCInstanceMethod> {
+    /// List of the methods defined in this interface
+    pub fn methods(&self) -> &Vec<ObjCMethod> {
         &self.methods
+    }
+
+    /// List of the class methods defined in this interface
+    pub fn class_methods(&self) -> &Vec<ObjCMethod> {
+        &self.class_methods
     }
 
     /// Parses the Objective C interface from the cursor
@@ -131,14 +143,15 @@ impl ObjCInterface {
                     }
 
                 }
-                CXCursor_ObjCInstanceMethodDecl => {
+                CXCursor_ObjCInstanceMethodDecl |
+                CXCursor_ObjCClassMethodDecl => {
                     let name = c.spelling();
                     let signature =
                         FunctionSig::from_ty(&c.cur_type(), &c, ctx)
                             .expect("Invalid function sig");
-                    let method = ObjCInstanceMethod::new(&name, signature);
-
-                    interface.methods.push(method);
+                    let is_class_method = c.kind() == CXCursor_ObjCClassMethodDecl;
+                    let method = ObjCMethod::new(&name, signature, is_class_method);
+                    interface.add_method(method);
                 }
                 _ => {}
             }
@@ -146,18 +159,30 @@ impl ObjCInterface {
         });
         Some(interface)
     }
+
+    fn add_method(&mut self, method: ObjCMethod) {
+        if method.is_class_method {
+            self.class_methods.push(method);
+        } else {
+            self.methods.push(method);
+        }
+    }
 }
 
-impl ObjCInstanceMethod {
-    fn new(name: &str, signature: FunctionSig) -> ObjCInstanceMethod {
+impl ObjCMethod {
+    fn new(name: &str,
+           signature: FunctionSig,
+           is_class_method: bool)
+           -> ObjCMethod {
         let split_name: Vec<&str> = name.split(':').collect();
 
         let rust_name = split_name.join("_");
 
-        ObjCInstanceMethod {
+        ObjCMethod {
             name: name.to_owned(),
             rust_name: rust_name.to_owned(),
             signature: signature,
+            is_class_method: is_class_method,
         }
     }
 
@@ -176,6 +201,11 @@ impl ObjCInstanceMethod {
     /// Returns the methods signature as FunctionSig
     pub fn signature(&self) -> &FunctionSig {
         &self.signature
+    }
+
+    /// Is this a class method?
+    pub fn is_class_method(&self) -> bool {
+        self.is_class_method
     }
 
     /// Formats the method call
@@ -211,6 +241,10 @@ impl Trace for ObjCInterface {
     {
         for method in &self.methods {
             method.signature.trace(context, tracer, &());
+        }
+
+        for class_method in &self.class_methods {
+            class_method.signature.trace(context, tracer, &());
         }
 
         for protocol in &self.conforms_to {
