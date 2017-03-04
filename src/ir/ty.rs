@@ -1268,6 +1268,7 @@ impl Type {
             CXType_ObjCInterface => {
                 let interface = ObjCInterface::from_ty(&location.unwrap(), ctx)
                     .expect("Not a valid objc interface?");
+                name = interface.rust_name();
                 TypeKind::ObjCInterface(interface)
             }
             _ => {
@@ -1325,8 +1326,8 @@ impl Trace for Type {
                 tracer.visit(id);
             }
 
-            TypeKind::ObjCInterface(_) => {
-                // TODO:
+            TypeKind::ObjCInterface(ref interface) => {
+                interface.trace(context, tracer, &());
             }
 
             // None of these variants have edges to other items and types.
