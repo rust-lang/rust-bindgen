@@ -1,14 +1,16 @@
 //! Objective C types
 
-use super::context::BindgenContext;
+use super::context::{BindgenContext, ItemId};
 use super::function::FunctionSig;
 use super::traversal::{Trace, Tracer};
+use super::ty::TypeKind;
 use clang;
 use clang_sys::CXChildVisit_Continue;
 use clang_sys::CXCursor_ObjCCategoryDecl;
 use clang_sys::CXCursor_ObjCClassRef;
 use clang_sys::CXCursor_ObjCInstanceMethodDecl;
 use clang_sys::CXCursor_ObjCProtocolDecl;
+use clang_sys::CXCursor_ObjCProtocolRef;
 
 /// Objective C interface as used in TypeKind
 ///
@@ -22,6 +24,8 @@ pub struct ObjCInterface {
     category: Option<String>,
 
     is_protocol: bool,
+
+    conforms_to: Vec<ItemId>,
 
     /// List of the methods defined in this interfae
     methods: Vec<ObjCInstanceMethod>,
@@ -47,6 +51,7 @@ impl ObjCInterface {
             name: name.to_owned(),
             category: None,
             is_protocol: false,
+            conforms_to: Vec::new(),
             methods: Vec::new(),
         }
     }
@@ -97,6 +102,34 @@ impl ObjCInterface {
                         interface.name = c.spelling();
                         interface.category = Some(cursor.spelling());
                     }
+                }
+                CXCursor_ObjCProtocolRef => {
+                    // Gather protocols this interface conforms to
+                    let needle = format!("protocol_{}", c.spelling());
+                    let items_map = ctx.items();
+                    debug!("Interface {} conforms to {}, find the item", interface.name, needle);
+
+                    for (id, item) in items_map
+                    {
+                       if let Some(ty) = item.as_type() {
+                            match *ty.kind() {
+                                TypeKind::ObjCInterface(ref protocol) => {
+                                    if protocol.is_protocol
+                                    {
+                                        debug!("Checking protocol {}, ty.name {:?}", protocol.name, ty.name());
+                                        if Some(needle.as_ref()) == ty.name()
+                                        {
+                                            debug!("Found conforming protocol {:?}", item);
+                                            interface.conforms_to.push(*id);
+                                            break;
+                                        }
+                                    }
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+
                 }
                 CXCursor_ObjCInstanceMethodDecl => {
                     let name = c.spelling();
@@ -176,9 +209,12 @@ impl Trace for ObjCInterface {
     fn trace<T>(&self, context: &BindgenContext, tracer: &mut T, _: &())
         where T: Tracer,
     {
-        for method in &self.methods
-        {
+        for method in &self.methods {
             method.signature.trace(context, tracer, &());
+        }
+
+        for protocol in &self.conforms_to {
+            tracer.visit(*protocol);
         }
     }
 }
