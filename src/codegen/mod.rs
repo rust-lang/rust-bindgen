@@ -2138,7 +2138,7 @@ impl ToRustTy for Type {
             TypeKind::Int(ik) => {
                 match ik {
                     IntKind::Bool => aster::ty::TyBuilder::new().bool(),
-                    IntKind::Char => raw_type(ctx, "c_char"),
+                    IntKind::Char => raw_type(ctx, "c_schar"),
                     IntKind::UChar => raw_type(ctx, "c_uchar"),
                     IntKind::Short => raw_type(ctx, "c_short"),
                     IntKind::UShort => raw_type(ctx, "c_ushort"),

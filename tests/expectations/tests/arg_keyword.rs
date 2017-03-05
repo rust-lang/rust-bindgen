@@ -6,5 +6,5 @@
 
 extern "C" {
     #[link_name = "_Z3fooPKc"]
-    pub fn foo(type_: *const ::std::os::raw::c_char);
+    pub fn foo(type_: *const ::std::os::raw::c_schar);
 }

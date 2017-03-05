@@ -40,7 +40,7 @@ impl <T> ::std::marker::Copy for __IncompleteArrayField<T> { }
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy)]
 pub struct header {
-    pub proto: ::std::os::raw::c_char,
+    pub proto: ::std::os::raw::c_schar,
     pub size: ::std::os::raw::c_uint,
     pub data: __IncompleteArrayField<::std::os::raw::c_uchar>,
     pub __bindgen_padding_0: [u8; 11usize],

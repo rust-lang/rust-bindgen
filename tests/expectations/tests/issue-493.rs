@@ -37,7 +37,7 @@ pub struct basic_string<_CharT, _Traits, _Allocator> {
     pub _phantom_2: ::std::marker::PhantomData<_Allocator>,
 }
 pub type basic_string_size_type = ::std::os::raw::c_ulonglong;
-pub type basic_string_value_type = ::std::os::raw::c_char;
+pub type basic_string_value_type = ::std::os::raw::c_schar;
 pub type basic_string_pointer = *mut basic_string_value_type;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
