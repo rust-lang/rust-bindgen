@@ -20,7 +20,7 @@ pub trait Foo {
     unsafe fn methodWithArg1_andArg2_andArg3_(self,
                                               intvalue: ::std::os::raw::c_int,
                                               ptr:
-                                                  *mut ::std::os::raw::c_char,
+                                                  *mut ::std::os::raw::c_schar,
                                               floatvalue: f32);
 }
 impl Foo for id {
@@ -40,7 +40,7 @@ impl Foo for id {
     unsafe fn methodWithArg1_andArg2_andArg3_(self,
                                               intvalue: ::std::os::raw::c_int,
                                               ptr:
-                                                  *mut ::std::os::raw::c_char,
+                                                  *mut ::std::os::raw::c_schar,
                                               floatvalue: f32) {
         msg_send!(self ,
                   methodWithArg1:intvalue andArg2:ptr andArg3:floatvalue )

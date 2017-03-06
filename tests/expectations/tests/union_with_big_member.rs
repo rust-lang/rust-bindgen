@@ -62,7 +62,7 @@ impl Default for WithBigArray {
 #[derive(Debug, Default, Copy)]
 pub struct WithBigArray2 {
     pub a: __BindgenUnionField<::std::os::raw::c_int>,
-    pub b: __BindgenUnionField<[::std::os::raw::c_char; 33usize]>,
+    pub b: __BindgenUnionField<[::std::os::raw::c_schar; 33usize]>,
     pub bindgen_union_field: [u32; 9usize],
 }
 #[test]

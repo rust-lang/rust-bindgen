@@ -15,7 +15,7 @@ pub struct C {
     pub other_ptr: *mut AnotherInt,
 }
 pub type C_MyInt = ::std::os::raw::c_int;
-pub type C_Lookup = *const ::std::os::raw::c_char;
+pub type C_Lookup = *const ::std::os::raw::c_schar;
 #[test]
 fn bindgen_test_layout_C() {
     assert_eq!(::std::mem::size_of::<C>() , 72usize , concat ! (

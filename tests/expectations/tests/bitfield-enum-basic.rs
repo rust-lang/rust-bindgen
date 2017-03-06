@@ -33,7 +33,7 @@ impl ::std::ops::BitOr<Buz> for Buz {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub struct Buz(pub ::std::os::raw::c_char);
+pub struct Buz(pub ::std::os::raw::c_schar);
 pub const NS_FOO: _bindgen_ty_1 = _bindgen_ty_1(1);
 pub const NS_BAR: _bindgen_ty_1 = _bindgen_ty_1(2);
 impl ::std::ops::BitOr<_bindgen_ty_1> for _bindgen_ty_1 {
