@@ -1286,17 +1286,25 @@ impl CodeGenerator for CompInfo {
             }
         }
 
-        // C requires every struct to be addressable, so what C compilers do is
-        // making the struct 1-byte sized.
+        // C++ requires every struct to be addressable, so what C++ compilers do
+        // is making the struct 1-byte sized.
+        //
+        // This is apparently not the case for C, see:
+        // https://github.com/servo/rust-bindgen/issues/551
+        //
+        // Just get the layout, and assume C++ if not.
         //
         // NOTE: This check is conveniently here to avoid the dummy fields we
         // may add for unused template parameters.
         if self.is_unsized(ctx) {
-            let ty = BlobTyBuilder::new(Layout::new(1, 1)).build();
-            let field = StructFieldBuilder::named("_address")
-                .pub_()
-                .build_ty(ty);
-            fields.push(field);
+            let has_address = layout.map_or(true, |l| l.size != 0);
+            if has_address {
+                let ty = BlobTyBuilder::new(Layout::new(1, 1)).build();
+                let field = StructFieldBuilder::named("_address")
+                    .pub_()
+                    .build_ty(ty);
+                fields.push(field);
+            }
         }
 
         // Append any extra template arguments that nobody has used so far.
