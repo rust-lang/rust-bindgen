@@ -403,10 +403,18 @@ impl CodeGenerator for Module {
         });
 
         let name = item.canonical_name(ctx);
-        let item = aster::AstBuilder::new()
+        let item_builder = aster::AstBuilder::new()
             .item()
-            .pub_()
-            .build_item_kind(name, module);
+            .pub_();
+        let item = if name == "root" {
+            let attrs = &["non_snake_case",
+                "non_camel_case_types",
+                "non_upper_case_globals"];
+            item_builder.with_attr(attributes::allow(attrs))
+                .build_item_kind(name, module)
+        } else {
+            item_builder.build_item_kind(name, module)
+        };
 
         result.push(item);
     }

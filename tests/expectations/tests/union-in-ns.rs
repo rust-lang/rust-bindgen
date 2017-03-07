@@ -4,6 +4,7 @@
 #![allow(non_snake_case)]
 
 
+#[allow(non_snake_case, non_camel_case_types, non_upper_case_globals)]
 pub mod root {
     #[repr(C)]
     pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
