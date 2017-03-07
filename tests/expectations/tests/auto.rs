@@ -21,13 +21,9 @@ impl Clone for Foo {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct Bar<T> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct Bar {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
-}
-impl <T> Default for Bar<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 extern "C" {
     #[link_name = "_Z5Test2v"]

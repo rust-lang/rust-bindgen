@@ -5,10 +5,9 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct DataType<_Tp> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct DataType {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<_Tp>,
 }
 pub type DataType_value_type<_Tp> = _Tp;
 pub type DataType_work_type<_Tp> = DataType_value_type<_Tp>;
@@ -27,9 +26,6 @@ pub const DataType_type_: DataType__bindgen_ty_1 =
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum DataType__bindgen_ty_1 { generic_type = 0, }
-impl <_Tp> Default for DataType<_Tp> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct Foo {

@@ -1,12 +1,12 @@
 //! Different variants of an `Item` in our intermediate representation.
 
-use std::io;
 use super::context::BindgenContext;
 use super::dot::DotAttributes;
 use super::function::Function;
 use super::module::Module;
 use super::ty::Type;
 use super::var::Var;
+use std::io;
 
 /// A item we parse and translate.
 #[derive(Debug)]
@@ -41,7 +41,7 @@ impl ItemKind {
             ItemKind::Module(..) => "Module",
             ItemKind::Type(..) => "Type",
             ItemKind::Function(..) => "Function",
-            ItemKind::Var(..) => "Var"
+            ItemKind::Var(..) => "Var",
         }
     }
 
@@ -127,10 +127,15 @@ impl ItemKind {
 }
 
 impl DotAttributes for ItemKind {
-    fn dot_attributes<W>(&self, ctx: &BindgenContext, out: &mut W) -> io::Result<()>
-        where W: io::Write
+    fn dot_attributes<W>(&self,
+                         ctx: &BindgenContext,
+                         out: &mut W)
+                         -> io::Result<()>
+        where W: io::Write,
     {
-        try!(writeln!(out, "<tr><td>kind</td><td>{}</td></tr>", self.kind_name()));
+        try!(writeln!(out,
+                      "<tr><td>kind</td><td>{}</td></tr>",
+                      self.kind_name()));
 
         match *self {
             ItemKind::Module(ref module) => module.dot_attributes(ctx, out),

@@ -6,7 +6,7 @@ use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::item::Item;
 use super::layout::Layout;
 use super::traversal::{EdgeKind, Trace, Tracer};
-use super::ty::{TemplateDeclaration, Type};
+use super::ty::TemplateDeclaration;
 use clang;
 use parse::{ClangItemParser, ParseError};
 use std::cell::Cell;
@@ -238,10 +238,11 @@ pub struct CompInfo {
     /// The members of this struct or union.
     fields: Vec<Field>,
 
-    /// The template parameters of this class. These are non-concrete, and
-    /// should always be a Type(TypeKind::Named(name)), but still they need to
-    /// be registered with an unique type id in the context.
-    template_args: Vec<ItemId>,
+    /// The abstract template parameters of this class. These are NOT concrete
+    /// template arguments, and should always be a
+    /// Type(TypeKind::Named(name)). For concrete template arguments, see the
+    /// TypeKind::TemplateInstantiation.
+    template_params: Vec<ItemId>,
 
     /// The method declarations inside this class, if in C++ mode.
     methods: Vec<Method>,
@@ -251,9 +252,6 @@ pub struct CompInfo {
 
     /// Vector of classes this one inherits from.
     base_members: Vec<Base>,
-
-    /// The parent reference template if any.
-    ref_template: Option<ItemId>,
 
     /// The inner types that were declared inside this class, in something like:
     ///
@@ -320,11 +318,10 @@ impl CompInfo {
         CompInfo {
             kind: kind,
             fields: vec![],
-            template_args: vec![],
+            template_params: vec![],
             methods: vec![],
             constructors: vec![],
             base_members: vec![],
-            ref_template: None,
             inner_types: vec![],
             inner_vars: vec![],
             has_vtable: false,
@@ -345,9 +342,7 @@ impl CompInfo {
         !self.has_vtable(ctx) && self.fields.is_empty() &&
         self.base_members.iter().all(|base| {
             ctx.resolve_type(base.ty).canonical_type(ctx).is_unsized(ctx)
-        }) &&
-        self.ref_template
-            .map_or(true, |template| ctx.resolve_type(template).is_unsized(ctx))
+        })
     }
 
     /// Does this compound type have a destructor?
@@ -364,16 +359,6 @@ impl CompInfo {
                              match self.kind {
             CompKind::Union => false,
             CompKind::Struct => {
-                // NB: We can't rely on a type with type parameters
-                // not having destructor.
-                //
-                // This is unfortunate, but...
-                self.ref_template.as_ref().map_or(false, |t| {
-                    ctx.resolve_type(*t).has_destructor(ctx)
-                }) ||
-                self.template_args.iter().any(|t| {
-                    ctx.resolve_type(*t).has_destructor(ctx)
-                }) ||
                 self.base_members.iter().any(|base| {
                     ctx.resolve_type(base.ty).has_destructor(ctx)
                 }) ||
@@ -389,16 +374,6 @@ impl CompInfo {
         has_destructor
     }
 
-    /// Is this type a template specialization?
-    pub fn is_template_specialization(&self) -> bool {
-        self.ref_template.is_some()
-    }
-
-    /// Get the template declaration this specialization is specializing.
-    pub fn specialized_template(&self) -> Option<ItemId> {
-        self.ref_template
-    }
-
     /// Compute the layout of this type.
     ///
     /// This is called as a fallback under some circumstances where LLVM doesn't
@@ -411,7 +386,7 @@ impl CompInfo {
         use std::cmp;
         // We can't do better than clang here, sorry.
         if self.kind == CompKind::Struct {
-            return None
+            return None;
         }
 
         let mut max_size = 0;
@@ -434,12 +409,6 @@ impl CompInfo {
         &self.fields
     }
 
-    /// Get this type's set of free template arguments. Empty if this is not a
-    /// template.
-    pub fn template_args(&self) -> &[ItemId] {
-        &self.template_args
-    }
-
     /// Does this type have any template parameters that aren't types
     /// (e.g. int)?
     pub fn has_non_type_template_params(&self) -> bool {
@@ -452,9 +421,6 @@ impl CompInfo {
         self.base_members().iter().any(|base| {
             ctx.resolve_type(base.ty)
                 .has_vtable(ctx)
-        }) ||
-        self.ref_template.map_or(false, |template| {
-            ctx.resolve_type(template).has_vtable(ctx)
         })
     }
 
@@ -485,10 +451,9 @@ impl CompInfo {
                    ctx: &mut BindgenContext)
                    -> Result<Self, ParseError> {
         use clang_sys::*;
-        // Sigh... For class templates we want the location, for
-        // specialisations, we want the declaration...  So just try both.
-        //
-        // TODO: Yeah, this code reads really bad.
+        assert!(ty.template_args().is_none(),
+                "We handle template instantiations elsewhere");
+
         let mut cursor = ty.declaration();
         let mut kind = Self::kind_from_cursor(&cursor);
         if kind.is_err() {
@@ -510,35 +475,6 @@ impl CompInfo {
                 CXCursor_ClassDecl => !cur.is_definition(),
                 _ => false,
             });
-        ci.template_args = match ty.template_args() {
-            // In forward declarations and not specializations, etc, they are in
-            // the ast, we'll meet them in CXCursor_TemplateTypeParameter
-            None => vec![],
-            Some(arg_types) => {
-                let num_arg_types = arg_types.len();
-                let mut specialization = true;
-
-                let args = arg_types.filter(|t| t.kind() != CXType_Invalid)
-                    .filter_map(|t| if t.spelling()
-                        .starts_with("type-parameter") {
-                        specialization = false;
-                        None
-                    } else {
-                        Some(Item::from_ty_or_ref(t, None, None, ctx))
-                    })
-                    .collect::<Vec<_>>();
-
-                if specialization && args.len() != num_arg_types {
-                    ci.has_non_type_template_params = true;
-                    warn!("warning: Template parameter is not a type");
-                }
-
-                if specialization { args } else { vec![] }
-            }
-        };
-
-        ci.ref_template = cursor.specialized()
-            .and_then(|c| Item::parse(c, None, ctx).ok());
 
         let mut maybe_anonymous_struct_field = None;
         cursor.visit(|cur| {
@@ -576,7 +512,7 @@ impl CompInfo {
 
                     let bit_width = cur.bit_width();
                     let field_type = Item::from_ty_or_ref(cur.cur_type(),
-                                                          Some(cur),
+                                                          cur,
                                                           Some(potential_id),
                                                           ctx);
 
@@ -616,6 +552,7 @@ impl CompInfo {
                 }
                 CXCursor_EnumDecl |
                 CXCursor_TypeAliasDecl |
+                CXCursor_TypeAliasTemplateDecl |
                 CXCursor_TypedefDecl |
                 CXCursor_StructDecl |
                 CXCursor_UnionDecl |
@@ -668,9 +605,10 @@ impl CompInfo {
                         return CXChildVisit_Continue;
                     }
 
-                    let param =
-                        Item::named_type(cur.spelling(), potential_id, ctx);
-                    ci.template_args.push(param);
+                    let param = Item::named_type(None, cur, ctx)
+                        .expect("Item::named_type should't fail when pointing \
+                                 at a TemplateTypeParameter");
+                    ci.template_params.push(param);
                 }
                 CXCursor_CXXBaseSpecifier => {
                     let is_virtual_base = cur.is_virtual_base();
@@ -682,10 +620,8 @@ impl CompInfo {
                         BaseKind::Normal
                     };
 
-                    let type_id = Item::from_ty_or_ref(cur.cur_type(),
-                                                       Some(cur),
-                                                       None,
-                                                       ctx);
+                    let type_id =
+                        Item::from_ty_or_ref(cur.cur_type(), cur, None, ctx);
                     ci.base_members.push(Base {
                         ty: type_id,
                         kind: kind,
@@ -711,7 +647,7 @@ impl CompInfo {
                     // Methods of template functions not only use to be inlined,
                     // but also instantiated, and we wouldn't be able to call
                     // them, so just bail out.
-                    if !ci.template_args.is_empty() {
+                    if !ci.template_params.is_empty() {
                         return CXChildVisit_Continue;
                     }
 
@@ -778,7 +714,7 @@ impl CompInfo {
                 _ => {
                     warn!("unhandled comp member `{}` (kind {:?}) in `{}` ({})",
                           cur.spelling(),
-                          cur.kind(),
+                          clang::kind_to_str(cur.kind()),
                           cursor.spelling(),
                           cur.location());
                 }
@@ -813,25 +749,6 @@ impl CompInfo {
                 warn!("Unknown kind for comp type: {:?}", cursor);
                 return Err(ParseError::Continue);
             }
-        })
-    }
-
-    /// Do any of the types that participate in this type's "signature" use the
-    /// named type `ty`?
-    ///
-    /// See also documentation for `ir::Item::signature_contains_named_type`.
-    pub fn signature_contains_named_type(&self,
-                                         ctx: &BindgenContext,
-                                         ty: &Type)
-                                         -> bool {
-        // We don't generate these, so rather don't make the codegen step to
-        // think we got it covered.
-        if self.has_non_type_template_params() {
-            return false;
-        }
-        self.template_args.iter().any(|arg| {
-            ctx.resolve_type(*arg)
-                .signature_contains_named_type(ctx, ty)
         })
     }
 
@@ -882,11 +799,13 @@ impl CompInfo {
 }
 
 impl TemplateDeclaration for CompInfo {
-    fn self_template_params(&self, _ctx: &BindgenContext) -> Option<Vec<ItemId>> {
-        if self.template_args.is_empty() {
+    fn self_template_params(&self,
+                            _ctx: &BindgenContext)
+                            -> Option<Vec<ItemId>> {
+        if self.template_params.is_empty() {
             None
         } else {
-            Some(self.template_args.clone())
+            Some(self.template_params.clone())
         }
     }
 }
@@ -925,13 +844,9 @@ impl CanDeriveDebug for CompInfo {
             self.base_members
                 .iter()
                 .all(|base| base.ty.can_derive_debug(ctx, ())) &&
-            self.template_args
-                .iter()
-                .all(|id| id.can_derive_debug(ctx, ())) &&
             self.fields
                 .iter()
-                .all(|f| f.can_derive_debug(ctx, ())) &&
-            self.ref_template.map_or(true, |id| id.can_derive_debug(ctx, ()))
+                .all(|f| f.can_derive_debug(ctx, ()))
         };
 
         self.detect_derive_debug_cycle.set(false);
@@ -961,7 +876,7 @@ impl CanDeriveDefault for CompInfo {
 
             return layout.unwrap_or_else(Layout::zero)
                 .opaque()
-                .can_derive_debug(ctx, ());
+                .can_derive_default(ctx, ());
         }
 
         self.detect_derive_default_cycle.set(true);
@@ -971,14 +886,9 @@ impl CanDeriveDefault for CompInfo {
                                  self.base_members
             .iter()
             .all(|base| base.ty.can_derive_default(ctx, ())) &&
-                                 self.template_args
-            .iter()
-            .all(|id| id.can_derive_default(ctx, ())) &&
                                  self.fields
             .iter()
-            .all(|f| f.can_derive_default(ctx, ())) &&
-                                 self.ref_template
-            .map_or(true, |id| id.can_derive_default(ctx, ()));
+            .all(|f| f.can_derive_default(ctx, ()));
 
         self.detect_derive_default_cycle.set(false);
 
@@ -1013,17 +923,12 @@ impl<'a> CanDeriveCopy<'a> for CompInfo {
             }
 
             // https://github.com/rust-lang/rust/issues/36640
-            if !self.template_args.is_empty() || self.ref_template.is_some() ||
-               !item.applicable_template_args(ctx).is_empty() {
+            if !self.template_params.is_empty() ||
+               item.used_template_params(ctx).is_some() {
                 return false;
             }
         }
 
-        // With template args, use a safe subset of the types,
-        // since copyability depends on the types itself.
-        self.ref_template
-            .as_ref()
-            .map_or(true, |t| t.can_derive_copy(ctx, ())) &&
         self.base_members
             .iter()
             .all(|base| base.ty.can_derive_copy(ctx, ())) &&
@@ -1044,25 +949,9 @@ impl Trace for CompInfo {
     fn trace<T>(&self, context: &BindgenContext, tracer: &mut T, item: &Item)
         where T: Tracer,
     {
-        // TODO: We should properly distinguish template instantiations from
-        // template declarations at the type level. Why are some template
-        // instantiations represented here instead of as
-        // TypeKind::TemplateInstantiation?
-        if let Some(template) = self.specialized_template() {
-            // This is an instantiation of a template declaration with concrete
-            // template type arguments.
-            tracer.visit_kind(template, EdgeKind::TemplateDeclaration);
-            let args = item.applicable_template_args(context);
-            for a in args {
-                tracer.visit_kind(a, EdgeKind::TemplateArgument);
-            }
-        } else {
-            let params = item.applicable_template_args(context);
-            // This is a template declaration with abstract template type
-            // parameters.
-            for p in params {
-                tracer.visit_kind(p, EdgeKind::TemplateParameterDefinition);
-            }
+        let params = item.all_template_params(context).unwrap_or(vec![]);
+        for p in params {
+            tracer.visit_kind(p, EdgeKind::TemplateParameterDefinition);
         }
 
         for base in self.base_members() {

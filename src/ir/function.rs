@@ -5,9 +5,9 @@ use super::dot::DotAttributes;
 use super::item::Item;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::TypeKind;
-use ir::derive::CanDeriveDebug;
 use clang;
 use clang_sys::CXCallingConv;
+use ir::derive::CanDeriveDebug;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use std::io;
 use syntax::abi;
@@ -63,11 +63,16 @@ impl Function {
 }
 
 impl DotAttributes for Function {
-    fn dot_attributes<W>(&self, _ctx: &BindgenContext, out: &mut W) -> io::Result<()>
-        where W: io::Write
+    fn dot_attributes<W>(&self,
+                         _ctx: &BindgenContext,
+                         out: &mut W)
+                         -> io::Result<()>
+        where W: io::Write,
     {
         if let Some(ref mangled) = self.mangled_name {
-            try!(writeln!(out, "<tr><td>mangled name</td><td>{}</td></tr>", mangled));
+            try!(writeln!(out,
+                          "<tr><td>mangled name</td><td>{}</td></tr>",
+                          mangled));
         }
 
         Ok(())
@@ -188,8 +193,7 @@ impl FunctionSig {
                         let name = arg.spelling();
                         let name =
                             if name.is_empty() { None } else { Some(name) };
-                        let ty =
-                            Item::from_ty_or_ref(arg_ty, Some(*arg), None, ctx);
+                        let ty = Item::from_ty_or_ref(arg_ty, *arg, None, ctx);
                         (name, ty)
                     })
                     .collect()
@@ -200,10 +204,8 @@ impl FunctionSig {
                 let mut args = vec![];
                 cursor.visit(|c| {
                     if c.kind() == CXCursor_ParmDecl {
-                        let ty = Item::from_ty_or_ref(c.cur_type(),
-                                                      Some(c),
-                                                      None,
-                                                      ctx);
+                        let ty =
+                            Item::from_ty_or_ref(c.cur_type(), c, None, ctx);
                         let name = c.spelling();
                         let name =
                             if name.is_empty() { None } else { Some(name) };
@@ -246,7 +248,7 @@ impl FunctionSig {
         } else {
             try!(ty.ret_type().ok_or(ParseError::Continue))
         };
-        let ret = Item::from_ty_or_ref(ty_ret_type, None, None, ctx);
+        let ret = Item::from_ty_or_ref(ty_ret_type, cursor, None, ctx);
         let abi = get_abi(ty.call_conv());
 
         if abi.is_none() {
@@ -317,10 +319,8 @@ impl ClangSubItemParser for Function {
         }
 
         // Grab the signature using Item::from_ty.
-        let sig = try!(Item::from_ty(&cursor.cur_type(),
-                                     Some(cursor),
-                                     None,
-                                     context));
+        let sig =
+            try!(Item::from_ty(&cursor.cur_type(), cursor, None, context));
 
         let name = cursor.spelling();
         assert!(!name.is_empty(), "Empty function name?");
@@ -368,7 +368,8 @@ impl CanDeriveDebug for FunctionSig {
         }
 
         match self.abi {
-            Some(abi::Abi::C) | None => true,
+            Some(abi::Abi::C) |
+            None => true,
             _ => false,
         }
     }

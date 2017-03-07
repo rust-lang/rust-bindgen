@@ -5,11 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct Foo<T> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct Foo {
     pub bar: ::std::os::raw::c_int,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
-}
-impl <T> Default for Foo<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

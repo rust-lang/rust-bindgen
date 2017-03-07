@@ -7,11 +7,9 @@
 pub type foo =
     ::std::option::Option<unsafe extern "C" fn(arg1: ::std::os::raw::c_int)>;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct Foo<T, U> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct Foo {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
-    pub _phantom_1: ::std::marker::PhantomData<U>,
 }
 pub type Foo_Char<T> = T;
 pub type Foo_FooPtrTypedef<T> = *mut Foo_Char<T>;
@@ -20,6 +18,3 @@ pub type Foo_nsCOMArrayEnumFunc<T> =
                                                aData:
                                                    *mut ::std::os::raw::c_void)
                               -> bool>;
-impl <T, U> Default for Foo<T, U> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}

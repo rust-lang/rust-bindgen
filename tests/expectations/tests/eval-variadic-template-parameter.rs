@@ -5,11 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct B<T> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct B {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
-}
-impl <T> Default for B<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

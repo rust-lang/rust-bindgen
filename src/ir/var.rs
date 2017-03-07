@@ -87,15 +87,20 @@ impl Var {
 }
 
 impl DotAttributes for Var {
-    fn dot_attributes<W>(&self, _ctx: &BindgenContext, out: &mut W) -> io::Result<()>
-        where W: io::Write
+    fn dot_attributes<W>(&self,
+                         _ctx: &BindgenContext,
+                         out: &mut W)
+                         -> io::Result<()>
+        where W: io::Write,
     {
         if self.is_const {
             try!(writeln!(out, "<tr><td>const</td><td>true</td></tr>"));
         }
 
         if let Some(ref mangled) = self.mangled_name {
-            try!(writeln!(out, "<tr><td>mangled name</td><td>{}</td></tr>", mangled));
+            try!(writeln!(out,
+                          "<tr><td>mangled name</td><td>{}</td></tr>",
+                          mangled));
         }
 
         Ok(())
@@ -202,7 +207,7 @@ impl ClangSubItemParser for Var {
                 // XXX this is redundant, remove!
                 let is_const = ty.is_const();
 
-                let ty = match Item::from_ty(&ty, Some(cursor), None, ctx) {
+                let ty = match Item::from_ty(&ty, cursor, None, ctx) {
                     Ok(ty) => ty,
                     Err(e) => {
                         assert_eq!(ty.kind(),

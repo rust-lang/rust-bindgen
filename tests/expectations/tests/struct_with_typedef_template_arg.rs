@@ -5,14 +5,9 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct Proxy<T, Args> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct Proxy {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
-    pub _phantom_1: ::std::marker::PhantomData<Args>,
 }
 pub type Proxy_foo<T> =
     ::std::option::Option<unsafe extern "C" fn(bar: *mut T)>;
-impl <T, Args> Default for Proxy<T, Args> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}

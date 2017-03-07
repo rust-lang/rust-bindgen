@@ -5,13 +5,9 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct std_char_traits<_CharT> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct std_char_traits {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<_CharT>,
-}
-impl <_CharT> Default for std_char_traits<_CharT> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]

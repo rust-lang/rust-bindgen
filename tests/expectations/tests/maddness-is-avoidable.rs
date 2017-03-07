@@ -5,22 +5,12 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct RefPtr<T> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct RefPtr {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct RefPtr_Proxy<T, R, Args> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct RefPtr_Proxy {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
-    pub _phantom_1: ::std::marker::PhantomData<R>,
-    pub _phantom_2: ::std::marker::PhantomData<Args>,
-}
-impl <T, R, Args> Default for RefPtr_Proxy<T, R, Args> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
-impl <T> Default for RefPtr<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

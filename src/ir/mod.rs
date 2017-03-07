@@ -16,6 +16,7 @@ pub mod item_kind;
 pub mod layout;
 pub mod module;
 pub mod named;
+pub mod template;
 pub mod traversal;
 pub mod ty;
 pub mod var;

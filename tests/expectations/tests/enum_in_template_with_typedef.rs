@@ -5,10 +5,9 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct std_fbstring_core<Char> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct std_fbstring_core {
     pub _address: u8,
-    pub _phantom_0: ::std::marker::PhantomData<Char>,
 }
 pub type std_fbstring_core_category_type = u8;
 pub const std_fbstring_core_Category_Bar: std_fbstring_core_Category =
@@ -16,6 +15,3 @@ pub const std_fbstring_core_Category_Bar: std_fbstring_core_Category =
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum std_fbstring_core_Category { Foo = 0, }
-impl <Char> Default for std_fbstring_core<Char> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}

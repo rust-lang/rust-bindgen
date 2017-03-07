@@ -6,17 +6,17 @@
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct LinkedList<T> {
-    pub next: *mut LinkedList<T>,
-    pub prev: *mut LinkedList<T>,
+pub struct LinkedList {
+    pub next: *mut LinkedList,
+    pub prev: *mut LinkedList,
 }
-impl <T> Default for LinkedList<T> {
+impl Default for LinkedList {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct InstantiateIt {
-    pub m_list: LinkedList<::std::os::raw::c_int>,
+    pub m_list: LinkedList,
 }
 #[test]
 fn bindgen_test_layout_InstantiateIt() {

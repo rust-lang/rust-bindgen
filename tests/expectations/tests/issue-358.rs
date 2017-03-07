@@ -6,11 +6,10 @@
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct JS_PersistentRooted<c> {
+pub struct JS_PersistentRooted {
     pub _base: a,
-    pub _phantom_0: ::std::marker::PhantomData<c>,
 }
-impl <c> Default for JS_PersistentRooted<c> {
+impl Default for JS_PersistentRooted {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]

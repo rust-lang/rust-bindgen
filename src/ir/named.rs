@@ -126,12 +126,13 @@
 //!
 //! [spa]: https://cs.au.dk/~amoeller/spa/spa.pdf
 
-use std::collections::HashMap;
-use std::fmt;
 use super::context::{BindgenContext, ItemId};
 use super::item::ItemSet;
+use super::template::AsNamed;
 use super::traversal::{EdgeKind, Trace};
 use super::ty::{TemplateDeclaration, TypeKind};
+use std::collections::HashMap;
+use std::fmt;
 
 /// An analysis in the monotone framework.
 ///
@@ -163,7 +164,7 @@ pub trait MonotoneFramework: Sized + fmt::Debug {
     /// The final output of this analysis. Once we have reached a fix-point, we
     /// convert `self` into this type, and return it as the final result of the
     /// analysis.
-    type Output: From<Self>;
+    type Output: From<Self> + fmt::Debug;
 
     /// Construct a new instance of this analysis.
     fn new(extra: Self::Extra) -> Self;
@@ -191,12 +192,8 @@ pub trait MonotoneFramework: Sized + fmt::Debug {
 }
 
 /// Run an analysis in the monotone framework.
-// TODO: This allow(...) is just temporary until we replace
-// `Item::signature_contains_named_type` with
-// `analyze::<UsedTemplateParameters>`.
-#[allow(dead_code)]
 pub fn analyze<Analysis>(extra: Analysis::Extra) -> Analysis::Output
-    where Analysis: MonotoneFramework
+    where Analysis: MonotoneFramework,
 {
     let mut analysis = Analysis::new(extra);
     let mut worklist = analysis.initial_worklist();
@@ -256,13 +253,19 @@ pub fn analyze<Analysis>(extra: Analysis::Extra) -> Analysis::Output
 /// self_template_param_usage(_) = { }
 /// ```
 #[derive(Debug, Clone)]
-pub struct UsedTemplateParameters<'a> {
-    ctx: &'a BindgenContext<'a>,
-    used: HashMap<ItemId, ItemSet>,
+pub struct UsedTemplateParameters<'ctx, 'gen>
+    where 'gen: 'ctx,
+{
+    ctx: &'ctx BindgenContext<'gen>,
+
+    // The Option is only there for temporary moves out of the hash map. See the
+    // comments in `UsedTemplateParameters::constrain` below.
+    used: HashMap<ItemId, Option<ItemSet>>,
+
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
-impl<'a> UsedTemplateParameters<'a> {
+impl<'ctx, 'gen> UsedTemplateParameters<'ctx, 'gen> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             // For each of these kinds of edges, if the referent uses a template
@@ -271,19 +274,24 @@ impl<'a> UsedTemplateParameters<'a> {
             EdgeKind::TemplateArgument |
             EdgeKind::BaseMember |
             EdgeKind::Field |
-            EdgeKind::InnerType |
-            EdgeKind::InnerVar |
             EdgeKind::Constructor |
             EdgeKind::VarType |
+            EdgeKind::FunctionReturn |
+            EdgeKind::FunctionParameter |
             EdgeKind::TypeReference => true,
 
-            // We can't emit machine code for new instantiations of function
-            // templates and class templates' methods (and don't detect explicit
-            // instantiations) so we must ignore template parameters that are
-            // only used by functions.
-            EdgeKind::Method |
-            EdgeKind::FunctionReturn |
-            EdgeKind::FunctionParameter => false,
+            // An inner var or type using a template parameter is orthogonal
+            // from whether we use it. See template-param-usage-{6,11}.hpp.
+            EdgeKind::InnerVar | EdgeKind::InnerType => false,
+
+            // We can't emit machine code for new monomorphizations of class
+            // templates' methods (and don't detect explicit instantiations) so
+            // we must ignore template parameters that are only used by
+            // methods. This doesn't apply to a function type's return or
+            // parameter types, however, because of type aliases of function
+            // pointers that use template parameters, eg
+            // tests/headers/struct_with_typedef_template_arg.hpp
+            EdgeKind::Method => false,
 
             // If we considered these edges, we would end up mistakenly claiming
             // that every template parameter always used.
@@ -299,25 +307,30 @@ impl<'a> UsedTemplateParameters<'a> {
     }
 }
 
-impl<'a> MonotoneFramework for UsedTemplateParameters<'a> {
+impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
     type Node = ItemId;
-    type Extra = &'a BindgenContext<'a>;
+    type Extra = &'ctx BindgenContext<'gen>;
     type Output = HashMap<ItemId, ItemSet>;
 
-    fn new(ctx: &'a BindgenContext<'a>) -> UsedTemplateParameters<'a> {
+    fn new(ctx: &'ctx BindgenContext<'gen>)
+           -> UsedTemplateParameters<'ctx, 'gen> {
         let mut used = HashMap::new();
         let mut dependencies = HashMap::new();
 
         for item in ctx.whitelisted_items() {
             dependencies.entry(item).or_insert(vec![]);
-            used.insert(item, ItemSet::new());
+            used.insert(item, Some(ItemSet::new()));
 
             {
                 // We reverse our natural IR graph edges to find dependencies
                 // between nodes.
-                item.trace(ctx, &mut |sub_item, _| {
-                    dependencies.entry(sub_item).or_insert(vec![]).push(item);
-                }, &());
+                item.trace(ctx,
+                           &mut |sub_item, _| {
+                               dependencies.entry(sub_item)
+                                   .or_insert(vec![])
+                                   .push(item);
+                           },
+                           &());
             }
 
             // Additionally, whether a template instantiation's template
@@ -326,14 +339,18 @@ impl<'a> MonotoneFramework for UsedTemplateParameters<'a> {
             ctx.resolve_item(item)
                 .as_type()
                 .map(|ty| match ty.kind() {
-                    &TypeKind::TemplateInstantiation(decl, ref args) => {
-                        let decl = ctx.resolve_type(decl);
+                    &TypeKind::TemplateInstantiation(ref inst) => {
+                        let decl = ctx.resolve_type(inst.template_definition());
+                        let args = inst.template_arguments();
+                        // Although template definitions should always have
+                        // template parameters, there is a single exception:
+                        // opaque templates. Hence the unwrap_or.
                         let params = decl.self_template_params(ctx)
-                            .expect("a template instantiation's referenced \
-                                     template declaration should have template \
-                                     parameters");
+                            .unwrap_or(vec![]);
                         for (arg, param) in args.iter().zip(params.iter()) {
-                            dependencies.entry(*arg).or_insert(vec![]).push(*param);
+                            dependencies.entry(*arg)
+                                .or_insert(vec![])
+                                .push(*param);
                         }
                     }
                     _ => {}
@@ -352,59 +369,81 @@ impl<'a> MonotoneFramework for UsedTemplateParameters<'a> {
     }
 
     fn constrain(&mut self, id: ItemId) -> bool {
-        let original_len = self.used[&id].len();
+        // Invariant: all hash map entries' values are `Some` upon entering and
+        // exiting this method.
+        debug_assert!(self.used.values().all(|v| v.is_some()));
 
-        // First, add this item's self template parameter usage.
+        // Take the set for this id out of the hash map while we mutate it based
+        // on other hash map entries. We *must* put it back into the hash map at
+        // the end of this method. This allows us to side-step HashMap's lack of
+        // an analog to slice::split_at_mut.
+        let mut used_by_this_id =
+            self.used.get_mut(&id).unwrap().take().unwrap();
+
+        let original_len = used_by_this_id.len();
+
         let item = self.ctx.resolve_item(id);
         let ty_kind = item.as_type().map(|ty| ty.kind());
         match ty_kind {
+            // Named template type parameters trivially use themselves.
             Some(&TypeKind::Named) => {
-                // This is a trivial use of the template type parameter.
-                self.used.get_mut(&id).unwrap().insert(id);
+                used_by_this_id.insert(id);
             }
-            Some(&TypeKind::TemplateInstantiation(decl, ref args)) => {
-                // A template instantiation's concrete template argument is
-                // only used if the template declaration uses the
-                // corresponding template parameter.
+
+            // A template instantiation's concrete template argument is
+            // only used if the template declaration uses the
+            // corresponding template parameter.
+            Some(&TypeKind::TemplateInstantiation(ref inst)) => {
+                let decl = self.ctx.resolve_type(inst.template_definition());
+                let args = inst.template_arguments();
+
                 let params = decl.self_template_params(self.ctx)
-                    .expect("a template instantiation's referenced \
-                             template declaration should have template \
-                             parameters");
+                    .unwrap_or(vec![]);
                 for (arg, param) in args.iter().zip(params.iter()) {
-                    if self.used[&decl].contains(param) {
-                        if self.ctx.resolve_item(*arg).is_named() {
-                            self.used.get_mut(&id).unwrap().insert(*arg);
+                    let used_by_definition = self.used
+                                                 [&inst.template_definition()]
+                        .as_ref()
+                        .unwrap();
+                    if used_by_definition.contains(param) {
+                        if let Some(named) = arg.as_named(self.ctx, &()) {
+                            used_by_this_id.insert(named);
                         }
                     }
                 }
             }
-            _ => {}
+
+            // Otherwise, add the union of each of its referent item's template
+            // parameter usage.
+            _ => {
+                item.trace(self.ctx,
+                           &mut |sub_id, edge_kind| {
+                    if sub_id == id || !Self::consider_edge(edge_kind) {
+                        return;
+                    }
+
+                    let used_by_sub_id = self.used[&sub_id]
+                        .as_ref()
+                        .unwrap()
+                        .iter()
+                        .cloned();
+                    used_by_this_id.extend(used_by_sub_id);
+                },
+                           &());
+            }
         }
 
-        // Second, add the union of each of its referent item's template
-        // parameter usage.
-        item.trace(self.ctx, &mut |sub_id, edge_kind| {
-            if sub_id == id || !Self::consider_edge(edge_kind) {
-                return;
-            }
-
-            // This clone is unfortunate because we are potentially thrashing
-            // malloc. We could investigate replacing the ItemSet values with
-            // Rc<RefCell<ItemSet>> to make the borrow checker happy, but it
-            // isn't clear that the added indirection wouldn't outweigh the cost
-            // of malloc'ing a new ItemSet here. Ideally, `HashMap` would have a
-            // `split_entries` method analogous to `slice::split_at_mut`...
-            let to_add = self.used[&sub_id].clone();
-            self.used.get_mut(&id).unwrap().extend(to_add);
-        }, &());
-
-        let new_len = self.used[&id].len();
+        let new_len = used_by_this_id.len();
         assert!(new_len >= original_len);
+
+        // Put the set back in the hash map and restore our invariant.
+        self.used.insert(id, Some(used_by_this_id));
+        debug_assert!(self.used.values().all(|v| v.is_some()));
+
         new_len != original_len
     }
 
     fn each_depending_on<F>(&self, item: ItemId, mut f: F)
-        where F: FnMut(Self::Node)
+        where F: FnMut(ItemId),
     {
         if let Some(edges) = self.dependencies.get(&item) {
             for item in edges {
@@ -414,16 +453,20 @@ impl<'a> MonotoneFramework for UsedTemplateParameters<'a> {
     }
 }
 
-impl<'a> From<UsedTemplateParameters<'a>> for HashMap<ItemId, ItemSet> {
-    fn from(used_templ_params: UsedTemplateParameters) -> Self {
+impl<'ctx, 'gen> From<UsedTemplateParameters<'ctx, 'gen>>
+    for HashMap<ItemId, ItemSet> {
+    fn from(used_templ_params: UsedTemplateParameters<'ctx, 'gen>) -> Self {
         used_templ_params.used
+            .into_iter()
+            .map(|(k, v)| (k, v.unwrap()))
+            .collect()
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::collections::{HashMap, HashSet};
     use super::*;
+    use std::collections::{HashMap, HashSet};
 
     // Here we find the set of nodes that are reachable from any given
     // node. This is a lattice mapping nodes to subsets of all nodes. Our join
@@ -489,7 +532,7 @@ mod tests {
             g.0.insert(Node(8), vec![]);
             g
         }
-        
+
         fn reverse(&self) -> Graph {
             let mut reversed = Graph::default();
             for (node, edges) in self.0.iter() {
@@ -537,8 +580,9 @@ mod tests {
             // Yes, what follows is a **terribly** inefficient set union
             // implementation. Don't copy this code outside of this test!
 
-            let original_size = self.reachable.entry(node).or_insert(HashSet::new()).len();
-            
+            let original_size =
+                self.reachable.entry(node).or_insert(HashSet::new()).len();
+
             for sub_node in self.graph.0[&node].iter() {
                 self.reachable.get_mut(&node).unwrap().insert(*sub_node);
 
@@ -557,7 +601,7 @@ mod tests {
         }
 
         fn each_depending_on<F>(&self, node: Node, mut f: F)
-            where F: FnMut(Node)
+            where F: FnMut(Node),
         {
             for dep in self.reversed.0[&node].iter() {
                 f(*dep);
@@ -578,19 +622,19 @@ mod tests {
         println!("reachable = {:#?}", reachable);
 
         fn nodes<A>(nodes: A) -> HashSet<Node>
-            where A: AsRef<[usize]>
+            where A: AsRef<[usize]>,
         {
             nodes.as_ref().iter().cloned().map(Node).collect()
         }
 
         let mut expected = HashMap::new();
-        expected.insert(Node(1), nodes([3,4,5,6,7,8]));
+        expected.insert(Node(1), nodes([3, 4, 5, 6, 7, 8]));
         expected.insert(Node(2), nodes([2]));
-        expected.insert(Node(3), nodes([3,4,5,6,7,8]));
-        expected.insert(Node(4), nodes([3,4,5,6,7,8]));
-        expected.insert(Node(5), nodes([3,4,5,6,7,8]));
+        expected.insert(Node(3), nodes([3, 4, 5, 6, 7, 8]));
+        expected.insert(Node(4), nodes([3, 4, 5, 6, 7, 8]));
+        expected.insert(Node(5), nodes([3, 4, 5, 6, 7, 8]));
         expected.insert(Node(6), nodes([8]));
-        expected.insert(Node(7), nodes([3,4,5,6,7,8]));
+        expected.insert(Node(7), nodes([3, 4, 5, 6, 7, 8]));
         expected.insert(Node(8), nodes([]));
         println!("expected = {:#?}", expected);
 

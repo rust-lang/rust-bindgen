@@ -8,18 +8,14 @@
  * <div rustbindgen replaces="nsTArray"></div>
  */
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct nsTArray<T> {
+#[derive(Debug, Default, Copy, Clone)]
+pub struct nsTArray {
     pub y: ::std::os::raw::c_uint,
-    pub _phantom_0: ::std::marker::PhantomData<T>,
-}
-impl <T> Default for nsTArray<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct Test {
-    pub a: nsTArray<::std::os::raw::c_long>,
+    pub a: nsTArray,
 }
 #[test]
 fn bindgen_test_layout_Test() {
