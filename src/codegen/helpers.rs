@@ -10,6 +10,10 @@ pub mod attributes {
     use aster;
     use syntax::ast;
 
+    pub fn allow(which_ones: &[&str]) -> ast::Attribute {
+        aster::AstBuilder::new().attr().list("allow").words(which_ones).build()
+    }
+
     pub fn repr(which: &str) -> ast::Attribute {
         aster::AstBuilder::new().attr().list("repr").words(&[which]).build()
     }
