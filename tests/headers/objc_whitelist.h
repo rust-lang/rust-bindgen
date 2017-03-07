@@ -5,11 +5,13 @@
 // Protocol should be included, since it is used by the WhitelistMe
 @protocol SomeProtocol
 -(void)protocolMethod;
++(void)protocolClassMethod;
 @end
 
 // The whitelisted item
 @interface WhitelistMe <SomeProtocol>
 -(void)method;
++(void)classMethod;
 @end
 
 // This was also explicitly whitelisted
