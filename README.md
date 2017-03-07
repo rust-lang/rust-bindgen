@@ -59,7 +59,7 @@ $ port install clang-3.9
 ##### Debian-based Linuxes
 
 ```
-# apt-get install llvm-3.9-dev libclang-3.9-dev
+# apt-get install llvm-3.9-dev libclang-3.9-dev clang-3.9
 ```
 
 Ubuntu 16.10 provides the necessary packages directly. If you are using older
