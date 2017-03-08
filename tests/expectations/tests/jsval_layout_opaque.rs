@@ -129,6 +129,44 @@ impl Clone for jsval_layout__bindgen_ty_1 {
 impl Default for jsval_layout__bindgen_ty_1 {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
+impl jsval_layout__bindgen_ty_1 {
+    #[inline]
+    pub fn payload47(&self) -> u64 {
+        let mask = 140737488355327usize as u64;
+        let field_val: u64 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        let val = (field_val & mask) >> 0usize;
+        unsafe { ::std::mem::transmute(val as u64) }
+    }
+    #[inline]
+    pub fn set_payload47(&mut self, val: u64) {
+        let mask = 140737488355327usize as u64;
+        let val = val as u64 as u64;
+        let mut field_val: u64 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        field_val &= !mask;
+        field_val |= (val << 0usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+    }
+    #[inline]
+    pub fn tag(&self) -> JSValueTag {
+        let mask = 18446603336221196288usize as u64;
+        let field_val: u64 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        let val = (field_val & mask) >> 47usize;
+        unsafe { ::std::mem::transmute(val as u32) }
+    }
+    #[inline]
+    pub fn set_tag(&mut self, val: JSValueTag) {
+        let mask = 18446603336221196288usize as u64;
+        let val = val as u32 as u64;
+        let mut field_val: u64 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        field_val &= !mask;
+        field_val |= (val << 47usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct jsval_layout__bindgen_ty_2 {

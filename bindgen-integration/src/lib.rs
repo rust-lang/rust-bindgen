@@ -1,9 +1,12 @@
+#![allow(warnings)]
+
 mod bindings {
     include!(concat!(env!("OUT_DIR"), "/test.rs"));
 }
 
 use std::ffi::CStr;
 use std::os::raw::c_int;
+use std::mem;
 
 #[test]
 fn test_static_array() {
@@ -46,4 +49,55 @@ fn test_overload() {
     let test = unsafe { bindings::Test::new1(5.0) };
     assert_eq!(test.m_int, 0);
     assert_eq!(test.m_double, 5.0);
+}
+
+#[test]
+fn test_bitfields_first() {
+    let mut first: bindings::bitfields::First = unsafe {
+        mem::zeroed()
+    };
+    assert!(unsafe {
+        first.assert(0, 0, 0)
+    });
+    first.set_three_bits_byte_one(2);
+    first.set_six_bits_byte_two(42);
+    first.set_two_bits_byte_two(1);
+    assert!(unsafe {
+        first.assert(2, 42, 1)
+    });
+}
+
+#[test]
+fn test_bitfields_second() {
+    let mut second: bindings::bitfields::Second = unsafe {
+        mem::zeroed()
+    };
+    assert!(unsafe {
+        second.assert(0, false)
+    });
+    second.set_thirty_one_bits(1337);
+    second.set_one_bit(true);
+    assert!(unsafe {
+        second.assert(1337, true)
+    });
+}
+
+#[test]
+fn test_bitfields_third() {
+    let mut third: bindings::bitfields::Third = unsafe {
+        mem::zeroed()
+    };
+    assert!(unsafe {
+        third.assert(0,
+                     false,
+                     bindings::bitfields::ItemKind::ITEM_KIND_UNO)
+    });
+    third.set_flags(12345);
+    third.set_is_whatever(true);
+    third.set_kind(bindings::bitfields::ItemKind::ITEM_KIND_TRES);
+    assert!(unsafe {
+        third.assert(12345,
+                     true,
+                     bindings::bitfields::ItemKind::ITEM_KIND_TRES)
+    });
 }
