@@ -2265,67 +2265,7 @@ impl ToRustTy for Type {
                 aster::AstBuilder::new().ty().path().ids(path).build()
             }
             TypeKind::TemplateInstantiation(ref inst) => {
-                let decl = inst.template_definition();
-                let mut ty = decl.to_rust_ty(ctx).unwrap();
-
-                // If we gave up when making a type for the template definition,
-                // check if maybe we can make a better opaque blob for the
-                // instantiation.
-                if ty == aster::AstBuilder::new().ty().unit().unwrap() {
-                    if let Some(layout) = self.layout(ctx) {
-                        ty = BlobTyBuilder::new(layout).build().unwrap()
-                    }
-                }
-
-                let decl_params = if let Some(params) =
-                    decl.self_template_params(ctx) {
-                    params
-                } else {
-                    // This can happen if we generated an opaque type for a
-                    // partial template specialization, in which case we just
-                    // use the opaque type's layout. If we don't have a layout,
-                    // we cross our fingers and hope for the best :-/
-                    debug_assert!(ctx.resolve_type_through_type_refs(decl)
-                        .is_opaque());
-                    let layout = self.layout(ctx).unwrap_or(Layout::zero());
-                    ty = BlobTyBuilder::new(layout).build().unwrap();
-
-                    vec![]
-                };
-
-                // TODO: If the decl type is a template class/struct
-                // declaration's member template declaration, it could rely on
-                // generic template parameters from its outer template
-                // class/struct. When we emit bindings for it, it could require
-                // *more* type arguments than we have here, and we will need to
-                // reconstruct them somehow. We don't have any means of doing
-                // that reconstruction at this time.
-
-                if let ast::TyKind::Path(_, ref mut path) = ty.node {
-                    let template_args = inst.template_arguments()
-                        .iter()
-                        .zip(decl_params.iter())
-                        // Only pass type arguments for the type parameters that
-                        // the decl uses.
-                        .filter(|&(_, param)| ctx.uses_template_parameter(decl, *param))
-                        .map(|(arg, _)| arg.to_rust_ty(ctx))
-                        .collect::<Vec<_>>();
-
-                    path.segments.last_mut().unwrap().parameters = if 
-                        template_args.is_empty() {
-                        None
-                    } else {
-                        Some(P(ast::PathParameters::AngleBracketed(
-                            ast::AngleBracketedParameterData {
-                                lifetimes: vec![],
-                                types: P::from_vec(template_args),
-                                bindings: P::from_vec(vec![]),
-                            }
-                        )))
-                    }
-                }
-
-                P(ty)
+                inst.to_rust_ty(ctx, self)
             }
             TypeKind::ResolvedTypeRef(inner) => inner.to_rust_ty(ctx),
             TypeKind::TemplateAlias(inner, _) |
@@ -2406,6 +2346,74 @@ impl ToRustTy for Type {
                 unreachable!("Should have been resolved after parsing {:?}!", u)
             }
         }
+    }
+}
+
+impl ToRustTy for TemplateInstantiation {
+    type Extra = Type;
+
+    fn to_rust_ty(&self, ctx: &BindgenContext, self_ty: &Type) -> P<ast::Ty> {
+        let decl = self.template_definition();
+        let mut ty = decl.to_rust_ty(ctx).unwrap();
+
+        // If we gave up when making a type for the template definition,
+        // check if maybe we can make a better opaque blob for the
+        // instantiation.
+        if ty == aster::AstBuilder::new().ty().unit().unwrap() {
+            if let Some(layout) = self_ty.layout(ctx) {
+                ty = BlobTyBuilder::new(layout).build().unwrap()
+            }
+        }
+
+        let decl_params = if let Some(params) =
+            decl.self_template_params(ctx) {
+            params
+        } else {
+            // This can happen if we generated an opaque type for a
+            // partial template specialization, in which case we just
+            // use the opaque type's layout. If we don't have a layout,
+            // we cross our fingers and hope for the best :-/
+            debug_assert!(ctx.resolve_type_through_type_refs(decl)
+                .is_opaque());
+            let layout = self_ty.layout(ctx).unwrap_or(Layout::zero());
+            ty = BlobTyBuilder::new(layout).build().unwrap();
+
+            vec![]
+        };
+
+        // TODO: If the decl type is a template class/struct
+        // declaration's member template declaration, it could rely on
+        // generic template parameters from its outer template
+        // class/struct. When we emit bindings for it, it could require
+        // *more* type arguments than we have here, and we will need to
+        // reconstruct them somehow. We don't have any means of doing
+        // that reconstruction at this time.
+
+        if let ast::TyKind::Path(_, ref mut path) = ty.node {
+            let template_args = self.template_arguments()
+                .iter()
+                .zip(decl_params.iter())
+                // Only pass type arguments for the type parameters that
+                // the decl uses.
+                .filter(|&(_, param)| ctx.uses_template_parameter(decl, *param))
+                .map(|(arg, _)| arg.to_rust_ty(ctx))
+                .collect::<Vec<_>>();
+
+            path.segments.last_mut().unwrap().parameters = if 
+                template_args.is_empty() {
+                None
+            } else {
+                Some(P(ast::PathParameters::AngleBracketed(
+                    ast::AngleBracketedParameterData {
+                        lifetimes: vec![],
+                        types: P::from_vec(template_args),
+                        bindings: P::from_vec(vec![]),
+                    }
+                )))
+            }
+        }
+
+        P(ty)
     }
 }
 
