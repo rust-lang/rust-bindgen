@@ -2361,7 +2361,7 @@ impl ToRustTy for TemplateInstantiation {
         // instantiation.
         if ty == aster::AstBuilder::new().ty().unit().unwrap() {
             if let Some(layout) = self_ty.layout(ctx) {
-                ty = BlobTyBuilder::new(layout).build().unwrap()
+                return BlobTyBuilder::new(layout).build();
             }
         }
 
@@ -2376,9 +2376,7 @@ impl ToRustTy for TemplateInstantiation {
             debug_assert!(ctx.resolve_type_through_type_refs(decl)
                 .is_opaque());
             let layout = self_ty.layout(ctx).unwrap_or(Layout::zero());
-            ty = BlobTyBuilder::new(layout).build().unwrap();
-
-            vec![]
+            return BlobTyBuilder::new(layout).build();
         };
 
         // TODO: If the decl type is a template class/struct
