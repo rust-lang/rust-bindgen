@@ -826,7 +826,7 @@ impl<'ctx> Bindings<'ctx> {
 /// Determines whether the given cursor is in any of the files matched by the
 /// options.
 fn filter_builtins(ctx: &BindgenContext, cursor: &clang::Cursor) -> bool {
-    !cursor.is_builtin() || ctx.options().builtins
+    ctx.options().builtins || !cursor.is_builtin()
 }
 
 /// Parse one `Item` from the Clang cursor.

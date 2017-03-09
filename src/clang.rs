@@ -80,7 +80,7 @@ impl Cursor {
     /// Returns whether the cursor refers to a built-in definition.
     pub fn is_builtin(&self) -> bool {
         let (file, _, _, _) = self.location().location();
-        !file.name().is_some()
+        file.name().is_none()
     }
 
     /// Get the `Cursor` for this cursor's referent's lexical parent.
