@@ -2379,18 +2379,18 @@ impl ToRustTy for TemplateInstantiation {
             }
         }
 
-        let decl_params = if let Some(params) =
-            decl.self_template_params(ctx) {
-            params
-        } else {
-            // This can happen if we generated an opaque type for a
-            // partial template specialization, in which case we just
-            // use the opaque type's layout. If we don't have a layout,
-            // we cross our fingers and hope for the best :-/
-            debug_assert!(ctx.resolve_type_through_type_refs(decl)
-                .is_opaque());
-            let layout = self_ty.layout(ctx).unwrap_or(Layout::zero());
-            return BlobTyBuilder::new(layout).build();
+        let decl_params = match decl.self_template_params(ctx) {
+            Some(params) => params,
+            None => {
+                // This can happen if we generated an opaque type for a
+                // partial template specialization, in which case we just
+                // use the opaque type's layout. If we don't have a layout,
+                // we cross our fingers and hope for the best :-/
+                debug_assert!(ctx.resolve_type_through_type_refs(decl)
+                              .is_opaque());
+                let layout = self_ty.layout(ctx).unwrap_or(Layout::zero());
+                return BlobTyBuilder::new(layout).build();
+            }
         };
 
         // TODO: If the decl type is a template class/struct
