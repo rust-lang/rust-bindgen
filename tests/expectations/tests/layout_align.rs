@@ -89,3 +89,59 @@ fn bindgen_test_layout_rte_eth_link() {
 impl Clone for rte_eth_link {
     fn clone(&self) -> Self { *self }
 }
+impl rte_eth_link {
+    #[inline]
+    pub fn link_duplex(&self) -> u16 {
+        let mask = 1usize as u8;
+        let field_val: u8 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        let val = (field_val & mask) >> 0usize;
+        unsafe { ::std::mem::transmute(val as u16) }
+    }
+    #[inline]
+    pub fn set_link_duplex(&mut self, val: u16) {
+        let mask = 1usize as u8;
+        let val = val as u16 as u8;
+        let mut field_val: u8 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        field_val &= !mask;
+        field_val |= (val << 0usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+    }
+    #[inline]
+    pub fn link_autoneg(&self) -> u16 {
+        let mask = 2usize as u8;
+        let field_val: u8 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        let val = (field_val & mask) >> 1usize;
+        unsafe { ::std::mem::transmute(val as u16) }
+    }
+    #[inline]
+    pub fn set_link_autoneg(&mut self, val: u16) {
+        let mask = 2usize as u8;
+        let val = val as u16 as u8;
+        let mut field_val: u8 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        field_val &= !mask;
+        field_val |= (val << 1usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+    }
+    #[inline]
+    pub fn link_status(&self) -> u16 {
+        let mask = 4usize as u8;
+        let field_val: u8 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        let val = (field_val & mask) >> 2usize;
+        unsafe { ::std::mem::transmute(val as u16) }
+    }
+    #[inline]
+    pub fn set_link_status(&mut self, val: u16) {
+        let mask = 4usize as u8;
+        let val = val as u16 as u8;
+        let mut field_val: u8 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        field_val &= !mask;
+        field_val |= (val << 2usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+    }
+}

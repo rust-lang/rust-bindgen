@@ -736,10 +736,8 @@ impl<'a> Bitfield<'a> {
     fn codegen_fields(self,
                       ctx: &BindgenContext,
                       fields: &mut Vec<ast::StructField>,
-                      _methods: &mut Vec<ast::ImplItem>)
+                      methods: &mut Vec<ast::ImplItem>)
                       -> Layout {
-        use aster::struct_field::StructFieldBuilder;
-
         // NOTE: What follows is reverse-engineered from LLVM's
         // lib/AST/RecordLayoutBuilder.cpp
         //
@@ -757,29 +755,28 @@ impl<'a> Bitfield<'a> {
         let mut last_field_name = format!("_bitfield_{}", self.index);
         let mut last_field_align = 0;
 
+        // (name, mask, width, bitfield's type, bitfield's layout)
+        let mut bitfields: Vec<(&str, usize, usize, ast::Ty, Layout)> = vec![];
+
         for field in self.fields {
-            let width = field.bitfield().unwrap();
+            let width = field.bitfield().unwrap() as usize;
             let field_item = ctx.resolve_item(field.ty());
             let field_ty_layout = field_item.kind()
                 .expect_type()
                 .layout(ctx)
                 .expect("Bitfield without layout? Gah!");
-
             let field_align = field_ty_layout.align;
 
             if field_size_in_bits != 0 &&
-               (width == 0 || width as usize > unfilled_bits_in_last_unit) {
+               (width == 0 || width > unfilled_bits_in_last_unit) {
+                // We've finished a physical field, so flush it and its bitfields.
                 field_size_in_bits = align_to(field_size_in_bits, field_align);
-                // Push the new field.
-                let ty =
-                    BlobTyBuilder::new(Layout::new(bytes_from_bits_pow2(field_size_in_bits),
-                                                   bytes_from_bits_pow2(last_field_align)))
-                        .build();
-
-                let field = StructFieldBuilder::named(&last_field_name)
-                    .pub_()
-                    .build_ty(ty);
-                fields.push(field);
+                fields.push(flush_bitfields(ctx,
+                                            field_size_in_bits,
+                                            last_field_align,
+                                            &last_field_name,
+                                            bitfields.drain(..),
+                                            methods));
 
                 // TODO(emilio): dedup this.
                 *self.index += 1;
@@ -791,42 +788,125 @@ impl<'a> Bitfield<'a> {
                 last_field_align = 0;
             }
 
-            // TODO(emilio): Create the accessors. Problem here is that we still
-            // don't know which one is going to be the final alignment of the
-            // bitfield, and whether we have to index in it. Thus, we don't know
-            // which integer type do we need.
-            //
-            // We could push them to a Vec or something, but given how buggy
-            // they where maybe it's not a great idea?
-            field_size_in_bits += width as usize;
-            total_size_in_bits += width as usize;
+            if let Some(name) = field.name() {
+                bitfields.push((name,
+                                field_size_in_bits,
+                                width,
+                                field_item.to_rust_ty(ctx).unwrap(),
+                                field_ty_layout));
+            }
 
+            field_size_in_bits += width;
+            total_size_in_bits += width;
 
             let data_size = align_to(field_size_in_bits, field_align * 8);
 
             max_align = cmp::max(max_align, field_align);
 
             // NB: The width here is completely, absolutely intentional.
-            last_field_align = cmp::max(last_field_align, width as usize);
+            last_field_align = cmp::max(last_field_align, width);
 
             unfilled_bits_in_last_unit = data_size - field_size_in_bits;
         }
 
         if field_size_in_bits != 0 {
-            // Push the last field.
-            let ty =
-                BlobTyBuilder::new(Layout::new(bytes_from_bits_pow2(field_size_in_bits),
-                                               bytes_from_bits_pow2(last_field_align)))
-                    .build();
-
-            let field = StructFieldBuilder::named(&last_field_name)
-                .pub_()
-                .build_ty(ty);
-            fields.push(field);
+            // Flush the last physical field and its bitfields.
+            fields.push(flush_bitfields(ctx,
+                                        field_size_in_bits,
+                                        last_field_align,
+                                        &last_field_name,
+                                        bitfields.drain(..),
+                                        methods));
         }
 
         Layout::new(bytes_from_bits(total_size_in_bits), max_align)
     }
+}
+
+/// A physical field (which is a word or byte or ...) has many logical bitfields
+/// contained within it, but not all bitfields are in the same physical field of
+/// a struct. This function creates a single physical field and flushes all the
+/// accessors for the logical `bitfields` within that physical field to the
+/// outgoing `methods`.
+fn flush_bitfields<'a, I>(ctx: &BindgenContext,
+                          field_size_in_bits: usize,
+                          field_align: usize,
+                          field_name: &str,
+                          bitfields: I,
+                          methods: &mut Vec<ast::ImplItem>) -> ast::StructField
+    where I: IntoIterator<Item = (&'a str, usize, usize, ast::Ty, Layout)>
+{
+    use aster::struct_field::StructFieldBuilder;
+
+    let field_layout = Layout::new(bytes_from_bits_pow2(field_size_in_bits),
+                                   bytes_from_bits_pow2(field_align));
+    let field_ty = BlobTyBuilder::new(field_layout).build();
+
+    let field = StructFieldBuilder::named(field_name)
+        .pub_()
+        .build_ty(field_ty.clone());
+
+    for (name, offset, width, bitfield_ty, bitfield_layout) in bitfields {
+        let prefix = ctx.trait_prefix();
+        let getter_name = ctx.rust_ident(name);
+        let setter_name = ctx.ext_cx()
+            .ident_of(&format!("set_{}", &name));
+        let field_ident = ctx.ext_cx().ident_of(field_name);
+
+        let field_int_ty = match field_layout.size {
+            8 => quote_ty!(ctx.ext_cx(), u64),
+            4 => quote_ty!(ctx.ext_cx(), u32),
+            2 => quote_ty!(ctx.ext_cx(), u16),
+            1 => quote_ty!(ctx.ext_cx(), u8),
+            _ => panic!("physical field containing bitfields should be sized \
+                         8, 4, 2, or 1 bytes")
+        };
+        let bitfield_int_ty = BlobTyBuilder::new(bitfield_layout).build();
+
+        let mask: usize = ((1usize << width) - 1usize) << offset;
+
+        let impl_item = quote_item!(
+            ctx.ext_cx(),
+            impl XxxIgnored {
+                #[inline]
+                pub fn $getter_name(&self) -> $bitfield_ty {
+                    let mask = $mask as $field_int_ty;
+                    let field_val: $field_int_ty = unsafe {
+                        ::$prefix::mem::transmute(self.$field_ident)
+                    };
+                    let val = (field_val & mask) >> $offset;
+                    unsafe {
+                        ::$prefix::mem::transmute(val as $bitfield_int_ty)
+                    }
+                }
+
+                #[inline]
+                pub fn $setter_name(&mut self, val: $bitfield_ty) {
+                    let mask = $mask as $field_int_ty;
+                    let val = val as $bitfield_int_ty as $field_int_ty;
+
+                    let mut field_val: $field_int_ty = unsafe {
+                        ::$prefix::mem::transmute(self.$field_ident)
+                    };
+                    field_val &= !mask;
+                    field_val |= (val << $offset) & mask;
+
+                    self.$field_ident = unsafe {
+                        ::$prefix::mem::transmute(field_val)
+                    };
+                }
+            }
+        ).unwrap();
+
+        match impl_item.unwrap().node {
+            ast::ItemKind::Impl(_, _, _, _, _, items) => {
+                methods.extend(items.into_iter());
+            },
+            _ => unreachable!(),
+        };
+    }
+
+    field
 }
 
 impl CodeGenerator for TemplateInstantiation {
