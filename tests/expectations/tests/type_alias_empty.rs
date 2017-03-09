@@ -4,4 +4,4 @@
 #![allow(non_snake_case)]
 
 
-pub type bool_constant = ();
+pub type bool_constant = u8;

@@ -561,7 +561,13 @@ impl CodeGenerator for Type {
                     let layout = self.layout(ctx).unwrap_or_else(Layout::zero);
                     BlobTyBuilder::new(layout).build()
                 } else {
-                    inner_item.to_rust_ty(ctx)
+                    let inner_rust_ty = inner_item.to_rust_ty(ctx);
+                    if inner_rust_ty == aster::AstBuilder::new().ty().unit() {
+                        let layout = self.layout(ctx).unwrap_or_else(|| Layout::for_size(1));
+                        BlobTyBuilder::new(layout).build()
+                    } else {
+                        inner_rust_ty
+                    }
                 };
 
                 {
@@ -2356,12 +2362,14 @@ impl ToRustTy for TemplateInstantiation {
         let decl = self.template_definition();
         let mut ty = decl.to_rust_ty(ctx).unwrap();
 
-        // If we gave up when making a type for the template definition,
-        // check if maybe we can make a better opaque blob for the
-        // instantiation.
         if ty == aster::AstBuilder::new().ty().unit().unwrap() {
+            // If we gave up when making a type for the template definition,
+            // check if maybe we can make a better opaque blob for the
+            // instantiation. If not, at least don't use a zero-sized type.
             if let Some(layout) = self_ty.layout(ctx) {
                 return BlobTyBuilder::new(layout).build();
+            } else {
+                return quote_ty!(ctx.ext_cx(), u8);
             }
         }
 
