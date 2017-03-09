@@ -35,7 +35,7 @@ impl Default for Opaque {
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct WithOpaquePtr {
-    pub whatever: *mut (),
+    pub whatever: *mut u8,
     pub other: u32,
     pub t: OtherOpaque,
 }
