@@ -562,6 +562,12 @@ impl CodeGenerator for Type {
                     BlobTyBuilder::new(layout).build()
                 } else {
                     let inner_rust_ty = inner_item.to_rust_ty(ctx);
+
+                    // We get a unit if the inner type is a template definition
+                    // that is opaque or has non-type template parameters and
+                    // doesn't know its layout. Its possible that we have better
+                    // information about the layout, and in the worst case, just
+                    // make sure we don't return a zero-sized type.
                     if inner_rust_ty == aster::AstBuilder::new().ty().unit() {
                         let layout = self.layout(ctx).unwrap_or_else(|| Layout::for_size(1));
                         BlobTyBuilder::new(layout).build()
