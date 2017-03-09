@@ -77,6 +77,12 @@ impl Cursor {
         }
     }
 
+    /// Returns whether the cursor refers to a built-in definition.
+    pub fn is_builtin(&self) -> bool {
+        let (file, _, _, _) = self.location().location();
+        file.name().is_none()
+    }
+
     /// Get the `Cursor` for this cursor's referent's lexical parent.
     ///
     /// The lexical parent is the parent of the definition. The semantic parent
@@ -1445,6 +1451,9 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
     }
 
     fn print_cursor<S: AsRef<str>>(depth: isize, prefix: S, c: &Cursor) {
+        if c.is_builtin() {
+            return;
+        }
         let prefix = prefix.as_ref();
         print_indent(depth,
                      format!(" {}kind = {}", prefix, kind_to_str(c.kind())));
