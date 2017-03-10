@@ -292,8 +292,12 @@ impl Type {
 
     /// Creates a new named type, with name `name`.
     pub fn named(name: String) -> Self {
-        assert!(!name.is_empty());
-        Self::new(Some(name), None, TypeKind::Named, false)
+        let name = if name.is_empty() {
+            None
+        } else {
+            Some(name)
+        };
+        Self::new(name, None, TypeKind::Named, false)
     }
 
     /// Is this a floating point type?
@@ -1127,12 +1131,6 @@ impl Type {
                                                               ctx);
                                         }
                                         CXCursor_TemplateTypeParameter => {
-                                            // See the comment in src/ir/comp.rs
-                                            // about the same situation.
-                                            if cur.spelling().is_empty() {
-                                                return CXChildVisit_Continue;
-                                            }
-
                                             let param =
                                                 Item::named_type(None,
                                                                  cur,
