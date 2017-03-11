@@ -376,7 +376,8 @@ impl CodeGenerator for Module {
             }
         };
 
-        if !ctx.options().enable_cxx_namespaces ||
+        let name = item.canonical_name(ctx);
+        if (name != "root" && !ctx.options().enable_cxx_namespaces) ||
            (self.is_inline() && !ctx.options().conservative_inline_namespaces) {
             codegen_self(result, &mut false);
             return;
@@ -384,7 +385,20 @@ impl CodeGenerator for Module {
 
         let mut found_any = false;
         let inner_items = result.inner(|result| {
-            result.push(root_import(ctx, item));
+            if name != "root" || ctx.options().enable_cxx_namespaces {
+                result.push(root_import(ctx, item));
+            } else if name == "root" {
+                let path = vec![ctx.rust_ident_raw("self"),
+                                ctx.rust_ident_raw("super"),
+                                ctx.rust_ident_raw("*")];
+                let use_root = aster::AstBuilder::new()
+                    .item()
+                    .use_()
+                    .ids(path)
+                    .build()
+                    .build();
+                result.push(quote_item!(ctx.ext_cx(), #[allow(unused_imports)] $use_root).unwrap());
+            }
             codegen_self(result, &mut found_any);
         });
 
@@ -398,7 +412,6 @@ impl CodeGenerator for Module {
             items: inner_items,
         });
 
-        let name = item.canonical_name(ctx);
         let item_builder = aster::AstBuilder::new()
             .item()
             .pub_();

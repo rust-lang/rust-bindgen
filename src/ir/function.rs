@@ -131,7 +131,8 @@ pub fn cursor_mangling(ctx: &BindgenContext,
     }
 
     // Try to undo backend linkage munging (prepended _, generally)
-    if cfg!(target_os = "macos") {
+    if get_abi(cursor.cur_type().call_conv()).map_or(true, |abi| abi != abi::Abi::Stdcall) &&
+        cfg!(target_os = "macos") {
         mangling.remove(0);
     }
 

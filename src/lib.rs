@@ -792,6 +792,10 @@ impl<'ctx> Bindings<'ctx> {
             try!(writer.write("\n".as_bytes()));
         }
 
+        if self.module.items.len() > 0 {
+            try!(writer.write("pub use self::root::*;\n\n".as_bytes()));
+        }
+
         let mut ps = pprust::rust_printer(writer);
         try!(ps.print_mod(&self.module, &[]));
         try!(ps.print_remaining_comments());
