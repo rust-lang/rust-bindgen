@@ -14,7 +14,6 @@ fn main() {
     let bindings = Builder::default()
         .no_unstable_rust()
         .enable_cxx_namespaces()
-        .raw_line("pub use self::root::*;")
         .header("cpp/Test.h")
         .clang_arg("-x")
         .clang_arg("c++")

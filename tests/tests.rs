@@ -105,13 +105,7 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
 
     let prepend = ["bindgen",
                    "--with-derive-default",
-                   header_str,
-                   "--raw-line",
-                   "",
-                   "--raw-line",
-                   "#![allow(non_snake_case)]",
-                   "--raw-line",
-                   ""];
+                   header_str];
 
     let args = prepend.into_iter()
         .map(ToString::to_string)
