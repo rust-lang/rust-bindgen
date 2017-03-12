@@ -39,7 +39,7 @@ use syntax::codemap::{Span, respan};
 use syntax::ptr::P;
 
 fn root_import_depth(ctx: &BindgenContext, item: &Item) -> usize {
-    if !ctx.options().enable_cxx_namespaces {
+    if !(item.id() == ctx.root_module() || ctx.options().enable_cxx_namespaces) {
         return 0;
     }
 
@@ -51,7 +51,7 @@ fn root_import_depth(ctx: &BindgenContext, item: &Item) -> usize {
 fn top_level_path(ctx: &BindgenContext, item: &Item) -> Vec<ast::Ident> {
     let mut path = vec![ctx.rust_ident_raw("self")];
 
-    if ctx.options().enable_cxx_namespaces {
+    if item.id() == ctx.root_module() || ctx.options().enable_cxx_namespaces {
         let super_ = ctx.rust_ident_raw("super");
 
         for _ in 0..root_import_depth(ctx, item) {
@@ -63,14 +63,18 @@ fn top_level_path(ctx: &BindgenContext, item: &Item) -> Vec<ast::Ident> {
 }
 
 fn root_import(ctx: &BindgenContext, module: &Item) -> P<ast::Item> {
-    assert!(ctx.options().enable_cxx_namespaces, "Somebody messed it up");
+    assert!(module.id() == ctx.root_module() || ctx.options().enable_cxx_namespaces, "Somebody messed it up");
     assert!(module.is_module());
 
     let mut path = top_level_path(ctx, module);
 
-    let root = ctx.root_module().canonical_name(ctx);
-    let root_ident = ctx.rust_ident(&root);
-    path.push(root_ident);
+    if module.id() == ctx.root_module() && !ctx.options().enable_cxx_namespaces {
+        path.push(ctx.rust_ident_raw("*"));
+    } else {
+        let root = ctx.root_module().canonical_name(ctx);
+        let root_ident = ctx.rust_ident(&root);
+        path.push(root_ident);
+    }
 
     let use_root = aster::AstBuilder::new()
         .item()
@@ -361,7 +365,11 @@ impl CodeGenerator for Module {
                 }
             }
 
-            if item.id() == ctx.root_module() {
+            if item.id() == ctx.sentinel_module() {
+                if result.saw_objc {
+                    utils::prepend_objc_header(ctx, &mut *result);
+                }
+            } else if item.id() == ctx.root_module() {
                 if result.saw_union && !ctx.options().unstable_rust {
                     utils::prepend_union_types(ctx, &mut *result);
                 }
@@ -371,13 +379,11 @@ impl CodeGenerator for Module {
                 if ctx.need_bindegen_complex_type() {
                     utils::prepend_complex_type(ctx, &mut *result);
                 }
-                if result.saw_objc {
-                    utils::prepend_objc_header(ctx, &mut *result);
-                }
             }
         };
 
-        if !ctx.options().enable_cxx_namespaces ||
+        let item_id = item.id();
+        if item_id == ctx.sentinel_module() || (item_id != ctx.root_module() && !ctx.options().enable_cxx_namespaces) ||
            (self.is_inline() && !ctx.options().conservative_inline_namespaces) {
             codegen_self(result, &mut false);
             return;
@@ -2950,7 +2956,7 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
             }
         }
 
-        context.resolve_item(context.root_module())
+        context.resolve_item(context.sentinel_module())
             .codegen(context, &mut result, &whitelisted_items, &());
 
         result.items

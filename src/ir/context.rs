@@ -111,6 +111,10 @@ pub struct BindgenContext<'ctx> {
     /// A cursor to module map. Similar reason than above.
     modules: HashMap<Cursor, ItemId>,
 
+    /// The sentinel module is the real root for the whole generated code.
+    /// It's always inline and should have exactly one child, namely the root_module.
+    sentinel_module: ItemId,
+
     /// The root module, this is guaranteed to be an item of kind Module.
     root_module: ItemId,
 
@@ -186,13 +190,21 @@ impl<'ctx> BindgenContext<'ctx> {
                                           parse_options)
                 .expect("TranslationUnit::parse failed");
 
-        let root_module = Self::build_root_module(ItemId(0));
+        let mut sentinel_module = Self::build_sentinel_module(ItemId(0));
+        let root_module = Self::build_root_module(ItemId(1), ItemId(1));
+
+        {
+            let mut sm = sentinel_module.as_module_mut().unwrap();
+            sm.children_mut().push(ItemId(1));
+        }
+
         let mut me = BindgenContext {
             items: Default::default(),
             types: Default::default(),
             named_types: Default::default(),
             modules: Default::default(),
-            next_item_id: ItemId(1),
+            next_item_id: ItemId(2),
+            sentinel_module: sentinel_module.id(),
             root_module: root_module.id(),
             current_module: root_module.id(),
             currently_parsed_types: vec![],
@@ -208,6 +220,7 @@ impl<'ctx> BindgenContext<'ctx> {
             used_template_parameters: None,
         };
 
+        me.add_item(sentinel_module, None, None);
         me.add_item(root_module, None, None);
 
         me
@@ -662,9 +675,19 @@ impl<'ctx> BindgenContext<'ctx> {
         assert!(old_item.is_none(), "Inserted type twice?");
     }
 
-    fn build_root_module(id: ItemId) -> Item {
-        let module = Module::new(Some("root".into()), ModuleKind::Normal);
+    fn build_sentinel_module(id: ItemId) -> Item {
+        let module = Module::new(Some("<sentinel>".into()), ModuleKind::Inline);
         Item::new(id, None, None, id, ItemKind::Module(module))
+    }
+
+    fn build_root_module(id: ItemId, parent_id: ItemId) -> Item {
+        let module = Module::new(Some("root".into()), ModuleKind::Normal);
+        Item::new(id, None, None, parent_id, ItemKind::Module(module))
+    }
+
+    /// Get the sentinel module
+    pub fn sentinel_module(&self) -> ItemId {
+        self.sentinel_module
     }
 
     /// Get the root module.
