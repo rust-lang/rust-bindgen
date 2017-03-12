@@ -410,7 +410,8 @@ impl CodeGenerator for Module {
         let module = ast::ItemKind::Mod(ast::Mod {
             inner: ctx.span(),
             items: inner_items,
-        });
+        })
+        let name = item.canonical_name(ctx);
 
         let item_builder = aster::AstBuilder::new()
             .item()
