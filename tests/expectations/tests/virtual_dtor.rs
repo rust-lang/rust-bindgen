@@ -22,14 +22,14 @@ fn bindgen_test_layout_nsSlots() {
 }
 extern "C" {
     #[link_name = "_ZN7nsSlotsD1Ev"]
-    pub fn nsSlots_~nsSlots(this: *mut nsSlots);
+    pub fn nsSlots_nsSlots_destructor(this: *mut nsSlots);
 }
 impl Default for nsSlots {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 impl nsSlots {
     #[inline]
-    pub unsafe fn _bindgen_destructor_nsSlots(&mut self) {
-        nsSlots_~nsSlots(&mut *self)
+    pub unsafe fn __bindgen_destructor__(&mut self) {
+        nsSlots_nsSlots_destructor(&mut *self)
     }
 }

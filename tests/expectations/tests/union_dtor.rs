@@ -54,11 +54,11 @@ fn bindgen_test_layout_UnionWithDtor() {
 }
 extern "C" {
     #[link_name = "_ZN13UnionWithDtorD1Ev"]
-    pub fn UnionWithDtor_~UnionWithDtor(this: *mut UnionWithDtor);
+    pub fn UnionWithDtor_UnionWithDtor_destructor(this: *mut UnionWithDtor);
 }
 impl UnionWithDtor {
     #[inline]
-    pub unsafe fn _bindgen_destructor_UnionWithDtor(&mut self) {
-        UnionWithDtor_~UnionWithDtor(&mut *self)
+    pub unsafe fn __bindgen_destructor__(&mut self) {
+        UnionWithDtor_UnionWithDtor_destructor(&mut *self)
     }
 }

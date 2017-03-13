@@ -18,11 +18,11 @@ fn bindgen_test_layout_cv_String() {
 }
 extern "C" {
     #[link_name = "_ZN2cv6StringD1Ev"]
-    pub fn cv_String_~String(this: *mut cv_String);
+    pub fn cv_String_String_destructor(this: *mut cv_String);
 }
 impl cv_String {
     #[inline]
-    pub unsafe fn _bindgen_destructor_String(&mut self) {
-        cv_String_~String(&mut *self)
+    pub unsafe fn __bindgen_destructor__(&mut self) {
+        cv_String_String_destructor(&mut *self)
     }
 }

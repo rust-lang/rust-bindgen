@@ -1574,11 +1574,7 @@ impl MethodCodegen for Method {
         let signature_item = ctx.resolve_item(function.signature());
         let mut name = match self.kind() {
             MethodKind::Constructor => "new".into(),
-            MethodKind::Destructor => {
-                let mut prefix = "_bindgen_destructor_".to_owned();
-                prefix.push_str(function.name().trim_left_matches('~'));
-                prefix
-            },
+            MethodKind::Destructor => "__bindgen_destructor__".into(),
             _ => function.name().to_owned(),
         };
 

@@ -323,7 +323,16 @@ impl ClangSubItemParser for Function {
                                      None,
                                      context));
 
-        let name = cursor.spelling();
+        let name = match cursor.kind() {
+            CXCursor_Destructor => {
+                let mut name_ = cursor.spelling();
+                // remove the `~`
+                name_.remove(0);
+                name_ + "_destructor"
+            },
+            _ => cursor.spelling(),
+        };
+
         assert!(!name.is_empty(), "Empty function name?");
 
         let mut mangled_name = cursor_mangling(context, &cursor);
