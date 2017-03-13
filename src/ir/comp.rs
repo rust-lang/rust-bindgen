@@ -597,14 +597,6 @@ impl CompInfo {
                     ci.packed = true;
                 }
                 CXCursor_TemplateTypeParameter => {
-                    // Yes! You can arrive here with an empty template parameter
-                    // name! Awesome, isn't it?
-                    //
-                    // see tests/headers/empty_template_param_name.hpp
-                    if cur.spelling().is_empty() {
-                        return CXChildVisit_Continue;
-                    }
-
                     let param = Item::named_type(None, cur, ctx)
                         .expect("Item::named_type should't fail when pointing \
                                  at a TemplateTypeParameter");

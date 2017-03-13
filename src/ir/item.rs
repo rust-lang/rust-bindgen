@@ -19,6 +19,7 @@ use std::collections::BTreeSet;
 use std::fmt::Write;
 use std::io;
 use std::iter;
+use regex;
 
 /// A trait to get the canonical name from an item.
 ///
@@ -1313,8 +1314,19 @@ impl ClangItemParser for Item {
         fn is_template_with_spelling(refd: &clang::Cursor,
                                      spelling: &str)
                                      -> bool {
-            refd.kind() == clang_sys::CXCursor_TemplateTypeParameter &&
-            refd.spelling() == spelling
+            lazy_static! {
+                static ref ANON_TYPE_PARAM_RE: regex::Regex =
+                    regex::Regex::new(r"^type\-parameter\-\d+\-\d+$").unwrap();
+            }
+
+            if refd.kind() != clang_sys::CXCursor_TemplateTypeParameter {
+                return false;
+            }
+
+            let refd_spelling = refd.spelling();
+            refd_spelling == spelling ||
+                // Allow for anonymous template parameters.
+                (refd_spelling.is_empty() && ANON_TYPE_PARAM_RE.is_match(spelling.as_ref()))
         }
 
         let definition = if is_template_with_spelling(&location,

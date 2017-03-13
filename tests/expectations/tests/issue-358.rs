@@ -13,12 +13,9 @@ impl Default for JS_PersistentRooted {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct a {
     pub b: *mut a,
-}
-impl Clone for a {
-    fn clone(&self) -> Self { *self }
 }
 impl Default for a {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

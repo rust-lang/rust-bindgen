@@ -1032,10 +1032,10 @@ impl<'ctx> BindgenContext<'ctx> {
                     }
 
                     return self.instantiate_template(with_id,
-                                              id,
-                                              parent_id,
-                                              ty,
-                                              location)
+                                                     id,
+                                                     parent_id,
+                                                     ty,
+                                                     location)
                         .or_else(|| Some(id));
                 }
 
