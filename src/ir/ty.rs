@@ -836,6 +836,24 @@ impl Type {
             _ => {}
         }
 
+        // Objective C template type parameter
+        // FIXME: This is probably wrong, we are attempting to find the
+        //        objc template params, which seem to manifest as a typedef.
+        //        We are rewriting them as id to suppress multiple conflicting
+        //        typedefs at root level
+        if ty_kind == CXType_Typedef {
+            let is_template_type_param = ty.declaration().kind() == CXCursor_TemplateTypeParameter;
+            let is_canonical_objcpointer = canonical_ty.kind() == CXType_ObjCObjectPointer;
+
+            // We have found a template type for objc interface
+            if is_canonical_objcpointer && is_template_type_param {
+                // Objective-C generics are just ids with fancy name.
+                // To keep it simple, just name them ids
+                name = "id".to_owned();
+            }
+
+        }
+
         if location.kind() == CXCursor_ClassTemplatePartialSpecialization {
             // Sorry! (Not sorry)
             warn!("Found a partial template specialization; bindgen does not \
