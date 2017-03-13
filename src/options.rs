@@ -349,6 +349,10 @@ pub fn builder_from_flags<I>
         builder = builder.use_core();
     }
 
+    if matches.is_present("distrust-clang-mangling") {
+        builder = builder.trust_clang_mangling(false);
+    }
+
     if matches.is_present("conservative-inline-namespaces") {
         builder = builder.conservative_inline_namespaces();
     }
