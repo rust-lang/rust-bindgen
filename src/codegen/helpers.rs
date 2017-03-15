@@ -158,17 +158,38 @@ pub mod ast_ty {
             .build_lit(aster::AstBuilder::new().lit().byte_str(string))
     }
 
-    pub fn float_expr(f: f64) -> P<ast::Expr> {
+    pub fn float_expr(ctx: &BindgenContext,
+                      f: f64)
+                      -> Result<P<ast::Expr>, ()> {
         use aster::symbol::ToSymbol;
-        let mut string = f.to_string();
 
-        // So it gets properly recognised as a floating point constant.
-        if !string.contains('.') {
-            string.push('.');
+        if f.is_finite() {
+            let mut string = f.to_string();
+
+            // So it gets properly recognised as a floating point constant.
+            if !string.contains('.') {
+                string.push('.');
+            }
+
+            let kind = ast::LitKind::FloatUnsuffixed(string.as_str().to_symbol());
+            return Ok(aster::AstBuilder::new().expr().lit().build_lit(kind))
         }
 
-        let kind = ast::LitKind::FloatUnsuffixed(string.as_str().to_symbol());
-        aster::AstBuilder::new().expr().lit().build_lit(kind)
+        let prefix = ctx.trait_prefix();
+        if f.is_nan() {
+            return Ok(quote_expr!(ctx.ext_cx(), ::$prefix::f64::NAN));
+        }
+
+        if f.is_infinite() {
+            return Ok(if f.is_sign_positive() {
+                quote_expr!(ctx.ext_cx(), ::$prefix::f64::INFINITY)
+            } else {
+                quote_expr!(ctx.ext_cx(), ::$prefix::f64::NEG_INFINITY)
+            });
+        }
+
+        warn!("Unknown non-finite float number: {:?}", f);
+        return Err(());
     }
 
     pub fn arguments_from_signature(signature: &FunctionSig,

@@ -470,8 +470,12 @@ impl CodeGenerator for Var {
                     }
                 }
                 VarType::Float(f) => {
-                    const_item.build(helpers::ast_ty::float_expr(f))
-                        .build(ty)
+                    match helpers::ast_ty::float_expr(ctx, f) {
+                        Ok(expr) => {
+                            const_item.build(expr).build(ty)
+                        }
+                        Err(..) => return,
+                    }
                 }
                 VarType::Char(c) => {
                     const_item
@@ -2419,7 +2423,7 @@ impl ToRustTy for TemplateInstantiation {
                 .map(|(arg, _)| arg.to_rust_ty(ctx))
                 .collect::<Vec<_>>();
 
-            path.segments.last_mut().unwrap().parameters = if 
+            path.segments.last_mut().unwrap().parameters = if
                 template_args.is_empty() {
                 None
             } else {

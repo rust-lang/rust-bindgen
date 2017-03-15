@@ -146,7 +146,7 @@ impl ClangSubItemParser for Var {
                 let (type_kind, val) = match value {
                     EvalResult::Invalid => return Err(ParseError::Continue),
                     EvalResult::Float(f) => {
-                        (TypeKind::Float(FloatKind::Float), VarType::Float(f))
+                        (TypeKind::Float(FloatKind::Double), VarType::Float(f))
                     }
                     EvalResult::Char(c) => {
                         let c = match c {
@@ -178,9 +178,7 @@ impl ClangSubItemParser for Var {
                                 } else {
                                     IntKind::Int
                                 }
-                            } else if value >
-                                                         u32::max_value() as
-                                                         i64 {
+                            } else if value > u32::max_value() as i64 {
                                 IntKind::ULongLong
                             } else {
                                 IntKind::UInt
