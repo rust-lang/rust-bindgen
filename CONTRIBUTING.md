@@ -94,6 +94,17 @@ Run `cargo test` to compare generated Rust bindings to the expectations.
 $ cargo test [--all-features]
 ```
 
+### Running a Single Test
+
+To generate bindings for a single test header, compile the bindings, and run the
+layout assertion tests for those bindings, use the `tests/test-one.sh`
+script. It supports fuzzy searching for test headers. For example, to test
+`tests/headers/what_is_going_on.hpp`, execute this command:
+
+```
+$ ./tests/test-one.sh going
+```
+
 ### Authoring New Tests
 
 To add a new test header to the suite, simply put it in the `tests/headers`
