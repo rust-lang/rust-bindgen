@@ -10,5 +10,5 @@ pub struct RandomTemplate {
     pub _address: u8,
 }
 /** <div rustbindgen opaque></div> */
-pub type ShouldBeOpaque = [u8; 0usize];
+pub type ShouldBeOpaque = u8;
 pub type ShouldNotBeOpaque = RandomTemplate;

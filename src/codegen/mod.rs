@@ -1,3 +1,4 @@
+mod error;
 mod helpers;
 mod struct_layout;
 
@@ -433,7 +434,7 @@ impl CodeGenerator for Var {
         }
         result.saw_var(&canonical_name);
 
-        let ty = self.ty().to_rust_ty(ctx);
+        let ty = self.ty().to_rust_ty_or_opaque(ctx, &());
 
         if let Some(val) = self.val() {
             let const_item = aster::AstBuilder::new()
@@ -443,8 +444,7 @@ impl CodeGenerator for Var {
                 .expr();
             let item = match *val {
                 VarType::Bool(val) => {
-                    const_item.build(helpers::ast_ty::bool_expr(val))
-                        .build(ty)
+                    const_item.build(helpers::ast_ty::bool_expr(val)).build(ty)
                 }
                 VarType::Int(val) => {
                     const_item.build(helpers::ast_ty::int_expr(val)).build(ty)
@@ -569,23 +569,13 @@ impl CodeGenerator for Type {
                 let mut used_template_params = item.used_template_params(ctx);
                 let inner_rust_type = if item.is_opaque(ctx) {
                     used_template_params = None;
-                    // Pray if there's no layout.
-                    let layout = self.layout(ctx).unwrap_or_else(Layout::zero);
-                    BlobTyBuilder::new(layout).build()
+                    self.to_opaque(ctx, item)
                 } else {
-                    let inner_rust_ty = inner_item.to_rust_ty(ctx);
-
-                    // We get a unit if the inner type is a template definition
-                    // that is opaque or has non-type template parameters and
-                    // doesn't know its layout. Its possible that we have better
-                    // information about the layout, and in the worst case, just
-                    // make sure we don't return a zero-sized type.
-                    if inner_rust_ty == aster::AstBuilder::new().ty().unit() {
-                        let layout = self.layout(ctx).unwrap_or_else(|| Layout::for_size(1));
-                        BlobTyBuilder::new(layout).build()
-                    } else {
-                        inner_rust_ty
-                    }
+                    // Its possible that we have better layout information than
+                    // the inner type does, so fall back to an opaque blob based
+                    // on our layout if converting the inner item fails.
+                    inner_item.try_to_rust_ty_or_opaque(ctx, &())
+                        .unwrap_or_else(|_| self.to_opaque(ctx, item))
                 };
 
                 {
@@ -738,9 +728,13 @@ impl<'a> ItemCanonicalName for Vtable<'a> {
     }
 }
 
-impl<'a> ItemToRustTy for Vtable<'a> {
-    fn to_rust_ty(&self, ctx: &BindgenContext) -> P<ast::Ty> {
-        aster::ty::TyBuilder::new().id(self.canonical_name(ctx))
+impl<'a> TryToRustTy for Vtable<'a> {
+    type Extra = ();
+
+    fn try_to_rust_ty(&self,
+                      ctx: &BindgenContext,
+                      _: &()) -> error::Result<P<ast::Ty>> {
+        Ok(aster::ty::TyBuilder::new().id(self.canonical_name(ctx)))
     }
 }
 
@@ -813,10 +807,11 @@ impl<'a> Bitfield<'a> {
             }
 
             if let Some(name) = field.name() {
+                let field_item_ty = field_item.to_rust_ty_or_opaque(ctx, &());
                 bitfields.push((name,
                                 field_size_in_bits,
                                 width,
-                                field_item.to_rust_ty(ctx).unwrap(),
+                                field_item_ty.unwrap(),
                                 field_ty_layout));
             }
 
@@ -958,7 +953,7 @@ impl CodeGenerator for TemplateInstantiation {
             let fn_name = ctx.rust_ident_raw(&fn_name);
 
             let prefix = ctx.trait_prefix();
-            let ident = item.to_rust_ty(ctx);
+            let ident = item.to_rust_ty_or_opaque(ctx, &());
             let size_of_expr = quote_expr!(ctx.ext_cx(),
                                            ::$prefix::mem::size_of::<$ident>());
             let align_of_expr = quote_expr!(ctx.ext_cx(),
@@ -1095,7 +1090,9 @@ impl CodeGenerator for CompInfo {
                 Vtable::new(item.id(), self.methods(), self.base_members());
             vtable.codegen(ctx, result, whitelisted_items, item);
 
-            let vtable_type = vtable.to_rust_ty(ctx).to_ptr(true, ctx.span());
+            let vtable_type = vtable.try_to_rust_ty(ctx, &())
+                .expect("vtable to Rust type conversion is infallible")
+                .to_ptr(true, ctx.span());
 
             let vtable_field = StructFieldBuilder::named("vtable_")
                 .pub_()
@@ -1123,7 +1120,7 @@ impl CodeGenerator for CompInfo {
                 continue;
             }
 
-            let inner = base.ty.to_rust_ty(ctx);
+            let inner = base.ty.to_rust_ty_or_opaque(ctx, &());
             let field_name = if i == 0 {
                 "_base".into()
             } else {
@@ -1204,7 +1201,7 @@ impl CodeGenerator for CompInfo {
                 continue;
             }
 
-            let ty = field.ty().to_rust_ty(ctx);
+            let ty = field.ty().to_rust_ty_or_opaque(ctx, &());
 
             // NB: In unstable rust we use proper `union` types.
             let ty = if is_union && !ctx.options().unstable_rust {
@@ -1217,7 +1214,7 @@ impl CodeGenerator for CompInfo {
                 field_ty.is_incomplete_array(ctx) {
                 result.saw_incomplete_array();
 
-                let inner = item.to_rust_ty(ctx);
+                let inner = item.to_rust_ty_or_opaque(ctx, &());
 
                 if ctx.options().enable_cxx_namespaces {
                     quote_ty!(ctx.ext_cx(), root::__IncompleteArrayField<$inner>)
@@ -2069,7 +2066,7 @@ impl CodeGenerator for Enum {
         }
 
         let repr = self.repr()
-            .map(|repr| repr.to_rust_ty(ctx))
+            .and_then(|repr| repr.try_to_rust_ty_or_opaque(ctx, &()).ok())
             .unwrap_or_else(|| helpers::ast_ty::raw_type(ctx, repr_name));
 
         let mut builder = EnumBuilder::new(builder,
@@ -2080,7 +2077,7 @@ impl CodeGenerator for Enum {
 
         // A map where we keep a value -> variant relation.
         let mut seen_values = HashMap::<_, String>::new();
-        let enum_rust_ty = item.to_rust_ty(ctx);
+        let enum_rust_ty = item.to_rust_ty_or_opaque(ctx, &());
         let is_toplevel = item.is_toplevel(ctx);
 
         // Used to mangle the constants we generate in the unnamed-enum case.
@@ -2191,107 +2188,294 @@ impl CodeGenerator for Enum {
     }
 }
 
-trait ToRustTy {
+/// Fallible conversion to an opaque blob.
+///
+/// Implementors of this trait should provide the `try_get_layout` method to
+/// fallibly get this thing's layout, which the provided `try_to_opaque` trait
+/// method will use to convert the `Layout` into an opaque blob Rust type.
+trait TryToOpaque {
     type Extra;
 
-    fn to_rust_ty(&self,
+    /// Get the layout for this thing, if one is available.
+    fn try_get_layout(&self,
+                      ctx: &BindgenContext,
+                      extra: &Self::Extra)
+                      -> error::Result<Layout>;
+
+    /// Do not override this provided trait method.
+    fn try_to_opaque(&self,
+                     ctx: &BindgenContext,
+                     extra: &Self::Extra)
+                     -> error::Result<P<ast::Ty>> {
+        self.try_get_layout(ctx, extra)
+            .map(|layout| BlobTyBuilder::new(layout).build())
+    }
+}
+
+/// Infallible conversion of an IR thing to an opaque blob.
+///
+/// The resulting layout is best effort, and is unfortunately not guaranteed to
+/// be correct. When all else fails, we fall back to a single byte layout as a
+/// last resort, because C++ does not permit zero-sized types. See the note in
+/// the `ToRustTyOrOpaque` doc comment about fallible versus infallible traits
+/// and when each is appropriate.
+///
+/// Don't implement this directly. Instead implement `TryToOpaque`, and then
+/// leverage the blanket impl for this trait.
+trait ToOpaque: TryToOpaque {
+    fn get_layout(&self,
                   ctx: &BindgenContext,
                   extra: &Self::Extra)
-                  -> P<ast::Ty>;
-}
+                  -> Layout {
+        self.try_get_layout(ctx, extra)
+            .unwrap_or_else(|_| Layout::for_size(1))
+    }
 
-trait ItemToRustTy {
-    fn to_rust_ty(&self, ctx: &BindgenContext) -> P<ast::Ty>;
-}
-
-// Convenience implementation.
-impl ItemToRustTy for ItemId {
-    fn to_rust_ty(&self, ctx: &BindgenContext) -> P<ast::Ty> {
-        ctx.resolve_item(*self).to_rust_ty(ctx)
+    fn to_opaque(&self,
+                 ctx: &BindgenContext,
+                 extra: &Self::Extra)
+                 -> P<ast::Ty> {
+        let layout = self.get_layout(ctx, extra);
+        BlobTyBuilder::new(layout).build()
     }
 }
 
-impl ItemToRustTy for Item {
-    fn to_rust_ty(&self, ctx: &BindgenContext) -> P<ast::Ty> {
-        self.kind().expect_type().to_rust_ty(ctx, self)
+impl<T> ToOpaque for T
+    where T: TryToOpaque
+{}
+
+/// Fallible conversion from an IR thing to an *equivalent* Rust type.
+///
+/// If the C/C++ construct represented by the IR thing cannot (currently) be
+/// represented in Rust (for example, instantiations of templates with
+/// const-value generic parameters) then the impl should return an `Err`. It
+/// should *not* attempt to return an opaque blob with the correct size and
+/// alignment. That is the responsibility of the `TryToOpaque` trait.
+trait TryToRustTy {
+    type Extra;
+
+    fn try_to_rust_ty(&self,
+                      ctx: &BindgenContext,
+                      extra: &Self::Extra)
+                      -> error::Result<P<ast::Ty>>;
+}
+
+/// Fallible conversion to a Rust type or an opaque blob with the correct size
+/// and alignment.
+///
+/// Don't implement this directly. Instead implement `TryToRustTy` and
+/// `TryToOpaque`, and then leverage the blanket impl for this trait below.
+trait TryToRustTyOrOpaque: TryToRustTy + TryToOpaque {
+    type Extra;
+
+    fn try_to_rust_ty_or_opaque(&self,
+                                ctx: &BindgenContext,
+                                extra: &<Self as TryToRustTyOrOpaque>::Extra)
+                                -> error::Result<P<ast::Ty>>;
+}
+
+impl<E, T> TryToRustTyOrOpaque for T
+    where T: TryToRustTy<Extra=E> + TryToOpaque<Extra=E>
+{
+    type Extra = E;
+
+    fn try_to_rust_ty_or_opaque(&self,
+                                ctx: &BindgenContext,
+                                extra: &E)
+                                -> error::Result<P<ast::Ty>> {
+        self.try_to_rust_ty(ctx, extra)
+            .or_else(|_| {
+                if let Ok(layout) = self.try_get_layout(ctx, extra) {
+                    Ok(BlobTyBuilder::new(layout).build())
+                } else {
+                    Err(error::Error::NoLayoutForOpaqueBlob)
+                }
+            })
     }
 }
 
-impl ToRustTy for Type {
+/// Infallible conversion to a Rust type, or an opaque blob with a best effort
+/// of correct size and alignment.
+///
+/// Don't implement this directly. Instead implement `TryToRustTy` and
+/// `TryToOpaque`, and then leverage the blanket impl for this trait below.
+///
+/// ### Fallible vs. Infallible Conversions to Rust Types
+///
+/// When should one use this infallible `ToRustTyOrOpaque` trait versus the
+/// fallible `TryTo{RustTy, Opaque, RustTyOrOpaque}` triats? All fallible trait
+/// implementations that need to convert another thing into a Rust type or
+/// opaque blob in a nested manner should also use fallible trait methods and
+/// propagate failure up the stack. Only infallible functions and methods like
+/// CodeGenerator implementations should use the infallible
+/// `ToRustTyOrOpaque`. The further out we push error recovery, the more likely
+/// we are to get a usable `Layout` even if we can't generate an equivalent Rust
+/// type for a C++ construct.
+trait ToRustTyOrOpaque: TryToRustTy + ToOpaque {
+    type Extra;
+
+    fn to_rust_ty_or_opaque(&self,
+                            ctx: &BindgenContext,
+                            extra: &<Self as ToRustTyOrOpaque>::Extra)
+                            -> P<ast::Ty>;
+}
+
+impl<E, T> ToRustTyOrOpaque for T
+    where T: TryToRustTy<Extra=E> + ToOpaque<Extra=E>
+{
+    type Extra = E;
+
+    fn to_rust_ty_or_opaque(&self,
+                            ctx: &BindgenContext,
+                            extra: &E)
+                            -> P<ast::Ty> {
+        self.try_to_rust_ty(ctx, extra)
+            .unwrap_or_else(|_| self.to_opaque(ctx, extra))
+    }
+}
+
+impl TryToOpaque for ItemId {
+    type Extra = ();
+
+    fn try_get_layout(&self,
+                      ctx: &BindgenContext,
+                      _: &())
+                      -> error::Result<Layout> {
+        ctx.resolve_item(*self).try_get_layout(ctx, &())
+    }
+}
+
+impl TryToRustTy for ItemId {
+    type Extra = ();
+
+    fn try_to_rust_ty(&self,
+                      ctx: &BindgenContext,
+                      _: &())
+                      -> error::Result<P<ast::Ty>> {
+        ctx.resolve_item(*self).try_to_rust_ty(ctx, &())
+    }
+}
+
+impl TryToOpaque for Item {
+    type Extra = ();
+
+    fn try_get_layout(&self,
+                      ctx: &BindgenContext,
+                      _: &())
+                      -> error::Result<Layout> {
+        self.kind().expect_type().try_get_layout(ctx, self)
+    }
+}
+
+impl TryToRustTy for Item {
+    type Extra = ();
+
+    fn try_to_rust_ty(&self,
+                      ctx: &BindgenContext,
+                      _: &())
+                      -> error::Result<P<ast::Ty>> {
+        self.kind().expect_type().try_to_rust_ty(ctx, self)
+    }
+}
+
+impl TryToOpaque for Type {
     type Extra = Item;
 
-    fn to_rust_ty(&self, ctx: &BindgenContext, item: &Item) -> P<ast::Ty> {
+    fn try_get_layout(&self,
+                      ctx: &BindgenContext,
+                      _: &Item)
+                      -> error::Result<Layout> {
+        self.layout(ctx).ok_or(error::Error::NoLayoutForOpaqueBlob)
+    }
+}
+
+impl TryToRustTy for Type {
+    type Extra = Item;
+
+    fn try_to_rust_ty(&self,
+                      ctx: &BindgenContext,
+                      item: &Item)
+                      -> error::Result<P<ast::Ty>> {
         use self::helpers::ast_ty::*;
 
         match *self.kind() {
-            TypeKind::Void => raw_type(ctx, "c_void"),
+            TypeKind::Void => Ok(raw_type(ctx, "c_void")),
             // TODO: we should do something smart with nullptr, or maybe *const
             // c_void is enough?
             TypeKind::NullPtr => {
-                raw_type(ctx, "c_void").to_ptr(true, ctx.span())
+                Ok(raw_type(ctx, "c_void").to_ptr(true, ctx.span()))
             }
             TypeKind::Int(ik) => {
                 match ik {
-                    IntKind::Bool => aster::ty::TyBuilder::new().bool(),
-                    IntKind::Char => raw_type(ctx, "c_schar"),
-                    IntKind::UChar => raw_type(ctx, "c_uchar"),
-                    IntKind::Short => raw_type(ctx, "c_short"),
-                    IntKind::UShort => raw_type(ctx, "c_ushort"),
-                    IntKind::Int => raw_type(ctx, "c_int"),
-                    IntKind::UInt => raw_type(ctx, "c_uint"),
-                    IntKind::Long => raw_type(ctx, "c_long"),
-                    IntKind::ULong => raw_type(ctx, "c_ulong"),
-                    IntKind::LongLong => raw_type(ctx, "c_longlong"),
-                    IntKind::ULongLong => raw_type(ctx, "c_ulonglong"),
+                    IntKind::Bool => Ok(aster::ty::TyBuilder::new().bool()),
+                    IntKind::Char => Ok(raw_type(ctx, "c_schar")),
+                    IntKind::UChar => Ok(raw_type(ctx, "c_uchar")),
+                    IntKind::Short => Ok(raw_type(ctx, "c_short")),
+                    IntKind::UShort => Ok(raw_type(ctx, "c_ushort")),
+                    IntKind::Int => Ok(raw_type(ctx, "c_int")),
+                    IntKind::UInt => Ok(raw_type(ctx, "c_uint")),
+                    IntKind::Long => Ok(raw_type(ctx, "c_long")),
+                    IntKind::ULong => Ok(raw_type(ctx, "c_ulong")),
+                    IntKind::LongLong => Ok(raw_type(ctx, "c_longlong")),
+                    IntKind::ULongLong => Ok(raw_type(ctx, "c_ulonglong")),
 
-                    IntKind::I8 => aster::ty::TyBuilder::new().i8(),
-                    IntKind::U8 => aster::ty::TyBuilder::new().u8(),
-                    IntKind::I16 => aster::ty::TyBuilder::new().i16(),
-                    IntKind::U16 => aster::ty::TyBuilder::new().u16(),
-                    IntKind::I32 => aster::ty::TyBuilder::new().i32(),
-                    IntKind::U32 => aster::ty::TyBuilder::new().u32(),
-                    IntKind::I64 => aster::ty::TyBuilder::new().i64(),
-                    IntKind::U64 => aster::ty::TyBuilder::new().u64(),
+                    IntKind::I8 => Ok(aster::ty::TyBuilder::new().i8()),
+                    IntKind::U8 => Ok(aster::ty::TyBuilder::new().u8()),
+                    IntKind::I16 => Ok(aster::ty::TyBuilder::new().i16()),
+                    IntKind::U16 => Ok(aster::ty::TyBuilder::new().u16()),
+                    IntKind::I32 => Ok(aster::ty::TyBuilder::new().i32()),
+                    IntKind::U32 => Ok(aster::ty::TyBuilder::new().u32()),
+                    IntKind::I64 => Ok(aster::ty::TyBuilder::new().i64()),
+                    IntKind::U64 => Ok(aster::ty::TyBuilder::new().u64()),
                     IntKind::Custom { name, .. } => {
                         let ident = ctx.rust_ident_raw(name);
-                        quote_ty!(ctx.ext_cx(), $ident)
+                        Ok(quote_ty!(ctx.ext_cx(), $ident))
                     }
                     // FIXME: This doesn't generate the proper alignment, but we
                     // can't do better right now. We should be able to use
                     // i128/u128 when they're available.
                     IntKind::U128 | IntKind::I128 => {
-                        aster::ty::TyBuilder::new().array(2).u64()
+                        Ok(aster::ty::TyBuilder::new().array(2).u64())
                     }
                 }
             }
-            TypeKind::Float(fk) => float_kind_rust_type(ctx, fk),
+            TypeKind::Float(fk) => Ok(float_kind_rust_type(ctx, fk)),
             TypeKind::Complex(fk) => {
                 let float_path = float_kind_rust_type(ctx, fk);
 
                 ctx.generated_bindegen_complex();
-                if ctx.options().enable_cxx_namespaces {
+                Ok(if ctx.options().enable_cxx_namespaces {
                     quote_ty!(ctx.ext_cx(), root::__BindgenComplex<$float_path>)
                 } else {
                     quote_ty!(ctx.ext_cx(), __BindgenComplex<$float_path>)
-                }
+                })
             }
             TypeKind::Function(ref fs) => {
-                let ty = fs.to_rust_ty(ctx, item);
+                // We can't rely on the sizeof(Option<NonZero<_>>) ==
+                // sizeof(NonZero<_>) optimization with opaque blobs (because
+                // they aren't NonZero), so don't *ever* use an or_opaque
+                // variant here.
+                let ty = fs.try_to_rust_ty(ctx, &())?;
+
                 let prefix = ctx.trait_prefix();
-                quote_ty!(ctx.ext_cx(), ::$prefix::option::Option<$ty>)
+                Ok(quote_ty!(ctx.ext_cx(), ::$prefix::option::Option<$ty>))
             }
             TypeKind::Array(item, len) => {
-                let ty = item.to_rust_ty(ctx);
-                aster::ty::TyBuilder::new().array(len).build(ty)
+                let ty = item.try_to_rust_ty(ctx, &())?;
+                Ok(aster::ty::TyBuilder::new().array(len).build(ty))
             }
             TypeKind::Enum(..) => {
                 let path = item.namespace_aware_canonical_path(ctx);
-                aster::AstBuilder::new().ty().path().ids(path).build()
+                Ok(aster::AstBuilder::new()
+                    .ty()
+                    .path()
+                    .ids(path)
+                    .build())
             }
             TypeKind::TemplateInstantiation(ref inst) => {
-                inst.to_rust_ty(ctx, self)
+                inst.try_to_rust_ty(ctx, self)
             }
-            TypeKind::ResolvedTypeRef(inner) => inner.to_rust_ty(ctx),
+            TypeKind::ResolvedTypeRef(inner) => inner.try_to_rust_ty(ctx, &()),
             TypeKind::TemplateAlias(inner, _) |
             TypeKind::Alias(inner) => {
                 let template_params = item.used_template_params(ctx)
@@ -2302,13 +2486,11 @@ impl ToRustTy for Type {
 
                 let spelling = self.name().expect("Unnamed alias?");
                 if item.is_opaque(ctx) && !template_params.is_empty() {
-                    // Pray if there's no available layout.
-                    let layout = self.layout(ctx).unwrap_or_else(Layout::zero);
-                    BlobTyBuilder::new(layout).build()
+                    self.try_to_opaque(ctx, item)
                 } else if let Some(ty) = utils::type_from_named(ctx,
                                                                 spelling,
                                                                 inner) {
-                    ty
+                    Ok(ty)
                 } else {
                     utils::build_templated_path(item, ctx, template_params)
                 }
@@ -2317,55 +2499,51 @@ impl ToRustTy for Type {
                 let template_params = item.used_template_params(ctx);
                 if info.has_non_type_template_params() ||
                    (item.is_opaque(ctx) && template_params.is_some()) {
-                    return match self.layout(ctx) {
-                        Some(layout) => BlobTyBuilder::new(layout).build(),
-                        None => {
-                            warn!("Couldn't compute layout for a type with non \
-                                  type template params or opaque, expect \
-                                  dragons!");
-                            aster::AstBuilder::new().ty().unit()
-                        }
-                    };
+                    return self.try_to_opaque(ctx, item);
                 }
 
+                let template_params = template_params.unwrap_or(vec![]);
                 utils::build_templated_path(item,
                                             ctx,
-                                            template_params.unwrap_or(vec![]))
+                                            template_params)
             }
             TypeKind::Opaque => {
-                BlobTyBuilder::new(self.layout(ctx).unwrap_or(Layout::zero()))
-                    .build()
+                self.try_to_opaque(ctx, item)
             }
             TypeKind::BlockPointer => {
                 let void = raw_type(ctx, "c_void");
-                void.to_ptr(/* is_const = */
-                            false,
-                            ctx.span())
+                Ok(void.to_ptr(/* is_const = */
+                               false,
+                               ctx.span()))
             }
             TypeKind::Pointer(inner) |
             TypeKind::Reference(inner) => {
                 let inner = ctx.resolve_item(inner);
                 let inner_ty = inner.expect_type();
-                let ty = inner.to_rust_ty(ctx);
+
+                // Regardless if we can properly represent the inner type, we
+                // should always generate a proper pointer here, so use
+                // infallible conversion of the inner type.
+                let ty = inner.to_rust_ty_or_opaque(ctx, &());
 
                 // Avoid the first function pointer level, since it's already
                 // represented in Rust.
                 if inner_ty.canonical_type(ctx).is_function() {
-                    ty
+                    Ok(ty)
                 } else {
                     let is_const = self.is_const() ||
                                    inner.expect_type().is_const();
-                    ty.to_ptr(is_const, ctx.span())
+                    Ok(ty.to_ptr(is_const, ctx.span()))
                 }
             }
             TypeKind::Named => {
                 let name = item.canonical_name(ctx);
                 let ident = ctx.rust_ident(&name);
-                quote_ty!(ctx.ext_cx(), $ident)
+                Ok(quote_ty!(ctx.ext_cx(), $ident))
             }
-            TypeKind::ObjCSel => quote_ty!(ctx.ext_cx(), objc::runtime::Sel),
+            TypeKind::ObjCSel => Ok(quote_ty!(ctx.ext_cx(), objc::runtime::Sel)),
             TypeKind::ObjCId |
-            TypeKind::ObjCInterface(..) => quote_ty!(ctx.ext_cx(), id),
+            TypeKind::ObjCInterface(..) => Ok(quote_ty!(ctx.ext_cx(), id)),
             ref u @ TypeKind::UnresolvedTypeRef(..) => {
                 unreachable!("Should have been resolved after parsing {:?}!", u)
             }
@@ -2373,35 +2551,36 @@ impl ToRustTy for Type {
     }
 }
 
-impl ToRustTy for TemplateInstantiation {
+impl TryToOpaque for TemplateInstantiation {
     type Extra = Type;
 
-    fn to_rust_ty(&self, ctx: &BindgenContext, self_ty: &Type) -> P<ast::Ty> {
-        let decl = self.template_definition();
-        let mut ty = decl.to_rust_ty(ctx).unwrap();
+    fn try_get_layout(&self,
+                      ctx: &BindgenContext,
+                      self_ty: &Type)
+                      -> error::Result<Layout> {
+        self_ty.layout(ctx).ok_or(error::Error::NoLayoutForOpaqueBlob)
+    }
+}
 
-        if ty == aster::AstBuilder::new().ty().unit().unwrap() {
-            // If we gave up when making a type for the template definition,
-            // check if maybe we can make a better opaque blob for the
-            // instantiation. If not, at least don't use a zero-sized type.
-            if let Some(layout) = self_ty.layout(ctx) {
-                return BlobTyBuilder::new(layout).build();
-            } else {
-                return quote_ty!(ctx.ext_cx(), u8);
-            }
-        }
+impl TryToRustTy for TemplateInstantiation {
+    type Extra = Type;
+
+    fn try_to_rust_ty(&self,
+                      ctx: &BindgenContext,
+                      _: &Type)
+                      -> error::Result<P<ast::Ty>> {
+        let decl = self.template_definition();
+        let mut ty = decl.try_to_rust_ty(ctx, &())?.unwrap();
 
         let decl_params = match decl.self_template_params(ctx) {
             Some(params) => params,
             None => {
-                // This can happen if we generated an opaque type for a
-                // partial template specialization, in which case we just
-                // use the opaque type's layout. If we don't have a layout,
-                // we cross our fingers and hope for the best :-/
+                // This can happen if we generated an opaque type for a partial
+                // template specialization, and we've hit an instantiation of
+                // that partial specialization.
                 debug_assert!(ctx.resolve_type_through_type_refs(decl)
-                              .is_opaque());
-                let layout = self_ty.layout(ctx).unwrap_or(Layout::zero());
-                return BlobTyBuilder::new(layout).build();
+                                  .is_opaque());
+                return Err(error::Error::InstantiationOfOpaqueType);
             }
         };
 
@@ -2420,8 +2599,8 @@ impl ToRustTy for TemplateInstantiation {
                 // Only pass type arguments for the type parameters that
                 // the decl uses.
                 .filter(|&(_, param)| ctx.uses_template_parameter(decl, *param))
-                .map(|(arg, _)| arg.to_rust_ty(ctx))
-                .collect::<Vec<_>>();
+                .map(|(arg, _)| arg.try_to_rust_ty(ctx, &()))
+                .collect::<error::Result<Vec<_>>>()?;
 
             path.segments.last_mut().unwrap().parameters = if
                 template_args.is_empty() {
@@ -2437,14 +2616,17 @@ impl ToRustTy for TemplateInstantiation {
             }
         }
 
-        P(ty)
+        Ok(P(ty))
     }
 }
 
-impl ToRustTy for FunctionSig {
-    type Extra = Item;
+impl TryToRustTy for FunctionSig {
+    type Extra = ();
 
-    fn to_rust_ty(&self, ctx: &BindgenContext, _item: &Item) -> P<ast::Ty> {
+    fn try_to_rust_ty(&self,
+                      ctx: &BindgenContext,
+                      _: &())
+                      -> error::Result<P<ast::Ty>> {
         // TODO: we might want to consider ignoring the reference return value.
         let ret = utils::fnsig_return_ty(ctx, &self);
         let arguments = utils::fnsig_arguments(ctx, &self);
@@ -2462,11 +2644,11 @@ impl ToRustTy for FunctionSig {
             decl: decl,
         }));
 
-        P(ast::Ty {
+        Ok(P(ast::Ty {
             id: ast::DUMMY_NODE_ID,
             node: fnty,
             span: ctx.span(),
-        })
+        }))
     }
 }
 
@@ -2712,7 +2894,7 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
 }
 
 mod utils {
-    use super::ItemToRustTy;
+    use super::{error, TryToRustTy, ToRustTyOrOpaque};
     use aster;
     use ir::context::{BindgenContext, ItemId};
     use ir::function::FunctionSig;
@@ -2925,20 +3107,20 @@ mod utils {
     pub fn build_templated_path(item: &Item,
                                 ctx: &BindgenContext,
                                 template_params: Vec<ItemId>)
-                                -> P<ast::Ty> {
+                                -> error::Result<P<ast::Ty>> {
         let path = item.namespace_aware_canonical_path(ctx);
         let builder = aster::AstBuilder::new().ty().path();
 
         let template_params = template_params.iter()
-            .map(|param| param.to_rust_ty(ctx))
-            .collect::<Vec<_>>();
+            .map(|param| param.try_to_rust_ty(ctx, &()))
+            .collect::<error::Result<Vec<_>>>()?;
 
         // XXX: I suck at aster.
         if path.len() == 1 {
-            return builder.segment(&path[0])
-                .with_tys(template_params)
-                .build()
-                .build();
+            return Ok(builder.segment(&path[0])
+                       .with_tys(template_params)
+                       .build()
+                       .build());
         }
 
         let mut builder = builder.id(&path[0]);
@@ -2954,7 +3136,7 @@ mod utils {
             }
         }
 
-        builder.build()
+        Ok(builder.build())
     }
 
     fn primitive_ty(ctx: &BindgenContext, name: &str) -> P<ast::Ty> {
@@ -2980,7 +3162,9 @@ mod utils {
 
             "uintptr_t" | "size_t" => primitive_ty(ctx, "usize"),
 
-            "intptr_t" | "ptrdiff_t" | "ssize_t" => primitive_ty(ctx, "isize"),
+            "intptr_t" | "ptrdiff_t" | "ssize_t" => {
+                primitive_ty(ctx, "isize")
+            }
             _ => return None,
         })
     }
@@ -2988,15 +3172,14 @@ mod utils {
     pub fn rust_fndecl_from_signature(ctx: &BindgenContext,
                                       sig: &Item)
                                       -> P<ast::FnDecl> {
-        use codegen::ToRustTy;
-
         let signature = sig.kind().expect_type().canonical_type(ctx);
         let signature = match *signature.kind() {
             TypeKind::Function(ref sig) => sig,
             _ => panic!("How?"),
         };
 
-        let decl_ty = signature.to_rust_ty(ctx, sig);
+        let decl_ty = signature.try_to_rust_ty(ctx, &())
+            .expect("function signature to Rust type conversion is infallible");
         match decl_ty.unwrap().node {
             ast::TyKind::BareFn(bare_fn) => bare_fn.unwrap().decl,
             _ => panic!("How did this happen exactly?"),
@@ -3010,7 +3193,7 @@ mod utils {
         if let TypeKind::Void = *return_item.kind().expect_type().kind() {
             ast::FunctionRetTy::Default(ctx.span())
         } else {
-            ast::FunctionRetTy::Ty(return_item.to_rust_ty(ctx))
+            ast::FunctionRetTy::Ty(return_item.to_rust_ty_or_opaque(ctx, &()))
         }
     }
 
@@ -3033,7 +3216,8 @@ mod utils {
             // [1]: http://c0x.coding-guidelines.com/6.7.5.3.html
             let arg_ty = match *arg_ty.canonical_type(ctx).kind() {
                 TypeKind::Array(t, _) => {
-                    t.to_rust_ty(ctx).to_ptr(ctx.resolve_type(t).is_const(), ctx.span())
+                    t.to_rust_ty_or_opaque(ctx, &())
+                        .to_ptr(ctx.resolve_type(t).is_const(), ctx.span())
                 },
                 TypeKind::Pointer(inner) => {
                     let inner = ctx.resolve_item(inner);
@@ -3041,11 +3225,11 @@ mod utils {
                     if let TypeKind::ObjCInterface(_) = *inner_ty.canonical_type(ctx).kind() {
                         quote_ty!(ctx.ext_cx(), id)
                     } else {
-                        arg_item.to_rust_ty(ctx)
+                        arg_item.to_rust_ty_or_opaque(ctx, &())
                     }
                 },
                 _ => {
-                    arg_item.to_rust_ty(ctx)
+                    arg_item.to_rust_ty_or_opaque(ctx, &())
                 }
             };
 
