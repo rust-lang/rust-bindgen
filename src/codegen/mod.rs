@@ -753,6 +753,7 @@ impl<'a> Bitfield<'a> {
 
     fn codegen_fields(self,
                       ctx: &BindgenContext,
+                      parent: &CompInfo,
                       fields: &mut Vec<ast::StructField>,
                       methods: &mut Vec<ast::ImplItem>)
                       -> Layout {
@@ -790,6 +791,7 @@ impl<'a> Bitfield<'a> {
                 // We've finished a physical field, so flush it and its bitfields.
                 field_size_in_bits = align_to(field_size_in_bits, field_align);
                 fields.push(flush_bitfields(ctx,
+                                            parent,
                                             field_size_in_bits,
                                             last_field_align,
                                             &last_field_name,
@@ -831,6 +833,7 @@ impl<'a> Bitfield<'a> {
         if field_size_in_bits != 0 {
             // Flush the last physical field and its bitfields.
             fields.push(flush_bitfields(ctx,
+                                        parent,
                                         field_size_in_bits,
                                         last_field_align,
                                         &last_field_name,
@@ -842,12 +845,59 @@ impl<'a> Bitfield<'a> {
     }
 }
 
+fn parent_has_method(ctx: &BindgenContext,
+                     parent: &CompInfo,
+                     name: &str)
+                     -> bool {
+    parent.methods().iter().any(|method| {
+        let method_name = match *ctx.resolve_item(method.signature()).kind() {
+            ItemKind::Function(ref func) => func.name(),
+            ref otherwise => panic!("a method's signature should always be a \
+                                     item of kind ItemKind::Function, found: \
+                                     {:?}",
+                                    otherwise),
+        };
+
+        method_name == name || ctx.rust_mangle(&method_name) == name
+    })
+}
+
+fn bitfield_getter_name(ctx: &BindgenContext,
+                        parent: &CompInfo,
+                        bitfield_name: &str)
+                        -> ast::Ident {
+    let name = ctx.rust_mangle(bitfield_name);
+
+    if parent_has_method(ctx, parent, &name) {
+        let mut name = name.to_string();
+        name.push_str("_bindgen_bitfield");
+        return ctx.ext_cx().ident_of(&name);
+    }
+
+    ctx.ext_cx().ident_of(&name)
+}
+
+fn bitfield_setter_name(ctx: &BindgenContext,
+                        parent: &CompInfo,
+                        bitfield_name: &str)
+                        -> ast::Ident {
+    let setter = format!("set_{}", bitfield_name);
+    let mut setter = ctx.rust_mangle(&setter).to_string();
+
+    if parent_has_method(ctx, parent, &setter) {
+        setter.push_str("_bindgen_bitfield");
+    }
+
+    ctx.ext_cx().ident_of(&setter)
+}
+
 /// A physical field (which is a word or byte or ...) has many logical bitfields
 /// contained within it, but not all bitfields are in the same physical field of
 /// a struct. This function creates a single physical field and flushes all the
 /// accessors for the logical `bitfields` within that physical field to the
 /// outgoing `methods`.
 fn flush_bitfields<'a, I>(ctx: &BindgenContext,
+                          parent: &CompInfo,
                           field_size_in_bits: usize,
                           field_align: usize,
                           field_name: &str,
@@ -867,9 +917,8 @@ fn flush_bitfields<'a, I>(ctx: &BindgenContext,
 
     for (name, offset, width, bitfield_ty, bitfield_layout) in bitfields {
         let prefix = ctx.trait_prefix();
-        let getter_name = ctx.rust_ident(name);
-        let setter_name = ctx.ext_cx()
-            .ident_of(&format!("set_{}", &name));
+        let getter_name = bitfield_getter_name(ctx, parent, name);
+        let setter_name = bitfield_setter_name(ctx, parent, name);
         let field_ident = ctx.ext_cx().ident_of(field_name);
 
         let field_int_ty = match field_layout.size {
@@ -1184,7 +1233,7 @@ impl CodeGenerator for CompInfo {
                     mem::replace(&mut current_bitfield_fields, vec![]);
                 let bitfield_layout = Bitfield::new(&mut bitfield_count,
                                                     bitfield_fields)
-                    .codegen_fields(ctx, &mut fields, &mut methods);
+                    .codegen_fields(ctx, self, &mut fields, &mut methods);
                 struct_layout.saw_bitfield_batch(bitfield_layout);
 
                 current_bitfield_width = None;
@@ -1339,7 +1388,7 @@ impl CodeGenerator for CompInfo {
                                                vec![]);
             let bitfield_layout = Bitfield::new(&mut bitfield_count,
                                                 bitfield_fields)
-                .codegen_fields(ctx, &mut fields, &mut methods);
+                .codegen_fields(ctx, self, &mut fields, &mut methods);
             struct_layout.saw_bitfield_batch(bitfield_layout);
         }
         debug_assert!(current_bitfield_fields.is_empty());
