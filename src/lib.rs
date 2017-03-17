@@ -63,7 +63,7 @@ mod parse;
 mod regex_set;
 mod uses;
 
-pub mod chooser;
+pub mod callbacks;
 
 #[cfg(rustfmt)]
 mod codegen;
@@ -445,10 +445,10 @@ impl Builder {
         self
     }
 
-    /// Allows configuring types in different situations, see the `TypeChooser`
+    /// Allows configuring types in different situations, see the `ParseCallbacks`
     /// documentation.
-    pub fn type_chooser(mut self, cb: Box<chooser::TypeChooser>) -> Self {
-        self.options.type_chooser = Some(cb);
+    pub fn parse_callbacks(mut self, cb: Box<callbacks::ParseCallbacks>) -> Self {
+        self.options.parse_callbacks = Some(cb);
         self
     }
 
@@ -567,9 +567,9 @@ pub struct BindgenOptions {
     /// of all types defined therein. See the `uses` module for more.
     pub dummy_uses: Option<String>,
 
-    /// A user-provided type chooser to allow customizing different kinds of
+    /// A user-provided visitor to allow customizing different kinds of
     /// situations.
-    pub type_chooser: Option<Box<chooser::TypeChooser>>,
+    pub parse_callbacks: Option<Box<callbacks::ParseCallbacks>>,
 
     /// Which kind of items should we generate? By default, we'll generate all
     /// of them.
@@ -650,7 +650,7 @@ impl Default for BindgenOptions {
             clang_args: vec![],
             input_header: None,
             dummy_uses: None,
-            type_chooser: None,
+            parse_callbacks: None,
             codegen_config: CodegenConfig::all(),
             conservative_inline_namespaces: false,
             generate_comments: true,

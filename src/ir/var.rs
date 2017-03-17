@@ -116,6 +116,11 @@ impl ClangSubItemParser for Var {
         use cexpr::literal::CChar;
         match cursor.kind() {
             CXCursor_MacroDefinition => {
+
+                if let Some(visitor) = ctx.parse_callbacks() {
+                    visitor.parsed_macro(&cursor.spelling());
+                }
+
                 let value = parse_macro(ctx, &cursor, ctx.translation_unit());
 
                 let (id, value) = match value {
@@ -170,7 +175,7 @@ impl ClangSubItemParser for Var {
                         (TypeKind::Pointer(char_ty), VarType::String(val))
                     }
                     EvalResult::Int(Wrapping(value)) => {
-                        let kind = ctx.type_chooser()
+                        let kind = ctx.parse_callbacks()
                             .and_then(|c| c.int_macro(&name, value))
                             .unwrap_or_else(|| if value < 0 {
                                 if value < i32::min_value() as i64 {

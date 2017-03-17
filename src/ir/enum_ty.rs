@@ -91,7 +91,7 @@ impl Enum {
                 };
                 if let Some(val) = value {
                     let name = cursor.spelling();
-                    let custom_behavior = ctx.type_chooser()
+                    let custom_behavior = ctx.parse_callbacks()
                         .and_then(|t| {
                             t.enum_variant_behavior(type_name, &name, val)
                         })

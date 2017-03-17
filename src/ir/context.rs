@@ -11,7 +11,7 @@ use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, TemplateDeclaration, Type, TypeKind};
 use BindgenOptions;
 use cexpr;
-use chooser::TypeChooser;
+use callbacks::ParseCallbacks;
 use clang::{self, Cursor};
 use clang_sys;
 use parse::ClangItemParser;
@@ -233,9 +233,9 @@ impl<'ctx> BindgenContext<'ctx> {
             .expect("should have been parsing a type, if we finished parsing a type")
     }
 
-    /// Get the user-provided type chooser by reference, if any.
-    pub fn type_chooser(&self) -> Option<&TypeChooser> {
-        self.options().type_chooser.as_ref().map(|t| &**t)
+    /// Get the user-provided callbacks by reference, if any.
+    pub fn parse_callbacks(&self) -> Option<&ParseCallbacks> {
+        self.options().parse_callbacks.as_ref().map(|t| &**t)
     }
 
     /// Define a new item.

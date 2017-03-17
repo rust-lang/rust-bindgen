@@ -7,7 +7,11 @@ use std::panic::UnwindSafe;
 
 /// A trait to allow configuring different kinds of types in different
 /// situations.
-pub trait TypeChooser: fmt::Debug + UnwindSafe {
+pub trait ParseCallbacks: fmt::Debug + UnwindSafe {
+
+    /// This function will be run on every macro that is identified
+    fn parsed_macro(&self, _name: &str) {}
+
     /// The integer kind an integer macro should have, given a name and the
     /// value of that macro, or `None` if you want the default to be chosen.
     fn int_macro(&self, _name: &str, _value: i64) -> Option<IntKind> {
