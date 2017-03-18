@@ -1,5 +1,7 @@
 #pragma once
 
+#define TESTMACRO
+
 class Test {
   int m_int;
   double m_double;
