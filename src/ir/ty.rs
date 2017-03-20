@@ -993,7 +993,10 @@ impl Type {
                       (ty.template_args().is_some() &&
                        ty_kind != CXType_Typedef) {
             // This is a template instantiation.
-            let inst = TemplateInstantiation::from_ty(&ty, ctx);
+            let inst = match TemplateInstantiation::from_ty(&ty, ctx) {
+                Some(inst) => inst,
+                None => return Err(ParseError::Continue),
+            };
             TypeKind::TemplateInstantiation(inst)
         } else {
             match ty_kind {

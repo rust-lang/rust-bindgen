@@ -88,7 +88,7 @@ impl TemplateInstantiation {
     /// Parse a `TemplateInstantiation` from a clang `Type`.
     pub fn from_ty(ty: &clang::Type,
                    ctx: &mut BindgenContext)
-                   -> TemplateInstantiation {
+                   -> Option<TemplateInstantiation> {
         use clang_sys::*;
 
         let template_args = ty.template_args()
@@ -99,6 +99,10 @@ impl TemplateInstantiation {
                     })
                     .collect()
             });
+
+        if ty.declaration().is_builtin() {
+            return None;
+        }
 
         let definition = ty.declaration()
             .specialized()
@@ -124,7 +128,7 @@ impl TemplateInstantiation {
         let template_definition =
             Item::from_ty_or_ref(definition.cur_type(), definition, None, ctx);
 
-        TemplateInstantiation::new(template_definition, template_args)
+        Some(TemplateInstantiation::new(template_definition, template_args))
     }
 
     /// Does this instantiation have a vtable?
