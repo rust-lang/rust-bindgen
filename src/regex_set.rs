@@ -8,8 +8,8 @@ use regex::RegexSet as RxSet;
 /// A dynamic set of regular expressions.
 #[derive(Debug)]
 pub struct RegexSet {
-    items: Vec<String>,
-    set: Option<RxSet>,
+    pub items: Vec<String>,
+    pub set: Option<RxSet>,
 }
 
 impl RegexSet {

@@ -168,6 +168,198 @@ pub fn builder() -> Builder {
 }
 
 impl Builder {
+    /// Configure and generate Rust bindings for a C/C++ header.
+    ///
+    /// This is the main entry point to the library.
+    ///
+    /// ```ignore
+    /// use bindgen::builder;
+    ///
+    /// // Configure and generate bindings.
+    /// let mut builder_1 = builder();
+    ///
+    /// // generate the command line flags use for creating `builder_1`
+    /// Builder::command_line_flags(&mut builder_1)
+    /// ```
+    pub fn command_line_flags(builder_ref : &mut Builder) -> Vec<String> {
+        let mut output_vector:Vec<String> = Vec::new();
+
+        if let Some(ref header) = builder_ref.options.input_header{
+            output_vector.push("header".into());
+            output_vector.push(header.clone().into());
+        }
+        
+               
+        if builder_ref.options.bitfield_enums.items.len() > 0 {
+            output_vector.push("bitfield-enum".into());
+            output_vector.extend(builder_ref.options.bitfield_enums.items.iter().cloned());
+        }
+
+        if builder_ref.options.constified_enums.items.len() > 0 {
+            output_vector.push("constified-enum".into());
+            output_vector.extend(builder_ref.options.constified_enums.items.iter().cloned());
+        }
+
+        if builder_ref.options.hidden_types.items.len() > 0 {
+            output_vector.push("blacklist-type".into());
+            output_vector.extend(builder_ref.options.hidden_types.items.iter().cloned());
+        }
+
+        if builder_ref.options.derive_debug == false {    
+            output_vector.push("no-derive-debug".into());
+        }
+        
+        if builder_ref.options.derive_default == false {   
+            output_vector.push("no-derive-default".into());
+        }else{
+            output_vector.push("with-derive-default".into());
+        }
+
+        if builder_ref.options.generate_comments == false{    
+            output_vector.push("no-doc-comments".into());
+        }
+        
+        if builder_ref.options.whitelist_recursively == false{
+            output_vector.push("no-recursive-whitelist".into());
+        }
+        
+        if builder_ref.options.objc_extern_crate == true{
+            output_vector.push("objc-extern-crate".into());
+        }
+        // unused in options.rs
+        //output_vector.push("distrust-clang-mangling");
+            
+        if builder_ref.options.builtins == true{
+            output_vector.push("builtins".into());
+        }
+
+        
+        if let Some(ref prefix) = builder_ref.options.ctypes_prefix{
+            output_vector.push("ctypes-prefix".into());
+            output_vector.push(prefix.clone().into());
+        }
+
+        if builder_ref.options.clang_args.len() > 0 {
+            output_vector.push("clang-args".into());
+            output_vector.extend(builder_ref.options.clang_args.iter().cloned());
+        }
+
+        if let Some(ref dummy) = builder_ref.options.dummy_uses{   
+            output_vector.push("dummy-uses".into());
+            output_vector.push(dummy.clone().into());
+        }
+
+        if builder_ref.options.emit_ast == true{
+            output_vector.push("emit-clang-ast".into());
+        }
+
+        if builder_ref.options.emit_ir == true{
+            output_vector.push("emit-ir".into());
+        }
+        if let Some(ref graph) = builder_ref.options.emit_ir_graphviz{   
+            output_vector.push("emit-ir-graphviz".into());
+            output_vector.push(graph.clone().into())
+        }
+        if builder_ref.options.enable_cxx_namespaces == true{
+            output_vector.push("enable-cxx-namespaces".into());
+        }
+        if builder_ref.options.disable_name_namespacing == true {
+            output_vector.push("disable-name-namespacing".into());
+        }
+        
+        if builder_ref.options.links.len() > 0 {
+            output_vector.push("framework".into());
+            output_vector.extend(builder_ref.options.links.iter().map(|&(ref a, _)| a).cloned());
+        }
+
+        if builder_ref.options.codegen_config.functions == false {
+            output_vector.push("ignore-functions".into());
+        }
+        
+        output_vector.push("generate".into());
+        
+        if builder_ref.options.codegen_config.functions == true {
+            output_vector.push("function".into());
+        }
+        if builder_ref.options.codegen_config.types == true {
+            output_vector.push("types".into());
+        }
+        if builder_ref.options.codegen_config.vars == true{
+            output_vector.push("vars".into());
+        }
+        
+        if builder_ref.options.codegen_config.methods == true{
+            output_vector.push("methods".into());
+        }else{   
+            output_vector.push("ignore-methods".into());
+        }    
+        
+        if builder_ref.options.links.len() > 0 {
+            output_vector.push("dynamic".into());
+            output_vector.extend(builder_ref.options.links.iter().map(|&(ref a, _)| a).cloned());
+        }
+
+
+        if builder_ref.options.convert_floats == false{
+            output_vector.push("no-convert-floats".into());
+        }
+        
+        
+        if builder_ref.options.prepend_enum_name == false {
+            output_vector.push("no-prepend-enum-name".into());
+        }
+        
+        if builder_ref.options.unstable_rust == false {
+            output_vector.push("no-unstable-rust".into());
+        }
+            
+        if builder_ref.options.opaque_types.items.len() > 0 {
+            output_vector.push("opaque-type".into());
+            output_vector.extend(builder_ref.options.opaque_types.items.iter().cloned());
+        }
+        // no function related to output in options.rs
+        // output_vector.push("output");
+            
+        if builder_ref.options.raw_lines.len() > 0 { 
+            output_vector.push("raw-line".into());
+            output_vector.extend(builder_ref.options.raw_lines.iter().cloned());
+        }
+
+        if builder_ref.options.links.len() > 0 {
+            output_vector.push("static".into());
+            output_vector.extend(builder_ref.options.links.iter().map(|&(ref a, _)| a).cloned());
+        }
+
+        if builder_ref.options.use_core == true{
+            output_vector.push("use-core".into());
+        }
+        
+        if builder_ref.options.conservative_inline_namespaces == true{
+            output_vector.push("conservative-inline-namespaces".into());
+        }
+        // unused in options.rs
+        // output_vector.push("use-msvc-mangling");
+
+
+        if builder_ref.options.whitelisted_functions.items.len() > 0 {
+            output_vector.push("whitelist-function".into());
+            output_vector.extend(builder_ref.options.whitelisted_functions.items.iter().cloned());
+        }
+
+        if builder_ref.options.whitelisted_types.items.len() > 0{ 
+            output_vector.push("whitelist-type".into());
+            output_vector.extend(builder_ref.options.whitelisted_types.items.iter().cloned());
+        }    
+        if builder_ref.options.whitelisted_vars.items.len() > 0{
+            output_vector.push("whitelist-var".into());
+            output_vector.extend(builder_ref.options.whitelisted_vars.items.iter().cloned());
+        }
+        // output_vector.push("verbose");
+
+        
+        output_vector
+    }
+
     /// Set the input C/C++ header.
     pub fn header<T: Into<String>>(mut self, header: T) -> Builder {
         let header = header.into();
@@ -927,4 +1119,42 @@ pub fn clang_version() -> ClangVersion {
         parsed: None,
         full: raw_v.clone(),
     }
+}
+
+/// Test command_line_flag function.
+#[test]
+fn commandline_flag_unit_test_function()  {
+        
+    let mut bindings = ::builder();
+    let test_cases = vec!["no-derive-default",
+                          "generate",
+                          "function",
+                          "types",
+                          "vars", 
+                          "methods"].iter()
+                                    .map(|&x| x.into())
+                                    .collect::<Vec<String>>();
+
+    let command_line_flags = ::Builder::command_line_flags(&mut bindings);
+
+    assert!( test_cases.len() == command_line_flags.len() &&
+             test_cases.iter().all(|x| command_line_flags.contains(x)));
+
+    /////////////////////////////////////////////////////////////////
+    let mut bindings = ::builder().use_core();
+    let test_cases = vec!["no-derive-default",
+                          "generate",
+                          "function",
+                          "types",
+                          "vars", 
+                          "methods",
+                          "use-core"].iter()
+                                    .map(|&x| x.into())
+                                    .collect::<Vec<String>>();
+    let command_line_flags = ::Builder::command_line_flags(&mut bindings);
+
+    assert!( test_cases.len() == command_line_flags.len() &&
+             test_cases.iter().all(|x| command_line_flags.contains(x)));
+    ///////////////////////////////////////////////////////////////////
+
 }
