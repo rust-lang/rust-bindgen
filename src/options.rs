@@ -177,6 +177,9 @@ pub fn builder_from_flags<I>
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("generate-inline-functions")
+                .long("generate-inline-functions")
+                .help("Whether inline functions should be generated."),
             Arg::with_name("whitelist-type")
                 .long("whitelist-type")
                 .help("Whitelist the type. Other non-whitelisted types will \
@@ -355,6 +358,10 @@ pub fn builder_from_flags<I>
 
     if matches.is_present("conservative-inline-namespaces") {
         builder = builder.conservative_inline_namespaces();
+    }
+
+    if matches.is_present("generate-inline-functions") {
+        builder = builder.generate_inline_functions(true);
     }
 
     if let Some(whitelist) = matches.values_of("whitelist-function") {

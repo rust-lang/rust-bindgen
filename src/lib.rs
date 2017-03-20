@@ -415,6 +415,16 @@ impl Builder {
         self
     }
 
+    /// Whether inline functions should be generated or not.
+    ///
+    /// Note that they will usually not work. However you can use
+    /// `-fkeep-inline-functions` or `-fno-inline-functions` if you are
+    /// responsible of compiling the library to make them callable.
+    pub fn generate_inline_functions(mut self, doit: bool) -> Self {
+        self.options.generate_inline_functions = doit;
+        self
+    }
+
     /// Ignore functions.
     pub fn ignore_functions(mut self) -> Builder {
         self.options.codegen_config.functions = false;
@@ -584,6 +594,9 @@ pub struct BindgenOptions {
     /// documentation for more details.
     pub generate_comments: bool,
 
+    /// Whether to generate inline functions. Defaults to false.
+    pub generate_inline_functions: bool,
+
     /// Wether to whitelist types recursively. Defaults to true.
     pub whitelist_recursively: bool,
 
@@ -654,6 +667,7 @@ impl Default for BindgenOptions {
             codegen_config: CodegenConfig::all(),
             conservative_inline_namespaces: false,
             generate_comments: true,
+            generate_inline_functions: false,
             whitelist_recursively: true,
             objc_extern_crate: false,
             enable_mangling: true,
