@@ -23,8 +23,7 @@ impl Default for Derived {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-pub struct Base__bindgen_vtable {
-}
+pub struct Base__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct Base {

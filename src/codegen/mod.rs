@@ -712,7 +712,9 @@ impl<'a> CodeGenerator for Vtable<'a> {
             .item()
             .pub_()
             .with_attrs(attributes)
-            .struct_(self.canonical_name(ctx))
+            .tuple_struct(self.canonical_name(ctx))
+            .field()
+            .build_ty(helpers::ast_ty::raw_type(ctx, "c_void"))
             .build();
         result.push(vtable);
     }
