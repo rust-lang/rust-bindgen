@@ -10,9 +10,7 @@ pub const whatever_else: _bindgen_ty_1 = _bindgen_ty_1::whatever_else;
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum _bindgen_ty_1 { match_ = 0, whatever_else = 1, }
 #[repr(C)]
-#[derive(Default)]
-pub struct C__bindgen_vtable {
-}
+pub struct C__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct C {

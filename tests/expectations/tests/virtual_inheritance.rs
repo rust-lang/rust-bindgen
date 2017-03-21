@@ -25,9 +25,7 @@ impl Clone for A {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Default)]
-pub struct B__bindgen_vtable {
-}
+pub struct B__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct B {
@@ -53,9 +51,7 @@ impl Default for B {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Default)]
-pub struct C__bindgen_vtable {
-}
+pub struct C__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct C {

@@ -6,9 +6,7 @@
 
 pub const NSID_LENGTH: ::std::os::raw::c_uint = 10;
 #[repr(C)]
-#[derive(Default)]
-pub struct nsID__bindgen_vtable {
-}
+pub struct nsID__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct nsID {

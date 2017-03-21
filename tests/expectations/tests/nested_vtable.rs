@@ -5,9 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Default)]
-pub struct nsISupports__bindgen_vtable {
-}
+pub struct nsISupports__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct nsISupports {

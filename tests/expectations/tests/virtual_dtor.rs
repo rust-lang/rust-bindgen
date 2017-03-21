@@ -5,9 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Default)]
-pub struct nsSlots__bindgen_vtable {
-}
+pub struct nsSlots__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C)]
 #[derive(Debug)]
 pub struct nsSlots {

@@ -706,17 +706,15 @@ impl<'a> CodeGenerator for Vtable<'a> {
         assert_eq!(item.id(), self.item_id);
         // For now, generate an empty struct, later we should generate function
         // pointers and whatnot.
-        let mut attributes = vec![attributes::repr("C")];
-
-        if ctx.options().derive_default {
-            attributes.push(attributes::derives(&["Default"]))
-        }
+        let attributes = vec![attributes::repr("C")];
 
         let vtable = aster::AstBuilder::new()
             .item()
             .pub_()
             .with_attrs(attributes)
-            .struct_(self.canonical_name(ctx))
+            .tuple_struct(self.canonical_name(ctx))
+            .field()
+            .build_ty(helpers::ast_ty::raw_type(ctx, "c_void"))
             .build();
         result.push(vtable);
     }
