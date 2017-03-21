@@ -5,7 +5,6 @@
 
 
 #[repr(C)]
-#[derive(Default)]
 pub struct nsISupports__bindgen_vtable {
 }
 #[repr(C)]

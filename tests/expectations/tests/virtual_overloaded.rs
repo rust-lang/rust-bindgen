@@ -5,7 +5,6 @@
 
 
 #[repr(C)]
-#[derive(Default)]
 pub struct C__bindgen_vtable {
 }
 #[repr(C)]
