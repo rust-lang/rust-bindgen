@@ -54,6 +54,8 @@ impl Enum {
                    ctx: &mut BindgenContext)
                    -> Result<Self, ParseError> {
         use clang_sys::*;
+        debug!("Enum::from_ty {:?}", ty);
+
         if ty.kind() != CXType_Enum {
             return Err(ParseError::Continue);
         }
@@ -82,7 +84,8 @@ impl Enum {
         };
         let type_name = type_name.as_ref().map(String::as_str);
 
-        declaration.visit(|cursor| {
+        let definition = declaration.definition().unwrap_or(declaration);
+        definition.visit(|cursor| {
             if cursor.kind() == CXCursor_EnumConstantDecl {
                 let value = if is_signed {
                     cursor.enum_val_signed().map(EnumVariantValue::Signed)
@@ -99,7 +102,7 @@ impl Enum {
                             Annotations::new(&cursor)
                                 .and_then(|anno| if anno.hide() {
                                     Some(EnumVariantCustomBehavior::Hide)
-                                } else if 
+                                } else if
                                     anno.constify_enum_variant() {
                                     Some(EnumVariantCustomBehavior::Constify)
                                 } else {
