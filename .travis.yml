@@ -35,7 +35,7 @@ cache:
 before_install: . ./ci/before_install.sh
 
 script:
-  - ./ci/assert-rustfmt.sh
+  # - ./ci/assert-rustfmt.sh
   - BINDGEN_FEATURES="$BINDGEN_FEATURES" ./ci/assert-docs.sh
   - BINDGEN_FEATURES="$BINDGEN_FEATURES" ./ci/test.sh
 
