@@ -182,7 +182,7 @@ impl<'ctx> BindgenContext<'ctx> {
             clang::TranslationUnit::parse(&index,
                                           "",
                                           &options.clang_args,
-                                          &[],
+                                          &options.input_unsaved_files,
                                           parse_options)
                 .expect("TranslationUnit::parse failed");
 

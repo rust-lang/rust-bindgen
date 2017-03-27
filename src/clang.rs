@@ -1409,7 +1409,9 @@ impl Drop for Diagnostic {
 /// A file which has not been saved to disk.
 pub struct UnsavedFile {
     x: CXUnsavedFile,
-    name: CString,
+    /// The name of the unsaved file. Kept here to avoid leaving dangling pointers in
+    /// `CXUnsavedFile`.
+    pub name: CString,
     contents: CString,
 }
 
@@ -1428,6 +1430,15 @@ impl UnsavedFile {
             name: name,
             contents: contents,
         }
+    }
+}
+
+impl fmt::Debug for UnsavedFile {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        write!(fmt,
+               "UnsavedFile(name: {:?}, contents: {:?})",
+               self.name,
+               self.contents)
     }
 }
 
