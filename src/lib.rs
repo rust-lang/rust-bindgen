@@ -367,6 +367,14 @@ impl Builder {
         self
     }
 
+    /// Add `contents` as an input C/C++ header named `name`.
+    ///
+    /// The file `name` will be added to the clang arguments.
+    pub fn header_contents(mut self, name: &str, contents: &str) -> Builder {
+        self.options.input_unsaved_files.push(clang::UnsavedFile::new(name, contents));
+        self
+    }
+
     /// Set the output graphviz file.
     pub fn emit_ir_graphviz<T: Into<String>>(mut self, path: T) -> Builder {
         let path = path.into();
@@ -765,6 +773,9 @@ pub struct BindgenOptions {
     /// The input header file.
     pub input_header: Option<String>,
 
+    /// Unsaved files for input.
+    pub input_unsaved_files: Vec<clang::UnsavedFile>,
+
     /// Generate a dummy C/C++ file that includes the header and has dummy uses
     /// of all types defined therein. See the `uses` module for more.
     pub dummy_uses: Option<String>,
@@ -854,6 +865,7 @@ impl Default for BindgenOptions {
             raw_lines: vec![],
             clang_args: vec![],
             input_header: None,
+            input_unsaved_files: vec![],
             dummy_uses: None,
             parse_callbacks: None,
             codegen_config: CodegenConfig::all(),
@@ -944,6 +956,10 @@ impl<'ctx> Bindings<'ctx> {
 
         if let Some(h) = options.input_header.as_ref() {
             options.clang_args.push(h.clone())
+        }
+
+        for f in options.input_unsaved_files.iter() {
+            options.clang_args.push(f.name.to_str().unwrap().to_owned())
         }
 
         let mut context = BindgenContext::new(options);
