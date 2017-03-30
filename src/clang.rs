@@ -1482,9 +1482,6 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
     }
 
     fn print_cursor<S: AsRef<str>>(depth: isize, prefix: S, c: &Cursor) {
-        if c.is_builtin() {
-            return;
-        }
         let prefix = prefix.as_ref();
         print_indent(depth,
                      format!(" {}kind = {}", prefix, kind_to_str(c.kind())));

@@ -1088,8 +1088,17 @@ fn parse(context: &mut BindgenContext) -> Result<(), ()> {
     }
 
     let cursor = context.translation_unit().cursor();
+
     if context.options().emit_ast {
-        cursor.visit(|cur| clang::ast_dump(&cur, 0));
+
+        fn dump_if_not_builtin(cur: &clang::Cursor) -> CXChildVisitResult {
+            if !cur.is_builtin() {
+                clang::ast_dump(&cur, 0)
+            } else {
+                CXChildVisit_Continue
+            }
+        }
+        cursor.visit(|cur| dump_if_not_builtin(&cur));
     }
 
     let root = context.root_module();
