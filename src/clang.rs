@@ -600,6 +600,17 @@ impl Cursor {
     }
 }
 
+/// Checks whether the name looks like an identifier, i.e. is alphanumeric
+/// (including '_') and does not start with a digit.
+pub fn is_valid_identifier(name: &str) -> bool {
+    let mut chars = name.chars();
+    let first_valid = chars.next()
+        .map(|c| c.is_alphabetic() || c == '_')
+        .unwrap_or(false);
+
+    first_valid && chars.all(|c| c.is_alphanumeric() || c == '_')
+}
+
 extern "C" fn visit_children<Visitor>(cur: CXCursor,
                                       _parent: CXCursor,
                                       data: CXClientData)
@@ -729,7 +740,16 @@ impl Type {
 
     /// Get a raw display name for this type.
     pub fn spelling(&self) -> String {
-        unsafe { cxstring_into_string(clang_getTypeSpelling(self.x)) }
+        let s = unsafe { cxstring_into_string(clang_getTypeSpelling(self.x)) };
+        // Clang 5.0 introduced changes in the spelling API so it returned the
+        // full qualified name. Let's undo that here.
+        if s.split("::").all(|s| is_valid_identifier(s)) {
+            if let Some(s) = s.split("::").last() {
+                return s.to_owned();
+            }
+        }
+
+        s
     }
 
     /// Is this type const qualified?
