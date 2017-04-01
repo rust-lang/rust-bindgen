@@ -220,13 +220,14 @@ impl FunctionSig {
 
         let is_method = cursor.kind() == CXCursor_CXXMethod;
         let is_constructor = cursor.kind() == CXCursor_Constructor;
-        if (is_constructor || is_method) &&
+        let is_destructor = cursor.kind() == CXCursor_Destructor;
+        if (is_constructor || is_destructor || is_method) &&
            cursor.lexical_parent() != cursor.semantic_parent() {
             // Only parse constructors once.
             return Err(ParseError::Continue);
         }
 
-        if is_method || is_constructor {
+        if is_method || is_constructor || is_destructor {
             let is_const = is_method && cursor.method_is_const();
             let is_virtual = is_method && cursor.method_is_virtual();
             let is_static = is_method && cursor.method_is_static();
@@ -292,9 +293,9 @@ impl ClangSubItemParser for Function {
              -> Result<ParseResult<Self>, ParseError> {
         use clang_sys::*;
         match cursor.kind() {
-            // FIXME(emilio): Generate destructors properly.
             CXCursor_FunctionDecl |
             CXCursor_Constructor |
+            CXCursor_Destructor |
             CXCursor_CXXMethod => {}
             _ => return Err(ParseError::Continue),
         };
@@ -325,7 +326,16 @@ impl ClangSubItemParser for Function {
         let sig =
             try!(Item::from_ty(&cursor.cur_type(), cursor, None, context));
 
-        let name = cursor.spelling();
+        let name = match cursor.kind() {
+            CXCursor_Destructor => {
+                let mut name_ = cursor.spelling();
+                // remove the `~`
+                name_.remove(0);
+                name_ + "_destructor"
+            },
+            _ => cursor.spelling(),
+        };
+
         assert!(!name.is_empty(), "Empty function name?");
 
         let mut mangled_name = cursor_mangling(context, &cursor);

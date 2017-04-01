@@ -1597,6 +1597,20 @@ impl CodeGenerator for CompInfo {
                                         self);
                 }
             }
+
+            if ctx.options().codegen_config.destructor {
+                if let Some(destructor) = *self.destructor() {
+                    Method::new(MethodKind::Destructor,
+                                destructor,
+                                false)
+                        .codegen_method(ctx,
+                                        &mut methods,
+                                        &mut method_names,
+                                        result,
+                                        whitelisted_items,
+                                        self);
+                }
+            }
         }
 
         // NB: We can't use to_rust_ty here since for opaque types this tries to
@@ -1701,6 +1715,7 @@ impl MethodCodegen for Method {
         let signature_item = ctx.resolve_item(function.signature());
         let mut name = match self.kind() {
             MethodKind::Constructor => "new".into(),
+            MethodKind::Destructor => "__bindgen_destructor__".into(),
             _ => function.name().to_owned(),
         };
 
