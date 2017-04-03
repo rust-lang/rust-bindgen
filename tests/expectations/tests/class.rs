@@ -283,14 +283,14 @@ impl Clone for RealAbstractionWithTonsOfMethods {
 }
 impl RealAbstractionWithTonsOfMethods {
     #[inline]
-    pub unsafe fn bar(&self) { RealAbstractionWithTonsOfMethods_bar(&*self) }
+    pub unsafe fn bar(&self) { RealAbstractionWithTonsOfMethods_bar(self) }
     #[inline]
     pub unsafe fn bar1(&mut self) {
-        RealAbstractionWithTonsOfMethods_bar1(&mut *self)
+        RealAbstractionWithTonsOfMethods_bar1(self)
     }
     #[inline]
     pub unsafe fn bar2(&mut self, foo: ::std::os::raw::c_int) {
-        RealAbstractionWithTonsOfMethods_bar2(&mut *self, foo)
+        RealAbstractionWithTonsOfMethods_bar2(self, foo)
     }
     #[inline]
     pub unsafe fn sta() { RealAbstractionWithTonsOfMethods_sta() }

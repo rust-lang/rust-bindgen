@@ -17,13 +17,17 @@ fn bindgen_test_layout_Foo() {
                 "Alignment of " , stringify ! ( Foo ) ));
 }
 extern "C" {
-    #[link_name = "_ZN3Foo4typeEv"]
-    pub fn Foo_type(this: *mut Foo) -> ::std::os::raw::c_int;
+    #[link_name = "_ZN3FooC1Ei"]
+    pub fn Foo_Foo(this: *mut Foo, a: ::std::os::raw::c_int);
 }
 impl Clone for Foo {
     fn clone(&self) -> Self { *self }
 }
 impl Foo {
     #[inline]
-    pub unsafe fn type_(&mut self) -> ::std::os::raw::c_int { Foo_type(self) }
+    pub unsafe fn new(a: ::std::os::raw::c_int) -> Self {
+        let mut __bindgen_tmp = ::std::mem::uninitialized();
+        Foo_Foo(&mut __bindgen_tmp, a);
+        __bindgen_tmp
+    }
 }

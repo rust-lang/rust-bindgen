@@ -1597,6 +1597,24 @@ impl CodeGenerator for CompInfo {
                                         self);
                 }
             }
+
+            if ctx.options().codegen_config.destructors {
+                if let Some((is_virtual, destructor)) = self.destructor() {
+                    let kind = if is_virtual {
+                        MethodKind::VirtualDestructor
+                    } else {
+                        MethodKind::Destructor
+                    };
+
+                    Method::new(kind, destructor, false)
+                        .codegen_method(ctx,
+                                        &mut methods,
+                                        &mut method_names,
+                                        result,
+                                        whitelisted_items,
+                                        self);
+                }
+            }
         }
 
         // NB: We can't use to_rust_ty here since for opaque types this tries to
@@ -1693,6 +1711,7 @@ impl MethodCodegen for Method {
         if self.is_virtual() {
             return; // FIXME
         }
+
         // First of all, output the actual function.
         let function_item = ctx.resolve_item(self.signature());
         function_item.codegen(ctx, result, whitelisted_items, &());
@@ -1701,6 +1720,7 @@ impl MethodCodegen for Method {
         let signature_item = ctx.resolve_item(function.signature());
         let mut name = match self.kind() {
             MethodKind::Constructor => "new".into(),
+            MethodKind::Destructor => "destruct".into(),
             _ => function.name().to_owned(),
         };
 
@@ -1801,11 +1821,7 @@ impl MethodCodegen for Method {
             exprs[0] = quote_expr!(ctx.ext_cx(), &mut __bindgen_tmp);
         } else if !self.is_static() {
             assert!(!exprs.is_empty());
-            exprs[0] = if self.is_const() {
-                quote_expr!(ctx.ext_cx(), &*self)
-            } else {
-                quote_expr!(ctx.ext_cx(), &mut *self)
-            };
+            exprs[0] = quote_expr!(ctx.ext_cx(), self);
         };
 
         let call = aster::expr::ExprBuilder::new()

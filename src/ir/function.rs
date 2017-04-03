@@ -114,6 +114,7 @@ fn get_abi(cc: CXCallingConv) -> Option<abi::Abi> {
 pub fn cursor_mangling(ctx: &BindgenContext,
                        cursor: &clang::Cursor)
                        -> Option<String> {
+    use clang_sys;
     if !ctx.options().enable_mangling {
         return None;
     }
@@ -131,8 +132,38 @@ pub fn cursor_mangling(ctx: &BindgenContext,
     }
 
     // Try to undo backend linkage munging (prepended _, generally)
+    //
+    // TODO(emilio): This is wrong when the target system is not the host
+    // system. See https://github.com/servo/rust-bindgen/issues/593
     if cfg!(target_os = "macos") {
         mangling.remove(0);
+    }
+
+    if cursor.kind() == clang_sys::CXCursor_Destructor {
+        // With old (3.8-) libclang versions, and the Itanium ABI, clang returns
+        // the "destructor group 0" symbol, which means that it'll try to free
+        // memory, which definitely isn't what we want.
+        //
+        // Explicitly force the destructor group 1 symbol.
+        //
+        // See http://refspecs.linuxbase.org/cxxabi-1.83.html#mangling-special
+        // for the reference, and http://stackoverflow.com/a/6614369/1091587 for
+        // a more friendly explanation.
+        //
+        // We don't need to do this for constructors since clang seems to always
+        // have returned the C1 constructor.
+        //
+        // FIXME(emilio): Can a legit symbol in other ABIs end with this string?
+        // I don't think so, but if it can this would become a linker error
+        // anyway, not an invalid free at runtime.
+        //
+        // TODO(emilio, #611): Use cpp_demangle if this becomes nastier with
+        // time.
+        if mangling.ends_with("D0Ev") {
+            let new_len = mangling.len() - 4;
+            mangling.truncate(new_len);
+            mangling.push_str("D1Ev");
+        }
     }
 
     Some(mangling)
@@ -220,13 +251,14 @@ impl FunctionSig {
 
         let is_method = cursor.kind() == CXCursor_CXXMethod;
         let is_constructor = cursor.kind() == CXCursor_Constructor;
-        if (is_constructor || is_method) &&
+        let is_destructor = cursor.kind() == CXCursor_Destructor;
+        if (is_constructor || is_destructor || is_method) &&
            cursor.lexical_parent() != cursor.semantic_parent() {
             // Only parse constructors once.
             return Err(ParseError::Continue);
         }
 
-        if is_method || is_constructor {
+        if is_method || is_constructor || is_destructor {
             let is_const = is_method && cursor.method_is_const();
             let is_virtual = is_method && cursor.method_is_virtual();
             let is_static = is_method && cursor.method_is_static();
@@ -292,9 +324,9 @@ impl ClangSubItemParser for Function {
              -> Result<ParseResult<Self>, ParseError> {
         use clang_sys::*;
         match cursor.kind() {
-            // FIXME(emilio): Generate destructors properly.
             CXCursor_FunctionDecl |
             CXCursor_Constructor |
+            CXCursor_Destructor |
             CXCursor_CXXMethod => {}
             _ => return Err(ParseError::Continue),
         };
@@ -325,8 +357,22 @@ impl ClangSubItemParser for Function {
         let sig =
             try!(Item::from_ty(&cursor.cur_type(), cursor, None, context));
 
-        let name = cursor.spelling();
+        let mut name = cursor.spelling();
         assert!(!name.is_empty(), "Empty function name?");
+
+        if cursor.kind() == CXCursor_Destructor {
+            // Remove the leading `~`. The alternative to this is special-casing
+            // code-generation for destructor functions, which seems less than
+            // ideal.
+            if name.starts_with('~') {
+                name.remove(0);
+            }
+
+            // Add a suffix to avoid colliding with constructors. This would be
+            // technically fine (since we handle duplicated functions/methods),
+            // but seems easy enough to handle it here.
+            name.push_str("_destructor");
+        }
 
         let mut mangled_name = cursor_mangling(context, &cursor);
         if mangled_name.as_ref() == Some(&name) {

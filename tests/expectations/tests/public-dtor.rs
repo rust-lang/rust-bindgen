@@ -16,3 +16,11 @@ fn bindgen_test_layout_cv_String() {
     assert_eq! (::std::mem::align_of::<cv_String>() , 1usize , concat ! (
                 "Alignment of " , stringify ! ( cv_String ) ));
 }
+extern "C" {
+    #[link_name = "_ZN2cv6StringD1Ev"]
+    pub fn cv_String_String_destructor(this: *mut cv_String);
+}
+impl cv_String {
+    #[inline]
+    pub unsafe fn destruct(&mut self) { cv_String_String_destructor(self) }
+}

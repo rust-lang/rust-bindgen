@@ -64,3 +64,11 @@ struct Third {
 };
 
 } // namespace bitfields
+
+struct AutoRestoreBool {
+  bool* m_ptr;
+  bool m_value;
+
+  AutoRestoreBool(bool*);
+  ~AutoRestoreBool();
+};
