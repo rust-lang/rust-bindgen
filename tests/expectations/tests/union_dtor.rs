@@ -59,6 +59,6 @@ extern "C" {
 impl UnionWithDtor {
     #[inline]
     pub unsafe fn destruct(&mut self) {
-        UnionWithDtor_UnionWithDtor_destructor(&mut *self)
+        UnionWithDtor_UnionWithDtor_destructor(self)
     }
 }

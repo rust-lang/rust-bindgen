@@ -58,7 +58,7 @@ pub mod root {
             #[inline]
             pub unsafe fn lets_hope_this_works(&mut self)
              -> ::std::os::raw::c_int {
-                A_lets_hope_this_works(&mut *self)
+                A_lets_hope_this_works(self)
             }
         }
     }
