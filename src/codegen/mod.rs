@@ -1821,11 +1821,7 @@ impl MethodCodegen for Method {
             exprs[0] = quote_expr!(ctx.ext_cx(), &mut __bindgen_tmp);
         } else if !self.is_static() {
             assert!(!exprs.is_empty());
-            exprs[0] = if self.is_const() {
-                quote_expr!(ctx.ext_cx(), &*self)
-            } else {
-                quote_expr!(ctx.ext_cx(), &mut *self)
-            };
+            exprs[0] = quote_expr!(ctx.ext_cx(), self);
         };
 
         let call = aster::expr::ExprBuilder::new()

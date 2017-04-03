@@ -27,5 +27,5 @@ extern "C" {
 }
 impl Foo {
     #[inline]
-    pub unsafe fn destruct(&mut self) { Foo_Foo_destructor(&mut *self) }
+    pub unsafe fn destruct(&mut self) { Foo_Foo_destructor(self) }
 }
