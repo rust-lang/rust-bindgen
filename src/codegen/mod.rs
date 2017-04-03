@@ -1599,10 +1599,14 @@ impl CodeGenerator for CompInfo {
             }
 
             if ctx.options().codegen_config.destructor {
-                if let Some(destructor) = *self.destructor() {
-                    Method::new(MethodKind::Destructor,
-                                destructor,
-                                false)
+                if let Some((is_virtual, destructor)) = self.destructor() {
+                    let kind = if is_virtual {
+                        MethodKind::VirtualDestructor
+                    } else {
+                        MethodKind::Destructor
+                    };
+
+                    Method::new(kind, destructor, false)
                         .codegen_method(ctx,
                                         &mut methods,
                                         &mut method_names,
@@ -1707,6 +1711,7 @@ impl MethodCodegen for Method {
         if self.is_virtual() {
             return; // FIXME
         }
+
         // First of all, output the actual function.
         let function_item = ctx.resolve_item(self.signature());
         function_item.codegen(ctx, result, whitelisted_items, &());

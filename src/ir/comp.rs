@@ -26,8 +26,10 @@ pub enum MethodKind {
     /// A constructor. We represent it as method for convenience, to avoid code
     /// duplication.
     Constructor,
-    /// A destructor method
+    /// A destructor.
     Destructor,
+    /// A virtual destructor.
+    VirtualDestructor,
     /// A static method.
     Static,
     /// A normal method.
@@ -65,7 +67,8 @@ impl Method {
 
     /// Is this a destructor method?
     pub fn is_destructor(&self) -> bool {
-        self.kind == MethodKind::Destructor
+        self.kind == MethodKind::Destructor ||
+        self.kind == MethodKind::VirtualDestructor
     }
 
     /// Is this a constructor?
@@ -75,7 +78,8 @@ impl Method {
 
     /// Is this a virtual method?
     pub fn is_virtual(&self) -> bool {
-        self.kind == MethodKind::Virtual
+        self.kind == MethodKind::Virtual ||
+        self.kind == MethodKind::VirtualDestructor
     }
 
     /// Is this a static method?
@@ -257,8 +261,9 @@ pub struct CompInfo {
     /// The different constructors this struct or class contains.
     constructors: Vec<ItemId>,
 
-    /// The destructor of this type
-    destructor: Option<ItemId>,
+    /// The destructor of this type. The bool represents whether this destructor
+    /// is virtual.
+    destructor: Option<(bool, ItemId)>,
 
     /// Vector of classes this one inherits from.
     base_members: Vec<Base>,
@@ -446,8 +451,8 @@ impl CompInfo {
     }
 
     /// Get this type's destructor.
-    pub fn destructor(&self) -> &Option<ItemId> {
-        &self.destructor
+    pub fn destructor(&self) -> Option<(bool, ItemId)> {
+        self.destructor
     }
 
     /// What kind of compound type is this?
@@ -674,7 +679,7 @@ impl CompInfo {
                             ci.constructors.push(signature);
                         }
                         CXCursor_Destructor => {
-                            ci.destructor = Some(signature);
+                            ci.destructor = Some((is_virtual, signature));
                         }
                         CXCursor_CXXMethod => {
                             let is_const = cur.method_is_const();
