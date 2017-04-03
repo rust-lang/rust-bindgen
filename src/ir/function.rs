@@ -114,6 +114,7 @@ fn get_abi(cc: CXCallingConv) -> Option<abi::Abi> {
 pub fn cursor_mangling(ctx: &BindgenContext,
                        cursor: &clang::Cursor)
                        -> Option<String> {
+    use clang_sys;
     if !ctx.options().enable_mangling {
         return None;
     }
@@ -131,8 +132,35 @@ pub fn cursor_mangling(ctx: &BindgenContext,
     }
 
     // Try to undo backend linkage munging (prepended _, generally)
+    //
+    // TODO(emilio): This is wrong when the target system is not the host
+    // system. See https://github.com/servo/rust-bindgen/issues/593
     if cfg!(target_os = "macos") {
         mangling.remove(0);
+    }
+
+    if cursor.kind() == clang_sys::CXCursor_Destructor {
+        // With old (3.8-) libclang versions, and the Itanium ABI, clang returns
+        // the "destructor group 0" symbol, which means that it'll try to free
+        // memory, which definitely isn't what we want.
+        //
+        // Explicitly force the destructor group 1 symbol.
+        //
+        // See http://refspecs.linuxbase.org/cxxabi-1.83.html#mangling-special
+        // for the reference, and http://stackoverflow.com/a/6614369/1091587 for
+        // a more friendly explanation.
+        //
+        // We don't need to do this for constructors since clang seems to always
+        // have returned the C1 constructor.
+        //
+        // FIXME(emilio): Can a legit symbol in other ABIs end with this string?
+        // I don't think so, but if it can this would become a linker error
+        // anyway, not an invalid free at runtime.
+        if mangling.ends_with("D0Ev") {
+            let new_len = mangling.len() - 4;
+            mangling.truncate(new_len);
+            mangling.push_str("D1Ev");
+        }
     }
 
     Some(mangling)
