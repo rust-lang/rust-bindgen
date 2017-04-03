@@ -109,8 +109,8 @@ pub struct CodegenConfig {
     pub methods: bool,
     /// Whether to generate constructors.
     pub constructors: bool,
-    /// Whether to generate a destructor.
-    pub destructor: bool,
+    /// Whether to generate destructors.
+    pub destructors: bool,
 }
 
 impl CodegenConfig {
@@ -122,7 +122,7 @@ impl CodegenConfig {
             vars: true,
             methods: true,
             constructors: true,
-            destructor: true,
+            destructors: true,
         }
     }
 
@@ -134,7 +134,7 @@ impl CodegenConfig {
             vars: false,
             methods: false,
             constructors: false,
-            destructor: false,
+            destructors: false,
         }
     }
 }

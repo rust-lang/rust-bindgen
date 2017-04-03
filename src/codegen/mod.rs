@@ -1598,7 +1598,7 @@ impl CodeGenerator for CompInfo {
                 }
             }
 
-            if ctx.options().codegen_config.destructor {
+            if ctx.options().codegen_config.destructors {
                 if let Some((is_virtual, destructor)) = self.destructor() {
                     let kind = if is_virtual {
                         MethodKind::VirtualDestructor
