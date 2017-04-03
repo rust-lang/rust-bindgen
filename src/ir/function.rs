@@ -156,6 +156,9 @@ pub fn cursor_mangling(ctx: &BindgenContext,
         // FIXME(emilio): Can a legit symbol in other ABIs end with this string?
         // I don't think so, but if it can this would become a linker error
         // anyway, not an invalid free at runtime.
+        //
+        // TODO(emilio, #611): Use cpp_demangle if this becomes nastier with
+        // time.
         if mangling.ends_with("D0Ev") {
             let new_len = mangling.len() - 4;
             mangling.truncate(new_len);
