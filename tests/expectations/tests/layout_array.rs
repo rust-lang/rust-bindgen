@@ -58,7 +58,7 @@ pub type rte_mempool_get_count =
 #[derive(Debug, Copy)]
 pub struct rte_mempool_ops {
     /**< Name of mempool ops struct. */
-    pub name: [::std::os::raw::c_schar; 32usize],
+    pub name: [::std::os::raw::c_char; 32usize],
     /**< Allocate private data. */
     pub alloc: rte_mempool_alloc_t,
     /**< Free the external pool. */

@@ -64,7 +64,7 @@ pub struct cmdline_token_ops {
     pub parse: ::std::option::Option<unsafe extern "C" fn(arg1:
                                                               *mut cmdline_parse_token_hdr_t,
                                                           arg2:
-                                                              *const ::std::os::raw::c_schar,
+                                                              *const ::std::os::raw::c_char,
                                                           arg3:
                                                               *mut ::std::os::raw::c_void,
                                                           arg4:
@@ -80,7 +80,7 @@ pub struct cmdline_token_ops {
                                                                      arg2:
                                                                          ::std::os::raw::c_int,
                                                                      arg3:
-                                                                         *mut ::std::os::raw::c_schar,
+                                                                         *mut ::std::os::raw::c_char,
                                                                      arg4:
                                                                          ::std::os::raw::c_uint)
                                                     -> ::std::os::raw::c_int>,
@@ -88,7 +88,7 @@ pub struct cmdline_token_ops {
     pub get_help: ::std::option::Option<unsafe extern "C" fn(arg1:
                                                                  *mut cmdline_parse_token_hdr_t,
                                                              arg2:
-                                                                 *mut ::std::os::raw::c_schar,
+                                                                 *mut ::std::os::raw::c_char,
                                                              arg3:
                                                                  ::std::os::raw::c_uint)
                                             -> ::std::os::raw::c_int>,
