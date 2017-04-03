@@ -7,7 +7,7 @@
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy)]
 pub struct a {
-    pub b: ::std::os::raw::c_schar,
+    pub b: ::std::os::raw::c_char,
     pub c: ::std::os::raw::c_short,
 }
 #[test]

@@ -11,6 +11,6 @@ pub mod root {
     pub mod std {
         #[allow(unused_imports)]
         use self::super::super::root;
-        pub type string = *const ::std::os::raw::c_schar;
+        pub type string = *const ::std::os::raw::c_char;
     }
 }

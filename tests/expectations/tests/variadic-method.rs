@@ -6,7 +6,7 @@
 
 extern "C" {
     #[link_name = "_Z3fooPKcz"]
-    pub fn foo(fmt: *const ::std::os::raw::c_schar, ...);
+    pub fn foo(fmt: *const ::std::os::raw::c_char, ...);
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
@@ -22,7 +22,7 @@ fn bindgen_test_layout_Bar() {
 }
 extern "C" {
     #[link_name = "_ZN3Bar3fooEPKcz"]
-    pub fn Bar_foo(this: *mut Bar, fmt: *const ::std::os::raw::c_schar, ...);
+    pub fn Bar_foo(this: *mut Bar, fmt: *const ::std::os::raw::c_char, ...);
 }
 impl Clone for Bar {
     fn clone(&self) -> Self { *self }
