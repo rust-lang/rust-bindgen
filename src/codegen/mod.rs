@@ -1720,7 +1720,7 @@ impl MethodCodegen for Method {
         let signature_item = ctx.resolve_item(function.signature());
         let mut name = match self.kind() {
             MethodKind::Constructor => "new".into(),
-            MethodKind::Destructor => "__bindgen_destructor__".into(),
+            MethodKind::Destructor => "destruct".into(),
             _ => function.name().to_owned(),
         };
 
