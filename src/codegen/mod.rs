@@ -2471,7 +2471,8 @@ impl TryToRustTy for Type {
             TypeKind::Int(ik) => {
                 match ik {
                     IntKind::Bool => Ok(aster::ty::TyBuilder::new().bool()),
-                    IntKind::Char => Ok(raw_type(ctx, "c_schar")),
+                    IntKind::Char { .. } => Ok(raw_type(ctx, "c_char")),
+                    IntKind::SChar => Ok(raw_type(ctx, "c_schar")),
                     IntKind::UChar => Ok(raw_type(ctx, "c_uchar")),
                     IntKind::Short => Ok(raw_type(ctx, "c_short")),
                     IntKind::UShort => Ok(raw_type(ctx, "c_ushort")),

@@ -1090,8 +1090,38 @@ impl<'ctx> BindgenContext<'ctx> {
             CXType_Bool => TypeKind::Int(IntKind::Bool),
             CXType_Int => TypeKind::Int(IntKind::Int),
             CXType_UInt => TypeKind::Int(IntKind::UInt),
-            CXType_SChar | CXType_Char_S => TypeKind::Int(IntKind::Char),
-            CXType_UChar | CXType_Char_U => TypeKind::Int(IntKind::UChar),
+            CXType_SChar | CXType_Char_S |
+            CXType_UChar | CXType_Char_U => {
+                let spelling = ty.spelling();
+
+                debug_assert!(spelling.contains("char"),
+                              "This is the canonical type, so no aliases or \
+                               typedefs!");
+
+                let signed = match ty.kind() {
+                    CXType_SChar | CXType_Char_S => true,
+                    _ => false,
+                };
+
+                // Clang only gives us the signedness of the target platform.
+                //
+                // Match the spelling for common cases we can handle
+                // cross-platform.
+                match &*spelling {
+                    "char" | "const char" => {
+                        TypeKind::Int(IntKind::Char {
+                            is_signed: signed,
+                        })
+                    },
+                    _ => {
+                        if signed {
+                            TypeKind::Int(IntKind::SChar)
+                        } else {
+                            TypeKind::Int(IntKind::UChar)
+                        }
+                    },
+                }
+            }
             CXType_Short => TypeKind::Int(IntKind::Short),
             CXType_UShort => TypeKind::Int(IntKind::UShort),
             CXType_WChar | CXType_Char16 => TypeKind::Int(IntKind::U16),

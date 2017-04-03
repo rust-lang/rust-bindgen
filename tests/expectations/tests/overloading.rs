@@ -6,7 +6,7 @@
 
 extern "C" {
     #[link_name = "_Z8Evaluatec"]
-    pub fn Evaluate(r: ::std::os::raw::c_schar) -> bool;
+    pub fn Evaluate(r: ::std::os::raw::c_char) -> bool;
 }
 extern "C" {
     #[link_name = "_Z8Evaluateii"]

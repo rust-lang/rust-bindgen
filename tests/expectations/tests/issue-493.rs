@@ -34,7 +34,7 @@ pub struct basic_string {
     pub _address: u8,
 }
 pub type basic_string_size_type = ::std::os::raw::c_ulonglong;
-pub type basic_string_value_type = ::std::os::raw::c_schar;
+pub type basic_string_value_type = ::std::os::raw::c_char;
 pub type basic_string_pointer = *mut basic_string_value_type;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
