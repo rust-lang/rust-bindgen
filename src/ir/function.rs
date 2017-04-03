@@ -354,17 +354,22 @@ impl ClangSubItemParser for Function {
         let sig =
             try!(Item::from_ty(&cursor.cur_type(), cursor, None, context));
 
-        let name = match cursor.kind() {
-            CXCursor_Destructor => {
-                let mut name_ = cursor.spelling();
-                // remove the `~`
-                name_.remove(0);
-                name_ + "_destructor"
-            },
-            _ => cursor.spelling(),
-        };
-
+        let mut name = cursor.spelling();
         assert!(!name.is_empty(), "Empty function name?");
+
+        if cursor.kind() == CXCursor_Destructor {
+            // Remove the leading `~`. The alternative to this is special-casing
+            // code-generation for destructor functions, which seems less than
+            // ideal.
+            if name.starts_with('~') {
+                name.remove(0);
+            }
+
+            // Add a suffix to avoid colliding with constructors. This would be
+            // technically fine (since we handle duplicated functions/methods),
+            // but seems easy enough to handle it here.
+            name.push_str("_destructor");
+        }
 
         let mut mangled_name = cursor_mangling(context, &cursor);
         if mangled_name.as_ref() == Some(&name) {
