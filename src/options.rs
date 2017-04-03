@@ -111,8 +111,8 @@ pub fn builder_from_flags<I>
             Arg::with_name("generate")
                 .long("generate")
                 .help("Generate a given kind of items, split by commas. \
-                       Valid values are \"functions\",\"types\", \"vars\" and \
-                       \"methods\".")
+                       Valid values are \"functions\",\"types\", \"vars\", \
+                       \"methods\" and \"constructors\".")
                 .takes_value(true),
             Arg::with_name("ignore-methods")
                 .long("ignore-methods")
@@ -268,6 +268,7 @@ pub fn builder_from_flags<I>
                 "types" => config.types = true,
                 "vars" => config.vars = true,
                 "methods" => config.methods = true,
+                "constructors" => config.constructors = true,
                 _ => {
                     return Err(Error::new(ErrorKind::Other,
                                           "Unknown generate item"));
