@@ -101,3 +101,21 @@ fn test_bitfields_third() {
                      bindings::bitfields::ItemKind::ITEM_KIND_TRES)
     });
 }
+
+impl Drop for bindings::AutoRestoreBool {
+    fn drop(&mut self) {
+        unsafe { bindings::AutoRestoreBool::destruct(self) }
+    }
+}
+
+#[test]
+fn test_destructors() {
+    let mut v = true;
+
+    {
+        let auto_restore = unsafe { bindings::AutoRestoreBool::new(&mut v) };
+        v = false;
+    }
+
+    assert!(v, "Should've been restored when going out of scope");
+}
