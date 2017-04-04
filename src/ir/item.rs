@@ -433,10 +433,11 @@ impl Item {
         }
     }
 
-    fn new_opaque_type(with_id: ItemId,
-                       ty: &clang::Type,
-                       ctx: &mut BindgenContext)
-                       -> ItemId {
+    /// Construct a new opaque item type.
+    pub fn new_opaque_type(with_id: ItemId,
+                           ty: &clang::Type,
+                           ctx: &mut BindgenContext)
+                           -> ItemId {
         let ty = Opaque::from_clang_ty(ty);
         let kind = ItemKind::Type(ty);
         let parent = ctx.root_module();
