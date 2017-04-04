@@ -1093,13 +1093,19 @@ impl Type {
                                     name = location.spelling();
                                 }
 
-                                if let Ok(complex) = CompInfo::from_ty(potential_id,
-                                                                       ty,
-                                                                       Some(location),
-                                                                       ctx) {
-                                    TypeKind::Comp(complex)
-                                } else {
-                                    return Ok(ParseResult::New(Opaque::from_clang_ty(ty), None));
+                                let complex = CompInfo::from_ty(potential_id,
+                                                                ty,
+                                                                Some(location),
+                                                                ctx);
+                                match complex {
+                                    Ok(complex) => TypeKind::Comp(complex),
+                                    Err(_) => {
+                                        warn!("Could not create complex type \
+                                               from class template or base \
+                                               specifier, using opaque blob");
+                                        let opaque = Opaque::from_clang_ty(ty);
+                                        return Ok(ParseResult::New(opaque, None));
+                                    }
                                 }
                             }
                             CXCursor_TypeAliasTemplateDecl => {
