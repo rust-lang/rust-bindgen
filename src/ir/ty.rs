@@ -1096,9 +1096,17 @@ impl Type {
                                 let complex = CompInfo::from_ty(potential_id,
                                                                 ty,
                                                                 Some(location),
-                                                                ctx)
-                                    .expect("C'mon");
-                                TypeKind::Comp(complex)
+                                                                ctx);
+                                match complex {
+                                    Ok(complex) => TypeKind::Comp(complex),
+                                    Err(_) => {
+                                        warn!("Could not create complex type \
+                                               from class template or base \
+                                               specifier, using opaque blob");
+                                        let opaque = Opaque::from_clang_ty(ty);
+                                        return Ok(ParseResult::New(opaque, None));
+                                    }
+                                }
                             }
                             CXCursor_TypeAliasTemplateDecl => {
                                 debug!("TypeAliasTemplateDecl");
