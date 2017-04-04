@@ -4,4 +4,4 @@
 #![allow(non_snake_case)]
 
 
-pub type std_make_integer_sequence<T> = T;
+pub type std_make_integer_sequence = u8;
