@@ -100,10 +100,6 @@ impl TemplateInstantiation {
                     .collect()
             });
 
-        if ty.declaration().is_builtin() {
-            return None;
-        }
-
         let definition = ty.declaration()
             .specialized()
             .or_else(|| {
@@ -122,8 +118,12 @@ impl TemplateInstantiation {
                 });
 
                 template_ref.and_then(|cur| cur.referenced())
-            })
-            .expect("Should have found the template definition one way or another");
+            });
+
+        let definition = match definition {
+            None => return None,
+            Some(def) => def,
+        };
 
         let template_definition =
             Item::from_ty_or_ref(definition.cur_type(), definition, None, ctx);
