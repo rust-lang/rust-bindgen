@@ -988,8 +988,10 @@ impl Type {
                       (ty.template_args().is_some() &&
                        ty_kind != CXType_Typedef) {
             // This is a template instantiation.
-            let inst = TemplateInstantiation::from_ty(&ty, ctx);
-            TypeKind::TemplateInstantiation(inst)
+            match TemplateInstantiation::from_ty(&ty, ctx) {
+                Some(inst) => TypeKind::TemplateInstantiation(inst),
+                None => TypeKind::Opaque,
+            }
         } else {
             match ty_kind {
                 CXType_Unexposed if *ty != canonical_ty &&
