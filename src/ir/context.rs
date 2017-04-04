@@ -424,7 +424,9 @@ impl<'ctx> BindgenContext<'ctx> {
         for (id, ty, loc, parent_id) in typerefs {
             let _resolved = {
                 let resolved = Item::from_ty(&ty, loc, parent_id, self)
-                    .expect("What happened?");
+                    .unwrap_or_else(|_| {
+                        Item::new_opaque_type(self.next_item_id(), &ty, self)
+                    });
                 let mut item = self.items.get_mut(&id).unwrap();
 
                 *item.kind_mut().as_type_mut().unwrap().kind_mut() =

@@ -1093,12 +1093,14 @@ impl Type {
                                     name = location.spelling();
                                 }
 
-                                let complex = CompInfo::from_ty(potential_id,
-                                                                ty,
-                                                                Some(location),
-                                                                ctx)
-                                    .expect("C'mon");
-                                TypeKind::Comp(complex)
+                                if let Ok(complex) = CompInfo::from_ty(potential_id,
+                                                                       ty,
+                                                                       Some(location),
+                                                                       ctx) {
+                                    TypeKind::Comp(complex)
+                                } else {
+                                    return Ok(ParseResult::New(Opaque::from_clang_ty(ty), None));
+                                }
                             }
                             CXCursor_TypeAliasTemplateDecl => {
                                 debug!("TypeAliasTemplateDecl");
