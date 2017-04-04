@@ -121,8 +121,14 @@ impl TemplateInstantiation {
             });
 
         let definition = match definition {
-            None => return None,
             Some(def) => def,
+            None => {
+                if !ty.declaration().is_builtin() {
+                    warn!("Could not find template definition for template \
+                           instantiation");
+                }
+                return None
+            }
         };
 
         let template_definition =
