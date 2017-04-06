@@ -37,6 +37,9 @@ extern crate log;
 #[macro_use]
 mod log_stubs;
 
+#[macro_use]
+mod extra_assertions;
+
 // A macro to declare an internal module for which we *must* provide
 // documentation for. If we are building with the "testing_only_docs" feature,
 // then the module is declared public, and our `#![deny(missing_docs)]` pragma
