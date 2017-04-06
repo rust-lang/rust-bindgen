@@ -27,6 +27,7 @@ path = "src/lib.rs"
 [[bin]]
 name = "bindgen"
 path = "src/main.rs"
+doc = false
 
 [dev-dependencies]
 diff = "0.1"
