@@ -250,7 +250,7 @@ impl<'ctx> BindgenContext<'ctx> {
                item,
                declaration,
                location);
-        debug_assert!(declaration.is_some() || !item.kind().is_type() ||
+        extra_assert!(declaration.is_some() || !item.kind().is_type() ||
                       item.kind().expect_type().is_builtin_or_named() ||
                       item.kind().expect_type().is_opaque(),
                       "Adding a type without declaration?");
@@ -310,7 +310,7 @@ impl<'ctx> BindgenContext<'ctx> {
             };
 
             let old = self.types.insert(key, id);
-            debug_assert_eq!(old, None);
+            extra_assert_eq!(old, None);
         }
     }
 
@@ -397,7 +397,7 @@ impl<'ctx> BindgenContext<'ctx> {
     fn collect_typerefs
         (&mut self)
          -> Vec<(ItemId, clang::Type, clang::Cursor, Option<ItemId>)> {
-        debug_assert!(!self.collected_typerefs);
+        extra_assert!(!self.collected_typerefs);
         self.collected_typerefs = true;
         let mut typerefs = vec![];
         for (id, ref mut item) in &mut self.items {
@@ -439,7 +439,7 @@ impl<'ctx> BindgenContext<'ctx> {
             // Something in the STL is trolling me. I don't need this assertion
             // right now, but worth investigating properly once this lands.
             //
-            // debug_assert!(self.items.get(&resolved).is_some(), "How?");
+            // extra_assert!(self.items.get(&resolved).is_some(), "How?");
         }
     }
 
@@ -584,12 +584,11 @@ impl<'ctx> BindgenContext<'ctx> {
         ret
     }
 
-    /// When the `testing_only_assert_no_dangling_items` feature is enabled,
-    /// this function walks the IR graph and asserts that we do not have any
-    /// edges referencing an ItemId for which we do not have an associated IR
-    /// item.
+    /// When the `testing_only_extra_assertions` feature is enabled, this
+    /// function walks the IR graph and asserts that we do not have any edges
+    /// referencing an ItemId for which we do not have an associated IR item.
     fn assert_no_dangling_references(&self) {
-        if cfg!(feature = "testing_only_assert_no_dangling_items") {
+        if cfg!(feature = "testing_only_extra_assertions") {
             for _ in self.assert_no_dangling_item_traversal() {
                 // The iterator's next method does the asserting for us.
             }
@@ -657,7 +656,7 @@ impl<'ctx> BindgenContext<'ctx> {
     // -> builtin type ItemId would be the best to improve that.
     fn add_builtin_item(&mut self, item: Item) {
         debug!("add_builtin_item: item = {:?}", item);
-        debug_assert!(item.kind().is_type());
+        extra_assert!(item.kind().is_type());
         let id = item.id();
         let old_item = self.items.insert(id, item);
         assert!(old_item.is_none(), "Inserted type twice?");
@@ -919,7 +918,7 @@ impl<'ctx> BindgenContext<'ctx> {
                         debug!("instantiate_template: inserting nested \
                                 instantiation item: {:?}",
                                sub_item);
-                        debug_assert!(sub_id == sub_item.id());
+                        extra_assert!(sub_id == sub_item.id());
                         self.items.insert(sub_id, sub_item);
                         args.push(sub_id);
                     }
@@ -964,7 +963,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
         // Bypass all the validations in add_item explicitly.
         debug!("instantiate_template: inserting item: {:?}", item);
-        debug_assert!(with_id == item.id());
+        extra_assert!(with_id == item.id());
         self.items.insert(with_id, item);
         Some(with_id)
     }
@@ -1152,7 +1151,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// Get the currently parsed macros.
     pub fn parsed_macros(&self) -> &HashMap<Vec<u8>, cexpr::expr::EvalResult> {
-        debug_assert!(!self.in_codegen_phase());
+        extra_assert!(!self.in_codegen_phase());
         &self.parsed_macros
     }
 
@@ -1194,7 +1193,7 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Is the item with the given `name` hidden? Or is the item with the given
     /// `name` and `id` replaced by another type, and effectively hidden?
     pub fn hidden_by_name(&self, path: &[String], id: ItemId) -> bool {
-        debug_assert!(self.in_codegen_phase(),
+        extra_assert!(self.in_codegen_phase(),
                       "You're not supposed to call this yet");
         self.options.hidden_types.matches(&path[1..].join("::")) ||
         self.is_replaced_type(path, id)
@@ -1211,7 +1210,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// Is the type with the given `name` marked as opaque?
     pub fn opaque_by_name(&self, path: &[String]) -> bool {
-        debug_assert!(self.in_codegen_phase(),
+        extra_assert!(self.in_codegen_phase(),
                       "You're not supposed to call this yet");
         self.options.opaque_types.matches(&path[1..].join("::"))
     }
@@ -1298,7 +1297,7 @@ impl<'ctx> BindgenContext<'ctx> {
     pub fn with_module<F>(&mut self, module_id: ItemId, cb: F)
         where F: FnOnce(&mut Self),
     {
-        debug_assert!(self.resolve_item(module_id).kind().is_module(), "Wat");
+        extra_assert!(self.resolve_item(module_id).kind().is_module(), "Wat");
 
         let previous_id = self.current_module;
         self.current_module = module_id;

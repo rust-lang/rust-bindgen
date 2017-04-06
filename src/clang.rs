@@ -152,7 +152,7 @@ impl Cursor {
                 if n >= 0 {
                     Some(n as u32)
                 } else {
-                    debug_assert_eq!(n, -1);
+                    extra_assert_eq!(n, -1);
                     None
                 }
             })
@@ -813,7 +813,7 @@ impl Type {
         if n >= 0 {
             Some(n as u32)
         } else {
-            debug_assert_eq!(n, -1);
+            extra_assert_eq!(n, -1);
             None
         }
     }
@@ -842,7 +842,7 @@ impl Type {
                 let ret = Type {
                     x: unsafe { clang_getPointeeType(self.x) },
                 };
-                debug_assert!(ret.is_valid());
+                extra_assert!(ret.is_valid());
                 Some(ret)
             }
             _ => None,

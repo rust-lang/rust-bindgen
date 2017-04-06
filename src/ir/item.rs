@@ -70,7 +70,7 @@ pub trait ItemAncestors {
 }
 
 cfg_if! {
-    if #[cfg(debug_assertions)] {
+    if #[cfg(testing_only_extra_assertions)] {
         type DebugOnlyItemSet = ItemSet;
     } else {
         struct DebugOnlyItemSet;
@@ -123,7 +123,7 @@ impl<'a, 'b> Iterator for ItemAncestorsIter<'a, 'b>
         } else {
             self.item = item.parent_id();
 
-            debug_assert!(!self.seen.contains(&item.id()));
+            extra_assert!(!self.seen.contains(&item.id()));
             self.seen.insert(item.id());
 
             Some(item.id())
@@ -163,7 +163,7 @@ impl AsNamed for ItemKind {
 // Pure convenience
 impl ItemCanonicalName for ItemId {
     fn canonical_name(&self, ctx: &BindgenContext) -> String {
-        debug_assert!(ctx.in_codegen_phase(),
+        extra_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         ctx.resolve_item(*self).canonical_name(ctx)
     }
@@ -173,13 +173,13 @@ impl ItemCanonicalPath for ItemId {
     fn namespace_aware_canonical_path(&self,
                                       ctx: &BindgenContext)
                                       -> Vec<String> {
-        debug_assert!(ctx.in_codegen_phase(),
+        extra_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         ctx.resolve_item(*self).namespace_aware_canonical_path(ctx)
     }
 
     fn canonical_path(&self, ctx: &BindgenContext) -> Vec<String> {
-        debug_assert!(ctx.in_codegen_phase(),
+        extra_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         ctx.resolve_item(*self).canonical_path(ctx)
     }
@@ -418,7 +418,7 @@ impl Item {
                parent_id: ItemId,
                kind: ItemKind)
                -> Self {
-        debug_assert!(id != parent_id || kind.is_module());
+        extra_assert!(id != parent_id || kind.is_module());
         Item {
             id: id,
             local_id: Cell::new(None),
@@ -573,7 +573,7 @@ impl Item {
     ///
     /// This may be due to either annotations or to other kind of configuration.
     pub fn is_hidden(&self, ctx: &BindgenContext) -> bool {
-        debug_assert!(ctx.in_codegen_phase(),
+        extra_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         self.annotations.hide() ||
         ctx.hidden_by_name(&self.canonical_path(ctx), self.id)
@@ -581,7 +581,7 @@ impl Item {
 
     /// Is this item opaque?
     pub fn is_opaque(&self, ctx: &BindgenContext) -> bool {
-        debug_assert!(ctx.in_codegen_phase(),
+        extra_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         self.annotations.opaque() ||
         self.as_type().map_or(false, |ty| ty.is_opaque()) ||
@@ -614,7 +614,7 @@ impl Item {
         let mut item = self;
 
         loop {
-            debug_assert!(!targets_seen.contains(&item.id()));
+            extra_assert!(!targets_seen.contains(&item.id()));
             targets_seen.insert(item.id());
 
             if self.annotations().use_instead_of().is_some() {
@@ -1402,7 +1402,7 @@ impl ClangItemParser for Item {
 
 impl ItemCanonicalName for Item {
     fn canonical_name(&self, ctx: &BindgenContext) -> String {
-        debug_assert!(ctx.in_codegen_phase(),
+        extra_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
         if self.canonical_name_cache.borrow().is_none() {
             let in_namespace = ctx.options().enable_cxx_namespaces ||
