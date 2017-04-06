@@ -6,10 +6,10 @@ cd "$(dirname "$0")/.."
 # Regenerate the test headers' bindings in debug and release modes, and assert
 # that we always get the expected generated bindings.
 
-cargo test --features "$BINDGEN_FEATURES assert_no_dangling_items"
+cargo test --features "$BINDGEN_FEATURES testing_only_assert_no_dangling_items"
 ./ci/assert-no-diff.sh
 
-cargo test --release --features "$BINDGEN_FEATURES assert_no_dangling_items"
+cargo test --release --features "$BINDGEN_FEATURES testing_only_assert_no_dangling_items"
 ./ci/assert-no-diff.sh
 
 # Now test the expectations' size and alignment tests.
