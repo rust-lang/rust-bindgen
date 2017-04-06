@@ -371,7 +371,7 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
     fn constrain(&mut self, id: ItemId) -> bool {
         // Invariant: all hash map entries' values are `Some` upon entering and
         // exiting this method.
-        debug_assert!(self.used.values().all(|v| v.is_some()));
+        extra_assert!(self.used.values().all(|v| v.is_some()));
 
         // Take the set for this id out of the hash map while we mutate it based
         // on other hash map entries. We *must* put it back into the hash map at
@@ -437,7 +437,7 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
 
         // Put the set back in the hash map and restore our invariant.
         self.used.insert(id, Some(used_by_this_id));
-        debug_assert!(self.used.values().all(|v| v.is_some()));
+        extra_assert!(self.used.values().all(|v| v.is_some()));
 
         new_len != original_len
     }
