@@ -645,7 +645,7 @@ impl CompInfo {
                 CXCursor_CXXMethod => {
                     let is_virtual = cur.method_is_virtual();
                     let is_static = cur.method_is_static();
-                    debug_assert!(!(is_static && is_virtual), "How?");
+                    extra_assert!(!(is_static && is_virtual), "How?");
 
                     ci.has_destructor |= cur.kind() == CXCursor_Destructor;
                     ci.has_vtable |= is_virtual;

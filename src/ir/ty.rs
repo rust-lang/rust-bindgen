@@ -894,7 +894,7 @@ impl Type {
     /// to comply to the C and C++ layouts, that specify that every type needs
     /// to be addressable.
     pub fn is_unsized(&self, ctx: &BindgenContext) -> bool {
-        debug_assert!(ctx.in_codegen_phase(), "Not yet");
+        extra_assert!(ctx.in_codegen_phase(), "Not yet");
 
         match self.kind {
             TypeKind::Void => true,
@@ -1122,7 +1122,7 @@ impl Type {
                                         CXCursor_TypeAliasDecl => {
                                             let current = cur.cur_type();
 
-                                            debug_assert!(current.kind() ==
+                                            extra_assert!(current.kind() ==
                                                           CXType_Typedef);
 
                                             name = current.spelling();

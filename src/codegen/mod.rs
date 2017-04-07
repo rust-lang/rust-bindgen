@@ -31,6 +31,7 @@ use std::cmp;
 use std::collections::{HashSet, VecDeque};
 use std::collections::hash_map::{Entry, HashMap};
 use std::fmt::Write;
+use std::iter::FromIterator;
 use std::mem;
 use std::ops;
 use syntax::abi::Abi;
@@ -993,10 +994,28 @@ impl CodeGenerator for TemplateInstantiation {
             let size = layout.size;
             let align = layout.align;
 
-            let name = item.canonical_name(ctx);
-            let fn_name = format!("__bindgen_test_layout_{}_instantiation_{}",
-                                  name,
-                                  item.id().as_usize());
+            let template_name = item.canonical_name(ctx);
+
+            // To make instantiations' layout tests' names more consistent
+            // across bindgen invokation so that we cut down on unnecessary diff
+            // noise, try and use the C++ name mangling for the layout test
+            // name. If it isn't available, fall back to mangling with the item
+            // id.
+            let fn_name = if let Some(mangled) = self.mangled_name() {
+                format!("__bindgen_test_layout_{}_instantiation_{}",
+                        template_name,
+                        String::from_iter(mangled.chars().map(|c| {
+                            if c.is_alphanumeric() {
+                                c
+                            } else {
+                                '_'
+                            }
+                        })))
+            } else {
+                format!("__bindgen_test_layout_{}_instantiation_{}",
+                        template_name,
+                        item.id().as_usize())
+            };
             let fn_name = ctx.rust_ident_raw(&fn_name);
 
             let prefix = ctx.trait_prefix();
@@ -1202,9 +1221,9 @@ impl CodeGenerator for CompInfo {
         let mut methods = vec![];
         let mut anonymous_field_count = 0;
         for field in struct_fields {
-            debug_assert_eq!(current_bitfield_width.is_some(),
+            extra_assert_eq!(current_bitfield_width.is_some(),
                              current_bitfield_layout.is_some());
-            debug_assert_eq!(current_bitfield_width.is_some(),
+            extra_assert_eq!(current_bitfield_width.is_some(),
                              !current_bitfield_fields.is_empty());
 
             let field_ty = ctx.resolve_type(field.ty());
@@ -1226,7 +1245,7 @@ impl CodeGenerator for CompInfo {
 
             // Flush the current bitfield.
             if current_bitfield_width.is_some() {
-                debug_assert!(!current_bitfield_fields.is_empty());
+                extra_assert!(!current_bitfield_fields.is_empty());
                 let bitfield_fields =
                     mem::replace(&mut current_bitfield_fields, vec![]);
                 let bitfield_layout = Bitfield::new(&mut bitfield_count,
@@ -1237,7 +1256,7 @@ impl CodeGenerator for CompInfo {
                 current_bitfield_width = None;
                 current_bitfield_layout = None;
             }
-            debug_assert!(current_bitfield_fields.is_empty());
+            extra_assert!(current_bitfield_fields.is_empty());
 
             if let Some(width) = field.bitfield() {
                 let layout = field_ty.layout(ctx)
@@ -1381,7 +1400,7 @@ impl CodeGenerator for CompInfo {
         // FIXME: Reduce duplication with the loop above.
         // FIXME: May need to pass current_bitfield_layout too.
         if current_bitfield_width.is_some() {
-            debug_assert!(!current_bitfield_fields.is_empty());
+            extra_assert!(!current_bitfield_fields.is_empty());
             let bitfield_fields = mem::replace(&mut current_bitfield_fields,
                                                vec![]);
             let bitfield_layout = Bitfield::new(&mut bitfield_count,
@@ -1389,7 +1408,7 @@ impl CodeGenerator for CompInfo {
                 .codegen_fields(ctx, self, &mut fields, &mut methods);
             struct_layout.saw_bitfield_batch(bitfield_layout);
         }
-        debug_assert!(current_bitfield_fields.is_empty());
+        extra_assert!(current_bitfield_fields.is_empty());
 
         if is_union && !ctx.options().unstable_rust {
             let layout = layout.expect("Unable to get layout information?");
@@ -2642,7 +2661,7 @@ impl TryToRustTy for TemplateInstantiation {
                 // This can happen if we generated an opaque type for a partial
                 // template specialization, and we've hit an instantiation of
                 // that partial specialization.
-                debug_assert!(ctx.resolve_type_through_type_refs(decl)
+                extra_assert!(ctx.resolve_type_through_type_refs(decl)
                                   .is_opaque());
                 return Err(error::Error::InstantiationOfOpaqueType);
             }

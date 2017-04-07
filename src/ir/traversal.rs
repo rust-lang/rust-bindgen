@@ -439,9 +439,9 @@ impl<'ctx, 'gen, Storage, Queue, Predicate> Iterator
         };
 
         let newly_discovered = self.seen.add(None, id);
-        debug_assert!(!newly_discovered,
+        extra_assert!(!newly_discovered,
                       "should have already seen anything we get out of our queue");
-        debug_assert!(self.ctx.resolve_item_fallible(id).is_some(),
+        extra_assert!(self.ctx.resolve_item_fallible(id).is_some(),
                       "should only get IDs of actual items in our context during traversal");
 
         self.currently_traversing = Some(id);
