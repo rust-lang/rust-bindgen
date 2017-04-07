@@ -29,6 +29,7 @@
 
 use super::context::{BindgenContext, ItemId};
 use super::derive::{CanDeriveCopy, CanDeriveDebug};
+use super::function::cursor_mangling;
 use super::item::Item;
 use super::layout::Layout;
 use super::traversal::{EdgeKind, Trace, Tracer};
@@ -60,18 +61,22 @@ pub struct TemplateInstantiation {
     /// The concrete template arguments, which will be substituted in the
     /// definition for the generic template parameters.
     args: Vec<ItemId>,
+    /// The C++ mangled name for this instantiation, if available.
+    mangled_name: Option<String>,
 }
 
 impl TemplateInstantiation {
     /// Construct a new template instantiation from the given parts.
     pub fn new<I>(template_definition: ItemId,
-                  template_args: I)
+                  template_args: I,
+                  mangled_name: Option<String>)
                   -> TemplateInstantiation
         where I: IntoIterator<Item = ItemId>,
     {
         TemplateInstantiation {
             definition: template_definition,
             args: template_args.into_iter().collect(),
+            mangled_name: mangled_name,
         }
     }
 
@@ -83,6 +88,11 @@ impl TemplateInstantiation {
     /// Get the concrete template arguments used in this instantiation.
     pub fn template_arguments(&self) -> &[ItemId] {
         &self.args[..]
+    }
+
+    /// The C++ mangled name for this instantiation, if available.
+    pub fn mangled_name(&self) -> Option<&str> {
+        self.mangled_name.as_ref().map(|s| s.as_str())
     }
 
     /// Parse a `TemplateInstantiation` from a clang `Type`.
@@ -134,7 +144,10 @@ impl TemplateInstantiation {
         let template_definition =
             Item::from_ty_or_ref(definition.cur_type(), definition, None, ctx);
 
-        Some(TemplateInstantiation::new(template_definition, template_args))
+        let mangled_name = cursor_mangling(ctx, &ty.declaration());
+        Some(TemplateInstantiation::new(template_definition,
+                                        template_args,
+                                        mangled_name))
     }
 
     /// Does this instantiation have a vtable?

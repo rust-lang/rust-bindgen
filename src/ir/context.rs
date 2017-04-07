@@ -1,6 +1,7 @@
 //! Common context that is passed around during parsing and codegen.
 
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
+use super::function::cursor_mangling;
 use super::int::IntKind;
 use super::item::{Item, ItemCanonicalPath, ItemSet};
 use super::item_kind::ItemKind;
@@ -898,7 +899,10 @@ impl<'ctx> BindgenContext<'ctx> {
                         sub_args.reverse();
 
                         let sub_name = Some(template_decl_cursor.spelling());
-                        let sub_inst = TemplateInstantiation::new(template_decl_id, sub_args);
+                        let sub_mangled_name = cursor_mangling(&*self, &child);
+                        let sub_inst = TemplateInstantiation::new(template_decl_id,
+                                                                  sub_args,
+                                                                  sub_mangled_name);
                         let sub_kind =
                             TypeKind::TemplateInstantiation(sub_inst);
                         let sub_ty = Type::new(sub_name,
@@ -950,8 +954,9 @@ impl<'ctx> BindgenContext<'ctx> {
         }
 
         args.reverse();
+        let mangled_name = cursor_mangling(&*self, &location);
         let type_kind = TypeKind::TemplateInstantiation(
-            TemplateInstantiation::new(template, args));
+            TemplateInstantiation::new(template, args, mangled_name));
         let name = ty.spelling();
         let name = if name.is_empty() { None } else { Some(name) };
         let ty = Type::new(name,
