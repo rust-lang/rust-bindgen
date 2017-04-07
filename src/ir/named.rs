@@ -377,8 +377,13 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
         // on other hash map entries. We *must* put it back into the hash map at
         // the end of this method. This allows us to side-step HashMap's lack of
         // an analog to slice::split_at_mut.
-        let mut used_by_this_id =
-            self.used.get_mut(&id).unwrap().take().unwrap();
+        let mut used_by_this_id = self.used
+            .get_mut(&id)
+            .expect("Should have a set of used template params for every item \
+                     id")
+            .take()
+            .expect("Should maintain the invariant that all used template param \
+                     sets are `Some` upon entry of `constrain`");
 
         let original_len = used_by_this_id.len();
 
@@ -415,27 +420,31 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
             // Otherwise, add the union of each of its referent item's template
             // parameter usage.
             _ => {
-                item.trace(self.ctx,
-                           &mut |sub_id, edge_kind| {
+                item.trace(self.ctx, &mut |sub_id, edge_kind| {
                     if sub_id == id || !Self::consider_edge(edge_kind) {
                         return;
                     }
 
                     let used_by_sub_id = self.used[&sub_id]
                         .as_ref()
-                        .unwrap()
+                        .expect("Because sub_id != id, and all used template \
+                                 param sets other than id's are `Some`, \
+                                 sub_id's used template param set should be \
+                                 `Some`")
                         .iter()
                         .cloned();
                     used_by_this_id.extend(used_by_sub_id);
-                },
-                           &());
+                }, &());
             }
         }
 
         let new_len = used_by_this_id.len();
-        assert!(new_len >= original_len);
+        assert!(new_len >= original_len,
+                "This is the property that ensures this function is monotone -- \
+                 if it doesn't hold, the analysis might never terminate!");
 
         // Put the set back in the hash map and restore our invariant.
+        extra_assert!(self.used[&id].is_none());
         self.used.insert(id, Some(used_by_this_id));
         extra_assert!(self.used.values().all(|v| v.is_some()));
 
