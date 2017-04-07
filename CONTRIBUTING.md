@@ -65,12 +65,12 @@ $ export LD_LIBRARY_PATH=path/to/clang-3.9/lib # for Linux
 $ export DYLD_LIBRARY_PATH=path/to/clang-3.9/lib # for macOS
 ```
 
-Additionally, you may want to build and test with the `docs_` feature to ensure
-that you aren't forgetting to document types and functions. CI will catch it if
-you forget, but the turn around will be a lot slower ;)
+Additionally, you may want to build and test with the `testing_only_docs`
+feature to ensure that you aren't forgetting to document types and functions. CI
+will catch it if you forget, but the turn around will be a lot slower ;)
 
 ```
-$ cargo build --features docs_
+$ cargo build --features testing_only_docs
 ```
 
 ## Testing

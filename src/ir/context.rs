@@ -584,9 +584,11 @@ impl<'ctx> BindgenContext<'ctx> {
         ret
     }
 
-    /// This function trying to find any dangling references inside of `items`
+    /// When the `testing_only_extra_assertions` feature is enabled, this
+    /// function walks the IR graph and asserts that we do not have any edges
+    /// referencing an ItemId for which we do not have an associated IR item.
     fn assert_no_dangling_references(&self) {
-        if cfg!(feature = "assert_no_dangling_items") {
+        if cfg!(feature = "testing_only_extra_assertions") {
             for _ in self.assert_no_dangling_item_traversal() {
                 // The iterator's next method does the asserting for us.
             }
