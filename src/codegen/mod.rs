@@ -924,8 +924,7 @@ fn flush_bitfields<'a, I>(ctx: &BindgenContext,
             4 => quote_ty!(ctx.ext_cx(), u32),
             2 => quote_ty!(ctx.ext_cx(), u16),
             1 => quote_ty!(ctx.ext_cx(), u8),
-            _ => panic!("physical field containing bitfields should be sized \
-                         8, 4, 2, or 1 bytes")
+            _ => return field
         };
         let bitfield_int_ty = BlobTyBuilder::new(bitfield_layout).build();
 
