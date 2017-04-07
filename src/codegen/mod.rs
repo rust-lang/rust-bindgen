@@ -913,20 +913,20 @@ fn flush_bitfields<'a, I>(ctx: &BindgenContext,
         .pub_()
         .build_ty(field_ty.clone());
 
+    let field_int_ty = match field_layout.size {
+        8 => quote_ty!(ctx.ext_cx(), u64),
+        4 => quote_ty!(ctx.ext_cx(), u32),
+        2 => quote_ty!(ctx.ext_cx(), u16),
+        1 => quote_ty!(ctx.ext_cx(), u8),
+        _ => return field
+    };
+
     for (name, offset, width, bitfield_ty, bitfield_layout) in bitfields {
         let prefix = ctx.trait_prefix();
         let getter_name = bitfield_getter_name(ctx, parent, name);
         let setter_name = bitfield_setter_name(ctx, parent, name);
         let field_ident = ctx.ext_cx().ident_of(field_name);
 
-        let field_int_ty = match field_layout.size {
-            8 => quote_ty!(ctx.ext_cx(), u64),
-            4 => quote_ty!(ctx.ext_cx(), u32),
-            2 => quote_ty!(ctx.ext_cx(), u16),
-            1 => quote_ty!(ctx.ext_cx(), u8),
-            _ => panic!("physical field containing bitfields should be sized \
-                         8, 4, 2, or 1 bytes")
-        };
         let bitfield_int_ty = BlobTyBuilder::new(bitfield_layout).build();
 
         let mask: usize = ((1usize << width) - 1usize) << offset;
