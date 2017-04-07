@@ -31,6 +31,7 @@ use std::cmp;
 use std::collections::{HashSet, VecDeque};
 use std::collections::hash_map::{Entry, HashMap};
 use std::fmt::Write;
+use std::iter::FromIterator;
 use std::mem;
 use std::ops;
 use syntax::abi::Abi;
@@ -993,10 +994,28 @@ impl CodeGenerator for TemplateInstantiation {
             let size = layout.size;
             let align = layout.align;
 
-            let name = item.canonical_name(ctx);
-            let fn_name = format!("__bindgen_test_layout_{}_instantiation_{}",
-                                  name,
-                                  item.id().as_usize());
+            let template_name = item.canonical_name(ctx);
+
+            // To make instantiations' layout tests' names more consistent
+            // across bindgen invokation so that we cut down on unnecessary diff
+            // noise, try and use the C++ name mangling for the layout test
+            // name. If it isn't available, fall back to mangling with the item
+            // id.
+            let fn_name = if let Some(mangled) = self.mangled_name() {
+                format!("__bindgen_test_layout_{}_instantiation_{}",
+                        template_name,
+                        String::from_iter(mangled.chars().map(|c| {
+                            if c.is_alphanumeric() {
+                                c
+                            } else {
+                                '_'
+                            }
+                        })))
+            } else {
+                format!("__bindgen_test_layout_{}_instantiation_{}",
+                        template_name,
+                        item.id().as_usize())
+            };
             let fn_name = ctx.rust_ident_raw(&fn_name);
 
             let prefix = ctx.trait_prefix();
