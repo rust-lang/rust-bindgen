@@ -2673,8 +2673,8 @@ impl TryToRustTy for TemplateInstantiation {
                 Some(P(ast::PathParameters::AngleBracketed(
                     ast::AngleBracketedParameterData {
                         lifetimes: vec![],
-                        types: P::from_vec(template_args),
-                        bindings: P::from_vec(vec![]),
+                        types: template_args,
+                        bindings: vec![],
                     }
                 )))
             }
