@@ -146,7 +146,7 @@ pub mod ast_ty {
         }
         vec.push(int_expr(0));
 
-        let kind = ast::ExprKind::Vec(vec);
+        let kind = ast::ExprKind::Array(vec);
 
         aster::AstBuilder::new().expr().build_expr_kind(kind)
     }
