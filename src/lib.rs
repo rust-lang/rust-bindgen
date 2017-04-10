@@ -175,195 +175,237 @@ pub fn builder() -> Builder {
 }
 
 impl Builder {
-    /// Configure and generate Rust bindings for a C/C++ header.
-    ///
-    /// This is the main entry point to the library.
-    ///
-    /// ```ignore
-    /// use bindgen::builder;
-    ///
-    /// // Configure and generate bindings.
-    /// let mut builder_1 = builder();
-    ///
-    /// // generate the command line flags use for creating `builder_1`
-    /// Builder::command_line_flags(&mut builder_1)
-    /// ```
-    pub fn command_line_flags(builder_ref : &mut Builder) -> Vec<String> {
-        let mut output_vector:Vec<String> = Vec::new();
+    ///Generates the command line flags use for creating `builder`
+    pub fn command_line_flags(&self) -> Vec<String> {
+        let mut output_vector: Vec<String> = Vec::new();
 
-        if let Some(ref header) = builder_ref.options.input_header{
-            output_vector.push("header".into());
+        if let Some(ref header) = self.options.input_header {
+            //Positional argument 'header'
             output_vector.push(header.clone().into());
         }
-        
-               
-        if builder_ref.options.bitfield_enums.items.len() > 0 {
-            output_vector.push("bitfield-enum".into());
-            output_vector.extend(builder_ref.options.bitfield_enums.items.iter().cloned());
+
+        self.options
+            .bitfield_enums
+            .get_items()
+            .iter()
+            .map(|item| {
+                     output_vector.push("--bitfield-enum".into());
+                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
+                 })
+            .count();
+
+        self.options
+            .constified_enums
+            .get_items()
+            .iter()
+            .map(|item| {
+                     output_vector.push("--constified-enum".into());
+                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
+                 })
+            .count();
+
+        self.options
+            .hidden_types
+            .get_items()
+            .iter()
+            .map(|item| {
+                     output_vector.push("--blacklist-type".into());
+                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
+                 })
+            .count();
+
+        if self.options.derive_debug == false {
+            output_vector.push("--no-derive-debug".into());
         }
 
-        if builder_ref.options.constified_enums.items.len() > 0 {
-            output_vector.push("constified-enum".into());
-            output_vector.extend(builder_ref.options.constified_enums.items.iter().cloned());
+        if self.options.derive_default == false {
+            output_vector.push("--no-derive-default".into());
+        } else {
+            output_vector.push("--with-derive-default".into());
         }
 
-        if builder_ref.options.hidden_types.items.len() > 0 {
-            output_vector.push("blacklist-type".into());
-            output_vector.extend(builder_ref.options.hidden_types.items.iter().cloned());
+        if self.options.generate_comments == false {
+            output_vector.push("--no-doc-comments".into());
         }
 
-        if builder_ref.options.derive_debug == false {    
-            output_vector.push("no-derive-debug".into());
+        if self.options.whitelist_recursively == false {
+            output_vector.push("--no-recursive-whitelist".into());
         }
-        
-        if builder_ref.options.derive_default == false {   
-            output_vector.push("no-derive-default".into());
-        }else{
-            output_vector.push("with-derive-default".into());
+  
+        if self.options.objc_extern_crate == true {
+            output_vector.push("--objc-extern-crate".into());
         }
-
-        if builder_ref.options.generate_comments == false{    
-            output_vector.push("no-doc-comments".into());
-        }
-        
-        if builder_ref.options.whitelist_recursively == false{
-            output_vector.push("no-recursive-whitelist".into());
-        }
-        
-        if builder_ref.options.objc_extern_crate == true{
-            output_vector.push("objc-extern-crate".into());
-        }
-        // unused in options.rs
-        //output_vector.push("distrust-clang-mangling");
-            
-        if builder_ref.options.builtins == true{
-            output_vector.push("builtins".into());
+    
+        if self.options.builtins == true {
+            output_vector.push("--builtins".into());
         }
 
-        
-        if let Some(ref prefix) = builder_ref.options.ctypes_prefix{
-            output_vector.push("ctypes-prefix".into());
-            output_vector.push(prefix.clone().into());
+        if let Some(ref prefix) = self.options.ctypes_prefix {
+            output_vector.push("--ctypes-prefix".into());
+            output_vector.push(prefix.clone());
         }
 
-        if builder_ref.options.clang_args.len() > 0 {
-            output_vector.push("clang-args".into());
-            output_vector.extend(builder_ref.options.clang_args.iter().cloned());
+        self.options
+            .clang_args
+            .iter()
+            .map(|item| {
+                     output_vector.push("--clang-args".into());
+                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
+                 })
+            .count();
+
+        if let Some(ref dummy) = self.options.dummy_uses {
+            output_vector.push("--dummy-uses".into());
+            output_vector.push(dummy.clone());
         }
 
-        if let Some(ref dummy) = builder_ref.options.dummy_uses{   
-            output_vector.push("dummy-uses".into());
-            output_vector.push(dummy.clone().into());
+        if self.options.emit_ast == true {
+            output_vector.push("--emit-clang-ast".into());
         }
 
-        if builder_ref.options.emit_ast == true{
-            output_vector.push("emit-clang-ast".into());
+        if self.options.emit_ir == true {
+            output_vector.push("--emit-ir".into());
+        }
+        if let Some(ref graph) = self.options.emit_ir_graphviz {
+            output_vector.push("--emit-ir-graphviz".into());
+            output_vector.push(graph.clone())
+        }
+        if self.options.enable_cxx_namespaces == true {
+            output_vector.push("--enable-cxx-namespaces".into());
+        }
+        if self.options.disable_name_namespacing == true {
+            output_vector.push("--disable-name-namespacing".into());
         }
 
-        if builder_ref.options.emit_ir == true{
-            output_vector.push("emit-ir".into());
-        }
-        if let Some(ref graph) = builder_ref.options.emit_ir_graphviz{   
-            output_vector.push("emit-ir-graphviz".into());
-            output_vector.push(graph.clone().into())
-        }
-        if builder_ref.options.enable_cxx_namespaces == true{
-            output_vector.push("enable-cxx-namespaces".into());
-        }
-        if builder_ref.options.disable_name_namespacing == true {
-            output_vector.push("disable-name-namespacing".into());
-        }
-        
-        if builder_ref.options.links.len() > 0 {
-            output_vector.push("framework".into());
-            output_vector.extend(builder_ref.options.links.iter().map(|&(ref a, _)| a).cloned());
+        self.options
+            .links
+            .iter()
+            .map(|&(ref item, _)| {
+                     output_vector.push("--framework".into());
+                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
+                 })
+            .count();
+
+        if self.options.codegen_config.functions == false {
+            output_vector.push("--ignore-functions".into());
         }
 
-        if builder_ref.options.codegen_config.functions == false {
-            output_vector.push("ignore-functions".into());
-        }
-        
-        output_vector.push("generate".into());
-        
-        if builder_ref.options.codegen_config.functions == true {
-            output_vector.push("function".into());
-        }
-        if builder_ref.options.codegen_config.types == true {
-            output_vector.push("types".into());
-        }
-        if builder_ref.options.codegen_config.vars == true{
-            output_vector.push("vars".into());
-        }
-        
-        if builder_ref.options.codegen_config.methods == true{
-            output_vector.push("methods".into());
-        }else{   
-            output_vector.push("ignore-methods".into());
-        }    
-        
-        if builder_ref.options.links.len() > 0 {
-            output_vector.push("dynamic".into());
-            output_vector.extend(builder_ref.options.links.iter().map(|&(ref a, _)| a).cloned());
-        }
+        output_vector.push("--generate".into());
 
-
-        if builder_ref.options.convert_floats == false{
-            output_vector.push("no-convert-floats".into());
+        //Temporary placeholder for below 4 options
+        let mut options:Vec<String> = Vec::new();
+        if self.options.codegen_config.functions == true {
+            options.push("function".into());
         }
-        
-        
-        if builder_ref.options.prepend_enum_name == false {
-            output_vector.push("no-prepend-enum-name".into());
+        if self.options.codegen_config.types == true {
+            options.push("types".into());
         }
-        
-        if builder_ref.options.unstable_rust == false {
-            output_vector.push("no-unstable-rust".into());
+        if self.options.codegen_config.vars == true {
+            options.push("vars".into());
         }
-            
-        if builder_ref.options.opaque_types.items.len() > 0 {
-            output_vector.push("opaque-type".into());
-            output_vector.extend(builder_ref.options.opaque_types.items.iter().cloned());
+        if self.options.codegen_config.methods == true {
+            options.push("methods".into());
         }
-        // no function related to output in options.rs
-        // output_vector.push("output");
-            
-        if builder_ref.options.raw_lines.len() > 0 { 
-            output_vector.push("raw-line".into());
-            output_vector.extend(builder_ref.options.raw_lines.iter().cloned());
+        if self.options.codegen_config.constructors == true {
+            options.push("constructors".into());
         }
-
-        if builder_ref.options.links.len() > 0 {
-            output_vector.push("static".into());
-            output_vector.extend(builder_ref.options.links.iter().map(|&(ref a, _)| a).cloned());
-        }
-
-        if builder_ref.options.use_core == true{
-            output_vector.push("use-core".into());
+        if self.options.codegen_config.destructors == true {
+            options.push("destructors".into());
         }
         
-        if builder_ref.options.conservative_inline_namespaces == true{
-            output_vector.push("conservative-inline-namespaces".into());
-        }
-        // unused in options.rs
-        // output_vector.push("use-msvc-mangling");
+        output_vector.push(options.join(","));
 
-
-        if builder_ref.options.whitelisted_functions.items.len() > 0 {
-            output_vector.push("whitelist-function".into());
-            output_vector.extend(builder_ref.options.whitelisted_functions.items.iter().cloned());
+        if self.options.codegen_config.methods == false{
+            output_vector.push("--ignore-methods".into());
         }
 
-        if builder_ref.options.whitelisted_types.items.len() > 0{ 
-            output_vector.push("whitelist-type".into());
-            output_vector.extend(builder_ref.options.whitelisted_types.items.iter().cloned());
-        }    
-        if builder_ref.options.whitelisted_vars.items.len() > 0{
-            output_vector.push("whitelist-var".into());
-            output_vector.extend(builder_ref.options.whitelisted_vars.items.iter().cloned());
-        }
-        // output_vector.push("verbose");
+        self.options
+            .links
+            .iter()
+            .map(|&(ref item, _)| {
+                     output_vector.push("--clang-args".into());
+                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
+                 })
+            .count();
 
-        
+        if self.options.convert_floats == false {
+            output_vector.push("--no-convert-floats".into());
+        }
+
+        if self.options.prepend_enum_name == false {
+            output_vector.push("--no-prepend-enum-name".into());
+        }
+
+        if self.options.unstable_rust == false {
+            output_vector.push("--no-unstable-rust".into());
+        }
+
+        self.options
+            .opaque_types
+            .get_items()
+            .iter()
+            .map(|item| {
+                     output_vector.push("--opaque-type".into());
+                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
+                 })
+            .count();
+
+        self.options
+            .raw_lines
+            .iter()
+            .map(|item| {
+                     output_vector.push("--raw-line".into());
+                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
+                 })
+            .count();
+
+        self.options
+            .links
+            .iter()
+            .map(|&(ref item, _)| {
+                     output_vector.push("--static".into());
+                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
+                 })
+            .count();
+
+        if self.options.use_core == true {
+            output_vector.push("--use-core".into());
+        }
+
+        if self.options.conservative_inline_namespaces == true {
+            output_vector.push("--conservative-inline-namespaces".into());
+        }
+
+        self.options
+            .whitelisted_functions
+            .get_items()
+            .iter()
+            .map(|item| {
+                     output_vector.push("--whitelist-function".into());
+                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
+                 })
+            .count();
+
+        self.options
+            .whitelisted_types
+            .get_items()
+            .iter()
+            .map(|item| {
+                     output_vector.push("--whitelist-type".into());
+                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
+                 })
+            .count();
+
+        self.options
+            .whitelisted_vars
+            .get_items()
+            .iter()
+            .map(|item| {
+                     output_vector.push("--whitelist-var".into());
+                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
+                 })
+            .count();
+
         output_vector
     }
 
@@ -1164,38 +1206,35 @@ pub fn clang_version() -> ClangVersion {
 
 /// Test command_line_flag function.
 #[test]
-fn commandline_flag_unit_test_function()  {
-        
-    let mut bindings = ::builder();
-    let test_cases = vec!["no-derive-default",
-                          "generate",
-                          "function",
-                          "types",
-                          "vars", 
-                          "methods"].iter()
-                                    .map(|&x| x.into())
-                                    .collect::<Vec<String>>();
+fn commandline_flag_unit_test_function() {
+    //Test 1
+    let bindings = ::builder();
+    let command_line_flags = bindings.command_line_flags();
 
-    let command_line_flags = ::Builder::command_line_flags(&mut bindings);
+    let test_cases = vec!["--no-derive-default",
+                          "--generate", "function,types,vars,methods,constructors,destructors"]
+                    .iter()
+                    .map(|&x| x.into())
+                    .collect::<Vec<String>>();
 
-    assert!( test_cases.len() == command_line_flags.len() &&
-             test_cases.iter().all(|x| command_line_flags.contains(x)));
+    assert!(test_cases.iter().all(|ref x| command_line_flags.contains(x)) );
 
-    /////////////////////////////////////////////////////////////////
-    let mut bindings = ::builder().use_core();
-    let test_cases = vec!["no-derive-default",
-                          "generate",
-                          "function",
-                          "types",
-                          "vars", 
-                          "methods",
-                          "use-core"].iter()
-                                    .map(|&x| x.into())
-                                    .collect::<Vec<String>>();
-    let command_line_flags = ::Builder::command_line_flags(&mut bindings);
+    //Test 2 
+    let bindings = ::builder().header("input_header")
+                              .whitelisted_type("Distinct_Type")
+                              .whitelisted_function("safe_function");
 
-    assert!( test_cases.len() == command_line_flags.len() &&
-             test_cases.iter().all(|x| command_line_flags.contains(x)));
-    ///////////////////////////////////////////////////////////////////
+    let command_line_flags = bindings.command_line_flags();
+    let test_cases = vec!["input_header",
+                          "--no-derive-default",
+                          "--generate", "function,types,vars,methods,constructors,destructors",
+                          "--whitelist-type", "Distinct_Type",
+                          "--whitelist-function", "safe_function"]
+                    .iter()
+                    .map(|&x| x.into())
+                    .collect::<Vec<String>>();
+    println!("{:?}", command_line_flags);
+
+    assert!(test_cases.iter().all(|ref x| command_line_flags.contains(x)) );
 
 }

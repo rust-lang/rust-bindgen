@@ -8,8 +8,8 @@ use regex::RegexSet as RxSet;
 /// A dynamic set of regular expressions.
 #[derive(Debug)]
 pub struct RegexSet {
-    pub items: Vec<String>,
-    pub set: Option<RxSet>,
+    items: Vec<String>,
+    set: Option<RxSet>,
 }
 
 impl RegexSet {
@@ -27,7 +27,14 @@ impl RegexSet {
             self.insert(s)
         }
     }
-
+    /// Returns slice of String from its field 'items'
+    pub fn get_items(&self) -> &[String] {
+        &self.items[..]
+    }
+    /// Returns reference of its field 'set'
+    pub fn get_set(&self) -> Option<&RxSet> {
+        self.set.as_ref()
+    }
     /// Insert a new regex into this set.
     pub fn insert<S>(&mut self, string: S)
         where S: AsRef<str>,
