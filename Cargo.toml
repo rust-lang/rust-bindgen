@@ -16,7 +16,11 @@ documentation = "https://docs.rs/bindgen"
 version = "0.22.1"
 build = "build.rs"
 
-exclude = ["tests/headers", "tests/expectations", "bindgen-integration", "ci"]
+exclude = [
+  "bindgen-integration",
+  "ci",
+  "tests/**",
+]
 
 [badges]
 travis-ci = { repository = "servo/rust-bindgen" }
