@@ -131,7 +131,7 @@ use super::item::ItemSet;
 use super::template::AsNamed;
 use super::traversal::{EdgeKind, Trace};
 use super::ty::{TemplateDeclaration, TypeKind};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fmt;
 
 /// An analysis in the monotone framework.
@@ -263,6 +263,8 @@ pub struct UsedTemplateParameters<'ctx, 'gen>
     used: HashMap<ItemId, Option<ItemSet>>,
 
     dependencies: HashMap<ItemId, Vec<ItemId>>,
+
+    whitelisted_items: HashSet<ItemId>,
 }
 
 impl<'ctx, 'gen> UsedTemplateParameters<'ctx, 'gen> {
@@ -316,21 +318,30 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
            -> UsedTemplateParameters<'ctx, 'gen> {
         let mut used = HashMap::new();
         let mut dependencies = HashMap::new();
+        let whitelisted_items: HashSet<_> = ctx.whitelisted_items().collect();
 
-        for item in ctx.whitelisted_items() {
+        for item in whitelisted_items.iter().cloned() {
             dependencies.entry(item).or_insert(vec![]);
             used.insert(item, Some(ItemSet::new()));
 
             {
                 // We reverse our natural IR graph edges to find dependencies
                 // between nodes.
-                item.trace(ctx,
-                           &mut |sub_item, _| {
-                               dependencies.entry(sub_item)
-                                   .or_insert(vec![])
-                                   .push(item);
-                           },
-                           &());
+                item.trace(ctx, &mut |sub_item, _| {
+                    // We won't be generating code for items that aren't
+                    // whitelisted, so don't bother keeping track of their
+                    // template parameters. But isn't whitelisting the
+                    // transitive closure of reachable items from the explicitly
+                    // whitelisted items? Usually! The exception is explicitly
+                    // blacklisted items.
+                    if !whitelisted_items.contains(&sub_item) {
+                        return;
+                    }
+
+                    dependencies.entry(sub_item)
+                        .or_insert(vec![])
+                        .push(item);
+                }, &());
             }
 
             // Additionally, whether a template instantiation's template
@@ -361,6 +372,7 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
             ctx: ctx,
             used: used,
             dependencies: dependencies,
+            whitelisted_items: whitelisted_items,
         }
     }
 
@@ -395,6 +407,19 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
                 used_by_this_id.insert(id);
             }
 
+            // We say that blacklisted items use all of their template
+            // parameters. The blacklisted type is most likely implemented
+            // explicitly by the user, since it won't be in the generated
+            // bindings, and we don't know exactly what they'll to with template
+            // parameters, but we can push the issue down the line to them.
+            Some(&TypeKind::TemplateInstantiation(ref inst))
+                if !self.whitelisted_items.contains(&inst.template_definition()) => {
+                    let args = inst.template_arguments()
+                        .iter()
+                        .filter_map(|a| a.as_named(self.ctx, &()));
+                    used_by_this_id.extend(args);
+                }
+
             // A template instantiation's concrete template argument is
             // only used if the template declaration uses the
             // corresponding template parameter.
@@ -404,12 +429,12 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
 
                 let params = decl.self_template_params(self.ctx)
                     .unwrap_or(vec![]);
+
                 for (arg, param) in args.iter().zip(params.iter()) {
-                    let used_by_definition = self.used
-                                                 [&inst.template_definition()]
+                    let used_by_def = self.used[&inst.template_definition()]
                         .as_ref()
                         .unwrap();
-                    if used_by_definition.contains(param) {
+                    if used_by_def.contains(param) {
                         if let Some(named) = arg.as_named(self.ctx, &()) {
                             used_by_this_id.insert(named);
                         }
@@ -421,7 +446,12 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
             // parameter usage.
             _ => {
                 item.trace(self.ctx, &mut |sub_id, edge_kind| {
-                    if sub_id == id || !Self::consider_edge(edge_kind) {
+                    // Ignore ourselves, since union with ourself is a
+                    // no-op. Ignore edges that aren't relevant to the
+                    // analysis. Ignore edges to blacklisted items.
+                    if sub_id == id ||
+                       !Self::consider_edge(edge_kind) ||
+                       !self.whitelisted_items.contains(&sub_id) {
                         return;
                     }
 

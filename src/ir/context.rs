@@ -631,6 +631,14 @@ impl<'ctx> BindgenContext<'ctx> {
     /// This method may only be called during the codegen phase, because the
     /// template usage information is only computed as we enter the codegen
     /// phase.
+    ///
+    /// If the item is blacklisted, then we say that it always uses the template
+    /// parameter. This is a little subtle. The template parameter usage
+    /// analysis only considers whitelisted items, and if any blacklisted item
+    /// shows up in the generated bindings, it is the user's responsibility to
+    /// manually provide a definition for them. To give them the most
+    /// flexibility when doing that, we assume that they use every template
+    /// parameter and always pass template arguments through in instantiations.
     pub fn uses_template_parameter(&self,
                                    item: ItemId,
                                    template_param: ItemId)
@@ -643,7 +651,7 @@ impl<'ctx> BindgenContext<'ctx> {
             .expect("should have found template parameter usage if we're in codegen")
             .get(&item)
             .map(|items_used_params| items_used_params.contains(&template_param))
-            .unwrap_or(false)
+            .unwrap_or_else(|| self.resolve_item(item).is_hidden(self))
     }
 
     // This deserves a comment. Builtin types don't get a valid declaration, so
