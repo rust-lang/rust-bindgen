@@ -40,6 +40,9 @@ pub fn builder_from_flags<I>
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("no-layout-tests")
+                .long("no-layout-tests")
+                .help("Avoid generating layout tests for any type."),
             Arg::with_name("no-derive-debug")
                 .long("no-derive-debug")
                 .help("Avoid deriving Debug on any type."),
@@ -231,6 +234,10 @@ pub fn builder_from_flags<I>
 
     if matches.is_present("builtins") {
         builder = builder.emit_builtins();
+    }
+
+    if matches.is_present("no-layout-tests") {
+        builder = builder.layout_tests(false);
     }
 
     if matches.is_present("no-derive-debug") {
