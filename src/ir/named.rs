@@ -322,12 +322,14 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
 
         for item in whitelisted_items.iter().cloned() {
             dependencies.entry(item).or_insert(vec![]);
-            used.insert(item, Some(ItemSet::new()));
+            used.entry(item).or_insert(Some(ItemSet::new()));
 
             {
                 // We reverse our natural IR graph edges to find dependencies
                 // between nodes.
                 item.trace(ctx, &mut |sub_item, _| {
+                    used.entry(sub_item).or_insert(Some(ItemSet::new()));
+
                     // We won't be generating code for items that aren't
                     // whitelisted, so don't bother keeping track of their
                     // template parameters. But isn't whitelisting the
@@ -353,12 +355,17 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
                     &TypeKind::TemplateInstantiation(ref inst) => {
                         let decl = ctx.resolve_type(inst.template_definition());
                         let args = inst.template_arguments();
+
                         // Although template definitions should always have
                         // template parameters, there is a single exception:
                         // opaque templates. Hence the unwrap_or.
                         let params = decl.self_template_params(ctx)
                             .unwrap_or(vec![]);
+
                         for (arg, param) in args.iter().zip(params.iter()) {
+                            used.entry(*arg).or_insert(Some(ItemSet::new()));
+                            used.entry(*param).or_insert(Some(ItemSet::new()));
+
                             dependencies.entry(*arg)
                                 .or_insert(vec![])
                                 .push(*param);
@@ -366,6 +373,28 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
                     }
                     _ => {}
                 });
+        }
+
+        if cfg!(feature = "testing_only_extra_assertions") {
+            // Invariant: The `used` map has an entry for every whitelisted
+            // item, as well as all explicitly blacklisted items that are
+            // reachable from whitelisted items.
+            //
+            // (This is so that every item we call `constrain` on is guaranteed
+            // to have a set of template parameters, and we can allow
+            // blacklisted templates to use all of their parameters).
+            for item in whitelisted_items.iter() {
+                extra_assert!(used.contains_key(item));
+                item.trace(ctx, &mut |sub_item, _| {
+                    extra_assert!(used.contains_key(&sub_item));
+                }, &())
+            }
+
+            // Invariant: the `dependencies` map has an entry for every
+            // whitelisted item.
+            for item in whitelisted_items.iter() {
+                extra_assert!(dependencies.contains_key(item));
+            }
         }
 
         UsedTemplateParameters {
