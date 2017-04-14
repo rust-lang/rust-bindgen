@@ -986,40 +986,41 @@ impl CodeGenerator for TemplateInstantiation {
         // Although uses of instantiations don't need code generation, and are
         // just converted to rust types in fields, vars, etc, we take this
         // opportunity to generate tests for their layout here.
+        if !ctx.options().layout_tests {
+            return
+        }
 
-        if ctx.options().layout_tests {
-            let layout = item.kind().expect_type().layout(ctx);
+        let layout = item.kind().expect_type().layout(ctx);
 
-            if let Some(layout) = layout {
-                let size = layout.size;
-                let align = layout.align;
+        if let Some(layout) = layout {
+            let size = layout.size;
+            let align = layout.align;
 
-                let name = item.canonical_name(ctx);
-                let fn_name = format!("__bindgen_test_layout_{}_instantiation_{}",
-                                      name,
-                                      item.id().as_usize());
-                let fn_name = ctx.rust_ident_raw(&fn_name);
+            let name = item.canonical_name(ctx);
+            let fn_name = format!("__bindgen_test_layout_{}_instantiation_{}",
+                                  name,
+                                  item.id().as_usize());
+            let fn_name = ctx.rust_ident_raw(&fn_name);
 
-                let prefix = ctx.trait_prefix();
-                let ident = item.to_rust_ty_or_opaque(ctx, &());
-                let size_of_expr = quote_expr!(ctx.ext_cx(),
-                                               ::$prefix::mem::size_of::<$ident>());
-                let align_of_expr = quote_expr!(ctx.ext_cx(),
-                                                ::$prefix::mem::align_of::<$ident>());
+            let prefix = ctx.trait_prefix();
+            let ident = item.to_rust_ty_or_opaque(ctx, &());
+            let size_of_expr = quote_expr!(ctx.ext_cx(),
+                                           ::$prefix::mem::size_of::<$ident>());
+            let align_of_expr = quote_expr!(ctx.ext_cx(),
+                                            ::$prefix::mem::align_of::<$ident>());
 
-                let item = quote_item!(
-                    ctx.ext_cx(),
-                    #[test]
-                    fn $fn_name() {
-                        assert_eq!($size_of_expr, $size,
-                                   concat!("Size of template specialization: ", stringify!($ident)));
-                        assert_eq!($align_of_expr, $align,
-                                   concat!("Alignment of template specialization: ", stringify!($ident)));
-                    })
-                    .unwrap();
+            let item = quote_item!(
+                ctx.ext_cx(),
+                #[test]
+                fn $fn_name() {
+                    assert_eq!($size_of_expr, $size,
+                               concat!("Size of template specialization: ", stringify!($ident)));
+                    assert_eq!($align_of_expr, $align,
+                               concat!("Alignment of template specialization: ", stringify!($ident)));
+                })
+                .unwrap();
 
-                result.push(item);
-            }
+            result.push(item);
         }
     }
 }
