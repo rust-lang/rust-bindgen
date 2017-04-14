@@ -987,37 +987,39 @@ impl CodeGenerator for TemplateInstantiation {
         // just converted to rust types in fields, vars, etc, we take this
         // opportunity to generate tests for their layout here.
 
-        let layout = item.kind().expect_type().layout(ctx);
+        if ctx.options().layout_tests {
+            let layout = item.kind().expect_type().layout(ctx);
 
-        if let Some(layout) = layout {
-            let size = layout.size;
-            let align = layout.align;
+            if let Some(layout) = layout {
+                let size = layout.size;
+                let align = layout.align;
 
-            let name = item.canonical_name(ctx);
-            let fn_name = format!("__bindgen_test_layout_{}_instantiation_{}",
-                                  name,
-                                  item.id().as_usize());
-            let fn_name = ctx.rust_ident_raw(&fn_name);
+                let name = item.canonical_name(ctx);
+                let fn_name = format!("__bindgen_test_layout_{}_instantiation_{}",
+                                      name,
+                                      item.id().as_usize());
+                let fn_name = ctx.rust_ident_raw(&fn_name);
 
-            let prefix = ctx.trait_prefix();
-            let ident = item.to_rust_ty_or_opaque(ctx, &());
-            let size_of_expr = quote_expr!(ctx.ext_cx(),
-                                           ::$prefix::mem::size_of::<$ident>());
-            let align_of_expr = quote_expr!(ctx.ext_cx(),
-                                            ::$prefix::mem::align_of::<$ident>());
+                let prefix = ctx.trait_prefix();
+                let ident = item.to_rust_ty_or_opaque(ctx, &());
+                let size_of_expr = quote_expr!(ctx.ext_cx(),
+                                               ::$prefix::mem::size_of::<$ident>());
+                let align_of_expr = quote_expr!(ctx.ext_cx(),
+                                                ::$prefix::mem::align_of::<$ident>());
 
-            let item = quote_item!(
-                ctx.ext_cx(),
-                #[test]
-                fn $fn_name() {
-                    assert_eq!($size_of_expr, $size,
-                               concat!("Size of template specialization: ", stringify!($ident)));
-                    assert_eq!($align_of_expr, $align,
-                               concat!("Alignment of template specialization: ", stringify!($ident)));
-                })
-                .unwrap();
+                let item = quote_item!(
+                    ctx.ext_cx(),
+                    #[test]
+                    fn $fn_name() {
+                        assert_eq!($size_of_expr, $size,
+                                   concat!("Size of template specialization: ", stringify!($ident)));
+                        assert_eq!($align_of_expr, $align,
+                                   concat!("Alignment of template specialization: ", stringify!($ident)));
+                    })
+                    .unwrap();
 
-            result.push(item);
+                result.push(item);
+            }
         }
     }
 }
@@ -1498,76 +1500,78 @@ impl CodeGenerator for CompInfo {
                     .codegen(ctx, result, whitelisted_items, &());
             }
 
-            if let Some(layout) = layout {
-                let fn_name = format!("bindgen_test_layout_{}", canonical_name);
-                let fn_name = ctx.rust_ident_raw(&fn_name);
-                let type_name = ctx.rust_ident_raw(&canonical_name);
-                let prefix = ctx.trait_prefix();
-                let size_of_expr = quote_expr!(ctx.ext_cx(),
-                                ::$prefix::mem::size_of::<$type_name>());
-                let align_of_expr = quote_expr!(ctx.ext_cx(),
-                                ::$prefix::mem::align_of::<$type_name>());
-                let size = layout.size;
-                let align = layout.align;
+            if ctx.options().layout_tests {
+                if let Some(layout) = layout {
+                    let fn_name = format!("bindgen_test_layout_{}", canonical_name);
+                    let fn_name = ctx.rust_ident_raw(&fn_name);
+                    let type_name = ctx.rust_ident_raw(&canonical_name);
+                    let prefix = ctx.trait_prefix();
+                    let size_of_expr = quote_expr!(ctx.ext_cx(),
+                                    ::$prefix::mem::size_of::<$type_name>());
+                    let align_of_expr = quote_expr!(ctx.ext_cx(),
+                                    ::$prefix::mem::align_of::<$type_name>());
+                    let size = layout.size;
+                    let align = layout.align;
 
-                let check_struct_align = if align > mem::size_of::<*mut ()>() {
-                    // FIXME when [RFC 1358](https://github.com/rust-lang/rust/issues/33626) ready
-                    None
-                } else {
-                    quote_item!(ctx.ext_cx(),
-                        assert_eq!($align_of_expr,
-                                   $align,
-                                   concat!("Alignment of ", stringify!($type_name)));
-                    )
-                };
+                    let check_struct_align = if align > mem::size_of::<*mut ()>() {
+                        // FIXME when [RFC 1358](https://github.com/rust-lang/rust/issues/33626) ready
+                        None
+                    } else {
+                        quote_item!(ctx.ext_cx(),
+                            assert_eq!($align_of_expr,
+                                       $align,
+                                       concat!("Alignment of ", stringify!($type_name)));
+                        )
+                    };
 
-                // FIXME when [issue #465](https://github.com/servo/rust-bindgen/issues/465) ready
-                let too_many_base_vtables = self.base_members()
-                    .iter()
-                    .filter(|base| {
-                        ctx.resolve_type(base.ty).has_vtable(ctx)
-                    })
-                    .count() > 1;
-
-                let should_skip_field_offset_checks = item.is_opaque(ctx) ||
-                                                      too_many_base_vtables;
-
-                let check_field_offset = if should_skip_field_offset_checks {
-                    None
-                } else {
-                    let asserts = self.fields()
-                    .iter()
-                    .filter(|field| field.bitfield().is_none())
-                    .flat_map(|field| {
-                        field.name().and_then(|name| {
-                            field.offset().and_then(|offset| {
-                                let field_offset = offset / 8;
-                                let field_name = ctx.rust_ident(name);
-
-                                quote_item!(ctx.ext_cx(),
-                                    assert_eq!(unsafe { &(*(0 as *const $type_name)).$field_name as *const _ as usize },
-                                               $field_offset,
-                                               concat!("Alignment of field: ", stringify!($type_name), "::", stringify!($field_name)));
-                                )
-                            })
+                    // FIXME when [issue #465](https://github.com/servo/rust-bindgen/issues/465) ready
+                    let too_many_base_vtables = self.base_members()
+                        .iter()
+                        .filter(|base| {
+                            ctx.resolve_type(base.ty).has_vtable(ctx)
                         })
-                    }).collect::<Vec<P<ast::Item>>>();
+                        .count() > 1;
 
-                    Some(asserts)
-                };
+                    let should_skip_field_offset_checks = item.is_opaque(ctx) ||
+                                                          too_many_base_vtables;
 
-                let item = quote_item!(ctx.ext_cx(),
-                    #[test]
-                    fn $fn_name() {
-                        assert_eq!($size_of_expr,
-                                   $size,
-                                   concat!("Size of: ", stringify!($type_name)));
+                    let check_field_offset = if should_skip_field_offset_checks {
+                        None
+                    } else {
+                        let asserts = self.fields()
+                        .iter()
+                        .filter(|field| field.bitfield().is_none())
+                        .flat_map(|field| {
+                            field.name().and_then(|name| {
+                                field.offset().and_then(|offset| {
+                                    let field_offset = offset / 8;
+                                    let field_name = ctx.rust_ident(name);
 
-                        $check_struct_align
-                        $check_field_offset
-                    })
-                    .unwrap();
-                result.push(item);
+                                    quote_item!(ctx.ext_cx(),
+                                        assert_eq!(unsafe { &(*(0 as *const $type_name)).$field_name as *const _ as usize },
+                                                   $field_offset,
+                                                   concat!("Alignment of field: ", stringify!($type_name), "::", stringify!($field_name)));
+                                    )
+                                })
+                            })
+                        }).collect::<Vec<P<ast::Item>>>();
+
+                        Some(asserts)
+                    };
+
+                    let item = quote_item!(ctx.ext_cx(),
+                        #[test]
+                        fn $fn_name() {
+                            assert_eq!($size_of_expr,
+                                       $size,
+                                       concat!("Size of: ", stringify!($type_name)));
+
+                            $check_struct_align
+                            $check_field_offset
+                        })
+                        .unwrap();
+                    result.push(item);
+                }
             }
 
             let mut method_names = Default::default();

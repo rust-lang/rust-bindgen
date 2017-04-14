@@ -214,29 +214,33 @@ impl Builder {
                  })
             .count();
 
-        if self.options.derive_debug == false {
+        if !self.options.layout_tests {
+            output_vector.push("--no-layout-tests".into());
+        }
+
+        if !self.options.derive_debug {
             output_vector.push("--no-derive-debug".into());
         }
 
-        if self.options.derive_default == false {
+        if !self.options.derive_default {
             output_vector.push("--no-derive-default".into());
         } else {
             output_vector.push("--with-derive-default".into());
         }
 
-        if self.options.generate_comments == false {
+        if !self.options.generate_comments {
             output_vector.push("--no-doc-comments".into());
         }
 
-        if self.options.whitelist_recursively == false {
+        if !self.options.whitelist_recursively {
             output_vector.push("--no-recursive-whitelist".into());
         }
   
-        if self.options.objc_extern_crate == true {
+        if self.options.objc_extern_crate {
             output_vector.push("--objc-extern-crate".into());
         }
     
-        if self.options.builtins == true {
+        if self.options.builtins {
             output_vector.push("--builtins".into());
         }
 
@@ -259,21 +263,21 @@ impl Builder {
             output_vector.push(dummy.clone());
         }
 
-        if self.options.emit_ast == true {
+        if self.options.emit_ast {
             output_vector.push("--emit-clang-ast".into());
         }
 
-        if self.options.emit_ir == true {
+        if self.options.emit_ir {
             output_vector.push("--emit-ir".into());
         }
         if let Some(ref graph) = self.options.emit_ir_graphviz {
             output_vector.push("--emit-ir-graphviz".into());
             output_vector.push(graph.clone())
         }
-        if self.options.enable_cxx_namespaces == true {
+        if self.options.enable_cxx_namespaces {
             output_vector.push("--enable-cxx-namespaces".into());
         }
-        if self.options.disable_name_namespacing == true {
+        if self.options.disable_name_namespacing {
             output_vector.push("--disable-name-namespacing".into());
         }
 
@@ -286,7 +290,7 @@ impl Builder {
                  })
             .count();
 
-        if self.options.codegen_config.functions == false {
+        if !self.options.codegen_config.functions {
             output_vector.push("--ignore-functions".into());
         }
 
@@ -294,28 +298,28 @@ impl Builder {
 
         //Temporary placeholder for below 4 options
         let mut options:Vec<String> = Vec::new();
-        if self.options.codegen_config.functions == true {
+        if self.options.codegen_config.functions {
             options.push("function".into());
         }
-        if self.options.codegen_config.types == true {
+        if self.options.codegen_config.types {
             options.push("types".into());
         }
-        if self.options.codegen_config.vars == true {
+        if self.options.codegen_config.vars {
             options.push("vars".into());
         }
-        if self.options.codegen_config.methods == true {
+        if self.options.codegen_config.methods {
             options.push("methods".into());
         }
-        if self.options.codegen_config.constructors == true {
+        if self.options.codegen_config.constructors {
             options.push("constructors".into());
         }
-        if self.options.codegen_config.destructors == true {
+        if self.options.codegen_config.destructors {
             options.push("destructors".into());
         }
         
         output_vector.push(options.join(","));
 
-        if self.options.codegen_config.methods == false{
+        if !self.options.codegen_config.methods {
             output_vector.push("--ignore-methods".into());
         }
 
@@ -328,15 +332,15 @@ impl Builder {
                  })
             .count();
 
-        if self.options.convert_floats == false {
+        if !self.options.convert_floats {
             output_vector.push("--no-convert-floats".into());
         }
 
-        if self.options.prepend_enum_name == false {
+        if !self.options.prepend_enum_name {
             output_vector.push("--no-prepend-enum-name".into());
         }
 
-        if self.options.unstable_rust == false {
+        if !self.options.unstable_rust {
             output_vector.push("--no-unstable-rust".into());
         }
 
@@ -368,11 +372,11 @@ impl Builder {
                  })
             .count();
 
-        if self.options.use_core == true {
+        if self.options.use_core {
             output_vector.push("--use-core".into());
         }
 
-        if self.options.conservative_inline_namespaces == true {
+        if self.options.conservative_inline_namespaces {
             output_vector.push("--conservative-inline-namespaces".into());
         }
 
@@ -582,6 +586,12 @@ impl Builder {
         self
     }
 
+    /// Set whether layout tests should be generated.
+    pub fn layout_tests(mut self, doit: bool) -> Self {
+        self.options.layout_tests = doit;
+        self
+    }
+
     /// Set whether `Debug` should be derived by default.
     pub fn derive_debug(mut self, doit: bool) -> Self {
         self.options.derive_debug = doit;
@@ -785,11 +795,14 @@ pub struct BindgenOptions {
     /// True if we should avoid mangling names with namespaces.
     pub disable_name_namespacing: bool,
 
-    /// True if we shold derive Debug trait implementations for C/C++ structures
+    /// True if we should generate layout tests for generated structures.
+    pub layout_tests: bool,
+
+    /// True if we should derive Debug trait implementations for C/C++ structures
     /// and types.
     pub derive_debug: bool,
 
-    /// True if we shold derive Default trait implementations for C/C++ structures
+    /// True if we should derive Default trait implementations for C/C++ structures
     /// and types.
     pub derive_default: bool,
 
@@ -901,6 +914,7 @@ impl Default for BindgenOptions {
             emit_ast: false,
             emit_ir: false,
             emit_ir_graphviz: None,
+            layout_tests: true,
             derive_debug: true,
             derive_default: false,
             enable_cxx_namespaces: false,
