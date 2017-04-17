@@ -317,7 +317,7 @@ impl<'ctx, 'gen> UsedTemplateParameters<'ctx, 'gen> {
     fn constrain_instantiation_of_blacklisted_template(&self,
                                                        used_by_this_id: &mut ItemSet,
                                                        instantiation: &TemplateInstantiation) {
-        debug!("    instantiation of blacklisted template, uses all template \
+        trace!("    instantiation of blacklisted template, uses all template \
                 arguments");
 
         let args = instantiation.template_arguments()
@@ -331,7 +331,7 @@ impl<'ctx, 'gen> UsedTemplateParameters<'ctx, 'gen> {
     fn constrain_instantiation(&self,
                                used_by_this_id: &mut ItemSet,
                                instantiation: &TemplateInstantiation) {
-        debug!("    template instantiation");
+        trace!("    template instantiation");
 
         let decl = self.ctx.resolve_type(instantiation.template_definition());
         let args = instantiation.template_arguments();
@@ -344,20 +344,20 @@ impl<'ctx, 'gen> UsedTemplateParameters<'ctx, 'gen> {
             .unwrap();
 
         for (arg, param) in args.iter().zip(params.iter()) {
-            debug!("      instantiation's argument {:?} is used if definition's \
+            trace!("      instantiation's argument {:?} is used if definition's \
                     parameter {:?} is used",
                    arg,
                    param);
 
             if used_by_def.contains(param) {
-                debug!("        param is used by template definition");
+                trace!("        param is used by template definition");
 
                 let arg = arg.into_resolver()
                     .through_type_refs()
                     .through_type_aliases()
                     .resolve(self.ctx);
                 if let Some(named) = arg.as_named(self.ctx, &()) {
-                    debug!("        arg is a type parameter, marking used");
+                    trace!("        arg is a type parameter, marking used");
                     used_by_this_id.insert(named);
                 }
             }
@@ -367,7 +367,7 @@ impl<'ctx, 'gen> UsedTemplateParameters<'ctx, 'gen> {
     /// The join operation on our lattice: the set union of all of this id's
     /// successors.
     fn constrain_join(&self, used_by_this_id: &mut ItemSet, item: &Item) {
-        debug!("    other item: join with successors' usage");
+        trace!("    other item: join with successors' usage");
 
         item.trace(self.ctx, &mut |sub_id, edge_kind| {
             // Ignore ourselves, since union with ourself is a
@@ -388,7 +388,7 @@ impl<'ctx, 'gen> UsedTemplateParameters<'ctx, 'gen> {
                         .iter()
                         .cloned();
 
-            debug!("      union with {:?}'s usage: {:?}",
+            trace!("      union with {:?}'s usage: {:?}",
                    sub_id,
                    used_by_sub_id.clone().collect::<Vec<_>>());
 
@@ -508,8 +508,8 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
         // an analog to slice::split_at_mut.
         let mut used_by_this_id = self.take_this_id_usage_set(id);
 
-        debug!("constrain {:?}", id);
-        debug!("  initially, used set is {:?}", used_by_this_id);
+        trace!("constrain {:?}", id);
+        trace!("  initially, used set is {:?}", used_by_this_id);
 
         let original_len = used_by_this_id.len();
 
@@ -518,7 +518,7 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
         match ty_kind {
             // Named template type parameters trivially use themselves.
             Some(&TypeKind::Named) => {
-                debug!("    named type, trivially uses itself");
+                trace!("    named type, trivially uses itself");
                 used_by_this_id.insert(id);
             }
             // Template instantiations only use their template arguments if the
@@ -536,7 +536,7 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
             _ => self.constrain_join(&mut used_by_this_id, item),
         }
 
-        debug!("  finally, used set is {:?}", used_by_this_id);
+        trace!("  finally, used set is {:?}", used_by_this_id);
 
         let new_len = used_by_this_id.len();
         assert!(new_len >= original_len,
@@ -556,7 +556,7 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
     {
         if let Some(edges) = self.dependencies.get(&item) {
             for item in edges {
-                debug!("enqueue {:?} into worklist", item);
+                trace!("enqueue {:?} into worklist", item);
                 f(*item);
             }
         }
