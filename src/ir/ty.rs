@@ -988,8 +988,10 @@ impl Type {
                       (ty.template_args().is_some() &&
                        ty_kind != CXType_Typedef) {
             // This is a template instantiation.
-            let inst = TemplateInstantiation::from_ty(&ty, ctx);
-            TypeKind::TemplateInstantiation(inst)
+            match TemplateInstantiation::from_ty(&ty, ctx) {
+                Some(inst) => TypeKind::TemplateInstantiation(inst),
+                None => TypeKind::Opaque,
+            }
         } else {
             match ty_kind {
                 CXType_Unexposed if *ty != canonical_ty &&
@@ -1096,9 +1098,17 @@ impl Type {
                                 let complex = CompInfo::from_ty(potential_id,
                                                                 ty,
                                                                 Some(location),
-                                                                ctx)
-                                    .expect("C'mon");
-                                TypeKind::Comp(complex)
+                                                                ctx);
+                                match complex {
+                                    Ok(complex) => TypeKind::Comp(complex),
+                                    Err(_) => {
+                                        warn!("Could not create complex type \
+                                               from class template or base \
+                                               specifier, using opaque blob");
+                                        let opaque = Opaque::from_clang_ty(ty);
+                                        return Ok(ParseResult::New(opaque, None));
+                                    }
+                                }
                             }
                             CXCursor_TypeAliasTemplateDecl => {
                                 debug!("TypeAliasTemplateDecl");

@@ -424,7 +424,11 @@ impl<'ctx> BindgenContext<'ctx> {
         for (id, ty, loc, parent_id) in typerefs {
             let _resolved = {
                 let resolved = Item::from_ty(&ty, loc, parent_id, self)
-                    .expect("What happened?");
+                    .unwrap_or_else(|_| {
+                        warn!("Could not resolve type reference, falling back \
+                               to opaque blob");
+                        Item::new_opaque_type(self.next_item_id(), &ty, self)
+                    });
                 let mut item = self.items.get_mut(&id).unwrap();
 
                 *item.kind_mut().as_type_mut().unwrap().kind_mut() =
@@ -580,9 +584,11 @@ impl<'ctx> BindgenContext<'ctx> {
         ret
     }
 
-    /// This function trying to find any dangling references inside of `items`
+    /// When the `testing_only_extra_assertions` feature is enabled, this
+    /// function walks the IR graph and asserts that we do not have any edges
+    /// referencing an ItemId for which we do not have an associated IR item.
     fn assert_no_dangling_references(&self) {
-        if cfg!(feature = "assert_no_dangling_items") {
+        if cfg!(feature = "testing_only_extra_assertions") {
             for _ in self.assert_no_dangling_item_traversal() {
                 // The iterator's next method does the asserting for us.
             }
@@ -625,6 +631,14 @@ impl<'ctx> BindgenContext<'ctx> {
     /// This method may only be called during the codegen phase, because the
     /// template usage information is only computed as we enter the codegen
     /// phase.
+    ///
+    /// If the item is blacklisted, then we say that it always uses the template
+    /// parameter. This is a little subtle. The template parameter usage
+    /// analysis only considers whitelisted items, and if any blacklisted item
+    /// shows up in the generated bindings, it is the user's responsibility to
+    /// manually provide a definition for them. To give them the most
+    /// flexibility when doing that, we assume that they use every template
+    /// parameter and always pass template arguments through in instantiations.
     pub fn uses_template_parameter(&self,
                                    item: ItemId,
                                    template_param: ItemId)
@@ -637,7 +651,7 @@ impl<'ctx> BindgenContext<'ctx> {
             .expect("should have found template parameter usage if we're in codegen")
             .get(&item)
             .map(|items_used_params| items_used_params.contains(&template_param))
-            .unwrap_or(false)
+            .unwrap_or_else(|| self.resolve_item(item).is_hidden(self))
     }
 
     // This deserves a comment. Builtin types don't get a valid declaration, so
@@ -1090,8 +1104,10 @@ impl<'ctx> BindgenContext<'ctx> {
             CXType_Bool => TypeKind::Int(IntKind::Bool),
             CXType_Int => TypeKind::Int(IntKind::Int),
             CXType_UInt => TypeKind::Int(IntKind::UInt),
-            CXType_SChar | CXType_Char_S => TypeKind::Int(IntKind::Char),
-            CXType_UChar | CXType_Char_U => TypeKind::Int(IntKind::UChar),
+            CXType_Char_S => TypeKind::Int(IntKind::Char { is_signed: true }),
+            CXType_Char_U => TypeKind::Int(IntKind::Char { is_signed: false }),
+            CXType_SChar => TypeKind::Int(IntKind::SChar),
+            CXType_UChar => TypeKind::Int(IntKind::UChar),
             CXType_Short => TypeKind::Int(IntKind::Short),
             CXType_UShort => TypeKind::Int(IntKind::UShort),
             CXType_WChar | CXType_Char16 => TypeKind::Int(IntKind::U16),

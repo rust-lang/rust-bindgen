@@ -913,20 +913,20 @@ fn flush_bitfields<'a, I>(ctx: &BindgenContext,
         .pub_()
         .build_ty(field_ty.clone());
 
+    let field_int_ty = match field_layout.size {
+        8 => quote_ty!(ctx.ext_cx(), u64),
+        4 => quote_ty!(ctx.ext_cx(), u32),
+        2 => quote_ty!(ctx.ext_cx(), u16),
+        1 => quote_ty!(ctx.ext_cx(), u8),
+        _ => return field
+    };
+
     for (name, offset, width, bitfield_ty, bitfield_layout) in bitfields {
         let prefix = ctx.trait_prefix();
         let getter_name = bitfield_getter_name(ctx, parent, name);
         let setter_name = bitfield_setter_name(ctx, parent, name);
         let field_ident = ctx.ext_cx().ident_of(field_name);
 
-        let field_int_ty = match field_layout.size {
-            8 => quote_ty!(ctx.ext_cx(), u64),
-            4 => quote_ty!(ctx.ext_cx(), u32),
-            2 => quote_ty!(ctx.ext_cx(), u16),
-            1 => quote_ty!(ctx.ext_cx(), u8),
-            _ => panic!("physical field containing bitfields should be sized \
-                         8, 4, 2, or 1 bytes")
-        };
         let bitfield_int_ty = BlobTyBuilder::new(bitfield_layout).build();
 
         let mask: usize = ((1usize << width) - 1usize) << offset;
@@ -986,6 +986,9 @@ impl CodeGenerator for TemplateInstantiation {
         // Although uses of instantiations don't need code generation, and are
         // just converted to rust types in fields, vars, etc, we take this
         // opportunity to generate tests for their layout here.
+        if !ctx.options().layout_tests {
+            return
+        }
 
         let layout = item.kind().expect_type().layout(ctx);
 
@@ -1507,76 +1510,78 @@ impl CodeGenerator for CompInfo {
                     .codegen(ctx, result, whitelisted_items, &());
             }
 
-            if let Some(layout) = layout {
-                let fn_name = format!("bindgen_test_layout_{}", canonical_name);
-                let fn_name = ctx.rust_ident_raw(&fn_name);
-                let type_name = ctx.rust_ident_raw(&canonical_name);
-                let prefix = ctx.trait_prefix();
-                let size_of_expr = quote_expr!(ctx.ext_cx(),
-                                ::$prefix::mem::size_of::<$type_name>());
-                let align_of_expr = quote_expr!(ctx.ext_cx(),
-                                ::$prefix::mem::align_of::<$type_name>());
-                let size = layout.size;
-                let align = layout.align;
+            if ctx.options().layout_tests {
+                if let Some(layout) = layout {
+                    let fn_name = format!("bindgen_test_layout_{}", canonical_name);
+                    let fn_name = ctx.rust_ident_raw(&fn_name);
+                    let type_name = ctx.rust_ident_raw(&canonical_name);
+                    let prefix = ctx.trait_prefix();
+                    let size_of_expr = quote_expr!(ctx.ext_cx(),
+                                    ::$prefix::mem::size_of::<$type_name>());
+                    let align_of_expr = quote_expr!(ctx.ext_cx(),
+                                    ::$prefix::mem::align_of::<$type_name>());
+                    let size = layout.size;
+                    let align = layout.align;
 
-                let check_struct_align = if align > mem::size_of::<*mut ()>() {
-                    // FIXME when [RFC 1358](https://github.com/rust-lang/rust/issues/33626) ready
-                    None
-                } else {
-                    quote_item!(ctx.ext_cx(),
-                        assert_eq!($align_of_expr,
-                                   $align,
-                                   concat!("Alignment of ", stringify!($type_name)));
-                    )
-                };
+                    let check_struct_align = if align > mem::size_of::<*mut ()>() {
+                        // FIXME when [RFC 1358](https://github.com/rust-lang/rust/issues/33626) ready
+                        None
+                    } else {
+                        quote_item!(ctx.ext_cx(),
+                            assert_eq!($align_of_expr,
+                                       $align,
+                                       concat!("Alignment of ", stringify!($type_name)));
+                        )
+                    };
 
-                // FIXME when [issue #465](https://github.com/servo/rust-bindgen/issues/465) ready
-                let too_many_base_vtables = self.base_members()
-                    .iter()
-                    .filter(|base| {
-                        ctx.resolve_type(base.ty).has_vtable(ctx)
-                    })
-                    .count() > 1;
-
-                let should_skip_field_offset_checks = item.is_opaque(ctx) ||
-                                                      too_many_base_vtables;
-
-                let check_field_offset = if should_skip_field_offset_checks {
-                    None
-                } else {
-                    let asserts = self.fields()
-                    .iter()
-                    .filter(|field| field.bitfield().is_none())
-                    .flat_map(|field| {
-                        field.name().and_then(|name| {
-                            field.offset().and_then(|offset| {
-                                let field_offset = offset / 8;
-                                let field_name = ctx.rust_ident(name);
-
-                                quote_item!(ctx.ext_cx(),
-                                    assert_eq!(unsafe { &(*(0 as *const $type_name)).$field_name as *const _ as usize },
-                                               $field_offset,
-                                               concat!("Alignment of field: ", stringify!($type_name), "::", stringify!($field_name)));
-                                )
-                            })
+                    // FIXME when [issue #465](https://github.com/servo/rust-bindgen/issues/465) ready
+                    let too_many_base_vtables = self.base_members()
+                        .iter()
+                        .filter(|base| {
+                            ctx.resolve_type(base.ty).has_vtable(ctx)
                         })
-                    }).collect::<Vec<P<ast::Item>>>();
+                        .count() > 1;
 
-                    Some(asserts)
-                };
+                    let should_skip_field_offset_checks = item.is_opaque(ctx) ||
+                                                          too_many_base_vtables;
 
-                let item = quote_item!(ctx.ext_cx(),
-                    #[test]
-                    fn $fn_name() {
-                        assert_eq!($size_of_expr,
-                                   $size,
-                                   concat!("Size of: ", stringify!($type_name)));
+                    let check_field_offset = if should_skip_field_offset_checks {
+                        None
+                    } else {
+                        let asserts = self.fields()
+                        .iter()
+                        .filter(|field| field.bitfield().is_none())
+                        .flat_map(|field| {
+                            field.name().and_then(|name| {
+                                field.offset().and_then(|offset| {
+                                    let field_offset = offset / 8;
+                                    let field_name = ctx.rust_ident(name);
 
-                        $check_struct_align
-                        $check_field_offset
-                    })
-                    .unwrap();
-                result.push(item);
+                                    quote_item!(ctx.ext_cx(),
+                                        assert_eq!(unsafe { &(*(0 as *const $type_name)).$field_name as *const _ as usize },
+                                                   $field_offset,
+                                                   concat!("Alignment of field: ", stringify!($type_name), "::", stringify!($field_name)));
+                                    )
+                                })
+                            })
+                        }).collect::<Vec<P<ast::Item>>>();
+
+                        Some(asserts)
+                    };
+
+                    let item = quote_item!(ctx.ext_cx(),
+                        #[test]
+                        fn $fn_name() {
+                            assert_eq!($size_of_expr,
+                                       $size,
+                                       concat!("Size of: ", stringify!($type_name)));
+
+                            $check_struct_align
+                            $check_field_offset
+                        })
+                        .unwrap();
+                    result.push(item);
+                }
             }
 
             let mut method_names = Default::default();
@@ -1598,6 +1603,24 @@ impl CodeGenerator for CompInfo {
                                 *sig,
                                 /* const */
                                 false)
+                        .codegen_method(ctx,
+                                        &mut methods,
+                                        &mut method_names,
+                                        result,
+                                        whitelisted_items,
+                                        self);
+                }
+            }
+
+            if ctx.options().codegen_config.destructors {
+                if let Some((is_virtual, destructor)) = self.destructor() {
+                    let kind = if is_virtual {
+                        MethodKind::VirtualDestructor
+                    } else {
+                        MethodKind::Destructor
+                    };
+
+                    Method::new(kind, destructor, false)
                         .codegen_method(ctx,
                                         &mut methods,
                                         &mut method_names,
@@ -1702,6 +1725,7 @@ impl MethodCodegen for Method {
         if self.is_virtual() {
             return; // FIXME
         }
+
         // First of all, output the actual function.
         let function_item = ctx.resolve_item(self.signature());
         function_item.codegen(ctx, result, whitelisted_items, &());
@@ -1710,6 +1734,7 @@ impl MethodCodegen for Method {
         let signature_item = ctx.resolve_item(function.signature());
         let mut name = match self.kind() {
             MethodKind::Constructor => "new".into(),
+            MethodKind::Destructor => "destruct".into(),
             _ => function.name().to_owned(),
         };
 
@@ -1810,11 +1835,7 @@ impl MethodCodegen for Method {
             exprs[0] = quote_expr!(ctx.ext_cx(), &mut __bindgen_tmp);
         } else if !self.is_static() {
             assert!(!exprs.is_empty());
-            exprs[0] = if self.is_const() {
-                quote_expr!(ctx.ext_cx(), &*self)
-            } else {
-                quote_expr!(ctx.ext_cx(), &mut *self)
-            };
+            exprs[0] = quote_expr!(ctx.ext_cx(), self);
         };
 
         let call = aster::expr::ExprBuilder::new()
@@ -2464,7 +2485,8 @@ impl TryToRustTy for Type {
             TypeKind::Int(ik) => {
                 match ik {
                     IntKind::Bool => Ok(aster::ty::TyBuilder::new().bool()),
-                    IntKind::Char => Ok(raw_type(ctx, "c_schar")),
+                    IntKind::Char { .. } => Ok(raw_type(ctx, "c_char")),
+                    IntKind::SChar => Ok(raw_type(ctx, "c_schar")),
                     IntKind::UChar => Ok(raw_type(ctx, "c_uchar")),
                     IntKind::Short => Ok(raw_type(ctx, "c_short")),
                     IntKind::UShort => Ok(raw_type(ctx, "c_ushort")),
@@ -2634,7 +2656,7 @@ impl TryToRustTy for TemplateInstantiation {
                 // This can happen if we generated an opaque type for a partial
                 // template specialization, and we've hit an instantiation of
                 // that partial specialization.
-                debug_assert!(ctx.resolve_type_through_type_refs(decl)
+                extra_assert!(ctx.resolve_type_through_type_refs(decl)
                                   .is_opaque());
                 return Err(error::Error::InstantiationOfOpaqueType);
             }
@@ -2665,8 +2687,8 @@ impl TryToRustTy for TemplateInstantiation {
                 Some(P(ast::PathParameters::AngleBracketed(
                     ast::AngleBracketedParameterData {
                         lifetimes: vec![],
-                        types: P::from_vec(template_args),
-                        bindings: P::from_vec(vec![]),
+                        types: template_args,
+                        bindings: vec![],
                     }
                 )))
             }

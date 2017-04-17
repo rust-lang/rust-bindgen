@@ -16,7 +16,7 @@ impl <T> Default for Foo<T> {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Bar {
-    pub member: ::std::os::raw::c_schar,
+    pub member: ::std::os::raw::c_char,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -30,6 +30,6 @@ impl <V> Default for Quux<V> {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Lobo {
-    pub also_member: ::std::os::raw::c_schar,
+    pub also_member: ::std::os::raw::c_char,
 }
-pub type AliasWithAnonType = ::std::os::raw::c_schar;
+pub type AliasWithAnonType = ::std::os::raw::c_char;

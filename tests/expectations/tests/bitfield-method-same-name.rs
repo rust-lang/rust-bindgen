@@ -19,22 +19,22 @@ fn bindgen_test_layout_Foo() {
 }
 extern "C" {
     #[link_name = "_ZN3Foo4typeEv"]
-    pub fn Foo_type(this: *mut Foo) -> ::std::os::raw::c_schar;
+    pub fn Foo_type(this: *mut Foo) -> ::std::os::raw::c_char;
 }
 extern "C" {
     #[link_name = "_ZN3Foo9set_type_Ec"]
-    pub fn Foo_set_type_(this: *mut Foo, c: ::std::os::raw::c_schar);
+    pub fn Foo_set_type_(this: *mut Foo, c: ::std::os::raw::c_char);
 }
 extern "C" {
     #[link_name = "_ZN3Foo8set_typeEc"]
-    pub fn Foo_set_type(this: *mut Foo, c: ::std::os::raw::c_schar);
+    pub fn Foo_set_type(this: *mut Foo, c: ::std::os::raw::c_char);
 }
 impl Clone for Foo {
     fn clone(&self) -> Self { *self }
 }
 impl Foo {
     #[inline]
-    pub fn type__bindgen_bitfield(&self) -> ::std::os::raw::c_schar {
+    pub fn type__bindgen_bitfield(&self) -> ::std::os::raw::c_char {
         let mask = 7usize as u8;
         let field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
@@ -43,7 +43,7 @@ impl Foo {
     }
     #[inline]
     pub fn set_type__bindgen_bitfield(&mut self,
-                                      val: ::std::os::raw::c_schar) {
+                                      val: ::std::os::raw::c_char) {
         let mask = 7usize as u8;
         let val = val as u8 as u8;
         let mut field_val: u8 =
@@ -53,15 +53,15 @@ impl Foo {
         self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
     }
     #[inline]
-    pub unsafe fn type_(&mut self) -> ::std::os::raw::c_schar {
-        Foo_type(&mut *self)
+    pub unsafe fn type_(&mut self) -> ::std::os::raw::c_char {
+        Foo_type(self)
     }
     #[inline]
-    pub unsafe fn set_type_(&mut self, c: ::std::os::raw::c_schar) {
-        Foo_set_type_(&mut *self, c)
+    pub unsafe fn set_type_(&mut self, c: ::std::os::raw::c_char) {
+        Foo_set_type_(self, c)
     }
     #[inline]
-    pub unsafe fn set_type(&mut self, c: ::std::os::raw::c_schar) {
-        Foo_set_type(&mut *self, c)
+    pub unsafe fn set_type(&mut self, c: ::std::os::raw::c_char) {
+        Foo_set_type(self, c)
     }
 }

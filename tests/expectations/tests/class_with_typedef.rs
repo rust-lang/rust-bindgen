@@ -15,7 +15,7 @@ pub struct C {
     pub other_ptr: *mut AnotherInt,
 }
 pub type C_MyInt = ::std::os::raw::c_int;
-pub type C_Lookup = *const ::std::os::raw::c_schar;
+pub type C_Lookup = *const ::std::os::raw::c_char;
 #[test]
 fn bindgen_test_layout_C() {
     assert_eq!(::std::mem::size_of::<C>() , 72usize , concat ! (
@@ -70,18 +70,18 @@ impl Default for C {
 }
 impl C {
     #[inline]
-    pub unsafe fn method(&mut self, c: C_MyInt) { C_method(&mut *self, c) }
+    pub unsafe fn method(&mut self, c: C_MyInt) { C_method(self, c) }
     #[inline]
     pub unsafe fn methodRef(&mut self, c: *mut C_MyInt) {
-        C_methodRef(&mut *self, c)
+        C_methodRef(self, c)
     }
     #[inline]
     pub unsafe fn complexMethodRef(&mut self, c: *mut C_Lookup) {
-        C_complexMethodRef(&mut *self, c)
+        C_complexMethodRef(self, c)
     }
     #[inline]
     pub unsafe fn anotherMethod(&mut self, c: AnotherInt) {
-        C_anotherMethod(&mut *self, c)
+        C_anotherMethod(self, c)
     }
 }
 #[repr(C)]

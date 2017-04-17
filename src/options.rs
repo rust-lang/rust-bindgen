@@ -40,6 +40,9 @@ pub fn builder_from_flags<I>
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("no-layout-tests")
+                .long("no-layout-tests")
+                .help("Avoid generating layout tests for any type."),
             Arg::with_name("no-derive-debug")
                 .long("no-derive-debug")
                 .help("Avoid deriving Debug on any type."),
@@ -111,8 +114,8 @@ pub fn builder_from_flags<I>
             Arg::with_name("generate")
                 .long("generate")
                 .help("Generate a given kind of items, split by commas. \
-                       Valid values are \"functions\",\"types\", \"vars\" and \
-                       \"methods\".")
+                       Valid values are \"functions\",\"types\", \"vars\", \
+                       \"methods\", \"constructors\" and \"destructors\".")
                 .takes_value(true),
             Arg::with_name("ignore-methods")
                 .long("ignore-methods")
@@ -233,6 +236,10 @@ pub fn builder_from_flags<I>
         builder = builder.emit_builtins();
     }
 
+    if matches.is_present("no-layout-tests") {
+        builder = builder.layout_tests(false);
+    }
+
     if matches.is_present("no-derive-debug") {
         builder = builder.derive_debug(false);
     }
@@ -271,6 +278,8 @@ pub fn builder_from_flags<I>
                 "types" => config.types = true,
                 "vars" => config.vars = true,
                 "methods" => config.methods = true,
+                "constructors" => config.constructors = true,
+                "destructors" => config.destructors = true,
                 _ => {
                     return Err(Error::new(ErrorKind::Other,
                                           "Unknown generate item"));

@@ -25,7 +25,5 @@ impl Clone for Foo {
 }
 impl Foo {
     #[inline]
-    pub unsafe fn type_(&mut self) -> ::std::os::raw::c_int {
-        Foo_type(&mut *self)
-    }
+    pub unsafe fn type_(&mut self) -> ::std::os::raw::c_int { Foo_type(self) }
 }

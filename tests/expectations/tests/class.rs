@@ -64,7 +64,7 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
 #[repr(C)]
 pub struct C {
     pub a: ::std::os::raw::c_int,
-    pub big_array: [::std::os::raw::c_schar; 33usize],
+    pub big_array: [::std::os::raw::c_char; 33usize],
 }
 #[test]
 fn bindgen_test_layout_C() {
@@ -88,8 +88,8 @@ impl Default for C {
 #[repr(C)]
 pub struct C_with_zero_length_array {
     pub a: ::std::os::raw::c_int,
-    pub big_array: [::std::os::raw::c_schar; 33usize],
-    pub zero_length_array: __IncompleteArrayField<::std::os::raw::c_schar>,
+    pub big_array: [::std::os::raw::c_char; 33usize],
+    pub zero_length_array: __IncompleteArrayField<::std::os::raw::c_char>,
 }
 #[test]
 fn bindgen_test_layout_C_with_zero_length_array() {
@@ -124,8 +124,8 @@ impl Default for C_with_zero_length_array {
 #[repr(C)]
 pub struct C_with_incomplete_array {
     pub a: ::std::os::raw::c_int,
-    pub big_array: [::std::os::raw::c_schar; 33usize],
-    pub incomplete_array: __IncompleteArrayField<::std::os::raw::c_schar>,
+    pub big_array: [::std::os::raw::c_char; 33usize],
+    pub incomplete_array: __IncompleteArrayField<::std::os::raw::c_char>,
 }
 #[test]
 fn bindgen_test_layout_C_with_incomplete_array() {
@@ -142,9 +142,9 @@ impl Default for C_with_incomplete_array {
 #[repr(C)]
 pub struct C_with_zero_length_array_and_incomplete_array {
     pub a: ::std::os::raw::c_int,
-    pub big_array: [::std::os::raw::c_schar; 33usize],
-    pub zero_length_array: __IncompleteArrayField<::std::os::raw::c_schar>,
-    pub incomplete_array: __IncompleteArrayField<::std::os::raw::c_schar>,
+    pub big_array: [::std::os::raw::c_char; 33usize],
+    pub zero_length_array: __IncompleteArrayField<::std::os::raw::c_char>,
+    pub incomplete_array: __IncompleteArrayField<::std::os::raw::c_char>,
 }
 #[test]
 fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
@@ -283,14 +283,14 @@ impl Clone for RealAbstractionWithTonsOfMethods {
 }
 impl RealAbstractionWithTonsOfMethods {
     #[inline]
-    pub unsafe fn bar(&self) { RealAbstractionWithTonsOfMethods_bar(&*self) }
+    pub unsafe fn bar(&self) { RealAbstractionWithTonsOfMethods_bar(self) }
     #[inline]
     pub unsafe fn bar1(&mut self) {
-        RealAbstractionWithTonsOfMethods_bar1(&mut *self)
+        RealAbstractionWithTonsOfMethods_bar1(self)
     }
     #[inline]
     pub unsafe fn bar2(&mut self, foo: ::std::os::raw::c_int) {
-        RealAbstractionWithTonsOfMethods_bar2(&mut *self, foo)
+        RealAbstractionWithTonsOfMethods_bar2(self, foo)
     }
     #[inline]
     pub unsafe fn sta() { RealAbstractionWithTonsOfMethods_sta() }

@@ -131,7 +131,7 @@ use super::item::ItemSet;
 use super::template::AsNamed;
 use super::traversal::{EdgeKind, Trace};
 use super::ty::{TemplateDeclaration, TypeKind};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fmt;
 
 /// An analysis in the monotone framework.
@@ -263,6 +263,8 @@ pub struct UsedTemplateParameters<'ctx, 'gen>
     used: HashMap<ItemId, Option<ItemSet>>,
 
     dependencies: HashMap<ItemId, Vec<ItemId>>,
+
+    whitelisted_items: HashSet<ItemId>,
 }
 
 impl<'ctx, 'gen> UsedTemplateParameters<'ctx, 'gen> {
@@ -316,21 +318,30 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
            -> UsedTemplateParameters<'ctx, 'gen> {
         let mut used = HashMap::new();
         let mut dependencies = HashMap::new();
+        let whitelisted_items: HashSet<_> = ctx.whitelisted_items().collect();
 
-        for item in ctx.whitelisted_items() {
+        for item in whitelisted_items.iter().cloned() {
             dependencies.entry(item).or_insert(vec![]);
             used.insert(item, Some(ItemSet::new()));
 
             {
                 // We reverse our natural IR graph edges to find dependencies
                 // between nodes.
-                item.trace(ctx,
-                           &mut |sub_item, _| {
-                               dependencies.entry(sub_item)
-                                   .or_insert(vec![])
-                                   .push(item);
-                           },
-                           &());
+                item.trace(ctx, &mut |sub_item, _| {
+                    // We won't be generating code for items that aren't
+                    // whitelisted, so don't bother keeping track of their
+                    // template parameters. But isn't whitelisting the
+                    // transitive closure of reachable items from the explicitly
+                    // whitelisted items? Usually! The exception is explicitly
+                    // blacklisted items.
+                    if !whitelisted_items.contains(&sub_item) {
+                        return;
+                    }
+
+                    dependencies.entry(sub_item)
+                        .or_insert(vec![])
+                        .push(item);
+                }, &());
             }
 
             // Additionally, whether a template instantiation's template
@@ -361,6 +372,7 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
             ctx: ctx,
             used: used,
             dependencies: dependencies,
+            whitelisted_items: whitelisted_items,
         }
     }
 
@@ -371,14 +383,19 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
     fn constrain(&mut self, id: ItemId) -> bool {
         // Invariant: all hash map entries' values are `Some` upon entering and
         // exiting this method.
-        debug_assert!(self.used.values().all(|v| v.is_some()));
+        extra_assert!(self.used.values().all(|v| v.is_some()));
 
         // Take the set for this id out of the hash map while we mutate it based
         // on other hash map entries. We *must* put it back into the hash map at
         // the end of this method. This allows us to side-step HashMap's lack of
         // an analog to slice::split_at_mut.
-        let mut used_by_this_id =
-            self.used.get_mut(&id).unwrap().take().unwrap();
+        let mut used_by_this_id = self.used
+            .get_mut(&id)
+            .expect("Should have a set of used template params for every item \
+                     id")
+            .take()
+            .expect("Should maintain the invariant that all used template param \
+                     sets are `Some` upon entry of `constrain`");
 
         let original_len = used_by_this_id.len();
 
@@ -390,6 +407,19 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
                 used_by_this_id.insert(id);
             }
 
+            // We say that blacklisted items use all of their template
+            // parameters. The blacklisted type is most likely implemented
+            // explicitly by the user, since it won't be in the generated
+            // bindings, and we don't know exactly what they'll to with template
+            // parameters, but we can push the issue down the line to them.
+            Some(&TypeKind::TemplateInstantiation(ref inst))
+                if !self.whitelisted_items.contains(&inst.template_definition()) => {
+                    let args = inst.template_arguments()
+                        .iter()
+                        .filter_map(|a| a.as_named(self.ctx, &()));
+                    used_by_this_id.extend(args);
+                }
+
             // A template instantiation's concrete template argument is
             // only used if the template declaration uses the
             // corresponding template parameter.
@@ -399,12 +429,12 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
 
                 let params = decl.self_template_params(self.ctx)
                     .unwrap_or(vec![]);
+
                 for (arg, param) in args.iter().zip(params.iter()) {
-                    let used_by_definition = self.used
-                                                 [&inst.template_definition()]
+                    let used_by_def = self.used[&inst.template_definition()]
                         .as_ref()
                         .unwrap();
-                    if used_by_definition.contains(param) {
+                    if used_by_def.contains(param) {
                         if let Some(named) = arg.as_named(self.ctx, &()) {
                             used_by_this_id.insert(named);
                         }
@@ -415,29 +445,38 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
             // Otherwise, add the union of each of its referent item's template
             // parameter usage.
             _ => {
-                item.trace(self.ctx,
-                           &mut |sub_id, edge_kind| {
-                    if sub_id == id || !Self::consider_edge(edge_kind) {
+                item.trace(self.ctx, &mut |sub_id, edge_kind| {
+                    // Ignore ourselves, since union with ourself is a
+                    // no-op. Ignore edges that aren't relevant to the
+                    // analysis. Ignore edges to blacklisted items.
+                    if sub_id == id ||
+                       !Self::consider_edge(edge_kind) ||
+                       !self.whitelisted_items.contains(&sub_id) {
                         return;
                     }
 
                     let used_by_sub_id = self.used[&sub_id]
                         .as_ref()
-                        .unwrap()
+                        .expect("Because sub_id != id, and all used template \
+                                 param sets other than id's are `Some`, \
+                                 sub_id's used template param set should be \
+                                 `Some`")
                         .iter()
                         .cloned();
                     used_by_this_id.extend(used_by_sub_id);
-                },
-                           &());
+                }, &());
             }
         }
 
         let new_len = used_by_this_id.len();
-        assert!(new_len >= original_len);
+        assert!(new_len >= original_len,
+                "This is the property that ensures this function is monotone -- \
+                 if it doesn't hold, the analysis might never terminate!");
 
         // Put the set back in the hash map and restore our invariant.
+        debug_assert!(self.used[&id].is_none());
         self.used.insert(id, Some(used_by_this_id));
-        debug_assert!(self.used.values().all(|v| v.is_some()));
+        extra_assert!(self.used.values().all(|v| v.is_some()));
 
         new_len != original_len
     }

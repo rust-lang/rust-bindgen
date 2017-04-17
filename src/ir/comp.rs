@@ -26,6 +26,10 @@ pub enum MethodKind {
     /// A constructor. We represent it as method for convenience, to avoid code
     /// duplication.
     Constructor,
+    /// A destructor.
+    Destructor,
+    /// A virtual destructor.
+    VirtualDestructor,
     /// A static method.
     Static,
     /// A normal method.
@@ -61,6 +65,12 @@ impl Method {
         self.kind
     }
 
+    /// Is this a destructor method?
+    pub fn is_destructor(&self) -> bool {
+        self.kind == MethodKind::Destructor ||
+        self.kind == MethodKind::VirtualDestructor
+    }
+
     /// Is this a constructor?
     pub fn is_constructor(&self) -> bool {
         self.kind == MethodKind::Constructor
@@ -68,7 +78,8 @@ impl Method {
 
     /// Is this a virtual method?
     pub fn is_virtual(&self) -> bool {
-        self.kind == MethodKind::Virtual
+        self.kind == MethodKind::Virtual ||
+        self.kind == MethodKind::VirtualDestructor
     }
 
     /// Is this a static method?
@@ -250,6 +261,10 @@ pub struct CompInfo {
     /// The different constructors this struct or class contains.
     constructors: Vec<ItemId>,
 
+    /// The destructor of this type. The bool represents whether this destructor
+    /// is virtual.
+    destructor: Option<(bool, ItemId)>,
+
     /// Vector of classes this one inherits from.
     base_members: Vec<Base>,
 
@@ -321,6 +336,7 @@ impl CompInfo {
             template_params: vec![],
             methods: vec![],
             constructors: vec![],
+            destructor: None,
             base_members: vec![],
             inner_types: vec![],
             inner_vars: vec![],
@@ -432,6 +448,11 @@ impl CompInfo {
     /// Get this type's set of constructors.
     pub fn constructors(&self) -> &[ItemId] {
         &self.constructors
+    }
+
+    /// Get this type's destructor.
+    pub fn destructor(&self) -> Option<(bool, ItemId)> {
+        self.destructor
     }
 
     /// What kind of compound type is this?
@@ -657,8 +678,9 @@ impl CompInfo {
                         CXCursor_Constructor => {
                             ci.constructors.push(signature);
                         }
-                        // TODO(emilio): Bind the destructor?
-                        CXCursor_Destructor => {}
+                        CXCursor_Destructor => {
+                            ci.destructor = Some((is_virtual, signature));
+                        }
                         CXCursor_CXXMethod => {
                             let is_const = cur.method_is_const();
                             let method_kind = if is_static {

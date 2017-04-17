@@ -70,7 +70,7 @@ pub trait ItemAncestors {
 }
 
 cfg_if! {
-    if #[cfg(debug_assertions)] {
+    if #[cfg(testing_only_extra_assertions)] {
         type DebugOnlyItemSet = ItemSet;
     } else {
         struct DebugOnlyItemSet;
@@ -123,7 +123,7 @@ impl<'a, 'b> Iterator for ItemAncestorsIter<'a, 'b>
         } else {
             self.item = item.parent_id();
 
-            debug_assert!(!self.seen.contains(&item.id()));
+            extra_assert!(!self.seen.contains(&item.id()));
             self.seen.insert(item.id());
 
             Some(item.id())
@@ -433,10 +433,11 @@ impl Item {
         }
     }
 
-    fn new_opaque_type(with_id: ItemId,
-                       ty: &clang::Type,
-                       ctx: &mut BindgenContext)
-                       -> ItemId {
+    /// Construct a new opaque item type.
+    pub fn new_opaque_type(with_id: ItemId,
+                           ty: &clang::Type,
+                           ctx: &mut BindgenContext)
+                           -> ItemId {
         let ty = Opaque::from_clang_ty(ty);
         let kind = ItemKind::Type(ty);
         let parent = ctx.root_module();
@@ -613,7 +614,7 @@ impl Item {
         let mut item = self;
 
         loop {
-            debug_assert!(!targets_seen.contains(&item.id()));
+            extra_assert!(!targets_seen.contains(&item.id()));
             targets_seen.insert(item.id());
 
             if self.annotations().use_instead_of().is_some() {

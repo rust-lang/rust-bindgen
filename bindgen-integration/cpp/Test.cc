@@ -21,6 +21,15 @@ Test::Test(double foo)
   , m_double(foo)
 {}
 
+AutoRestoreBool::AutoRestoreBool(bool* ptr)
+  : m_ptr(ptr)
+  , m_value(*ptr)
+{}
+
+AutoRestoreBool::~AutoRestoreBool() {
+  *m_ptr = m_value;
+}
+
 namespace bitfields {
 
 bool
@@ -47,4 +56,4 @@ Third::assert(int first, bool second, ItemKind third)
         kind == third;
 }
 
-}
+} // namespace bitfields

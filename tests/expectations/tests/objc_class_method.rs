@@ -19,7 +19,7 @@ pub trait Foo {
     -> *mut id;
     unsafe fn methodWithArg1_andArg2_andArg3_(intvalue: ::std::os::raw::c_int,
                                               ptr:
-                                                  *mut ::std::os::raw::c_schar,
+                                                  *mut ::std::os::raw::c_char,
                                               floatvalue: f32);
 }
 impl Foo for id {
@@ -45,7 +45,7 @@ impl Foo for id {
     }
     unsafe fn methodWithArg1_andArg2_andArg3_(intvalue: ::std::os::raw::c_int,
                                               ptr:
-                                                  *mut ::std::os::raw::c_schar,
+                                                  *mut ::std::os::raw::c_char,
                                               floatvalue: f32) {
         msg_send!(objc :: runtime :: Class :: get ( "Foo" ) . expect (
                   "Couldn\'t find Foo" ) ,
