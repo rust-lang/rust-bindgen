@@ -555,6 +555,16 @@ impl Builder {
         self
     }
 
+    /// Add arguments to be passed straight through to clang.
+    pub fn clang_args<I>(mut self, iter: I) -> Builder
+        where I: IntoIterator,
+              I::Item: AsRef<str> {
+        for arg in iter {
+            self = self.clang_arg(arg.as_ref())
+        }
+        self
+    }
+
     /// Make the generated bindings link the given shared library.
     pub fn link<T: Into<String>>(mut self, library: T) -> Builder {
         self.options.links.push((library.into(), LinkType::Default));
