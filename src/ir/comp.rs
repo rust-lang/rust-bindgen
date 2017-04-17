@@ -6,7 +6,7 @@ use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::item::Item;
 use super::layout::Layout;
 use super::traversal::{EdgeKind, Trace, Tracer};
-use super::ty::TemplateParameters;
+use super::template::TemplateParameters;
 use clang;
 use parse::{ClangItemParser, ParseError};
 use std::cell::Cell;

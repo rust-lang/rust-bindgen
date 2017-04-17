@@ -128,9 +128,9 @@
 
 use super::context::{BindgenContext, ItemId};
 use super::item::{Item, ItemSet};
-use super::template::{AsNamed, TemplateInstantiation};
+use super::template::{AsNamed, TemplateInstantiation, TemplateParameters};
 use super::traversal::{EdgeKind, Trace};
-use super::ty::{TemplateParameters, TypeKind};
+use super::ty::TypeKind;
 use std::collections::{HashMap, HashSet};
 use std::fmt;
 

@@ -21,8 +21,8 @@ use ir::item_kind::ItemKind;
 use ir::layout::Layout;
 use ir::module::Module;
 use ir::objc::{ObjCInterface, ObjCMethod};
-use ir::template::{AsNamed, TemplateInstantiation};
-use ir::ty::{TemplateParameters, Type, TypeKind};
+use ir::template::{AsNamed, TemplateInstantiation, TemplateParameters};
+use ir::ty::{Type, TypeKind};
 use ir::var::Var;
 
 use std::borrow::Cow;
