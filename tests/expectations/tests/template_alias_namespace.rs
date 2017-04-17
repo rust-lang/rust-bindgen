@@ -20,6 +20,7 @@ pub mod root {
         #[derive(Debug, Copy, Clone)]
         pub struct Rooted<T> {
             pub ptr: root::JS::detail::Wrapped<T>,
+            _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
         }
         impl <T> Default for Rooted<T> {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
