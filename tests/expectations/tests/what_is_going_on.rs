@@ -25,6 +25,7 @@ pub type Float = f32;
 pub struct PointTyped<F> {
     pub x: F,
     pub y: F,
+    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<F>>,
 }
 impl <F> Default for PointTyped<F> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

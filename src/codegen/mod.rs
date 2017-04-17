@@ -1047,13 +1047,16 @@ impl CodeGenerator for CompInfo {
 
         // generate tuple struct if struct or union is a forward declaration,
         // skip for now if template parameters are needed.
+        //
+        // NB: We generate a proper struct to avoid struct/function name
+        // collisions.
         if self.is_forward_declaration() && used_template_params.is_none() {
             let struct_name = item.canonical_name(ctx);
             let struct_name = ctx.rust_ident_raw(&struct_name);
             let tuple_struct = quote_item!(ctx.ext_cx(),
                                            #[repr(C)]
                                            #[derive(Debug, Copy, Clone)]
-                                           pub struct $struct_name([u8; 0]);
+                                           pub struct $struct_name { _unused: [u8; 0] };
                                           )
                 .unwrap();
             result.push(tuple_struct);
@@ -1462,11 +1465,20 @@ impl CodeGenerator for CompInfo {
         let mut generics = aster::AstBuilder::new().generics();
 
         if let Some(ref params) = used_template_params {
-            for ty in params.iter() {
+            for (idx, ty) in params.iter().enumerate() {
                 let param = ctx.resolve_type(*ty);
                 let name = param.name().unwrap();
                 let ident = ctx.rust_ident(name);
+
                 generics = generics.ty_param_id(ident);
+
+                let prefix = ctx.trait_prefix();
+                let phantom_ty = quote_ty!(
+                    ctx.ext_cx(),
+                    ::$prefix::marker::PhantomData<::$prefix::cell::UnsafeCell<$ident>>);
+                let phantom_field = StructFieldBuilder::named(format!("_phantom_{}", idx))
+                    .build_ty(phantom_ty);
+                fields.push(phantom_field);
             }
         }
 
@@ -3322,3 +3334,4 @@ mod utils {
         }).collect::<Vec<_>>()
     }
 }
+

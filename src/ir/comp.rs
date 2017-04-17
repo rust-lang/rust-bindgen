@@ -500,11 +500,19 @@ impl CompInfo {
         let mut maybe_anonymous_struct_field = None;
         cursor.visit(|cur| {
             if cur.kind() != CXCursor_FieldDecl {
-                if let Some((ty, _, offset)) =
+                if let Some((ty, clang_ty, offset)) =
                     maybe_anonymous_struct_field.take() {
-                    let field =
-                        Field::new(None, ty, None, None, None, false, offset);
-                    ci.fields.push(field);
+                    if cur.kind() == CXCursor_TypedefDecl &&
+                       cur.typedef_type().unwrap().canonical_type() == clang_ty {
+                        // Typedefs of anonymous structs appear later in the ast
+                        // than the struct itself, that would otherwise be an
+                        // anonymous field. Detect that case here, and do
+                        // nothing.
+                    } else {
+                        let field =
+                            Field::new(None, ty, None, None, None, false, offset);
+                        ci.fields.push(field);
+                    }
                 }
             }
 
@@ -580,21 +588,19 @@ impl CompInfo {
                 CXCursor_ClassTemplate |
                 CXCursor_ClassDecl => {
                     // We can find non-semantic children here, clang uses a
-                    // StructDecl to note incomplete structs that hasn't been
-                    // forward-declared before, see:
+                    // StructDecl to note incomplete structs that haven't been
+                    // forward-declared before, see [1].
                     //
                     // Also, clang seems to scope struct definitions inside
-                    // unions to the whole translation unit. Since those are
-                    // anonymous, let's just assume that if the cursor we've
-                    // found is a definition it's a valid inner type.
+                    // unions, and other named struct definitions inside other
+                    // structs to the whole translation unit.
                     //
-                    // Note that doing this could be always ok, but let's just
-                    // keep the union check for now.
+                    // Let's just assume that if the cursor we've found is a
+                    // definition, it's a valid inner type.
                     //
-                    // https://github.com/servo/rust-bindgen/issues/482
+                    // [1]: https://github.com/servo/rust-bindgen/issues/482
                     let is_inner_struct = cur.semantic_parent() == cursor ||
-                                          (kind == CompKind::Union &&
-                                           cur.is_definition());
+                                          cur.is_definition();
                     if !is_inner_struct {
                         return CXChildVisit_Continue;
                     }
@@ -737,7 +743,8 @@ impl CompInfo {
         });
 
         if let Some((ty, _, offset)) = maybe_anonymous_struct_field {
-            let field = Field::new(None, ty, None, None, None, false, offset);
+            let field =
+                Field::new(None, ty, None, None, None, false, offset);
             ci.fields.push(field);
         }
 
@@ -968,16 +975,23 @@ impl Trace for CompInfo {
             tracer.visit_kind(p, EdgeKind::TemplateParameterDefinition);
         }
 
+        for &ty in self.inner_types() {
+            tracer.visit_kind(ty, EdgeKind::InnerType);
+        }
+
+        // We unconditionally trace `CompInfo`'s template parameters and inner
+        // types for the the usage analysis. However, we don't want to continue
+        // tracing anything else, if this type is marked opaque.
+        if item.is_opaque(context) {
+            return;
+        }
+
         for base in self.base_members() {
             tracer.visit_kind(base.ty, EdgeKind::BaseMember);
         }
 
         for field in self.fields() {
             tracer.visit_kind(field.ty(), EdgeKind::Field);
-        }
-
-        for &ty in self.inner_types() {
-            tracer.visit_kind(ty, EdgeKind::InnerType);
         }
 
         for &var in self.inner_vars() {

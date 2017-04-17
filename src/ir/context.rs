@@ -163,12 +163,53 @@ pub struct BindgenContext<'ctx> {
 }
 
 /// A traversal of whitelisted items.
-pub type WhitelistedItems<'ctx, 'gen> = ItemTraversal<'ctx,
-                                                      'gen,
-                                                      ItemSet,
-                                                      Vec<ItemId>,
-                                                      fn(Edge) -> bool>;
+pub struct WhitelistedItems<'ctx, 'gen>
+    where 'gen: 'ctx
+{
+    ctx: &'ctx BindgenContext<'gen>,
+    traversal: ItemTraversal<'ctx,
+                             'gen,
+                             ItemSet,
+                             Vec<ItemId>,
+                             fn(Edge) -> bool>,
+}
 
+impl<'ctx, 'gen> Iterator for WhitelistedItems<'ctx, 'gen>
+    where 'gen: 'ctx
+{
+    type Item = ItemId;
+
+    fn next(&mut self) -> Option<ItemId> {
+        loop {
+            match self.traversal.next() {
+                None => return None,
+                Some(id) if self.ctx.resolve_item(id).is_hidden(self.ctx) => continue,
+                Some(id) => return Some(id),
+            }
+        }
+    }
+}
+
+impl<'ctx, 'gen> WhitelistedItems<'ctx, 'gen>
+    where 'gen: 'ctx
+{
+    /// Construct a new whitelisted items traversal.
+    pub fn new<R>(ctx: &'ctx BindgenContext<'gen>,
+                  roots: R)
+                  -> WhitelistedItems<'ctx, 'gen>
+        where R: IntoIterator<Item = ItemId>,
+    {
+        let predicate = if ctx.options().whitelist_recursively {
+            traversal::all_edges
+        } else {
+            traversal::no_edges
+        };
+        WhitelistedItems {
+            ctx: ctx,
+            traversal: ItemTraversal::new(ctx, roots, predicate)
+        }
+    }
+}
 impl<'ctx> BindgenContext<'ctx> {
     /// Construct the context for the given `options`.
     pub fn new(options: BindgenOptions) -> Self {
@@ -646,12 +687,21 @@ impl<'ctx> BindgenContext<'ctx> {
         assert!(self.in_codegen_phase(),
                 "We only compute template parameter usage as we enter codegen");
 
+        if self.resolve_item(item).is_hidden(self) {
+            return true;
+        }
+
+        let template_param = template_param.into_resolver()
+            .through_type_refs()
+            .through_type_aliases()
+            .resolve(self)
+            .id();
+
         self.used_template_parameters
             .as_ref()
             .expect("should have found template parameter usage if we're in codegen")
             .get(&item)
-            .map(|items_used_params| items_used_params.contains(&template_param))
-            .unwrap_or_else(|| self.resolve_item(item).is_hidden(self))
+            .map_or(false, |items_used_params| items_used_params.contains(&template_param))
     }
 
     // This deserves a comment. Builtin types don't get a valid declaration, so
@@ -1214,7 +1264,7 @@ impl<'ctx> BindgenContext<'ctx> {
     }
 
     /// Tokenizes a namespace cursor in order to get the name and kind of the
-    /// namespace,
+    /// namespace.
     fn tokenize_namespace(&self,
                           cursor: &clang::Cursor)
                           -> (Option<String>, ModuleKind) {
@@ -1230,6 +1280,7 @@ impl<'ctx> BindgenContext<'ctx> {
         let mut kind = ModuleKind::Normal;
         let mut found_namespace_keyword = false;
         let mut module_name = None;
+
         while let Some(token) = iter.next() {
             match &*token.spelling {
                 "inline" => {
@@ -1237,7 +1288,17 @@ impl<'ctx> BindgenContext<'ctx> {
                     assert!(kind != ModuleKind::Inline);
                     kind = ModuleKind::Inline;
                 }
-                "namespace" => {
+                // The double colon allows us to handle nested namespaces like
+                // namespace foo::bar { }
+                //
+                // libclang still gives us two namespace cursors, which is cool,
+                // but the tokenization of the second begins with the double
+                // colon. That's ok, so we only need to handle the weird
+                // tokenization here.
+                //
+                // Fortunately enough, inline nested namespace specifiers aren't
+                // a thing, and are invalid C++ :)
+                "namespace" | "::" => {
                     found_namespace_keyword = true;
                 }
                 "{" => {
@@ -1374,14 +1435,7 @@ impl<'ctx> BindgenContext<'ctx> {
         // unions).
         let mut roots: Vec<_> = roots.collect();
         roots.reverse();
-
-        let predicate = if self.options().whitelist_recursively {
-            traversal::all_edges
-        } else {
-            traversal::no_edges
-        };
-
-        WhitelistedItems::new(self, roots, predicate)
+        WhitelistedItems::new(self, roots)
     }
 
     /// Convenient method for getting the prefix to use for most traits in
