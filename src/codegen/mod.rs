@@ -2647,8 +2647,10 @@ impl TryToRustTy for TemplateInstantiation {
                 // This can happen if we generated an opaque type for a partial
                 // template specialization, and we've hit an instantiation of
                 // that partial specialization.
-                extra_assert!(ctx.resolve_type_through_type_refs(decl)
-                                  .is_opaque());
+                extra_assert!(decl.into_resolver()
+                                  .through_type_refs()
+                                  .resolve(ctx)
+                                  .is_opaque(ctx));
                 return Err(error::Error::InstantiationOfOpaqueType);
             }
         };

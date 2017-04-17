@@ -712,21 +712,6 @@ impl<'ctx> BindgenContext<'ctx> {
         }
     }
 
-    /// Resolve the given `ItemId` into a `Type`, and keep doing so while we see
-    /// `ResolvedTypeRef`s to other items until we get to the final `Type`.
-    pub fn resolve_type_through_type_refs(&self, item_id: ItemId) -> &Type {
-        assert!(self.collected_typerefs());
-
-        let mut id = item_id;
-        loop {
-            let ty = self.resolve_type(id);
-            match *ty.kind() {
-                TypeKind::ResolvedTypeRef(next_id) => id = next_id,
-                _ => return ty,
-            }
-        }
-    }
-
     /// Get the current module.
     pub fn current_module(&self) -> ItemId {
         self.current_module
@@ -1417,6 +1402,73 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Whether we need to generate the binden complex type
     pub fn need_bindegen_complex_type(&self) -> bool {
         self.generated_bindegen_complex.get()
+    }
+}
+
+/// A builder struct for configuring item resolution options.
+#[derive(Debug, Copy, Clone)]
+pub struct ItemResolver {
+    id: ItemId,
+    through_type_refs: bool,
+    through_type_aliases: bool,
+}
+
+impl ItemId {
+    /// Create an `ItemResolver` from this item id.
+    pub fn into_resolver(self) -> ItemResolver {
+        self.into()
+    }
+}
+
+impl From<ItemId> for ItemResolver {
+    fn from(id: ItemId) -> ItemResolver {
+        ItemResolver::new(id)
+    }
+}
+
+impl ItemResolver {
+    /// Construct a new `ItemResolver` from the given id.
+    pub fn new(id: ItemId) -> ItemResolver {
+        ItemResolver {
+            id: id,
+            through_type_refs: false,
+            through_type_aliases: false,
+        }
+    }
+
+    /// Keep resolving through `Type::TypeRef` items.
+    pub fn through_type_refs(mut self) -> ItemResolver {
+        self.through_type_refs = true;
+        self
+    }
+
+    /// Keep resolving through `Type::Alias` items.
+    pub fn through_type_aliases(mut self) -> ItemResolver {
+        self.through_type_aliases = true;
+        self
+    }
+
+    /// Finish configuring and perform the actual item resolution.
+    pub fn resolve<'a, 'b>(self, ctx: &'a BindgenContext<'b>) -> &'a Item {
+        assert!(ctx.collected_typerefs());
+
+        let mut id = self.id;
+        loop {
+            let item = ctx.resolve_item(id);
+            let ty_kind = item.as_type().map(|t| t.kind());
+            match ty_kind {
+                Some(&TypeKind::ResolvedTypeRef(next_id)) if self.through_type_refs => {
+                    id = next_id;
+                }
+                // We intentionally ignore template aliases here, as they are
+                // more complicated, and don't represent a simple renaming of
+                // some type.
+                Some(&TypeKind::Alias(next_id)) if self.through_type_aliases => {
+                    id = next_id;
+                }
+                _ => return item,
+            }
+        }
     }
 }
 
