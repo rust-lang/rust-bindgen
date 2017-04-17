@@ -22,12 +22,12 @@ use options::builder_from_flags;
 pub fn main() {
     #[cfg(feature="logging")]
     log::set_logger(|max_log_level| {
-            use env_logger::Logger;
-            let env_logger = Logger::new();
-            max_log_level.set(env_logger.filter());
-            Box::new(env_logger)
-        })
-        .expect("Failed to set logger.");
+                        use env_logger::Logger;
+                        let env_logger = Logger::new();
+                        max_log_level.set(env_logger.filter());
+                        Box::new(env_logger)
+                    })
+            .expect("Failed to set logger.");
 
     let bind_args: Vec<_> = env::args().collect();
 
@@ -52,8 +52,8 @@ pub fn main() {
         Ok((builder, output, verbose)) => {
 
             let builder_result = panic::catch_unwind(|| {
-                builder.generate().expect("Unable to generate bindings")
-            });
+                                                         builder.generate().expect("Unable to generate bindings")
+                                                     });
 
             if builder_result.is_err() {
                 if verbose {
@@ -63,9 +63,9 @@ pub fn main() {
             }
 
             let mut bindings = builder_result.unwrap();
-            bindings.write(output)
-                .expect("Unable to write output");
-            bindings.write_dummy_uses()
+            bindings.write(output).expect("Unable to write output");
+            bindings
+                .write_dummy_uses()
                 .expect("Unable to write dummy uses to file.");
         }
         Err(error) => {
