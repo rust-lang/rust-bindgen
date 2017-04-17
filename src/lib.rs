@@ -235,11 +235,11 @@ impl Builder {
         if !self.options.whitelist_recursively {
             output_vector.push("--no-recursive-whitelist".into());
         }
-  
+
         if self.options.objc_extern_crate {
             output_vector.push("--objc-extern-crate".into());
         }
-    
+
         if self.options.builtins {
             output_vector.push("--builtins".into());
         }
@@ -248,15 +248,6 @@ impl Builder {
             output_vector.push("--ctypes-prefix".into());
             output_vector.push(prefix.clone());
         }
-
-        self.options
-            .clang_args
-            .iter()
-            .map(|item| {
-                     output_vector.push("--clang-args".into());
-                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
-                 })
-            .count();
 
         if let Some(ref dummy) = self.options.dummy_uses {
             output_vector.push("--dummy-uses".into());
@@ -316,7 +307,7 @@ impl Builder {
         if self.options.codegen_config.destructors {
             options.push("destructors".into());
         }
-        
+
         output_vector.push(options.join(","));
 
         if !self.options.codegen_config.methods {
@@ -409,6 +400,18 @@ impl Builder {
                      output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
                  })
             .count();
+
+        if !self.options.clang_args.is_empty() {
+            output_vector.push("--".into());
+            self.options
+                .clang_args
+                .iter()
+                .cloned()
+                .map(|item| {
+                    output_vector.push(item);
+                })
+                .count();
+        }
 
         output_vector
     }
@@ -1243,7 +1246,7 @@ fn commandline_flag_unit_test_function() {
 
     assert!(test_cases.iter().all(|ref x| command_line_flags.contains(x)) );
 
-    //Test 2 
+    //Test 2
     let bindings = ::builder().header("input_header")
                               .whitelisted_type("Distinct_Type")
                               .whitelisted_function("safe_function");
