@@ -212,46 +212,37 @@ pub fn analyze<Analysis>(extra: Analysis::Extra) -> Analysis::Output
 /// An analysis that finds for each IR item its set of template parameters that
 /// it uses.
 ///
-/// We use the following monotone constraint function:
+/// We use the monotone constraint function `template_param_usage`, defined as
+/// follows:
+///
+/// * If `T` is a named template type parameter, it trivially uses itself:
 ///
 /// ```ignore
-/// template_param_usage(v) =
-///     self_template_param_usage(v) union
-///     template_param_usage(w_0) union
-///     template_param_usage(w_1) union
-///     ...
-///     template_param_usage(w_n)
-/// ```
-///
-/// Where `v` has direct edges in the IR graph to each of `w_0`, `w_1`,
-/// ..., `w_n` (for example, if `v` were a struct type and `x` and `y`
-/// were the types of two of `v`'s fields). We ignore certain edges, such
-/// as edges from a template declaration to its template parameters'
-/// definitions for this analysis. If we didn't, then we would mistakenly
-/// determine that ever template parameter is always used.
-///
-/// Finally, `self_template_param_usage` is defined with the following cases:
-///
-/// * If `T` is a template parameter:
-///
-/// ```ignore
-/// self_template_param_usage(T) = { T }
+/// template_param_usage(T) = { T }
 /// ```
 ///
 /// * If `inst` is a template instantiation, `inst.args` are the template
-///   instantiation's template arguments, and `inst.decl` is the template
-///   declaration being instantiated:
+///   instantiation's template arguments, and `inst.def` is the template
+///   definition being instantiated:
 ///
 /// ```ignore
-/// self_template_param_usage(inst) =
-///     { T: for T in inst.args, if T in template_param_usage(inst.decl) }
+/// template_param_usage(inst) =
+///     { T: for T in inst.args, if T in template_param_usage(inst.def) }
 /// ```
 ///
-/// * And for all other IR items, the result is the empty set:
+/// * Finally, for all other IR item kinds, we use our lattice's `join`
+/// operation: set union with each successor of the given item's template
+/// parameter usage:
 ///
 /// ```ignore
-/// self_template_param_usage(_) = { }
+/// template_param_usage(v) =
+///     union(template_param_usage(w) for w in successors(v))
 /// ```
+///
+/// Note that we ignore certain edges in the graph, such as edges from a
+/// template declaration to its template parameters' definitions for this
+/// analysis. If we didn't, then we would mistakenly determine that ever
+/// template parameter is always used.
 #[derive(Debug, Clone)]
 pub struct UsedTemplateParameters<'ctx, 'gen>
     where 'gen: 'ctx,
