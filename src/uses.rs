@@ -37,7 +37,7 @@
 
 use ir::context::BindgenContext;
 use ir::item::{Item, ItemAncestors, ItemCanonicalName};
-use ir::ty::TemplateDeclaration;
+use ir::template::TemplateParameters;
 use std::io;
 
 // Like `canonical_path`, except we always take namespaces into account, ignore

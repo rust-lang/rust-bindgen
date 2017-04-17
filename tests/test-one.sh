@@ -31,6 +31,14 @@ TEST_BINDINGS_BINARY=$(mktemp -t bindings.XXXXX)
 
 dot -Tpng ir.dot -o ir.png
 
+echo "=== Input header ========================================================"
+cat "$TEST"
+
+echo "=== Generated bindings =================================================="
+cat "$BINDINGS"
+
+echo "=== Building bindings ==================================================="
 rustc --test -o "$TEST_BINDINGS_BINARY" "$BINDINGS"
 
+echo "=== Testing bindings ===================================================="
 "$TEST_BINDINGS_BINARY"
