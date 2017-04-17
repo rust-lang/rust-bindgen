@@ -5,3 +5,5 @@ bindgen-integration/Cargo.lock
 tests/expectations/Cargo.lock
 #*#
 bindgen-integration/mybuild.rs
+ir.dot
+ir.png
