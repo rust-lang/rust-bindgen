@@ -481,6 +481,10 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
                     if used_by_def.contains(param) {
                         debug!("        param is used by template definition");
 
+                        let arg = arg.into_resolver()
+                            .through_type_refs()
+                            .through_type_aliases()
+                            .resolve(self.ctx);
                         if let Some(named) = arg.as_named(self.ctx, &()) {
                             debug!("        arg is a type parameter, marking used");
                             used_by_this_id.insert(named);
