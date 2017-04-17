@@ -84,7 +84,8 @@ use std::mem;
 /// ... |Wtf   | ... | Some([T])            |
 /// ... |Qux   | ... | None                 |
 /// ----+------+-----+----------------------+
-pub trait TemplateDeclaration {
+
+pub trait TemplateParameters {
     /// Get the set of `ItemId`s that make up this template declaration's free
     /// template parameters.
     ///
@@ -623,7 +624,7 @@ fn is_invalid_named_type_empty_name() {
 }
 
 
-impl TemplateDeclaration for Type {
+impl TemplateParameters for Type {
     fn self_template_params(&self,
                             ctx: &BindgenContext)
                             -> Option<Vec<ItemId>> {
@@ -631,7 +632,7 @@ impl TemplateDeclaration for Type {
     }
 }
 
-impl TemplateDeclaration for TypeKind {
+impl TemplateParameters for TypeKind {
     fn self_template_params(&self,
                             ctx: &BindgenContext)
                             -> Option<Vec<ItemId>> {

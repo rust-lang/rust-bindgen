@@ -10,7 +10,7 @@ use super::layout::Opaque;
 use super::module::Module;
 use super::template::AsNamed;
 use super::traversal::{EdgeKind, Trace, Tracer};
-use super::ty::{TemplateDeclaration, Type, TypeKind};
+use super::ty::{TemplateParameters, Type, TypeKind};
 use clang;
 use clang_sys;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
@@ -830,7 +830,7 @@ impl DotAttributes for Item {
     }
 }
 
-impl TemplateDeclaration for ItemId {
+impl TemplateParameters for ItemId {
     fn self_template_params(&self,
                             ctx: &BindgenContext)
                             -> Option<Vec<ItemId>> {
@@ -839,7 +839,7 @@ impl TemplateDeclaration for ItemId {
     }
 }
 
-impl TemplateDeclaration for Item {
+impl TemplateParameters for Item {
     fn self_template_params(&self,
                             ctx: &BindgenContext)
                             -> Option<Vec<ItemId>> {
@@ -847,7 +847,7 @@ impl TemplateDeclaration for Item {
     }
 }
 
-impl TemplateDeclaration for ItemKind {
+impl TemplateParameters for ItemKind {
     fn self_template_params(&self,
                             ctx: &BindgenContext)
                             -> Option<Vec<ItemId>> {

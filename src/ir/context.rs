@@ -8,7 +8,7 @@ use super::module::{Module, ModuleKind};
 use super::named::{UsedTemplateParameters, analyze};
 use super::template::TemplateInstantiation;
 use super::traversal::{self, Edge, ItemTraversal};
-use super::ty::{FloatKind, TemplateDeclaration, Type, TypeKind};
+use super::ty::{FloatKind, TemplateParameters, Type, TypeKind};
 use BindgenOptions;
 use cexpr;
 use callbacks::ParseCallbacks;
@@ -1501,7 +1501,7 @@ impl PartialType {
     }
 }
 
-impl TemplateDeclaration for PartialType {
+impl TemplateParameters for PartialType {
     fn self_template_params(&self,
                             _ctx: &BindgenContext)
                             -> Option<Vec<ItemId>> {

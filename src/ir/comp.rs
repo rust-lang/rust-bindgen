@@ -6,7 +6,7 @@ use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::item::Item;
 use super::layout::Layout;
 use super::traversal::{EdgeKind, Trace, Tracer};
-use super::ty::TemplateDeclaration;
+use super::ty::TemplateParameters;
 use clang;
 use parse::{ClangItemParser, ParseError};
 use std::cell::Cell;
@@ -812,7 +812,7 @@ impl CompInfo {
     }
 }
 
-impl TemplateDeclaration for CompInfo {
+impl TemplateParameters for CompInfo {
     fn self_template_params(&self,
                             _ctx: &BindgenContext)
                             -> Option<Vec<ItemId>> {

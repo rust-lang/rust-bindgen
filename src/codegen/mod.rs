@@ -22,7 +22,7 @@ use ir::layout::Layout;
 use ir::module::Module;
 use ir::objc::{ObjCInterface, ObjCMethod};
 use ir::template::{AsNamed, TemplateInstantiation};
-use ir::ty::{TemplateDeclaration, Type, TypeKind};
+use ir::ty::{TemplateParameters, Type, TypeKind};
 use ir::var::Var;
 
 use std::borrow::Cow;
