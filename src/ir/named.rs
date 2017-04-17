@@ -426,6 +426,9 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
             .expect("Should maintain the invariant that all used template param \
                      sets are `Some` upon entry of `constrain`");
 
+        debug!("constrain {:?}", id);
+        debug!("  initially, used set is {:?}", used_by_this_id);
+
         let original_len = used_by_this_id.len();
 
         let item = self.ctx.resolve_item(id);
@@ -433,6 +436,7 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
         match ty_kind {
             // Named template type parameters trivially use themselves.
             Some(&TypeKind::Named) => {
+                debug!("    named type, trivially uses itself");
                 used_by_this_id.insert(id);
             }
 
@@ -443,6 +447,9 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
             // parameters, but we can push the issue down the line to them.
             Some(&TypeKind::TemplateInstantiation(ref inst))
                 if !self.whitelisted_items.contains(&inst.template_definition()) => {
+                    debug!("    instantiation of blacklisted template, uses all template \
+                            arguments");
+
                     let args = inst.template_arguments()
                         .iter()
                         .filter_map(|a| a.as_named(self.ctx, &()));
@@ -453,18 +460,29 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
             // only used if the template declaration uses the
             // corresponding template parameter.
             Some(&TypeKind::TemplateInstantiation(ref inst)) => {
+                debug!("    template instantiation");
+
                 let decl = self.ctx.resolve_type(inst.template_definition());
                 let args = inst.template_arguments();
 
                 let params = decl.self_template_params(self.ctx)
                     .unwrap_or(vec![]);
 
+                let used_by_def = self.used[&inst.template_definition()]
+                    .as_ref()
+                    .unwrap();
+
                 for (arg, param) in args.iter().zip(params.iter()) {
-                    let used_by_def = self.used[&inst.template_definition()]
-                        .as_ref()
-                        .unwrap();
+                    debug!("      instantiation's argument {:?} is used if definition's \
+                            parameter {:?} is used",
+                           arg,
+                           param);
+
                     if used_by_def.contains(param) {
+                        debug!("        param is used by template definition");
+
                         if let Some(named) = arg.as_named(self.ctx, &()) {
+                            debug!("        arg is a type parameter, marking used");
                             used_by_this_id.insert(named);
                         }
                     }
@@ -474,6 +492,8 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
             // Otherwise, add the union of each of its referent item's template
             // parameter usage.
             _ => {
+                debug!("    other item: join with successors' usage");
+
                 item.trace(self.ctx, &mut |sub_id, edge_kind| {
                     // Ignore ourselves, since union with ourself is a
                     // no-op. Ignore edges that aren't relevant to the
@@ -492,10 +512,17 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
                                  `Some`")
                         .iter()
                         .cloned();
+
+                    debug!("      union with {:?}'s usage: {:?}",
+                           sub_id,
+                           used_by_sub_id.clone().collect::<Vec<_>>());
+
                     used_by_this_id.extend(used_by_sub_id);
                 }, &());
             }
         }
+
+        debug!("  finally, used set is {:?}", used_by_this_id);
 
         let new_len = used_by_this_id.len();
         assert!(new_len >= original_len,
@@ -515,6 +542,7 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
     {
         if let Some(edges) = self.dependencies.get(&item) {
             for item in edges {
+                debug!("enqueue {:?} into worklist", item);
                 f(*item);
             }
         }
