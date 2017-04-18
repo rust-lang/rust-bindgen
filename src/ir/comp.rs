@@ -500,11 +500,19 @@ impl CompInfo {
         let mut maybe_anonymous_struct_field = None;
         cursor.visit(|cur| {
             if cur.kind() != CXCursor_FieldDecl {
-                if let Some((ty, _, offset)) =
+                if let Some((ty, clang_ty, offset)) =
                     maybe_anonymous_struct_field.take() {
-                    let field =
-                        Field::new(None, ty, None, None, None, false, offset);
-                    ci.fields.push(field);
+                    if cur.kind() == CXCursor_TypedefDecl &&
+                       cur.typedef_type().unwrap().canonical_type() == clang_ty {
+                        // Typedefs of anonymous structs appear later in the ast
+                        // than the struct itself, that would otherwise be an
+                        // anonymous field. Detect that case here, and do
+                        // nothing.
+                    } else {
+                        let field =
+                            Field::new(None, ty, None, None, None, false, offset);
+                        ci.fields.push(field);
+                    }
                 }
             }
 
@@ -737,7 +745,8 @@ impl CompInfo {
         });
 
         if let Some((ty, _, offset)) = maybe_anonymous_struct_field {
-            let field = Field::new(None, ty, None, None, None, false, offset);
+            let field =
+                Field::new(None, ty, None, None, None, false, offset);
             ci.fields.push(field);
         }
 
