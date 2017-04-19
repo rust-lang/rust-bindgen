@@ -588,21 +588,19 @@ impl CompInfo {
                 CXCursor_ClassTemplate |
                 CXCursor_ClassDecl => {
                     // We can find non-semantic children here, clang uses a
-                    // StructDecl to note incomplete structs that hasn't been
-                    // forward-declared before, see:
+                    // StructDecl to note incomplete structs that haven't been
+                    // forward-declared before, see [1].
                     //
                     // Also, clang seems to scope struct definitions inside
-                    // unions to the whole translation unit. Since those are
-                    // anonymous, let's just assume that if the cursor we've
-                    // found is a definition it's a valid inner type.
+                    // unions, and other named struct definitions inside other
+                    // structs to the whole translation unit.
                     //
-                    // Note that doing this could be always ok, but let's just
-                    // keep the union check for now.
+                    // Let's just assume that if the cursor we've found is a
+                    // definition, it's a valid inner type.
                     //
-                    // https://github.com/servo/rust-bindgen/issues/482
+                    // [1]: https://github.com/servo/rust-bindgen/issues/482
                     let is_inner_struct = cur.semantic_parent() == cursor ||
-                                          (kind == CompKind::Union &&
-                                           cur.is_definition());
+                                          cur.is_definition();
                     if !is_inner_struct {
                         return CXChildVisit_Continue;
                     }
