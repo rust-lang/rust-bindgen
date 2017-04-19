@@ -322,7 +322,14 @@ impl<'ctx, 'gen> UsedTemplateParameters<'ctx, 'gen> {
 
         let args = instantiation.template_arguments()
             .iter()
-            .filter_map(|a| a.as_named(self.ctx, &()));
+            .filter_map(|a| {
+                a.into_resolver()
+                    .through_type_refs()
+                    .through_type_aliases()
+                    .resolve(self.ctx)
+                    .as_named(self.ctx, &())
+            });
+
         used_by_this_id.extend(args);
     }
 
