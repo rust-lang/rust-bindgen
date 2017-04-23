@@ -77,6 +77,30 @@ impl Cursor {
         }
     }
 
+    /// Gets the C++ manglings for this cursor, or an error if the function is
+    /// not loaded or the manglings are not available.
+    pub fn cxx_manglings(&self) -> Result<Vec<String>, ()> {
+        use clang_sys::*;
+        if !clang_Cursor_getCXXManglings::is_loaded() {
+            return Err(());
+        }
+        unsafe {
+            let manglings = clang_Cursor_getCXXManglings(self.x);
+            if manglings.is_null() {
+                return Err(());
+            }
+            let count = (*manglings).Count as usize;
+
+            let mut result = Vec::with_capacity(count);
+            for i in 0..count {
+                let string_ptr = (*manglings).Strings.offset(i as isize);
+                result.push(cxstring_to_string_leaky(*string_ptr));
+            }
+            clang_disposeStringSet(manglings);
+            Ok(result)
+        }
+    }
+
     /// Returns whether the cursor refers to a built-in definition.
     pub fn is_builtin(&self) -> bool {
         let (file, _, _, _) = self.location().location();
@@ -1168,16 +1192,18 @@ impl File {
     }
 }
 
-fn cxstring_into_string(s: CXString) -> String {
+fn cxstring_to_string_leaky(s: CXString) -> String {
     if s.data.is_null() {
         return "".to_owned();
     }
-    unsafe {
-        let c_str = CStr::from_ptr(clang_getCString(s) as *const _);
-        let ret = c_str.to_string_lossy().into_owned();
-        clang_disposeString(s);
-        ret
-    }
+    let c_str = unsafe { CStr::from_ptr(clang_getCString(s) as *const _) };
+    c_str.to_string_lossy().into_owned()
+}
+
+fn cxstring_into_string(s: CXString) -> String {
+    let ret = cxstring_to_string_leaky(s);
+    unsafe { clang_disposeString(s) };
+    ret
 }
 
 /// An `Index` is an environment for a set of translation units that will
