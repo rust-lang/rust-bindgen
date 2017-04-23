@@ -6,7 +6,9 @@
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct JS_Zone([u8; 0]);
+pub struct JS_Zone {
+    _unused: [u8; 0],
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct JS_shadow_Zone {

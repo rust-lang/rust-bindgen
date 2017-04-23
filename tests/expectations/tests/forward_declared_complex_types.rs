@@ -21,7 +21,9 @@ impl Clone for Foo_empty {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Foo([u8; 0]);
+pub struct Foo {
+    _unused: [u8; 0],
+}
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct Bar {
@@ -51,14 +53,18 @@ extern "C" {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Union([u8; 0]);
+pub struct Union {
+    _unused: [u8; 0],
+}
 extern "C" {
     #[link_name = "_Z9baz_unionP5Union"]
     pub fn baz_union(u: *mut Union);
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Quux([u8; 0]);
+pub struct Quux {
+    _unused: [u8; 0],
+}
 extern "C" {
     #[link_name = "_Z9baz_classP4Quux"]
     pub fn baz_class(q: *mut Quux);
