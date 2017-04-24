@@ -126,6 +126,12 @@ pub fn cursor_mangling(ctx: &BindgenContext,
         return None;
     }
 
+    if let Ok(mut manglings) = cursor.cxx_manglings() {
+        if let Some(m) = manglings.pop() {
+            return Some(m);
+        }
+    }
+
     let mut mangling = cursor.mangling();
     if mangling.is_empty() {
         return None;
