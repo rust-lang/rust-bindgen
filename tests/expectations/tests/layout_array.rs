@@ -10,7 +10,9 @@ pub const RTE_MEMPOOL_MAX_OPS_IDX: ::std::os::raw::c_uint = 16;
 pub const RTE_HEAP_NUM_FREELISTS: ::std::os::raw::c_uint = 13;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct rte_mempool([u8; 0]);
+pub struct rte_mempool {
+    _unused: [u8; 0],
+}
 /**
  * Prototype for implementation specific data provisioning function.
  *
