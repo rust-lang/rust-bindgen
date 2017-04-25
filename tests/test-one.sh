@@ -18,8 +18,8 @@ export RUST_BACKTRACE=1
 # Grab the first match
 TEST=$(find ./tests/headers -type f -iname "*$1*" | head -n 1)
 
-BINDINGS=$(mktemp -t bindings_XXXXXX.rs)
-TEST_BINDINGS_BINARY=$(mktemp -t bindings.XXXXX)
+BINDINGS=$(mktemp -t bindings.rs.XXXXXX)
+TEST_BINDINGS_BINARY=$(mktemp -t bindings.XXXXXX)
 
 FLAGS="$(grep "// bindgen-flags: " "$TEST")"
 FLAGS="${FLAGS/\/\/ bindgen\-flags:/}"
@@ -41,7 +41,7 @@ echo "=== Generated bindings =================================================="
 cat "$BINDINGS"
 
 echo "=== Building bindings ==================================================="
-rustc --test -o "$TEST_BINDINGS_BINARY" "$BINDINGS"
+rustc --test -o "$TEST_BINDINGS_BINARY" "$BINDINGS" --crate-name bindgen_test_one
 
 echo "=== Testing bindings ===================================================="
 "$TEST_BINDINGS_BINARY"
