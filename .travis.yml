@@ -38,6 +38,14 @@ script:
   # - ./ci/assert-rustfmt.sh
   - BINDGEN_FEATURES="$BINDGEN_FEATURES" ./ci/assert-docs.sh
   - BINDGEN_FEATURES="$BINDGEN_FEATURES" ./ci/test.sh
+  - ./ci/test-book.sh
+
+after_success:
+  - test "$TRAVIS_PULL_REQUEST" == "false" &&
+    test "$TRAVIS_BRANCH" == "master" &&
+    test "$BINDGEN_FEATURES" == "" &&
+    test "$LLVM_VERSION" == "3.9.0" &&
+    ./ci/deploy-book.sh
 
 notifications:
   webhooks: http://build.servo.org:54856/travis
