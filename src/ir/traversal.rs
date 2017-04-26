@@ -25,16 +25,6 @@ impl Edge {
             kind: kind,
         }
     }
-
-    /// Get the item that this edge is pointing to.
-    pub fn to(&self) -> ItemId {
-        self.to
-    }
-
-    /// Get the kind of edge that this is.
-    pub fn kind(&self) -> EdgeKind {
-        self.kind
-    }
 }
 
 impl Into<ItemId> for Edge {

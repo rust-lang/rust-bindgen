@@ -217,9 +217,12 @@ impl Trace for Item {
     fn trace<T>(&self, ctx: &BindgenContext, tracer: &mut T, _extra: &())
         where T: Tracer,
     {
-        if self.is_hidden(ctx) {
-            return;
-        }
+        // Even if this item is blacklisted/hidden, we want to trace it. It is
+        // traversal iterators' consumers' responsibility to filter items as
+        // needed. Generally, this filtering happens in the implementation of
+        // `Iterator` for `WhitelistedItems`. Fully tracing blacklisted items is
+        // necessary for things like the template parameter usage analysis to
+        // function correctly.
 
         match *self.kind() {
             ItemKind::Type(ref ty) => {
