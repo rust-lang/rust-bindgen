@@ -1,6 +1,7 @@
-# `bindgen`
+# Introduction
 
-**`bindgen` automatically generates Rust FFI bindings to C and C++ libraries.**
+**[`bindgen`](https://github.com/servo/rust-bindgen) automatically generates Rust
+FFI bindings to C and C++ libraries.**
 
 For example, given the C header `cool.h`:
 
@@ -31,15 +32,3 @@ extern "C" {
                          cs: *mut CoolStruct);
 }
 ```
-
-## Users Guide
-
-[📚 Read the `bindgen` users guide here! 📚](https://servo.github.io/rust-bindgen)
-
-## API Reference
-
-[API reference documentation is on docs.rs](https://docs.rs/bindgen)
-
-## Contributing
-
-[See `CONTRIBUTING.md` for hacking on `bindgen`!](./CONTRIBUTING.md)
