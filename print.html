@@ -1,0 +1,669 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Generating Bindings to C++ - The `bindgen` User Guide</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="`bindgen` automatically generates Rust FFI bindings to C and C++ libraries.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <base href="">
+
+        <link rel="stylesheet" href="book.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <link rel="shortcut icon" href="favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+
+        <!-- MathJax -->
+        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Fetch JQuery from CDN but have a local fallback -->
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script>
+            if (typeof jQuery == 'undefined') {
+                document.write(unescape("%3Cscript src='jquery.js'%3E%3C/script%3E"));
+            }
+        </script>
+    </head>
+    <body class="light">
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme = localStorage.getItem('theme');
+            if (theme == null) { theme = 'light'; }
+            $('body').removeClass().addClass(theme);
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var sidebar = localStorage.getItem('sidebar');
+            if (sidebar === "hidden") { $("html").addClass("sidebar-hidden") }
+            else if (sidebar === "visible") { $("html").addClass("sidebar-visible") }
+        </script>
+
+        <div id="sidebar" class="sidebar">
+            <ul class="chapter"><li><a href="./introduction.html"><strong>1.</strong> Introduction</a></li><li><a href="./requirements.html"><strong>2.</strong> Requirements</a></li><li><a href="./library-usage.html"><strong>3.</strong> Library Usage with <code>build.rs</code></a></li><li><ul class="section"><li><a href="./tutorial-0.html"><strong>3.1.</strong> Tutorial</a></li><li><ul class="section"><li><a href="./tutorial-1.html"><strong>3.1.1.</strong> Add <code>bindgen</code> as a Build Dependency</a></li><li><a href="./tutorial-2.html"><strong>3.1.2.</strong> Create a <code>wrapper.h</code> Header</a></li><li><a href="./tutorial-3.html"><strong>3.1.3.</strong> Create a <code>build.rs</code> File</a></li><li><a href="./tutorial-4.html"><strong>3.1.4.</strong> Include the Generated Bindings in <code>src/lib.rs</code></a></li><li><a href="./tutorial-5.html"><strong>3.1.5.</strong> Write a Sanity Test</a></li><li><a href="./tutorial-6.html"><strong>3.1.6.</strong> Publish Your Crate!</a></li></ul></li></ul></li><li><a href="./command-line-usage.html"><strong>4.</strong> Command Line Usage</a></li><li><a href="./customizing-generated-bindings.html"><strong>5.</strong> Customizing the Generated Bindings</a></li><li><ul class="section"><li><a href="./whitelisting.html"><strong>5.1.</strong> Whitelisting</a></li><li><a href="./blacklisting.html"><strong>5.2.</strong> Blacklisting</a></li><li><a href="./opaque.html"><strong>5.3.</strong> Treating a Type as an Opaque Blob of Bytes</a></li><li><a href="./replacing-types.html"><strong>5.4.</strong> Replacing One Type with Another</a></li><li><a href="./nocopy.html"><strong>5.5.</strong> Preventing the Derivation of <code>Copy</code> and <code>Clone</code></a></li></ul></li><li><a href="./cpp.html"><strong>6.</strong> Generating Bindings to C++</a></li></ul>
+        </div>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar" class="menu-bar">
+                    <div class="left-buttons">
+                        <i id="sidebar-toggle" class="fa fa-bars"></i>
+                        <i id="theme-toggle" class="fa fa-paint-brush"></i>
+                    </div>
+
+                    <h1 class="menu-title">The `bindgen` User Guide</h1>
+
+                    <div class="right-buttons">
+                        <i id="print-button" class="fa fa-print" title="Print this book"></i>
+                    </div>
+                </div>
+
+                <div id="content" class="content">
+                    <a class="header" href="print.html#introduction" id="introduction"><h1>Introduction</h1></a>
+<p><strong><a href="https://github.com/servo/rust-bindgen"><code>bindgen</code></a> automatically generates Rust
+FFI bindings to C and C++ libraries.</strong></p>
+<p>For example, given the C header <code>cool.h</code>:</p>
+<pre><code class="language-c">typedef struct CoolStruct {
+    int x;
+    int y;
+} CoolStruct;
+
+void cool_function(int i, char c, CoolStruct* cs);
+</code></pre>
+<p><code>bindgen</code> produces Rust FFI code allowing you to call into the <code>cool</code> library's
+functions and use its types:</p>
+<pre><pre class="playpen"><code class="language-rust"># #![allow(unused_variables)]
+#fn main() {
+/* automatically generated by rust-bindgen */
+
+#[repr(C)]
+pub struct CoolStruct {
+    pub x: ::std::os::raw::c_int,
+    pub y: ::std::os::raw::c_int,
+}
+
+extern &quot;C&quot; {
+    pub fn cool_function(i: ::std::os::raw::c_int,
+                         c: ::std::os::raw::c_char,
+                         cs: *mut CoolStruct);
+}
+
+#}</code></pre></pre>
+<a class="header" href="print.html#requirements" id="requirements"><h1>Requirements</h1></a>
+<p>This page lists the requirements for running <code>bindgen</code> and how to get them.</p>
+<a class="header" href="print.html#clang" id="clang"><h2>Clang</h2></a>
+<p><code>bindgen</code> leverages <code>libclang</code> to preprocess, parse, and type check C and C++
+header files.</p>
+<p>It is recommended to use Clang 3.9 or greater, however <code>bindgen</code> can run with
+older Clangs with some features disabled.</p>
+<ul>
+<li>
+<p><strong>If you are generating bindings to C,</strong> 3.7 and 3.8 will probably work OK for
+you.</p>
+</li>
+<li>
+<p><strong>If you are generating bindings to C++,</strong> you almost definitely want 3.9 or
+greater.</p>
+</li>
+</ul>
+<a class="header" href="print.html#installing-clang-39" id="installing-clang-39"><h3>Installing Clang 3.9</h3></a>
+<a class="header" href="print.html#windows" id="windows"><h4>Windows</h4></a>
+<p>Download and install the official pre-built binary from
+<a href="http://releases.llvm.org/download.html">LLVM download page</a>.</p>
+<a class="header" href="print.html#osx" id="osx"><h4>OSX</h4></a>
+<p>If you use Homebrew:</p>
+<pre><code class="language-bash">$ brew install llvm@3.9
+</code></pre>
+<p>If you use MacPorts:</p>
+<pre><code class="language-bash">$ port install clang-3.9
+</code></pre>
+<a class="header" href="print.html#debian-based-linuxes" id="debian-based-linuxes"><h4>Debian-based Linuxes</h4></a>
+<pre><code class="language-bash"># apt-get install llvm-3.9-dev libclang-3.9-dev clang-3.9
+</code></pre>
+<p>Ubuntu 16.10 provides the necessary packages directly. If you are using older
+version of Ubuntu or other Debian-based distros, you may need to add the LLVM
+repos to get version 3.9. See http://apt.llvm.org/.</p>
+<a class="header" href="print.html#arch" id="arch"><h4>Arch</h4></a>
+<pre><code class="language-bash"># pacman -S clang
+</code></pre>
+<a class="header" href="print.html#from-source" id="from-source"><h4>From source</h4></a>
+<p>If your package manager doesn't yet offer Clang 3.9, you'll need to build from
+source. For that, follow the
+instructions <a href="http://clang.llvm.org/get_started.html">here</a>.</p>
+<p>Those instructions list optional steps. For <code>bindgen</code>:</p>
+<ul>
+<li>Checkout and build clang</li>
+<li>Checkout and build the extra-clang-tools</li>
+<li>You do not need to checkout or build compiler-rt</li>
+<li>You do not need to checkout or build libcxx</li>
+</ul>
+<a class="header" href="print.html#library-usage-with-buildrs" id="library-usage-with-buildrs"><h1>Library Usage with <code>build.rs</code></h1></a>
+<p>💡 This is the recommended way to use <code>bindgen</code>. 💡</p>
+<p>Often times C and C++ headers will have platform- and architecture-specific
+<code>#ifdef</code>s that affect the shape of the Rust FFI bindings we need to create to
+interface Rust code with the outside world. By using <code>bindgen</code> as a library
+inside your <code>build.rs</code>, you can generate bindings for the current target
+on-the-fly. Otherwise, you would need to generate and maintain
+<code>x86_64-unknown-linux-gnu-bindings.rs</code>, <code>x86_64-apple-darwin-bindings.rs</code>,
+etc... separate bindings files for each of your supported targets, which can be
+a huge pain. The downside is that everyone building your crate also needs
+<code>libclang</code> available to run <code>bindgen</code>.</p>
+<a class="header" href="print.html#library-api-documentation" id="library-api-documentation"><h2>Library API Documentation</h2></a>
+<p><a href="https://docs.rs/bindgen">📚 There is complete API reference documentation on docs.rs 📚</a></p>
+<a class="header" href="print.html#tutorial" id="tutorial"><h2>Tutorial</h2></a>
+<p>The next section contains a detailed, step-by-step tutorial for using <code>bindgen</code>
+as a library inside <code>build.rs</code>.</p>
+<a class="header" href="print.html#tutorial-1" id="tutorial-1"><h1>Tutorial</h1></a>
+<p>The following tutorial is adapted from <a href="http://fitzgeraldnick.com/2016/12/14/using-libbindgen-in-build-rs.html">this blog post</a>.</p>
+<p>What follows is a whirlwind introductory tutorial to using <code>bindgen</code> from inside
+<code>build.rs</code>. We'll generate bindings to <code>bzip2</code> (which is available on most
+systems) on-the-fly.</p>
+<p><a href="https://github.com/fitzgen/libbindgen-tutorial-bzip2-sys"><strong>TL;DR?</strong> The full tutorial code is available here.</a></p>
+<a class="header" href="print.html#add-bindgen-as-a-build-dependency" id="add-bindgen-as-a-build-dependency"><h1>Add <code>bindgen</code> as a Build Dependency</h1></a>
+<p>Declare a build-time dependency on <code>bindgen</code> by adding it to the
+<code>[build-dependencies]</code> section of our crate's <code>Cargo.toml</code> metadata file:</p>
+<pre><code class="language-toml">[build-dependencies]
+bindgen = &quot;0.23&quot;
+</code></pre>
+<a class="header" href="print.html#create-a-wrapperh-header" id="create-a-wrapperh-header"><h1>Create a <code>wrapper.h</code> Header</h1></a>
+<p>The <code>wrapper.h</code> file will include all the various headers containing
+declarations of structs and functions we would like bindings for. In the
+particular case of <code>bzip2</code>, this is pretty easy since the entire public API is
+contained in a single header. For a project like <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/How_to_embed_the_JavaScript_engine">SpiderMonkey</a>,
+where the public API is split across multiple header files and grouped by
+functionality, we'd want to include all those headers we want to bind to in this
+single <code>wrapper.h</code> entry point for <code>bindgen</code>.</p>
+<p>Here is our <code>wrapper.h</code>:</p>
+<pre><code class="language-c">#include &lt;bzlib.h&gt;
+</code></pre>
+<p>This is also where we would add any <a href="./replacing-types.html">replacement types</a>,
+if we were using some.</p>
+<a class="header" href="print.html#create-a-buildrs-file" id="create-a-buildrs-file"><h1>Create a <code>build.rs</code> File</h1></a>
+<p>First, we have to tell <code>cargo</code> that we have a <code>build.rs</code> script by adding
+another line to the <code>Cargo.toml</code>:</p>
+<pre><code class="language-toml">[package]
+build = &quot;build.rs&quot;
+</code></pre>
+<p>Second, we create the <code>build.rs</code> file in our crate's root. This file is compiled
+and executed before the rest of the crate is built, and can be used to generate
+code at compile time. And of course in our case, we will be generating Rust FFI
+bindings to <code>bzip2</code> at compile time. The resulting bindings will be written to
+<code>$OUT_DIR/bindings.rs</code> where <code>$OUT_DIR</code> is chosen by <code>cargo</code> and is something
+like <code>./target/debug/build/libbindgen-tutorial-bzip2-sys-afc7747d7eafd720/out/</code>.</p>
+<pre><code class="language-rust ignore">extern crate bindgen;
+
+use std::env;
+use std::path::PathBuf;
+
+fn main() {
+    // Tell cargo to tell rustc to link the system bzip2
+    // shared library.
+    println!(&quot;cargo:rustc-link-lib=bz2&quot;);
+
+    // The bindgen::Builder is the main entry point
+    // to bindgen, and lets you build up options for
+    // the resulting bindings.
+    let bindings = bindgen::Builder::default()
+        // Do not generate unstable Rust code that
+        // requires a nightly rustc and enabling
+        // unstable features.
+        .no_unstable_rust()
+        // The input header we would like to generate
+        // bindings for.
+        .header(&quot;wrapper.h&quot;)
+        // Finish the builder and generate the bindings.
+        .generate()
+        // Unwrap the Result and panic on failure.
+        .expect(&quot;Unable to generate bindings&quot;);
+
+    // Write the bindings to the $OUT_DIR/bindings.rs file.
+    let out_path = PathBuf::from(env::var(&quot;OUT_DIR&quot;).unwrap());
+    bindings
+        .write_to_file(out_path.join(&quot;bindings.rs&quot;))
+        .expect(&quot;Couldn't write bindings!&quot;);
+}
+</code></pre>
+<p>Now, when we run <code>cargo build</code>, our bindings to <code>bzip2</code> are generated on the
+fly!</p>
+<p><a href="http://doc.crates.io/build-script.html">There's more info about <code>build.rs</code> files in the crates.io documentation.</a></p>
+<a class="header" href="print.html#include-the-generated-bindings-in-srclibrs" id="include-the-generated-bindings-in-srclibrs"><h1>Include the Generated Bindings in <code>src/lib.rs</code></h1></a>
+<p>We can use the <code>include!</code> macro to dump our generated bindings right into our
+crate's main entry point, <code>src/lib.rs</code>:</p>
+<pre><code class="language-rust ignore">#![allow(non_upper_case_globals)]
+#![allow(non_camel_case_types)]
+#![allow(non_snake_case)]
+
+include!(concat!(env!(&quot;OUT_DIR&quot;), &quot;/bindings.rs&quot;));
+</code></pre>
+<p>Because <code>bzip2</code>'s symbols do not follow Rust's style conventions, we suppress a
+bunch of warnings with a few <code>#![allow(...)]</code> pragmas.</p>
+<p>We can run <code>cargo build</code> again to check that the bindings themselves compile:</p>
+<pre><code class="language-bash">$ cargo build
+   Compiling libbindgen-tutorial-bzip2-sys v0.1.0
+    Finished debug [unoptimized + debuginfo] target(s) in 62.8 secs
+</code></pre>
+<p>And we can run <code>cargo test</code> to verify that the layout, size, and alignment of
+our generated Rust FFI structs match what <code>bindgen</code> thinks they should be:</p>
+<pre><code class="language-bash">$ cargo test
+   Compiling libbindgen-tutorial-bzip2-sys v0.1.0
+    Finished debug [unoptimized + debuginfo] target(s) in 0.0 secs
+     Running target/debug/deps/bzip2_sys-10413fc2af207810
+
+running 14 tests
+test bindgen_test_layout___darwin_pthread_handler_rec ... ok
+test bindgen_test_layout___sFILE ... ok
+test bindgen_test_layout___sbuf ... ok
+test bindgen_test_layout__bindgen_ty_1 ... ok
+test bindgen_test_layout__bindgen_ty_2 ... ok
+test bindgen_test_layout__opaque_pthread_attr_t ... ok
+test bindgen_test_layout__opaque_pthread_cond_t ... ok
+test bindgen_test_layout__opaque_pthread_mutex_t ... ok
+test bindgen_test_layout__opaque_pthread_condattr_t ... ok
+test bindgen_test_layout__opaque_pthread_mutexattr_t ... ok
+test bindgen_test_layout__opaque_pthread_once_t ... ok
+test bindgen_test_layout__opaque_pthread_rwlock_t ... ok
+test bindgen_test_layout__opaque_pthread_rwlockattr_t ... ok
+test bindgen_test_layout__opaque_pthread_t ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured
+
+   Doc-tests libbindgen-tutorial-bzip2-sys
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured
+</code></pre>
+<a class="header" href="print.html#write-a-sanity-test" id="write-a-sanity-test"><h1>Write a Sanity Test</h1></a>
+<p>Finally, to tie everything together, let's write a sanity test that round trips
+some text through compression and decompression, and then asserts that it came
+back out the same as it went in. This is a little wordy using the raw FFI
+bindings, but hopefully we wouldn't usually ask people to do this, we'd provide
+a nice Rust-y API on top of the raw FFI bindings for them. However, since this
+is for testing the bindings directly, our sanity test will use the bindings
+directly.</p>
+<p>The test data I'm round tripping are some Futurama quotes I got off the internet
+and put in the <code>futurama-quotes.txt</code> file, which is read into a <code>&amp;'static str</code>
+at compile time via the <code>include_str!(&quot;../futurama-quotes.txt&quot;)</code> macro
+invocation.</p>
+<p>Without further ado, here is the test, which should be appended to the bottom of
+our <code>src/lib.rs</code> file:</p>
+<pre><pre class="playpen"><code class="language-rust"># #![allow(unused_variables)]
+#fn main() {
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::mem;
+
+    #[test]
+    fn round_trip_compression_decompression() {
+        unsafe {
+            let input = include_str!(&quot;../futurama-quotes.txt&quot;).as_bytes();
+            let mut compressed_output: Vec&lt;u8&gt; = vec![0; input.len()];
+            let mut decompressed_output: Vec&lt;u8&gt; = vec![0; input.len()];
+
+            // Construct a compression stream.
+            let mut stream: bz_stream = mem::zeroed();
+            let result = BZ2_bzCompressInit(&amp;mut stream as *mut _,
+                                            1,   // 1 x 100000 block size
+                                            4,   // verbosity (4 = most verbose)
+                                            0);  // default work factor
+            match result {
+                r if r == (BZ_CONFIG_ERROR as _) =&gt; panic!(&quot;BZ_CONFIG_ERROR&quot;),
+                r if r == (BZ_PARAM_ERROR as _) =&gt; panic!(&quot;BZ_PARAM_ERROR&quot;),
+                r if r == (BZ_MEM_ERROR as _) =&gt; panic!(&quot;BZ_MEM_ERROR&quot;),
+                r if r == (BZ_OK as _) =&gt; {},
+                r =&gt; panic!(&quot;Unknown return value = {}&quot;, r),
+            }
+
+            // Compress `input` into `compressed_output`.
+            stream.next_in = input.as_ptr() as *mut _;
+            stream.avail_in = input.len() as _;
+            stream.next_out = compressed_output.as_mut_ptr() as *mut _;
+            stream.avail_out = compressed_output.len() as _;
+            let result = BZ2_bzCompress(&amp;mut stream as *mut _, BZ_FINISH as _);
+            match result {
+                r if r == (BZ_RUN_OK as _) =&gt; panic!(&quot;BZ_RUN_OK&quot;),
+                r if r == (BZ_FLUSH_OK as _) =&gt; panic!(&quot;BZ_FLUSH_OK&quot;),
+                r if r == (BZ_FINISH_OK as _) =&gt; panic!(&quot;BZ_FINISH_OK&quot;),
+                r if r == (BZ_SEQUENCE_ERROR as _) =&gt; panic!(&quot;BZ_SEQUENCE_ERROR&quot;),
+                r if r == (BZ_STREAM_END as _) =&gt; {},
+                r =&gt; panic!(&quot;Unknown return value = {}&quot;, r),
+            }
+
+            // Finish the compression stream.
+            let result = BZ2_bzCompressEnd(&amp;mut stream as *mut _);
+            match result {
+                r if r == (BZ_PARAM_ERROR as _) =&gt; panic!(BZ_PARAM_ERROR),
+                r if r == (BZ_OK as _) =&gt; {},
+                r =&gt; panic!(&quot;Unknown return value = {}&quot;, r),
+            }
+
+            // Construct a decompression stream.
+            let mut stream: bz_stream = mem::zeroed();
+            let result = BZ2_bzDecompressInit(&amp;mut stream as *mut _,
+                                              4,   // verbosity (4 = most verbose)
+                                              0);  // default small factor
+            match result {
+                r if r == (BZ_CONFIG_ERROR as _) =&gt; panic!(&quot;BZ_CONFIG_ERROR&quot;),
+                r if r == (BZ_PARAM_ERROR as _) =&gt; panic!(&quot;BZ_PARAM_ERROR&quot;),
+                r if r == (BZ_MEM_ERROR as _) =&gt; panic!(&quot;BZ_MEM_ERROR&quot;),
+                r if r == (BZ_OK as _) =&gt; {},
+                r =&gt; panic!(&quot;Unknown return value = {}&quot;, r),
+            }
+
+            // Decompress `compressed_output` into `decompressed_output`.
+            stream.next_in = compressed_output.as_ptr() as *mut _;
+            stream.avail_in = compressed_output.len() as _;
+            stream.next_out = decompressed_output.as_mut_ptr() as *mut _;
+            stream.avail_out = decompressed_output.len() as _;
+            let result = BZ2_bzDecompress(&amp;mut stream as *mut _);
+            match result {
+                r if r == (BZ_PARAM_ERROR as _) =&gt; panic!(&quot;BZ_PARAM_ERROR&quot;),
+                r if r == (BZ_DATA_ERROR as _) =&gt; panic!(&quot;BZ_DATA_ERROR&quot;),
+                r if r == (BZ_DATA_ERROR_MAGIC as _) =&gt; panic!(&quot;BZ_DATA_ERROR&quot;),
+                r if r == (BZ_MEM_ERROR as _) =&gt; panic!(&quot;BZ_MEM_ERROR&quot;),
+                r if r == (BZ_OK as _) =&gt; panic!(&quot;BZ_OK&quot;),
+                r if r == (BZ_STREAM_END as _) =&gt; {},
+                r =&gt; panic!(&quot;Unknown return value = {}&quot;, r),
+            }
+
+            // Close the decompression stream.
+            let result = BZ2_bzDecompressEnd(&amp;mut stream as *mut _);
+            match result {
+                r if r == (BZ_PARAM_ERROR as _) =&gt; panic!(&quot;BZ_PARAM_ERROR&quot;),
+                r if r == (BZ_OK as _) =&gt; {},
+                r =&gt; panic!(&quot;Unknown return value = {}&quot;, r),
+            }
+
+            assert_eq!(input, &amp;decompressed_output[..]);
+        }
+    }
+}
+
+#}</code></pre></pre>
+<p>Now let's run <code>cargo test</code> again and verify that everying is linking and binding
+properly!</p>
+<pre><code class="language-bash">$ cargo test
+   Compiling libbindgen-tutorial-bzip2-sys v0.1.0
+    Finished debug [unoptimized + debuginfo] target(s) in 0.54 secs
+     Running target/debug/deps/libbindgen_tutorial_bzip2_sys-1c5626bbc4401c3a
+
+running 15 tests
+test bindgen_test_layout___darwin_pthread_handler_rec ... ok
+test bindgen_test_layout___sFILE ... ok
+test bindgen_test_layout___sbuf ... ok
+test bindgen_test_layout__bindgen_ty_1 ... ok
+test bindgen_test_layout__bindgen_ty_2 ... ok
+test bindgen_test_layout__opaque_pthread_attr_t ... ok
+test bindgen_test_layout__opaque_pthread_cond_t ... ok
+test bindgen_test_layout__opaque_pthread_condattr_t ... ok
+test bindgen_test_layout__opaque_pthread_mutex_t ... ok
+test bindgen_test_layout__opaque_pthread_mutexattr_t ... ok
+test bindgen_test_layout__opaque_pthread_once_t ... ok
+test bindgen_test_layout__opaque_pthread_rwlock_t ... ok
+test bindgen_test_layout__opaque_pthread_rwlockattr_t ... ok
+test bindgen_test_layout__opaque_pthread_t ... ok
+    block 1: crc = 0x47bfca17, combined CRC = 0x47bfca17, size = 2857
+        bucket sorting ...
+        depth      1 has   2849 unresolved strings
+        depth      2 has   2702 unresolved strings
+        depth      4 has   1508 unresolved strings
+        depth      8 has    538 unresolved strings
+        depth     16 has    148 unresolved strings
+        depth     32 has      0 unresolved strings
+        reconstructing block ...
+      2857 in block, 2221 after MTF &amp; 1-2 coding, 61+2 syms in use
+      initial group 5, [0 .. 1], has 570 syms (25.7%)
+      initial group 4, [2 .. 2], has 256 syms (11.5%)
+      initial group 3, [3 .. 6], has 554 syms (24.9%)
+      initial group 2, [7 .. 12], has 372 syms (16.7%)
+      initial group 1, [13 .. 62], has 469 syms (21.1%)
+      pass 1: size is 2743, grp uses are 13 6 15 0 11
+      pass 2: size is 1216, grp uses are 13 7 15 0 10
+      pass 3: size is 1214, grp uses are 13 8 14 0 10
+      pass 4: size is 1213, grp uses are 13 9 13 0 10
+      bytes: mapping 19, selectors 17, code lengths 79, codes 1213
+    final combined CRC = 0x47bfca17
+
+    [1: huff+mtf rt+rld {0x47bfca17, 0x47bfca17}]
+    combined CRCs: stored = 0x47bfca17, computed = 0x47bfca17
+test tests::round_trip_compression_decompression ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured
+
+   Doc-tests libbindgen-tutorial-bzip2-sys
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured
+</code></pre>
+<a class="header" href="print.html#publish-your-crate" id="publish-your-crate"><h1>Publish Your Crate!</h1></a>
+<p>That's it! Now we can publish our crate on crates.io and we can write a nice,
+Rust-y API wrapping the raw FFI bindings in a safe interface. However, there is
+already a <a href="https://crates.io/crates/bzip2-sys"><code>bzip2-sys</code></a> crate providing raw FFI bindings, and there is
+already a <a href="https://crates.io/crates/bzip2"><code>bzip2</code></a> crate providing a nice, safe, Rust-y API on top of the
+bindings, so we have nothing left to do here!</p>
+<p>Check out the <a href="https://github.com/fitzgen/libbindgen-tutorial-bzip2-sys">full code on Github!</a></p>
+<a class="header" href="print.html#command-line-usage" id="command-line-usage"><h1>Command Line Usage</h1></a>
+<p>Install the <code>bindgen</code> executable with <code>cargo</code>:</p>
+<pre><code class="language-bash">$ cargo install bindgen
+</code></pre>
+<p>The <code>bindgen</code> executable is installed to <code>~/.cargo/bin</code>. You have to add that
+directory to your <code>$PATH</code> to use <code>bindgen</code>.</p>
+<p><code>bindgen</code> takes the path to an input C or C++ header file, and optionally an
+output file path for the generated bindings. If the output file path is not
+supplied, the bindings are printed to <code>stdout</code>.</p>
+<p>If we wanted to generated Rust FFI bindings from a C header named <code>input.h</code> and
+put them in the <code>bindings.rs</code> file, we would invoke <code>bindgen</code> like this:</p>
+<pre><code class="language-bash">$ bindgen input.h -o bindings.rs
+</code></pre>
+<p>For more details, pass the <code>--help</code> flag:</p>
+<pre><code class="language-bash">$ bindgen --help
+</code></pre>
+<a class="header" href="print.html#customizing-the-generated-bindings" id="customizing-the-generated-bindings"><h1>Customizing the Generated Bindings</h1></a>
+<p>The translation of classes, structs, enums, and typedefs can be adjusted in a
+few ways:</p>
+<ol>
+<li>
+<p>By using the <code>bindgen::Builder</code>'s configuration methods, when using <code>bindgen</code>
+as a library.</p>
+</li>
+<li>
+<p>By passing extra flags and options to the <code>bindgen</code> executable.</p>
+</li>
+<li>
+<p>By adding an annotation comment to the C/C++ source code. Annotations are
+specially formatted HTML tags inside doxygen style comments:</p>
+<ul>
+<li>
+<p>For single line comments:</p>
+<pre><code class="language-c">/// &lt;div rustbindgen&gt;&lt;/div&gt;
+</code></pre>
+</li>
+<li>
+<p>For multi-line comments:</p>
+<pre><code class="language-c">/**
+ * &lt;div rustbindgen&gt;&lt;/div&gt;
+ */
+</code></pre>
+</li>
+</ul>
+</li>
+</ol>
+<p>We'll leave the nitty-gritty details to
+the <a href="https://docs.rs/bindgen">docs.rs API reference</a> and <code>bindgen --help</code>, but
+provide higher level concept documentation here.</p>
+<a class="header" href="print.html#whitelisting" id="whitelisting"><h1>Whitelisting</h1></a>
+<p>Whitelisting allows us to be precise about which type, function, and global
+variable definitions <code>bindgen</code> generates bindings for. By default, if we don't
+specify any whitelisting rules, everything is considered whitelisted. This may
+not be desirable because of either</p>
+<ul>
+<li>the generated bindings contain a lot of extra defintions we don't plan on using, or</li>
+<li>the header file contains C++ features for which Rust does not have a
+corresponding form (such as partial template specialization), and we would
+like to avoid these definitions</li>
+</ul>
+<p>If we specify whitelisting rules, then <code>bindgen</code> will only generate bindings to
+types, functions, and global variables that match the whitelisting rules, or are
+transitively used by a definition that matches them.</p>
+<a class="header" href="print.html#library" id="library"><h3>Library</h3></a>
+<ul>
+<li><a href="https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.whitelisted_type"><code>bindgen::Builder::whitelisted_type</code></a></li>
+<li><a href="https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.whitelisted_function"><code>bindgen::Builder::whitelisted_function</code></a></li>
+<li><a href="https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.whitelisted_function"><code>bindgen::Builder::whitelisted_var</code></a></li>
+</ul>
+<a class="header" href="print.html#command-line" id="command-line"><h3>Command Line</h3></a>
+<ul>
+<li><code>--whitelist-type &lt;type&gt;</code></li>
+<li><code>--whitelist-function &lt;function&gt;</code></li>
+<li><code>--whitelist-var &lt;var&gt;</code></li>
+</ul>
+<a class="header" href="print.html#annotations" id="annotations"><h3>Annotations</h3></a>
+<p>None.</p>
+<a class="header" href="print.html#blacklisting" id="blacklisting"><h1>Blacklisting</h1></a>
+<p>If you need to provide your own custom translation of some type (for example,
+because you need to wrap one of its fields in an <code>UnsafeCell</code>), you can
+explicitly blacklist generation of its definition. Uses of the blacklisted type
+will still appear in other types' definitions. (If you don't want the type to
+appear in the bindings at
+all, <a href="./opaque.html">make it opaque</a> instead of
+blacklisting it.)</p>
+<a class="header" href="print.html#library-1" id="library-1"><h3>Library</h3></a>
+<ul>
+<li><a href="https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.hide_type"><code>bindgen::Builder::hide_type</code></a></li>
+</ul>
+<a class="header" href="print.html#command-line-1" id="command-line-1"><h3>Command Line</h3></a>
+<ul>
+<li><code>--blacklist-type &lt;type&gt;</code></li>
+</ul>
+<a class="header" href="print.html#annotations-1" id="annotations-1"><h3>Annotations</h3></a>
+<pre><code class="language-cpp">/// &lt;div rustbindgen hide&gt;&lt;/div&gt;
+class Foo {
+    // ...
+};
+</code></pre>
+<a class="header" href="print.html#treating-a-type-as-an-opaque-blob-of-bytes" id="treating-a-type-as-an-opaque-blob-of-bytes"><h1>Treating a Type as an Opaque Blob of Bytes</h1></a>
+<p>Sometimes a type definition is simply not translatable to Rust, for example it
+uses
+<a href="https://en.wikipedia.org/wiki/Substitution_failure_is_not_an_error">C++'s SFINAE</a> for
+which Rust has no equivalent. In these cases, it is best to treat all
+occurrences of the type as an opaque blob of bytes with a size and
+alignment. <code>bindgen</code> will attempt to detect such cases and do this
+automatically, but other times it needs some explicit help from you.</p>
+<a class="header" href="print.html#library-2" id="library-2"><h3>Library</h3></a>
+<ul>
+<li><a href="https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.opaque_type"><code>bindgen::Builder::opaque_type</code></a></li>
+</ul>
+<a class="header" href="print.html#command-line-2" id="command-line-2"><h3>Command Line</h3></a>
+<ul>
+<li><code>--opaque-type &lt;type&gt;</code></li>
+</ul>
+<a class="header" href="print.html#annotation" id="annotation"><h3>Annotation</h3></a>
+<pre><code class="language-cpp">/// &lt;div rustbindgen opaque&gt;&lt;/div&gt;
+class Foo {
+    // ...
+};
+</code></pre>
+<a class="header" href="print.html#replacing-one-type-with-another" id="replacing-one-type-with-another"><h1>Replacing One Type with Another</h1></a>
+<p>The <code>replaces</code> annotation can be used to use a type as a replacement for other
+(presumably more complex) type. This is used in Stylo to generate bindings for
+structures that for multiple reasons are too complex for bindgen to understand.</p>
+<p>For example, in a C++ header:</p>
+<pre><code class="language-cpp">/**
+ * &lt;div rustbindgen replaces=&quot;nsTArray&quot;&gt;&lt;/div&gt;
+ */
+template&lt;typename T&gt;
+class nsTArray_Simple {
+  T* mBuffer;
+public:
+  // The existence of a destructor here prevents bindgen from deriving the Clone
+  // trait via a simple memory copy.
+  ~nsTArray_Simple() {};
+};
+</code></pre>
+<p>That way, after code generation, the bindings for the <code>nsTArray</code> type are
+the ones that would be generated for <code>nsTArray_Simple</code>.</p>
+<p>Replacing is only available as an annotation. To replace a C or C++ definition
+with a Rust definition, use <a href="./blacklisting.html">blacklisting</a>.</p>
+<a class="header" href="print.html#preventing-the-derivation-of-copy-and-clone" id="preventing-the-derivation-of-copy-and-clone"><h1>Preventing the Derivation of <code>Copy</code> and <code>Clone</code></h1></a>
+<p><code>bindgen</code> will attempt to derive the <code>Copy</code> and <code>Clone</code> traits on a best-effort
+basis. Sometimes, it might not understand that although adding <code>#[derive(Copy, Clone)]</code> to a translated type definition will compile, it still shouldn't do
+that for reasons it can't know. In these cases, the <code>nocopy</code> annotation can be
+used to prevent bindgen to autoderive the <code>Copy</code> and <code>Clone</code> traits for a type.</p>
+<pre><code class="language-c">/**
+ * Although bindgen can't know, this struct is not safe to move because pthread
+ * mutexes can't move in memory!
+ *
+ * &lt;div rustbindgen nocopy&gt;&lt;/div&gt;
+ */
+struct MyMutexWrapper {
+    pthread_mutex_t raw;
+    // ...
+};
+</code></pre>
+<a class="header" href="print.html#generating-bindings-to-c" id="generating-bindings-to-c"><h1>Generating Bindings to C++</h1></a>
+<p><code>bindgen</code> can handle a surprising number of C++ features, but not all of
+them. When <code>bindgen</code> can't translate some C++ construct into Rust, it usually
+comes down to one of two things:</p>
+<ol>
+<li>Rust has no equivalent language feature</li>
+<li>C++ is <em>hard!</em></li>
+</ol>
+<p>Notable C++ features that are unsupported or only partially supported, and for
+which <code>bindgen</code> <em>should</em> generate opaque blobs whenever it finds an occurrence
+of them in a type it is generating bindings for:</p>
+<ul>
+<li>Template specialization</li>
+<li>Partial template specialization</li>
+<li>Traits templates</li>
+<li>SFINAE</li>
+</ul>
+<p>When passing in header files, the file will automatically be treated as C++ if
+it ends in <code>.hpp</code>. If it doesn't, adding <code>-x=c++</code> clang args can be used to
+force C++ mode. You probably also want to use <code>-std=c++14</code> or similar clang args
+as well.</p>
+<p>You pretty much <strong>must</strong> use <a href="./whitelisting.html">whitelisting</a> when working
+with C++ to avoid pulling in all of the <code>std::*</code> types, many of which <code>bindgen</code>
+cannot handle. Additionally, you may want to mark other types
+as <a href="./opaque.html">opaque</a> that <code>bindgen</code> stumbles on.</p>
+
+                </div>
+
+                <!-- Mobile navigation buttons -->
+                
+
+                
+
+            </div>
+
+            
+
+            
+
+        </div>
+
+
+        <!-- Local fallback for Font Awesome -->
+        <script>
+            if ($(".fa").css("font-family") !== "FontAwesome") {
+                $('<link rel="stylesheet" type="text/css" href="_FontAwesome/css/font-awesome.css">').prependTo('head');
+            }
+        </script>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        
+
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+    </body>
+</html>
