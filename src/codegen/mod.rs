@@ -2994,13 +2994,13 @@ mod utils {
                                result: &mut Vec<P<ast::Item>>) {
         let use_objc = if ctx.options().objc_extern_crate {
             quote_item!(ctx.ext_cx(),
-                use objc;
+                #[macro_use]
+                extern crate objc;
             )
                 .unwrap()
         } else {
             quote_item!(ctx.ext_cx(),
-                #[macro_use]
-                extern crate objc;
+                use objc;
             )
                 .unwrap()
         };
