@@ -6,7 +6,6 @@ extern crate env_logger;
 extern crate log;
 extern crate clang_sys;
 extern crate clap;
-extern crate rustc_serialize;
 
 use bindgen::clang_version;
 use std::env;
