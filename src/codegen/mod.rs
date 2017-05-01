@@ -2805,7 +2805,8 @@ impl CodeGenerator for Function {
 
 fn objc_method_codegen(ctx: &BindgenContext,
                        method: &ObjCMethod,
-                       class_name: Option<&str>)
+                       class_name: Option<&str>,
+                       prefix: &str)
                        -> (ast::ImplItem, ast::TraitItem) {
     let signature = method.signature();
     let fn_args = utils::fnsig_arguments(ctx, signature);
@@ -2864,9 +2865,11 @@ fn objc_method_codegen(ctx: &BindgenContext,
 
     let attrs = vec![];
 
+    let method_name = format!("{}{}", prefix, method.rust_name());
+
     let impl_item = ast::ImplItem {
         id: ast::DUMMY_NODE_ID,
-        ident: ctx.rust_ident(method.rust_name()),
+        ident: ctx.rust_ident(&method_name),
         vis: ast::Visibility::Inherited, // Public,
         attrs: attrs.clone(),
         node: ast::ImplItemKind::Method(sig.clone(), P(block)),
@@ -2876,7 +2879,7 @@ fn objc_method_codegen(ctx: &BindgenContext,
 
     let trait_item = ast::TraitItem {
         id: ast::DUMMY_NODE_ID,
-        ident: ctx.rust_ident(method.rust_name()),
+        ident: ctx.rust_ident(&method_name),
         attrs: attrs,
         node: ast::TraitItemKind::Method(sig, None),
         span: ctx.span(),
@@ -2898,14 +2901,23 @@ impl CodeGenerator for ObjCInterface {
 
         for method in self.methods() {
             let (impl_item, trait_item) =
-                objc_method_codegen(ctx, method, None);
+                objc_method_codegen(ctx, method, None, "");
             impl_items.push(impl_item);
             trait_items.push(trait_item)
         }
 
+        let instance_method_names : Vec<_> = self.methods().iter().map( { |m| m.rust_name() } ).collect();
+
         for class_method in self.class_methods() {
+
+            let ambiquity = instance_method_names.contains(&class_method.rust_name());
+            let prefix = if ambiquity {
+                    "class_"
+                } else {
+                    ""
+                };
             let (impl_item, trait_item) =
-                objc_method_codegen(ctx, class_method, Some(self.name()));
+                objc_method_codegen(ctx, class_method, Some(self.name()), prefix);
             impl_items.push(impl_item);
             trait_items.push(trait_item)
         }
