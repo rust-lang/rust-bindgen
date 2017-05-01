@@ -345,6 +345,7 @@ impl Type {
     /// item, so we can arrive to the proper item that needs to be generated.
     pub fn should_be_traced_unconditionally(&self) -> bool {
         match self.kind {
+            TypeKind::Comp(..) |
             TypeKind::Function(..) |
             TypeKind::Pointer(..) |
             TypeKind::Array(..) |

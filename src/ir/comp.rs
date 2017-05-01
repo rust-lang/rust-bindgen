@@ -975,16 +975,23 @@ impl Trace for CompInfo {
             tracer.visit_kind(p, EdgeKind::TemplateParameterDefinition);
         }
 
+        for &ty in self.inner_types() {
+            tracer.visit_kind(ty, EdgeKind::InnerType);
+        }
+
+        // We unconditionally trace `CompInfo`'s template parameters and inner
+        // types for the the usage analysis. However, we don't want to continue
+        // tracing anything else, if this type is marked opaque.
+        if item.is_opaque(context) {
+            return;
+        }
+
         for base in self.base_members() {
             tracer.visit_kind(base.ty, EdgeKind::BaseMember);
         }
 
         for field in self.fields() {
             tracer.visit_kind(field.ty(), EdgeKind::Field);
-        }
-
-        for &ty in self.inner_types() {
-            tracer.visit_kind(ty, EdgeKind::InnerType);
         }
 
         for &var in self.inner_vars() {
