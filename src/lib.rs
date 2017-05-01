@@ -416,8 +416,34 @@ impl Builder {
         output_vector
     }
 
-    /// Set the input C/C++ header.
+    /// Add an input C/C++ header to generate bindings for.
+    ///
+    /// This can be used to generate bindings to a single header:
+    ///
+    /// ```ignore
+    /// let bindings = bindgen::Builder::default()
+    ///     .header("input.h")
+    ///     .generate()
+    ///     .unwrap();
+    /// ```
+    ///
+    /// Or you can invoke it multiple times to generate bindings to multiple
+    /// headers:
+    ///
+    /// ```ignore
+    /// let bindings = bindgen::Builder::default()
+    ///     .header("first.h")
+    ///     .header("second.h")
+    ///     .header("third.h")
+    ///     .generate()
+    ///     .unwrap();
+    /// ```
     pub fn header<T: Into<String>>(mut self, header: T) -> Builder {
+        if let Some(prev_header) = self.options.input_header.take() {
+            self.options.clang_args.push("-include".into());
+            self.options.clang_args.push(prev_header);
+        }
+
         let header = header.into();
         self.options.input_header = Some(header);
         self
