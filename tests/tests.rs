@@ -160,3 +160,29 @@ extern \"C\" {
 }
 ");
 }
+
+#[test]
+fn test_multiple_header_calls_in_builder() {
+    let actual = builder()
+        .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/func_ptr.h"))
+        .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/enum.h"))
+        .generate()
+        .unwrap()
+        .to_string();
+
+    let expected = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/expectations/tests/test_multiple_header_calls_in_builder.rs"));
+
+    if actual != expected {
+        println!("Generated bindings differ from expected!");
+
+        for diff in diff::lines(&actual, &expected) {
+            match diff {
+                diff::Result::Left(l) => println!("-{}", l),
+                diff::Result::Both(l, _) => println!(" {}", l),
+                diff::Result::Right(r) => println!("+{}", r),
+            }
+        }
+
+        panic!();
+    }
+}
