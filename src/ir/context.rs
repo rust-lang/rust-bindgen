@@ -1264,7 +1264,7 @@ impl<'ctx> BindgenContext<'ctx> {
     }
 
     /// Tokenizes a namespace cursor in order to get the name and kind of the
-    /// namespace,
+    /// namespace.
     fn tokenize_namespace(&self,
                           cursor: &clang::Cursor)
                           -> (Option<String>, ModuleKind) {
@@ -1280,6 +1280,7 @@ impl<'ctx> BindgenContext<'ctx> {
         let mut kind = ModuleKind::Normal;
         let mut found_namespace_keyword = false;
         let mut module_name = None;
+
         while let Some(token) = iter.next() {
             match &*token.spelling {
                 "inline" => {
@@ -1287,7 +1288,17 @@ impl<'ctx> BindgenContext<'ctx> {
                     assert!(kind != ModuleKind::Inline);
                     kind = ModuleKind::Inline;
                 }
-                "namespace" => {
+                // The double colon allows us to handle nested namespaces like
+                // namespace foo::bar { }
+                //
+                // libclang still gives us two namespace cursors, which is cool,
+                // but the tokenization of the second begins with the double
+                // colon. That's ok, so we only need to handle the weird
+                // tokenization here.
+                //
+                // Fortunately enough, inline nested namespace specifiers aren't
+                // a thing, and are invalid C++ :)
+                "namespace" | "::" => {
                     found_namespace_keyword = true;
                 }
                 "{" => {
