@@ -21,8 +21,8 @@ use ir::item_kind::ItemKind;
 use ir::layout::Layout;
 use ir::module::Module;
 use ir::objc::{ObjCInterface, ObjCMethod};
-use ir::template::{AsNamed, TemplateInstantiation};
-use ir::ty::{TemplateDeclaration, Type, TypeKind};
+use ir::template::{AsNamed, TemplateInstantiation, TemplateParameters};
+use ir::ty::{Type, TypeKind};
 use ir::var::Var;
 
 use std::borrow::Cow;
@@ -1047,13 +1047,16 @@ impl CodeGenerator for CompInfo {
 
         // generate tuple struct if struct or union is a forward declaration,
         // skip for now if template parameters are needed.
+        //
+        // NB: We generate a proper struct to avoid struct/function name
+        // collisions.
         if self.is_forward_declaration() && used_template_params.is_none() {
             let struct_name = item.canonical_name(ctx);
             let struct_name = ctx.rust_ident_raw(&struct_name);
             let tuple_struct = quote_item!(ctx.ext_cx(),
                                            #[repr(C)]
                                            #[derive(Debug, Copy, Clone)]
-                                           pub struct $struct_name([u8; 0]);
+                                           pub struct $struct_name { _unused: [u8; 0] };
                                           )
                 .unwrap();
             result.push(tuple_struct);
@@ -2656,8 +2659,10 @@ impl TryToRustTy for TemplateInstantiation {
                 // This can happen if we generated an opaque type for a partial
                 // template specialization, and we've hit an instantiation of
                 // that partial specialization.
-                extra_assert!(ctx.resolve_type_through_type_refs(decl)
-                                  .is_opaque());
+                extra_assert!(decl.into_resolver()
+                                  .through_type_refs()
+                                  .resolve(ctx)
+                                  .is_opaque(ctx));
                 return Err(error::Error::InstantiationOfOpaqueType);
             }
         };

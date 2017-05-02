@@ -3,7 +3,7 @@
 //! Provide a C/C++ header file, receive Rust FFI code to call into C/C++
 //! functions and use types defined in the header.
 //!
-//! See the [Builder](./struct.Builder.html) struct for usage.
+//! See the [`Builder`](./struct.Builder.html) struct for usage.
 
 #![deny(missing_docs)]
 #![deny(warnings)]
@@ -175,7 +175,7 @@ pub fn builder() -> Builder {
 }
 
 impl Builder {
-     ///Generates the command line flags use for creating `builder`
+     /// Generates the command line flags use for creating `Builder`.
     pub fn command_line_flags(&self) -> Vec<String> {
         let mut output_vector: Vec<String> = Vec::new();
 
@@ -416,8 +416,34 @@ impl Builder {
         output_vector
     }
 
-    /// Set the input C/C++ header.
+    /// Add an input C/C++ header to generate bindings for.
+    ///
+    /// This can be used to generate bindings to a single header:
+    ///
+    /// ```ignore
+    /// let bindings = bindgen::Builder::default()
+    ///     .header("input.h")
+    ///     .generate()
+    ///     .unwrap();
+    /// ```
+    ///
+    /// Or you can invoke it multiple times to generate bindings to multiple
+    /// headers:
+    ///
+    /// ```ignore
+    /// let bindings = bindgen::Builder::default()
+    ///     .header("first.h")
+    ///     .header("second.h")
+    ///     .header("third.h")
+    ///     .generate()
+    ///     .unwrap();
+    /// ```
     pub fn header<T: Into<String>>(mut self, header: T) -> Builder {
+        if let Some(prev_header) = self.options.input_header.take() {
+            self.options.clang_args.push("-include".into());
+            self.options.clang_args.push(prev_header);
+        }
+
         let header = header.into();
         self.options.input_header = Some(header);
         self
@@ -455,21 +481,21 @@ impl Builder {
     ///
     /// This can be used to get bindgen to generate _exactly_ the types you want
     /// in your bindings, and then import other types manually via other means
-    /// (like `raw_line`).
+    /// (like [`raw_line`](#method.raw_line)).
     pub fn whitelist_recursively(mut self, doit: bool) -> Self {
         self.options.whitelist_recursively = doit;
         self
     }
 
-    /// Generate '#[macro_use] extern crate objc;' instead of 'use objc;'
+    /// Generate `#[macro_use] extern crate objc;` instead of `use objc;`
     /// in the prologue of the files generated from objective-c files
     pub fn objc_extern_crate(mut self, doit: bool) -> Self {
         self.options.objc_extern_crate = doit;
         self
     }
 
-    /// Whether to use the clang-provided name mangling. This is true and
-    /// probably needed for C++ features.
+    /// Whether to use the clang-provided name mangling. This is true by default
+    /// and probably needed for C++ features.
     ///
     /// However, some old libclang versions seem to return incorrect results in
     /// some cases for non-mangled functions, see [1], so we allow disabling it.
@@ -593,7 +619,7 @@ impl Builder {
         self
     }
 
-    /// Avoid converting floats to f32/f64 by default.
+    /// Avoid converting floats to `f32`/`f64` by default.
     pub fn no_convert_floats(mut self) -> Self {
         self.options.convert_floats = false;
         self
@@ -635,20 +661,19 @@ impl Builder {
         self
     }
 
-    /// Disable auto-namespacing of names if namespaces are disabled.
+    /// Disable name auto-namespacing.
     ///
-    /// By default, if namespaces are disabled, bindgen tries to mangle the
-    /// names to from `foo::bar::Baz` to look like `foo_bar_Baz`, instead of
-    /// just `Baz`.
+    /// By default, bindgen mangles names like `foo::bar::Baz` to look like
+    /// `foo_bar_Baz` instead of just `Baz`.
     ///
-    /// This option disables that behavior.
+    /// This method disables that behavior.
     ///
-    /// Note that this intentionally doesn't change the names using for
-    /// whitelisting and blacklisting, that should still be mangled with the
+    /// Note that this intentionally does not change the names used for
+    /// whitelisting and blacklisting, which should still be mangled with the
     /// namespaces.
     ///
-    /// Note, also, that using this option may cause duplicated names to be
-    /// generated.
+    /// Note, also, that this option may cause bindgen to generate duplicate
+    /// names.
     pub fn disable_name_namespacing(mut self) -> Builder {
         self.options.disable_name_namespacing = true;
         self
@@ -727,14 +752,15 @@ impl Builder {
         self
     }
 
-    /// Allows configuring types in different situations, see the `ParseCallbacks`
-    /// documentation.
+    /// Allows configuring types in different situations, see the
+    /// [`ParseCallbacks`](./callbacks/trait.ParseCallbacks.html) documentation.
     pub fn parse_callbacks(mut self, cb: Box<callbacks::ParseCallbacks>) -> Self {
         self.options.parse_callbacks = Some(cb);
         self
     }
 
-    /// Choose what to generate using a CodegenConfig.
+    /// Choose what to generate using a
+    /// [`CodegenConfig`](./struct.CodegenConfig.html).
     pub fn with_codegen_config(mut self, config: CodegenConfig) -> Self {
         self.options.codegen_config = config;
         self

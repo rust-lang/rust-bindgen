@@ -18,19 +18,30 @@ export RUST_BACKTRACE=1
 # Grab the first match
 TEST=$(find ./tests/headers -type f -iname "*$1*" | head -n 1)
 
-BINDINGS=$(mktemp -t bindings_XXXXXX.rs)
-TEST_BINDINGS_BINARY=$(mktemp -t bindings.XXXXX)
+BINDINGS=$(mktemp -t bindings.rs.XXXXXX)
+TEST_BINDINGS_BINARY=$(mktemp -t bindings.XXXXXX)
 
-./target/debug/bindgen \
-    "$TEST" \
+FLAGS="$(grep "// bindgen-flags: " "$TEST")"
+FLAGS="${FLAGS/\/\/ bindgen\-flags:/}"
+
+eval ./target/debug/bindgen \
+    "\"$TEST\"" \
     --emit-ir \
     --emit-ir-graphviz ir.dot \
     --emit-clang-ast \
-    -o "$BINDINGS" \
-    -- -std=c++14
+    -o "\"$BINDINGS\"" \
+    $FLAGS
 
 dot -Tpng ir.dot -o ir.png
 
-rustc --test -o "$TEST_BINDINGS_BINARY" "$BINDINGS"
+echo "=== Input header ========================================================"
+cat "$TEST"
 
+echo "=== Generated bindings =================================================="
+cat "$BINDINGS"
+
+echo "=== Building bindings ==================================================="
+rustc --test -o "$TEST_BINDINGS_BINARY" "$BINDINGS" --crate-name bindgen_test_one
+
+echo "=== Testing bindings ===================================================="
 "$TEST_BINDINGS_BINARY"

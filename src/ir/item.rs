@@ -8,9 +8,9 @@ use super::function::Function;
 use super::item_kind::ItemKind;
 use super::layout::Opaque;
 use super::module::Module;
-use super::template::AsNamed;
+use super::template::{AsNamed, TemplateParameters};
 use super::traversal::{EdgeKind, Trace, Tracer};
-use super::ty::{TemplateDeclaration, Type, TypeKind};
+use super::ty::{Type, TypeKind};
 use clang;
 use clang_sys;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
@@ -217,9 +217,12 @@ impl Trace for Item {
     fn trace<T>(&self, ctx: &BindgenContext, tracer: &mut T, _extra: &())
         where T: Tracer,
     {
-        if self.is_hidden(ctx) {
-            return;
-        }
+        // Even if this item is blacklisted/hidden, we want to trace it. It is
+        // traversal iterators' consumers' responsibility to filter items as
+        // needed. Generally, this filtering happens in the implementation of
+        // `Iterator` for `WhitelistedItems`. Fully tracing blacklisted items is
+        // necessary for things like the template parameter usage analysis to
+        // function correctly.
 
         match *self.kind() {
             ItemKind::Type(ref ty) => {
@@ -830,7 +833,7 @@ impl DotAttributes for Item {
     }
 }
 
-impl TemplateDeclaration for ItemId {
+impl TemplateParameters for ItemId {
     fn self_template_params(&self,
                             ctx: &BindgenContext)
                             -> Option<Vec<ItemId>> {
@@ -839,7 +842,7 @@ impl TemplateDeclaration for ItemId {
     }
 }
 
-impl TemplateDeclaration for Item {
+impl TemplateParameters for Item {
     fn self_template_params(&self,
                             ctx: &BindgenContext)
                             -> Option<Vec<ItemId>> {
@@ -847,7 +850,7 @@ impl TemplateDeclaration for Item {
     }
 }
 
-impl TemplateDeclaration for ItemKind {
+impl TemplateParameters for ItemKind {
     fn self_template_params(&self,
                             ctx: &BindgenContext)
                             -> Option<Vec<ItemId>> {

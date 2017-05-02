@@ -6,9 +6,9 @@ use super::item::{Item, ItemCanonicalPath, ItemSet};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
 use super::named::{UsedTemplateParameters, analyze};
-use super::template::TemplateInstantiation;
+use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
-use super::ty::{FloatKind, TemplateDeclaration, Type, TypeKind};
+use super::ty::{FloatKind, Type, TypeKind};
 use BindgenOptions;
 use cexpr;
 use callbacks::ParseCallbacks;
@@ -163,12 +163,53 @@ pub struct BindgenContext<'ctx> {
 }
 
 /// A traversal of whitelisted items.
-pub type WhitelistedItems<'ctx, 'gen> = ItemTraversal<'ctx,
-                                                      'gen,
-                                                      ItemSet,
-                                                      Vec<ItemId>,
-                                                      fn(Edge) -> bool>;
+pub struct WhitelistedItems<'ctx, 'gen>
+    where 'gen: 'ctx
+{
+    ctx: &'ctx BindgenContext<'gen>,
+    traversal: ItemTraversal<'ctx,
+                             'gen,
+                             ItemSet,
+                             Vec<ItemId>,
+                             fn(Edge) -> bool>,
+}
 
+impl<'ctx, 'gen> Iterator for WhitelistedItems<'ctx, 'gen>
+    where 'gen: 'ctx
+{
+    type Item = ItemId;
+
+    fn next(&mut self) -> Option<ItemId> {
+        loop {
+            match self.traversal.next() {
+                None => return None,
+                Some(id) if self.ctx.resolve_item(id).is_hidden(self.ctx) => continue,
+                Some(id) => return Some(id),
+            }
+        }
+    }
+}
+
+impl<'ctx, 'gen> WhitelistedItems<'ctx, 'gen>
+    where 'gen: 'ctx
+{
+    /// Construct a new whitelisted items traversal.
+    pub fn new<R>(ctx: &'ctx BindgenContext<'gen>,
+                  roots: R)
+                  -> WhitelistedItems<'ctx, 'gen>
+        where R: IntoIterator<Item = ItemId>,
+    {
+        let predicate = if ctx.options().whitelist_recursively {
+            traversal::all_edges
+        } else {
+            traversal::no_edges
+        };
+        WhitelistedItems {
+            ctx: ctx,
+            traversal: ItemTraversal::new(ctx, roots, predicate)
+        }
+    }
+}
 impl<'ctx> BindgenContext<'ctx> {
     /// Construct the context for the given `options`.
     pub fn new(options: BindgenOptions) -> Self {
@@ -646,12 +687,21 @@ impl<'ctx> BindgenContext<'ctx> {
         assert!(self.in_codegen_phase(),
                 "We only compute template parameter usage as we enter codegen");
 
+        if self.resolve_item(item).is_hidden(self) {
+            return true;
+        }
+
+        let template_param = template_param.into_resolver()
+            .through_type_refs()
+            .through_type_aliases()
+            .resolve(self)
+            .id();
+
         self.used_template_parameters
             .as_ref()
             .expect("should have found template parameter usage if we're in codegen")
             .get(&item)
-            .map(|items_used_params| items_used_params.contains(&template_param))
-            .unwrap_or_else(|| self.resolve_item(item).is_hidden(self))
+            .map_or(false, |items_used_params| items_used_params.contains(&template_param))
     }
 
     // This deserves a comment. Builtin types don't get a valid declaration, so
@@ -709,21 +759,6 @@ impl<'ctx> BindgenContext<'ctx> {
         match self.items.get(&item_id) {
             Some(item) => item,
             None => panic!("Not an item: {:?}", item_id),
-        }
-    }
-
-    /// Resolve the given `ItemId` into a `Type`, and keep doing so while we see
-    /// `ResolvedTypeRef`s to other items until we get to the final `Type`.
-    pub fn resolve_type_through_type_refs(&self, item_id: ItemId) -> &Type {
-        assert!(self.collected_typerefs());
-
-        let mut id = item_id;
-        loop {
-            let ty = self.resolve_type(id);
-            match *ty.kind() {
-                TypeKind::ResolvedTypeRef(next_id) => id = next_id,
-                _ => return ty,
-            }
         }
     }
 
@@ -1229,7 +1264,7 @@ impl<'ctx> BindgenContext<'ctx> {
     }
 
     /// Tokenizes a namespace cursor in order to get the name and kind of the
-    /// namespace,
+    /// namespace.
     fn tokenize_namespace(&self,
                           cursor: &clang::Cursor)
                           -> (Option<String>, ModuleKind) {
@@ -1245,6 +1280,7 @@ impl<'ctx> BindgenContext<'ctx> {
         let mut kind = ModuleKind::Normal;
         let mut found_namespace_keyword = false;
         let mut module_name = None;
+
         while let Some(token) = iter.next() {
             match &*token.spelling {
                 "inline" => {
@@ -1252,7 +1288,17 @@ impl<'ctx> BindgenContext<'ctx> {
                     assert!(kind != ModuleKind::Inline);
                     kind = ModuleKind::Inline;
                 }
-                "namespace" => {
+                // The double colon allows us to handle nested namespaces like
+                // namespace foo::bar { }
+                //
+                // libclang still gives us two namespace cursors, which is cool,
+                // but the tokenization of the second begins with the double
+                // colon. That's ok, so we only need to handle the weird
+                // tokenization here.
+                //
+                // Fortunately enough, inline nested namespace specifiers aren't
+                // a thing, and are invalid C++ :)
+                "namespace" | "::" => {
                     found_namespace_keyword = true;
                 }
                 "{" => {
@@ -1389,14 +1435,7 @@ impl<'ctx> BindgenContext<'ctx> {
         // unions).
         let mut roots: Vec<_> = roots.collect();
         roots.reverse();
-
-        let predicate = if self.options().whitelist_recursively {
-            traversal::all_edges
-        } else {
-            traversal::no_edges
-        };
-
-        WhitelistedItems::new(self, roots, predicate)
+        WhitelistedItems::new(self, roots)
     }
 
     /// Convenient method for getting the prefix to use for most traits in
@@ -1417,6 +1456,73 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Whether we need to generate the binden complex type
     pub fn need_bindegen_complex_type(&self) -> bool {
         self.generated_bindegen_complex.get()
+    }
+}
+
+/// A builder struct for configuring item resolution options.
+#[derive(Debug, Copy, Clone)]
+pub struct ItemResolver {
+    id: ItemId,
+    through_type_refs: bool,
+    through_type_aliases: bool,
+}
+
+impl ItemId {
+    /// Create an `ItemResolver` from this item id.
+    pub fn into_resolver(self) -> ItemResolver {
+        self.into()
+    }
+}
+
+impl From<ItemId> for ItemResolver {
+    fn from(id: ItemId) -> ItemResolver {
+        ItemResolver::new(id)
+    }
+}
+
+impl ItemResolver {
+    /// Construct a new `ItemResolver` from the given id.
+    pub fn new(id: ItemId) -> ItemResolver {
+        ItemResolver {
+            id: id,
+            through_type_refs: false,
+            through_type_aliases: false,
+        }
+    }
+
+    /// Keep resolving through `Type::TypeRef` items.
+    pub fn through_type_refs(mut self) -> ItemResolver {
+        self.through_type_refs = true;
+        self
+    }
+
+    /// Keep resolving through `Type::Alias` items.
+    pub fn through_type_aliases(mut self) -> ItemResolver {
+        self.through_type_aliases = true;
+        self
+    }
+
+    /// Finish configuring and perform the actual item resolution.
+    pub fn resolve<'a, 'b>(self, ctx: &'a BindgenContext<'b>) -> &'a Item {
+        assert!(ctx.collected_typerefs());
+
+        let mut id = self.id;
+        loop {
+            let item = ctx.resolve_item(id);
+            let ty_kind = item.as_type().map(|t| t.kind());
+            match ty_kind {
+                Some(&TypeKind::ResolvedTypeRef(next_id)) if self.through_type_refs => {
+                    id = next_id;
+                }
+                // We intentionally ignore template aliases here, as they are
+                // more complicated, and don't represent a simple renaming of
+                // some type.
+                Some(&TypeKind::Alias(next_id)) if self.through_type_aliases => {
+                    id = next_id;
+                }
+                _ => return item,
+            }
+        }
     }
 }
 
@@ -1449,7 +1555,7 @@ impl PartialType {
     }
 }
 
-impl TemplateDeclaration for PartialType {
+impl TemplateParameters for PartialType {
     fn self_template_params(&self,
                             _ctx: &BindgenContext)
                             -> Option<Vec<ItemId>> {

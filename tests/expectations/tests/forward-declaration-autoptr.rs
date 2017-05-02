@@ -6,7 +6,9 @@
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct Foo([u8; 0]);
+pub struct Foo {
+    _unused: [u8; 0],
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct RefPtr<T> {

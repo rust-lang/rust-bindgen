@@ -35,7 +35,7 @@ pub fn builder_from_flags<I>
                 .number_of_values(1),
             Arg::with_name("blacklist-type")
                 .long("blacklist-type")
-                .help("Mark a type as hidden.")
+                .help("Mark <type> as hidden.")
                 .value_name("type")
                 .takes_value(true)
                 .multiple(true)
@@ -52,17 +52,17 @@ pub fn builder_from_flags<I>
                 .help("Avoid deriving Default on any type."),
             Arg::with_name("with-derive-default")
                 .long("with-derive-default")
-                .help("Deriving Default on any type."),
+                .help("Derive Default on any type."),
             Arg::with_name("no-doc-comments")
                 .long("no-doc-comments")
                 .help("Avoid including doc comments in the output, see: \
                       https://github.com/servo/rust-bindgen/issues/426"),
             Arg::with_name("no-recursive-whitelist")
                 .long("no-recursive-whitelist")
-                .help("Avoid whitelisting types recursively"),
+                .help("Avoid whitelisting types recursively."),
             Arg::with_name("objc-extern-crate")
                 .long("objc-extern-crate")
-                .help("Use extern crate instead of use for objc"),
+                .help("Use extern crate instead of use for objc."),
             Arg::with_name("distrust-clang-mangling")
                 .long("distrust-clang-mangling")
                 .help("Do not trust the libclang-provided mangling"),
@@ -100,7 +100,9 @@ pub fn builder_from_flags<I>
                 .help("Enable support for C++ namespaces."),
             Arg::with_name("disable-name-namespacing")
                 .long("disable-name-namespacing")
-                .help("Disable name namespacing if namespaces are disabled."),
+                .help("Disable namespacing via mangling, causing bindgen to \
+                       generate names like \"Baz\" instead of \"foo_bar_Baz\" \
+                       for an input name \"foo::bar::Baz\"."),
             Arg::with_name("framework")
                 .long("framework-link")
                 .help("Link to framework.")
@@ -113,7 +115,7 @@ pub fn builder_from_flags<I>
                        is useful when you only care about struct layouts."),
             Arg::with_name("generate")
                 .long("generate")
-                .help("Generate a given kind of items, split by commas. \
+                .help("Generate only given items, split by commas. \
                        Valid values are \"functions\",\"types\", \"vars\", \
                        \"methods\", \"constructors\" and \"destructors\".")
                 .takes_value(true),
@@ -129,17 +131,17 @@ pub fn builder_from_flags<I>
                 .number_of_values(1),
             Arg::with_name("no-convert-floats")
                 .long("no-convert-floats")
-                .help("Don't automatically convert floats to f32/f64."),
+                .help("Do not automatically convert floats to f32/f64."),
             Arg::with_name("no-prepend-enum-name")
                 .long("no-prepend-enum-name")
-                .help("Do not prepend the enum name to bitfield or constant variants"),
+                .help("Do not prepend the enum name to bitfield or constant variants."),
             Arg::with_name("no-unstable-rust")
                 .long("no-unstable-rust")
                 .help("Do not generate unstable Rust code.")
                 .multiple(true), // FIXME: Pass legacy test suite
             Arg::with_name("opaque-type")
                 .long("opaque-type")
-                .help("Mark a type as opaque.")
+                .help("Mark <type> as opaque.")
                 .value_name("type")
                 .takes_value(true)
                 .multiple(true)
@@ -182,7 +184,7 @@ pub fn builder_from_flags<I>
                 .number_of_values(1),
             Arg::with_name("generate-inline-functions")
                 .long("generate-inline-functions")
-                .help("Whether inline functions should be generated."),
+                .help("Generate inline functions."),
             Arg::with_name("whitelist-type")
                 .long("whitelist-type")
                 .help("Whitelist the type. Other non-whitelisted types will \
@@ -202,7 +204,7 @@ pub fn builder_from_flags<I>
                 .number_of_values(1),
             Arg::with_name("verbose")
                 .long("verbose")
-                .help("Print verbose error messages"),
+                .help("Print verbose error messages."),
         ]) // .args()
         .get_matches_from(args);
 
