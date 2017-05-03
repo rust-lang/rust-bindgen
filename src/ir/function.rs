@@ -284,7 +284,9 @@ impl FunctionSig {
 
         let ty_ret_type = if cursor.kind() == CXCursor_ObjCInstanceMethodDecl ||
                              cursor.kind() == CXCursor_ObjCClassMethodDecl {
-            try!(cursor.ret_type().ok_or(ParseError::Continue))
+            try!(ty.ret_type()
+                   .or_else(|| cursor.ret_type())
+                   .ok_or(ParseError::Continue))
         } else {
             try!(ty.ret_type().ok_or(ParseError::Continue))
         };

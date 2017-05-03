@@ -341,6 +341,10 @@ pub fn builder_from_flags<I>
         builder = builder.whitelist_recursively(false);
     }
 
+    if matches.is_present("objc-extern-crate") {
+        builder = builder.objc_extern_crate(true);
+    }
+
     if let Some(opaque_types) = matches.values_of("opaque-type") {
         for ty in opaque_types {
             builder = builder.opaque_type(ty);
