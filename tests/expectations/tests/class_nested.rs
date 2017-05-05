@@ -53,6 +53,7 @@ impl Clone for A_C {
 #[derive(Debug, Copy, Clone)]
 pub struct A_D<T> {
     pub foo: T,
+    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for A_D<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -115,11 +116,13 @@ impl Clone for D {
 #[derive(Debug, Copy, Clone)]
 pub struct Templated<T> {
     pub member: T,
+    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Templated_Templated_inner<T> {
     pub member_ptr: *mut T,
+    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for Templated_Templated_inner<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

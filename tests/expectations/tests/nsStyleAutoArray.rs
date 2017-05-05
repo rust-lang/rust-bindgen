@@ -8,6 +8,7 @@
 #[derive(Debug, Copy, Clone)]
 pub struct nsTArray<T> {
     pub mBuff: *mut T,
+    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for nsTArray<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -17,6 +18,7 @@ impl <T> Default for nsTArray<T> {
 pub struct nsStyleAutoArray<T> {
     pub mFirstElement: T,
     pub mOtherElements: nsTArray<T>,
+    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]

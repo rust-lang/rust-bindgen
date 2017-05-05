@@ -9,6 +9,8 @@
 pub struct Foo<T, U> {
     pub t: T,
     pub u: U,
+    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    _phantom_1: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
 }
 impl <T, U> Default for Foo<T, U> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

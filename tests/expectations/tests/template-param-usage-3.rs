@@ -8,12 +8,15 @@
 #[derive(Debug, Copy, Clone)]
 pub struct UsesTemplateParameter<T> {
     pub t: T,
+    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct UsesTemplateParameter_AlsoUsesTemplateParameterAndMore<T, U> {
     pub also: T,
     pub more: U,
+    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    _phantom_1: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
 }
 impl <T, U> Default for
  UsesTemplateParameter_AlsoUsesTemplateParameterAndMore<T, U> {
