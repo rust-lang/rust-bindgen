@@ -8,11 +8,13 @@
 #[derive(Debug, Copy, Clone)]
 pub struct UsesTemplateParameter<T> {
     pub t: T,
+    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct UsesTemplateParameter_AlsoUsesTemplateParameter<T> {
     pub also: T,
+    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for UsesTemplateParameter_AlsoUsesTemplateParameter<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

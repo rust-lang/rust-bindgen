@@ -539,7 +539,8 @@ fn sanity_check_can_generate_stylo_bindings() {
 
     println!("");
     println!("");
-    println!("Generated Stylo bindings in: {:?}", now.duration_since(then));
+    println!("Generated Stylo bindings in: {:?}",
+             now.duration_since(then));
     println!("");
     println!("");
 

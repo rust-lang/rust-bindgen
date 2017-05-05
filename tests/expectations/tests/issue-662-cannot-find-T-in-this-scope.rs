@@ -8,6 +8,7 @@
 #[derive(Debug, Copy, Clone)]
 pub struct RefPtr<T> {
     pub a: T,
+    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for RefPtr<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -16,6 +17,7 @@ impl <T> Default for RefPtr<T> {
 #[derive(Debug, Copy, Clone)]
 pub struct nsMainThreadPtrHolder<T> {
     pub a: T,
+    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for nsMainThreadPtrHolder<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -24,6 +26,7 @@ impl <T> Default for nsMainThreadPtrHolder<T> {
 #[derive(Debug, Copy, Clone)]
 pub struct nsMainThreadPtrHandle<T> {
     pub mPtr: RefPtr<nsMainThreadPtrHolder<T>>,
+    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for nsMainThreadPtrHandle<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
