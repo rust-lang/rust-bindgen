@@ -8,7 +8,7 @@
 #[derive(Debug, Copy, Clone)]
 pub struct Foo<T> {
     pub t_member: T,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for Foo<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -22,7 +22,7 @@ pub struct Bar {
 #[derive(Debug, Copy, Clone)]
 pub struct Quux<V> {
     pub v_member: V,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<V>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<V>>,
 }
 impl <V> Default for Quux<V> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

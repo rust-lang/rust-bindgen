@@ -16,8 +16,8 @@ pub type DoesNotUse_Typedefed<U> = U;
 pub struct DoesNotUse_IndirectUsage<T, U> {
     pub member: DoesNotUse_Aliased<T>,
     pub another: DoesNotUse_Typedefed<U>,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
-    _phantom_1: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_1: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
 }
 impl <T, U> Default for DoesNotUse_IndirectUsage<T, U> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

@@ -14,7 +14,7 @@ pub struct BaseIgnoresT {
 pub struct CrtpUsesU<U> {
     pub _base: BaseIgnoresT,
     pub usage: U,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
 }
 impl <U> Default for CrtpUsesU<U> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

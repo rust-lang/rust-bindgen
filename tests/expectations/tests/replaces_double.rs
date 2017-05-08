@@ -8,7 +8,7 @@
 #[derive(Debug, Copy, Clone)]
 pub struct Rooted<T> {
     pub ptr: Rooted_MaybeWrapped<T>,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 /**
      * <div rustbindgen replaces="Rooted_MaybeWrapped"></div>

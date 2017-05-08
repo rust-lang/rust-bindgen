@@ -13,7 +13,7 @@ pub struct Wohoo {
 #[derive(Debug, Copy, Clone)]
 pub struct Weeee<T> {
     pub _base: T,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for Weeee<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
