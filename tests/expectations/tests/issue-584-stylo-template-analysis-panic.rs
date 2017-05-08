@@ -43,7 +43,7 @@ impl Clone for A {
 #[derive(Debug, Copy, Clone)]
 pub struct e<c> {
     pub d: RefPtr<c>,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<c>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<c>>,
 }
 impl <c> Default for e<c> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

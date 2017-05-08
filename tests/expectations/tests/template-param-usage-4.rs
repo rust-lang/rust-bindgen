@@ -8,7 +8,7 @@
 #[derive(Debug, Copy, Clone)]
 pub struct UsesTemplateParameter<T> {
     pub t: T,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]

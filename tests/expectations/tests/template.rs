@@ -10,7 +10,7 @@ pub struct Foo<T> {
     pub m_member: T,
     pub m_member_ptr: *mut T,
     pub m_member_arr: [T; 1usize],
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for Foo<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -30,7 +30,7 @@ pub type D_MyFoo = Foo<::std::os::raw::c_int>;
 pub struct D_U<Z> {
     pub m_nested_foo: D_MyFoo,
     pub m_baz: Z,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<Z>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<Z>>,
 }
 impl <Z> Default for D_U<Z> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -44,7 +44,7 @@ pub struct Rooted<T> {
     pub prev: *mut T,
     pub next: *mut Rooted<*mut ::std::os::raw::c_void>,
     pub ptr: T,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for Rooted<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -76,7 +76,7 @@ impl Default for RootedContainer {
 #[derive(Debug)]
 pub struct WithDtor<T> {
     pub member: T,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for WithDtor<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -137,7 +137,7 @@ impl Clone for POD {
 #[derive(Debug, Copy, Clone)]
 pub struct NestedReplaced<T> {
     pub buff: *mut T,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for NestedReplaced<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -146,7 +146,7 @@ impl <T> Default for NestedReplaced<T> {
 #[derive(Debug, Copy, Clone)]
 pub struct NestedBase<T> {
     pub buff: *mut T,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for NestedBase<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -155,7 +155,7 @@ impl <T> Default for NestedBase<T> {
 #[derive(Debug, Copy, Clone)]
 pub struct Incomplete<T> {
     pub d: T,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for Incomplete<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -166,7 +166,7 @@ pub struct NestedContainer<T> {
     pub c: T,
     pub nested: NestedReplaced<T>,
     pub inc: Incomplete<T>,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for NestedContainer<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -201,7 +201,7 @@ pub struct Templated {
 #[derive(Debug)]
 pub struct ReplacedWithoutDestructor<T> {
     pub buff: *mut T,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for ReplacedWithoutDestructor<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -210,7 +210,7 @@ impl <T> Default for ReplacedWithoutDestructor<T> {
 #[derive(Debug)]
 pub struct ShouldNotBeCopiable<T> {
     pub m_member: ReplacedWithoutDestructor<T>,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for ShouldNotBeCopiable<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -219,7 +219,7 @@ impl <T> Default for ShouldNotBeCopiable<T> {
 #[derive(Debug)]
 pub struct ShouldNotBeCopiableAsWell<U> {
     pub m_member: ReplacedWithoutDestructorFwd<U>,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
 }
 impl <U> Default for ShouldNotBeCopiableAsWell<U> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -234,7 +234,7 @@ impl <U> Default for ShouldNotBeCopiableAsWell<U> {
 #[derive(Debug)]
 pub struct ReplacedWithoutDestructorFwd<T> {
     pub buff: *mut T,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for ReplacedWithoutDestructorFwd<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

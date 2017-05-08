@@ -1477,6 +1477,7 @@ impl CodeGenerator for CompInfo {
                     ctx.ext_cx(),
                     ::$prefix::marker::PhantomData<::$prefix::cell::UnsafeCell<$ident>>);
                 let phantom_field = StructFieldBuilder::named(format!("_phantom_{}", idx))
+                    .pub_()
                     .build_ty(phantom_ty);
                 fields.push(phantom_field);
             }

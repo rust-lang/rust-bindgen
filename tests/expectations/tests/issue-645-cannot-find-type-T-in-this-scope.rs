@@ -9,7 +9,7 @@
 #[derive(Debug, Copy, Clone)]
 pub struct HasRefPtr<T> {
     pub refptr_member: RefPtr<HasRefPtr_TypedefOfT<T>>,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 pub type HasRefPtr_TypedefOfT<T> = T;
 impl <T> Default for HasRefPtr<T> {

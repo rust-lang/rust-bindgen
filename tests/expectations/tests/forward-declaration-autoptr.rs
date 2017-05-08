@@ -13,7 +13,7 @@ pub struct Foo {
 #[derive(Debug, Copy, Clone)]
 pub struct RefPtr<T> {
     pub m_inner: *mut T,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for RefPtr<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

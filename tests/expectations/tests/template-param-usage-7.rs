@@ -9,8 +9,8 @@
 pub struct DoesNotUseU<T, V> {
     pub t: T,
     pub v: V,
-    _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
-    _phantom_1: ::std::marker::PhantomData<::std::cell::UnsafeCell<V>>,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+    pub _phantom_1: ::std::marker::PhantomData<::std::cell::UnsafeCell<V>>,
 }
 impl <T, V> Default for DoesNotUseU<T, V> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
