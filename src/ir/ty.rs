@@ -109,6 +109,14 @@ impl Type {
         }
     }
 
+    /// Is this a template instantiation type?
+    pub fn is_template_instantiation(&self) -> bool {
+        match self.kind {
+            TypeKind::TemplateInstantiation(..) => true,
+            _ => false,
+        }
+    }
+
     /// Is this a template alias type?
     pub fn is_template_alias(&self) -> bool {
         match self.kind {
