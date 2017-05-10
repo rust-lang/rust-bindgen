@@ -233,11 +233,22 @@ impl TemplateInstantiation {
 
         let template_args = ty.template_args()
             .map_or(vec![], |args| {
-                args.filter(|t| t.kind() != CXType_Invalid)
-                    .map(|t| {
-                        Item::from_ty_or_ref(t, t.declaration(), None, ctx)
-                    })
-                    .collect()
+                match ty.canonical_type().template_args() {
+                    Some(canonical_args) => {
+                        let arg_count = args.len();
+                        args.chain(canonical_args.skip(arg_count))
+                            .filter(|t| t.kind() != CXType_Invalid)
+                            .map(|t| {
+                                Item::from_ty_or_ref(t, t.declaration(), None, ctx)
+                            }).collect()
+                    }
+                    None => {
+                        args.filter(|t| t.kind() != CXType_Invalid)
+                            .map(|t| {
+                                Item::from_ty_or_ref(t, t.declaration(), None, ctx)
+                            }).collect()
+                    }
+                }
             });
 
         let definition = ty.declaration()
