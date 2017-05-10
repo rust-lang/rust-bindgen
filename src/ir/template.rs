@@ -240,25 +240,30 @@ impl TemplateInstantiation {
                     .collect()
             });
 
-        let definition = ty.declaration()
-            .specialized()
-            .or_else(|| {
-                let mut template_ref = None;
-                ty.declaration().visit(|child| {
-                    if child.kind() == CXCursor_TemplateRef {
-                        template_ref = Some(child);
-                        return CXVisit_Break;
-                    }
+        let declaration = ty.declaration();
+        let definition = if declaration.kind() == CXCursor_TypeAliasTemplateDecl {
+            Some(declaration)
+        } else {
+            declaration
+                .specialized()
+                .or_else(|| {
+                    let mut template_ref = None;
+                    ty.declaration().visit(|child| {
+                        if child.kind() == CXCursor_TemplateRef {
+                            template_ref = Some(child);
+                            return CXVisit_Break;
+                        }
 
-                    // Instantiations of template aliases might have the
-                    // TemplateRef to the template alias definition arbitrarily
-                    // deep, so we need to recurse here and not only visit
-                    // direct children.
-                    CXChildVisit_Recurse
-                });
+                        // Instantiations of template aliases might have the
+                        // TemplateRef to the template alias definition arbitrarily
+                        // deep, so we need to recurse here and not only visit
+                        // direct children.
+                        CXChildVisit_Recurse
+                    });
 
-                template_ref.and_then(|cur| cur.referenced())
-            });
+                    template_ref.and_then(|cur| cur.referenced())
+                })
+        };
 
         let definition = match definition {
             Some(def) => def,

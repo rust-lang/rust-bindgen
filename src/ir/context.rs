@@ -299,6 +299,8 @@ impl<'ctx> BindgenContext<'ctx> {
         let id = item.id();
         let is_type = item.kind().is_type();
         let is_unnamed = is_type && item.expect_type().name().is_none();
+        let is_template_instantiation =
+            is_type && item.expect_type().is_template_instantiation();
 
         // Be sure to track all the generated children under namespace, even
         // those generated after resolving typerefs, etc.
@@ -317,7 +319,7 @@ impl<'ctx> BindgenContext<'ctx> {
         // Unnamed items can have an USR, but they can't be referenced from
         // other sites explicitly and the USR can match if the unnamed items are
         // nested, so don't bother tracking them.
-        if is_type && declaration.is_some() {
+        if is_type && !is_template_instantiation && declaration.is_some() {
             let mut declaration = declaration.unwrap();
             if !declaration.is_valid() {
                 if let Some(location) = location {
