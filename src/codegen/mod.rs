@@ -2009,8 +2009,43 @@ impl<'a> EnumBuilder<'a> {
                     }
                 )
                     .unwrap();
-
                 result.push(impl_);
+
+                let impl_ = quote_item!(ctx.ext_cx(),
+                    impl ::$prefix::ops::BitOrAssign for $rust_ty {
+                        #[inline]
+                        fn bitor_assign(&mut self, rhs: $rust_ty) {
+                            self.0 |= rhs.0;
+                        }
+                    }
+                )
+                    .unwrap();
+                result.push(impl_);
+
+                let impl_ = quote_item!(ctx.ext_cx(),
+                    impl ::$prefix::ops::BitAnd<$rust_ty> for $rust_ty {
+                        type Output = Self;
+
+                        #[inline]
+                        fn bitand(self, other: Self) -> Self {
+                            $rust_ty_name(self.0 & other.0)
+                        }
+                    }
+                )
+                    .unwrap();
+                result.push(impl_);
+
+                let impl_ = quote_item!(ctx.ext_cx(),
+                    impl ::$prefix::ops::BitAndAssign for $rust_ty {
+                        #[inline]
+                        fn bitand_assign(&mut self, rhs: $rust_ty) {
+                            self.0 &= rhs.0;
+                        }
+                    }
+                )
+                    .unwrap();
+                result.push(impl_);
+
                 aster
             }
             EnumBuilder::Consts { aster, .. } => aster,
