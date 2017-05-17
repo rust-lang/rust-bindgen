@@ -26,6 +26,7 @@ extern crate aster;
 extern crate quasi;
 extern crate clang_sys;
 extern crate regex;
+extern crate bit_set;
 #[macro_use]
 extern crate lazy_static;
 
