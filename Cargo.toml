@@ -46,6 +46,7 @@ cexpr = "0.2"
 cfg-if = "0.1.0"
 clang-sys = { version = "0.17.0", features = ["runtime", "clang_3_9"] }
 lazy_static = "0.2.1"
+peeking_take_while = "0.1.2"
 syntex_syntax = "0.58"
 regex = "0.2"
 # This kinda sucks: https://github.com/rust-lang/cargo/issues/1982

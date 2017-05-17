@@ -55,38 +55,38 @@ impl foo__bindgen_ty_1 {
     #[inline]
     pub fn b(&self) -> ::std::os::raw::c_int {
         let mask = 127usize as u32;
-        let field_val: u32 =
+        let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 0usize;
+        let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b(&mut self, val: ::std::os::raw::c_int) {
         let mask = 127usize as u32;
         let val = val as u32 as u32;
-        let mut field_val: u32 =
+        let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 0usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 0usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn c(&self) -> ::std::os::raw::c_int {
         let mask = 4294967168usize as u32;
-        let field_val: u32 =
+        let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 7usize;
+        let val = (unit_field_val & mask) >> 7usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_c(&mut self, val: ::std::os::raw::c_int) {
         let mask = 4294967168usize as u32;
         let val = val as u32 as u32;
-        let mut field_val: u32 =
+        let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 7usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 7usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
 }
 #[test]

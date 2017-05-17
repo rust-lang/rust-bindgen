@@ -1,14 +1,16 @@
 mod error;
 mod helpers;
-mod struct_layout;
+pub mod struct_layout;
 
 use self::helpers::{BlobTyBuilder, attributes};
-use self::struct_layout::{StructLayoutTracker, bytes_from_bits_pow2};
-use self::struct_layout::{align_to, bytes_from_bits};
+use self::struct_layout::StructLayoutTracker;
+
 use aster;
+use aster::struct_field::StructFieldBuilder;
 
 use ir::annotations::FieldAccessorKind;
-use ir::comp::{Base, CompInfo, CompKind, Field, Method, MethodKind};
+use ir::comp::{Base, BitfieldUnit, Bitfield, CompInfo, CompKind, Field,
+               FieldData, FieldMethods, Method, MethodKind};
 use ir::context::{BindgenContext, ItemId};
 use ir::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use ir::dot;
@@ -27,7 +29,6 @@ use ir::var::Var;
 
 use std::borrow::Cow;
 use std::cell::Cell;
-use std::cmp;
 use std::collections::{HashSet, VecDeque};
 use std::collections::hash_map::{Entry, HashMap};
 use std::fmt::Write;
@@ -736,110 +737,341 @@ impl<'a> TryToRustTy for Vtable<'a> {
     }
 }
 
-struct Bitfield<'a> {
-    index: &'a mut usize,
-    fields: Vec<&'a Field>,
-}
+impl CodeGenerator for TemplateInstantiation {
+    type Extra = Item;
 
-impl<'a> Bitfield<'a> {
-    fn new(index: &'a mut usize, fields: Vec<&'a Field>) -> Self {
-        Bitfield {
-            index: index,
-            fields: fields,
+    fn codegen<'a>(&self,
+                   ctx: &BindgenContext,
+                   result: &mut CodegenResult<'a>,
+                   _whitelisted_items: &ItemSet,
+                   item: &Item) {
+        // Although uses of instantiations don't need code generation, and are
+        // just converted to rust types in fields, vars, etc, we take this
+        // opportunity to generate tests for their layout here.
+        if !ctx.options().layout_tests {
+            return
+        }
+
+        let layout = item.kind().expect_type().layout(ctx);
+
+        if let Some(layout) = layout {
+            let size = layout.size;
+            let align = layout.align;
+
+            let name = item.canonical_name(ctx);
+            let fn_name = format!("__bindgen_test_layout_{}_instantiation_{}",
+                                  name,
+                                  item.id().as_usize());
+            let fn_name = ctx.rust_ident_raw(&fn_name);
+
+            let prefix = ctx.trait_prefix();
+            let ident = item.to_rust_ty_or_opaque(ctx, &());
+            let size_of_expr = quote_expr!(ctx.ext_cx(),
+                                           ::$prefix::mem::size_of::<$ident>());
+            let align_of_expr = quote_expr!(ctx.ext_cx(),
+                                            ::$prefix::mem::align_of::<$ident>());
+
+            let item = quote_item!(
+                ctx.ext_cx(),
+                #[test]
+                fn $fn_name() {
+                    assert_eq!($size_of_expr, $size,
+                               concat!("Size of template specialization: ",
+                                       stringify!($ident)));
+                    assert_eq!($align_of_expr, $align,
+                               concat!("Alignment of template specialization: ",
+                                       stringify!($ident)));
+                })
+                .unwrap();
+
+            result.push(item);
         }
     }
+}
 
-    fn codegen_fields(self,
-                      ctx: &BindgenContext,
-                      parent: &CompInfo,
-                      fields: &mut Vec<ast::StructField>,
-                      methods: &mut Vec<ast::ImplItem>)
-                      -> Layout {
-        // NOTE: What follows is reverse-engineered from LLVM's
-        // lib/AST/RecordLayoutBuilder.cpp
-        //
-        // FIXME(emilio): There are some differences between Microsoft and the
-        // Itanium ABI, but we'll ignore those and stick to Itanium for now.
-        //
-        // Also, we need to handle packed bitfields and stuff.
-        // TODO(emilio): Take into account C++'s wide bitfields, and
-        // packing, sigh.
-        let mut total_size_in_bits = 0;
-        let mut max_align = 0;
-        let mut unfilled_bits_in_last_unit = 0;
-        let mut field_size_in_bits = 0;
-        *self.index += 1;
-        let mut last_field_name = format!("_bitfield_{}", self.index);
-        let mut last_field_align = 0;
+/// Generates an infinite number of anonymous field names.
+struct AnonFieldNames(usize);
 
-        // (name, mask, width, bitfield's type, bitfield's layout)
-        let mut bitfields: Vec<(&str, usize, usize, ast::Ty, Layout)> = vec![];
+impl Default for AnonFieldNames {
+    fn default() -> AnonFieldNames {
+        AnonFieldNames(0)
+    }
+}
 
-        for field in self.fields {
-            let width = field.bitfield().unwrap() as usize;
-            let field_item = ctx.resolve_item(field.ty());
-            let field_ty_layout = field_item.kind()
-                .expect_type()
-                .layout(ctx)
-                .expect("Bitfield without layout? Gah!");
-            let field_align = field_ty_layout.align;
+impl Iterator for AnonFieldNames {
+    type Item = String;
 
-            if field_size_in_bits != 0 &&
-               (width == 0 || width > unfilled_bits_in_last_unit) {
-                // We've finished a physical field, so flush it and its bitfields.
-                field_size_in_bits = align_to(field_size_in_bits, field_align);
-                fields.push(flush_bitfields(ctx,
-                                            parent,
-                                            field_size_in_bits,
-                                            last_field_align,
-                                            &last_field_name,
-                                            bitfields.drain(..),
-                                            methods));
+    fn next(&mut self) -> Option<String> {
+        self.0 += 1;
+        Some(format!("__bindgen_anon_{}", self.0))
+    }
+}
 
-                // TODO(emilio): dedup this.
-                *self.index += 1;
-                last_field_name = format!("_bitfield_{}", self.index);
+/// Trait for implementing the code generation of a struct or union field.
+trait FieldCodegen<'a> {
+    type Extra;
 
-                // Now reset the size and the rest of stuff.
-                // unfilled_bits_in_last_unit = 0;
-                field_size_in_bits = 0;
-                last_field_align = 0;
+    fn codegen<F, M>(&self,
+                     ctx: &BindgenContext,
+                     fields_should_be_private: bool,
+                     accessor_kind: FieldAccessorKind,
+                     parent: &CompInfo,
+                     anon_field_names: &mut AnonFieldNames,
+                     result: &mut CodegenResult,
+                     struct_layout: &mut StructLayoutTracker,
+                     fields: &mut F,
+                     methods: &mut M,
+                     extra: Self::Extra)
+        where F: Extend<ast::StructField>,
+              M: Extend<ast::ImplItem>;
+}
+
+impl<'a> FieldCodegen<'a> for Field {
+    type Extra = ();
+
+    fn codegen<F, M>(&self,
+                     ctx: &BindgenContext,
+                     fields_should_be_private: bool,
+                     accessor_kind: FieldAccessorKind,
+                     parent: &CompInfo,
+                     anon_field_names: &mut AnonFieldNames,
+                     result: &mut CodegenResult,
+                     struct_layout: &mut StructLayoutTracker,
+                     fields: &mut F,
+                     methods: &mut M,
+                     _: ())
+        where F: Extend<ast::StructField>,
+              M: Extend<ast::ImplItem>
+    {
+        match *self {
+            Field::DataMember(ref data) => {
+                data.codegen(ctx,
+                             fields_should_be_private,
+                             accessor_kind,
+                             parent,
+                             anon_field_names,
+                             result,
+                             struct_layout,
+                             fields,
+                             methods,
+                             ());
             }
-
-            if let Some(name) = field.name() {
-                let field_item_ty = field_item.to_rust_ty_or_opaque(ctx, &());
-                bitfields.push((name,
-                                field_size_in_bits,
-                                width,
-                                field_item_ty.unwrap(),
-                                field_ty_layout));
+            Field::Bitfields(ref unit) => {
+                unit.codegen(ctx,
+                             fields_should_be_private,
+                             accessor_kind,
+                             parent,
+                             anon_field_names,
+                             result,
+                             struct_layout,
+                             fields,
+                             methods,
+                             ());
             }
+        }
+    }
+}
 
-            field_size_in_bits += width;
-            total_size_in_bits += width;
+impl<'a> FieldCodegen<'a> for FieldData {
+    type Extra = ();
 
-            let data_size = align_to(field_size_in_bits, field_align * 8);
+    fn codegen<F, M>(&self,
+                     ctx: &BindgenContext,
+                     fields_should_be_private: bool,
+                     accessor_kind: FieldAccessorKind,
+                     parent: &CompInfo,
+                     anon_field_names: &mut AnonFieldNames,
+                     result: &mut CodegenResult,
+                     struct_layout: &mut StructLayoutTracker,
+                     fields: &mut F,
+                     methods: &mut M,
+                     _: ())
+        where F: Extend<ast::StructField>,
+              M: Extend<ast::ImplItem>
+    {
+        // Bitfields are handled by `FieldCodegen` implementations for
+        // `BitfieldUnit` and `Bitfield`.
+        assert!(self.bitfield().is_none());
 
-            max_align = cmp::max(max_align, field_align);
+        let field_ty = ctx.resolve_type(self.ty());
+        let ty = self.ty().to_rust_ty_or_opaque(ctx, &());
 
-            // NB: The width here is completely, absolutely intentional.
-            last_field_align = cmp::max(last_field_align, width);
+        // NB: In unstable rust we use proper `union` types.
+        let ty = if parent.is_union() && !ctx.options().unstable_rust {
+            if ctx.options().enable_cxx_namespaces {
+                quote_ty!(ctx.ext_cx(), root::__BindgenUnionField<$ty>)
+            } else {
+                quote_ty!(ctx.ext_cx(), __BindgenUnionField<$ty>)
+            }
+        } else if let Some(item) =
+            field_ty.is_incomplete_array(ctx) {
+            result.saw_incomplete_array();
 
-            unfilled_bits_in_last_unit = data_size - field_size_in_bits;
+            let inner = item.to_rust_ty_or_opaque(ctx, &());
+
+            if ctx.options().enable_cxx_namespaces {
+                quote_ty!(ctx.ext_cx(), root::__IncompleteArrayField<$inner>)
+            } else {
+                quote_ty!(ctx.ext_cx(), __IncompleteArrayField<$inner>)
+            }
+        } else {
+            ty
+        };
+
+        let mut attrs = vec![];
+        if ctx.options().generate_comments {
+            if let Some(comment) = self.comment() {
+                attrs.push(attributes::doc(comment));
+            }
         }
 
-        if field_size_in_bits != 0 {
-            // Flush the last physical field and its bitfields.
-            fields.push(flush_bitfields(ctx,
-                                        parent,
-                                        field_size_in_bits,
-                                        last_field_align,
-                                        &last_field_name,
-                                        bitfields.drain(..),
-                                        methods));
+        let field_name = self.name()
+            .map(|name| ctx.rust_mangle(name).into_owned())
+            .unwrap_or_else(|| anon_field_names.next().unwrap());
+
+        if !parent.is_union() {
+            if let Some(padding_field) =
+                struct_layout.pad_field(&field_name, field_ty, self.offset()) {
+                fields.extend(Some(padding_field));
+            }
         }
 
-        Layout::new(bytes_from_bits(total_size_in_bits), max_align)
+        let is_private = self.annotations()
+            .private_fields()
+            .unwrap_or(fields_should_be_private);
+
+        let accessor_kind = self.annotations()
+            .accessor_kind()
+            .unwrap_or(accessor_kind);
+
+        let mut field = StructFieldBuilder::named(&field_name);
+
+        if !is_private {
+            field = field.pub_();
+        }
+
+        let field = field.with_attrs(attrs)
+            .build_ty(ty.clone());
+
+        fields.extend(Some(field));
+
+        // TODO: Factor the following code out, please!
+        if accessor_kind == FieldAccessorKind::None {
+            return;
+        }
+
+        let getter_name =
+            ctx.rust_ident_raw(&format!("get_{}", field_name));
+        let mutable_getter_name =
+            ctx.rust_ident_raw(&format!("get_{}_mut", field_name));
+        let field_name = ctx.rust_ident_raw(&field_name);
+
+        let accessor_methods_impl = match accessor_kind {
+            FieldAccessorKind::None => unreachable!(),
+            FieldAccessorKind::Regular => {
+                quote_item!(ctx.ext_cx(),
+                    impl X {
+                        #[inline]
+                        pub fn $getter_name(&self) -> &$ty {
+                            &self.$field_name
+                        }
+
+                        #[inline]
+                        pub fn $mutable_getter_name(&mut self) -> &mut $ty {
+                            &mut self.$field_name
+                        }
+                    }
+                )
+            }
+            FieldAccessorKind::Unsafe => {
+                quote_item!(ctx.ext_cx(),
+                    impl X {
+                        #[inline]
+                        pub unsafe fn $getter_name(&self) -> &$ty {
+                            &self.$field_name
+                        }
+
+                        #[inline]
+                        pub unsafe fn $mutable_getter_name(&mut self)
+                            -> &mut $ty {
+                            &mut self.$field_name
+                        }
+                    }
+                )
+            }
+            FieldAccessorKind::Immutable => {
+                quote_item!(ctx.ext_cx(),
+                    impl X {
+                        #[inline]
+                        pub fn $getter_name(&self) -> &$ty {
+                            &self.$field_name
+                        }
+                    }
+                )
+            }
+        };
+
+        match accessor_methods_impl.unwrap().node {
+            ast::ItemKind::Impl(_, _, _, _, _, ref items) => {
+                methods.extend(items.clone())
+            }
+            _ => unreachable!(),
+        }
+    }
+}
+
+impl<'a> FieldCodegen<'a> for BitfieldUnit {
+    type Extra = ();
+
+    fn codegen<F, M>(&self,
+                     ctx: &BindgenContext,
+                     fields_should_be_private: bool,
+                     accessor_kind: FieldAccessorKind,
+                     parent: &CompInfo,
+                     anon_field_names: &mut AnonFieldNames,
+                     result: &mut CodegenResult,
+                     struct_layout: &mut StructLayoutTracker,
+                     fields: &mut F,
+                     methods: &mut M,
+                     _: ())
+        where F: Extend<ast::StructField>,
+              M: Extend<ast::ImplItem>
+    {
+        let field_ty = BlobTyBuilder::new(self.layout()).build();
+        let unit_field_name = format!("_bitfield_{}", self.nth());
+
+        let field = StructFieldBuilder::named(&unit_field_name)
+            .pub_()
+            .build_ty(field_ty.clone());
+        fields.extend(Some(field));
+
+        let unit_field_int_ty = match self.layout().size {
+            8 => quote_ty!(ctx.ext_cx(), u64),
+            4 => quote_ty!(ctx.ext_cx(), u32),
+            2 => quote_ty!(ctx.ext_cx(), u16),
+            1 => quote_ty!(ctx.ext_cx(), u8),
+            _ => {
+                // Can't generate bitfield accessors for unit sizes larget than
+                // 64 bits at the moment.
+                struct_layout.saw_bitfield_unit(self.layout());
+                return;
+            }
+        };
+
+        for bf in self.bitfields() {
+            bf.codegen(ctx,
+                       fields_should_be_private,
+                       accessor_kind,
+                       parent,
+                       anon_field_names,
+                       result,
+                       struct_layout,
+                       fields,
+                       methods,
+                       (&unit_field_name, unit_field_int_ty.clone()));
+        }
+
+        struct_layout.saw_bitfield_unit(self.layout());
     }
 }
 
@@ -889,58 +1121,51 @@ fn bitfield_setter_name(ctx: &BindgenContext,
     ctx.ext_cx().ident_of(&setter)
 }
 
-/// A physical field (which is a word or byte or ...) has many logical bitfields
-/// contained within it, but not all bitfields are in the same physical field of
-/// a struct. This function creates a single physical field and flushes all the
-/// accessors for the logical `bitfields` within that physical field to the
-/// outgoing `methods`.
-fn flush_bitfields<'a, I>(ctx: &BindgenContext,
-                          parent: &CompInfo,
-                          field_size_in_bits: usize,
-                          field_align: usize,
-                          field_name: &str,
-                          bitfields: I,
-                          methods: &mut Vec<ast::ImplItem>) -> ast::StructField
-    where I: IntoIterator<Item = (&'a str, usize, usize, ast::Ty, Layout)>
-{
-    use aster::struct_field::StructFieldBuilder;
+impl<'a> FieldCodegen<'a> for Bitfield {
+    type Extra = (&'a str, P<ast::Ty>);
 
-    let field_layout = Layout::new(bytes_from_bits_pow2(field_size_in_bits),
-                                   bytes_from_bits_pow2(field_align));
-    let field_ty = BlobTyBuilder::new(field_layout).build();
-
-    let field = StructFieldBuilder::named(field_name)
-        .pub_()
-        .build_ty(field_ty.clone());
-
-    let field_int_ty = match field_layout.size {
-        8 => quote_ty!(ctx.ext_cx(), u64),
-        4 => quote_ty!(ctx.ext_cx(), u32),
-        2 => quote_ty!(ctx.ext_cx(), u16),
-        1 => quote_ty!(ctx.ext_cx(), u8),
-        _ => return field
-    };
-
-    for (name, offset, width, bitfield_ty, bitfield_layout) in bitfields {
+    fn codegen<F, M>(&self,
+                     ctx: &BindgenContext,
+                     _fields_should_be_private: bool,
+                     _accessor_kind: FieldAccessorKind,
+                     parent: &CompInfo,
+                     _anon_field_names: &mut AnonFieldNames,
+                     _result: &mut CodegenResult,
+                     _struct_layout: &mut StructLayoutTracker,
+                     _fields: &mut F,
+                     methods: &mut M,
+                     (unit_field_name,
+                      unit_field_int_ty): (&'a str, P<ast::Ty>))
+        where F: Extend<ast::StructField>,
+              M: Extend<ast::ImplItem>
+    {
         let prefix = ctx.trait_prefix();
-        let getter_name = bitfield_getter_name(ctx, parent, name);
-        let setter_name = bitfield_setter_name(ctx, parent, name);
-        let field_ident = ctx.ext_cx().ident_of(field_name);
+        let getter_name = bitfield_getter_name(ctx, parent, self.name());
+        let setter_name = bitfield_setter_name(ctx, parent, self.name());
+        let unit_field_ident = ctx.ext_cx().ident_of(unit_field_name);
 
-        let bitfield_int_ty = BlobTyBuilder::new(bitfield_layout).build();
+        let bitfield_ty_item = ctx.resolve_item(self.ty());
+        let bitfield_ty = bitfield_ty_item.expect_type();
 
-        let mask: usize = ((1usize << width) - 1usize) << offset;
+        let bitfield_ty_layout = bitfield_ty.layout(ctx)
+            .expect("Bitfield without layout? Gah!");
+        let bitfield_int_ty = BlobTyBuilder::new(bitfield_ty_layout).build();
+
+        let bitfield_ty = bitfield_ty.to_rust_ty_or_opaque(ctx, bitfield_ty_item);
+
+        let offset = self.offset_into_unit();
+        let mask: usize = ((1usize << self.width()) - 1usize) << offset;
 
         let impl_item = quote_item!(
             ctx.ext_cx(),
             impl XxxIgnored {
                 #[inline]
                 pub fn $getter_name(&self) -> $bitfield_ty {
-                    let mask = $mask as $field_int_ty;
-                    let field_val: $field_int_ty = unsafe {
-                        ::$prefix::mem::transmute(self.$field_ident)
+                    let mask = $mask as $unit_field_int_ty;
+                    let unit_field_val: $unit_field_int_ty = unsafe {
+                        ::$prefix::mem::transmute(self.$unit_field_ident)
                     };
-                    let val = (field_val & mask) >> $offset;
+                    let val = (unit_field_val & mask) >> $offset;
                     unsafe {
                         ::$prefix::mem::transmute(val as $bitfield_int_ty)
                     }
@@ -948,17 +1173,17 @@ fn flush_bitfields<'a, I>(ctx: &BindgenContext,
 
                 #[inline]
                 pub fn $setter_name(&mut self, val: $bitfield_ty) {
-                    let mask = $mask as $field_int_ty;
-                    let val = val as $bitfield_int_ty as $field_int_ty;
+                    let mask = $mask as $unit_field_int_ty;
+                    let val = val as $bitfield_int_ty as $unit_field_int_ty;
 
-                    let mut field_val: $field_int_ty = unsafe {
-                        ::$prefix::mem::transmute(self.$field_ident)
+                    let mut unit_field_val: $unit_field_int_ty = unsafe {
+                        ::$prefix::mem::transmute(self.$unit_field_ident)
                     };
-                    field_val &= !mask;
-                    field_val |= (val << $offset) & mask;
+                    unit_field_val &= !mask;
+                    unit_field_val |= (val << $offset) & mask;
 
-                    self.$field_ident = unsafe {
-                        ::$prefix::mem::transmute(field_val)
+                    self.$unit_field_ident = unsafe {
+                        ::$prefix::mem::transmute(unit_field_val)
                     };
                 }
             }
@@ -971,58 +1196,6 @@ fn flush_bitfields<'a, I>(ctx: &BindgenContext,
             _ => unreachable!(),
         };
     }
-
-    field
-}
-
-impl CodeGenerator for TemplateInstantiation {
-    type Extra = Item;
-
-    fn codegen<'a>(&self,
-                   ctx: &BindgenContext,
-                   result: &mut CodegenResult<'a>,
-                   _whitelisted_items: &ItemSet,
-                   item: &Item) {
-        // Although uses of instantiations don't need code generation, and are
-        // just converted to rust types in fields, vars, etc, we take this
-        // opportunity to generate tests for their layout here.
-        if !ctx.options().layout_tests {
-            return
-        }
-
-        let layout = item.kind().expect_type().layout(ctx);
-
-        if let Some(layout) = layout {
-            let size = layout.size;
-            let align = layout.align;
-
-            let name = item.canonical_name(ctx);
-            let fn_name = format!("__bindgen_test_layout_{}_instantiation_{}",
-                                  name,
-                                  item.id().as_usize());
-            let fn_name = ctx.rust_ident_raw(&fn_name);
-
-            let prefix = ctx.trait_prefix();
-            let ident = item.to_rust_ty_or_opaque(ctx, &());
-            let size_of_expr = quote_expr!(ctx.ext_cx(),
-                                           ::$prefix::mem::size_of::<$ident>());
-            let align_of_expr = quote_expr!(ctx.ext_cx(),
-                                            ::$prefix::mem::align_of::<$ident>());
-
-            let item = quote_item!(
-                ctx.ext_cx(),
-                #[test]
-                fn $fn_name() {
-                    assert_eq!($size_of_expr, $size,
-                               concat!("Size of template specialization: ", stringify!($ident)));
-                    assert_eq!($align_of_expr, $align,
-                               concat!("Alignment of template specialization: ", stringify!($ident)));
-                })
-                .unwrap();
-
-            result.push(item);
-        }
-    }
 }
 
 impl CodeGenerator for CompInfo {
@@ -1033,8 +1206,6 @@ impl CodeGenerator for CompInfo {
                    result: &mut CodegenResult<'a>,
                    whitelisted_items: &ItemSet,
                    item: &Item) {
-        use aster::struct_field::StructFieldBuilder;
-
         debug!("<CompInfo as CodeGenerator>::codegen: item = {:?}", item);
 
         // Don't output classes with template parameters that aren't types, and
@@ -1137,7 +1308,7 @@ impl CodeGenerator for CompInfo {
         // Also, we need to generate the vtable in such a way it "inherits" from
         // the parent too.
         let mut fields = vec![];
-        let mut struct_layout = StructLayoutTracker::new(ctx, self);
+        let mut struct_layout = StructLayoutTracker::new(ctx, self, &canonical_name);
         if self.needs_explicit_vtable(ctx) {
             let vtable =
                 Vtable::new(item.id(), self.methods(), self.base_members());
@@ -1185,7 +1356,7 @@ impl CodeGenerator for CompInfo {
             let field = StructFieldBuilder::named(field_name)
                 .pub_()
                 .build_ty(inner);
-            fields.push(field);
+            fields.extend(Some(field));
         }
         if is_union {
             result.saw_union();
@@ -1193,11 +1364,6 @@ impl CodeGenerator for CompInfo {
 
         let layout = item.kind().expect_type().layout(ctx);
 
-        let mut current_bitfield_width = None;
-        let mut current_bitfield_layout: Option<Layout> = None;
-        let mut current_bitfield_fields = vec![];
-        let mut bitfield_count = 0;
-        let struct_fields = self.fields();
         let fields_should_be_private = item.annotations()
             .private_fields()
             .unwrap_or(false);
@@ -1206,196 +1372,19 @@ impl CodeGenerator for CompInfo {
             .unwrap_or(FieldAccessorKind::None);
 
         let mut methods = vec![];
-        let mut anonymous_field_count = 0;
-        for field in struct_fields {
-            debug_assert_eq!(current_bitfield_width.is_some(),
-                             current_bitfield_layout.is_some());
-            debug_assert_eq!(current_bitfield_width.is_some(),
-                             !current_bitfield_fields.is_empty());
-
-            let field_ty = ctx.resolve_type(field.ty());
-
-            // Try to catch a bitfield contination early.
-            if let (Some(ref mut bitfield_width), Some(width)) =
-                (current_bitfield_width, field.bitfield()) {
-                let layout = current_bitfield_layout.unwrap();
-                debug!("Testing bitfield continuation {} {} {:?}",
-                       *bitfield_width,
-                       width,
-                       layout);
-                if *bitfield_width + width <= (layout.size * 8) as u32 {
-                    *bitfield_width += width;
-                    current_bitfield_fields.push(field);
-                    continue;
-                }
-            }
-
-            // Flush the current bitfield.
-            if current_bitfield_width.is_some() {
-                debug_assert!(!current_bitfield_fields.is_empty());
-                let bitfield_fields =
-                    mem::replace(&mut current_bitfield_fields, vec![]);
-                let bitfield_layout = Bitfield::new(&mut bitfield_count,
-                                                    bitfield_fields)
-                    .codegen_fields(ctx, self, &mut fields, &mut methods);
-                struct_layout.saw_bitfield_batch(bitfield_layout);
-
-                current_bitfield_width = None;
-                current_bitfield_layout = None;
-            }
-            debug_assert!(current_bitfield_fields.is_empty());
-
-            if let Some(width) = field.bitfield() {
-                let layout = field_ty.layout(ctx)
-                    .expect("Bitfield type without layout?");
-                current_bitfield_width = Some(width);
-                current_bitfield_layout = Some(layout);
-                current_bitfield_fields.push(field);
-                continue;
-            }
-
-            let ty = field.ty().to_rust_ty_or_opaque(ctx, &());
-
-            // NB: In unstable rust we use proper `union` types.
-            let ty = if is_union && !ctx.options().unstable_rust {
-                if ctx.options().enable_cxx_namespaces {
-                    quote_ty!(ctx.ext_cx(), root::__BindgenUnionField<$ty>)
-                } else {
-                    quote_ty!(ctx.ext_cx(), __BindgenUnionField<$ty>)
-                }
-            } else if let Some(item) =
-                field_ty.is_incomplete_array(ctx) {
-                result.saw_incomplete_array();
-
-                let inner = item.to_rust_ty_or_opaque(ctx, &());
-
-                if ctx.options().enable_cxx_namespaces {
-                    quote_ty!(ctx.ext_cx(), root::__IncompleteArrayField<$inner>)
-                } else {
-                    quote_ty!(ctx.ext_cx(), __IncompleteArrayField<$inner>)
-                }
-            } else {
-                ty
-            };
-
-            let mut attrs = vec![];
-            if ctx.options().generate_comments {
-                if let Some(comment) = field.comment() {
-                    attrs.push(attributes::doc(comment));
-                }
-            }
-            let field_name = match field.name() {
-                Some(name) => ctx.rust_mangle(name).into_owned(),
-                None => {
-                    anonymous_field_count += 1;
-                    format!("__bindgen_anon_{}", anonymous_field_count)
-                }
-            };
-
-            if !is_union {
-                if let Some(padding_field) =
-                    struct_layout.pad_field(&field_name, field_ty, field.offset()) {
-                    fields.push(padding_field);
-                }
-            }
-
-            let is_private = field.annotations()
-                .private_fields()
-                .unwrap_or(fields_should_be_private);
-
-            let accessor_kind = field.annotations()
-                .accessor_kind()
-                .unwrap_or(struct_accessor_kind);
-
-            let mut field = StructFieldBuilder::named(&field_name);
-
-            if !is_private {
-                field = field.pub_();
-            }
-
-            let field = field.with_attrs(attrs)
-                .build_ty(ty.clone());
-
-            fields.push(field);
-
-            // TODO: Factor the following code out, please!
-            if accessor_kind == FieldAccessorKind::None {
-                continue;
-            }
-
-            let getter_name =
-                ctx.rust_ident_raw(&format!("get_{}", field_name));
-            let mutable_getter_name =
-                ctx.rust_ident_raw(&format!("get_{}_mut", field_name));
-            let field_name = ctx.rust_ident_raw(&field_name);
-
-            let accessor_methods_impl = match accessor_kind {
-                FieldAccessorKind::None => unreachable!(),
-                FieldAccessorKind::Regular => {
-                    quote_item!(ctx.ext_cx(),
-                        impl X {
-                            #[inline]
-                            pub fn $getter_name(&self) -> &$ty {
-                                &self.$field_name
-                            }
-
-                            #[inline]
-                            pub fn $mutable_getter_name(&mut self) -> &mut $ty {
-                                &mut self.$field_name
-                            }
-                        }
-                    )
-                }
-                FieldAccessorKind::Unsafe => {
-                    quote_item!(ctx.ext_cx(),
-                        impl X {
-                            #[inline]
-                            pub unsafe fn $getter_name(&self) -> &$ty {
-                                &self.$field_name
-                            }
-
-                            #[inline]
-                            pub unsafe fn $mutable_getter_name(&mut self)
-                                -> &mut $ty {
-                                &mut self.$field_name
-                            }
-                        }
-                    )
-                }
-                FieldAccessorKind::Immutable => {
-                    quote_item!(ctx.ext_cx(),
-                        impl X {
-                            #[inline]
-                            pub fn $getter_name(&self) -> &$ty {
-                                &self.$field_name
-                            }
-                        }
-                    )
-                }
-            };
-
-            match accessor_methods_impl.unwrap().node {
-                ast::ItemKind::Impl(_, _, _, _, _, ref items) => {
-                    methods.extend(items.clone())
-                }
-                _ => unreachable!(),
-            }
+        let mut anon_field_names = AnonFieldNames::default();
+        for field in self.fields() {
+            field.codegen(ctx,
+                          fields_should_be_private,
+                          struct_accessor_kind,
+                          self,
+                          &mut anon_field_names,
+                          result,
+                          &mut struct_layout,
+                          &mut fields,
+                          &mut methods,
+                          ());
         }
-
-        // Flush the last bitfield if any.
-        //
-        // FIXME: Reduce duplication with the loop above.
-        // FIXME: May need to pass current_bitfield_layout too.
-        if current_bitfield_width.is_some() {
-            debug_assert!(!current_bitfield_fields.is_empty());
-            let bitfield_fields = mem::replace(&mut current_bitfield_fields,
-                                               vec![]);
-            let bitfield_layout = Bitfield::new(&mut bitfield_count,
-                                                bitfield_fields)
-                .codegen_fields(ctx, self, &mut fields, &mut methods);
-            struct_layout.saw_bitfield_batch(bitfield_layout);
-        }
-        debug_assert!(current_bitfield_fields.is_empty());
 
         if is_union && !ctx.options().unstable_rust {
             let layout = layout.expect("Unable to get layout information?");
@@ -1430,7 +1419,7 @@ impl CodeGenerator for CompInfo {
         } else if !is_union && !self.is_unsized(ctx) {
             if let Some(padding_field) =
                 layout.and_then(|layout| {
-                    struct_layout.pad_struct(&canonical_name, layout)
+                    struct_layout.pad_struct(layout)
                 }) {
                 fields.push(padding_field);
             }
@@ -1554,21 +1543,24 @@ impl CodeGenerator for CompInfo {
                     } else {
                         let asserts = self.fields()
                         .iter()
-                        .filter(|field| field.bitfield().is_none())
+                        .filter_map(|field| match *field {
+                            Field::DataMember(ref f) if f.name().is_some() => Some(f),
+                            _ => None,
+                        })
                         .flat_map(|field| {
-                            field.name().and_then(|name| {
-                                field.offset().and_then(|offset| {
-                                    let field_offset = offset / 8;
-                                    let field_name = ctx.rust_ident(name);
+                            let name = field.name().unwrap();
+                            field.offset().and_then(|offset| {
+                                let field_offset = offset / 8;
+                                let field_name = ctx.rust_ident(name);
 
-                                    quote_item!(ctx.ext_cx(),
-                                        assert_eq!(unsafe { &(*(0 as *const $type_name)).$field_name as *const _ as usize },
-                                                   $field_offset,
-                                                   concat!("Alignment of field: ", stringify!($type_name), "::", stringify!($field_name)));
-                                    )
-                                })
+                                quote_item!(ctx.ext_cx(),
+                                    assert_eq!(unsafe { &(*(0 as *const $type_name)).$field_name as *const _ as usize },
+                                               $field_offset,
+                                               concat!("Alignment of field: ", stringify!($type_name), "::", stringify!($field_name)));
+                                )
                             })
-                        }).collect::<Vec<P<ast::Item>>>();
+                        })
+                        .collect::<Vec<P<ast::Item>>>();
 
                         Some(asserts)
                     };

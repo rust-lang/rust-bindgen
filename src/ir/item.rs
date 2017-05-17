@@ -829,6 +829,11 @@ impl DotAttributes for Item {
                        <tr><td>name</td><td>{}</td></tr>",
                       self.id,
                       self.name(ctx).get()));
+
+        if self.is_opaque(ctx) {
+            writeln!(out, "<tr><td>opaque</td><td>true</td></tr>")?;
+        }
+
         self.kind.dot_attributes(ctx, out)
     }
 }

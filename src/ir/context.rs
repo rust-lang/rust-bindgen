@@ -21,6 +21,7 @@ use std::collections::{HashMap, hash_map};
 use std::collections::btree_map::{self, BTreeMap};
 use std::fmt;
 use std::iter::IntoIterator;
+use std::mem;
 use syntax::ast::Ident;
 use syntax::codemap::{DUMMY_SP, Span};
 use syntax::ext::base::ExtCtxt;
@@ -160,6 +161,10 @@ pub struct BindgenContext<'ctx> {
     /// uses. See `ir::named` for more details. Always `Some` during the codegen
     /// phase.
     used_template_parameters: Option<HashMap<ItemId, ItemSet>>,
+
+    /// The set of `TypeKind::Comp` items found during parsing that need their
+    /// bitfield allocation units computed. Drained in `compute_bitfield_units`.
+    need_bitfield_allocation: Vec<ItemId>,
 }
 
 /// A traversal of whitelisted items.
@@ -247,6 +252,7 @@ impl<'ctx> BindgenContext<'ctx> {
             options: options,
             generated_bindegen_complex: Cell::new(false),
             used_template_parameters: None,
+            need_bitfield_allocation: Default::default(),
         };
 
         me.add_item(root_module, None, None);
@@ -310,6 +316,10 @@ impl<'ctx> BindgenContext<'ctx> {
                     module.children_mut().push(item.id());
                 }
             }
+        }
+
+        if is_type && item.expect_type().is_comp() {
+            self.need_bitfield_allocation.push(id);
         }
 
         let old_item = self.items.insert(id, item);
@@ -486,6 +496,32 @@ impl<'ctx> BindgenContext<'ctx> {
         }
     }
 
+    /// Compute the bitfield allocation units for all `TypeKind::Comp` items we
+    /// parsed.
+    fn compute_bitfield_units(&mut self) {
+        assert!(self.collected_typerefs());
+
+        let need_bitfield_allocation = mem::replace(&mut self.need_bitfield_allocation, vec![]);
+        for id in need_bitfield_allocation {
+            // To appease the borrow checker, we temporarily remove this item
+            // from the context, and then replace it once we are done computing
+            // its bitfield units. We will never try and resolve this
+            // `TypeKind::Comp` item's id (which would now cause a panic) during
+            // bitfield unit computation because it is a non-scalar by
+            // definition, and non-scalar types may not be used as bitfields.
+            let mut item = self.items.remove(&id).unwrap();
+
+            item.kind_mut()
+                .as_type_mut()
+                .unwrap()
+                .as_comp_mut()
+                .unwrap()
+                .compute_bitfield_units(&*self);
+
+            self.items.insert(id, item);
+        }
+    }
+
     /// Iterate over all items and replace any item that has been named in a
     /// `replaces="SomeType"` annotation with the replacement type.
     fn process_replacements(&mut self) {
@@ -617,6 +653,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
         if !self.collected_typerefs() {
             self.resolve_typerefs();
+            self.compute_bitfield_units();
             self.process_replacements();
         }
 
