@@ -23,6 +23,9 @@ TEST_BINDINGS_BINARY=$(mktemp -t bindings.XXXXXX)
 
 FLAGS="$(grep "// bindgen-flags: " "$TEST" || echo)"
 FLAGS="${FLAGS/\/\/ bindgen\-flags:/}"
+# Prepend the default flags added in test.rs's `create_bindgen_builder`.
+FLAGS="--no-unstable-rust --with-derive-default --raw-line '' --raw-line '#![allow(non_snake_case)]' --raw-line '' $FLAGS"
+
 
 eval ./target/debug/bindgen \
     "\"$TEST\"" \
@@ -52,6 +55,7 @@ echo
 
 EXPECTED=${TEST/headers/expectations\/tests}
 EXPECTED=${EXPECTED/.hpp/.rs}
+EXPECTED=${EXPECTED/.h/.rs}
 
 # Don't exit early if there is a diff.
 diff -U8 "$EXPECTED" "$BINDINGS" || true
