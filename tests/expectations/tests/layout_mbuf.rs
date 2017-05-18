@@ -179,128 +179,128 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     #[inline]
     pub fn l2_type(&self) -> u32 {
         let mask = 15usize as u32;
-        let field_val: u32 =
+        let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 0usize;
+        let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_l2_type(&mut self, val: u32) {
         let mask = 15usize as u32;
         let val = val as u32 as u32;
-        let mut field_val: u32 =
+        let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 0usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 0usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn l3_type(&self) -> u32 {
         let mask = 240usize as u32;
-        let field_val: u32 =
+        let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 4usize;
+        let val = (unit_field_val & mask) >> 4usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_l3_type(&mut self, val: u32) {
         let mask = 240usize as u32;
         let val = val as u32 as u32;
-        let mut field_val: u32 =
+        let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 4usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 4usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn l4_type(&self) -> u32 {
         let mask = 3840usize as u32;
-        let field_val: u32 =
+        let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 8usize;
+        let val = (unit_field_val & mask) >> 8usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_l4_type(&mut self, val: u32) {
         let mask = 3840usize as u32;
         let val = val as u32 as u32;
-        let mut field_val: u32 =
+        let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 8usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 8usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn tun_type(&self) -> u32 {
         let mask = 61440usize as u32;
-        let field_val: u32 =
+        let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 12usize;
+        let val = (unit_field_val & mask) >> 12usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_tun_type(&mut self, val: u32) {
         let mask = 61440usize as u32;
         let val = val as u32 as u32;
-        let mut field_val: u32 =
+        let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 12usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 12usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn inner_l2_type(&self) -> u32 {
         let mask = 983040usize as u32;
-        let field_val: u32 =
+        let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 16usize;
+        let val = (unit_field_val & mask) >> 16usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_inner_l2_type(&mut self, val: u32) {
         let mask = 983040usize as u32;
         let val = val as u32 as u32;
-        let mut field_val: u32 =
+        let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 16usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 16usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn inner_l3_type(&self) -> u32 {
         let mask = 15728640usize as u32;
-        let field_val: u32 =
+        let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 20usize;
+        let val = (unit_field_val & mask) >> 20usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_inner_l3_type(&mut self, val: u32) {
         let mask = 15728640usize as u32;
         let val = val as u32 as u32;
-        let mut field_val: u32 =
+        let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 20usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 20usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn inner_l4_type(&self) -> u32 {
         let mask = 251658240usize as u32;
-        let field_val: u32 =
+        let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 24usize;
+        let val = (unit_field_val & mask) >> 24usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_inner_l4_type(&mut self, val: u32) {
         let mask = 251658240usize as u32;
         let val = val as u32 as u32;
-        let mut field_val: u32 =
+        let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 24usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 24usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
 }
 #[test]
@@ -557,110 +557,110 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     #[inline]
     pub fn l2_len(&self) -> u64 {
         let mask = 127usize as u64;
-        let field_val: u64 =
+        let unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 0usize;
+        let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u64) }
     }
     #[inline]
     pub fn set_l2_len(&mut self, val: u64) {
         let mask = 127usize as u64;
         let val = val as u64 as u64;
-        let mut field_val: u64 =
+        let mut unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 0usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 0usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn l3_len(&self) -> u64 {
         let mask = 65408usize as u64;
-        let field_val: u64 =
+        let unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 7usize;
+        let val = (unit_field_val & mask) >> 7usize;
         unsafe { ::std::mem::transmute(val as u64) }
     }
     #[inline]
     pub fn set_l3_len(&mut self, val: u64) {
         let mask = 65408usize as u64;
         let val = val as u64 as u64;
-        let mut field_val: u64 =
+        let mut unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 7usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 7usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn l4_len(&self) -> u64 {
         let mask = 16711680usize as u64;
-        let field_val: u64 =
+        let unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 16usize;
+        let val = (unit_field_val & mask) >> 16usize;
         unsafe { ::std::mem::transmute(val as u64) }
     }
     #[inline]
     pub fn set_l4_len(&mut self, val: u64) {
         let mask = 16711680usize as u64;
         let val = val as u64 as u64;
-        let mut field_val: u64 =
+        let mut unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 16usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 16usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn tso_segsz(&self) -> u64 {
         let mask = 1099494850560usize as u64;
-        let field_val: u64 =
+        let unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 24usize;
+        let val = (unit_field_val & mask) >> 24usize;
         unsafe { ::std::mem::transmute(val as u64) }
     }
     #[inline]
     pub fn set_tso_segsz(&mut self, val: u64) {
         let mask = 1099494850560usize as u64;
         let val = val as u64 as u64;
-        let mut field_val: u64 =
+        let mut unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 24usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 24usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn outer_l3_len(&self) -> u64 {
         let mask = 561850441793536usize as u64;
-        let field_val: u64 =
+        let unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 40usize;
+        let val = (unit_field_val & mask) >> 40usize;
         unsafe { ::std::mem::transmute(val as u64) }
     }
     #[inline]
     pub fn set_outer_l3_len(&mut self, val: u64) {
         let mask = 561850441793536usize as u64;
         let val = val as u64 as u64;
-        let mut field_val: u64 =
+        let mut unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 40usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 40usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn outer_l2_len(&self) -> u64 {
         let mask = 71494644084506624usize as u64;
-        let field_val: u64 =
+        let unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 49usize;
+        let val = (unit_field_val & mask) >> 49usize;
         unsafe { ::std::mem::transmute(val as u64) }
     }
     #[inline]
     pub fn set_outer_l2_len(&mut self, val: u64) {
         let mask = 71494644084506624usize as u64;
         let val = val as u64 as u64;
-        let mut field_val: u64 =
+        let mut unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 49usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 49usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
 }
 #[test]

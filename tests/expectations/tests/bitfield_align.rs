@@ -34,182 +34,182 @@ impl A {
     #[inline]
     pub fn b1(&self) -> ::std::os::raw::c_uint {
         let mask = 1usize as u16;
-        let field_val: u16 =
+        let unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 0usize;
+        let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b1(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 1usize as u16;
         let val = val as u32 as u16;
-        let mut field_val: u16 =
+        let mut unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 0usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 0usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn b2(&self) -> ::std::os::raw::c_uint {
         let mask = 2usize as u16;
-        let field_val: u16 =
+        let unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 1usize;
+        let val = (unit_field_val & mask) >> 1usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b2(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 2usize as u16;
         let val = val as u32 as u16;
-        let mut field_val: u16 =
+        let mut unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 1usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 1usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn b3(&self) -> ::std::os::raw::c_uint {
         let mask = 4usize as u16;
-        let field_val: u16 =
+        let unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 2usize;
+        let val = (unit_field_val & mask) >> 2usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b3(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 4usize as u16;
         let val = val as u32 as u16;
-        let mut field_val: u16 =
+        let mut unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 2usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 2usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn b4(&self) -> ::std::os::raw::c_uint {
         let mask = 8usize as u16;
-        let field_val: u16 =
+        let unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 3usize;
+        let val = (unit_field_val & mask) >> 3usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b4(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 8usize as u16;
         let val = val as u32 as u16;
-        let mut field_val: u16 =
+        let mut unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 3usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 3usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn b5(&self) -> ::std::os::raw::c_uint {
         let mask = 16usize as u16;
-        let field_val: u16 =
+        let unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 4usize;
+        let val = (unit_field_val & mask) >> 4usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b5(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 16usize as u16;
         let val = val as u32 as u16;
-        let mut field_val: u16 =
+        let mut unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 4usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 4usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn b6(&self) -> ::std::os::raw::c_uint {
         let mask = 32usize as u16;
-        let field_val: u16 =
+        let unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 5usize;
+        let val = (unit_field_val & mask) >> 5usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b6(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 32usize as u16;
         let val = val as u32 as u16;
-        let mut field_val: u16 =
+        let mut unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 5usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 5usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn b7(&self) -> ::std::os::raw::c_uint {
         let mask = 64usize as u16;
-        let field_val: u16 =
+        let unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 6usize;
+        let val = (unit_field_val & mask) >> 6usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b7(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 64usize as u16;
         let val = val as u32 as u16;
-        let mut field_val: u16 =
+        let mut unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 6usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 6usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn b8(&self) -> ::std::os::raw::c_uint {
         let mask = 128usize as u16;
-        let field_val: u16 =
+        let unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 7usize;
+        let val = (unit_field_val & mask) >> 7usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b8(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 128usize as u16;
         let val = val as u32 as u16;
-        let mut field_val: u16 =
+        let mut unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 7usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 7usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn b9(&self) -> ::std::os::raw::c_uint {
         let mask = 256usize as u16;
-        let field_val: u16 =
+        let unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 8usize;
+        let val = (unit_field_val & mask) >> 8usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b9(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 256usize as u16;
         let val = val as u32 as u16;
-        let mut field_val: u16 =
+        let mut unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 8usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 8usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn b10(&self) -> ::std::os::raw::c_uint {
         let mask = 512usize as u16;
-        let field_val: u16 =
+        let unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 9usize;
+        let val = (unit_field_val & mask) >> 9usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b10(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 512usize as u16;
         let val = val as u32 as u16;
-        let mut field_val: u16 =
+        let mut unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 9usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 9usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
 }
 #[repr(C)]
@@ -232,38 +232,38 @@ impl B {
     #[inline]
     pub fn foo(&self) -> ::std::os::raw::c_uint {
         let mask = 2147483647usize as u32;
-        let field_val: u32 =
+        let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 0usize;
+        let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_foo(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 2147483647usize as u32;
         let val = val as u32 as u32;
-        let mut field_val: u32 =
+        let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 0usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 0usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn bar(&self) -> ::std::os::raw::c_uchar {
         let mask = 2147483648usize as u32;
-        let field_val: u32 =
+        let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 31usize;
+        let val = (unit_field_val & mask) >> 31usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_bar(&mut self, val: ::std::os::raw::c_uchar) {
         let mask = 2147483648usize as u32;
         let val = val as u8 as u32;
-        let mut field_val: u32 =
+        let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 31usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 31usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
 }
 #[repr(C)]
@@ -296,38 +296,38 @@ impl C {
     #[inline]
     pub fn b1(&self) -> ::std::os::raw::c_uint {
         let mask = 1usize as u8;
-        let field_val: u8 =
+        let unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 0usize;
+        let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b1(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 1usize as u8;
         let val = val as u32 as u8;
-        let mut field_val: u8 =
+        let mut unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 0usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 0usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn b2(&self) -> ::std::os::raw::c_uint {
         let mask = 2usize as u8;
-        let field_val: u8 =
+        let unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 1usize;
+        let val = (unit_field_val & mask) >> 1usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b2(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 2usize as u8;
         let val = val as u32 as u8;
-        let mut field_val: u8 =
+        let mut unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 1usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 1usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
 }
 #[repr(C)]
@@ -335,6 +335,7 @@ impl C {
 pub struct Date1 {
     pub _bitfield_1: [u8; 2usize],
     pub _bitfield_2: u8,
+    pub __bindgen_padding_0: u8,
     pub __bindgen_align: [u16; 0usize],
 }
 #[test]
@@ -351,74 +352,74 @@ impl Date1 {
     #[inline]
     pub fn nWeekDay(&self) -> ::std::os::raw::c_ushort {
         let mask = 7usize as u16;
-        let field_val: u16 =
+        let unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 0usize;
+        let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nWeekDay(&mut self, val: ::std::os::raw::c_ushort) {
         let mask = 7usize as u16;
         let val = val as u16 as u16;
-        let mut field_val: u16 =
+        let mut unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 0usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 0usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn nMonthDay(&self) -> ::std::os::raw::c_ushort {
         let mask = 504usize as u16;
-        let field_val: u16 =
+        let unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 3usize;
+        let val = (unit_field_val & mask) >> 3usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nMonthDay(&mut self, val: ::std::os::raw::c_ushort) {
         let mask = 504usize as u16;
         let val = val as u16 as u16;
-        let mut field_val: u16 =
+        let mut unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 3usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 3usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn nMonth(&self) -> ::std::os::raw::c_ushort {
         let mask = 15872usize as u16;
-        let field_val: u16 =
+        let unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 9usize;
+        let val = (unit_field_val & mask) >> 9usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nMonth(&mut self, val: ::std::os::raw::c_ushort) {
         let mask = 15872usize as u16;
         let val = val as u16 as u16;
-        let mut field_val: u16 =
+        let mut unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 9usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 9usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn nYear(&self) -> ::std::os::raw::c_ushort {
         let mask = 255usize as u8;
-        let field_val: u8 =
+        let unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_2) };
-        let val = (field_val & mask) >> 0usize;
+        let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nYear(&mut self, val: ::std::os::raw::c_ushort) {
         let mask = 255usize as u8;
         let val = val as u16 as u8;
-        let mut field_val: u8 =
+        let mut unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_2) };
-        field_val &= !mask;
-        field_val |= (val << 0usize) & mask;
-        self._bitfield_2 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 0usize) & mask;
+        self._bitfield_2 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
 }
 #[repr(C)]
@@ -448,73 +449,73 @@ impl Date2 {
     #[inline]
     pub fn nWeekDay(&self) -> ::std::os::raw::c_ushort {
         let mask = 7usize as u16;
-        let field_val: u16 =
+        let unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 0usize;
+        let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nWeekDay(&mut self, val: ::std::os::raw::c_ushort) {
         let mask = 7usize as u16;
         let val = val as u16 as u16;
-        let mut field_val: u16 =
+        let mut unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 0usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 0usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn nMonthDay(&self) -> ::std::os::raw::c_ushort {
         let mask = 504usize as u16;
-        let field_val: u16 =
+        let unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 3usize;
+        let val = (unit_field_val & mask) >> 3usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nMonthDay(&mut self, val: ::std::os::raw::c_ushort) {
         let mask = 504usize as u16;
         let val = val as u16 as u16;
-        let mut field_val: u16 =
+        let mut unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 3usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 3usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn nMonth(&self) -> ::std::os::raw::c_ushort {
         let mask = 15872usize as u16;
-        let field_val: u16 =
+        let unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 9usize;
+        let val = (unit_field_val & mask) >> 9usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nMonth(&mut self, val: ::std::os::raw::c_ushort) {
         let mask = 15872usize as u16;
         let val = val as u16 as u16;
-        let mut field_val: u16 =
+        let mut unit_field_val: u16 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 9usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 9usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn nYear(&self) -> ::std::os::raw::c_ushort {
         let mask = 255usize as u8;
-        let field_val: u8 =
+        let unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_2) };
-        let val = (field_val & mask) >> 0usize;
+        let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nYear(&mut self, val: ::std::os::raw::c_ushort) {
         let mask = 255usize as u8;
         let val = val as u16 as u8;
-        let mut field_val: u8 =
+        let mut unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_2) };
-        field_val &= !mask;
-        field_val |= (val << 0usize) & mask;
-        self._bitfield_2 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 0usize) & mask;
+        self._bitfield_2 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
 }

@@ -29,6 +29,7 @@ pub struct Weird {
     pub mTextRendering: ::std::os::raw::c_uchar,
     pub _bitfield_2: u8,
     pub _bitfield_3: u8,
+    pub __bindgen_padding_0: [u8; 3usize],
 }
 #[test]
 fn bindgen_test_layout_Weird() {
@@ -107,127 +108,127 @@ impl Weird {
     #[inline]
     pub fn bitTest(&self) -> ::std::os::raw::c_uint {
         let mask = 65535usize as u32;
-        let field_val: u32 =
+        let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 0usize;
+        let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_bitTest(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 65535usize as u32;
         let val = val as u32 as u32;
-        let mut field_val: u32 =
+        let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 0usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 0usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn bitTest2(&self) -> ::std::os::raw::c_uint {
         let mask = 2147418112usize as u32;
-        let field_val: u32 =
+        let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 16usize;
+        let val = (unit_field_val & mask) >> 16usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_bitTest2(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 2147418112usize as u32;
         let val = val as u32 as u32;
-        let mut field_val: u32 =
+        let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 16usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 16usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn mFillOpacitySource(&self) -> nsStyleSVGOpacitySource {
         let mask = 7usize as u8;
-        let field_val: u8 =
+        let unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_2) };
-        let val = (field_val & mask) >> 0usize;
+        let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_mFillOpacitySource(&mut self, val: nsStyleSVGOpacitySource) {
         let mask = 7usize as u8;
         let val = val as u32 as u8;
-        let mut field_val: u8 =
+        let mut unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_2) };
-        field_val &= !mask;
-        field_val |= (val << 0usize) & mask;
-        self._bitfield_2 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 0usize) & mask;
+        self._bitfield_2 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn mStrokeOpacitySource(&self) -> nsStyleSVGOpacitySource {
         let mask = 56usize as u8;
-        let field_val: u8 =
+        let unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_2) };
-        let val = (field_val & mask) >> 3usize;
+        let val = (unit_field_val & mask) >> 3usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_mStrokeOpacitySource(&mut self, val: nsStyleSVGOpacitySource) {
         let mask = 56usize as u8;
         let val = val as u32 as u8;
-        let mut field_val: u8 =
+        let mut unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_2) };
-        field_val &= !mask;
-        field_val |= (val << 3usize) & mask;
-        self._bitfield_2 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 3usize) & mask;
+        self._bitfield_2 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn mStrokeDasharrayFromObject(&self) -> bool {
         let mask = 64usize as u8;
-        let field_val: u8 =
+        let unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_2) };
-        let val = (field_val & mask) >> 6usize;
+        let val = (unit_field_val & mask) >> 6usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_mStrokeDasharrayFromObject(&mut self, val: bool) {
         let mask = 64usize as u8;
         let val = val as u8 as u8;
-        let mut field_val: u8 =
+        let mut unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_2) };
-        field_val &= !mask;
-        field_val |= (val << 6usize) & mask;
-        self._bitfield_2 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 6usize) & mask;
+        self._bitfield_2 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn mStrokeDashoffsetFromObject(&self) -> bool {
         let mask = 128usize as u8;
-        let field_val: u8 =
+        let unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_2) };
-        let val = (field_val & mask) >> 7usize;
+        let val = (unit_field_val & mask) >> 7usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_mStrokeDashoffsetFromObject(&mut self, val: bool) {
         let mask = 128usize as u8;
         let val = val as u8 as u8;
-        let mut field_val: u8 =
+        let mut unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_2) };
-        field_val &= !mask;
-        field_val |= (val << 7usize) & mask;
-        self._bitfield_2 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 7usize) & mask;
+        self._bitfield_2 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn mStrokeWidthFromObject(&self) -> bool {
         let mask = 1usize as u8;
-        let field_val: u8 =
+        let unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_3) };
-        let val = (field_val & mask) >> 0usize;
+        let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_mStrokeWidthFromObject(&mut self, val: bool) {
         let mask = 1usize as u8;
         let val = val as u8 as u8;
-        let mut field_val: u8 =
+        let mut unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_3) };
-        field_val &= !mask;
-        field_val |= (val << 0usize) & mask;
-        self._bitfield_3 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 0usize) & mask;
+        self._bitfield_3 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
 }

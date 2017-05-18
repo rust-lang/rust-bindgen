@@ -27,37 +27,37 @@ impl mach_msg_type_descriptor_t {
     #[inline]
     pub fn pad3(&self) -> ::std::os::raw::c_uint {
         let mask = 16777215usize as u32;
-        let field_val: u32 =
+        let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 0usize;
+        let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_pad3(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 16777215usize as u32;
         let val = val as u32 as u32;
-        let mut field_val: u32 =
+        let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 0usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 0usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
     pub fn type_(&self) -> ::std::os::raw::c_uint {
         let mask = 4278190080usize as u32;
-        let field_val: u32 =
+        let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        let val = (field_val & mask) >> 24usize;
+        let val = (unit_field_val & mask) >> 24usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_type(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 4278190080usize as u32;
         let val = val as u32 as u32;
-        let mut field_val: u32 =
+        let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
-        field_val &= !mask;
-        field_val |= (val << 24usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(field_val) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 24usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
 }
