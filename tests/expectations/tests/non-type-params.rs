@@ -38,7 +38,7 @@ impl Default for UsesArray {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
-fn __bindgen_test_layout_Array_instantiation_18() {
+fn __bindgen_test_layout_Array_instantiation_1() {
     assert_eq!(::std::mem::size_of::<[u32; 4usize]>() , 16usize , concat ! (
                "Size of template specialization: " , stringify ! (
                [u32; 4usize] ) ));
