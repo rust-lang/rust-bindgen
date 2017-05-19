@@ -60,4 +60,20 @@ impl mach_msg_type_descriptor_t {
         unit_field_val |= (val << 24usize) & mask;
         self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
+    #[inline]
+    pub fn new_bitfield_1(pad3: ::std::os::raw::c_uint,
+                          type_: ::std::os::raw::c_uint) -> u32 {
+        let bitfield_unit_val =
+            {
+                let bitfield_unit_val = { 0 };
+                let pad3 = pad3 as u32 as u32;
+                let mask = 16777215usize as u32;
+                let pad3 = (pad3 << 0usize) & mask;
+                bitfield_unit_val | pad3
+            };
+        let type_ = type_ as u32 as u32;
+        let mask = 4278190080usize as u32;
+        let type_ = (type_ << 24usize) & mask;
+        bitfield_unit_val | type_
+    }
 }

@@ -57,4 +57,19 @@ impl C {
         unit_field_val |= (val << 1usize) & mask;
         self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
+    #[inline]
+    pub fn new_bitfield_1(a: bool, b: bool) -> u8 {
+        let bitfield_unit_val =
+            {
+                let bitfield_unit_val = { 0 };
+                let a = a as u8 as u8;
+                let mask = 1usize as u8;
+                let a = (a << 0usize) & mask;
+                bitfield_unit_val | a
+            };
+        let b = b as u8 as u8;
+        let mask = 254usize as u8;
+        let b = (b << 1usize) & mask;
+        bitfield_unit_val | b
+    }
 }

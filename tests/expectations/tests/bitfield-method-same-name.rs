@@ -53,6 +53,16 @@ impl Foo {
         self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
+    pub fn new_bitfield_1(type__bindgen_bitfield: ::std::os::raw::c_char)
+     -> u8 {
+        let bitfield_unit_val = { 0 };
+        let type__bindgen_bitfield = type__bindgen_bitfield as u8 as u8;
+        let mask = 7usize as u8;
+        let type__bindgen_bitfield =
+            (type__bindgen_bitfield << 0usize) & mask;
+        bitfield_unit_val | type__bindgen_bitfield
+    }
+    #[inline]
     pub unsafe fn type_(&mut self) -> ::std::os::raw::c_char {
         Foo_type(self)
     }
