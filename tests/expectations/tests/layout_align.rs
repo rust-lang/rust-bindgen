@@ -144,4 +144,27 @@ impl rte_eth_link {
         unit_field_val |= (val << 2usize) & mask;
         self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
+    #[inline]
+    pub fn new_bitfield_1(link_duplex: u16, link_autoneg: u16,
+                          link_status: u16) -> u8 {
+        let bitfield_unit_val =
+            {
+                let bitfield_unit_val =
+                    {
+                        let bitfield_unit_val = { 0 };
+                        let link_duplex = link_duplex as u16 as u8;
+                        let mask = 1usize as u8;
+                        let link_duplex = (link_duplex << 0usize) & mask;
+                        bitfield_unit_val | link_duplex
+                    };
+                let link_autoneg = link_autoneg as u16 as u8;
+                let mask = 2usize as u8;
+                let link_autoneg = (link_autoneg << 1usize) & mask;
+                bitfield_unit_val | link_autoneg
+            };
+        let link_status = link_status as u16 as u8;
+        let mask = 4usize as u8;
+        let link_status = (link_status << 2usize) & mask;
+        bitfield_unit_val | link_status
+    }
 }

@@ -291,6 +291,12 @@ impl Bitfield {
         self.offset_into_unit
     }
 
+    /// Get the mask value that when &'ed with this bitfield's allocation unit
+    /// produces this bitfield's value.
+    pub fn mask(&self) -> usize {
+        ((1usize << self.width()) - 1usize) << self.offset_into_unit()
+    }
+
     /// Get the bit width of this bitfield.
     pub fn width(&self) -> u32 {
         self.data.bitfield().unwrap()

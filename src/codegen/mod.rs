@@ -1020,6 +1020,111 @@ impl<'a> FieldCodegen<'a> for FieldData {
     }
 }
 
+impl BitfieldUnit {
+    /// Get the constructor name for this bitfield unit.
+    fn ctor_name(&self, ctx: &BindgenContext) -> ast::Ident {
+        let ctor_name = format!("new_bitfield_{}", self.nth());
+        ctx.ext_cx().ident_of(&ctor_name)
+    }
+
+    /// Get the initial bitfield unit constructor that just returns 0. This will
+    /// then be extended by each bitfield in the unit. See `extend_ctor_impl`
+    /// below.
+    fn initial_ctor_impl(&self,
+                         ctx: &BindgenContext,
+                         unit_field_int_ty: &P<ast::Ty>)
+                         -> P<ast::Item> {
+        let ctor_name = self.ctor_name(ctx);
+
+        // If we're generating unstable Rust, add the const.
+        let fn_prefix = if ctx.options().unstable_rust {
+            quote_tokens!(ctx.ext_cx(), pub const fn)
+        } else {
+            quote_tokens!(ctx.ext_cx(), pub fn)
+        };
+
+        quote_item!(
+            ctx.ext_cx(),
+            impl XxxUnused {
+                #[inline]
+                $fn_prefix $ctor_name() -> $unit_field_int_ty {
+                    0
+                }
+            }
+        ).unwrap()
+    }
+}
+
+impl Bitfield {
+    /// Extend an under construction bitfield unit constructor with this
+    /// bitfield. This involves two things:
+    ///
+    /// 1. Adding a parameter with this bitfield's name and its type.
+    ///
+    /// 2. Bitwise or'ing the parameter into the final value of the constructed
+    /// bitfield unit.
+    fn extend_ctor_impl(&self,
+                        ctx: &BindgenContext,
+                        parent: &CompInfo,
+                        ctor_impl: P<ast::Item>,
+                        ctor_name: &ast::Ident,
+                        unit_field_int_ty: &P<ast::Ty>)
+                        -> P<ast::Item> {
+        let items = match ctor_impl.unwrap().node {
+            ast::ItemKind::Impl(_, _, _, _, _, items) => {
+                items
+            }
+            _ => unreachable!(),
+        };
+
+        assert_eq!(items.len(), 1);
+        let (sig, body) = match items[0].node {
+            ast::ImplItemKind::Method(ref sig, ref body) => {
+                (sig, body)
+            }
+            _ => unreachable!(),
+        };
+
+        let params = sig.decl.clone().unwrap().inputs;
+        let param_name = bitfield_getter_name(ctx, parent, self.name());
+
+        let bitfield_ty_item = ctx.resolve_item(self.ty());
+        let bitfield_ty = bitfield_ty_item.expect_type();
+        let bitfield_ty_layout = bitfield_ty.layout(ctx)
+            .expect("Bitfield without layout? Gah!");
+        let bitfield_int_ty = BlobTyBuilder::new(bitfield_ty_layout).build();
+        let bitfield_ty = bitfield_ty
+            .to_rust_ty_or_opaque(ctx, bitfield_ty_item);
+
+        let offset = self.offset_into_unit();
+        let mask = self.mask();
+
+        // If we're generating unstable Rust, add the const.
+        let fn_prefix = if ctx.options().unstable_rust {
+            quote_tokens!(ctx.ext_cx(), pub const fn)
+        } else {
+            quote_tokens!(ctx.ext_cx(), pub fn)
+        };
+
+        quote_item!(
+            ctx.ext_cx(),
+            impl XxxUnused {
+                #[inline]
+                $fn_prefix $ctor_name($params $param_name : $bitfield_ty)
+                                      -> $unit_field_int_ty {
+                    let bitfield_unit_val = $body;
+                    let $param_name = $param_name
+                        as $bitfield_int_ty
+                        as $unit_field_int_ty;
+                    let mask = $mask as $unit_field_int_ty;
+                    let $param_name = ($param_name << $offset) & mask;
+                    bitfield_unit_val | $param_name
+                }
+            }
+        ).unwrap()
+    }
+}
+
 impl<'a> FieldCodegen<'a> for BitfieldUnit {
     type Extra = ();
 
@@ -1058,6 +1163,9 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
             }
         };
 
+        let ctor_name = self.ctor_name(ctx);
+        let mut ctor_impl = self.initial_ctor_impl(ctx, &unit_field_int_ty);
+
         for bf in self.bitfields() {
             bf.codegen(ctx,
                        fields_should_be_private,
@@ -1069,7 +1177,21 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                        fields,
                        methods,
                        (&unit_field_name, unit_field_int_ty.clone()));
+
+            ctor_impl = bf.extend_ctor_impl(ctx,
+                                            parent,
+                                            ctor_impl,
+                                            &ctor_name,
+                                            &unit_field_int_ty);
         }
+
+        match ctor_impl.unwrap().node {
+            ast::ItemKind::Impl(_, _, _, _, _, items) => {
+                assert_eq!(items.len(), 1);
+                methods.extend(items.into_iter());
+            },
+            _ => unreachable!(),
+        };
 
         struct_layout.saw_bitfield_unit(self.layout());
     }
@@ -1154,7 +1276,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         let bitfield_ty = bitfield_ty.to_rust_ty_or_opaque(ctx, bitfield_ty_item);
 
         let offset = self.offset_into_unit();
-        let mask: usize = ((1usize << self.width()) - 1usize) << offset;
+        let mask: usize = self.mask();
 
         let impl_item = quote_item!(
             ctx.ext_cx(),

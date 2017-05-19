@@ -102,6 +102,40 @@ fn test_bitfields_third() {
     });
 }
 
+#[test]
+fn test_bitfield_constructors() {
+    let mut first = bindings::bitfields::First {
+        _bitfield_1: bindings::bitfields::First::new_bitfield_1(1),
+        _bitfield_2: bindings::bitfields::First::new_bitfield_2(2, 3),
+        __bindgen_align: [],
+    };
+    assert!(unsafe {
+        first.assert(1, 2, 3)
+    });
+
+    let mut second = bindings::bitfields::Second {
+        _bitfield_1: bindings::bitfields::Second::new_bitfield_1(1337, true),
+        __bindgen_align: [],
+    };
+    assert!(unsafe {
+        second.assert(1337, true)
+    });
+
+    let mut third = bindings::bitfields::Third {
+        _bitfield_1: bindings::bitfields::Third::new_bitfield_1(
+            42,
+            false,
+            bindings::bitfields::ItemKind::ITEM_KIND_TRES
+        ),
+        __bindgen_align: [],
+    };
+    assert!(unsafe {
+        third.assert(42,
+                     false,
+                     bindings::bitfields::ItemKind::ITEM_KIND_TRES)
+    });
+}
+
 impl Drop for bindings::AutoRestoreBool {
     fn drop(&mut self) {
         unsafe { bindings::AutoRestoreBool::destruct(self) }

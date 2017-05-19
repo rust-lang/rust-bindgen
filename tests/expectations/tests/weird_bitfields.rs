@@ -142,6 +142,22 @@ impl Weird {
         self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
+    pub fn new_bitfield_1(bitTest: ::std::os::raw::c_uint,
+                          bitTest2: ::std::os::raw::c_uint) -> u32 {
+        let bitfield_unit_val =
+            {
+                let bitfield_unit_val = { 0 };
+                let bitTest = bitTest as u32 as u32;
+                let mask = 65535usize as u32;
+                let bitTest = (bitTest << 0usize) & mask;
+                bitfield_unit_val | bitTest
+            };
+        let bitTest2 = bitTest2 as u32 as u32;
+        let mask = 2147418112usize as u32;
+        let bitTest2 = (bitTest2 << 16usize) & mask;
+        bitfield_unit_val | bitTest2
+    }
+    #[inline]
     pub fn mFillOpacitySource(&self) -> nsStyleSVGOpacitySource {
         let mask = 7usize as u8;
         let unit_field_val: u8 =
@@ -214,6 +230,46 @@ impl Weird {
         self._bitfield_2 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
+    pub fn new_bitfield_2(mFillOpacitySource: nsStyleSVGOpacitySource,
+                          mStrokeOpacitySource: nsStyleSVGOpacitySource,
+                          mStrokeDasharrayFromObject: bool,
+                          mStrokeDashoffsetFromObject: bool) -> u8 {
+        let bitfield_unit_val =
+            {
+                let bitfield_unit_val =
+                    {
+                        let bitfield_unit_val =
+                            {
+                                let bitfield_unit_val = { 0 };
+                                let mFillOpacitySource =
+                                    mFillOpacitySource as u32 as u8;
+                                let mask = 7usize as u8;
+                                let mFillOpacitySource =
+                                    (mFillOpacitySource << 0usize) & mask;
+                                bitfield_unit_val | mFillOpacitySource
+                            };
+                        let mStrokeOpacitySource =
+                            mStrokeOpacitySource as u32 as u8;
+                        let mask = 56usize as u8;
+                        let mStrokeOpacitySource =
+                            (mStrokeOpacitySource << 3usize) & mask;
+                        bitfield_unit_val | mStrokeOpacitySource
+                    };
+                let mStrokeDasharrayFromObject =
+                    mStrokeDasharrayFromObject as u8 as u8;
+                let mask = 64usize as u8;
+                let mStrokeDasharrayFromObject =
+                    (mStrokeDasharrayFromObject << 6usize) & mask;
+                bitfield_unit_val | mStrokeDasharrayFromObject
+            };
+        let mStrokeDashoffsetFromObject =
+            mStrokeDashoffsetFromObject as u8 as u8;
+        let mask = 128usize as u8;
+        let mStrokeDashoffsetFromObject =
+            (mStrokeDashoffsetFromObject << 7usize) & mask;
+        bitfield_unit_val | mStrokeDashoffsetFromObject
+    }
+    #[inline]
     pub fn mStrokeWidthFromObject(&self) -> bool {
         let mask = 1usize as u8;
         let unit_field_val: u8 =
@@ -230,5 +286,14 @@ impl Weird {
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         self._bitfield_3 = unsafe { ::std::mem::transmute(unit_field_val) };
+    }
+    #[inline]
+    pub fn new_bitfield_3(mStrokeWidthFromObject: bool) -> u8 {
+        let bitfield_unit_val = { 0 };
+        let mStrokeWidthFromObject = mStrokeWidthFromObject as u8 as u8;
+        let mask = 1usize as u8;
+        let mStrokeWidthFromObject =
+            (mStrokeWidthFromObject << 0usize) & mask;
+        bitfield_unit_val | mStrokeWidthFromObject
     }
 }

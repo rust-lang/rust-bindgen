@@ -88,6 +88,22 @@ impl foo__bindgen_ty_1 {
         unit_field_val |= (val << 7usize) & mask;
         self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
+    #[inline]
+    pub fn new_bitfield_1(b: ::std::os::raw::c_int, c: ::std::os::raw::c_int)
+     -> u32 {
+        let bitfield_unit_val =
+            {
+                let bitfield_unit_val = { 0 };
+                let b = b as u32 as u32;
+                let mask = 127usize as u32;
+                let b = (b << 0usize) & mask;
+                bitfield_unit_val | b
+            };
+        let c = c as u32 as u32;
+        let mask = 4294967168usize as u32;
+        let c = (c << 7usize) & mask;
+        bitfield_unit_val | c
+    }
 }
 #[test]
 fn bindgen_test_layout_foo() {
