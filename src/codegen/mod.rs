@@ -1070,55 +1070,58 @@ impl Bitfield {
                         ctor_name: &ast::Ident,
                         unit_field_int_ty: &P<ast::Ty>)
                         -> P<ast::Item> {
-        match ctor_impl.unwrap().node {
-            ast::ItemKind::Impl(_, _, _, _, _, ref items) => {
-                assert_eq!(items.len(), 1);
-
-                match items.get(0).unwrap().node {
-                    ast::ImplItemKind::Method(ref sig, ref body) => {
-                        let params = sig.decl.clone().unwrap().inputs;
-                        let param_name = bitfield_getter_name(ctx, parent, self.name());
-
-                        let bitfield_ty_item = ctx.resolve_item(self.ty());
-                        let bitfield_ty = bitfield_ty_item.expect_type();
-                        let bitfield_ty_layout = bitfield_ty.layout(ctx)
-                            .expect("Bitfield without layout? Gah!");
-                        let bitfield_int_ty = BlobTyBuilder::new(bitfield_ty_layout).build();
-                        let bitfield_ty = bitfield_ty
-                            .to_rust_ty_or_opaque(ctx, bitfield_ty_item);
-
-                        let offset = self.offset_into_unit();
-                        let mask = self.mask();
-
-                        // If we're generating unstable Rust, add the const.
-                        let fn_prefix = if ctx.options().unstable_rust {
-                            quote_tokens!(ctx.ext_cx(), pub const fn)
-                        } else {
-                            quote_tokens!(ctx.ext_cx(), pub fn)
-                        };
-
-                        quote_item!(
-                            ctx.ext_cx(),
-                            impl XxxUnused {
-                                #[inline]
-                                $fn_prefix $ctor_name($params $param_name : $bitfield_ty)
-                                                        -> $unit_field_int_ty {
-                                    let bitfield_unit_val = $body;
-                                    let $param_name = $param_name
-                                        as $bitfield_int_ty
-                                        as $unit_field_int_ty;
-                                    let mask = $mask as $unit_field_int_ty;
-                                    let $param_name = ($param_name << $offset) & mask;
-                                    bitfield_unit_val | $param_name
-                                }
-                            }
-                        ).unwrap()
-                    }
-                    _ => unreachable!(),
-                }
+        let items = match ctor_impl.unwrap().node {
+            ast::ItemKind::Impl(_, _, _, _, _, items) => {
+                items
             }
             _ => unreachable!(),
-        }
+        };
+
+        assert_eq!(items.len(), 1);
+        let (sig, body) = match items[0].node {
+            ast::ImplItemKind::Method(ref sig, ref body) => {
+                (sig, body)
+            }
+            _ => unreachable!(),
+        };
+
+        let params = sig.decl.clone().unwrap().inputs;
+        let param_name = bitfield_getter_name(ctx, parent, self.name());
+
+        let bitfield_ty_item = ctx.resolve_item(self.ty());
+        let bitfield_ty = bitfield_ty_item.expect_type();
+        let bitfield_ty_layout = bitfield_ty.layout(ctx)
+            .expect("Bitfield without layout? Gah!");
+        let bitfield_int_ty = BlobTyBuilder::new(bitfield_ty_layout).build();
+        let bitfield_ty = bitfield_ty
+            .to_rust_ty_or_opaque(ctx, bitfield_ty_item);
+
+        let offset = self.offset_into_unit();
+        let mask = self.mask();
+
+        // If we're generating unstable Rust, add the const.
+        let fn_prefix = if ctx.options().unstable_rust {
+            quote_tokens!(ctx.ext_cx(), pub const fn)
+        } else {
+            quote_tokens!(ctx.ext_cx(), pub fn)
+        };
+
+        quote_item!(
+            ctx.ext_cx(),
+            impl XxxUnused {
+                #[inline]
+                $fn_prefix $ctor_name($params $param_name : $bitfield_ty)
+                                      -> $unit_field_int_ty {
+                    let bitfield_unit_val = $body;
+                    let $param_name = $param_name
+                        as $bitfield_int_ty
+                        as $unit_field_int_ty;
+                    let mask = $mask as $unit_field_int_ty;
+                    let $param_name = ($param_name << $offset) & mask;
+                    bitfield_unit_val | $param_name
+                }
+            }
+        ).unwrap()
     }
 }
 
