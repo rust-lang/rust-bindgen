@@ -245,7 +245,7 @@ pub struct TemplateWithVar {
     pub _address: u8,
 }
 #[test]
-fn __bindgen_test_layout_Foo_instantiation_95() {
+fn __bindgen_test_layout_Foo_instantiation_1() {
     assert_eq!(::std::mem::size_of::<Foo<::std::os::raw::c_int>>() , 24usize ,
                concat ! (
                "Size of template specialization: " , stringify ! (
@@ -256,7 +256,7 @@ fn __bindgen_test_layout_Foo_instantiation_95() {
                Foo<::std::os::raw::c_int> ) ));
 }
 #[test]
-fn __bindgen_test_layout_Foo_instantiation_101() {
+fn __bindgen_test_layout_Foo_instantiation_2() {
     assert_eq!(::std::mem::size_of::<Foo<::std::os::raw::c_int>>() , 24usize ,
                concat ! (
                "Size of template specialization: " , stringify ! (
@@ -267,7 +267,7 @@ fn __bindgen_test_layout_Foo_instantiation_101() {
                Foo<::std::os::raw::c_int> ) ));
 }
 #[test]
-fn __bindgen_test_layout_Rooted_instantiation_111() {
+fn __bindgen_test_layout_Rooted_instantiation_3() {
     assert_eq!(::std::mem::size_of::<Rooted<*mut ::std::os::raw::c_void>>() ,
                24usize , concat ! (
                "Size of template specialization: " , stringify ! (
@@ -278,7 +278,7 @@ fn __bindgen_test_layout_Rooted_instantiation_111() {
                Rooted<*mut ::std::os::raw::c_void> ) ));
 }
 #[test]
-fn __bindgen_test_layout_WithDtor_instantiation_123() {
+fn __bindgen_test_layout_WithDtor_instantiation_4() {
     assert_eq!(::std::mem::size_of::<WithDtor<::std::os::raw::c_int>>() ,
                4usize , concat ! (
                "Size of template specialization: " , stringify ! (

@@ -78,7 +78,7 @@ extern "C" {
     pub static mut var: A_B;
 }
 #[test]
-fn __bindgen_test_layout_A_D_instantiation_16() {
+fn __bindgen_test_layout_A_D_instantiation_1() {
     assert_eq!(::std::mem::size_of::<A_D<::std::os::raw::c_int>>() , 4usize ,
                concat ! (
                "Size of template specialization: " , stringify ! (

@@ -32,7 +32,7 @@ impl Default for JS_AutoIdVector {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
-fn __bindgen_test_layout_JS_Base_instantiation_20() {
+fn __bindgen_test_layout_JS_Base_instantiation_2() {
     assert_eq!(::std::mem::size_of::<JS_Base>() , 1usize , concat ! (
                "Size of template specialization: " , stringify ! ( JS_Base )
                ));

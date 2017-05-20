@@ -760,8 +760,8 @@ impl CodeGenerator for TemplateInstantiation {
 
             let name = item.canonical_name(ctx);
             let fn_name = format!("__bindgen_test_layout_{}_instantiation_{}",
-                                  name,
-                                  item.id().as_usize());
+                                  name, item.exposed_id(ctx));
+
             let fn_name = ctx.rust_ident_raw(&fn_name);
 
             let prefix = ctx.trait_prefix();
