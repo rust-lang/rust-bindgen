@@ -127,7 +127,13 @@ pub fn cursor_mangling(ctx: &BindgenContext,
     }
 
     if let Ok(mut manglings) = cursor.cxx_manglings() {
-        if let Some(m) = manglings.pop() {
+        if let Some(mut m) = manglings.pop() {
+            debug_assert!(!m.is_empty(),
+                          "This API never returns empty strings!");
+            // Se the comment below for why this is nasty.
+            if cfg!(target_os = "macos") {
+                m.remove(0);
+            }
             return Some(m);
         }
     }
