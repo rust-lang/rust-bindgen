@@ -144,18 +144,10 @@ impl Weird {
     #[inline]
     pub fn new_bitfield_1(bitTest: ::std::os::raw::c_uint,
                           bitTest2: ::std::os::raw::c_uint) -> u32 {
-        let bitfield_unit_val =
-            {
-                let bitfield_unit_val = { 0 };
-                let bitTest = bitTest as u32 as u32;
-                let mask = 65535usize as u32;
-                let bitTest = (bitTest << 0usize) & mask;
-                bitfield_unit_val | bitTest
-            };
-        let bitTest2 = bitTest2 as u32 as u32;
-        let mask = 2147418112usize as u32;
-        let bitTest2 = (bitTest2 << 16usize) & mask;
-        bitfield_unit_val | bitTest2
+        ({
+             ({ 0 } |
+                  ((bitTest as u32 as u32) << 0usize) & (65535usize as u32))
+         } | ((bitTest2 as u32 as u32) << 16usize) & (2147418112usize as u32))
     }
     #[inline]
     pub fn mFillOpacitySource(&self) -> nsStyleSVGOpacitySource {
@@ -234,40 +226,21 @@ impl Weird {
                           mStrokeOpacitySource: nsStyleSVGOpacitySource,
                           mStrokeDasharrayFromObject: bool,
                           mStrokeDashoffsetFromObject: bool) -> u8 {
-        let bitfield_unit_val =
-            {
-                let bitfield_unit_val =
-                    {
-                        let bitfield_unit_val =
-                            {
-                                let bitfield_unit_val = { 0 };
-                                let mFillOpacitySource =
-                                    mFillOpacitySource as u32 as u8;
-                                let mask = 7usize as u8;
-                                let mFillOpacitySource =
-                                    (mFillOpacitySource << 0usize) & mask;
-                                bitfield_unit_val | mFillOpacitySource
-                            };
-                        let mStrokeOpacitySource =
-                            mStrokeOpacitySource as u32 as u8;
-                        let mask = 56usize as u8;
-                        let mStrokeOpacitySource =
-                            (mStrokeOpacitySource << 3usize) & mask;
-                        bitfield_unit_val | mStrokeOpacitySource
-                    };
-                let mStrokeDasharrayFromObject =
-                    mStrokeDasharrayFromObject as u8 as u8;
-                let mask = 64usize as u8;
-                let mStrokeDasharrayFromObject =
-                    (mStrokeDasharrayFromObject << 6usize) & mask;
-                bitfield_unit_val | mStrokeDasharrayFromObject
-            };
-        let mStrokeDashoffsetFromObject =
-            mStrokeDashoffsetFromObject as u8 as u8;
-        let mask = 128usize as u8;
-        let mStrokeDashoffsetFromObject =
-            (mStrokeDashoffsetFromObject << 7usize) & mask;
-        bitfield_unit_val | mStrokeDashoffsetFromObject
+        ({
+             ({
+                  ({
+                       ({ 0 } |
+                            ((mFillOpacitySource as u32 as u8) << 0usize) &
+                                (7usize as u8))
+                   } |
+                       ((mStrokeOpacitySource as u32 as u8) << 3usize) &
+                           (56usize as u8))
+              } |
+                  ((mStrokeDasharrayFromObject as u8 as u8) << 6usize) &
+                      (64usize as u8))
+         } |
+             ((mStrokeDashoffsetFromObject as u8 as u8) << 7usize) &
+                 (128usize as u8))
     }
     #[inline]
     pub fn mStrokeWidthFromObject(&self) -> bool {
@@ -289,11 +262,8 @@ impl Weird {
     }
     #[inline]
     pub fn new_bitfield_3(mStrokeWidthFromObject: bool) -> u8 {
-        let bitfield_unit_val = { 0 };
-        let mStrokeWidthFromObject = mStrokeWidthFromObject as u8 as u8;
-        let mask = 1usize as u8;
-        let mStrokeWidthFromObject =
-            (mStrokeWidthFromObject << 0usize) & mask;
-        bitfield_unit_val | mStrokeWidthFromObject
+        ({ 0 } |
+             ((mStrokeWidthFromObject as u8 as u8) << 0usize) &
+                 (1usize as u8))
     }
 }

@@ -287,113 +287,41 @@ impl rte_eth_rxmode {
                           hw_vlan_extend: u16, jumbo_frame: u16,
                           hw_strip_crc: u16, enable_scatter: u16,
                           enable_lro: u16) -> u16 {
-        let bitfield_unit_val =
-            {
-                let bitfield_unit_val =
-                    {
-                        let bitfield_unit_val =
-                            {
-                                let bitfield_unit_val =
-                                    {
-                                        let bitfield_unit_val =
-                                            {
-                                                let bitfield_unit_val =
-                                                    {
-                                                        let bitfield_unit_val =
-                                                            {
-                                                                let bitfield_unit_val =
-                                                                    {
-                                                                        let bitfield_unit_val =
-                                                                            {
-                                                                                0
-                                                                            };
-                                                                        let header_split =
-                                                                            header_split
-                                                                                as
-                                                                                u16
-                                                                                as
-                                                                                u16;
-                                                                        let mask =
-                                                                            1usize
-                                                                                as
-                                                                                u16;
-                                                                        let header_split =
-                                                                            (header_split
-                                                                                 <<
-                                                                                 0usize)
-                                                                                &
-                                                                                mask;
-                                                                        bitfield_unit_val
-                                                                            |
-                                                                            header_split
-                                                                    };
-                                                                let hw_ip_checksum =
-                                                                    hw_ip_checksum
-                                                                        as u16
-                                                                        as
-                                                                        u16;
-                                                                let mask =
-                                                                    2usize as
-                                                                        u16;
-                                                                let hw_ip_checksum =
-                                                                    (hw_ip_checksum
-                                                                         <<
-                                                                         1usize)
-                                                                        &
-                                                                        mask;
-                                                                bitfield_unit_val
-                                                                    |
-                                                                    hw_ip_checksum
-                                                            };
-                                                        let hw_vlan_filter =
-                                                            hw_vlan_filter as
-                                                                u16 as u16;
-                                                        let mask =
-                                                            4usize as u16;
-                                                        let hw_vlan_filter =
-                                                            (hw_vlan_filter <<
-                                                                 2usize) &
-                                                                mask;
-                                                        bitfield_unit_val |
-                                                            hw_vlan_filter
-                                                    };
-                                                let hw_vlan_strip =
-                                                    hw_vlan_strip as u16 as
-                                                        u16;
-                                                let mask = 8usize as u16;
-                                                let hw_vlan_strip =
-                                                    (hw_vlan_strip << 3usize)
-                                                        & mask;
-                                                bitfield_unit_val |
-                                                    hw_vlan_strip
-                                            };
-                                        let hw_vlan_extend =
-                                            hw_vlan_extend as u16 as u16;
-                                        let mask = 16usize as u16;
-                                        let hw_vlan_extend =
-                                            (hw_vlan_extend << 4usize) & mask;
-                                        bitfield_unit_val | hw_vlan_extend
-                                    };
-                                let jumbo_frame = jumbo_frame as u16 as u16;
-                                let mask = 32usize as u16;
-                                let jumbo_frame =
-                                    (jumbo_frame << 5usize) & mask;
-                                bitfield_unit_val | jumbo_frame
-                            };
-                        let hw_strip_crc = hw_strip_crc as u16 as u16;
-                        let mask = 64usize as u16;
-                        let hw_strip_crc = (hw_strip_crc << 6usize) & mask;
-                        bitfield_unit_val | hw_strip_crc
-                    };
-                let enable_scatter = enable_scatter as u16 as u16;
-                let mask = 128usize as u16;
-                let enable_scatter = (enable_scatter << 7usize) & mask;
-                bitfield_unit_val | enable_scatter
-            };
-        let enable_lro = enable_lro as u16 as u16;
-        let mask = 256usize as u16;
-        let enable_lro = (enable_lro << 8usize) & mask;
-        bitfield_unit_val | enable_lro
+        ({
+             ({
+                  ({
+                       ({
+                            ({
+                                 ({
+                                      ({
+                                           ({
+                                                ({ 0 } |
+                                                     ((header_split as u16 as
+                                                           u16) << 0usize) &
+                                                         (1usize as u16))
+                                            } |
+                                                ((hw_ip_checksum as u16 as
+                                                      u16) << 1usize) &
+                                                    (2usize as u16))
+                                       } |
+                                           ((hw_vlan_filter as u16 as u16) <<
+                                                2usize) & (4usize as u16))
+                                  } |
+                                      ((hw_vlan_strip as u16 as u16) <<
+                                           3usize) & (8usize as u16))
+                             } |
+                                 ((hw_vlan_extend as u16 as u16) << 4usize) &
+                                     (16usize as u16))
+                        } |
+                            ((jumbo_frame as u16 as u16) << 5usize) &
+                                (32usize as u16))
+                   } |
+                       ((hw_strip_crc as u16 as u16) << 6usize) &
+                           (64usize as u16))
+              } |
+                  ((enable_scatter as u16 as u16) << 7usize) &
+                      (128usize as u16))
+         } | ((enable_lro as u16 as u16) << 8usize) & (256usize as u16))
     }
 }
 #[repr(u32)]
@@ -502,29 +430,15 @@ impl rte_eth_txmode {
     pub fn new_bitfield_1(hw_vlan_reject_tagged: u8,
                           hw_vlan_reject_untagged: u8,
                           hw_vlan_insert_pvid: u8) -> u8 {
-        let bitfield_unit_val =
-            {
-                let bitfield_unit_val =
-                    {
-                        let bitfield_unit_val = { 0 };
-                        let hw_vlan_reject_tagged =
-                            hw_vlan_reject_tagged as u8 as u8;
-                        let mask = 1usize as u8;
-                        let hw_vlan_reject_tagged =
-                            (hw_vlan_reject_tagged << 0usize) & mask;
-                        bitfield_unit_val | hw_vlan_reject_tagged
-                    };
-                let hw_vlan_reject_untagged =
-                    hw_vlan_reject_untagged as u8 as u8;
-                let mask = 2usize as u8;
-                let hw_vlan_reject_untagged =
-                    (hw_vlan_reject_untagged << 1usize) & mask;
-                bitfield_unit_val | hw_vlan_reject_untagged
-            };
-        let hw_vlan_insert_pvid = hw_vlan_insert_pvid as u8 as u8;
-        let mask = 4usize as u8;
-        let hw_vlan_insert_pvid = (hw_vlan_insert_pvid << 2usize) & mask;
-        bitfield_unit_val | hw_vlan_insert_pvid
+        ({
+             ({
+                  ({ 0 } |
+                       ((hw_vlan_reject_tagged as u8 as u8) << 0usize) &
+                           (1usize as u8))
+              } |
+                  ((hw_vlan_reject_untagged as u8 as u8) << 1usize) &
+                      (2usize as u8))
+         } | ((hw_vlan_insert_pvid as u8 as u8) << 2usize) & (4usize as u8))
     }
 }
 /**

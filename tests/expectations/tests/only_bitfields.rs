@@ -59,17 +59,7 @@ impl C {
     }
     #[inline]
     pub fn new_bitfield_1(a: bool, b: bool) -> u8 {
-        let bitfield_unit_val =
-            {
-                let bitfield_unit_val = { 0 };
-                let a = a as u8 as u8;
-                let mask = 1usize as u8;
-                let a = (a << 0usize) & mask;
-                bitfield_unit_val | a
-            };
-        let b = b as u8 as u8;
-        let mask = 254usize as u8;
-        let b = (b << 1usize) & mask;
-        bitfield_unit_val | b
+        ({ ({ 0 } | ((a as u8 as u8) << 0usize) & (1usize as u8)) } |
+             ((b as u8 as u8) << 1usize) & (254usize as u8))
     }
 }
