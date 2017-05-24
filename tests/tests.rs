@@ -116,7 +116,7 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
                    "--raw-line",
                    "",
                    "--raw-line",
-                   "#![allow(non_snake_case)]",
+                   "#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]",
                    "--raw-line",
                    ""];
 
