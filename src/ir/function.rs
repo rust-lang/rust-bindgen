@@ -110,6 +110,17 @@ fn get_abi(cc: CXCallingConv) -> Option<abi::Abi> {
     }
 }
 
+// Mac os needs __ for mangled symbols but rust will automatically prepend the extra _.
+// We need to make sure that we don't include __ because rust will turn into ___.
+//
+// TODO(emilio): This is wrong when the target system is not the host
+// system. See https://github.com/servo/rust-bindgen/issues/593
+fn macos_mangling(symbol: &mut String) {
+    if cfg!(target_os = "macos") && symbol.starts_with("_") {
+        symbol.remove(0);
+    }
+}
+
 /// Get the mangled name for the cursor's referent.
 pub fn cursor_mangling(ctx: &BindgenContext,
                        cursor: &clang::Cursor)
@@ -127,7 +138,8 @@ pub fn cursor_mangling(ctx: &BindgenContext,
     }
 
     if let Ok(mut manglings) = cursor.cxx_manglings() {
-        if let Some(m) = manglings.pop() {
+        if let Some(mut m) = manglings.pop() {
+            macos_mangling(&mut m);
             return Some(m);
         }
     }
@@ -137,13 +149,7 @@ pub fn cursor_mangling(ctx: &BindgenContext,
         return None;
     }
 
-    // Try to undo backend linkage munging (prepended _, generally)
-    //
-    // TODO(emilio): This is wrong when the target system is not the host
-    // system. See https://github.com/servo/rust-bindgen/issues/593
-    if cfg!(target_os = "macos") {
-        mangling.remove(0);
-    }
+    macos_mangling(&mut mangling);
 
     if cursor.kind() == clang_sys::CXCursor_Destructor {
         // With old (3.8-) libclang versions, and the Itanium ABI, clang returns
