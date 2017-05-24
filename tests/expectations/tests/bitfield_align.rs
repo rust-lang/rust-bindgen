@@ -222,122 +222,39 @@ impl A {
                           b8: ::std::os::raw::c_uint,
                           b9: ::std::os::raw::c_uint,
                           b10: ::std::os::raw::c_uint) -> u16 {
-        let bitfield_unit_val =
-            {
-                let bitfield_unit_val =
-                    {
-                        let bitfield_unit_val =
-                            {
-                                let bitfield_unit_val =
-                                    {
-                                        let bitfield_unit_val =
-                                            {
-                                                let bitfield_unit_val =
-                                                    {
-                                                        let bitfield_unit_val =
-                                                            {
-                                                                let bitfield_unit_val =
-                                                                    {
-                                                                        let bitfield_unit_val =
-                                                                            {
-                                                                                let bitfield_unit_val =
-                                                                                    {
-                                                                                        0
-                                                                                    };
-                                                                                let b1 =
-                                                                                    b1
-                                                                                        as
-                                                                                        u32
-                                                                                        as
-                                                                                        u16;
-                                                                                let mask =
-                                                                                    1usize
-                                                                                        as
-                                                                                        u16;
-                                                                                let b1 =
-                                                                                    (b1
-                                                                                         <<
-                                                                                         0usize)
-                                                                                        &
-                                                                                        mask;
-                                                                                bitfield_unit_val
-                                                                                    |
-                                                                                    b1
-                                                                            };
-                                                                        let b2 =
-                                                                            b2
-                                                                                as
-                                                                                u32
-                                                                                as
-                                                                                u16;
-                                                                        let mask =
-                                                                            2usize
-                                                                                as
-                                                                                u16;
-                                                                        let b2 =
-                                                                            (b2
-                                                                                 <<
-                                                                                 1usize)
-                                                                                &
-                                                                                mask;
-                                                                        bitfield_unit_val
-                                                                            |
-                                                                            b2
-                                                                    };
-                                                                let b3 =
-                                                                    b3 as u32
-                                                                        as
-                                                                        u16;
-                                                                let mask =
-                                                                    4usize as
-                                                                        u16;
-                                                                let b3 =
-                                                                    (b3 <<
-                                                                         2usize)
-                                                                        &
-                                                                        mask;
-                                                                bitfield_unit_val
-                                                                    | b3
-                                                            };
-                                                        let b4 =
-                                                            b4 as u32 as u16;
-                                                        let mask =
-                                                            8usize as u16;
-                                                        let b4 =
-                                                            (b4 << 3usize) &
-                                                                mask;
-                                                        bitfield_unit_val | b4
-                                                    };
-                                                let b5 = b5 as u32 as u16;
-                                                let mask = 16usize as u16;
-                                                let b5 =
-                                                    (b5 << 4usize) & mask;
-                                                bitfield_unit_val | b5
-                                            };
-                                        let b6 = b6 as u32 as u16;
-                                        let mask = 32usize as u16;
-                                        let b6 = (b6 << 5usize) & mask;
-                                        bitfield_unit_val | b6
-                                    };
-                                let b7 = b7 as u32 as u16;
-                                let mask = 64usize as u16;
-                                let b7 = (b7 << 6usize) & mask;
-                                bitfield_unit_val | b7
-                            };
-                        let b8 = b8 as u32 as u16;
-                        let mask = 128usize as u16;
-                        let b8 = (b8 << 7usize) & mask;
-                        bitfield_unit_val | b8
-                    };
-                let b9 = b9 as u32 as u16;
-                let mask = 256usize as u16;
-                let b9 = (b9 << 8usize) & mask;
-                bitfield_unit_val | b9
-            };
-        let b10 = b10 as u32 as u16;
-        let mask = 512usize as u16;
-        let b10 = (b10 << 9usize) & mask;
-        bitfield_unit_val | b10
+        ({
+             ({
+                  ({
+                       ({
+                            ({
+                                 ({
+                                      ({
+                                           ({
+                                                ({
+                                                     ({ 0 } |
+                                                          ((b1 as u32 as u16)
+                                                               << 0usize) &
+                                                              (1usize as u16))
+                                                 } |
+                                                     ((b2 as u32 as u16) <<
+                                                          1usize) &
+                                                         (2usize as u16))
+                                            } |
+                                                ((b3 as u32 as u16) << 2usize)
+                                                    & (4usize as u16))
+                                       } |
+                                           ((b4 as u32 as u16) << 3usize) &
+                                               (8usize as u16))
+                                  } |
+                                      ((b5 as u32 as u16) << 4usize) &
+                                          (16usize as u16))
+                             } |
+                                 ((b6 as u32 as u16) << 5usize) &
+                                     (32usize as u16))
+                        } | ((b7 as u32 as u16) << 6usize) & (64usize as u16))
+                   } | ((b8 as u32 as u16) << 7usize) & (128usize as u16))
+              } | ((b9 as u32 as u16) << 8usize) & (256usize as u16))
+         } | ((b10 as u32 as u16) << 9usize) & (512usize as u16))
     }
 }
 #[repr(C)]
@@ -396,18 +313,10 @@ impl B {
     #[inline]
     pub fn new_bitfield_1(foo: ::std::os::raw::c_uint,
                           bar: ::std::os::raw::c_uchar) -> u32 {
-        let bitfield_unit_val =
-            {
-                let bitfield_unit_val = { 0 };
-                let foo = foo as u32 as u32;
-                let mask = 2147483647usize as u32;
-                let foo = (foo << 0usize) & mask;
-                bitfield_unit_val | foo
-            };
-        let bar = bar as u8 as u32;
-        let mask = 2147483648usize as u32;
-        let bar = (bar << 31usize) & mask;
-        bitfield_unit_val | bar
+        ({
+             ({ 0 } |
+                  ((foo as u32 as u32) << 0usize) & (2147483647usize as u32))
+         } | ((bar as u8 as u32) << 31usize) & (2147483648usize as u32))
     }
 }
 #[repr(C)]
@@ -476,18 +385,8 @@ impl C {
     #[inline]
     pub fn new_bitfield_1(b1: ::std::os::raw::c_uint,
                           b2: ::std::os::raw::c_uint) -> u8 {
-        let bitfield_unit_val =
-            {
-                let bitfield_unit_val = { 0 };
-                let b1 = b1 as u32 as u8;
-                let mask = 1usize as u8;
-                let b1 = (b1 << 0usize) & mask;
-                bitfield_unit_val | b1
-            };
-        let b2 = b2 as u32 as u8;
-        let mask = 2usize as u8;
-        let b2 = (b2 << 1usize) & mask;
-        bitfield_unit_val | b2
+        ({ ({ 0 } | ((b1 as u32 as u8) << 0usize) & (1usize as u8)) } |
+             ((b2 as u32 as u8) << 1usize) & (2usize as u8))
     }
 }
 #[repr(C)]
@@ -567,25 +466,12 @@ impl Date1 {
     pub fn new_bitfield_1(nWeekDay: ::std::os::raw::c_ushort,
                           nMonthDay: ::std::os::raw::c_ushort,
                           nMonth: ::std::os::raw::c_ushort) -> u16 {
-        let bitfield_unit_val =
-            {
-                let bitfield_unit_val =
-                    {
-                        let bitfield_unit_val = { 0 };
-                        let nWeekDay = nWeekDay as u16 as u16;
-                        let mask = 7usize as u16;
-                        let nWeekDay = (nWeekDay << 0usize) & mask;
-                        bitfield_unit_val | nWeekDay
-                    };
-                let nMonthDay = nMonthDay as u16 as u16;
-                let mask = 504usize as u16;
-                let nMonthDay = (nMonthDay << 3usize) & mask;
-                bitfield_unit_val | nMonthDay
-            };
-        let nMonth = nMonth as u16 as u16;
-        let mask = 15872usize as u16;
-        let nMonth = (nMonth << 9usize) & mask;
-        bitfield_unit_val | nMonth
+        ({
+             ({
+                  ({ 0 } |
+                       ((nWeekDay as u16 as u16) << 0usize) & (7usize as u16))
+              } | ((nMonthDay as u16 as u16) << 3usize) & (504usize as u16))
+         } | ((nMonth as u16 as u16) << 9usize) & (15872usize as u16))
     }
     #[inline]
     pub fn nYear(&self) -> ::std::os::raw::c_ushort {
@@ -607,11 +493,7 @@ impl Date1 {
     }
     #[inline]
     pub fn new_bitfield_2(nYear: ::std::os::raw::c_ushort) -> u8 {
-        let bitfield_unit_val = { 0 };
-        let nYear = nYear as u16 as u8;
-        let mask = 255usize as u8;
-        let nYear = (nYear << 0usize) & mask;
-        bitfield_unit_val | nYear
+        ({ 0 } | ((nYear as u16 as u8) << 0usize) & (255usize as u8))
     }
 }
 #[repr(C)]
@@ -696,25 +578,12 @@ impl Date2 {
     pub fn new_bitfield_1(nWeekDay: ::std::os::raw::c_ushort,
                           nMonthDay: ::std::os::raw::c_ushort,
                           nMonth: ::std::os::raw::c_ushort) -> u16 {
-        let bitfield_unit_val =
-            {
-                let bitfield_unit_val =
-                    {
-                        let bitfield_unit_val = { 0 };
-                        let nWeekDay = nWeekDay as u16 as u16;
-                        let mask = 7usize as u16;
-                        let nWeekDay = (nWeekDay << 0usize) & mask;
-                        bitfield_unit_val | nWeekDay
-                    };
-                let nMonthDay = nMonthDay as u16 as u16;
-                let mask = 504usize as u16;
-                let nMonthDay = (nMonthDay << 3usize) & mask;
-                bitfield_unit_val | nMonthDay
-            };
-        let nMonth = nMonth as u16 as u16;
-        let mask = 15872usize as u16;
-        let nMonth = (nMonth << 9usize) & mask;
-        bitfield_unit_val | nMonth
+        ({
+             ({
+                  ({ 0 } |
+                       ((nWeekDay as u16 as u16) << 0usize) & (7usize as u16))
+              } | ((nMonthDay as u16 as u16) << 3usize) & (504usize as u16))
+         } | ((nMonth as u16 as u16) << 9usize) & (15872usize as u16))
     }
     #[inline]
     pub fn nYear(&self) -> ::std::os::raw::c_ushort {
@@ -736,10 +605,6 @@ impl Date2 {
     }
     #[inline]
     pub fn new_bitfield_2(nYear: ::std::os::raw::c_ushort) -> u8 {
-        let bitfield_unit_val = { 0 };
-        let nYear = nYear as u16 as u8;
-        let mask = 255usize as u8;
-        let nYear = (nYear << 0usize) & mask;
-        bitfield_unit_val | nYear
+        ({ 0 } | ((nYear as u16 as u8) << 0usize) & (255usize as u8))
     }
 }

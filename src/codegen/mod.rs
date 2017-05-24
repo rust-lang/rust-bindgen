@@ -1106,19 +1106,16 @@ impl Bitfield {
             quote_tokens!(ctx.ext_cx(), pub fn)
         };
 
+        // Don't use variables or blocks because const function does not allow them.
         quote_item!(
             ctx.ext_cx(),
             impl XxxUnused {
                 #[inline]
                 $fn_prefix $ctor_name($params $param_name : $bitfield_ty)
                                       -> $unit_field_int_ty {
-                    let bitfield_unit_val = $body;
-                    let $param_name = $param_name
-                        as $bitfield_int_ty
-                        as $unit_field_int_ty;
-                    let mask = $mask as $unit_field_int_ty;
-                    let $param_name = ($param_name << $offset) & mask;
-                    bitfield_unit_val | $param_name
+                    ($body | 
+                        (($param_name as $bitfield_int_ty as $unit_field_int_ty) << $offset) & 
+                        ($mask as $unit_field_int_ty)) 
                 }
             }
         ).unwrap()

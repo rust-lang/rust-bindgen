@@ -168,18 +168,13 @@ impl jsval_layout__bindgen_ty_1 {
     }
     #[inline]
     pub fn new_bitfield_1(payload47: u64, tag: JSValueTag) -> u64 {
-        let bitfield_unit_val =
-            {
-                let bitfield_unit_val = { 0 };
-                let payload47 = payload47 as u64 as u64;
-                let mask = 140737488355327usize as u64;
-                let payload47 = (payload47 << 0usize) & mask;
-                bitfield_unit_val | payload47
-            };
-        let tag = tag as u32 as u64;
-        let mask = 18446603336221196288usize as u64;
-        let tag = (tag << 47usize) & mask;
-        bitfield_unit_val | tag
+        ({
+             ({ 0 } |
+                  ((payload47 as u64 as u64) << 0usize) &
+                      (140737488355327usize as u64))
+         } |
+             ((tag as u32 as u64) << 47usize) &
+                 (18446603336221196288usize as u64))
     }
 }
 #[repr(C)]

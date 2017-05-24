@@ -105,32 +105,12 @@ impl bitfield {
                           b: ::std::os::raw::c_ushort,
                           c: ::std::os::raw::c_ushort,
                           d: ::std::os::raw::c_ushort) -> u8 {
-        let bitfield_unit_val =
-            {
-                let bitfield_unit_val =
-                    {
-                        let bitfield_unit_val =
-                            {
-                                let bitfield_unit_val = { 0 };
-                                let a = a as u16 as u8;
-                                let mask = 1usize as u8;
-                                let a = (a << 0usize) & mask;
-                                bitfield_unit_val | a
-                            };
-                        let b = b as u16 as u8;
-                        let mask = 2usize as u8;
-                        let b = (b << 1usize) & mask;
-                        bitfield_unit_val | b
-                    };
-                let c = c as u16 as u8;
-                let mask = 4usize as u8;
-                let c = (c << 2usize) & mask;
-                bitfield_unit_val | c
-            };
-        let d = d as u16 as u8;
-        let mask = 192usize as u8;
-        let d = (d << 6usize) & mask;
-        bitfield_unit_val | d
+        ({
+             ({
+                  ({ ({ 0 } | ((a as u16 as u8) << 0usize) & (1usize as u8)) }
+                       | ((b as u16 as u8) << 1usize) & (2usize as u8))
+              } | ((c as u16 as u8) << 2usize) & (4usize as u8))
+         } | ((d as u16 as u8) << 6usize) & (192usize as u8))
     }
     #[inline]
     pub fn f(&self) -> ::std::os::raw::c_uint {
@@ -152,11 +132,7 @@ impl bitfield {
     }
     #[inline]
     pub fn new_bitfield_2(f: ::std::os::raw::c_uint) -> u8 {
-        let bitfield_unit_val = { 0 };
-        let f = f as u32 as u8;
-        let mask = 3usize as u8;
-        let f = (f << 0usize) & mask;
-        bitfield_unit_val | f
+        ({ 0 } | ((f as u32 as u8) << 0usize) & (3usize as u8))
     }
     #[inline]
     pub fn g(&self) -> ::std::os::raw::c_uint {
@@ -178,10 +154,6 @@ impl bitfield {
     }
     #[inline]
     pub fn new_bitfield_3(g: ::std::os::raw::c_uint) -> u32 {
-        let bitfield_unit_val = { 0 };
-        let g = g as u32 as u32;
-        let mask = 4294967295usize as u32;
-        let g = (g << 0usize) & mask;
-        bitfield_unit_val | g
+        ({ 0 } | ((g as u32 as u32) << 0usize) & (4294967295usize as u32))
     }
 }
