@@ -11,4 +11,6 @@ bindgen = { path = ".." }
 gcc = "0.3"
 
 [features]
-testing_only_llvm_stable = ["bindgen/testing_only_llvm_stable"]
+testing_only_libclang_4 = ["bindgen/testing_only_libclang_4"]
+testing_only_libclang_3_9 = ["bindgen/testing_only_libclang_3_9"]
+testing_only_libclang_3_8 = ["bindgen/testing_only_libclang_3_8"]

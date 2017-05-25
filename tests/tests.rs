@@ -26,6 +26,30 @@ fn compare_generated_header(header: &PathBuf,
     expected.push(file_name);
     expected.set_extension("rs");
 
+    // If the expectation file doesn't exist, see if we have different test
+    // expectations for different libclang versions.
+    if !expected.is_file() {
+        let file_name = expected.file_name().unwrap().to_owned();
+        expected.pop();
+
+        if cfg!(feature = "testing_only_libclang_4") {
+            expected.push("libclang-4");
+        } else if cfg!(feature = "testing_only_libclang_3_9") {
+            expected.push("libclang-3.9");
+        } else if cfg!(feature = "testing_only_libclang_3_8") {
+            expected.push("libclang-3.8");
+        }
+
+        expected.push(file_name);
+
+        if !expected.is_file() {
+            panic!("missing test expectation file and/or 'testing_only_libclang_$VERSION' \
+                    feature for header '{}'; looking for expectation file at '{}'",
+                   header.display(),
+                   expected.display());
+        }
+    }
+
     // We skip the generate() error here so we get a full diff below
     let output = match builder.generate() {
         Ok(bindings) => bindings.to_string(),
@@ -87,9 +111,6 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
                 .and_then(shlex::split)
                 .unwrap();
             flags.extend(extra_flags.into_iter());
-        } else if line.contains("bindgen-unstable") &&
-                  cfg!(feature = "testing_only_llvm_stable") {
-            return Ok(None);
         } else if line.contains("bindgen-osx-only") {
             let prepend_flags = ["--raw-line", "#![cfg(target_os=\"macos\")]"];
             flags = prepend_flags.into_iter()
@@ -116,7 +137,7 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
                    "--raw-line",
                    "",
                    "--raw-line",
-                   "#![allow(non_snake_case)]",
+                   "#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]",
                    "--raw-line",
                    ""];
 
