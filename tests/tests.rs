@@ -75,8 +75,12 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
     // Scoop up bindgen-flags from test header
     let mut flags = Vec::with_capacity(2);
 
-    for line in reader.lines().take(3) {
+    for line in reader.lines() {
         let line = try!(line);
+        if !line.starts_with("// bindgen") {
+            continue;
+        }
+
         if line.contains("bindgen-flags: ") {
             let extra_flags = line.split("bindgen-flags: ")
                 .last()
@@ -92,6 +96,9 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
                 .map(ToString::to_string)
                 .chain(flags)
                 .collect();
+        } else if line.contains("bindgen-generate-bindings-on-linux-only") &&
+          !cfg!(target_os = "linux") {
+              return Ok(None);
         }
     }
 
