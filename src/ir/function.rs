@@ -109,13 +109,16 @@ fn get_abi(cc: CXCallingConv) -> Option<abi::Abi> {
     }
 }
 
-// Mac os needs __ for mangled symbols but rust will automatically prepend the extra _.
-// We need to make sure that we don't include __ because rust will turn into ___.
+// Mac os and Win32 need __ for mangled symbols but rust will automatically
+// prepend the extra _.
 //
-// TODO(emilio): This is wrong when the target system is not the host
-// system. See https://github.com/servo/rust-bindgen/issues/593
-fn macos_mangling(symbol: &mut String) {
-    if cfg!(target_os = "macos") && symbol.starts_with("_") {
+// We need to make sure that we don't include __ because rust will turn into
+// ___.
+fn mangling_hack_if_needed(ctx: &BindgenContext, symbol: &mut String) {
+    // NB: win64 also contains the substring "win32" in the target triple, so
+    // we need to actually check for i686...
+    if ctx.target().contains("macos") ||
+       (ctx.target().contains("i686") && ctx.target().contains("windows")) {
         symbol.remove(0);
     }
 }
@@ -138,7 +141,7 @@ pub fn cursor_mangling(ctx: &BindgenContext,
 
     if let Ok(mut manglings) = cursor.cxx_manglings() {
         if let Some(mut m) = manglings.pop() {
-            macos_mangling(&mut m);
+            mangling_hack_if_needed(ctx, &mut m);
             return Some(m);
         }
     }
@@ -148,7 +151,7 @@ pub fn cursor_mangling(ctx: &BindgenContext,
         return None;
     }
 
-    macos_mangling(&mut mangling);
+    mangling_hack_if_needed(ctx, &mut mangling);
 
     if cursor.kind() == clang_sys::CXCursor_Destructor {
         // With old (3.8-) libclang versions, and the Itanium ABI, clang returns
