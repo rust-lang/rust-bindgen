@@ -20,6 +20,7 @@ exclude = [
   "bindgen-integration",
   "ci",
   "tests/**",
+  "*.orig",
 ]
 
 [badges]
