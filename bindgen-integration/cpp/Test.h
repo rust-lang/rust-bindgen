@@ -49,7 +49,7 @@ struct Second {
 };
 
 enum ItemKind {
-    ITEM_KIND_UNO,
+    ITEM_KIND_UNO = 0,
     ITEM_KIND_DOS,
     ITEM_KIND_TRES,
 };
@@ -61,6 +61,35 @@ struct Third {
 
     /// Returns true if the bitfields match the arguments, false otherwise.
     bool assert(int first, bool second, ItemKind third);
+};
+
+enum MyEnum {
+    ONE = 0,
+    TWO,
+    THREE,
+    FOUR,
+};
+
+struct Fourth {
+    MyEnum tag: 2;
+    unsigned long ptr: 48;
+
+    /// Returns true if the bitfields match the arguments, false otherwise.
+    bool assert(MyEnum tag, unsigned long ptr);
+};
+
+struct Date2 {
+    unsigned short nWeekDay  : 3;    // 0..7   (3 bits)
+    unsigned short nMonthDay : 6;    // 0..31  (6 bits)
+    unsigned short nMonth    : 5;    // 0..12  (5 bits)
+    unsigned short nYear     : 8;    // 0..100 (8 bits)
+    unsigned char byte : 8;
+
+    bool assert(unsigned short nWeekDay,
+                unsigned short nMonthDay,
+                unsigned short nMonth,
+                unsigned short nYear,
+                unsigned short byte);
 };
 
 } // namespace bitfields

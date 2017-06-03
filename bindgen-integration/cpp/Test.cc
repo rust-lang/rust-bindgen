@@ -56,4 +56,24 @@ Third::assert(int first, bool second, ItemKind third)
         kind == third;
 }
 
+bool
+Fourth::assert(MyEnum tag, unsigned long ptr)
+{
+    return this->tag == tag && this->ptr == ptr;
+}
+
+bool
+Date2::assert(unsigned short nWeekDay,
+              unsigned short nMonthDay,
+              unsigned short nMonth,
+              unsigned short nYear,
+              unsigned short byte)
+{
+  return this->nWeekDay == nWeekDay &&
+      this->nMonthDay == nMonthDay &&
+      this->nMonth == nMonth &&
+      this->nYear == nYear &&
+      this->byte == byte;
+}
+
 } // namespace bitfields
