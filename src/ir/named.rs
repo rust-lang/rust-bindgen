@@ -126,6 +126,7 @@
 //!
 //! [spa]: https://cs.au.dk/~amoeller/spa/spa.pdf
 
+use bit_set::BitSet;
 use super::context::{BindgenContext, ItemId};
 use super::item::{Item, ItemSet};
 use super::template::{TemplateInstantiation, TemplateParameters};
@@ -152,7 +153,7 @@ pub trait MonotoneFramework: Sized + fmt::Debug {
     ///
     /// This is just generic (and not `ItemId`) so that we can easily unit test
     /// without constructing real `Item`s and their `ItemId`s.
-    type Node: Copy;
+    type Node: Copy + Into<usize>;
 
     /// Any extra data that is needed during computation.
     ///
@@ -198,10 +199,24 @@ pub fn analyze<Analysis>(extra: Analysis::Extra) -> Analysis::Output
     let mut analysis = Analysis::new(extra);
     let mut worklist = analysis.initial_worklist();
 
+    // INVARIANT: node_ids_in_worklist.contains(node.id) if and only if
+    // worklist.contains(node)
+    let mut node_ids_in_worklist = BitSet::new();
+
     while let Some(node) = worklist.pop() {
+        // We just popped `node` from `worklist`, so remove `node` from
+        // `node_ids_in_worklist`
+        node_ids_in_worklist.remove(node.into());
+
         if analysis.constrain(node) {
             analysis.each_depending_on(node, |needs_work| {
-                worklist.push(needs_work);
+                let needs_work_id: usize = needs_work.into();
+
+                // Do not add the same node to worklist multiple times
+                if !node_ids_in_worklist.contains(needs_work_id) {
+                    worklist.push(needs_work);
+                    node_ids_in_worklist.insert(needs_work_id);
+                }
             });
         }
     }
@@ -704,6 +719,12 @@ mod tests {
 
     #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
     struct Node(usize);
+
+    impl Into<usize> for Node {
+        fn into(self) -> usize {
+            self.0
+        }
+    }
 
     #[derive(Clone, Debug, Default, PartialEq, Eq)]
     struct Graph(HashMap<Node, Vec<Node>>);

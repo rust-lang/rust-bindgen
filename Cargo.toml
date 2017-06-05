@@ -50,6 +50,7 @@ lazy_static = "0.2.1"
 peeking_take_while = "0.1.2"
 syntex_syntax = "0.58"
 regex = "0.2"
+bit-set = "0.4.0"
 # This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
 clap = "2"
 
