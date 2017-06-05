@@ -9,8 +9,7 @@
 pub struct bitfield {
     pub _bitfield_1: u8,
     pub e: ::std::os::raw::c_int,
-    pub _bitfield_2: u8,
-    pub _bitfield_3: u32,
+    pub _bitfield_2: [u32; 2usize],
 }
 #[test]
 fn bindgen_test_layout_bitfield() {
@@ -114,46 +113,45 @@ impl bitfield {
     }
     #[inline]
     pub fn f(&self) -> ::std::os::raw::c_uint {
-        let mask = 3usize as u8;
-        let unit_field_val: u8 =
+        let mask = 3usize as u64;
+        let unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_2) };
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_f(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 3usize as u8;
-        let val = val as u32 as u8;
-        let mut unit_field_val: u8 =
+        let mask = 3usize as u64;
+        let val = val as u32 as u64;
+        let mut unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_2) };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         self._bitfield_2 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
-    pub fn new_bitfield_2(f: ::std::os::raw::c_uint) -> u8 {
-        ({ 0 } | ((f as u32 as u8) << 0usize) & (3usize as u8))
-    }
-    #[inline]
     pub fn g(&self) -> ::std::os::raw::c_uint {
-        let mask = 4294967295usize as u32;
-        let unit_field_val: u32 =
-            unsafe { ::std::mem::transmute(self._bitfield_3) };
-        let val = (unit_field_val & mask) >> 0usize;
+        let mask = 18446744069414584320usize as u64;
+        let unit_field_val: u64 =
+            unsafe { ::std::mem::transmute(self._bitfield_2) };
+        let val = (unit_field_val & mask) >> 32usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_g(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 4294967295usize as u32;
-        let val = val as u32 as u32;
-        let mut unit_field_val: u32 =
-            unsafe { ::std::mem::transmute(self._bitfield_3) };
+        let mask = 18446744069414584320usize as u64;
+        let val = val as u32 as u64;
+        let mut unit_field_val: u64 =
+            unsafe { ::std::mem::transmute(self._bitfield_2) };
         unit_field_val &= !mask;
-        unit_field_val |= (val << 0usize) & mask;
-        self._bitfield_3 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unit_field_val |= (val << 32usize) & mask;
+        self._bitfield_2 = unsafe { ::std::mem::transmute(unit_field_val) };
     }
     #[inline]
-    pub fn new_bitfield_3(g: ::std::os::raw::c_uint) -> u32 {
-        ({ 0 } | ((g as u32 as u32) << 0usize) & (4294967295usize as u32))
+    pub fn new_bitfield_2(f: ::std::os::raw::c_uint,
+                          g: ::std::os::raw::c_uint) -> u64 {
+        ({ ({ 0 } | ((f as u32 as u64) << 0usize) & (3usize as u64)) } |
+             ((g as u32 as u64) << 32usize) &
+                 (18446744069414584320usize as u64))
     }
 }
