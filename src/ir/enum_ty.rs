@@ -125,7 +125,7 @@ impl Enum {
         Ok(Enum::new(repr, variants))
     }
 
-    // Whether the enum should be an constified enum module
+    /// Whether the enum should be an constified enum module
     pub fn is_constified_enum_module(&self, ctx: &BindgenContext, item: &Item) -> bool {
         let name = item.canonical_name(ctx);
         let enum_ty = item.expect_type();
