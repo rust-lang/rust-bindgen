@@ -33,6 +33,15 @@ pub fn builder_from_flags<I>
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("constified-enum-module")
+                .long("constified-enum-module")
+                .help("Mark any enum whose name matches <regex> as a module of \
+                       constants instead of an enumeration. This option \
+                       implies \"--constified-enum.\"")
+                .value_name("regex")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
             Arg::with_name("blacklist-type")
                 .long("blacklist-type")
                 .help("Mark <type> as hidden.")
@@ -222,12 +231,17 @@ pub fn builder_from_flags<I>
         }
     }
 
-    if let Some(bitfields) = matches.values_of("constified-enum") {
-        for regex in bitfields {
+    if let Some(constifieds) = matches.values_of("constified-enum") {
+        for regex in constifieds {
             builder = builder.constified_enum(regex);
         }
     }
 
+    if let Some(constified_mods) = matches.values_of("constified-enum-module") {
+        for regex in constified_mods {
+            builder = builder.constified_enum_module(regex);
+        }
+    }
     if let Some(hidden_types) = matches.values_of("blacklist-type") {
         for ty in hidden_types {
             builder = builder.hide_type(ty);

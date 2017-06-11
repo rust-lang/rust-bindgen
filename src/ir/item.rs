@@ -1,5 +1,6 @@
 //! Bindgen's core intermediate representation type.
 
+use super::super::codegen::CONSTIFIED_ENUM_MODULE_REPR_NAME;
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId, PartialType};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
@@ -1444,6 +1445,15 @@ impl ItemCanonicalPath for Item {
                                       ctx: &BindgenContext)
                                       -> Vec<String> {
         let path = self.canonical_path(ctx);
+        if let super::item_kind::ItemKind::Type(ref type_) = self.kind {
+            if let &TypeKind::Enum(ref enum_) = type_.kind() {
+                if enum_.is_constified_enum_module(ctx, self) {
+                    // Type alias is inside a module
+                    return vec![path.last().unwrap().clone(),
+                                CONSTIFIED_ENUM_MODULE_REPR_NAME.into()];
+                }
+            }
+        }
         if ctx.options().enable_cxx_namespaces {
             return path;
         }
