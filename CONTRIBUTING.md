@@ -19,6 +19,7 @@ out to us in a GitHub issue, or stop by
   - [Authoring New Tests](#authoring-new-tests)
   - [Test Expectations and `libclang` Versions](#test-expectations-and-libclang-versions)
 - [Automatic code formatting](#automatic-code-formatting)
+- [Pull Requests and Code Reviews](#pull-requests-and-code-reviews)
 - [Generating Graphviz Dot Files](#generating-graphviz-dot-files)
 - [Debug Logging](#debug-logging)
 - [Using `creduce` to Minimize Test Cases](#using-creduce-to-minimize-test-cases)
@@ -182,6 +183,27 @@ $ cargo fmt
 ```
 
 The code style is described in the `rustfmt.toml` file in top level of the repo.
+
+## Pull Requests and Code Reviews
+
+Ensure that each commit stands alone, and passes tests. This enables better `git
+bisect`ing when needed. If your commits do not stand on their own, then rebase
+them on top of the latest master and squash them into a single commit.
+
+All pull requests undergo code review before merging. To request review, comment
+`r? @github_username_of_reviewer`. They we will respond with `r+` to approve the
+pull request, or may leave feedback and request changes to the pull request. Any
+changes should be squashed into the original commit.
+
+Unsure who to ask for review? Ask any of:
+
+* `@emilio`
+* `@fitzgen`
+
+More resources:
+
+* [Servo's GitHub Workflow](https://github.com/servo/servo/wiki/Github-workflow)
+* [Beginner's Guide to Rebasing and Squashing](https://github.com/servo/servo/wiki/Beginner's-guide-to-rebasing-and-squashing)
 
 ## Generating Graphviz Dot Files
 
