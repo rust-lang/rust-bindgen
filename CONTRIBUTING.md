@@ -10,6 +10,7 @@ out to us in a GitHub issue, or stop by
 
 - [Code of Conduct](#code-of-conduct)
 - [Filing an Issue](#filing-an-issue)
+- [Looking to Start Contributing to `bindgen`?](#looking-to-start-contributing-to-bindgen)
 - [Building](#building)
 - [Testing](#testing)
   - [Overview](#overview)
@@ -42,6 +43,12 @@ issue, provide us with:
 * The expected `bindgen` output
 * The actual `bindgen` output
 * The [debugging logs](#logs) generated when running `bindgen` on this testcase
+
+## Looking to Start Contributing to `bindgen`?
+
+* [Issues labeled "easy"](https://github.com/servo/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-easy)
+* [Issues labeled "less easy"](https://github.com/servo/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-less-easy)
+* Still can't find something to work on? [Drop a comment here](https://github.com/servo/rust-bindgen/issues/747)
 
 ## Building
 
