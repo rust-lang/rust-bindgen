@@ -37,7 +37,7 @@ We abide by the [Rust Code of Conduct][coc] and ask that you do as well.
 Think you've found a bug? File an issue! To help us understand and reproduce the
 issue, provide us with:
 
-* A (preferrably reduced) C/C++ header file that reproduces the issue
+* A (preferably reduced) C/C++ header file that reproduces the issue
 * The `bindgen` flags used to reproduce the issue with the header file
 * The expected `bindgen` output
 * The actual `bindgen` output
