@@ -1444,18 +1444,27 @@ impl ItemCanonicalPath for Item {
     fn namespace_aware_canonical_path(&self,
                                       ctx: &BindgenContext)
                                       -> Vec<String> {
-        let path = self.canonical_path(ctx);
-        if let super::item_kind::ItemKind::Type(ref type_) = self.kind {
-            if let &TypeKind::Enum(ref enum_) = type_.kind() {
-                if enum_.is_constified_enum_module(ctx, self) {
-                    // Type alias is inside a module
-                    return vec![path.last().unwrap().clone(),
-                                CONSTIFIED_ENUM_MODULE_REPR_NAME.into()];
+        let mut path = self.canonical_path(ctx);
+        let mut is_constified_module_enum = false;
+        if let ItemKind::Type(ref type_) = self.kind {
+            if let Some(ref type_) = type_.safe_canonical_type(ctx) {
+                if let TypeKind::Enum(ref enum_) = *type_.kind() {
+                    if enum_.is_constified_enum_module(ctx, self) {
+                        // Type alias is inside a module
+                        is_constified_module_enum = true;
+                    }
                 }
             }
         }
         if ctx.options().enable_cxx_namespaces {
+            if is_constified_module_enum {
+                path.push(CONSTIFIED_ENUM_MODULE_REPR_NAME.into());
+            }
             return path;
+        }
+        if is_constified_module_enum {
+            return vec![path.last().unwrap().clone(),
+                        CONSTIFIED_ENUM_MODULE_REPR_NAME.into()];
         }
         if ctx.options().disable_name_namespacing {
             return vec![path.last().unwrap().clone()];
