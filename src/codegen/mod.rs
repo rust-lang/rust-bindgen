@@ -2264,7 +2264,8 @@ impl CodeGenerator for Enum {
             builder = builder.with_attr(derives);
         }
 
-        fn add_constant<'a>(enum_: &Type,
+        fn add_constant<'a>(ctx: &BindgenContext,
+                            enum_: &Type,
                             // Only to avoid recomputing every time.
                             enum_canonical_name: &str,
                             // May be the same as "variant" if it's because the
@@ -2275,7 +2276,11 @@ impl CodeGenerator for Enum {
                             enum_rust_ty: P<ast::Ty>,
                             result: &mut CodegenResult<'a>) {
             let constant_name = if enum_.name().is_some() {
-                format!("{}_{}", enum_canonical_name, variant_name)
+                if ctx.options().prepend_enum_name {
+                    format!("{}_{}", enum_canonical_name, variant_name)
+                } else {
+                    variant_name.into()
+                }
             } else {
                 variant_name.into()
             };
@@ -2358,7 +2363,8 @@ impl CodeGenerator for Enum {
                         };
 
                         let existing_variant_name = entry.get();
-                        add_constant(enum_ty,
+                        add_constant(ctx,
+                                     enum_ty,
                                      &name,
                                      &*mangled_name,
                                      existing_variant_name,
@@ -2397,7 +2403,8 @@ impl CodeGenerator for Enum {
                                                variant_name))
                         };
 
-                        add_constant(enum_ty,
+                        add_constant(ctx,
+                                     enum_ty,
                                      &name,
                                      &mangled_name,
                                      &variant_name,
