@@ -28,3 +28,11 @@ typedef struct bar {
 
 foo *func1(foo arg1, foo *arg2, foo **arg3);
 foo_alias1 *func2(foo_alias1 arg1, foo_alias1 *arg2, foo_alias1 **arg3);
+
+template <class T>
+class Thing {
+  T thing;
+  T& get_thing();
+};
+
+foo func3(Thing<foo> arg1);

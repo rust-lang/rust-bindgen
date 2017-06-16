@@ -62,3 +62,16 @@ extern "C" {
     pub fn func2(arg1: foo_alias1, arg2: *mut foo_alias1,
                  arg3: *mut *mut foo_alias1) -> *mut foo_alias1;
 }
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct Thing<T> {
+    pub thing: T,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+}
+impl <T> Default for Thing<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+extern "C" {
+    #[link_name = "_Z5func35ThingI3fooE"]
+    pub fn func3(arg1: Thing<foo::Type>) -> foo::Type;
+}
