@@ -12,6 +12,9 @@ pub mod foo {
     pub const ALSO_THIS: Type = 42;
     pub const AND_ALSO_THIS: Type = 42;
 }
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum ns1_foo2 { THIS = 0, SHOULD_BE = 1, A_CONSTANT = 2, ALSO_THIS = 42, }
 pub use self::foo::Type as foo_alias1;
 pub use self::foo_alias1 as foo_alias2;
 #[repr(C)]
@@ -48,4 +51,14 @@ impl Clone for bar {
 }
 impl Default for bar {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+extern "C" {
+    #[link_name = "_Z5func13fooPS_PS0_"]
+    pub fn func1(arg1: foo::Type, arg2: *mut foo::Type,
+                 arg3: *mut *mut foo::Type) -> *mut foo::Type;
+}
+extern "C" {
+    #[link_name = "_Z5func23fooPS_PS0_"]
+    pub fn func2(arg1: foo_alias1, arg2: *mut foo_alias1,
+                 arg3: *mut *mut foo_alias1) -> *mut foo_alias1;
 }

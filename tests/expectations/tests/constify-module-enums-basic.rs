@@ -10,6 +10,8 @@ pub mod foo {
     pub const SHOULD_BE: Type = 1;
     pub const A_CONSTANT: Type = 2;
 }
+pub use self::foo::Type as foo_alias1;
+pub use self::foo_alias1 as foo_alias2;
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct bar {
@@ -32,4 +34,12 @@ impl Clone for bar {
 }
 impl Default for bar {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+extern "C" {
+    pub fn func1(arg1: foo::Type, arg2: *mut foo::Type,
+                 arg3: *mut *mut foo::Type) -> *mut foo::Type;
+}
+extern "C" {
+    pub fn func2(arg1: foo_alias1, arg2: *mut foo_alias1,
+                 arg3: *mut *mut foo_alias1) -> *mut foo_alias1;
 }
