@@ -1113,9 +1113,9 @@ impl Bitfield {
                 #[inline]
                 $fn_prefix $ctor_name($params $param_name : $bitfield_ty)
                                       -> $unit_field_int_ty {
-                    ($body | 
-                        (($param_name as $bitfield_int_ty as $unit_field_int_ty) << $offset) & 
-                        ($mask as $unit_field_int_ty)) 
+                    ($body |
+                        (($param_name as $bitfield_int_ty as $unit_field_int_ty) << $offset) &
+                        ($mask as $unit_field_int_ty))
                 }
             }
         ).unwrap()
