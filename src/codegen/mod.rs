@@ -1147,12 +1147,18 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
             .build_ty(field_ty.clone());
         fields.extend(Some(field));
 
-        let unit_field_int_ty = match self.layout().size {
+        let mut field_int_size = self.layout().size;
+        if !field_int_size.is_power_of_two() {
+            field_int_size = field_int_size.next_power_of_two();
+        }
+
+        let unit_field_int_ty = match field_int_size {
             8 => quote_ty!(ctx.ext_cx(), u64),
             4 => quote_ty!(ctx.ext_cx(), u32),
             2 => quote_ty!(ctx.ext_cx(), u16),
             1 => quote_ty!(ctx.ext_cx(), u8),
-            _ => {
+            size => {
+                debug_assert!(size > 8);
                 // Can't generate bitfield accessors for unit sizes larget than
                 // 64 bits at the moment.
                 struct_layout.saw_bitfield_unit(self.layout());

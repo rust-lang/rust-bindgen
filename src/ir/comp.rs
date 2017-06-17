@@ -488,8 +488,9 @@ fn bitfields_to_allocation_units<E, I>(ctx: &BindgenContext,
         where E: Extend<Field>
     {
         *bitfield_unit_count += 1;
-        let layout = Layout::new(bytes_from_bits_pow2(unit_size_in_bits),
-                                 bytes_from_bits_pow2(unit_align_in_bits));
+        let align = bytes_from_bits_pow2(unit_align_in_bits);
+        let size = align_to(unit_size_in_bits, align * 8) / 8;
+        let layout = Layout::new(size, align);
         fields.extend(Some(Field::Bitfields(BitfieldUnit {
             nth: *bitfield_unit_count,
             layout: layout,

@@ -392,7 +392,8 @@ impl C {
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct Date1 {
-    pub _bitfield_1: [u8; 4usize],
+    pub _bitfield_1: [u8; 3usize],
+    pub __bindgen_padding_0: u8,
     pub __bindgen_align: [u16; 0usize],
 }
 #[test]
@@ -624,5 +625,118 @@ impl Date2 {
                            (15872usize as u32))
               } | ((nYear as u16 as u32) << 16usize) & (16711680usize as u32))
          } | ((byte as u8 as u32) << 24usize) & (4278190080usize as u32))
+    }
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy)]
+pub struct Date3 {
+    pub _bitfield_1: [u8; 3usize],
+    pub byte: ::std::os::raw::c_uchar,
+    pub __bindgen_align: [u16; 0usize],
+}
+#[test]
+fn bindgen_test_layout_Date3() {
+    assert_eq!(::std::mem::size_of::<Date3>() , 4usize , concat ! (
+               "Size of: " , stringify ! ( Date3 ) ));
+    assert_eq! (::std::mem::align_of::<Date3>() , 2usize , concat ! (
+                "Alignment of " , stringify ! ( Date3 ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Date3 ) ) . byte as * const _ as usize }
+                , 3usize , concat ! (
+                "Alignment of field: " , stringify ! ( Date3 ) , "::" ,
+                stringify ! ( byte ) ));
+}
+impl Clone for Date3 {
+    fn clone(&self) -> Self { *self }
+}
+impl Date3 {
+    #[inline]
+    pub fn nWeekDay(&self) -> ::std::os::raw::c_ushort {
+        let mask = 7usize as u32;
+        let unit_field_val: u32 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        let val = (unit_field_val & mask) >> 0usize;
+        unsafe { ::std::mem::transmute(val as u16) }
+    }
+    #[inline]
+    pub fn set_nWeekDay(&mut self, val: ::std::os::raw::c_ushort) {
+        let mask = 7usize as u32;
+        let val = val as u16 as u32;
+        let mut unit_field_val: u32 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 0usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+    }
+    #[inline]
+    pub fn nMonthDay(&self) -> ::std::os::raw::c_ushort {
+        let mask = 504usize as u32;
+        let unit_field_val: u32 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        let val = (unit_field_val & mask) >> 3usize;
+        unsafe { ::std::mem::transmute(val as u16) }
+    }
+    #[inline]
+    pub fn set_nMonthDay(&mut self, val: ::std::os::raw::c_ushort) {
+        let mask = 504usize as u32;
+        let val = val as u16 as u32;
+        let mut unit_field_val: u32 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 3usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+    }
+    #[inline]
+    pub fn nMonth(&self) -> ::std::os::raw::c_ushort {
+        let mask = 15872usize as u32;
+        let unit_field_val: u32 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        let val = (unit_field_val & mask) >> 9usize;
+        unsafe { ::std::mem::transmute(val as u16) }
+    }
+    #[inline]
+    pub fn set_nMonth(&mut self, val: ::std::os::raw::c_ushort) {
+        let mask = 15872usize as u32;
+        let val = val as u16 as u32;
+        let mut unit_field_val: u32 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 9usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+    }
+    #[inline]
+    pub fn nYear(&self) -> ::std::os::raw::c_ushort {
+        let mask = 16711680usize as u32;
+        let unit_field_val: u32 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        let val = (unit_field_val & mask) >> 16usize;
+        unsafe { ::std::mem::transmute(val as u16) }
+    }
+    #[inline]
+    pub fn set_nYear(&mut self, val: ::std::os::raw::c_ushort) {
+        let mask = 16711680usize as u32;
+        let val = val as u16 as u32;
+        let mut unit_field_val: u32 =
+            unsafe { ::std::mem::transmute(self._bitfield_1) };
+        unit_field_val &= !mask;
+        unit_field_val |= (val << 16usize) & mask;
+        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+    }
+    #[inline]
+    pub fn new_bitfield_1(nWeekDay: ::std::os::raw::c_ushort,
+                          nMonthDay: ::std::os::raw::c_ushort,
+                          nMonth: ::std::os::raw::c_ushort,
+                          nYear: ::std::os::raw::c_ushort) -> u32 {
+        ({
+             ({
+                  ({
+                       ({ 0 } |
+                            ((nWeekDay as u16 as u32) << 0usize) &
+                                (7usize as u32))
+                   } |
+                       ((nMonthDay as u16 as u32) << 3usize) &
+                           (504usize as u32))
+              } | ((nMonth as u16 as u32) << 9usize) & (15872usize as u32))
+         } | ((nYear as u16 as u32) << 16usize) & (16711680usize as u32))
     }
 }
