@@ -826,6 +826,19 @@ impl Item {
             _ => None,
         }
     }
+
+    /// Returns whether the item is a constified module enum
+    fn is_constified_enum_module(&self, ctx: &BindgenContext) -> bool {
+        if let ItemKind::Type(ref type_) = self.kind {
+            if let Some(ref type_) = type_.safe_canonical_type(ctx) {
+                if let TypeKind::Enum(ref enum_) = *type_.kind() {
+                    return enum_.is_constified_enum_module(ctx, self);
+                }
+            }
+        }
+
+        return false;
+    }
 }
 
 /// A set of items.
@@ -1445,17 +1458,7 @@ impl ItemCanonicalPath for Item {
                                       ctx: &BindgenContext)
                                       -> Vec<String> {
         let mut path = self.canonical_path(ctx);
-        let mut is_constified_module_enum = false;
-        if let ItemKind::Type(ref type_) = self.kind {
-            if let Some(ref type_) = type_.safe_canonical_type(ctx) {
-                if let TypeKind::Enum(ref enum_) = *type_.kind() {
-                    if enum_.is_constified_enum_module(ctx, self) {
-                        // Type alias is inside a module
-                        is_constified_module_enum = true;
-                    }
-                }
-            }
-        }
+        let is_constified_module_enum = self.is_constified_enum_module(ctx);
         if ctx.options().enable_cxx_namespaces {
             if is_constified_module_enum {
                 path.push(CONSTIFIED_ENUM_MODULE_REPR_NAME.into());

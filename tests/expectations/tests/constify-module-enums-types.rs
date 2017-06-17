@@ -15,6 +15,7 @@ pub mod foo {
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum ns1_foo2 { THIS = 0, SHOULD_BE = 1, A_CONSTANT = 2, ALSO_THIS = 42, }
+pub use self::ns1_foo2 as ns1_foo;
 pub use self::foo::Type as foo_alias1;
 pub use self::foo_alias1 as foo_alias2;
 #[repr(C)]
@@ -23,10 +24,11 @@ pub struct bar {
     pub member1: foo::Type,
     pub member2: foo_alias1,
     pub member3: foo_alias2,
+    pub member4: ns1_foo,
 }
 #[test]
 fn bindgen_test_layout_bar() {
-    assert_eq!(::std::mem::size_of::<bar>() , 12usize , concat ! (
+    assert_eq!(::std::mem::size_of::<bar>() , 16usize , concat ! (
                "Size of: " , stringify ! ( bar ) ));
     assert_eq! (::std::mem::align_of::<bar>() , 4usize , concat ! (
                 "Alignment of " , stringify ! ( bar ) ));
@@ -45,6 +47,11 @@ fn bindgen_test_layout_bar() {
                 , 8usize , concat ! (
                 "Alignment of field: " , stringify ! ( bar ) , "::" ,
                 stringify ! ( member3 ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const bar ) ) . member4 as * const _ as usize }
+                , 12usize , concat ! (
+                "Alignment of field: " , stringify ! ( bar ) , "::" ,
+                stringify ! ( member4 ) ));
 }
 impl Clone for bar {
     fn clone(&self) -> Self { *self }
