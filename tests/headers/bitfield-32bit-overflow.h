@@ -1,0 +1,36 @@
+
+struct MuchBitfield {
+  char m0 : 1;
+  char m1 : 1;
+  char m2 : 1;
+  char m3 : 1;
+  char m4 : 1;
+  char m5 : 1;
+  char m6 : 1;
+  char m7 : 1;
+  char m8 : 1;
+  char m9 : 1;
+  char m10 : 1;
+  char m11 : 1;
+  char m12 : 1;
+  char m13 : 1;
+  char m14 : 1;
+  char m15 : 1;
+  char m16 : 1;
+  char m17 : 1;
+  char m18 : 1;
+  char m19 : 1;
+  char m20 : 1;
+  char m21 : 1;
+  char m22 : 1;
+  char m23 : 1;
+  char m24 : 1;
+  char m25 : 1;
+  char m26 : 1;
+  char m27 : 1;
+  char m28 : 1;
+  char m29 : 1;
+  char m30 : 1;
+  char m31 : 1;
+  char m32 : 1;
+};

@@ -29,7 +29,7 @@ impl Default for TaggedPtr {
 impl TaggedPtr {
     #[inline]
     pub fn tag(&self) -> MyEnum {
-        let mask = 3usize as u64;
+        let mask = 3u64 as u64;
         let unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
         let val = (unit_field_val & mask) >> 0usize;
@@ -37,7 +37,7 @@ impl TaggedPtr {
     }
     #[inline]
     pub fn set_tag(&mut self, val: MyEnum) {
-        let mask = 3usize as u64;
+        let mask = 3u64 as u64;
         let val = val as u32 as u64;
         let mut unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
@@ -47,7 +47,7 @@ impl TaggedPtr {
     }
     #[inline]
     pub fn ptr(&self) -> ::std::os::raw::c_long {
-        let mask = 18446744073709551612usize as u64;
+        let mask = 18446744073709551612u64 as u64;
         let unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
         let val = (unit_field_val & mask) >> 2usize;
@@ -55,7 +55,7 @@ impl TaggedPtr {
     }
     #[inline]
     pub fn set_ptr(&mut self, val: ::std::os::raw::c_long) {
-        let mask = 18446744073709551612usize as u64;
+        let mask = 18446744073709551612u64 as u64;
         let val = val as u64 as u64;
         let mut unit_field_val: u64 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
@@ -65,8 +65,8 @@ impl TaggedPtr {
     }
     #[inline]
     pub fn new_bitfield_1(tag: MyEnum, ptr: ::std::os::raw::c_long) -> u64 {
-        ({ ({ 0 } | ((tag as u32 as u64) << 0usize) & (3usize as u64)) } |
+        ({ ({ 0 } | ((tag as u32 as u64) << 0usize) & (3u64 as u64)) } |
              ((ptr as u64 as u64) << 2usize) &
-                 (18446744073709551612usize as u64))
+                 (18446744073709551612u64 as u64))
     }
 }

@@ -26,7 +26,7 @@ impl Clone for mach_msg_type_descriptor_t {
 impl mach_msg_type_descriptor_t {
     #[inline]
     pub fn pad3(&self) -> ::std::os::raw::c_uint {
-        let mask = 16777215usize as u32;
+        let mask = 16777215u64 as u32;
         let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
         let val = (unit_field_val & mask) >> 0usize;
@@ -34,7 +34,7 @@ impl mach_msg_type_descriptor_t {
     }
     #[inline]
     pub fn set_pad3(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 16777215usize as u32;
+        let mask = 16777215u64 as u32;
         let val = val as u32 as u32;
         let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
@@ -44,7 +44,7 @@ impl mach_msg_type_descriptor_t {
     }
     #[inline]
     pub fn type_(&self) -> ::std::os::raw::c_uint {
-        let mask = 4278190080usize as u32;
+        let mask = 4278190080u64 as u32;
         let unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
         let val = (unit_field_val & mask) >> 24usize;
@@ -52,7 +52,7 @@ impl mach_msg_type_descriptor_t {
     }
     #[inline]
     pub fn set_type(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 4278190080usize as u32;
+        let mask = 4278190080u64 as u32;
         let val = val as u32 as u32;
         let mut unit_field_val: u32 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
@@ -63,9 +63,7 @@ impl mach_msg_type_descriptor_t {
     #[inline]
     pub fn new_bitfield_1(pad3: ::std::os::raw::c_uint,
                           type_: ::std::os::raw::c_uint) -> u32 {
-        ({
-             ({ 0 } |
-                  ((pad3 as u32 as u32) << 0usize) & (16777215usize as u32))
-         } | ((type_ as u32 as u32) << 24usize) & (4278190080usize as u32))
+        ({ ({ 0 } | ((pad3 as u32 as u32) << 0usize) & (16777215u64 as u32)) }
+             | ((type_ as u32 as u32) << 24usize) & (4278190080u64 as u32))
     }
 }
