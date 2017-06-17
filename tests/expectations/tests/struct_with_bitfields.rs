@@ -31,7 +31,10 @@ impl bitfield {
     pub fn a(&self) -> ::std::os::raw::c_ushort {
         let mask = 1u64 as u8;
         let unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
@@ -40,16 +43,25 @@ impl bitfield {
         let mask = 1u64 as u8;
         let val = val as u16 as u8;
         let mut unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u8, unit_field_val);
+        }
     }
     #[inline]
     pub fn b(&self) -> ::std::os::raw::c_ushort {
         let mask = 2u64 as u8;
         let unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         let val = (unit_field_val & mask) >> 1usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
@@ -58,16 +70,25 @@ impl bitfield {
         let mask = 2u64 as u8;
         let val = val as u16 as u8;
         let mut unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 1usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u8, unit_field_val);
+        }
     }
     #[inline]
     pub fn c(&self) -> ::std::os::raw::c_ushort {
         let mask = 4u64 as u8;
         let unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         let val = (unit_field_val & mask) >> 2usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
@@ -76,16 +97,25 @@ impl bitfield {
         let mask = 4u64 as u8;
         let val = val as u16 as u8;
         let mut unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 2usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u8, unit_field_val);
+        }
     }
     #[inline]
     pub fn d(&self) -> ::std::os::raw::c_ushort {
         let mask = 192u64 as u8;
         let unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         let val = (unit_field_val & mask) >> 6usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
@@ -94,10 +124,16 @@ impl bitfield {
         let mask = 192u64 as u8;
         let val = val as u16 as u8;
         let mut unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 6usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u8, unit_field_val);
+        }
     }
     #[inline]
     pub fn new_bitfield_1(a: ::std::os::raw::c_ushort,
@@ -115,7 +151,10 @@ impl bitfield {
     pub fn f(&self) -> ::std::os::raw::c_uint {
         let mask = 3u64 as u64;
         let unit_field_val: u64 =
-            unsafe { ::std::mem::transmute(self._bitfield_2) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_2 as *const _ as
+                                               *const u64)
+            };
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
@@ -124,16 +163,25 @@ impl bitfield {
         let mask = 3u64 as u64;
         let val = val as u32 as u64;
         let mut unit_field_val: u64 =
-            unsafe { ::std::mem::transmute(self._bitfield_2) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_2 as *const _ as
+                                               *const u64)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
-        self._bitfield_2 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_2 as *mut _ as
+                                            *mut u64, unit_field_val);
+        }
     }
     #[inline]
     pub fn g(&self) -> ::std::os::raw::c_uint {
         let mask = 18446744069414584320u64 as u64;
         let unit_field_val: u64 =
-            unsafe { ::std::mem::transmute(self._bitfield_2) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_2 as *const _ as
+                                               *const u64)
+            };
         let val = (unit_field_val & mask) >> 32usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
@@ -142,10 +190,16 @@ impl bitfield {
         let mask = 18446744069414584320u64 as u64;
         let val = val as u32 as u64;
         let mut unit_field_val: u64 =
-            unsafe { ::std::mem::transmute(self._bitfield_2) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_2 as *const _ as
+                                               *const u64)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 32usize) & mask;
-        self._bitfield_2 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_2 as *mut _ as
+                                            *mut u64, unit_field_val);
+        }
     }
     #[inline]
     pub fn new_bitfield_2(f: ::std::os::raw::c_uint,

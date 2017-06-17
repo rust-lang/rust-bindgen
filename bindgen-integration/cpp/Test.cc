@@ -76,4 +76,29 @@ Date2::assert(unsigned short nWeekDay,
       this->byte == byte;
 }
 
+bool
+Fifth::assert(unsigned short nWeekDay,
+              unsigned short nMonthDay,
+              unsigned short nMonth,
+              unsigned short nYear,
+              unsigned char byte)
+{
+  return this->nWeekDay == nWeekDay &&
+      this->nMonthDay == nMonthDay &&
+      this->nMonth == nMonth &&
+      this->nYear == nYear &&
+      this->byte == byte;
+}
+
+bool
+Sixth::assert(unsigned char byte,
+              unsigned char nWeekDay,
+              unsigned char nMonth,
+              unsigned char nMonthDay) {
+  return this->nWeekDay == nWeekDay &&
+      this->nMonthDay == nMonthDay &&
+      this->nMonth == nMonth &&
+      this->byte == byte;
+};
+
 } // namespace bitfields

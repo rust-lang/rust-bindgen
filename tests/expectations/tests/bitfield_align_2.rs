@@ -31,7 +31,10 @@ impl TaggedPtr {
     pub fn tag(&self) -> MyEnum {
         let mask = 3u64 as u64;
         let unit_field_val: u64 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u64)
+            };
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
@@ -40,16 +43,25 @@ impl TaggedPtr {
         let mask = 3u64 as u64;
         let val = val as u32 as u64;
         let mut unit_field_val: u64 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u64)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u64, unit_field_val);
+        }
     }
     #[inline]
     pub fn ptr(&self) -> ::std::os::raw::c_long {
         let mask = 18446744073709551612u64 as u64;
         let unit_field_val: u64 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u64)
+            };
         let val = (unit_field_val & mask) >> 2usize;
         unsafe { ::std::mem::transmute(val as u64) }
     }
@@ -58,10 +70,16 @@ impl TaggedPtr {
         let mask = 18446744073709551612u64 as u64;
         let val = val as u64 as u64;
         let mut unit_field_val: u64 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u64)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 2usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u64, unit_field_val);
+        }
     }
     #[inline]
     pub fn new_bitfield_1(tag: MyEnum, ptr: ::std::os::raw::c_long) -> u64 {

@@ -123,7 +123,10 @@ impl rte_eth_rxmode {
     pub fn header_split(&self) -> u16 {
         let mask = 1u64 as u16;
         let unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
@@ -132,16 +135,25 @@ impl rte_eth_rxmode {
         let mask = 1u64 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u16, unit_field_val);
+        }
     }
     #[inline]
     pub fn hw_ip_checksum(&self) -> u16 {
         let mask = 2u64 as u16;
         let unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         let val = (unit_field_val & mask) >> 1usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
@@ -150,16 +162,25 @@ impl rte_eth_rxmode {
         let mask = 2u64 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 1usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u16, unit_field_val);
+        }
     }
     #[inline]
     pub fn hw_vlan_filter(&self) -> u16 {
         let mask = 4u64 as u16;
         let unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         let val = (unit_field_val & mask) >> 2usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
@@ -168,16 +189,25 @@ impl rte_eth_rxmode {
         let mask = 4u64 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 2usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u16, unit_field_val);
+        }
     }
     #[inline]
     pub fn hw_vlan_strip(&self) -> u16 {
         let mask = 8u64 as u16;
         let unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         let val = (unit_field_val & mask) >> 3usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
@@ -186,16 +216,25 @@ impl rte_eth_rxmode {
         let mask = 8u64 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 3usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u16, unit_field_val);
+        }
     }
     #[inline]
     pub fn hw_vlan_extend(&self) -> u16 {
         let mask = 16u64 as u16;
         let unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         let val = (unit_field_val & mask) >> 4usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
@@ -204,16 +243,25 @@ impl rte_eth_rxmode {
         let mask = 16u64 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 4usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u16, unit_field_val);
+        }
     }
     #[inline]
     pub fn jumbo_frame(&self) -> u16 {
         let mask = 32u64 as u16;
         let unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         let val = (unit_field_val & mask) >> 5usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
@@ -222,16 +270,25 @@ impl rte_eth_rxmode {
         let mask = 32u64 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 5usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u16, unit_field_val);
+        }
     }
     #[inline]
     pub fn hw_strip_crc(&self) -> u16 {
         let mask = 64u64 as u16;
         let unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         let val = (unit_field_val & mask) >> 6usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
@@ -240,16 +297,25 @@ impl rte_eth_rxmode {
         let mask = 64u64 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 6usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u16, unit_field_val);
+        }
     }
     #[inline]
     pub fn enable_scatter(&self) -> u16 {
         let mask = 128u64 as u16;
         let unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         let val = (unit_field_val & mask) >> 7usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
@@ -258,16 +324,25 @@ impl rte_eth_rxmode {
         let mask = 128u64 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 7usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u16, unit_field_val);
+        }
     }
     #[inline]
     pub fn enable_lro(&self) -> u16 {
         let mask = 256u64 as u16;
         let unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         let val = (unit_field_val & mask) >> 8usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
@@ -276,10 +351,16 @@ impl rte_eth_rxmode {
         let mask = 256u64 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u16)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 8usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u16, unit_field_val);
+        }
     }
     #[inline]
     pub fn new_bitfield_1(header_split: u16, hw_ip_checksum: u16,
@@ -376,7 +457,10 @@ impl rte_eth_txmode {
     pub fn hw_vlan_reject_tagged(&self) -> u8 {
         let mask = 1u64 as u8;
         let unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
@@ -385,16 +469,25 @@ impl rte_eth_txmode {
         let mask = 1u64 as u8;
         let val = val as u8 as u8;
         let mut unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u8, unit_field_val);
+        }
     }
     #[inline]
     pub fn hw_vlan_reject_untagged(&self) -> u8 {
         let mask = 2u64 as u8;
         let unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         let val = (unit_field_val & mask) >> 1usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
@@ -403,16 +496,25 @@ impl rte_eth_txmode {
         let mask = 2u64 as u8;
         let val = val as u8 as u8;
         let mut unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 1usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u8, unit_field_val);
+        }
     }
     #[inline]
     pub fn hw_vlan_insert_pvid(&self) -> u8 {
         let mask = 4u64 as u8;
         let unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         let val = (unit_field_val & mask) >> 2usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
@@ -421,10 +523,16 @@ impl rte_eth_txmode {
         let mask = 4u64 as u8;
         let val = val as u8 as u8;
         let mut unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 2usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u8, unit_field_val);
+        }
     }
     #[inline]
     pub fn new_bitfield_1(hw_vlan_reject_tagged: u8,

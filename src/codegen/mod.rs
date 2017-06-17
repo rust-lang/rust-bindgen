@@ -1288,7 +1288,9 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                 pub fn $getter_name(&self) -> $bitfield_ty {
                     let mask = $mask as $unit_field_int_ty;
                     let unit_field_val: $unit_field_int_ty = unsafe {
-                        ::$prefix::mem::transmute(self.$unit_field_ident)
+                        ::$prefix::ptr::read_unaligned(
+                            &self.$unit_field_ident as *const _ as *const $unit_field_int_ty
+                        )
                     };
                     let val = (unit_field_val & mask) >> $offset;
                     unsafe {
@@ -1302,14 +1304,19 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                     let val = val as $bitfield_int_ty as $unit_field_int_ty;
 
                     let mut unit_field_val: $unit_field_int_ty = unsafe {
-                        ::$prefix::mem::transmute(self.$unit_field_ident)
+                        ::$prefix::ptr::read_unaligned(
+                            &self.$unit_field_ident as *const _ as *const $unit_field_int_ty)
                     };
+
                     unit_field_val &= !mask;
                     unit_field_val |= (val << $offset) & mask;
 
-                    self.$unit_field_ident = unsafe {
-                        ::$prefix::mem::transmute(unit_field_val)
-                    };
+                    unsafe {
+                        ::$prefix::ptr::write_unaligned(
+                            &mut self.$unit_field_ident as *mut _ as *mut $unit_field_int_ty,
+                            unit_field_val
+                        );
+                    }
                 }
             }
         ).unwrap();

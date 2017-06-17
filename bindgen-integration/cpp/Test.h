@@ -92,6 +92,36 @@ struct Date2 {
                 unsigned short byte);
 };
 
+
+struct Fifth {
+    unsigned short nWeekDay  : 3;    // 0..7   (3 bits)
+    unsigned short nMonthDay : 6;    // 0..31  (6 bits)
+    unsigned short nMonth    : 5;    // 0..12  (5 bits)
+    unsigned short nYear     : 8;    // 0..100 (8 bits)
+    unsigned char byte;
+
+    /// Returns true if the bitfields match the arguments, false otherwise.
+    bool assert(unsigned short nWeekDay,
+                unsigned short nMonthDay,
+                unsigned short nMonth,
+                unsigned short nYear,
+                unsigned char byte);
+};
+
+struct Sixth {
+    unsigned char byte;
+    unsigned char nWeekDay  : 3;
+    unsigned char nMonth    : 5;
+    unsigned char nMonthDay : 6;
+
+    /// Returns true if the bitfields match the arguments, false otherwise.
+    bool assert(unsigned char byte,
+                unsigned char nWeekDay,
+                unsigned char nMonth,
+                unsigned char nMonthDay);
+};
+
+
 } // namespace bitfields
 
 struct AutoRestoreBool {

@@ -94,7 +94,10 @@ impl rte_eth_link {
     pub fn link_duplex(&self) -> u16 {
         let mask = 1u64 as u8;
         let unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
@@ -103,16 +106,25 @@ impl rte_eth_link {
         let mask = 1u64 as u8;
         let val = val as u16 as u8;
         let mut unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u8, unit_field_val);
+        }
     }
     #[inline]
     pub fn link_autoneg(&self) -> u16 {
         let mask = 2u64 as u8;
         let unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         let val = (unit_field_val & mask) >> 1usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
@@ -121,16 +133,25 @@ impl rte_eth_link {
         let mask = 2u64 as u8;
         let val = val as u16 as u8;
         let mut unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 1usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u8, unit_field_val);
+        }
     }
     #[inline]
     pub fn link_status(&self) -> u16 {
         let mask = 4u64 as u8;
         let unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         let val = (unit_field_val & mask) >> 2usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
@@ -139,10 +160,16 @@ impl rte_eth_link {
         let mask = 4u64 as u8;
         let val = val as u16 as u8;
         let mut unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 2usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u8, unit_field_val);
+        }
     }
     #[inline]
     pub fn new_bitfield_1(link_duplex: u16, link_autoneg: u16,
