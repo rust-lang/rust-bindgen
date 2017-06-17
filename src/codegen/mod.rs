@@ -1279,7 +1279,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         let bitfield_ty = bitfield_ty.to_rust_ty_or_opaque(ctx, bitfield_ty_item);
 
         let offset = self.offset_into_unit();
-        let mask: usize = self.mask();
+        let mask = self.mask();
 
         let impl_item = quote_item!(
             ctx.ext_cx(),

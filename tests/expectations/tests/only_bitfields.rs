@@ -23,7 +23,7 @@ impl Clone for C {
 impl C {
     #[inline]
     pub fn a(&self) -> bool {
-        let mask = 1usize as u8;
+        let mask = 1u64 as u8;
         let unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
         let val = (unit_field_val & mask) >> 0usize;
@@ -31,7 +31,7 @@ impl C {
     }
     #[inline]
     pub fn set_a(&mut self, val: bool) {
-        let mask = 1usize as u8;
+        let mask = 1u64 as u8;
         let val = val as u8 as u8;
         let mut unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
@@ -41,7 +41,7 @@ impl C {
     }
     #[inline]
     pub fn b(&self) -> bool {
-        let mask = 254usize as u8;
+        let mask = 254u64 as u8;
         let unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
         let val = (unit_field_val & mask) >> 1usize;
@@ -49,7 +49,7 @@ impl C {
     }
     #[inline]
     pub fn set_b(&mut self, val: bool) {
-        let mask = 254usize as u8;
+        let mask = 254u64 as u8;
         let val = val as u8 as u8;
         let mut unit_field_val: u8 =
             unsafe { ::std::mem::transmute(self._bitfield_1) };
@@ -59,7 +59,7 @@ impl C {
     }
     #[inline]
     pub fn new_bitfield_1(a: bool, b: bool) -> u8 {
-        ({ ({ 0 } | ((a as u8 as u8) << 0usize) & (1usize as u8)) } |
-             ((b as u8 as u8) << 1usize) & (254usize as u8))
+        ({ ({ 0 } | ((a as u8 as u8) << 0usize) & (1u64 as u8)) } |
+             ((b as u8 as u8) << 1usize) & (254u64 as u8))
     }
 }

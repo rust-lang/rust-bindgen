@@ -293,18 +293,15 @@ impl Bitfield {
 
     /// Get the mask value that when &'ed with this bitfield's allocation unit
     /// produces this bitfield's value.
-    ///
-    /// TODO(emilio): This should probably use the target's word size, and what
-    /// about bitfields that are bigger than that?
-    pub fn mask(&self) -> usize {
+    pub fn mask(&self) -> u64 {
         use std::mem;
-        use std::usize;
+        use std::u64;
 
         let unoffseted_mask =
-            if self.width() as usize == mem::size_of::<usize>() * 8 {
-                usize::MAX
+            if self.width() as u64 == mem::size_of::<u64>() as u64 * 8 {
+                u64::MAX
             } else {
-                ((1usize << self.width()) - 1usize)
+                ((1u64 << self.width()) - 1u64)
             };
 
         unoffseted_mask << self.offset_into_unit()
