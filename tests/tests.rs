@@ -146,7 +146,7 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
         .chain(flags.into_iter());
 
     builder_from_flags(args)
-        .map(|(builder, _, _)| Some(builder.no_unstable_rust()))
+        .map(|(builder, _, _)| Some(builder))
 }
 
 macro_rules! test_header {
@@ -177,7 +177,6 @@ include!(concat!(env!("OUT_DIR"), "/tests.rs"));
 fn test_header_contents() {
     let bindings = builder()
         .header_contents("test.h", "int foo(const char* a);")
-        .no_unstable_rust()
         .generate()
         .unwrap()
         .to_string();
