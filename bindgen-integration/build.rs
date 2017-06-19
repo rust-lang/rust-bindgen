@@ -28,7 +28,6 @@ fn main() {
     let macros = Arc::new(RwLock::new(HashSet::new()));
 
     let bindings = Builder::default()
-        .no_unstable_rust()
         .enable_cxx_namespaces()
         .raw_line("pub use self::root::*;")
         .header("cpp/Test.h")

@@ -1,4 +1,4 @@
-// bindgen-flags: --no-unstable-rust -- -std=c++11
+// bindgen-flags: -- -std=c++11
 
 /**
  * These typedefs are hacky, but keep our tests consistent across 64-bit
