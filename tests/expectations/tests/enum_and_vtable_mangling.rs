@@ -34,3 +34,7 @@ impl Clone for C {
 impl Default for C {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
+extern "C" {
+    #[link_name = "_ZN1C5matchEv"]
+    pub fn C_match(this: *mut ::std::os::raw::c_void);
+}

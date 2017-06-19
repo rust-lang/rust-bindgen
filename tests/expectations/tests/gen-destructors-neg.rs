@@ -21,3 +21,7 @@ fn bindgen_test_layout_Foo() {
                 "Alignment of field: " , stringify ! ( Foo ) , "::" ,
                 stringify ! ( bar ) ));
 }
+extern "C" {
+    #[link_name = "_ZN3FooD1Ev"]
+    pub fn Foo_Foo_destructor(this: *mut Foo);
+}

@@ -31,6 +31,6 @@ class Templated {
     class Templated_inner {
     public:
         T* member_ptr;
-        void get() {}
+        void get();
     };
 };

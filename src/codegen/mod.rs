@@ -435,6 +435,16 @@ impl CodeGenerator for Var {
         }
         result.saw_var(&canonical_name);
 
+        // We can't generate bindings to static variables of templates. The
+        // number of actual variables for a single declaration are open ended
+        // and we don't know what instantiations do or don't exist.
+        let type_params = item.all_template_params(ctx);
+        if let Some(params) = type_params {
+            if !params.is_empty() {
+                return;
+            }
+        }
+
         let ty = self.ty().to_rust_ty_or_opaque(ctx, &());
 
         if let Some(val) = self.val() {
@@ -752,6 +762,13 @@ impl CodeGenerator for TemplateInstantiation {
             return
         }
 
+        // If there are any unbound type parameters, then we can't generate a
+        // layout test because we aren't dealing with a concrete type with a
+        // concrete size and alignment.
+        if ctx.uses_any_template_parameters(item.id()) {
+            return;
+        }
+
         let layout = item.kind().expect_type().layout(ctx);
 
         if let Some(layout) = layout {
@@ -759,8 +776,11 @@ impl CodeGenerator for TemplateInstantiation {
             let align = layout.align;
 
             let name = item.canonical_name(ctx);
-            let fn_name = format!("__bindgen_test_layout_{}_instantiation_{}",
-                                  name, item.exposed_id(ctx));
+            let mut fn_name = format!("__bindgen_test_layout_{}_instantiation", name);
+            let times_seen = result.overload_number(&fn_name);
+            if times_seen > 0 {
+                write!(&mut fn_name, "_{}", times_seen).unwrap();
+            }
 
             let fn_name = ctx.rust_ident_raw(&fn_name);
 
@@ -2919,6 +2939,17 @@ impl CodeGenerator for Function {
                    _whitelisted_items: &ItemSet,
                    item: &Item) {
         debug!("<Function as CodeGenerator>::codegen: item = {:?}", item);
+
+        // Similar to static member variables in a class template, we can't
+        // generate bindings to template functions, because the set of
+        // instantiations is open ended and we have no way of knowing which
+        // monomorphizations actually exist.
+        let type_params = item.all_template_params(ctx);
+        if let Some(params) = type_params {
+            if !params.is_empty() {
+                return;
+            }
+        }
 
         let name = self.name();
         let mut canonical_name = item.canonical_name(ctx);

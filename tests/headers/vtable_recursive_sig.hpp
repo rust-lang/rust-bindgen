@@ -3,9 +3,9 @@
 class Derived;
 class Base {
 public:
-  virtual Derived* AsDerived() { return nullptr; }
+  virtual Derived* AsDerived();
 };
 
 class Derived final : public Base {
-  virtual Derived* AsDerived() override { return this; }
+  virtual Derived* AsDerived() override;
 };

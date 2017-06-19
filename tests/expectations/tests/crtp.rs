@@ -51,7 +51,7 @@ impl Default for DerivedFromBaseWithDestructor {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
-fn __bindgen_test_layout_Base_instantiation_1() {
+fn __bindgen_test_layout_Base_instantiation() {
     assert_eq!(::std::mem::size_of::<Base>() , 1usize , concat ! (
                "Size of template specialization: " , stringify ! ( Base ) ));
     assert_eq!(::std::mem::align_of::<Base>() , 1usize , concat ! (
@@ -59,7 +59,7 @@ fn __bindgen_test_layout_Base_instantiation_1() {
                ));
 }
 #[test]
-fn __bindgen_test_layout_BaseWithDestructor_instantiation_2() {
+fn __bindgen_test_layout_BaseWithDestructor_instantiation() {
     assert_eq!(::std::mem::size_of::<BaseWithDestructor>() , 1usize , concat !
                (
                "Size of template specialization: " , stringify ! (

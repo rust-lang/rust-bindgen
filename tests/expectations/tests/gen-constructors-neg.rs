@@ -19,3 +19,7 @@ fn bindgen_test_layout_Foo() {
 impl Clone for Foo {
     fn clone(&self) -> Self { *self }
 }
+extern "C" {
+    #[link_name = "_ZN3FooC1Ei"]
+    pub fn Foo_Foo(this: *mut Foo, a: ::std::os::raw::c_int);
+}

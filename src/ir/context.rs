@@ -2,7 +2,7 @@
 
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::int::IntKind;
-use super::item::{Item, ItemCanonicalPath, ItemSet};
+use super::item::{Item, ItemAncestors, ItemCanonicalPath, ItemSet};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
 use super::named::{UsedTemplateParameters, analyze};
@@ -348,14 +348,8 @@ impl<'ctx> BindgenContext<'ctx> {
         let is_template_instantiation =
             is_type && item.expect_type().is_template_instantiation();
 
-        // Be sure to track all the generated children under namespace, even
-        // those generated after resolving typerefs, etc.
-        if item.id() != item.parent_id() {
-            if let Some(mut parent) = self.items.get_mut(&item.parent_id()) {
-                if let Some(mut module) = parent.as_module_mut() {
-                    module.children_mut().push(item.id());
-                }
-            }
+        if item.id() != self.root_module {
+            self.add_item_to_module(&item);
         }
 
         if is_type && item.expect_type().is_comp() {
@@ -407,6 +401,38 @@ impl<'ctx> BindgenContext<'ctx> {
         }
     }
 
+    /// Ensure that every item (other than the root module) is in a module's
+    /// children list. This is to make sure that every whitelisted item get's
+    /// codegen'd, even if its parent is not whitelisted. See issue #769 for
+    /// details.
+    fn add_item_to_module(&mut self, item: &Item) {
+        assert!(item.id() != self.root_module);
+        assert!(!self.items.contains_key(&item.id()));
+
+        if let Some(mut parent) = self.items.get_mut(&item.parent_id()) {
+            if let Some(mut module) = parent.as_module_mut() {
+                debug!("add_item_to_module: adding {:?} as child of parent module {:?}",
+                       item.id(),
+                       item.parent_id());
+
+                module.children_mut().insert(item.id());
+                return;
+            }
+        }
+
+        debug!("add_item_to_module: adding {:?} as child of current module {:?}",
+               item.id(),
+               self.current_module);
+
+        self.items
+            .get_mut(&self.current_module)
+            .expect("Should always have an item for self.current_module")
+            .as_module_mut()
+            .expect("self.current_module should always be a module")
+            .children_mut()
+            .insert(item.id());
+    }
+
     /// Add a new named template type parameter to this context's item set.
     pub fn add_named_type(&mut self, item: Item, definition: clang::Cursor) {
         debug!("BindgenContext::add_named_type: item = {:?}; definition = {:?}",
@@ -417,6 +443,8 @@ impl<'ctx> BindgenContext<'ctx> {
                 "Should directly be a named type, not a resolved reference or anything");
         assert_eq!(definition.kind(),
                    clang_sys::CXCursor_TemplateTypeParameter);
+
+        self.add_item_to_module(&item);
 
         let id = item.id();
         let old_item = self.items.insert(id, item);
@@ -620,41 +648,65 @@ impl<'ctx> BindgenContext<'ctx> {
                 item.parent_id()
             };
 
+            // Relocate the replacement item from where it was declared, to
+            // where the thing it is replacing was declared.
+            //
+            // First, we'll make sure that its parent id is correct.
 
-            // Reparent the item.
             let old_parent = self.resolve_item(replacement).parent_id();
-
             if new_parent == old_parent {
+                // Same parent and therefore also same containing
+                // module. Nothing to do here.
                 continue;
-            }
-
-            if let Some(mut module) = self.items
-                .get_mut(&old_parent)
-                .unwrap()
-                .as_module_mut() {
-                // Deparent the replacement.
-                let position = module.children()
-                    .iter()
-                    .position(|id| *id == replacement)
-                    .unwrap();
-                module.children_mut().remove(position);
-            }
-
-            if let Some(mut module) = self.items
-                .get_mut(&new_parent)
-                .unwrap()
-                .as_module_mut() {
-                module.children_mut().push(replacement);
             }
 
             self.items
                 .get_mut(&replacement)
                 .unwrap()
                 .set_parent_for_replacement(new_parent);
+
+            // Second, make sure that it is in the correct module's children
+            // set.
+
+            let old_module = {
+                let immut_self = &*self;
+                old_parent.ancestors(immut_self)
+                    .chain(Some(immut_self.root_module))
+                    .find(|id| {
+                        let item = immut_self.resolve_item(*id);
+                        item.as_module().map_or(false, |m| m.children().contains(&replacement))
+                    })
+            };
+            let old_module = old_module.expect("Every replacement item should be in a module");
+
+            let new_module = {
+                let immut_self = &*self;
+                new_parent.ancestors(immut_self).find(|id| {
+                    immut_self.resolve_item(*id).is_module()
+                })
+            };
+            let new_module = new_module.unwrap_or(self.root_module);
+
+            if new_module == old_module {
+                // Already in the correct module.
+                continue;
+            }
+
             self.items
-                .get_mut(&id)
+                .get_mut(&old_module)
                 .unwrap()
-                .set_parent_for_replacement(old_parent);
+                .as_module_mut()
+                .unwrap()
+                .children_mut()
+                .remove(&replacement);
+
+            self.items
+                .get_mut(&new_module)
+                .unwrap()
+                .as_module_mut()
+                .unwrap()
+                .children_mut()
+                .insert(replacement);
         }
     }
 
@@ -783,6 +835,21 @@ impl<'ctx> BindgenContext<'ctx> {
             .map_or(false, |items_used_params| items_used_params.contains(&template_param))
     }
 
+    /// Return `true` if `item` uses any unbound, generic template parameters,
+    /// `false` otherwise.
+    ///
+    /// Has the same restrictions that `uses_template_parameter` has.
+    pub fn uses_any_template_parameters(&self, item: ItemId) -> bool {
+        assert!(self.in_codegen_phase(),
+                "We only compute template parameter usage as we enter codegen");
+
+        self.used_template_parameters
+            .as_ref()
+            .expect("should have template parameter usage info in codegen phase")
+            .get(&item)
+            .map_or(false, |used| !used.is_empty())
+    }
+
     // This deserves a comment. Builtin types don't get a valid declaration, so
     // we can't add it to the cursor->type map.
     //
@@ -794,6 +861,7 @@ impl<'ctx> BindgenContext<'ctx> {
     fn add_builtin_item(&mut self, item: Item) {
         debug!("add_builtin_item: item = {:?}", item);
         debug_assert!(item.kind().is_type());
+        self.add_item_to_module(&item);
         let id = item.id();
         let old_item = self.items.insert(id, item);
         assert!(old_item.is_none(), "Inserted type twice?");
@@ -932,7 +1000,6 @@ impl<'ctx> BindgenContext<'ctx> {
     fn instantiate_template(&mut self,
                             with_id: ItemId,
                             template: ItemId,
-                            parent_id: ItemId,
                             ty: &clang::Type,
                             location: clang::Cursor)
                             -> Option<ItemId> {
@@ -1038,13 +1105,14 @@ impl<'ctx> BindgenContext<'ctx> {
                         let sub_item = Item::new(sub_id,
                                                  None,
                                                  None,
-                                                 template_decl_id,
+                                                 self.current_module,
                                                  ItemKind::Type(sub_ty));
 
                         // Bypass all the validations in add_item explicitly.
                         debug!("instantiate_template: inserting nested \
                                 instantiation item: {:?}",
                                sub_item);
+                        self.add_item_to_module(&sub_item);
                         debug_assert!(sub_id == sub_item.id());
                         self.items.insert(sub_id, sub_item);
                         args.push(sub_id);
@@ -1086,10 +1154,11 @@ impl<'ctx> BindgenContext<'ctx> {
                            type_kind,
                            ty.is_const());
         let item =
-            Item::new(with_id, None, None, parent_id, ItemKind::Type(ty));
+            Item::new(with_id, None, None, self.current_module, ItemKind::Type(ty));
 
         // Bypass all the validations in add_item explicitly.
         debug!("instantiate_template: inserting item: {:?}", item);
+        self.add_item_to_module(&item);
         debug_assert!(with_id == item.id());
         self.items.insert(with_id, item);
         Some(with_id)
@@ -1143,11 +1212,6 @@ impl<'ctx> BindgenContext<'ctx> {
                    location.is_some() {
                     let location = location.unwrap();
 
-                    // It is always safe to hang instantiations off of the root
-                    // module. They use their template definition for naming,
-                    // and don't need the parent for anything else.
-                    let parent_id = self.root_module();
-
                     // For specialized type aliases, there's no way to get the
                     // template parameters as of this writing (for a struct
                     // specialization we wouldn't be in this branch anyway).
@@ -1166,7 +1230,6 @@ impl<'ctx> BindgenContext<'ctx> {
 
                     return self.instantiate_template(with_id,
                                                      id,
-                                                     parent_id,
                                                      ty,
                                                      location)
                         .or_else(|| Some(id));

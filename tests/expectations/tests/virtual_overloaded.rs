@@ -24,3 +24,13 @@ impl Clone for C {
 impl Default for C {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
+extern "C" {
+    #[link_name = "_ZN1C8do_thingEc"]
+    pub fn C_do_thing(this: *mut ::std::os::raw::c_void,
+                      arg1: ::std::os::raw::c_char);
+}
+extern "C" {
+    #[link_name = "_ZN1C8do_thingEi"]
+    pub fn C_do_thing1(this: *mut ::std::os::raw::c_void,
+                       arg1: ::std::os::raw::c_int);
+}

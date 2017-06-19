@@ -51,7 +51,7 @@ impl Default for ServoElementSnapshotTable {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
-fn __bindgen_test_layout_Set_instantiation_1() {
+fn __bindgen_test_layout_Set_instantiation() {
     assert_eq!(::std::mem::size_of::<Set>() , 4usize , concat ! (
                "Size of template specialization: " , stringify ! ( Set ) ));
     assert_eq!(::std::mem::align_of::<Set>() , 4usize , concat ! (
