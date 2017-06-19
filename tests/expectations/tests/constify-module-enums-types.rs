@@ -12,25 +12,36 @@ pub mod foo {
     pub const ALSO_THIS: Type = 42;
     pub const AND_ALSO_THIS: Type = 42;
 }
-#[repr(u32)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum ns1_foo2 { THIS = 0, SHOULD_BE = 1, A_CONSTANT = 2, ALSO_THIS = 42, }
-pub use self::ns1_foo2 as ns1_foo;
+pub mod ns1_foo {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const THIS: Type = 0;
+    pub const SHOULD_BE: Type = 1;
+    pub const A_CONSTANT: Type = 2;
+    pub const ALSO_THIS: Type = 42;
+}
+pub mod ns2_Foo {
+    pub type Type = ::std::os::raw::c_int;
+    pub const Variant1: Type = 0;
+    pub const Variant2: Type = 1;
+}
 pub use self::foo::Type as foo_alias1;
 pub use self::foo_alias1 as foo_alias2;
+pub use self::foo_alias2 as foo_alias3;
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct bar {
     pub member1: foo::Type,
     pub member2: foo_alias1,
     pub member3: foo_alias2,
-    pub member4: ns1_foo,
+    pub member4: foo_alias3,
+    pub member5: ns1_foo::Type,
+    pub member6: *mut ns2_Foo::Type,
 }
 #[test]
 fn bindgen_test_layout_bar() {
-    assert_eq!(::std::mem::size_of::<bar>() , 16usize , concat ! (
+    assert_eq!(::std::mem::size_of::<bar>() , 32usize , concat ! (
                "Size of: " , stringify ! ( bar ) ));
-    assert_eq! (::std::mem::align_of::<bar>() , 4usize , concat ! (
+    assert_eq! (::std::mem::align_of::<bar>() , 8usize , concat ! (
                 "Alignment of " , stringify ! ( bar ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const bar ) ) . member1 as * const _ as usize }
@@ -52,11 +63,72 @@ fn bindgen_test_layout_bar() {
                 , 12usize , concat ! (
                 "Alignment of field: " , stringify ! ( bar ) , "::" ,
                 stringify ! ( member4 ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const bar ) ) . member5 as * const _ as usize }
+                , 16usize , concat ! (
+                "Alignment of field: " , stringify ! ( bar ) , "::" ,
+                stringify ! ( member5 ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const bar ) ) . member6 as * const _ as usize }
+                , 24usize , concat ! (
+                "Alignment of field: " , stringify ! ( bar ) , "::" ,
+                stringify ! ( member6 ) ));
 }
 impl Clone for bar {
     fn clone(&self) -> Self { *self }
 }
 impl Default for bar {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+#[repr(C)]
+#[derive(Debug, Copy)]
+pub struct Baz {
+    pub member1: ns2_Foo::Type,
+}
+#[test]
+fn bindgen_test_layout_Baz() {
+    assert_eq!(::std::mem::size_of::<Baz>() , 4usize , concat ! (
+               "Size of: " , stringify ! ( Baz ) ));
+    assert_eq! (::std::mem::align_of::<Baz>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( Baz ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Baz ) ) . member1 as * const _ as usize }
+                , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( Baz ) , "::" ,
+                stringify ! ( member1 ) ));
+}
+impl Clone for Baz {
+    fn clone(&self) -> Self { *self }
+}
+impl Default for Baz {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+pub mod one_Foo {
+    pub type Type = ::std::os::raw::c_int;
+    pub const Variant1: Type = 0;
+    pub const Variant2: Type = 1;
+}
+#[repr(C)]
+#[derive(Debug, Copy)]
+pub struct Bar {
+    pub baz: *mut one_Foo::Type,
+}
+#[test]
+fn bindgen_test_layout_Bar() {
+    assert_eq!(::std::mem::size_of::<Bar>() , 8usize , concat ! (
+               "Size of: " , stringify ! ( Bar ) ));
+    assert_eq! (::std::mem::align_of::<Bar>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( Bar ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Bar ) ) . baz as * const _ as usize } ,
+                0usize , concat ! (
+                "Alignment of field: " , stringify ! ( Bar ) , "::" ,
+                stringify ! ( baz ) ));
+}
+impl Clone for Bar {
+    fn clone(&self) -> Self { *self }
+}
+impl Default for Bar {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 extern "C" {
@@ -81,4 +153,8 @@ impl <T> Default for Thing<T> {
 extern "C" {
     #[link_name = "_Z5func35ThingI3fooE"]
     pub fn func3(arg1: Thing<foo::Type>) -> foo::Type;
+}
+extern "C" {
+    #[link_name = "_Z5func45ThingIS_I3fooEE"]
+    pub fn func4(arg1: Thing<Thing<foo::Type>>) -> foo::Type;
 }
