@@ -10,13 +10,34 @@
 
 set -eu
 
-cd $(dirname $0)
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <fuzzy-name>"
+    exit 1
+fi
+
+cd "$(dirname "$0")"
 cd ..
 
 export RUST_BACKTRACE=1
 
-# Grab the first match
-TEST=$(find ./tests/headers -type f -iname "*$1*" | head -n 1)
+unique_fuzzy_file() {
+    local pattern="$1"
+    local results="$(find ./tests/headers -type f -iname "*$pattern*")"
+    local num_results=$(echo "$results" | wc -l)
+
+    if [[ -z "$results" ]]; then
+        >&2 echo "ERROR: no files found with pattern \"$pattern\""
+        exit 1
+    elif [[ "$num_results" -ne 1 ]]; then
+        >&2 echo "ERROR: Expected exactly 1 result, got $num_results:"
+        >&2 echo "$results"
+        exit 1
+    fi
+
+    echo "$results"
+}
+
+TEST="$(unique_fuzzy_file "$1")"
 
 BINDINGS=$(mktemp -t bindings.rs.XXXXXX)
 TEST_BINDINGS_BINARY=$(mktemp -t bindings.XXXXXX)

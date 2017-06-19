@@ -4,3 +4,7 @@ target/
 bindgen-integration/Cargo.lock
 tests/expectations/Cargo.lock
 #*#
+
+# Test script output
+ir.dot
+ir.png
