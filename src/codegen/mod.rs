@@ -23,7 +23,7 @@ use ir::item_kind::ItemKind;
 use ir::layout::Layout;
 use ir::module::Module;
 use ir::objc::{ObjCInterface, ObjCMethod};
-use ir::template::{AsNamed, TemplateInstantiation, TemplateParameters};
+use ir::template::{AsTemplateParam, TemplateInstantiation, TemplateParameters};
 use ir::ty::{Type, TypeKind};
 use ir::var::Var;
 
@@ -641,7 +641,7 @@ impl CodeGenerator for Type {
                     if let Some(ref params) = used_template_params {
                         for template_param in params {
                             if let Some(id) =
-                                template_param.as_named(ctx, &()) {
+                                template_param.as_template_param(ctx, &()) {
                                 let template_param = ctx.resolve_type(id);
                                 if template_param.is_invalid_named_type() {
                                     warn!("Item contained invalid template \
@@ -2729,7 +2729,7 @@ impl TryToRustTy for Type {
                 let template_params = item.used_template_params(ctx)
                     .unwrap_or(vec![])
                     .into_iter()
-                    .filter(|param| param.is_named(ctx, &()))
+                    .filter(|param| param.is_template_param(ctx, &()))
                     .collect::<Vec<_>>();
 
                 let spelling = self.name().expect("Unnamed alias?");
