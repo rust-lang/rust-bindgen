@@ -138,6 +138,48 @@ fn test_bitfields_date2() {
 }
 
 #[test]
+fn test_bitfields_fifth() {
+    let mut date: bindings::bitfields::Fifth = unsafe {
+        mem::zeroed()
+    };
+
+    assert!(unsafe {
+        date.assert(0, 0, 0, 0, 0)
+    });
+
+    date.byte = 255; // Set this first, to ensure we don't override it.
+
+    date.set_nWeekDay(6); // saturdays are the best
+    date.set_nMonthDay(20);
+    date.set_nMonth(11);
+    date.set_nYear(95);
+
+    assert!(unsafe {
+        date.assert(6, 20, 11, 95, 255)
+    });
+}
+
+#[test]
+fn test_bitfields_sixth() {
+    let mut date: bindings::bitfields::Sixth = unsafe {
+        mem::zeroed()
+    };
+
+    assert!(unsafe {
+        date.assert(0, 0, 0, 0)
+    });
+
+    date.byte = 255;
+    date.set_nWeekDay(6); // saturdays are the best
+    date.set_nMonthDay(20);
+    date.set_nMonth(11);
+
+    assert!(unsafe {
+        date.assert(255, 6, 11, 20)
+    });
+}
+
+#[test]
 fn test_bitfield_constructors() {
     use std::mem;
     let mut first = bindings::bitfields::First {

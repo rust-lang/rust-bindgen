@@ -35,29 +35,37 @@ impl Clone for Foo {
 impl Foo {
     #[inline]
     pub fn type__bindgen_bitfield(&self) -> ::std::os::raw::c_char {
-        let mask = 7usize as u8;
+        let mask = 7u64 as u8;
         let unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_type__bindgen_bitfield(&mut self,
                                       val: ::std::os::raw::c_char) {
-        let mask = 7usize as u8;
+        let mask = 7u64 as u8;
         let val = val as u8 as u8;
         let mut unit_field_val: u8 =
-            unsafe { ::std::mem::transmute(self._bitfield_1) };
+            unsafe {
+                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
+                                               *const u8)
+            };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
-        self._bitfield_1 = unsafe { ::std::mem::transmute(unit_field_val) };
+        unsafe {
+            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
+                                            *mut u8, unit_field_val);
+        }
     }
     #[inline]
     pub fn new_bitfield_1(type__bindgen_bitfield: ::std::os::raw::c_char)
      -> u8 {
         ({ 0 } |
-             ((type__bindgen_bitfield as u8 as u8) << 0usize) &
-                 (7usize as u8))
+             ((type__bindgen_bitfield as u8 as u8) << 0usize) & (7u64 as u8))
     }
     #[inline]
     pub unsafe fn type_(&mut self) -> ::std::os::raw::c_char {
