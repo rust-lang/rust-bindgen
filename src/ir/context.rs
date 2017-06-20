@@ -1038,6 +1038,11 @@ impl<'ctx> BindgenContext<'ctx> {
     ///   Incomplete<U> bar;
     /// };
     /// ```
+    ///
+    /// Finally, template instantiations are always children of the current
+    /// module. They use their template's definition for their name, so the
+    /// parent is only useful for ensuring that their layout tests get
+    /// codegen'd.
     fn instantiate_template(&mut self,
                             with_id: ItemId,
                             template: ItemId,
