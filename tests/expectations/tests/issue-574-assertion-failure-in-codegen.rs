@@ -36,3 +36,11 @@ extern "C" {
     #[link_name = "AutoIdVector"]
     pub static mut AutoIdVector: _bindgen_ty_1;
 }
+#[test]
+fn __bindgen_test_layout_a_instantiation() {
+    assert_eq!(::std::mem::size_of::<a>() , 1usize , concat ! (
+               "Size of template specialization: " , stringify ! ( a ) ));
+    assert_eq!(::std::mem::align_of::<a>() , 1usize , concat ! (
+               "Alignment of template specialization: " , stringify ! ( a )
+               ));
+}

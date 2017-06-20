@@ -123,3 +123,14 @@ impl Clone for Bar {
 impl Default for Bar {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
+#[test]
+fn __bindgen_test_layout_mozilla_StyleShapeSource_instantiation() {
+    assert_eq!(::std::mem::size_of::<mozilla_StyleShapeSource>() , 8usize ,
+               concat ! (
+               "Size of template specialization: " , stringify ! (
+               mozilla_StyleShapeSource ) ));
+    assert_eq!(::std::mem::align_of::<mozilla_StyleShapeSource>() , 8usize ,
+               concat ! (
+               "Alignment of template specialization: " , stringify ! (
+               mozilla_StyleShapeSource ) ));
+}

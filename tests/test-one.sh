@@ -22,7 +22,7 @@ export RUST_BACKTRACE=1
 
 unique_fuzzy_file() {
     local pattern="$1"
-    local results="$(find ./tests/headers -type f -iname "*$pattern*")"
+    local results="$(find ./tests/headers -type f | egrep -i "*$pattern*")"
     local num_results=$(echo "$results" | wc -l)
 
     if [[ -z "$results" ]]; then

@@ -101,4 +101,15 @@ pub mod root {
     impl Default for F {
         fn default() -> Self { unsafe { ::std::mem::zeroed() } }
     }
+    #[test]
+    fn __bindgen_test_layout_C_instantiation() {
+        assert_eq!(::std::mem::size_of::<[u64; 33usize]>() , 264usize , concat
+                   ! (
+                   "Size of template specialization: " , stringify ! (
+                   [u64; 33usize] ) ));
+        assert_eq!(::std::mem::align_of::<[u64; 33usize]>() , 8usize , concat
+                   ! (
+                   "Alignment of template specialization: " , stringify ! (
+                   [u64; 33usize] ) ));
+    }
 }

@@ -7,5 +7,5 @@ enum {
 class C {
     int i;
 public:
-    virtual void match() { };
+    virtual void match();
 };

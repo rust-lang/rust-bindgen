@@ -79,3 +79,11 @@ extern "C" {
     #[link_name = "_Z25Servo_Element_GetSnapshotv"]
     pub fn Servo_Element_GetSnapshot() -> A;
 }
+#[test]
+fn __bindgen_test_layout_f_instantiation() {
+    assert_eq!(::std::mem::size_of::<f>() , 1usize , concat ! (
+               "Size of template specialization: " , stringify ! ( f ) ));
+    assert_eq!(::std::mem::align_of::<f>() , 1usize , concat ! (
+               "Alignment of template specialization: " , stringify ! ( f )
+               ));
+}

@@ -14,15 +14,6 @@ pub struct Base {
 pub struct Derived {
     pub b: bool,
 }
-#[test]
-fn __bindgen_test_layout__bindgen_ty_id_21_instantiation_1() {
-    assert_eq!(::std::mem::size_of::<[u32; 2usize]>() , 8usize , concat ! (
-               "Size of template specialization: " , stringify ! (
-               [u32; 2usize] ) ));
-    assert_eq!(::std::mem::align_of::<[u32; 2usize]>() , 4usize , concat ! (
-               "Alignment of template specialization: " , stringify ! (
-               [u32; 2usize] ) ));
-}
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct Usage {
@@ -53,4 +44,13 @@ impl Usage {
         Usage_Usage(&mut __bindgen_tmp);
         __bindgen_tmp
     }
+}
+#[test]
+fn __bindgen_test_layout__bindgen_ty_id_21_instantiation() {
+    assert_eq!(::std::mem::size_of::<[u32; 2usize]>() , 8usize , concat ! (
+               "Size of template specialization: " , stringify ! (
+               [u32; 2usize] ) ));
+    assert_eq!(::std::mem::align_of::<[u32; 2usize]>() , 4usize , concat ! (
+               "Alignment of template specialization: " , stringify ! (
+               [u32; 2usize] ) ));
 }

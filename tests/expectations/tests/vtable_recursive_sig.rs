@@ -42,3 +42,7 @@ impl Clone for Base {
 impl Default for Base {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
+extern "C" {
+    #[link_name = "_ZN4Base9AsDerivedEv"]
+    pub fn Base_AsDerived(this: *mut ::std::os::raw::c_void) -> *mut Derived;
+}

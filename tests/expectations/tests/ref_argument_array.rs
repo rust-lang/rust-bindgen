@@ -25,3 +25,9 @@ impl Clone for nsID {
 impl Default for nsID {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
+extern "C" {
+    #[link_name = "_ZN4nsID16ToProvidedStringERA10_c"]
+    pub fn nsID_ToProvidedString(this: *mut ::std::os::raw::c_void,
+                                 aDest:
+                                     *mut [::std::os::raw::c_char; 10usize]);
+}

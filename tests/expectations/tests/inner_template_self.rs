@@ -36,3 +36,12 @@ impl Clone for InstantiateIt {
 impl Default for InstantiateIt {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
+#[test]
+fn __bindgen_test_layout_LinkedList_instantiation() {
+    assert_eq!(::std::mem::size_of::<LinkedList>() , 16usize , concat ! (
+               "Size of template specialization: " , stringify ! ( LinkedList
+               ) ));
+    assert_eq!(::std::mem::align_of::<LinkedList>() , 8usize , concat ! (
+               "Alignment of template specialization: " , stringify ! (
+               LinkedList ) ));
+}

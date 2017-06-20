@@ -35,3 +35,12 @@ impl Clone for Test {
 impl Default for Test {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
+#[test]
+fn __bindgen_test_layout_nsTArray_instantiation() {
+    assert_eq!(::std::mem::size_of::<nsTArray>() , 4usize , concat ! (
+               "Size of template specialization: " , stringify ! ( nsTArray )
+               ));
+    assert_eq!(::std::mem::align_of::<nsTArray>() , 4usize , concat ! (
+               "Alignment of template specialization: " , stringify ! (
+               nsTArray ) ));
+}
