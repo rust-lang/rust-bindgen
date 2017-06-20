@@ -749,6 +749,11 @@ impl<'ctx> BindgenContext<'ctx> {
             self.process_replacements();
         }
 
+        // Make sure to do this after processing replacements, since that messes
+        // with the parentage and module children, and we want to assert that it
+        // messes with them correctly.
+        self.assert_every_item_in_a_module();
+
         self.find_used_template_parameters();
 
         let ret = cb(self);
@@ -777,6 +782,42 @@ impl<'ctx> BindgenContext<'ctx> {
         traversal::AssertNoDanglingItemsTraversal::new(self,
                                                        roots,
                                                        traversal::all_edges)
+    }
+
+    /// When the `testing_only_extra_assertions` feature is enabled, walk over
+    /// every item and ensure that it is in the children set of one of its
+    /// module ancestors.
+    fn assert_every_item_in_a_module(&self) {
+        if cfg!(feature = "testing_only_extra_assertions") {
+            assert!(self.in_codegen_phase());
+            assert!(self.current_module == self.root_module);
+
+            for (&id, _item) in self.items() {
+                if id == self.root_module {
+                    continue;
+                }
+
+                assert!(
+                    {
+                        let id = id.into_resolver()
+                            .through_type_refs()
+                            .through_type_aliases()
+                            .resolve(self)
+                            .id();
+                        id.ancestors(self)
+                            .chain(Some(self.root_module))
+                            .any(|ancestor| {
+                                debug!("Checking if {:?} is a child of {:?}", id, ancestor);
+                                self.resolve_item(ancestor)
+                                    .as_module()
+                                    .map_or(false, |m| m.children().contains(&id))
+                            })
+                    },
+                    "{:?} should be in some ancestor module's children set",
+                    id
+                );
+            }
+        }
     }
 
     fn find_used_template_parameters(&mut self) {
