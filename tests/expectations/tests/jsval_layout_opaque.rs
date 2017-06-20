@@ -132,12 +132,15 @@ impl Default for jsval_layout__bindgen_ty_1 {
 impl jsval_layout__bindgen_ty_1 {
     #[inline]
     pub fn payload47(&self) -> u64 {
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         let mask = 140737488355327u64 as u64;
-        let unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u64) }
     }
@@ -145,26 +148,35 @@ impl jsval_layout__bindgen_ty_1 {
     pub fn set_payload47(&mut self, val: u64) {
         let mask = 140737488355327u64 as u64;
         let val = val as u64 as u64;
-        let mut unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u64, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>());
         }
     }
     #[inline]
     pub fn tag(&self) -> JSValueTag {
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         let mask = 18446603336221196288u64 as u64;
-        let unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
         let val = (unit_field_val & mask) >> 47usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
@@ -172,16 +184,22 @@ impl jsval_layout__bindgen_ty_1 {
     pub fn set_tag(&mut self, val: JSValueTag) {
         let mask = 18446603336221196288u64 as u64;
         let val = val as u32 as u64;
-        let mut unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 47usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u64, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>());
         }
     }
     #[inline]

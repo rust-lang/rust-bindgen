@@ -106,12 +106,15 @@ impl Default for Weird {
 impl Weird {
     #[inline]
     pub fn bitTest(&self) -> ::std::os::raw::c_uint {
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         let mask = 65535u64 as u32;
-        let unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
@@ -119,26 +122,35 @@ impl Weird {
     pub fn set_bitTest(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 65535u64 as u32;
         let val = val as u32 as u32;
-        let mut unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u32, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>());
         }
     }
     #[inline]
     pub fn bitTest2(&self) -> ::std::os::raw::c_uint {
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         let mask = 2147418112u64 as u32;
-        let unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
         let val = (unit_field_val & mask) >> 16usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
@@ -146,16 +158,22 @@ impl Weird {
     pub fn set_bitTest2(&mut self, val: ::std::os::raw::c_uint) {
         let mask = 2147418112u64 as u32;
         let val = val as u32 as u32;
-        let mut unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 16usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u32, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>());
         }
     }
     #[inline]
@@ -166,12 +184,15 @@ impl Weird {
     }
     #[inline]
     pub fn mFillOpacitySource(&self) -> nsStyleSVGOpacitySource {
+        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u16 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u16>())
+        };
         let mask = 7u64 as u16;
-        let unit_field_val: u16 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_2 as *const _ as
-                                               *const u16)
-            };
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
@@ -179,26 +200,35 @@ impl Weird {
     pub fn set_mFillOpacitySource(&mut self, val: nsStyleSVGOpacitySource) {
         let mask = 7u64 as u16;
         let val = val as u32 as u16;
-        let mut unit_field_val: u16 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_2 as *const _ as
-                                               *const u16)
-            };
+        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u16 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u16>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_2 as *mut _ as
-                                            *mut u16, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_2 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u16>());
         }
     }
     #[inline]
     pub fn mStrokeOpacitySource(&self) -> nsStyleSVGOpacitySource {
+        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u16 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u16>())
+        };
         let mask = 56u64 as u16;
-        let unit_field_val: u16 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_2 as *const _ as
-                                               *const u16)
-            };
         let val = (unit_field_val & mask) >> 3usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
@@ -206,26 +236,35 @@ impl Weird {
     pub fn set_mStrokeOpacitySource(&mut self, val: nsStyleSVGOpacitySource) {
         let mask = 56u64 as u16;
         let val = val as u32 as u16;
-        let mut unit_field_val: u16 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_2 as *const _ as
-                                               *const u16)
-            };
+        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u16 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u16>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 3usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_2 as *mut _ as
-                                            *mut u16, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_2 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u16>());
         }
     }
     #[inline]
     pub fn mStrokeDasharrayFromObject(&self) -> bool {
+        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u16 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u16>())
+        };
         let mask = 64u64 as u16;
-        let unit_field_val: u16 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_2 as *const _ as
-                                               *const u16)
-            };
         let val = (unit_field_val & mask) >> 6usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
@@ -233,26 +272,35 @@ impl Weird {
     pub fn set_mStrokeDasharrayFromObject(&mut self, val: bool) {
         let mask = 64u64 as u16;
         let val = val as u8 as u16;
-        let mut unit_field_val: u16 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_2 as *const _ as
-                                               *const u16)
-            };
+        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u16 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u16>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 6usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_2 as *mut _ as
-                                            *mut u16, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_2 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u16>());
         }
     }
     #[inline]
     pub fn mStrokeDashoffsetFromObject(&self) -> bool {
+        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u16 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u16>())
+        };
         let mask = 128u64 as u16;
-        let unit_field_val: u16 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_2 as *const _ as
-                                               *const u16)
-            };
         let val = (unit_field_val & mask) >> 7usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
@@ -260,26 +308,35 @@ impl Weird {
     pub fn set_mStrokeDashoffsetFromObject(&mut self, val: bool) {
         let mask = 128u64 as u16;
         let val = val as u8 as u16;
-        let mut unit_field_val: u16 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_2 as *const _ as
-                                               *const u16)
-            };
+        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u16 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u16>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 7usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_2 as *mut _ as
-                                            *mut u16, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_2 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u16>());
         }
     }
     #[inline]
     pub fn mStrokeWidthFromObject(&self) -> bool {
+        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u16 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u16>())
+        };
         let mask = 256u64 as u16;
-        let unit_field_val: u16 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_2 as *const _ as
-                                               *const u16)
-            };
         let val = (unit_field_val & mask) >> 8usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
@@ -287,16 +344,22 @@ impl Weird {
     pub fn set_mStrokeWidthFromObject(&mut self, val: bool) {
         let mask = 256u64 as u16;
         let val = val as u8 as u16;
-        let mut unit_field_val: u16 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_2 as *const _ as
-                                               *const u16)
-            };
+        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u16 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u16>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 8usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_2 as *mut _ as
-                                            *mut u16, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_2 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u16>());
         }
     }
     #[inline]

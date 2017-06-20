@@ -178,12 +178,15 @@ impl Clone for rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
 impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     #[inline]
     pub fn l2_type(&self) -> u32 {
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         let mask = 15u64 as u32;
-        let unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
@@ -191,26 +194,35 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     pub fn set_l2_type(&mut self, val: u32) {
         let mask = 15u64 as u32;
         let val = val as u32 as u32;
-        let mut unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u32, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>());
         }
     }
     #[inline]
     pub fn l3_type(&self) -> u32 {
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         let mask = 240u64 as u32;
-        let unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
         let val = (unit_field_val & mask) >> 4usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
@@ -218,26 +230,35 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     pub fn set_l3_type(&mut self, val: u32) {
         let mask = 240u64 as u32;
         let val = val as u32 as u32;
-        let mut unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 4usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u32, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>());
         }
     }
     #[inline]
     pub fn l4_type(&self) -> u32 {
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         let mask = 3840u64 as u32;
-        let unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
         let val = (unit_field_val & mask) >> 8usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
@@ -245,26 +266,35 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     pub fn set_l4_type(&mut self, val: u32) {
         let mask = 3840u64 as u32;
         let val = val as u32 as u32;
-        let mut unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 8usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u32, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>());
         }
     }
     #[inline]
     pub fn tun_type(&self) -> u32 {
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         let mask = 61440u64 as u32;
-        let unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
         let val = (unit_field_val & mask) >> 12usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
@@ -272,26 +302,35 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     pub fn set_tun_type(&mut self, val: u32) {
         let mask = 61440u64 as u32;
         let val = val as u32 as u32;
-        let mut unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 12usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u32, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>());
         }
     }
     #[inline]
     pub fn inner_l2_type(&self) -> u32 {
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         let mask = 983040u64 as u32;
-        let unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
         let val = (unit_field_val & mask) >> 16usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
@@ -299,26 +338,35 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     pub fn set_inner_l2_type(&mut self, val: u32) {
         let mask = 983040u64 as u32;
         let val = val as u32 as u32;
-        let mut unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 16usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u32, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>());
         }
     }
     #[inline]
     pub fn inner_l3_type(&self) -> u32 {
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         let mask = 15728640u64 as u32;
-        let unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
         let val = (unit_field_val & mask) >> 20usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
@@ -326,26 +374,35 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     pub fn set_inner_l3_type(&mut self, val: u32) {
         let mask = 15728640u64 as u32;
         let val = val as u32 as u32;
-        let mut unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 20usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u32, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>());
         }
     }
     #[inline]
     pub fn inner_l4_type(&self) -> u32 {
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         let mask = 251658240u64 as u32;
-        let unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
         let val = (unit_field_val & mask) >> 24usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
@@ -353,16 +410,22 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     pub fn set_inner_l4_type(&mut self, val: u32) {
         let mask = 251658240u64 as u32;
         let val = val as u32 as u32;
-        let mut unit_field_val: u32 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u32)
-            };
+        let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u32 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 24usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u32, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u32>());
         }
     }
     #[inline]
@@ -651,12 +714,15 @@ impl Clone for rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
 impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     #[inline]
     pub fn l2_len(&self) -> u64 {
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         let mask = 127u64 as u64;
-        let unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u64) }
     }
@@ -664,26 +730,35 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     pub fn set_l2_len(&mut self, val: u64) {
         let mask = 127u64 as u64;
         let val = val as u64 as u64;
-        let mut unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u64, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>());
         }
     }
     #[inline]
     pub fn l3_len(&self) -> u64 {
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         let mask = 65408u64 as u64;
-        let unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
         let val = (unit_field_val & mask) >> 7usize;
         unsafe { ::std::mem::transmute(val as u64) }
     }
@@ -691,26 +766,35 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     pub fn set_l3_len(&mut self, val: u64) {
         let mask = 65408u64 as u64;
         let val = val as u64 as u64;
-        let mut unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 7usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u64, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>());
         }
     }
     #[inline]
     pub fn l4_len(&self) -> u64 {
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         let mask = 16711680u64 as u64;
-        let unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
         let val = (unit_field_val & mask) >> 16usize;
         unsafe { ::std::mem::transmute(val as u64) }
     }
@@ -718,26 +802,35 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     pub fn set_l4_len(&mut self, val: u64) {
         let mask = 16711680u64 as u64;
         let val = val as u64 as u64;
-        let mut unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 16usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u64, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>());
         }
     }
     #[inline]
     pub fn tso_segsz(&self) -> u64 {
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         let mask = 1099494850560u64 as u64;
-        let unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
         let val = (unit_field_val & mask) >> 24usize;
         unsafe { ::std::mem::transmute(val as u64) }
     }
@@ -745,26 +838,35 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     pub fn set_tso_segsz(&mut self, val: u64) {
         let mask = 1099494850560u64 as u64;
         let val = val as u64 as u64;
-        let mut unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 24usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u64, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>());
         }
     }
     #[inline]
     pub fn outer_l3_len(&self) -> u64 {
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         let mask = 561850441793536u64 as u64;
-        let unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
         let val = (unit_field_val & mask) >> 40usize;
         unsafe { ::std::mem::transmute(val as u64) }
     }
@@ -772,26 +874,35 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     pub fn set_outer_l3_len(&mut self, val: u64) {
         let mask = 561850441793536u64 as u64;
         let val = val as u64 as u64;
-        let mut unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 40usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u64, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>());
         }
     }
     #[inline]
     pub fn outer_l2_len(&self) -> u64 {
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         let mask = 71494644084506624u64 as u64;
-        let unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
         let val = (unit_field_val & mask) >> 49usize;
         unsafe { ::std::mem::transmute(val as u64) }
     }
@@ -799,16 +910,22 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     pub fn set_outer_l2_len(&mut self, val: u64) {
         let mask = 71494644084506624u64 as u64;
         let val = val as u64 as u64;
-        let mut unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 49usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u64, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>());
         }
     }
     #[inline]

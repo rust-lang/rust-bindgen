@@ -1286,12 +1286,19 @@ impl<'a> FieldCodegen<'a> for Bitfield {
             impl XxxIgnored {
                 #[inline]
                 pub fn $getter_name(&self) -> $bitfield_ty {
-                    let mask = $mask as $unit_field_int_ty;
-                    let unit_field_val: $unit_field_int_ty = unsafe {
-                        ::$prefix::ptr::read_unaligned(
-                            &self.$unit_field_ident as *const _ as *const $unit_field_int_ty
+                    let mut unit_field_val: $unit_field_int_ty = unsafe {
+                        ::$prefix::mem::uninitialized()
+                    };
+
+                    unsafe {
+                        ::$prefix::ptr::copy_nonoverlapping(
+                            &self.$unit_field_ident as *const _ as *const u8,
+                            &mut unit_field_val as *mut $unit_field_int_ty as *mut u8,
+                            ::$prefix::mem::size_of::<$unit_field_int_ty>(),
                         )
                     };
+
+                    let mask = $mask as $unit_field_int_ty;
                     let val = (unit_field_val & mask) >> $offset;
                     unsafe {
                         ::$prefix::mem::transmute(val as $bitfield_int_ty)
@@ -1304,17 +1311,25 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                     let val = val as $bitfield_int_ty as $unit_field_int_ty;
 
                     let mut unit_field_val: $unit_field_int_ty = unsafe {
-                        ::$prefix::ptr::read_unaligned(
-                            &self.$unit_field_ident as *const _ as *const $unit_field_int_ty)
+                        ::$prefix::mem::uninitialized()
+                    };
+
+                    unsafe {
+                        ::$prefix::ptr::copy_nonoverlapping(
+                            &self.$unit_field_ident as *const _ as *const u8,
+                            &mut unit_field_val as *mut $unit_field_int_ty as *mut u8,
+                            ::$prefix::mem::size_of::<$unit_field_int_ty>(),
+                        )
                     };
 
                     unit_field_val &= !mask;
                     unit_field_val |= (val << $offset) & mask;
 
                     unsafe {
-                        ::$prefix::ptr::write_unaligned(
-                            &mut self.$unit_field_ident as *mut _ as *mut $unit_field_int_ty,
-                            unit_field_val
+                        ::$prefix::ptr::copy_nonoverlapping(
+                            &unit_field_val as *const _ as *const u8,
+                            &mut self.$unit_field_ident as *mut _ as *mut u8,
+                            ::$prefix::mem::size_of::<$unit_field_int_ty>(),
                         );
                     }
                 }
