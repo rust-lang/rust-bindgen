@@ -29,12 +29,15 @@ impl Default for TaggedPtr {
 impl TaggedPtr {
     #[inline]
     pub fn tag(&self) -> MyEnum {
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         let mask = 3u64 as u64;
-        let unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
@@ -42,26 +45,35 @@ impl TaggedPtr {
     pub fn set_tag(&mut self, val: MyEnum) {
         let mask = 3u64 as u64;
         let val = val as u32 as u64;
-        let mut unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u64, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>());
         }
     }
     #[inline]
     pub fn ptr(&self) -> ::std::os::raw::c_long {
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         let mask = 18446744073709551612u64 as u64;
-        let unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
         let val = (unit_field_val & mask) >> 2usize;
         unsafe { ::std::mem::transmute(val as u64) }
     }
@@ -69,16 +81,22 @@ impl TaggedPtr {
     pub fn set_ptr(&mut self, val: ::std::os::raw::c_long) {
         let mask = 18446744073709551612u64 as u64;
         let val = val as u64 as u64;
-        let mut unit_field_val: u64 =
-            unsafe {
-                ::std::ptr::read_unaligned(&self._bitfield_1 as *const _ as
-                                               *const u64)
-            };
+        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
+        unsafe {
+            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
+                                                *const u8,
+                                            &mut unit_field_val as *mut u64 as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>())
+        };
         unit_field_val &= !mask;
         unit_field_val |= (val << 2usize) & mask;
         unsafe {
-            ::std::ptr::write_unaligned(&mut self._bitfield_1 as *mut _ as
-                                            *mut u64, unit_field_val);
+            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
+                                                *const u8,
+                                            &mut self._bitfield_1 as *mut _ as
+                                                *mut u8,
+                                            ::std::mem::size_of::<u64>());
         }
     }
     #[inline]
