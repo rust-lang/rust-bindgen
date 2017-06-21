@@ -12,6 +12,12 @@ pub mod foo {
     pub const ALSO_THIS: Type = 42;
     pub const AND_ALSO_THIS: Type = 42;
 }
+pub mod anon_enum {
+    pub type Type = ::std::os::raw::c_uint;
+    pub const Variant1: Type = 0;
+    pub const Variant2: Type = 1;
+    pub const Variant3: Type = 2;
+}
 pub mod ns1_foo {
     pub type Type = ::std::os::raw::c_uint;
     pub const THIS: Type = 0;
@@ -27,6 +33,9 @@ pub mod ns2_Foo {
 pub use self::foo::Type as foo_alias1;
 pub use self::foo_alias1 as foo_alias2;
 pub use self::foo_alias2 as foo_alias3;
+pub use self::anon_enum::Type as anon_enum_alias1;
+pub use self::anon_enum_alias1 as anon_enum_alias2;
+pub use self::anon_enum_alias2 as anon_enum_alias3;
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct bar {
@@ -36,10 +45,14 @@ pub struct bar {
     pub member4: foo_alias3,
     pub member5: ns1_foo::Type,
     pub member6: *mut ns2_Foo::Type,
+    pub member7: anon_enum::Type,
+    pub member8: anon_enum_alias1,
+    pub member9: anon_enum_alias2,
+    pub member10: anon_enum_alias3,
 }
 #[test]
 fn bindgen_test_layout_bar() {
-    assert_eq!(::std::mem::size_of::<bar>() , 32usize , concat ! (
+    assert_eq!(::std::mem::size_of::<bar>() , 48usize , concat ! (
                "Size of: " , stringify ! ( bar ) ));
     assert_eq! (::std::mem::align_of::<bar>() , 8usize , concat ! (
                 "Alignment of " , stringify ! ( bar ) ));
@@ -73,6 +86,26 @@ fn bindgen_test_layout_bar() {
                 , 24usize , concat ! (
                 "Alignment of field: " , stringify ! ( bar ) , "::" ,
                 stringify ! ( member6 ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const bar ) ) . member7 as * const _ as usize }
+                , 32usize , concat ! (
+                "Alignment of field: " , stringify ! ( bar ) , "::" ,
+                stringify ! ( member7 ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const bar ) ) . member8 as * const _ as usize }
+                , 36usize , concat ! (
+                "Alignment of field: " , stringify ! ( bar ) , "::" ,
+                stringify ! ( member8 ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const bar ) ) . member9 as * const _ as usize }
+                , 40usize , concat ! (
+                "Alignment of field: " , stringify ! ( bar ) , "::" ,
+                stringify ! ( member9 ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const bar ) ) . member10 as * const _ as usize
+                } , 44usize , concat ! (
+                "Alignment of field: " , stringify ! ( bar ) , "::" ,
+                stringify ! ( member10 ) ));
 }
 impl Clone for bar {
     fn clone(&self) -> Self { *self }

@@ -829,46 +829,32 @@ impl Item {
 
     /// Returns whether the item is a constified module enum
     fn is_constified_enum_module(&self, ctx: &BindgenContext) -> bool {
-        if let ItemKind::Type(ref type_) = self.kind {
-            // Do not count an "alias of an alias" as a constified module enum;
-            // otherwise, we will get:
-            //   pub mod foo {
-            //      pub type Type = ::std::os::raw::c_uint;
-            //      ...
-            //   }
-            //   pub use foo::Type as foo_alias1;
-            //   pub use foo_alias1::Type as foo_alias2;
-            //   pub use foo_alias2::Type as foo_alias3;
-            //   ...
-            //
-            // (We do not want the '::Type' appended to the alias types; only the base type)
-            if let TypeKind::Alias(inner_id) = *type_.kind() {
-                let inner_item = ctx.resolve_item(inner_id);
-                if let ItemKind::Type(ref inner_type) = *inner_item.kind() {
-                    match *inner_type.kind() {
-                        TypeKind::Alias(..) => { return false; }
-                        TypeKind::ResolvedTypeRef(resolved_id) => {
-                            // We need to handle:
-                            // Alias -> ResolvedTypeRef -> Alias
-                            let resolved_item = ctx.resolve_item(resolved_id);
-                            if let ItemKind::Type(ref resolved_type) = *resolved_item.kind() {
-                                if let TypeKind::Alias(..) = *resolved_type.kind() {
-                                    return false;
-                                }
-                            }
-                        }
-                        _ => (),
-                    }
-                }
-            }
-            if let Some(ref type_) = type_.safe_canonical_type(ctx) {
-                if let TypeKind::Enum(ref enum_) = *type_.kind() {
-                    return enum_.is_constified_enum_module(ctx, self);
-                }
-            }
-        }
+        // Do not jump through aliases, except for aliases that point to a type
+        // with the same name, since we dont generate coe for them.
+        let item = self.id.into_resolver().through_type_refs().resolve(ctx);
+        let type_ = match *item.kind() {
+            ItemKind::Type(ref type_) => type_,
+            _ => return false,
+        };
 
-        return false;
+        match *type_.kind() {
+            TypeKind::Enum(ref enum_) => {
+                enum_.is_constified_enum_module(ctx, self)
+            }
+            TypeKind::Alias(inner_id) => {
+                // TODO(emilio): Make this "hop through type aliases that aren't
+                // really generated" an option in `ItemResolver`?
+                let inner_item = ctx.resolve_item(inner_id);
+                let name = item.canonical_name(ctx);
+
+                if inner_item.canonical_name(ctx) == name {
+                    inner_item.is_constified_enum_module(ctx)
+                } else {
+                    false
+                }
+            }
+            _ => false,
+        }
     }
 }
 

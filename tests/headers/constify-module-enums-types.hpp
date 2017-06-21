@@ -8,6 +8,12 @@ typedef enum foo {
   AND_ALSO_THIS = 42,
 } foo;
 
+
+typedef enum {
+  Variant1, Variant2, Variant3,
+} anon_enum;
+
+
 namespace ns1 {
   typedef enum {
     THIS,
@@ -28,6 +34,10 @@ typedef foo foo_alias1;
 typedef foo_alias1 foo_alias2;
 typedef foo_alias2 foo_alias3;
 
+typedef anon_enum anon_enum_alias1;
+typedef anon_enum_alias1 anon_enum_alias2;
+typedef anon_enum_alias2 anon_enum_alias3;
+
 typedef struct bar {
   foo member1;
   foo_alias1 member2;
@@ -35,6 +45,10 @@ typedef struct bar {
   foo_alias3 member4;
   ns1::foo member5;
   ns2::Foo *member6;
+  anon_enum member7;
+  anon_enum_alias1 member8;
+  anon_enum_alias2 member9;
+  anon_enum_alias3 member10;
 } bar;
 
 class Baz {
