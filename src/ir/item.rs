@@ -61,6 +61,17 @@ pub trait ItemCanonicalPath {
     fn canonical_path(&self, ctx: &BindgenContext) -> Vec<String>;
 }
 
+/// A trait for determining if some IR thing is opaque or not.
+pub trait IsOpaque {
+    /// Extra context the IR thing needs to determine if it is opaque or not.
+    type Extra;
+
+    /// Returns `true` if the thing is opaque, and `false` otherwise.
+    ///
+    /// May only be called when `ctx` is in the codegen phase.
+    fn is_opaque(&self, ctx: &BindgenContext, extra: &Self::Extra) -> bool;
+}
+
 /// A trait for iterating over an item and its parents and up its ancestor chain
 /// up to (but not including) the implicit root module.
 pub trait ItemAncestors {
@@ -231,7 +242,7 @@ impl Trace for Item {
                 // don't want to stop collecting types even though they may be
                 // opaque.
                 if ty.should_be_traced_unconditionally() ||
-                   !self.is_opaque(ctx) {
+                   !self.is_opaque(ctx, &()) {
                     ty.trace(ctx, tracer, self);
                 }
             }
@@ -269,7 +280,7 @@ impl CanDeriveDebug for Item {
         let result = ctx.options().derive_debug &&
                      match self.kind {
             ItemKind::Type(ref ty) => {
-                if self.is_opaque(ctx) {
+                if self.is_opaque(ctx, &()) {
                     ty.layout(ctx)
                         .map_or(true, |l| l.opaque().can_derive_debug(ctx, ()))
                 } else {
@@ -292,7 +303,7 @@ impl CanDeriveDefault for Item {
         ctx.options().derive_default &&
         match self.kind {
             ItemKind::Type(ref ty) => {
-                if self.is_opaque(ctx) {
+                if self.is_opaque(ctx, &()) {
                     ty.layout(ctx)
                         .map_or(false,
                                 |l| l.opaque().can_derive_default(ctx, ()))
@@ -317,7 +328,7 @@ impl<'a> CanDeriveCopy<'a> for Item {
 
         let result = match self.kind {
             ItemKind::Type(ref ty) => {
-                if self.is_opaque(ctx) {
+                if self.is_opaque(ctx, &()) {
                     ty.layout(ctx)
                         .map_or(true, |l| l.opaque().can_derive_copy(ctx, ()))
                 } else {
@@ -335,7 +346,7 @@ impl<'a> CanDeriveCopy<'a> for Item {
     fn can_derive_copy_in_array(&self, ctx: &BindgenContext, _: ()) -> bool {
         match self.kind {
             ItemKind::Type(ref ty) => {
-                if self.is_opaque(ctx) {
+                if self.is_opaque(ctx, &()) {
                     ty.layout(ctx)
                         .map_or(true, |l| {
                             l.opaque().can_derive_copy_in_array(ctx, ())
@@ -591,15 +602,6 @@ impl Item {
                       "You're not supposed to call this yet");
         self.annotations.hide() ||
         ctx.hidden_by_name(&self.canonical_path(ctx), self.id)
-    }
-
-    /// Is this item opaque?
-    pub fn is_opaque(&self, ctx: &BindgenContext) -> bool {
-        debug_assert!(ctx.in_codegen_phase(),
-                      "You're not supposed to call this yet");
-        self.annotations.opaque() ||
-        self.as_type().map_or(false, |ty| ty.is_opaque()) ||
-        ctx.opaque_by_name(&self.canonical_path(ctx))
     }
 
     /// Is this a reference to another type?
@@ -858,6 +860,28 @@ impl Item {
     }
 }
 
+impl IsOpaque for ItemId {
+    type Extra = ();
+
+    fn is_opaque(&self, ctx: &BindgenContext, _: &()) -> bool {
+        debug_assert!(ctx.in_codegen_phase(),
+                      "You're not supposed to call this yet");
+        ctx.resolve_item(*self).is_opaque(ctx, &())
+    }
+}
+
+impl IsOpaque for Item {
+    type Extra = ();
+
+    fn is_opaque(&self, ctx: &BindgenContext, _: &()) -> bool {
+        debug_assert!(ctx.in_codegen_phase(),
+                      "You're not supposed to call this yet");
+        self.annotations.opaque() ||
+            self.as_type().map_or(false, |ty| ty.is_opaque(ctx, self)) ||
+            ctx.opaque_by_name(&self.canonical_path(ctx))
+    }
+}
+
 /// A set of items.
 pub type ItemSet = BTreeSet<ItemId>;
 
@@ -874,7 +898,7 @@ impl DotAttributes for Item {
                       self.id,
                       self.name(ctx).get()));
 
-        if self.is_opaque(ctx) {
+        if self.is_opaque(ctx, &()) {
             writeln!(out, "<tr><td>opaque</td><td>true</td></tr>")?;
         }
 

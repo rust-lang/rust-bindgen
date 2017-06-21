@@ -43,13 +43,4 @@ pub mod root {
     impl Clone for CapturingContentInfo {
         fn clone(&self) -> Self { *self }
     }
-    #[test]
-    fn __bindgen_test_layout_Maybe_instantiation() {
-        assert_eq!(::std::mem::size_of::<u8>() , 1usize , concat ! (
-                   "Size of template specialization: " , stringify ! ( u8 )
-                   ));
-        assert_eq!(::std::mem::align_of::<u8>() , 1usize , concat ! (
-                   "Alignment of template specialization: " , stringify ! ( u8
-                   ) ));
-    }
 }

@@ -4,7 +4,7 @@ use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::dot::DotAttributes;
-use super::item::Item;
+use super::item::{IsOpaque, Item};
 use super::layout::Layout;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::template::TemplateParameters;
@@ -1585,7 +1585,7 @@ impl Trace for CompInfo {
         // We unconditionally trace `CompInfo`'s template parameters and inner
         // types for the the usage analysis. However, we don't want to continue
         // tracing anything else, if this type is marked opaque.
-        if item.is_opaque(context) {
+        if item.is_opaque(context, &()) {
             return;
         }
 
