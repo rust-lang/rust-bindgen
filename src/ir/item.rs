@@ -1,5 +1,6 @@
 //! Bindgen's core intermediate representation type.
 
+use super::super::codegen::CONSTIFIED_ENUM_MODULE_REPR_NAME;
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId, PartialType};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
@@ -825,6 +826,36 @@ impl Item {
             _ => None,
         }
     }
+
+    /// Returns whether the item is a constified module enum
+    fn is_constified_enum_module(&self, ctx: &BindgenContext) -> bool {
+        // Do not jump through aliases, except for aliases that point to a type
+        // with the same name, since we dont generate coe for them.
+        let item = self.id.into_resolver().through_type_refs().resolve(ctx);
+        let type_ = match *item.kind() {
+            ItemKind::Type(ref type_) => type_,
+            _ => return false,
+        };
+
+        match *type_.kind() {
+            TypeKind::Enum(ref enum_) => {
+                enum_.is_constified_enum_module(ctx, self)
+            }
+            TypeKind::Alias(inner_id) => {
+                // TODO(emilio): Make this "hop through type aliases that aren't
+                // really generated" an option in `ItemResolver`?
+                let inner_item = ctx.resolve_item(inner_id);
+                let name = item.canonical_name(ctx);
+
+                if inner_item.canonical_name(ctx) == name {
+                    inner_item.is_constified_enum_module(ctx)
+                } else {
+                    false
+                }
+            }
+            _ => false,
+        }
+    }
 }
 
 /// A set of items.
@@ -1443,14 +1474,25 @@ impl ItemCanonicalPath for Item {
     fn namespace_aware_canonical_path(&self,
                                       ctx: &BindgenContext)
                                       -> Vec<String> {
-        let path = self.canonical_path(ctx);
-        if ctx.options().enable_cxx_namespaces {
-            return path;
-        }
+        let mut path = self.canonical_path(ctx);
+
+        // ASSUMPTION: (disable_name_namespacing && cxx_namespaces)
+        // is equivalent to
+        // disable_name_namespacing
         if ctx.options().disable_name_namespacing {
-            return vec![path.last().unwrap().clone()];
+            // Only keep the last item in path
+            let split_idx = path.len() - 1;
+            path = path.split_off(split_idx);
+        } else if !ctx.options().enable_cxx_namespaces {
+            // Ignore first item "root"
+            path = vec![path[1..].join("_")];
         }
-        return vec![path[1..].join("_")];
+
+        if self.is_constified_enum_module(ctx) {
+            path.push(CONSTIFIED_ENUM_MODULE_REPR_NAME.into());
+        }
+
+        return path;
     }
 
     fn canonical_path(&self, ctx: &BindgenContext) -> Vec<String> {
