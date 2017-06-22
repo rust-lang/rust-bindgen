@@ -29,7 +29,7 @@
 
 use super::context::{BindgenContext, ItemId};
 use super::derive::{CanDeriveCopy, CanDeriveDebug};
-use super::item::{Item, ItemAncestors};
+use super::item::{IsOpaque, Item, ItemAncestors, ItemCanonicalPath};
 use super::layout::Layout;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use clang;
@@ -302,6 +302,40 @@ impl TemplateInstantiation {
     pub fn has_destructor(&self, ctx: &BindgenContext) -> bool {
         ctx.resolve_type(self.definition).has_destructor(ctx) ||
         self.args.iter().any(|arg| ctx.resolve_type(*arg).has_destructor(ctx))
+    }
+}
+
+impl IsOpaque for TemplateInstantiation {
+    type Extra = Item;
+
+    /// Is this an opaque template instantiation?
+    fn is_opaque(&self, ctx: &BindgenContext, item: &Item) -> bool {
+        if self.template_definition().is_opaque(ctx, &()) {
+            return true;
+        }
+
+        // TODO(#774): This doesn't properly handle opaque instantiations where
+        // an argument is itself an instantiation because `canonical_name` does
+        // not insert the template arguments into the name, ie it for nested
+        // template arguments it creates "Foo" instead of "Foo<int>". The fully
+        // correct fix is to make `canonical_{name,path}` include template
+        // arguments properly.
+
+        let mut path = item.canonical_path(ctx);
+        let args: Vec<_> = self.template_arguments()
+            .iter()
+            .map(|arg| {
+                let arg_path = arg.canonical_path(ctx);
+                arg_path[1..].join("::")
+            }).collect();
+        {
+            let mut last = path.last_mut().unwrap();
+            last.push('<');
+            last.push_str(&args.join(", "));
+            last.push('>');
+        }
+
+        ctx.opaque_by_name(&path)
     }
 }
 

@@ -17,8 +17,8 @@ use ir::dot;
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
 use ir::function::{Abi, Function, FunctionSig};
 use ir::int::IntKind;
-use ir::item::{Item, ItemAncestors, ItemCanonicalName, ItemCanonicalPath,
-               ItemSet};
+use ir::item::{IsOpaque, Item, ItemAncestors, ItemCanonicalName,
+               ItemCanonicalPath, ItemSet};
 use ir::item_kind::ItemKind;
 use ir::layout::Layout;
 use ir::module::Module;
@@ -580,7 +580,7 @@ impl CodeGenerator for Type {
                 }
 
                 let mut used_template_params = item.used_template_params(ctx);
-                let inner_rust_type = if item.is_opaque(ctx) {
+                let inner_rust_type = if item.is_opaque(ctx, &()) {
                     used_template_params = None;
                     self.to_opaque(ctx, item)
                 } else {
@@ -759,8 +759,11 @@ impl CodeGenerator for TemplateInstantiation {
                    item: &Item) {
         // Although uses of instantiations don't need code generation, and are
         // just converted to rust types in fields, vars, etc, we take this
-        // opportunity to generate tests for their layout here.
-        if !ctx.options().layout_tests {
+        // opportunity to generate tests for their layout here. If the
+        // instantiation is opaque, then its presumably because we don't
+        // properly understand it (maybe because of specializations), and so we
+        // shouldn't emit layout tests either.
+        if !ctx.options().layout_tests || self.is_opaque(ctx, item) {
             return
         }
 
@@ -1568,7 +1571,7 @@ impl CodeGenerator for CompInfo {
         }
 
         // Yeah, sorry about that.
-        if item.is_opaque(ctx) {
+        if item.is_opaque(ctx, &()) {
             fields.clear();
             methods.clear();
 
@@ -1704,7 +1707,7 @@ impl CodeGenerator for CompInfo {
                         })
                         .count() > 1;
 
-                    let should_skip_field_offset_checks = item.is_opaque(ctx) ||
+                    let should_skip_field_offset_checks = item.is_opaque(ctx, &()) ||
                                                           too_many_base_vtables;
 
                     let check_field_offset = if should_skip_field_offset_checks {
@@ -2816,7 +2819,7 @@ impl TryToRustTy for Type {
                     .build())
             }
             TypeKind::TemplateInstantiation(ref inst) => {
-                inst.try_to_rust_ty(ctx, self)
+                inst.try_to_rust_ty(ctx, item)
             }
             TypeKind::ResolvedTypeRef(inner) => inner.try_to_rust_ty(ctx, &()),
             TypeKind::TemplateAlias(inner, _) |
@@ -2828,7 +2831,7 @@ impl TryToRustTy for Type {
                     .collect::<Vec<_>>();
 
                 let spelling = self.name().expect("Unnamed alias?");
-                if item.is_opaque(ctx) && !template_params.is_empty() {
+                if item.is_opaque(ctx, &()) && !template_params.is_empty() {
                     self.try_to_opaque(ctx, item)
                 } else if let Some(ty) = utils::type_from_named(ctx,
                                                                 spelling,
@@ -2841,7 +2844,7 @@ impl TryToRustTy for Type {
             TypeKind::Comp(ref info) => {
                 let template_params = item.used_template_params(ctx);
                 if info.has_non_type_template_params() ||
-                   (item.is_opaque(ctx) && template_params.is_some()) {
+                   (item.is_opaque(ctx, &()) && template_params.is_some()) {
                     return self.try_to_opaque(ctx, item);
                 }
 
@@ -2895,23 +2898,27 @@ impl TryToRustTy for Type {
 }
 
 impl TryToOpaque for TemplateInstantiation {
-    type Extra = Type;
+    type Extra = Item;
 
     fn try_get_layout(&self,
                       ctx: &BindgenContext,
-                      self_ty: &Type)
+                      item: &Item)
                       -> error::Result<Layout> {
-        self_ty.layout(ctx).ok_or(error::Error::NoLayoutForOpaqueBlob)
+        item.expect_type().layout(ctx).ok_or(error::Error::NoLayoutForOpaqueBlob)
     }
 }
 
 impl TryToRustTy for TemplateInstantiation {
-    type Extra = Type;
+    type Extra = Item;
 
     fn try_to_rust_ty(&self,
                       ctx: &BindgenContext,
-                      _: &Type)
+                      item: &Item)
                       -> error::Result<P<ast::Ty>> {
+        if self.is_opaque(ctx, item) {
+            return Err(error::Error::InstantiationOfOpaqueType);
+        }
+
         let decl = self.template_definition();
         let mut ty = decl.try_to_rust_ty(ctx, &())?.unwrap();
 
@@ -2924,7 +2931,7 @@ impl TryToRustTy for TemplateInstantiation {
                 extra_assert!(decl.into_resolver()
                                   .through_type_refs()
                                   .resolve(ctx)
-                                  .is_opaque(ctx));
+                                  .is_opaque(ctx, &()));
                 return Err(error::Error::InstantiationOfOpaqueType);
             }
         };

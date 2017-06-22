@@ -2,7 +2,7 @@
 
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::int::IntKind;
-use super::item::{Item, ItemAncestors, ItemCanonicalPath, ItemSet};
+use super::item::{IsOpaque, Item, ItemAncestors, ItemCanonicalPath, ItemSet};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
 use super::named::{UsedTemplateParameters, analyze};
@@ -339,7 +339,7 @@ impl<'ctx> BindgenContext<'ctx> {
                location);
         debug_assert!(declaration.is_some() || !item.kind().is_type() ||
                       item.kind().expect_type().is_builtin_or_named() ||
-                      item.kind().expect_type().is_opaque(),
+                      item.kind().expect_type().is_opaque(self, &item),
                       "Adding a type without declaration?");
 
         let id = item.id();

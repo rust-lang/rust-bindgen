@@ -7,7 +7,7 @@ use super::dot::DotAttributes;
 use super::enum_ty::Enum;
 use super::function::FunctionSig;
 use super::int::IntKind;
-use super::item::Item;
+use super::item::{IsOpaque, Item};
 use super::layout::{Layout, Opaque};
 use super::objc::ObjCInterface;
 use super::template::{AsTemplateParam, TemplateInstantiation, TemplateParameters};
@@ -98,14 +98,6 @@ impl Type {
     pub fn is_comp(&self) -> bool {
         match self.kind {
             TypeKind::Comp(..) => true,
-            _ => false,
-        }
-    }
-
-    /// Is this type of kind `TypeKind::Opaque`?
-    pub fn is_opaque(&self) -> bool {
-        match self.kind {
-            TypeKind::Opaque => true,
             _ => false,
         }
     }
@@ -369,6 +361,18 @@ impl Type {
             TypeKind::Reference(..) |
             TypeKind::TemplateInstantiation(..) |
             TypeKind::ResolvedTypeRef(..) => true,
+            _ => false,
+        }
+    }
+}
+
+impl IsOpaque for Type {
+    type Extra = Item;
+
+    fn is_opaque(&self, ctx: &BindgenContext, item: &Item) -> bool {
+        match self.kind {
+            TypeKind::Opaque => true,
+            TypeKind::TemplateInstantiation(ref inst) => inst.is_opaque(ctx, item),
             _ => false,
         }
     }
