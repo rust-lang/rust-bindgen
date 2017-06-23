@@ -261,7 +261,7 @@ impl<'ctx> BindgenContext<'ctx> {
             effective_target = Some(HOST_TARGET.to_owned());
         }
 
-        // Mac os and Win32 need __ for mangled symbols but rust will automatically
+        // Mac os, iOS and Win32 need __ for mangled symbols but rust will automatically
         // prepend the extra _.
         //
         // We need to make sure that we don't include __ because rust will turn into
@@ -269,6 +269,7 @@ impl<'ctx> BindgenContext<'ctx> {
         let effective_target = effective_target.unwrap();
         let needs_mangling_hack =
             effective_target.contains("darwin") ||
+            effective_target.contains("ios") ||
             effective_target == "i686-pc-win32";
 
         let root_module = Self::build_root_module(ItemId(0));
