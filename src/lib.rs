@@ -1063,7 +1063,7 @@ impl<'ctx> Bindings<'ctx> {
         options.build();
 
         // TODO: Make this path fixup configurable?
-        if let Some(clang) = clang_sys::support::Clang::find(None) {
+        if let Some(clang) = clang_sys::support::Clang::find(None, &options.clang_args) {
             // If --target is specified, assume caller knows what they're doing
             // and don't mess with include paths for them
             let has_target_arg = options.clang_args
