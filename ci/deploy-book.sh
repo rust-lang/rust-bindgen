@@ -4,7 +4,7 @@ set -xeu
 cd "$(dirname "$0")/../book"
 
 # Ensure mdbook is installed.
-cargo install mdbook || true
+cargo install mdbook --vers "^0.0.22" || true
 export PATH="$PATH:~/.cargo/bin"
 
 # Get the git revision we are on.
