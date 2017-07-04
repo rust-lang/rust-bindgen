@@ -14,7 +14,6 @@ use super::template::{AsTemplateParam, TemplateInstantiation, TemplateParameters
 use super::traversal::{EdgeKind, Trace, Tracer};
 use clang::{self, Cursor};
 use parse::{ClangItemParser, ParseError, ParseResult};
-use std::cell::Cell;
 use std::io;
 use std::mem;
 
@@ -33,9 +32,6 @@ pub struct Type {
     kind: TypeKind,
     /// Whether this type is const-qualified.
     is_const: bool,
-    /// Don't go into an infinite loop when detecting if we have a vtable or
-    /// not.
-    detect_has_vtable_cycle: Cell<bool>,
 }
 
 /// The maximum number of items in an array for which Rust implements common
@@ -75,7 +71,6 @@ impl Type {
             layout: layout,
             kind: kind,
             is_const: is_const,
-            detect_has_vtable_cycle: Cell::new(false),
         }
     }
 
@@ -244,25 +239,15 @@ impl Type {
 
     /// Whether this type has a vtable.
     pub fn has_vtable(&self, ctx: &BindgenContext) -> bool {
-        if self.detect_has_vtable_cycle.get() {
-            return false;
-        }
-
-        self.detect_has_vtable_cycle.set(true);
-
         // FIXME: Can we do something about template parameters? Huh...
-        let result = match self.kind {
+        match self.kind {
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) |
             TypeKind::ResolvedTypeRef(t) => ctx.resolve_type(t).has_vtable(ctx),
             TypeKind::Comp(ref info) => info.has_vtable(ctx),
             TypeKind::TemplateInstantiation(ref inst) => inst.has_vtable(ctx),
             _ => false,
-        };
-
-        self.detect_has_vtable_cycle.set(false);
-
-        result
+        }
     }
 
     /// Returns whether this type has a destructor.
