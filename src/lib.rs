@@ -1057,6 +1057,26 @@ impl<'ctx> Bindings<'ctx> {
     pub fn generate(mut options: BindgenOptions,
                     span: Option<Span>)
                     -> Result<Bindings<'ctx>, ()> {
+        let version = clang_version();
+        let expected_version = if cfg!(feature = "testing_only_libclang_4") {
+            (4, 0)
+        } else if cfg!(feature = "testing_only_libclang_3_8") {
+            (3, 8)
+        } else {
+            // Default to 3.9.
+            (3, 9)
+        };
+
+        info!("Clang Version: {}", version.full);
+
+        match version.parsed {
+            None => warn!("Couldn't parse libclang version"),
+            Some(version) if version != expected_version => {
+                warn!("Using clang {:?}, expected {:?}", version, expected_version);
+            }
+            _ => {}
+        }
+
         let span = span.unwrap_or(DUMMY_SP);
         ensure_libclang_is_loaded();
 
@@ -1251,7 +1271,7 @@ pub struct ClangVersion {
 }
 
 /// Get the major and the minor semvar numbers of Clang's version
-pub fn clang_version() -> ClangVersion {
+fn clang_version() -> ClangVersion {
     if !clang_sys::is_loaded() {
         // TODO(emilio): Return meaningful error (breaking).
         clang_sys::load().expect("Unable to find libclang");
