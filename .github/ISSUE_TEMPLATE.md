@@ -1,7 +1,14 @@
 ### Input C/C++ Header
 
 ```C++
-// Insert your (minimal) C/C++ header here.
+// Insert your minimal C or C++ header here.
+//
+// It should *NOT* have any `#include`s! Not all systems have the same header
+// files, and therefore any `#include` harms reproducibility. Additionally,
+// the test case isn't minimal since the included file almost assuredly
+// contains things that aren't necessary to reproduce the bug, and makes
+// tracking it down much more difficult. If necessary, see
+// https://github.com/servo/rust-bindgen/blob/master/CONTRIBUTING.md#using-creduce-to-minimize-test-cases
 ```
 
 ### Bindgen Invocation
