@@ -12,21 +12,19 @@ pub const ARP_OP_REVREQUEST: ::std::os::raw::c_uint = 3;
 pub const ARP_OP_REVREPLY: ::std::os::raw::c_uint = 4;
 pub const ARP_OP_INVREQUEST: ::std::os::raw::c_uint = 8;
 pub const ARP_OP_INVREPLY: ::std::os::raw::c_uint = 9;
-/**
- * Ethernet address:
- * A universally administered address is uniquely assigned to a device by its
- * manufacturer. The first three octets (in transmission order) contain the
- * Organizationally Unique Identifier (OUI). The following three (MAC-48 and
- * EUI-48) octets are assigned by that organization with the only constraint
- * of uniqueness.
- * A locally administered address is assigned to a device by a network
- * administrator and does not contain OUIs.
- * See http://standards.ieee.org/regauth/groupmac/tutorial.html
- */
+/// Ethernet address:
+/// A universally administered address is uniquely assigned to a device by its
+/// manufacturer. The first three octets (in transmission order) contain the
+/// Organizationally Unique Identifier (OUI). The following three (MAC-48 and
+/// EUI-48) octets are assigned by that organization with the only constraint
+/// of uniqueness.
+/// A locally administered address is assigned to a device by a network
+/// administrator and does not contain OUIs.
+/// See http://standards.ieee.org/regauth/groupmac/tutorial.html
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy)]
 pub struct ether_addr {
-    /**< Addr bytes in tx order */
+    /// < Addr bytes in tx order
     pub addr_bytes: [u8; 6usize],
 }
 #[test]
@@ -44,19 +42,17 @@ fn bindgen_test_layout_ether_addr() {
 impl Clone for ether_addr {
     fn clone(&self) -> Self { *self }
 }
-/**
- * ARP header IPv4 payload.
- */
+/// ARP header IPv4 payload.
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy)]
 pub struct arp_ipv4 {
-    /**< sender hardware address */
+    /// < sender hardware address
     pub arp_sha: ether_addr,
-    /**< sender IP address */
+    /// < sender IP address
     pub arp_sip: u32,
-    /**< target hardware address */
+    /// < target hardware address
     pub arp_tha: ether_addr,
-    /**< target IP address */
+    /// < target IP address
     pub arp_tip: u32,
 }
 #[test]
@@ -89,9 +85,7 @@ fn bindgen_test_layout_arp_ipv4() {
 impl Clone for arp_ipv4 {
     fn clone(&self) -> Self { *self }
 }
-/**
- * ARP header.
- */
+/// ARP header.
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy)]
 pub struct arp_hdr {

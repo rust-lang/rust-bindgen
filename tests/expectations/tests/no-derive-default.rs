@@ -5,11 +5,9 @@
 
 #[repr(C)] #[derive(Copy, Clone, Debug)] pub struct foo { bar: ::std::os::raw::c_int, }
 
-/**
- * bar should compile. It will normally derive default, but our blacklist of foo
- * and replacement for another type that doesn't implement it would prevent it
- * from building if --no-derive-default didn't work.
- */
+/// bar should compile. It will normally derive default, but our blacklist of foo
+/// and replacement for another type that doesn't implement it would prevent it
+/// from building if --no-derive-default didn't work.
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct bar {

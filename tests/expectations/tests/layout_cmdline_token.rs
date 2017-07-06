@@ -4,10 +4,8 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
 
-/**
- * Stores a pointer to the ops struct, and the offset: the place to
- * write the parsed result in the destination structure.
- */
+/// Stores a pointer to the ops struct, and the offset: the place to
+/// write the parsed result in the destination structure.
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct cmdline_token_hdr {
@@ -38,29 +36,27 @@ impl Default for cmdline_token_hdr {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 pub type cmdline_parse_token_hdr_t = cmdline_token_hdr;
-/**
- * A token is defined by this structure.
- *
- * parse() takes the token as first argument, then the source buffer
- * starting at the token we want to parse. The 3rd arg is a pointer
- * where we store the parsed data (as binary). It returns the number of
- * parsed chars on success and a negative value on error.
- *
- * complete_get_nb() returns the number of possible values for this
- * token if completion is possible. If it is NULL or if it returns 0,
- * no completion is possible.
- *
- * complete_get_elt() copy in dstbuf (the size is specified in the
- * parameter) the i-th possible completion for this token.  returns 0
- * on success or and a negative value on error.
- *
- * get_help() fills the dstbuf with the help for the token. It returns
- * -1 on error and 0 on success.
- */
+/// A token is defined by this structure.
+///
+/// parse() takes the token as first argument, then the source buffer
+/// starting at the token we want to parse. The 3rd arg is a pointer
+/// where we store the parsed data (as binary). It returns the number of
+/// parsed chars on success and a negative value on error.
+///
+/// complete_get_nb() returns the number of possible values for this
+/// token if completion is possible. If it is NULL or if it returns 0,
+/// no completion is possible.
+///
+/// complete_get_elt() copy in dstbuf (the size is specified in the
+/// parameter) the i-th possible completion for this token.  returns 0
+/// on success or and a negative value on error.
+///
+/// get_help() fills the dstbuf with the help for the token. It returns
+/// -1 on error and 0 on success.
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct cmdline_token_ops {
-    /** parse(token ptr, buf, res pts, buf len) */
+    /// parse(token ptr, buf, res pts, buf len)
     pub parse: ::std::option::Option<unsafe extern "C" fn(arg1:
                                                               *mut cmdline_parse_token_hdr_t,
                                                           arg2:
@@ -70,11 +66,11 @@ pub struct cmdline_token_ops {
                                                           arg4:
                                                               ::std::os::raw::c_uint)
                                          -> ::std::os::raw::c_int>,
-    /** return the num of possible choices for this token */
+    /// return the num of possible choices for this token
     pub complete_get_nb: ::std::option::Option<unsafe extern "C" fn(arg1:
                                                                         *mut cmdline_parse_token_hdr_t)
                                                    -> ::std::os::raw::c_int>,
-    /** return the elt x for this token (token, idx, dstbuf, size) */
+    /// return the elt x for this token (token, idx, dstbuf, size)
     pub complete_get_elt: ::std::option::Option<unsafe extern "C" fn(arg1:
                                                                          *mut cmdline_parse_token_hdr_t,
                                                                      arg2:
@@ -84,7 +80,7 @@ pub struct cmdline_token_ops {
                                                                      arg4:
                                                                          ::std::os::raw::c_uint)
                                                     -> ::std::os::raw::c_int>,
-    /** get help for this token (token, dstbuf, size) */
+    /// get help for this token (token, dstbuf, size)
     pub get_help: ::std::option::Option<unsafe extern "C" fn(arg1:
                                                                  *mut cmdline_parse_token_hdr_t,
                                                              arg2:

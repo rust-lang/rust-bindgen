@@ -8,11 +8,11 @@
 #[derive(Debug, Default, Copy)]
 pub struct SomeAccessors {
     pub mNoAccessor: ::std::os::raw::c_int,
-    /** <div rustbindgen accessor></div> */
+    /// <div rustbindgen accessor></div>
     pub mBothAccessors: ::std::os::raw::c_int,
-    /** <div rustbindgen accessor="unsafe"></div> */
+    /// <div rustbindgen accessor="unsafe"></div>
     pub mUnsafeAccessors: ::std::os::raw::c_int,
-    /** <div rustbindgen accessor="immutable"></div> */
+    /// <div rustbindgen accessor="immutable"></div>
     pub mImmutableAccessor: ::std::os::raw::c_int,
 }
 #[test]
@@ -68,7 +68,7 @@ impl SomeAccessors {
         &self.mImmutableAccessor
     }
 }
-/** <div rustbindgen accessor></div> */
+/// <div rustbindgen accessor></div>
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct AllAccessors {
@@ -114,7 +114,7 @@ impl AllAccessors {
         &mut self.mAlsoBothAccessors
     }
 }
-/** <div rustbindgen accessor="unsafe"></div> */
+/// <div rustbindgen accessor="unsafe"></div>
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct AllUnsafeAccessors {
@@ -162,16 +162,16 @@ impl AllUnsafeAccessors {
         &mut self.mAlsoBothAccessors
     }
 }
-/** <div rustbindgen accessor></div> */
+/// <div rustbindgen accessor></div>
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct ContradictAccessors {
     pub mBothAccessors: ::std::os::raw::c_int,
-    /** <div rustbindgen accessor="false"></div> */
+    /// <div rustbindgen accessor="false"></div>
     pub mNoAccessors: ::std::os::raw::c_int,
-    /** <div rustbindgen accessor="unsafe"></div> */
+    /// <div rustbindgen accessor="unsafe"></div>
     pub mUnsafeAccessors: ::std::os::raw::c_int,
-    /** <div rustbindgen accessor="immutable"></div> */
+    /// <div rustbindgen accessor="immutable"></div>
     pub mImmutableAccessor: ::std::os::raw::c_int,
 }
 #[test]
@@ -229,7 +229,7 @@ impl ContradictAccessors {
         &self.mImmutableAccessor
     }
 }
-/** <div rustbindgen accessor replaces="Replaced"></div> */
+/// <div rustbindgen accessor replaces="Replaced"></div>
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct Replaced {
@@ -258,7 +258,7 @@ impl Replaced {
         &mut self.mAccessor
     }
 }
-/** <div rustbindgen accessor></div> */
+/// <div rustbindgen accessor></div>
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct Wrapper {

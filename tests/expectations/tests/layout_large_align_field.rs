@@ -51,15 +51,15 @@ pub enum _bindgen_ty_1 {
     IP_MIN_FRAG_NUM = 2,
     IP_MAX_FRAG_NUM = 4,
 }
-/** @internal fragmented mbuf */
+/// @internal fragmented mbuf
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct ip_frag {
-    /**< offset into the packet */
+    /// < offset into the packet
     pub ofs: u16,
-    /**< length of fragment */
+    /// < length of fragment
     pub len: u16,
-    /**< fragment mbuf */
+    /// < fragment mbuf
     pub mb: *mut rte_mbuf,
 }
 #[test]
@@ -90,15 +90,15 @@ impl Clone for ip_frag {
 impl Default for ip_frag {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-/** @internal <src addr, dst_addr, id> to uniquely indetify fragmented datagram. */
+/// @internal <src addr, dst_addr, id> to uniquely indetify fragmented datagram.
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct ip_frag_key {
-    /**< src address, first 8 bytes used for IPv4 */
+    /// < src address, first 8 bytes used for IPv4
     pub src_dst: [u64; 4usize],
-    /**< dst address */
+    /// < dst address
     pub id: u32,
-    /**< src/dst key length */
+    /// < src/dst key length
     pub key_len: u32,
 }
 #[test]
@@ -126,26 +126,24 @@ fn bindgen_test_layout_ip_frag_key() {
 impl Clone for ip_frag_key {
     fn clone(&self) -> Self { *self }
 }
-/**
- * @internal Fragmented packet to reassemble.
- * First two entries in the frags[] array are for the last and first fragments.
- */
+/// @internal Fragmented packet to reassemble.
+/// First two entries in the frags[] array are for the last and first fragments.
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct ip_frag_pkt {
-    /**< LRU list */
+    /// < LRU list
     pub lru: ip_frag_pkt__bindgen_ty_1,
-    /**< fragmentation key */
+    /// < fragmentation key
     pub key: ip_frag_key,
-    /**< creation timestamp */
+    /// < creation timestamp
     pub start: u64,
-    /**< expected reassembled size */
+    /// < expected reassembled size
     pub total_size: u32,
-    /**< size of fragments received */
+    /// < size of fragments received
     pub frag_size: u32,
-    /**< index of next entry to fill */
+    /// < index of next entry to fill
     pub last_idx: u32,
-    /**< fragments */
+    /// < fragments
     pub frags: [ip_frag; 4usize],
     pub __bindgen_padding_0: [u64; 6usize],
 }
@@ -258,21 +256,21 @@ impl Clone for ip_pkt_list {
 impl Default for ip_pkt_list {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-/** fragmentation table statistics */
+/// fragmentation table statistics
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct ip_frag_tbl_stat {
-    /**< total # of find/insert attempts. */
+    /// < total # of find/insert attempts.
     pub find_num: u64,
-    /**< # of add ops. */
+    /// < # of add ops.
     pub add_num: u64,
-    /**< # of del ops. */
+    /// < # of del ops.
     pub del_num: u64,
-    /**< # of reuse (del/add) ops. */
+    /// < # of reuse (del/add) ops.
     pub reuse_num: u64,
-    /**< total # of add failures. */
+    /// < total # of add failures.
     pub fail_total: u64,
-    /**< # of 'no space' add failures. */
+    /// < # of 'no space' add failures.
     pub fail_nospace: u64,
     pub __bindgen_padding_0: [u64; 2usize],
 }
@@ -314,32 +312,32 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
 impl Clone for ip_frag_tbl_stat {
     fn clone(&self) -> Self { *self }
 }
-/** fragmentation table */
+/// fragmentation table
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct rte_ip_frag_tbl {
-    /**< ttl for table entries. */
+    /// < ttl for table entries.
     pub max_cycles: u64,
-    /**< hash value mask. */
+    /// < hash value mask.
     pub entry_mask: u32,
-    /**< max entries allowed. */
+    /// < max entries allowed.
     pub max_entries: u32,
-    /**< entries in use. */
+    /// < entries in use.
     pub use_entries: u32,
-    /**< hash assocaitivity. */
+    /// < hash assocaitivity.
     pub bucket_entries: u32,
-    /**< total size of the table. */
+    /// < total size of the table.
     pub nb_entries: u32,
-    /**< num of associativity lines. */
+    /// < num of associativity lines.
     pub nb_buckets: u32,
-    /**< last used entry. */
+    /// < last used entry.
     pub last: *mut ip_frag_pkt,
-    /**< LRU list for table entries. */
+    /// < LRU list for table entries.
     pub lru: ip_pkt_list,
     pub __bindgen_padding_0: u64,
-    /**< statistics counters. */
+    /// < statistics counters.
     pub stat: ip_frag_tbl_stat,
-    /**< hash table. */
+    /// < hash table.
     pub pkt: __IncompleteArrayField<ip_frag_pkt>,
 }
 #[test]
@@ -408,7 +406,7 @@ impl Clone for rte_ip_frag_tbl {
 impl Default for rte_ip_frag_tbl {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-/**< fragment mbuf */
+/// < fragment mbuf
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct rte_mbuf {

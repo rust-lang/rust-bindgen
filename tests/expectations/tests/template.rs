@@ -102,7 +102,7 @@ fn bindgen_test_layout_PODButContainsDtor() {
 impl Default for PODButContainsDtor {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-/** <div rustbindgen opaque> */
+/// <div rustbindgen opaque>
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Opaque {
@@ -130,9 +130,7 @@ fn bindgen_test_layout_POD() {
 impl Clone for POD {
     fn clone(&self) -> Self { *self }
 }
-/**
- * <div rustbindgen replaces="NestedReplaced"></div>
- */
+/// <div rustbindgen replaces="NestedReplaced"></div>
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct NestedReplaced<T> {
@@ -191,12 +189,10 @@ impl Clone for Untemplated {
 pub struct Templated {
     pub m_untemplated: Untemplated,
 }
-/**
- * If the replacement doesn't happen at the parse level the container would be
- * copy and the replacement wouldn't, so this wouldn't compile.
- *
- * <div rustbindgen replaces="ReplacedWithoutDestructor"></div>
- */
+/// If the replacement doesn't happen at the parse level the container would be
+/// copy and the replacement wouldn't, so this wouldn't compile.
+///
+/// <div rustbindgen replaces="ReplacedWithoutDestructor"></div>
 #[repr(C)]
 #[derive(Debug)]
 pub struct ReplacedWithoutDestructor<T> {
@@ -224,12 +220,10 @@ pub struct ShouldNotBeCopiableAsWell<U> {
 impl <U> Default for ShouldNotBeCopiableAsWell<U> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-/**
- * If the replacement doesn't happen at the parse level the container would be
- * copy and the replacement wouldn't, so this wouldn't compile.
- *
- * <div rustbindgen replaces="ReplacedWithoutDestructorFwd"></div>
- */
+/// If the replacement doesn't happen at the parse level the container would be
+/// copy and the replacement wouldn't, so this wouldn't compile.
+///
+/// <div rustbindgen replaces="ReplacedWithoutDestructorFwd"></div>
 #[repr(C)]
 #[derive(Debug)]
 pub struct ReplacedWithoutDestructorFwd<T> {

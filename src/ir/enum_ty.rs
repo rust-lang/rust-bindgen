@@ -1,5 +1,6 @@
 //! Intermediate representation for C/C++ enumerations.
 
+use super::comment;
 use super::context::{BindgenContext, ItemId};
 use super::item::Item;
 use super::ty::TypeKind;
@@ -113,7 +114,7 @@ impl Enum {
                                 })
                         });
 
-                    let comment = cursor.raw_comment();
+                    let comment = cursor.raw_comment().map(comment::preprocess);
                     variants.push(EnumVariant::new(name,
                                                    comment,
                                                    val,
