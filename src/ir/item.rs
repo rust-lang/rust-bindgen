@@ -768,8 +768,18 @@ impl Item {
             .ancestors(ctx)
             .filter(|id| *id != ctx.root_module())
             .take_while(|id| {
-                // Stop iterating ancestors once we reach a namespace.
+                // Stop iterating ancestors once we reach a non-inline namespace
+                // when opt.within_namespaces is set.
                 !opt.within_namespaces || !ctx.resolve_item(*id).is_module()
+            })
+            .filter(|id| {
+                if !ctx.options().conservative_inline_namespaces {
+                    if let ItemKind::Module(ref module) = *ctx.resolve_item(*id).kind() {
+                        return !module.is_inline();
+                    }
+                }
+
+                true
             })
             .map(|id| {
                 let item = ctx.resolve_item(id);
