@@ -7,6 +7,7 @@ use bindgen::{Builder, builder};
 use std::fs;
 use std::io::{BufRead, BufReader, Error, ErrorKind, Read, Write};
 use std::path::PathBuf;
+use std::process::Command;
 
 #[path="../src/options.rs"]
 mod options;
@@ -212,4 +213,15 @@ fn test_multiple_header_calls_in_builder() {
 
         panic!();
     }
+}
+
+#[test]
+fn no_system_header_includes() {
+    assert!(Command::new("./ci/no-includes.sh")
+            .current_dir(env!("CARGO_MANIFEST_DIR"))
+            .spawn()
+            .expect("should spawn ./ci/no-includes.sh OK")
+            .wait()
+            .expect("should wait for ./ci/no-includes OK")
+            .success());
 }
