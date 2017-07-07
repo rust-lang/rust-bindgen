@@ -28,9 +28,8 @@
 //! ```
 
 use super::context::{BindgenContext, ItemId};
-use super::derive::{CanDeriveCopy, CanDeriveDebug};
+use super::derive::{CanDeriveCopy};
 use super::item::{IsOpaque, Item, ItemAncestors, ItemCanonicalPath};
-use super::layout::Layout;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use clang;
 use parse::ClangItemParser;
@@ -350,40 +349,6 @@ impl<'a> CanDeriveCopy<'a> for TemplateInstantiation {
     fn can_derive_copy_in_array(&self, ctx: &BindgenContext, _: ()) -> bool {
         self.definition.can_derive_copy_in_array(ctx, ()) &&
         self.args.iter().all(|arg| arg.can_derive_copy_in_array(ctx, ()))
-    }
-}
-
-impl CanDeriveDebug for TemplateInstantiation {
-    type Extra = Option<Layout>;
-
-    fn can_derive_debug(&self,
-                        ctx: &BindgenContext,
-                        layout: Option<Layout>)
-                        -> bool {
-        self.args.iter().all(|arg| arg.can_derive_debug(ctx, ())) &&
-        self.definition
-            .into_resolver()
-            .through_type_refs()
-            .through_type_aliases()
-            .resolve(ctx)
-            .as_type()
-            .expect("Instantiation of a non-type?")
-            .as_comp()
-            .and_then(|c| {
-                // For non-type template parameters, we generate an opaque
-                // blob, and in this case the instantiation has a better
-                // idea of the layout than the definition does.
-                if c.has_non_type_template_params() {
-                    let opaque = layout
-                        .or_else(|| ctx.resolve_type(self.definition).layout(ctx))
-                        .unwrap_or(Layout::zero())
-                        .opaque();
-                    Some(opaque.can_derive_debug(ctx, ()))
-                } else {
-                    None
-                }
-            })
-            .unwrap_or_else(|| self.definition.can_derive_debug(ctx, ()))
     }
 }
 

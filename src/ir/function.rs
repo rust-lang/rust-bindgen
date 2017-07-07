@@ -7,7 +7,7 @@ use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::TypeKind;
 use clang;
 use clang_sys::CXCallingConv;
-use ir::derive::CanDeriveDebug;
+use ir::derive::CanTriviallyDeriveDebug;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use std::io;
 use syntax::abi;
@@ -440,10 +440,10 @@ impl Trace for FunctionSig {
 // and https://github.com/rust-lang/rust/issues/40158
 //
 // Note that copy is always derived, so we don't need to implement it.
-impl CanDeriveDebug for FunctionSig {
+impl CanTriviallyDeriveDebug for FunctionSig {
     type Extra = ();
 
-    fn can_derive_debug(&self, _ctx: &BindgenContext, _: ()) -> bool {
+    fn can_trivially_derive_debug(&self, _ctx: &BindgenContext, _: ()) -> bool {
         const RUST_DERIVE_FUNPTR_LIMIT: usize = 12;
         if self.argument_types.len() > RUST_DERIVE_FUNPTR_LIMIT {
             return false;

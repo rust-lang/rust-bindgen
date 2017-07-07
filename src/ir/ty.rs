@@ -539,35 +539,10 @@ impl TemplateParameters for TypeKind {
 }
 
 impl CanDeriveDebug for Type {
-    type Extra = ();
+    type Extra = Item;
 
-    fn can_derive_debug(&self, ctx: &BindgenContext, _: ()) -> bool {
-        match self.kind {
-            TypeKind::Array(t, len) => {
-                len <= RUST_DERIVE_IN_ARRAY_LIMIT && t.can_derive_debug(ctx, ())
-            }
-            TypeKind::ResolvedTypeRef(t) |
-            TypeKind::TemplateAlias(t, _) |
-            TypeKind::Alias(t) => t.can_derive_debug(ctx, ()),
-            TypeKind::Comp(ref info) => {
-                info.can_derive_debug(ctx, self.layout(ctx))
-            }
-            TypeKind::Pointer(inner) => {
-                let inner = ctx.resolve_type(inner);
-                if let TypeKind::Function(ref sig) =
-                    *inner.canonical_type(ctx).kind() {
-                    return sig.can_derive_debug(ctx, ());
-                }
-                return true;
-            }
-            TypeKind::TemplateInstantiation(ref inst) => {
-                inst.can_derive_debug(ctx, self.layout(ctx))
-            }
-            TypeKind::Opaque => {
-                self.layout.map_or(true, |l| l.opaque().can_derive_debug(ctx, ()))
-            }
-            _ => true,
-        }
+    fn can_derive_debug(&self, ctx: &BindgenContext, item: Item) -> bool {
+        ctx.lookup_item_id_can_derive_debug(item.id())
     }
 }
 

@@ -2,7 +2,7 @@
 
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId};
-use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
+use super::derive::{CanDeriveCopy, CanDeriveDefault};
 use super::dot::DotAttributes;
 use super::item::{IsOpaque, Item};
 use super::layout::Layout;
@@ -701,19 +701,6 @@ impl FieldMethods for FieldData {
     }
 }
 
-impl CanDeriveDebug for Field {
-    type Extra = ();
-
-    fn can_derive_debug(&self, ctx: &BindgenContext, _: ()) -> bool {
-        match *self {
-            Field::DataMember(ref data) => data.ty.can_derive_debug(ctx, ()),
-            Field::Bitfields(BitfieldUnit { ref bitfields, .. }) => bitfields.iter().all(|b| {
-                b.ty().can_derive_debug(ctx, ())
-            }),
-        }
-    }
-}
-
 impl CanDeriveDefault for Field {
     type Extra = ();
 
@@ -857,10 +844,6 @@ pub struct CompInfo {
     /// and pray, or behave as an opaque type.
     found_unknown_attr: bool,
 
-    /// Used to detect if we've run in a can_derive_debug cycle while cycling
-    /// around the template arguments.
-    detect_derive_debug_cycle: Cell<bool>,
-
     /// Used to detect if we've run in a can_derive_default cycle while cycling
     /// around the template arguments.
     detect_derive_default_cycle: Cell<bool>,
@@ -893,7 +876,6 @@ impl CompInfo {
             has_non_type_template_params: false,
             packed: false,
             found_unknown_attr: false,
-            detect_derive_debug_cycle: Cell::new(false),
             detect_derive_default_cycle: Cell::new(false),
             detect_has_destructor_cycle: Cell::new(false),
             is_forward_declaration: false,
@@ -1439,51 +1421,6 @@ impl TemplateParameters for CompInfo {
         } else {
             Some(self.template_params.clone())
         }
-    }
-}
-
-impl CanDeriveDebug for CompInfo {
-    type Extra = Option<Layout>;
-
-    fn can_derive_debug(&self,
-                        ctx: &BindgenContext,
-                        layout: Option<Layout>)
-                        -> bool {
-        if self.has_non_type_template_params() {
-            return layout.map_or(true, |l| l.opaque().can_derive_debug(ctx, ()));
-        }
-
-        // We can reach here recursively via template parameters of a member,
-        // for example.
-        if self.detect_derive_debug_cycle.get() {
-            warn!("Derive debug cycle detected!");
-            return true;
-        }
-
-        if self.kind == CompKind::Union {
-            if ctx.options().unstable_rust {
-                return false;
-            }
-
-            return layout.unwrap_or_else(Layout::zero)
-                .opaque()
-                .can_derive_debug(ctx, ());
-        }
-
-        self.detect_derive_debug_cycle.set(true);
-
-        let can_derive_debug = {
-            self.base_members
-                .iter()
-                .all(|base| base.ty.can_derive_debug(ctx, ())) &&
-            self.fields()
-                .iter()
-                .all(|f| f.can_derive_debug(ctx, ()))
-        };
-
-        self.detect_derive_debug_cycle.set(false);
-
-        can_derive_debug
     }
 }
 
