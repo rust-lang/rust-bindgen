@@ -3,7 +3,7 @@ extern crate diff;
 extern crate bindgen;
 extern crate shlex;
 
-use bindgen::{Builder, builder};
+use bindgen::{Builder, builder, clang_version};
 use std::fs;
 use std::io::{BufRead, BufReader, Error, ErrorKind, Read, Write};
 use std::path::PathBuf;
@@ -39,6 +39,19 @@ fn compare_generated_header(header: &PathBuf,
             expected.push("libclang-3.9");
         } else if cfg!(feature = "testing_only_libclang_3_8") {
             expected.push("libclang-3.8");
+        } else {
+            match clang_version().parsed {
+                None => {},
+                Some(version) => {
+                    let (maj, min) = version;
+                    let version_str = if maj >= 4 {
+                        "4".to_owned()
+                    } else {
+                        format!("{}.{}", maj, min)
+                    };
+                    expected.push(format!("libclang-{}", version_str));
+                }
+            }
         }
 
         expected.push(file_name);
