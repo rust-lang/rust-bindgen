@@ -4,6 +4,7 @@
 //! the IR.
 
 pub mod annotations;
+pub mod analysis;
 pub mod comp;
 pub mod context;
 pub mod derive;
