@@ -2,6 +2,7 @@
 
 use super::super::codegen::CONSTIFIED_ENUM_MODULE_REPR_NAME;
 use super::annotations::Annotations;
+use super::comment;
 use super::context::{BindgenContext, ItemId, PartialType};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::dot::DotAttributes;
@@ -1011,7 +1012,7 @@ impl ClangItemParser for Item {
             return Err(ParseError::Continue);
         }
 
-        let comment = cursor.raw_comment();
+        let comment = cursor.raw_comment().map(comment::preprocess);
         let annotations = Annotations::new(&cursor);
 
         let current_module = ctx.current_module();
@@ -1217,7 +1218,8 @@ impl ClangItemParser for Item {
         };
 
         let comment = decl.raw_comment()
-            .or_else(|| location.raw_comment());
+            .or_else(|| location.raw_comment())
+            .map(comment::preprocess);
         let annotations = Annotations::new(&decl)
             .or_else(|| Annotations::new(&location));
 

@@ -6,6 +6,7 @@
 pub mod annotations;
 pub mod analysis;
 pub mod comp;
+pub mod comment;
 pub mod context;
 pub mod derive;
 pub mod dot;

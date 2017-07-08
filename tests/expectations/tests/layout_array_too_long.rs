@@ -18,15 +18,15 @@ pub enum _bindgen_ty_1 {
     IP_MIN_FRAG_NUM = 2,
     IP_MAX_FRAG_NUM = 4,
 }
-/** @internal fragmented mbuf */
+/// @internal fragmented mbuf
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct ip_frag {
-    /**< offset into the packet */
+    /// < offset into the packet
     pub ofs: u16,
-    /**< length of fragment */
+    /// < length of fragment
     pub len: u16,
-    /**< fragment mbuf */
+    /// < fragment mbuf
     pub mb: *mut rte_mbuf,
 }
 #[test]
@@ -57,15 +57,15 @@ impl Clone for ip_frag {
 impl Default for ip_frag {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-/** @internal <src addr, dst_addr, id> to uniquely indetify fragmented datagram. */
+/// @internal <src addr, dst_addr, id> to uniquely indetify fragmented datagram.
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct ip_frag_key {
-    /**< src address, first 8 bytes used for IPv4 */
+    /// < src address, first 8 bytes used for IPv4
     pub src_dst: [u64; 4usize],
-    /**< dst address */
+    /// < dst address
     pub id: u32,
-    /**< src/dst key length */
+    /// < src/dst key length
     pub key_len: u32,
 }
 #[test]
@@ -93,26 +93,24 @@ fn bindgen_test_layout_ip_frag_key() {
 impl Clone for ip_frag_key {
     fn clone(&self) -> Self { *self }
 }
-/**
- * @internal Fragmented packet to reassemble.
- * First two entries in the frags[] array are for the last and first fragments.
- */
+/// @internal Fragmented packet to reassemble.
+/// First two entries in the frags[] array are for the last and first fragments.
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct ip_frag_pkt {
-    /**< LRU list */
+    /// < LRU list
     pub lru: ip_frag_pkt__bindgen_ty_1,
-    /**< fragmentation key */
+    /// < fragmentation key
     pub key: ip_frag_key,
-    /**< creation timestamp */
+    /// < creation timestamp
     pub start: u64,
-    /**< expected reassembled size */
+    /// < expected reassembled size
     pub total_size: u32,
-    /**< size of fragments received */
+    /// < size of fragments received
     pub frag_size: u32,
-    /**< index of next entry to fill */
+    /// < index of next entry to fill
     pub last_idx: u32,
-    /**< fragments */
+    /// < fragments
     pub frags: [ip_frag; 4usize],
     pub __bindgen_padding_0: [u64; 6usize],
 }
@@ -196,7 +194,7 @@ impl Clone for ip_frag_pkt {
 impl Default for ip_frag_pkt {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-/**< fragment mbuf */
+/// < fragment mbuf
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct rte_mbuf {

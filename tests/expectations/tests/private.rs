@@ -8,7 +8,7 @@
 #[derive(Debug, Default, Copy)]
 pub struct HasPrivate {
     pub mNotPrivate: ::std::os::raw::c_int,
-    /** <div rustbindgen private></div> */
+    /// <div rustbindgen private></div>
     mIsPrivate: ::std::os::raw::c_int,
 }
 #[test]
@@ -31,7 +31,7 @@ fn bindgen_test_layout_HasPrivate() {
 impl Clone for HasPrivate {
     fn clone(&self) -> Self { *self }
 }
-/** <div rustbindgen private></div> */
+/// <div rustbindgen private></div>
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct VeryPrivate {
@@ -58,11 +58,11 @@ fn bindgen_test_layout_VeryPrivate() {
 impl Clone for VeryPrivate {
     fn clone(&self) -> Self { *self }
 }
-/** <div rustbindgen private></div> */
+/// <div rustbindgen private></div>
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct ContradictPrivate {
-    /** <div rustbindgen private="false"></div> */
+    /// <div rustbindgen private="false"></div>
     pub mNotPrivate: ::std::os::raw::c_int,
     mIsPrivate: ::std::os::raw::c_int,
 }
