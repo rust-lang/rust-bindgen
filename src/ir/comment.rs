@@ -1,5 +1,7 @@
 //! Utilities for manipulating C/C++ comments.
 
+use std::iter;
+
 /// The type of a comment.
 #[derive(Debug, PartialEq, Eq)]
 enum Kind {
@@ -10,11 +12,12 @@ enum Kind {
     /// entire block ends with `*/`.
     MultiLine,
 }
+
 /// Preprocesses a C/C++ comment so that it is a valid Rust comment.
-pub fn preprocess(comment: String) -> String {
+pub fn preprocess(comment: &str, indent: usize) -> String {
     match self::kind(&comment) {
-        Some(Kind::SingleLines) => preprocess_single_lines(&comment),
-        Some(Kind::MultiLine) => preprocess_multi_line(&comment),
+        Some(Kind::SingleLines) => preprocess_single_lines(comment, indent),
+        Some(Kind::MultiLine) => preprocess_multi_line(comment, indent),
         None => comment.to_owned(),
     }
 }
@@ -30,38 +33,59 @@ fn kind(comment: &str) -> Option<Kind> {
     }
 }
 
+fn make_indent(indent: usize) -> String {
+    const RUST_INDENTATION: usize = 4;
+
+    iter::repeat(' ').take(indent * RUST_INDENTATION).collect()
+}
+
 /// Preprocesses mulitple single line comments.
 ///
 /// Handles lines starting with both `//` and `///`.
-fn preprocess_single_lines(comment: &str) -> String {
-    assert!(comment.starts_with("//"), "comment is not single line");
+fn preprocess_single_lines(comment: &str, indent: usize) -> String {
+    debug_assert!(comment.starts_with("//"), "comment is not single line");
 
+    let indent = make_indent(indent);
+    let mut is_first = true;
     let lines: Vec<_> = comment.lines()
-                               .map(|l| l.trim_left_matches('/').trim())
-                               .map(|l| format!("/// {}", l).trim().to_owned())
-                               .collect();
+        .map(|l| l.trim_left_matches('/').trim())
+        .map(|l| {
+            let indent = if is_first { "" } else { &*indent };
+            is_first = false;
+            let maybe_space = if l.is_empty() { "" } else { " " };
+            format!("{}///{}{}", indent, maybe_space, l)
+        })
+        .collect();
     lines.join("\n")
 }
 
-fn preprocess_multi_line(comment: &str) -> String {
+fn preprocess_multi_line(comment: &str, indent: usize) -> String {
     let comment = comment.trim_left_matches('/')
-                         .trim_left_matches("*")
-                         .trim_left_matches("!")
+                         .trim_left_matches('*')
+                         .trim_left_matches('!')
                          .trim_right_matches('/')
                          .trim_right_matches('*')
                          .trim();
 
+    let indent = make_indent(indent);
     // Strip any potential `*` characters preceding each line.
+    let mut is_first = true;
     let mut lines: Vec<_> = comment.lines()
         .map(|line| line.trim().trim_left_matches('*').trim())
         .skip_while(|line| line.is_empty()) // Skip the first empty lines.
-        .map(|line| format!("/// {}", line).trim().to_owned())
+        .map(|line| {
+            let indent = if is_first { "" } else { &*indent };
+            is_first = false;
+            let maybe_space = if line.is_empty() { "" } else { " " };
+            format!("{}///{}{}", indent, maybe_space, line)
+        })
         .collect();
 
-    // Remove the trailing `*/`.
-    let last_idx = lines.len() - 1;
-    if lines[last_idx].is_empty() {
-        lines.remove(last_idx);
+    // Remove the trailing line corresponding to the `*/`.
+    let last_line_is_empty = lines.last().map_or(false, |l| l.is_empty());
+
+    if last_line_is_empty {
+        lines.pop();
     }
 
     lines.join("\n")
@@ -79,16 +103,16 @@ mod test {
 
     #[test]
     fn processes_single_lines_correctly() {
-        assert_eq!(preprocess("/// hello".to_owned()), "/// hello");
-        assert_eq!(preprocess("// hello".to_owned()), "/// hello");
+        assert_eq!(preprocess("/// hello", 0), "/// hello");
+        assert_eq!(preprocess("// hello", 0), "/// hello");
     }
 
     #[test]
     fn processes_multi_lines_correctly() {
-        assert_eq!(preprocess("/** hello \n * world \n * foo \n */".to_owned()),
+        assert_eq!(preprocess("/** hello \n * world \n * foo \n */", 0),
                    "/// hello\n/// world\n/// foo");
 
-        assert_eq!(preprocess("/**\nhello\n*world\n*foo\n*/".to_owned()),
+        assert_eq!(preprocess("/**\nhello\n*world\n*foo\n*/", 0),
                    "/// hello\n/// world\n/// foo");
     }
 }

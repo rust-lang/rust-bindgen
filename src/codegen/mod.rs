@@ -11,14 +11,14 @@ use aster::struct_field::StructFieldBuilder;
 use ir::annotations::FieldAccessorKind;
 use ir::comp::{Base, BitfieldUnit, Bitfield, CompInfo, CompKind, Field,
                FieldData, FieldMethods, Method, MethodKind};
+use ir::comment;
 use ir::context::{BindgenContext, ItemId};
 use ir::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use ir::dot;
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
 use ir::function::{Abi, Function, FunctionSig};
 use ir::int::IntKind;
-use ir::item::{IsOpaque, Item, ItemAncestors, ItemCanonicalName,
-               ItemCanonicalPath, ItemSet};
+use ir::item::{IsOpaque, Item, ItemCanonicalName, ItemCanonicalPath, ItemSet};
 use ir::item_kind::ItemKind;
 use ir::layout::Layout;
 use ir::module::Module;
@@ -42,23 +42,13 @@ use syntax::ptr::P;
 // Name of type defined in constified enum module
 pub static CONSTIFIED_ENUM_MODULE_REPR_NAME: &'static str = "Type";
 
-fn root_import_depth(ctx: &BindgenContext, item: &Item) -> usize {
-    if !ctx.options().enable_cxx_namespaces {
-        return 0;
-    }
-
-    item.ancestors(ctx)
-        .filter(|id| ctx.resolve_item(*id).is_module())
-        .fold(1, |i, _| i + 1)
-}
-
 fn top_level_path(ctx: &BindgenContext, item: &Item) -> Vec<ast::Ident> {
     let mut path = vec![ctx.rust_ident_raw("self")];
 
     if ctx.options().enable_cxx_namespaces {
         let super_ = ctx.rust_ident_raw("super");
 
-        for _ in 0..root_import_depth(ctx, item) {
+        for _ in 0..item.codegen_depth(ctx) {
             path.push(super_.clone());
         }
     }
@@ -616,10 +606,8 @@ impl CodeGenerator for Type {
                 let rust_name = ctx.rust_ident(&name);
                 let mut typedef = aster::AstBuilder::new().item().pub_();
 
-                if ctx.options().generate_comments {
-                    if let Some(comment) = item.comment() {
-                        typedef = typedef.attr().doc(comment);
-                    }
+                if let Some(comment) = item.comment(ctx) {
+                    typedef = typedef.with_attr(attributes::doc(comment));
                 }
 
                 // We prefer using `pub use` over `pub type` because of:
@@ -839,6 +827,7 @@ trait FieldCodegen<'a> {
     fn codegen<F, M>(&self,
                      ctx: &BindgenContext,
                      fields_should_be_private: bool,
+                     codegen_depth: usize,
                      accessor_kind: FieldAccessorKind,
                      parent: &CompInfo,
                      anon_field_names: &mut AnonFieldNames,
@@ -857,6 +846,7 @@ impl<'a> FieldCodegen<'a> for Field {
     fn codegen<F, M>(&self,
                      ctx: &BindgenContext,
                      fields_should_be_private: bool,
+                     codegen_depth: usize,
                      accessor_kind: FieldAccessorKind,
                      parent: &CompInfo,
                      anon_field_names: &mut AnonFieldNames,
@@ -872,6 +862,7 @@ impl<'a> FieldCodegen<'a> for Field {
             Field::DataMember(ref data) => {
                 data.codegen(ctx,
                              fields_should_be_private,
+                             codegen_depth,
                              accessor_kind,
                              parent,
                              anon_field_names,
@@ -884,6 +875,7 @@ impl<'a> FieldCodegen<'a> for Field {
             Field::Bitfields(ref unit) => {
                 unit.codegen(ctx,
                              fields_should_be_private,
+                             codegen_depth,
                              accessor_kind,
                              parent,
                              anon_field_names,
@@ -903,6 +895,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
     fn codegen<F, M>(&self,
                      ctx: &BindgenContext,
                      fields_should_be_private: bool,
+                     codegen_depth: usize,
                      accessor_kind: FieldAccessorKind,
                      parent: &CompInfo,
                      anon_field_names: &mut AnonFieldNames,
@@ -945,8 +938,9 @@ impl<'a> FieldCodegen<'a> for FieldData {
 
         let mut attrs = vec![];
         if ctx.options().generate_comments {
-            if let Some(comment) = self.comment() {
-                attrs.push(attributes::doc(comment));
+            if let Some(raw_comment) = self.comment() {
+                let comment = comment::preprocess(raw_comment, codegen_depth + 1);
+                attrs.push(attributes::doc(comment))
             }
         }
 
@@ -1153,6 +1147,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
     fn codegen<F, M>(&self,
                      ctx: &BindgenContext,
                      fields_should_be_private: bool,
+                     codegen_depth: usize,
                      accessor_kind: FieldAccessorKind,
                      parent: &CompInfo,
                      anon_field_names: &mut AnonFieldNames,
@@ -1197,6 +1192,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         for bf in self.bitfields() {
             bf.codegen(ctx,
                        fields_should_be_private,
+                       codegen_depth,
                        accessor_kind,
                        parent,
                        anon_field_names,
@@ -1277,6 +1273,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
     fn codegen<F, M>(&self,
                      ctx: &BindgenContext,
                      _fields_should_be_private: bool,
+                     _codegen_depth: usize,
                      _accessor_kind: FieldAccessorKind,
                      parent: &CompInfo,
                      _anon_field_names: &mut AnonFieldNames,
@@ -1409,10 +1406,8 @@ impl CodeGenerator for CompInfo {
         let mut attributes = vec![];
         let mut needs_clone_impl = false;
         let mut needs_default_impl = false;
-        if ctx.options().generate_comments {
-            if let Some(comment) = item.comment() {
-                attributes.push(attributes::doc(comment));
-            }
+        if let Some(comment) = item.comment(ctx) {
+            attributes.push(attributes::doc(comment));
         }
         if self.packed() {
             attributes.push(attributes::repr_list(&["C", "packed"]));
@@ -1545,9 +1540,11 @@ impl CodeGenerator for CompInfo {
 
         let mut methods = vec![];
         let mut anon_field_names = AnonFieldNames::default();
+        let codegen_depth = item.codegen_depth(ctx);
         for field in self.fields() {
             field.codegen(ctx,
                           fields_should_be_private,
+                          codegen_depth,
                           struct_accessor_kind,
                           self,
                           &mut anon_field_names,
@@ -2367,10 +2364,8 @@ impl CodeGenerator for Enum {
             builder = builder.with_attr(attributes::repr("C"));
         }
 
-        if ctx.options().generate_comments {
-            if let Some(comment) = item.comment() {
-                builder = builder.with_attr(attributes::doc(comment));
-            }
+        if let Some(comment) = item.comment(ctx) {
+            builder = builder.with_attr(attributes::doc(comment));
         }
 
         if !is_constified_enum {
@@ -3069,10 +3064,8 @@ impl CodeGenerator for Function {
 
         let mut attributes = vec![];
 
-        if ctx.options().generate_comments {
-            if let Some(comment) = item.comment() {
-                attributes.push(attributes::doc(comment));
-            }
+        if let Some(comment) = item.comment(ctx) {
+            attributes.push(attributes::doc(comment));
         }
 
         if let Some(mangled) = mangled_name {

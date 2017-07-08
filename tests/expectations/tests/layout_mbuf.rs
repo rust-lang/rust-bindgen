@@ -98,7 +98,7 @@ pub struct rte_mbuf {
     pub next: *mut rte_mbuf,
     pub __bindgen_anon_4: rte_mbuf__bindgen_ty_5,
     /// Size of the application private data. In case of an indirect
-/// mbuf, it stores the direct mbuf private data size.
+    /// mbuf, it stores the direct mbuf private data size.
     pub priv_size: u16,
     /// Timesync flags for use with IEEE1588.
     pub timesync: u16,

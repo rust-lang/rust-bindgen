@@ -480,9 +480,35 @@ impl Item {
         self.parent_id = id;
     }
 
-    /// Get this `Item`'s comment, if it has any.
-    pub fn comment(&self) -> Option<&str> {
-        self.comment.as_ref().map(|c| &**c)
+    /// Returns the depth this item is indented to.
+    ///
+    /// FIXME(emilio): This may need fixes for the enums within modules stuff.
+    pub fn codegen_depth(&self, ctx: &BindgenContext) -> usize {
+        if !ctx.options().enable_cxx_namespaces {
+            return 0;
+        }
+
+        self.ancestors(ctx)
+            .filter(|id| {
+                ctx.resolve_item(*id).as_module().map_or(false, |module| {
+                    !module.is_inline() ||
+                        ctx.options().conservative_inline_namespaces
+                })
+            })
+            .count() + 1
+    }
+
+
+    /// Get this `Item`'s comment, if it has any, already preprocessed and with
+    /// the right indentation.
+    pub fn comment(&self, ctx: &BindgenContext) -> Option<String> {
+        if !ctx.options().generate_comments {
+            return None;
+        }
+
+        self.comment.as_ref().map(|comment| {
+            comment::preprocess(comment, self.codegen_depth(ctx))
+        })
     }
 
     /// What kind of item is this?
@@ -1012,7 +1038,7 @@ impl ClangItemParser for Item {
             return Err(ParseError::Continue);
         }
 
-        let comment = cursor.raw_comment().map(comment::preprocess);
+        let comment = cursor.raw_comment();
         let annotations = Annotations::new(&cursor);
 
         let current_module = ctx.current_module();
@@ -1218,8 +1244,7 @@ impl ClangItemParser for Item {
         };
 
         let comment = decl.raw_comment()
-            .or_else(|| location.raw_comment())
-            .map(comment::preprocess);
+            .or_else(|| location.raw_comment());
         let annotations = Annotations::new(&decl)
             .or_else(|| Annotations::new(&location));
 

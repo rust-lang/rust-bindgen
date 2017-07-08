@@ -1182,12 +1182,12 @@ pub struct rte_eth_fdir_masks {
     /// Bit mask for L4 destination port in big endian.
     pub dst_port_mask: u16,
     /// 6 bit mask for proper 6 bytes of Mac address, bit 0 matches the
-/// first byte on the wire
+    /// first byte on the wire
     pub mac_addr_byte_mask: u8,
     /// Bit mask for tunnel ID in big endian.
     pub tunnel_id_mask: u32,
     /// < 1 - Match tunnel type,
-/// 0 - Ignore tunnel type.
+    /// 0 - Ignore tunnel type.
     pub tunnel_type_mask: u8,
 }
 #[test]
@@ -1460,29 +1460,29 @@ impl Clone for rte_intr_conf {
 #[repr(C)]
 pub struct rte_eth_conf {
     /// < bitmap of ETH_LINK_SPEED_XXX of speeds to be
-/// used. ETH_LINK_SPEED_FIXED disables link
-/// autonegotiation, and a unique speed shall be
-/// set. Otherwise, the bitmap defines the set of
-/// speeds to be advertised. If the special value
-/// ETH_LINK_SPEED_AUTONEG (0) is used, all speeds
-/// supported are advertised.
+    /// used. ETH_LINK_SPEED_FIXED disables link
+    /// autonegotiation, and a unique speed shall be
+    /// set. Otherwise, the bitmap defines the set of
+    /// speeds to be advertised. If the special value
+    /// ETH_LINK_SPEED_AUTONEG (0) is used, all speeds
+    /// supported are advertised.
     pub link_speeds: u32,
     /// < Port RX configuration.
     pub rxmode: rte_eth_rxmode,
     /// < Port TX configuration.
     pub txmode: rte_eth_txmode,
     /// < Loopback operation mode. By default the value
-/// is 0, meaning the loopback mode is disabled.
-/// Read the datasheet of given ethernet controller
-/// for details. The possible values of this field
-/// are defined in implementation of each driver.
+    /// is 0, meaning the loopback mode is disabled.
+    /// Read the datasheet of given ethernet controller
+    /// for details. The possible values of this field
+    /// are defined in implementation of each driver.
     pub lpbk_mode: u32,
     /// < Port RX filtering configuration (union).
     pub rx_adv_conf: rte_eth_conf__bindgen_ty_1,
     /// < Port TX DCB configuration (union).
     pub tx_adv_conf: rte_eth_conf__bindgen_ty_2,
     /// Currently,Priority Flow Control(PFC) are supported,if DCB with PFC
-/// is needed,and the variable must be set ETH_DCB_PFC_SUPPORT.
+    /// is needed,and the variable must be set ETH_DCB_PFC_SUPPORT.
     pub dcb_capability_en: u32,
     /// < FDIR configuration.
     pub fdir_conf: rte_fdir_conf,
