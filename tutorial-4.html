@@ -22,7 +22,7 @@
         <link rel="stylesheet" href="tomorrow-night.css">
 
         <!-- MathJax -->
-        <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
         <!-- Fetch JQuery from CDN but have a local fallback -->
         <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
@@ -48,7 +48,7 @@
         </script>
 
         <div id="sidebar" class="sidebar">
-            <ul class="chapter"><li><a href="./introduction.html"><strong>1.</strong> Introduction</a></li><li><a href="./requirements.html"><strong>2.</strong> Requirements</a></li><li><a href="./library-usage.html"><strong>3.</strong> Library Usage with <code>build.rs</code></a></li><li><ul class="section"><li><a href="./tutorial-0.html"><strong>3.1.</strong> Tutorial</a></li><li><ul class="section"><li><a href="./tutorial-1.html"><strong>3.1.1.</strong> Add <code>bindgen</code> as a Build Dependency</a></li><li><a href="./tutorial-2.html"><strong>3.1.2.</strong> Create a <code>wrapper.h</code> Header</a></li><li><a href="./tutorial-3.html"><strong>3.1.3.</strong> Create a <code>build.rs</code> File</a></li><li><a href="./tutorial-4.html" class="active"><strong>3.1.4.</strong> Include the Generated Bindings in <code>src/lib.rs</code></a></li><li><a href="./tutorial-5.html"><strong>3.1.5.</strong> Write a Sanity Test</a></li><li><a href="./tutorial-6.html"><strong>3.1.6.</strong> Publish Your Crate!</a></li></ul></li></ul></li><li><a href="./command-line-usage.html"><strong>4.</strong> Command Line Usage</a></li><li><a href="./customizing-generated-bindings.html"><strong>5.</strong> Customizing the Generated Bindings</a></li><li><ul class="section"><li><a href="./whitelisting.html"><strong>5.1.</strong> Whitelisting</a></li><li><a href="./blacklisting.html"><strong>5.2.</strong> Blacklisting</a></li><li><a href="./opaque.html"><strong>5.3.</strong> Treating a Type as an Opaque Blob of Bytes</a></li><li><a href="./replacing-types.html"><strong>5.4.</strong> Replacing One Type with Another</a></li><li><a href="./nocopy.html"><strong>5.5.</strong> Preventing the Derivation of <code>Copy</code> and <code>Clone</code></a></li></ul></li><li><a href="./cpp.html"><strong>6.</strong> Generating Bindings to C++</a></li></ul>
+            <ul class="chapter"><li><a href="./introduction.html"><strong>1.</strong> Introduction</a></li><li><a href="./requirements.html"><strong>2.</strong> Requirements</a></li><li><a href="./library-usage.html"><strong>3.</strong> Library Usage with <code>build.rs</code></a></li><li><ul class="section"><li><a href="./tutorial-0.html"><strong>3.1.</strong> Tutorial</a></li><li><ul class="section"><li><a href="./tutorial-1.html"><strong>3.1.1.</strong> Add <code>bindgen</code> as a Build Dependency</a></li><li><a href="./tutorial-2.html"><strong>3.1.2.</strong> Create a <code>wrapper.h</code> Header</a></li><li><a href="./tutorial-3.html"><strong>3.1.3.</strong> Create a <code>build.rs</code> File</a></li><li><a href="./tutorial-4.html" class="active"><strong>3.1.4.</strong> Include the Generated Bindings in <code>src/lib.rs</code></a></li><li><a href="./tutorial-5.html"><strong>3.1.5.</strong> Write a Sanity Test</a></li><li><a href="./tutorial-6.html"><strong>3.1.6.</strong> Publish Your Crate!</a></li></ul></li></ul></li><li><a href="./command-line-usage.html"><strong>4.</strong> Command Line Usage</a></li><li><a href="./customizing-generated-bindings.html"><strong>5.</strong> Customizing the Generated Bindings</a></li><li><ul class="section"><li><a href="./whitelisting.html"><strong>5.1.</strong> Whitelisting</a></li><li><a href="./blacklisting.html"><strong>5.2.</strong> Blacklisting</a></li><li><a href="./opaque.html"><strong>5.3.</strong> Treating a Type as an Opaque Blob of Bytes</a></li><li><a href="./replacing-types.html"><strong>5.4.</strong> Replacing One Type with Another</a></li><li><a href="./nocopy.html"><strong>5.5.</strong> Preventing the Derivation of <code>Copy</code> and <code>Clone</code></a></li></ul></li><li><a href="./cpp.html"><strong>6.</strong> Generating Bindings to C++</a></li><li><a href="./using-unions.html"><strong>7.</strong> Using Unions</a></li></ul>
         </div>
 
         <div id="page-wrapper" class="page-wrapper">
@@ -81,13 +81,13 @@ include!(concat!(env!(&quot;OUT_DIR&quot;), &quot;/bindings.rs&quot;));
 bunch of warnings with a few <code>#![allow(...)]</code> pragmas.</p>
 <p>We can run <code>cargo build</code> again to check that the bindings themselves compile:</p>
 <pre><code class="language-bash">$ cargo build
-   Compiling libbindgen-tutorial-bzip2-sys v0.1.0
+   Compiling bindgen-tutorial-bzip2-sys v0.1.0
     Finished debug [unoptimized + debuginfo] target(s) in 62.8 secs
 </code></pre>
 <p>And we can run <code>cargo test</code> to verify that the layout, size, and alignment of
 our generated Rust FFI structs match what <code>bindgen</code> thinks they should be:</p>
 <pre><code class="language-bash">$ cargo test
-   Compiling libbindgen-tutorial-bzip2-sys v0.1.0
+   Compiling bindgen-tutorial-bzip2-sys v0.1.0
     Finished debug [unoptimized + debuginfo] target(s) in 0.0 secs
      Running target/debug/deps/bzip2_sys-10413fc2af207810
 
@@ -109,7 +109,7 @@ test bindgen_test_layout__opaque_pthread_t ... ok
 
 test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured
 
-   Doc-tests libbindgen-tutorial-bzip2-sys
+   Doc-tests bindgen-tutorial-bzip2-sys
 
 running 0 tests
 
@@ -157,6 +157,9 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured
 
         <!-- Livereload script (if served using the cli tool) -->
         
+
+        
+
 
         <script src="highlight.js"></script>
         <script src="book.js"></script>
