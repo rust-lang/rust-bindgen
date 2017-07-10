@@ -1,7 +1,6 @@
 //! Compound types (unions and structs) in our intermediate representation.
 
 use super::annotations::Annotations;
-use super::comment;
 use super::context::{BindgenContext, ItemId};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::dot::DotAttributes;
@@ -1102,7 +1101,7 @@ impl CompInfo {
                                                           Some(potential_id),
                                                           ctx);
 
-                    let comment = cur.raw_comment().map(comment::preprocess);
+                    let comment = cur.raw_comment();
                     let annotations = Annotations::new(&cur);
                     let name = cur.spelling();
                     let is_mutable = cursor.is_mutable_field();

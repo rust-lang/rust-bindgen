@@ -1,6 +1,5 @@
 //! Intermediate representation for C/C++ functions and methods.
 
-use super::comment;
 use super::context::{BindgenContext, ItemId};
 use super::dot::DotAttributes;
 use super::item::Item;
@@ -406,7 +405,7 @@ impl ClangSubItemParser for Function {
             mangled_name = None;
         }
 
-        let comment = cursor.raw_comment().map(comment::preprocess);
+        let comment = cursor.raw_comment();
 
         let function = Self::new(name, mangled_name, sig, comment);
         Ok(ParseResult::New(function, Some(cursor)))
