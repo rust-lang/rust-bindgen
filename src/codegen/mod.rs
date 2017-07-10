@@ -1571,7 +1571,8 @@ impl CodeGenerator for CompInfo {
         }
 
         // Yeah, sorry about that.
-        if item.is_opaque(ctx, &()) {
+        let is_opaque = item.is_opaque(ctx, &());
+        if is_opaque {
             fields.clear();
             methods.clear();
 
@@ -1613,7 +1614,14 @@ impl CodeGenerator for CompInfo {
         // NOTE: This check is conveniently here to avoid the dummy fields we
         // may add for unused template parameters.
         if self.is_unsized(ctx) {
-            let has_address = layout.map_or(true, |l| l.size != 0);
+            let has_address = if is_opaque {
+                // Generate the address field if it's an opaque type and
+                // couldn't determine the layout of the blob.
+                layout.is_none()
+            } else {
+                layout.map_or(true, |l| l.size != 0)
+            };
+
             if has_address {
                 let ty = BlobTyBuilder::new(Layout::new(1, 1)).build();
                 let field = StructFieldBuilder::named("_address")
@@ -1670,9 +1678,11 @@ impl CodeGenerator for CompInfo {
         }
 
         if used_template_params.is_none() {
-            for var in self.inner_vars() {
-                ctx.resolve_item(*var)
-                    .codegen(ctx, result, whitelisted_items, &());
+            if !is_opaque {
+                for var in self.inner_vars() {
+                    ctx.resolve_item(*var)
+                        .codegen(ctx, result, whitelisted_items, &());
+                }
             }
 
             if ctx.options().layout_tests {
@@ -1707,8 +1717,8 @@ impl CodeGenerator for CompInfo {
                         })
                         .count() > 1;
 
-                    let should_skip_field_offset_checks = item.is_opaque(ctx, &()) ||
-                                                          too_many_base_vtables;
+                    let should_skip_field_offset_checks =
+                        is_opaque || too_many_base_vtables;
 
                     let check_field_offset = if should_skip_field_offset_checks {
                         None
