@@ -9,7 +9,7 @@ use std::collections::{BTreeMap, VecDeque};
 ///
 ///   from --> to
 ///
-/// The `from` is left implicit: it is the concrete `Trace` implementor which
+/// The `from` is left implicit: it is the concrete `Trace` implementer which
 /// yielded this outgoing edge.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Edge {
@@ -350,7 +350,7 @@ pub struct ItemTraversal<'ctx, 'gen, Storage, Queue, Predicate>
     /// The set of items that we have seen, but have yet to traverse.
     queue: Queue,
 
-    /// The predicate that determins which edges this traversal will follow.
+    /// The predicate that determines which edges this traversal will follow.
     predicate: Predicate,
 
     /// The item we are currently traversing.
