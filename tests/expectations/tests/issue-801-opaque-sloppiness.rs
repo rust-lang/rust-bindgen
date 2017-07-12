@@ -5,6 +5,11 @@
 
 
 #[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct A {
+    _unused: [u8; 0],
+}
+#[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct B {
     pub _bindgen_opaque_blob: u8,
@@ -18,6 +23,10 @@ fn bindgen_test_layout_B() {
 }
 impl Clone for B {
     fn clone(&self) -> Self { *self }
+}
+extern "C" {
+    #[link_name = "_ZN1B1aE"]
+    pub static mut B_a: A;
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
