@@ -272,14 +272,21 @@ With those two things in hand, running `creduce` looks like this:
 
 ### Isolating Your Test Case
 
-Use the `-save-temps` flag to make Clang spit out its intermediate
-representations when compiling the test case into an object file.
+If you're using `bindgen` as a command line tool, pass
+`--dump-preprocessed-input` flag.
 
-    $ clang[++ -x c++ --std=c++14] -save-temps -c my_test_case.h
+If you're using `bindgen` as a Rust library, invoke the
+`bindgen::Builder::dump_preprocessed_input` method where you call
+`bindgen::Builder::generate`.
 
-There should now be a `my_test_case.ii` file, which is the results after the C
-pre-processor has processed all the `#include`s, `#define`s, and `#ifdef`s. This
-is generally what we're looking for.
+Afterwards, there should be a `__bindgen.i` or `__bindgen.ii` file containing
+the combined and preprocessed input headers, which is usable as an isolated,
+standalone test case.
+
+Note that the preprocessor likely removed all comments, so if the bug you're
+trying to pin down involves source annotations (for example, `/** <div
+rustbindgen opaque> */`), then you will have to manually reapply them to the
+preprocessed file.
 
 ### Writing a Predicate Script
 
