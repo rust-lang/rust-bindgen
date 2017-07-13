@@ -166,7 +166,7 @@ impl Default for CodegenConfig {
 /// // Write the generated bindings to an output file.
 /// try!(bindings.write_to_file("path/to/output.rs"));
 /// ```
-#[derive(Debug,Default)]
+#[derive(Debug, Default)]
 pub struct Builder {
     options: BindgenOptions,
     input_headers: Vec<String>,
