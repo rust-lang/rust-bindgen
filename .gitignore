@@ -8,3 +8,6 @@ tests/expectations/Cargo.lock
 # Test script output
 ir.dot
 ir.png
+
+# Output of the --dump-preprocessed-input flag.
+__bindgen.*
