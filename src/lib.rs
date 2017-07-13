@@ -87,10 +87,11 @@ use ir::item::Item;
 use parse::{ClangItemParser, ParseError};
 use regex_set::RegexSet;
 
-use std::fs::OpenOptions;
+use std::fs::{File, OpenOptions};
 use std::iter;
 use std::io::{self, Write};
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::process::Command;
 use std::sync::Arc;
 
 use syntax::ast;
@@ -813,6 +814,75 @@ impl Builder {
         );
 
         Bindings::generate(self.options, None)
+    }
+
+    /// Preprocess and dump the input header files to disk.
+    ///
+    /// This is useful when debugging bindgen, using C-Reduce, or when filing
+    /// issues. The resulting file will be named something like `__bindgen.i` or
+    /// `__bindgen.ii`
+    pub fn dump_preprocessed_input(&self) -> io::Result<()> {
+        let clang = clang_sys::support::Clang::find(None, &[])
+            .ok_or_else(|| io::Error::new(io::ErrorKind::Other,
+                                          "Cannot find clang executable"))?;
+
+        // The contents of a wrapper file that includes all the input header
+        // files.
+        let mut wrapper_contents = String::new();
+
+        // Whether we are working with C or C++ inputs.
+        let mut is_cpp = false;
+
+        // For each input header, add `#include "$header"`.
+        for header in &self.input_headers {
+            is_cpp |= header.ends_with(".hpp");
+
+            wrapper_contents.push_str("#include \"");
+            wrapper_contents.push_str(header);
+            wrapper_contents.push_str("\"\n");
+        }
+
+        // For each input header content, add a prefix line of `#line 0 "$name"`
+        // followed by the contents.
+        for &(ref name, ref contents) in &self.input_header_contents {
+            is_cpp |= name.ends_with(".hpp");
+
+            wrapper_contents.push_str("#line 0 \"");
+            wrapper_contents.push_str(name);
+            wrapper_contents.push_str("\"\n");
+            wrapper_contents.push_str(contents);
+        }
+
+        is_cpp |= self.options.clang_args.windows(2).any(|w| {
+            w[0] == "-x=c++" || w[1] == "-x=c++" || w == &["-x", "c++"]
+        });
+
+        let wrapper_path = PathBuf::from(if is_cpp {
+            "__bindgen.cpp"
+        } else {
+            "__bindgen.c"
+        });
+
+        {
+            let mut wrapper_file = File::create(&wrapper_path)?;
+            wrapper_file.write(wrapper_contents.as_bytes())?;
+        }
+
+        let mut cmd = Command::new(&clang.path);
+        cmd.arg("-save-temps")
+            .arg("-c")
+            .arg(&wrapper_path);
+
+        for a in &self.options.clang_args {
+            cmd.arg(a);
+        }
+
+        if cmd.spawn()?.wait()?.success() {
+            Ok(())
+        } else {
+            Err(io::Error::new(io::ErrorKind::Other,
+                               "clang exited with non-zero status"))
+        }
     }
 }
 

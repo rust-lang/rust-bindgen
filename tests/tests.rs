@@ -238,3 +238,31 @@ fn no_system_header_includes() {
             .expect("should wait for ./ci/no-includes OK")
             .success());
 }
+
+#[test]
+fn dump_preprocessed_input() {
+    let arg_keyword = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/arg_keyword.hpp");
+    let empty_layout = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/cpp-empty-layout.hpp");
+
+    builder()
+        .header(arg_keyword)
+        .header(empty_layout)
+        .dump_preprocessed_input()
+        .expect("should dump preprocessed input");
+
+    fn slurp(p: &str) -> String {
+        let mut contents = String::new();
+        let mut file = fs::File::open(p).unwrap();
+        file.read_to_string(&mut contents).unwrap();
+        contents
+    }
+
+    let bindgen_ii = slurp("__bindgen.ii");
+    let arg_keyword = slurp(arg_keyword);
+    let empty_layout = slurp(empty_layout);
+
+    assert!(bindgen_ii.find(&arg_keyword).is_some(),
+            "arg_keyword.hpp is in the preprocessed file");
+    assert!(bindgen_ii.find(&empty_layout).is_some(),
+            "cpp-empty-layout.hpp is in the preprocessed file");
+}
