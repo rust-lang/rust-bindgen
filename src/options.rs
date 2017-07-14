@@ -214,6 +214,12 @@ pub fn builder_from_flags<I>
             Arg::with_name("verbose")
                 .long("verbose")
                 .help("Print verbose error messages."),
+            Arg::with_name("dump-preprocessed-input")
+                .long("dump-preprocessed-input")
+                .help("Preprocess and dump the input header files to disk. \
+                       Useful when debugging bindgen, using C-Reduce, or when \
+                       filing issues. The resulting file will be named \
+                       something like `__bindgen.i` or `__bindgen.ii`.")
         ]) // .args()
         .get_matches_from(args);
 
@@ -423,6 +429,10 @@ pub fn builder_from_flags<I>
     } else {
         Box::new(io::BufWriter::new(io::stdout())) as Box<io::Write>
     };
+
+    if matches.is_present("dump-preprocessed-input") {
+        builder.dump_preprocessed_input()?;
+    }
 
     let verbose = matches.is_present("verbose");
 

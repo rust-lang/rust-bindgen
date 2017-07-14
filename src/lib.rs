@@ -87,9 +87,11 @@ use ir::item::Item;
 use parse::{ClangItemParser, ParseError};
 use regex_set::RegexSet;
 
-use std::fs::OpenOptions;
+use std::fs::{File, OpenOptions};
+use std::iter;
 use std::io::{self, Write};
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::process::Command;
 use std::sync::Arc;
 
 use syntax::ast;
@@ -165,9 +167,12 @@ impl Default for CodegenConfig {
 /// // Write the generated bindings to an output file.
 /// try!(bindings.write_to_file("path/to/output.rs"));
 /// ```
-#[derive(Debug,Default)]
+#[derive(Debug, Default)]
 pub struct Builder {
     options: BindgenOptions,
+    input_headers: Vec<String>,
+    // Tuples of unsaved file contents of the form (name, contents).
+    input_header_contents: Vec<(String, String)>,
 }
 
 /// Construct a new [`Builder`](./struct.Builder.html).
@@ -180,9 +185,9 @@ impl Builder {
     pub fn command_line_flags(&self) -> Vec<String> {
         let mut output_vector: Vec<String> = Vec::new();
 
-        if let Some(ref header) = self.options.input_header {
-            //Positional argument 'header'
-            output_vector.push(header.clone().into());
+        if let Some(header) = self.input_headers.last().cloned() {
+            // Positional argument 'header'
+            output_vector.push(header);
         }
 
         self.options
@@ -412,16 +417,19 @@ impl Builder {
                  })
             .count();
 
+        output_vector.push("--".into());
+
         if !self.options.clang_args.is_empty() {
-            output_vector.push("--".into());
-            self.options
-                .clang_args
-                .iter()
-                .cloned()
-                .map(|item| {
-                    output_vector.push(item);
-                })
-                .count();
+            output_vector.extend(
+                self.options
+                    .clang_args
+                    .iter()
+                    .cloned()
+            );
+        }
+
+        if self.input_headers.len() > 1 {
+            output_vector.extend(self.input_headers[..self.input_headers.len() - 1].iter().cloned());
         }
 
         output_vector
@@ -450,13 +458,7 @@ impl Builder {
     ///     .unwrap();
     /// ```
     pub fn header<T: Into<String>>(mut self, header: T) -> Builder {
-        if let Some(prev_header) = self.options.input_header.take() {
-            self.options.clang_args.push("-include".into());
-            self.options.clang_args.push(prev_header);
-        }
-
-        let header = header.into();
-        self.options.input_header = Some(header);
+        self.input_headers.push(header.into());
         self
     }
 
@@ -464,7 +466,7 @@ impl Builder {
     ///
     /// The file `name` will be added to the clang arguments.
     pub fn header_contents(mut self, name: &str, contents: &str) -> Builder {
-        self.options.input_unsaved_files.push(clang::UnsavedFile::new(name, contents));
+        self.input_header_contents.push((name.into(), contents.into()));
         self
     }
 
@@ -794,8 +796,93 @@ impl Builder {
     }
 
     /// Generate the Rust bindings using the options built up thus far.
-    pub fn generate<'ctx>(self) -> Result<Bindings<'ctx>, ()> {
+    pub fn generate<'ctx>(mut self) -> Result<Bindings<'ctx>, ()> {
+        self.options.input_header = self.input_headers.pop();
+        self.options.clang_args.extend(
+            self.input_headers
+                .drain(..)
+                .flat_map(|header| {
+                    iter::once("-include".into())
+                        .chain(iter::once(header))
+                })
+        );
+
+        self.options.input_unsaved_files.extend(
+            self.input_header_contents
+                .drain(..)
+                .map(|(name, contents)| clang::UnsavedFile::new(&name, &contents))
+        );
+
         Bindings::generate(self.options, None)
+    }
+
+    /// Preprocess and dump the input header files to disk.
+    ///
+    /// This is useful when debugging bindgen, using C-Reduce, or when filing
+    /// issues. The resulting file will be named something like `__bindgen.i` or
+    /// `__bindgen.ii`
+    pub fn dump_preprocessed_input(&self) -> io::Result<()> {
+        let clang = clang_sys::support::Clang::find(None, &[])
+            .ok_or_else(|| io::Error::new(io::ErrorKind::Other,
+                                          "Cannot find clang executable"))?;
+
+        // The contents of a wrapper file that includes all the input header
+        // files.
+        let mut wrapper_contents = String::new();
+
+        // Whether we are working with C or C++ inputs.
+        let mut is_cpp = false;
+
+        // For each input header, add `#include "$header"`.
+        for header in &self.input_headers {
+            is_cpp |= header.ends_with(".hpp");
+
+            wrapper_contents.push_str("#include \"");
+            wrapper_contents.push_str(header);
+            wrapper_contents.push_str("\"\n");
+        }
+
+        // For each input header content, add a prefix line of `#line 0 "$name"`
+        // followed by the contents.
+        for &(ref name, ref contents) in &self.input_header_contents {
+            is_cpp |= name.ends_with(".hpp");
+
+            wrapper_contents.push_str("#line 0 \"");
+            wrapper_contents.push_str(name);
+            wrapper_contents.push_str("\"\n");
+            wrapper_contents.push_str(contents);
+        }
+
+        is_cpp |= self.options.clang_args.windows(2).any(|w| {
+            w[0] == "-x=c++" || w[1] == "-x=c++" || w == &["-x", "c++"]
+        });
+
+        let wrapper_path = PathBuf::from(if is_cpp {
+            "__bindgen.cpp"
+        } else {
+            "__bindgen.c"
+        });
+
+        {
+            let mut wrapper_file = File::create(&wrapper_path)?;
+            wrapper_file.write(wrapper_contents.as_bytes())?;
+        }
+
+        let mut cmd = Command::new(&clang.path);
+        cmd.arg("-save-temps")
+            .arg("-c")
+            .arg(&wrapper_path);
+
+        for a in &self.options.clang_args {
+            cmd.arg(a);
+        }
+
+        if cmd.spawn()?.wait()?.success() {
+            Ok(())
+        } else {
+            Err(io::Error::new(io::ErrorKind::Other,
+                               "clang exited with non-zero status"))
+        }
     }
 }
 
