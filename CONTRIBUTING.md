@@ -283,11 +283,6 @@ Afterwards, there should be a `__bindgen.i` or `__bindgen.ii` file containing
 the combined and preprocessed input headers, which is usable as an isolated,
 standalone test case.
 
-Note that the preprocessor likely removed all comments, so if the bug you're
-trying to pin down involves source annotations (for example, `/** <div
-rustbindgen opaque> */`), then you will have to manually reapply them to the
-preprocessed file.
-
 ### Writing a Predicate Script
 
 Writing a `predicate.sh` script for a `bindgen` test case is fairly
