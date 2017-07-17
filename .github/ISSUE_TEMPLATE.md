@@ -63,8 +63,8 @@ bindings is missing a field that exists in the C/C++ struct, note that here.
 <details>
 
 ```
-Insert debug logging when running bindgen with the `RUST_LOG=bindgen` environment
-variable set.
+Insert debug logging when running bindgen (not when compiling bindgen's output)
+with the `RUST_LOG=bindgen` environment variable set.
 ```
 
 </details>
