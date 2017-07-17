@@ -91,7 +91,7 @@ use std::fs::{File, OpenOptions};
 use std::iter;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{Command, Stdio};
 use std::sync::Arc;
 
 use syntax::ast;
@@ -870,19 +870,30 @@ impl Builder {
 
         let mut cmd = Command::new(&clang.path);
         cmd.arg("-save-temps")
+            .arg("-E")
+            .arg("-C")
             .arg("-c")
-            .arg(&wrapper_path);
+            .arg(&wrapper_path)
+            .stdout(Stdio::piped());
 
         for a in &self.options.clang_args {
             cmd.arg(a);
         }
 
-        if cmd.spawn()?.wait()?.success() {
-            Ok(())
-        } else {
-            Err(io::Error::new(io::ErrorKind::Other,
-                               "clang exited with non-zero status"))
+        let mut child = cmd.spawn()?;
+        if !child.wait()?.success() {
+            return Err(io::Error::new(io::ErrorKind::Other,
+                                      "clang exited with non-zero status"));
         }
+
+        let mut preprocessed = child.stdout.take().unwrap();
+        let mut file = File::create(if is_cpp {
+            "__bindgen.ii"
+        } else {
+            "__bindgen.i"
+        })?;
+        io::copy(&mut preprocessed, &mut file)?;
+        Ok(())
     }
 }
 
