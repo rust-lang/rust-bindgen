@@ -881,10 +881,6 @@ impl Builder {
         }
 
         let mut child = cmd.spawn()?;
-        if !child.wait()?.success() {
-            return Err(io::Error::new(io::ErrorKind::Other,
-                                      "clang exited with non-zero status"));
-        }
 
         let mut preprocessed = child.stdout.take().unwrap();
         let mut file = File::create(if is_cpp {
@@ -893,7 +889,13 @@ impl Builder {
             "__bindgen.i"
         })?;
         io::copy(&mut preprocessed, &mut file)?;
-        Ok(())
+
+        if child.wait()?.success() {
+            Ok(())
+        } else {
+            Err(io::Error::new(io::ErrorKind::Other,
+                               "clang exited with non-zero status"))
+        }
     }
 }
 
