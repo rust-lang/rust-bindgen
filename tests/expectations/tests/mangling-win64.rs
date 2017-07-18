@@ -13,7 +13,7 @@ pub struct Foo {
     pub _address: u8,
 }
 extern "C" {
-    #[link_name = "_ZN3Foo4sBarE"]
+    #[link_name = "?sBar@Foo@@2_NA"]
     pub static mut Foo_sBar: bool;
 }
 #[test]
