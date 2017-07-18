@@ -130,7 +130,14 @@ fn get_abi(cc: CXCallingConv) -> Abi {
 
 fn mangling_hack_if_needed(ctx: &BindgenContext, symbol: &mut String) {
     if ctx.needs_mangling_hack() {
-        symbol.remove(0);
+        match symbol.chars().next().unwrap() {
+            // Stripping leading underscore for all names on Darwin and
+            // C linkage functions on Win32.
+            '_' => { symbol.remove(0); }
+            // Stop Rust from prepending underscore for variables on Win32.
+            '?' => { symbol.insert(0, '\x01'); }
+            _ => {}
+        }
     }
 }
 
