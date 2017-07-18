@@ -1422,6 +1422,14 @@ impl DotAttributes for CompInfo {
     }
 }
 
+impl IsOpaque for CompInfo {
+    type Extra = ();
+
+    fn is_opaque(&self, _: &BindgenContext, _: &()) -> bool {
+        self.has_non_type_template_params
+    }
+}
+
 impl TemplateParameters for CompInfo {
     fn self_template_params(&self,
                             _ctx: &BindgenContext)
@@ -1442,7 +1450,7 @@ impl CanDeriveDebug for CompInfo {
                         layout: Option<Layout>)
                         -> bool {
         if self.has_non_type_template_params() {
-            return layout.map_or(false, |l| l.opaque().can_derive_debug(ctx, ()));
+            return layout.map_or(true, |l| l.opaque().can_derive_debug(ctx, ()));
         }
 
         // We can reach here recursively via template parameters of a member,
@@ -1498,9 +1506,11 @@ impl CanDeriveDefault for CompInfo {
                 return false;
             }
 
-            return layout.unwrap_or_else(Layout::zero)
-                .opaque()
-                .can_derive_default(ctx, ());
+            return layout.map_or(true, |l| l.opaque().can_derive_default(ctx, ()));
+        }
+
+        if self.has_non_type_template_params {
+            return layout.map_or(true, |l| l.opaque().can_derive_default(ctx, ()));
         }
 
         self.detect_derive_default_cycle.set(true);
@@ -1528,7 +1538,7 @@ impl<'a> CanDeriveCopy<'a> for CompInfo {
                        (item, layout): (&Item, Option<Layout>))
                        -> bool {
         if self.has_non_type_template_params() {
-            return layout.map_or(false, |l| l.opaque().can_derive_copy(ctx, ()));
+            return layout.map_or(true, |l| l.opaque().can_derive_copy(ctx, ()));
         }
 
         // NOTE: Take into account that while unions in C and C++ are copied by

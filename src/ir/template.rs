@@ -361,14 +361,23 @@ impl CanDeriveDebug for TemplateInstantiation {
                         layout: Option<Layout>)
                         -> bool {
         self.args.iter().all(|arg| arg.can_derive_debug(ctx, ())) &&
-        ctx.resolve_type(self.definition)
+        self.definition
+            .into_resolver()
+            .through_type_refs()
+            .through_type_aliases()
+            .resolve(ctx)
+            .as_type()
+            .expect("Instantiation of a non-type?")
             .as_comp()
             .and_then(|c| {
                 // For non-type template parameters, we generate an opaque
                 // blob, and in this case the instantiation has a better
                 // idea of the layout than the definition does.
                 if c.has_non_type_template_params() {
-                    let opaque = layout.unwrap_or(Layout::zero()).opaque();
+                    let opaque = layout
+                        .or_else(|| ctx.resolve_type(self.definition).layout(ctx))
+                        .unwrap_or(Layout::zero())
+                        .opaque();
                     Some(opaque.can_derive_debug(ctx, ()))
                 } else {
                     None

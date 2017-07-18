@@ -83,6 +83,7 @@ pub mod root {
         ai = 11,
     }
     #[repr(C)]
+    #[derive(Copy)]
     pub struct F {
         pub w: [u64; 33usize],
     }
@@ -97,6 +98,9 @@ pub mod root {
                     0usize , concat ! (
                     "Alignment of field: " , stringify ! ( F ) , "::" ,
                     stringify ! ( w ) ));
+    }
+    impl Clone for F {
+        fn clone(&self) -> Self { *self }
     }
     impl Default for F {
         fn default() -> Self { unsafe { ::std::mem::zeroed() } }

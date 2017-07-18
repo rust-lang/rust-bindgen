@@ -5,6 +5,7 @@
 
 
 #[repr(C)]
+#[derive(Debug, Copy)]
 pub struct C {
     pub arr: [u32; 3usize],
 }
@@ -19,6 +20,9 @@ fn bindgen_test_layout_C() {
                 0usize , concat ! (
                 "Alignment of field: " , stringify ! ( C ) , "::" , stringify
                 ! ( arr ) ));
+}
+impl Clone for C {
+    fn clone(&self) -> Self { *self }
 }
 impl Default for C {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
