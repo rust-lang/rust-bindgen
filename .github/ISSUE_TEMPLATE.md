@@ -7,7 +7,11 @@
 // files, and therefore any `#include` harms reproducibility. Additionally,
 // the test case isn't minimal since the included file almost assuredly
 // contains things that aren't necessary to reproduce the bug, and makes
-// tracking it down much more difficult. If necessary, see
+// tracking it down much more difficult.
+//
+// Use the `--dump-preprocessed-input` flag or the
+// `bindgen::Builder::dump_preprocessed_input` method to make your test case
+// standalone and without `#include`s, and then use C-Reduce to minimize it:
 // https://github.com/servo/rust-bindgen/blob/master/CONTRIBUTING.md#using-creduce-to-minimize-test-cases
 ```
 
@@ -59,8 +63,8 @@ bindings is missing a field that exists in the C/C++ struct, note that here.
 <details>
 
 ```
-Insert debug logging when running bindgen with the `RUST_LOG=bindgen` environment
-variable set.
+Insert debug logging when running bindgen (not when compiling bindgen's output)
+with the `RUST_LOG=bindgen` environment variable set.
 ```
 
 </details>
