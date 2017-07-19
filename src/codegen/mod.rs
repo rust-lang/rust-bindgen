@@ -294,6 +294,10 @@ impl CodeGenerator for Item {
                    result: &mut CodegenResult<'a>,
                    whitelisted_items: &ItemSet,
                    _extra: &()) {
+        if !self.is_enabled_for_codegen(ctx) {
+            return;
+        }
+
         if self.is_hidden(ctx) || result.seen(self.id()) {
             debug!("<Item as CodeGenerator>::codegen: Ignoring hidden or seen: \
                    self = {:?}",
@@ -316,19 +320,13 @@ impl CodeGenerator for Item {
                 module.codegen(ctx, result, whitelisted_items, self);
             }
             ItemKind::Function(ref fun) => {
-                if ctx.options().codegen_config.functions {
-                    fun.codegen(ctx, result, whitelisted_items, self);
-                }
+                fun.codegen(ctx, result, whitelisted_items, self);
             }
             ItemKind::Var(ref var) => {
-                if ctx.options().codegen_config.vars {
-                    var.codegen(ctx, result, whitelisted_items, self);
-                }
+                var.codegen(ctx, result, whitelisted_items, self);
             }
             ItemKind::Type(ref ty) => {
-                if ctx.options().codegen_config.types {
-                    ty.codegen(ctx, result, whitelisted_items, self);
-                }
+                ty.codegen(ctx, result, whitelisted_items, self);
             }
         }
     }
@@ -419,6 +417,7 @@ impl CodeGenerator for Var {
                    item: &Item) {
         use ir::var::VarType;
         debug!("<Var as CodeGenerator>::codegen: item = {:?}", item);
+        debug_assert!(item.is_enabled_for_codegen(ctx));
 
         let canonical_name = item.canonical_name(ctx);
 
@@ -522,6 +521,7 @@ impl CodeGenerator for Type {
                    whitelisted_items: &ItemSet,
                    item: &Item) {
         debug!("<Type as CodeGenerator>::codegen: item = {:?}", item);
+        debug_assert!(item.is_enabled_for_codegen(ctx));
 
         match *self.kind() {
             TypeKind::Void |
@@ -705,6 +705,8 @@ impl<'a> CodeGenerator for Vtable<'a> {
                    _whitelisted_items: &ItemSet,
                    item: &Item) {
         assert_eq!(item.id(), self.item_id);
+        debug_assert!(item.is_enabled_for_codegen(ctx));
+
         // For now, generate an empty struct, later we should generate function
         // pointers and whatnot.
         let attributes = vec![attributes::repr("C")];
@@ -745,6 +747,8 @@ impl CodeGenerator for TemplateInstantiation {
                    result: &mut CodegenResult<'a>,
                    _whitelisted_items: &ItemSet,
                    item: &Item) {
+        debug_assert!(item.is_enabled_for_codegen(ctx));
+
         // Although uses of instantiations don't need code generation, and are
         // just converted to rust types in fields, vars, etc, we take this
         // opportunity to generate tests for their layout here. If the
@@ -1376,6 +1380,7 @@ impl CodeGenerator for CompInfo {
                    whitelisted_items: &ItemSet,
                    item: &Item) {
         debug!("<CompInfo as CodeGenerator>::codegen: item = {:?}", item);
+        debug_assert!(item.is_enabled_for_codegen(ctx));
 
         // Don't output classes with template parameters that aren't types, and
         // also don't output template specializations, neither total or partial.
@@ -1897,6 +1902,18 @@ impl MethodCodegen for Method {
                           result: &mut CodegenResult<'a>,
                           whitelisted_items: &ItemSet,
                           _parent: &CompInfo) {
+        assert!({
+            let cc = &ctx.options().codegen_config;
+            match self.kind() {
+                MethodKind::Constructor => cc.constructors,
+                MethodKind::Destructor => cc.destructors,
+                MethodKind::VirtualDestructor => cc.destructors,
+                MethodKind::Static |
+                MethodKind::Normal |
+                MethodKind::Virtual => cc.methods,
+            }
+        });
+
         if self.is_virtual() {
             return; // FIXME
         }
@@ -2287,6 +2304,7 @@ impl CodeGenerator for Enum {
                    _whitelisted_items: &ItemSet,
                    item: &Item) {
         debug!("<Enum as CodeGenerator>::codegen: item = {:?}", item);
+        debug_assert!(item.is_enabled_for_codegen(ctx));
 
         let name = item.canonical_name(ctx);
         let enum_ty = item.expect_type();
@@ -3026,6 +3044,7 @@ impl CodeGenerator for Function {
                    _whitelisted_items: &ItemSet,
                    item: &Item) {
         debug!("<Function as CodeGenerator>::codegen: item = {:?}", item);
+        debug_assert!(item.is_enabled_for_codegen(ctx));
 
         // Similar to static member variables in a class template, we can't
         // generate bindings to template functions, because the set of
@@ -3202,7 +3221,9 @@ impl CodeGenerator for ObjCInterface {
                    ctx: &BindgenContext,
                    result: &mut CodegenResult<'a>,
                    _whitelisted_items: &ItemSet,
-                   _: &Item) {
+                   item: &Item) {
+        debug_assert!(item.is_enabled_for_codegen(ctx));
+
         let mut impl_items = vec![];
         let mut trait_items = vec![];
 

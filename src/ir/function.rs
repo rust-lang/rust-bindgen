@@ -1,16 +1,46 @@
 //! Intermediate representation for C/C++ functions and methods.
 
+use super::comp::MethodKind;
 use super::context::{BindgenContext, ItemId};
 use super::dot::DotAttributes;
 use super::item::Item;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::TypeKind;
 use clang;
-use clang_sys::CXCallingConv;
+use clang_sys::{self, CXCallingConv};
 use ir::derive::CanTriviallyDeriveDebug;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use std::io;
 use syntax::abi;
+
+/// What kind of a function are we looking at?
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub enum FunctionKind {
+    /// A plain, free function.
+    Function,
+    /// A method of some kind.
+    Method(MethodKind),
+}
+
+impl FunctionKind {
+    fn from_cursor(cursor: &clang::Cursor) -> Option<FunctionKind> {
+        Some(match cursor.kind() {
+            clang_sys::CXCursor_FunctionDecl => FunctionKind::Function,
+            clang_sys::CXCursor_Constructor => FunctionKind::Method(MethodKind::Constructor),
+            clang_sys::CXCursor_Destructor => FunctionKind::Method(MethodKind::Destructor),
+            clang_sys::CXCursor_CXXMethod => {
+                if cursor.method_is_virtual() {
+                    FunctionKind::Method(MethodKind::Virtual)
+                } else if cursor.method_is_static() {
+                    FunctionKind::Method(MethodKind::Static)
+                } else {
+                    FunctionKind::Method(MethodKind::Normal)
+                }
+            }
+            _ => return None,
+        })
+    }
+}
 
 /// A function declaration, with a signature, arguments, and argument names.
 ///
@@ -29,6 +59,9 @@ pub struct Function {
 
     /// The doc comment on the function, if any.
     comment: Option<String>,
+
+    /// The kind of function this is.
+    kind: FunctionKind,
 }
 
 impl Function {
@@ -36,13 +69,15 @@ impl Function {
     pub fn new(name: String,
                mangled_name: Option<String>,
                sig: ItemId,
-               comment: Option<String>)
+               comment: Option<String>,
+               kind: FunctionKind)
                -> Self {
         Function {
             name: name,
             mangled_name: mangled_name,
             signature: sig,
             comment: comment,
+            kind: kind,
         }
     }
 
@@ -59,6 +94,11 @@ impl Function {
     /// Get this function's signature.
     pub fn signature(&self) -> ItemId {
         self.signature
+    }
+
+    /// Get this function's kind.
+    pub fn kind(&self) -> FunctionKind {
+        self.kind
     }
 }
 
@@ -357,12 +397,10 @@ impl ClangSubItemParser for Function {
              context: &mut BindgenContext)
              -> Result<ParseResult<Self>, ParseError> {
         use clang_sys::*;
-        match cursor.kind() {
-            CXCursor_FunctionDecl |
-            CXCursor_Constructor |
-            CXCursor_Destructor |
-            CXCursor_CXXMethod => {}
-            _ => return Err(ParseError::Continue),
+
+        let kind = match FunctionKind::from_cursor(&cursor) {
+            None => return Err(ParseError::Continue),
+            Some(k) => k,
         };
 
         debug!("Function::parse({:?}, {:?})", cursor, cursor.cur_type());
@@ -415,7 +453,7 @@ impl ClangSubItemParser for Function {
 
         let comment = cursor.raw_comment();
 
-        let function = Self::new(name, mangled_name, sig, comment);
+        let function = Self::new(name, mangled_name, sig, comment, kind);
         Ok(ParseResult::New(function, Some(cursor)))
     }
 }

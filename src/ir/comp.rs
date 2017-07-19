@@ -1534,7 +1534,11 @@ impl Trace for CompInfo {
         }
 
         for method in self.methods() {
-            tracer.visit_kind(method.signature, EdgeKind::Method);
+            if method.is_destructor() {
+                tracer.visit_kind(method.signature, EdgeKind::Destructor);
+            } else {
+                tracer.visit_kind(method.signature, EdgeKind::Method);
+            }
         }
 
         for &ctor in self.constructors() {

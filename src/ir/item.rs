@@ -3,10 +3,11 @@
 use super::super::codegen::CONSTIFIED_ENUM_MODULE_REPR_NAME;
 use super::annotations::Annotations;
 use super::comment;
+use super::comp::MethodKind;
 use super::context::{BindgenContext, ItemId, PartialType};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::dot::DotAttributes;
-use super::function::Function;
+use super::function::{Function, FunctionKind};
 use super::item_kind::ItemKind;
 use super::layout::Opaque;
 use super::module::Module;
@@ -872,6 +873,27 @@ impl Item {
                 }
             }
             _ => false,
+        }
+    }
+
+    /// Is this item of a kind that is enabled for code generation?
+    pub fn is_enabled_for_codegen(&self, ctx: &BindgenContext) -> bool {
+        let cc = &ctx.options().codegen_config;
+        match *self.kind() {
+            ItemKind::Module(..) => true,
+            ItemKind::Var(_) => cc.vars,
+            ItemKind::Type(_) => cc.types,
+            ItemKind::Function(ref f) => {
+                match f.kind() {
+                    FunctionKind::Function => cc.functions,
+                    FunctionKind::Method(MethodKind::Constructor) => cc.constructors,
+                    FunctionKind::Method(MethodKind::Destructor) |
+                    FunctionKind::Method(MethodKind::VirtualDestructor) => cc.destructors,
+                    FunctionKind::Method(MethodKind::Static) |
+                    FunctionKind::Method(MethodKind::Normal) |
+                    FunctionKind::Method(MethodKind::Virtual) => cc.methods,
+                }
+            }
         }
     }
 }
