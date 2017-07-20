@@ -40,8 +40,8 @@
 // Re-export individual analyses.
 mod template_params;
 pub use self::template_params::UsedTemplateParameters;
-mod cant_derive_debug;
-pub use self::cant_derive_debug::CantDeriveDebugAnalysis;
+mod derive_debug;
+pub use self::derive_debug::CannotDeriveDebugAnalysis;
 
 use std::fmt;
 

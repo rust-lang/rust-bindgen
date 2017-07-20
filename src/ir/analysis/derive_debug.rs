@@ -16,7 +16,7 @@ use ir::comp::CompKind;
 
 /// An analysis that finds for each IR item whether debug cannot be derived.
 ///
-/// We use the monotone constraint function `cant_derive_debug`, defined as
+/// We use the monotone constraint function `cannot_derive_debug`, defined as
 /// follows:
 ///
 /// * If T is Opaque and layout of the type is known, get this layout as opaque
@@ -34,17 +34,17 @@ use ir::comp::CompKind;
 ///   derived debug if any of the template arguments or template definition
 ///   cannot derive debug.
 #[derive(Debug, Clone)]
-pub struct CantDeriveDebugAnalysis<'ctx, 'gen>
+pub struct CannotDeriveDebugAnalysis<'ctx, 'gen>
     where 'gen: 'ctx
 {
     ctx: &'ctx BindgenContext<'gen>,
 
     // The incremental result of this analysis's computation. Everything in this
     // set cannot derive debug.
-    cant_derive_debug: HashSet<ItemId>,
+    cannot_derive_debug: HashSet<ItemId>,
 
     // Dependencies saying that if a key ItemId has been inserted into the
-    // `cant_derive_debug` set, then each of the ids in Vec<ItemId> need to be
+    // `cannot_derive_debug` set, then each of the ids in Vec<ItemId> need to be
     // considered again.
     //
     // This is a subset of the natural IR graph with reversed edges, where we
@@ -53,7 +53,7 @@ pub struct CantDeriveDebugAnalysis<'ctx, 'gen>
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
-impl<'ctx, 'gen> CantDeriveDebugAnalysis<'ctx, 'gen> {
+impl<'ctx, 'gen> CannotDeriveDebugAnalysis<'ctx, 'gen> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             // These are the only edges that can affect whether a type can derive
@@ -78,7 +78,7 @@ impl<'ctx, 'gen> CantDeriveDebugAnalysis<'ctx, 'gen> {
     }
 
     fn insert(&mut self, id: ItemId) -> bool {
-        let was_already_in = self.cant_derive_debug.insert(id);
+        let was_already_in = self.cannot_derive_debug.insert(id);
         assert!(
             was_already_in,
             format!("We shouldn't try and insert twice because if it was already in the set, \
@@ -88,13 +88,13 @@ impl<'ctx, 'gen> CantDeriveDebugAnalysis<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> MonotoneFramework for CantDeriveDebugAnalysis<'ctx, 'gen> {
+impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebugAnalysis<'ctx, 'gen> {
     type Node = ItemId;
     type Extra = &'ctx BindgenContext<'gen>;
     type Output = HashSet<ItemId>;
 
-    fn new(ctx: &'ctx BindgenContext<'gen>) -> CantDeriveDebugAnalysis<'ctx, 'gen> {
-        let cant_derive_debug = HashSet::new();
+    fn new(ctx: &'ctx BindgenContext<'gen>) -> CannotDeriveDebugAnalysis<'ctx, 'gen> {
+        let cannot_derive_debug = HashSet::new();
         let mut dependencies = HashMap::new();
         let whitelisted_items: HashSet<_> = ctx.whitelisted_items().collect();
 
@@ -125,9 +125,9 @@ impl<'ctx, 'gen> MonotoneFramework for CantDeriveDebugAnalysis<'ctx, 'gen> {
             }
         }
 
-        CantDeriveDebugAnalysis {
+        CannotDeriveDebugAnalysis {
             ctx: ctx,
-            cant_derive_debug: cant_derive_debug,
+            cannot_derive_debug: cannot_derive_debug,
             dependencies: dependencies,
         }
     }
@@ -137,7 +137,7 @@ impl<'ctx, 'gen> MonotoneFramework for CantDeriveDebugAnalysis<'ctx, 'gen> {
     }
 
     fn constrain(&mut self, id: ItemId) -> bool {
-        if self.cant_derive_debug.contains(&id) {
+        if self.cannot_derive_debug.contains(&id) {
             return false;
         }
 
@@ -176,7 +176,7 @@ impl<'ctx, 'gen> MonotoneFramework for CantDeriveDebugAnalysis<'ctx, 'gen> {
             },
             TypeKind::Array(t, len) => {
                 if len <= RUST_DERIVE_IN_ARRAY_LIMIT {
-                    if self.cant_derive_debug.contains(&t) {
+                    if self.cannot_derive_debug.contains(&t) {
                         return self.insert(id);
                     }
                     return false;
@@ -187,7 +187,7 @@ impl<'ctx, 'gen> MonotoneFramework for CantDeriveDebugAnalysis<'ctx, 'gen> {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
-                if self.cant_derive_debug.contains(&t) {
+                if self.cannot_derive_debug.contains(&t) {
                     return self.insert(id);
                 }
                 return false;
@@ -213,24 +213,24 @@ impl<'ctx, 'gen> MonotoneFramework for CantDeriveDebugAnalysis<'ctx, 'gen> {
                         return self.insert(id);
                     }
                 }
-                let bases_cant_derive = info.base_members()
+                let bases_cannot_derive = info.base_members()
                     .iter()
-                    .any(|base| self.cant_derive_debug.contains(&base.ty));
-                if bases_cant_derive {
+                    .any(|base| self.cannot_derive_debug.contains(&base.ty));
+                if bases_cannot_derive {
                     return self.insert(id);
                 }
-                let fields_cant_derive = info.fields()
+                let fields_cannot_derive = info.fields()
                     .iter()
                     .any(|f| {
                         match f {
-                            &Field::DataMember(ref data) => self.cant_derive_debug.contains(&data.ty()),
+                            &Field::DataMember(ref data) => self.cannot_derive_debug.contains(&data.ty()),
                             &Field::Bitfields(ref bfu) => bfu.bitfields()
                                 .iter().any(|b| {
-                                    self.cant_derive_debug.contains(&b.ty())
+                                    self.cannot_derive_debug.contains(&b.ty())
                                 })
                         }
                     });
-                if fields_cant_derive {
+                if fields_cannot_derive {
                     return self.insert(id);
                 }
                 false
@@ -248,13 +248,13 @@ impl<'ctx, 'gen> MonotoneFramework for CantDeriveDebugAnalysis<'ctx, 'gen> {
                 false
             },
             TypeKind::TemplateInstantiation(ref template) => {
-                let args_cant_derive = template.template_arguments()
+                let args_cannot_derive = template.template_arguments()
                     .iter()
-                    .any(|arg| self.cant_derive_debug.contains(&arg));
-                if args_cant_derive {
+                    .any(|arg| self.cannot_derive_debug.contains(&arg));
+                if args_cannot_derive {
                     return self.insert(id);
                 }
-                let ty_cant_derive = template.template_definition()
+                let ty_cannot_derive = template.template_definition()
                     .into_resolver()
                     .through_type_refs()
                     .through_type_aliases()
@@ -276,8 +276,8 @@ impl<'ctx, 'gen> MonotoneFramework for CantDeriveDebugAnalysis<'ctx, 'gen> {
                             None
                         }
                     })
-                    .unwrap_or_else(|| self.cant_derive_debug.contains(&template.template_definition()));
-                if ty_cant_derive {
+                    .unwrap_or_else(|| self.cannot_derive_debug.contains(&template.template_definition()));
+                if ty_cannot_derive {
                     return self.insert(id);
                 }
                 false
@@ -297,8 +297,8 @@ impl<'ctx, 'gen> MonotoneFramework for CantDeriveDebugAnalysis<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> From<CantDeriveDebugAnalysis<'ctx, 'gen>> for HashSet<ItemId> {
-    fn from(analysis: CantDeriveDebugAnalysis<'ctx, 'gen>) -> Self {
-        analysis.cant_derive_debug
+impl<'ctx, 'gen> From<CannotDeriveDebugAnalysis<'ctx, 'gen>> for HashSet<ItemId> {
+    fn from(analysis: CannotDeriveDebugAnalysis<'ctx, 'gen>) -> Self {
+        analysis.cannot_derive_debug
     }
 }
