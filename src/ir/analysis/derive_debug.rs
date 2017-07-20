@@ -1,10 +1,9 @@
 //! Determining which types for which we can emit `#[derive(Debug)]`.
 
 use super::{ConstrainResult, MonotoneFramework};
-use ir::context::{BindgenContext, ItemId};
-use ir::item::ItemSet;
 use std::collections::HashSet;
 use std::collections::HashMap;
+use ir::context::{BindgenContext, ItemId};
 use ir::traversal::EdgeKind;
 use ir::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
 use ir::ty::TypeKind;
@@ -98,30 +97,19 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
     fn new(ctx: &'ctx BindgenContext<'gen>) -> CannotDeriveDebug<'ctx, 'gen> {
         let cannot_derive_debug = HashSet::new();
         let mut dependencies = HashMap::new();
-        let whitelisted_items: HashSet<_> = ctx.whitelisted_items().iter().cloned().collect();
 
-        let whitelisted_and_blacklisted_items: ItemSet = whitelisted_items.iter()
-            .cloned()
-            .flat_map(|i| {
-                let mut reachable = vec![i];
-                i.trace(ctx, &mut |s, _| {
-                    reachable.push(s);
-                }, &());
-                reachable
-            })
-            .collect();
-
-        for item in whitelisted_and_blacklisted_items {
+        for &item in ctx.whitelisted_items() {
             dependencies.entry(item).or_insert(vec![]);
 
             {
                 // We reverse our natural IR graph edges to find dependencies
                 // between nodes.
                 item.trace(ctx, &mut |sub_item: ItemId, edge_kind| {
-                    if Self::consider_edge(edge_kind) {
-                        dependencies.entry(sub_item)
-                            .or_insert(vec![])
-                            .push(item);
+                    if ctx.whitelisted_items().contains(&sub_item) &&
+                       Self::consider_edge(edge_kind) {
+                           dependencies.entry(sub_item)
+                               .or_insert(vec![])
+                               .push(item);
                     }
                 }, &());
             }
