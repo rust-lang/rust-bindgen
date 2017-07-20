@@ -1,4 +1,42 @@
-//! Fix-point analyses on the IR using the monotone framework.
+//! Fix-point analyses on the IR using the "monotone framework".
+//!
+//! A lattice is a set with a partial ordering between elements, where there is
+//! a single least upper bound and a single greatest least bound for every
+//! subset. We are dealing with finite lattices, which means that it has a
+//! finite number of elements, and it follows that there exists a single top and
+//! a single bottom member of the lattice. For example, the power set of a
+//! finite set forms a finite lattice where partial ordering is defined by set
+//! inclusion, that is `a <= b` if `a` is a subset of `b`. Here is the finite
+//! lattice constructed from the set {0,1,2}:
+//!
+//! ```text
+//!                    .----- Top = {0,1,2} -----.
+//!                   /            |              \
+//!                  /             |               \
+//!                 /              |                \
+//!              {0,1} -------.  {0,2}  .--------- {1,2}
+//!                |           \ /   \ /             |
+//!                |            /     \              |
+//!                |           / \   / \             |
+//!               {0} --------'   {1}   `---------- {2}
+//!                 \              |                /
+//!                  \             |               /
+//!                   \            |              /
+//!                    `------ Bottom = {} ------'
+//! ```
+//!
+//! A monotone function `f` is a function where if `x <= y`, then it holds that
+//! `f(x) <= f(y)`. It should be clear that running a monotone function to a
+//! fix-point on a finite lattice will always terminate: `f` can only "move"
+//! along the lattice in a single direction, and therefore can only either find
+//! a fix-point in the middle of the lattice or continue to the top or bottom
+//! depending if it is ascending or descending the lattice respectively.
+//!
+//! For a deeper introduction to the general form of this kind of analysis, see
+//! [Static Program Analysis by Anders Møller and Michael I. Schwartzbach][spa].
+//!
+//! [spa]: https://cs.au.dk/~amoeller/spa/spa.pdf
+
 use std::fmt;
 
 /// An analysis in the monotone framework.
