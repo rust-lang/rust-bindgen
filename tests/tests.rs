@@ -7,7 +7,6 @@ use bindgen::{Builder, builder, clang_version};
 use std::fs;
 use std::io::{BufRead, BufReader, Error, ErrorKind, Read, Write};
 use std::path::PathBuf;
-use std::process::Command;
 
 #[path="../src/options.rs"]
 mod options;
@@ -137,6 +136,20 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
         }
     }
 
+    // Windows platform has various different conventions than *nix platforms,
+    // e.g. default enum underlying type, struct padding, mangling. Most tests
+    // were written and checked on Linux and macOS, and thus they could fail on
+    // Windows. We just make those tests targetting Linux instead as far as one
+    // isn't annotated for a specific target.
+    if cfg!(target_os = "windows") {
+        if flags.iter().all(|flag| !flag.starts_with("--target=")) {
+            if !flags.iter().any(|flag| flag == "--") {
+                flags.push("--".into());
+            }
+            flags.push("--target=x86_64-unknown-linux".into());
+        }
+    }
+
     // Fool builder_from_flags() into believing it has real env::args_os...
     // - add "bindgen" as executable name 0th element
     // - add header filename as 1st element
@@ -206,7 +219,7 @@ extern \"C\" {
 fn test_multiple_header_calls_in_builder() {
     let actual = builder()
         .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/func_ptr.h"))
-        .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/enum.h"))
+        .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/char.h"))
         .generate()
         .unwrap()
         .to_string();
@@ -229,7 +242,11 @@ fn test_multiple_header_calls_in_builder() {
 }
 
 #[test]
+// Doesn't support executing sh file on Windows.
+// We may want to implement it in Rust so that we support all systems.
+#[cfg(not(target_os = "windows"))]
 fn no_system_header_includes() {
+    use std::process::Command;
     assert!(Command::new("./ci/no-includes.sh")
             .current_dir(env!("CARGO_MANIFEST_DIR"))
             .spawn()
