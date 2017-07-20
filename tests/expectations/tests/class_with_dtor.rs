@@ -35,7 +35,7 @@ impl Default for WithoutDtor {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
-fn __bindgen_test_layout_HandleWithDtor_instantiation() {
+fn __bindgen_test_layout_HandleWithDtor_open0_int_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<HandleWithDtor<::std::os::raw::c_int>>()
                , 8usize , concat ! (
                "Size of template specialization: " , stringify ! (

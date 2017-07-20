@@ -80,7 +80,7 @@ extern "C" {
     pub fn Servo_Element_GetSnapshot() -> A;
 }
 #[test]
-fn __bindgen_test_layout_f_instantiation() {
+fn __bindgen_test_layout_f_open0_e_open1_int_close1_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<f>() , 1usize , concat ! (
                "Size of template specialization: " , stringify ! ( f ) ));
     assert_eq!(::std::mem::align_of::<f>() , 1usize , concat ! (

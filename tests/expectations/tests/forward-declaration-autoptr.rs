@@ -42,7 +42,7 @@ impl Default for Bar {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
-fn __bindgen_test_layout_RefPtr_instantiation() {
+fn __bindgen_test_layout_RefPtr_open0_Foo_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<RefPtr<Foo>>() , 8usize , concat ! (
                "Size of template specialization: " , stringify ! ( RefPtr<Foo>
                ) ));

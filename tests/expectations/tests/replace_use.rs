@@ -34,7 +34,7 @@ impl Default for Test {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
-fn __bindgen_test_layout_nsTArray_instantiation() {
+fn __bindgen_test_layout_nsTArray_open0_long_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<nsTArray>() , 4usize , concat ! (
                "Size of template specialization: " , stringify ! ( nsTArray )
                ));

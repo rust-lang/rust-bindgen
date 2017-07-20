@@ -63,7 +63,7 @@ impl Clone for ContainsOpaqueInstantiation {
     fn clone(&self) -> Self { *self }
 }
 #[test]
-fn __bindgen_test_layout_Template_instantiation() {
+fn __bindgen_test_layout_Template_open0_char_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<Template<::std::os::raw::c_char>>() ,
                1usize , concat ! (
                "Size of template specialization: " , stringify ! (

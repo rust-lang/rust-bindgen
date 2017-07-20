@@ -80,7 +80,7 @@ impl Default for ErrorResult {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
-fn __bindgen_test_layout_TErrorResult_instantiation() {
+fn __bindgen_test_layout_TErrorResult_open0_int_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<TErrorResult>() , 24usize , concat ! (
                "Size of template specialization: " , stringify ! (
                TErrorResult ) ));

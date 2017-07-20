@@ -29,7 +29,7 @@ impl Default for AutoIdVector {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
-fn __bindgen_test_layout_Outer_instantiation() {
+fn __bindgen_test_layout_Outer_open0_int_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<Outer>() , 1usize , concat ! (
                "Size of template specialization: " , stringify ! ( Outer ) ));
     assert_eq!(::std::mem::align_of::<Outer>() , 1usize , concat ! (

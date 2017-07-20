@@ -67,7 +67,7 @@ pub mod root {
         pub _address: u8,
     }
     #[test]
-    fn __bindgen_test_layout_StaticRefPtr_instantiation() {
+    fn __bindgen_test_layout_StaticRefPtr_open0_B_close0_instantiation() {
         assert_eq!(::std::mem::size_of::<root::StaticRefPtr>() , 1usize ,
                    concat ! (
                    "Size of template specialization: " , stringify ! (

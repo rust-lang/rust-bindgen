@@ -234,7 +234,7 @@ impl <T> Default for ReplacedWithoutDestructorFwd<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
-fn __bindgen_test_layout_Foo_instantiation() {
+fn __bindgen_test_layout_Foo_open0_int_int_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<Foo<::std::os::raw::c_int>>() , 24usize ,
                concat ! (
                "Size of template specialization: " , stringify ! (
@@ -245,7 +245,7 @@ fn __bindgen_test_layout_Foo_instantiation() {
                Foo<::std::os::raw::c_int> ) ));
 }
 #[test]
-fn __bindgen_test_layout_Foo_instantiation_1() {
+fn __bindgen_test_layout_Foo_open0_int_int_close0_instantiation_1() {
     assert_eq!(::std::mem::size_of::<Foo<::std::os::raw::c_int>>() , 24usize ,
                concat ! (
                "Size of template specialization: " , stringify ! (
@@ -256,7 +256,7 @@ fn __bindgen_test_layout_Foo_instantiation_1() {
                Foo<::std::os::raw::c_int> ) ));
 }
 #[test]
-fn __bindgen_test_layout_Rooted_instantiation() {
+fn __bindgen_test_layout_Rooted_open0__bindgen_ty_id_108_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<Rooted<*mut ::std::os::raw::c_void>>() ,
                24usize , concat ! (
                "Size of template specialization: " , stringify ! (
@@ -267,7 +267,7 @@ fn __bindgen_test_layout_Rooted_instantiation() {
                Rooted<*mut ::std::os::raw::c_void> ) ));
 }
 #[test]
-fn __bindgen_test_layout_Rooted_instantiation_1() {
+fn __bindgen_test_layout_Rooted_open0__bindgen_ty_id_114_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<Rooted<*mut ::std::os::raw::c_void>>() ,
                24usize , concat ! (
                "Size of template specialization: " , stringify ! (
@@ -278,7 +278,7 @@ fn __bindgen_test_layout_Rooted_instantiation_1() {
                Rooted<*mut ::std::os::raw::c_void> ) ));
 }
 #[test]
-fn __bindgen_test_layout_WithDtor_instantiation() {
+fn __bindgen_test_layout_WithDtor_open0_int_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<WithDtor<::std::os::raw::c_int>>() ,
                4usize , concat ! (
                "Size of template specialization: " , stringify ! (
@@ -289,7 +289,7 @@ fn __bindgen_test_layout_WithDtor_instantiation() {
                WithDtor<::std::os::raw::c_int> ) ));
 }
 #[test]
-fn __bindgen_test_layout_Opaque_instantiation() {
+fn __bindgen_test_layout_Opaque_open0_int_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<u32>() , 4usize , concat ! (
                "Size of template specialization: " , stringify ! ( u32 ) ));
     assert_eq!(::std::mem::align_of::<u32>() , 4usize , concat ! (
