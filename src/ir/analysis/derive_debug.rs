@@ -97,7 +97,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
     fn new(ctx: &'ctx BindgenContext<'gen>) -> CannotDeriveDebug<'ctx, 'gen> {
         let cannot_derive_debug = HashSet::new();
         let mut dependencies = HashMap::new();
-        let whitelisted_items: HashSet<_> = ctx.whitelisted_items().collect();
+        let whitelisted_items: HashSet<_> = ctx.whitelisted_items().iter().cloned().collect();
 
         let whitelisted_and_blacklisted_items: ItemSet = whitelisted_items.iter()
             .cloned()
@@ -134,7 +134,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
     }
 
     fn initial_worklist(&self) -> Vec<ItemId> {
-        self.ctx.whitelisted_items().collect()
+        self.ctx.whitelisted_items().iter().cloned().collect()
     }
 
     fn constrain(&mut self, id: ItemId) -> bool {

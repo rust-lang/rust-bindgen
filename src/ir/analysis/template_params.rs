@@ -350,7 +350,10 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
            -> UsedTemplateParameters<'ctx, 'gen> {
         let mut used = HashMap::new();
         let mut dependencies = HashMap::new();
-        let whitelisted_items: HashSet<_> = ctx.whitelisted_items().collect();
+        let whitelisted_items: HashSet<_> = ctx.whitelisted_items()
+            .iter()
+            .cloned()
+            .collect();
 
         let whitelisted_and_blacklisted_items: ItemSet = whitelisted_items.iter()
             .cloned()
@@ -453,6 +456,8 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
         // blacklisted items.
         self.ctx
             .whitelisted_items()
+            .iter()
+            .cloned()
             .flat_map(|i| {
                 let mut reachable = vec![i];
                 i.trace(self.ctx, &mut |s, _| {
