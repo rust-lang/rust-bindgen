@@ -7,7 +7,6 @@ use bindgen::{Builder, builder, clang_version};
 use std::fs;
 use std::io::{BufRead, BufReader, Error, ErrorKind, Read, Write};
 use std::path::PathBuf;
-use std::process::Command;
 
 #[path="../src/options.rs"]
 mod options;
@@ -243,7 +242,11 @@ fn test_multiple_header_calls_in_builder() {
 }
 
 #[test]
+// Doesn't support executing sh file on Windows.
+// We may want to implement it in Rust so that we support all systems.
+#[cfg(not(target_os = "windows"))]
 fn no_system_header_includes() {
+    use std::process::Command;
     assert!(Command::new("./ci/no-includes.sh")
             .current_dir(env!("CARGO_MANIFEST_DIR"))
             .spawn()
