@@ -219,7 +219,7 @@ extern \"C\" {
 fn test_multiple_header_calls_in_builder() {
     let actual = builder()
         .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/func_ptr.h"))
-        .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/enum.h"))
+        .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/char.h"))
         .generate()
         .unwrap()
         .to_string();
