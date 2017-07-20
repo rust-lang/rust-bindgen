@@ -70,6 +70,7 @@ impl DotAttributes for Function {
         where W: io::Write,
     {
         if let Some(ref mangled) = self.mangled_name {
+            let mangled: String = mangled.chars().flat_map(|c| c.escape_default()).collect();
             try!(writeln!(out,
                           "<tr><td>mangled name</td><td>{}</td></tr>",
                           mangled));
