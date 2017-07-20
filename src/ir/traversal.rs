@@ -58,7 +58,7 @@ pub enum EdgeKind {
     /// template<typename T>
     /// class Foo { };
     ///
-    /// using Bar = Foo<int>;
+    /// using Bar = Foo<ant>;
     /// ```
     TemplateDeclaration,
 

@@ -10,6 +10,7 @@ use super::analysis::analyze;
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
+use super::cant_derive_debug::CantDeriveDebugAnalysis;
 use BindgenOptions;
 use cexpr;
 use callbacks::ParseCallbacks;
@@ -18,7 +19,7 @@ use clang_sys;
 use parse::ClangItemParser;
 use std::borrow::Cow;
 use std::cell::Cell;
-use std::collections::{HashMap, hash_map};
+use std::collections::{HashMap, hash_map, HashSet};
 use std::collections::btree_map::{self, BTreeMap};
 use std::fmt;
 use std::iter::IntoIterator;
@@ -169,6 +170,11 @@ pub struct BindgenContext<'ctx> {
 
     /// Whether we need the mangling hack which removes the prefixing underscore.
     needs_mangling_hack: bool,
+
+    /// Set of ItemId that can't derive debug.
+    /// Populated when we enter codegen by `compute_can_derive_debug`; always `None`
+    /// before that and `Some` after.
+    cant_derive_debug: Option<HashSet<ItemId>>,
 }
 
 /// A traversal of whitelisted items.
@@ -295,6 +301,7 @@ impl<'ctx> BindgenContext<'ctx> {
             used_template_parameters: None,
             need_bitfield_allocation: Default::default(),
             needs_mangling_hack: needs_mangling_hack,
+            cant_derive_debug: None,
         };
 
         me.add_item(root_module, None, None);
@@ -757,6 +764,7 @@ impl<'ctx> BindgenContext<'ctx> {
         self.assert_every_item_in_a_module();
 
         self.find_used_template_parameters();
+        self.compute_cant_derive_debug();
 
         let ret = cb(self);
         self.gen_ctx = None;
@@ -1651,6 +1659,23 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Whether we need to generate the binden complex type
     pub fn need_bindegen_complex_type(&self) -> bool {
         self.generated_bindegen_complex.get()
+    }
+
+    /// Compute whether we can derive debug.
+    fn compute_cant_derive_debug(&mut self) {
+        assert!(self.cant_derive_debug.is_none());
+        self.cant_derive_debug = Some(analyze::<CantDeriveDebugAnalysis>(self));
+    }
+
+    /// Look up whether the item with `id` can
+    /// derive debug or not.
+    pub fn lookup_item_id_can_derive_debug(&self, id: ItemId) -> bool {
+        assert!(self.in_codegen_phase(),
+                "We only compute can_derive_debug when we enter codegen");
+
+        // Look up the computed value for whether the item with `id` can
+        // derive debug or not.
+        !self.cant_derive_debug.as_ref().unwrap().contains(&id)
     }
 }
 

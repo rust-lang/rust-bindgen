@@ -23,3 +23,4 @@ pub mod traversal;
 pub mod ty;
 pub mod var;
 pub mod objc;
+pub mod cant_derive_debug;

@@ -272,28 +272,7 @@ impl CanDeriveDebug for Item {
     type Extra = ();
 
     fn can_derive_debug(&self, ctx: &BindgenContext, _: ()) -> bool {
-        if self.detect_derive_debug_cycle.get() {
-            return true;
-        }
-
-        self.detect_derive_debug_cycle.set(true);
-
-        let result = ctx.options().derive_debug &&
-                     match self.kind {
-            ItemKind::Type(ref ty) => {
-                if self.is_opaque(ctx, &()) {
-                    ty.layout(ctx)
-                        .map_or(true, |l| l.opaque().can_derive_debug(ctx, ()))
-                } else {
-                    ty.can_derive_debug(ctx, ())
-                }
-            }
-            _ => false,
-        };
-
-        self.detect_derive_debug_cycle.set(false);
-
-        result
+        ctx.options().derive_debug && ctx.lookup_item_id_can_derive_debug(self.id())
     }
 }
 
