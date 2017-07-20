@@ -149,8 +149,8 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
         };
 
         match *ty.kind() {
-            // handle the simple case
-            // These can derive debug without further information
+            // Handle the simple cases. These can derive debug without further
+            // information
             TypeKind::Void |
             TypeKind::NullPtr |
             TypeKind::Int(..) |
