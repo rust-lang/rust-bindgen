@@ -75,63 +75,25 @@
 //! union of its sub-item's used template parameters) and iterate to a
 //! fixed-point.
 //!
-//! We use the "monotone framework" for this fix-point analysis where our
-//! lattice is the mapping from each IR item to the powerset of the template
-//! parameters that appear in the input C++ header, our join function is set
-//! union, and we use the `ir::traversal::Trace` trait to implement the
-//! work-list optimization so we don't have to revisit every node in the graph
-//! when for every iteration towards the fix-point.
+//! We use the `ir::analysis::MonotoneFramework` infrastructure for this
+//! fix-point analysis, where our lattice is the mapping from each IR item to
+//! the powerset of the template parameters that appear in the input C++ header,
+//! our join function is set union. The set of template parameters appearing in
+//! the program is finite, as is the number of IR items. We start at our
+//! lattice's bottom element: every item mapping to an empty set of template
+//! parameters. Our analysis only adds members to each item's set of used
+//! template parameters, never removes them, so it is monotone. Because our
+//! lattice is finite and our constraint function is monotone, iteration to a
+//! fix-point will terminate.
 //!
-//! A lattice is a set with a partial ordering between elements, where there is
-//! a single least upper bound and a single greatest least bound for every
-//! subset. We are dealing with finite lattices, which means that it has a
-//! finite number of elements, and it follows that there exists a single top and
-//! a single bottom member of the lattice. For example, the power set of a
-//! finite set forms a finite lattice where partial ordering is defined by set
-//! inclusion, that is `a <= b` if `a` is a subset of `b`. Here is the finite
-//! lattice constructed from the set {0,1,2}:
-//!
-//! ```text
-//!                    .----- Top = {0,1,2} -----.
-//!                   /            |              \
-//!                  /             |               \
-//!                 /              |                \
-//!              {0,1} -------.  {0,2}  .--------- {1,2}
-//!                |           \ /   \ /             |
-//!                |            /     \              |
-//!                |           / \   / \             |
-//!               {0} --------'   {1}   `---------- {2}
-//!                 \              |                /
-//!                  \             |               /
-//!                   \            |              /
-//!                    `------ Bottom = {} ------'
-//! ```
-//!
-//! A monotone function `f` is a function where if `x <= y`, then it holds that
-//! `f(x) <= f(y)`. It should be clear that running a monotone function to a
-//! fix-point on a finite lattice will always terminate: `f` can only "move"
-//! along the lattice in a single direction, and therefore can only either find
-//! a fix-point in the middle of the lattice or continue to the top or bottom
-//! depending if it is ascending or descending the lattice respectively.
-//!
-//! For our analysis, we are collecting the set of template parameters used by
-//! any given IR node. The set of template parameters appearing in the program
-//! is finite. Our lattice is their powerset. We start at the bottom element,
-//! the empty set. Our analysis only adds members to the set of used template
-//! parameters, never removes them, so it is monotone, and therefore iteration
-//! to a fix-point will terminate.
-//!
-//! For a deeper introduction to the general form of this kind of analysis, see
-//! [Static Program Analysis by Anders Møller and Michael I. Schwartzbach][spa].
-//!
-//! [spa]: https://cs.au.dk/~amoeller/spa/spa.pdf
+//! See `src/ir/analysis.rs` for more.
 
-use super::analysis::MonotoneFramework;
-use super::context::{BindgenContext, ItemId};
-use super::item::{Item, ItemSet};
-use super::template::{TemplateInstantiation, TemplateParameters};
-use super::traversal::{EdgeKind, Trace};
-use super::ty::TypeKind;
+use super::{ConstrainResult, MonotoneFramework};
+use ir::context::{BindgenContext, ItemId};
+use ir::item::{Item, ItemSet};
+use ir::template::{TemplateInstantiation, TemplateParameters};
+use ir::traversal::{EdgeKind, Trace};
+use ir::ty::TypeKind;
 use std::collections::{HashMap, HashSet};
 
 /// An analysis that finds for each IR item its set of template parameters that
@@ -388,7 +350,10 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
            -> UsedTemplateParameters<'ctx, 'gen> {
         let mut used = HashMap::new();
         let mut dependencies = HashMap::new();
-        let whitelisted_items: HashSet<_> = ctx.whitelisted_items().collect();
+        let whitelisted_items: HashSet<_> = ctx.whitelisted_items()
+            .iter()
+            .cloned()
+            .collect();
 
         let whitelisted_and_blacklisted_items: ItemSet = whitelisted_items.iter()
             .cloned()
@@ -491,6 +456,8 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
         // blacklisted items.
         self.ctx
             .whitelisted_items()
+            .iter()
+            .cloned()
             .flat_map(|i| {
                 let mut reachable = vec![i];
                 i.trace(self.ctx, &mut |s, _| {
@@ -501,7 +468,7 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
             .collect()
     }
 
-    fn constrain(&mut self, id: ItemId) -> bool {
+    fn constrain(&mut self, id: ItemId) -> ConstrainResult {
         // Invariant: all hash map entries' values are `Some` upon entering and
         // exiting this method.
         extra_assert!(self.used.values().all(|v| v.is_some()));
@@ -553,7 +520,11 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
         self.used.insert(id, Some(used_by_this_id));
         extra_assert!(self.used.values().all(|v| v.is_some()));
 
-        new_len != original_len
+        if new_len != original_len {
+            ConstrainResult::Changed
+        } else {
+            ConstrainResult::Same
+        }
     }
 
     fn each_depending_on<F>(&self, item: ItemId, mut f: F)

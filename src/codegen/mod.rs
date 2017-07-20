@@ -3275,8 +3275,6 @@ impl CodeGenerator for ObjCInterface {
     }
 }
 
-
-
 pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
     context.gen(|context| {
         let counter = Cell::new(0);
@@ -3284,10 +3282,10 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
 
         debug!("codegen: {:?}", context.options());
 
-        let whitelisted_items: ItemSet = context.whitelisted_items().collect();
+        let whitelisted_items = context.whitelisted_items();
 
         if context.options().emit_ir {
-            for &id in whitelisted_items.iter() {
+            for &id in whitelisted_items {
                 let item = context.resolve_item(id);
                 println!("ir: {:?} = {:#?}", id, item);
             }
@@ -3301,7 +3299,7 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
         }
 
         context.resolve_item(context.root_module())
-            .codegen(context, &mut result, &whitelisted_items, &());
+            .codegen(context, &mut result, whitelisted_items, &());
 
         result.items
     })

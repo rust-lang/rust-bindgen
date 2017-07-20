@@ -1,9 +1,9 @@
 //! Determining which types for which we can emit `#[derive(Debug)]`.
-use super::analysis::MonotoneFramework;
-use ir::context::{BindgenContext, ItemId};
-use ir::item::ItemSet;
+
+use super::{ConstrainResult, MonotoneFramework};
 use std::collections::HashSet;
 use std::collections::HashMap;
+use ir::context::{BindgenContext, ItemId};
 use ir::traversal::EdgeKind;
 use ir::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
 use ir::ty::TypeKind;
@@ -16,7 +16,7 @@ use ir::comp::CompKind;
 
 /// An analysis that finds for each IR item whether debug cannot be derived.
 ///
-/// We use the monotone constraint function `cant_derive_debug`, defined as
+/// We use the monotone constraint function `cannot_derive_debug`, defined as
 /// follows:
 ///
 /// * If T is Opaque and layout of the type is known, get this layout as opaque
@@ -34,17 +34,17 @@ use ir::comp::CompKind;
 ///   derived debug if any of the template arguments or template definition
 ///   cannot derive debug.
 #[derive(Debug, Clone)]
-pub struct CantDeriveDebugAnalysis<'ctx, 'gen>
+pub struct CannotDeriveDebug<'ctx, 'gen>
     where 'gen: 'ctx
 {
     ctx: &'ctx BindgenContext<'gen>,
 
     // The incremental result of this analysis's computation. Everything in this
     // set cannot derive debug.
-    cant_derive_debug: HashSet<ItemId>,
+    cannot_derive_debug: HashSet<ItemId>,
 
     // Dependencies saying that if a key ItemId has been inserted into the
-    // `cant_derive_debug` set, then each of the ids in Vec<ItemId> need to be
+    // `cannot_derive_debug` set, then each of the ids in Vec<ItemId> need to be
     // considered again.
     //
     // This is a subset of the natural IR graph with reversed edges, where we
@@ -53,7 +53,7 @@ pub struct CantDeriveDebugAnalysis<'ctx, 'gen>
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
-impl<'ctx, 'gen> CantDeriveDebugAnalysis<'ctx, 'gen> {
+impl<'ctx, 'gen> CannotDeriveDebug<'ctx, 'gen> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             // These are the only edges that can affect whether a type can derive
@@ -77,79 +77,69 @@ impl<'ctx, 'gen> CantDeriveDebugAnalysis<'ctx, 'gen> {
         }
     }
 
-    fn insert(&mut self, id: ItemId) -> bool {
-        let was_already_in = self.cant_derive_debug.insert(id);
+    fn insert(&mut self, id: ItemId) -> ConstrainResult {
+        let was_not_already_in_set = self.cannot_derive_debug.insert(id);
         assert!(
-            was_already_in,
-            format!("We shouldn't try and insert twice because if it was already in the set, \
-             `constrain` would have exited early.: {:?}", id)
+            was_not_already_in_set,
+            "We shouldn't try and insert {:?} twice because if it was \
+             already in the set, `constrain` should have exited early.",
+            id
         );
-        true
+        ConstrainResult::Changed
     }
 }
 
-impl<'ctx, 'gen> MonotoneFramework for CantDeriveDebugAnalysis<'ctx, 'gen> {
+impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
     type Node = ItemId;
     type Extra = &'ctx BindgenContext<'gen>;
     type Output = HashSet<ItemId>;
 
-    fn new(ctx: &'ctx BindgenContext<'gen>) -> CantDeriveDebugAnalysis<'ctx, 'gen> {
-        let cant_derive_debug = HashSet::new();
+    fn new(ctx: &'ctx BindgenContext<'gen>) -> CannotDeriveDebug<'ctx, 'gen> {
+        let cannot_derive_debug = HashSet::new();
         let mut dependencies = HashMap::new();
-        let whitelisted_items: HashSet<_> = ctx.whitelisted_items().collect();
 
-        let whitelisted_and_blacklisted_items: ItemSet = whitelisted_items.iter()
-            .cloned()
-            .flat_map(|i| {
-                let mut reachable = vec![i];
-                i.trace(ctx, &mut |s, _| {
-                    reachable.push(s);
-                }, &());
-                reachable
-            })
-            .collect();
-
-        for item in whitelisted_and_blacklisted_items {
+        for &item in ctx.whitelisted_items() {
             dependencies.entry(item).or_insert(vec![]);
 
             {
                 // We reverse our natural IR graph edges to find dependencies
                 // between nodes.
                 item.trace(ctx, &mut |sub_item: ItemId, edge_kind| {
-                    if Self::consider_edge(edge_kind) {
-                        dependencies.entry(sub_item)
-                            .or_insert(vec![])
-                            .push(item);
+                    if ctx.whitelisted_items().contains(&sub_item) &&
+                       Self::consider_edge(edge_kind) {
+                           dependencies.entry(sub_item)
+                               .or_insert(vec![])
+                               .push(item);
                     }
                 }, &());
             }
         }
 
-        CantDeriveDebugAnalysis {
-            ctx: ctx,
-            cant_derive_debug: cant_derive_debug,
-            dependencies: dependencies,
+        CannotDeriveDebug {
+            ctx,
+            cannot_derive_debug,
+            dependencies,
         }
     }
 
     fn initial_worklist(&self) -> Vec<ItemId> {
-        self.ctx.whitelisted_items().collect()
+        self.ctx.whitelisted_items().iter().cloned().collect()
     }
 
-    fn constrain(&mut self, id: ItemId) -> bool {
-        if self.cant_derive_debug.contains(&id) {
-            return false;
+    fn constrain(&mut self, id: ItemId) -> ConstrainResult {
+        if self.cannot_derive_debug.contains(&id) {
+            return ConstrainResult::Same;
         }
 
         let item = self.ctx.resolve_item(id);
         let ty = match item.as_type() {
-            None => return false,
+            None => return ConstrainResult::Same,
             Some(ty) => ty
         };
 
         match *ty.kind() {
-            // handle the simple case
-            // These can derive debug without further information
+            // Handle the simple cases. These can derive debug without further
+            // information.
             TypeKind::Void |
             TypeKind::NullPtr |
             TypeKind::Int(..) |
@@ -164,97 +154,113 @@ impl<'ctx, 'gen> MonotoneFramework for CantDeriveDebugAnalysis<'ctx, 'gen> {
             TypeKind::ObjCInterface(..) |
             TypeKind::ObjCId |
             TypeKind::ObjCSel => {
-                return false;
+                ConstrainResult::Same
             },
+
             TypeKind::Opaque => {
                 if ty.layout(self.ctx)
                     .map_or(true, |l| l.opaque().can_trivially_derive_debug(self.ctx, ())) {
-                        return false;
+                        ConstrainResult::Same
                     } else {
-                        return self.insert(id);
+                        self.insert(id)
                     }
             },
+
             TypeKind::Array(t, len) => {
-                if len <= RUST_DERIVE_IN_ARRAY_LIMIT {
-                    if self.cant_derive_debug.contains(&t) {
-                        return self.insert(id);
-                    }
-                    return false;
-                } else {
+                if self.cannot_derive_debug.contains(&t) {
                     return self.insert(id);
                 }
+
+                if len <= RUST_DERIVE_IN_ARRAY_LIMIT {
+                    ConstrainResult::Same
+                } else {
+                    self.insert(id)
+                }
             },
+
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
-                if self.cant_derive_debug.contains(&t) {
-                    return self.insert(id);
+                if self.cannot_derive_debug.contains(&t) {
+                    self.insert(id)
+                } else {
+                    ConstrainResult::Same
                 }
-                return false;
             },
+
             TypeKind::Comp(ref info) => {
                 if info.has_non_type_template_params() {
-                    if ty.layout(self.ctx).map_or(true,
-                                                  |l| l.opaque().can_trivially_derive_debug(self.ctx, ())) {
-                        return false;
+                    if ty.layout(self.ctx)
+                        .map_or(true,
+                                |l| l.opaque().can_trivially_derive_debug(self.ctx, ())) {
+                        return ConstrainResult::Same;
                     } else {
                         return self.insert(id);
                     }
                 }
+
                 if info.kind() == CompKind::Union {
                     if self.ctx.options().unstable_rust {
                         return self.insert(id);
                     }
 
-                    if ty.layout(self.ctx).map_or(true,
-                                                  |l| l.opaque().can_trivially_derive_debug(self.ctx, ())) {
-                        return false;
+                    if ty.layout(self.ctx)
+                        .map_or(true,
+                                |l| l.opaque().can_trivially_derive_debug(self.ctx, ())) {
+                        return ConstrainResult::Same;
                     } else {
                         return self.insert(id);
                     }
                 }
-                let bases_cant_derive = info.base_members()
+
+                let bases_cannot_derive = info.base_members()
                     .iter()
-                    .any(|base| self.cant_derive_debug.contains(&base.ty));
-                if bases_cant_derive {
+                    .any(|base| self.cannot_derive_debug.contains(&base.ty));
+                if bases_cannot_derive {
                     return self.insert(id);
                 }
-                let fields_cant_derive = info.fields()
+
+                let fields_cannot_derive = info.fields()
                     .iter()
                     .any(|f| {
-                        match f {
-                            &Field::DataMember(ref data) => self.cant_derive_debug.contains(&data.ty()),
-                            &Field::Bitfields(ref bfu) => bfu.bitfields()
-                                .iter().any(|b| {
-                                    self.cant_derive_debug.contains(&b.ty())
-                                })
+                        match *f {
+                            Field::DataMember(ref data) => {
+                                self.cannot_derive_debug.contains(&data.ty())
+                            }
+                            Field::Bitfields(ref bfu) => {
+                                bfu.bitfields()
+                                    .iter().any(|b| {
+                                        self.cannot_derive_debug.contains(&b.ty())
+                                    })
+                            }
                         }
                     });
-                if fields_cant_derive {
+                if fields_cannot_derive {
                     return self.insert(id);
                 }
-                false
+
+                ConstrainResult::Same
             },
+
             TypeKind::Pointer(inner) => {
-                let inner_type = self.ctx.resolve_type(inner);
-                if let TypeKind::Function(ref sig) =
-                    *inner_type.canonical_type(self.ctx).kind() {
-                        if sig.can_trivially_derive_debug(&self.ctx, ()) {
-                            return false;
-                        } else {
-                            return self.insert(id);
-                        }
+                let inner_type = self.ctx.resolve_type(inner).canonical_type(self.ctx);
+                if let TypeKind::Function(ref sig) = *inner_type.kind() {
+                    if !sig.can_trivially_derive_debug(&self.ctx, ()) {
+                        return self.insert(id);
                     }
-                false
+                }
+                ConstrainResult::Same
             },
+
             TypeKind::TemplateInstantiation(ref template) => {
-                let args_cant_derive = template.template_arguments()
+                let args_cannot_derive = template.template_arguments()
                     .iter()
-                    .any(|arg| self.cant_derive_debug.contains(&arg));
-                if args_cant_derive {
+                    .any(|arg| self.cannot_derive_debug.contains(&arg));
+                if args_cannot_derive {
                     return self.insert(id);
                 }
-                let ty_cant_derive = template.template_definition()
+
+                let ty_cannot_derive = template.template_definition()
                     .into_resolver()
                     .through_type_refs()
                     .through_type_aliases()
@@ -268,7 +274,11 @@ impl<'ctx, 'gen> MonotoneFramework for CantDeriveDebugAnalysis<'ctx, 'gen> {
                         // idea of the layout than the definition does.
                         if c.has_non_type_template_params() {
                             let opaque = ty.layout(self.ctx)
-                                .or_else(|| self.ctx.resolve_type(template.template_definition()).layout(self.ctx))
+                                .or_else(|| {
+                                    self.ctx
+                                        .resolve_type(template.template_definition())
+                                        .layout(self.ctx)
+                                })
                                 .unwrap_or(Layout::zero())
                                 .opaque();
                             Some(!opaque.can_trivially_derive_debug(&self.ctx, ()))
@@ -276,11 +286,14 @@ impl<'ctx, 'gen> MonotoneFramework for CantDeriveDebugAnalysis<'ctx, 'gen> {
                             None
                         }
                     })
-                    .unwrap_or_else(|| self.cant_derive_debug.contains(&template.template_definition()));
-                if ty_cant_derive {
+                    .unwrap_or_else(|| {
+                        self.cannot_derive_debug.contains(&template.template_definition())
+                    });
+                if ty_cannot_derive {
                     return self.insert(id);
                 }
-                false
+
+                ConstrainResult::Same
             },
         }
     }
@@ -297,8 +310,8 @@ impl<'ctx, 'gen> MonotoneFramework for CantDeriveDebugAnalysis<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> From<CantDeriveDebugAnalysis<'ctx, 'gen>> for HashSet<ItemId> {
-    fn from(analysis: CantDeriveDebugAnalysis<'ctx, 'gen>) -> Self {
-        analysis.cant_derive_debug
+impl<'ctx, 'gen> From<CannotDeriveDebug<'ctx, 'gen>> for HashSet<ItemId> {
+    fn from(analysis: CannotDeriveDebug<'ctx, 'gen>) -> Self {
+        analysis.cannot_derive_debug
     }
 }
