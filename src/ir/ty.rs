@@ -358,6 +358,7 @@ impl IsOpaque for Type {
         match self.kind {
             TypeKind::Opaque => true,
             TypeKind::TemplateInstantiation(ref inst) => inst.is_opaque(ctx, item),
+            TypeKind::Comp(ref comp) => comp.is_opaque(ctx, &()),
             _ => false,
         }
     }
@@ -561,6 +562,9 @@ impl CanDeriveDebug for Type {
             }
             TypeKind::TemplateInstantiation(ref inst) => {
                 inst.can_derive_debug(ctx, self.layout(ctx))
+            }
+            TypeKind::Opaque => {
+                self.layout.map_or(true, |l| l.opaque().can_derive_debug(ctx, ()))
             }
             _ => true,
         }
