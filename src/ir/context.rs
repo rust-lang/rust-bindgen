@@ -763,6 +763,10 @@ impl<'ctx> BindgenContext<'ctx> {
             self.process_replacements();
         }
 
+        // And assert once again, because resolving type refs and processing
+        // replacements both mutate the IR graph.
+        self.assert_no_dangling_references();
+
         // Compute the whitelisted set after processing replacements and
         // resolving type refs, as those are the final mutations of the IR
         // graph, and their completion means that the IR graph is now frozen.
