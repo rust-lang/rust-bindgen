@@ -127,9 +127,9 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
         }
 
         CannotDeriveDebug {
-            ctx: ctx,
-            cannot_derive_debug: cannot_derive_debug,
-            dependencies: dependencies,
+            ctx,
+            cannot_derive_debug,
+            dependencies,
         }
     }
 
