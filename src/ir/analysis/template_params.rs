@@ -88,7 +88,7 @@
 //!
 //! See `src/ir/analysis.rs` for more.
 
-use super::MonotoneFramework;
+use super::{ConstrainResult, MonotoneFramework};
 use ir::context::{BindgenContext, ItemId};
 use ir::item::{Item, ItemSet};
 use ir::template::{TemplateInstantiation, TemplateParameters};
@@ -468,7 +468,7 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
             .collect()
     }
 
-    fn constrain(&mut self, id: ItemId) -> bool {
+    fn constrain(&mut self, id: ItemId) -> ConstrainResult {
         // Invariant: all hash map entries' values are `Some` upon entering and
         // exiting this method.
         extra_assert!(self.used.values().all(|v| v.is_some()));
@@ -520,7 +520,11 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
         self.used.insert(id, Some(used_by_this_id));
         extra_assert!(self.used.values().all(|v| v.is_some()));
 
-        new_len != original_len
+        if new_len != original_len {
+            ConstrainResult::Changed
+        } else {
+            ConstrainResult::Same
+        }
     }
 
     fn each_depending_on<F>(&self, item: ItemId, mut f: F)

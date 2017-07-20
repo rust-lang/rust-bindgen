@@ -89,10 +89,10 @@ pub trait MonotoneFramework: Sized + fmt::Debug {
     ///
     /// If this results in changing our internal state (ie, we discovered that
     /// we have not reached a fix-point and iteration should continue), return
-    /// `true`. Otherwise, return `false`. When `constrain` returns false for
-    /// all nodes in the set, we have reached a fix-point and the analysis is
-    /// complete.
-    fn constrain(&mut self, node: Self::Node) -> bool;
+    /// `ConstrainResult::Changed`. Otherwise, return `ConstrainResult::Same`.
+    /// When `constrain` returns `ConstrainResult::Same` for all nodes in the
+    /// set, we have reached a fix-point and the analysis is complete.
+    fn constrain(&mut self, node: Self::Node) -> ConstrainResult;
 
     /// For each node `d` that depends on the given `node`'s current answer when
     /// running `constrain(d)`, call `f(d)`. This informs us which new nodes to
@@ -100,6 +100,17 @@ pub trait MonotoneFramework: Sized + fmt::Debug {
     /// information.
     fn each_depending_on<F>(&self, node: Self::Node, f: F)
         where F: FnMut(Self::Node);
+}
+
+/// Whether an analysis's `constrain` function modified the incremental results
+/// or not.
+pub enum ConstrainResult {
+    /// The incremental results were updated, and the fix-point computation
+    /// should continue.
+    Changed,
+
+    /// The incremental results were not updated.
+    Same,
 }
 
 /// Run an analysis in the monotone framework.
@@ -110,7 +121,7 @@ pub fn analyze<Analysis>(extra: Analysis::Extra) -> Analysis::Output
     let mut worklist = analysis.initial_worklist();
 
     while let Some(node) = worklist.pop() {
-        if analysis.constrain(node) {
+        if let ConstrainResult::Changed = analysis.constrain(node) {
             analysis.each_depending_on(node, |needs_work| {
                 worklist.push(needs_work);
             });
@@ -227,7 +238,7 @@ mod tests {
             self.graph.0.keys().cloned().collect()
         }
 
-        fn constrain(&mut self, node: Node) -> bool {
+        fn constrain(&mut self, node: Node) -> ConstrainResult {
             // The set of nodes reachable from a node `x` is
             //
             //     reachable(x) = s_0 U s_1 U ... U reachable(s_0) U reachable(s_1) U ...
@@ -254,7 +265,11 @@ mod tests {
             }
 
             let new_size = self.reachable[&node].len();
-            original_size != new_size
+            if original_size != new_size {
+                ConstrainResult::Changed
+            } else {
+                ConstrainResult::Same
+            }
         }
 
         fn each_depending_on<F>(&self, node: Node, mut f: F)

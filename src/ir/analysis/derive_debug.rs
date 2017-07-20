@@ -1,5 +1,6 @@
 //! Determining which types for which we can emit `#[derive(Debug)]`.
-use super::MonotoneFramework;
+
+use super::{ConstrainResult, MonotoneFramework};
 use ir::context::{BindgenContext, ItemId};
 use ir::item::ItemSet;
 use std::collections::HashSet;
@@ -77,7 +78,7 @@ impl<'ctx, 'gen> CannotDeriveDebug<'ctx, 'gen> {
         }
     }
 
-    fn insert(&mut self, id: ItemId) -> bool {
+    fn insert(&mut self, id: ItemId) -> ConstrainResult {
         let was_not_already_in_set = self.cannot_derive_debug.insert(id);
         assert!(
             was_not_already_in_set,
@@ -85,7 +86,7 @@ impl<'ctx, 'gen> CannotDeriveDebug<'ctx, 'gen> {
              already in the set, `constrain` should have exited early.",
             id
         );
-        true
+        ConstrainResult::Changed
     }
 }
 
@@ -137,20 +138,20 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
         self.ctx.whitelisted_items().iter().cloned().collect()
     }
 
-    fn constrain(&mut self, id: ItemId) -> bool {
+    fn constrain(&mut self, id: ItemId) -> ConstrainResult {
         if self.cannot_derive_debug.contains(&id) {
-            return false;
+            return ConstrainResult::Same;
         }
 
         let item = self.ctx.resolve_item(id);
         let ty = match item.as_type() {
-            None => return false,
+            None => return ConstrainResult::Same,
             Some(ty) => ty
         };
 
         match *ty.kind() {
             // Handle the simple cases. These can derive debug without further
-            // information
+            // information.
             TypeKind::Void |
             TypeKind::NullPtr |
             TypeKind::Int(..) |
@@ -165,89 +166,104 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
             TypeKind::ObjCInterface(..) |
             TypeKind::ObjCId |
             TypeKind::ObjCSel => {
-                return false;
+                ConstrainResult::Same
             },
+
             TypeKind::Opaque => {
                 if ty.layout(self.ctx)
                     .map_or(true, |l| l.opaque().can_trivially_derive_debug(self.ctx, ())) {
-                        return false;
+                        ConstrainResult::Same
                     } else {
-                        return self.insert(id);
+                        self.insert(id)
                     }
             },
+
             TypeKind::Array(t, len) => {
-                if len <= RUST_DERIVE_IN_ARRAY_LIMIT {
-                    if self.cannot_derive_debug.contains(&t) {
-                        return self.insert(id);
-                    }
-                    return false;
-                } else {
+                if self.cannot_derive_debug.contains(&t) {
                     return self.insert(id);
                 }
+
+                if len <= RUST_DERIVE_IN_ARRAY_LIMIT {
+                    ConstrainResult::Same
+                } else {
+                    self.insert(id)
+                }
             },
+
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
                 if self.cannot_derive_debug.contains(&t) {
-                    return self.insert(id);
+                    self.insert(id)
+                } else {
+                    ConstrainResult::Same
                 }
-                return false;
             },
+
             TypeKind::Comp(ref info) => {
                 if info.has_non_type_template_params() {
-                    if ty.layout(self.ctx).map_or(true,
-                                                  |l| l.opaque().can_trivially_derive_debug(self.ctx, ())) {
-                        return false;
+                    if ty.layout(self.ctx)
+                        .map_or(true,
+                                |l| l.opaque().can_trivially_derive_debug(self.ctx, ())) {
+                        return ConstrainResult::Same;
                     } else {
                         return self.insert(id);
                     }
                 }
+
                 if info.kind() == CompKind::Union {
                     if self.ctx.options().unstable_rust {
                         return self.insert(id);
                     }
 
-                    if ty.layout(self.ctx).map_or(true,
-                                                  |l| l.opaque().can_trivially_derive_debug(self.ctx, ())) {
-                        return false;
+                    if ty.layout(self.ctx)
+                        .map_or(true,
+                                |l| l.opaque().can_trivially_derive_debug(self.ctx, ())) {
+                        return ConstrainResult::Same;
                     } else {
                         return self.insert(id);
                     }
                 }
+
                 let bases_cannot_derive = info.base_members()
                     .iter()
                     .any(|base| self.cannot_derive_debug.contains(&base.ty));
                 if bases_cannot_derive {
                     return self.insert(id);
                 }
+
                 let fields_cannot_derive = info.fields()
                     .iter()
                     .any(|f| {
-                        match f {
-                            &Field::DataMember(ref data) => self.cannot_derive_debug.contains(&data.ty()),
-                            &Field::Bitfields(ref bfu) => bfu.bitfields()
-                                .iter().any(|b| {
-                                    self.cannot_derive_debug.contains(&b.ty())
-                                })
+                        match *f {
+                            Field::DataMember(ref data) => {
+                                self.cannot_derive_debug.contains(&data.ty())
+                            }
+                            Field::Bitfields(ref bfu) => {
+                                bfu.bitfields()
+                                    .iter().any(|b| {
+                                        self.cannot_derive_debug.contains(&b.ty())
+                                    })
+                            }
                         }
                     });
                 if fields_cannot_derive {
                     return self.insert(id);
                 }
-                false
+
+                ConstrainResult::Same
             },
+
             TypeKind::Pointer(inner) => {
-                let inner_type = self.ctx.resolve_type(inner);
-                if let TypeKind::Function(ref sig) =
-                    *inner_type.canonical_type(self.ctx).kind() {
-                        if sig.can_trivially_derive_debug(&self.ctx, ()) {
-                            return false;
-                        } else {
-                            return self.insert(id);
-                        }
+                let inner_type = self.ctx.resolve_type(inner).canonical_type(self.ctx);
+                if let TypeKind::Function(ref sig) = *inner_type.kind() {
+                    if !sig.can_trivially_derive_debug(&self.ctx, ()) {
+                        return self.insert(id);
                     }
-                false
+                }
+                ConstrainResult::Same
             },
+
             TypeKind::TemplateInstantiation(ref template) => {
                 let args_cannot_derive = template.template_arguments()
                     .iter()
@@ -255,6 +271,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                 if args_cannot_derive {
                     return self.insert(id);
                 }
+
                 let ty_cannot_derive = template.template_definition()
                     .into_resolver()
                     .through_type_refs()
@@ -269,7 +286,11 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                         // idea of the layout than the definition does.
                         if c.has_non_type_template_params() {
                             let opaque = ty.layout(self.ctx)
-                                .or_else(|| self.ctx.resolve_type(template.template_definition()).layout(self.ctx))
+                                .or_else(|| {
+                                    self.ctx
+                                        .resolve_type(template.template_definition())
+                                        .layout(self.ctx)
+                                })
                                 .unwrap_or(Layout::zero())
                                 .opaque();
                             Some(!opaque.can_trivially_derive_debug(&self.ctx, ()))
@@ -277,11 +298,14 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                             None
                         }
                     })
-                    .unwrap_or_else(|| self.cannot_derive_debug.contains(&template.template_definition()));
+                    .unwrap_or_else(|| {
+                        self.cannot_derive_debug.contains(&template.template_definition())
+                    });
                 if ty_cannot_derive {
                     return self.insert(id);
                 }
-                false
+
+                ConstrainResult::Same
             },
         }
     }
