@@ -78,11 +78,12 @@ impl<'ctx, 'gen> CannotDeriveDebug<'ctx, 'gen> {
     }
 
     fn insert(&mut self, id: ItemId) -> bool {
-        let was_already_in = self.cannot_derive_debug.insert(id);
+        let was_not_already_in_set = self.cannot_derive_debug.insert(id);
         assert!(
-            was_already_in,
-            format!("We shouldn't try and insert twice because if it was already in the set, \
-             `constrain` would have exited early.: {:?}", id)
+            was_not_already_in_set,
+            "We shouldn't try and insert {:?} twice because if it was \
+             already in the set, `constrain` should have exited early.",
+            id
         );
         true
     }
