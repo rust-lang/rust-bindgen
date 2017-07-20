@@ -5,7 +5,7 @@ use super::int::IntKind;
 use super::item::{IsOpaque, Item, ItemAncestors, ItemCanonicalPath, ItemSet};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
-use super::analysis::{analyze, UsedTemplateParameters, CannotDeriveDebugAnalysis};
+use super::analysis::{analyze, UsedTemplateParameters, CannotDeriveDebug};
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
@@ -1664,7 +1664,7 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Compute whether we can derive debug.
     fn compute_cant_derive_debug(&mut self) {
         assert!(self.cant_derive_debug.is_none());
-        self.cant_derive_debug = Some(analyze::<CannotDeriveDebugAnalysis>(self));
+        self.cant_derive_debug = Some(analyze::<CannotDeriveDebug>(self));
     }
 
     /// Look up whether the item with `id` can

@@ -41,7 +41,7 @@
 mod template_params;
 pub use self::template_params::UsedTemplateParameters;
 mod derive_debug;
-pub use self::derive_debug::CannotDeriveDebugAnalysis;
+pub use self::derive_debug::CannotDeriveDebug;
 
 use std::fmt;
 

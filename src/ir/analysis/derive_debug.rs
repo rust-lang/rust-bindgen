@@ -34,7 +34,7 @@ use ir::comp::CompKind;
 ///   derived debug if any of the template arguments or template definition
 ///   cannot derive debug.
 #[derive(Debug, Clone)]
-pub struct CannotDeriveDebugAnalysis<'ctx, 'gen>
+pub struct CannotDeriveDebug<'ctx, 'gen>
     where 'gen: 'ctx
 {
     ctx: &'ctx BindgenContext<'gen>,
@@ -53,7 +53,7 @@ pub struct CannotDeriveDebugAnalysis<'ctx, 'gen>
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
-impl<'ctx, 'gen> CannotDeriveDebugAnalysis<'ctx, 'gen> {
+impl<'ctx, 'gen> CannotDeriveDebug<'ctx, 'gen> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             // These are the only edges that can affect whether a type can derive
@@ -88,12 +88,12 @@ impl<'ctx, 'gen> CannotDeriveDebugAnalysis<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebugAnalysis<'ctx, 'gen> {
+impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
     type Node = ItemId;
     type Extra = &'ctx BindgenContext<'gen>;
     type Output = HashSet<ItemId>;
 
-    fn new(ctx: &'ctx BindgenContext<'gen>) -> CannotDeriveDebugAnalysis<'ctx, 'gen> {
+    fn new(ctx: &'ctx BindgenContext<'gen>) -> CannotDeriveDebug<'ctx, 'gen> {
         let cannot_derive_debug = HashSet::new();
         let mut dependencies = HashMap::new();
         let whitelisted_items: HashSet<_> = ctx.whitelisted_items().collect();
@@ -125,7 +125,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebugAnalysis<'ctx, 'gen> {
             }
         }
 
-        CannotDeriveDebugAnalysis {
+        CannotDeriveDebug {
             ctx: ctx,
             cannot_derive_debug: cannot_derive_debug,
             dependencies: dependencies,
@@ -297,8 +297,8 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebugAnalysis<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> From<CannotDeriveDebugAnalysis<'ctx, 'gen>> for HashSet<ItemId> {
-    fn from(analysis: CannotDeriveDebugAnalysis<'ctx, 'gen>) -> Self {
+impl<'ctx, 'gen> From<CannotDeriveDebug<'ctx, 'gen>> for HashSet<ItemId> {
+    fn from(analysis: CannotDeriveDebug<'ctx, 'gen>) -> Self {
         analysis.cannot_derive_debug
     }
 }
