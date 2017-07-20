@@ -88,12 +88,12 @@
 //!
 //! See `src/ir/analysis.rs` for more.
 
-use super::analysis::MonotoneFramework;
-use super::context::{BindgenContext, ItemId};
-use super::item::{Item, ItemSet};
-use super::template::{TemplateInstantiation, TemplateParameters};
-use super::traversal::{EdgeKind, Trace};
-use super::ty::TypeKind;
+use super::MonotoneFramework;
+use ir::context::{BindgenContext, ItemId};
+use ir::item::{Item, ItemSet};
+use ir::template::{TemplateInstantiation, TemplateParameters};
+use ir::traversal::{EdgeKind, Trace};
+use ir::ty::TypeKind;
 use std::collections::{HashMap, HashSet};
 
 /// An analysis that finds for each IR item its set of template parameters that

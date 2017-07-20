@@ -37,6 +37,12 @@
 //!
 //! [spa]: https://cs.au.dk/~amoeller/spa/spa.pdf
 
+// Re-export individual analyses.
+mod template_params;
+pub use self::template_params::UsedTemplateParameters;
+mod cant_derive_debug;
+pub use self::cant_derive_debug::CantDeriveDebugAnalysis;
+
 use std::fmt;
 
 /// An analysis in the monotone framework.

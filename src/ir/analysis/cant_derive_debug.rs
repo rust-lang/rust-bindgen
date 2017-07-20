@@ -1,5 +1,5 @@
 //! Determining which types for which we can emit `#[derive(Debug)]`.
-use super::analysis::MonotoneFramework;
+use super::MonotoneFramework;
 use ir::context::{BindgenContext, ItemId};
 use ir::item::ItemSet;
 use std::collections::HashSet;
