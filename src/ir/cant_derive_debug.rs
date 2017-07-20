@@ -67,6 +67,7 @@ impl<'ctx, 'gen> CantDeriveDebugAnalysis<'ctx, 'gen> {
             EdgeKind::TemplateParameterDefinition => true,
 
             EdgeKind::Constructor |
+            EdgeKind::Destructor |
             EdgeKind::FunctionReturn |
             EdgeKind::FunctionParameter |
             EdgeKind::InnerType |

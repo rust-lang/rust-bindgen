@@ -211,6 +211,7 @@ impl<'ctx, 'gen> UsedTemplateParameters<'ctx, 'gen> {
             EdgeKind::BaseMember |
             EdgeKind::Field |
             EdgeKind::Constructor |
+            EdgeKind::Destructor |
             EdgeKind::VarType |
             EdgeKind::FunctionReturn |
             EdgeKind::FunctionParameter |

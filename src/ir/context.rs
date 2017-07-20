@@ -186,7 +186,7 @@ pub struct WhitelistedItems<'ctx, 'gen>
                              'gen,
                              ItemSet,
                              Vec<ItemId>,
-                             fn(Edge) -> bool>,
+                             for<'a> fn(&'a BindgenContext, Edge) -> bool>,
 }
 
 impl<'ctx, 'gen> Iterator for WhitelistedItems<'ctx, 'gen>
@@ -215,7 +215,7 @@ impl<'ctx, 'gen> WhitelistedItems<'ctx, 'gen>
         where R: IntoIterator<Item = ItemId>,
     {
         let predicate = if ctx.options().whitelist_recursively {
-            traversal::all_edges
+            traversal::codegen_edges
         } else {
             traversal::no_edges
         };
@@ -1573,6 +1573,8 @@ impl<'ctx> BindgenContext<'ctx> {
         assert!(self.current_module == self.root_module);
 
         let roots = self.items()
+            // Only consider items that are enabled for codegen.
+            .filter(|&(_, item)| item.is_enabled_for_codegen(self))
             .filter(|&(_, item)| {
                 // If nothing is explicitly whitelisted, then everything is fair
                 // game.
