@@ -3282,10 +3282,9 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
 
         debug!("codegen: {:?}", context.options());
 
-        let whitelisted_items = context.whitelisted_items();
-
+        let codegen_items = context.codegen_items();
         if context.options().emit_ir {
-            for &id in whitelisted_items {
+            for &id in codegen_items {
                 let item = context.resolve_item(id);
                 println!("ir: {:?} = {:#?}", id, item);
             }
@@ -3299,7 +3298,7 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
         }
 
         context.resolve_item(context.root_module())
-            .codegen(context, &mut result, whitelisted_items, &());
+            .codegen(context, &mut result, codegen_items, &());
 
         result.items
     })
