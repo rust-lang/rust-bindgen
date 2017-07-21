@@ -157,10 +157,15 @@ pub struct BindgenContext<'ctx> {
     /// Whether a bindgen complex was generated
     generated_bindegen_complex: Cell<bool>,
 
-    /// The set of `ItemId`s that are whitelisted for code generation. This the
-    /// very first thing computed after parsing our IR, and before running any
-    /// of our analyses.
+    /// The set of `ItemId`s that are whitelisted. This the very first thing
+    /// computed after parsing our IR, and before running any of our analyses.
     whitelisted: Option<ItemSet>,
+
+    /// The set of `ItemId`s that are whitelisted for code generation _and_ that
+    /// we should generate accounting for the codegen options.
+    ///
+    /// It's computed right after computing the whitelisted items.
+    codegen_items: Option<ItemSet>,
 
     /// Map from an item's id to the set of template parameter items that it
     /// uses. See `ir::named` for more details. Always `Some` during the codegen
@@ -182,7 +187,7 @@ pub struct BindgenContext<'ctx> {
 }
 
 /// A traversal of whitelisted items.
-pub struct WhitelistedItems<'ctx, 'gen>
+struct WhitelistedItemsTraversal<'ctx, 'gen>
     where 'gen: 'ctx
 {
     ctx: &'ctx BindgenContext<'gen>,
@@ -193,7 +198,7 @@ pub struct WhitelistedItems<'ctx, 'gen>
                              for<'a> fn(&'a BindgenContext, Edge) -> bool>,
 }
 
-impl<'ctx, 'gen> Iterator for WhitelistedItems<'ctx, 'gen>
+impl<'ctx, 'gen> Iterator for WhitelistedItemsTraversal<'ctx, 'gen>
     where 'gen: 'ctx
 {
     type Item = ItemId;
@@ -209,26 +214,23 @@ impl<'ctx, 'gen> Iterator for WhitelistedItems<'ctx, 'gen>
     }
 }
 
-impl<'ctx, 'gen> WhitelistedItems<'ctx, 'gen>
+impl<'ctx, 'gen> WhitelistedItemsTraversal<'ctx, 'gen>
     where 'gen: 'ctx
 {
     /// Construct a new whitelisted items traversal.
     pub fn new<R>(ctx: &'ctx BindgenContext<'gen>,
-                  roots: R)
-                  -> WhitelistedItems<'ctx, 'gen>
+                  roots: R,
+                  predicate: for<'a> fn(&'a BindgenContext, Edge) -> bool)
+                  -> Self
         where R: IntoIterator<Item = ItemId>,
     {
-        let predicate = if ctx.options().whitelist_recursively {
-            traversal::all_edges
-        } else {
-            traversal::no_edges
-        };
-        WhitelistedItems {
+        WhitelistedItemsTraversal {
             ctx: ctx,
             traversal: ItemTraversal::new(ctx, roots, predicate)
         }
     }
 }
+
 impl<'ctx> BindgenContext<'ctx> {
     /// Construct the context for the given `options`.
     pub fn new(options: BindgenOptions) -> Self {
@@ -303,6 +305,7 @@ impl<'ctx> BindgenContext<'ctx> {
             options: options,
             generated_bindegen_complex: Cell::new(false),
             whitelisted: None,
+            codegen_items: None,
             used_template_parameters: None,
             need_bitfield_allocation: Default::default(),
             needs_mangling_hack: needs_mangling_hack,
@@ -770,7 +773,7 @@ impl<'ctx> BindgenContext<'ctx> {
         // Compute the whitelisted set after processing replacements and
         // resolving type refs, as those are the final mutations of the IR
         // graph, and their completion means that the IR graph is now frozen.
-        self.compute_whitelisted_items();
+        self.compute_whitelisted_and_codegen_items();
 
         // Make sure to do this after processing replacements, since that messes
         // with the parentage and module children, and we want to assert that it
@@ -1589,15 +1592,22 @@ impl<'ctx> BindgenContext<'ctx> {
         self.whitelisted.as_ref().unwrap()
     }
 
+    /// Get a reference to the set of items we should generate.
+    pub fn codegen_items(&self) -> &ItemSet {
+        assert!(self.in_codegen_phase());
+        assert!(self.current_module == self.root_module);
+        self.codegen_items.as_ref().unwrap()
+    }
+
     /// Compute the whitelisted items set and populate `self.whitelisted`.
-    fn compute_whitelisted_items(&mut self) {
+    fn compute_whitelisted_and_codegen_items(&mut self) {
         assert!(self.in_codegen_phase());
         assert!(self.current_module == self.root_module);
         assert!(self.whitelisted.is_none());
 
-        self.whitelisted = Some({
-            let roots = self.items()
-                // Only consider items that are enabled for codegen.
+        let roots = {
+            let mut roots = self.items()
+                // Only consider roots that are enabled for codegen.
                 .filter(|&(_, item)| item.is_enabled_for_codegen(self))
                 .filter(|&(_, item)| {
                     // If nothing is explicitly whitelisted, then everything is fair
@@ -1657,16 +1667,43 @@ impl<'ctx> BindgenContext<'ctx> {
                         }
                     }
                 })
-                .map(|(&id, _)| id);
+                .map(|(&id, _)| id)
+                .collect::<Vec<_>>();
 
-            // The reversal preserves the expected ordering of traversal, resulting
-            // in more stable-ish bindgen-generated names for anonymous types (like
-            // unions).
-            let mut roots: Vec<_> = roots.collect();
+            // The reversal preserves the expected ordering of traversal,
+            // resulting in more stable-ish bindgen-generated names for
+            // anonymous types (like unions).
             roots.reverse();
+            roots
+        };
 
-            WhitelistedItems::new(self, roots).collect()
-        });
+        let whitelisted_items_predicate =
+            if self.options().whitelist_recursively {
+                traversal::all_edges
+            } else {
+                traversal::no_edges
+            };
+
+        let whitelisted =
+            WhitelistedItemsTraversal::new(
+                self,
+                roots.clone(),
+                whitelisted_items_predicate,
+            ).collect::<ItemSet>();
+
+        let codegen_items =
+            if self.options().whitelist_recursively {
+                WhitelistedItemsTraversal::new(
+                    self,
+                    roots.clone(),
+                    traversal::codegen_edges,
+                ).collect::<ItemSet>()
+            } else {
+                whitelisted.clone()
+            };
+
+        self.whitelisted = Some(whitelisted);
+        self.codegen_items = Some(codegen_items);
     }
 
     /// Convenient method for getting the prefix to use for most traits in
