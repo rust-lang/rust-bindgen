@@ -115,7 +115,7 @@ pub mod root {
         }
     }
     #[test]
-    fn __bindgen_test_layout_Template_instantiation() {
+    fn __bindgen_test_layout_Template_open0_Foo_close0_instantiation() {
         assert_eq!(::std::mem::size_of::<root::zoidberg::Template<root::zoidberg::Foo>>()
                    , 1usize , concat ! (
                    "Size of template specialization: " , stringify ! (

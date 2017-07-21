@@ -772,7 +772,7 @@ impl CodeGenerator for TemplateInstantiation {
             let size = layout.size;
             let align = layout.align;
 
-            let name = item.canonical_name(ctx);
+            let name = item.full_disambiguated_name(ctx);
             let mut fn_name = format!("__bindgen_test_layout_{}_instantiation", name);
             let times_seen = result.overload_number(&fn_name);
             if times_seen > 0 {

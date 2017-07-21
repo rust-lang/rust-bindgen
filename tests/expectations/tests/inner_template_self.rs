@@ -37,7 +37,7 @@ impl Default for InstantiateIt {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
-fn __bindgen_test_layout_LinkedList_instantiation() {
+fn __bindgen_test_layout_LinkedList_open0_int_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<LinkedList>() , 16usize , concat ! (
                "Size of template specialization: " , stringify ! ( LinkedList
                ) ));

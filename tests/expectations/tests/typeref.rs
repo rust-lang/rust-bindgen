@@ -124,7 +124,7 @@ impl Default for Bar {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
-fn __bindgen_test_layout_mozilla_StyleShapeSource_instantiation() {
+fn __bindgen_test_layout_mozilla_StyleShapeSource_open0_int_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<mozilla_StyleShapeSource>() , 8usize ,
                concat ! (
                "Size of template specialization: " , stringify ! (

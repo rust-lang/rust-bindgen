@@ -661,6 +661,33 @@ impl Item {
         }
     }
 
+    /// Create a fully disambiguated name for an item, including template
+    /// parameters if it is a type
+    pub fn full_disambiguated_name(&self, ctx: &BindgenContext) -> String {
+        let mut s = String::new();
+        let level = 0;
+        self.push_disambiguated_name(ctx, &mut s, level);
+        s
+    }
+
+    /// Helper function for full_disambiguated_name
+    fn push_disambiguated_name(&self, ctx: &BindgenContext, to: &mut String, level: u8) {
+        to.push_str(&self.canonical_name(ctx));
+        if let ItemKind::Type(ref ty) = *self.kind() {
+            if let TypeKind::TemplateInstantiation(ref inst) = *ty.kind() {
+                to.push_str(&format!("_open{}_", level));
+                for arg in inst.template_arguments() {
+                    arg.into_resolver()
+                       .through_type_refs()
+                       .resolve(ctx)
+                       .push_disambiguated_name(ctx, to, level + 1);
+                    to.push_str("_");
+                }
+                to.push_str(&format!("close{}", level));
+            }
+        }
+    }
+
     /// Get this function item's name, or `None` if this item is not a function.
     fn func_name(&self) -> Option<&str> {
         match *self.kind() {

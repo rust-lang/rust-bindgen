@@ -34,7 +34,7 @@ impl Clone for Usage {
     fn clone(&self) -> Self { *self }
 }
 #[test]
-fn __bindgen_test_layout__bindgen_ty_id_20_instantiation() {
+fn __bindgen_test_layout__bindgen_ty_id_20_open0__bindgen_ty_id_18_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<[u32; 2usize]>() , 8usize , concat ! (
                "Size of template specialization: " , stringify ! (
                [u32; 2usize] ) ));

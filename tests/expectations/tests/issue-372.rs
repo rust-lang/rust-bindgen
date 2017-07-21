@@ -106,7 +106,7 @@ pub mod root {
         fn default() -> Self { unsafe { ::std::mem::zeroed() } }
     }
     #[test]
-    fn __bindgen_test_layout_C_instantiation() {
+    fn __bindgen_test_layout_C_open0_n_close0_instantiation() {
         assert_eq!(::std::mem::size_of::<[u64; 33usize]>() , 264usize , concat
                    ! (
                    "Size of template specialization: " , stringify ! (
