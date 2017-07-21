@@ -201,34 +201,6 @@ pub fn all_edges(_: &BindgenContext, _: Edge) -> bool {
     true
 }
 
-/// A `TraversalPredicate` implementation that only follows edges to items that
-/// are enabled for code generation. This lets us skip considering items for
-/// which we won't generate any bindings to.
-pub fn codegen_edges(ctx: &BindgenContext, edge: Edge) -> bool {
-    let cc = &ctx.options().codegen_config;
-    match edge.kind {
-        EdgeKind::Generic => ctx.resolve_item(edge.to).is_enabled_for_codegen(ctx),
-
-        // We statically know the kind of item that non-generic edges can point
-        // to, so we don't need to actually resolve the item and check
-        // `Item::is_enabled_for_codegen`.
-        EdgeKind::TemplateParameterDefinition |
-        EdgeKind::TemplateArgument |
-        EdgeKind::TemplateDeclaration |
-        EdgeKind::BaseMember |
-        EdgeKind::Field |
-        EdgeKind::InnerType |
-        EdgeKind::FunctionReturn |
-        EdgeKind::FunctionParameter |
-        EdgeKind::VarType |
-        EdgeKind::TypeReference => cc.types,
-        EdgeKind::InnerVar => cc.vars,
-        EdgeKind::Method => cc.methods,
-        EdgeKind::Constructor => cc.constructors,
-        EdgeKind::Destructor => cc.destructors,
-    }
-}
-
 /// A `TraversalPredicate` implementation that never follows any edges, and
 /// therefore traversals using this predicate will only visit the traversal's
 /// roots.
