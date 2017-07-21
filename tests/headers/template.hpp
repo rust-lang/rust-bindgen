@@ -1,10 +1,25 @@
+// bindgen-flags: -- -std=c++11
+//
 template<typename T, typename U> class Foo {
     T m_member;
     T* m_member_ptr;
     T m_member_arr[1];
 };
 
+template<typename T> class B {
+    T m_member;
+};
+
 void bar(Foo<int, int> foo);
+
+struct C {
+    B<unsigned int> mB;
+    B<const int*> mBConstPtr;
+    B<const int> mBConst;
+    B<volatile int> mBVolatile;
+    B<const bool> mBConstBool;
+    B<const char16_t> mBConstChar;
+};
 
 template<typename T>
 class D {
