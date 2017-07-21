@@ -219,7 +219,7 @@ impl<'ctx, 'gen> WhitelistedItems<'ctx, 'gen>
         where R: IntoIterator<Item = ItemId>,
     {
         let predicate = if ctx.options().whitelist_recursively {
-            traversal::codegen_edges
+            traversal::all_edges
         } else {
             traversal::no_edges
         };
