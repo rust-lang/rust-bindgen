@@ -4,6 +4,7 @@ use super::{ConstrainResult, MonotoneFramework};
 use std::collections::HashSet;
 use std::collections::HashMap;
 use ir::context::{BindgenContext, ItemId};
+use ir::item::IsOpaque;
 use ir::traversal::EdgeKind;
 use ir::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
 use ir::ty::TypeKind;
@@ -260,19 +261,23 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                     return self.insert(id);
                 }
 
-                let ty_cannot_derive = template.template_definition()
+                let template_definition = template.template_definition()
                     .into_resolver()
                     .through_type_refs()
                     .through_type_aliases()
-                    .resolve(self.ctx)
+                    .resolve(self.ctx);
+
+                let ty_cannot_derive = template_definition
                     .as_type()
                     .expect("Instantiations of a non-type?")
                     .as_comp()
                     .and_then(|c| {
-                        // For non-type template parameters, we generate an opaque
-                        // blob, and in this case the instantiation has a better
-                        // idea of the layout than the definition does.
-                        if c.has_non_type_template_params() {
+                        // For non-type template parameters, or opaque template
+                        // definitions, we generate an opaque blob, and in this
+                        // case the instantiation has a better idea of the
+                        // layout than the definition does.
+                        if template_definition.is_opaque(self.ctx, &()) ||
+                            c.has_non_type_template_params() {
                             let opaque = ty.layout(self.ctx)
                                 .or_else(|| {
                                     self.ctx
