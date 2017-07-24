@@ -11,7 +11,6 @@ use ir::ty::TypeKind;
 use ir::comp::Field;
 use ir::traversal::Trace;
 use ir::comp::FieldMethods;
-use ir::layout::Layout;
 use ir::derive::CanTriviallyDeriveDebug;
 use ir::comp::CompKind;
 
@@ -138,6 +137,17 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
             Some(ty) => ty
         };
 
+        if ty.is_opaque(self.ctx, item) {
+            let layout_can_derive = ty.layout(self.ctx).map_or(true, |l| {
+                l.opaque().can_trivially_derive_debug(self.ctx, ())
+            });
+            if layout_can_derive {
+                return ConstrainResult::Same;
+            } else {
+                return self.insert(id);
+            }
+        }
+
         match *ty.kind() {
             // Handle the simple cases. These can derive debug without further
             // information.
@@ -156,16 +166,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
             TypeKind::ObjCId |
             TypeKind::ObjCSel => {
                 ConstrainResult::Same
-            },
-
-            TypeKind::Opaque => {
-                if ty.layout(self.ctx)
-                    .map_or(true, |l| l.opaque().can_trivially_derive_debug(self.ctx, ())) {
-                        ConstrainResult::Same
-                    } else {
-                        self.insert(id)
-                    }
-            },
+            }
 
             TypeKind::Array(t, len) => {
                 if self.cannot_derive_debug.contains(&t) {
@@ -177,7 +178,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                 } else {
                     self.insert(id)
                 }
-            },
+            }
 
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
@@ -187,18 +188,13 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                 } else {
                     ConstrainResult::Same
                 }
-            },
+            }
 
             TypeKind::Comp(ref info) => {
-                if info.has_non_type_template_params() {
-                    if ty.layout(self.ctx)
-                        .map_or(true,
-                                |l| l.opaque().can_trivially_derive_debug(self.ctx, ())) {
-                        return ConstrainResult::Same;
-                    } else {
-                        return self.insert(id);
-                    }
-                }
+                assert!(
+                    !info.has_non_type_template_params(),
+                    "The early ty.is_opaque check should have handled this case"
+                );
 
                 if info.kind() == CompKind::Union {
                     if self.ctx.options().unstable_rust {
@@ -241,7 +237,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                 }
 
                 ConstrainResult::Same
-            },
+            }
 
             TypeKind::Pointer(inner) => {
                 let inner_type = self.ctx.resolve_type(inner).canonical_type(self.ctx);
@@ -251,7 +247,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                     }
                 }
                 ConstrainResult::Same
-            },
+            }
 
             TypeKind::TemplateInstantiation(ref template) => {
                 let args_cannot_derive = template.template_arguments()
@@ -261,45 +257,24 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                     return self.insert(id);
                 }
 
-                let template_definition = template.template_definition()
-                    .into_resolver()
-                    .through_type_refs()
-                    .through_type_aliases()
-                    .resolve(self.ctx);
-
-                let ty_cannot_derive = template_definition
-                    .as_type()
-                    .expect("Instantiations of a non-type?")
-                    .as_comp()
-                    .and_then(|c| {
-                        // For non-type template parameters, or opaque template
-                        // definitions, we generate an opaque blob, and in this
-                        // case the instantiation has a better idea of the
-                        // layout than the definition does.
-                        if template_definition.is_opaque(self.ctx, &()) ||
-                            c.has_non_type_template_params() {
-                            let opaque = ty.layout(self.ctx)
-                                .or_else(|| {
-                                    self.ctx
-                                        .resolve_type(template.template_definition())
-                                        .layout(self.ctx)
-                                })
-                                .unwrap_or(Layout::zero())
-                                .opaque();
-                            Some(!opaque.can_trivially_derive_debug(&self.ctx, ()))
-                        } else {
-                            None
-                        }
-                    })
-                    .unwrap_or_else(|| {
-                        self.cannot_derive_debug.contains(&template.template_definition())
-                    });
-                if ty_cannot_derive {
+                assert!(
+                    !template.template_definition().is_opaque(self.ctx, &()),
+                    "The early ty.is_opaque check should have handled this case"
+                );
+                let def_cannot_derive = self.cannot_derive_debug
+                    .contains(&template.template_definition());
+                if def_cannot_derive {
                     return self.insert(id);
                 }
 
                 ConstrainResult::Same
-            },
+            }
+
+            TypeKind::Opaque => {
+                unreachable!(
+                    "The early ty.is_opaque check should have handled this case"
+                )
+            }
         }
     }
 
