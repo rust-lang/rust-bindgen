@@ -5,20 +5,21 @@
 
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct OpaqueTemplate {
 }
 impl Default for OpaqueTemplate {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
+#[derive(Debug, Default, Copy)]
 pub struct ContainsOpaqueTemplate {
-    pub mBlah: [u32; 101usize],
+    pub mBlah: u32,
     pub mBaz: ::std::os::raw::c_int,
 }
 #[test]
 fn bindgen_test_layout_ContainsOpaqueTemplate() {
-    assert_eq!(::std::mem::size_of::<ContainsOpaqueTemplate>() , 408usize ,
+    assert_eq!(::std::mem::size_of::<ContainsOpaqueTemplate>() , 8usize ,
                concat ! ( "Size of: " , stringify ! ( ContainsOpaqueTemplate )
                ));
     assert_eq! (::std::mem::align_of::<ContainsOpaqueTemplate>() , 4usize ,
@@ -31,21 +32,22 @@ fn bindgen_test_layout_ContainsOpaqueTemplate() {
                 ) , "::" , stringify ! ( mBlah ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const ContainsOpaqueTemplate ) ) . mBaz as *
-                const _ as usize } , 404usize , concat ! (
+                const _ as usize } , 4usize , concat ! (
                 "Alignment of field: " , stringify ! ( ContainsOpaqueTemplate
                 ) , "::" , stringify ! ( mBaz ) ));
 }
-impl Default for ContainsOpaqueTemplate {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl Clone for ContainsOpaqueTemplate {
+    fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
+#[derive(Debug, Copy)]
 pub struct InheritsOpaqueTemplate {
-    pub _base: [u8; 401usize],
+    pub _base: u8,
     pub wow: *mut ::std::os::raw::c_char,
 }
 #[test]
 fn bindgen_test_layout_InheritsOpaqueTemplate() {
-    assert_eq!(::std::mem::size_of::<InheritsOpaqueTemplate>() , 416usize ,
+    assert_eq!(::std::mem::size_of::<InheritsOpaqueTemplate>() , 16usize ,
                concat ! ( "Size of: " , stringify ! ( InheritsOpaqueTemplate )
                ));
     assert_eq! (::std::mem::align_of::<InheritsOpaqueTemplate>() , 8usize ,
@@ -53,9 +55,12 @@ fn bindgen_test_layout_InheritsOpaqueTemplate() {
                 "Alignment of " , stringify ! ( InheritsOpaqueTemplate ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const InheritsOpaqueTemplate ) ) . wow as *
-                const _ as usize } , 408usize , concat ! (
+                const _ as usize } , 8usize , concat ! (
                 "Alignment of field: " , stringify ! ( InheritsOpaqueTemplate
                 ) , "::" , stringify ! ( wow ) ));
+}
+impl Clone for InheritsOpaqueTemplate {
+    fn clone(&self) -> Self { *self }
 }
 impl Default for InheritsOpaqueTemplate {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

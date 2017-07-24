@@ -7,7 +7,7 @@
 pub type Array16 = u8;
 pub type ArrayInt4 = [u32; 4usize];
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct UsesArray {
     pub array_char_16: [u8; 16usize],
     pub array_bool_8: [u8; 8usize],
@@ -37,34 +37,4 @@ fn bindgen_test_layout_UsesArray() {
 }
 impl Clone for UsesArray {
     fn clone(&self) -> Self { *self }
-}
-impl Default for UsesArray {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
-#[test]
-fn __bindgen_test_layout_Array_open0_int_close0_instantiation() {
-    assert_eq!(::std::mem::size_of::<[u32; 4usize]>() , 16usize , concat ! (
-               "Size of template specialization: " , stringify ! (
-               [u32; 4usize] ) ));
-    assert_eq!(::std::mem::align_of::<[u32; 4usize]>() , 4usize , concat ! (
-               "Alignment of template specialization: " , stringify ! (
-               [u32; 4usize] ) ));
-}
-#[test]
-fn __bindgen_test_layout_Array_open0_char_close0_instantiation() {
-    assert_eq!(::std::mem::size_of::<[u8; 16usize]>() , 16usize , concat ! (
-               "Size of template specialization: " , stringify ! (
-               [u8; 16usize] ) ));
-    assert_eq!(::std::mem::align_of::<[u8; 16usize]>() , 1usize , concat ! (
-               "Alignment of template specialization: " , stringify ! (
-               [u8; 16usize] ) ));
-}
-#[test]
-fn __bindgen_test_layout_Array_open0_bool__close0_instantiation() {
-    assert_eq!(::std::mem::size_of::<[u8; 8usize]>() , 8usize , concat ! (
-               "Size of template specialization: " , stringify ! (
-               [u8; 8usize] ) ));
-    assert_eq!(::std::mem::align_of::<[u8; 8usize]>() , 1usize , concat ! (
-               "Alignment of template specialization: " , stringify ! (
-               [u8; 8usize] ) ));
 }
