@@ -63,11 +63,3 @@ impl Clone for WithOpaquePtr {
 impl Default for WithOpaquePtr {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-#[test]
-fn __bindgen_test_layout_Opaque_open0_float_close0_instantiation() {
-    assert_eq!(::std::mem::size_of::<u32>() , 4usize , concat ! (
-               "Size of template specialization: " , stringify ! ( u32 ) ));
-    assert_eq!(::std::mem::align_of::<u32>() , 4usize , concat ! (
-               "Alignment of template specialization: " , stringify ! ( u32 )
-               ));
-}
