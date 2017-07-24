@@ -78,6 +78,8 @@ impl<'ctx, 'gen> CannotDeriveDebug<'ctx, 'gen> {
     }
 
     fn insert(&mut self, id: ItemId) -> ConstrainResult {
+        trace!("inserting {:?} into the cannot_derive_debug set", id);
+
         let was_not_already_in_set = self.cannot_derive_debug.insert(id);
         assert!(
             was_not_already_in_set,
@@ -85,6 +87,7 @@ impl<'ctx, 'gen> CannotDeriveDebug<'ctx, 'gen> {
              already in the set, `constrain` should have exited early.",
             id
         );
+
         ConstrainResult::Changed
     }
 }
@@ -127,14 +130,20 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
     }
 
     fn constrain(&mut self, id: ItemId) -> ConstrainResult {
+        trace!("constrain: {:?}", id);
+
         if self.cannot_derive_debug.contains(&id) {
+            trace!("    already know it cannot derive Debug");
             return ConstrainResult::Same;
         }
 
         let item = self.ctx.resolve_item(id);
         let ty = match item.as_type() {
-            None => return ConstrainResult::Same,
-            Some(ty) => ty
+            Some(ty) => ty,
+            None => {
+                trace!("    not a type; ignoring");
+                return ConstrainResult::Same;
+            }
         };
 
         if ty.is_opaque(self.ctx, item) {
@@ -142,8 +151,10 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                 l.opaque().can_trivially_derive_debug(self.ctx, ())
             });
             if layout_can_derive {
+                trace!("    we can trivially derive Debug for the layout");
                 return ConstrainResult::Same;
             } else {
+                trace!("    we cannot derive Debug for the layout");
                 return self.insert(id);
             }
         }
@@ -165,17 +176,22 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
             TypeKind::ObjCInterface(..) |
             TypeKind::ObjCId |
             TypeKind::ObjCSel => {
+                trace!("    simple type that can always derive Debug");
                 ConstrainResult::Same
             }
 
             TypeKind::Array(t, len) => {
                 if self.cannot_derive_debug.contains(&t) {
+                    trace!("    arrays of T for which we cannot derive Debug \
+                            also cannot derive Debug");
                     return self.insert(id);
                 }
 
                 if len <= RUST_DERIVE_IN_ARRAY_LIMIT {
+                    trace!("    array is small enough to derive Debug");
                     ConstrainResult::Same
                 } else {
+                    trace!("    array is too large to derive Debug");
                     self.insert(id)
                 }
             }
@@ -184,8 +200,12 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
                 if self.cannot_derive_debug.contains(&t) {
+                    trace!("    aliases and type refs to T which cannot derive \
+                            Debug also cannot derive Debug");
                     self.insert(id)
                 } else {
+                    trace!("    aliases and type refs to T which can derive \
+                            Debug can also derive Debug");
                     ConstrainResult::Same
                 }
             }
@@ -198,14 +218,17 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
 
                 if info.kind() == CompKind::Union {
                     if self.ctx.options().unstable_rust {
+                        trace!("    cannot derive Debug for Rust unions");
                         return self.insert(id);
                     }
 
                     if ty.layout(self.ctx)
                         .map_or(true,
                                 |l| l.opaque().can_trivially_derive_debug(self.ctx, ())) {
+                        trace!("    union layout can trivially derive Debug");
                         return ConstrainResult::Same;
                     } else {
+                        trace!("    union layout cannot derive Debug");
                         return self.insert(id);
                     }
                 }
@@ -214,6 +237,8 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                     .iter()
                     .any(|base| self.cannot_derive_debug.contains(&base.ty));
                 if bases_cannot_derive {
+                    trace!("    base members cannot derive Debug, so we can't \
+                            either");
                     return self.insert(id);
                 }
 
@@ -233,9 +258,11 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                         }
                     });
                 if fields_cannot_derive {
+                    trace!("    fields cannot derive Debug, so we can't either");
                     return self.insert(id);
                 }
 
+                trace!("    comp can derive Debug");
                 ConstrainResult::Same
             }
 
@@ -243,9 +270,11 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                 let inner_type = self.ctx.resolve_type(inner).canonical_type(self.ctx);
                 if let TypeKind::Function(ref sig) = *inner_type.kind() {
                     if !sig.can_trivially_derive_debug(&self.ctx, ()) {
+                        trace!("    function pointer that can't trivially derive Debug");
                         return self.insert(id);
                     }
                 }
+                trace!("    pointers can derive Debug");
                 ConstrainResult::Same
             }
 
@@ -254,6 +283,8 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                     .iter()
                     .any(|arg| self.cannot_derive_debug.contains(&arg));
                 if args_cannot_derive {
+                    trace!("    template args cannot derive Debug, so \
+                            insantiation can't either");
                     return self.insert(id);
                 }
 
@@ -264,9 +295,12 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                 let def_cannot_derive = self.cannot_derive_debug
                     .contains(&template.template_definition());
                 if def_cannot_derive {
+                    trace!("    template definition cannot derive Debug, so \
+                            insantiation can't either");
                     return self.insert(id);
                 }
 
+                trace!("    template instantiation can derive Debug");
                 ConstrainResult::Same
             }
 
