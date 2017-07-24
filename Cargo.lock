@@ -1,6 +1,6 @@
 [root]
 name = "bindgen"
-version = "0.27.0"
+version = "0.28.0"
 dependencies = [
  "aster 0.41.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "cexpr 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
