@@ -150,13 +150,13 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
             let layout_can_derive = ty.layout(self.ctx).map_or(true, |l| {
                 l.opaque().can_trivially_derive_debug(self.ctx, ())
             });
-            if layout_can_derive {
+            return if layout_can_derive {
                 trace!("    we can trivially derive Debug for the layout");
-                return ConstrainResult::Same;
+                ConstrainResult::Same
             } else {
                 trace!("    we cannot derive Debug for the layout");
-                return self.insert(id);
-            }
+                self.insert(id)
+            };
         }
 
         match *ty.kind() {
