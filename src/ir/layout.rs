@@ -111,7 +111,7 @@ impl CanTriviallyDeriveDebug for Opaque {
     }
 }
 
-impl CanDeriveDefault for Opaque {
+impl<'a> CanDeriveDefault<'a> for Opaque {
     type Extra = ();
 
     fn can_derive_default(&self, _: &BindgenContext, _: ()) -> bool {

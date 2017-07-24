@@ -237,19 +237,6 @@ impl Type {
         })
     }
 
-    /// Whether this type has a vtable.
-    pub fn has_vtable(&self, ctx: &BindgenContext) -> bool {
-        // FIXME: Can we do something about template parameters? Huh...
-        match self.kind {
-            TypeKind::TemplateAlias(t, _) |
-            TypeKind::Alias(t) |
-            TypeKind::ResolvedTypeRef(t) => ctx.resolve_type(t).has_vtable(ctx),
-            TypeKind::Comp(ref info) => info.has_vtable(ctx),
-            TypeKind::TemplateInstantiation(ref inst) => inst.has_vtable(ctx),
-            _ => false,
-        }
-    }
-
     /// Returns whether this type has a destructor.
     pub fn has_destructor(&self, ctx: &BindgenContext) -> bool {
         match self.kind {
@@ -547,10 +534,10 @@ impl CanDeriveDebug for Type {
     }
 }
 
-impl CanDeriveDefault for Type {
-    type Extra = ();
+impl<'a> CanDeriveDefault<'a> for Type {
+    type Extra = &'a Item;
 
-    fn can_derive_default(&self, ctx: &BindgenContext, _: ()) -> bool {
+    fn can_derive_default(&self, ctx: &BindgenContext, item: &Item) -> bool {
         match self.kind {
             TypeKind::Array(t, len) => {
                 len <= RUST_DERIVE_IN_ARRAY_LIMIT &&
@@ -560,7 +547,7 @@ impl CanDeriveDefault for Type {
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => t.can_derive_default(ctx, ()),
             TypeKind::Comp(ref info) => {
-                info.can_derive_default(ctx, self.layout(ctx))
+                info.can_derive_default(ctx, (&item, self.layout(ctx)))
             }
             TypeKind::Opaque => {
                 self.layout
@@ -745,23 +732,24 @@ impl Type {
     /// derive whether we should generate a dummy `_address` field for structs,
     /// to comply to the C and C++ layouts, that specify that every type needs
     /// to be addressable.
-    pub fn is_unsized(&self, ctx: &BindgenContext) -> bool {
+    pub fn is_unsized(&self, ctx: &BindgenContext, itemid: &ItemId) -> bool {
         debug_assert!(ctx.in_codegen_phase(), "Not yet");
 
         match self.kind {
             TypeKind::Void => true,
-            TypeKind::Comp(ref ci) => ci.is_unsized(ctx),
+            TypeKind::Comp(ref ci) => ci.is_unsized(ctx, itemid),
             TypeKind::Opaque => self.layout.map_or(true, |l| l.size == 0),
             TypeKind::Array(inner, size) => {
-                size == 0 || ctx.resolve_type(inner).is_unsized(ctx)
+                size == 0 || ctx.resolve_type(inner).is_unsized(ctx, &inner)
             }
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(inner) |
             TypeKind::TemplateAlias(inner, _) => {
-                ctx.resolve_type(inner).is_unsized(ctx)
+                ctx.resolve_type(inner).is_unsized(ctx, &inner)
             }
             TypeKind::TemplateInstantiation(ref inst) => {
-                ctx.resolve_type(inst.template_definition()).is_unsized(ctx)
+                let definition = inst.template_definition();
+                ctx.resolve_type(definition).is_unsized(ctx, &definition)
             }
             TypeKind::Named |
             TypeKind::Int(..) |

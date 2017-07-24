@@ -701,7 +701,7 @@ impl FieldMethods for FieldData {
     }
 }
 
-impl CanDeriveDefault for Field {
+impl<'a> CanDeriveDefault<'a> for Field {
     type Extra = ();
 
     fn can_derive_default(&self, ctx: &BindgenContext, _: ()) -> bool {
@@ -819,7 +819,7 @@ pub struct CompInfo {
 
     /// Whether this type should generate an vtable (TODO: Should be able to
     /// look at the virtual methods and ditch this field).
-    has_vtable: bool,
+    has_own_virtual_method: bool,
 
     /// Whether this type has destructor.
     has_destructor: bool,
@@ -870,7 +870,7 @@ impl CompInfo {
             base_members: vec![],
             inner_types: vec![],
             inner_vars: vec![],
-            has_vtable: false,
+            has_own_virtual_method: false,
             has_destructor: false,
             has_nonempty_base: false,
             has_non_type_template_params: false,
@@ -883,10 +883,10 @@ impl CompInfo {
     }
 
     /// Is this compound type unsized?
-    pub fn is_unsized(&self, ctx: &BindgenContext) -> bool {
-        !self.has_vtable(ctx) && self.fields().is_empty() &&
+    pub fn is_unsized(&self, ctx: &BindgenContext, itemid: &ItemId) -> bool {
+        !ctx.lookup_item_id_has_vtable(itemid) && self.fields().is_empty() &&
         self.base_members.iter().all(|base| {
-            ctx.resolve_type(base.ty).canonical_type(ctx).is_unsized(ctx)
+            ctx.resolve_type(base.ty).canonical_type(ctx).is_unsized(ctx, &base.ty)
         })
     }
 
@@ -964,13 +964,10 @@ impl CompInfo {
         self.has_non_type_template_params
     }
 
-    /// Does this type have a virtual table?
-    pub fn has_vtable(&self, ctx: &BindgenContext) -> bool {
-        self.has_vtable ||
-        self.base_members().iter().any(|base| {
-            ctx.resolve_type(base.ty)
-                .has_vtable(ctx)
-        })
+    /// Do we see a virtual function during parsing?
+    /// Get the has_own_virtual_method boolean.
+    pub fn has_own_virtual_method(&self) -> bool {
+        return self.has_own_virtual_method;
     }
 
     /// Get this type's set of methods.
@@ -1169,7 +1166,7 @@ impl CompInfo {
                 }
                 CXCursor_CXXBaseSpecifier => {
                     let is_virtual_base = cur.is_virtual_base();
-                    ci.has_vtable |= is_virtual_base;
+                    ci.has_own_virtual_method |= is_virtual_base;
 
                     let kind = if is_virtual_base {
                         BaseKind::Virtual
@@ -1192,7 +1189,7 @@ impl CompInfo {
                     debug_assert!(!(is_static && is_virtual), "How?");
 
                     ci.has_destructor |= cur.kind() == CXCursor_Destructor;
-                    ci.has_vtable |= is_virtual;
+                    ci.has_own_virtual_method |= is_virtual;
 
                     // This used to not be here, but then I tried generating
                     // stylo bindings with this (without path filters), and
@@ -1335,8 +1332,8 @@ impl CompInfo {
 
     /// Returns whether this type needs an explicit vtable because it has
     /// virtual methods and none of its base classes has already a vtable.
-    pub fn needs_explicit_vtable(&self, ctx: &BindgenContext) -> bool {
-        self.has_vtable(ctx) &&
+    pub fn needs_explicit_vtable(&self, ctx: &BindgenContext, item: &Item) -> bool {
+        ctx.lookup_item_id_has_vtable(&item.id()) &&
         !self.base_members.iter().any(|base| {
             // NB: Ideally, we could rely in all these types being `comp`, and
             // life would be beautiful.
@@ -1347,7 +1344,7 @@ impl CompInfo {
             ctx.resolve_type(base.ty)
                 .canonical_type(ctx)
                 .as_comp()
-                .map_or(false, |ci| ci.has_vtable(ctx))
+                .map_or(false, |_| ctx.lookup_item_id_has_vtable(&base.ty))
         })
     }
 
@@ -1368,7 +1365,7 @@ impl DotAttributes for CompInfo {
     {
         writeln!(out, "<tr><td>CompKind</td><td>{:?}</td></tr>", self.kind)?;
 
-        if self.has_vtable {
+        if self.has_own_virtual_method {
             writeln!(out, "<tr><td>has_vtable</td><td>true</td></tr>")?;
         }
 
@@ -1424,12 +1421,12 @@ impl TemplateParameters for CompInfo {
     }
 }
 
-impl CanDeriveDefault for CompInfo {
-    type Extra = Option<Layout>;
+impl<'a> CanDeriveDefault<'a> for CompInfo {
+    type Extra = (&'a Item, Option<Layout>);
 
     fn can_derive_default(&self,
                           ctx: &BindgenContext,
-                          layout: Option<Layout>)
+                          (item, layout): (&Item, Option<Layout>))
                           -> bool {
         // We can reach here recursively via template parameters of a member,
         // for example.
@@ -1452,8 +1449,8 @@ impl CanDeriveDefault for CompInfo {
 
         self.detect_derive_default_cycle.set(true);
 
-        let can_derive_default = !self.has_vtable(ctx) &&
-                                 !self.needs_explicit_vtable(ctx) &&
+        let can_derive_default = !ctx.lookup_item_id_has_vtable(&item.id()) &&
+                                 !self.needs_explicit_vtable(ctx, item) &&
                                  self.base_members
             .iter()
             .all(|base| base.ty.can_derive_default(ctx, ())) &&

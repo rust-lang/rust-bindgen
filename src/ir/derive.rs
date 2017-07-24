@@ -90,7 +90,7 @@ pub trait CanDeriveCopy<'a> {
 /// to be a recursive method that checks whether all the proper members can
 /// derive default or not, because of the limit rust has on 32 items as max in the
 /// array.
-pub trait CanDeriveDefault {
+pub trait CanDeriveDefault<'a> {
     /// Implementations can define this type to get access to any extra
     /// information required to determine whether they can derive `Default`. If
     /// extra information is unneeded, then this should simply be the unit type.

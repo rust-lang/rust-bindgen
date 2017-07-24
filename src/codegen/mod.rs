@@ -1473,7 +1473,7 @@ impl CodeGenerator for CompInfo {
         // the parent too.
         let mut fields = vec![];
         let mut struct_layout = StructLayoutTracker::new(ctx, self, &canonical_name);
-        if self.needs_explicit_vtable(ctx) {
+        if self.needs_explicit_vtable(ctx, item) {
             let vtable =
                 Vtable::new(item.id(), self.methods(), self.base_members());
             vtable.codegen(ctx, result, item);
@@ -1504,7 +1504,7 @@ impl CodeGenerator for CompInfo {
             // NB: We won't include unsized types in our base chain because they
             // would contribute to our size given the dummy field we insert for
             // unsized types.
-            if base_ty.is_unsized(ctx) {
+            if base_ty.is_unsized(ctx, &base.ty) {
                 continue;
             }
 
@@ -1583,7 +1583,7 @@ impl CodeGenerator for CompInfo {
                     warn!("Opaque type without layout! Expect dragons!");
                 }
             }
-        } else if !is_union && !self.is_unsized(ctx) {
+        } else if !is_union && !self.is_unsized(ctx, &item.id()) {
             if let Some(padding_field) =
                 layout.and_then(|layout| {
                     struct_layout.pad_struct(layout)
@@ -1607,7 +1607,7 @@ impl CodeGenerator for CompInfo {
         //
         // NOTE: This check is conveniently here to avoid the dummy fields we
         // may add for unused template parameters.
-        if self.is_unsized(ctx) {
+        if self.is_unsized(ctx, &item.id()) {
             let has_address = if is_opaque {
                 // Generate the address field if it's an opaque type and
                 // couldn't determine the layout of the blob.
@@ -1707,7 +1707,7 @@ impl CodeGenerator for CompInfo {
                     let too_many_base_vtables = self.base_members()
                         .iter()
                         .filter(|base| {
-                            ctx.resolve_type(base.ty).has_vtable(ctx)
+                            ctx.lookup_item_id_has_vtable(&base.ty)
                         })
                         .count() > 1;
 

@@ -292,11 +292,6 @@ impl TemplateInstantiation {
         Some(TemplateInstantiation::new(template_definition, template_args))
     }
 
-    /// Does this instantiation have a vtable?
-    pub fn has_vtable(&self, ctx: &BindgenContext) -> bool {
-        ctx.resolve_type(self.definition).has_vtable(ctx)
-    }
-
     /// Does this instantiation have a destructor?
     pub fn has_destructor(&self, ctx: &BindgenContext) -> bool {
         ctx.resolve_type(self.definition).has_destructor(ctx) ||
