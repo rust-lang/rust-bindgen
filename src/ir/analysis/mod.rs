@@ -47,6 +47,10 @@ pub use self::has_vtable::HasVtableAnalysis;
 pub use self::has_vtable::HasVtable;
 mod derive_default;
 pub use self::derive_default::CannotDeriveDefault;
+mod derive_copy;
+pub use self::derive_copy::CannotDeriveCopy;
+mod has_type_param_in_array;
+pub use self::has_type_param_in_array::HasTypeParameterInArray;
 
 use ir::context::{BindgenContext, ItemId};
 use ir::traversal::{EdgeKind, Trace};

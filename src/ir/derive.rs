@@ -28,44 +28,21 @@ pub trait CanTriviallyDeriveDebug {
 /// A trait that encapsulates the logic for whether or not we can derive `Copy`
 /// for a given thing.
 pub trait CanDeriveCopy<'a> {
-    /// Implementations can define this type to get access to any extra
-    /// information required to determine whether they can derive `Copy`. If
-    /// extra information is unneeded, then this should simply be the unit type.
-    type Extra;
-
     /// Return `true` if `Copy` can be derived for this thing, `false`
     /// otherwise.
     fn can_derive_copy(&'a self,
-                       ctx: &'a BindgenContext,
-                       extra: Self::Extra)
+                       ctx: &'a BindgenContext)
                        -> bool;
+}
 
-    /// For some reason, deriving copies of an array of a type that is not known
-    /// to be `Copy` is a compile error. e.g.:
-    ///
-    /// ```rust
-    /// #[derive(Copy, Clone)]
-    /// struct A<T> {
-    ///     member: T,
-    /// }
-    /// ```
-    ///
-    /// is fine, while:
-    ///
-    /// ```rust,ignore
-    /// #[derive(Copy, Clone)]
-    /// struct A<T> {
-    ///     member: [T; 1],
-    /// }
-    /// ```
-    ///
-    /// is an error.
-    ///
-    /// That's the whole point of the existence of `can_derive_copy_in_array`.
-    fn can_derive_copy_in_array(&'a self,
-                                ctx: &'a BindgenContext,
-                                extra: Self::Extra)
-                                -> bool;
+/// A trait that encapsulates the logic for whether or not we can derive `Copy`.
+/// The difference between this trait and the CanDeriveCopy is that the type
+/// implementing this trait cannot use recursion or lookup result from fix point
+/// analysis. It's a helper trait for fix point analysis.
+pub trait CanTriviallyDeriveCopy {
+    /// Return `true` if `Copy` can be derived for this thing, `false`
+    /// otherwise.
+    fn can_trivially_derive_copy(&self) -> bool;
 }
 
 /// A trait that encapsulates the logic for whether or not we can derive `Default`

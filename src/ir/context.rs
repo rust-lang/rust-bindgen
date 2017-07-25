@@ -2,11 +2,11 @@
 
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
 use super::int::IntKind;
-use super::item::{IsOpaque, Item, ItemAncestors, ItemCanonicalPath, ItemSet};
+use super::item::{IsOpaque, HasTypeParamInArray, Item, ItemAncestors, ItemCanonicalPath, ItemSet};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
 use super::analysis::{analyze, UsedTemplateParameters, CannotDeriveDebug, HasVtableAnalysis,
-                      CannotDeriveDefault};
+                      CannotDeriveDefault, CannotDeriveCopy, HasTypeParameterInArray};
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
@@ -53,14 +53,8 @@ impl CanDeriveDefault for ItemId {
 }
 
 impl<'a> CanDeriveCopy<'a> for ItemId {
-    type Extra = ();
-
-    fn can_derive_copy(&self, ctx: &BindgenContext, _: ()) -> bool {
-        ctx.resolve_item(*self).can_derive_copy(ctx, ())
-    }
-
-    fn can_derive_copy_in_array(&self, ctx: &BindgenContext, _: ()) -> bool {
-        ctx.resolve_item(*self).can_derive_copy_in_array(ctx, ())
+    fn can_derive_copy(&self, ctx: &BindgenContext) -> bool {
+        ctx.lookup_item_id_can_derive_copy(*self)
     }
 }
 
@@ -188,11 +182,29 @@ pub struct BindgenContext<'ctx> {
     /// and is always `None` before that and `Some` after.
     cannot_derive_default: Option<HashSet<ItemId>>,
 
+    /// The set of (`ItemId`s of) types that can't derive copy.
+    ///
+    /// This is populated when we enter codegen by `compute_cannot_derive_copy`
+    /// and is always `None` before that and `Some` after.
+    cannot_derive_copy: Option<HashSet<ItemId>>,
+
+    /// The set of (`ItemId`s of) types that can't derive copy in array.
+    ///
+    /// This is populated when we enter codegen by `compute_cannot_derive_copy`
+    /// and is always `None` before that and `Some` after.
+    cannot_derive_copy_in_array: Option<HashSet<ItemId>>,
+
     /// The set of (`ItemId's of`) types that has vtable.
     ///
     /// Populated when we enter codegen by `compute_has_vtable`; always `None`
     /// before that and `Some` after.
     have_vtable: Option<HashSet<ItemId>>,
+
+    /// The set of (`ItemId's of`) types that has array.
+    ///
+    /// Populated when we enter codegen by `compute_has_type_param_in_array`; always `None`
+    /// before that and `Some` after.
+    has_type_param_in_array: Option<HashSet<ItemId>>,
 }
 
 /// A traversal of whitelisted items.
@@ -320,7 +332,10 @@ impl<'ctx> BindgenContext<'ctx> {
             needs_mangling_hack: needs_mangling_hack,
             cannot_derive_debug: None,
             cannot_derive_default: None,
+            cannot_derive_copy: None,
+            cannot_derive_copy_in_array: None,
             have_vtable: None,
+            has_type_param_in_array: None,
         };
 
         me.add_item(root_module, None, None);
@@ -795,6 +810,8 @@ impl<'ctx> BindgenContext<'ctx> {
         self.find_used_template_parameters();
         self.compute_cannot_derive_debug();
         self.compute_cannot_derive_default();
+        self.compute_cannot_derive_copy();
+        self.compute_has_type_param_in_array();
 
         let ret = cb(self);
         self.gen_ctx = None;
@@ -1793,6 +1810,40 @@ impl<'ctx> BindgenContext<'ctx> {
         // Look up the computed value for whether the item with `id` can
         // derive default or not.
         !self.cannot_derive_default.as_ref().unwrap().contains(&id)
+    }
+
+    /// Compute whether we can derive debug.
+    fn compute_cannot_derive_copy(&mut self) {
+        assert!(self.cannot_derive_copy.is_none());
+        self.cannot_derive_copy = Some(analyze::<CannotDeriveCopy>(self));
+    }
+
+    /// Look up whether the item with `id` can
+    /// derive debug or not.
+    pub fn lookup_item_id_can_derive_copy(&self, id: ItemId) -> bool {
+        assert!(self.in_codegen_phase(),
+                "We only compute can_derive_debug when we enter codegen");
+
+        // Look up the computed value for whether the item with `id` can
+        // derive `Copy` or not.
+        !id.has_type_param_in_array(self) &&
+            !self.cannot_derive_copy.as_ref().unwrap().contains(&id)
+    }
+
+    /// Compute whether the type has array.
+    fn compute_has_type_param_in_array(&mut self) {
+        assert!(self.has_type_param_in_array.is_none());
+        self.has_type_param_in_array = Some(analyze::<HasTypeParameterInArray>(self));
+    }
+
+    /// Look up whether the item with `id` has array or not.
+    pub fn lookup_item_id_has_type_param_in_array(&self, id: &ItemId) -> bool {
+        assert!(self.in_codegen_phase(),
+                "We only compute has array when we enter codegen");
+
+        // Look up the computed value for whether the item with `id` has
+        // array or not.
+        self.has_type_param_in_array.as_ref().unwrap().contains(id)
     }
 }
 
