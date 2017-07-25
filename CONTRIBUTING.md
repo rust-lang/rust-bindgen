@@ -47,9 +47,9 @@ issue, provide us with:
 
 ## Looking to Start Contributing to `bindgen`?
 
-* [Issues labeled "easy"](https://github.com/servo/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-easy)
-* [Issues labeled "less easy"](https://github.com/servo/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-less-easy)
-* Still can't find something to work on? [Drop a comment here](https://github.com/servo/rust-bindgen/issues/747)
+* [Issues labeled "easy"](https://github.com/rust-lang-nursery/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-easy)
+* [Issues labeled "less easy"](https://github.com/rust-lang-nursery/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-less-easy)
+* Still can't find something to work on? [Drop a comment here](https://github.com/rust-lang-nursery/rust-bindgen/issues/747)
 
 ## Building
 

@@ -11,7 +11,7 @@ categories = ["external-ffi-bindings", "development-tools::ffi"]
 license = "BSD-3-Clause"
 name = "bindgen"
 readme = "README.md"
-repository = "https://github.com/servo/rust-bindgen"
+repository = "https://github.com/rust-lang-nursery/rust-bindgen"
 documentation = "https://docs.rs/bindgen"
 version = "0.28.0"
 build = "build.rs"
@@ -24,7 +24,7 @@ exclude = [
 ]
 
 [badges]
-travis-ci = { repository = "servo/rust-bindgen" }
+travis-ci = { repository = "rust-lang-nursery/rust-bindgen" }
 
 [lib]
 path = "src/lib.rs"

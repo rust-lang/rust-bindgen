@@ -484,7 +484,7 @@ impl Builder {
     /// implement some processing on comments to work around issues as described
     /// in:
     ///
-    /// https://github.com/servo/rust-bindgen/issues/426
+    /// https://github.com/rust-lang-nursery/rust-bindgen/issues/426
     pub fn generate_comments(mut self, doit: bool) -> Self {
         self.options.generate_comments = doit;
         self
@@ -513,7 +513,7 @@ impl Builder {
     /// However, some old libclang versions seem to return incorrect results in
     /// some cases for non-mangled functions, see [1], so we allow disabling it.
     ///
-    /// [1]: https://github.com/servo/rust-bindgen/issues/528
+    /// [1]: https://github.com/rust-lang-nursery/rust-bindgen/issues/528
     pub fn trust_clang_mangling(mut self, doit: bool) -> Self {
         self.options.enable_mangling = doit;
         self
@@ -1038,7 +1038,7 @@ pub struct BindgenOptions {
     /// However, some old libclang versions seem to return incorrect results in
     /// some cases for non-mangled functions, see [1], so we allow disabling it.
     ///
-    /// [1]: https://github.com/servo/rust-bindgen/issues/528
+    /// [1]: https://github.com/rust-lang-nursery/rust-bindgen/issues/528
     pub enable_mangling: bool,
 
     /// Whether to prepend the enum name to bitfield or constant variants.

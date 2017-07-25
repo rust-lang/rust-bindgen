@@ -1601,7 +1601,7 @@ impl CodeGenerator for CompInfo {
         // is making the struct 1-byte sized.
         //
         // This is apparently not the case for C, see:
-        // https://github.com/servo/rust-bindgen/issues/551
+        // https://github.com/rust-lang-nursery/rust-bindgen/issues/551
         //
         // Just get the layout, and assume C++ if not.
         //
@@ -1703,7 +1703,7 @@ impl CodeGenerator for CompInfo {
                         )
                     };
 
-                    // FIXME when [issue #465](https://github.com/servo/rust-bindgen/issues/465) ready
+                    // FIXME when [issue #465](https://github.com/rust-lang-nursery/rust-bindgen/issues/465) ready
                     let too_many_base_vtables = self.base_members()
                         .iter()
                         .filter(|base| {
