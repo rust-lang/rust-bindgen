@@ -42,6 +42,9 @@ mod template_params;
 pub use self::template_params::UsedTemplateParameters;
 mod derive_debug;
 pub use self::derive_debug::CannotDeriveDebug;
+mod has_vtable;
+pub use self::has_vtable::HasVtableAnalysis;
+pub use self::has_vtable::HasVtable;
 
 use std::fmt;
 

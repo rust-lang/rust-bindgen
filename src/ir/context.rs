@@ -5,7 +5,7 @@ use super::int::IntKind;
 use super::item::{IsOpaque, Item, ItemAncestors, ItemCanonicalPath, ItemSet};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
-use super::analysis::{analyze, UsedTemplateParameters, CannotDeriveDebug};
+use super::analysis::{analyze, UsedTemplateParameters, CannotDeriveDebug, HasVtableAnalysis};
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
@@ -47,7 +47,7 @@ impl CanDeriveDebug for ItemId {
     }
 }
 
-impl CanDeriveDefault for ItemId {
+impl<'a> CanDeriveDefault<'a> for ItemId {
     type Extra = ();
 
     fn can_derive_default(&self, ctx: &BindgenContext, _: ()) -> bool {
@@ -184,6 +184,12 @@ pub struct BindgenContext<'ctx> {
     /// This is populated when we enter codegen by `compute_can_derive_debug`
     /// and is always `None` before that and `Some` after.
     cant_derive_debug: Option<HashSet<ItemId>>,
+
+    /// The set of (`ItemId's of`) types that has vtable.
+    ///
+    /// Populated when we enter codegen by `compute_has_vtable`; always `None`
+    /// before that and `Some` after.
+    have_vtable: Option<HashSet<ItemId>>,
 }
 
 /// A traversal of whitelisted items.
@@ -310,6 +316,7 @@ impl<'ctx> BindgenContext<'ctx> {
             need_bitfield_allocation: Default::default(),
             needs_mangling_hack: needs_mangling_hack,
             cant_derive_debug: None,
+            have_vtable: None,
         };
 
         me.add_item(root_module, None, None);
@@ -780,6 +787,7 @@ impl<'ctx> BindgenContext<'ctx> {
         // messes with them correctly.
         self.assert_every_item_in_a_module();
 
+        self.compute_has_vtable();
         self.find_used_template_parameters();
         self.compute_cant_derive_debug();
 
@@ -845,6 +853,22 @@ impl<'ctx> BindgenContext<'ctx> {
                 );
             }
         }
+    }
+
+    /// Compute whether the type has vtable.
+    fn compute_has_vtable(&mut self) {
+        assert!(self.have_vtable.is_none());
+        self.have_vtable = Some(analyze::<HasVtableAnalysis>(self));
+    }
+
+    /// Look up whether the item with `id` has vtable or not.
+    pub fn lookup_item_id_has_vtable(&self, id: &ItemId) -> bool {
+        assert!(self.in_codegen_phase(),
+                "We only compute vtables when we enter codegen");
+
+        // Look up the computed value for whether the item with `id` has a
+        // vtable or not.
+        self.have_vtable.as_ref().unwrap().contains(id)
     }
 
     fn find_used_template_parameters(&mut self) {

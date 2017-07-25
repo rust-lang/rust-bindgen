@@ -14,6 +14,7 @@ use super::module::Module;
 use super::template::{AsTemplateParam, TemplateParameters};
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::{Type, TypeKind};
+use super::analysis::HasVtable;
 use clang;
 use clang_sys;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
@@ -277,7 +278,7 @@ impl CanDeriveDebug for Item {
     }
 }
 
-impl CanDeriveDefault for Item {
+impl<'a> CanDeriveDefault<'a> for Item {
     type Extra = ();
 
     fn can_derive_default(&self, ctx: &BindgenContext, _: ()) -> bool {
@@ -289,7 +290,7 @@ impl CanDeriveDefault for Item {
                         .map_or(false,
                                 |l| l.opaque().can_derive_default(ctx, ()))
                 } else {
-                    ty.can_derive_default(ctx, ())
+                    ty.can_derive_default(ctx, self)
                 }
             }
             _ => false,
@@ -944,6 +945,22 @@ impl IsOpaque for Item {
         self.annotations.opaque() ||
             self.as_type().map_or(false, |ty| ty.is_opaque(ctx, self)) ||
             ctx.opaque_by_name(&self.canonical_path(ctx))
+    }
+}
+
+impl HasVtable for ItemId {
+    type Extra = ();
+
+    fn has_vtable(&self, ctx: &BindgenContext, _: &()) -> bool {
+        ctx.lookup_item_id_has_vtable(self)
+    }
+}
+
+impl HasVtable for Item {
+    type Extra = ();
+
+    fn has_vtable(&self, ctx: &BindgenContext, _: &()) -> bool {
+        ctx.lookup_item_id_has_vtable(&self.id())
     }
 }
 
