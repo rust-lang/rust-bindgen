@@ -58,7 +58,7 @@ impl Clone for rte_atomic16_t {
 }
 /// The generic rte_mbuf, containing a packet mbuf.
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Copy)]
 pub struct rte_mbuf {
     pub cacheline0: MARKER,
     /// < Virtual address of segment buffer.

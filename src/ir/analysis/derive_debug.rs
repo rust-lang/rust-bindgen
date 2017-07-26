@@ -141,6 +141,15 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
             };
         }
 
+        if ty.layout(self.ctx).map_or(false, |l| l.align > RUST_DERIVE_IN_ARRAY_LIMIT) {
+            // We have to be conservative: the struct *could* have enough
+            // padding that we emit an array that is longer than
+            // `RUST_DERIVE_IN_ARRAY_LIMIT`. If we moved padding calculations
+            // into the IR and computed them before this analysis, then we could
+            // be precise rather than conservative here.
+            return self.insert(id);
+        }
+
         match *ty.kind() {
             // Handle the simple cases. These can derive debug without further
             // information.

@@ -7,7 +7,7 @@
 pub const RTE_CACHE_LINE_MIN_SIZE: ::std::os::raw::c_uint = 64;
 pub const RTE_CACHE_LINE_SIZE: ::std::os::raw::c_uint = 64;
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Copy)]
 pub struct rte_kni_mbuf {
     pub buf_addr: *mut ::std::os::raw::c_void,
     pub buf_physaddr: u64,

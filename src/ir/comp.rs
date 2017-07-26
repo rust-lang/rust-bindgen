@@ -7,6 +7,7 @@ use super::dot::DotAttributes;
 use super::item::{IsOpaque, Item};
 use super::layout::Layout;
 use super::traversal::{EdgeKind, Trace, Tracer};
+use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
 use super::template::TemplateParameters;
 use clang;
 use codegen::struct_layout::{align_to, bytes_from_bits_pow2};
@@ -1433,6 +1434,10 @@ impl<'a> CanDeriveDefault<'a> for CompInfo {
         if self.detect_derive_default_cycle.get() {
             warn!("Derive default cycle detected!");
             return true;
+        }
+
+        if layout.map_or(false, |l| l.align > RUST_DERIVE_IN_ARRAY_LIMIT) {
+            return false;
         }
 
         if self.kind == CompKind::Union {

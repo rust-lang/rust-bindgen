@@ -96,7 +96,7 @@ impl Clone for ip_frag_key {
 /// @internal Fragmented packet to reassemble.
 /// First two entries in the frags[] array are for the last and first fragments.
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Copy)]
 pub struct ip_frag_pkt {
     /// < LRU list
     pub lru: ip_frag_pkt__bindgen_ty_1,
