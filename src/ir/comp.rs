@@ -1133,7 +1133,7 @@ impl CompInfo {
                     // Let's just assume that if the cursor we've found is a
                     // definition, it's a valid inner type.
                     //
-                    // [1]: https://github.com/servo/rust-bindgen/issues/482
+                    // [1]: https://github.com/rust-lang-nursery/rust-bindgen/issues/482
                     let is_inner_struct = cur.semantic_parent() == cursor ||
                                           cur.is_definition();
                     if !is_inner_struct {

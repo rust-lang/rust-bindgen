@@ -193,7 +193,7 @@ pub fn cursor_mangling(ctx: &BindgenContext,
 
     // We early return here because libclang may crash in some case
     // if we pass in a variable inside a partial specialized template.
-    // See servo/rust-bindgen#67, and servo/rust-bindgen#462.
+    // See rust-lang-nursery/rust-bindgen#67, and rust-lang-nursery/rust-bindgen#462.
     if cursor.is_in_non_fully_specialized_template() {
         return None;
     }
@@ -474,7 +474,7 @@ impl Trace for FunctionSig {
 
 // Function pointers follow special rules, see:
 //
-// https://github.com/servo/rust-bindgen/issues/547,
+// https://github.com/rust-lang-nursery/rust-bindgen/issues/547,
 // https://github.com/rust-lang/rust/issues/38848,
 // and https://github.com/rust-lang/rust/issues/40158
 //

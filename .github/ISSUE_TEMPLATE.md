@@ -14,7 +14,7 @@
 // Use the `--dump-preprocessed-input` flag or the
 // `bindgen::Builder::dump_preprocessed_input` method to make your test case
 // standalone and without `#include`s, and then use C-Reduce to minimize it:
-// https://github.com/servo/rust-bindgen/blob/master/CONTRIBUTING.md#using-creduce-to-minimize-test-cases
+// https://github.com/rust-lang-nursery/rust-bindgen/blob/master/CONTRIBUTING.md#using-creduce-to-minimize-test-cases
 ```
 
 ### Bindgen Invocation

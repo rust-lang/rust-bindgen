@@ -22,7 +22,7 @@ git init
 git config user.name "Travis CI"
 git config user.email "builds@travis-ci.org"
 
-git remote add upstream "https://$GH_TOKEN@github.com/servo/rust-bindgen.git"
+git remote add upstream "https://$GH_TOKEN@github.com/rust-lang-nursery/rust-bindgen.git"
 git fetch upstream
 git reset upstream/gh-pages
 
