@@ -302,9 +302,10 @@ pub fn builder_from_flags<I>
                 "methods" => config.methods = true,
                 "constructors" => config.constructors = true,
                 "destructors" => config.destructors = true,
-                _ => {
+                otherwise => {
                     return Err(Error::new(ErrorKind::Other,
-                                          "Unknown generate item"));
+                                          format!("Unknown generate item: {}",
+                                                  otherwise)));
                 }
             }
         }
