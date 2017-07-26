@@ -46,6 +46,9 @@ mod has_vtable;
 pub use self::has_vtable::HasVtableAnalysis;
 pub use self::has_vtable::HasVtable;
 
+use ir::context::{BindgenContext, ItemId};
+use ir::traversal::{EdgeKind, Trace};
+use std::collections::HashMap;
 use std::fmt;
 
 /// An analysis in the monotone framework.
@@ -132,6 +135,30 @@ pub fn analyze<Analysis>(extra: Analysis::Extra) -> Analysis::Output
     }
 
     analysis.into()
+}
+
+/// Generate the dependency map for analysis
+pub fn generate_dependencies<F>(ctx: &BindgenContext, consider_edge: F) -> HashMap<ItemId, Vec<ItemId>>
+    where F: Fn(EdgeKind) -> bool {
+    let mut dependencies = HashMap::new();
+
+    for &item in ctx.whitelisted_items() {
+        dependencies.entry(item).or_insert(vec![]);
+
+        {
+            // We reverse our natural IR graph edges to find dependencies
+            // between nodes.
+            item.trace(ctx, &mut |sub_item: ItemId, edge_kind| {
+                if ctx.whitelisted_items().contains(&sub_item) &&
+                    consider_edge(edge_kind) {
+                        dependencies.entry(sub_item)
+                            .or_insert(vec![])
+                            .push(item);
+                    }
+            }, &());
+        }
+    }
+    dependencies
 }
 
 #[cfg(test)]

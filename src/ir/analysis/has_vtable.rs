@@ -1,11 +1,10 @@
 //! Determining which types has vtable
-use super::{ConstrainResult, MonotoneFramework};
+use super::{ConstrainResult, MonotoneFramework, generate_dependencies};
 use std::collections::HashSet;
 use std::collections::HashMap;
 use ir::context::{BindgenContext, ItemId};
 use ir::traversal::EdgeKind;
 use ir::ty::TypeKind;
-use ir::traversal::Trace;
 
 /// An analysis that finds for each IR item whether it has vtable or not
 ///
@@ -68,24 +67,7 @@ impl<'ctx, 'gen> MonotoneFramework for HasVtableAnalysis<'ctx, 'gen> {
 
     fn new(ctx: &'ctx BindgenContext<'gen>) -> HasVtableAnalysis<'ctx, 'gen> {
         let have_vtable = HashSet::new();
-        let mut dependencies = HashMap::new();
-
-        for &item in ctx.whitelisted_items() {
-            dependencies.entry(item).or_insert(vec![]);
-
-            {
-                // We reverse our natural IR graph edges to find dependencies
-                // between nodes.
-                item.trace(ctx, &mut |sub_item: ItemId, edge_kind| {
-                    if ctx.whitelisted_items().contains(&sub_item) &&
-                        Self::consider_edge(edge_kind) {
-                            dependencies.entry(sub_item)
-                                .or_insert(vec![])
-                                .push(item);
-                        }
-                }, &());
-            }
-        }
+        let dependencies = generate_dependencies(ctx, Self::consider_edge);
 
         HasVtableAnalysis {
             ctx,

@@ -1,6 +1,6 @@
 //! Determining which types for which we can emit `#[derive(Debug)]`.
 
-use super::{ConstrainResult, MonotoneFramework};
+use super::{ConstrainResult, MonotoneFramework, generate_dependencies};
 use std::collections::HashSet;
 use std::collections::HashMap;
 use ir::context::{BindgenContext, ItemId};
@@ -9,7 +9,6 @@ use ir::traversal::EdgeKind;
 use ir::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
 use ir::ty::TypeKind;
 use ir::comp::Field;
-use ir::traversal::Trace;
 use ir::comp::FieldMethods;
 use ir::derive::CanTriviallyDeriveDebug;
 use ir::comp::CompKind;
@@ -99,24 +98,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
 
     fn new(ctx: &'ctx BindgenContext<'gen>) -> CannotDeriveDebug<'ctx, 'gen> {
         let cannot_derive_debug = HashSet::new();
-        let mut dependencies = HashMap::new();
-
-        for &item in ctx.whitelisted_items() {
-            dependencies.entry(item).or_insert(vec![]);
-
-            {
-                // We reverse our natural IR graph edges to find dependencies
-                // between nodes.
-                item.trace(ctx, &mut |sub_item: ItemId, edge_kind| {
-                    if ctx.whitelisted_items().contains(&sub_item) &&
-                       Self::consider_edge(edge_kind) {
-                           dependencies.entry(sub_item)
-                               .or_insert(vec![])
-                               .push(item);
-                    }
-                }, &());
-            }
-        }
+        let dependencies = generate_dependencies(ctx, Self::consider_edge);
 
         CannotDeriveDebug {
             ctx,
