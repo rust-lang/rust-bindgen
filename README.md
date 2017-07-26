@@ -32,7 +32,7 @@ extern "C" {
 
 ## Users Guide
 
-[📚 Read the `bindgen` users guide here! 📚](https://servo.github.io/rust-bindgen)
+[📚 Read the `bindgen` users guide here! 📚](https://rust-lang-nursery.github.io/rust-bindgen)
 
 ## API Reference
 
