@@ -129,7 +129,7 @@ impl Clone for ip_frag_key {
 /// @internal Fragmented packet to reassemble.
 /// First two entries in the frags[] array are for the last and first fragments.
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Copy)]
 pub struct ip_frag_pkt {
     /// < LRU list
     pub lru: ip_frag_pkt__bindgen_ty_1,
@@ -258,7 +258,7 @@ impl Default for ip_pkt_list {
 }
 /// fragmentation table statistics
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Copy)]
 pub struct ip_frag_tbl_stat {
     /// < total # of find/insert attempts.
     pub find_num: u64,
@@ -312,9 +312,12 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
 impl Clone for ip_frag_tbl_stat {
     fn clone(&self) -> Self { *self }
 }
+impl Default for ip_frag_tbl_stat {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 /// fragmentation table
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Copy)]
 pub struct rte_ip_frag_tbl {
     /// < ttl for table entries.
     pub max_cycles: u64,

@@ -47,7 +47,7 @@ pub type rte_mempool_get_count =
                               -> ::std::os::raw::c_uint>;
 /// Structure defining mempool operations structure
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Copy)]
 pub struct rte_mempool_ops {
     /// < Name of mempool ops struct.
     pub name: [::std::os::raw::c_char; 32usize],
@@ -134,7 +134,7 @@ impl Clone for rte_spinlock_t {
 /// any function pointers stored directly in the mempool struct would not be.
 /// This results in us simply having "ops_index" in the mempool struct.
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Copy)]
 pub struct rte_mempool_ops_table {
     /// < Spinlock for add/delete.
     pub sl: rte_spinlock_t,
@@ -173,7 +173,7 @@ impl Default for rte_mempool_ops_table {
 }
 /// Structure to hold malloc heap
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Copy)]
 pub struct malloc_heap {
     pub lock: rte_spinlock_t,
     pub free_head: [malloc_heap__bindgen_ty_1; 13usize],
