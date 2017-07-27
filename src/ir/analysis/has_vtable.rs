@@ -157,12 +157,6 @@ impl<'ctx, 'gen> From<HasVtableAnalysis<'ctx, 'gen>> for HashSet<ItemId> {
 /// looking up the results of the HasVtableAnalysis's computations for a
 /// specific thing.
 pub trait HasVtable {
-
-    /// Implementations can define this type to get access to any extra
-    /// information required to determine whether they have vtable. If
-    /// extra information is unneeded, then this should simply be the unit type.
-    type Extra;
-
     /// Return `true` if this thing has vtable, `false` otherwise.
-    fn has_vtable(&self, ctx: &BindgenContext, extra: &Self::Extra) -> bool;
+    fn has_vtable(&self, ctx: &BindgenContext) -> bool;
 }

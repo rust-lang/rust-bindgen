@@ -1414,7 +1414,7 @@ impl CodeGenerator for CompInfo {
 
         let is_union = self.kind() == CompKind::Union;
         let mut derives = vec![];
-        if item.can_derive_debug(ctx, ()) {
+        if item.can_derive_debug(ctx) {
             derives.push("Debug");
         }
 

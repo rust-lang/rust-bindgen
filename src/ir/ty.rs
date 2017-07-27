@@ -2,7 +2,7 @@
 
 use super::comp::CompInfo;
 use super::context::{BindgenContext, ItemId};
-use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
+use super::derive::{CanDeriveCopy, CanDeriveDefault};
 use super::dot::DotAttributes;
 use super::enum_ty::Enum;
 use super::function::FunctionSig;
@@ -523,14 +523,6 @@ impl TemplateParameters for TypeKind {
             TypeKind::ObjCSel |
             TypeKind::ObjCInterface(_) => None,
         }
-    }
-}
-
-impl CanDeriveDebug for Type {
-    type Extra = Item;
-
-    fn can_derive_debug(&self, ctx: &BindgenContext, item: Item) -> bool {
-        ctx.lookup_item_id_can_derive_debug(item.id())
     }
 }
 
