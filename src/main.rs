@@ -64,11 +64,9 @@ pub fn main() {
                 std::process::exit(1);
             }
 
-            let mut bindings = builder_result.unwrap();
+            let bindings = builder_result.unwrap();
             bindings.write(output)
                 .expect("Unable to write output");
-            bindings.write_dummy_uses()
-                .expect("Unable to write dummy uses to file.");
         }
         Err(error) => {
             println!("{}", error);

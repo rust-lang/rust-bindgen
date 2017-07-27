@@ -65,7 +65,6 @@ mod clang;
 mod ir;
 mod parse;
 mod regex_set;
-mod uses;
 
 pub mod callbacks;
 
@@ -76,7 +75,6 @@ doc_mod!(clang, clang_docs);
 doc_mod!(ir, ir_docs);
 doc_mod!(parse, parse_docs);
 doc_mod!(regex_set, regex_set_docs);
-doc_mod!(uses, uses_docs);
 
 mod codegen {
     include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
@@ -263,11 +261,6 @@ impl Builder {
         if let Some(ref prefix) = self.options.ctypes_prefix {
             output_vector.push("--ctypes-prefix".into());
             output_vector.push(prefix.clone());
-        }
-
-        if let Some(ref dummy) = self.options.dummy_uses {
-            output_vector.push("--dummy-uses".into());
-            output_vector.push(dummy.clone());
         }
 
         if self.options.emit_ast {
@@ -516,13 +509,6 @@ impl Builder {
     /// [1]: https://github.com/rust-lang-nursery/rust-bindgen/issues/528
     pub fn trust_clang_mangling(mut self, doit: bool) -> Self {
         self.options.enable_mangling = doit;
-        self
-    }
-
-    /// Generate a C/C++ file that includes the header and has dummy uses of
-    /// every type defined in the header.
-    pub fn dummy_uses<T: Into<String>>(mut self, dummy_uses: T) -> Builder {
-        self.options.dummy_uses = Some(dummy_uses.into());
         self
     }
 
@@ -1001,10 +987,6 @@ pub struct BindgenOptions {
     /// Unsaved files for input.
     pub input_unsaved_files: Vec<clang::UnsavedFile>,
 
-    /// Generate a dummy C/C++ file that includes the header and has dummy uses
-    /// of all types defined therein. See the `uses` module for more.
-    pub dummy_uses: Option<String>,
-
     /// A user-provided visitor to allow customizing different kinds of
     /// situations.
     pub parse_callbacks: Option<Box<callbacks::ParseCallbacks>>,
@@ -1094,7 +1076,6 @@ impl Default for BindgenOptions {
             clang_args: vec![],
             input_header: None,
             input_unsaved_files: vec![],
-            dummy_uses: None,
             parse_callbacks: None,
             codegen_config: CodegenConfig::all(),
             conservative_inline_namespaces: false,
@@ -1249,29 +1230,6 @@ impl<'ctx> Bindings<'ctx> {
         try!(ps.print_remaining_comments());
         try!(eof(&mut ps.s));
         ps.s.out.flush()
-    }
-
-    /// Generate and write dummy uses of all the types we parsed, if we've been
-    /// requested to do so in the options.
-    ///
-    /// See the `uses` module for more information.
-    pub fn write_dummy_uses(&mut self) -> io::Result<()> {
-        let file = if let Some(ref dummy_path) =
-            self.context.options().dummy_uses {
-            Some(try!(OpenOptions::new()
-                .write(true)
-                .truncate(true)
-                .create(true)
-                .open(dummy_path)))
-        } else {
-            None
-        };
-
-        if let Some(file) = file {
-            try!(uses::generate_dummy_uses(&mut self.context, file));
-        }
-
-        Ok(())
     }
 }
 

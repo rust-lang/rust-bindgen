@@ -88,11 +88,6 @@ pub fn builder_from_flags<I>
             // All positional arguments after the end of options marker, `--`
             Arg::with_name("clang-args")
                 .multiple(true),
-            Arg::with_name("dummy-uses")
-                .long("dummy-uses")
-                .help("For testing purposes, generate a C/C++ file containing \
-                       dummy uses of all types defined in the input header.")
-                .takes_value(true),
             Arg::with_name("emit-clang-ast")
                 .long("emit-clang-ast")
                 .help("Output the Clang AST for debugging purposes."),
@@ -280,10 +275,6 @@ pub fn builder_from_flags<I>
 
     if let Some(prefix) = matches.value_of("ctypes-prefix") {
         builder = builder.ctypes_prefix(prefix);
-    }
-
-    if let Some(dummy) = matches.value_of("dummy-uses") {
-        builder = builder.dummy_uses(dummy);
     }
 
     if let Some(links) = matches.values_of("dynamic") {
