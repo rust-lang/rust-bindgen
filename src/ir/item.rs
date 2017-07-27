@@ -271,9 +271,7 @@ impl Trace for Item {
 }
 
 impl CanDeriveDebug for Item {
-    type Extra = ();
-
-    fn can_derive_debug(&self, ctx: &BindgenContext, _: ()) -> bool {
+    fn can_derive_debug(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_debug && ctx.lookup_item_id_can_derive_debug(self.id())
     }
 }

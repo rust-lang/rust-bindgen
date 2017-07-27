@@ -40,10 +40,8 @@ impl ItemId {
 }
 
 impl CanDeriveDebug for ItemId {
-    type Extra = ();
-
-    fn can_derive_debug(&self, ctx: &BindgenContext, _: ()) -> bool {
-        ctx.resolve_item(*self).can_derive_debug(ctx, ())
+    fn can_derive_debug(&self, ctx: &BindgenContext) -> bool {
+        ctx.options().derive_debug && ctx.lookup_item_id_can_derive_debug(*self)
     }
 }
 
