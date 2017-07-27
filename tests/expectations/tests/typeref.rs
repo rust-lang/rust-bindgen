@@ -29,7 +29,7 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct nsFoo {
     pub mBar: mozilla_StyleShapeSource,
 }
@@ -47,9 +47,6 @@ fn bindgen_test_layout_nsFoo() {
 }
 impl Clone for nsFoo {
     fn clone(&self) -> Self { *self }
-}
-impl Default for nsFoo {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]

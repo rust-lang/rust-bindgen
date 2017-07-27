@@ -45,6 +45,8 @@ pub use self::derive_debug::CannotDeriveDebug;
 mod has_vtable;
 pub use self::has_vtable::HasVtableAnalysis;
 pub use self::has_vtable::HasVtable;
+mod derive_default;
+pub use self::derive_default::CannotDeriveDefault;
 
 use ir::context::{BindgenContext, ItemId};
 use ir::traversal::{EdgeKind, Trace};

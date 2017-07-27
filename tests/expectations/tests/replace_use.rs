@@ -11,7 +11,7 @@ pub struct nsTArray {
     pub y: ::std::os::raw::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Test {
     pub a: nsTArray,
 }
@@ -29,9 +29,6 @@ fn bindgen_test_layout_Test() {
 }
 impl Clone for Test {
     fn clone(&self) -> Self { *self }
-}
-impl Default for Test {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
 fn __bindgen_test_layout_nsTArray_open0_long_close0_instantiation() {

@@ -2,12 +2,12 @@
 
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId};
-use super::derive::{CanDeriveCopy, CanDeriveDefault};
+use super::derive::CanDeriveCopy;
 use super::dot::DotAttributes;
 use super::item::{IsOpaque, Item};
 use super::layout::Layout;
 use super::traversal::{EdgeKind, Trace, Tracer};
-use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
+// use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
 use super::template::TemplateParameters;
 use clang;
 use codegen::struct_layout::{align_to, bytes_from_bits_pow2};
@@ -702,19 +702,6 @@ impl FieldMethods for FieldData {
     }
 }
 
-impl<'a> CanDeriveDefault<'a> for Field {
-    type Extra = ();
-
-    fn can_derive_default(&self, ctx: &BindgenContext, _: ()) -> bool {
-        match *self {
-            Field::DataMember(ref data) => data.ty.can_derive_default(ctx, ()),
-            Field::Bitfields(BitfieldUnit { ref bitfields, .. }) => bitfields.iter().all(|b| {
-                b.ty().can_derive_default(ctx, ())
-            }),
-        }
-    }
-}
-
 impl<'a> CanDeriveCopy<'a> for Field {
     type Extra = ();
 
@@ -845,10 +832,6 @@ pub struct CompInfo {
     /// and pray, or behave as an opaque type.
     found_unknown_attr: bool,
 
-    /// Used to detect if we've run in a can_derive_default cycle while cycling
-    /// around the template arguments.
-    detect_derive_default_cycle: Cell<bool>,
-
     /// Used to detect if we've run in a has_destructor cycle while cycling
     /// around the template arguments.
     detect_has_destructor_cycle: Cell<bool>,
@@ -877,7 +860,6 @@ impl CompInfo {
             has_non_type_template_params: false,
             packed: false,
             found_unknown_attr: false,
-            detect_derive_default_cycle: Cell::new(false),
             detect_has_destructor_cycle: Cell::new(false),
             is_forward_declaration: false,
         }
@@ -1419,53 +1401,6 @@ impl TemplateParameters for CompInfo {
         } else {
             Some(self.template_params.clone())
         }
-    }
-}
-
-impl<'a> CanDeriveDefault<'a> for CompInfo {
-    type Extra = (&'a Item, Option<Layout>);
-
-    fn can_derive_default(&self,
-                          ctx: &BindgenContext,
-                          (item, layout): (&Item, Option<Layout>))
-                          -> bool {
-        // We can reach here recursively via template parameters of a member,
-        // for example.
-        if self.detect_derive_default_cycle.get() {
-            warn!("Derive default cycle detected!");
-            return true;
-        }
-
-        if layout.map_or(false, |l| l.align > RUST_DERIVE_IN_ARRAY_LIMIT) {
-            return false;
-        }
-
-        if self.kind == CompKind::Union {
-            if ctx.options().unstable_rust {
-                return false;
-            }
-
-            return layout.map_or(true, |l| l.opaque().can_derive_default(ctx, ()));
-        }
-
-        if self.has_non_type_template_params {
-            return layout.map_or(true, |l| l.opaque().can_derive_default(ctx, ()));
-        }
-
-        self.detect_derive_default_cycle.set(true);
-
-        let can_derive_default = !ctx.lookup_item_id_has_vtable(&item.id()) &&
-                                 !self.needs_explicit_vtable(ctx, item) &&
-                                 self.base_members
-            .iter()
-            .all(|base| base.ty.can_derive_default(ctx, ())) &&
-                                 self.fields()
-            .iter()
-            .all(|f| f.can_derive_default(ctx, ()));
-
-        self.detect_derive_default_cycle.set(false);
-
-        can_derive_default
     }
 }
 

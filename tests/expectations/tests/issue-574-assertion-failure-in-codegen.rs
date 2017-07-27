@@ -10,7 +10,7 @@ pub struct a {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct _bindgen_ty_1 {
     pub ar: a,
 }
@@ -28,9 +28,6 @@ fn bindgen_test_layout__bindgen_ty_1() {
 }
 impl Clone for _bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
-}
-impl Default for _bindgen_ty_1 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 extern "C" {
     #[link_name = "AutoIdVector"]
