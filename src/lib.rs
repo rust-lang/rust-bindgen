@@ -1162,8 +1162,35 @@ impl<'ctx> Bindings<'ctx> {
 
         options.build();
 
+        // Filter out include paths and similar stuff, so we don't incorrectly
+        // promote them to `-isystem`.
+        let clang_args_for_clang_sys = {
+            let mut last_was_include_prefix = false;
+            options.clang_args.iter().filter(|arg| {
+                if last_was_include_prefix {
+                    last_was_include_prefix = false;
+                    return false;
+                }
+
+                let arg = &**arg;
+
+                // https://clang.llvm.org/docs/ClangCommandLineReference.html
+                // -isystem and -isystem-after are harmless.
+                if arg == "-I" || arg == "--include-directory" {
+                    last_was_include_prefix = true;
+                    return false;
+                }
+
+                if arg.starts_with("-I") || arg.starts_with("--include-directory=") {
+                    return false;
+                }
+
+                true
+            }).cloned().collect::<Vec<_>>()
+        };
+
         // TODO: Make this path fixup configurable?
-        if let Some(clang) = clang_sys::support::Clang::find(None, &options.clang_args) {
+        if let Some(clang) = clang_sys::support::Clang::find(None, &clang_args_for_clang_sys) {
             // If --target is specified, assume caller knows what they're doing
             // and don't mess with include paths for them
             let has_target_arg = options.clang_args
