@@ -379,9 +379,8 @@ pub struct Item {
     parent_id: ItemId,
     /// The item kind.
     kind: ItemKind,
-    /// Detect cycles when determining if we can derive debug/copy or not, and
+    /// Detect cycles when determining if we can derive copy or not, and
     /// avoid infinite recursion.
-    detect_derive_debug_cycle: Cell<bool>,
     detect_derive_copy_cycle: Cell<bool>,
 }
 
@@ -409,7 +408,6 @@ impl Item {
             comment: comment,
             annotations: annotations.unwrap_or_default(),
             kind: kind,
-            detect_derive_debug_cycle: Cell::new(false),
             detect_derive_copy_cycle: Cell::new(false),
         }
     }

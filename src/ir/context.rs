@@ -180,7 +180,7 @@ pub struct BindgenContext<'ctx> {
     ///
     /// This is populated when we enter codegen by `compute_can_derive_debug`
     /// and is always `None` before that and `Some` after.
-    cant_derive_debug: Option<HashSet<ItemId>>,
+    cannot_derive_debug: Option<HashSet<ItemId>>,
 
     /// The set of (`ItemId`s of) types that can't derive default.
     ///
@@ -318,7 +318,7 @@ impl<'ctx> BindgenContext<'ctx> {
             used_template_parameters: None,
             need_bitfield_allocation: Default::default(),
             needs_mangling_hack: needs_mangling_hack,
-            cant_derive_debug: None,
+            cannot_derive_debug: None,
             cannot_derive_default: None,
             have_vtable: None,
         };
@@ -793,7 +793,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
         self.compute_has_vtable();
         self.find_used_template_parameters();
-        self.compute_cant_derive_debug();
+        self.compute_cannot_derive_debug();
         self.compute_cannot_derive_default();
 
         let ret = cb(self);
@@ -1762,9 +1762,9 @@ impl<'ctx> BindgenContext<'ctx> {
     }
 
     /// Compute whether we can derive debug.
-    fn compute_cant_derive_debug(&mut self) {
-        assert!(self.cant_derive_debug.is_none());
-        self.cant_derive_debug = Some(analyze::<CannotDeriveDebug>(self));
+    fn compute_cannot_derive_debug(&mut self) {
+        assert!(self.cannot_derive_debug.is_none());
+        self.cannot_derive_debug = Some(analyze::<CannotDeriveDebug>(self));
     }
 
     /// Look up whether the item with `id` can
@@ -1775,7 +1775,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
         // Look up the computed value for whether the item with `id` can
         // derive debug or not.
-        !self.cant_derive_debug.as_ref().unwrap().contains(&id)
+        !self.cannot_derive_debug.as_ref().unwrap().contains(&id)
     }
 
     /// Compute whether we can derive default.
