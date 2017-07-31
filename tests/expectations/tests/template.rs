@@ -37,6 +37,7 @@ pub struct C {
     pub mBVolatile: B<::std::os::raw::c_int>,
     pub mBConstBool: B<bool>,
     pub mBConstChar: B<u16>,
+    pub mBArray: B<[::std::os::raw::c_int; 1usize]>,
 }
 #[test]
 fn bindgen_test_layout_C() {
@@ -73,6 +74,11 @@ fn bindgen_test_layout_C() {
                 } , 26usize , concat ! (
                 "Alignment of field: " , stringify ! ( C ) , "::" , stringify
                 ! ( mBConstChar ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C ) ) . mBArray as * const _ as usize } ,
+                28usize , concat ! (
+                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
+                ! ( mBArray ) ));
 }
 impl Clone for C {
     fn clone(&self) -> Self { *self }
@@ -317,7 +323,7 @@ fn __bindgen_test_layout_B_open0_unsigned_int_close0_instantiation() {
                B<::std::os::raw::c_uint> ) ));
 }
 #[test]
-fn __bindgen_test_layout_B_open0__bindgen_ty_id_113_close0_instantiation() {
+fn __bindgen_test_layout_B_open0_ptr_const_int_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<B<*const ::std::os::raw::c_int>>() ,
                8usize , concat ! (
                "Size of template specialization: " , stringify ! (
@@ -368,6 +374,17 @@ fn __bindgen_test_layout_B_open0_const_char16_t_close0_instantiation() {
                ) ));
 }
 #[test]
+fn __bindgen_test_layout_B_open0_array_int_1_close0_instantiation() {
+    assert_eq!(::std::mem::size_of::<B<[::std::os::raw::c_int; 1usize]>>() ,
+               4usize , concat ! (
+               "Size of template specialization: " , stringify ! (
+               B<[::std::os::raw::c_int; 1usize]> ) ));
+    assert_eq!(::std::mem::align_of::<B<[::std::os::raw::c_int; 1usize]>>() ,
+               4usize , concat ! (
+               "Alignment of template specialization: " , stringify ! (
+               B<[::std::os::raw::c_int; 1usize]> ) ));
+}
+#[test]
 fn __bindgen_test_layout_Foo_open0_int_int_close0_instantiation_1() {
     assert_eq!(::std::mem::size_of::<Foo<::std::os::raw::c_int>>() , 24usize ,
                concat ! (
@@ -379,7 +396,7 @@ fn __bindgen_test_layout_Foo_open0_int_int_close0_instantiation_1() {
                Foo<::std::os::raw::c_int> ) ));
 }
 #[test]
-fn __bindgen_test_layout_Rooted_open0__bindgen_ty_id_144_close0_instantiation() {
+fn __bindgen_test_layout_Rooted_open0_ptr_void_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<Rooted<*mut ::std::os::raw::c_void>>() ,
                24usize , concat ! (
                "Size of template specialization: " , stringify ! (
@@ -390,7 +407,7 @@ fn __bindgen_test_layout_Rooted_open0__bindgen_ty_id_144_close0_instantiation() 
                Rooted<*mut ::std::os::raw::c_void> ) ));
 }
 #[test]
-fn __bindgen_test_layout_Rooted_open0__bindgen_ty_id_150_close0_instantiation() {
+fn __bindgen_test_layout_Rooted_open0_ptr_void_close0_instantiation_1() {
     assert_eq!(::std::mem::size_of::<Rooted<*mut ::std::os::raw::c_void>>() ,
                24usize , concat ! (
                "Size of template specialization: " , stringify ! (
