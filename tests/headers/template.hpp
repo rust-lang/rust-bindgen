@@ -19,6 +19,10 @@ struct C {
     B<volatile int> mBVolatile;
     B<const bool> mBConstBool;
     B<const char16_t> mBConstChar;
+    B<int[1]> mBArray;
+    // clang 3.x ignores const in this case, so they generate different
+    // result than clang 4.0.
+    // B<const int[1]> mBConstArray;
 };
 
 template<typename T>
