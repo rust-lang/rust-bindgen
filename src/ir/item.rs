@@ -276,23 +276,9 @@ impl CanDeriveDebug for Item {
     }
 }
 
-impl<'a> CanDeriveDefault<'a> for Item {
-    type Extra = ();
-
-    fn can_derive_default(&self, ctx: &BindgenContext, _: ()) -> bool {
-        ctx.options().derive_default &&
-        match self.kind {
-            ItemKind::Type(ref ty) => {
-                if self.is_opaque(ctx, &()) {
-                    ty.layout(ctx)
-                        .map_or(false,
-                                |l| l.opaque().can_derive_default(ctx, ()))
-                } else {
-                    ty.can_derive_default(ctx, self)
-                }
-            }
-            _ => false,
-        }
+impl CanDeriveDefault for Item {
+    fn can_derive_default(&self, ctx: &BindgenContext) -> bool {
+        ctx.options().derive_default && ctx.lookup_item_id_can_derive_default(self.id())
     }
 }
 

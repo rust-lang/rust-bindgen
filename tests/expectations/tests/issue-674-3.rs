@@ -9,14 +9,11 @@ pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]
-    #[derive(Debug, Copy, Clone)]
+    #[derive(Debug, Default, Copy, Clone)]
     pub struct nsRefPtrHashtable {
         pub _address: u8,
     }
     pub type nsRefPtrHashtable_UserDataType<PtrType> = *mut PtrType;
-    impl Default for nsRefPtrHashtable {
-        fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-    }
     #[repr(C)]
     #[derive(Debug, Default, Copy)]
     pub struct a {

@@ -10,7 +10,7 @@ pub struct Base {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct Derived {
     pub _address: u8,
 }
@@ -24,16 +24,13 @@ fn bindgen_test_layout_Derived() {
 impl Clone for Derived {
     fn clone(&self) -> Self { *self }
 }
-impl Default for Derived {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
 #[repr(C)]
 #[derive(Debug, Default)]
 pub struct BaseWithDestructor {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct DerivedFromBaseWithDestructor {
     pub _address: u8,
 }
@@ -46,9 +43,6 @@ fn bindgen_test_layout_DerivedFromBaseWithDestructor() {
                 1usize , concat ! (
                 "Alignment of " , stringify ! ( DerivedFromBaseWithDestructor
                 ) ));
-}
-impl Default for DerivedFromBaseWithDestructor {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
 fn __bindgen_test_layout_Base_open0_Derived_close0_instantiation() {

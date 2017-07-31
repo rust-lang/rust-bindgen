@@ -1418,7 +1418,7 @@ impl CodeGenerator for CompInfo {
             derives.push("Debug");
         }
 
-        if item.can_derive_default(ctx, ()) {
+        if item.can_derive_default(ctx) {
             derives.push("Default");
         } else {
             needs_default_impl = ctx.options().derive_default;

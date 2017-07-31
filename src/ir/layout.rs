@@ -1,7 +1,8 @@
 //! Intermediate representation for the physical layout of some type.
 
 use super::context::BindgenContext;
-use super::derive::{CanDeriveCopy, CanTriviallyDeriveDebug, CanDeriveDefault};
+use super::derive::{CanDeriveCopy, CanTriviallyDeriveDebug,
+                    CanTriviallyDeriveDefault};
 use super::ty::{RUST_DERIVE_IN_ARRAY_LIMIT, Type, TypeKind};
 use clang;
 use std::{cmp, mem};
@@ -111,10 +112,9 @@ impl CanTriviallyDeriveDebug for Opaque {
     }
 }
 
-impl<'a> CanDeriveDefault<'a> for Opaque {
-    type Extra = ();
+impl CanTriviallyDeriveDefault for Opaque {
 
-    fn can_derive_default(&self, _: &BindgenContext, _: ()) -> bool {
+    fn can_trivially_derive_default(&self) -> bool {
         self.array_size()
             .map_or(false, |size| size <= RUST_DERIVE_IN_ARRAY_LIMIT)
     }

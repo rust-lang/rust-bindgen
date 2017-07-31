@@ -5,15 +5,12 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Outer {
     pub i: u8,
 }
-impl Default for Outer {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Default, Copy)]
 pub struct AutoIdVector {
     pub ar: Outer,
 }
@@ -31,9 +28,6 @@ fn bindgen_test_layout_AutoIdVector() {
 }
 impl Clone for AutoIdVector {
     fn clone(&self) -> Self { *self }
-}
-impl Default for AutoIdVector {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
 fn __bindgen_test_layout_Outer_open0_int_close0_instantiation() {

@@ -12,14 +12,11 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Copy, Clone)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct Rooted {
             pub _address: u8,
         }
         pub type Rooted_ElementType<T> = T;
-        impl Default for Rooted {
-            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-        }
     }
     #[repr(C)]
     #[derive(Debug, Default, Copy)]

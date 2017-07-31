@@ -2,7 +2,7 @@
 
 use super::comp::CompInfo;
 use super::context::{BindgenContext, ItemId};
-use super::derive::{CanDeriveCopy, CanDeriveDefault};
+use super::derive::CanDeriveCopy;
 use super::dot::DotAttributes;
 use super::enum_ty::Enum;
 use super::function::FunctionSig;
@@ -522,46 +522,6 @@ impl TemplateParameters for TypeKind {
             TypeKind::ObjCId |
             TypeKind::ObjCSel |
             TypeKind::ObjCInterface(_) => None,
-        }
-    }
-}
-
-impl<'a> CanDeriveDefault<'a> for Type {
-    type Extra = &'a Item;
-
-    fn can_derive_default(&self, ctx: &BindgenContext, item: &Item) -> bool {
-        match self.kind {
-            TypeKind::Array(t, len) => {
-                len <= RUST_DERIVE_IN_ARRAY_LIMIT &&
-                t.can_derive_default(ctx, ())
-            }
-            TypeKind::ResolvedTypeRef(t) |
-            TypeKind::TemplateAlias(t, _) |
-            TypeKind::Alias(t) => t.can_derive_default(ctx, ()),
-            TypeKind::Comp(ref info) => {
-                info.can_derive_default(ctx, (&item, self.layout(ctx)))
-            }
-            TypeKind::Opaque => {
-                self.layout
-                    .map_or(true, |l| l.opaque().can_derive_default(ctx, ()))
-            }
-            TypeKind::Void |
-            TypeKind::Named |
-            TypeKind::TemplateInstantiation(..) |
-            TypeKind::Reference(..) |
-            TypeKind::NullPtr |
-            TypeKind::Pointer(..) |
-            TypeKind::BlockPointer |
-            TypeKind::ObjCId |
-            TypeKind::ObjCSel |
-            TypeKind::ObjCInterface(..) |
-            TypeKind::Enum(..) => false,
-
-            TypeKind::Function(..) |
-            TypeKind::Int(..) |
-            TypeKind::Float(..) |
-            TypeKind::Complex(..) => true,
-            TypeKind::UnresolvedTypeRef(..) => unreachable!(),
         }
     }
 }
