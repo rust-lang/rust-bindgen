@@ -90,7 +90,6 @@ impl Default for C {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Copy)]
 pub struct C_with_zero_length_array {
     pub a: ::std::os::raw::c_int,
     pub big_array: [::std::os::raw::c_char; 33usize],
@@ -123,14 +122,10 @@ fn bindgen_test_layout_C_with_zero_length_array() {
                 C_with_zero_length_array ) , "::" , stringify ! (
                 zero_length_array ) ));
 }
-impl Clone for C_with_zero_length_array {
-    fn clone(&self) -> Self { *self }
-}
 impl Default for C_with_zero_length_array {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Copy)]
 pub struct C_with_incomplete_array {
     pub a: ::std::os::raw::c_int,
     pub big_array: [::std::os::raw::c_char; 33usize],
@@ -145,14 +140,10 @@ fn bindgen_test_layout_C_with_incomplete_array() {
                 concat ! (
                 "Alignment of " , stringify ! ( C_with_incomplete_array ) ));
 }
-impl Clone for C_with_incomplete_array {
-    fn clone(&self) -> Self { *self }
-}
 impl Default for C_with_incomplete_array {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Copy)]
 pub struct C_with_zero_length_array_and_incomplete_array {
     pub a: ::std::os::raw::c_int,
     pub big_array: [::std::os::raw::c_char; 33usize],
@@ -169,9 +160,6 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
                 , 4usize , concat ! (
                 "Alignment of " , stringify ! (
                 C_with_zero_length_array_and_incomplete_array ) ));
-}
-impl Clone for C_with_zero_length_array_and_incomplete_array {
-    fn clone(&self) -> Self { *self }
 }
 impl Default for C_with_zero_length_array_and_incomplete_array {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -194,7 +182,6 @@ fn bindgen_test_layout_WithDtor() {
                 stringify ! ( b ) ));
 }
 #[repr(C)]
-#[derive(Copy)]
 pub struct IncompleteArrayNonCopiable {
     pub whatever: *mut ::std::os::raw::c_void,
     pub incomplete_array: __IncompleteArrayField<C>,
@@ -208,9 +195,6 @@ fn bindgen_test_layout_IncompleteArrayNonCopiable() {
                 , concat ! (
                 "Alignment of " , stringify ! ( IncompleteArrayNonCopiable )
                 ));
-}
-impl Clone for IncompleteArrayNonCopiable {
-    fn clone(&self) -> Self { *self }
 }
 impl Default for IncompleteArrayNonCopiable {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

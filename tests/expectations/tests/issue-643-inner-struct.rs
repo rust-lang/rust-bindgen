@@ -38,7 +38,7 @@ impl <T> ::std::clone::Clone for __IncompleteArrayField<T> {
 }
 impl <T> ::std::marker::Copy for __IncompleteArrayField<T> { }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug)]
 pub struct rte_ring {
     pub memzone: *mut rte_memzone,
     pub prod: rte_ring_prod,
@@ -91,9 +91,6 @@ fn bindgen_test_layout_rte_ring() {
                "Size of: " , stringify ! ( rte_ring ) ));
     assert_eq! (::std::mem::align_of::<rte_ring>() , 8usize , concat ! (
                 "Alignment of " , stringify ! ( rte_ring ) ));
-}
-impl Clone for rte_ring {
-    fn clone(&self) -> Self { *self }
 }
 impl Default for rte_ring {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

@@ -38,7 +38,7 @@ impl <T> ::std::clone::Clone for __IncompleteArrayField<T> {
 }
 impl <T> ::std::marker::Copy for __IncompleteArrayField<T> { }
 #[repr(C, packed)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default)]
 pub struct header {
     pub proto: ::std::os::raw::c_char,
     pub size: ::std::os::raw::c_uint,
@@ -49,7 +49,4 @@ pub struct header {
 fn bindgen_test_layout_header() {
     assert_eq!(::std::mem::size_of::<header>() , 16usize , concat ! (
                "Size of: " , stringify ! ( header ) ));
-}
-impl Clone for header {
-    fn clone(&self) -> Self { *self }
 }
