@@ -531,8 +531,7 @@ impl<'a> CanDeriveCopy<'a> for Type {
 
     fn can_derive_copy(&self, ctx: &BindgenContext, item: &Item) -> bool {
         match self.kind {
-            TypeKind::Array(t, len) => {
-                len <= RUST_DERIVE_IN_ARRAY_LIMIT &&
+            TypeKind::Array(t, _) => {
                 t.can_derive_copy_in_array(ctx, ())
             }
             TypeKind::ResolvedTypeRef(t) |
