@@ -25,6 +25,7 @@ impl Clone for LittleArray {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
+#[derive(Copy)]
 pub struct BigArray {
     pub a: [::std::os::raw::c_int; 33usize],
 }
@@ -39,6 +40,9 @@ fn bindgen_test_layout_BigArray() {
                 , 0usize , concat ! (
                 "Alignment of field: " , stringify ! ( BigArray ) , "::" ,
                 stringify ! ( a ) ));
+}
+impl Clone for BigArray {
+    fn clone(&self) -> Self { *self }
 }
 impl Default for BigArray {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -64,6 +68,7 @@ impl Clone for WithLittleArray {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
+#[derive(Copy)]
 pub struct WithBigArray {
     pub a: BigArray,
 }
@@ -78,6 +83,9 @@ fn bindgen_test_layout_WithBigArray() {
                 usize } , 0usize , concat ! (
                 "Alignment of field: " , stringify ! ( WithBigArray ) , "::" ,
                 stringify ! ( a ) ));
+}
+impl Clone for WithBigArray {
+    fn clone(&self) -> Self { *self }
 }
 impl Default for WithBigArray {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

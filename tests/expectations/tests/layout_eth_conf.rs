@@ -727,6 +727,7 @@ pub enum rte_eth_nb_pools {
 /// A default pool may be used, if desired, to route all traffic which
 /// does not match the vlan filter rules.
 #[repr(C)]
+#[derive(Copy)]
 pub struct rte_eth_vmdq_dcb_conf {
     /// < With DCB, 16 or 32 pools
     pub nb_queue_pools: rte_eth_nb_pools,
@@ -813,6 +814,9 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
                 const _ as usize } , 1032usize , concat ! (
                 "Alignment of field: " , stringify ! ( rte_eth_vmdq_dcb_conf )
                 , "::" , stringify ! ( dcb_tc ) ));
+}
+impl Clone for rte_eth_vmdq_dcb_conf {
+    fn clone(&self) -> Self { *self }
 }
 impl Default for rte_eth_vmdq_dcb_conf {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -941,6 +945,7 @@ impl Default for rte_eth_vmdq_tx_conf {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
+#[derive(Copy)]
 pub struct rte_eth_vmdq_rx_conf {
     /// < VMDq only mode, 8 or 64 pools
     pub nb_queue_pools: rte_eth_nb_pools,
@@ -1035,6 +1040,9 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
                 const _ as usize } , 16usize , concat ! (
                 "Alignment of field: " , stringify ! ( rte_eth_vmdq_rx_conf )
                 , "::" , stringify ! ( pool_map ) ));
+}
+impl Clone for rte_eth_vmdq_rx_conf {
+    fn clone(&self) -> Self { *self }
 }
 impl Default for rte_eth_vmdq_rx_conf {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -1458,6 +1466,7 @@ impl Clone for rte_intr_conf {
 /// Depending upon the RX multi-queue mode, extra advanced
 /// configuration settings may be needed.
 #[repr(C)]
+#[derive(Copy)]
 pub struct rte_eth_conf {
     /// < bitmap of ETH_LINK_SPEED_XXX of speeds to be
     /// used. ETH_LINK_SPEED_FIXED disables link
@@ -1490,6 +1499,7 @@ pub struct rte_eth_conf {
     pub intr_conf: rte_intr_conf,
 }
 #[repr(C)]
+#[derive(Copy)]
 pub struct rte_eth_conf__bindgen_ty_1 {
     /// < Port RSS configuration
     pub rss_conf: rte_eth_rss_conf,
@@ -1530,6 +1540,9 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
                 "Alignment of field: " , stringify ! (
                 rte_eth_conf__bindgen_ty_1 ) , "::" , stringify ! (
                 vmdq_rx_conf ) ));
+}
+impl Clone for rte_eth_conf__bindgen_ty_1 {
+    fn clone(&self) -> Self { *self }
 }
 impl Default for rte_eth_conf__bindgen_ty_1 {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -1624,6 +1637,9 @@ fn bindgen_test_layout_rte_eth_conf() {
                 as usize } , 2940usize , concat ! (
                 "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
                 stringify ! ( intr_conf ) ));
+}
+impl Clone for rte_eth_conf {
+    fn clone(&self) -> Self { *self }
 }
 impl Default for rte_eth_conf {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

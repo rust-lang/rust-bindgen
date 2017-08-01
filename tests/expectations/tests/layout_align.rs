@@ -38,7 +38,7 @@ impl <T> ::std::clone::Clone for __IncompleteArrayField<T> {
 }
 impl <T> ::std::marker::Copy for __IncompleteArrayField<T> { }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug)]
 pub struct rte_kni_fifo {
     /// < Next position to be written
     pub write: ::std::os::raw::c_uint,
@@ -58,9 +58,6 @@ fn bindgen_test_layout_rte_kni_fifo() {
                "Size of: " , stringify ! ( rte_kni_fifo ) ));
     assert_eq! (::std::mem::align_of::<rte_kni_fifo>() , 8usize , concat ! (
                 "Alignment of " , stringify ! ( rte_kni_fifo ) ));
-}
-impl Clone for rte_kni_fifo {
-    fn clone(&self) -> Self { *self }
 }
 impl Default for rte_kni_fifo {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

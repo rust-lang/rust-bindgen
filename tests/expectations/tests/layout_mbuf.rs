@@ -58,7 +58,6 @@ impl Clone for rte_atomic16_t {
 }
 /// The generic rte_mbuf, containing a packet mbuf.
 #[repr(C)]
-#[derive(Copy)]
 pub struct rte_mbuf {
     pub cacheline0: MARKER,
     /// < Virtual address of segment buffer.
@@ -1077,9 +1076,6 @@ fn bindgen_test_layout_rte_mbuf() {
                 usize } , 98usize , concat ! (
                 "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
                 stringify ! ( timesync ) ));
-}
-impl Clone for rte_mbuf {
-    fn clone(&self) -> Self { *self }
 }
 impl Default for rte_mbuf {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

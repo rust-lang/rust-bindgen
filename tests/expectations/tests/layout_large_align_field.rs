@@ -317,7 +317,6 @@ impl Default for ip_frag_tbl_stat {
 }
 /// fragmentation table
 #[repr(C)]
-#[derive(Copy)]
 pub struct rte_ip_frag_tbl {
     /// < ttl for table entries.
     pub max_cycles: u64,
@@ -402,9 +401,6 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
                 usize } , 128usize , concat ! (
                 "Alignment of field: " , stringify ! ( rte_ip_frag_tbl ) ,
                 "::" , stringify ! ( pkt ) ));
-}
-impl Clone for rte_ip_frag_tbl {
-    fn clone(&self) -> Self { *self }
 }
 impl Default for rte_ip_frag_tbl {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
