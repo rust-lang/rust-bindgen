@@ -5,7 +5,7 @@ use super::annotations::Annotations;
 use super::comment;
 use super::comp::MethodKind;
 use super::context::{BindgenContext, ItemId, PartialType};
-use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
+use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault, CanDeriveHash};
 use super::dot::DotAttributes;
 use super::function::{Function, FunctionKind};
 use super::item_kind::ItemKind;
@@ -291,6 +291,12 @@ impl CanDeriveDefault for Item {
 impl<'a> CanDeriveCopy<'a> for Item {
     fn can_derive_copy(&self, ctx: &BindgenContext) -> bool {
         ctx.lookup_item_id_can_derive_copy(self.id())
+    }
+}
+
+impl CanDeriveHash for Item {
+    fn can_derive_hash(&self, ctx: &BindgenContext) -> bool {
+        ctx.options().derive_hash && ctx.lookup_item_id_can_derive_hash(self.id())
     }
 }
 

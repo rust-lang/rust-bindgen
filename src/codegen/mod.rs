@@ -13,7 +13,7 @@ use ir::comp::{Base, BitfieldUnit, Bitfield, CompInfo, CompKind, Field,
                FieldData, FieldMethods, Method, MethodKind};
 use ir::comment;
 use ir::context::{BindgenContext, ItemId};
-use ir::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
+use ir::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault, CanDeriveHash};
 use ir::dot;
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
 use ir::function::{Abi, Function, FunctionSig};
@@ -1438,6 +1438,10 @@ impl CodeGenerator for CompInfo {
             } else {
                 needs_clone_impl = true;
             }
+        }
+
+        if item.can_derive_hash(ctx) {
+            derives.push("Hash");
         }
 
         if !derives.is_empty() {
@@ -3394,12 +3398,23 @@ mod utils {
         )
             .unwrap();
 
+        // The actual memory of the filed will be hashed, so that's why these
+        // field doesn't do anything with the hash.
+        let union_field_hash_impl = quote_item!(&ctx.ext_cx(),
+            impl<T> ::$prefix::hash::Hash for __BindgenUnionField<T> {
+                fn hash<H: ::$prefix::hash::Hasher>(&self, _state: &mut H) {
+                }
+            }
+        )
+            .unwrap();
+
         let items = vec![union_field_decl,
                          union_field_impl,
                          union_field_default_impl,
                          union_field_clone_impl,
                          union_field_copy_impl,
-                         union_field_debug_impl];
+                         union_field_debug_impl,
+                         union_field_hash_impl];
 
         let old_items = mem::replace(result, items);
         result.extend(old_items.into_iter());
