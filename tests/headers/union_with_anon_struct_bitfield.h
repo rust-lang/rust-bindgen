@@ -1,3 +1,5 @@
+// bindgen-flags: --with-derive-hash
+//
 union foo {
     int a;
     struct {

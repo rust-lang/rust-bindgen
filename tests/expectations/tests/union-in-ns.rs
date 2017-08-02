@@ -34,6 +34,9 @@ pub mod root {
             fmt.write_str("__BindgenUnionField")
         }
     }
+    impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
+        fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
+    }
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]

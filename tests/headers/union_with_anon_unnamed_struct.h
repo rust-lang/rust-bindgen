@@ -1,3 +1,5 @@
+// bindgen-flags: --with-derive-hash
+//
 union pixel {
     unsigned int rgba;
     struct {

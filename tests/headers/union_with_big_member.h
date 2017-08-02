@@ -1,3 +1,5 @@
+// bindgen-flags: --with-derive-hash
+//
 union WithBigArray {
   int a;
   int b[33];

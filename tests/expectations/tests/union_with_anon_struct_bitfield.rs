@@ -28,15 +28,18 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
         fmt.write_str("__BindgenUnionField")
     }
 }
+impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
+    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
+}
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct foo {
     pub a: __BindgenUnionField<::std::os::raw::c_int>,
     pub __bindgen_anon_1: __BindgenUnionField<foo__bindgen_ty_1>,
     pub bindgen_union_field: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct foo__bindgen_ty_1 {
     pub _bitfield_1: u32,
     pub __bindgen_align: [u32; 0usize],
