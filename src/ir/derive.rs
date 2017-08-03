@@ -20,16 +20,9 @@ pub trait CanDeriveDebug {
 /// implementing this trait cannot use recursion or lookup result from fix point
 /// analysis. It's a helper trait for fix point analysis.
 pub trait CanTriviallyDeriveDebug {
-
-    /// Serve the same purpose as the Extra in CanDeriveDebug.
-    type Extra;
-
     /// Return `true` if `Debug` can be derived for this thing, `false`
     /// otherwise.
-    fn can_trivially_derive_debug(&self,
-                        ctx: &BindgenContext,
-                        extra: Self::Extra)
-                        -> bool;
+    fn can_trivially_derive_debug(&self) -> bool;
 }
 
 /// A trait that encapsulates the logic for whether or not we can derive `Copy`

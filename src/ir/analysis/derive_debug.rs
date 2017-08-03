@@ -130,7 +130,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
 
         if ty.is_opaque(self.ctx, item) {
             let layout_can_derive = ty.layout(self.ctx).map_or(true, |l| {
-                l.opaque().can_trivially_derive_debug(self.ctx, ())
+                l.opaque().can_trivially_derive_debug()
             });
             return if layout_can_derive {
                 trace!("    we can trivially derive Debug for the layout");
@@ -215,7 +215,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
 
                     if ty.layout(self.ctx)
                         .map_or(true,
-                                |l| l.opaque().can_trivially_derive_debug(self.ctx, ())) {
+                                |l| l.opaque().can_trivially_derive_debug()) {
                         trace!("    union layout can trivially derive Debug");
                         return ConstrainResult::Same;
                     } else {
@@ -260,7 +260,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
             TypeKind::Pointer(inner) => {
                 let inner_type = self.ctx.resolve_type(inner).canonical_type(self.ctx);
                 if let TypeKind::Function(ref sig) = *inner_type.kind() {
-                    if !sig.can_trivially_derive_debug(&self.ctx, ()) {
+                    if !sig.can_trivially_derive_debug() {
                         trace!("    function pointer that can't trivially derive Debug");
                         return self.insert(id);
                     }

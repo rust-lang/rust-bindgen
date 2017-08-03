@@ -104,9 +104,7 @@ impl Opaque {
 }
 
 impl CanTriviallyDeriveDebug for Opaque {
-    type Extra = ();
-
-    fn can_trivially_derive_debug(&self, _: &BindgenContext, _: ()) -> bool {
+    fn can_trivially_derive_debug(&self) -> bool {
         self.array_size()
             .map_or(false, |size| size <= RUST_DERIVE_IN_ARRAY_LIMIT)
     }
