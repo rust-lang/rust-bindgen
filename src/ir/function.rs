@@ -480,9 +480,7 @@ impl Trace for FunctionSig {
 //
 // Note that copy is always derived, so we don't need to implement it.
 impl CanTriviallyDeriveDebug for FunctionSig {
-    type Extra = ();
-
-    fn can_trivially_derive_debug(&self, _ctx: &BindgenContext, _: ()) -> bool {
+    fn can_trivially_derive_debug(&self) -> bool {
         const RUST_DERIVE_FUNPTR_LIMIT: usize = 12;
         if self.argument_types.len() > RUST_DERIVE_FUNPTR_LIMIT {
             return false;
