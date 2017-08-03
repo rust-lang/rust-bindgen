@@ -1424,7 +1424,7 @@ impl CodeGenerator for CompInfo {
             needs_default_impl = ctx.options().derive_default;
         }
 
-        if item.can_derive_copy(ctx, ()) &&
+        if item.can_derive_copy(ctx) &&
            !item.annotations().disallow_copy() {
             derives.push("Copy");
             if used_template_params.is_some() {

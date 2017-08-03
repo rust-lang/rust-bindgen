@@ -2,7 +2,6 @@
 
 use super::comp::CompInfo;
 use super::context::{BindgenContext, ItemId};
-use super::derive::CanDeriveCopy;
 use super::dot::DotAttributes;
 use super::enum_ty::Enum;
 use super::function::FunctionSig;
@@ -522,47 +521,6 @@ impl TemplateParameters for TypeKind {
             TypeKind::ObjCId |
             TypeKind::ObjCSel |
             TypeKind::ObjCInterface(_) => None,
-        }
-    }
-}
-
-impl<'a> CanDeriveCopy<'a> for Type {
-    type Extra = &'a Item;
-
-    fn can_derive_copy(&self, ctx: &BindgenContext, item: &Item) -> bool {
-        match self.kind {
-            TypeKind::Array(t, len) => {
-                len > 0 &&
-                t.can_derive_copy_in_array(ctx, ())
-            }
-            TypeKind::ResolvedTypeRef(t) |
-            TypeKind::TemplateAlias(t, _) |
-            TypeKind::Alias(t) => t.can_derive_copy(ctx, ()),
-            TypeKind::TemplateInstantiation(ref inst) => {
-                inst.can_derive_copy(ctx, ())
-            }
-            TypeKind::Comp(ref info) => {
-                info.can_derive_copy(ctx, (item, self.layout(ctx)))
-            }
-            TypeKind::Opaque => {
-                self.layout
-                    .map_or(true, |l| l.opaque().can_derive_copy(ctx, ()))
-            }
-            _ => true,
-        }
-    }
-
-    fn can_derive_copy_in_array(&self,
-                                ctx: &BindgenContext,
-                                item: &Item)
-                                -> bool {
-        match self.kind {
-            TypeKind::ResolvedTypeRef(t) |
-            TypeKind::TemplateAlias(t, _) |
-            TypeKind::Alias(t) |
-            TypeKind::Array(t, _) => t.can_derive_copy_in_array(ctx, ()),
-            TypeKind::Named => false,
-            _ => self.can_derive_copy(ctx, item),
         }
     }
 }

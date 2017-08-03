@@ -2,7 +2,6 @@
 
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId};
-use super::derive::CanDeriveCopy;
 use super::dot::DotAttributes;
 use super::item::{IsOpaque, Item};
 use super::layout::Layout;
@@ -702,29 +701,6 @@ impl FieldMethods for FieldData {
     }
 }
 
-impl<'a> CanDeriveCopy<'a> for Field {
-    type Extra = ();
-
-    fn can_derive_copy(&self, ctx: &BindgenContext, _: ()) -> bool {
-        match *self {
-            Field::DataMember(ref data) => data.ty.can_derive_copy(ctx, ()),
-            Field::Bitfields(BitfieldUnit { ref bitfields, .. }) => bitfields.iter().all(|b| {
-                b.ty().can_derive_copy(ctx, ())
-            }),
-        }
-    }
-
-    fn can_derive_copy_in_array(&self, ctx: &BindgenContext, _: ()) -> bool {
-        match *self {
-            Field::DataMember(ref data) => data.ty.can_derive_copy_in_array(ctx, ()),
-            Field::Bitfields(BitfieldUnit { ref bitfields, .. }) => bitfields.iter().all(|b| {
-                b.ty().can_derive_copy_in_array(ctx, ())
-            }),
-        }
-    }
-}
-
-
 /// The kind of inheritance a base class is using.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum BaseKind {
@@ -1401,53 +1377,6 @@ impl TemplateParameters for CompInfo {
         } else {
             Some(self.template_params.clone())
         }
-    }
-}
-
-impl<'a> CanDeriveCopy<'a> for CompInfo {
-    type Extra = (&'a Item, Option<Layout>);
-
-    fn can_derive_copy(&self,
-                       ctx: &BindgenContext,
-                       (item, layout): (&Item, Option<Layout>))
-                       -> bool {
-        if self.has_non_type_template_params() {
-            return layout.map_or(true, |l| l.opaque().can_derive_copy(ctx, ()));
-        }
-
-        // NOTE: Take into account that while unions in C and C++ are copied by
-        // default, the may have an explicit destructor in C++, so we can't
-        // defer this check just for the union case.
-        if self.has_destructor(ctx) {
-            return false;
-        }
-
-        if self.kind == CompKind::Union {
-            if !ctx.options().unstable_rust {
-                // NOTE: If there's no template parameters we can derive copy
-                // unconditionally, since arrays are magical for rustc, and
-                // __BindgenUnionField always implements copy.
-                return true;
-            }
-
-            // https://github.com/rust-lang/rust/issues/36640
-            if !self.template_params.is_empty() ||
-               item.used_template_params(ctx).is_some() {
-                return false;
-            }
-        }
-
-        self.base_members
-            .iter()
-            .all(|base| base.ty.can_derive_copy(ctx, ())) &&
-        self.fields().iter().all(|field| field.can_derive_copy(ctx, ()))
-    }
-
-    fn can_derive_copy_in_array(&self,
-                                ctx: &BindgenContext,
-                                extra: (&Item, Option<Layout>))
-                                -> bool {
-        self.can_derive_copy(ctx, extra)
     }
 }
 

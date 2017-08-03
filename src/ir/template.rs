@@ -28,7 +28,6 @@
 //! ```
 
 use super::context::{BindgenContext, ItemId};
-use super::derive::{CanDeriveCopy};
 use super::item::{IsOpaque, Item, ItemAncestors, ItemCanonicalPath};
 use super::traversal::{EdgeKind, Trace, Tracer};
 use clang;
@@ -330,20 +329,6 @@ impl IsOpaque for TemplateInstantiation {
         }
 
         ctx.opaque_by_name(&path)
-    }
-}
-
-impl<'a> CanDeriveCopy<'a> for TemplateInstantiation {
-    type Extra = ();
-
-    fn can_derive_copy(&self, ctx: &BindgenContext, _: ()) -> bool {
-        self.definition.can_derive_copy(ctx, ()) &&
-        self.args.iter().all(|arg| arg.can_derive_copy(ctx, ()))
-    }
-
-    fn can_derive_copy_in_array(&self, ctx: &BindgenContext, _: ()) -> bool {
-        self.definition.can_derive_copy_in_array(ctx, ()) &&
-        self.args.iter().all(|arg| arg.can_derive_copy_in_array(ctx, ()))
     }
 }
 

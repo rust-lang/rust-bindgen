@@ -75,6 +75,12 @@ pub trait IsOpaque {
     fn is_opaque(&self, ctx: &BindgenContext, extra: &Self::Extra) -> bool;
 }
 
+/// A trait for determining if some IR thing has type parameter in array or not.
+pub trait HasTypeParamInArray {
+    /// Returns `true` if the thing has Array, and `false` otherwise.
+    fn has_type_param_in_array(&self, ctx: &BindgenContext) -> bool;
+}
+
 /// A trait for iterating over an item and its parents and up its ancestor chain
 /// up to (but not including) the implicit root module.
 pub trait ItemAncestors {
@@ -283,46 +289,8 @@ impl CanDeriveDefault for Item {
 }
 
 impl<'a> CanDeriveCopy<'a> for Item {
-    type Extra = ();
-
-    fn can_derive_copy(&self, ctx: &BindgenContext, _: ()) -> bool {
-        if self.detect_derive_copy_cycle.get() {
-            return true;
-        }
-
-        self.detect_derive_copy_cycle.set(true);
-
-        let result = match self.kind {
-            ItemKind::Type(ref ty) => {
-                if self.is_opaque(ctx, &()) {
-                    ty.layout(ctx)
-                        .map_or(true, |l| l.opaque().can_derive_copy(ctx, ()))
-                } else {
-                    ty.can_derive_copy(ctx, self)
-                }
-            }
-            _ => false,
-        };
-
-        self.detect_derive_copy_cycle.set(false);
-
-        result
-    }
-
-    fn can_derive_copy_in_array(&self, ctx: &BindgenContext, _: ()) -> bool {
-        match self.kind {
-            ItemKind::Type(ref ty) => {
-                if self.is_opaque(ctx, &()) {
-                    ty.layout(ctx)
-                        .map_or(true, |l| {
-                            l.opaque().can_derive_copy_in_array(ctx, ())
-                        })
-                } else {
-                    ty.can_derive_copy_in_array(ctx, self)
-                }
-            }
-            _ => false,
-        }
+    fn can_derive_copy(&self, ctx: &BindgenContext) -> bool {
+        ctx.lookup_item_id_can_derive_copy(self.id())
     }
 }
 
@@ -379,9 +347,6 @@ pub struct Item {
     parent_id: ItemId,
     /// The item kind.
     kind: ItemKind,
-    /// Detect cycles when determining if we can derive copy or not, and
-    /// avoid infinite recursion.
-    detect_derive_copy_cycle: Cell<bool>,
 }
 
 impl AsRef<ItemId> for Item {
@@ -408,7 +373,6 @@ impl Item {
             comment: comment,
             annotations: annotations.unwrap_or_default(),
             kind: kind,
-            detect_derive_copy_cycle: Cell::new(false),
         }
     }
 
@@ -948,6 +912,22 @@ impl HasVtable for ItemId {
 impl HasVtable for Item {
     fn has_vtable(&self, ctx: &BindgenContext) -> bool {
         ctx.lookup_item_id_has_vtable(&self.id())
+    }
+}
+
+impl HasTypeParamInArray for ItemId {
+    fn has_type_param_in_array(&self, ctx: &BindgenContext) -> bool {
+        debug_assert!(ctx.in_codegen_phase(),
+                      "You're not supposed to call this yet");
+        ctx.lookup_item_id_has_type_param_in_array(self)
+    }
+}
+
+impl HasTypeParamInArray for Item {
+    fn has_type_param_in_array(&self, ctx: &BindgenContext) -> bool {
+        debug_assert!(ctx.in_codegen_phase(),
+                      "You're not supposed to call this yet");
+        ctx.lookup_item_id_has_type_param_in_array(&self.id())
     }
 }
 
