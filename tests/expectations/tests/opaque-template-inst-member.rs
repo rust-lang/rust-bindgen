@@ -5,11 +5,8 @@
 
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Default, Copy, Clone)]
 pub struct OpaqueTemplate {
-}
-impl Default for OpaqueTemplate {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 pub struct ContainsOpaqueTemplate {
