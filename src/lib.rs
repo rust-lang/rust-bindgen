@@ -4,15 +4,12 @@
 //! functions and use types defined in the header.
 //!
 //! See the [`Builder`](./struct.Builder.html) struct for usage.
-
 #![deny(missing_docs)]
 #![deny(warnings)]
 #![deny(unused_extern_crates)]
-
 // We internally use the deprecated BindgenOptions all over the place. Once we
 // remove its `pub` declaration, we can un-deprecate it and remove this pragma.
 #![allow(deprecated)]
-
 // To avoid rather annoying warnings when matching with CXCursor_xxx as a
 // constant.
 #![allow(non_upper_case_globals)]
@@ -86,14 +83,14 @@ use parse::{ClangItemParser, ParseError};
 use regex_set::RegexSet;
 
 use std::fs::{File, OpenOptions};
-use std::iter;
 use std::io::{self, Write};
+use std::iter;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::sync::Arc;
 
 use syntax::ast;
-use syntax::codemap::{DUMMY_SP, Span};
+use syntax::codemap::{Span, DUMMY_SP};
 use syntax::print::pp::eof;
 use syntax::print::pprust;
 use syntax::ptr::P;
@@ -179,7 +176,7 @@ pub fn builder() -> Builder {
 }
 
 impl Builder {
-     /// Generates the command line flags use for creating `Builder`.
+    /// Generates the command line flags use for creating `Builder`.
     pub fn command_line_flags(&self) -> Vec<String> {
         let mut output_vector: Vec<String> = Vec::new();
 
@@ -193,9 +190,11 @@ impl Builder {
             .get_items()
             .iter()
             .map(|item| {
-                     output_vector.push("--bitfield-enum".into());
-                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
-                 })
+                output_vector.push("--bitfield-enum".into());
+                output_vector.push(
+                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                );
+            })
             .count();
 
         self.options
@@ -203,9 +202,11 @@ impl Builder {
             .get_items()
             .iter()
             .map(|item| {
-                     output_vector.push("--constified-enum".into());
-                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
-                 })
+                output_vector.push("--constified-enum".into());
+                output_vector.push(
+                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                );
+            })
             .count();
 
         self.options
@@ -213,9 +214,11 @@ impl Builder {
             .get_items()
             .iter()
             .map(|item| {
-                     output_vector.push("--constified-enum-module".into());
-                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
-                 })
+                output_vector.push("--constified-enum-module".into());
+                output_vector.push(
+                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                );
+            })
             .count();
 
         self.options
@@ -223,9 +226,11 @@ impl Builder {
             .get_items()
             .iter()
             .map(|item| {
-                     output_vector.push("--blacklist-type".into());
-                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
-                 })
+                output_vector.push("--blacklist-type".into());
+                output_vector.push(
+                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                );
+            })
             .count();
 
         if !self.options.layout_tests {
@@ -234,6 +239,10 @@ impl Builder {
 
         if !self.options.derive_debug {
             output_vector.push("--no-derive-debug".into());
+        }
+
+        if !self.options.impl_debug {
+            output_vector.push("--force-derive-debug".into());
         }
 
         if !self.options.derive_default {
@@ -285,9 +294,11 @@ impl Builder {
             .links
             .iter()
             .map(|&(ref item, _)| {
-                     output_vector.push("--framework".into());
-                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
-                 })
+                output_vector.push("--framework".into());
+                output_vector.push(
+                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                );
+            })
             .count();
 
         if !self.options.codegen_config.functions {
@@ -297,7 +308,7 @@ impl Builder {
         output_vector.push("--generate".into());
 
         //Temporary placeholder for below 4 options
-        let mut options:Vec<String> = Vec::new();
+        let mut options: Vec<String> = Vec::new();
         if self.options.codegen_config.functions {
             options.push("function".into());
         }
@@ -327,9 +338,11 @@ impl Builder {
             .links
             .iter()
             .map(|&(ref item, _)| {
-                     output_vector.push("--clang-args".into());
-                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
-                 })
+                output_vector.push("--clang-args".into());
+                output_vector.push(
+                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                );
+            })
             .count();
 
         if !self.options.convert_floats {
@@ -349,27 +362,33 @@ impl Builder {
             .get_items()
             .iter()
             .map(|item| {
-                     output_vector.push("--opaque-type".into());
-                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
-                 })
+                output_vector.push("--opaque-type".into());
+                output_vector.push(
+                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                );
+            })
             .count();
 
         self.options
             .raw_lines
             .iter()
             .map(|item| {
-                     output_vector.push("--raw-line".into());
-                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
-                 })
+                output_vector.push("--raw-line".into());
+                output_vector.push(
+                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                );
+            })
             .count();
 
         self.options
             .links
             .iter()
             .map(|&(ref item, _)| {
-                     output_vector.push("--static".into());
-                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
-                 })
+                output_vector.push("--static".into());
+                output_vector.push(
+                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                );
+            })
             .count();
 
         if self.options.use_core {
@@ -385,9 +404,11 @@ impl Builder {
             .get_items()
             .iter()
             .map(|item| {
-                     output_vector.push("--whitelist-function".into());
-                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
-                 })
+                output_vector.push("--whitelist-function".into());
+                output_vector.push(
+                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                );
+            })
             .count();
 
         self.options
@@ -395,9 +416,11 @@ impl Builder {
             .get_items()
             .iter()
             .map(|item| {
-                     output_vector.push("--whitelist-type".into());
-                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
-                 })
+                output_vector.push("--whitelist-type".into());
+                output_vector.push(
+                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                );
+            })
             .count();
 
         self.options
@@ -405,24 +428,25 @@ impl Builder {
             .get_items()
             .iter()
             .map(|item| {
-                     output_vector.push("--whitelist-var".into());
-                     output_vector.push(item.trim_left_matches("^").trim_right_matches("$").into());
-                 })
+                output_vector.push("--whitelist-var".into());
+                output_vector.push(
+                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                );
+            })
             .count();
 
         output_vector.push("--".into());
 
         if !self.options.clang_args.is_empty() {
-            output_vector.extend(
-                self.options
-                    .clang_args
-                    .iter()
-                    .cloned()
-            );
+            output_vector.extend(self.options.clang_args.iter().cloned());
         }
 
         if self.input_headers.len() > 1 {
-            output_vector.extend(self.input_headers[..self.input_headers.len() - 1].iter().cloned());
+            output_vector.extend(
+                self.input_headers[..self.input_headers.len() - 1]
+                    .iter()
+                    .cloned(),
+            );
         }
 
         output_vector
@@ -459,7 +483,8 @@ impl Builder {
     ///
     /// The file `name` will be added to the clang arguments.
     pub fn header_contents(mut self, name: &str, contents: &str) -> Builder {
-        self.input_header_contents.push((name.into(), contents.into()));
+        self.input_header_contents
+            .push((name.into(), contents.into()));
         self
     }
 
@@ -595,8 +620,10 @@ impl Builder {
 
     /// Add arguments to be passed straight through to clang.
     pub fn clang_args<I>(mut self, iter: I) -> Builder
-        where I: IntoIterator,
-              I::Item: AsRef<str> {
+    where
+        I: IntoIterator,
+        I::Item: AsRef<str>,
+    {
         for arg in iter {
             self = self.clang_arg(arg.as_ref())
         }
@@ -617,7 +644,9 @@ impl Builder {
 
     /// Make the generated bindings link the given framework.
     pub fn link_framework<T: Into<String>>(mut self, library: T) -> Builder {
-        self.options.links.push((library.into(), LinkType::Framework));
+        self.options
+            .links
+            .push((library.into(), LinkType::Framework));
         self
     }
 
@@ -643,6 +672,12 @@ impl Builder {
     /// Set whether `Debug` should be derived by default.
     pub fn derive_debug(mut self, doit: bool) -> Self {
         self.options.derive_debug = doit;
+        self
+    }
+
+    /// Set whether `Debug` should be implemented, if it can not be derived automatically.
+    pub fn impl_debug(mut self, doit: bool) -> Self {
+        self.options.impl_debug = doit;
         self
     }
 
@@ -763,7 +798,10 @@ impl Builder {
 
     /// Allows configuring types in different situations, see the
     /// [`ParseCallbacks`](./callbacks/trait.ParseCallbacks.html) documentation.
-    pub fn parse_callbacks(mut self, cb: Box<callbacks::ParseCallbacks>) -> Self {
+    pub fn parse_callbacks(
+        mut self,
+        cb: Box<callbacks::ParseCallbacks>,
+    ) -> Self {
         self.options.parse_callbacks = Some(cb);
         self
     }
@@ -785,18 +823,17 @@ impl Builder {
     pub fn generate<'ctx>(mut self) -> Result<Bindings<'ctx>, ()> {
         self.options.input_header = self.input_headers.pop();
         self.options.clang_args.extend(
-            self.input_headers
-                .drain(..)
-                .flat_map(|header| {
-                    iter::once("-include".into())
-                        .chain(iter::once(header))
-                })
+            self.input_headers.drain(..).flat_map(|header| {
+                iter::once("-include".into()).chain(iter::once(header))
+            }),
         );
 
         self.options.input_unsaved_files.extend(
             self.input_header_contents
                 .drain(..)
-                .map(|(name, contents)| clang::UnsavedFile::new(&name, &contents))
+                .map(|(name, contents)| {
+                    clang::UnsavedFile::new(&name, &contents)
+                }),
         );
 
         Bindings::generate(self.options, None)
@@ -809,8 +846,12 @@ impl Builder {
     /// `__bindgen.ii`
     pub fn dump_preprocessed_input(&self) -> io::Result<()> {
         let clang = clang_sys::support::Clang::find(None, &[])
-            .ok_or_else(|| io::Error::new(io::ErrorKind::Other,
-                                          "Cannot find clang executable"))?;
+            .ok_or_else(|| {
+                io::Error::new(
+                    io::ErrorKind::Other,
+                    "Cannot find clang executable",
+                )
+            })?;
 
         // The contents of a wrapper file that includes all the input header
         // files.
@@ -879,8 +920,10 @@ impl Builder {
         if child.wait()?.success() {
             Ok(())
         } else {
-            Err(io::Error::new(io::ErrorKind::Other,
-                               "clang exited with non-zero status"))
+            Err(io::Error::new(
+                io::ErrorKind::Other,
+                "clang exited with non-zero status",
+            ))
         }
     }
 }
@@ -950,6 +993,10 @@ pub struct BindgenOptions {
     /// True if we should derive Debug trait implementations for C/C++ structures
     /// and types.
     pub derive_debug: bool,
+
+    /// True if we should implement the Debug trait for C/C++ structures and types
+    /// that do not support automatically deriving Debug.
+    pub impl_debug: bool,
 
     /// True if we should derive Default trait implementations for C/C++ structures
     /// and types.
@@ -1063,6 +1110,7 @@ impl Default for BindgenOptions {
             emit_ir_graphviz: None,
             layout_tests: true,
             derive_debug: true,
+            impl_debug: false,
             derive_default: false,
             enable_cxx_namespaces: false,
             disable_name_namespacing: false,
@@ -1135,9 +1183,10 @@ impl<'ctx> Bindings<'ctx> {
     ///
     /// Deprecated - use a `Builder` instead
     #[deprecated]
-    pub fn generate(mut options: BindgenOptions,
-                    span: Option<Span>)
-                    -> Result<Bindings<'ctx>, ()> {
+    pub fn generate(
+        mut options: BindgenOptions,
+        span: Option<Span>,
+    ) -> Result<Bindings<'ctx>, ()> {
         let span = span.unwrap_or(DUMMY_SP);
         ensure_libclang_is_loaded();
 
@@ -1171,10 +1220,13 @@ impl<'ctx> Bindings<'ctx> {
         };
 
         // TODO: Make this path fixup configurable?
-        if let Some(clang) = clang_sys::support::Clang::find(None, &clang_args_for_clang_sys) {
+        if let Some(clang) =
+            clang_sys::support::Clang::find(None, &clang_args_for_clang_sys)
+        {
             // If --target is specified, assume caller knows what they're doing
             // and don't mess with include paths for them
-            let has_target_arg = options.clang_args
+            let has_target_arg = options
+                .clang_args
                 .iter()
                 .rposition(|arg| arg.starts_with("--target"))
                 .is_some();
@@ -1224,25 +1276,29 @@ impl<'ctx> Bindings<'ctx> {
         let mut mod_str = vec![];
         {
             let ref_writer = Box::new(mod_str.by_ref()) as Box<Write>;
-            self.write(ref_writer).expect("Could not write bindings to string");
+            self.write(ref_writer)
+                .expect("Could not write bindings to string");
         }
         String::from_utf8(mod_str).unwrap()
     }
 
     /// Write these bindings as source text to a file.
     pub fn write_to_file<P: AsRef<Path>>(&self, path: P) -> io::Result<()> {
-        let file = try!(OpenOptions::new()
-            .write(true)
-            .truncate(true)
-            .create(true)
-            .open(path));
+        let file = try!(
+            OpenOptions::new()
+                .write(true)
+                .truncate(true)
+                .create(true)
+                .open(path)
+        );
         self.write(Box::new(file))
     }
 
     /// Write these bindings as source text to the given `Write`able.
     pub fn write<'a>(&self, mut writer: Box<Write + 'a>) -> io::Result<()> {
-        try!(writer.write("/* automatically generated by rust-bindgen */\n\n"
-            .as_bytes()));
+        try!(writer.write(
+            "/* automatically generated by rust-bindgen */\n\n".as_bytes(),
+        ));
 
         for line in self.context.options().raw_lines.iter() {
             try!(writer.write(line.as_bytes()));
@@ -1267,10 +1323,11 @@ fn filter_builtins(ctx: &BindgenContext, cursor: &clang::Cursor) -> bool {
 }
 
 /// Parse one `Item` from the Clang cursor.
-pub fn parse_one(ctx: &mut BindgenContext,
-                 cursor: clang::Cursor,
-                 parent: Option<ItemId>)
-                 -> clang_sys::CXChildVisitResult {
+pub fn parse_one(
+    ctx: &mut BindgenContext,
+    cursor: clang::Cursor,
+    parent: Option<ItemId>,
+) -> clang_sys::CXChildVisitResult {
     if !filter_builtins(ctx, &cursor) {
         return CXChildVisit_Continue;
     }
@@ -1321,8 +1378,10 @@ fn parse(context: &mut BindgenContext) -> Result<(), ()> {
         cursor.visit(|cursor| parse_one(context, cursor, None))
     });
 
-    assert!(context.current_module() == context.root_module(),
-            "How did this happen?");
+    assert!(
+        context.current_module() == context.root_module(),
+        "How did this happen?"
+    );
     Ok(())
 }
 
@@ -1343,25 +1402,24 @@ pub fn clang_version() -> ClangVersion {
     }
 
     let raw_v: String = clang::extract_clang_version();
-    let split_v: Option<Vec<&str>> = raw_v.split_whitespace()
+    let split_v: Option<Vec<&str>> = raw_v
+        .split_whitespace()
         .nth(2)
         .map(|v| v.split('.').collect());
     match split_v {
-        Some(v) => {
-            if v.len() >= 2 {
-                let maybe_major = v[0].parse::<u32>();
-                let maybe_minor = v[1].parse::<u32>();
-                match (maybe_major, maybe_minor) {
-                    (Ok(major), Ok(minor)) => {
-                        return ClangVersion {
-                            parsed: Some((major, minor)),
-                            full: raw_v.clone(),
-                        }
+        Some(v) => if v.len() >= 2 {
+            let maybe_major = v[0].parse::<u32>();
+            let maybe_minor = v[1].parse::<u32>();
+            match (maybe_major, maybe_minor) {
+                (Ok(major), Ok(minor)) => {
+                    return ClangVersion {
+                        parsed: Some((major, minor)),
+                        full: raw_v.clone(),
                     }
-                    _ => {}
                 }
+                _ => {}
             }
-        }
+        },
         None => {}
     };
     ClangVersion {
@@ -1377,30 +1435,45 @@ fn commandline_flag_unit_test_function() {
     let bindings = ::builder();
     let command_line_flags = bindings.command_line_flags();
 
-    let test_cases = vec!["--no-derive-default",
-                          "--generate", "function,types,vars,methods,constructors,destructors"]
-                    .iter()
-                    .map(|&x| x.into())
-                    .collect::<Vec<String>>();
+    let test_cases = vec![
+        "--no-derive-default",
+        "--generate",
+        "function,types,vars,methods,constructors,destructors",
+    ].iter()
+        .map(|&x| x.into())
+        .collect::<Vec<String>>();
 
-    assert!(test_cases.iter().all(|ref x| command_line_flags.contains(x)) );
+    assert!(
+        test_cases
+            .iter()
+            .all(|ref x| command_line_flags.contains(x),)
+    );
 
     //Test 2
-    let bindings = ::builder().header("input_header")
-                              .whitelisted_type("Distinct_Type")
-                              .whitelisted_function("safe_function");
+    let bindings = ::builder()
+        .header("input_header")
+        .whitelisted_type("Distinct_Type")
+        .whitelisted_function("safe_function");
 
     let command_line_flags = bindings.command_line_flags();
-    let test_cases = vec!["input_header",
-                          "--no-derive-default",
-                          "--generate", "function,types,vars,methods,constructors,destructors",
-                          "--whitelist-type", "Distinct_Type",
-                          "--whitelist-function", "safe_function"]
-                    .iter()
-                    .map(|&x| x.into())
-                    .collect::<Vec<String>>();
+    let test_cases = vec![
+        "input_header",
+        "--no-derive-default",
+        "--generate",
+        "function,types,vars,methods,constructors,destructors",
+        "--whitelist-type",
+        "Distinct_Type",
+        "--whitelist-function",
+        "safe_function",
+    ].iter()
+        .map(|&x| x.into())
+        .collect::<Vec<String>>();
     println!("{:?}", command_line_flags);
 
-    assert!(test_cases.iter().all(|ref x| command_line_flags.contains(x)) );
+    assert!(
+        test_cases
+            .iter()
+            .all(|ref x| command_line_flags.contains(x),)
+    );
 
 }
