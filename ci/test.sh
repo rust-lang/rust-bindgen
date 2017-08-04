@@ -20,7 +20,7 @@ cargo test --features "$BINDGEN_FEATURES testing_only_extra_assertions"
 cargo test --release --features "$BINDGEN_FEATURES testing_only_extra_assertions"
 ./ci/assert-no-diff.sh
 
-if [ -v "${TRAVIS_OS_NAME}" ]; then
+if [[ "${TRAVIS}" == "true" ]]; then
 
     # Now test the expectations' size and alignment tests.
 
