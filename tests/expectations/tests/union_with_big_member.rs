@@ -5,10 +5,35 @@
 
 
 #[repr(C)]
+pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
+impl <T> __BindgenUnionField<T> {
+    #[inline]
+    pub fn new() -> Self { __BindgenUnionField(::std::marker::PhantomData) }
+    #[inline]
+    pub unsafe fn as_ref(&self) -> &T { ::std::mem::transmute(self) }
+    #[inline]
+    pub unsafe fn as_mut(&mut self) -> &mut T { ::std::mem::transmute(self) }
+}
+impl <T> ::std::default::Default for __BindgenUnionField<T> {
+    #[inline]
+    fn default() -> Self { Self::new() }
+}
+impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
+    #[inline]
+    fn clone(&self) -> Self { Self::new() }
+}
+impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
+impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
+    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        fmt.write_str("__BindgenUnionField")
+    }
+}
+#[repr(C)]
 #[derive(Copy)]
-pub union WithBigArray {
-    pub a: ::std::os::raw::c_int,
-    pub b: [::std::os::raw::c_int; 33usize],
+pub struct WithBigArray {
+    pub a: __BindgenUnionField<::std::os::raw::c_int>,
+    pub b: __BindgenUnionField<[::std::os::raw::c_int; 33usize]>,
+    pub bindgen_union_field: [u32; 33usize],
 }
 #[test]
 fn bindgen_test_layout_WithBigArray() {
@@ -34,10 +59,11 @@ impl Default for WithBigArray {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Copy)]
-pub union WithBigArray2 {
-    pub a: ::std::os::raw::c_int,
-    pub b: [::std::os::raw::c_char; 33usize],
+#[derive(Debug, Default, Copy)]
+pub struct WithBigArray2 {
+    pub a: __BindgenUnionField<::std::os::raw::c_int>,
+    pub b: __BindgenUnionField<[::std::os::raw::c_char; 33usize]>,
+    pub bindgen_union_field: [u32; 9usize],
 }
 #[test]
 fn bindgen_test_layout_WithBigArray2() {
@@ -59,14 +85,12 @@ fn bindgen_test_layout_WithBigArray2() {
 impl Clone for WithBigArray2 {
     fn clone(&self) -> Self { *self }
 }
-impl Default for WithBigArray2 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
 #[repr(C)]
 #[derive(Copy)]
-pub union WithBigMember {
-    pub a: ::std::os::raw::c_int,
-    pub b: WithBigArray,
+pub struct WithBigMember {
+    pub a: __BindgenUnionField<::std::os::raw::c_int>,
+    pub b: __BindgenUnionField<WithBigArray>,
+    pub bindgen_union_field: [u32; 33usize],
 }
 #[test]
 fn bindgen_test_layout_WithBigMember() {
