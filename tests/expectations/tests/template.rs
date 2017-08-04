@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Hash)]
 pub struct Foo<T> {
     pub m_member: T,
     pub m_member_ptr: *mut T,
@@ -16,7 +16,7 @@ impl <T> Default for Foo<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash)]
 pub struct B<T> {
     pub m_member: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
@@ -29,7 +29,7 @@ extern "C" {
     pub fn bar(foo: Foo<::std::os::raw::c_int>);
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Hash)]
 pub struct C {
     pub mB: B<::std::os::raw::c_uint>,
     pub mBConstPtr: B<*const ::std::os::raw::c_int>,
@@ -87,13 +87,13 @@ impl Default for C {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Hash)]
 pub struct D {
     pub m_foo: D_MyFoo,
 }
 pub type D_MyFoo = Foo<::std::os::raw::c_int>;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Hash)]
 pub struct D_U<Z> {
     pub m_nested_foo: D_MyFoo,
     pub m_baz: Z,
@@ -106,7 +106,7 @@ impl Default for D {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash)]
 pub struct Rooted<T> {
     pub prev: *mut T,
     pub next: *mut Rooted<*mut ::std::os::raw::c_void>,
@@ -117,7 +117,7 @@ impl <T> Default for Rooted<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Hash)]
 pub struct RootedContainer {
     pub root: Rooted<*mut ::std::os::raw::c_void>,
 }
@@ -140,7 +140,7 @@ impl Default for RootedContainer {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Hash)]
 pub struct WithDtor<T> {
     pub member: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
@@ -150,7 +150,7 @@ impl <T> Default for WithDtor<T> {
 }
 pub type WithDtorIntFwd = WithDtor<::std::os::raw::c_int>;
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Hash)]
 pub struct PODButContainsDtor {
     pub member: WithDtorIntFwd,
 }
@@ -171,11 +171,11 @@ impl Default for PODButContainsDtor {
 }
 /// <div rustbindgen opaque>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone, Hash)]
 pub struct Opaque {
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct POD {
     pub opaque_member: u32,
 }
@@ -196,7 +196,7 @@ impl Clone for POD {
 }
 /// <div rustbindgen replaces="NestedReplaced"></div>
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash)]
 pub struct NestedReplaced<T> {
     pub buff: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
@@ -205,7 +205,7 @@ impl <T> Default for NestedReplaced<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash)]
 pub struct NestedBase<T> {
     pub buff: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
@@ -214,7 +214,7 @@ impl <T> Default for NestedBase<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash)]
 pub struct Incomplete<T> {
     pub d: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
@@ -223,7 +223,7 @@ impl <T> Default for Incomplete<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash)]
 pub struct NestedContainer<T> {
     pub c: T,
     pub nested: NestedReplaced<T>,
@@ -234,7 +234,7 @@ impl <T> Default for NestedContainer<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct Untemplated {
     pub _address: u8,
 }
@@ -249,7 +249,7 @@ impl Clone for Untemplated {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone, Hash)]
 pub struct Templated {
     pub m_untemplated: Untemplated,
 }
@@ -258,7 +258,7 @@ pub struct Templated {
 ///
 /// <div rustbindgen replaces="ReplacedWithoutDestructor"></div>
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Hash)]
 pub struct ReplacedWithoutDestructor<T> {
     pub buff: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
@@ -267,7 +267,7 @@ impl <T> Default for ReplacedWithoutDestructor<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Hash)]
 pub struct ShouldNotBeCopiable<T> {
     pub m_member: ReplacedWithoutDestructor<T>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
@@ -276,7 +276,7 @@ impl <T> Default for ShouldNotBeCopiable<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Hash)]
 pub struct ShouldNotBeCopiableAsWell<U> {
     pub m_member: ReplacedWithoutDestructorFwd<U>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
@@ -289,7 +289,7 @@ impl <U> Default for ShouldNotBeCopiableAsWell<U> {
 ///
 /// <div rustbindgen replaces="ReplacedWithoutDestructorFwd"></div>
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Hash)]
 pub struct ReplacedWithoutDestructorFwd<T> {
     pub buff: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,

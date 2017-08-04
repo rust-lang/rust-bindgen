@@ -6,7 +6,7 @@
 
 pub type JS_detail_Wrapped<T> = T;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash)]
 pub struct JS_Rooted<T> {
     pub ptr: JS_detail_Wrapped<T>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,

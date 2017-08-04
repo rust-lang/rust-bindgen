@@ -1,3 +1,4 @@
+// bindgen-flags: --with-derive-hash
 
 namespace detail {
 template<typename T>
