@@ -28,8 +28,11 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
         fmt.write_str("__BindgenUnionField")
     }
 }
+impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
+    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
+}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash)]
 pub struct TErrorResult {
     pub mResult: ::std::os::raw::c_int,
     pub __bindgen_anon_1: TErrorResult__bindgen_ty_1,
@@ -42,17 +45,17 @@ pub const TErrorResult_UnionState_HasException: TErrorResult_UnionState =
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum TErrorResult_UnionState { HasMessage = 0, }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone, Hash)]
 pub struct TErrorResult_Message {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone, Hash)]
 pub struct TErrorResult_DOMExceptionInfo {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone, Hash)]
 pub struct TErrorResult__bindgen_ty_1 {
     pub mMessage: __BindgenUnionField<*mut TErrorResult_Message>,
     pub mDOMExceptionInfo: __BindgenUnionField<*mut TErrorResult_DOMExceptionInfo>,
@@ -62,7 +65,7 @@ impl Default for TErrorResult {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Hash)]
 pub struct ErrorResult {
     pub _base: TErrorResult,
 }
