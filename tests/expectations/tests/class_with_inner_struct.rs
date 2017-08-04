@@ -28,15 +28,18 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
         fmt.write_str("__BindgenUnionField")
     }
 }
+impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
+    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
+}
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct A {
     pub c: ::std::os::raw::c_uint,
     pub named_union: A__bindgen_ty_1,
     pub __bindgen_anon_1: A__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct A_Segment {
     pub begin: ::std::os::raw::c_int,
     pub end: ::std::os::raw::c_int,
@@ -62,7 +65,7 @@ impl Clone for A_Segment {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct A__bindgen_ty_1 {
     pub f: __BindgenUnionField<::std::os::raw::c_int>,
     pub bindgen_union_field: u32,
@@ -83,7 +86,7 @@ impl Clone for A__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct A__bindgen_ty_2 {
     pub d: __BindgenUnionField<::std::os::raw::c_int>,
     pub bindgen_union_field: u32,
@@ -123,12 +126,12 @@ impl Clone for A {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct B {
     pub d: ::std::os::raw::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct B_Segment {
     pub begin: ::std::os::raw::c_int,
     pub end: ::std::os::raw::c_int,
@@ -176,13 +179,13 @@ pub enum StepSyntax {
     FunctionalWithEndKeyword = 3,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct C {
     pub d: ::std::os::raw::c_uint,
     pub __bindgen_anon_1: C__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct C__bindgen_ty_1 {
     pub mFunc: __BindgenUnionField<C__bindgen_ty_1__bindgen_ty_1>,
     pub __bindgen_anon_1: __BindgenUnionField<C__bindgen_ty_1__bindgen_ty_2>,
@@ -234,7 +237,7 @@ impl Clone for C__bindgen_ty_1__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Hash)]
 pub struct C__bindgen_ty_1__bindgen_ty_2 {
     pub mStepSyntax: StepSyntax,
     pub mSteps: ::std::os::raw::c_uint,
@@ -283,7 +286,7 @@ impl Clone for C__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct C_Segment {
     pub begin: ::std::os::raw::c_int,
     pub end: ::std::os::raw::c_int,

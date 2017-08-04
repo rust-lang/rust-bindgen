@@ -1,3 +1,4 @@
+// bindgen-flags: --with-derive-hash
 typedef int AnotherInt;
 
 class C {

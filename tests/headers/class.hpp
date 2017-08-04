@@ -1,3 +1,5 @@
+// bindgen-flags: --with-derive-hash
+//
 class C {
     int a;
     // More than rust limits (32)

@@ -1,3 +1,4 @@
+// bindgen-flags: --with-derive-hash
 class MyClass {
 public:
     static const int* example;

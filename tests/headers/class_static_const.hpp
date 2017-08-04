@@ -1,3 +1,4 @@
+// bindgen-flags: --with-derive-hash
 using int32_t = int;
 typedef unsigned int uint32_t;
 

@@ -5,12 +5,12 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct A {
     pub member_a: ::std::os::raw::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct A_B {
     pub member_b: ::std::os::raw::c_int,
 }
@@ -30,7 +30,7 @@ impl Clone for A_B {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct A_C {
     pub baz: ::std::os::raw::c_int,
 }
@@ -50,7 +50,7 @@ impl Clone for A_C {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash)]
 pub struct A_D<T> {
     pub foo: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
@@ -93,7 +93,7 @@ extern "C" {
     pub static mut baz: A_D<::std::os::raw::c_int>;
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct D {
     pub member: A_B,
 }
@@ -113,13 +113,13 @@ impl Clone for D {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash)]
 pub struct Templated<T> {
     pub member: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash)]
 pub struct Templated_Templated_inner<T> {
     pub member_ptr: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
