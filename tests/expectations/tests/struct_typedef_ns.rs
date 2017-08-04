@@ -12,7 +12,7 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Hash)]
         pub struct typedef_struct {
             pub foo: ::std::os::raw::c_int,
         }
@@ -41,7 +41,7 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Hash)]
         pub struct _bindgen_ty_1 {
             pub foo: ::std::os::raw::c_int,
         }

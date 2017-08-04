@@ -1,3 +1,5 @@
+// bindgen-flags: --with-derive-hash
+//
 struct S {
     char large_array[33];
 };

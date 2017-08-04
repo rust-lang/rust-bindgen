@@ -1,3 +1,5 @@
+// bindgen-flags: --with-derive-hash
+//
 struct bitfield {
     unsigned short
     a   :1,

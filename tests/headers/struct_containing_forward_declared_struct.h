@@ -1,3 +1,4 @@
+// bindgen-flags: --with-derive-hash
 struct a {
     struct b* val_a;
 };
