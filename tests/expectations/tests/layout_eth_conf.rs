@@ -4,30 +4,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
 
-#[repr(C)]
-pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
-impl <T> __BindgenUnionField<T> {
-    #[inline]
-    pub fn new() -> Self { __BindgenUnionField(::std::marker::PhantomData) }
-    #[inline]
-    pub unsafe fn as_ref(&self) -> &T { ::std::mem::transmute(self) }
-    #[inline]
-    pub unsafe fn as_mut(&mut self) -> &mut T { ::std::mem::transmute(self) }
-}
-impl <T> ::std::default::Default for __BindgenUnionField<T> {
-    #[inline]
-    fn default() -> Self { Self::new() }
-}
-impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
-    #[inline]
-    fn clone(&self) -> Self { Self::new() }
-}
-impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
-impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
-    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        fmt.write_str("__BindgenUnionField")
-    }
-}
 pub const ETH_MQ_RX_RSS_FLAG: ::std::os::raw::c_uint = 1;
 pub const ETH_MQ_RX_DCB_FLAG: ::std::os::raw::c_uint = 2;
 pub const ETH_MQ_RX_VMDQ_FLAG: ::std::os::raw::c_uint = 4;
@@ -1548,12 +1524,11 @@ impl Default for rte_eth_conf__bindgen_ty_1 {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
-pub struct rte_eth_conf__bindgen_ty_2 {
-    pub vmdq_dcb_tx_conf: __BindgenUnionField<rte_eth_vmdq_dcb_tx_conf>,
-    pub dcb_tx_conf: __BindgenUnionField<rte_eth_dcb_tx_conf>,
-    pub vmdq_tx_conf: __BindgenUnionField<rte_eth_vmdq_tx_conf>,
-    pub bindgen_union_field: [u32; 3usize],
+#[derive(Copy)]
+pub union rte_eth_conf__bindgen_ty_2 {
+    pub vmdq_dcb_tx_conf: rte_eth_vmdq_dcb_tx_conf,
+    pub dcb_tx_conf: rte_eth_dcb_tx_conf,
+    pub vmdq_tx_conf: rte_eth_vmdq_tx_conf,
 }
 #[test]
 fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
@@ -1585,6 +1560,9 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
 }
 impl Clone for rte_eth_conf__bindgen_ty_2 {
     fn clone(&self) -> Self { *self }
+}
+impl Default for rte_eth_conf__bindgen_ty_2 {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
 fn bindgen_test_layout_rte_eth_conf() {

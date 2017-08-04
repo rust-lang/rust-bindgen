@@ -242,7 +242,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
                 );
 
                 if info.kind() == CompKind::Union {
-                    if self.ctx.options().unstable_rust {
+                    if self.ctx.options().rust_features().untagged_union() {
                         trace!("    cannot derive Default for Rust unions");
                         return self.insert(id);
                     }

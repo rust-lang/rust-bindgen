@@ -4,30 +4,6 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
 
-#[repr(C)]
-pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
-impl <T> __BindgenUnionField<T> {
-    #[inline]
-    pub fn new() -> Self { __BindgenUnionField(::std::marker::PhantomData) }
-    #[inline]
-    pub unsafe fn as_ref(&self) -> &T { ::std::mem::transmute(self) }
-    #[inline]
-    pub unsafe fn as_mut(&mut self) -> &mut T { ::std::mem::transmute(self) }
-}
-impl <T> ::std::default::Default for __BindgenUnionField<T> {
-    #[inline]
-    fn default() -> Self { Self::new() }
-}
-impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
-    #[inline]
-    fn clone(&self) -> Self { Self::new() }
-}
-impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
-impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
-    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        fmt.write_str("__BindgenUnionField")
-    }
-}
 pub const JSVAL_TAG_SHIFT: ::std::os::raw::c_uint = 47;
 pub const JSVAL_PAYLOAD_MASK: ::std::os::raw::c_ulonglong = 140737488355327;
 pub const JSVAL_TAG_MASK: ::std::os::raw::c_longlong = -140737488355328;
@@ -96,16 +72,15 @@ pub enum JSWhyMagic {
     JS_WHY_MAGIC_COUNT = 18,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
-pub struct jsval_layout {
-    pub asBits: __BindgenUnionField<u64>,
-    pub debugView: __BindgenUnionField<jsval_layout__bindgen_ty_1>,
-    pub s: __BindgenUnionField<jsval_layout__bindgen_ty_2>,
-    pub asDouble: __BindgenUnionField<f64>,
-    pub asPtr: __BindgenUnionField<*mut ::std::os::raw::c_void>,
-    pub asWord: __BindgenUnionField<usize>,
-    pub asUIntPtr: __BindgenUnionField<usize>,
-    pub bindgen_union_field: u64,
+#[derive(Copy)]
+pub union jsval_layout {
+    pub asBits: u64,
+    pub debugView: jsval_layout__bindgen_ty_1,
+    pub s: jsval_layout__bindgen_ty_2,
+    pub asDouble: f64,
+    pub asPtr: *mut ::std::os::raw::c_void,
+    pub asWord: usize,
+    pub asUIntPtr: usize,
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -214,17 +189,16 @@ impl jsval_layout__bindgen_ty_1 {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Copy)]
 pub struct jsval_layout__bindgen_ty_2 {
     pub payload: jsval_layout__bindgen_ty_2__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
-pub struct jsval_layout__bindgen_ty_2__bindgen_ty_1 {
-    pub i32: __BindgenUnionField<i32>,
-    pub u32: __BindgenUnionField<u32>,
-    pub why: __BindgenUnionField<JSWhyMagic>,
-    pub bindgen_union_field: u32,
+#[derive(Copy)]
+pub union jsval_layout__bindgen_ty_2__bindgen_ty_1 {
+    pub i32: i32,
+    pub u32: u32,
+    pub why: JSWhyMagic,
 }
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
@@ -261,6 +235,9 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
 impl Clone for jsval_layout__bindgen_ty_2__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
+impl Default for jsval_layout__bindgen_ty_2__bindgen_ty_1 {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
     assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_2>() , 4usize ,
@@ -279,6 +256,9 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
 }
 impl Clone for jsval_layout__bindgen_ty_2 {
     fn clone(&self) -> Self { *self }
+}
+impl Default for jsval_layout__bindgen_ty_2 {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[test]
 fn bindgen_test_layout_jsval_layout() {
@@ -325,8 +305,11 @@ fn bindgen_test_layout_jsval_layout() {
 impl Clone for jsval_layout {
     fn clone(&self) -> Self { *self }
 }
+impl Default for jsval_layout {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Copy)]
 pub struct Value {
     pub data: jsval_layout,
 }
@@ -344,4 +327,7 @@ fn bindgen_test_layout_Value() {
 }
 impl Clone for Value {
     fn clone(&self) -> Self { *self }
+}
+impl Default for Value {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
