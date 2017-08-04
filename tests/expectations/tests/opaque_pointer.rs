@@ -6,7 +6,7 @@
 
 /// <div rustbindgen opaque></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct OtherOpaque {
     pub _bindgen_opaque_blob: u32,
 }
@@ -22,11 +22,11 @@ impl Clone for OtherOpaque {
 }
 /// <div rustbindgen opaque></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone, Hash)]
 pub struct Opaque {
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Hash)]
 pub struct WithOpaquePtr {
     pub whatever: *mut u8,
     pub other: u32,

@@ -1,4 +1,4 @@
-// bindgen-flags: --enable-cxx-namespaces --opaque-type 'zoidberg::Template<zoidberg::Bar>' -- -std=c++14
+// bindgen-flags: --enable-cxx-namespaces --opaque-type 'zoidberg::Template<zoidberg::Bar>'  --with-derive-hash -- -std=c++14
 
 namespace zoidberg {
 

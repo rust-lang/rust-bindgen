@@ -1,3 +1,4 @@
+// bindgen-flags: --with-derive-hash
 
 
 /** <div rustbindgen opaque> */
