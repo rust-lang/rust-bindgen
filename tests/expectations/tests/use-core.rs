@@ -6,30 +6,6 @@
 extern crate core;
 
 #[repr(C)]
-pub struct __BindgenUnionField<T>(::core::marker::PhantomData<T>);
-impl <T> __BindgenUnionField<T> {
-    #[inline]
-    pub fn new() -> Self { __BindgenUnionField(::core::marker::PhantomData) }
-    #[inline]
-    pub unsafe fn as_ref(&self) -> &T { ::core::mem::transmute(self) }
-    #[inline]
-    pub unsafe fn as_mut(&mut self) -> &mut T { ::core::mem::transmute(self) }
-}
-impl <T> ::core::default::Default for __BindgenUnionField<T> {
-    #[inline]
-    fn default() -> Self { Self::new() }
-}
-impl <T> ::core::clone::Clone for __BindgenUnionField<T> {
-    #[inline]
-    fn clone(&self) -> Self { Self::new() }
-}
-impl <T> ::core::marker::Copy for __BindgenUnionField<T> { }
-impl <T> ::core::fmt::Debug for __BindgenUnionField<T> {
-    fn fmt(&self, fmt: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        fmt.write_str("__BindgenUnionField")
-    }
-}
-#[repr(C)]
 #[derive(Debug, Copy)]
 pub struct foo {
     pub a: ::std::os::raw::c_int,
@@ -65,11 +41,10 @@ impl Default for foo {
     fn default() -> Self { unsafe { ::core::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
-pub struct _bindgen_ty_1 {
-    pub bar: __BindgenUnionField<::std::os::raw::c_int>,
-    pub baz: __BindgenUnionField<::std::os::raw::c_long>,
-    pub bindgen_union_field: u64,
+#[derive(Copy)]
+pub union _bindgen_ty_1 {
+    pub bar: ::std::os::raw::c_int,
+    pub baz: ::std::os::raw::c_long,
 }
 #[test]
 fn bindgen_test_layout__bindgen_ty_1() {
@@ -90,6 +65,9 @@ fn bindgen_test_layout__bindgen_ty_1() {
 }
 impl Clone for _bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
+}
+impl Default for _bindgen_ty_1 {
+    fn default() -> Self { unsafe { ::core::mem::zeroed() } }
 }
 extern "C" {
     #[link_name = "bazz"]

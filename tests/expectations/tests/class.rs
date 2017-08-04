@@ -38,30 +38,6 @@ impl <T> ::std::clone::Clone for __IncompleteArrayField<T> {
 }
 impl <T> ::std::marker::Copy for __IncompleteArrayField<T> { }
 #[repr(C)]
-pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
-impl <T> __BindgenUnionField<T> {
-    #[inline]
-    pub fn new() -> Self { __BindgenUnionField(::std::marker::PhantomData) }
-    #[inline]
-    pub unsafe fn as_ref(&self) -> &T { ::std::mem::transmute(self) }
-    #[inline]
-    pub unsafe fn as_mut(&mut self) -> &mut T { ::std::mem::transmute(self) }
-}
-impl <T> ::std::default::Default for __BindgenUnionField<T> {
-    #[inline]
-    fn default() -> Self { Self::new() }
-}
-impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
-    #[inline]
-    fn clone(&self) -> Self { Self::new() }
-}
-impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
-impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
-    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        fmt.write_str("__BindgenUnionField")
-    }
-}
-#[repr(C)]
 #[derive(Copy)]
 pub struct C {
     pub a: ::std::os::raw::c_int,
@@ -200,11 +176,10 @@ impl Default for IncompleteArrayNonCopiable {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
-pub struct Union {
-    pub d: __BindgenUnionField<f32>,
-    pub i: __BindgenUnionField<::std::os::raw::c_int>,
-    pub bindgen_union_field: u32,
+#[derive(Copy)]
+pub union Union {
+    pub d: f32,
+    pub i: ::std::os::raw::c_int,
 }
 #[test]
 fn bindgen_test_layout_Union() {
@@ -226,8 +201,11 @@ fn bindgen_test_layout_Union() {
 impl Clone for Union {
     fn clone(&self) -> Self { *self }
 }
+impl Default for Union {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Copy)]
 pub struct WithUnion {
     pub data: Union,
 }
@@ -245,6 +223,9 @@ fn bindgen_test_layout_WithUnion() {
 }
 impl Clone for WithUnion {
     fn clone(&self) -> Self { *self }
+}
+impl Default for WithUnion {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]

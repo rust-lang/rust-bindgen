@@ -5,30 +5,6 @@
 
 
 #[repr(C)]
-pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
-impl <T> __BindgenUnionField<T> {
-    #[inline]
-    pub fn new() -> Self { __BindgenUnionField(::std::marker::PhantomData) }
-    #[inline]
-    pub unsafe fn as_ref(&self) -> &T { ::std::mem::transmute(self) }
-    #[inline]
-    pub unsafe fn as_mut(&mut self) -> &mut T { ::std::mem::transmute(self) }
-}
-impl <T> ::std::default::Default for __BindgenUnionField<T> {
-    #[inline]
-    fn default() -> Self { Self::new() }
-}
-impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
-    #[inline]
-    fn clone(&self) -> Self { Self::new() }
-}
-impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
-impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
-    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        fmt.write_str("__BindgenUnionField")
-    }
-}
-#[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct basic_string {
     pub _address: u8,
@@ -52,27 +28,25 @@ pub const basic_string___min_cap: basic_string__bindgen_ty_1 =
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum basic_string__bindgen_ty_1 { __min_cap = 0, }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct basic_string___short {
     pub __bindgen_anon_1: basic_string___short__bindgen_ty_1,
     pub __data_: *mut basic_string_value_type,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
-pub struct basic_string___short__bindgen_ty_1 {
-    pub __size_: __BindgenUnionField<::std::os::raw::c_uchar>,
-    pub __lx: __BindgenUnionField<basic_string_value_type>,
-    pub bindgen_union_field: u8,
+pub union basic_string___short__bindgen_ty_1 {
+    pub __size_: ::std::os::raw::c_uchar,
+    pub __lx: basic_string_value_type,
+}
+impl Default for basic_string___short__bindgen_ty_1 {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 impl Default for basic_string___short {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
-pub struct basic_string___ulx {
-    pub __lx: __BindgenUnionField<basic_string___long>,
-    pub __lxx: __BindgenUnionField<basic_string___short>,
-    pub bindgen_union_field: [u8; 0usize],
+pub union basic_string___ulx {
+    pub __lx: basic_string___long,
+    pub __lxx: basic_string___short,
 }
 impl Default for basic_string___ulx {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
@@ -91,17 +65,14 @@ impl Default for basic_string___raw {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
 pub struct basic_string___rep {
     pub __bindgen_anon_1: basic_string___rep__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
-pub struct basic_string___rep__bindgen_ty_1 {
-    pub __l: __BindgenUnionField<basic_string___long>,
-    pub __s: __BindgenUnionField<basic_string___short>,
-    pub __r: __BindgenUnionField<basic_string___raw>,
-    pub bindgen_union_field: [u8; 0usize],
+pub union basic_string___rep__bindgen_ty_1 {
+    pub __l: basic_string___long,
+    pub __s: basic_string___short,
+    pub __r: basic_string___raw,
 }
 impl Default for basic_string___rep__bindgen_ty_1 {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
