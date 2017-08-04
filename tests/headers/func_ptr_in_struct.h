@@ -1,4 +1,5 @@
-
+// bindgen-flags: --with-derive-hash
+//
 enum baz;
 
 struct Foo {
