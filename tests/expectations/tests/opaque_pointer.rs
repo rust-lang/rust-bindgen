@@ -22,11 +22,8 @@ impl Clone for OtherOpaque {
 }
 /// <div rustbindgen opaque></div>
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Opaque {
-}
-impl Default for Opaque {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]

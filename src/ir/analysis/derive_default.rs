@@ -158,7 +158,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
             }
         };
 
-        if ty.is_opaque(self.ctx, item) {
+        if item.is_opaque(self.ctx, &()) {
             let layout_can_derive = ty.layout(self.ctx).map_or(true, |l| {
                 l.opaque().can_trivially_derive_default()
             });
@@ -265,7 +265,8 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
 
                 let bases_cannot_derive = info.base_members()
                     .iter()
-                    .any(|base| self.cannot_derive_default.contains(&base.ty));
+                    .any(|base| !self.ctx.whitelisted_items().contains(&base.ty) ||
+                         self.cannot_derive_default.contains(&base.ty));
                 if bases_cannot_derive {
                     trace!("    base members cannot derive Default, so we can't \
                             either");
@@ -277,12 +278,14 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
                     .any(|f| {
                         match *f {
                             Field::DataMember(ref data) => {
-                                self.cannot_derive_default.contains(&data.ty())
+                                !self.ctx.whitelisted_items().contains(&data.ty()) ||
+                                    self.cannot_derive_default.contains(&data.ty())
                             }
                             Field::Bitfields(ref bfu) => {
                                 bfu.bitfields()
                                     .iter().any(|b| {
-                                        self.cannot_derive_default.contains(&b.ty())
+                                        !self.ctx.whitelisted_items().contains(&b.ty()) ||
+                                            self.cannot_derive_default.contains(&b.ty())
                                     })
                             }
                         }
