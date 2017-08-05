@@ -106,7 +106,7 @@ impl Default for rte_mempool_ops {
 }
 /// The rte_spinlock_t type.
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct rte_spinlock_t {
     /// < lock status 0 = unlocked, 1 = locked
     pub locked: ::std::os::raw::c_int,
@@ -181,7 +181,7 @@ pub struct malloc_heap {
     pub total_size: usize,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Hash)]
 pub struct malloc_heap__bindgen_ty_1 {
     pub lh_first: *mut malloc_elem,
 }
@@ -239,7 +239,7 @@ impl Default for malloc_heap {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct malloc_elem {
     pub _address: u8,
 }
