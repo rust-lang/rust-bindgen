@@ -1,3 +1,5 @@
+// bindgen-flags: --with-derive-hash
+//
 typedef char Char;
 typedef signed char SChar;
 typedef unsigned char UChar;

@@ -29,8 +29,11 @@ impl <T> ::core::fmt::Debug for __BindgenUnionField<T> {
         fmt.write_str("__BindgenUnionField")
     }
 }
+impl <T> ::core::hash::Hash for __BindgenUnionField<T> {
+    fn hash<H: ::core::hash::Hasher>(&self, _state: &mut H) { }
+}
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Hash)]
 pub struct foo {
     pub a: ::std::os::raw::c_int,
     pub b: ::std::os::raw::c_int,
@@ -65,7 +68,7 @@ impl Default for foo {
     fn default() -> Self { unsafe { ::core::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct _bindgen_ty_1 {
     pub bar: __BindgenUnionField<::std::os::raw::c_int>,
     pub baz: __BindgenUnionField<::std::os::raw::c_long>,
