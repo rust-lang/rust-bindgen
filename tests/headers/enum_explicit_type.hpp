@@ -5,7 +5,7 @@ enum Foo: unsigned char {
     Qux
 };
 
-enum Neg: char {
+enum Neg: signed char {
     MinusOne = -1,
     One = 1,
 };
