@@ -51,6 +51,8 @@ mod derive_copy;
 pub use self::derive_copy::CannotDeriveCopy;
 mod has_type_param_in_array;
 pub use self::has_type_param_in_array::HasTypeParameterInArray;
+mod derive_hash;
+pub use self::derive_hash::CannotDeriveHash;
 
 use ir::context::{BindgenContext, ItemId};
 use ir::traversal::{EdgeKind, Trace};

@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone, Hash)]
 pub struct Proxy {
     pub _address: u8,
 }

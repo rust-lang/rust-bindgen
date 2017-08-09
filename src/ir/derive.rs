@@ -71,3 +71,30 @@ pub trait CanTriviallyDeriveDefault {
     /// otherwise.
     fn can_trivially_derive_default(&self) -> bool;
 }
+
+/// A trait that encapsulates the logic for whether or not we can derive `Hash`
+/// for a given thing.
+///
+/// This should ideally be a no-op that just returns `true`, but instead needs
+/// to be a recursive method that checks whether all the proper members can
+/// derive default or not, because of the limit rust has on 32 items as max in the
+/// array.
+pub trait CanDeriveHash {
+
+    /// Return `true` if `Default` can be derived for this thing, `false`
+    /// otherwise.
+    fn can_derive_hash(&self,
+                       ctx: &BindgenContext)
+                       -> bool;
+}
+
+/// A trait that encapsulates the logic for whether or not we can derive `Hash`.
+/// The difference between this trait and the CanDeriveHash is that the type
+/// implementing this trait cannot use recursion or lookup result from fix point
+/// analysis. It's a helper trait for fix point analysis.
+pub trait CanTriviallyDeriveHash {
+
+    /// Return `true` if `Hash` can be derived for this thing, `false`
+    /// otherwise.
+    fn can_trivially_derive_hash(&self) -> bool;
+}

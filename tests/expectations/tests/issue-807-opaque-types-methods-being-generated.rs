@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct Pupper {
     pub _address: u8,
 }
@@ -20,7 +20,7 @@ impl Clone for Pupper {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct Doggo {
     pub _address: u8,
 }
@@ -35,7 +35,7 @@ impl Clone for Doggo {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct SuchWow {
     pub _address: u8,
 }
@@ -50,7 +50,7 @@ impl Clone for SuchWow {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct Opaque {
     pub _bindgen_opaque_blob: u8,
 }
@@ -89,7 +89,7 @@ extern "C" {
     pub static mut Opaque_MAJESTIC_AF: Doggo;
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct Whitelisted {
     pub some_member: Opaque,
 }

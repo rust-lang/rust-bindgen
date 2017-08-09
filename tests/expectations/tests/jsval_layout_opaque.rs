@@ -28,6 +28,9 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
         fmt.write_str("__BindgenUnionField")
     }
 }
+impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
+    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
+}
 pub const JSVAL_TAG_SHIFT: ::std::os::raw::c_uint = 47;
 pub const JSVAL_PAYLOAD_MASK: ::std::os::raw::c_ulonglong = 140737488355327;
 pub const JSVAL_TAG_MASK: ::std::os::raw::c_longlong = -140737488355328;
@@ -96,7 +99,7 @@ pub enum JSWhyMagic {
     JS_WHY_MAGIC_COUNT = 18,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct jsval_layout {
     pub asBits: __BindgenUnionField<u64>,
     pub debugView: __BindgenUnionField<jsval_layout__bindgen_ty_1>,
@@ -108,7 +111,7 @@ pub struct jsval_layout {
     pub bindgen_union_field: u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Hash)]
 pub struct jsval_layout__bindgen_ty_1 {
     pub _bitfield_1: u64,
     pub __bindgen_align: [u64; 0usize],
@@ -214,12 +217,12 @@ impl jsval_layout__bindgen_ty_1 {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct jsval_layout__bindgen_ty_2 {
     pub payload: jsval_layout__bindgen_ty_2__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct jsval_layout__bindgen_ty_2__bindgen_ty_1 {
     pub i32: __BindgenUnionField<i32>,
     pub u32: __BindgenUnionField<u32>,
@@ -326,7 +329,7 @@ impl Clone for jsval_layout {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct Value {
     pub data: jsval_layout,
 }

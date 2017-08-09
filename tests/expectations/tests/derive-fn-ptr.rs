@@ -44,3 +44,39 @@ impl Clone for Foo {
 impl Default for Foo {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
+pub type my_fun2_t =
+    ::std::option::Option<unsafe extern "C" fn(arg1: ::std::os::raw::c_int,
+                                               arg2: ::std::os::raw::c_int,
+                                               arg3: ::std::os::raw::c_int,
+                                               arg4: ::std::os::raw::c_int,
+                                               arg5: ::std::os::raw::c_int,
+                                               arg6: ::std::os::raw::c_int,
+                                               arg7: ::std::os::raw::c_int,
+                                               arg8: ::std::os::raw::c_int,
+                                               arg9: ::std::os::raw::c_int,
+                                               arg10: ::std::os::raw::c_int,
+                                               arg11: ::std::os::raw::c_int,
+                                               arg12: ::std::os::raw::c_int)>;
+#[repr(C)]
+#[derive(Debug, Copy, Hash)]
+pub struct Bar {
+    pub callback: my_fun2_t,
+}
+#[test]
+fn bindgen_test_layout_Bar() {
+    assert_eq!(::std::mem::size_of::<Bar>() , 8usize , concat ! (
+               "Size of: " , stringify ! ( Bar ) ));
+    assert_eq! (::std::mem::align_of::<Bar>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( Bar ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const Bar ) ) . callback as * const _ as usize
+                } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( Bar ) , "::" ,
+                stringify ! ( callback ) ));
+}
+impl Clone for Bar {
+    fn clone(&self) -> Self { *self }
+}
+impl Default for Bar {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}

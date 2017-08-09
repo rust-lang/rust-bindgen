@@ -1,4 +1,4 @@
-// bindgen-flags: --opaque-type=.* --whitelist-function=foo
+// bindgen-flags: --opaque-type=.* --whitelist-function=foo  --with-derive-hash
 
 class Container;
 

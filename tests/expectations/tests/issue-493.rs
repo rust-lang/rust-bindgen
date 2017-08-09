@@ -28,8 +28,11 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
         fmt.write_str("__BindgenUnionField")
     }
 }
+impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
+    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
+}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone, Hash)]
 pub struct basic_string {
     pub _address: u8,
 }
@@ -37,7 +40,7 @@ pub type basic_string_size_type = ::std::os::raw::c_ulonglong;
 pub type basic_string_value_type = ::std::os::raw::c_char;
 pub type basic_string_pointer = *mut basic_string_value_type;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash)]
 pub struct basic_string___long {
     pub __cap_: basic_string_size_type,
     pub __size_: basic_string_size_type,
@@ -52,13 +55,13 @@ pub const basic_string___min_cap: basic_string__bindgen_ty_1 =
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum basic_string__bindgen_ty_1 { __min_cap = 0, }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash)]
 pub struct basic_string___short {
     pub __bindgen_anon_1: basic_string___short__bindgen_ty_1,
     pub __data_: *mut basic_string_value_type,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone, Hash)]
 pub struct basic_string___short__bindgen_ty_1 {
     pub __size_: __BindgenUnionField<::std::os::raw::c_uchar>,
     pub __lx: __BindgenUnionField<basic_string_value_type>,
@@ -83,7 +86,7 @@ pub const basic_string___n_words: basic_string__bindgen_ty_2 =
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum basic_string__bindgen_ty_2 { __n_words = 0, }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Hash)]
 pub struct basic_string___raw {
     pub __words: *mut basic_string_size_type,
 }

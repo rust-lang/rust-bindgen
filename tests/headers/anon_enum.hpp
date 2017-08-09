@@ -1,3 +1,4 @@
+// bindgen-flags: --with-derive-hash
 struct Test {
   int foo;
   float bar;

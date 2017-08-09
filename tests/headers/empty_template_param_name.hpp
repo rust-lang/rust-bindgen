@@ -1,3 +1,4 @@
+// bindgen-flags: --with-derive-hash
 // bindgen-flags: -- -std=c++11
 
 template<typename...> using __void_t = void;

@@ -1,3 +1,5 @@
+// bindgen-flags: --with-derive-hash
+//
 struct LittleArray {
     int a[32];
 };

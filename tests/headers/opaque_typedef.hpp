@@ -1,4 +1,4 @@
-// bindgen-flags: -- -std=c++11
+// bindgen-flags:  --with-derive-hash -- -std=c++11
 template<typename T>
 class RandomTemplate;
 

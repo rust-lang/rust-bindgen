@@ -1,3 +1,4 @@
+// bindgen-flags: --with-derive-hash
 template <typename T>
 class Foo
 {

@@ -1,3 +1,5 @@
+// bindgen-flags: --with-derive-hash
+//
 struct a {
     char b;
     short c;

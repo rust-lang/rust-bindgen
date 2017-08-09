@@ -61,6 +61,9 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
         fmt.write_str("__BindgenUnionField")
     }
 }
+impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
+    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
+}
 #[repr(C)]
 #[derive(Copy)]
 pub struct C {
@@ -165,7 +168,7 @@ impl Default for C_with_zero_length_array_and_incomplete_array {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Hash)]
 pub struct WithDtor {
     pub b: ::std::os::raw::c_int,
 }
@@ -200,7 +203,7 @@ impl Default for IncompleteArrayNonCopiable {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct Union {
     pub d: __BindgenUnionField<f32>,
     pub i: __BindgenUnionField<::std::os::raw::c_int>,
@@ -227,7 +230,7 @@ impl Clone for Union {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct WithUnion {
     pub data: Union,
 }
@@ -247,7 +250,7 @@ impl Clone for WithUnion {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct RealAbstractionWithTonsOfMethods {
     pub _address: u8,
 }

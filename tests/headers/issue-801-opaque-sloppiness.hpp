@@ -1,4 +1,4 @@
-// bindgen-flags: --opaque-type "B" --whitelist-type "C"
+// bindgen-flags: --opaque-type "B" --whitelist-type "C" --with-derive-hash
 
 class A;
 

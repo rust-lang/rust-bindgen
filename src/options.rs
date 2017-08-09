@@ -62,6 +62,9 @@ pub fn builder_from_flags<I>
             Arg::with_name("with-derive-default")
                 .long("with-derive-default")
                 .help("Derive Default on any type."),
+            Arg::with_name("with-derive-hash")
+                .long("with-derive-hash")
+                .help("Derive hash on any type."),
             Arg::with_name("no-doc-comments")
                 .long("no-doc-comments")
                 .help("Avoid including doc comments in the output, see: \
@@ -263,6 +266,10 @@ pub fn builder_from_flags<I>
 
     if matches.is_present("with-derive-default") {
         builder = builder.derive_default(true);
+    }
+
+    if matches.is_present("with-derive-hash") {
+        builder = builder.derive_hash(true);
     }
 
     if matches.is_present("no-derive-default") {

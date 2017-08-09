@@ -1,3 +1,4 @@
+// bindgen-flags: --with-derive-hash
 class A {
 public:
     int member_a;

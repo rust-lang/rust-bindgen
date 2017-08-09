@@ -1,3 +1,4 @@
+// bindgen-flags: --with-derive-hash
 
 #define RTE_CACHE_LINE_MIN_SIZE 64	/**< Minimum Cache line size. */
 

@@ -1,3 +1,5 @@
+// bindgen-flags: --with-derive-hash
+//
 typedef struct {
     _Bool has_name;
 } typedef_named_struct;

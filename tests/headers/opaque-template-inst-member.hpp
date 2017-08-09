@@ -1,4 +1,4 @@
-// bindgen-flags: --opaque-type 'OpaqueTemplate'
+// bindgen-flags: --opaque-type 'OpaqueTemplate'  --with-derive-hash
 
 template<typename T>
 class OpaqueTemplate {
@@ -6,15 +6,15 @@ class OpaqueTemplate {
     bool mCannotDebug[400];
 };
 
-// This should not end up deriving Debug because its `mBlah` field cannot derive
-// Debug because the instantiation's definition cannot derive Debug.
+/// This should not end up deriving Debug/Hash because its `mBlah` field cannot derive
+/// Debug/Hash because the instantiation's definition cannot derive Debug/Hash.
 class ContainsOpaqueTemplate {
     OpaqueTemplate<int> mBlah;
     int mBaz;
 };
 
-// This shold not end up deriving Debug either, for similar reasons, although
-// we're exercising base member edges now.
+/// This shold not end up deriving Debug/Hash either, for similar reasons, although
+/// we're exercising base member edges now.
 class InheritsOpaqueTemplate : public OpaqueTemplate<bool> {
     char* wow;
 };

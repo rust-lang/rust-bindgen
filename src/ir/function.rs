@@ -8,10 +8,12 @@ use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::TypeKind;
 use clang;
 use clang_sys::{self, CXCallingConv};
-use ir::derive::CanTriviallyDeriveDebug;
+use ir::derive::{CanTriviallyDeriveDebug, CanTriviallyDeriveHash};
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use std::io;
 use syntax::abi;
+
+const RUST_DERIVE_FUNPTR_LIMIT: usize = 12;
 
 /// What kind of a function are we looking at?
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -481,7 +483,20 @@ impl Trace for FunctionSig {
 // Note that copy is always derived, so we don't need to implement it.
 impl CanTriviallyDeriveDebug for FunctionSig {
     fn can_trivially_derive_debug(&self) -> bool {
-        const RUST_DERIVE_FUNPTR_LIMIT: usize = 12;
+        if self.argument_types.len() > RUST_DERIVE_FUNPTR_LIMIT {
+            return false;
+        }
+
+        match self.abi {
+            Abi::Known(abi::Abi::C) |
+            Abi::Unknown(..) => true,
+            _ => false,
+        }
+    }
+}
+
+impl CanTriviallyDeriveHash for FunctionSig {
+    fn can_trivially_derive_hash(&self) -> bool {
         if self.argument_types.len() > RUST_DERIVE_FUNPTR_LIMIT {
             return false;
         }

@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct A {
     pub _address: u8,
 }

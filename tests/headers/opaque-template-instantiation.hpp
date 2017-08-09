@@ -1,4 +1,4 @@
-// bindgen-flags: --opaque-type 'Template<int>' -- -std=c++14
+// bindgen-flags: --opaque-type 'Template<int>'  --with-derive-hash -- -std=c++14
 
 template <typename T>
 class Template {

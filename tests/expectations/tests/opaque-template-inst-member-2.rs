@@ -4,12 +4,15 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
 
+/// This is like `opaque-template-inst-member.hpp` except exercising the cases
+/// where we are OK to derive Debug/Hash.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone, Hash)]
 pub struct OpaqueTemplate {
 }
+/// Should derive Debug/Hash.
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct ContainsOpaqueTemplate {
     pub mBlah: u32,
     pub mBaz: ::std::os::raw::c_int,
@@ -36,8 +39,9 @@ fn bindgen_test_layout_ContainsOpaqueTemplate() {
 impl Clone for ContainsOpaqueTemplate {
     fn clone(&self) -> Self { *self }
 }
+/// Should also derive Debug/Hash.
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Hash)]
 pub struct InheritsOpaqueTemplate {
     pub _base: u8,
     pub wow: *mut ::std::os::raw::c_char,

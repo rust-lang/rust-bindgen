@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone, Hash)]
 pub struct DataType {
     pub _address: u8,
 }
@@ -27,7 +27,7 @@ pub const DataType_type_: DataType__bindgen_ty_1 =
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum DataType__bindgen_ty_1 { generic_type = 0, }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Hash)]
 pub struct Foo {
     pub _address: u8,
 }

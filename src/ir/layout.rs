@@ -1,7 +1,8 @@
 //! Intermediate representation for the physical layout of some type.
 
 use super::derive::{CanTriviallyDeriveDebug,
-                    CanTriviallyDeriveDefault, CanTriviallyDeriveCopy};
+                    CanTriviallyDeriveDefault, CanTriviallyDeriveCopy,
+                    CanTriviallyDeriveHash};
 use super::ty::{RUST_DERIVE_IN_ARRAY_LIMIT, Type, TypeKind};
 use clang;
 use std::{cmp, mem};
@@ -119,6 +120,14 @@ impl CanTriviallyDeriveDefault for Opaque {
 
 impl CanTriviallyDeriveCopy for Opaque {
     fn can_trivially_derive_copy(&self) -> bool {
+        self.array_size()
+            .map_or(false, |size| size <= RUST_DERIVE_IN_ARRAY_LIMIT)
+    }
+}
+
+impl CanTriviallyDeriveHash for Opaque {
+
+    fn can_trivially_derive_hash(&self) -> bool {
         self.array_size()
             .map_or(false, |size| size <= RUST_DERIVE_IN_ARRAY_LIMIT)
     }

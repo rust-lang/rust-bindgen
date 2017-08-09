@@ -1,12 +1,13 @@
 //! Common context that is passed around during parsing and codegen.
 
-use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault};
+use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault, CanDeriveHash};
 use super::int::IntKind;
 use super::item::{IsOpaque, HasTypeParamInArray, Item, ItemAncestors, ItemCanonicalPath, ItemSet};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
 use super::analysis::{analyze, UsedTemplateParameters, CannotDeriveDebug, HasVtableAnalysis,
-                      CannotDeriveDefault, CannotDeriveCopy, HasTypeParameterInArray};
+                      CannotDeriveDefault, CannotDeriveCopy, HasTypeParameterInArray,
+                      CannotDeriveHash};
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
@@ -55,6 +56,12 @@ impl CanDeriveDefault for ItemId {
 impl<'a> CanDeriveCopy<'a> for ItemId {
     fn can_derive_copy(&self, ctx: &BindgenContext) -> bool {
         ctx.lookup_item_id_can_derive_copy(*self)
+    }
+}
+
+impl CanDeriveHash for ItemId {
+    fn can_derive_hash(&self, ctx: &BindgenContext) -> bool {
+        ctx.options().derive_hash && ctx.lookup_item_id_can_derive_hash(*self)
     }
 }
 
@@ -193,6 +200,12 @@ pub struct BindgenContext<'ctx> {
     /// This is populated when we enter codegen by `compute_cannot_derive_copy`
     /// and is always `None` before that and `Some` after.
     cannot_derive_copy_in_array: Option<HashSet<ItemId>>,
+
+    /// The set of (`ItemId`s of) types that can't derive hash.
+    ///
+    /// This is populated when we enter codegen by `compute_can_derive_hash`
+    /// and is always `None` before that and `Some` after.
+    cannot_derive_hash: Option<HashSet<ItemId>>,
 
     /// The set of (`ItemId's of`) types that has vtable.
     ///
@@ -334,6 +347,7 @@ impl<'ctx> BindgenContext<'ctx> {
             cannot_derive_default: None,
             cannot_derive_copy: None,
             cannot_derive_copy_in_array: None,
+            cannot_derive_hash: None,
             have_vtable: None,
             has_type_param_in_array: None,
         };
@@ -812,6 +826,7 @@ impl<'ctx> BindgenContext<'ctx> {
         self.compute_cannot_derive_default();
         self.compute_cannot_derive_copy();
         self.compute_has_type_param_in_array();
+        self.compute_cannot_derive_hash();
 
         let ret = cb(self);
         self.gen_ctx = None;
@@ -1818,8 +1833,25 @@ impl<'ctx> BindgenContext<'ctx> {
         self.cannot_derive_copy = Some(analyze::<CannotDeriveCopy>(self));
     }
 
+    /// Compute whether we can derive hash.
+    fn compute_cannot_derive_hash(&mut self) {
+        assert!(self.cannot_derive_hash.is_none());
+        self.cannot_derive_hash = Some(analyze::<CannotDeriveHash>(self));
+    }
+
     /// Look up whether the item with `id` can
-    /// derive debug or not.
+    /// derive hash or not.
+    pub fn lookup_item_id_can_derive_hash(&self, id: ItemId) -> bool {
+        assert!(self.in_codegen_phase(),
+                "We only compute can_derive_debug when we enter codegen");
+
+        // Look up the computed value for whether the item with `id` can
+        // derive hash or not.
+        !self.cannot_derive_hash.as_ref().unwrap().contains(&id)
+    }
+
+    /// Look up whether the item with `id` can
+    /// derive copy or not.
     pub fn lookup_item_id_can_derive_copy(&self, id: ItemId) -> bool {
         assert!(self.in_codegen_phase(),
                 "We only compute can_derive_debug when we enter codegen");
