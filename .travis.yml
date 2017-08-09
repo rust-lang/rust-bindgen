@@ -30,6 +30,7 @@ matrix:
 cache:
   directories:
     - $HOME/.cargo
+    - $HOME/.llvm-builds
 
 before_install: . ./ci/before_install.sh
 
