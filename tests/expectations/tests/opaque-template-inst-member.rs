@@ -5,11 +5,11 @@
 
 
 #[repr(C)]
-#[derive(Default, Copy, Clone, Hash)]
+#[derive(Default, Copy, Clone, Hash, PartialEq)]
 pub struct OpaqueTemplate {
 }
-/// This should not end up deriving Debug/Hash because its `mBlah` field cannot derive
-/// Debug/Hash because the instantiation's definition cannot derive Debug/Hash.
+/// This should not end up deriving Debug/Hash/PartialEq because its `mBlah` field cannot derive
+/// Debug/Hash/PartialEq because the instantiation's definition cannot derive Debug/Hash/PartialEq.
 #[repr(C)]
 pub struct ContainsOpaqueTemplate {
     pub mBlah: [u32; 101usize],
@@ -37,7 +37,7 @@ fn bindgen_test_layout_ContainsOpaqueTemplate() {
 impl Default for ContainsOpaqueTemplate {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-/// This shold not end up deriving Debug/Hash either, for similar reasons, although
+/// This shold not end up deriving Debug/Hash/PartialEq either, for similar reasons, although
 /// we're exercising base member edges now.
 #[repr(C)]
 pub struct InheritsOpaqueTemplate {

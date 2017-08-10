@@ -84,7 +84,7 @@ pub union jsval_layout {
     _bindgen_union_align: u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash)]
+#[derive(Debug, Copy, Hash, PartialEq)]
 pub struct jsval_layout__bindgen_ty_1 {
     pub _bitfield_1: u64,
     pub __bindgen_align: [u64; 0usize],
