@@ -31,8 +31,11 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
 impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
     fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
 }
+impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
+    fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
+}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct nsStyleUnion {
     pub mInt: __BindgenUnionField<::std::os::raw::c_int>,
     pub mFloat: __BindgenUnionField<f32>,

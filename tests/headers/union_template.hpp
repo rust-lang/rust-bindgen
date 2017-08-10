@@ -1,5 +1,5 @@
-// bindgen-flags: --with-derive-hash
-
+// bindgen-flags: --with-derive-hash --with-derive-partialeq
+//
 template<typename T>
 struct NastyStruct {
   bool mIsSome;
