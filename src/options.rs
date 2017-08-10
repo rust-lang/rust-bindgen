@@ -1,13 +1,14 @@
-use bindgen::{Builder, CodegenConfig, builder};
+use bindgen::{builder, Builder, CodegenConfig};
 use clap::{App, Arg};
 use std::fs::File;
 use std::io::{self, Error, ErrorKind};
 
 /// Construct a new [`Builder`](./struct.Builder.html) from command line flags.
-pub fn builder_from_flags<I>
-    (args: I)
-     -> Result<(Builder, Box<io::Write>, bool), io::Error>
-    where I: Iterator<Item = String>,
+pub fn builder_from_flags<I>(
+    args: I,
+) -> Result<(Builder, Box<io::Write>, bool), io::Error>
+where
+    I: Iterator<Item = String>,
 {
     let matches = App::new("bindgen")
         .version(env!("CARGO_PKG_VERSION"))
@@ -55,6 +56,9 @@ pub fn builder_from_flags<I>
             Arg::with_name("no-derive-debug")
                 .long("no-derive-debug")
                 .help("Avoid deriving Debug on any type."),
+            Arg::with_name("impl-debug")
+                .long("impl-debug")
+                .help("Create Debug implementation, if it can not be derived automatically."),
             Arg::with_name("no-derive-default")
                 .long("no-derive-default")
                 .hidden(true)
@@ -264,6 +268,10 @@ pub fn builder_from_flags<I>
         builder = builder.derive_debug(false);
     }
 
+    if matches.is_present("impl-debug") {
+        builder = builder.impl_debug(true);
+    }
+
     if matches.is_present("with-derive-default") {
         builder = builder.derive_default(true);
     }
@@ -301,9 +309,10 @@ pub fn builder_from_flags<I>
                 "constructors" => config.constructors = true,
                 "destructors" => config.destructors = true,
                 otherwise => {
-                    return Err(Error::new(ErrorKind::Other,
-                                          format!("Unknown generate item: {}",
-                                                  otherwise)));
+                    return Err(Error::new(
+                        ErrorKind::Other,
+                        format!("Unknown generate item: {}", otherwise),
+                    ));
                 }
             }
         }
