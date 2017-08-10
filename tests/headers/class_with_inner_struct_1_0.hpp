@@ -1,4 +1,4 @@
-// bindgen-flags: --rust-target 1.0  --with-derive-hash
+// bindgen-flags: --rust-target 1.0  --with-derive-hash --with-derive-partialeq
 // bindgen-flags: -- -std=c++11
 
 class A {

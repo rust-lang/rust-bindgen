@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash
+// bindgen-flags: --with-derive-hash --with-derive-partialeq
 // bindgen-flags: -- -std=c++11
 
 class whatever {
