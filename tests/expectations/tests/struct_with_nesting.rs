@@ -19,7 +19,7 @@ pub union foo__bindgen_ty_1 {
     _bindgen_union_align: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct foo__bindgen_ty_1__bindgen_ty_1 {
     pub c1: ::std::os::raw::c_ushort,
     pub c2: ::std::os::raw::c_ushort,
@@ -51,7 +51,7 @@ impl Clone for foo__bindgen_ty_1__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct foo__bindgen_ty_1__bindgen_ty_2 {
     pub d1: ::std::os::raw::c_uchar,
     pub d2: ::std::os::raw::c_uchar,

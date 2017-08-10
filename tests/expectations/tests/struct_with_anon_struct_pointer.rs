@@ -5,12 +5,12 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Hash)]
+#[derive(Debug, Copy, Hash, PartialEq)]
 pub struct foo {
     pub bar: *mut foo__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct foo__bindgen_ty_1 {
     pub a: ::std::os::raw::c_int,
     pub b: ::std::os::raw::c_int,

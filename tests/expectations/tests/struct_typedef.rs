@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct typedef_named_struct {
     pub has_name: bool,
 }
@@ -26,7 +26,7 @@ impl Clone for typedef_named_struct {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash)]
+#[derive(Debug, Copy, Hash, PartialEq)]
 pub struct _bindgen_ty_1 {
     pub no_name: *mut ::std::os::raw::c_void,
 }
