@@ -11,7 +11,7 @@ pub struct __BindgenComplex<T> {
     pub im: T,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, PartialEq)]
 pub struct TestDouble {
     pub mMember: __BindgenComplex<f64>,
 }
@@ -31,7 +31,7 @@ impl Clone for TestDouble {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash)]
+#[derive(Debug, Copy, Hash, PartialEq)]
 pub struct TestDoublePtr {
     pub mMember: *mut __BindgenComplex<f64>,
 }
@@ -54,7 +54,7 @@ impl Default for TestDoublePtr {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, PartialEq)]
 pub struct TestFloat {
     pub mMember: __BindgenComplex<f32>,
 }
@@ -74,7 +74,7 @@ impl Clone for TestFloat {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash)]
+#[derive(Debug, Copy, Hash, PartialEq)]
 pub struct TestFloatPtr {
     pub mMember: *mut __BindgenComplex<f32>,
 }
