@@ -1,4 +1,4 @@
-// bindgen-flags: --force-derive-debug
+// bindgen-flags: --impl-debug
 
 template<typename T>
 class Generic {

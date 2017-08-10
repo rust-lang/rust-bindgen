@@ -242,7 +242,7 @@ impl Builder {
         }
 
         if !self.options.impl_debug {
-            output_vector.push("--force-derive-debug".into());
+            output_vector.push("--impl-debug".into());
         }
 
         if !self.options.derive_default {

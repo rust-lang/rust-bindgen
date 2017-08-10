@@ -1,4 +1,4 @@
-// bindgen-flags: --force-derive-debug
+// bindgen-flags: --impl-debug
 
 class Nice {
   typedef void (*Function) (int data);

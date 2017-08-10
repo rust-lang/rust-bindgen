@@ -56,8 +56,8 @@ where
             Arg::with_name("no-derive-debug")
                 .long("no-derive-debug")
                 .help("Avoid deriving Debug on any type."),
-            Arg::with_name("force-derive-debug")
-                .long("force-derive-debug")
+            Arg::with_name("impl-debug")
+                .long("impl-debug")
                 .help("Create Debug implementation, if it can not be derived automatically."),
             Arg::with_name("no-derive-default")
                 .long("no-derive-default")
@@ -265,7 +265,7 @@ where
         builder = builder.derive_debug(false);
     }
 
-    if matches.is_present("force-derive-debug") {
+    if matches.is_present("impl-debug") {
         builder = builder.impl_debug(true);
     }
 
