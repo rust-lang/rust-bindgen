@@ -262,6 +262,10 @@ impl Builder {
             output_vector.push("--with-derive-hash".into());
         }
 
+        if self.options.derive_partialeq {
+            output_vector.push("--with-derive-partialeq".into());
+        }
+
         if !self.options.generate_comments {
             output_vector.push("--no-doc-comments".into());
         }
@@ -721,6 +725,12 @@ impl Builder {
         self
     }
 
+    /// Set whether `PartialEq` should be derived by default.
+    pub fn derive_partialeq(mut self, doit: bool) -> Self {
+        self.options.derive_partialeq = doit;
+        self
+    }
+
     /// Emit Clang AST.
     pub fn emit_clang_ast(mut self) -> Builder {
         self.options.emit_ast = true;
@@ -1055,6 +1065,10 @@ pub struct BindgenOptions {
     /// and types.
     pub derive_hash: bool,
 
+    /// True if we should derive PartialEq trait implementations for C/C++ structures
+    /// and types.
+    pub derive_partialeq: bool,
+
     /// True if we should avoid using libstd to use libcore instead.
     pub use_core: bool,
 
@@ -1198,6 +1212,7 @@ impl Default for BindgenOptions {
             impl_debug: false,
             derive_default: false,
             derive_hash: false,
+            derive_partialeq: false,
             enable_cxx_namespaces: false,
             disable_name_namespacing: false,
             use_core: false,

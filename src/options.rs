@@ -76,6 +76,9 @@ where
             Arg::with_name("with-derive-hash")
                 .long("with-derive-hash")
                 .help("Derive hash on any type."),
+            Arg::with_name("with-derive-partialeq")
+                .long("with-derive-partialeq")
+                .help("Derive partialeq on any type."),
             Arg::with_name("no-doc-comments")
                 .long("no-doc-comments")
                 .help("Avoid including doc comments in the output, see: \
@@ -312,6 +315,10 @@ where
 
     if matches.is_present("with-derive-hash") {
         builder = builder.derive_hash(true);
+    }
+
+    if matches.is_present("with-derive-partialeq") {
+        builder = builder.derive_partialeq(true);
     }
 
     if matches.is_present("no-derive-default") {

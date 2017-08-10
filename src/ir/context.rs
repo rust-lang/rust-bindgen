@@ -1,13 +1,13 @@
 //! Common context that is passed around during parsing and codegen.
 
-use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault, CanDeriveHash};
+use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault, CanDeriveHash, CanDerivePartialEq};
 use super::int::IntKind;
 use super::item::{IsOpaque, HasTypeParamInArray, Item, ItemAncestors, ItemCanonicalPath, ItemSet};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
 use super::analysis::{analyze, UsedTemplateParameters, CannotDeriveDebug, HasVtableAnalysis,
                       CannotDeriveDefault, CannotDeriveCopy, HasTypeParameterInArray,
-                      CannotDeriveHash};
+                      CannotDeriveHash, CannotDerivePartialEq};
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
@@ -62,6 +62,12 @@ impl<'a> CanDeriveCopy<'a> for ItemId {
 impl CanDeriveHash for ItemId {
     fn can_derive_hash(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_hash && ctx.lookup_item_id_can_derive_hash(*self)
+    }
+}
+
+impl CanDerivePartialEq for ItemId {
+    fn can_derive_partialeq(&self, ctx: &BindgenContext) -> bool {
+        ctx.options().derive_partialeq && ctx.lookup_item_id_can_derive_partialeq(*self)
     }
 }
 
@@ -207,6 +213,12 @@ pub struct BindgenContext<'ctx> {
     /// and is always `None` before that and `Some` after.
     cannot_derive_hash: Option<HashSet<ItemId>>,
 
+    /// The set of (`ItemId`s of) types that can't derive hash.
+    ///
+    /// This is populated when we enter codegen by `compute_can_derive_partialeq`
+    /// and is always `None` before that and `Some` after.
+    cannot_derive_partialeq: Option<HashSet<ItemId>>,
+
     /// The set of (`ItemId's of`) types that has vtable.
     ///
     /// Populated when we enter codegen by `compute_has_vtable`; always `None`
@@ -348,6 +360,7 @@ impl<'ctx> BindgenContext<'ctx> {
             cannot_derive_copy: None,
             cannot_derive_copy_in_array: None,
             cannot_derive_hash: None,
+            cannot_derive_partialeq: None,
             have_vtable: None,
             has_type_param_in_array: None,
         };
@@ -827,6 +840,7 @@ impl<'ctx> BindgenContext<'ctx> {
         self.compute_cannot_derive_copy();
         self.compute_has_type_param_in_array();
         self.compute_cannot_derive_hash();
+        self.compute_cannot_derive_partialeq();
 
         let ret = cb(self);
         self.gen_ctx = None;
@@ -1842,6 +1856,23 @@ impl<'ctx> BindgenContext<'ctx> {
         // Look up the computed value for whether the item with `id` can
         // derive hash or not.
         !self.cannot_derive_hash.as_ref().unwrap().contains(&id)
+    }
+
+    /// Compute whether we can derive hash.
+    fn compute_cannot_derive_partialeq(&mut self) {
+        assert!(self.cannot_derive_partialeq.is_none());
+        self.cannot_derive_partialeq = Some(analyze::<CannotDerivePartialEq>(self));
+    }
+
+    /// Look up whether the item with `id` can
+    /// derive partialeq or not.
+    pub fn lookup_item_id_can_derive_partialeq(&self, id: ItemId) -> bool {
+        assert!(self.in_codegen_phase(),
+                "We only compute can_derive_debug when we enter codegen");
+
+        // Look up the computed value for whether the item with `id` can
+        // derive partialeq or not.
+        !self.cannot_derive_partialeq.as_ref().unwrap().contains(&id)
     }
 
     /// Look up whether the item with `id` can
