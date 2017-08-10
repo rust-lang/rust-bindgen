@@ -58,7 +58,7 @@ pub type my_fun2_t =
                                                arg11: ::std::os::raw::c_int,
                                                arg12: ::std::os::raw::c_int)>;
 #[repr(C)]
-#[derive(Debug, Copy, Hash)]
+#[derive(Debug, Copy, Hash, PartialEq)]
 pub struct Bar {
     pub callback: my_fun2_t,
 }
