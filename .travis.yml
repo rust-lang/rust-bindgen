@@ -17,9 +17,9 @@ env:
   global:
     - CARGO_TARGET_DIR=/tmp/bindgen
   matrix:
-    - LLVM_VERSION=3.8.1 BINDGEN_FEATURES=testing_only_libclang_3_8
-    - LLVM_VERSION=3.9.0 BINDGEN_FEATURES=testing_only_libclang_3_9
-    - LLVM_VERSION=4.0.0 BINDGEN_FEATURES=testing_only_libclang_4
+    - LLVM_VERSION=3.8.1
+    - LLVM_VERSION=3.9.0
+    - LLVM_VERSION=4.0.0
 
 matrix:
   fast_finish: true
