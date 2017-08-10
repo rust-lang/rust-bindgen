@@ -1,4 +1,4 @@
-// bindgen-flags: --opaque-type "Opaque" --impl-debug
+// bindgen-flags: --impl-debug
 
 class C {
   bool a: 1;
