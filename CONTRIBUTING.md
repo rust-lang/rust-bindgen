@@ -14,8 +14,9 @@ out to us in a GitHub issue, or stop by
 - [Building](#building)
 - [Testing](#testing)
   - [Overview](#overview)
-  - [Running All Tests](#running-all-tests)
-  - [Running a Single Test](#running-a-single-test)
+  - [Testing Bindings Generation](#testing-bindings-generation)
+  - [Testing Generated Bindings](#testing-generated-bindings)
+  - [Testing a Single Header's Bindings Generation and Compiling its Bindings](#testing-a-single-headers-bindings-generation-and-compiling-its-bindings)
   - [Authoring New Tests](#authoring-new-tests)
   - [Test Expectations and `libclang` Versions](#test-expectations-and-libclang-versions)
 - [Automatic code formatting](#automatic-code-formatting)
@@ -85,38 +86,49 @@ $ cargo build --features testing_only_docs
 
 ## Testing
 
-Code for binding generation and testing thereof is in the `bindgen` crate.
-The following sections assume you are working in that subdirectory.
-
 ### Overview
 
 Input C/C++ test headers reside in the `tests/headers` directory. Expected
-output Rust bindings live in `tests/expectations/tests`.
+output Rust bindings live in `tests/expectations/tests`. For example,
+`tests/headers/my_header.h`'s expected generated Rust bindings would be
+`tests/expectations/tests/my_header.rs`.
 
-For example, `tests/headers/my_header.h`'s expected generated Rust bindings
-would be `tests/expectations/tests/my_header.rs`.
+There is also the `./bindgen-integration` crate, which uses `bindgen` to
+generate bindings to some C++ code, and then uses the bindings, asserting that
+values are what we expect them to be both on the Rust and C++ side.
 
-Run `cargo test` to compare generated Rust bindings to the expectations.
+### Testing Bindings Generation
 
-### Running All Tests
+To regenerate bindings from the corpus of test headers in `tests/headers` and
+compare them against the expected bindings in `tests/expectations/tests`, run:
 
 ```
-$ cargo test --features testing_only_libclang_$VERSION
+$ cargo test
 ```
 
-Where `$VERSION` is one of:
+As long as you aren't making any changes to `bindgen`'s output, running this
+should be sufficient to test your local modifications.
 
-* `4`
-* `3_9`
-* `3_8`
+### Testing Generated Bindings
 
-depending on which version of `libclang` you have installed.
+If your local changes are introducing expected modifications in the
+`tests/expectations/tests/*` bindings files, then you should test that the
+generated bindings files still compile, and that their struct layout tests still
+pass.
 
-### Running a Single Test
+You can do this with these commands:
 
-To generate bindings for a single test header, compile the bindings, and run the
-layout assertion tests for those bindings, use the `tests/test-one.sh`
-script. It supports fuzzy searching for test headers. For example, to test
+```
+$ cd tests/expectations
+$ cargo test
+```
+
+### Testing a Single Header's Bindings Generation and Compiling its Bindings
+
+Sometimes its useful to work with one test header from start (generating
+bindings for it) to finish (compiling the bindings and running their layout
+tests). This can be done with the `tests/test-one.sh` script. It supports fuzzy
+searching for test headers. For example, to test
 `tests/headers/what_is_going_on.hpp`, execute this command:
 
 ```
@@ -132,14 +144,17 @@ bindings. Put those in `tests/expectations/tests`.
 If your new test requires certain flags to be passed to `bindgen`, you can
 specify them at the top of the test header, with a comment like this:
 
+`new_test_header.hpp`:
+
 ```c
 // bindgen-flags: --enable-cxx-namespaces -- -std=c++14
 ```
 
-Then verify the new Rust bindings compile and pass some basic tests:
+Then verify the new Rust bindings compile and pass their layout tests:
 
 ```
-$ cargo test -p tests_expectations
+$ cd tests/expectations
+$ cargo test new_test_header
 ```
 
 ### Test Expectations and `libclang` Versions
@@ -160,6 +175,22 @@ many version of `libclang` installed locally. Just make a work-in-progress pull
 request, and then when Travis CI fails, it will log a diff of the
 expectations. Use the diff to patch the appropriate expectation file locally and
 then update your pull request.
+
+Usually, `bindgen`'s test runner can infer which version of `libclang` you
+have. If for some reason it can't, you can force a specific `libclang` version
+to check the bindings against with a cargo feature:
+
+```
+$ cargo test --features testing_only_libclang_$VERSION
+```
+
+Where `$VERSION` is one of:
+
+* `4`
+* `3_9`
+* `3_8`
+
+depending on which version of `libclang` you have installed.
 
 ## Automatic code formatting
 
