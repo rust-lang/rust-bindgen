@@ -7,7 +7,7 @@ template<typename T, typename U> class Foo {
 };
 
 template<typename T> class B {
-    T m_member;
+    T m_member { 0 };
 };
 
 void bar(Foo<int, int> foo);
