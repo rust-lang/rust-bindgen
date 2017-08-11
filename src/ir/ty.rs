@@ -13,6 +13,7 @@ use super::template::{AsTemplateParam, TemplateInstantiation, TemplateParameters
 use super::traversal::{EdgeKind, Trace, Tracer};
 use clang::{self, Cursor};
 use parse::{ClangItemParser, ParseError, ParseResult};
+use std::borrow::Cow;
 use std::io;
 use std::mem;
 
@@ -270,6 +271,16 @@ impl Type {
     /// i.e. is alphanumeric (including '_') and does not start with a digit.
     pub fn is_valid_identifier(name: &str) -> bool {
         clang::is_valid_identifier(name)
+    }
+
+    /// Takes `name`, and returns a suitable identifier representation for it.
+    pub fn sanitize_name<'a>(name: &'a str) -> Cow<'a, str> {
+        if Self::is_valid_identifier(name) {
+            return Cow::Borrowed(name)
+        }
+
+        let name = name.replace(|c| c == ' ' || c == ':' || c == '.' , "_");
+        Cow::Owned(name)
     }
 
     /// See safe_canonical_type.

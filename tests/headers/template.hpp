@@ -12,9 +12,14 @@ template<typename T> class B {
 
 void bar(Foo<int, int> foo);
 
+namespace mozilla {
+class Foo;
+};
+
 struct C {
     B<unsigned int> mB;
     B<const int*> mBConstPtr;
+    B<const mozilla::Foo*> mBConstStructPtr;
     B<const int> mBConst;
     B<volatile int> mBVolatile;
     B<const bool> mBConstBool;
