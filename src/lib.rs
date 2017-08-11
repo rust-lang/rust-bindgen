@@ -1382,8 +1382,7 @@ impl<'ctx> Bindings<'ctx> {
             self.write(Box::new(file))?;
         }
 
-        self.format_generated_file(path.as_ref());
-        Ok(())
+        self.rustfmt_generated_file(path.as_ref())
     }
 
     /// Write these bindings as source text to the given `Write`able.
@@ -1407,28 +1406,60 @@ impl<'ctx> Bindings<'ctx> {
         ps.s.out.flush()
     }
 
-    /// Checks if format_bindings is set and runs rustfmt on the file
-    fn format_generated_file(&self, file: &Path) {
-        if !self.context.options().format_bindings {
-            return;
+    /// Checks if rustfmt_bindings is set and runs rustfmt on the file
+    fn rustfmt_generated_file(&self, file: &Path) -> io::Result<()> {
+        if !self.context.options().rustfmt_bindings {
+            return Ok(());
         }
 
         let rustfmt = if let Ok(rustfmt) = which::which("rustfmt") {
             rustfmt
         } else {
-            error!("Could not find rustfmt in the global path.");
-            return;
+            return Err(io::Error::new(
+                io::ErrorKind::Other,
+                "Rustfmt activated, but it could not be found in global path.",
+            ));
         };
 
         let mut cmd = Command::new(rustfmt);
 
-        if let Some(path) = self.context.options().format_configuration_file.as_ref().and_then(
-            |f| f.to_str()) {
+        if let Some(path) = self.context
+            .options()
+            .rustfmt_configuration_file
+            .as_ref()
+            .and_then(|f| f.to_str())
+        {
             cmd.args(&["--config-path", path]);
         }
 
-        if let Err(e) = cmd.arg(file).status() {
-            error!("Error executing rustfmt (exit code: {:?}).", e);
+        if let Ok(output) = cmd.arg(file).output() {
+            if !output.status.success() {
+                let stderr = String::from_utf8_lossy(&output.stderr);
+                match output.status.code() {
+                    Some(2) => Err(io::Error::new(
+                        io::ErrorKind::Other,
+                        format!("Rustfmt parsing errors:\n{}", stderr),
+                    )),
+                    Some(3) => {
+                        warn!(
+                            "Rustfmt could not format some lines:\n{}",
+                            stderr
+                        );
+                        Ok(())
+                    }
+                    _ => Err(io::Error::new(
+                        io::ErrorKind::Other,
+                        format!("Internal rustfmt error:\n{}", stderr),
+                    )),
+                }
+            } else {
+                Ok(())
+            }
+        } else {
+            Err(io::Error::new(
+                io::ErrorKind::Other,
+                "Error executing rustfmt!",
+            ))
         }
     }
 }
