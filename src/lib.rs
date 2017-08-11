@@ -456,13 +456,16 @@ impl Builder {
             );
         }
 
-        if !self.options.format_bindings {
-            output_vector.push("--format-bindings".into());
+        if !self.options.rustfmt_bindings {
+            output_vector.push("--rustfmt-bindings".into());
         }
 
-        if let Some(path) = self.options.format_configuration_file.as_ref().and_then(
-            |f| f.to_str()) {
-            output_vector.push("--format-configuration-file".into());
+        if let Some(path) = self.options
+            .rustfmt_configuration_file
+            .as_ref()
+            .and_then(|f| f.to_str())
+        {
+            output_vector.push("--rustfmt-configuration-file".into());
             output_vector.push(path.into());
         }
 
@@ -852,15 +855,16 @@ impl Builder {
     }
 
     /// Set whether rustfmt should format the generated bindings.
-    pub fn format_bindings(mut self, doit: bool) -> Self {
-        self.options.format_bindings = doit;
+    pub fn rustfmt_bindings(mut self, doit: bool) -> Self {
+        self.options.rustfmt_bindings = doit;
         self
     }
 
     /// Set the absolute path to the rustfmt configuration file, if None, the standard rustfmt
     /// options are used.
-    pub fn format_configuration_file(mut self, path: Option<PathBuf>) -> Self {
-        self.options.format_configuration_file = path;
+    pub fn rustfmt_configuration_file(mut self, path: Option<PathBuf>) -> Self {
+        self = self.rustfmt_bindings(true);
+        self.options.rustfmt_configuration_file = path;
         self
     }
 
@@ -1125,11 +1129,11 @@ pub struct BindgenOptions {
     rust_features: RustFeatures,
 
     /// Whether rustfmt should format the generated bindings.
-    pub format_bindings: bool,
+    pub rustfmt_bindings: bool,
 
     /// The absolute path to the rustfmt configuration file, if None, the standard rustfmt
     /// options are used.
-    pub format_configuration_file: Option<PathBuf>,
+    pub rustfmt_configuration_file: Option<PathBuf>,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -1214,8 +1218,8 @@ impl Default for BindgenOptions {
             objc_extern_crate: false,
             enable_mangling: true,
             prepend_enum_name: true,
-            format_bindings: true,
-            format_configuration_file: None,
+            rustfmt_bindings: true,
+            rustfmt_configuration_file: None,
         }
     }
 }
