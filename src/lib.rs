@@ -26,6 +26,7 @@ extern crate peeking_take_while;
 extern crate regex;
 #[macro_use]
 extern crate lazy_static;
+extern crate which;
 
 #[cfg(feature = "logging")]
 #[macro_use]
@@ -455,6 +456,16 @@ impl Builder {
             );
         }
 
+        if !self.options.format_bindings {
+            output_vector.push("--format-bindings".into());
+        }
+
+        if let Some(path) = self.options.format_configuration_file.as_ref().and_then(
+            |f| f.to_str()) {
+            output_vector.push("--format-configuration-file".into());
+            output_vector.push(path.into());
+        }
+
         output_vector
     }
 
@@ -840,6 +851,19 @@ impl Builder {
         self
     }
 
+    /// Set whether rustfmt should format the generated bindings.
+    pub fn format_bindings(mut self, doit: bool) -> Self {
+        self.options.format_bindings = doit;
+        self
+    }
+
+    /// Set the absolute path to the rustfmt configuration file, if None, the standard rustfmt
+    /// options are used.
+    pub fn format_configuration_file(mut self, path: Option<PathBuf>) -> Self {
+        self.options.format_configuration_file = path;
+        self
+    }
+
     /// Generate the Rust bindings using the options built up thus far.
     pub fn generate<'ctx>(mut self) -> Result<Bindings<'ctx>, ()> {
         self.options.input_header = self.input_headers.pop();
@@ -1099,6 +1123,13 @@ pub struct BindgenOptions {
 
     /// Features to enable, derived from `rust_target`
     rust_features: RustFeatures,
+
+    /// Whether rustfmt should format the generated bindings.
+    pub format_bindings: bool,
+
+    /// The absolute path to the rustfmt configuration file, if None, the standard rustfmt
+    /// options are used.
+    pub format_configuration_file: Option<PathBuf>,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -1183,6 +1214,8 @@ impl Default for BindgenOptions {
             objc_extern_crate: false,
             enable_mangling: true,
             prepend_enum_name: true,
+            format_bindings: true,
+            format_configuration_file: None,
         }
     }
 }
@@ -1334,14 +1367,19 @@ impl<'ctx> Bindings<'ctx> {
 
     /// Write these bindings as source text to a file.
     pub fn write_to_file<P: AsRef<Path>>(&self, path: P) -> io::Result<()> {
-        let file = try!(
-            OpenOptions::new()
-                .write(true)
-                .truncate(true)
-                .create(true)
-                .open(path)
-        );
-        self.write(Box::new(file))
+        {
+            let file = try!(
+                OpenOptions::new()
+                    .write(true)
+                    .truncate(true)
+                    .create(true)
+                    .open(path.as_ref())
+            );
+            self.write(Box::new(file))?;
+        }
+
+        self.format_generated_file(path.as_ref());
+        Ok(())
     }
 
     /// Write these bindings as source text to the given `Write`able.
@@ -1363,6 +1401,31 @@ impl<'ctx> Bindings<'ctx> {
         try!(ps.print_remaining_comments());
         try!(eof(&mut ps.s));
         ps.s.out.flush()
+    }
+
+    /// Checks if format_bindings is set and runs rustfmt on the file
+    fn format_generated_file(&self, file: &Path) {
+        if !self.context.options().format_bindings {
+            return;
+        }
+
+        let rustfmt = if let Ok(rustfmt) = which::which("rustfmt") {
+            rustfmt
+        } else {
+            error!("Could not find rustfmt in the global path.");
+            return;
+        };
+
+        let mut cmd = Command::new(rustfmt);
+
+        if let Some(path) = self.context.options().format_configuration_file.as_ref().and_then(
+            |f| f.to_str()) {
+            cmd.args(&["--config-path", path]);
+        }
+
+        if let Err(e) = cmd.arg(file).status() {
+            error!("Error executing rustfmt (exit code: {:?}).", e);
+        }
     }
 }
 

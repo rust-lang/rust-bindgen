@@ -51,6 +51,7 @@ syntex_syntax = "0.58"
 regex = "0.2"
 # This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
 clap = "2"
+which = "1.0.2"
 
 [dependencies.aster]
 features = ["with-syntex"]
