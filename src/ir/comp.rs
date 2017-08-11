@@ -460,7 +460,7 @@ fn raw_fields_to_fields_and_bitfield_units<I>(ctx: &BindgenContext,
 /// (potentially multiple) bitfield units.
 fn bitfields_to_allocation_units<E, I>(ctx: &BindgenContext,
                                        bitfield_unit_count: &mut usize,
-                                       mut fields: &mut E,
+                                       fields: &mut E,
                                        raw_bitfields: I)
     where E: Extend<Field>,
           I: IntoIterator<Item=RawField>
@@ -478,7 +478,7 @@ fn bitfields_to_allocation_units<E, I>(ctx: &BindgenContext,
     // TODO(emilio): Take into account C++'s wide bitfields, and
     // packing, sigh.
 
-    fn flush_allocation_unit<E>(mut fields: &mut E,
+    fn flush_allocation_unit<E>(fields: &mut E,
                                 bitfield_unit_count: &mut usize,
                                 unit_size_in_bits: usize,
                                 unit_align_in_bits: usize,

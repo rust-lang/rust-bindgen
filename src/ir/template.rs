@@ -322,7 +322,7 @@ impl IsOpaque for TemplateInstantiation {
                 arg_path[1..].join("::")
             }).collect();
         {
-            let mut last = path.last_mut().unwrap();
+            let last = path.last_mut().unwrap();
             last.push('<');
             last.push_str(&args.join(", "));
             last.push('>');

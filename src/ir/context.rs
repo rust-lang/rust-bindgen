@@ -466,8 +466,8 @@ impl<'ctx> BindgenContext<'ctx> {
         assert!(item.id() != self.root_module);
         assert!(!self.items.contains_key(&item.id()));
 
-        if let Some(mut parent) = self.items.get_mut(&item.parent_id()) {
-            if let Some(mut module) = parent.as_module_mut() {
+        if let Some(parent) = self.items.get_mut(&item.parent_id()) {
+            if let Some(module) = parent.as_module_mut() {
                 debug!("add_item_to_module: adding {:?} as child of parent module {:?}",
                        item.id(),
                        item.parent_id());
@@ -607,7 +607,7 @@ impl<'ctx> BindgenContext<'ctx> {
                                to opaque blob");
                         Item::new_opaque_type(self.next_item_id(), &ty, self)
                     });
-                let mut item = self.items.get_mut(&id).unwrap();
+                let item = self.items.get_mut(&id).unwrap();
 
                 *item.kind_mut().as_type_mut().unwrap().kind_mut() =
                     TypeKind::ResolvedTypeRef(resolved);
@@ -699,7 +699,7 @@ impl<'ctx> BindgenContext<'ctx> {
             debug!("Replacing {:?} with {:?}", id, replacement);
 
             let new_parent = {
-                let mut item = self.items.get_mut(&id).unwrap();
+                let item = self.items.get_mut(&id).unwrap();
                 *item.kind_mut().as_type_mut().unwrap().kind_mut() =
                     TypeKind::ResolvedTypeRef(replacement);
                 item.parent_id()
