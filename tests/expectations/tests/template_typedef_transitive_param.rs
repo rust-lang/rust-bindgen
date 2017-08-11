@@ -5,12 +5,12 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
 pub struct Wrapper {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq)]
 pub struct Wrapper_Wrapped<T> {
     pub t: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,

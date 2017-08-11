@@ -5,19 +5,19 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
 pub struct Foo {
     pub _address: u8,
 }
 pub type Foo_FunctionPtr<T> =
     ::std::option::Option<unsafe extern "C" fn() -> T>;
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
 pub struct RefPtr {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
 pub struct RefPtr_Proxy {
     pub _address: u8,
 }
