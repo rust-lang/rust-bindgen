@@ -1,4 +1,4 @@
-// bindgen-flags: --rust-target 1.0 --with-derive-hash
+// bindgen-flags: --rust-target 1.0 --with-derive-hash --with-derive-partialeq
 
 
 #define RTE_CACHE_LINE_MIN_SIZE 64	/**< Minimum Cache line size. */
