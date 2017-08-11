@@ -1,4 +1,4 @@
-// bindgen-flags: --rust-target 1.0 --with-derive-hash
+// bindgen-flags: --rust-target 1.0 --with-derive-hash --with-derive-partialeq
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;

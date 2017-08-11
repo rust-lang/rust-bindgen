@@ -19,7 +19,7 @@ pub union rte_ipv4_tuple__bindgen_ty_1 {
     _bindgen_union_align: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1 {
     pub dport: u16,
     pub sport: u16,
@@ -112,7 +112,7 @@ pub union rte_ipv6_tuple__bindgen_ty_1 {
     _bindgen_union_align: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1 {
     pub dport: u16,
     pub sport: u16,

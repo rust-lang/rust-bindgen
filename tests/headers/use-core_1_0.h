@@ -1,4 +1,4 @@
-// bindgen-flags: --rust-target 1.0 --use-core --raw-line "extern crate core;" --with-derive-hash
+// bindgen-flags: --rust-target 1.0 --use-core --raw-line "extern crate core;" --with-derive-hash --with-derive-partialeq
 
 struct foo {
   int a, b;

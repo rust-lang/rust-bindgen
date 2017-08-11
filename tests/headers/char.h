@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash
+// bindgen-flags: --with-derive-hash --with-derive-partialeq
 //
 typedef char Char;
 typedef signed char SChar;

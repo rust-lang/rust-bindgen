@@ -31,22 +31,25 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
 impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
     fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
 }
+impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
+    fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
+}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct rte_ipv4_tuple {
     pub src_addr: u32,
     pub dst_addr: u32,
     pub __bindgen_anon_1: rte_ipv4_tuple__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct rte_ipv4_tuple__bindgen_ty_1 {
     pub __bindgen_anon_1: __BindgenUnionField<rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1>,
     pub sctp_tag: __BindgenUnionField<u32>,
     pub bindgen_union_field: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1 {
     pub dport: u16,
     pub sport: u16,
@@ -119,21 +122,21 @@ impl Clone for rte_ipv4_tuple {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct rte_ipv6_tuple {
     pub src_addr: [u8; 16usize],
     pub dst_addr: [u8; 16usize],
     pub __bindgen_anon_1: rte_ipv6_tuple__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct rte_ipv6_tuple__bindgen_ty_1 {
     pub __bindgen_anon_1: __BindgenUnionField<rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1>,
     pub sctp_tag: __BindgenUnionField<u32>,
     pub bindgen_union_field: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1 {
     pub dport: u16,
     pub sport: u16,

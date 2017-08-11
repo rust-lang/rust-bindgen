@@ -31,8 +31,11 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
 impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
     fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
 }
+impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
+    fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
+}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct nsFoo {
     pub mBar: mozilla_StyleShapeSource,
 }
@@ -52,7 +55,7 @@ impl Clone for nsFoo {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct mozilla_FragmentOrURL {
     pub mIsLocalRef: bool,
 }
@@ -74,7 +77,7 @@ impl Clone for mozilla_FragmentOrURL {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct mozilla_Position {
     pub _address: u8,
 }
@@ -89,19 +92,19 @@ impl Clone for mozilla_Position {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
 pub struct mozilla_StyleShapeSource {
     pub __bindgen_anon_1: mozilla_StyleShapeSource__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
 pub struct mozilla_StyleShapeSource__bindgen_ty_1 {
     pub mPosition: __BindgenUnionField<*mut mozilla_Position>,
     pub mFragmentOrURL: __BindgenUnionField<*mut mozilla_FragmentOrURL>,
     pub bindgen_union_field: u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash)]
+#[derive(Debug, Copy, Hash, PartialEq)]
 pub struct Bar {
     pub mFoo: *mut nsFoo,
 }
