@@ -1218,7 +1218,7 @@ impl Default for BindgenOptions {
             objc_extern_crate: false,
             enable_mangling: true,
             prepend_enum_name: true,
-            rustfmt_bindings: true,
+            rustfmt_bindings: false,
             rustfmt_configuration_file: None,
         }
     }
