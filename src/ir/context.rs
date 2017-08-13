@@ -1452,13 +1452,7 @@ impl<'ctx> BindgenContext<'ctx> {
             _ => return None,
         };
 
-        let mut spelling = ty.spelling();
-        // avoid the allocation if possible
-        if spelling.contains(' ') {
-            // These names are used in generated test names,
-            // they should be valid identifiers
-            spelling = spelling.replace(' ', "_");
-        }
+        let spelling = ty.spelling();
         let is_const = ty.is_const();
         let layout = ty.fallible_layout().ok();
         let ty = Type::new(Some(spelling), layout, type_kind, is_const);
