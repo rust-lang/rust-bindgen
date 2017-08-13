@@ -28,10 +28,7 @@ struct rte_ipv6_tuple {
         };
 };
 
-// TODO(tmfink) uncomment once test passes
-#if 0
 union rte_thash_tuple {
         struct rte_ipv4_tuple   v4;
         struct rte_ipv6_tuple   v6;
 } __attribute__((aligned(16)));
-#endif

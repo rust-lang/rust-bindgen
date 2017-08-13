@@ -16,6 +16,7 @@ pub struct rte_ipv4_tuple {
 pub union rte_ipv4_tuple__bindgen_ty_1 {
     pub __bindgen_anon_1: rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1,
     pub sctp_tag: u32,
+    _bindgen_union_align: u32,
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash)]
@@ -108,6 +109,7 @@ pub struct rte_ipv6_tuple {
 pub union rte_ipv6_tuple__bindgen_ty_1 {
     pub __bindgen_anon_1: rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1,
     pub sctp_tag: u32,
+    _bindgen_union_align: u32,
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash)]
@@ -186,5 +188,33 @@ impl Clone for rte_ipv6_tuple {
     fn clone(&self) -> Self { *self }
 }
 impl Default for rte_ipv6_tuple {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+#[repr(C)]
+#[derive(Copy)]
+pub union rte_thash_tuple {
+    pub v4: rte_ipv4_tuple,
+    pub v6: rte_ipv6_tuple,
+    _bindgen_union_align: [u8; 48usize],
+}
+#[test]
+fn bindgen_test_layout_rte_thash_tuple() {
+    assert_eq!(::std::mem::size_of::<rte_thash_tuple>() , 48usize , concat ! (
+               "Size of: " , stringify ! ( rte_thash_tuple ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const rte_thash_tuple ) ) . v4 as * const _ as
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_thash_tuple ) ,
+                "::" , stringify ! ( v4 ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const rte_thash_tuple ) ) . v6 as * const _ as
+                usize } , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( rte_thash_tuple ) ,
+                "::" , stringify ! ( v6 ) ));
+}
+impl Clone for rte_thash_tuple {
+    fn clone(&self) -> Self { *self }
+}
+impl Default for rte_thash_tuple {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }

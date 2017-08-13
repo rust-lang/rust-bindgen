@@ -1612,14 +1612,20 @@ impl CodeGenerator for CompInfo {
             );
         }
 
-        if is_union && !self.can_be_rust_union(ctx) {
+        if is_union {
             let layout = layout.expect("Unable to get layout information?");
             let ty = BlobTyBuilder::new(layout).build();
-            let field = StructFieldBuilder::named("bindgen_union_field")
-                .pub_()
-                .build_ty(ty);
+            
+            let field = if self.can_be_rust_union(ctx) {
+                StructFieldBuilder::named("_bindgen_union_align")
+                    .build_ty(ty)
+            } else {
+                struct_layout.saw_union(layout);
 
-            struct_layout.saw_union(layout);
+                StructFieldBuilder::named("bindgen_union_field")
+                    .pub_()
+                    .build_ty(ty)
+            };
 
             fields.push(field);
         }

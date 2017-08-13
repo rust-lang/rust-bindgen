@@ -9,6 +9,7 @@
 pub union pixel {
     pub rgba: ::std::os::raw::c_uint,
     pub __bindgen_anon_1: pixel__bindgen_ty_1,
+    _bindgen_union_align: u32,
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash)]

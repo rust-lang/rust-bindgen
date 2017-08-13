@@ -10,6 +10,7 @@ pub union nsStyleUnion {
     pub mInt: ::std::os::raw::c_int,
     pub mFloat: f32,
     pub mPointer: *mut ::std::os::raw::c_void,
+    _bindgen_union_align: u64,
 }
 #[test]
 fn bindgen_test_layout_nsStyleUnion() {

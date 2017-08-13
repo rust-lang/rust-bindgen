@@ -92,6 +92,7 @@ pub union rte_mbuf__bindgen_ty_1 {
     pub refcnt_atomic: rte_atomic16_t,
     /// < Non-atomically accessed refcnt
     pub refcnt: u16,
+    _bindgen_union_align: u16,
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_1() {
@@ -124,6 +125,7 @@ pub union rte_mbuf__bindgen_ty_2 {
     /// < L2/L3/L4 and tunnel information.
     pub packet_type: u32,
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_2__bindgen_ty_1,
+    _bindgen_union_align: u32,
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash)]
@@ -462,6 +464,7 @@ pub union rte_mbuf__bindgen_ty_3 {
     pub sched: rte_mbuf__bindgen_ty_3__bindgen_ty_2,
     /// < User defined tags. See rte_distributor_process()
     pub usr: u32,
+    _bindgen_union_align: [u32; 2usize],
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -474,6 +477,7 @@ pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_1 {
 pub union rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 {
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1,
     pub lo: u32,
+    _bindgen_union_align: u32,
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash)]
@@ -639,6 +643,7 @@ pub union rte_mbuf__bindgen_ty_4 {
     pub userdata: *mut ::std::os::raw::c_void,
     /// < Allow 8-byte userdata on 32-bit
     pub udata64: u64,
+    _bindgen_union_align: u64,
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_4() {
@@ -671,6 +676,7 @@ pub union rte_mbuf__bindgen_ty_5 {
     /// < combined for easy fetch
     pub tx_offload: u64,
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_5__bindgen_ty_1,
+    _bindgen_union_align: u64,
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash)]

@@ -41,6 +41,7 @@ impl Clone for A_Segment {
 #[derive(Copy)]
 pub union A__bindgen_ty_1 {
     pub f: ::std::os::raw::c_int,
+    _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_A__bindgen_ty_1() {
@@ -64,6 +65,7 @@ impl Default for A__bindgen_ty_1 {
 #[derive(Copy)]
 pub union A__bindgen_ty_2 {
     pub d: ::std::os::raw::c_int,
+    _bindgen_union_align: u32,
 }
 #[test]
 fn bindgen_test_layout_A__bindgen_ty_2() {
@@ -169,6 +171,7 @@ pub struct C {
 pub union C__bindgen_ty_1 {
     pub mFunc: C__bindgen_ty_1__bindgen_ty_1,
     pub __bindgen_anon_1: C__bindgen_ty_1__bindgen_ty_2,
+    _bindgen_union_align: [u32; 4usize],
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]

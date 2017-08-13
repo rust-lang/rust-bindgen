@@ -8,6 +8,7 @@
 pub union UnionWithDtor {
     pub mFoo: ::std::os::raw::c_int,
     pub mBar: *mut ::std::os::raw::c_void,
+    _bindgen_union_align: u64,
 }
 #[test]
 fn bindgen_test_layout_UnionWithDtor() {
