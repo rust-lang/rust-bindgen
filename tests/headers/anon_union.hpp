@@ -1,4 +1,5 @@
 // bindgen-flags: --with-derive-hash
+
 template<typename T>
 struct TErrorResult {
   enum UnionState {

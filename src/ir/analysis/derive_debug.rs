@@ -208,7 +208,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                 );
 
                 if info.kind() == CompKind::Union {
-                    if self.ctx.options().unstable_rust {
+                    if self.ctx.options().rust_features().untagged_union() {
                         trace!("    cannot derive Debug for Rust unions");
                         return self.insert(id);
                     }

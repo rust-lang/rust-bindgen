@@ -207,7 +207,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
                 }
 
                 if info.kind() == CompKind::Union {
-                    if !self.ctx.options().unstable_rust {
+                    if !self.ctx.options().rust_features().untagged_union() {
                         // NOTE: If there's no template parameters we can derive copy
                         // unconditionally, since arrays are magical for rustc, and
                         // __BindgenUnionField always implements copy.
