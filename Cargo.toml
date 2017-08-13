@@ -16,11 +16,10 @@ documentation = "https://docs.rs/bindgen"
 version = "0.29.0"
 build = "build.rs"
 
-exclude = [
-  "bindgen-integration",
-  "ci",
-  "tests/**",
-  "*.orig",
+include = [
+  "Cargo.toml",
+  "build.rs",
+  "src/*.rs",
 ]
 
 [badges]
