@@ -1790,7 +1790,9 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Compute whether we can derive debug.
     fn compute_cannot_derive_debug(&mut self) {
         assert!(self.cannot_derive_debug.is_none());
-        self.cannot_derive_debug = Some(analyze::<CannotDeriveDebug>(self));
+        if self.options.derive_debug {
+            self.cannot_derive_debug = Some(analyze::<CannotDeriveDebug>(self));
+        }
     }
 
     /// Look up whether the item with `id` can
@@ -1807,7 +1809,9 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Compute whether we can derive default.
     fn compute_cannot_derive_default(&mut self) {
         assert!(self.cannot_derive_default.is_none());
-        self.cannot_derive_default = Some(analyze::<CannotDeriveDefault>(self));
+        if self.options.derive_default {
+            self.cannot_derive_default = Some(analyze::<CannotDeriveDefault>(self));
+        }
     }
 
     /// Look up whether the item with `id` can
@@ -1830,7 +1834,9 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Compute whether we can derive hash.
     fn compute_cannot_derive_hash(&mut self) {
         assert!(self.cannot_derive_hash.is_none());
-        self.cannot_derive_hash = Some(analyze::<CannotDeriveHash>(self));
+        if self.options.derive_hash {
+            self.cannot_derive_hash = Some(analyze::<CannotDeriveHash>(self));
+        }
     }
 
     /// Look up whether the item with `id` can
