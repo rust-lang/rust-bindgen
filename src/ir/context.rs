@@ -1867,7 +1867,9 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Compute whether we can derive hash.
     fn compute_cannot_derive_partialeq(&mut self) {
         assert!(self.cannot_derive_partialeq.is_none());
-        self.cannot_derive_partialeq = Some(analyze::<CannotDerivePartialEq>(self));
+        if self.options.derive_partialeq {
+            self.cannot_derive_partialeq = Some(analyze::<CannotDerivePartialEq>(self));
+        }
     }
 
     /// Look up whether the item with `id` can
