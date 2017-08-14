@@ -20,11 +20,18 @@ struct C {
     B<unsigned int> mB;
     B<const int*> mBConstPtr;
     B<const mozilla::Foo*> mBConstStructPtr;
+    B<const mozilla::Foo*[1]> mBConstStructPtrArray;
     B<const int> mBConst;
     B<volatile int> mBVolatile;
     B<const bool> mBConstBool;
     B<const char16_t> mBConstChar;
     B<int[1]> mBArray;
+    B<int*[1]> mBPtrArray;
+    B<int(*)[1]> mBArrayPtr;
+    B<int&> mBRef;
+    B<const int&> mBConstRef;
+    B<int*&> mPtrRef;
+    B<int(&)[1]> mArrayRef;
     // clang 3.x ignores const in this case, so they generate different
     // result than clang 4.0.
     // B<const int[1]> mBConstArray;

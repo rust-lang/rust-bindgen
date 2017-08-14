@@ -39,15 +39,22 @@ pub struct C {
     pub mB: B<::std::os::raw::c_uint>,
     pub mBConstPtr: B<*const ::std::os::raw::c_int>,
     pub mBConstStructPtr: B<*const mozilla_Foo>,
+    pub mBConstStructPtrArray: B<[*const mozilla_Foo; 1usize]>,
     pub mBConst: B<::std::os::raw::c_int>,
     pub mBVolatile: B<::std::os::raw::c_int>,
     pub mBConstBool: B<bool>,
     pub mBConstChar: B<u16>,
     pub mBArray: B<[::std::os::raw::c_int; 1usize]>,
+    pub mBPtrArray: B<[*mut ::std::os::raw::c_int; 1usize]>,
+    pub mBArrayPtr: B<*mut [::std::os::raw::c_int; 1usize]>,
+    pub mBRef: B<*mut ::std::os::raw::c_int>,
+    pub mBConstRef: B<*const ::std::os::raw::c_int>,
+    pub mPtrRef: B<*mut *mut ::std::os::raw::c_int>,
+    pub mArrayRef: B<*mut [::std::os::raw::c_int; 1usize]>,
 }
 #[test]
 fn bindgen_test_layout_C() {
-    assert_eq!(::std::mem::size_of::<C>() , 40usize , concat ! (
+    assert_eq!(::std::mem::size_of::<C>() , 96usize , concat ! (
                "Size of: " , stringify ! ( C ) ));
     assert_eq! (::std::mem::align_of::<C>() , 8usize , concat ! (
                 "Alignment of " , stringify ! ( C ) ));
@@ -66,30 +73,65 @@ fn bindgen_test_layout_C() {
                 "Alignment of field: " , stringify ! ( C ) , "::" , stringify
                 ! ( mBConstStructPtr ) ));
     assert_eq! (unsafe {
+                & ( * ( 0 as * const C ) ) . mBConstStructPtrArray as * const
+                _ as usize } , 24usize , concat ! (
+                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
+                ! ( mBConstStructPtrArray ) ));
+    assert_eq! (unsafe {
                 & ( * ( 0 as * const C ) ) . mBConst as * const _ as usize } ,
-                24usize , concat ! (
+                32usize , concat ! (
                 "Alignment of field: " , stringify ! ( C ) , "::" , stringify
                 ! ( mBConst ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const C ) ) . mBVolatile as * const _ as usize
-                } , 28usize , concat ! (
+                } , 36usize , concat ! (
                 "Alignment of field: " , stringify ! ( C ) , "::" , stringify
                 ! ( mBVolatile ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const C ) ) . mBConstBool as * const _ as usize
-                } , 32usize , concat ! (
+                } , 40usize , concat ! (
                 "Alignment of field: " , stringify ! ( C ) , "::" , stringify
                 ! ( mBConstBool ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const C ) ) . mBConstChar as * const _ as usize
-                } , 34usize , concat ! (
+                } , 42usize , concat ! (
                 "Alignment of field: " , stringify ! ( C ) , "::" , stringify
                 ! ( mBConstChar ) ));
     assert_eq! (unsafe {
                 & ( * ( 0 as * const C ) ) . mBArray as * const _ as usize } ,
-                36usize , concat ! (
+                44usize , concat ! (
                 "Alignment of field: " , stringify ! ( C ) , "::" , stringify
                 ! ( mBArray ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C ) ) . mBPtrArray as * const _ as usize
+                } , 48usize , concat ! (
+                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
+                ! ( mBPtrArray ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C ) ) . mBArrayPtr as * const _ as usize
+                } , 56usize , concat ! (
+                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
+                ! ( mBArrayPtr ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C ) ) . mBRef as * const _ as usize } ,
+                64usize , concat ! (
+                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
+                ! ( mBRef ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C ) ) . mBConstRef as * const _ as usize
+                } , 72usize , concat ! (
+                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
+                ! ( mBConstRef ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C ) ) . mPtrRef as * const _ as usize } ,
+                80usize , concat ! (
+                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
+                ! ( mPtrRef ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const C ) ) . mArrayRef as * const _ as usize }
+                , 88usize , concat ! (
+                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
+                ! ( mArrayRef ) ));
 }
 impl Clone for C {
     fn clone(&self) -> Self { *self }
@@ -353,6 +395,17 @@ fn __bindgen_test_layout_B_open0_ptr_const_mozilla__Foo_close0_instantiation() {
                B<*const mozilla_Foo> ) ));
 }
 #[test]
+fn __bindgen_test_layout_B_open0_array1_ptr_const_mozilla__Foo_close0_instantiation() {
+    assert_eq!(::std::mem::size_of::<B<[*const mozilla_Foo; 1usize]>>() ,
+               8usize , concat ! (
+               "Size of template specialization: " , stringify ! (
+               B<[*const mozilla_Foo; 1usize]> ) ));
+    assert_eq!(::std::mem::align_of::<B<[*const mozilla_Foo; 1usize]>>() ,
+               8usize , concat ! (
+               "Alignment of template specialization: " , stringify ! (
+               B<[*const mozilla_Foo; 1usize]> ) ));
+}
+#[test]
 fn __bindgen_test_layout_B_open0_const_int_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<B<::std::os::raw::c_int>>() , 4usize ,
                concat ! (
@@ -393,7 +446,7 @@ fn __bindgen_test_layout_B_open0_const_char16_t_close0_instantiation() {
                ) ));
 }
 #[test]
-fn __bindgen_test_layout_B_open0_array_int_1_close0_instantiation() {
+fn __bindgen_test_layout_B_open0_array1_int_close0_instantiation() {
     assert_eq!(::std::mem::size_of::<B<[::std::os::raw::c_int; 1usize]>>() ,
                4usize , concat ! (
                "Size of template specialization: " , stringify ! (
@@ -402,6 +455,72 @@ fn __bindgen_test_layout_B_open0_array_int_1_close0_instantiation() {
                4usize , concat ! (
                "Alignment of template specialization: " , stringify ! (
                B<[::std::os::raw::c_int; 1usize]> ) ));
+}
+#[test]
+fn __bindgen_test_layout_B_open0_array1_ptr_int_close0_instantiation() {
+    assert_eq!(::std::mem::size_of::<B<[*mut ::std::os::raw::c_int; 1usize]>>()
+               , 8usize , concat ! (
+               "Size of template specialization: " , stringify ! (
+               B<[*mut ::std::os::raw::c_int; 1usize]> ) ));
+    assert_eq!(::std::mem::align_of::<B<[*mut ::std::os::raw::c_int; 1usize]>>()
+               , 8usize , concat ! (
+               "Alignment of template specialization: " , stringify ! (
+               B<[*mut ::std::os::raw::c_int; 1usize]> ) ));
+}
+#[test]
+fn __bindgen_test_layout_B_open0_ptr_array1_int_close0_instantiation() {
+    assert_eq!(::std::mem::size_of::<B<*mut [::std::os::raw::c_int; 1usize]>>()
+               , 8usize , concat ! (
+               "Size of template specialization: " , stringify ! (
+               B<*mut [::std::os::raw::c_int; 1usize]> ) ));
+    assert_eq!(::std::mem::align_of::<B<*mut [::std::os::raw::c_int; 1usize]>>()
+               , 8usize , concat ! (
+               "Alignment of template specialization: " , stringify ! (
+               B<*mut [::std::os::raw::c_int; 1usize]> ) ));
+}
+#[test]
+fn __bindgen_test_layout_B_open0_ref_int_close0_instantiation() {
+    assert_eq!(::std::mem::size_of::<B<*mut ::std::os::raw::c_int>>() , 8usize
+               , concat ! (
+               "Size of template specialization: " , stringify ! (
+               B<*mut ::std::os::raw::c_int> ) ));
+    assert_eq!(::std::mem::align_of::<B<*mut ::std::os::raw::c_int>>() ,
+               8usize , concat ! (
+               "Alignment of template specialization: " , stringify ! (
+               B<*mut ::std::os::raw::c_int> ) ));
+}
+#[test]
+fn __bindgen_test_layout_B_open0_ref_const_int_close0_instantiation() {
+    assert_eq!(::std::mem::size_of::<B<*const ::std::os::raw::c_int>>() ,
+               8usize , concat ! (
+               "Size of template specialization: " , stringify ! (
+               B<*const ::std::os::raw::c_int> ) ));
+    assert_eq!(::std::mem::align_of::<B<*const ::std::os::raw::c_int>>() ,
+               8usize , concat ! (
+               "Alignment of template specialization: " , stringify ! (
+               B<*const ::std::os::raw::c_int> ) ));
+}
+#[test]
+fn __bindgen_test_layout_B_open0_ref_ptr_int_close0_instantiation() {
+    assert_eq!(::std::mem::size_of::<B<*mut *mut ::std::os::raw::c_int>>() ,
+               8usize , concat ! (
+               "Size of template specialization: " , stringify ! (
+               B<*mut *mut ::std::os::raw::c_int> ) ));
+    assert_eq!(::std::mem::align_of::<B<*mut *mut ::std::os::raw::c_int>>() ,
+               8usize , concat ! (
+               "Alignment of template specialization: " , stringify ! (
+               B<*mut *mut ::std::os::raw::c_int> ) ));
+}
+#[test]
+fn __bindgen_test_layout_B_open0_ref_array1_int_close0_instantiation() {
+    assert_eq!(::std::mem::size_of::<B<*mut [::std::os::raw::c_int; 1usize]>>()
+               , 8usize , concat ! (
+               "Size of template specialization: " , stringify ! (
+               B<*mut [::std::os::raw::c_int; 1usize]> ) ));
+    assert_eq!(::std::mem::align_of::<B<*mut [::std::os::raw::c_int; 1usize]>>()
+               , 8usize , concat ! (
+               "Alignment of template specialization: " , stringify ! (
+               B<*mut [::std::os::raw::c_int; 1usize]> ) ));
 }
 #[test]
 fn __bindgen_test_layout_Foo_open0_int_int_close0_instantiation_1() {
