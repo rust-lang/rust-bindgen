@@ -694,35 +694,7 @@ impl Item {
                     })
             }
             ItemKind::Type(ref ty) => {
-                let name = match *ty.kind() {
-                    TypeKind::ResolvedTypeRef(..) => {
-                        panic!("should have resolved this in name_target()")
-                    }
-                    TypeKind::Pointer(inner) => {
-                        ctx.resolve_item(inner)
-                           .expect_type().name()
-                           .map(|name| {
-                               format!("ptr_{}", Type::sanitize_name(name))
-                           })
-                    }
-                    TypeKind::Array(inner, length) => {
-                        ctx.resolve_item(inner)
-                           .expect_type().name()
-                           .map(|name| {
-                               format!(
-                                   "array_{}_{}",
-                                   Type::sanitize_name(name),
-                                   length,
-                                )
-                            })
-                    }
-                    _ => {
-                        ty.name()
-                          .map(Type::sanitize_name)
-                          .map(Into::into)
-                    }
-                };
-                name.unwrap_or_else(|| {
+                ty.sanitized_name(ctx).map(Into::into).unwrap_or_else(|| {
                     format!("_bindgen_ty_{}", self.exposed_id(ctx))
                 })
             }
