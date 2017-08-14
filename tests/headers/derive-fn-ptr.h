@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash
+// bindgen-flags: --with-derive-hash --with-derive-partialeq
 //
 typedef void (*my_fun_t)(int, int, int, int,
                          int, int, int, int,

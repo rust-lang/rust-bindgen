@@ -6,7 +6,7 @@
 
 pub type __void_t = ::std::os::raw::c_void;
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
 pub struct __iterator_traits {
     pub _address: u8,
 }

@@ -7,7 +7,7 @@
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum baz { }
 #[repr(C)]
-#[derive(Debug, Copy, Hash)]
+#[derive(Debug, Copy, Hash, PartialEq)]
 pub struct Foo {
     pub bar: ::std::option::Option<unsafe extern "C" fn(x:
                                                             ::std::os::raw::c_int,

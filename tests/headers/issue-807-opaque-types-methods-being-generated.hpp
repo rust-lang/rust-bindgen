@@ -1,4 +1,4 @@
-// bindgen-flags: --whitelist-type Whitelisted --opaque-type Opaque --with-derive-hash -- -std=c++11
+// bindgen-flags: --whitelist-type Whitelisted --opaque-type Opaque --with-derive-hash --with-derive-partialeq -- -std=c++11
 
 // These types are not explicitly whitelisted, but are reachable through the
 // opaque type.

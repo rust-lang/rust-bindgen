@@ -8,7 +8,7 @@ use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::TypeKind;
 use clang;
 use clang_sys::{self, CXCallingConv};
-use ir::derive::{CanTriviallyDeriveDebug, CanTriviallyDeriveHash};
+use ir::derive::{CanTriviallyDeriveDebug, CanTriviallyDeriveHash, CanTriviallyDerivePartialEq};
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use std::io;
 use syntax::abi;
@@ -497,6 +497,20 @@ impl CanTriviallyDeriveDebug for FunctionSig {
 
 impl CanTriviallyDeriveHash for FunctionSig {
     fn can_trivially_derive_hash(&self) -> bool {
+        if self.argument_types.len() > RUST_DERIVE_FUNPTR_LIMIT {
+            return false;
+        }
+
+        match self.abi {
+            Abi::Known(abi::Abi::C) |
+            Abi::Unknown(..) => true,
+            _ => false,
+        }
+    }
+}
+
+impl CanTriviallyDerivePartialEq for FunctionSig {
+    fn can_trivially_derive_partialeq(&self) -> bool {
         if self.argument_types.len() > RUST_DERIVE_FUNPTR_LIMIT {
             return false;
         }

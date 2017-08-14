@@ -12,7 +12,7 @@ pub union foo {
     _bindgen_union_align: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct foo__bindgen_ty_1 {
     pub _bitfield_1: u32,
     pub __bindgen_align: [u32; 0usize],

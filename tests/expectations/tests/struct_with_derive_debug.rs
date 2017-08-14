@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct LittleArray {
     pub a: [::std::os::raw::c_int; 32usize],
 }
@@ -48,7 +48,7 @@ impl Default for BigArray {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct WithLittleArray {
     pub a: LittleArray,
 }

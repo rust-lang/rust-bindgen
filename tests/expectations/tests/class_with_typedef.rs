@@ -6,7 +6,7 @@
 
 pub type AnotherInt = ::std::os::raw::c_int;
 #[repr(C)]
-#[derive(Debug, Copy, Hash)]
+#[derive(Debug, Copy, Hash, PartialEq)]
 pub struct C {
     pub c: C_MyInt,
     pub ptr: *mut C_MyInt,
@@ -85,7 +85,7 @@ impl C {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash)]
+#[derive(Debug, Copy, Hash, PartialEq)]
 pub struct D {
     pub _base: C,
     pub ptr: *mut C_MyInt,

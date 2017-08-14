@@ -31,15 +31,18 @@ impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
 impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
     fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
 }
+impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
+    fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
+}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct pixel {
     pub rgba: __BindgenUnionField<::std::os::raw::c_uint>,
     pub __bindgen_anon_1: __BindgenUnionField<pixel__bindgen_ty_1>,
     pub bindgen_union_field: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct pixel__bindgen_ty_1 {
     pub r: ::std::os::raw::c_uchar,
     pub g: ::std::os::raw::c_uchar,

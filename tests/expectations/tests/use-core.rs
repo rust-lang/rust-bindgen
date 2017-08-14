@@ -6,7 +6,7 @@
 extern crate core;
 
 #[repr(C)]
-#[derive(Debug, Copy, Hash)]
+#[derive(Debug, Copy, Hash, PartialEq)]
 pub struct foo {
     pub a: ::std::os::raw::c_int,
     pub b: ::std::os::raw::c_int,

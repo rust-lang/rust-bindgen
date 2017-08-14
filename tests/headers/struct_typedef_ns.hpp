@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash --enable-cxx-namespaces
+// bindgen-flags: --with-derive-hash --with-derive-partialeq --enable-cxx-namespaces
 
 namespace whatever {
     typedef struct {

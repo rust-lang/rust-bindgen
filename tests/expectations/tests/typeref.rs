@@ -24,7 +24,7 @@ impl Default for nsFoo {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct mozilla_FragmentOrURL {
     pub mIsLocalRef: bool,
 }
@@ -46,7 +46,7 @@ impl Clone for mozilla_FragmentOrURL {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct mozilla_Position {
     pub _address: u8,
 }
@@ -77,7 +77,7 @@ impl Default for mozilla_StyleShapeSource {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash)]
+#[derive(Debug, Copy, Hash, PartialEq)]
 pub struct Bar {
     pub mFoo: *mut nsFoo,
 }

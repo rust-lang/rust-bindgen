@@ -5,13 +5,13 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
 pub struct detail_PointerType {
     pub _address: u8,
 }
 pub type detail_PointerType_Type<T> = *mut T;
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
 pub struct UniquePtr {
     pub _address: u8,
 }

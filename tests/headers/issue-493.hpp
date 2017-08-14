@@ -1,5 +1,4 @@
-// bindgen-flags: --with-derive-hash
-
+// bindgen-flags: --with-derive-hash --with-derive-partialeq
 template<class _CharT, class _Traits, class _Allocator>
 class basic_string
 {

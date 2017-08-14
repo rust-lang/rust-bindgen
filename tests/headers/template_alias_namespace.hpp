@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash --enable-cxx-namespaces -- -std=c++14
+// bindgen-flags: --with-derive-hash --with-derive-partialeq --enable-cxx-namespaces -- -std=c++14
 
 namespace JS {
 namespace detail {

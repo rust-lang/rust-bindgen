@@ -37,6 +37,9 @@ pub mod root {
     impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
         fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
     }
+    impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
+        fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
+    }
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]
