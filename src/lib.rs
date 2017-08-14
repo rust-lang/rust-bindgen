@@ -59,6 +59,7 @@ macro_rules! doc_mod {
 }
 
 mod clang;
+mod features;
 mod ir;
 mod parse;
 mod regex_set;
@@ -69,6 +70,7 @@ pub mod callbacks;
 mod codegen;
 
 doc_mod!(clang, clang_docs);
+doc_mod!(features, features_docs);
 doc_mod!(ir, ir_docs);
 doc_mod!(parse, parse_docs);
 doc_mod!(regex_set, regex_set_docs);
@@ -77,6 +79,8 @@ mod codegen {
     include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 }
 
+pub use features::{RustTarget, LATEST_STABLE_RUST, RUST_TARGET_STRINGS};
+use features::RustFeatures;
 use ir::context::{BindgenContext, ItemId};
 use ir::item::Item;
 use parse::{ClangItemParser, ParseError};
@@ -184,6 +188,8 @@ impl Builder {
             // Positional argument 'header'
             output_vector.push(header);
         }
+
+        output_vector.push(self.options.rust_target.into());
 
         self.options
             .bitfield_enums
@@ -357,10 +363,6 @@ impl Builder {
             output_vector.push("--no-prepend-enum-name".into());
         }
 
-        if !self.options.unstable_rust {
-            output_vector.push("--unstable-rust".into());
-        }
-
         self.options
             .opaque_types
             .get_items()
@@ -489,6 +491,14 @@ impl Builder {
     pub fn header_contents(mut self, name: &str, contents: &str) -> Builder {
         self.input_header_contents
             .push((name.into(), contents.into()));
+        self
+    }
+
+    /// Specify the rust target
+    ///
+    /// The default is the latest stable Rust version
+    pub fn rust_target(mut self, rust_target: RustTarget) -> Self {
+        self.options.set_rust_target(rust_target);
         self
     }
 
@@ -789,9 +799,10 @@ impl Builder {
     }
 
     /// Avoid generating any unstable Rust, such as Rust unions, in the generated bindings.
-    pub fn unstable_rust(mut self, doit: bool) -> Self {
-        self.options.unstable_rust = doit;
-        self
+    #[deprecated(note="please use `rust_target` instead")]
+    pub fn unstable_rust(self, doit: bool) -> Self {
+        let rust_target = if doit { RustTarget::Nightly } else { LATEST_STABLE_RUST };
+        self.rust_target(rust_target)
     }
 
     /// Use core instead of libstd in the generated bindings.
@@ -1016,10 +1027,6 @@ pub struct BindgenOptions {
     /// and types.
     pub derive_hash: bool,
 
-    /// True if we can use unstable Rust code in the bindings, false if we
-    /// cannot.
-    pub unstable_rust: bool,
-
     /// True if we should avoid using libstd to use libcore instead.
     pub use_core: bool,
 
@@ -1086,6 +1093,12 @@ pub struct BindgenOptions {
 
     /// Whether to prepend the enum name to bitfield or constant variants.
     pub prepend_enum_name: bool,
+
+    /// Version of the Rust compiler to target
+    rust_target: RustTarget,
+
+    /// Features to enable, derived from `rust_target`
+    rust_features: RustFeatures,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -1104,11 +1117,34 @@ impl BindgenOptions {
         self.constified_enum_modules.build();
         self.constified_enums.build();
     }
+
+    /// Update rust target version
+    pub fn set_rust_target(&mut self, rust_target: RustTarget) {
+        self.rust_target = rust_target;
+
+        // Keep rust_features synced with rust_target
+        self.rust_features = rust_target.into();
+    }
+
+    /// Get target Rust version
+    pub fn rust_target(&self) -> RustTarget {
+        self.rust_target
+    }
+
+    /// Get features supported by target Rust version
+    pub fn rust_features(&self) -> RustFeatures {
+        self.rust_features
+    }
+
 }
 
 impl Default for BindgenOptions {
     fn default() -> BindgenOptions {
+        let rust_target = RustTarget::default();
+
         BindgenOptions {
+            rust_target: rust_target,
+            rust_features: rust_target.into(),
             hidden_types: Default::default(),
             opaque_types: Default::default(),
             whitelisted_types: Default::default(),
@@ -1129,7 +1165,6 @@ impl Default for BindgenOptions {
             derive_hash: false,
             enable_cxx_namespaces: false,
             disable_name_namespacing: false,
-            unstable_rust: false,
             use_core: false,
             ctypes_prefix: None,
             namespaced_constants: true,

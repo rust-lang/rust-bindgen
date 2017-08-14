@@ -10,6 +10,7 @@ use super::traversal::{EdgeKind, Trace, Tracer};
 use super::template::TemplateParameters;
 use clang;
 use codegen::struct_layout::{align_to, bytes_from_bits_pow2};
+use ir::derive::CanDeriveCopy;
 use parse::{ClangItemParser, ParseError};
 use peeking_take_while::PeekableExt;
 use std::cell::Cell;
@@ -1316,6 +1317,22 @@ impl CompInfo {
     pub fn compute_bitfield_units(&mut self, ctx: &BindgenContext) {
         self.fields.compute_bitfield_units(ctx);
     }
+
+    /// Returns whether the current union can be represented as a Rust `union`
+    ///
+    /// Requirements:
+    ///     1. Current RustTarget allows for `untagged_union`
+    ///     2. Each field can derive `Copy`
+    pub fn can_be_rust_union(&self, ctx: &BindgenContext) -> bool {
+        ctx.options().rust_features().untagged_union() &&
+            self.fields().iter().all(|f|
+                match *f {
+                    Field::DataMember(ref field_data) => field_data.ty().can_derive_copy(ctx),
+                    Field::Bitfields(_) => false,
+                }
+            )
+    }
+
 }
 
 impl DotAttributes for CompInfo {

@@ -1,4 +1,5 @@
 // bindgen-flags: --with-derive-hash
+
 struct nsFoo;
 
 namespace mozilla {

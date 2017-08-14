@@ -232,7 +232,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveHash<'ctx, 'gen> {
                 );
 
                 if info.kind() == CompKind::Union {
-                    if self.ctx.options().unstable_rust {
+                    if self.ctx.options().rust_features().untagged_union() {
                         trace!("    cannot derive Hash for Rust unions");
                         return self.insert(id);
                     }

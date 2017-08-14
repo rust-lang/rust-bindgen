@@ -5,34 +5,6 @@
 
 
 #[repr(C)]
-pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
-impl <T> __BindgenUnionField<T> {
-    #[inline]
-    pub fn new() -> Self { __BindgenUnionField(::std::marker::PhantomData) }
-    #[inline]
-    pub unsafe fn as_ref(&self) -> &T { ::std::mem::transmute(self) }
-    #[inline]
-    pub unsafe fn as_mut(&mut self) -> &mut T { ::std::mem::transmute(self) }
-}
-impl <T> ::std::default::Default for __BindgenUnionField<T> {
-    #[inline]
-    fn default() -> Self { Self::new() }
-}
-impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
-    #[inline]
-    fn clone(&self) -> Self { Self::new() }
-}
-impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
-impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
-    fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        fmt.write_str("__BindgenUnionField")
-    }
-}
-impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
-    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
-}
-#[repr(C)]
-#[derive(Debug, Default, Copy, Hash)]
 pub struct nsFoo {
     pub mBar: mozilla_StyleShapeSource,
 }
@@ -48,8 +20,8 @@ fn bindgen_test_layout_nsFoo() {
                 "Alignment of field: " , stringify ! ( nsFoo ) , "::" ,
                 stringify ! ( mBar ) ));
 }
-impl Clone for nsFoo {
-    fn clone(&self) -> Self { *self }
+impl Default for nsFoo {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash)]
@@ -89,16 +61,19 @@ impl Clone for mozilla_Position {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash)]
 pub struct mozilla_StyleShapeSource {
     pub __bindgen_anon_1: mozilla_StyleShapeSource__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash)]
-pub struct mozilla_StyleShapeSource__bindgen_ty_1 {
-    pub mPosition: __BindgenUnionField<*mut mozilla_Position>,
-    pub mFragmentOrURL: __BindgenUnionField<*mut mozilla_FragmentOrURL>,
-    pub bindgen_union_field: u64,
+pub union mozilla_StyleShapeSource__bindgen_ty_1 {
+    pub mPosition: *mut mozilla_Position,
+    pub mFragmentOrURL: *mut mozilla_FragmentOrURL,
+}
+impl Default for mozilla_StyleShapeSource__bindgen_ty_1 {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+impl Default for mozilla_StyleShapeSource {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Hash)]
