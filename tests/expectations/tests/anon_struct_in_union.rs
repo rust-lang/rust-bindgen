@@ -13,6 +13,7 @@ pub struct s {
 #[derive(Copy)]
 pub union s__bindgen_ty_1 {
     pub field: s__bindgen_ty_1_inner,
+    _bindgen_union_align: u32,
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash)]

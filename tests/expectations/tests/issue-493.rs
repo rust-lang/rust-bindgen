@@ -63,6 +63,7 @@ pub struct basic_string___short {
 pub union basic_string___short__bindgen_ty_1 {
     pub __size_: ::std::os::raw::c_uchar,
     pub __lx: basic_string_value_type,
+    _bindgen_union_align: u8,
 }
 impl Default for basic_string___short__bindgen_ty_1 {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
