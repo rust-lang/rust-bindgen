@@ -261,21 +261,15 @@ impl Type {
         match self.kind {
             TypeKind::Named => {
                 let name = self.name().expect("Unnamed named type?");
-                !Self::is_valid_identifier(&name)
+                !clang::is_valid_identifier(&name)
             }
             _ => false,
         }
     }
 
-    /// Checks whether the name looks like an identifier,
-    /// i.e. is alphanumeric (including '_') and does not start with a digit.
-    fn is_valid_identifier(name: &str) -> bool {
-        clang::is_valid_identifier(name)
-    }
-
     /// Takes `name`, and returns a suitable identifier representation for it.
     fn sanitize_name<'a>(name: &'a str) -> Cow<'a, str> {
-        if Self::is_valid_identifier(name) {
+        if clang::is_valid_identifier(name) {
             return Cow::Borrowed(name)
         }
 
@@ -1112,7 +1106,7 @@ impl Type {
 
                     if name.is_empty() {
                         let pretty_name = ty.spelling();
-                        if Self::is_valid_identifier(&pretty_name) {
+                        if clang::is_valid_identifier(&pretty_name) {
                             name = pretty_name;
                         }
                     }
@@ -1130,7 +1124,7 @@ impl Type {
                         // The pretty-printed name may contain typedefed name,
                         // but may also be "struct (anonymous at .h:1)"
                         let pretty_name = ty.spelling();
-                        if Self::is_valid_identifier(&pretty_name) {
+                        if clang::is_valid_identifier(&pretty_name) {
                             name = pretty_name;
                         }
                     }
