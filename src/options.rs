@@ -4,6 +4,7 @@ use clap::{App, Arg};
 use std::fs::File;
 use std::io::{self, Error, ErrorKind, Write, stderr};
 use std::str::FromStr;
+use std::path::PathBuf;
 
 /// Construct a new [`Builder`](./struct.Builder.html) from command line flags.
 pub fn builder_from_flags<I>(
@@ -231,7 +232,20 @@ where
                 .help("Preprocess and dump the input header files to disk. \
                        Useful when debugging bindgen, using C-Reduce, or when \
                        filing issues. The resulting file will be named \
-                       something like `__bindgen.i` or `__bindgen.ii`.")
+                       something like `__bindgen.i` or `__bindgen.ii`."),
+            Arg::with_name("rustfmt-bindings")
+                .long("rustfmt-bindings")
+                .help("Format the generated bindings with rustfmt. \
+                       Rustfmt needs to be in the global PATH."),
+            Arg::with_name("rustfmt-configuration-file")
+                .long("rustfmt-configuration-file")
+                .help("The absolute path to the rustfmt configuration file. \
+                       The configuration file will be used for formatting the bindings. \
+                       Setting this parameter, will automatically set --rustfmt-bindings.")
+                .value_name("path")
+                .takes_value(true)
+                .multiple(false)
+                .number_of_values(1),
         ]) // .args()
         .get_matches_from(args);
 
@@ -457,6 +471,27 @@ where
     if matches.is_present("dump-preprocessed-input") {
         builder.dump_preprocessed_input()?;
     }
+
+    if matches.is_present("rustfmt-bindings") {
+        builder = builder.rustfmt_bindings(true);
+    }
+
+    if let Some(path_str) = matches.value_of("rustfmt-configuration-file") {
+        let path = PathBuf::from(path_str);
+
+        if !path.is_absolute() {
+            return Err(Error::new(ErrorKind::Other,
+                                  "--rustfmt-configuration--file needs to be an absolute path!"));
+        }
+
+        if path.to_str().is_none() {
+            return Err(
+                Error::new(ErrorKind::Other,
+                           "--rustfmt-configuration-file contains non-valid UTF8 characters."));
+        }
+
+        builder = builder.rustfmt_configuration_file(Some(path));
+    } 
 
     let verbose = matches.is_present("verbose");
 

@@ -26,6 +26,7 @@ extern crate peeking_take_while;
 extern crate regex;
 #[macro_use]
 extern crate lazy_static;
+extern crate which;
 
 #[cfg(feature = "logging")]
 #[macro_use]
@@ -455,6 +456,19 @@ impl Builder {
             );
         }
 
+        if !self.options.rustfmt_bindings {
+            output_vector.push("--rustfmt-bindings".into());
+        }
+
+        if let Some(path) = self.options
+            .rustfmt_configuration_file
+            .as_ref()
+            .and_then(|f| f.to_str())
+        {
+            output_vector.push("--rustfmt-configuration-file".into());
+            output_vector.push(path.into());
+        }
+
         output_vector
     }
 
@@ -840,6 +854,20 @@ impl Builder {
         self
     }
 
+    /// Set whether rustfmt should format the generated bindings.
+    pub fn rustfmt_bindings(mut self, doit: bool) -> Self {
+        self.options.rustfmt_bindings = doit;
+        self
+    }
+
+    /// Set the absolute path to the rustfmt configuration file, if None, the standard rustfmt
+    /// options are used.
+    pub fn rustfmt_configuration_file(mut self, path: Option<PathBuf>) -> Self {
+        self = self.rustfmt_bindings(true);
+        self.options.rustfmt_configuration_file = path;
+        self
+    }
+
     /// Generate the Rust bindings using the options built up thus far.
     pub fn generate<'ctx>(mut self) -> Result<Bindings<'ctx>, ()> {
         self.options.input_header = self.input_headers.pop();
@@ -1099,6 +1127,13 @@ pub struct BindgenOptions {
 
     /// Features to enable, derived from `rust_target`
     rust_features: RustFeatures,
+
+    /// Whether rustfmt should format the generated bindings.
+    pub rustfmt_bindings: bool,
+
+    /// The absolute path to the rustfmt configuration file, if None, the standard rustfmt
+    /// options are used.
+    pub rustfmt_configuration_file: Option<PathBuf>,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -1183,6 +1218,8 @@ impl Default for BindgenOptions {
             objc_extern_crate: false,
             enable_mangling: true,
             prepend_enum_name: true,
+            rustfmt_bindings: false,
+            rustfmt_configuration_file: None,
         }
     }
 }
@@ -1334,14 +1371,18 @@ impl<'ctx> Bindings<'ctx> {
 
     /// Write these bindings as source text to a file.
     pub fn write_to_file<P: AsRef<Path>>(&self, path: P) -> io::Result<()> {
-        let file = try!(
-            OpenOptions::new()
-                .write(true)
-                .truncate(true)
-                .create(true)
-                .open(path)
-        );
-        self.write(Box::new(file))
+        {
+            let file = try!(
+                OpenOptions::new()
+                    .write(true)
+                    .truncate(true)
+                    .create(true)
+                    .open(path.as_ref())
+            );
+            self.write(Box::new(file))?;
+        }
+
+        self.rustfmt_generated_file(path.as_ref())
     }
 
     /// Write these bindings as source text to the given `Write`able.
@@ -1363,6 +1404,63 @@ impl<'ctx> Bindings<'ctx> {
         try!(ps.print_remaining_comments());
         try!(eof(&mut ps.s));
         ps.s.out.flush()
+    }
+
+    /// Checks if rustfmt_bindings is set and runs rustfmt on the file
+    fn rustfmt_generated_file(&self, file: &Path) -> io::Result<()> {
+        if !self.context.options().rustfmt_bindings {
+            return Ok(());
+        }
+
+        let rustfmt = if let Ok(rustfmt) = which::which("rustfmt") {
+            rustfmt
+        } else {
+            return Err(io::Error::new(
+                io::ErrorKind::Other,
+                "Rustfmt activated, but it could not be found in global path.",
+            ));
+        };
+
+        let mut cmd = Command::new(rustfmt);
+
+        if let Some(path) = self.context
+            .options()
+            .rustfmt_configuration_file
+            .as_ref()
+            .and_then(|f| f.to_str())
+        {
+            cmd.args(&["--config-path", path]);
+        }
+
+        if let Ok(output) = cmd.arg(file).output() {
+            if !output.status.success() {
+                let stderr = String::from_utf8_lossy(&output.stderr);
+                match output.status.code() {
+                    Some(2) => Err(io::Error::new(
+                        io::ErrorKind::Other,
+                        format!("Rustfmt parsing errors:\n{}", stderr),
+                    )),
+                    Some(3) => {
+                        warn!(
+                            "Rustfmt could not format some lines:\n{}",
+                            stderr
+                        );
+                        Ok(())
+                    }
+                    _ => Err(io::Error::new(
+                        io::ErrorKind::Other,
+                        format!("Internal rustfmt error:\n{}", stderr),
+                    )),
+                }
+            } else {
+                Ok(())
+            }
+        } else {
+            Err(io::Error::new(
+                io::ErrorKind::Other,
+                "Error executing rustfmt!",
+            ))
+        }
     }
 }
 

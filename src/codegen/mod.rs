@@ -175,7 +175,7 @@ impl<'a> CodegenResult<'a> {
     /// counter internally so the next time we ask for the overload for this
     /// name, we get the incremented value, and so on.
     fn overload_number(&mut self, name: &str) -> u32 {
-        let mut counter =
+        let counter =
             self.overload_counters.entry(name.into()).or_insert(0);
         let number = *counter;
         *counter += 1;
@@ -2030,7 +2030,7 @@ impl MethodCodegen for Method {
         }
 
         let count = {
-            let mut count = method_names.entry(name.clone()).or_insert(0);
+            let count = method_names.entry(name.clone()).or_insert(0);
             *count += 1;
             *count - 1
         };
