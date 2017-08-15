@@ -833,6 +833,13 @@ impl Type {
     /// Get the number of template arguments this type has, or `None` if it is
     /// not some kind of template.
     pub fn num_template_args(&self) -> Option<u32> {
+        // If an old libclang is loaded, we have no hope of answering this
+        // question correctly. However, that's no reason to panic when
+        // generating bindings for simple C headers with an old libclang.
+        if !clang_Type_getNumTemplateArguments::is_loaded() {
+            return None
+        }
+
         let n = unsafe { clang_Type_getNumTemplateArguments(self.x) };
         if n >= 0 {
             Some(n as u32)
@@ -1594,14 +1601,19 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
 
         print_indent(depth,
                      format!(" {}spelling = \"{}\"", prefix, ty.spelling()));
-        let num_template_args =
-            unsafe { clang_Type_getNumTemplateArguments(ty.x) };
+
+        let num_template_args = if clang_Type_getNumTemplateArguments::is_loaded() {
+            unsafe { clang_Type_getNumTemplateArguments(ty.x) }
+        } else {
+            -1
+        };
         if num_template_args >= 0 {
             print_indent(depth,
                          format!(" {}number-of-template-args = {}",
                                  prefix,
                                  num_template_args));
         }
+
         if let Some(num) = ty.num_elements() {
             print_indent(depth,
                          format!(" {}number-of-elements = {}", prefix, num));
