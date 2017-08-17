@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash --with-derive-partialeq -- -std=c++14
+// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq -- -std=c++14
 
 namespace JS {
 namespace detail {
