@@ -45,8 +45,8 @@ pub struct HasTypeParameterInArray<'ctx, 'gen>
 impl<'ctx, 'gen> HasTypeParameterInArray<'ctx, 'gen> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
-            // These are the only edges that can affect whether a type can derive
-            // debug or not.
+            // These are the only edges that can affect whether a type has type parameter
+            // in array or not.
             EdgeKind::BaseMember |
             EdgeKind::Field |
             EdgeKind::TypeReference |
@@ -119,8 +119,8 @@ impl<'ctx, 'gen> MonotoneFramework for HasTypeParameterInArray<'ctx, 'gen> {
         };
 
         match *ty.kind() {
-            // Handle the simple cases. These can derive copy without further
-            // information.
+            // Handle the simple cases. These cannot have array in type parameter
+            // without further information.
             TypeKind::Void |
             TypeKind::NullPtr |
             TypeKind::Int(..) |

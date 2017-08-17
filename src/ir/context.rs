@@ -185,13 +185,13 @@ pub struct BindgenContext<'ctx> {
 
     /// The set of (`ItemId`s of) types that can't derive debug.
     ///
-    /// This is populated when we enter codegen by `compute_can_derive_debug`
+    /// This is populated when we enter codegen by `compute_cannot_derive_debug`
     /// and is always `None` before that and `Some` after.
     cannot_derive_debug: Option<HashSet<ItemId>>,
 
     /// The set of (`ItemId`s of) types that can't derive default.
     ///
-    /// This is populated when we enter codegen by `compute_can_derive_default`
+    /// This is populated when we enter codegen by `compute_cannot_derive_default`
     /// and is always `None` before that and `Some` after.
     cannot_derive_default: Option<HashSet<ItemId>>,
 
@@ -1839,7 +1839,7 @@ impl<'ctx> BindgenContext<'ctx> {
         !self.cannot_derive_default.as_ref().unwrap().contains(&id)
     }
 
-    /// Compute whether we can derive debug.
+    /// Compute whether we can derive copy.
     fn compute_cannot_derive_copy(&mut self) {
         assert!(self.cannot_derive_copy.is_none());
         self.cannot_derive_copy = Some(analyze::<CannotDeriveCopy>(self));
@@ -1864,7 +1864,7 @@ impl<'ctx> BindgenContext<'ctx> {
         !self.cannot_derive_hash.as_ref().unwrap().contains(&id)
     }
 
-    /// Compute whether we can derive hash.
+    /// Compute whether we can derive partialeq.
     fn compute_cannot_derive_partialeq(&mut self) {
         assert!(self.cannot_derive_partialeq.is_none());
         if self.options.derive_partialeq {
@@ -1895,19 +1895,19 @@ impl<'ctx> BindgenContext<'ctx> {
             !self.cannot_derive_copy.as_ref().unwrap().contains(&id)
     }
 
-    /// Compute whether the type has array.
+    /// Compute whether the type has type parameter in array.
     fn compute_has_type_param_in_array(&mut self) {
         assert!(self.has_type_param_in_array.is_none());
         self.has_type_param_in_array = Some(analyze::<HasTypeParameterInArray>(self));
     }
 
-    /// Look up whether the item with `id` has array or not.
+    /// Look up whether the item with `id` has type parameter in array or not.
     pub fn lookup_item_id_has_type_param_in_array(&self, id: &ItemId) -> bool {
         assert!(self.in_codegen_phase(),
                 "We only compute has array when we enter codegen");
 
         // Look up the computed value for whether the item with `id` has
-        // array or not.
+        // type parameter in array or not.
         self.has_type_param_in_array.as_ref().unwrap().contains(id)
     }
 }

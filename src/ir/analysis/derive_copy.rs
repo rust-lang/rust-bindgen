@@ -202,7 +202,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
                 // default, the may have an explicit destructor in C++, so we can't
                 // defer this check just for the union case.
                 if info.has_destructor(self.ctx) {
-                    trace!("    comp has destructor which cannot derive copy");
+                    trace!("    comp has destructor which cannot derive Copy");
                     return self.insert(id);
                 }
 
@@ -211,7 +211,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
                         // NOTE: If there's no template parameters we can derive copy
                         // unconditionally, since arrays are magical for rustc, and
                         // __BindgenUnionField always implements copy.
-                        trace!("    comp can always derive debug if it's a Union and no template parameters");
+                        trace!("    comp can always derive Copy if it's a Union and no template parameters");
                         return ConstrainResult::Same
                     }
 
