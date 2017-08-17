@@ -1,17 +1,17 @@
-// bindgen-flags: --with-derive-hash --whitelist-type 'Whitelisted.*' --blacklist-type Blacklisted --raw-line "#[repr(C)] #[derive(Debug, Hash, Copy, Clone)] pub struct Blacklisted<T> {t: T, pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>> }"
+// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq --whitelist-type 'Whitelisted.*' --blacklist-type Blacklisted --raw-line "#[repr(C)] #[derive(Debug, Hash, Copy, Clone, PartialEq, Eq)] pub struct Blacklisted<T> {t: T, pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>> }"
 //
-template<class T>
+template <class T>
 struct Blacklisted {
-	T t;
+    T t;
 };
 
-/// This would derive(Hash) if it didn't contain a blacklisted type,
-/// causing us to conservatively avoid deriving hash for it.
+/// This would derive(Hash, Eq, PartialEq) if it didn't contain a blacklisted type,
+/// causing us to conservatively avoid deriving hash/Eq/PartialEq for it.
 struct WhitelistedOne {
-	Blacklisted<int> a;
+    Blacklisted<int> a;
 };
 
-/// This can't derive(Hash) even if it didn't contain a blacklisted type.
+/// This can't derive(Hash/Eq) even if it didn't contain a blacklisted type.
 struct WhitelistedTwo {
-	Blacklisted<float> b;
+    Blacklisted<float> b;
 };

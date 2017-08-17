@@ -4,9 +4,9 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
 
-/// Template definition that doesn't contain float can derive hash
+/// Template definition that doesn't contain float can derive hash/partialeq/eq
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct foo<T> {
     pub data: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
@@ -14,9 +14,9 @@ pub struct foo<T> {
 impl <T> Default for foo<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-/// Can derive hash when instantiated with int
+/// Can derive hash/partialeq/eq when instantiated with int
 #[repr(C)]
-#[derive(Debug, Copy, Hash)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct IntStr {
     pub a: foo<::std::os::raw::c_int>,
 }
@@ -38,9 +38,9 @@ impl Clone for IntStr {
 impl Default for IntStr {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-/// Cannot derive hash when instantiated with float
+/// Cannot derive hash/eq when instantiated with float but can derive partialeq
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, PartialEq)]
 pub struct FloatStr {
     pub a: foo<f32>,
 }

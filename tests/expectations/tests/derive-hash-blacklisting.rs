@@ -3,10 +3,10 @@
 
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
-#[repr(C)] #[derive(Debug, Hash, Copy, Clone)] pub struct Blacklisted<T> {t: T, pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>> }
+#[repr(C)] #[derive(Debug, Hash, Copy, Clone, PartialEq, Eq)] pub struct Blacklisted<T> {t: T, pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>> }
 
-/// This would derive(Hash) if it didn't contain a blacklisted type,
-/// causing us to conservatively avoid deriving hash for it.
+/// This would derive(Hash, Eq, PartialEq) if it didn't contain a blacklisted type,
+/// causing us to conservatively avoid deriving hash/Eq/PartialEq for it.
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct WhitelistedOne {
@@ -30,7 +30,7 @@ impl Clone for WhitelistedOne {
 impl Default for WhitelistedOne {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-/// This can't derive(Hash) even if it didn't contain a blacklisted type.
+/// This can't derive(Hash/Eq) even if it didn't contain a blacklisted type.
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct WhitelistedTwo {
