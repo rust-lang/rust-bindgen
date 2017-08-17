@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Hash, PartialEq)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 pub struct HandleWithDtor<T> {
     pub ptr: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
@@ -15,7 +15,7 @@ impl <T> Default for HandleWithDtor<T> {
 }
 pub type HandleValue = HandleWithDtor<::std::os::raw::c_int>;
 #[repr(C)]
-#[derive(Debug, Hash, PartialEq)]
+#[derive(Debug, Hash, PartialEq, Eq)]
 pub struct WithoutDtor {
     pub shouldBeWithDtor: HandleValue,
 }

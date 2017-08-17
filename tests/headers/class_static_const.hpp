@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash --with-derive-partialeq
+// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq
 using int32_t = int;
 typedef unsigned int uint32_t;
 

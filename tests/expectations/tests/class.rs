@@ -141,7 +141,7 @@ impl Default for C_with_zero_length_array_and_incomplete_array {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Hash, PartialEq)]
+#[derive(Debug, Default, Hash, PartialEq, Eq)]
 pub struct WithDtor {
     pub b: ::std::os::raw::c_int,
 }
@@ -229,7 +229,7 @@ impl Default for WithUnion {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct RealAbstractionWithTonsOfMethods {
     pub _address: u8,
 }
