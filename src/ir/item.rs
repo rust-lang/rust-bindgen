@@ -6,7 +6,7 @@ use super::comment;
 use super::comp::MethodKind;
 use super::context::{BindgenContext, ItemId, PartialType};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
-                    CanDeriveHash, CanDerivePartialEq};
+                    CanDeriveHash, CanDerivePartialEq, CanDeriveEq};
 use super::dot::DotAttributes;
 use super::function::{Function, FunctionKind};
 use super::item_kind::ItemKind;
@@ -81,6 +81,12 @@ pub trait IsOpaque {
 pub trait HasTypeParamInArray {
     /// Returns `true` if the thing has Array, and `false` otherwise.
     fn has_type_param_in_array(&self, ctx: &BindgenContext) -> bool;
+}
+
+/// A trait for determining if some IR thing has float or not.
+pub trait HasFloat {
+    /// Returns `true` if the thing has float, and `false` otherwise.
+    fn has_float(&self, ctx: &BindgenContext) -> bool;
 }
 
 /// A trait for iterating over an item and its parents and up its ancestor chain
@@ -337,6 +343,14 @@ impl CanDerivePartialEq for Item {
     fn can_derive_partialeq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_partialeq &&
             ctx.lookup_item_id_can_derive_partialeq(self.id())
+    }
+}
+
+impl CanDeriveEq for Item {
+    fn can_derive_eq(&self, ctx: &BindgenContext) -> bool {
+        ctx.options().derive_eq &&
+            ctx.lookup_item_id_can_derive_partialeq(self.id()) &&
+            !ctx.lookup_item_id_has_float(&self.id())
     }
 }
 
@@ -986,6 +1000,22 @@ impl HasTypeParamInArray for Item {
             "You're not supposed to call this yet"
         );
         ctx.lookup_item_id_has_type_param_in_array(&self.id())
+    }
+}
+
+impl HasFloat for ItemId {
+    fn has_float(&self, ctx: &BindgenContext) -> bool {
+        debug_assert!(ctx.in_codegen_phase(),
+                      "You're not supposed to call this yet");
+        ctx.lookup_item_id_has_float(self)
+    }
+}
+
+impl HasFloat for Item {
+    fn has_float(&self, ctx: &BindgenContext) -> bool {
+        debug_assert!(ctx.in_codegen_phase(),
+                      "You're not supposed to call this yet");
+        ctx.lookup_item_id_has_float(&self.id())
     }
 }
 
