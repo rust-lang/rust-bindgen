@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Template<T> {
     pub member: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
@@ -14,7 +14,7 @@ impl <T> Default for Template<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct ContainsInstantiation {
     pub not_opaque: Template<::std::os::raw::c_char>,
 }
@@ -39,7 +39,7 @@ impl Default for ContainsInstantiation {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct ContainsOpaqueInstantiation {
     pub opaque: u32,
 }

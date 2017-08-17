@@ -12,7 +12,7 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Copy, Clone, Hash, PartialEq)]
+        #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
         pub struct Template<T> {
             pub member: T,
             pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
@@ -21,7 +21,7 @@ pub mod root {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Hash, PartialEq)]
+        #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
         pub struct Foo {
             pub c: ::std::os::raw::c_char,
         }
@@ -41,7 +41,7 @@ pub mod root {
             fn clone(&self) -> Self { *self }
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Hash, PartialEq)]
+        #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
         pub struct Bar {
             pub i: ::std::os::raw::c_int,
         }
@@ -61,7 +61,7 @@ pub mod root {
             fn clone(&self) -> Self { *self }
         }
         #[repr(C)]
-        #[derive(Debug, Copy, Hash, PartialEq)]
+        #[derive(Debug, Copy, Hash, PartialEq, Eq)]
         pub struct ContainsInstantiation {
             pub not_opaque: root::zoidberg::Template<root::zoidberg::Foo>,
         }
@@ -89,7 +89,7 @@ pub mod root {
             fn default() -> Self { unsafe { ::std::mem::zeroed() } }
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Hash, PartialEq)]
+        #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
         pub struct ContainsOpaqueInstantiation {
             pub opaque: u32,
         }

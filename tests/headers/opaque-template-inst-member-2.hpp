@@ -1,4 +1,4 @@
-// bindgen-flags: --opaque-type 'OpaqueTemplate' --with-derive-hash --with-derive-partialeq
+// bindgen-flags: --opaque-type 'OpaqueTemplate' --with-derive-hash --with-derive-partialeq --with-derive-eq
 
 /// This is like `opaque-template-inst-member.hpp` except exercising the cases
 /// where we are OK to derive Debug/Hash/PartialEq.
