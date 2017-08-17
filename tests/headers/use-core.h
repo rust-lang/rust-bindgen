@@ -1,4 +1,4 @@
-// bindgen-flags: --use-core --raw-line "extern crate core;" --with-derive-hash --with-derive-partialeq
+// bindgen-flags: --use-core --raw-line "extern crate core;" --with-derive-hash --with-derive-partialeq --with-derive-eq
 
 struct foo {
   int a, b;

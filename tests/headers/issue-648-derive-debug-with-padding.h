@@ -11,8 +11,8 @@ struct NoDebug {
 } __attribute__((__aligned__(64)));
 
 /**
- * This should derive Debug/Hash/PartialEq because the padding size is less than the max derive
- * Debug/Hash/PartialEq impl for arrays. However, we conservatively don't derive Debug/Hash because
+ * This should derive Debug/Hash/PartialEq/Eq because the padding size is less than the max derive
+ * Debug/Hash/PartialEq/Eq impl for arrays. However, we conservatively don't derive Debug/Hash because
  * we determine Debug derive-ability before we compute padding, which happens at
  * codegen. (Again, we expect to get the alignment wrong for similar reasons.)
  */

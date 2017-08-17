@@ -35,8 +35,9 @@ impl <T> ::core::hash::Hash for __BindgenUnionField<T> {
 impl <T> ::core::cmp::PartialEq for __BindgenUnionField<T> {
     fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
 }
+impl <T> ::core::cmp::Eq for __BindgenUnionField<T> { }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct foo {
     pub a: ::std::os::raw::c_int,
     pub b: ::std::os::raw::c_int,
@@ -71,7 +72,7 @@ impl Default for foo {
     fn default() -> Self { unsafe { ::core::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct _bindgen_ty_1 {
     pub bar: __BindgenUnionField<::std::os::raw::c_int>,
     pub baz: __BindgenUnionField<::std::os::raw::c_long>,
