@@ -36,7 +36,7 @@ pub struct CannotDeriveDefault<'ctx, 'gen>
     ctx: &'ctx BindgenContext<'gen>,
 
     // The incremental result of this analysis's computation. Everything in this
-    // set cannot derive debug.
+    // set cannot derive default.
     cannot_derive_default: HashSet<ItemId>,
 
     // Dependencies saying that if a key ItemId has been inserted into the
@@ -45,7 +45,7 @@ pub struct CannotDeriveDefault<'ctx, 'gen>
     //
     // This is a subset of the natural IR graph with reversed edges, where we
     // only include the edges from the IR graph that can affect whether a type
-    // can derive debug or not.
+    // can derive default or not.
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
@@ -53,7 +53,7 @@ impl<'ctx, 'gen> CannotDeriveDefault<'ctx, 'gen> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             // These are the only edges that can affect whether a type can derive
-            // debug or not.
+            // default or not.
             EdgeKind::BaseMember |
             EdgeKind::Field |
             EdgeKind::TypeReference |
@@ -181,7 +181,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
         }
 
         match *ty.kind() {
-            // Handle the simple cases. These can derive debug without further
+            // Handle the simple cases. These can derive Default without further
             // information.
             TypeKind::Function(..) |
             TypeKind::Int(..) |
