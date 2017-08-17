@@ -34,8 +34,9 @@ impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
 impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
     fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
 }
+impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct TErrorResult {
     pub mResult: ::std::os::raw::c_int,
     pub __bindgen_anon_1: TErrorResult__bindgen_ty_1,
@@ -48,17 +49,17 @@ pub const TErrorResult_UnionState_HasException: TErrorResult_UnionState =
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum TErrorResult_UnionState { HasMessage = 0, }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct TErrorResult_Message {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct TErrorResult_DOMExceptionInfo {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct TErrorResult__bindgen_ty_1 {
     pub mMessage: __BindgenUnionField<*mut TErrorResult_Message>,
     pub mDOMExceptionInfo: __BindgenUnionField<*mut TErrorResult_DOMExceptionInfo>,
@@ -68,7 +69,7 @@ impl Default for TErrorResult {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct ErrorResult {
     pub _base: TErrorResult,
 }
