@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct a {
     pub val_a: *mut b,
 }
@@ -28,7 +28,7 @@ impl Default for a {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct b {
     pub val_b: ::std::os::raw::c_int,
 }
