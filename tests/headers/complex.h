@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash --with-derive-partialeq
+// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq
 
 #define COMPLEX_TEST(ty_, name_)  \
   struct Test##name_ {            \
