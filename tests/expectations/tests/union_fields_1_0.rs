@@ -34,6 +34,7 @@ impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
 impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
     fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
 }
+impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct nsStyleUnion {

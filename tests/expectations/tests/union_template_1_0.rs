@@ -34,29 +34,30 @@ impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
 impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
     fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
 }
+impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct NastyStruct {
     pub mIsSome: bool,
     pub mStorage: NastyStruct__bindgen_ty_1,
     pub __bindgen_anon_1: NastyStruct__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct NastyStruct__bindgen_ty_1 {
     pub mFoo: __BindgenUnionField<*mut ::std::os::raw::c_void>,
     pub mDummy: __BindgenUnionField<::std::os::raw::c_ulong>,
     pub bindgen_union_field: u64,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct NastyStruct__bindgen_ty_2 {
     pub wat: __BindgenUnionField<::std::os::raw::c_short>,
     pub wut: __BindgenUnionField<*mut ::std::os::raw::c_int>,
     pub bindgen_union_field: u64,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Whatever {
     pub mTPtr: __BindgenUnionField<*mut ::std::os::raw::c_void>,
     pub mInt: __BindgenUnionField<::std::os::raw::c_int>,

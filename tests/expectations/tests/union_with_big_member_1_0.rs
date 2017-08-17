@@ -34,6 +34,7 @@ impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
 impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
     fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
 }
+impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
 #[repr(C)]
 #[derive(Copy)]
 pub struct WithBigArray {
@@ -65,7 +66,7 @@ impl Default for WithBigArray {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct WithBigArray2 {
     pub a: __BindgenUnionField<::std::os::raw::c_int>,
     pub b: __BindgenUnionField<[::std::os::raw::c_char; 33usize]>,
