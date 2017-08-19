@@ -1,10 +1,9 @@
-
 use bindgen::{Builder, CodegenConfig, RUST_TARGET_STRINGS, RustTarget, builder};
 use clap::{App, Arg};
 use std::fs::File;
 use std::io::{self, Error, ErrorKind, Write, stderr};
-use std::str::FromStr;
 use std::path::PathBuf;
+use std::str::FromStr;
 
 /// Construct a new [`Builder`](./struct.Builder.html) from command line flags.
 pub fn builder_from_flags<I>(
@@ -14,8 +13,10 @@ where
     I: Iterator<Item = String>,
 {
     let rust_target_help = format!(
-        "Version of the Rust compiler to target. Valid options are: {:?}.",
-        RUST_TARGET_STRINGS);
+        "Version of the Rust compiler to target. Valid options are: {:?}. Defaults to {:?}.",
+        RUST_TARGET_STRINGS,
+        String::from(RustTarget::default())
+    );
 
     let matches = App::new("bindgen")
         .version(env!("CARGO_PKG_VERSION"))
@@ -262,8 +263,10 @@ where
 
     if matches.is_present("unstable-rust") {
         builder = builder.rust_target(RustTarget::Nightly);
-        writeln!(&mut stderr(), "warning: the `--unstable-rust` option is deprecated")
-            .expect("Unable to write error message");
+        writeln!(
+            &mut stderr(),
+            "warning: the `--unstable-rust` option is deprecated"
+        ).expect("Unable to write error message");
     }
 
     if let Some(rust_target) = matches.value_of("rust-target") {
@@ -487,18 +490,21 @@ where
         let path = PathBuf::from(path_str);
 
         if !path.is_absolute() {
-            return Err(Error::new(ErrorKind::Other,
-                                  "--rustfmt-configuration--file needs to be an absolute path!"));
+            return Err(Error::new(
+                ErrorKind::Other,
+                "--rustfmt-configuration--file needs to be an absolute path!",
+            ));
         }
 
         if path.to_str().is_none() {
-            return Err(
-                Error::new(ErrorKind::Other,
-                           "--rustfmt-configuration-file contains non-valid UTF8 characters."));
+            return Err(Error::new(
+                ErrorKind::Other,
+                "--rustfmt-configuration-file contains non-valid UTF8 characters.",
+            ));
         }
 
         builder = builder.rustfmt_configuration_file(Some(path));
-    } 
+    }
 
     let verbose = matches.is_present("verbose");
 
