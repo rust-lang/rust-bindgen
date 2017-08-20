@@ -3,7 +3,7 @@ mod error;
 mod helpers;
 pub mod struct_layout;
 
-use self::helpers::{attributes, BlobTyBuilder};
+use self::helpers::{BlobTyBuilder, attributes};
 use self::struct_layout::StructLayoutTracker;
 
 use aster;
@@ -14,7 +14,8 @@ use ir::comment;
 use ir::comp::{Base, Bitfield, BitfieldUnit, CompInfo, CompKind, Field,
                FieldData, FieldMethods, Method, MethodKind};
 use ir::context::{BindgenContext, ItemId};
-use ir::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault, CanDeriveHash, CanDerivePartialEq};
+use ir::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
+                 CanDeriveHash, CanDerivePartialEq};
 use ir::dot;
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
 use ir::function::{Abi, Function, FunctionSig};
@@ -37,7 +38,7 @@ use std::mem;
 use std::ops;
 use syntax::abi;
 use syntax::ast;
-use syntax::codemap::{respan, Span, DUMMY_SP};
+use syntax::codemap::{DUMMY_SP, Span, respan};
 use syntax::ptr::P;
 
 // Name of type defined in constified enum module
@@ -175,8 +176,7 @@ impl<'a> CodegenResult<'a> {
     /// counter internally so the next time we ask for the overload for this
     /// name, we get the incremented value, and so on.
     fn overload_number(&mut self, name: &str) -> u32 {
-        let counter =
-            self.overload_counters.entry(name.into()).or_insert(0);
+        let counter = self.overload_counters.entry(name.into()).or_insert(0);
         let number = *counter;
         *counter += 1;
         number
@@ -480,12 +480,16 @@ impl CodeGenerator for Var {
                     let ty = quote_ty!(ctx.ext_cx(), [u8; $len]);
 
                     match String::from_utf8(bytes.clone()) {
-                        Ok(string) => const_item
-                            .build(helpers::ast_ty::cstr_expr(string))
-                            .build(quote_ty!(ctx.ext_cx(), &'static $ty)),
-                        Err(..) => const_item
-                            .build(helpers::ast_ty::byte_array_expr(bytes))
-                            .build(ty),
+                        Ok(string) => {
+                            const_item
+                                .build(helpers::ast_ty::cstr_expr(string))
+                                .build(quote_ty!(ctx.ext_cx(), &'static $ty))
+                        }
+                        Err(..) => {
+                            const_item
+                                .build(helpers::ast_ty::byte_array_expr(bytes))
+                                .build(ty)
+                        }
                     }
                 }
                 VarType::Float(f) => {
@@ -494,9 +498,11 @@ impl CodeGenerator for Var {
                         Err(..) => return,
                     }
                 }
-                VarType::Char(c) => const_item
-                    .build(aster::AstBuilder::new().expr().lit().byte(c))
-                    .build(ty),
+                VarType::Char(c) => {
+                    const_item
+                        .build(aster::AstBuilder::new().expr().lit().byte(c))
+                        .build(ty)
+                }
             };
 
             result.push(item);
@@ -550,7 +556,7 @@ impl CodeGenerator for Type {
             TypeKind::Function(..) |
             TypeKind::ResolvedTypeRef(..) |
             TypeKind::Opaque |
-            TypeKind::Named => {
+            TypeKind::TypeParam => {
                 // These items don't need code generation, they only need to be
                 // converted to rust types in fields, arguments, and such.
                 return;
@@ -559,7 +565,8 @@ impl CodeGenerator for Type {
                 inst.codegen(ctx, result, item)
             }
             TypeKind::Comp(ref ci) => ci.codegen(ctx, result, item),
-            TypeKind::TemplateAlias(inner, _) | TypeKind::Alias(inner) => {
+            TypeKind::TemplateAlias(inner, _) |
+            TypeKind::Alias(inner) => {
                 let inner_item = ctx.resolve_item(inner);
                 let name = item.canonical_name(ctx);
 
@@ -606,7 +613,7 @@ impl CodeGenerator for Type {
                     // code.
                     let inner_canon_type =
                         inner_item.expect_type().canonical_type(ctx);
-                    if inner_canon_type.is_invalid_named_type() {
+                    if inner_canon_type.is_invalid_type_param() {
                         warn!(
                             "Item contained invalid named type, skipping: \
                              {:?}, {:?}",
@@ -627,18 +634,19 @@ impl CodeGenerator for Type {
                 // We prefer using `pub use` over `pub type` because of:
                 // https://github.com/rust-lang/rust/issues/26264
                 let simple_enum_path = match inner_rust_type.node {
-                    ast::TyKind::Path(None, ref p) => if used_template_params
-                        .is_none() &&
-                        inner_item
-                            .expect_type()
-                            .canonical_type(ctx)
-                            .is_enum() &&
-                        p.segments.iter().all(|p| p.parameters.is_none())
-                    {
-                        Some(p.clone())
-                    } else {
-                        None
-                    },
+                    ast::TyKind::Path(None, ref p) => {
+                        if used_template_params.is_none() &&
+                            inner_item
+                                .expect_type()
+                                .canonical_type(ctx)
+                                .is_enum() &&
+                            p.segments.iter().all(|p| p.parameters.is_none())
+                        {
+                            Some(p.clone())
+                        } else {
+                            None
+                        }
+                    }
                     _ => None,
                 };
 
@@ -657,11 +665,11 @@ impl CodeGenerator for Type {
                     let mut generics = typedef.type_(rust_name).generics();
                     if let Some(ref params) = used_template_params {
                         for template_param in params {
-                            if let Some(id) =
-                                template_param.as_template_param(ctx, &())
+                            if let Some(id) = template_param
+                                .as_template_param(ctx, &())
                             {
                                 let template_param = ctx.resolve_type(id);
-                                if template_param.is_invalid_named_type() {
+                                if template_param.is_invalid_type_param() {
                                     warn!(
                                         "Item contained invalid template \
                                          parameter: {:?}",
@@ -982,9 +990,10 @@ impl<'a> FieldCodegen<'a> for FieldData {
             }
         }
 
-        let field_name = self.name()
-            .map(|name| ctx.rust_mangle(name).into_owned())
-            .unwrap_or_else(|| anon_field_names.next().unwrap());
+        let field_name =
+            self.name()
+                .map(|name| ctx.rust_mangle(name).into_owned())
+                .unwrap_or_else(|| anon_field_names.next().unwrap());
 
         if !parent.is_union() {
             if let Some(padding_field) =
@@ -994,9 +1003,9 @@ impl<'a> FieldCodegen<'a> for FieldData {
             }
         }
 
-        let is_private = self.annotations()
-            .private_fields()
-            .unwrap_or(fields_should_be_private);
+        let is_private = self.annotations().private_fields().unwrap_or(
+            fields_should_be_private,
+        );
 
         let accessor_kind =
             self.annotations().accessor_kind().unwrap_or(accessor_kind);
@@ -1023,7 +1032,8 @@ impl<'a> FieldCodegen<'a> for FieldData {
 
         let accessor_methods_impl = match accessor_kind {
             FieldAccessorKind::None => unreachable!(),
-            FieldAccessorKind::Regular => quote_item!(ctx.ext_cx(),
+            FieldAccessorKind::Regular => {
+                quote_item!(ctx.ext_cx(),
                     impl X {
                         #[inline]
                         pub fn $getter_name(&self) -> &$ty {
@@ -1035,8 +1045,10 @@ impl<'a> FieldCodegen<'a> for FieldData {
                             &mut self.$field_name
                         }
                     }
-                ),
-            FieldAccessorKind::Unsafe => quote_item!(ctx.ext_cx(),
+                )
+            }
+            FieldAccessorKind::Unsafe => {
+                quote_item!(ctx.ext_cx(),
                     impl X {
                         #[inline]
                         pub unsafe fn $getter_name(&self) -> &$ty {
@@ -1049,15 +1061,18 @@ impl<'a> FieldCodegen<'a> for FieldData {
                             &mut self.$field_name
                         }
                     }
-                ),
-            FieldAccessorKind::Immutable => quote_item!(ctx.ext_cx(),
+                )
+            }
+            FieldAccessorKind::Immutable => {
+                quote_item!(ctx.ext_cx(),
                     impl X {
                         #[inline]
                         pub fn $getter_name(&self) -> &$ty {
                             &self.$field_name
                         }
                     }
-                ),
+                )
+            }
         };
 
         match accessor_methods_impl.unwrap().node {
@@ -1137,9 +1152,9 @@ impl Bitfield {
 
         let bitfield_ty_item = ctx.resolve_item(self.ty());
         let bitfield_ty = bitfield_ty_item.expect_type();
-        let bitfield_ty_layout = bitfield_ty
-            .layout(ctx)
-            .expect("Bitfield without layout? Gah!");
+        let bitfield_ty_layout = bitfield_ty.layout(ctx).expect(
+            "Bitfield without layout? Gah!",
+        );
         let bitfield_int_ty = BlobTyBuilder::new(bitfield_ty_layout).build();
         let bitfield_ty =
             bitfield_ty.to_rust_ty_or_opaque(ctx, bitfield_ty_item);
@@ -1264,12 +1279,14 @@ fn parent_has_method(
     parent.methods().iter().any(|method| {
         let method_name = match *ctx.resolve_item(method.signature()).kind() {
             ItemKind::Function(ref func) => func.name(),
-            ref otherwise => panic!(
-                "a method's signature should always be a \
+            ref otherwise => {
+                panic!(
+                    "a method's signature should always be a \
                  item of kind ItemKind::Function, found: \
                  {:?}",
-                otherwise
-            ),
+                    otherwise
+                )
+            }
         };
 
         method_name == name || ctx.rust_mangle(&method_name) == name
@@ -1335,9 +1352,9 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         let bitfield_ty_item = ctx.resolve_item(self.ty());
         let bitfield_ty = bitfield_ty_item.expect_type();
 
-        let bitfield_ty_layout = bitfield_ty
-            .layout(ctx)
-            .expect("Bitfield without layout? Gah!");
+        let bitfield_ty_layout = bitfield_ty.layout(ctx).expect(
+            "Bitfield without layout? Gah!",
+        );
         let bitfield_int_ty = BlobTyBuilder::new(bitfield_ty_layout).build();
 
         let bitfield_ty =
@@ -1466,8 +1483,8 @@ impl CodeGenerator for CompInfo {
         if item.can_derive_debug(ctx) {
             derives.push("Debug");
         } else {
-            needs_debug_impl =
-                ctx.options().derive_debug && ctx.options().impl_debug
+            needs_debug_impl = ctx.options().derive_debug &&
+                ctx.options().impl_debug
         }
 
         if item.can_derive_default(ctx) {
@@ -1619,10 +1636,9 @@ impl CodeGenerator for CompInfo {
         if is_union {
             let layout = layout.expect("Unable to get layout information?");
             let ty = BlobTyBuilder::new(layout).build();
-            
+
             let field = if self.can_be_rust_union(ctx) {
-                StructFieldBuilder::named("_bindgen_union_align")
-                    .build_ty(ty)
+                StructFieldBuilder::named("_bindgen_union_align").build_ty(ty)
             } else {
                 struct_layout.saw_union(layout);
 
@@ -1784,8 +1800,8 @@ impl CodeGenerator for CompInfo {
                         .count() >
                         1;
 
-                    let should_skip_field_offset_checks =
-                        is_opaque || too_many_base_vtables;
+                    let should_skip_field_offset_checks = is_opaque ||
+                        too_many_base_vtables;
 
                     let check_field_offset =
                         if should_skip_field_offset_checks {
@@ -2000,9 +2016,8 @@ impl MethodCodegen for Method {
                 MethodKind::Constructor => cc.constructors,
                 MethodKind::Destructor => cc.destructors,
                 MethodKind::VirtualDestructor => cc.destructors,
-                MethodKind::Static | MethodKind::Normal | MethodKind::Virtual => {
-                    cc.methods
-                }
+                MethodKind::Static | MethodKind::Normal |
+                MethodKind::Virtual => cc.methods,
             }
         });
 
@@ -2044,8 +2059,8 @@ impl MethodCodegen for Method {
         }
 
         let function_name = function_item.canonical_name(ctx);
-        let mut fndecl =
-            utils::rust_fndecl_from_signature(ctx, signature_item).unwrap();
+        let mut fndecl = utils::rust_fndecl_from_signature(ctx, signature_item)
+            .unwrap();
         if !self.is_static() && !self.is_constructor() {
             let mutability = if self.is_const() {
                 ast::Mutability::Immutable
@@ -2296,9 +2311,9 @@ impl<'a> EnumBuilder<'a> {
                 ..
             } => {
                 // Variant type
-                let inside_module_type = aster::AstBuilder::new()
-                    .ty()
-                    .id(CONSTIFIED_ENUM_MODULE_REPR_NAME);
+                let inside_module_type = aster::AstBuilder::new().ty().id(
+                    CONSTIFIED_ENUM_MODULE_REPR_NAME,
+                );
 
                 let constant = aster::AstBuilder::new()
                     .item()
@@ -2425,10 +2440,12 @@ impl CodeGenerator for Enum {
 
         let repr = self.repr().map(|repr| ctx.resolve_type(repr));
         let repr = match repr {
-            Some(repr) => match *repr.canonical_type(ctx).kind() {
-                TypeKind::Int(int_kind) => int_kind,
-                _ => panic!("Unexpected type as enum repr"),
-            },
+            Some(repr) => {
+                match *repr.canonical_type(ctx).kind() {
+                    TypeKind::Int(int_kind) => int_kind,
+                    _ => panic!("Unexpected type as enum repr"),
+                }
+            }
             None => {
                 warn!(
                     "Guessing type of enum! Forward declarations of enums \
@@ -2466,9 +2483,9 @@ impl CodeGenerator for Enum {
         let is_bitfield = {
             ctx.options().bitfield_enums.matches(&name) ||
                 (enum_ty.name().is_none() &&
-                    self.variants().iter().any(
-                        |v| ctx.options().bitfield_enums.matches(&v.name()),
-                    ))
+                     self.variants().iter().any(|v| {
+                        ctx.options().bitfield_enums.matches(&v.name())
+                    }))
         };
 
         let is_constified_enum_module =
@@ -2478,9 +2495,9 @@ impl CodeGenerator for Enum {
             is_constified_enum_module ||
                 ctx.options().constified_enums.matches(&name) ||
                 (enum_ty.name().is_none() &&
-                    self.variants().iter().any(
-                        |v| ctx.options().constified_enums.matches(&v.name()),
-                    ))
+                     self.variants().iter().any(|v| {
+                        ctx.options().constified_enums.matches(&v.name())
+                    }))
         };
 
         let is_rust_enum = !is_bitfield && !is_constified_enum;
@@ -2502,9 +2519,10 @@ impl CodeGenerator for Enum {
         }
 
         if !is_constified_enum {
-            let derives = attributes::derives(
-                &["Debug", "Copy", "Clone", "PartialEq", "Eq", "Hash"],
-            );
+            let derives =
+                attributes::derives(
+                    &["Debug", "Copy", "Clone", "PartialEq", "Eq", "Hash"],
+                );
 
             builder = builder.with_attr(derives);
         }
@@ -2544,9 +2562,10 @@ impl CodeGenerator for Enum {
             result.push(constant);
         }
 
-        let repr = self.repr()
-            .and_then(|repr| repr.try_to_rust_ty_or_opaque(ctx, &()).ok())
-            .unwrap_or_else(|| helpers::ast_ty::raw_type(ctx, repr_name));
+        let repr =
+            self.repr()
+                .and_then(|repr| repr.try_to_rust_ty_or_opaque(ctx, &()).ok())
+                .unwrap_or_else(|| helpers::ast_ty::raw_type(ctx, repr_name));
 
         let mut builder = EnumBuilder::new(
             builder,
@@ -2585,8 +2604,9 @@ impl CodeGenerator for Enum {
         let mut constified_variants = VecDeque::new();
 
         let mut iter = self.variants().iter().peekable();
-        while let Some(variant) =
-            iter.next().or_else(|| constified_variants.pop_front())
+        while let Some(variant) = iter.next().or_else(|| {
+            constified_variants.pop_front()
+        })
         {
             if variant.hidden() {
                 continue;
@@ -2598,38 +2618,41 @@ impl CodeGenerator for Enum {
             }
 
             match seen_values.entry(variant.val()) {
-                Entry::Occupied(ref entry) => if is_rust_enum {
-                    let variant_name = ctx.rust_mangle(variant.name());
-                    let mangled_name = if is_toplevel ||
-                        enum_ty.name().is_some()
-                    {
-                        variant_name
+                Entry::Occupied(ref entry) => {
+                    if is_rust_enum {
+                        let variant_name = ctx.rust_mangle(variant.name());
+                        let mangled_name =
+                            if is_toplevel || enum_ty.name().is_some() {
+                                variant_name
+                            } else {
+                                let parent_name =
+                                    parent_canonical_name.as_ref().unwrap();
+
+                                Cow::Owned(
+                                    format!("{}_{}", parent_name, variant_name),
+                                )
+                            };
+
+                        let existing_variant_name = entry.get();
+                        add_constant(
+                            ctx,
+                            enum_ty,
+                            &name,
+                            &*mangled_name,
+                            existing_variant_name,
+                            enum_rust_ty.clone(),
+                            result,
+                        );
                     } else {
-                        let parent_name =
-                            parent_canonical_name.as_ref().unwrap();
-
-                        Cow::Owned(format!("{}_{}", parent_name, variant_name))
-                    };
-
-                    let existing_variant_name = entry.get();
-                    add_constant(
-                        ctx,
-                        enum_ty,
-                        &name,
-                        &*mangled_name,
-                        existing_variant_name,
-                        enum_rust_ty.clone(),
-                        result,
-                    );
-                } else {
-                    builder = builder.with_variant(
-                        ctx,
-                        variant,
-                        constant_mangling_prefix,
-                        enum_rust_ty.clone(),
-                        result,
-                    );
-                },
+                        builder = builder.with_variant(
+                            ctx,
+                            variant,
+                            constant_mangling_prefix,
+                            enum_rust_ty.clone(),
+                            result,
+                        );
+                    }
+                }
                 Entry::Vacant(entry) => {
                     builder = builder.with_variant(
                         ctx,
@@ -2700,8 +2723,9 @@ trait TryToOpaque {
         ctx: &BindgenContext,
         extra: &Self::Extra,
     ) -> error::Result<P<ast::Ty>> {
-        self.try_get_layout(ctx, extra)
-            .map(|layout| BlobTyBuilder::new(layout).build())
+        self.try_get_layout(ctx, extra).map(|layout| {
+            BlobTyBuilder::new(layout).build()
+        })
     }
 }
 
@@ -2717,8 +2741,9 @@ trait TryToOpaque {
 /// leverage the blanket impl for this trait.
 trait ToOpaque: TryToOpaque {
     fn get_layout(&self, ctx: &BindgenContext, extra: &Self::Extra) -> Layout {
-        self.try_get_layout(ctx, extra)
-            .unwrap_or_else(|_| Layout::for_size(1))
+        self.try_get_layout(ctx, extra).unwrap_or_else(
+            |_| Layout::for_size(1),
+        )
     }
 
     fn to_opaque(
@@ -2771,7 +2796,8 @@ trait TryToRustTyOrOpaque: TryToRustTy + TryToOpaque {
 
 impl<E, T> TryToRustTyOrOpaque for T
 where
-    T: TryToRustTy<Extra = E> + TryToOpaque<Extra = E>,
+    T: TryToRustTy<Extra = E>
+        + TryToOpaque<Extra = E>,
 {
     type Extra = E;
 
@@ -2781,7 +2807,9 @@ where
         extra: &E,
     ) -> error::Result<P<ast::Ty>> {
         self.try_to_rust_ty(ctx, extra).or_else(
-            |_| if let Ok(layout) = self.try_get_layout(ctx, extra) {
+            |_| if let Ok(layout) =
+                self.try_get_layout(ctx, extra)
+            {
                 Ok(BlobTyBuilder::new(layout).build())
             } else {
                 Err(error::Error::NoLayoutForOpaqueBlob)
@@ -2828,8 +2856,9 @@ where
         ctx: &BindgenContext,
         extra: &E,
     ) -> P<ast::Ty> {
-        self.try_to_rust_ty(ctx, extra)
-            .unwrap_or_else(|_| self.to_opaque(ctx, extra))
+        self.try_to_rust_ty(ctx, extra).unwrap_or_else(|_| {
+            self.to_opaque(ctx, extra)
+        })
     }
 }
 
@@ -2982,7 +3011,8 @@ impl TryToRustTy for Type {
                 inst.try_to_rust_ty(ctx, item)
             }
             TypeKind::ResolvedTypeRef(inner) => inner.try_to_rust_ty(ctx, &()),
-            TypeKind::TemplateAlias(inner, _) | TypeKind::Alias(inner) => {
+            TypeKind::TemplateAlias(inner, _) |
+            TypeKind::Alias(inner) => {
                 let template_params = item.used_template_params(ctx)
                     .unwrap_or(vec![])
                     .into_iter()
@@ -2992,8 +3022,11 @@ impl TryToRustTy for Type {
                 let spelling = self.name().expect("Unnamed alias?");
                 if item.is_opaque(ctx, &()) && !template_params.is_empty() {
                     self.try_to_opaque(ctx, item)
-                } else if let Some(ty) =
-                    utils::type_from_named(ctx, spelling, inner)
+                } else if let Some(ty) = utils::type_from_named(
+                    ctx,
+                    spelling,
+                    inner,
+                )
                 {
                     Ok(ty)
                 } else {
@@ -3020,7 +3053,8 @@ impl TryToRustTy for Type {
                     ctx.span(),
                 ))
             }
-            TypeKind::Pointer(inner) | TypeKind::Reference(inner) => {
+            TypeKind::Pointer(inner) |
+            TypeKind::Reference(inner) => {
                 let inner = ctx.resolve_item(inner);
                 let inner_ty = inner.expect_type();
 
@@ -3034,12 +3068,12 @@ impl TryToRustTy for Type {
                 if inner_ty.canonical_type(ctx).is_function() {
                     Ok(ty)
                 } else {
-                    let is_const =
-                        self.is_const() || inner.expect_type().is_const();
+                    let is_const = self.is_const() ||
+                        inner.expect_type().is_const();
                     Ok(ty.to_ptr(is_const, ctx.span()))
                 }
             }
-            TypeKind::Named => {
+            TypeKind::TypeParam => {
                 let name = item.canonical_name(ctx);
                 let ident = ctx.rust_ident(&name);
                 Ok(quote_ty!(ctx.ext_cx(), $ident))
@@ -3047,9 +3081,8 @@ impl TryToRustTy for Type {
             TypeKind::ObjCSel => {
                 Ok(quote_ty!(ctx.ext_cx(), objc::runtime::Sel))
             }
-            TypeKind::ObjCId | TypeKind::ObjCInterface(..) => {
-                Ok(quote_ty!(ctx.ext_cx(), id))
-            }
+            TypeKind::ObjCId |
+            TypeKind::ObjCInterface(..) => Ok(quote_ty!(ctx.ext_cx(), id)),
             ref u @ TypeKind::UnresolvedTypeRef(..) => {
                 unreachable!("Should have been resolved after parsing {:?}!", u)
             }
@@ -3065,9 +3098,9 @@ impl TryToOpaque for TemplateInstantiation {
         ctx: &BindgenContext,
         item: &Item,
     ) -> error::Result<Layout> {
-        item.expect_type()
-            .layout(ctx)
-            .ok_or(error::Error::NoLayoutForOpaqueBlob)
+        item.expect_type().layout(ctx).ok_or(
+            error::Error::NoLayoutForOpaqueBlob,
+        )
     }
 }
 
@@ -3390,8 +3423,12 @@ impl CodeGenerator for ObjCInterface {
             trait_items.push(trait_item)
         }
 
-        let instance_method_names: Vec<_> =
-            self.methods().iter().map({ |m| m.rust_name() }).collect();
+        let instance_method_names: Vec<_> = self.methods()
+            .iter()
+            .map({
+                |m| m.rust_name()
+            })
+            .collect();
 
         for class_method in self.class_methods() {
 
@@ -3463,7 +3500,7 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
 }
 
 mod utils {
-    use super::{error, ToRustTyOrOpaque, TryToRustTy};
+    use super::{ToRustTyOrOpaque, TryToRustTy, error};
     use aster;
     use ir::context::{BindgenContext, ItemId};
     use ir::function::FunctionSig;
@@ -3570,8 +3607,7 @@ mod utils {
                 fn hash<H: ::$prefix::hash::Hasher>(&self, _state: &mut H) {
                 }
             }
-        )
-            .unwrap();
+        ).unwrap();
 
         let union_field_partialeq_impl = quote_item!(&ctx.ext_cx(),
            impl<T> ::$prefix::cmp::PartialEq for __BindgenUnionField<T> {
@@ -3579,8 +3615,7 @@ mod utils {
                    true
                }
            }
-        )
-            .unwrap();
+        ).unwrap();
 
         let items = vec![union_field_decl,
                          union_field_impl,
@@ -3767,9 +3802,9 @@ mod utils {
             _ => panic!("How?"),
         };
 
-        let decl_ty = signature
-            .try_to_rust_ty(ctx, sig)
-            .expect("function signature to Rust type conversion is infallible");
+        let decl_ty = signature.try_to_rust_ty(ctx, sig).expect(
+            "function signature to Rust type conversion is infallible",
+        );
         match decl_ty.unwrap().node {
             ast::TyKind::BareFn(bare_fn) => bare_fn.unwrap().decl,
             _ => panic!("How did this happen exactly?"),

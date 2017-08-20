@@ -1,17 +1,17 @@
 //! Determining which types for which we can emit `#[derive(Copy)]`.
 
 use super::{ConstrainResult, MonotoneFramework, generate_dependencies};
-use std::collections::HashSet;
-use std::collections::HashMap;
-use ir::context::{BindgenContext, ItemId};
-use ir::item::IsOpaque;
-use ir::traversal::EdgeKind;
-use ir::ty::TypeKind;
+use ir::comp::CompKind;
 use ir::comp::Field;
 use ir::comp::FieldMethods;
+use ir::context::{BindgenContext, ItemId};
 use ir::derive::CanTriviallyDeriveCopy;
-use ir::comp::CompKind;
+use ir::item::IsOpaque;
 use ir::template::TemplateParameters;
+use ir::traversal::EdgeKind;
+use ir::ty::TypeKind;
+use std::collections::HashMap;
+use std::collections::HashSet;
 
 /// An analysis that finds for each IR item whether copy cannot be derived.
 ///
@@ -32,7 +32,8 @@ use ir::template::TemplateParameters;
 ///   cannot derive copy.
 #[derive(Debug, Clone)]
 pub struct CannotDeriveCopy<'ctx, 'gen>
-    where 'gen: 'ctx
+where
+    'gen: 'ctx,
 {
     ctx: &'ctx BindgenContext<'gen>,
 
@@ -150,7 +151,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
             TypeKind::Function(..) |
             TypeKind::Enum(..) |
             TypeKind::Reference(..) |
-            TypeKind::Named |
+            TypeKind::TypeParam |
             TypeKind::BlockPointer |
             TypeKind::Pointer(..) |
             TypeKind::UnresolvedTypeRef(..) |
@@ -163,9 +164,11 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
 
             TypeKind::Array(t, len) => {
                 let cant_derive_copy = self.cannot_derive_copy.contains(&t);
-                if  cant_derive_copy {
-                    trace!("    arrays of T for which we cannot derive Copy \
-                            also cannot derive Copy");
+                if cant_derive_copy {
+                    trace!(
+                        "    arrays of T for which we cannot derive Copy \
+                            also cannot derive Copy"
+                    );
                     return self.insert(id);
                 }
 
@@ -182,13 +185,17 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
                 let cant_derive_copy = self.cannot_derive_copy.contains(&t);
-                if  cant_derive_copy {
-                    trace!("    arrays of T for which we cannot derive Copy \
-                            also cannot derive Copy");
+                if cant_derive_copy {
+                    trace!(
+                        "    arrays of T for which we cannot derive Copy \
+                            also cannot derive Copy"
+                    );
                     return self.insert(id);
                 }
-                trace!("    aliases and type refs to T which can derive \
-                        Copy can also derive Copy");
+                trace!(
+                    "    aliases and type refs to T which can derive \
+                        Copy can also derive Copy"
+                );
                 ConstrainResult::Same
             }
 
@@ -202,7 +209,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
                 // default, the may have an explicit destructor in C++, so we can't
                 // defer this check just for the union case.
                 if info.has_destructor(self.ctx) {
-                    trace!("    comp has destructor which cannot derive Copy");
+                    trace!("    comp has destructor which cannot derive copy");
                     return self.insert(id);
                 }
 
@@ -211,40 +218,44 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
                         // NOTE: If there's no template parameters we can derive copy
                         // unconditionally, since arrays are magical for rustc, and
                         // __BindgenUnionField always implements copy.
-                        trace!("    comp can always derive Copy if it's a Union and no template parameters");
-                        return ConstrainResult::Same
+                        trace!(
+                            "    comp can always derive debug if it's a Union and no template parameters"
+                        );
+                        return ConstrainResult::Same;
                     }
 
                     // https://github.com/rust-lang/rust/issues/36640
                     if info.self_template_params(self.ctx).is_some() ||
-                       item.used_template_params(self.ctx).is_some() {
-                        trace!("    comp cannot derive copy because issue 36640");
+                        item.used_template_params(self.ctx).is_some()
+                    {
+                        trace!(
+                            "    comp cannot derive copy because issue 36640"
+                        );
                         return self.insert(id);
                     }
                 }
 
-                let bases_cannot_derive = info.base_members()
-                    .iter()
-                    .any(|base| self.cannot_derive_copy.contains(&base.ty));
+                let bases_cannot_derive =
+                    info.base_members().iter().any(|base| {
+                        self.cannot_derive_copy.contains(&base.ty)
+                    });
                 if bases_cannot_derive {
-                    trace!("    base members cannot derive Copy, so we can't \
-                            either");
+                    trace!(
+                        "    base members cannot derive Copy, so we can't \
+                            either"
+                    );
                     return self.insert(id);
                 }
 
-                let fields_cannot_derive = info.fields()
-                    .iter()
-                    .any(|f| {
-                        match *f {
-                            Field::DataMember(ref data) => {
-                                self.cannot_derive_copy.contains(&data.ty())
-                            }
-                            Field::Bitfields(ref bfu) => {
-                                bfu.bitfields()
-                                    .iter().any(|b| {
-                                        self.cannot_derive_copy.contains(&b.ty())
-                                    })
-                            }
+                let fields_cannot_derive =
+                    info.fields().iter().any(|f| match *f {
+                        Field::DataMember(ref data) => {
+                            self.cannot_derive_copy.contains(&data.ty())
+                        }
+                        Field::Bitfields(ref bfu) => {
+                            bfu.bitfields().iter().any(|b| {
+                                self.cannot_derive_copy.contains(&b.ty())
+                            })
                         }
                     });
                 if fields_cannot_derive {
@@ -257,12 +268,15 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
             }
 
             TypeKind::TemplateInstantiation(ref template) => {
-                let args_cannot_derive = template.template_arguments()
-                    .iter()
-                    .any(|arg| self.cannot_derive_copy.contains(&arg));
+                let args_cannot_derive =
+                    template.template_arguments().iter().any(|arg| {
+                        self.cannot_derive_copy.contains(&arg)
+                    });
                 if args_cannot_derive {
-                    trace!("    template args cannot derive Copy, so \
-                            insantiation can't either");
+                    trace!(
+                        "    template args cannot derive Copy, so \
+                            insantiation can't either"
+                    );
                     return self.insert(id);
                 }
 
@@ -270,11 +284,14 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
                     !template.template_definition().is_opaque(self.ctx, &()),
                     "The early ty.is_opaque check should have handled this case"
                 );
-                let def_cannot_derive = self.cannot_derive_copy
-                    .contains(&template.template_definition());
+                let def_cannot_derive = self.cannot_derive_copy.contains(
+                    &template.template_definition(),
+                );
                 if def_cannot_derive {
-                    trace!("    template definition cannot derive Copy, so \
-                            insantiation can't either");
+                    trace!(
+                        "    template definition cannot derive Copy, so \
+                            insantiation can't either"
+                    );
                     return self.insert(id);
                 }
 
@@ -291,7 +308,8 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
     }
 
     fn each_depending_on<F>(&self, id: ItemId, mut f: F)
-        where F: FnMut(ItemId),
+    where
+        F: FnMut(ItemId),
     {
         if let Some(edges) = self.dependencies.get(&id) {
             for item in edges {

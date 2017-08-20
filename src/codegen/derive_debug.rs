@@ -2,7 +2,7 @@ use ir::comp::{BitfieldUnit, CompKind, Field, FieldData, FieldMethods};
 use ir::context::BindgenContext;
 use ir::derive::CanTriviallyDeriveDebug;
 use ir::item::{HasTypeParamInArray, IsOpaque, Item, ItemCanonicalName};
-use ir::ty::{TypeKind, RUST_DERIVE_IN_ARRAY_LIMIT};
+use ir::ty::{RUST_DERIVE_IN_ARRAY_LIMIT, TypeKind};
 use syntax::ast;
 use syntax::codemap::DUMMY_SP;
 use syntax::parse::token::Token;
@@ -171,17 +171,16 @@ impl<'a> ImplDebug<'a> for Item {
             } 
 
             // The generic is not required to implement Debug, so we can not debug print that type
-            TypeKind::Named => {
+            TypeKind::TypeParam => {
                 Some((format!("{}: Non-debuggable generic", name), vec![]))
             }
 
             TypeKind::Array(_, len) => {
                 // Generics are not required to implement Debug
                 if self.has_type_param_in_array(ctx) {
-                    Some((
-                        format!("{}: Array with length {}", name, len),
-                        vec![],
-                    ))
+                    Some(
+                        (format!("{}: Array with length {}", name, len), vec![]),
+                    )
                 } else if len < RUST_DERIVE_IN_ARRAY_LIMIT {
                     // The simple case
                     debug_print(ctx, name, name_ident)
@@ -211,8 +210,7 @@ impl<'a> ImplDebug<'a> for Item {
                 let inner_type = ctx.resolve_type(inner).canonical_type(ctx);
                 match *inner_type.kind() {
                     TypeKind::Function(ref sig)
-                        if !sig.can_trivially_derive_debug() =>
-                    {
+                        if !sig.can_trivially_derive_debug() => {
                         Some((format!("{}: FunctionPointer", name), vec![]))
                     }
                     _ => debug_print(ctx, name, name_ident),
