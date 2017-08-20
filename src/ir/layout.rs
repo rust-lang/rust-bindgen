@@ -1,8 +1,8 @@
 //! Intermediate representation for the physical layout of some type.
 
-use super::derive::{CanTriviallyDeriveDebug,
-                    CanTriviallyDeriveDefault, CanTriviallyDeriveCopy,
-                    CanTriviallyDeriveHash, CanTriviallyDerivePartialEq};
+use super::derive::{CanTriviallyDeriveCopy, CanTriviallyDeriveDebug,
+                    CanTriviallyDeriveDefault, CanTriviallyDeriveHash,
+                    CanTriviallyDerivePartialEq};
 use super::ty::{RUST_DERIVE_IN_ARRAY_LIMIT, Type, TypeKind};
 use clang;
 use std::{cmp, mem};
@@ -22,8 +22,10 @@ pub struct Layout {
 fn test_layout_for_size() {
     let ptr_size = mem::size_of::<*mut ()>();
     assert_eq!(Layout::for_size(ptr_size), Layout::new(ptr_size, ptr_size));
-    assert_eq!(Layout::for_size(3 * ptr_size),
-               Layout::new(3 * ptr_size, ptr_size));
+    assert_eq!(
+        Layout::for_size(3 * ptr_size),
+        Layout::new(3 * ptr_size, ptr_size)
+    );
 }
 
 impl Layout {
@@ -42,7 +44,8 @@ impl Layout {
     pub fn for_size(size: usize) -> Self {
         let mut next_align = 2;
         while size % next_align == 0 &&
-              next_align <= mem::size_of::<*mut ()>() {
+            next_align <= mem::size_of::<*mut ()>()
+        {
             next_align *= 2;
         }
         Layout {
@@ -105,38 +108,40 @@ impl Opaque {
 
 impl CanTriviallyDeriveDebug for Opaque {
     fn can_trivially_derive_debug(&self) -> bool {
-        self.array_size()
-            .map_or(false, |size| size <= RUST_DERIVE_IN_ARRAY_LIMIT)
+        self.array_size().map_or(false, |size| {
+            size <= RUST_DERIVE_IN_ARRAY_LIMIT
+        })
     }
 }
 
 impl CanTriviallyDeriveDefault for Opaque {
-
     fn can_trivially_derive_default(&self) -> bool {
-        self.array_size()
-            .map_or(false, |size| size <= RUST_DERIVE_IN_ARRAY_LIMIT)
+        self.array_size().map_or(false, |size| {
+            size <= RUST_DERIVE_IN_ARRAY_LIMIT
+        })
     }
 }
 
 impl CanTriviallyDeriveCopy for Opaque {
     fn can_trivially_derive_copy(&self) -> bool {
-        self.array_size()
-            .map_or(false, |size| size <= RUST_DERIVE_IN_ARRAY_LIMIT)
+        self.array_size().map_or(false, |size| {
+            size <= RUST_DERIVE_IN_ARRAY_LIMIT
+        })
     }
 }
 
 impl CanTriviallyDeriveHash for Opaque {
-
     fn can_trivially_derive_hash(&self) -> bool {
-        self.array_size()
-            .map_or(false, |size| size <= RUST_DERIVE_IN_ARRAY_LIMIT)
+        self.array_size().map_or(false, |size| {
+            size <= RUST_DERIVE_IN_ARRAY_LIMIT
+        })
     }
 }
 
 impl CanTriviallyDerivePartialEq for Opaque {
-
     fn can_trivially_derive_partialeq(&self) -> bool {
-        self.array_size()
-            .map_or(false, |size| size <= RUST_DERIVE_IN_ARRAY_LIMIT)
+        self.array_size().map_or(false, |size| {
+            size <= RUST_DERIVE_IN_ARRAY_LIMIT
+        })
     }
 }
