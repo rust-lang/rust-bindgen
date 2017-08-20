@@ -30,9 +30,7 @@ pub trait CanTriviallyDeriveDebug {
 pub trait CanDeriveCopy<'a> {
     /// Return `true` if `Copy` can be derived for this thing, `false`
     /// otherwise.
-    fn can_derive_copy(&'a self,
-                       ctx: &'a BindgenContext)
-                       -> bool;
+    fn can_derive_copy(&'a self, ctx: &'a BindgenContext) -> bool;
 }
 
 /// A trait that encapsulates the logic for whether or not we can derive `Copy`.
@@ -53,12 +51,9 @@ pub trait CanTriviallyDeriveCopy {
 /// derive default or not, because of the limit rust has on 32 items as max in the
 /// array.
 pub trait CanDeriveDefault {
-
     /// Return `true` if `Default` can be derived for this thing, `false`
     /// otherwise.
-    fn can_derive_default(&self,
-                          ctx: &BindgenContext)
-                          -> bool;
+    fn can_derive_default(&self, ctx: &BindgenContext) -> bool;
 }
 
 /// A trait that encapsulates the logic for whether or not we can derive `Default`.
@@ -66,7 +61,6 @@ pub trait CanDeriveDefault {
 /// implementing this trait cannot use recursion or lookup result from fix point
 /// analysis. It's a helper trait for fix point analysis.
 pub trait CanTriviallyDeriveDefault {
-
     /// Return `true` if `Default` can be derived for this thing, `false`
     /// otherwise.
     fn can_trivially_derive_default(&self) -> bool;
@@ -80,12 +74,9 @@ pub trait CanTriviallyDeriveDefault {
 /// derive default or not, because of the limit rust has on 32 items as max in the
 /// array.
 pub trait CanDeriveHash {
-
     /// Return `true` if `Default` can be derived for this thing, `false`
     /// otherwise.
-    fn can_derive_hash(&self,
-                       ctx: &BindgenContext)
-                       -> bool;
+    fn can_derive_hash(&self, ctx: &BindgenContext) -> bool;
 }
 
 /// A trait that encapsulates the logic for whether or not we can derive `PartialEq`
@@ -96,12 +87,9 @@ pub trait CanDeriveHash {
 /// derive default or not, because of the limit rust has on 32 items as max in the
 /// array.
 pub trait CanDerivePartialEq {
-
     /// Return `true` if `Default` can be derived for this thing, `false`
     /// otherwise.
-    fn can_derive_partialeq(&self,
-                            ctx: &BindgenContext)
-                            -> bool;
+    fn can_derive_partialeq(&self, ctx: &BindgenContext) -> bool;
 }
 
 /// A trait that encapsulates the logic for whether or not we can derive `Hash`.
@@ -109,7 +97,6 @@ pub trait CanDerivePartialEq {
 /// implementing this trait cannot use recursion or lookup result from fix point
 /// analysis. It's a helper trait for fix point analysis.
 pub trait CanTriviallyDeriveHash {
-
     /// Return `true` if `Hash` can be derived for this thing, `false`
     /// otherwise.
     fn can_trivially_derive_hash(&self) -> bool;
@@ -120,7 +107,6 @@ pub trait CanTriviallyDeriveHash {
 /// implementing this trait cannot use recursion or lookup result from fix point
 /// analysis. It's a helper trait for fix point analysis.
 pub trait CanTriviallyDerivePartialEq {
-
     /// Return `true` if `PartialEq` can be derived for this thing, `false`
     /// otherwise.
     fn can_trivially_derive_partialeq(&self) -> bool;

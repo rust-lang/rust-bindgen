@@ -66,7 +66,8 @@ where
                 .help("Avoid deriving Debug on any type."),
             Arg::with_name("impl-debug")
                 .long("impl-debug")
-                .help("Create Debug implementation, if it can not be derived automatically."),
+                .help("Create Debug implementation, if it can not be derived \
+                       automatically."),
             Arg::with_name("no-derive-default")
                 .long("no-derive-default")
                 .hidden(true)
