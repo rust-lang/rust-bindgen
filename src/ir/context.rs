@@ -1,25 +1,28 @@
 //! Common context that is passed around during parsing and codegen.
 
-use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault, CanDeriveHash, CanDerivePartialEq};
+use super::analysis::{CannotDeriveCopy, CannotDeriveDebug,
+                      CannotDeriveDefault, CannotDeriveHash,
+                      CannotDerivePartialEq, HasTypeParameterInArray,
+                      HasVtableAnalysis, UsedTemplateParameters, analyze};
+use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
+                    CanDeriveHash, CanDerivePartialEq};
 use super::int::IntKind;
-use super::item::{IsOpaque, HasTypeParamInArray, Item, ItemAncestors, ItemCanonicalPath, ItemSet};
+use super::item::{HasTypeParamInArray, IsOpaque, Item, ItemAncestors,
+                  ItemCanonicalPath, ItemSet};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
-use super::analysis::{analyze, UsedTemplateParameters, CannotDeriveDebug, HasVtableAnalysis,
-                      CannotDeriveDefault, CannotDeriveCopy, HasTypeParameterInArray,
-                      CannotDeriveHash, CannotDerivePartialEq};
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
 use BindgenOptions;
-use cexpr;
 use callbacks::ParseCallbacks;
+use cexpr;
 use clang::{self, Cursor};
 use clang_sys;
 use parse::ClangItemParser;
 use std::borrow::Cow;
 use std::cell::Cell;
-use std::collections::{HashMap, hash_map, HashSet};
+use std::collections::{HashMap, HashSet, hash_map};
 use std::collections::btree_map::{self, BTreeMap};
 use std::fmt;
 use std::iter::IntoIterator;
@@ -49,7 +52,8 @@ impl CanDeriveDebug for ItemId {
 
 impl CanDeriveDefault for ItemId {
     fn can_derive_default(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_default && ctx.lookup_item_id_can_derive_default(*self)
+        ctx.options().derive_default &&
+            ctx.lookup_item_id_can_derive_default(*self)
     }
 }
 
@@ -67,7 +71,8 @@ impl CanDeriveHash for ItemId {
 
 impl CanDerivePartialEq for ItemId {
     fn can_derive_partialeq(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_partialeq && ctx.lookup_item_id_can_derive_partialeq(*self)
+        ctx.options().derive_partialeq &&
+            ctx.lookup_item_id_can_derive_partialeq(*self)
     }
 }
 
@@ -111,7 +116,7 @@ pub struct BindgenContext<'ctx> {
 
     /// Maps from a cursor to the item id of the named template type parameter
     /// for that cursor.
-    named_types: HashMap<clang::Cursor, ItemId>,
+    type_params: HashMap<clang::Cursor, ItemId>,
 
     /// A cursor to module map. Similar reason than above.
     modules: HashMap<Cursor, ItemId>,
@@ -234,18 +239,22 @@ pub struct BindgenContext<'ctx> {
 
 /// A traversal of whitelisted items.
 struct WhitelistedItemsTraversal<'ctx, 'gen>
-    where 'gen: 'ctx
+where
+    'gen: 'ctx,
 {
     ctx: &'ctx BindgenContext<'gen>,
-    traversal: ItemTraversal<'ctx,
-                             'gen,
-                             ItemSet,
-                             Vec<ItemId>,
-                             for<'a> fn(&'a BindgenContext, Edge) -> bool>,
+    traversal: ItemTraversal<
+        'ctx,
+        'gen,
+        ItemSet,
+        Vec<ItemId>,
+        for<'a> fn(&'a BindgenContext, Edge) -> bool,
+    >,
 }
 
 impl<'ctx, 'gen> Iterator for WhitelistedItemsTraversal<'ctx, 'gen>
-    where 'gen: 'ctx
+where
+    'gen: 'ctx,
 {
     type Item = ItemId;
 
@@ -253,7 +262,9 @@ impl<'ctx, 'gen> Iterator for WhitelistedItemsTraversal<'ctx, 'gen>
         loop {
             match self.traversal.next() {
                 None => return None,
-                Some(id) if self.ctx.resolve_item(id).is_hidden(self.ctx) => continue,
+                Some(id) if self.ctx.resolve_item(id).is_hidden(self.ctx) => {
+                    continue
+                }
                 Some(id) => return Some(id),
             }
         }
@@ -261,18 +272,21 @@ impl<'ctx, 'gen> Iterator for WhitelistedItemsTraversal<'ctx, 'gen>
 }
 
 impl<'ctx, 'gen> WhitelistedItemsTraversal<'ctx, 'gen>
-    where 'gen: 'ctx
+where
+    'gen: 'ctx,
 {
     /// Construct a new whitelisted items traversal.
-    pub fn new<R>(ctx: &'ctx BindgenContext<'gen>,
-                  roots: R,
-                  predicate: for<'a> fn(&'a BindgenContext, Edge) -> bool)
-                  -> Self
-        where R: IntoIterator<Item = ItemId>,
+    pub fn new<R>(
+        ctx: &'ctx BindgenContext<'gen>,
+        roots: R,
+        predicate: for<'a> fn(&'a BindgenContext, Edge) -> bool,
+    ) -> Self
+    where
+        R: IntoIterator<Item = ItemId>,
     {
         WhitelistedItemsTraversal {
             ctx: ctx,
-            traversal: ItemTraversal::new(ctx, roots, predicate)
+            traversal: ItemTraversal::new(ctx, roots, predicate),
         }
     }
 }
@@ -286,13 +300,13 @@ impl<'ctx> BindgenContext<'ctx> {
 
         let parse_options =
             clang_sys::CXTranslationUnit_DetailedPreprocessingRecord;
-        let translation_unit =
-            clang::TranslationUnit::parse(&index,
-                                          "",
-                                          &options.clang_args,
-                                          &options.input_unsaved_files,
-                                          parse_options)
-                .expect("TranslationUnit::parse failed");
+        let translation_unit = clang::TranslationUnit::parse(
+            &index,
+            "",
+            &options.clang_args,
+            &options.input_unsaved_files,
+            parse_options,
+        ).expect("TranslationUnit::parse failed");
 
         // TODO(emilio): Use the CXTargetInfo here when available.
         //
@@ -326,8 +340,7 @@ impl<'ctx> BindgenContext<'ctx> {
         // We need to make sure that we don't include __ because rust will turn into
         // ___.
         let effective_target = effective_target.unwrap();
-        let needs_mangling_hack =
-            effective_target.contains("darwin") ||
+        let needs_mangling_hack = effective_target.contains("darwin") ||
             effective_target.contains("ios") ||
             effective_target == "i686-pc-win32";
 
@@ -335,7 +348,7 @@ impl<'ctx> BindgenContext<'ctx> {
         let mut me = BindgenContext {
             items: Default::default(),
             types: Default::default(),
-            named_types: Default::default(),
+            type_params: Default::default(),
             modules: Default::default(),
             next_item_id: ItemId(1),
             root_module: root_module.id(),
@@ -386,8 +399,9 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Finish parsing the current partial type, pop it off the
     /// `currently_parsed_types` stack, and return it.
     pub fn finish_parsing(&mut self) -> PartialType {
-        self.currently_parsed_types.pop()
-            .expect("should have been parsing a type, if we finished parsing a type")
+        self.currently_parsed_types.pop().expect(
+            "should have been parsing a type, if we finished parsing a type",
+        )
     }
 
     /// Get the user-provided callbacks by reference, if any.
@@ -399,24 +413,30 @@ impl<'ctx> BindgenContext<'ctx> {
     ///
     /// This inserts it into the internal items set, and its type into the
     /// internal types set.
-    pub fn add_item(&mut self,
-                    item: Item,
-                    declaration: Option<Cursor>,
-                    location: Option<Cursor>) {
-        debug!("BindgenContext::add_item({:?}, declaration: {:?}, loc: {:?}",
-               item,
-               declaration,
-               location);
-        debug_assert!(declaration.is_some() || !item.kind().is_type() ||
-                      item.kind().expect_type().is_builtin_or_named() ||
-                      item.kind().expect_type().is_opaque(self, &item),
-                      "Adding a type without declaration?");
+    pub fn add_item(
+        &mut self,
+        item: Item,
+        declaration: Option<Cursor>,
+        location: Option<Cursor>,
+    ) {
+        debug!(
+            "BindgenContext::add_item({:?}, declaration: {:?}, loc: {:?}",
+            item,
+            declaration,
+            location
+        );
+        debug_assert!(
+            declaration.is_some() || !item.kind().is_type() ||
+                item.kind().expect_type().is_builtin_or_type_param() ||
+                item.kind().expect_type().is_opaque(self, &item),
+            "Adding a type without declaration?"
+        );
 
         let id = item.id();
         let is_type = item.kind().is_type();
         let is_unnamed = is_type && item.expect_type().name().is_none();
-        let is_template_instantiation =
-            is_type && item.expect_type().is_template_instantiation();
+        let is_template_instantiation = is_type &&
+            item.expect_type().is_template_instantiation();
 
         if item.id() != self.root_module {
             self.add_item_to_module(&item);
@@ -427,8 +447,10 @@ impl<'ctx> BindgenContext<'ctx> {
         }
 
         let old_item = self.items.insert(id, item);
-        assert!(old_item.is_none(),
-                "should not have already associated an item with the given id");
+        assert!(
+            old_item.is_none(),
+            "should not have already associated an item with the given id"
+        );
 
         // Unnamed items can have an USR, but they can't be referenced from
         // other sites explicitly and the USR can match if the unnamed items are
@@ -449,9 +471,11 @@ impl<'ctx> BindgenContext<'ctx> {
                 //
                 // Fortunately, we don't care about those types being
                 // duplicated, so we can just ignore them.
-                debug!("Invalid declaration {:?} found for type {:?}",
-                       declaration,
-                       self.items.get(&id).unwrap().kind().expect_type());
+                debug!(
+                    "Invalid declaration {:?} found for type {:?}",
+                    declaration,
+                    self.items.get(&id).unwrap().kind().expect_type()
+                );
                 return;
             }
 
@@ -460,9 +484,11 @@ impl<'ctx> BindgenContext<'ctx> {
             } else if let Some(usr) = declaration.usr() {
                 TypeKey::USR(usr)
             } else {
-                warn!("Valid declaration with no USR: {:?}, {:?}",
-                      declaration,
-                      location);
+                warn!(
+                    "Valid declaration with no USR: {:?}, {:?}",
+                    declaration,
+                    location
+                );
                 TypeKey::Declaration(declaration)
             };
 
@@ -481,18 +507,22 @@ impl<'ctx> BindgenContext<'ctx> {
 
         if let Some(parent) = self.items.get_mut(&item.parent_id()) {
             if let Some(module) = parent.as_module_mut() {
-                debug!("add_item_to_module: adding {:?} as child of parent module {:?}",
-                       item.id(),
-                       item.parent_id());
+                debug!(
+                    "add_item_to_module: adding {:?} as child of parent module {:?}",
+                    item.id(),
+                    item.parent_id()
+                );
 
                 module.children_mut().insert(item.id());
                 return;
             }
         }
 
-        debug!("add_item_to_module: adding {:?} as child of current module {:?}",
-               item.id(),
-               self.current_module);
+        debug!(
+            "add_item_to_module: adding {:?} as child of current module {:?}",
+            item.id(),
+            self.current_module
+        );
 
         self.items
             .get_mut(&self.current_module)
@@ -504,34 +534,46 @@ impl<'ctx> BindgenContext<'ctx> {
     }
 
     /// Add a new named template type parameter to this context's item set.
-    pub fn add_named_type(&mut self, item: Item, definition: clang::Cursor) {
-        debug!("BindgenContext::add_named_type: item = {:?}; definition = {:?}",
-               item,
-               definition);
+    pub fn add_type_param(&mut self, item: Item, definition: clang::Cursor) {
+        debug!(
+            "BindgenContext::add_type_param: item = {:?}; definition = {:?}",
+            item,
+            definition
+        );
 
-        assert!(item.expect_type().is_named(),
-                "Should directly be a named type, not a resolved reference or anything");
-        assert_eq!(definition.kind(),
-                   clang_sys::CXCursor_TemplateTypeParameter);
+        assert!(
+            item.expect_type().is_type_param(),
+            "Should directly be a named type, not a resolved reference or anything"
+        );
+        assert_eq!(
+            definition.kind(),
+            clang_sys::CXCursor_TemplateTypeParameter
+        );
 
         self.add_item_to_module(&item);
 
         let id = item.id();
         let old_item = self.items.insert(id, item);
-        assert!(old_item.is_none(),
-                "should not have already associated an item with the given id");
+        assert!(
+            old_item.is_none(),
+            "should not have already associated an item with the given id"
+        );
 
-        let old_named_ty = self.named_types.insert(definition, id);
-        assert!(old_named_ty.is_none(),
-                "should not have already associated a named type with this id");
+        let old_named_ty = self.type_params.insert(definition, id);
+        assert!(
+            old_named_ty.is_none(),
+            "should not have already associated a named type with this id"
+        );
     }
 
     /// Get the named type defined at the given cursor location, if we've
     /// already added one.
-    pub fn get_named_type(&self, definition: &clang::Cursor) -> Option<ItemId> {
-        assert_eq!(definition.kind(),
-                   clang_sys::CXCursor_TemplateTypeParameter);
-        self.named_types.get(definition).cloned()
+    pub fn get_type_param(&self, definition: &clang::Cursor) -> Option<ItemId> {
+        assert_eq!(
+            definition.kind(),
+            clang_sys::CXCursor_TemplateTypeParameter
+        );
+        self.type_params.get(definition).cloned()
     }
 
     // TODO: Move all this syntax crap to other part of the code.
@@ -552,8 +594,9 @@ impl<'ctx> BindgenContext<'ctx> {
         let ident = self.rust_ident_raw(name);
         let token = token::Ident(ident);
         if token.is_any_keyword() || name.contains("@") ||
-           name.contains("?") || name.contains("$") ||
-           "bool" == name {
+            name.contains("?") || name.contains("$") ||
+            "bool" == name
+        {
             let mut s = name.to_owned();
             s = s.replace("@", "_");
             s = s.replace("?", "_");
@@ -585,9 +628,9 @@ impl<'ctx> BindgenContext<'ctx> {
     }
 
     /// Gather all the unresolved type references.
-    fn collect_typerefs
-        (&mut self)
-         -> Vec<(ItemId, clang::Type, clang::Cursor, Option<ItemId>)> {
+    fn collect_typerefs(
+        &mut self,
+    ) -> Vec<(ItemId, clang::Type, clang::Cursor, Option<ItemId>)> {
         debug_assert!(!self.collected_typerefs);
         self.collected_typerefs = true;
         let mut typerefs = vec![];
@@ -613,19 +656,20 @@ impl<'ctx> BindgenContext<'ctx> {
         let typerefs = self.collect_typerefs();
 
         for (id, ty, loc, parent_id) in typerefs {
-            let _resolved = {
-                let resolved = Item::from_ty(&ty, loc, parent_id, self)
+            let _resolved =
+                {
+                    let resolved = Item::from_ty(&ty, loc, parent_id, self)
                     .unwrap_or_else(|_| {
                         warn!("Could not resolve type reference, falling back \
                                to opaque blob");
                         Item::new_opaque_type(self.next_item_id(), &ty, self)
                     });
-                let item = self.items.get_mut(&id).unwrap();
+                    let item = self.items.get_mut(&id).unwrap();
 
-                *item.kind_mut().as_type_mut().unwrap().kind_mut() =
-                    TypeKind::ResolvedTypeRef(resolved);
-                resolved
-            };
+                    *item.kind_mut().as_type_mut().unwrap().kind_mut() =
+                        TypeKind::ResolvedTypeRef(resolved);
+                    resolved
+                };
 
             // Something in the STL is trolling me. I don't need this assertion
             // right now, but worth investigating properly once this lands.
@@ -639,7 +683,8 @@ impl<'ctx> BindgenContext<'ctx> {
     fn compute_bitfield_units(&mut self) {
         assert!(self.collected_typerefs());
 
-        let need_bitfield_allocation = mem::replace(&mut self.need_bitfield_allocation, vec![]);
+        let need_bitfield_allocation =
+            mem::replace(&mut self.need_bitfield_allocation, vec![]);
         for id in need_bitfield_allocation {
             // To appease the borrow checker, we temporarily remove this item
             // from the context, and then replace it once we are done computing
@@ -740,14 +785,19 @@ impl<'ctx> BindgenContext<'ctx> {
 
             let old_module = {
                 let immut_self = &*self;
-                old_parent.ancestors(immut_self)
+                old_parent
+                    .ancestors(immut_self)
                     .chain(Some(immut_self.root_module))
                     .find(|id| {
                         let item = immut_self.resolve_item(*id);
-                        item.as_module().map_or(false, |m| m.children().contains(&replacement))
+                        item.as_module().map_or(false, |m| {
+                            m.children().contains(&replacement)
+                        })
                     })
             };
-            let old_module = old_module.expect("Every replacement item should be in a module");
+            let old_module = old_module.expect(
+                "Every replacement item should be in a module",
+            );
 
             let new_module = {
                 let immut_self = &*self;
@@ -783,7 +833,8 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Enter the code generation phase, invoke the given callback `cb`, and
     /// leave the code generation phase.
     pub fn gen<F, Out>(&mut self, cb: F) -> Out
-        where F: FnOnce(&Self) -> Out,
+    where
+        F: FnOnce(&Self) -> Out,
     {
         use aster::symbol::ToSymbol;
         use syntax::ext::expand::ExpansionConfig;
@@ -858,16 +909,18 @@ impl<'ctx> BindgenContext<'ctx> {
         }
     }
 
-    fn assert_no_dangling_item_traversal<'me>
-        (&'me self)
-         -> traversal::AssertNoDanglingItemsTraversal<'me, 'ctx> {
+    fn assert_no_dangling_item_traversal<'me>(
+        &'me self,
+    ) -> traversal::AssertNoDanglingItemsTraversal<'me, 'ctx> {
         assert!(self.in_codegen_phase());
         assert!(self.current_module == self.root_module);
 
         let roots = self.items().map(|(&id, _)| id);
-        traversal::AssertNoDanglingItemsTraversal::new(self,
-                                                       roots,
-                                                       traversal::all_edges)
+        traversal::AssertNoDanglingItemsTraversal::new(
+            self,
+            roots,
+            traversal::all_edges,
+        )
     }
 
     /// When the `testing_only_extra_assertions` feature is enabled, walk over
@@ -890,14 +943,21 @@ impl<'ctx> BindgenContext<'ctx> {
                             .through_type_aliases()
                             .resolve(self)
                             .id();
-                        id.ancestors(self)
-                            .chain(Some(self.root_module))
-                            .any(|ancestor| {
-                                debug!("Checking if {:?} is a child of {:?}", id, ancestor);
-                                self.resolve_item(ancestor)
-                                    .as_module()
-                                    .map_or(false, |m| m.children().contains(&id))
-                            })
+                        id.ancestors(self).chain(Some(self.root_module)).any(
+                            |ancestor| {
+                                debug!(
+                                    "Checking if {:?} is a child of {:?}",
+                                    id,
+                                    ancestor
+                                );
+                                self.resolve_item(ancestor).as_module().map_or(
+                                    false,
+                                    |m| {
+                                        m.children().contains(&id)
+                                    },
+                                )
+                            },
+                        )
                     },
                     "{:?} should be in some ancestor module's children set",
                     id
@@ -914,8 +974,10 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// Look up whether the item with `id` has vtable or not.
     pub fn lookup_item_id_has_vtable(&self, id: &ItemId) -> bool {
-        assert!(self.in_codegen_phase(),
-                "We only compute vtables when we enter codegen");
+        assert!(
+            self.in_codegen_phase(),
+            "We only compute vtables when we enter codegen"
+        );
 
         // Look up the computed value for whether the item with `id` has a
         // vtable or not.
@@ -931,10 +993,12 @@ impl<'ctx> BindgenContext<'ctx> {
             // any sense of template parameter usage, and you're on your own.
             let mut used_params = HashMap::new();
             for &id in self.whitelisted_items() {
-                used_params.entry(id)
-                    .or_insert(id.self_template_params(self)
-                        .map_or(Default::default(),
-                                |params| params.into_iter().collect()));
+                used_params.entry(id).or_insert(
+                    id.self_template_params(self).map_or(
+                        Default::default(),
+                        |params| params.into_iter().collect(),
+                    ),
+                );
             }
             self.used_template_parameters = Some(used_params);
         }
@@ -954,18 +1018,22 @@ impl<'ctx> BindgenContext<'ctx> {
     /// manually provide a definition for them. To give them the most
     /// flexibility when doing that, we assume that they use every template
     /// parameter and always pass template arguments through in instantiations.
-    pub fn uses_template_parameter(&self,
-                                   item: ItemId,
-                                   template_param: ItemId)
-                                   -> bool {
-        assert!(self.in_codegen_phase(),
-                "We only compute template parameter usage as we enter codegen");
+    pub fn uses_template_parameter(
+        &self,
+        item: ItemId,
+        template_param: ItemId,
+    ) -> bool {
+        assert!(
+            self.in_codegen_phase(),
+            "We only compute template parameter usage as we enter codegen"
+        );
 
         if self.resolve_item(item).is_hidden(self) {
             return true;
         }
 
-        let template_param = template_param.into_resolver()
+        let template_param = template_param
+            .into_resolver()
             .through_type_refs()
             .through_type_aliases()
             .resolve(self)
@@ -983,12 +1051,16 @@ impl<'ctx> BindgenContext<'ctx> {
     ///
     /// Has the same restrictions that `uses_template_parameter` has.
     pub fn uses_any_template_parameters(&self, item: ItemId) -> bool {
-        assert!(self.in_codegen_phase(),
-                "We only compute template parameter usage as we enter codegen");
+        assert!(
+            self.in_codegen_phase(),
+            "We only compute template parameter usage as we enter codegen"
+        );
 
         self.used_template_parameters
             .as_ref()
-            .expect("should have template parameter usage info in codegen phase")
+            .expect(
+                "should have template parameter usage info in codegen phase",
+            )
             .get(&item)
             .map_or(false, |used| !used.is_empty())
     }
@@ -1069,22 +1141,27 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Note that `declaration_id` is not guaranteed to be in the context's item
     /// set! It is possible that it is a partial type that we are still in the
     /// middle of parsign.
-    fn get_declaration_info_for_template_instantiation
-        (&self,
-         instantiation: &Cursor)
-         -> Option<(Cursor, ItemId, usize)> {
-        instantiation.cur_type()
+    fn get_declaration_info_for_template_instantiation(
+        &self,
+        instantiation: &Cursor,
+    ) -> Option<(Cursor, ItemId, usize)> {
+        instantiation
+            .cur_type()
             .canonical_declaration(Some(instantiation))
             .and_then(|canon_decl| {
-                self.get_resolved_type(&canon_decl)
-                    .and_then(|template_decl_id| {
-                        template_decl_id.num_self_template_params(self)
-                            .map(|num_params| {
-                                (*canon_decl.cursor(),
-                                 template_decl_id,
-                                 num_params)
-                            })
-                    })
+                self.get_resolved_type(&canon_decl).and_then(
+                    |template_decl_id| {
+                        template_decl_id.num_self_template_params(self).map(
+                            |num_params| {
+                                (
+                                    *canon_decl.cursor(),
+                                    template_decl_id,
+                                    num_params,
+                                )
+                            },
+                        )
+                    },
+                )
             })
             .or_else(|| {
                 // If we haven't already parsed the declaration of
@@ -1094,7 +1171,8 @@ impl<'ctx> BindgenContext<'ctx> {
                 // already errored out before we started
                 // constructing our IR because you can't instantiate
                 // a template until it is fully defined.
-                instantiation.referenced()
+                instantiation
+                    .referenced()
                     .and_then(|referenced| {
                         self.currently_parsed_types()
                             .iter()
@@ -1102,12 +1180,15 @@ impl<'ctx> BindgenContext<'ctx> {
                             .cloned()
                     })
                     .and_then(|template_decl| {
-                        template_decl.num_self_template_params(self)
-                            .map(|num_template_params| {
-                                (*template_decl.decl(),
-                                 template_decl.id(),
-                                 num_template_params)
-                            })
+                        template_decl.num_self_template_params(self).map(
+                            |num_template_params| {
+                                (
+                                    *template_decl.decl(),
+                                    template_decl.id(),
+                                    num_template_params,
+                                )
+                            },
+                        )
                     })
             })
     }
@@ -1145,20 +1226,23 @@ impl<'ctx> BindgenContext<'ctx> {
     /// module. They use their template's definition for their name, so the
     /// parent is only useful for ensuring that their layout tests get
     /// codegen'd.
-    fn instantiate_template(&mut self,
-                            with_id: ItemId,
-                            template: ItemId,
-                            ty: &clang::Type,
-                            location: clang::Cursor)
-                            -> Option<ItemId> {
+    fn instantiate_template(
+        &mut self,
+        with_id: ItemId,
+        template: ItemId,
+        ty: &clang::Type,
+        location: clang::Cursor,
+    ) -> Option<ItemId> {
         use clang_sys;
 
         let num_expected_args = match self.resolve_type(template)
             .num_self_template_params(self) {
             Some(n) => n,
             None => {
-                warn!("Tried to instantiate a template for which we could not \
-                       determine any template parameters");
+                warn!(
+                    "Tried to instantiate a template for which we could not \
+                       determine any template parameters"
+                );
                 return None;
             }
         };
@@ -1178,12 +1262,14 @@ impl<'ctx> BindgenContext<'ctx> {
             // being specialized via the `location`'s type, and if we do not
             // filter it out, we'll add an extra layer of template instantiation
             // on accident.
-            let idx = children.iter()
-                .position(|c| c.kind() == clang_sys::CXCursor_TemplateRef);
+            let idx = children.iter().position(|c| {
+                c.kind() == clang_sys::CXCursor_TemplateRef
+            });
             if let Some(idx) = idx {
-                if children.iter()
-                    .take(idx)
-                    .all(|c| c.kind() == clang_sys::CXCursor_NamespaceRef) {
+                if children.iter().take(idx).all(|c| {
+                    c.kind() == clang_sys::CXCursor_NamespaceRef
+                })
+                {
                     children = children.into_iter().skip(idx + 1).collect();
                 }
             }
@@ -1200,10 +1286,12 @@ impl<'ctx> BindgenContext<'ctx> {
                     // potentially a dangling reference. Instead, use the canonical
                     // template declaration as the parent. It is already parsed and
                     // has a known-resolvable `ItemId`.
-                    let ty = Item::from_ty_or_ref(child.cur_type(),
-                                                  *child,
-                                                  Some(template),
-                                                  self);
+                    let ty = Item::from_ty_or_ref(
+                        child.cur_type(),
+                        *child,
+                        Some(template),
+                        self,
+                    );
                     args.push(ty);
                 }
                 clang_sys::CXCursor_TemplateRef => {
@@ -1214,13 +1302,18 @@ impl<'ctx> BindgenContext<'ctx> {
                         };
 
                     if num_expected_template_args == 0 ||
-                       child.has_at_least_num_children(num_expected_template_args) {
+                        child.has_at_least_num_children(
+                            num_expected_template_args,
+                        )
+                    {
                         // Do a happy little parse. See comment in the TypeRef
                         // match arm about parent IDs.
-                        let ty = Item::from_ty_or_ref(child.cur_type(),
-                                                      *child,
-                                                      Some(template),
-                                                      self);
+                        let ty = Item::from_ty_or_ref(
+                            child.cur_type(),
+                            *child,
+                            Some(template),
+                            self,
+                        );
                         args.push(ty);
                     } else {
                         // This is the case mentioned in the doc comment where
@@ -1229,37 +1322,49 @@ impl<'ctx> BindgenContext<'ctx> {
                         // instantiation :(
                         let args_len = args.len();
                         if args_len < num_expected_template_args {
-                            warn!("Found a template instantiation without \
-                                   enough template arguments");
+                            warn!(
+                                "Found a template instantiation without \
+                                   enough template arguments"
+                            );
                             return None;
                         }
 
-                        let mut sub_args: Vec<_> =
-                            args.drain(args_len - num_expected_template_args..)
-                                .collect();
+                        let mut sub_args: Vec<_> = args.drain(
+                            args_len - num_expected_template_args..,
+                        ).collect();
                         sub_args.reverse();
 
                         let sub_name = Some(template_decl_cursor.spelling());
-                        let sub_inst = TemplateInstantiation::new(template_decl_id, sub_args);
+                        let sub_inst = TemplateInstantiation::new(
+                            template_decl_id,
+                            sub_args,
+                        );
                         let sub_kind =
                             TypeKind::TemplateInstantiation(sub_inst);
-                        let sub_ty = Type::new(sub_name,
-                                               template_decl_cursor.cur_type()
-                                                   .fallible_layout()
-                                                   .ok(),
-                                               sub_kind,
-                                               false);
+                        let sub_ty = Type::new(
+                            sub_name,
+                            template_decl_cursor
+                                .cur_type()
+                                .fallible_layout()
+                                .ok(),
+                            sub_kind,
+                            false,
+                        );
                         let sub_id = self.next_item_id();
-                        let sub_item = Item::new(sub_id,
-                                                 None,
-                                                 None,
-                                                 self.current_module,
-                                                 ItemKind::Type(sub_ty));
+                        let sub_item = Item::new(
+                            sub_id,
+                            None,
+                            None,
+                            self.current_module,
+                            ItemKind::Type(sub_ty),
+                        );
 
                         // Bypass all the validations in add_item explicitly.
-                        debug!("instantiate_template: inserting nested \
+                        debug!(
+                            "instantiate_template: inserting nested \
                                 instantiation item: {:?}",
-                               sub_item);
+                            sub_item
+                        );
                         self.add_item_to_module(&sub_item);
                         debug_assert!(sub_id == sub_item.id());
                         self.items.insert(sub_id, sub_item);
@@ -1267,8 +1372,10 @@ impl<'ctx> BindgenContext<'ctx> {
                     }
                 }
                 _ => {
-                    warn!("Found template arg cursor we can't handle: {:?}",
-                          child);
+                    warn!(
+                        "Found template arg cursor we can't handle: {:?}",
+                        child
+                    );
                     found_const_arg = true;
                 }
             }
@@ -1281,28 +1388,40 @@ impl<'ctx> BindgenContext<'ctx> {
             // arguments. For example, `Foo<true, 5>` versus `Bar<bool, int>`.
             // We can't handle these instantiations, so just punt in this
             // situation...
-            warn!("Found template instantiated with a const value; \
-                   bindgen can't handle this kind of template instantiation!");
+            warn!(
+                "Found template instantiated with a const value; \
+                   bindgen can't handle this kind of template instantiation!"
+            );
             return None;
         }
 
         if args.len() != num_expected_args {
-            warn!("Found a template with an unexpected number of template \
-                   arguments");
+            warn!(
+                "Found a template with an unexpected number of template \
+                   arguments"
+            );
             return None;
         }
 
         args.reverse();
         let type_kind = TypeKind::TemplateInstantiation(
-            TemplateInstantiation::new(template, args));
+            TemplateInstantiation::new(template, args),
+        );
         let name = ty.spelling();
         let name = if name.is_empty() { None } else { Some(name) };
-        let ty = Type::new(name,
-                           ty.fallible_layout().ok(),
-                           type_kind,
-                           ty.is_const());
-        let item =
-            Item::new(with_id, None, None, self.current_module, ItemKind::Type(ty));
+        let ty = Type::new(
+            name,
+            ty.fallible_layout().ok(),
+            type_kind,
+            ty.is_const(),
+        );
+        let item = Item::new(
+            with_id,
+            None,
+            None,
+            self.current_module,
+            ItemKind::Type(ty),
+        );
 
         // Bypass all the validations in add_item explicitly.
         debug!("instantiate_template: inserting item: {:?}", item);
@@ -1314,40 +1433,46 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// If we have already resolved the type for the given type declaration,
     /// return its `ItemId`. Otherwise, return `None`.
-    pub fn get_resolved_type(&self,
-                             decl: &clang::CanonicalTypeDeclaration)
-                             -> Option<ItemId> {
+    pub fn get_resolved_type(
+        &self,
+        decl: &clang::CanonicalTypeDeclaration,
+    ) -> Option<ItemId> {
         self.types
             .get(&TypeKey::Declaration(*decl.cursor()))
             .or_else(|| {
-                decl.cursor()
-                    .usr()
-                    .and_then(|usr| self.types.get(&TypeKey::USR(usr)))
+                decl.cursor().usr().and_then(
+                    |usr| self.types.get(&TypeKey::USR(usr)),
+                )
             })
             .cloned()
     }
 
     /// Looks up for an already resolved type, either because it's builtin, or
     /// because we already have it in the map.
-    pub fn builtin_or_resolved_ty(&mut self,
-                                  with_id: ItemId,
-                                  parent_id: Option<ItemId>,
-                                  ty: &clang::Type,
-                                  location: Option<clang::Cursor>)
-                                  -> Option<ItemId> {
+    pub fn builtin_or_resolved_ty(
+        &mut self,
+        with_id: ItemId,
+        parent_id: Option<ItemId>,
+        ty: &clang::Type,
+        location: Option<clang::Cursor>,
+    ) -> Option<ItemId> {
         use clang_sys::{CXCursor_TypeAliasTemplateDecl, CXCursor_TypeRef};
-        debug!("builtin_or_resolved_ty: {:?}, {:?}, {:?}",
-               ty,
-               location,
-               parent_id);
+        debug!(
+            "builtin_or_resolved_ty: {:?}, {:?}, {:?}",
+            ty,
+            location,
+            parent_id
+        );
 
         if let Some(decl) = ty.canonical_declaration(location.as_ref()) {
             if let Some(id) = self.get_resolved_type(&decl) {
-                debug!("Already resolved ty {:?}, {:?}, {:?} {:?}",
-                       id,
-                       decl,
-                       ty,
-                       location);
+                debug!(
+                    "Already resolved ty {:?}, {:?}, {:?} {:?}",
+                    id,
+                    decl,
+                    ty,
+                    location
+                );
                 // If the declaration already exists, then either:
                 //
                 //   * the declaration is a template declaration of some sort,
@@ -1356,8 +1481,9 @@ impl<'ctx> BindgenContext<'ctx> {
                 //   * we have already parsed and resolved this type, and
                 //     there's nothing left to do.
                 if decl.cursor().is_template_like() &&
-                   *ty != decl.cursor().cur_type() &&
-                   location.is_some() {
+                    *ty != decl.cursor().cur_type() &&
+                    location.is_some()
+                {
                     let location = location.unwrap();
 
                     // For specialized type aliases, there's no way to get the
@@ -1371,15 +1497,13 @@ impl<'ctx> BindgenContext<'ctx> {
                     //
                     // This is _tricky_, I know :(
                     if decl.cursor().kind() == CXCursor_TypeAliasTemplateDecl &&
-                       !location.contains_cursor(CXCursor_TypeRef) &&
-                       ty.canonical_type().is_valid_and_exposed() {
+                        !location.contains_cursor(CXCursor_TypeRef) &&
+                        ty.canonical_type().is_valid_and_exposed()
+                    {
                         return None;
                     }
 
-                    return self.instantiate_template(with_id,
-                                                     id,
-                                                     ty,
-                                                     location)
+                    return self.instantiate_template(with_id, id, ty, location)
                         .or_else(|| Some(id));
                 }
 
@@ -1399,22 +1523,25 @@ impl<'ctx> BindgenContext<'ctx> {
     /// We should probably make the constness tracking separate, so it doesn't
     /// bloat that much, but hey, we already bloat the heck out of builtin
     /// types.
-    pub fn build_ty_wrapper(&mut self,
-                            with_id: ItemId,
-                            wrapped_id: ItemId,
-                            parent_id: Option<ItemId>,
-                            ty: &clang::Type)
-                            -> ItemId {
+    pub fn build_ty_wrapper(
+        &mut self,
+        with_id: ItemId,
+        wrapped_id: ItemId,
+        parent_id: Option<ItemId>,
+        ty: &clang::Type,
+    ) -> ItemId {
         let spelling = ty.spelling();
         let is_const = ty.is_const();
         let layout = ty.fallible_layout().ok();
         let type_kind = TypeKind::ResolvedTypeRef(wrapped_id);
         let ty = Type::new(Some(spelling), layout, type_kind, is_const);
-        let item = Item::new(with_id,
-                             None,
-                             None,
-                             parent_id.unwrap_or(self.current_module),
-                             ItemKind::Type(ty));
+        let item = Item::new(
+            with_id,
+            None,
+            None,
+            parent_id.unwrap_or(self.current_module),
+            ItemKind::Type(ty),
+        );
         self.add_builtin_item(item);
         with_id
     }
@@ -1434,8 +1561,12 @@ impl<'ctx> BindgenContext<'ctx> {
             CXType_Bool => TypeKind::Int(IntKind::Bool),
             CXType_Int => TypeKind::Int(IntKind::Int),
             CXType_UInt => TypeKind::Int(IntKind::UInt),
-            CXType_Char_S => TypeKind::Int(IntKind::Char { is_signed: true }),
-            CXType_Char_U => TypeKind::Int(IntKind::Char { is_signed: false }),
+            CXType_Char_S => TypeKind::Int(IntKind::Char {
+                is_signed: true,
+            }),
+            CXType_Char_U => TypeKind::Int(IntKind::Char {
+                is_signed: false,
+            }),
             CXType_SChar => TypeKind::Int(IntKind::SChar),
             CXType_UChar => TypeKind::Int(IntKind::UChar),
             CXType_Short => TypeKind::Int(IntKind::Short),
@@ -1453,8 +1584,8 @@ impl<'ctx> BindgenContext<'ctx> {
             CXType_LongDouble => TypeKind::Float(FloatKind::LongDouble),
             CXType_Float128 => TypeKind::Float(FloatKind::Float128),
             CXType_Complex => {
-                let float_type = ty.elem_type()
-                    .expect("Not able to resolve complex type?");
+                let float_type =
+                    ty.elem_type().expect("Not able to resolve complex type?");
                 let float_kind = match float_type.kind() {
                     CXType_Float => FloatKind::Float,
                     CXType_Double => FloatKind::Double,
@@ -1494,9 +1625,11 @@ impl<'ctx> BindgenContext<'ctx> {
     }
 
     /// Mark the macro named `macro_name` as parsed.
-    pub fn note_parsed_macro(&mut self,
-                             id: Vec<u8>,
-                             value: cexpr::expr::EvalResult) {
+    pub fn note_parsed_macro(
+        &mut self,
+        id: Vec<u8>,
+        value: cexpr::expr::EvalResult,
+    ) {
         self.parsed_macros.insert(id, value);
     }
 
@@ -1513,17 +1646,21 @@ impl<'ctx> BindgenContext<'ctx> {
     pub fn replace(&mut self, name: &[String], potential_ty: ItemId) {
         match self.replacements.entry(name.into()) {
             hash_map::Entry::Vacant(entry) => {
-                debug!("Defining replacement for {:?} as {:?}",
-                       name,
-                       potential_ty);
+                debug!(
+                    "Defining replacement for {:?} as {:?}",
+                    name,
+                    potential_ty
+                );
                 entry.insert(potential_ty);
             }
             hash_map::Entry::Occupied(occupied) => {
-                warn!("Replacement for {:?} already defined as {:?}; \
+                warn!(
+                    "Replacement for {:?} already defined as {:?}; \
                        ignoring duplicate replacement definition as {:?}",
-                      name,
-                      occupied.get(),
-                      potential_ty);
+                    name,
+                    occupied.get(),
+                    potential_ty
+                );
             }
         }
     }
@@ -1531,10 +1668,12 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Is the item with the given `name` hidden? Or is the item with the given
     /// `name` and `id` replaced by another type, and effectively hidden?
     pub fn hidden_by_name(&self, path: &[String], id: ItemId) -> bool {
-        debug_assert!(self.in_codegen_phase(),
-                      "You're not supposed to call this yet");
+        debug_assert!(
+            self.in_codegen_phase(),
+            "You're not supposed to call this yet"
+        );
         self.options.hidden_types.matches(&path[1..].join("::")) ||
-        self.is_replaced_type(path, id)
+            self.is_replaced_type(path, id)
     }
 
     /// Has the item with the given `name` and `id` been replaced by another
@@ -1548,8 +1687,10 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// Is the type with the given `name` marked as opaque?
     pub fn opaque_by_name(&self, path: &[String]) -> bool {
-        debug_assert!(self.in_codegen_phase(),
-                      "You're not supposed to call this yet");
+        debug_assert!(
+            self.in_codegen_phase(),
+            "You're not supposed to call this yet"
+        );
         self.options.opaque_types.matches(&path[1..].join("::"))
     }
 
@@ -1560,12 +1701,15 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// Tokenizes a namespace cursor in order to get the name and kind of the
     /// namespace.
-    fn tokenize_namespace(&self,
-                          cursor: &clang::Cursor)
-                          -> (Option<String>, ModuleKind) {
-        assert_eq!(cursor.kind(),
-                   ::clang_sys::CXCursor_Namespace,
-                   "Be a nice person");
+    fn tokenize_namespace(
+        &self,
+        cursor: &clang::Cursor,
+    ) -> (Option<String>, ModuleKind) {
+        assert_eq!(
+            cursor.kind(),
+            ::clang_sys::CXCursor_Namespace,
+            "Be a nice person"
+        );
         let tokens = match self.translation_unit.tokens(&cursor) {
             Some(tokens) => tokens,
             None => return (None, ModuleKind::Normal),
@@ -1605,8 +1749,10 @@ impl<'ctx> BindgenContext<'ctx> {
                     break;
                 }
                 _ => {
-                    panic!("Unknown token while processing namespace: {:?}",
-                           token);
+                    panic!(
+                        "Unknown token while processing namespace: {:?}",
+                        token
+                    );
                 }
             }
         }
@@ -1628,11 +1774,13 @@ impl<'ctx> BindgenContext<'ctx> {
 
         let module_id = self.next_item_id();
         let module = Module::new(module_name, kind);
-        let module = Item::new(module_id,
-                               None,
-                               None,
-                               self.current_module,
-                               ItemKind::Module(module));
+        let module = Item::new(
+            module_id,
+            None,
+            None,
+            self.current_module,
+            ItemKind::Module(module),
+        );
 
         self.modules.insert(cursor, module.id());
 
@@ -1644,7 +1792,8 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Start traversing the module with the given `module_id`, invoke the
     /// callback `cb`, and then return to traversing the original module.
     pub fn with_module<F>(&mut self, module_id: ItemId, cb: F)
-        where F: FnOnce(&mut Self),
+    where
+        F: FnOnce(&mut Self),
     {
         debug_assert!(self.resolve_item(module_id).kind().is_module(), "Wat");
 
@@ -1759,23 +1908,21 @@ impl<'ctx> BindgenContext<'ctx> {
                 traversal::no_edges
             };
 
-        let whitelisted =
+        let whitelisted = WhitelistedItemsTraversal::new(
+            self,
+            roots.clone(),
+            whitelisted_items_predicate,
+        ).collect::<ItemSet>();
+
+        let codegen_items = if self.options().whitelist_recursively {
             WhitelistedItemsTraversal::new(
                 self,
                 roots.clone(),
-                whitelisted_items_predicate,
-            ).collect::<ItemSet>();
-
-        let codegen_items =
-            if self.options().whitelist_recursively {
-                WhitelistedItemsTraversal::new(
-                    self,
-                    roots.clone(),
-                    traversal::codegen_edges,
-                ).collect::<ItemSet>()
-            } else {
-                whitelisted.clone()
-            };
+                traversal::codegen_edges,
+            ).collect::<ItemSet>()
+        } else {
+            whitelisted.clone()
+        };
 
         self.whitelisted = Some(whitelisted);
         self.codegen_items = Some(codegen_items);
@@ -1812,8 +1959,10 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Look up whether the item with `id` can
     /// derive debug or not.
     pub fn lookup_item_id_can_derive_debug(&self, id: ItemId) -> bool {
-        assert!(self.in_codegen_phase(),
-                "We only compute can_derive_debug when we enter codegen");
+        assert!(
+            self.in_codegen_phase(),
+            "We only compute can_derive_debug when we enter codegen"
+        );
 
         // Look up the computed value for whether the item with `id` can
         // derive debug or not.
@@ -1824,15 +1973,18 @@ impl<'ctx> BindgenContext<'ctx> {
     fn compute_cannot_derive_default(&mut self) {
         assert!(self.cannot_derive_default.is_none());
         if self.options.derive_default {
-            self.cannot_derive_default = Some(analyze::<CannotDeriveDefault>(self));
+            self.cannot_derive_default =
+                Some(analyze::<CannotDeriveDefault>(self));
         }
     }
 
     /// Look up whether the item with `id` can
     /// derive default or not.
     pub fn lookup_item_id_can_derive_default(&self, id: ItemId) -> bool {
-        assert!(self.in_codegen_phase(),
-                "We only compute can_derive_default when we enter codegen");
+        assert!(
+            self.in_codegen_phase(),
+            "We only compute can_derive_default when we enter codegen"
+        );
 
         // Look up the computed value for whether the item with `id` can
         // derive default or not.
@@ -1856,8 +2008,10 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Look up whether the item with `id` can
     /// derive hash or not.
     pub fn lookup_item_id_can_derive_hash(&self, id: ItemId) -> bool {
-        assert!(self.in_codegen_phase(),
-                "We only compute can_derive_debug when we enter codegen");
+        assert!(
+            self.in_codegen_phase(),
+            "We only compute can_derive_debug when we enter codegen"
+        );
 
         // Look up the computed value for whether the item with `id` can
         // derive hash or not.
@@ -1868,15 +2022,18 @@ impl<'ctx> BindgenContext<'ctx> {
     fn compute_cannot_derive_partialeq(&mut self) {
         assert!(self.cannot_derive_partialeq.is_none());
         if self.options.derive_partialeq {
-            self.cannot_derive_partialeq = Some(analyze::<CannotDerivePartialEq>(self));
+            self.cannot_derive_partialeq =
+                Some(analyze::<CannotDerivePartialEq>(self));
         }
     }
 
     /// Look up whether the item with `id` can
     /// derive partialeq or not.
     pub fn lookup_item_id_can_derive_partialeq(&self, id: ItemId) -> bool {
-        assert!(self.in_codegen_phase(),
-                "We only compute can_derive_debug when we enter codegen");
+        assert!(
+            self.in_codegen_phase(),
+            "We only compute can_derive_debug when we enter codegen"
+        );
 
         // Look up the computed value for whether the item with `id` can
         // derive partialeq or not.
@@ -1886,8 +2043,10 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Look up whether the item with `id` can
     /// derive copy or not.
     pub fn lookup_item_id_can_derive_copy(&self, id: ItemId) -> bool {
-        assert!(self.in_codegen_phase(),
-                "We only compute can_derive_debug when we enter codegen");
+        assert!(
+            self.in_codegen_phase(),
+            "We only compute can_derive_debug when we enter codegen"
+        );
 
         // Look up the computed value for whether the item with `id` can
         // derive `Copy` or not.
@@ -1898,13 +2057,16 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Compute whether the type has type parameter in array.
     fn compute_has_type_param_in_array(&mut self) {
         assert!(self.has_type_param_in_array.is_none());
-        self.has_type_param_in_array = Some(analyze::<HasTypeParameterInArray>(self));
+        self.has_type_param_in_array =
+            Some(analyze::<HasTypeParameterInArray>(self));
     }
 
     /// Look up whether the item with `id` has type parameter in array or not.
     pub fn lookup_item_id_has_type_param_in_array(&self, id: &ItemId) -> bool {
-        assert!(self.in_codegen_phase(),
-                "We only compute has array when we enter codegen");
+        assert!(
+            self.in_codegen_phase(),
+            "We only compute has array when we enter codegen"
+        );
 
         // Look up the computed value for whether the item with `id` has
         // type parameter in array or not.
@@ -1964,13 +2126,15 @@ impl ItemResolver {
             let item = ctx.resolve_item(id);
             let ty_kind = item.as_type().map(|t| t.kind());
             match ty_kind {
-                Some(&TypeKind::ResolvedTypeRef(next_id)) if self.through_type_refs => {
+                Some(&TypeKind::ResolvedTypeRef(next_id))
+                    if self.through_type_refs => {
                     id = next_id;
                 }
                 // We intentionally ignore template aliases here, as they are
                 // more complicated, and don't represent a simple renaming of
                 // some type.
-                Some(&TypeKind::Alias(next_id)) if self.through_type_aliases => {
+                Some(&TypeKind::Alias(next_id))
+                    if self.through_type_aliases => {
                     id = next_id;
                 }
                 _ => return item,
@@ -2009,9 +2173,10 @@ impl PartialType {
 }
 
 impl TemplateParameters for PartialType {
-    fn self_template_params(&self,
-                            _ctx: &BindgenContext)
-                            -> Option<Vec<ItemId>> {
+    fn self_template_params(
+        &self,
+        _ctx: &BindgenContext,
+    ) -> Option<Vec<ItemId>> {
         // Maybe at some point we will eagerly parse named types, but for now we
         // don't and this information is unavailable.
         None

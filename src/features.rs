@@ -167,7 +167,7 @@ impl Default for RustFeatures {
 
 #[cfg(test)]
 mod test {
-    #![allow(unused_imports)]
+#![allow(unused_imports)]
     use super::*;
 
     fn test_target(target_str: &str, target: RustTarget) {

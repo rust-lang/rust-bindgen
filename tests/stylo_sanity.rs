@@ -13,10 +13,10 @@ extern crate bindgen;
 /// takes too long to be a proper `#[bench]`.
 #[test]
 #[cfg(not(any(debug_assertions,
-              feature = "testing_only_extra_assertions",
-              feature = "testing_only_libclang_3_8")))]
+                  feature = "testing_only_extra_assertions",
+                  feature = "testing_only_libclang_3_8")))]
 #[cfg(any(feature = "testing_only_libclang_3_9",
-          feature = "testing_only_libclang_4"))]
+            feature = "testing_only_libclang_4"))]
 fn sanity_check_can_generate_stylo_bindings() {
     use std::time::Instant;
 
@@ -541,8 +541,10 @@ fn sanity_check_can_generate_stylo_bindings() {
 
     println!("");
     println!("");
-    println!("Generated Stylo bindings in: {:?}",
-             now.duration_since(then));
+    println!(
+        "Generated Stylo bindings in: {:?}",
+        now.duration_since(then)
+    );
     println!("");
     println!("");
 

@@ -5,9 +5,9 @@ use super::context::{BindgenContext, ItemId};
 use super::dot::DotAttributes;
 use super::item::{IsOpaque, Item};
 use super::layout::Layout;
-use super::traversal::{EdgeKind, Trace, Tracer};
 // use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
 use super::template::TemplateParameters;
+use super::traversal::{EdgeKind, Trace, Tracer};
 use clang;
 use codegen::struct_layout::{align_to, bytes_from_bits_pow2};
 use ir::derive::CanDeriveCopy;
@@ -75,7 +75,7 @@ impl Method {
     /// Is this a destructor method?
     pub fn is_destructor(&self) -> bool {
         self.kind == MethodKind::Destructor ||
-        self.kind == MethodKind::VirtualDestructor
+            self.kind == MethodKind::VirtualDestructor
     }
 
     /// Is this a constructor?
@@ -86,7 +86,7 @@ impl Method {
     /// Is this a virtual method?
     pub fn is_virtual(&self) -> bool {
         self.kind == MethodKind::Virtual ||
-        self.kind == MethodKind::VirtualDestructor
+            self.kind == MethodKind::VirtualDestructor
     }
 
     /// Is this a static method?
@@ -172,16 +172,22 @@ pub enum Field {
 impl Field {
     fn has_destructor(&self, ctx: &BindgenContext) -> bool {
         match *self {
-            Field::DataMember(ref data) => ctx.resolve_type(data.ty).has_destructor(ctx),
+            Field::DataMember(ref data) => {
+                ctx.resolve_type(data.ty).has_destructor(ctx)
+            }
             // Bitfields may not be of a type that has a destructor.
-            Field::Bitfields(BitfieldUnit { .. }) => false,
+            Field::Bitfields(BitfieldUnit {
+                                 ..
+                             }) => false,
         }
     }
 
     /// Get this field's layout.
     pub fn layout(&self, ctx: &BindgenContext) -> Option<Layout> {
         match *self {
-            Field::Bitfields(BitfieldUnit { layout, ..}) => Some(layout),
+            Field::Bitfields(BitfieldUnit {
+                                 layout, ..
+                             }) => Some(layout),
             Field::DataMember(ref data) => {
                 ctx.resolve_type(data.ty).layout(ctx)
             }
@@ -193,13 +199,16 @@ impl Trace for Field {
     type Extra = ();
 
     fn trace<T>(&self, _: &BindgenContext, tracer: &mut T, _: &())
-        where T: Tracer,
+    where
+        T: Tracer,
     {
         match *self {
             Field::DataMember(ref data) => {
                 tracer.visit_kind(data.ty, EdgeKind::Field);
             }
-            Field::Bitfields(BitfieldUnit { ref bitfields, .. }) => {
+            Field::Bitfields(BitfieldUnit {
+                                 ref bitfields, ..
+                             }) => {
                 for bf in bitfields {
                     tracer.visit_kind(bf.ty(), EdgeKind::Field);
                 }
@@ -209,16 +218,24 @@ impl Trace for Field {
 }
 
 impl DotAttributes for Field {
-    fn dot_attributes<W>(&self, ctx: &BindgenContext, out: &mut W) -> io::Result<()>
-        where W: io::Write
+    fn dot_attributes<W>(
+        &self,
+        ctx: &BindgenContext,
+        out: &mut W,
+    ) -> io::Result<()>
+    where
+        W: io::Write,
     {
         match *self {
-            Field::DataMember(ref data) => {
-                data.dot_attributes(ctx, out)
-            }
-            Field::Bitfields(BitfieldUnit { layout, ref bitfields, .. }) => {
-                writeln!(out,
-                         r#"<tr>
+            Field::DataMember(ref data) => data.dot_attributes(ctx, out),
+            Field::Bitfields(BitfieldUnit {
+                                 layout,
+                                 ref bitfields,
+                                 ..
+                             }) => {
+                writeln!(
+                    out,
+                    r#"<tr>
                               <td>bitfield unit</td>
                               <td>
                                 <table border="0">
@@ -229,8 +246,9 @@ impl DotAttributes for Field {
                                     <td>unit.align</td><td>{}</td>
                                   </tr>
                          "#,
-                         layout.size,
-                         layout.align)?;
+                    layout.size,
+                    layout.align
+                )?;
                 for bf in bitfields {
                     bf.dot_attributes(ctx, out)?;
                 }
@@ -241,25 +259,39 @@ impl DotAttributes for Field {
 }
 
 impl DotAttributes for FieldData {
-    fn dot_attributes<W>(&self, _ctx: &BindgenContext, out: &mut W) -> io::Result<()>
-        where W: io::Write
+    fn dot_attributes<W>(
+        &self,
+        _ctx: &BindgenContext,
+        out: &mut W,
+    ) -> io::Result<()>
+    where
+        W: io::Write,
     {
-        writeln!(out,
-                 "<tr><td>{}</td><td>{:?}</td></tr>",
-                 self.name().unwrap_or("(anonymous)"),
-                 self.ty())
+        writeln!(
+            out,
+            "<tr><td>{}</td><td>{:?}</td></tr>",
+            self.name().unwrap_or("(anonymous)"),
+            self.ty()
+        )
     }
 }
 
 impl DotAttributes for Bitfield {
-    fn dot_attributes<W>(&self, _ctx: &BindgenContext, out: &mut W) -> io::Result<()>
-        where W: io::Write
+    fn dot_attributes<W>(
+        &self,
+        _ctx: &BindgenContext,
+        out: &mut W,
+    ) -> io::Result<()>
+    where
+        W: io::Write,
     {
-        writeln!(out,
-                 "<tr><td>{} : {}</td><td>{:?}</td></tr>",
-                 self.name(),
-                 self.width(),
-                 self.ty())
+        writeln!(
+            out,
+            "<tr><td>{} : {}</td><td>{:?}</td></tr>",
+            self.name(),
+            self.width(),
+            self.ty()
+        )
     }
 }
 
@@ -359,14 +391,15 @@ struct RawField(FieldData);
 
 impl RawField {
     /// Construct a new `RawField`.
-    fn new(name: Option<String>,
-           ty: ItemId,
-           comment: Option<String>,
-           annotations: Option<Annotations>,
-           bitfield: Option<u32>,
-           mutable: bool,
-           offset: Option<usize>)
-           -> RawField {
+    fn new(
+        name: Option<String>,
+        ty: ItemId,
+        comment: Option<String>,
+        annotations: Option<Annotations>,
+        bitfield: Option<u32>,
+        mutable: bool,
+        offset: Option<usize>,
+    ) -> RawField {
         RawField(FieldData {
             name: name,
             ty: ty,
@@ -411,10 +444,12 @@ impl FieldMethods for RawField {
 
 /// Convert the given ordered set of raw fields into a list of either plain data
 /// members, and/or bitfield units containing multiple bitfields.
-fn raw_fields_to_fields_and_bitfield_units<I>(ctx: &BindgenContext,
-                                              raw_fields: I)
-                                              -> Vec<Field>
-    where I: IntoIterator<Item=RawField>
+fn raw_fields_to_fields_and_bitfield_units<I>(
+    ctx: &BindgenContext,
+    raw_fields: I,
+) -> Vec<Field>
+where
+    I: IntoIterator<Item = RawField>,
 {
     let mut raw_fields = raw_fields.into_iter().fuse().peekable();
     let mut fields = vec![];
@@ -444,26 +479,32 @@ fn raw_fields_to_fields_and_bitfield_units<I>(ctx: &BindgenContext,
             break;
         }
 
-        bitfields_to_allocation_units(ctx,
-                                      &mut bitfield_unit_count,
-                                      &mut fields,
-                                      bitfields);
+        bitfields_to_allocation_units(
+            ctx,
+            &mut bitfield_unit_count,
+            &mut fields,
+            bitfields,
+        );
     }
 
-    assert!(raw_fields.next().is_none(),
-            "The above loop should consume all items in `raw_fields`");
+    assert!(
+        raw_fields.next().is_none(),
+        "The above loop should consume all items in `raw_fields`"
+    );
 
     fields
 }
 
 /// Given a set of contiguous raw bitfields, group and allocate them into
 /// (potentially multiple) bitfield units.
-fn bitfields_to_allocation_units<E, I>(ctx: &BindgenContext,
-                                       bitfield_unit_count: &mut usize,
-                                       fields: &mut E,
-                                       raw_bitfields: I)
-    where E: Extend<Field>,
-          I: IntoIterator<Item=RawField>
+fn bitfields_to_allocation_units<E, I>(
+    ctx: &BindgenContext,
+    bitfield_unit_count: &mut usize,
+    fields: &mut E,
+    raw_bitfields: I,
+) where
+    E: Extend<Field>,
+    I: IntoIterator<Item = RawField>,
 {
     assert!(ctx.collected_typerefs());
 
@@ -478,12 +519,14 @@ fn bitfields_to_allocation_units<E, I>(ctx: &BindgenContext,
     // TODO(emilio): Take into account C++'s wide bitfields, and
     // packing, sigh.
 
-    fn flush_allocation_unit<E>(fields: &mut E,
-                                bitfield_unit_count: &mut usize,
-                                unit_size_in_bits: usize,
-                                unit_align_in_bits: usize,
-                                bitfields: Vec<Bitfield>)
-        where E: Extend<Field>
+    fn flush_allocation_unit<E>(
+        fields: &mut E,
+        bitfield_unit_count: &mut usize,
+        unit_size_in_bits: usize,
+        unit_align_in_bits: usize,
+        bitfields: Vec<Bitfield>,
+    ) where
+        E: Extend<Field>,
     {
         *bitfield_unit_count += 1;
         let align = bytes_from_bits_pow2(unit_align_in_bits);
@@ -508,26 +551,28 @@ fn bitfields_to_allocation_units<E, I>(ctx: &BindgenContext,
 
     for bitfield in raw_bitfields {
         let bitfield_width = bitfield.bitfield().unwrap() as usize;
-        let bitfield_layout =
-            ctx.resolve_type(bitfield.ty())
-                .layout(ctx)
-                .expect("Bitfield without layout? Gah!");
+        let bitfield_layout = ctx.resolve_type(bitfield.ty())
+            .layout(ctx)
+            .expect("Bitfield without layout? Gah!");
         let bitfield_size = bitfield_layout.size;
         let bitfield_align = bitfield_layout.align;
 
         let mut offset = unit_size_in_bits;
         if is_ms_struct {
             if unit_size_in_bits != 0 &&
-               (bitfield_width == 0 ||
-                bitfield_width > unfilled_bits_in_unit) {
+                (bitfield_width == 0 ||
+                    bitfield_width > unfilled_bits_in_unit)
+            {
                 // We've reached the end of this allocation unit, so flush it
                 // and its bitfields.
                 unit_size_in_bits = align_to(unit_size_in_bits, unit_align * 8);
-                flush_allocation_unit(fields,
-                                      bitfield_unit_count,
-                                      unit_size_in_bits,
-                                      unit_align,
-                                      mem::replace(&mut bitfields_in_unit, vec![]));
+                flush_allocation_unit(
+                    fields,
+                    bitfield_unit_count,
+                    unit_size_in_bits,
+                    unit_align,
+                    mem::replace(&mut bitfields_in_unit, vec![]),
+                );
 
                 // Now we're working on a fresh bitfield allocation unit, so reset
                 // the current unit size and alignment.
@@ -541,7 +586,9 @@ fn bitfields_to_allocation_units<E, I>(ctx: &BindgenContext,
         } else {
             if offset != 0 &&
                 (bitfield_width == 0 ||
-                 (offset & (bitfield_align * 8 - 1)) + bitfield_width > bitfield_size * 8) {
+                     (offset & (bitfield_align * 8 - 1)) + bitfield_width >
+                         bitfield_size * 8)
+            {
                 offset = align_to(offset, bitfield_align * 8);
             }
         }
@@ -572,11 +619,13 @@ fn bitfields_to_allocation_units<E, I>(ctx: &BindgenContext,
 
     if unit_size_in_bits != 0 {
         // Flush the last allocation unit and its bitfields.
-        flush_allocation_unit(fields,
-                              bitfield_unit_count,
-                              unit_size_in_bits,
-                              unit_align,
-                              bitfields_in_unit);
+        flush_allocation_unit(
+            fields,
+            bitfield_unit_count,
+            unit_size_in_bits,
+            unit_align,
+            bitfields_in_unit,
+        );
     }
 }
 
@@ -606,7 +655,9 @@ impl CompFields {
                 raws.push(raw);
             }
             CompFields::AfterComputingBitfieldUnits(_) => {
-                panic!("Must not append new fields after computing bitfield allocation units");
+                panic!(
+                    "Must not append new fields after computing bitfield allocation units"
+                );
             }
         }
     }
@@ -621,8 +672,12 @@ impl CompFields {
             }
         };
 
-        let fields_and_units = raw_fields_to_fields_and_bitfield_units(ctx, raws);
-        mem::replace(self, CompFields::AfterComputingBitfieldUnits(fields_and_units));
+        let fields_and_units =
+            raw_fields_to_fields_and_bitfield_units(ctx, raws);
+        mem::replace(
+            self,
+            CompFields::AfterComputingBitfieldUnits(fields_and_units),
+        );
     }
 }
 
@@ -630,7 +685,8 @@ impl Trace for CompFields {
     type Extra = ();
 
     fn trace<T>(&self, context: &BindgenContext, tracer: &mut T, _: &())
-        where T: Tracer,
+    where
+        T: Tracer,
     {
         match *self {
             CompFields::BeforeComputingBitfieldUnits(ref fields) => {
@@ -750,7 +806,7 @@ pub struct CompInfo {
 
     /// The abstract template parameters of this class. Note that these are NOT
     /// concrete template arguments, and should always be a
-    /// `Type(TypeKind::Named(name))`. For concrete template arguments, see
+    /// `Type(TypeKind::TypeParam(name))`. For concrete template arguments, see
     /// `TypeKind::TemplateInstantiation`.
     template_params: Vec<ItemId>,
 
@@ -845,9 +901,12 @@ impl CompInfo {
     /// Is this compound type unsized?
     pub fn is_unsized(&self, ctx: &BindgenContext, itemid: &ItemId) -> bool {
         !ctx.lookup_item_id_has_vtable(itemid) && self.fields().is_empty() &&
-        self.base_members.iter().all(|base| {
-            ctx.resolve_type(base.ty).canonical_type(ctx).is_unsized(ctx, &base.ty)
-        })
+            self.base_members.iter().all(|base| {
+                ctx.resolve_type(base.ty).canonical_type(ctx).is_unsized(
+                    ctx,
+                    &base.ty,
+                )
+            })
     }
 
     /// Does this compound type have a destructor?
@@ -861,17 +920,17 @@ impl CompInfo {
         self.detect_has_destructor_cycle.set(true);
 
         let has_destructor = self.has_destructor ||
-                             match self.kind {
-            CompKind::Union => false,
-            CompKind::Struct => {
-                self.base_members.iter().any(|base| {
-                    ctx.resolve_type(base.ty).has_destructor(ctx)
-                }) ||
-                self.fields().iter().any(|field| {
-                    field.has_destructor(ctx)
-                })
-            }
-        };
+            match self.kind {
+                CompKind::Union => false,
+                CompKind::Struct => {
+                    self.base_members.iter().any(|base| {
+                        ctx.resolve_type(base.ty).has_destructor(ctx)
+                    }) ||
+                        self.fields().iter().any(
+                            |field| field.has_destructor(ctx),
+                        )
+                }
+            };
 
         self.detect_has_destructor_cycle.set(false);
 
@@ -961,14 +1020,17 @@ impl CompInfo {
     }
 
     /// Construct a new compound type from a Clang type.
-    pub fn from_ty(potential_id: ItemId,
-                   ty: &clang::Type,
-                   location: Option<clang::Cursor>,
-                   ctx: &mut BindgenContext)
-                   -> Result<Self, ParseError> {
+    pub fn from_ty(
+        potential_id: ItemId,
+        ty: &clang::Type,
+        location: Option<clang::Cursor>,
+        ctx: &mut BindgenContext,
+    ) -> Result<Self, ParseError> {
         use clang_sys::*;
-        assert!(ty.template_args().is_none(),
-                "We handle template instantiations elsewhere");
+        assert!(
+            ty.template_args().is_none(),
+            "We handle template instantiations elsewhere"
+        );
 
         let mut cursor = ty.declaration();
         let mut kind = Self::kind_from_cursor(&cursor);
@@ -1119,8 +1181,8 @@ impl CompInfo {
                     ci.packed = true;
                 }
                 CXCursor_TemplateTypeParameter => {
-                    let param = Item::named_type(None, cur, ctx)
-                        .expect("Item::named_type should't fail when pointing \
+                    let param = Item::type_param(None, cur, ctx)
+                        .expect("Item::type_param should't fail when pointing \
                                  at a TemplateTypeParameter");
                     ci.template_params.push(param);
                 }
@@ -1246,8 +1308,9 @@ impl CompInfo {
         Ok(ci)
     }
 
-    fn kind_from_cursor(cursor: &clang::Cursor)
-                        -> Result<CompKind, ParseError> {
+    fn kind_from_cursor(
+        cursor: &clang::Cursor,
+    ) -> Result<CompKind, ParseError> {
         use clang_sys::*;
         Ok(match cursor.kind() {
             CXCursor_UnionDecl => CompKind::Union,
@@ -1292,7 +1355,11 @@ impl CompInfo {
 
     /// Returns whether this type needs an explicit vtable because it has
     /// virtual methods and none of its base classes has already a vtable.
-    pub fn needs_explicit_vtable(&self, ctx: &BindgenContext, item: &Item) -> bool {
+    pub fn needs_explicit_vtable(
+        &self,
+        ctx: &BindgenContext,
+        item: &Item,
+    ) -> bool {
         ctx.lookup_item_id_has_vtable(&item.id()) &&
         !self.base_members.iter().any(|base| {
             // NB: Ideally, we could rely in all these types being `comp`, and
@@ -1325,19 +1392,23 @@ impl CompInfo {
     ///     2. Each field can derive `Copy`
     pub fn can_be_rust_union(&self, ctx: &BindgenContext) -> bool {
         ctx.options().rust_features().untagged_union() &&
-            self.fields().iter().all(|f|
-                match *f {
-                    Field::DataMember(ref field_data) => field_data.ty().can_derive_copy(ctx),
-                    Field::Bitfields(_) => false,
+            self.fields().iter().all(|f| match *f {
+                Field::DataMember(ref field_data) => {
+                    field_data.ty().can_derive_copy(ctx)
                 }
-            )
+                Field::Bitfields(_) => false,
+            })
     }
-
 }
 
 impl DotAttributes for CompInfo {
-    fn dot_attributes<W>(&self, ctx: &BindgenContext, out: &mut W) -> io::Result<()>
-        where W: io::Write
+    fn dot_attributes<W>(
+        &self,
+        ctx: &BindgenContext,
+        out: &mut W,
+    ) -> io::Result<()>
+    where
+        W: io::Write,
     {
         writeln!(out, "<tr><td>CompKind</td><td>{:?}</td></tr>", self.kind)?;
 
@@ -1354,7 +1425,10 @@ impl DotAttributes for CompInfo {
         }
 
         if self.has_non_type_template_params {
-            writeln!(out, "<tr><td>has_non_type_template_params</td><td>true</td></tr>")?;
+            writeln!(
+                out,
+                "<tr><td>has_non_type_template_params</td><td>true</td></tr>"
+            )?;
         }
 
         if self.packed {
@@ -1362,7 +1436,10 @@ impl DotAttributes for CompInfo {
         }
 
         if self.is_forward_declaration {
-            writeln!(out, "<tr><td>is_forward_declaration</td><td>true</td></tr>")?;
+            writeln!(
+                out,
+                "<tr><td>is_forward_declaration</td><td>true</td></tr>"
+            )?;
         }
 
         if !self.fields().is_empty() {
@@ -1386,9 +1463,10 @@ impl IsOpaque for CompInfo {
 }
 
 impl TemplateParameters for CompInfo {
-    fn self_template_params(&self,
-                            _ctx: &BindgenContext)
-                            -> Option<Vec<ItemId>> {
+    fn self_template_params(
+        &self,
+        _ctx: &BindgenContext,
+    ) -> Option<Vec<ItemId>> {
         if self.template_params.is_empty() {
             None
         } else {
@@ -1401,7 +1479,8 @@ impl Trace for CompInfo {
     type Extra = Item;
 
     fn trace<T>(&self, context: &BindgenContext, tracer: &mut T, item: &Item)
-        where T: Tracer,
+    where
+        T: Tracer,
     {
         let params = item.all_template_params(context).unwrap_or(vec![]);
         for p in params {

@@ -80,7 +80,7 @@ mod codegen {
     include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 }
 
-pub use features::{RustTarget, LATEST_STABLE_RUST, RUST_TARGET_STRINGS};
+pub use features::{LATEST_STABLE_RUST, RUST_TARGET_STRINGS, RustTarget};
 use features::RustFeatures;
 use ir::context::{BindgenContext, ItemId};
 use ir::item::Item;
@@ -95,7 +95,7 @@ use std::process::{Command, Stdio};
 use std::sync::Arc;
 
 use syntax::ast;
-use syntax::codemap::{Span, DUMMY_SP};
+use syntax::codemap::{DUMMY_SP, Span};
 use syntax::print::pp::eof;
 use syntax::print::pprust;
 use syntax::ptr::P;
@@ -199,7 +199,9 @@ impl Builder {
             .map(|item| {
                 output_vector.push("--bitfield-enum".into());
                 output_vector.push(
-                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
                 );
             })
             .count();
@@ -211,7 +213,9 @@ impl Builder {
             .map(|item| {
                 output_vector.push("--constified-enum".into());
                 output_vector.push(
-                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
                 );
             })
             .count();
@@ -223,7 +227,9 @@ impl Builder {
             .map(|item| {
                 output_vector.push("--constified-enum-module".into());
                 output_vector.push(
-                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
                 );
             })
             .count();
@@ -235,7 +241,9 @@ impl Builder {
             .map(|item| {
                 output_vector.push("--blacklist-type".into());
                 output_vector.push(
-                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
                 );
             })
             .count();
@@ -311,7 +319,9 @@ impl Builder {
             .map(|&(ref item, _)| {
                 output_vector.push("--framework".into());
                 output_vector.push(
-                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
                 );
             })
             .count();
@@ -355,7 +365,9 @@ impl Builder {
             .map(|&(ref item, _)| {
                 output_vector.push("--clang-args".into());
                 output_vector.push(
-                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
                 );
             })
             .count();
@@ -375,7 +387,9 @@ impl Builder {
             .map(|item| {
                 output_vector.push("--opaque-type".into());
                 output_vector.push(
-                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
                 );
             })
             .count();
@@ -386,7 +400,9 @@ impl Builder {
             .map(|item| {
                 output_vector.push("--raw-line".into());
                 output_vector.push(
-                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
                 );
             })
             .count();
@@ -397,7 +413,9 @@ impl Builder {
             .map(|&(ref item, _)| {
                 output_vector.push("--static".into());
                 output_vector.push(
-                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
                 );
             })
             .count();
@@ -417,7 +435,9 @@ impl Builder {
             .map(|item| {
                 output_vector.push("--whitelist-function".into());
                 output_vector.push(
-                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
                 );
             })
             .count();
@@ -429,7 +449,9 @@ impl Builder {
             .map(|item| {
                 output_vector.push("--whitelist-type".into());
                 output_vector.push(
-                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
                 );
             })
             .count();
@@ -441,7 +463,9 @@ impl Builder {
             .map(|item| {
                 output_vector.push("--whitelist-var".into());
                 output_vector.push(
-                    item.trim_left_matches("^").trim_right_matches("$").into(),
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
                 );
             })
             .count();
@@ -507,8 +531,9 @@ impl Builder {
     ///
     /// The file `name` will be added to the clang arguments.
     pub fn header_contents(mut self, name: &str, contents: &str) -> Builder {
-        self.input_header_contents
-            .push((name.into(), contents.into()));
+        self.input_header_contents.push(
+            (name.into(), contents.into()),
+        );
         self
     }
 
@@ -676,9 +701,9 @@ impl Builder {
 
     /// Make the generated bindings link the given framework.
     pub fn link_framework<T: Into<String>>(mut self, library: T) -> Builder {
-        self.options
-            .links
-            .push((library.into(), LinkType::Framework));
+        self.options.links.push(
+            (library.into(), LinkType::Framework),
+        );
         self
     }
 
@@ -823,9 +848,13 @@ impl Builder {
     }
 
     /// Avoid generating any unstable Rust, such as Rust unions, in the generated bindings.
-    #[deprecated(note="please use `rust_target` instead")]
+    #[deprecated(note = "please use `rust_target` instead")]
     pub fn unstable_rust(self, doit: bool) -> Self {
-        let rust_target = if doit { RustTarget::Nightly } else { LATEST_STABLE_RUST };
+        let rust_target = if doit {
+            RustTarget::Nightly
+        } else {
+            LATEST_STABLE_RUST
+        };
         self.rust_target(rust_target)
     }
 
@@ -882,17 +911,17 @@ impl Builder {
     pub fn generate<'ctx>(mut self) -> Result<Bindings<'ctx>, ()> {
         self.options.input_header = self.input_headers.pop();
         self.options.clang_args.extend(
-            self.input_headers.drain(..).flat_map(|header| {
-                iter::once("-include".into()).chain(iter::once(header))
-            }),
+            self.input_headers
+                .drain(..)
+                .flat_map(|header| {
+                    iter::once("-include".into()).chain(iter::once(header))
+                }),
         );
 
         self.options.input_unsaved_files.extend(
-            self.input_header_contents
-                .drain(..)
-                .map(|(name, contents)| {
-                    clang::UnsavedFile::new(&name, &contents)
-                }),
+            self.input_header_contents.drain(..).map(|(name, contents)| {
+                clang::UnsavedFile::new(&name, &contents)
+            }),
         );
 
         Bindings::generate(self.options, None)
@@ -904,13 +933,9 @@ impl Builder {
     /// issues. The resulting file will be named something like `__bindgen.i` or
     /// `__bindgen.ii`
     pub fn dump_preprocessed_input(&self) -> io::Result<()> {
-        let clang = clang_sys::support::Clang::find(None, &[])
-            .ok_or_else(|| {
-                io::Error::new(
-                    io::ErrorKind::Other,
-                    "Cannot find clang executable",
-                )
-            })?;
+        let clang = clang_sys::support::Clang::find(None, &[]).ok_or_else(|| {
+            io::Error::new(io::ErrorKind::Other, "Cannot find clang executable")
+        })?;
 
         // The contents of a wrapper file that includes all the input header
         // files.
@@ -1184,7 +1209,6 @@ impl BindgenOptions {
     pub fn rust_features(&self) -> RustFeatures {
         self.rust_features
     }
-
 }
 
 impl Default for BindgenOptions {
@@ -1322,8 +1346,10 @@ impl<'ctx> Bindings<'ctx> {
         };
 
         // TODO: Make this path fixup configurable?
-        if let Some(clang) =
-            clang_sys::support::Clang::find(None, &clang_args_for_clang_sys)
+        if let Some(clang) = clang_sys::support::Clang::find(
+            None,
+            &clang_args_for_clang_sys,
+        )
         {
             // If --target is specified, assume caller knows what they're doing
             // and don't mess with include paths for them
@@ -1378,8 +1404,9 @@ impl<'ctx> Bindings<'ctx> {
         let mut mod_str = vec![];
         {
             let ref_writer = Box::new(mod_str.by_ref()) as Box<Write>;
-            self.write(ref_writer)
-                .expect("Could not write bindings to string");
+            self.write(ref_writer).expect(
+                "Could not write bindings to string",
+            );
         }
         String::from_utf8(mod_str).unwrap()
     }
@@ -1565,24 +1592,25 @@ pub fn clang_version() -> ClangVersion {
     }
 
     let raw_v: String = clang::extract_clang_version();
-    let split_v: Option<Vec<&str>> = raw_v
-        .split_whitespace()
-        .nth(2)
-        .map(|v| v.split('.').collect());
+    let split_v: Option<Vec<&str>> = raw_v.split_whitespace().nth(2).map(|v| {
+        v.split('.').collect()
+    });
     match split_v {
-        Some(v) => if v.len() >= 2 {
-            let maybe_major = v[0].parse::<u32>();
-            let maybe_minor = v[1].parse::<u32>();
-            match (maybe_major, maybe_minor) {
-                (Ok(major), Ok(minor)) => {
-                    return ClangVersion {
-                        parsed: Some((major, minor)),
-                        full: raw_v.clone(),
+        Some(v) => {
+            if v.len() >= 2 {
+                let maybe_major = v[0].parse::<u32>();
+                let maybe_minor = v[1].parse::<u32>();
+                match (maybe_major, maybe_minor) {
+                    (Ok(major), Ok(minor)) => {
+                        return ClangVersion {
+                            parsed: Some((major, minor)),
+                            full: raw_v.clone(),
+                        }
                     }
+                    _ => {}
                 }
-                _ => {}
             }
-        },
+        }
         None => {}
     };
     ClangVersion {
@@ -1606,11 +1634,9 @@ fn commandline_flag_unit_test_function() {
         .map(|&x| x.into())
         .collect::<Vec<String>>();
 
-    assert!(
-        test_cases
-            .iter()
-            .all(|ref x| command_line_flags.contains(x),)
-    );
+    assert!(test_cases.iter().all(
+        |ref x| command_line_flags.contains(x),
+    ));
 
     //Test 2
     let bindings = ::builder()
@@ -1633,10 +1659,8 @@ fn commandline_flag_unit_test_function() {
         .collect::<Vec<String>>();
     println!("{:?}", command_line_flags);
 
-    assert!(
-        test_cases
-            .iter()
-            .all(|ref x| command_line_flags.contains(x),)
-    );
+    assert!(test_cases.iter().all(
+        |ref x| command_line_flags.contains(x),
+    ));
 
 }

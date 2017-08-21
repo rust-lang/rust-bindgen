@@ -1,19 +1,19 @@
 //! Determining which types for which we can emit `#[derive(Default)]`.
 
-use super::{ConstrainResult, MonotoneFramework, HasVtable};
-use std::collections::HashSet;
-use std::collections::HashMap;
-use ir::context::{BindgenContext, ItemId};
-use ir::item::IsOpaque;
-use ir::traversal::EdgeKind;
-use ir::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
-use ir::ty::TypeKind;
+use super::{ConstrainResult, HasVtable, MonotoneFramework};
+use ir::comp::CompKind;
 use ir::comp::Field;
 use ir::comp::FieldMethods;
+use ir::context::{BindgenContext, ItemId};
 use ir::derive::CanTriviallyDeriveDefault;
-use ir::comp::CompKind;
-use ir::traversal::Trace;
+use ir::item::IsOpaque;
 use ir::item::ItemSet;
+use ir::traversal::EdgeKind;
+use ir::traversal::Trace;
+use ir::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
+use ir::ty::TypeKind;
+use std::collections::HashMap;
+use std::collections::HashSet;
 
 /// An analysis that finds for each IR item whether default cannot be derived.
 ///
@@ -31,7 +31,8 @@ use ir::item::ItemSet;
 ///   or field cannot be derived default.
 #[derive(Debug, Clone)]
 pub struct CannotDeriveDefault<'ctx, 'gen>
-    where 'gen: 'ctx
+where
+    'gen: 'ctx,
 {
     ctx: &'ctx BindgenContext<'gen>,
 
@@ -97,18 +98,15 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
         let mut dependencies = HashMap::new();
         let cannot_derive_default = HashSet::new();
 
-        let whitelisted_items: HashSet<_> = ctx.whitelisted_items()
-            .iter()
-            .cloned()
-            .collect();
+        let whitelisted_items: HashSet<_> =
+            ctx.whitelisted_items().iter().cloned().collect();
 
-        let whitelisted_and_blacklisted_items: ItemSet = whitelisted_items.iter()
+        let whitelisted_and_blacklisted_items: ItemSet = whitelisted_items
+            .iter()
             .cloned()
             .flat_map(|i| {
                 let mut reachable = vec![i];
-                i.trace(ctx, &mut |s, _| {
-                    reachable.push(s);
-                }, &());
+                i.trace(ctx, &mut |s, _| { reachable.push(s); }, &());
                 reachable
             })
             .collect();
@@ -119,14 +117,20 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
             {
                 // We reverse our natural IR graph edges to find dependencies
                 // between nodes.
-                item.trace(ctx, &mut |sub_item: ItemId, edge_kind| {
-                    if ctx.whitelisted_items().contains(&sub_item) &&
-                        Self::consider_edge(edge_kind) {
-                            dependencies.entry(sub_item)
+                item.trace(
+                    ctx,
+                    &mut |sub_item: ItemId, edge_kind| {
+                        if ctx.whitelisted_items().contains(&sub_item) &&
+                            Self::consider_edge(edge_kind)
+                        {
+                            dependencies
+                                .entry(sub_item)
                                 .or_insert(vec![])
                                 .push(item);
                         }
-                }, &());
+                    },
+                    &(),
+                );
             }
         }
 
@@ -171,7 +175,10 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
             };
         }
 
-        if ty.layout(self.ctx).map_or(false, |l| l.align > RUST_DERIVE_IN_ARRAY_LIMIT) {
+        if ty.layout(self.ctx).map_or(false, |l| {
+            l.align > RUST_DERIVE_IN_ARRAY_LIMIT
+        })
+        {
             // We have to be conservative: the struct *could* have enough
             // padding that we emit an array that is longer than
             // `RUST_DERIVE_IN_ARRAY_LIMIT`. If we moved padding calculations
@@ -192,7 +199,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
             }
 
             TypeKind::Void |
-            TypeKind::Named |
+            TypeKind::TypeParam |
             TypeKind::Reference(..) |
             TypeKind::NullPtr |
             TypeKind::Pointer(..) |
@@ -207,8 +214,10 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
 
             TypeKind::Array(t, len) => {
                 if self.cannot_derive_default.contains(&t) {
-                    trace!("    arrays of T for which we cannot derive Default \
-                            also cannot derive Default");
+                    trace!(
+                        "    arrays of T for which we cannot derive Default \
+                            also cannot derive Default"
+                    );
                     return self.insert(id);
                 }
 
@@ -225,12 +234,16 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
                 if self.cannot_derive_default.contains(&t) {
-                    trace!("    aliases and type refs to T which cannot derive \
-                            Default also cannot derive Default");
+                    trace!(
+                        "    aliases and type refs to T which cannot derive \
+                            Default also cannot derive Default"
+                    );
                     self.insert(id)
                 } else {
-                    trace!("    aliases and type refs to T which can derive \
-                            Default can also derive Default");
+                    trace!(
+                        "    aliases and type refs to T which can derive \
+                            Default can also derive Default"
+                    );
                     ConstrainResult::Same
                 }
             }
@@ -247,9 +260,10 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
                         return self.insert(id);
                     }
 
-                    if ty.layout(self.ctx)
-                        .map_or(true,
-                                |l| l.opaque().can_trivially_derive_default()) {
+                    if ty.layout(self.ctx).map_or(true, |l| {
+                        l.opaque().can_trivially_derive_default()
+                    })
+                    {
                         trace!("    union layout can trivially derive Default");
                         return ConstrainResult::Same;
                     } else {
@@ -263,35 +277,40 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
                     return self.insert(id);
                 }
 
-                let bases_cannot_derive = info.base_members()
-                    .iter()
-                    .any(|base| !self.ctx.whitelisted_items().contains(&base.ty) ||
-                         self.cannot_derive_default.contains(&base.ty));
+                let bases_cannot_derive =
+                    info.base_members().iter().any(|base| {
+                        !self.ctx.whitelisted_items().contains(&base.ty) ||
+                            self.cannot_derive_default.contains(&base.ty)
+                    });
                 if bases_cannot_derive {
-                    trace!("    base members cannot derive Default, so we can't \
-                            either");
+                    trace!(
+                        "    base members cannot derive Default, so we can't \
+                            either"
+                    );
                     return self.insert(id);
                 }
 
-                let fields_cannot_derive = info.fields()
-                    .iter()
-                    .any(|f| {
-                        match *f {
-                            Field::DataMember(ref data) => {
-                                !self.ctx.whitelisted_items().contains(&data.ty()) ||
-                                    self.cannot_derive_default.contains(&data.ty())
-                            }
-                            Field::Bitfields(ref bfu) => {
-                                bfu.bitfields()
-                                    .iter().any(|b| {
-                                        !self.ctx.whitelisted_items().contains(&b.ty()) ||
-                                            self.cannot_derive_default.contains(&b.ty())
-                                    })
-                            }
+                let fields_cannot_derive =
+                    info.fields().iter().any(|f| match *f {
+                        Field::DataMember(ref data) => {
+                            !self.ctx.whitelisted_items().contains(
+                                &data.ty(),
+                            ) ||
+                                self.cannot_derive_default.contains(&data.ty())
+                        }
+                        Field::Bitfields(ref bfu) => {
+                            bfu.bitfields().iter().any(|b| {
+                                !self.ctx.whitelisted_items().contains(
+                                    &b.ty(),
+                                ) ||
+                                    self.cannot_derive_default.contains(&b.ty())
+                            })
                         }
                     });
                 if fields_cannot_derive {
-                    trace!("    fields cannot derive Default, so we can't either");
+                    trace!(
+                        "    fields cannot derive Default, so we can't either"
+                    );
                     return self.insert(id);
                 }
 
@@ -300,13 +319,19 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
             }
 
             TypeKind::TemplateInstantiation(ref template) => {
-                if self.ctx.whitelisted_items().contains(&template.template_definition()) {
-                    let args_cannot_derive = template.template_arguments()
-                        .iter()
-                        .any(|arg| self.cannot_derive_default.contains(&arg));
+                if self.ctx.whitelisted_items().contains(
+                    &template.template_definition(),
+                )
+                {
+                    let args_cannot_derive =
+                        template.template_arguments().iter().any(|arg| {
+                            self.cannot_derive_default.contains(&arg)
+                        });
                     if args_cannot_derive {
-                        trace!("    template args cannot derive Default, so \
-                                insantiation can't either");
+                        trace!(
+                            "    template args cannot derive Default, so \
+                                insantiation can't either"
+                        );
                         return self.insert(id);
                     }
 
@@ -314,18 +339,23 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
                         !template.template_definition().is_opaque(self.ctx, &()),
                         "The early ty.is_opaque check should have handled this case"
                     );
-                    let def_cannot_derive = self.cannot_derive_default
-                        .contains(&template.template_definition());
+                    let def_cannot_derive =
+                        self.cannot_derive_default.contains(&template
+                            .template_definition());
                     if def_cannot_derive {
-                        trace!("    template definition cannot derive Default, so \
-                                insantiation can't either");
+                        trace!(
+                            "    template definition cannot derive Default, so \
+                                insantiation can't either"
+                        );
                         return self.insert(id);
                     }
 
                     trace!("    template instantiation can derive Default");
                     ConstrainResult::Same
                 } else {
-                    trace!("    blacklisted template instantiation cannot derive default");
+                    trace!(
+                        "    blacklisted template instantiation cannot derive default"
+                    );
                     return self.insert(id);
                 }
             }
@@ -345,7 +375,8 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
     }
 
     fn each_depending_on<F>(&self, id: ItemId, mut f: F)
-        where F: FnMut(ItemId),
+    where
+        F: FnMut(ItemId),
     {
         if let Some(edges) = self.dependencies.get(&id) {
             for item in edges {
