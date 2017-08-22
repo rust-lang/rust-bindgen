@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash --with-derive-partialeq
+// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq
 typedef int AnotherInt;
 
 class C {

@@ -31,7 +31,7 @@ impl Clone for TestDouble {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct TestDoublePtr {
     pub mMember: *mut __BindgenComplex<f64>,
 }
@@ -74,7 +74,7 @@ impl Clone for TestFloat {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct TestFloatPtr {
     pub mMember: *mut __BindgenComplex<f32>,
 }

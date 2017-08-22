@@ -17,12 +17,12 @@ pub const TErrorResult_UnionState_HasException: TErrorResult_UnionState =
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum TErrorResult_UnionState { HasMessage = 0, }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct TErrorResult_Message {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct TErrorResult_DOMExceptionInfo {
     pub _address: u8,
 }

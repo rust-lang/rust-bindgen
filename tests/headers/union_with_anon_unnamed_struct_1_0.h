@@ -1,4 +1,4 @@
-// bindgen-flags: --rust-target 1.0 --with-derive-hash --with-derive-partialeq
+// bindgen-flags: --rust-target 1.0 --with-derive-hash --with-derive-partialeq --with-derive-eq
 
 union pixel {
     unsigned int rgba;

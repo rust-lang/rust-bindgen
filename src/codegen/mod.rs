@@ -15,7 +15,7 @@ use ir::comp::{Base, Bitfield, BitfieldUnit, CompInfo, CompKind, Field,
                FieldData, FieldMethods, Method, MethodKind};
 use ir::context::{BindgenContext, ItemId};
 use ir::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
-                 CanDeriveHash, CanDerivePartialEq};
+                 CanDeriveHash, CanDerivePartialEq, CanDeriveEq};
 use ir::dot;
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
 use ir::function::{Abi, Function, FunctionSig};
@@ -1514,6 +1514,10 @@ impl CodeGenerator for CompInfo {
 
         if item.can_derive_partialeq(ctx) {
             derives.push("PartialEq");
+        }
+
+        if item.can_derive_eq(ctx) {
+            derives.push("Eq");
         }
 
         if !derives.is_empty() {
@@ -3617,6 +3621,12 @@ mod utils {
            }
         ).unwrap();
 
+        let union_field_eq_impl = quote_item!(&ctx.ext_cx(),
+           impl<T> ::$prefix::cmp::Eq for __BindgenUnionField<T> {
+           }
+        )
+            .unwrap();
+
         let items = vec![union_field_decl,
                          union_field_impl,
                          union_field_default_impl,
@@ -3624,7 +3634,8 @@ mod utils {
                          union_field_copy_impl,
                          union_field_debug_impl,
                          union_field_hash_impl,
-                         union_field_partialeq_impl];
+                         union_field_partialeq_impl,
+                         union_field_eq_impl];
 
         let old_items = mem::replace(result, items);
         result.extend(old_items.into_iter());

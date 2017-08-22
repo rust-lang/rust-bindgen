@@ -1,4 +1,4 @@
-// bindgen-flags: --opaque-type 'OpaqueTemplate'  --with-derive-hash --with-derive-partialeq
+// bindgen-flags: --opaque-type 'OpaqueTemplate'  --with-derive-hash --with-derive-partialeq --with-derive-eq
 
 template<typename T>
 class OpaqueTemplate {

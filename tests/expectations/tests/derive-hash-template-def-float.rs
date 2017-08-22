@@ -4,9 +4,9 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
 
-/// Template definition containing a float, which cannot derive hash.
+/// Template definition containing a float, which cannot derive hash/eq but can derive partialeq.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct foo<T> {
     pub data: T,
     pub b: f32,

@@ -12,7 +12,7 @@ pub type MARKER8 = [u8; 0usize];
 pub type MARKER64 = [u64; 0usize];
 /// The atomic counter structure.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct rte_atomic16_t {
     /// < An internal counter value.
     pub cnt: i16,
@@ -128,7 +128,7 @@ pub union rte_mbuf__bindgen_ty_2 {
     _bindgen_union_align: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     pub _bitfield_1: [u8; 4usize],
     pub __bindgen_align: [u32; 0usize],
@@ -480,7 +480,7 @@ pub union rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 {
     _bindgen_union_align: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {
     pub hash: u16,
     pub id: u16,
@@ -570,7 +570,7 @@ impl Default for rte_mbuf__bindgen_ty_3__bindgen_ty_1 {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_2 {
     pub lo: u32,
     pub hi: u32,
@@ -679,7 +679,7 @@ pub union rte_mbuf__bindgen_ty_5 {
     _bindgen_union_align: u64,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     pub _bitfield_1: [u16; 4usize],
     pub __bindgen_align: [u64; 0usize],
@@ -1079,7 +1079,7 @@ impl Default for rte_mbuf {
 }
 /// < Pool from which mbuf was allocated.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct rte_mempool {
     pub _address: u8,
 }

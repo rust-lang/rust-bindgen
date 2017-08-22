@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash --with-derive-partialeq
+// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;

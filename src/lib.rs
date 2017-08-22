@@ -274,6 +274,10 @@ impl Builder {
             output_vector.push("--with-derive-partialeq".into());
         }
 
+        if self.options.derive_eq {
+            output_vector.push("--with-derive-eq".into());
+        }
+
         if !self.options.generate_comments {
             output_vector.push("--no-doc-comments".into());
         }
@@ -751,7 +755,21 @@ impl Builder {
     }
 
     /// Set whether `PartialEq` should be derived by default.
+    /// If we don't compute partialeq, we also cannot compute
+    /// eq. Set the derive_eq to `false` when doit is `false`.
     pub fn derive_partialeq(mut self, doit: bool) -> Self {
+        self.options.derive_partialeq = doit;
+        if !doit {
+            self.options.derive_eq = false;
+        }
+        self
+    }
+
+    /// Set whether `Eq` should be derived by default.
+    /// We can't compute Eq without computing PartialEq, so
+    /// we set the same option to derive_partialeq.
+    pub fn derive_eq(mut self, doit: bool) -> Self {
+        self.options.derive_eq = doit;
         self.options.derive_partialeq = doit;
         self
     }
@@ -1094,6 +1112,10 @@ pub struct BindgenOptions {
     /// and types.
     pub derive_partialeq: bool,
 
+    /// True if we should derive Eq trait implementations for C/C++ structures
+    /// and types.
+    pub derive_eq: bool,
+
     /// True if we should avoid using libstd to use libcore instead.
     pub use_core: bool,
 
@@ -1237,6 +1259,7 @@ impl Default for BindgenOptions {
             derive_default: false,
             derive_hash: false,
             derive_partialeq: false,
+            derive_eq: false,
             enable_cxx_namespaces: false,
             disable_name_namespacing: false,
             use_core: false,

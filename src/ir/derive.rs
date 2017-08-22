@@ -92,6 +92,22 @@ pub trait CanDerivePartialEq {
     fn can_derive_partialeq(&self, ctx: &BindgenContext) -> bool;
 }
 
+/// A trait that encapsulates the logic for whether or not we can derive `Eq`
+/// for a given thing.
+///
+/// This should ideally be a no-op that just returns `true`, but instead needs
+/// to be a recursive method that checks whether all the proper members can
+/// derive eq or not, because of the limit rust has on 32 items as max in the
+/// array.
+pub trait CanDeriveEq {
+
+    /// Return `true` if `Eq` can be derived for this thing, `false`
+    /// otherwise.
+    fn can_derive_eq(&self,
+                     ctx: &BindgenContext)
+                     -> bool;
+}
+
 /// A trait that encapsulates the logic for whether or not we can derive `Hash`.
 /// The difference between this trait and the CanDeriveHash is that the type
 /// implementing this trait cannot use recursion or lookup result from fix point

@@ -3,9 +3,10 @@
 use super::analysis::{CannotDeriveCopy, CannotDeriveDebug,
                       CannotDeriveDefault, CannotDeriveHash,
                       CannotDerivePartialEq, HasTypeParameterInArray,
-                      HasVtableAnalysis, UsedTemplateParameters, analyze};
+                      HasVtableAnalysis, UsedTemplateParameters, HasFloat,
+                      analyze};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
-                    CanDeriveHash, CanDerivePartialEq};
+                    CanDeriveHash, CanDerivePartialEq, CanDeriveEq};
 use super::int::IntKind;
 use super::item::{HasTypeParamInArray, IsOpaque, Item, ItemAncestors,
                   ItemCanonicalPath, ItemSet};
@@ -73,6 +74,14 @@ impl CanDerivePartialEq for ItemId {
     fn can_derive_partialeq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_partialeq &&
             ctx.lookup_item_id_can_derive_partialeq(*self)
+    }
+}
+
+impl CanDeriveEq for ItemId {
+    fn can_derive_eq(&self, ctx: &BindgenContext) -> bool {
+        ctx.options().derive_eq &&
+            ctx.lookup_item_id_can_derive_partialeq(*self) &&
+            !ctx.lookup_item_id_has_float(&self)
     }
 }
 
@@ -235,6 +244,12 @@ pub struct BindgenContext<'ctx> {
     /// Populated when we enter codegen by `compute_has_type_param_in_array`; always `None`
     /// before that and `Some` after.
     has_type_param_in_array: Option<HashSet<ItemId>>,
+
+    /// The set of (`ItemId's of`) types that has float.
+    ///
+    /// Populated when we enter codegen by `compute_has_float`; always `None`
+    /// before that and `Some` after.
+    has_float: Option<HashSet<ItemId>>,
 }
 
 /// A traversal of whitelisted items.
@@ -376,6 +391,7 @@ impl<'ctx> BindgenContext<'ctx> {
             cannot_derive_partialeq: None,
             have_vtable: None,
             has_type_param_in_array: None,
+            has_float: None,
         };
 
         me.add_item(root_module, None, None);
@@ -890,8 +906,9 @@ impl<'ctx> BindgenContext<'ctx> {
         self.compute_cannot_derive_default();
         self.compute_cannot_derive_copy();
         self.compute_has_type_param_in_array();
+        self.compute_has_float();
         self.compute_cannot_derive_hash();
-        self.compute_cannot_derive_partialeq();
+        self.compute_cannot_derive_partialeq_or_eq();
 
         let ret = cb(self);
         self.gen_ctx = None;
@@ -2018,12 +2035,12 @@ impl<'ctx> BindgenContext<'ctx> {
         !self.cannot_derive_hash.as_ref().unwrap().contains(&id)
     }
 
-    /// Compute whether we can derive partialeq.
-    fn compute_cannot_derive_partialeq(&mut self) {
+    /// Compute whether we can derive PartialEq. This method is also used in calculating
+    /// whether we can derive Eq
+    fn compute_cannot_derive_partialeq_or_eq(&mut self) {
         assert!(self.cannot_derive_partialeq.is_none());
-        if self.options.derive_partialeq {
-            self.cannot_derive_partialeq =
-                Some(analyze::<CannotDerivePartialEq>(self));
+        if self.options.derive_partialeq || self.options.derive_eq {
+            self.cannot_derive_partialeq = Some(analyze::<CannotDerivePartialEq>(self));
         }
     }
 
@@ -2071,6 +2088,24 @@ impl<'ctx> BindgenContext<'ctx> {
         // Look up the computed value for whether the item with `id` has
         // type parameter in array or not.
         self.has_type_param_in_array.as_ref().unwrap().contains(id)
+    }
+
+    /// Compute whether the type has float.
+    fn compute_has_float(&mut self) {
+        assert!(self.has_float.is_none());
+        if self.options.derive_eq {
+            self.has_float = Some(analyze::<HasFloat>(self));
+        }
+    }
+
+    /// Look up whether the item with `id` has array or not.
+    pub fn lookup_item_id_has_float(&self, id: &ItemId) -> bool {
+        assert!(self.in_codegen_phase(),
+                "We only compute has float when we enter codegen");
+
+        // Look up the computed value for whether the item with `id` has
+        // float or not.
+        self.has_float.as_ref().unwrap().contains(id)
     }
 }
 

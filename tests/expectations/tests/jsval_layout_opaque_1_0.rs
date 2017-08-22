@@ -34,6 +34,7 @@ impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
 impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
     fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
 }
+impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
 pub const JSVAL_TAG_SHIFT: ::std::os::raw::c_uint = 47;
 pub const JSVAL_PAYLOAD_MASK: ::std::os::raw::c_ulonglong = 140737488355327;
 pub const JSVAL_TAG_MASK: ::std::os::raw::c_longlong = -140737488355328;
@@ -114,7 +115,7 @@ pub struct jsval_layout {
     pub bindgen_union_field: u64,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct jsval_layout__bindgen_ty_1 {
     pub _bitfield_1: u64,
     pub __bindgen_align: [u64; 0usize],
@@ -220,12 +221,12 @@ impl jsval_layout__bindgen_ty_1 {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct jsval_layout__bindgen_ty_2 {
     pub payload: jsval_layout__bindgen_ty_2__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct jsval_layout__bindgen_ty_2__bindgen_ty_1 {
     pub i32: __BindgenUnionField<i32>,
     pub u32: __BindgenUnionField<u32>,

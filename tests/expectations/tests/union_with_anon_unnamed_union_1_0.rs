@@ -34,15 +34,16 @@ impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
 impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
     fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
 }
+impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct foo {
     pub a: __BindgenUnionField<::std::os::raw::c_uint>,
     pub __bindgen_anon_1: __BindgenUnionField<foo__bindgen_ty_1>,
     pub bindgen_union_field: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct foo__bindgen_ty_1 {
     pub b: __BindgenUnionField<::std::os::raw::c_ushort>,
     pub c: __BindgenUnionField<::std::os::raw::c_uchar>,

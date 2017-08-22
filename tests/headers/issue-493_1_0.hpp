@@ -1,4 +1,4 @@
-// bindgen-flags: --rust-target 1.0 --with-derive-hash --with-derive-partialeq
+// bindgen-flags: --rust-target 1.0 --with-derive-hash --with-derive-partialeq --with-derive-eq
 
 template<class _CharT, class _Traits, class _Allocator>
 class basic_string

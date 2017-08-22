@@ -52,7 +52,7 @@ pub enum rte_eth_rx_mq_mode {
 }
 /// A structure used to configure the RX features of an Ethernet port.
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_rxmode {
     /// The multi-queue packet distribution mode to be used, e.g. RSS.
     pub mq_mode: rte_eth_rx_mq_mode,
@@ -470,7 +470,7 @@ pub enum rte_eth_tx_mq_mode {
 }
 /// A structure used to configure the TX features of an Ethernet port.
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_txmode {
     /// < TX multi-queues mode.
     pub mq_mode: rte_eth_tx_mq_mode,
@@ -641,7 +641,7 @@ impl rte_eth_txmode {
 /// types of IPv4/IPv6 packets to which the RSS hashing must be applied.
 /// Supplying an *rss_hf* equal to zero disables the RSS feature.
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_rss_conf {
     /// < If not NULL, 40-byte hash key.
     pub rss_key: *mut u8,
@@ -718,7 +718,7 @@ pub struct rte_eth_vmdq_dcb_conf {
     pub dcb_tc: [u8; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_vmdq_dcb_conf__bindgen_ty_1 {
     /// < The vlan id of the received frame
     pub vlan_id: u16,
@@ -798,7 +798,7 @@ impl Default for rte_eth_vmdq_dcb_conf {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_dcb_rx_conf {
     /// < Possible DCB TCs, 4 or 8 TCs
     pub nb_tcs: rte_eth_nb_tcs,
@@ -830,7 +830,7 @@ impl Default for rte_eth_dcb_rx_conf {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_vmdq_dcb_tx_conf {
     /// < With DCB, 16 or 32 pools.
     pub nb_queue_pools: rte_eth_nb_pools,
@@ -864,7 +864,7 @@ impl Default for rte_eth_vmdq_dcb_tx_conf {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_dcb_tx_conf {
     /// < Possible DCB TCs, 4 or 8 TCs.
     pub nb_tcs: rte_eth_nb_tcs,
@@ -896,7 +896,7 @@ impl Default for rte_eth_dcb_tx_conf {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_vmdq_tx_conf {
     /// < VMDq mode, 64 pools.
     pub nb_queue_pools: rte_eth_nb_pools,
@@ -939,7 +939,7 @@ pub struct rte_eth_vmdq_rx_conf {
     pub pool_map: [rte_eth_vmdq_rx_conf__bindgen_ty_1; 64usize],
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_vmdq_rx_conf__bindgen_ty_1 {
     /// < The vlan id of the received frame
     pub vlan_id: u16,
@@ -1052,7 +1052,7 @@ pub enum rte_fdir_status_mode {
 }
 /// A structure used to define the input for IPV4 flow
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_ipv4_flow {
     /// < IPv4 source address in big endian.
     pub src_ip: u32,
@@ -1102,7 +1102,7 @@ impl Clone for rte_eth_ipv4_flow {
 }
 /// A structure used to define the input for IPV6 flow
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_ipv6_flow {
     /// < IPv6 source address in big endian.
     pub src_ip: [u32; 4usize],
@@ -1153,7 +1153,7 @@ impl Clone for rte_eth_ipv6_flow {
 /// A structure used to configure FDIR masks that are used by the device
 /// to match the various fields of RX packet headers.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_fdir_masks {
     /// < Bit mask for vlan_tci in big endian
     pub vlan_tci_mask: u16,
@@ -1239,7 +1239,7 @@ pub enum rte_eth_payload_type {
 /// A structure used to select bytes extracted from the protocol layers to
 /// flexible payload for filter
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_flex_payload_cfg {
     /// < Payload type
     pub type_: rte_eth_payload_type,
@@ -1274,7 +1274,7 @@ impl Default for rte_eth_flex_payload_cfg {
 /// A structure used to define FDIR masks for flexible payload
 /// for each flow type
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_fdir_flex_mask {
     pub flow_type: u16,
     pub mask: [u8; 16usize],
@@ -1304,7 +1304,7 @@ impl Clone for rte_eth_fdir_flex_mask {
 /// A structure used to define all flexible payload related setting
 /// include flex payload and flex mask
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct rte_eth_fdir_flex_conf {
     /// < The number of following payload cfg
     pub nb_payloads: u16,
@@ -1353,7 +1353,7 @@ impl Default for rte_eth_fdir_flex_conf {
 ///
 /// If mode is RTE_FDIR_DISABLE, the pballoc value is ignored.
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct rte_fdir_conf {
     /// < Flow Director mode.
     pub mode: rte_fdir_mode,
@@ -1411,7 +1411,7 @@ impl Default for rte_fdir_conf {
 }
 /// A structure used to enable/disable specific device interrupts.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct rte_intr_conf {
     /// enable/disable lsc interrupt. 0 (default) - disable, 1 enable
     pub lsc: u16,
