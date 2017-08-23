@@ -1194,7 +1194,18 @@ impl ClangItemParser for Item {
         // Types are sort of special, so to avoid parsing template classes
         // twice, handle them separately.
         {
-            let applicable_cursor = cursor.definition().unwrap_or(cursor);
+            let definition = cursor.definition();
+            let applicable_cursor = definition.unwrap_or(cursor);
+
+            if definition.is_some() && definition != Some(cursor) {
+                return Ok(Item::from_ty_or_ref(
+                    applicable_cursor.cur_type(),
+                    cursor,
+                    parent_id,
+                    ctx,
+                ));
+            }
+
             match Item::from_ty(
                 &applicable_cursor.cur_type(),
                 applicable_cursor,
