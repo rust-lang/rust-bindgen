@@ -30,11 +30,8 @@ use std::collections::HashSet;
 /// * If T is a compound type, default cannot be derived if any of its base member
 ///   or field cannot be derived default.
 #[derive(Debug, Clone)]
-pub struct CannotDeriveDefault<'ctx, 'gen>
-where
-    'gen: 'ctx,
-{
-    ctx: &'ctx BindgenContext<'gen>,
+pub struct CannotDeriveDefault<'ctx> {
+    ctx: &'ctx BindgenContext,
 
     // The incremental result of this analysis's computation. Everything in this
     // set cannot derive default.
@@ -50,7 +47,7 @@ where
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
-impl<'ctx, 'gen> CannotDeriveDefault<'ctx, 'gen> {
+impl<'ctx> CannotDeriveDefault<'ctx> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             // These are the only edges that can affect whether a type can derive
@@ -94,12 +91,12 @@ impl<'ctx, 'gen> CannotDeriveDefault<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
+impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
     type Node = ItemId;
-    type Extra = &'ctx BindgenContext<'gen>;
+    type Extra = &'ctx BindgenContext;
     type Output = HashSet<ItemId>;
 
-    fn new(ctx: &'ctx BindgenContext<'gen>) -> CannotDeriveDefault<'ctx, 'gen> {
+    fn new(ctx: &'ctx BindgenContext) -> CannotDeriveDefault<'ctx> {
         let mut dependencies = HashMap::new();
         let cannot_derive_default = HashSet::new();
 
@@ -388,8 +385,8 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> From<CannotDeriveDefault<'ctx, 'gen>> for HashSet<ItemId> {
-    fn from(analysis: CannotDeriveDefault<'ctx, 'gen>) -> Self {
+impl<'ctx> From<CannotDeriveDefault<'ctx>> for HashSet<ItemId> {
+    fn from(analysis: CannotDeriveDefault<'ctx>) -> Self {
         analysis.cannot_derive_default
     }
 }

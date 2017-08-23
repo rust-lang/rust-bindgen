@@ -33,11 +33,8 @@ use std::collections::HashSet;
 ///   derived partialeq if any of the template arguments or template definition
 ///   cannot derive partialeq.
 #[derive(Debug, Clone)]
-pub struct CannotDerivePartialEq<'ctx, 'gen>
-where
-    'gen: 'ctx,
-{
-    ctx: &'ctx BindgenContext<'gen>,
+pub struct CannotDerivePartialEq<'ctx> {
+    ctx: &'ctx BindgenContext,
 
     // The incremental result of this analysis's computation. Everything in this
     // set cannot derive partialeq.
@@ -53,7 +50,7 @@ where
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
-impl<'ctx, 'gen> CannotDerivePartialEq<'ctx, 'gen> {
+impl<'ctx> CannotDerivePartialEq<'ctx> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             // These are the only edges that can affect whether a type can derive
@@ -92,14 +89,14 @@ impl<'ctx, 'gen> CannotDerivePartialEq<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> MonotoneFramework for CannotDerivePartialEq<'ctx, 'gen> {
+impl<'ctx> MonotoneFramework for CannotDerivePartialEq<'ctx> {
     type Node = ItemId;
-    type Extra = &'ctx BindgenContext<'gen>;
+    type Extra = &'ctx BindgenContext;
     type Output = HashSet<ItemId>;
 
     fn new(
-        ctx: &'ctx BindgenContext<'gen>,
-    ) -> CannotDerivePartialEq<'ctx, 'gen> {
+        ctx: &'ctx BindgenContext,
+    ) -> CannotDerivePartialEq<'ctx> {
         let cannot_derive_partialeq = HashSet::new();
         let dependencies = generate_dependencies(ctx, Self::consider_edge);
 
@@ -365,8 +362,8 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDerivePartialEq<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> From<CannotDerivePartialEq<'ctx, 'gen>> for HashSet<ItemId> {
-    fn from(analysis: CannotDerivePartialEq<'ctx, 'gen>) -> Self {
+impl<'ctx> From<CannotDerivePartialEq<'ctx>> for HashSet<ItemId> {
+    fn from(analysis: CannotDerivePartialEq<'ctx>) -> Self {
         analysis.cannot_derive_partialeq
     }
 }

@@ -2,8 +2,7 @@
 
 
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-
-#![cfg(target_os="macos")]
+#![cfg(target_os = "macos")]
 
 #[macro_use]
 extern crate objc;
@@ -14,9 +13,13 @@ pub trait Foo {
     unsafe fn class_foo();
 }
 impl Foo for id {
-    unsafe fn foo(self) { msg_send!(self , foo) }
+    unsafe fn foo(self) {
+        msg_send!(self, foo)
+    }
     unsafe fn class_foo() {
-        msg_send!(objc :: runtime :: Class :: get ( "Foo" ) . expect (
-                  "Couldn\'t find Foo" ) , foo)
+        msg_send!(
+            objc::runtime::Class::get("Foo").expect("Couldn't find Foo"),
+            foo
+        )
     }
 }

@@ -32,87 +32,157 @@ pub struct Weird {
 }
 #[test]
 fn bindgen_test_layout_Weird() {
-    assert_eq!(::std::mem::size_of::<Weird>() , 24usize , concat ! (
-               "Size of: " , stringify ! ( Weird ) ));
-    assert_eq! (::std::mem::align_of::<Weird>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( Weird ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Weird ) ) . mStrokeDasharrayLength as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
-                stringify ! ( mStrokeDasharrayLength ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Weird ) ) . mClipRule as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
-                stringify ! ( mClipRule ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Weird ) ) . mColorInterpolation as *
-                const _ as usize } , 9usize , concat ! (
-                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
-                stringify ! ( mColorInterpolation ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Weird ) ) . mColorInterpolationFilters as
-                * const _ as usize } , 10usize , concat ! (
-                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
-                stringify ! ( mColorInterpolationFilters ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Weird ) ) . mFillRule as * const _ as
-                usize } , 11usize , concat ! (
-                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
-                stringify ! ( mFillRule ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Weird ) ) . mImageRendering as * const _
-                as usize } , 12usize , concat ! (
-                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
-                stringify ! ( mImageRendering ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Weird ) ) . mPaintOrder as * const _ as
-                usize } , 13usize , concat ! (
-                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
-                stringify ! ( mPaintOrder ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Weird ) ) . mShapeRendering as * const _
-                as usize } , 14usize , concat ! (
-                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
-                stringify ! ( mShapeRendering ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Weird ) ) . mStrokeLinecap as * const _
-                as usize } , 15usize , concat ! (
-                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
-                stringify ! ( mStrokeLinecap ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Weird ) ) . mStrokeLinejoin as * const _
-                as usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
-                stringify ! ( mStrokeLinejoin ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Weird ) ) . mTextAnchor as * const _ as
-                usize } , 17usize , concat ! (
-                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
-                stringify ! ( mTextAnchor ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Weird ) ) . mTextRendering as * const _
-                as usize } , 18usize , concat ! (
-                "Alignment of field: " , stringify ! ( Weird ) , "::" ,
-                stringify ! ( mTextRendering ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Weird>(),
+        24usize,
+        concat!("Size of: ", stringify!(Weird))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Weird>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Weird))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Weird)).mStrokeDasharrayLength as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mStrokeDasharrayLength)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Weird)).mClipRule as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mClipRule)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Weird)).mColorInterpolation as *const _ as usize },
+        9usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mColorInterpolation)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Weird)).mColorInterpolationFilters as *const _ as usize },
+        10usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mColorInterpolationFilters)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Weird)).mFillRule as *const _ as usize },
+        11usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mFillRule)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Weird)).mImageRendering as *const _ as usize },
+        12usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mImageRendering)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Weird)).mPaintOrder as *const _ as usize },
+        13usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mPaintOrder)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Weird)).mShapeRendering as *const _ as usize },
+        14usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mShapeRendering)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Weird)).mStrokeLinecap as *const _ as usize },
+        15usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mStrokeLinecap)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Weird)).mStrokeLinejoin as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mStrokeLinejoin)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Weird)).mTextAnchor as *const _ as usize },
+        17usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mTextAnchor)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Weird)).mTextRendering as *const _ as usize },
+        18usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Weird),
+            "::",
+            stringify!(mTextRendering)
+        )
+    );
 }
 impl Clone for Weird {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for Weird {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 impl Weird {
     #[inline]
     pub fn bitTest(&self) -> ::std::os::raw::c_uint {
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         let mask = 65535u64 as u32;
         let val = (unit_field_val & mask) >> 0usize;
@@ -124,31 +194,31 @@ impl Weird {
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            );
         }
     }
     #[inline]
     pub fn bitTest2(&self) -> ::std::os::raw::c_uint {
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         let mask = 2147418112u64 as u32;
         let val = (unit_field_val & mask) >> 16usize;
@@ -160,37 +230,39 @@ impl Weird {
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 16usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            );
         }
     }
     #[inline]
-    pub fn new_bitfield_1(bitTest: ::std::os::raw::c_uint,
-                          bitTest2: ::std::os::raw::c_uint) -> u32 {
-        ({ ({ 0 } | ((bitTest as u32 as u32) << 0usize) & (65535u64 as u32)) }
-             | ((bitTest2 as u32 as u32) << 16usize) & (2147418112u64 as u32))
+    pub fn new_bitfield_1(
+        bitTest: ::std::os::raw::c_uint,
+        bitTest2: ::std::os::raw::c_uint,
+    ) -> u32 {
+        ((0 | ((bitTest as u32 as u32) << 0usize) & (65535u64 as u32)) |
+            ((bitTest2 as u32 as u32) << 16usize) & (2147418112u64 as u32))
     }
     #[inline]
     pub fn mFillOpacitySource(&self) -> nsStyleSVGOpacitySource {
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_2 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         let mask = 7u64 as u16;
         let val = (unit_field_val & mask) >> 0usize;
@@ -202,31 +274,31 @@ impl Weird {
         let val = val as u32 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_2 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_2 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_2 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            );
         }
     }
     #[inline]
     pub fn mStrokeOpacitySource(&self) -> nsStyleSVGOpacitySource {
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_2 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         let mask = 56u64 as u16;
         let val = (unit_field_val & mask) >> 3usize;
@@ -238,31 +310,31 @@ impl Weird {
         let val = val as u32 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_2 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 3usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_2 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_2 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            );
         }
     }
     #[inline]
     pub fn mStrokeDasharrayFromObject(&self) -> bool {
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_2 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         let mask = 64u64 as u16;
         let val = (unit_field_val & mask) >> 6usize;
@@ -274,31 +346,31 @@ impl Weird {
         let val = val as u8 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_2 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 6usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_2 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_2 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            );
         }
     }
     #[inline]
     pub fn mStrokeDashoffsetFromObject(&self) -> bool {
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_2 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         let mask = 128u64 as u16;
         let val = (unit_field_val & mask) >> 7usize;
@@ -310,31 +382,31 @@ impl Weird {
         let val = val as u8 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_2 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 7usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_2 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_2 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            );
         }
     }
     #[inline]
     pub fn mStrokeWidthFromObject(&self) -> bool {
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_2 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         let mask = 256u64 as u16;
         let val = (unit_field_val & mask) >> 8usize;
@@ -346,46 +418,34 @@ impl Weird {
         let val = val as u8 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_2 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_2 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 8usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_2 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_2 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            );
         }
     }
     #[inline]
-    pub fn new_bitfield_2(mFillOpacitySource: nsStyleSVGOpacitySource,
-                          mStrokeOpacitySource: nsStyleSVGOpacitySource,
-                          mStrokeDasharrayFromObject: bool,
-                          mStrokeDashoffsetFromObject: bool,
-                          mStrokeWidthFromObject: bool) -> u16 {
-        ({
-             ({
-                  ({
-                       ({
-                            ({ 0 } |
-                                 ((mFillOpacitySource as u32 as u16) <<
-                                      0usize) & (7u64 as u16))
-                        } |
-                            ((mStrokeOpacitySource as u32 as u16) << 3usize) &
-                                (56u64 as u16))
-                   } |
-                       ((mStrokeDasharrayFromObject as u8 as u16) << 6usize) &
-                           (64u64 as u16))
-              } |
-                  ((mStrokeDashoffsetFromObject as u8 as u16) << 7usize) &
-                      (128u64 as u16))
-         } |
-             ((mStrokeWidthFromObject as u8 as u16) << 8usize) &
-                 (256u64 as u16))
+    pub fn new_bitfield_2(
+        mFillOpacitySource: nsStyleSVGOpacitySource,
+        mStrokeOpacitySource: nsStyleSVGOpacitySource,
+        mStrokeDasharrayFromObject: bool,
+        mStrokeDashoffsetFromObject: bool,
+        mStrokeWidthFromObject: bool,
+    ) -> u16 {
+        (((((0 | ((mFillOpacitySource as u32 as u16) << 0usize) & (7u64 as u16)) |
+            ((mStrokeOpacitySource as u32 as u16) << 3usize) & (56u64 as u16)) |
+            ((mStrokeDasharrayFromObject as u8 as u16) << 6usize) & (64u64 as u16)) |
+            ((mStrokeDashoffsetFromObject as u8 as u16) << 7usize) & (128u64 as u16)) |
+            ((mStrokeWidthFromObject as u8 as u16) << 8usize) & (256u64 as u16))
     }
 }

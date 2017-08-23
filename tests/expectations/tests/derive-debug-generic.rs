@@ -9,11 +9,13 @@ pub struct Generic<T> {
     pub t: [T; 40usize],
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
-impl <T> Default for Generic<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for Generic<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
-impl <T> ::std::fmt::Debug for Generic<T> {
+impl<T> ::std::fmt::Debug for Generic<T> {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        write!(f , "Generic {{ t: Array with length 40 }}")
+        write!(f, "Generic {{ t: Array with length 40 }}")
     }
 }

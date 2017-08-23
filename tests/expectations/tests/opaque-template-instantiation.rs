@@ -10,8 +10,10 @@ pub struct Template<T> {
     pub member: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
-impl <T> Default for Template<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for Template<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Hash, PartialEq, Eq)]
@@ -20,23 +22,36 @@ pub struct ContainsInstantiation {
 }
 #[test]
 fn bindgen_test_layout_ContainsInstantiation() {
-    assert_eq!(::std::mem::size_of::<ContainsInstantiation>() , 1usize ,
-               concat ! ( "Size of: " , stringify ! ( ContainsInstantiation )
-               ));
-    assert_eq! (::std::mem::align_of::<ContainsInstantiation>() , 1usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( ContainsInstantiation ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ContainsInstantiation ) ) . not_opaque as
-                * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( ContainsInstantiation )
-                , "::" , stringify ! ( not_opaque ) ));
+    assert_eq!(
+        ::std::mem::size_of::<ContainsInstantiation>(),
+        1usize,
+        concat!("Size of: ", stringify!(ContainsInstantiation))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ContainsInstantiation>(),
+        1usize,
+        concat!("Alignment of ", stringify!(ContainsInstantiation))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ContainsInstantiation)).not_opaque as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ContainsInstantiation),
+            "::",
+            stringify!(not_opaque)
+        )
+    );
 }
 impl Clone for ContainsInstantiation {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for ContainsInstantiation {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
@@ -45,31 +60,41 @@ pub struct ContainsOpaqueInstantiation {
 }
 #[test]
 fn bindgen_test_layout_ContainsOpaqueInstantiation() {
-    assert_eq!(::std::mem::size_of::<ContainsOpaqueInstantiation>() , 4usize ,
-               concat ! (
-               "Size of: " , stringify ! ( ContainsOpaqueInstantiation ) ));
-    assert_eq! (::std::mem::align_of::<ContainsOpaqueInstantiation>() , 4usize
-                , concat ! (
-                "Alignment of " , stringify ! ( ContainsOpaqueInstantiation )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ContainsOpaqueInstantiation ) ) . opaque
-                as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                ContainsOpaqueInstantiation ) , "::" , stringify ! ( opaque )
-                ));
+    assert_eq!(
+        ::std::mem::size_of::<ContainsOpaqueInstantiation>(),
+        4usize,
+        concat!("Size of: ", stringify!(ContainsOpaqueInstantiation))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ContainsOpaqueInstantiation>(),
+        4usize,
+        concat!("Alignment of ", stringify!(ContainsOpaqueInstantiation))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ContainsOpaqueInstantiation)).opaque as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ContainsOpaqueInstantiation),
+            "::",
+            stringify!(opaque)
+        )
+    );
 }
 impl Clone for ContainsOpaqueInstantiation {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[test]
 fn __bindgen_test_layout_Template_open0_char_close0_instantiation() {
-    assert_eq!(::std::mem::size_of::<Template<::std::os::raw::c_char>>() ,
-               1usize , concat ! (
-               "Size of template specialization: " , stringify ! (
-               Template<::std::os::raw::c_char> ) ));
-    assert_eq!(::std::mem::align_of::<Template<::std::os::raw::c_char>>() ,
-               1usize , concat ! (
-               "Alignment of template specialization: " , stringify ! (
-               Template<::std::os::raw::c_char> ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Template<::std::os::raw::c_char>>(),
+        1usize,
+        concat!(
+            "Size of template specialization: ",
+            stringify ! ( Template < :: std :: os :: raw :: c_char > )
+        )
+    );
+    assert_eq ! ( :: std :: mem :: align_of :: < Template < :: std :: os :: raw :: c_char > > ( ) , 1usize , concat ! ( "Alignment of template specialization: " , stringify ! ( Template < :: std :: os :: raw :: c_char > ) ) );
 }

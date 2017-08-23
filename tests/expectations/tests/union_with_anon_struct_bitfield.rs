@@ -19,24 +19,32 @@ pub struct foo__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_foo__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<foo__bindgen_ty_1>() , 4usize , concat !
-               ( "Size of: " , stringify ! ( foo__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<foo__bindgen_ty_1>() , 4usize , concat
-                ! ( "Alignment of " , stringify ! ( foo__bindgen_ty_1 ) ));
+    assert_eq!(
+        ::std::mem::size_of::<foo__bindgen_ty_1>(),
+        4usize,
+        concat!("Size of: ", stringify!(foo__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<foo__bindgen_ty_1>(),
+        4usize,
+        concat!("Alignment of ", stringify!(foo__bindgen_ty_1))
+    );
 }
 impl Clone for foo__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl foo__bindgen_ty_1 {
     #[inline]
     pub fn b(&self) -> ::std::os::raw::c_int {
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         let mask = 127u64 as u32;
         let val = (unit_field_val & mask) >> 0usize;
@@ -48,31 +56,31 @@ impl foo__bindgen_ty_1 {
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            );
         }
     }
     #[inline]
     pub fn c(&self) -> ::std::os::raw::c_int {
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         let mask = 4294967168u64 as u32;
         let val = (unit_field_val & mask) >> 7usize;
@@ -84,44 +92,53 @@ impl foo__bindgen_ty_1 {
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 7usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            );
         }
     }
     #[inline]
-    pub fn new_bitfield_1(b: ::std::os::raw::c_int, c: ::std::os::raw::c_int)
-     -> u32 {
-        ({ ({ 0 } | ((b as u32 as u32) << 0usize) & (127u64 as u32)) } |
-             ((c as u32 as u32) << 7usize) & (4294967168u64 as u32))
+    pub fn new_bitfield_1(b: ::std::os::raw::c_int, c: ::std::os::raw::c_int) -> u32 {
+        ((0 | ((b as u32 as u32) << 0usize) & (127u64 as u32)) |
+            ((c as u32 as u32) << 7usize) & (4294967168u64 as u32))
     }
 }
 #[test]
 fn bindgen_test_layout_foo() {
-    assert_eq!(::std::mem::size_of::<foo>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( foo ) ));
-    assert_eq! (::std::mem::align_of::<foo>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( foo ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const foo ) ) . a as * const _ as usize } ,
-                0usize , concat ! (
-                "Alignment of field: " , stringify ! ( foo ) , "::" ,
-                stringify ! ( a ) ));
+    assert_eq!(
+        ::std::mem::size_of::<foo>(),
+        4usize,
+        concat!("Size of: ", stringify!(foo))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<foo>(),
+        4usize,
+        concat!("Alignment of ", stringify!(foo))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const foo)).a as *const _ as usize },
+        0usize,
+        concat!("Alignment of field: ", stringify!(foo), "::", stringify!(a))
+    );
 }
 impl Clone for foo {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for foo {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

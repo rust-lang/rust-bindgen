@@ -22,16 +22,13 @@ use cexpr;
 use clang::{self, Cursor};
 use clang_sys;
 use parse::ClangItemParser;
+use quote;
 use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::{HashMap, HashSet, hash_map};
 use std::collections::btree_map::{self, BTreeMap};
-use std::fmt;
 use std::iter::IntoIterator;
 use std::mem;
-use syntax::ast::Ident;
-use syntax::codemap::{DUMMY_SP, Span};
-use syntax::ext::base::ExtCtxt;
 
 /// A single identifier for an item.
 ///
@@ -98,19 +95,9 @@ enum TypeKey {
     Declaration(Cursor),
 }
 
-// This is just convenience to avoid creating a manual debug impl for the
-// context.
-struct GenContext<'ctx>(ExtCtxt<'ctx>);
-
-impl<'ctx> fmt::Debug for GenContext<'ctx> {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        write!(fmt, "GenContext {{ ... }}")
-    }
-}
-
 /// A context used during parsing and generation of structs.
 #[derive(Debug)]
-pub struct BindgenContext<'ctx> {
+pub struct BindgenContext {
     /// The map of all the items parsed so far.
     ///
     /// It's a BTreeMap because we want the keys to be sorted to have consistent
@@ -168,9 +155,7 @@ pub struct BindgenContext<'ctx> {
 
     collected_typerefs: bool,
 
-    /// Dummy structures for code generation.
-    gen_ctx: Option<&'ctx GenContext<'ctx>>,
-    span: Span,
+    in_codegen: bool,
 
     /// The clang index for parsing.
     index: clang::Index,
@@ -268,24 +253,17 @@ pub struct BindgenContext<'ctx> {
 }
 
 /// A traversal of whitelisted items.
-struct WhitelistedItemsTraversal<'ctx, 'gen>
-where
-    'gen: 'ctx,
-{
-    ctx: &'ctx BindgenContext<'gen>,
+struct WhitelistedItemsTraversal<'ctx> {
+    ctx: &'ctx BindgenContext,
     traversal: ItemTraversal<
         'ctx,
-        'gen,
         ItemSet,
         Vec<ItemId>,
         for<'a> fn(&'a BindgenContext, Edge) -> bool,
     >,
 }
 
-impl<'ctx, 'gen> Iterator for WhitelistedItemsTraversal<'ctx, 'gen>
-where
-    'gen: 'ctx,
-{
+impl<'ctx> Iterator for WhitelistedItemsTraversal<'ctx> {
     type Item = ItemId;
 
     fn next(&mut self) -> Option<ItemId> {
@@ -301,13 +279,10 @@ where
     }
 }
 
-impl<'ctx, 'gen> WhitelistedItemsTraversal<'ctx, 'gen>
-where
-    'gen: 'ctx,
-{
+impl<'ctx> WhitelistedItemsTraversal<'ctx> {
     /// Construct a new whitelisted items traversal.
     pub fn new<R>(
-        ctx: &'ctx BindgenContext<'gen>,
+        ctx: &'ctx BindgenContext,
         roots: R,
         predicate: for<'a> fn(&'a BindgenContext, Edge) -> bool,
     ) -> Self
@@ -344,7 +319,7 @@ fn find_effective_target(clang_args: &[String]) -> (String, bool) {
     (HOST_TARGET.to_owned(), false)
 }
 
-impl<'ctx> BindgenContext<'ctx> {
+impl BindgenContext {
     /// Construct the context for the given `options`.
     pub fn new(options: BindgenOptions) -> Self {
         use clang_sys;
@@ -402,8 +377,7 @@ impl<'ctx> BindgenContext<'ctx> {
             parsed_macros: Default::default(),
             replacements: Default::default(),
             collected_typerefs: false,
-            gen_ctx: None,
-            span: DUMMY_SP,
+            in_codegen: false,
             index: index,
             translation_unit: translation_unit,
             options: options,
@@ -632,24 +606,67 @@ impl<'ctx> BindgenContext<'ctx> {
 
     // TODO: Move all this syntax crap to other part of the code.
 
-    /// Given that we are in the codegen phase, get the syntex context.
-    pub fn ext_cx(&self) -> &ExtCtxt<'ctx> {
-        &self.gen_ctx.expect("Not in gen phase").0
-    }
-
-    /// Given that we are in the codegen phase, get the current syntex span.
-    pub fn span(&self) -> Span {
-        self.span
-    }
-
     /// Mangles a name so it doesn't conflict with any keyword.
     pub fn rust_mangle<'a>(&self, name: &'a str) -> Cow<'a, str> {
-        use syntax::parse::token;
-        let ident = self.rust_ident_raw(name);
-        let token = token::Ident(ident);
-        if token.is_any_keyword() || name.contains("@") ||
-            name.contains("?") || name.contains("$") ||
-            "bool" == name
+        if name.contains("@") ||
+            name.contains("?") ||
+            name.contains("$") ||
+            match name {
+                "abstract" |
+ 	            "alignof" |
+ 	            "as" |
+ 	            "become" |
+ 	            "box" |
+                "break" |
+ 	            "const" |
+ 	            "continue" |
+ 	            "crate" |
+ 	            "do" |
+                "else" |
+ 	            "enum" |
+ 	            "extern" |
+ 	            "false" |
+ 	            "final" |
+                "fn" |
+ 	            "for" |
+ 	            "if" |
+ 	            "impl" |
+ 	            "in" |
+                "let" |
+ 	            "loop" |
+ 	            "macro" |
+ 	            "match" |
+ 	            "mod" |
+                "move" |
+ 	            "mut" |
+ 	            "offsetof" |
+ 	            "override" |
+ 	            "priv" |
+                "proc" |
+ 	            "pub" |
+ 	            "pure" |
+ 	            "ref" |
+ 	            "return" |
+                "Self" |
+ 	            "self" |
+ 	            "sizeof" |
+ 	            "static" |
+ 	            "struct" |
+                "super" |
+ 	            "trait" |
+ 	            "true" |
+ 	            "type" |
+ 	            "typeof" |
+                "unsafe" |
+ 	            "unsized" |
+ 	            "use" |
+ 	            "virtual" |
+ 	            "where" |
+                "while" |
+ 	            "yield" |
+                "bool" => true,
+                _ => false,
+            }
         {
             let mut s = name.to_owned();
             s = s.replace("@", "_");
@@ -662,13 +679,19 @@ impl<'ctx> BindgenContext<'ctx> {
     }
 
     /// Returns a mangled name as a rust identifier.
-    pub fn rust_ident(&self, name: &str) -> Ident {
-        self.rust_ident_raw(&self.rust_mangle(name))
+    pub fn rust_ident<S>(&self, name: S) -> quote::Ident
+    where
+        S: AsRef<str>
+    {
+        self.rust_ident_raw(self.rust_mangle(name.as_ref()))
     }
 
     /// Returns a mangled name as a rust identifier.
-    pub fn rust_ident_raw(&self, name: &str) -> Ident {
-        self.ext_cx().ident_of(name)
+    pub fn rust_ident_raw<T>(&self, name: T) -> quote::Ident
+    where
+        T: Into<quote::Ident>
+    {
+        name.into()
     }
 
     /// Iterate over all items that have been defined.
@@ -891,30 +914,7 @@ impl<'ctx> BindgenContext<'ctx> {
     where
         F: FnOnce(&Self) -> Out,
     {
-        use aster::symbol::ToSymbol;
-        use syntax::ext::expand::ExpansionConfig;
-        use syntax::codemap::{ExpnInfo, MacroBang, NameAndSpan};
-        use syntax::ext::base;
-        use syntax::parse;
-
-        let cfg = ExpansionConfig::default("xxx".to_owned());
-        let sess = parse::ParseSess::new();
-        let mut loader = base::DummyResolver;
-        let mut ctx = GenContext(base::ExtCtxt::new(&sess, cfg, &mut loader));
-
-        ctx.0.bt_push(ExpnInfo {
-            call_site: self.span,
-            callee: NameAndSpan {
-                format: MacroBang("".to_symbol()),
-                allow_internal_unstable: false,
-                span: None,
-            },
-        });
-
-        // FIXME: This is evil, we should move code generation to use a wrapper
-        // of BindgenContext instead, I guess. Even though we know it's fine
-        // because we remove it before the end of this function.
-        self.gen_ctx = Some(unsafe { mem::transmute(&ctx) });
+        self.in_codegen = true;
 
         self.assert_no_dangling_references();
 
@@ -950,7 +950,7 @@ impl<'ctx> BindgenContext<'ctx> {
         self.compute_cannot_derive_partialeq_or_eq();
 
         let ret = cb(self);
-        self.gen_ctx = None;
+        self.in_codegen = false;
         ret
     }
 
@@ -965,9 +965,9 @@ impl<'ctx> BindgenContext<'ctx> {
         }
     }
 
-    fn assert_no_dangling_item_traversal<'me>(
-        &'me self,
-    ) -> traversal::AssertNoDanglingItemsTraversal<'me, 'ctx> {
+    fn assert_no_dangling_item_traversal(
+        &self,
+    ) -> traversal::AssertNoDanglingItemsTraversal {
         assert!(self.in_codegen_phase());
         assert!(self.current_module == self.root_module);
 
@@ -1735,7 +1735,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// Are we in the codegen phase?
     pub fn in_codegen_phase(&self) -> bool {
-        self.gen_ctx.is_some()
+        self.in_codegen
     }
 
     /// Mark the type with the given `name` as replaced by the type with id
@@ -2031,7 +2031,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// Convenient method for getting the prefix to use for most traits in
     /// codegen depending on the `use_core` option.
-    pub fn trait_prefix(&self) -> Ident {
+    pub fn trait_prefix(&self) -> quote::Ident {
         if self.options().use_core {
             self.rust_ident_raw("core")
         } else {
@@ -2244,7 +2244,7 @@ impl ItemResolver {
     }
 
     /// Finish configuring and perform the actual item resolution.
-    pub fn resolve<'a, 'b>(self, ctx: &'a BindgenContext<'b>) -> &'a Item {
+    pub fn resolve(self, ctx: &BindgenContext) -> &Item {
         assert!(ctx.collected_typerefs());
 
         let mut id = self.id;

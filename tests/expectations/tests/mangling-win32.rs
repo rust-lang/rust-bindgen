@@ -13,16 +13,24 @@ pub struct Foo {
     pub _address: u8,
 }
 extern "C" {
-    #[link_name = "\u{1}?sBar@Foo@@2_NA"]
+    #[link_name = "?sBar@Foo@@2_NA"]
     pub static mut Foo_sBar: bool;
 }
 #[test]
 fn bindgen_test_layout_Foo() {
-    assert_eq!(::std::mem::size_of::<Foo>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( Foo ) ));
-    assert_eq! (::std::mem::align_of::<Foo>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( Foo ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Foo>(),
+        1usize,
+        concat!("Size of: ", stringify!(Foo))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Foo>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Foo))
+    );
 }
 impl Clone for Foo {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }

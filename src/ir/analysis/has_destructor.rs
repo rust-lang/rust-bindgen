@@ -23,11 +23,8 @@ use std::collections::HashSet;
 /// * If T is the type of a field, that field has a destructor if it's not a bitfield,
 ///   and if T has a destructor.
 #[derive(Debug, Clone)]
-pub struct HasDestructorAnalysis<'ctx, 'gen>
-where
-    'gen: 'ctx,
-{
-    ctx: &'ctx BindgenContext<'gen>,
+pub struct HasDestructorAnalysis<'ctx> {
+    ctx: &'ctx BindgenContext,
 
     // The incremental result of this analysis's computation. Everything in this
     // set definitely has a destructor.
@@ -43,7 +40,7 @@ where
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
-impl<'ctx, 'gen> HasDestructorAnalysis<'ctx, 'gen> {
+impl<'ctx> HasDestructorAnalysis<'ctx> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             // These are the only edges that can affect whether a type has a
@@ -69,12 +66,12 @@ impl<'ctx, 'gen> HasDestructorAnalysis<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> MonotoneFramework for HasDestructorAnalysis<'ctx, 'gen> {
+impl<'ctx> MonotoneFramework for HasDestructorAnalysis<'ctx> {
     type Node = ItemId;
-    type Extra = &'ctx BindgenContext<'gen>;
+    type Extra = &'ctx BindgenContext;
     type Output = HashSet<ItemId>;
 
-    fn new(ctx: &'ctx BindgenContext<'gen>) -> Self {
+    fn new(ctx: &'ctx BindgenContext) -> Self {
         let have_destructor = HashSet::new();
         let dependencies = generate_dependencies(ctx, Self::consider_edge);
 
@@ -172,8 +169,8 @@ impl<'ctx, 'gen> MonotoneFramework for HasDestructorAnalysis<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> From<HasDestructorAnalysis<'ctx, 'gen>> for HashSet<ItemId> {
-    fn from(analysis: HasDestructorAnalysis<'ctx, 'gen>) -> Self {
+impl<'ctx> From<HasDestructorAnalysis<'ctx>> for HashSet<ItemId> {
+    fn from(analysis: HasDestructorAnalysis<'ctx>) -> Self {
         analysis.have_destructor
     }
 }

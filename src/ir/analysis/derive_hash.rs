@@ -33,11 +33,8 @@ use std::collections::HashSet;
 ///   derived hash if any of the template arguments or template definition
 ///   cannot derive hash.
 #[derive(Debug, Clone)]
-pub struct CannotDeriveHash<'ctx, 'gen>
-where
-    'gen: 'ctx,
-{
-    ctx: &'ctx BindgenContext<'gen>,
+pub struct CannotDeriveHash<'ctx> {
+    ctx: &'ctx BindgenContext,
 
     // The incremental result of this analysis's computation. Everything in this
     // set cannot derive hash.
@@ -53,7 +50,7 @@ where
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
-impl<'ctx, 'gen> CannotDeriveHash<'ctx, 'gen> {
+impl<'ctx> CannotDeriveHash<'ctx> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             // These are the only edges that can affect whether a type can derive
@@ -92,12 +89,12 @@ impl<'ctx, 'gen> CannotDeriveHash<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> MonotoneFramework for CannotDeriveHash<'ctx, 'gen> {
+impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
     type Node = ItemId;
-    type Extra = &'ctx BindgenContext<'gen>;
+    type Extra = &'ctx BindgenContext;
     type Output = HashSet<ItemId>;
 
-    fn new(ctx: &'ctx BindgenContext<'gen>) -> CannotDeriveHash<'ctx, 'gen> {
+    fn new(ctx: &'ctx BindgenContext) -> CannotDeriveHash<'ctx> {
         let cannot_derive_hash = HashSet::new();
         let dependencies = generate_dependencies(ctx, Self::consider_edge);
 
@@ -356,8 +353,8 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveHash<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> From<CannotDeriveHash<'ctx, 'gen>> for HashSet<ItemId> {
-    fn from(analysis: CannotDeriveHash<'ctx, 'gen>) -> Self {
+impl<'ctx> From<CannotDeriveHash<'ctx>> for HashSet<ItemId> {
+    fn from(analysis: CannotDeriveHash<'ctx>) -> Self {
         analysis.cannot_derive_hash
     }
 }

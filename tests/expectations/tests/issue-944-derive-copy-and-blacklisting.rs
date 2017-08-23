@@ -5,6 +5,7 @@
 
 pub struct BlacklistMe(u8);
 
+
 /// Because this type contains a blacklisted type, it should not derive Copy.
 #[repr(C)]
 pub struct ShouldNotBeCopy {
@@ -12,16 +13,29 @@ pub struct ShouldNotBeCopy {
 }
 #[test]
 fn bindgen_test_layout_ShouldNotBeCopy() {
-    assert_eq!(::std::mem::size_of::<ShouldNotBeCopy>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( ShouldNotBeCopy ) ));
-    assert_eq! (::std::mem::align_of::<ShouldNotBeCopy>() , 1usize , concat !
-                ( "Alignment of " , stringify ! ( ShouldNotBeCopy ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ShouldNotBeCopy ) ) . a as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( ShouldNotBeCopy ) ,
-                "::" , stringify ! ( a ) ));
+    assert_eq!(
+        ::std::mem::size_of::<ShouldNotBeCopy>(),
+        1usize,
+        concat!("Size of: ", stringify!(ShouldNotBeCopy))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ShouldNotBeCopy>(),
+        1usize,
+        concat!("Alignment of ", stringify!(ShouldNotBeCopy))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ShouldNotBeCopy)).a as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ShouldNotBeCopy),
+            "::",
+            stringify!(a)
+        )
+    );
 }
 impl Default for ShouldNotBeCopy {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

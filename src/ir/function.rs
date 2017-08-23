@@ -11,8 +11,8 @@ use clang_sys::{self, CXCallingConv};
 use ir::derive::{CanTriviallyDeriveDebug, CanTriviallyDeriveHash,
                  CanTriviallyDerivePartialEq};
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
+use quote;
 use std::io;
-use syntax::abi;
 
 const RUST_DERIVE_FUNPTR_LIMIT: usize = 12;
 
@@ -136,8 +136,16 @@ impl DotAttributes for Function {
 /// An ABI extracted from a clang cursor.
 #[derive(Debug, Copy, Clone)]
 pub enum Abi {
-    /// A known ABI, that rust also understand.
-    Known(abi::Abi),
+    /// The default C ABI.
+    C,
+    /// The "stdcall" ABI.
+    Stdcall,
+    /// The "fastcall" ABI.
+    Fastcall,
+    /// The "aapcs" ABI.
+    Aapcs,
+    /// The "win64" ABI.
+    Win64,
     /// An unknown or invalid ABI.
     Unknown(CXCallingConv),
 }
@@ -149,6 +157,22 @@ impl Abi {
             Abi::Unknown(..) => true,
             _ => false,
         }
+    }
+}
+
+impl quote::ToTokens for Abi {
+    fn to_tokens(&self, tokens: &mut quote::Tokens) {
+        tokens.append(match *self {
+            Abi::C => quote! { "C" },
+            Abi::Stdcall => quote! { "stdcall" },
+            Abi::Fastcall => quote! { "fastcall" },
+            Abi::Aapcs => quote! { "aapcs" },
+            Abi::Win64 => quote! { "win64" },
+            Abi::Unknown(cc) => panic!(
+                "Cannot turn unknown calling convention to tokens: {:?}",
+                cc
+            ),
+        });
     }
 }
 
@@ -171,15 +195,15 @@ pub struct FunctionSig {
 
 fn get_abi(cc: CXCallingConv) -> Abi {
     use clang_sys::*;
-    Abi::Known(match cc {
-        CXCallingConv_Default => abi::Abi::C,
-        CXCallingConv_C => abi::Abi::C,
-        CXCallingConv_X86StdCall => abi::Abi::Stdcall,
-        CXCallingConv_X86FastCall => abi::Abi::Fastcall,
-        CXCallingConv_AAPCS => abi::Abi::Aapcs,
-        CXCallingConv_X86_64Win64 => abi::Abi::Win64,
-        other => return Abi::Unknown(other),
-    })
+    match cc {
+        CXCallingConv_Default => Abi::C,
+        CXCallingConv_C => Abi::C,
+        CXCallingConv_X86StdCall => Abi::Stdcall,
+        CXCallingConv_X86FastCall => Abi::Fastcall,
+        CXCallingConv_AAPCS => Abi::Aapcs,
+        CXCallingConv_X86_64Win64 => Abi::Win64,
+        other => Abi::Unknown(other),
+    }
 }
 
 fn mangling_hack_if_needed(ctx: &BindgenContext, symbol: &mut String) {
@@ -513,8 +537,7 @@ impl CanTriviallyDeriveDebug for FunctionSig {
         }
 
         match self.abi {
-            Abi::Known(abi::Abi::C) |
-            Abi::Unknown(..) => true,
+            Abi::C | Abi::Unknown(..) => true,
             _ => false,
         }
     }
@@ -527,8 +550,7 @@ impl CanTriviallyDeriveHash for FunctionSig {
         }
 
         match self.abi {
-            Abi::Known(abi::Abi::C) |
-            Abi::Unknown(..) => true,
+            Abi::C | Abi::Unknown(..) => true,
             _ => false,
         }
     }
@@ -541,8 +563,7 @@ impl CanTriviallyDerivePartialEq for FunctionSig {
         }
 
         match self.abi {
-            Abi::Known(abi::Abi::C) |
-            Abi::Unknown(..) => true,
+            Abi::C | Abi::Unknown(..) => true,
             _ => false,
         }
     }

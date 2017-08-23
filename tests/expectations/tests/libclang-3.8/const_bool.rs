@@ -6,7 +6,7 @@
 
 extern "C" {
     #[link_name = "_ZL1k"]
-    pub static k: bool;
+    pub static mut k: bool;
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
@@ -15,20 +15,28 @@ pub struct A {
 }
 extern "C" {
     #[link_name = "_ZN1A1kE"]
-    pub static A_k: bool;
+    pub static mut A_k: bool;
 }
 #[test]
 fn bindgen_test_layout_A() {
-    assert_eq!(::std::mem::size_of::<A>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( A ) ));
-    assert_eq! (::std::mem::align_of::<A>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( A ) ));
+    assert_eq!(
+        ::std::mem::size_of::<A>(),
+        1usize,
+        concat!("Size of: ", stringify!(A))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<A>(),
+        1usize,
+        concat!("Alignment of ", stringify!(A))
+    );
 }
 impl Clone for A {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 pub type foo = bool;
 extern "C" {
     #[link_name = "_ZL2k2"]
-    pub static k2: foo;
+    pub static mut k2: foo;
 }

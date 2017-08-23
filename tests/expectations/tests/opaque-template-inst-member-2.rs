@@ -4,12 +4,12 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
 
+
 /// This is like `opaque-template-inst-member.hpp` except exercising the cases
 /// where we are OK to derive Debug/Hash/PartialEq.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
-pub struct OpaqueTemplate {
-}
+pub struct OpaqueTemplate {}
 /// Should derive Debug/Hash/PartialEq.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
@@ -19,25 +19,41 @@ pub struct ContainsOpaqueTemplate {
 }
 #[test]
 fn bindgen_test_layout_ContainsOpaqueTemplate() {
-    assert_eq!(::std::mem::size_of::<ContainsOpaqueTemplate>() , 8usize ,
-               concat ! ( "Size of: " , stringify ! ( ContainsOpaqueTemplate )
-               ));
-    assert_eq! (::std::mem::align_of::<ContainsOpaqueTemplate>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( ContainsOpaqueTemplate ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ContainsOpaqueTemplate ) ) . mBlah as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( ContainsOpaqueTemplate
-                ) , "::" , stringify ! ( mBlah ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ContainsOpaqueTemplate ) ) . mBaz as *
-                const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( ContainsOpaqueTemplate
-                ) , "::" , stringify ! ( mBaz ) ));
+    assert_eq!(
+        ::std::mem::size_of::<ContainsOpaqueTemplate>(),
+        8usize,
+        concat!("Size of: ", stringify!(ContainsOpaqueTemplate))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ContainsOpaqueTemplate>(),
+        4usize,
+        concat!("Alignment of ", stringify!(ContainsOpaqueTemplate))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ContainsOpaqueTemplate)).mBlah as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ContainsOpaqueTemplate),
+            "::",
+            stringify!(mBlah)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ContainsOpaqueTemplate)).mBaz as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ContainsOpaqueTemplate),
+            "::",
+            stringify!(mBaz)
+        )
+    );
 }
 impl Clone for ContainsOpaqueTemplate {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 /// Should also derive Debug/Hash/PartialEq.
 #[repr(C)]
@@ -48,21 +64,34 @@ pub struct InheritsOpaqueTemplate {
 }
 #[test]
 fn bindgen_test_layout_InheritsOpaqueTemplate() {
-    assert_eq!(::std::mem::size_of::<InheritsOpaqueTemplate>() , 16usize ,
-               concat ! ( "Size of: " , stringify ! ( InheritsOpaqueTemplate )
-               ));
-    assert_eq! (::std::mem::align_of::<InheritsOpaqueTemplate>() , 8usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( InheritsOpaqueTemplate ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const InheritsOpaqueTemplate ) ) . wow as *
-                const _ as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( InheritsOpaqueTemplate
-                ) , "::" , stringify ! ( wow ) ));
+    assert_eq!(
+        ::std::mem::size_of::<InheritsOpaqueTemplate>(),
+        16usize,
+        concat!("Size of: ", stringify!(InheritsOpaqueTemplate))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<InheritsOpaqueTemplate>(),
+        8usize,
+        concat!("Alignment of ", stringify!(InheritsOpaqueTemplate))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const InheritsOpaqueTemplate)).wow as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(InheritsOpaqueTemplate),
+            "::",
+            stringify!(wow)
+        )
+    );
 }
 impl Clone for InheritsOpaqueTemplate {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for InheritsOpaqueTemplate {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

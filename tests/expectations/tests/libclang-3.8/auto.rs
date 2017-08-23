@@ -11,17 +11,25 @@ pub struct Foo {
 }
 extern "C" {
     #[link_name = "_ZN3Foo4kFooE"]
-    pub static Foo_kFoo: bool;
+    pub static mut Foo_kFoo: bool;
 }
 #[test]
 fn bindgen_test_layout_Foo() {
-    assert_eq!(::std::mem::size_of::<Foo>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( Foo ) ));
-    assert_eq! (::std::mem::align_of::<Foo>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( Foo ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Foo>(),
+        1usize,
+        concat!("Size of: ", stringify!(Foo))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Foo>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Foo))
+    );
 }
 impl Clone for Foo {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]

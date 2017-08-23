@@ -10,8 +10,10 @@ pub struct HandleWithDtor<T> {
     pub ptr: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
-impl <T> Default for HandleWithDtor<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for HandleWithDtor<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type HandleValue = HandleWithDtor<::std::os::raw::c_int>;
 #[repr(C)]
@@ -21,27 +23,41 @@ pub struct WithoutDtor {
 }
 #[test]
 fn bindgen_test_layout_WithoutDtor() {
-    assert_eq!(::std::mem::size_of::<WithoutDtor>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( WithoutDtor ) ));
-    assert_eq! (::std::mem::align_of::<WithoutDtor>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( WithoutDtor ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const WithoutDtor ) ) . shouldBeWithDtor as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( WithoutDtor ) , "::" ,
-                stringify ! ( shouldBeWithDtor ) ));
+    assert_eq!(
+        ::std::mem::size_of::<WithoutDtor>(),
+        8usize,
+        concat!("Size of: ", stringify!(WithoutDtor))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<WithoutDtor>(),
+        8usize,
+        concat!("Alignment of ", stringify!(WithoutDtor))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const WithoutDtor)).shouldBeWithDtor as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(WithoutDtor),
+            "::",
+            stringify!(shouldBeWithDtor)
+        )
+    );
 }
 impl Default for WithoutDtor {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[test]
 fn __bindgen_test_layout_HandleWithDtor_open0_int_close0_instantiation() {
-    assert_eq!(::std::mem::size_of::<HandleWithDtor<::std::os::raw::c_int>>()
-               , 8usize , concat ! (
-               "Size of template specialization: " , stringify ! (
-               HandleWithDtor<::std::os::raw::c_int> ) ));
-    assert_eq!(::std::mem::align_of::<HandleWithDtor<::std::os::raw::c_int>>()
-               , 8usize , concat ! (
-               "Alignment of template specialization: " , stringify ! (
-               HandleWithDtor<::std::os::raw::c_int> ) ));
+    assert_eq!(
+        ::std::mem::size_of::<HandleWithDtor<::std::os::raw::c_int>>(),
+        8usize,
+        concat!(
+            "Size of template specialization: ",
+            stringify ! ( HandleWithDtor < :: std :: os :: raw :: c_int > )
+        )
+    );
+    assert_eq ! ( :: std :: mem :: align_of :: < HandleWithDtor < :: std :: os :: raw :: c_int > > ( ) , 8usize , concat ! ( "Alignment of template specialization: " , stringify ! ( HandleWithDtor < :: std :: os :: raw :: c_int > ) ) );
 }

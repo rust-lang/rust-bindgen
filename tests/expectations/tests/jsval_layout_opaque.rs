@@ -91,30 +91,37 @@ pub struct jsval_layout__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_1>() , 8usize ,
-               concat ! (
-               "Size of: " , stringify ! ( jsval_layout__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<jsval_layout__bindgen_ty_1>() , 8usize
-                , concat ! (
-                "Alignment of " , stringify ! ( jsval_layout__bindgen_ty_1 )
-                ));
+    assert_eq!(
+        ::std::mem::size_of::<jsval_layout__bindgen_ty_1>(),
+        8usize,
+        concat!("Size of: ", stringify!(jsval_layout__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<jsval_layout__bindgen_ty_1>(),
+        8usize,
+        concat!("Alignment of ", stringify!(jsval_layout__bindgen_ty_1))
+    );
 }
 impl Clone for jsval_layout__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for jsval_layout__bindgen_ty_1 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 impl jsval_layout__bindgen_ty_1 {
     #[inline]
     pub fn payload47(&self) -> u64 {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 140737488355327u64 as u64;
         let val = (unit_field_val & mask) >> 0usize;
@@ -126,31 +133,31 @@ impl jsval_layout__bindgen_ty_1 {
         let val = val as u64 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn tag(&self) -> JSValueTag {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 18446603336221196288u64 as u64;
         let val = (unit_field_val & mask) >> 47usize;
@@ -162,31 +169,26 @@ impl jsval_layout__bindgen_ty_1 {
         let val = val as u32 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 47usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn new_bitfield_1(payload47: u64, tag: JSValueTag) -> u64 {
-        ({
-             ({ 0 } |
-                  ((payload47 as u64 as u64) << 0usize) &
-                      (140737488355327u64 as u64))
-         } |
-             ((tag as u32 as u64) << 47usize) &
-                 (18446603336221196288u64 as u64))
+        ((0 | ((payload47 as u64 as u64) << 0usize) & (140737488355327u64 as u64)) |
+            ((tag as u32 as u64) << 47usize) & (18446603336221196288u64 as u64))
     }
 }
 #[repr(C)]
@@ -204,111 +206,194 @@ pub union jsval_layout__bindgen_ty_2__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()
-               , 4usize , concat ! (
-               "Size of: " , stringify ! (
-               jsval_layout__bindgen_ty_2__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()
-                , 4usize , concat ! (
-                "Alignment of " , stringify ! (
-                jsval_layout__bindgen_ty_2__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & (
-                * ( 0 as * const jsval_layout__bindgen_ty_2__bindgen_ty_1 ) )
-                . i32 as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                jsval_layout__bindgen_ty_2__bindgen_ty_1 ) , "::" , stringify
-                ! ( i32 ) ));
-    assert_eq! (unsafe {
-                & (
-                * ( 0 as * const jsval_layout__bindgen_ty_2__bindgen_ty_1 ) )
-                . u32 as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                jsval_layout__bindgen_ty_2__bindgen_ty_1 ) , "::" , stringify
-                ! ( u32 ) ));
-    assert_eq! (unsafe {
-                & (
-                * ( 0 as * const jsval_layout__bindgen_ty_2__bindgen_ty_1 ) )
-                . why as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                jsval_layout__bindgen_ty_2__bindgen_ty_1 ) , "::" , stringify
-                ! ( why ) ));
+    assert_eq!(
+        ::std::mem::size_of::<jsval_layout__bindgen_ty_2__bindgen_ty_1>(),
+        4usize,
+        concat!(
+            "Size of: ",
+            stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1)
+        )
+    );
+    assert_eq!(
+        ::std::mem::align_of::<jsval_layout__bindgen_ty_2__bindgen_ty_1>(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(0 as *const jsval_layout__bindgen_ty_2__bindgen_ty_1)).i32 as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
+            "::",
+            stringify!(i32)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(0 as *const jsval_layout__bindgen_ty_2__bindgen_ty_1)).u32 as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
+            "::",
+            stringify!(u32)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(0 as *const jsval_layout__bindgen_ty_2__bindgen_ty_1)).why as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
+            "::",
+            stringify!(why)
+        )
+    );
 }
 impl Clone for jsval_layout__bindgen_ty_2__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for jsval_layout__bindgen_ty_2__bindgen_ty_1 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
-    assert_eq!(::std::mem::size_of::<jsval_layout__bindgen_ty_2>() , 4usize ,
-               concat ! (
-               "Size of: " , stringify ! ( jsval_layout__bindgen_ty_2 ) ));
-    assert_eq! (::std::mem::align_of::<jsval_layout__bindgen_ty_2>() , 4usize
-                , concat ! (
-                "Alignment of " , stringify ! ( jsval_layout__bindgen_ty_2 )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const jsval_layout__bindgen_ty_2 ) ) . payload
-                as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                jsval_layout__bindgen_ty_2 ) , "::" , stringify ! ( payload )
-                ));
+    assert_eq!(
+        ::std::mem::size_of::<jsval_layout__bindgen_ty_2>(),
+        4usize,
+        concat!("Size of: ", stringify!(jsval_layout__bindgen_ty_2))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<jsval_layout__bindgen_ty_2>(),
+        4usize,
+        concat!("Alignment of ", stringify!(jsval_layout__bindgen_ty_2))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const jsval_layout__bindgen_ty_2)).payload as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(jsval_layout__bindgen_ty_2),
+            "::",
+            stringify!(payload)
+        )
+    );
 }
 impl Clone for jsval_layout__bindgen_ty_2 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for jsval_layout__bindgen_ty_2 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_jsval_layout() {
-    assert_eq!(::std::mem::size_of::<jsval_layout>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( jsval_layout ) ));
-    assert_eq! (::std::mem::align_of::<jsval_layout>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( jsval_layout ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const jsval_layout ) ) . asBits as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( jsval_layout ) , "::" ,
-                stringify ! ( asBits ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const jsval_layout ) ) . debugView as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( jsval_layout ) , "::" ,
-                stringify ! ( debugView ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const jsval_layout ) ) . s as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( jsval_layout ) , "::" ,
-                stringify ! ( s ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const jsval_layout ) ) . asDouble as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( jsval_layout ) , "::" ,
-                stringify ! ( asDouble ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const jsval_layout ) ) . asPtr as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( jsval_layout ) , "::" ,
-                stringify ! ( asPtr ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const jsval_layout ) ) . asWord as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( jsval_layout ) , "::" ,
-                stringify ! ( asWord ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const jsval_layout ) ) . asUIntPtr as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( jsval_layout ) , "::" ,
-                stringify ! ( asUIntPtr ) ));
+    assert_eq!(
+        ::std::mem::size_of::<jsval_layout>(),
+        8usize,
+        concat!("Size of: ", stringify!(jsval_layout))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<jsval_layout>(),
+        8usize,
+        concat!("Alignment of ", stringify!(jsval_layout))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const jsval_layout)).asBits as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(jsval_layout),
+            "::",
+            stringify!(asBits)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const jsval_layout)).debugView as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(jsval_layout),
+            "::",
+            stringify!(debugView)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const jsval_layout)).s as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(jsval_layout),
+            "::",
+            stringify!(s)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const jsval_layout)).asDouble as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(jsval_layout),
+            "::",
+            stringify!(asDouble)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const jsval_layout)).asPtr as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(jsval_layout),
+            "::",
+            stringify!(asPtr)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const jsval_layout)).asWord as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(jsval_layout),
+            "::",
+            stringify!(asWord)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const jsval_layout)).asUIntPtr as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(jsval_layout),
+            "::",
+            stringify!(asUIntPtr)
+        )
+    );
 }
 impl Clone for jsval_layout {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for jsval_layout {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -317,19 +402,34 @@ pub struct Value {
 }
 #[test]
 fn bindgen_test_layout_Value() {
-    assert_eq!(::std::mem::size_of::<Value>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( Value ) ));
-    assert_eq! (::std::mem::align_of::<Value>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( Value ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Value ) ) . data as * const _ as usize }
-                , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Value ) , "::" ,
-                stringify ! ( data ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Value>(),
+        8usize,
+        concat!("Size of: ", stringify!(Value))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Value>(),
+        8usize,
+        concat!("Alignment of ", stringify!(Value))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Value)).data as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Value),
+            "::",
+            stringify!(data)
+        )
+    );
 }
 impl Clone for Value {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for Value {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

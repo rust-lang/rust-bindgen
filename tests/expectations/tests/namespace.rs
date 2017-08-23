@@ -9,7 +9,7 @@ pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
     extern "C" {
-        #[link_name = "_Z9top_levelv"]
+    #[link_name = "_Z9top_levelv"]
         pub fn top_level();
     }
     pub mod whatever {
@@ -17,7 +17,7 @@ pub mod root {
         use self::super::super::root;
         pub type whatever_int_t = ::std::os::raw::c_int;
         extern "C" {
-            #[link_name = "_ZN8whatever11in_whateverEv"]
+    #[link_name = "_ZN8whatever11in_whateverEv"]
             pub fn in_whatever();
         }
     }
@@ -25,7 +25,7 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         extern "C" {
-            #[link_name = "_ZN12_GLOBAL__N_13fooEv"]
+    #[link_name = "_ZN12_GLOBAL__N_13fooEv"]
             pub fn foo();
         }
         #[repr(C)]
@@ -35,29 +35,36 @@ pub mod root {
         }
         #[test]
         fn bindgen_test_layout_A() {
-            assert_eq!(::std::mem::size_of::<A>() , 4usize , concat ! (
-                       "Size of: " , stringify ! ( A ) ));
-            assert_eq! (::std::mem::align_of::<A>() , 4usize , concat ! (
-                        "Alignment of " , stringify ! ( A ) ));
-            assert_eq! (unsafe {
-                        & ( * ( 0 as * const A ) ) . b as * const _ as usize }
-                        , 0usize , concat ! (
-                        "Alignment of field: " , stringify ! ( A ) , "::" ,
-                        stringify ! ( b ) ));
+            assert_eq!(
+                ::std::mem::size_of::<A>(),
+                4usize,
+                concat!("Size of: ", stringify!(A))
+            );
+            assert_eq!(
+                ::std::mem::align_of::<A>(),
+                4usize,
+                concat!("Alignment of ", stringify!(A))
+            );
+            assert_eq!(
+                unsafe { &(*(0 as *const A)).b as *const _ as usize },
+                0usize,
+                concat!("Alignment of field: ", stringify!(A), "::", stringify!(b))
+            );
         }
         extern "C" {
-            #[link_name = "_ZN12_GLOBAL__N_11A20lets_hope_this_worksEv"]
-            pub fn A_lets_hope_this_works(this:
-                                              *mut root::_bindgen_mod_id_13::A)
-             -> ::std::os::raw::c_int;
+    #[link_name = "_ZN12_GLOBAL__N_11A20lets_hope_this_worksEv"]
+            pub fn A_lets_hope_this_works(
+                this: *mut root::_bindgen_mod_id_13::A,
+            ) -> ::std::os::raw::c_int;
         }
         impl Clone for A {
-            fn clone(&self) -> Self { *self }
+            fn clone(&self) -> Self {
+                *self
+            }
         }
         impl A {
             #[inline]
-            pub unsafe fn lets_hope_this_works(&mut self)
-             -> ::std::os::raw::c_int {
+            pub unsafe fn lets_hope_this_works(&mut self) -> ::std::os::raw::c_int {
                 A_lets_hope_this_works(self)
             }
         }
@@ -71,8 +78,10 @@ pub mod root {
         pub m_c_arr: [T; 10usize],
         pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     }
-    impl <T> Default for C<T> {
-        fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    impl<T> Default for C<T> {
+        fn default() -> Self {
+            unsafe { ::std::mem::zeroed() }
+        }
     }
     pub mod w {
         #[allow(unused_imports)]
@@ -84,19 +93,21 @@ pub mod root {
             pub m_c: root::C<T>,
             pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
         }
-        impl <T> Default for D<T> {
-            fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+        impl<T> Default for D<T> {
+            fn default() -> Self {
+                unsafe { ::std::mem::zeroed() }
+            }
         }
         extern "C" {
-            #[link_name = "_ZN1w3hehEv"]
+    #[link_name = "_ZN1w3hehEv"]
             pub fn heh() -> root::w::whatever_int_t;
         }
         extern "C" {
-            #[link_name = "_ZN1w3fooEv"]
+    #[link_name = "_ZN1w3fooEv"]
             pub fn foo() -> root::C<::std::os::raw::c_int>;
         }
         extern "C" {
-            #[link_name = "_ZN1w4barrEv"]
+    #[link_name = "_ZN1w4barrEv"]
             pub fn barr() -> root::C<f32>;
         }
     }

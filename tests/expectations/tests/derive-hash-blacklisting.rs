@@ -3,7 +3,13 @@
 
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
-#[repr(C)] #[derive(Debug, Hash, Copy, Clone, PartialEq, Eq)] pub struct Blacklisted<T> {t: T, pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>> }
+#[repr(C)]
+#[derive(Debug, Hash, Copy, Clone, PartialEq, Eq)]
+pub struct Blacklisted<T> {
+    t: T,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+}
+
 
 /// This would derive(Hash, Eq, PartialEq) if it didn't contain a blacklisted type,
 /// causing us to conservatively avoid deriving hash/Eq/PartialEq for it.
@@ -13,18 +19,31 @@ pub struct WhitelistedOne {
 }
 #[test]
 fn bindgen_test_layout_WhitelistedOne() {
-    assert_eq!(::std::mem::size_of::<WhitelistedOne>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( WhitelistedOne ) ));
-    assert_eq! (::std::mem::align_of::<WhitelistedOne>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( WhitelistedOne ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const WhitelistedOne ) ) . a as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( WhitelistedOne ) , "::"
-                , stringify ! ( a ) ));
+    assert_eq!(
+        ::std::mem::size_of::<WhitelistedOne>(),
+        4usize,
+        concat!("Size of: ", stringify!(WhitelistedOne))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<WhitelistedOne>(),
+        4usize,
+        concat!("Alignment of ", stringify!(WhitelistedOne))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const WhitelistedOne)).a as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(WhitelistedOne),
+            "::",
+            stringify!(a)
+        )
+    );
 }
 impl Default for WhitelistedOne {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 /// This can't derive(Hash/Eq) even if it didn't contain a blacklisted type.
 #[repr(C)]
@@ -33,16 +52,29 @@ pub struct WhitelistedTwo {
 }
 #[test]
 fn bindgen_test_layout_WhitelistedTwo() {
-    assert_eq!(::std::mem::size_of::<WhitelistedTwo>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( WhitelistedTwo ) ));
-    assert_eq! (::std::mem::align_of::<WhitelistedTwo>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( WhitelistedTwo ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const WhitelistedTwo ) ) . b as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( WhitelistedTwo ) , "::"
-                , stringify ! ( b ) ));
+    assert_eq!(
+        ::std::mem::size_of::<WhitelistedTwo>(),
+        4usize,
+        concat!("Size of: ", stringify!(WhitelistedTwo))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<WhitelistedTwo>(),
+        4usize,
+        concat!("Alignment of ", stringify!(WhitelistedTwo))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const WhitelistedTwo)).b as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(WhitelistedTwo),
+            "::",
+            stringify!(b)
+        )
+    );
 }
 impl Default for WhitelistedTwo {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

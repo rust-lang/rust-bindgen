@@ -7,13 +7,15 @@
 #[repr(C)]
 #[derive(Default)]
 pub struct __IncompleteArrayField<T>(::std::marker::PhantomData<T>);
-impl <T> __IncompleteArrayField<T> {
+impl<T> __IncompleteArrayField<T> {
     #[inline]
     pub fn new() -> Self {
         __IncompleteArrayField(::std::marker::PhantomData)
     }
     #[inline]
-    pub unsafe fn as_ptr(&self) -> *const T { ::std::mem::transmute(self) }
+    pub unsafe fn as_ptr(&self) -> *const T {
+        ::std::mem::transmute(self)
+    }
     #[inline]
     pub unsafe fn as_mut_ptr(&mut self) -> *mut T {
         ::std::mem::transmute(self)
@@ -27,16 +29,18 @@ impl <T> __IncompleteArrayField<T> {
         ::std::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
     }
 }
-impl <T> ::std::fmt::Debug for __IncompleteArrayField<T> {
+impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         fmt.write_str("__IncompleteArrayField")
     }
 }
-impl <T> ::std::clone::Clone for __IncompleteArrayField<T> {
+impl<T> ::std::clone::Clone for __IncompleteArrayField<T> {
     #[inline]
-    fn clone(&self) -> Self { Self::new() }
+    fn clone(&self) -> Self {
+        Self::new()
+    }
 }
-impl <T> ::std::marker::Copy for __IncompleteArrayField<T> { }
+impl<T> ::std::marker::Copy for __IncompleteArrayField<T> {}
 #[repr(C)]
 #[derive(Debug)]
 pub struct rte_kni_fifo {
@@ -54,13 +58,21 @@ pub struct rte_kni_fifo {
 }
 #[test]
 fn bindgen_test_layout_rte_kni_fifo() {
-    assert_eq!(::std::mem::size_of::<rte_kni_fifo>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( rte_kni_fifo ) ));
-    assert_eq! (::std::mem::align_of::<rte_kni_fifo>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( rte_kni_fifo ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_kni_fifo>(),
+        16usize,
+        concat!("Size of: ", stringify!(rte_kni_fifo))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_kni_fifo>(),
+        8usize,
+        concat!("Alignment of ", stringify!(rte_kni_fifo))
+    );
 }
 impl Default for rte_kni_fifo {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
@@ -73,29 +85,42 @@ pub struct rte_eth_link {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_link() {
-    assert_eq!(::std::mem::size_of::<rte_eth_link>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( rte_eth_link ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_link>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( rte_eth_link ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_link ) ) . link_speed as * const
-                _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_link ) , "::" ,
-                stringify ! ( link_speed ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_link>(),
+        8usize,
+        concat!("Size of: ", stringify!(rte_eth_link))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_link>(),
+        8usize,
+        concat!("Alignment of ", stringify!(rte_eth_link))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_link)).link_speed as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_link),
+            "::",
+            stringify!(link_speed)
+        )
+    );
 }
 impl Clone for rte_eth_link {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl rte_eth_link {
     #[inline]
     pub fn link_duplex(&self) -> u16 {
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u8 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u8 as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            )
         };
         let mask = 1u64 as u8;
         let val = (unit_field_val & mask) >> 0usize;
@@ -107,31 +132,31 @@ impl rte_eth_link {
         let val = val as u16 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u8 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u8 as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            );
         }
     }
     #[inline]
     pub fn link_autoneg(&self) -> u16 {
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u8 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u8 as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            )
         };
         let mask = 2u64 as u8;
         let val = (unit_field_val & mask) >> 1usize;
@@ -143,31 +168,31 @@ impl rte_eth_link {
         let val = val as u16 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u8 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u8 as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 1usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            );
         }
     }
     #[inline]
     pub fn link_status(&self) -> u16 {
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u8 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u8 as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            )
         };
         let mask = 4u64 as u8;
         let val = (unit_field_val & mask) >> 2usize;
@@ -179,30 +204,26 @@ impl rte_eth_link {
         let val = val as u16 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u8 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u8 as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 2usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            );
         }
     }
     #[inline]
-    pub fn new_bitfield_1(link_duplex: u16, link_autoneg: u16,
-                          link_status: u16) -> u8 {
-        ({
-             ({
-                  ({ 0 } |
-                       ((link_duplex as u16 as u8) << 0usize) & (1u64 as u8))
-              } | ((link_autoneg as u16 as u8) << 1usize) & (2u64 as u8))
-         } | ((link_status as u16 as u8) << 2usize) & (4u64 as u8))
+    pub fn new_bitfield_1(link_duplex: u16, link_autoneg: u16, link_status: u16) -> u8 {
+        (((0 | ((link_duplex as u16 as u8) << 0usize) & (1u64 as u8)) |
+            ((link_autoneg as u16 as u8) << 1usize) & (2u64 as u8)) |
+            ((link_status as u16 as u8) << 2usize) & (4u64 as u8))
     }
 }
