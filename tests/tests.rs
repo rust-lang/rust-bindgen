@@ -5,12 +5,102 @@ extern crate shlex;
 
 use bindgen::{Builder, builder, clang_version};
 use std::fs;
-use std::io::{BufRead, BufReader, Error, ErrorKind, Read, Write};
+use std::io::{self, BufRead, BufReader, Error, ErrorKind, Read, Write};
 use std::path::PathBuf;
+use std::process;
+use std::sync::{Once, ONCE_INIT};
 
 #[path = "../src/options.rs"]
 mod options;
 use options::builder_from_flags;
+
+// Run `rustfmt` on the given source string and return a tuple of the formatted
+// bindings, and rustfmt's stderr.
+fn rustfmt(source: String) -> (String, String) {
+    static INSTALL_RUSTFMT: Once = ONCE_INIT;
+
+    INSTALL_RUSTFMT.call_once(|| {
+        let have_working_rustfmt = process::Command::new("rustup")
+            .args(&["run", "nightly", "rustfmt", "--version"])
+            .stdout(process::Stdio::null())
+            .stderr(process::Stdio::null())
+            .status()
+            .expect("should run `rustup run nightly rustfmt --version` OK")
+            .success();
+
+        if have_working_rustfmt {
+            return;
+        }
+
+        // Because `rustfmt` needs to match its exact nightly version, we update
+        // both at the same time.
+
+        let status = process::Command::new("rustup")
+            .args(&["update", "nightly"])
+            .status()
+            .expect("should run `rustup update nightly` OK");
+        assert!(status.success(), "should run `rustup update nightly` OK");
+
+        let status = process::Command::new("rustup")
+            .args(&["run", "nightly", "cargo", "install", "-f", "rustfmt-nightly"])
+            .status()
+            .expect("should run `rustup run nightly cargo install rustfmt-nightly` OK");
+        assert!(status.success(), "should install rustfmt OK");
+    });
+
+    let mut child = process::Command::new("rustup")
+        .args(&[
+            "run",
+            "nightly",
+            "rustfmt",
+            "--config-path",
+            concat!(env!("CARGO_MANIFEST_DIR"), "/tests/rustfmt.toml")
+        ])
+        .stdin(process::Stdio::piped())
+        .stdout(process::Stdio::piped())
+        .stderr(process::Stdio::piped())
+        .spawn()
+        .expect("should spawn `rustup run nightly rustfmt`");
+
+    let mut stdin = child.stdin.take().unwrap();
+    let mut stdout = child.stdout.take().unwrap();
+    let mut stderr = child.stderr.take().unwrap();
+
+    // Write to stdin in a new thread, so that we can read from stdout on this
+    // thread. This keeps the child from blocking on writing to its stdout which
+    // might block us from writing to its stdin.
+    let stdin_handle = ::std::thread::spawn(move || {
+        stdin.write_all(source.as_bytes())
+    });
+
+    // Read stderr on a new thread for similar reasons.
+    let stderr_handle = ::std::thread::spawn(move || {
+        let mut output = vec![];
+        io::copy(&mut stderr, &mut output)
+            .map(|_| String::from_utf8_lossy(&output).to_string())
+    });
+
+    let mut output = vec![];
+    io::copy(&mut stdout, &mut output)
+        .expect("Should copy stdout into vec OK");
+
+    // Ignore actual rustfmt status because it is often non-zero for trivial
+    // things.
+    let _ = child.wait().expect("should wait on rustfmt child OK");
+
+    stdin_handle.join()
+        .expect("writer thread should not have panicked")
+        .expect("should have written to child rustfmt's stdin OK");
+
+    let bindings = String::from_utf8(output)
+        .expect("rustfmt should only emit valid utf-8");
+
+    let stderr = stderr_handle.join()
+        .expect("stderr reader thread should not have panicked")
+        .expect("should have read child rustfmt's stderr OK");
+
+    (bindings, stderr)
+}
 
 fn compare_generated_header(
     header: &PathBuf,
@@ -18,7 +108,7 @@ fn compare_generated_header(
 ) -> Result<(), Error> {
     let file_name = try!(header.file_name().ok_or(Error::new(
         ErrorKind::Other,
-        "spawn_bindgen expects a file",
+        "compare_generated_header expects a file",
     )));
 
     let mut expected = PathBuf::from(header);
@@ -69,9 +159,12 @@ fn compare_generated_header(
     }
 
     // We skip the generate() error here so we get a full diff below
-    let output = match builder.generate() {
-        Ok(bindings) => bindings.to_string(),
-        Err(_) => "".to_string(),
+    let (bindings, rustfmt_stderr) = match builder.generate() {
+        Ok(bindings) => {
+            let bindings = bindings.to_string();
+            rustfmt(bindings)
+        }
+        Err(()) => ("<error generating bindings>".to_string(), "".to_string()),
     };
 
     let mut buffer = String::new();
@@ -80,9 +173,10 @@ fn compare_generated_header(
             try!(BufReader::new(expected_file).read_to_string(&mut buffer));
         }
     }
+    let (buffer, _) = rustfmt(buffer);
 
-    if output == buffer {
-        if !output.is_empty() {
+    if bindings == buffer {
+        if !bindings.is_empty() {
             return Ok(());
         }
         return Err(Error::new(
@@ -91,11 +185,13 @@ fn compare_generated_header(
         ));
     }
 
+    println!("{}", rustfmt_stderr);
+
     println!("diff expected generated");
     println!("--- expected: {:?}", expected);
     println!("+++ generated from: {:?}", header);
 
-    for diff in diff::lines(&buffer, &output) {
+    for diff in diff::lines(&buffer, &bindings) {
         match diff {
             diff::Result::Left(l) => println!("-{}", l),
             diff::Result::Both(l, _) => println!(" {}", l),
@@ -106,7 +202,7 @@ fn compare_generated_header(
     // Override the diff.
     {
         let mut expected_file = try!(fs::File::create(&expected));
-        try!(expected_file.write_all(output.as_bytes()));
+        try!(expected_file.write_all(bindings.as_bytes()));
     }
 
     Err(Error::new(ErrorKind::Other, "Header and binding differ!"))

@@ -56,6 +56,8 @@ eval ./target/debug/bindgen \
     -o "\"$BINDINGS\"" \
     $FLAGS
 
+rustup run nightly rustfmt "$BINDINGS" || true
+
 dot -Tpng ir.dot -o ir.png
 
 echo
@@ -77,6 +79,8 @@ echo
 EXPECTED=${TEST/headers/expectations\/tests}
 EXPECTED=${EXPECTED/.hpp/.rs}
 EXPECTED=${EXPECTED/.h/.rs}
+
+rustup run nightly rustfmt "$EXPECTED" || true
 
 # Don't exit early if there is a diff.
 diff -U8 "$EXPECTED" "$BINDINGS" || true
