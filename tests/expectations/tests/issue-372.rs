@@ -10,29 +10,6 @@ pub mod root {
     use self::super::root;
     #[repr(C)]
     #[derive(Debug, Copy)]
-    pub struct d {
-        pub m: root::i,
-    }
-    #[test]
-    fn bindgen_test_layout_d() {
-        assert_eq!(::std::mem::size_of::<d>() , 24usize , concat ! (
-                   "Size of: " , stringify ! ( d ) ));
-        assert_eq! (::std::mem::align_of::<d>() , 8usize , concat ! (
-                    "Alignment of " , stringify ! ( d ) ));
-        assert_eq! (unsafe {
-                    & ( * ( 0 as * const d ) ) . m as * const _ as usize } ,
-                    0usize , concat ! (
-                    "Alignment of field: " , stringify ! ( d ) , "::" ,
-                    stringify ! ( m ) ));
-    }
-    impl Clone for d {
-        fn clone(&self) -> Self { *self }
-    }
-    impl Default for d {
-        fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-    }
-    #[repr(C)]
-    #[derive(Debug, Copy)]
     pub struct i {
         pub j: *mut root::i,
         pub k: *mut root::i,
@@ -64,6 +41,29 @@ pub mod root {
         fn clone(&self) -> Self { *self }
     }
     impl Default for i {
+        fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    }
+    #[repr(C)]
+    #[derive(Debug, Copy)]
+    pub struct d {
+        pub m: root::i,
+    }
+    #[test]
+    fn bindgen_test_layout_d() {
+        assert_eq!(::std::mem::size_of::<d>() , 24usize , concat ! (
+                   "Size of: " , stringify ! ( d ) ));
+        assert_eq! (::std::mem::align_of::<d>() , 8usize , concat ! (
+                    "Alignment of " , stringify ! ( d ) ));
+        assert_eq! (unsafe {
+                    & ( * ( 0 as * const d ) ) . m as * const _ as usize } ,
+                    0usize , concat ! (
+                    "Alignment of field: " , stringify ! ( d ) , "::" ,
+                    stringify ! ( m ) ));
+    }
+    impl Clone for d {
+        fn clone(&self) -> Self { *self }
+    }
+    impl Default for d {
         fn default() -> Self { unsafe { ::std::mem::zeroed() } }
     }
     #[repr(u32)]
