@@ -60,40 +60,28 @@ pub mod attributes {
 
 /// Generates a proper type for a field or type with a given `Layout`, that is,
 /// a type with the correct size and alignment restrictions.
-pub struct BlobTyBuilder {
-    layout: Layout,
-}
+pub fn blob(layout: Layout) -> P<ast::Ty> {
+    let opaque = layout.opaque();
 
-impl BlobTyBuilder {
-    pub fn new(layout: Layout) -> Self {
-        BlobTyBuilder {
-            layout: layout,
+    // FIXME(emilio, #412): We fall back to byte alignment, but there are
+    // some things that legitimately are more than 8-byte aligned.
+    //
+    // Eventually we should be able to `unwrap` here, but...
+    let ty_name = match opaque.known_rust_type_for_array() {
+        Some(ty) => ty,
+        None => {
+            warn!("Found unknown alignment on code generation!");
+            "u8"
         }
-    }
+    };
 
-    pub fn build(self) -> P<ast::Ty> {
-        let opaque = self.layout.opaque();
+    let data_len = opaque.array_size().unwrap_or(layout.size);
 
-        // FIXME(emilio, #412): We fall back to byte alignment, but there are
-        // some things that legitimately are more than 8-byte aligned.
-        //
-        // Eventually we should be able to `unwrap` here, but...
-        let ty_name = match opaque.known_rust_type_for_array() {
-            Some(ty) => ty,
-            None => {
-                warn!("Found unknown alignment on code generation!");
-                "u8"
-            }
-        };
-
-        let data_len = opaque.array_size().unwrap_or(self.layout.size);
-
-        let inner_ty = aster::AstBuilder::new().ty().path().id(ty_name).build();
-        if data_len == 1 {
-            inner_ty
-        } else {
-            aster::ty::TyBuilder::new().array(data_len).build(inner_ty)
-        }
+    let inner_ty = aster::AstBuilder::new().ty().path().id(ty_name).build();
+    if data_len == 1 {
+        inner_ty
+    } else {
+        aster::ty::TyBuilder::new().array(data_len).build(inner_ty)
     }
 }
 
