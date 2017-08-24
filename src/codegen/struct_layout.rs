@@ -1,6 +1,6 @@
 //! Helpers for code generation that need struct layout
 
-use super::helpers::BlobTyBuilder;
+use super::helpers;
 
 use aster::struct_field::StructFieldBuilder;
 
@@ -295,7 +295,7 @@ impl<'a, 'ctx> StructLayoutTracker<'a, 'ctx> {
         if self.max_field_align < layout.align &&
             layout.align <= mem::size_of::<*mut ()>()
         {
-            let ty = BlobTyBuilder::new(Layout::new(0, layout.align)).build();
+            let ty = helpers::blob(Layout::new(0, layout.align));
 
             Some(
                 StructFieldBuilder::named("__bindgen_align")
@@ -312,7 +312,7 @@ impl<'a, 'ctx> StructLayoutTracker<'a, 'ctx> {
     }
 
     fn padding_field(&mut self, layout: Layout) -> ast::StructField {
-        let ty = BlobTyBuilder::new(layout).build();
+        let ty = helpers::blob(layout);
         let padding_count = self.padding_count;
 
         self.padding_count += 1;

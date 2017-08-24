@@ -3,7 +3,7 @@ mod error;
 mod helpers;
 pub mod struct_layout;
 
-use self::helpers::{BlobTyBuilder, attributes};
+use self::helpers::attributes;
 use self::struct_layout::StructLayoutTracker;
 
 use aster;
@@ -1155,7 +1155,7 @@ impl Bitfield {
         let bitfield_ty_layout = bitfield_ty.layout(ctx).expect(
             "Bitfield without layout? Gah!",
         );
-        let bitfield_int_ty = BlobTyBuilder::new(bitfield_ty_layout).build();
+        let bitfield_int_ty = helpers::blob(bitfield_ty_layout);
         let bitfield_ty =
             bitfield_ty.to_rust_ty_or_opaque(ctx, bitfield_ty_item);
 
@@ -1205,7 +1205,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         F: Extend<ast::StructField>,
         M: Extend<ast::ImplItem>,
     {
-        let field_ty = BlobTyBuilder::new(self.layout()).build();
+        let field_ty = helpers::blob(self.layout());
         let unit_field_name = format!("_bitfield_{}", self.nth());
 
         let field = StructFieldBuilder::named(&unit_field_name)
@@ -1355,7 +1355,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         let bitfield_ty_layout = bitfield_ty.layout(ctx).expect(
             "Bitfield without layout? Gah!",
         );
-        let bitfield_int_ty = BlobTyBuilder::new(bitfield_ty_layout).build();
+        let bitfield_int_ty = helpers::blob(bitfield_ty_layout);
 
         let bitfield_ty =
             bitfield_ty.to_rust_ty_or_opaque(ctx, bitfield_ty_item);
@@ -1639,7 +1639,7 @@ impl CodeGenerator for CompInfo {
 
         if is_union {
             let layout = layout.expect("Unable to get layout information?");
-            let ty = BlobTyBuilder::new(layout).build();
+            let ty = helpers::blob(layout);
 
             let field = if self.can_be_rust_union(ctx) {
                 StructFieldBuilder::named("_bindgen_union_align").build_ty(ty)
@@ -1662,7 +1662,7 @@ impl CodeGenerator for CompInfo {
 
             match layout {
                 Some(l) => {
-                    let ty = BlobTyBuilder::new(l).build();
+                    let ty = helpers::blob(l);
                     let field = StructFieldBuilder::named(
                         "_bindgen_opaque_blob",
                     ).pub_()
@@ -1707,7 +1707,7 @@ impl CodeGenerator for CompInfo {
             };
 
             if has_address {
-                let ty = BlobTyBuilder::new(Layout::new(1, 1)).build();
+                let ty = helpers::blob(Layout::new(1, 1));
                 let field =
                     StructFieldBuilder::named("_address").pub_().build_ty(ty);
                 fields.push(field);
@@ -2728,7 +2728,7 @@ trait TryToOpaque {
         extra: &Self::Extra,
     ) -> error::Result<P<ast::Ty>> {
         self.try_get_layout(ctx, extra).map(|layout| {
-            BlobTyBuilder::new(layout).build()
+            helpers::blob(layout)
         })
     }
 }
@@ -2756,7 +2756,7 @@ trait ToOpaque: TryToOpaque {
         extra: &Self::Extra,
     ) -> P<ast::Ty> {
         let layout = self.get_layout(ctx, extra);
-        BlobTyBuilder::new(layout).build()
+        helpers::blob(layout)
     }
 }
 
@@ -2814,7 +2814,7 @@ where
             |_| if let Ok(layout) =
                 self.try_get_layout(ctx, extra)
             {
-                Ok(BlobTyBuilder::new(layout).build())
+                Ok(helpers::blob(layout))
             } else {
                 Err(error::Error::NoLayoutForOpaqueBlob)
             },
