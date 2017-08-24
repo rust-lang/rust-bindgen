@@ -208,7 +208,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
                 // NOTE: Take into account that while unions in C and C++ are copied by
                 // default, the may have an explicit destructor in C++, so we can't
                 // defer this check just for the union case.
-                if info.has_destructor(self.ctx) {
+                if self.ctx.lookup_item_id_has_destructor(&id) {
                     trace!("    comp has destructor which cannot derive copy");
                     return self.insert(id);
                 }

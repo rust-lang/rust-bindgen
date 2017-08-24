@@ -45,6 +45,8 @@ pub use self::derive_debug::CannotDeriveDebug;
 mod has_vtable;
 pub use self::has_vtable::HasVtable;
 pub use self::has_vtable::HasVtableAnalysis;
+mod has_destructor;
+pub use self::has_destructor::HasDestructorAnalysis;
 mod derive_default;
 pub use self::derive_default::CannotDeriveDefault;
 mod derive_copy;

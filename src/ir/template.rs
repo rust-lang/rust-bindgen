@@ -309,14 +309,6 @@ impl TemplateInstantiation {
             template_args,
         ))
     }
-
-    /// Does this instantiation have a destructor?
-    pub fn has_destructor(&self, ctx: &BindgenContext) -> bool {
-        ctx.resolve_type(self.definition).has_destructor(ctx) ||
-            self.args.iter().any(|arg| {
-                ctx.resolve_type(*arg).has_destructor(ctx)
-            })
-    }
 }
 
 impl IsOpaque for TemplateInstantiation {

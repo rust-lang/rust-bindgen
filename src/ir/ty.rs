@@ -237,22 +237,6 @@ impl Type {
         })
     }
 
-    /// Returns whether this type has a destructor.
-    pub fn has_destructor(&self, ctx: &BindgenContext) -> bool {
-        match self.kind {
-            TypeKind::TemplateAlias(t, _) |
-            TypeKind::Alias(t) |
-            TypeKind::ResolvedTypeRef(t) => {
-                ctx.resolve_type(t).has_destructor(ctx)
-            }
-            TypeKind::TemplateInstantiation(ref inst) => {
-                inst.has_destructor(ctx)
-            }
-            TypeKind::Comp(ref info) => info.has_destructor(ctx),
-            _ => false,
-        }
-    }
-
     /// Whether this named type is an invalid C++ identifier. This is done to
     /// avoid generating invalid code with some cases we can't handle, see:
     ///

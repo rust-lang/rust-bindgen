@@ -3,8 +3,8 @@
 use super::analysis::{CannotDeriveCopy, CannotDeriveDebug,
                       CannotDeriveDefault, CannotDeriveHash,
                       CannotDerivePartialEq, HasTypeParameterInArray,
-                      HasVtableAnalysis, UsedTemplateParameters, HasFloat,
-                      analyze};
+                      HasVtableAnalysis, HasDestructorAnalysis, UsedTemplateParameters,
+                      HasFloat, analyze};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
                     CanDeriveHash, CanDerivePartialEq, CanDeriveEq};
 use super::int::IntKind;
@@ -239,6 +239,12 @@ pub struct BindgenContext<'ctx> {
     /// before that and `Some` after.
     have_vtable: Option<HashSet<ItemId>>,
 
+    /// The set of (`ItemId's of`) types that has destructor.
+    ///
+    /// Populated when we enter codegen by `compute_has_destructor`; always `None`
+    /// before that and `Some` after.
+    have_destructor: Option<HashSet<ItemId>>,
+
     /// The set of (`ItemId's of`) types that has array.
     ///
     /// Populated when we enter codegen by `compute_has_type_param_in_array`; always `None`
@@ -390,6 +396,7 @@ impl<'ctx> BindgenContext<'ctx> {
             cannot_derive_hash: None,
             cannot_derive_partialeq: None,
             have_vtable: None,
+            have_destructor: None,
             has_type_param_in_array: None,
             has_float: None,
         };
@@ -901,6 +908,7 @@ impl<'ctx> BindgenContext<'ctx> {
         self.assert_every_item_in_a_module();
 
         self.compute_has_vtable();
+        self.compute_has_destructor();
         self.find_used_template_parameters();
         self.compute_cannot_derive_debug();
         self.compute_cannot_derive_default();
@@ -999,6 +1007,22 @@ impl<'ctx> BindgenContext<'ctx> {
         // Look up the computed value for whether the item with `id` has a
         // vtable or not.
         self.have_vtable.as_ref().unwrap().contains(id)
+    }
+
+    /// Compute whether the type has a destructor.
+    fn compute_has_destructor(&mut self) {
+        assert!(self.have_destructor.is_none());
+        self.have_destructor = Some(analyze::<HasDestructorAnalysis>(self));
+    }
+
+    /// Look up whether the item with `id` has a destructor.
+    pub fn lookup_item_id_has_destructor(&self, id: &ItemId) -> bool {
+        assert!(
+            self.in_codegen_phase(),
+            "We only compute destructors when we enter codegen"
+        );
+
+        self.have_destructor.as_ref().unwrap().contains(id)
     }
 
     fn find_used_template_parameters(&mut self) {

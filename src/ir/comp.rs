@@ -13,7 +13,6 @@ use codegen::struct_layout::{align_to, bytes_from_bits_pow2};
 use ir::derive::CanDeriveCopy;
 use parse::{ClangItemParser, ParseError};
 use peeking_take_while::PeekableExt;
-use std::cell::Cell;
 use std::cmp;
 use std::io;
 use std::mem;
@@ -170,18 +169,6 @@ pub enum Field {
 }
 
 impl Field {
-    fn has_destructor(&self, ctx: &BindgenContext) -> bool {
-        match *self {
-            Field::DataMember(ref data) => {
-                ctx.resolve_type(data.ty).has_destructor(ctx)
-            }
-            // Bitfields may not be of a type that has a destructor.
-            Field::Bitfields(BitfieldUnit {
-                                 ..
-                             }) => false,
-        }
-    }
-
     /// Get this field's layout.
     pub fn layout(&self, ctx: &BindgenContext) -> Option<Layout> {
         match *self {
@@ -865,10 +852,6 @@ pub struct CompInfo {
     /// and pray, or behave as an opaque type.
     found_unknown_attr: bool,
 
-    /// Used to detect if we've run in a has_destructor cycle while cycling
-    /// around the template arguments.
-    detect_has_destructor_cycle: Cell<bool>,
-
     /// Used to indicate when a struct has been forward declared. Usually used
     /// in headers so that APIs can't modify them directly.
     is_forward_declaration: bool,
@@ -893,7 +876,6 @@ impl CompInfo {
             has_non_type_template_params: false,
             packed: false,
             found_unknown_attr: false,
-            detect_has_destructor_cycle: Cell::new(false),
             is_forward_declaration: false,
         }
     }
@@ -907,34 +889,6 @@ impl CompInfo {
                     &base.ty,
                 )
             })
-    }
-
-    /// Does this compound type have a destructor?
-    pub fn has_destructor(&self, ctx: &BindgenContext) -> bool {
-        if self.detect_has_destructor_cycle.get() {
-            warn!("Cycle detected looking for destructors");
-            // Assume no destructor, since we don't have an explicit one.
-            return false;
-        }
-
-        self.detect_has_destructor_cycle.set(true);
-
-        let has_destructor = self.has_destructor ||
-            match self.kind {
-                CompKind::Union => false,
-                CompKind::Struct => {
-                    self.base_members.iter().any(|base| {
-                        ctx.resolve_type(base.ty).has_destructor(ctx)
-                    }) ||
-                        self.fields().iter().any(
-                            |field| field.has_destructor(ctx),
-                        )
-                }
-            };
-
-        self.detect_has_destructor_cycle.set(false);
-
-        has_destructor
     }
 
     /// Compute the layout of this type.
@@ -987,6 +941,11 @@ impl CompInfo {
     /// Get the has_own_virtual_method boolean.
     pub fn has_own_virtual_method(&self) -> bool {
         return self.has_own_virtual_method;
+    }
+
+    /// Did we see a destructor when parsing this type?
+    pub fn has_own_destructor(&self) -> bool {
+        self.has_destructor
     }
 
     /// Get this type's set of methods.
