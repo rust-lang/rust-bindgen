@@ -1551,57 +1551,61 @@ impl CodeGenerator for CompInfo {
         //
         // Also, we need to generate the vtable in such a way it "inherits" from
         // the parent too.
+        let is_opaque = item.is_opaque(ctx, &());
         let mut fields = vec![];
         let mut struct_layout =
             StructLayoutTracker::new(ctx, self, &canonical_name);
-        if self.needs_explicit_vtable(ctx, item) {
-            let vtable =
-                Vtable::new(item.id(), self.methods(), self.base_members());
-            vtable.codegen(ctx, result, item);
 
-            let vtable_type = vtable
-                .try_to_rust_ty(ctx, &())
-                .expect("vtable to Rust type conversion is infallible")
-                .to_ptr(true, ctx.span());
+        if !is_opaque {
+            if self.needs_explicit_vtable(ctx, item) {
+                let vtable =
+                    Vtable::new(item.id(), self.methods(), self.base_members());
+                vtable.codegen(ctx, result, item);
 
-            let vtable_field = StructFieldBuilder::named("vtable_")
-                .pub_()
-                .build_ty(vtable_type);
+                let vtable_type = vtable
+                    .try_to_rust_ty(ctx, &())
+                    .expect("vtable to Rust type conversion is infallible")
+                    .to_ptr(true, ctx.span());
 
-            struct_layout.saw_vtable();
+                let vtable_field = StructFieldBuilder::named("vtable_")
+                    .pub_()
+                    .build_ty(vtable_type);
 
-            fields.push(vtable_field);
-        }
+                struct_layout.saw_vtable();
 
-        for (i, base) in self.base_members().iter().enumerate() {
-            // Virtual bases are already taken into account by the vtable
-            // pointer.
-            //
-            // FIXME(emilio): Is this always right?
-            if base.is_virtual() {
-                continue;
+                fields.push(vtable_field);
             }
 
-            let base_ty = ctx.resolve_type(base.ty);
-            // NB: We won't include unsized types in our base chain because they
-            // would contribute to our size given the dummy field we insert for
-            // unsized types.
-            if base_ty.is_unsized(ctx, &base.ty) {
-                continue;
+            for (i, base) in self.base_members().iter().enumerate() {
+                // Virtual bases are already taken into account by the vtable
+                // pointer.
+                //
+                // FIXME(emilio): Is this always right?
+                if base.is_virtual() {
+                    continue;
+                }
+
+                let base_ty = ctx.resolve_type(base.ty);
+                // NB: We won't include unsized types in our base chain because they
+                // would contribute to our size given the dummy field we insert for
+                // unsized types.
+                if base_ty.is_unsized(ctx, &base.ty) {
+                    continue;
+                }
+
+                let inner = base.ty.to_rust_ty_or_opaque(ctx, &());
+                let field_name = if i == 0 {
+                    "_base".into()
+                } else {
+                    format!("_base_{}", i)
+                };
+
+                struct_layout.saw_base(base_ty);
+
+                let field =
+                    StructFieldBuilder::named(field_name).pub_().build_ty(inner);
+                fields.extend(Some(field));
             }
-
-            let inner = base.ty.to_rust_ty_or_opaque(ctx, &());
-            let field_name = if i == 0 {
-                "_base".into()
-            } else {
-                format!("_base_{}", i)
-            };
-
-            struct_layout.saw_base(base_ty);
-
-            let field =
-                StructFieldBuilder::named(field_name).pub_().build_ty(inner);
-            fields.extend(Some(field));
         }
         if is_union {
             result.saw_union();
@@ -1610,34 +1614,34 @@ impl CodeGenerator for CompInfo {
             }
         }
 
-        let layout = item.kind().expect_type().layout(ctx);
-
-        let fields_should_be_private =
-            item.annotations().private_fields().unwrap_or(false);
-        let struct_accessor_kind = item.annotations()
-            .accessor_kind()
-            .unwrap_or(FieldAccessorKind::None);
-
         let mut methods = vec![];
-        let mut anon_field_names = AnonFieldNames::default();
-        let codegen_depth = item.codegen_depth(ctx);
-        for field in self.fields() {
-            field.codegen(
-                ctx,
-                fields_should_be_private,
-                codegen_depth,
-                struct_accessor_kind,
-                self,
-                &mut anon_field_names,
-                result,
-                &mut struct_layout,
-                &mut fields,
-                &mut methods,
-                (),
-            );
+        if !is_opaque {
+            let mut anon_field_names = AnonFieldNames::default();
+            let codegen_depth = item.codegen_depth(ctx);
+            let fields_should_be_private =
+                item.annotations().private_fields().unwrap_or(false);
+            let struct_accessor_kind = item.annotations()
+                .accessor_kind()
+                .unwrap_or(FieldAccessorKind::None);
+            for field in self.fields() {
+                field.codegen(
+                    ctx,
+                    fields_should_be_private,
+                    codegen_depth,
+                    struct_accessor_kind,
+                    self,
+                    &mut anon_field_names,
+                    result,
+                    &mut struct_layout,
+                    &mut fields,
+                    &mut methods,
+                    (),
+                );
+            }
         }
 
-        if is_union {
+        let layout = item.kind().expect_type().layout(ctx);
+        if is_union && !is_opaque {
             let layout = layout.expect("Unable to get layout information?");
             let ty = helpers::blob(layout);
 
@@ -1654,11 +1658,10 @@ impl CodeGenerator for CompInfo {
             fields.push(field);
         }
 
-        // Yeah, sorry about that.
-        let is_opaque = item.is_opaque(ctx, &());
         if is_opaque {
-            fields.clear();
-            methods.clear();
+            // Opaque item should not have generated methods, fields.
+            debug_assert!(fields.is_empty());
+            debug_assert!(methods.is_empty());
 
             match layout {
                 Some(l) => {
