@@ -1659,11 +1659,9 @@ impl CodeGenerator for CompInfo {
         }
 
         if is_opaque {
-            // Opaque item should not have generated methods, fields
+            // Opaque item should not have generated methods, fields.
             debug_assert!(fields.is_empty());
             debug_assert!(methods.is_empty());
-            // fields.clear();
-            // methods.clear();
 
             match layout {
                 Some(l) => {
