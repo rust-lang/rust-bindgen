@@ -3479,6 +3479,7 @@ impl CodeGenerator for ObjCInterface {
 
 pub fn codegen(context: &mut BindgenContext) -> Vec<P<ast::Item>> {
     context.gen(|context| {
+        let _t = context.timer("codegen");
         let counter = Cell::new(0);
         let mut result = CodegenResult::new(&counter);
 

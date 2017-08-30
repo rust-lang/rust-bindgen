@@ -107,6 +107,9 @@ where
                       ::std::os::raw.")
                 .value_name("prefix")
                 .takes_value(true),
+            Arg::with_name("time-phases")
+                .long("time-phases")
+                .help("Time the different bindgen phases and print to stderr"),
             // All positional arguments after the end of options marker, `--`
             Arg::with_name("clang-args")
                 .multiple(true),
@@ -338,6 +341,10 @@ where
 
     if matches.is_present("no-prepend-enum-name") {
         builder = builder.prepend_enum_name(false);
+    }
+
+    if matches.is_present("time-phases") {
+        builder = builder.time_phases(true);
     }
 
     if let Some(prefix) = matches.value_of("ctypes-prefix") {

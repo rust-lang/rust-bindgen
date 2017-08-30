@@ -64,6 +64,7 @@ mod features;
 mod ir;
 mod parse;
 mod regex_set;
+mod time;
 
 pub mod callbacks;
 
@@ -276,6 +277,10 @@ impl Builder {
 
         if self.options.derive_eq {
             output_vector.push("--with-derive-eq".into());
+        }
+
+        if self.options.time_phases {
+            output_vector.push("--time-phases".into());
         }
 
         if !self.options.generate_comments {
@@ -774,6 +779,13 @@ impl Builder {
         self
     }
 
+    /// Set whether or not to time bindgen phases, and print
+    /// information to stderr.
+    pub fn time_phases(mut self, doit: bool) -> Self {
+        self.options.time_phases = doit;
+        self
+    }
+
     /// Emit Clang AST.
     pub fn emit_clang_ast(mut self) -> Builder {
         self.options.emit_ast = true;
@@ -1122,6 +1134,9 @@ pub struct BindgenOptions {
     /// An optional prefix for the "raw" types, like `c_int`, `c_void`...
     pub ctypes_prefix: Option<String>,
 
+    /// Whether to time the bindgen phases.
+    pub time_phases: bool,
+
     /// True if we should generate constant names that are **directly** under
     /// namespaces.
     pub namespaced_constants: bool,
@@ -1280,6 +1295,7 @@ impl Default for BindgenOptions {
             objc_extern_crate: false,
             enable_mangling: true,
             prepend_enum_name: true,
+            time_phases: false,
             rustfmt_bindings: false,
             rustfmt_configuration_file: None,
         }
@@ -1403,8 +1419,13 @@ impl<'ctx> Bindings<'ctx> {
             options.clang_args.push(f.name.to_str().unwrap().to_owned())
         }
 
+        let time_phases = options.time_phases;
         let mut context = BindgenContext::new(options);
-        try!(parse(&mut context));
+        {
+            let _t = time::Timer::new("parse")
+                                  .with_output(time_phases);
+            try!(parse(&mut context));
+        }
 
         let module = ast::Mod {
             inner: span,
