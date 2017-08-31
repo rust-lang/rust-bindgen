@@ -25,6 +25,7 @@ fn sanity_check_can_generate_stylo_bindings() {
     let then = Instant::now();
 
     bindgen::builder()
+        .time_phases(true)
         .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/stylo.hpp"))
         .whitelisted_function("Servo_.*")
         .whitelisted_function("Gecko_.*")
