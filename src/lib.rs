@@ -1485,6 +1485,8 @@ impl Bindings {
 
     /// Checks if rustfmt_bindings is set and runs rustfmt on the file
     fn rustfmt_generated_file(&self, file: &Path) -> io::Result<()> {
+        let _t = self.context.timer("rustfmt_generated_file");
+
         if !self.context.options().rustfmt_bindings {
             return Ok(());
         }
