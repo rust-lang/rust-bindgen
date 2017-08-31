@@ -15,6 +15,7 @@ use super::module::{Module, ModuleKind};
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
+use super::super::time::Timer;
 use BindgenOptions;
 use callbacks::ParseCallbacks;
 use cexpr;
@@ -406,6 +407,13 @@ impl<'ctx> BindgenContext<'ctx> {
         me
     }
 
+    /// Creates a timer for the current bindgen phase. If time_phases is `true`,
+    /// the timer will print to stderr when it is dropped, otherwise it will do
+    /// nothing.
+    pub fn timer<'a>(&self, name: &'a str) -> Timer<'a> {
+        Timer::new(name).with_output(self.options.time_phases)
+    }
+
     /// Get the stack of partially parsed types that we are in the middle of
     /// parsing.
     pub fn currently_parsed_types(&self) -> &[PartialType] {
@@ -731,6 +739,7 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Iterate over all items and replace any item that has been named in a
     /// `replaces="SomeType"` annotation with the replacement type.
     fn process_replacements(&mut self) {
+        let _t = self.timer("process_replacements");
         if self.replacements.is_empty() {
             debug!("No replacements to process");
             return;
@@ -993,6 +1002,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// Compute whether the type has vtable.
     fn compute_has_vtable(&mut self) {
+        let _t = self.timer("compute_has_vtable");
         assert!(self.have_vtable.is_none());
         self.have_vtable = Some(analyze::<HasVtableAnalysis>(self));
     }
@@ -1011,6 +1021,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// Compute whether the type has a destructor.
     fn compute_has_destructor(&mut self) {
+        let _t = self.timer("compute_has_destructor");
         assert!(self.have_destructor.is_none());
         self.have_destructor = Some(analyze::<HasDestructorAnalysis>(self));
     }
@@ -1026,6 +1037,7 @@ impl<'ctx> BindgenContext<'ctx> {
     }
 
     fn find_used_template_parameters(&mut self) {
+        let _t = self.timer("find_used_template_parameters");
         if self.options.whitelist_recursively {
             let used_params = analyze::<UsedTemplateParameters>(self);
             self.used_template_parameters = Some(used_params);
@@ -1869,6 +1881,7 @@ impl<'ctx> BindgenContext<'ctx> {
         assert!(self.in_codegen_phase());
         assert!(self.current_module == self.root_module);
         assert!(self.whitelisted.is_none());
+        let _t = self.timer("compute_whitelisted_and_codegen_items");
 
         let roots = {
             let mut roots = self.items()
@@ -1991,6 +2004,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// Compute whether we can derive debug.
     fn compute_cannot_derive_debug(&mut self) {
+        let _t = self.timer("compute_cannot_derive_debug");
         assert!(self.cannot_derive_debug.is_none());
         if self.options.derive_debug {
             self.cannot_derive_debug = Some(analyze::<CannotDeriveDebug>(self));
@@ -2012,6 +2026,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// Compute whether we can derive default.
     fn compute_cannot_derive_default(&mut self) {
+        let _t = self.timer("compute_cannot_derive_default");
         assert!(self.cannot_derive_default.is_none());
         if self.options.derive_default {
             self.cannot_derive_default =
@@ -2034,12 +2049,14 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// Compute whether we can derive copy.
     fn compute_cannot_derive_copy(&mut self) {
+        let _t = self.timer("compute_cannot_derive_copy");
         assert!(self.cannot_derive_copy.is_none());
         self.cannot_derive_copy = Some(analyze::<CannotDeriveCopy>(self));
     }
 
     /// Compute whether we can derive hash.
     fn compute_cannot_derive_hash(&mut self) {
+        let _t = self.timer("compute_cannot_derive_hash");
         assert!(self.cannot_derive_hash.is_none());
         if self.options.derive_hash {
             self.cannot_derive_hash = Some(analyze::<CannotDeriveHash>(self));
@@ -2062,6 +2079,7 @@ impl<'ctx> BindgenContext<'ctx> {
     /// Compute whether we can derive PartialEq. This method is also used in calculating
     /// whether we can derive Eq
     fn compute_cannot_derive_partialeq_or_eq(&mut self) {
+        let _t = self.timer("compute_cannot_derive_partialeq_or_eq");
         assert!(self.cannot_derive_partialeq.is_none());
         if self.options.derive_partialeq || self.options.derive_eq {
             self.cannot_derive_partialeq = Some(analyze::<CannotDerivePartialEq>(self));
@@ -2097,6 +2115,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// Compute whether the type has type parameter in array.
     fn compute_has_type_param_in_array(&mut self) {
+        let _t = self.timer("compute_has_type_param_in_array");
         assert!(self.has_type_param_in_array.is_none());
         self.has_type_param_in_array =
             Some(analyze::<HasTypeParameterInArray>(self));
@@ -2116,6 +2135,7 @@ impl<'ctx> BindgenContext<'ctx> {
 
     /// Compute whether the type has float.
     fn compute_has_float(&mut self) {
+        let _t = self.timer("compute_has_float");
         assert!(self.has_float.is_none());
         if self.options.derive_eq {
             self.has_float = Some(analyze::<HasFloat>(self));
