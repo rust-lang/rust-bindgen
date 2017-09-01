@@ -11,6 +11,10 @@ export RUST_BACKTRACE=1
 
 case "$BINDGEN_JOB" in
     "test")
+        # Need rustfmt to compare the test expectations.
+        rustup update nightly
+        rustup run nightly cargo install -f rustfmt-nightly
+
         cargo test $BINDGEN_PROFILE --features "$BINDGEN_FEATURES"
         ./ci/assert-no-diff.sh
         ;;
