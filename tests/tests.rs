@@ -166,6 +166,7 @@ fn compare_generated_header(
         }
         Err(()) => ("<error generating bindings>".to_string(), "".to_string()),
     };
+    println!("{}", rustfmt_stderr);
 
     let mut expected = String::new();
     {
@@ -174,7 +175,8 @@ fn compare_generated_header(
         }
     }
 
-    let (expected, _) = rustfmt(expected);
+    let (expected, rustfmt_stderr) = rustfmt(expected);
+    println!("{}", rustfmt_stderr);
 
     if actual == expected {
         if !actual.is_empty() {
