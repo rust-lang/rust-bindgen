@@ -19,7 +19,6 @@ out to us in a GitHub issue, or stop by
   - [Testing a Single Header's Bindings Generation and Compiling its Bindings](#testing-a-single-headers-bindings-generation-and-compiling-its-bindings)
   - [Authoring New Tests](#authoring-new-tests)
   - [Test Expectations and `libclang` Versions](#test-expectations-and-libclang-versions)
-- [Automatic code formatting](#automatic-code-formatting)
 - [Pull Requests and Code Reviews](#pull-requests-and-code-reviews)
 - [Generating Graphviz Dot Files](#generating-graphviz-dot-files)
 - [Debug Logging](#debug-logging)
@@ -191,29 +190,6 @@ Where `$VERSION` is one of:
 * `3_8`
 
 depending on which version of `libclang` you have installed.
-
-## Automatic code formatting
-
-We use [`rustfmt`](https://github.com/rust-lang-nursery/rustfmt) to enforce a
-consistent code style across the whole `bindgen` code base. This is enforced in
-CI, and your pull requests will get automatically rejected if you don't
-re-format with the latest `rustfmt` before pushing.
-
-You can install the latest version of `rustfmt` with this command:
-
-```
-$ cargo install -f rustfmt
-```
-
-Ensure that `~/.cargo/bin` is on your path.
-
-Once that is taken care of, you can (re)format all code by running this command:
-
-```
-$ cargo fmt
-```
-
-The code style is described in the `rustfmt.toml` file in top level of the repo.
 
 ## Pull Requests and Code Reviews
 
