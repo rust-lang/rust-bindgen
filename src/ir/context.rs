@@ -137,6 +137,14 @@ pub struct BindgenContext<'ctx> {
     /// Current module being traversed.
     current_module: ItemId,
 
+    /// A HashMap keyed on a type definition, and whose value is the parent id
+    /// of the declaration.
+    ///
+    /// This is used to handle the cases where the semantic and the lexical
+    /// parents of the cursor differ, like when a nested class is defined
+    /// outside of the parent class.
+    semantic_parents: HashMap<clang::Cursor, ItemId>,
+
     /// A stack with the current type declarations and types we're parsing. This
     /// is needed to avoid infinite recursion when parsing a type like:
     ///
@@ -375,6 +383,7 @@ impl<'ctx> BindgenContext<'ctx> {
             next_item_id: ItemId(1),
             root_module: root_module.id(),
             current_module: root_module.id(),
+            semantic_parents: Default::default(),
             currently_parsed_types: vec![],
             parsed_macros: Default::default(),
             replacements: Default::default(),
@@ -1186,6 +1195,31 @@ impl<'ctx> BindgenContext<'ctx> {
     pub fn current_module(&self) -> ItemId {
         self.current_module
     }
+
+    /// Add a semantic parent for a given type definition.
+    ///
+    /// We do this from the type declaration, in order to be able to find the
+    /// correct type definition afterwards.
+    ///
+    /// TODO(emilio): We could consider doing this only when
+    /// declaration.lexical_parent() != definition.lexical_parent(), but it's
+    /// not sure it's worth it.
+    pub fn add_semantic_parent(
+        &mut self,
+        definition: clang::Cursor,
+        parent_id: ItemId,
+    ) {
+        self.semantic_parents.insert(definition, parent_id);
+    }
+
+    /// Returns a known semantic parent for a given definition.
+    pub fn known_semantic_parent(
+        &self,
+        definition: clang::Cursor
+    ) -> Option<ItemId> {
+        self.semantic_parents.get(&definition).cloned()
+    }
+
 
     /// Given a cursor pointing to the location of a template instantiation,
     /// return a tuple of the form `(declaration_cursor, declaration_id,

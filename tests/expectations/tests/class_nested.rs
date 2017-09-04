@@ -55,22 +55,22 @@ impl Clone for A {
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
-pub struct C {
+pub struct A_C {
     pub baz: ::std::os::raw::c_int,
 }
 #[test]
-fn bindgen_test_layout_C() {
-    assert_eq!(::std::mem::size_of::<C>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( C ) ));
-    assert_eq! (::std::mem::align_of::<C>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( C ) ));
+fn bindgen_test_layout_A_C() {
+    assert_eq!(::std::mem::size_of::<A_C>() , 4usize , concat ! (
+               "Size of: " , stringify ! ( A_C ) ));
+    assert_eq! (::std::mem::align_of::<A_C>() , 4usize , concat ! (
+                "Alignment of " , stringify ! ( A_C ) ));
     assert_eq! (unsafe {
-                & ( * ( 0 as * const C ) ) . baz as * const _ as usize } ,
+                & ( * ( 0 as * const A_C ) ) . baz as * const _ as usize } ,
                 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
-                ! ( baz ) ));
+                "Alignment of field: " , stringify ! ( A_C ) , "::" ,
+                stringify ! ( baz ) ));
 }
-impl Clone for C {
+impl Clone for A_C {
     fn clone(&self) -> Self { *self }
 }
 extern "C" {
