@@ -96,6 +96,14 @@ There is also the `./bindgen-integration` crate, which uses `bindgen` to
 generate bindings to some C++ code, and then uses the bindings, asserting that
 values are what we expect them to be both on the Rust and C++ side.
 
+The generated and expected bindings are run through `rustfmt` before they are
+compared. Make sure you have `rustfmt` up to date:
+
+```
+$ rustup update nightly
+$ rustup run nightly cargo install -f rustfmt-nightly
+```
+
 ### Testing Bindings Generation
 
 To regenerate bindings from the corpus of test headers in `tests/headers` and
