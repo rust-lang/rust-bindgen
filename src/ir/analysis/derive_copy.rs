@@ -88,6 +88,13 @@ impl<'ctx, 'gen> CannotDeriveCopy<'ctx, 'gen> {
 
         ConstrainResult::Changed
     }
+
+    /// A type is not `Copy` if we've determined it is not copy, or if it is
+    /// blacklisted.
+    fn is_not_copy(&self, id: ItemId) -> bool {
+        self.cannot_derive_copy.contains(&id) ||
+            !self.ctx.whitelisted_items().contains(&id)
+    }
 }
 
 impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
@@ -115,6 +122,15 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
 
         if self.cannot_derive_copy.contains(&id) {
             trace!("    already know it cannot derive Copy");
+            return ConstrainResult::Same;
+        }
+
+        // If an item is reachable from the whitelisted items set, but isn't
+        // itself whitelisted, then it must be blacklisted. We assume that
+        // blacklisted items are not `Copy`, since they are presumably
+        // blacklisted because they are too complicated for us to understand.
+        if !self.ctx.whitelisted_items().contains(&id) {
+            trace!("    blacklisted items are assumed not to be Copy");
             return ConstrainResult::Same;
         }
 
@@ -163,7 +179,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
             }
 
             TypeKind::Array(t, len) => {
-                let cant_derive_copy = self.cannot_derive_copy.contains(&t);
+                let cant_derive_copy = self.is_not_copy(t);
                 if cant_derive_copy {
                     trace!(
                         "    arrays of T for which we cannot derive Copy \
@@ -184,7 +200,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
-                let cant_derive_copy = self.cannot_derive_copy.contains(&t);
+                let cant_derive_copy = self.is_not_copy(t);
                 if cant_derive_copy {
                     trace!(
                         "    arrays of T for which we cannot derive Copy \
@@ -237,7 +253,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
 
                 let bases_cannot_derive =
                     info.base_members().iter().any(|base| {
-                        self.cannot_derive_copy.contains(&base.ty)
+                        self.is_not_copy(base.ty)
                     });
                 if bases_cannot_derive {
                     trace!(
@@ -250,11 +266,11 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
                 let fields_cannot_derive =
                     info.fields().iter().any(|f| match *f {
                         Field::DataMember(ref data) => {
-                            self.cannot_derive_copy.contains(&data.ty())
+                            self.is_not_copy(data.ty())
                         }
                         Field::Bitfields(ref bfu) => {
                             bfu.bitfields().iter().any(|b| {
-                                self.cannot_derive_copy.contains(&b.ty())
+                                self.is_not_copy(b.ty())
                             })
                         }
                     });
@@ -270,7 +286,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
             TypeKind::TemplateInstantiation(ref template) => {
                 let args_cannot_derive =
                     template.template_arguments().iter().any(|arg| {
-                        self.cannot_derive_copy.contains(&arg)
+                        self.is_not_copy(*arg)
                     });
                 if args_cannot_derive {
                     trace!(
@@ -284,8 +300,8 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
                     !template.template_definition().is_opaque(self.ctx, &()),
                     "The early ty.is_opaque check should have handled this case"
                 );
-                let def_cannot_derive = self.cannot_derive_copy.contains(
-                    &template.template_definition(),
+                let def_cannot_derive = self.is_not_copy(
+                    template.template_definition(),
                 );
                 if def_cannot_derive {
                     trace!(
