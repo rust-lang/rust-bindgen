@@ -8,6 +8,10 @@ appear in the bindings at
 all, [make it opaque](./opaque.html) instead of
 blacklisting it.)
 
+Blacklisted types are pessimistically assumed not to be able to `derive` any
+traits, which can transitively affect other types' ability to `derive` traits or
+not.
+
 ### Library
 
 * [`bindgen::Builder::hide_type`](https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.hide_type)
