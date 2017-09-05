@@ -45,12 +45,9 @@ pub mod attributes {
     }
 
     pub fn link_name(name: &str) -> quote::Tokens {
-        // This is ridiculous, but rustfmt doesn't seem to be formatting
-        // `link_name` attributes very well, so we jump through these formatting
-        // hoops to make it work.
-        let mut tokens = quote! {};
-        tokens.append(format!("   #[link_name = \"{}\"]", name));
-        tokens
+        quote! {
+            #[link_name = #name]
+        }
     }
 }
 
