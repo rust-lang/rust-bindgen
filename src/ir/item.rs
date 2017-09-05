@@ -1194,11 +1194,31 @@ impl ClangItemParser for Item {
         // Types are sort of special, so to avoid parsing template classes
         // twice, handle them separately.
         {
-            let applicable_cursor = cursor.definition().unwrap_or(cursor);
+            let definition = cursor.definition();
+            let applicable_cursor = definition.unwrap_or(cursor);
+
+
+            let relevant_parent_id = match definition {
+                Some(definition) => {
+                    if definition != cursor {
+                        ctx.add_semantic_parent(definition, relevant_parent_id);
+                        return Ok(Item::from_ty_or_ref(
+                            applicable_cursor.cur_type(),
+                            cursor,
+                            parent_id,
+                            ctx,
+                        ));
+                    }
+                    parent_id.or_else(|| ctx.known_semantic_parent(definition))
+                        .unwrap_or(ctx.current_module())
+                }
+                None => relevant_parent_id,
+            };
+
             match Item::from_ty(
                 &applicable_cursor.cur_type(),
                 applicable_cursor,
-                parent_id,
+                Some(relevant_parent_id),
                 ctx,
             ) {
                 Ok(ty) => return Ok(ty),

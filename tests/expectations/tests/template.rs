@@ -192,6 +192,7 @@ impl Clone for RootedContainer {
 impl Default for RootedContainer {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
+pub type WithDtorIntFwd = WithDtor<::std::os::raw::c_int>;
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct WithDtor<T> {
@@ -201,7 +202,6 @@ pub struct WithDtor<T> {
 impl <T> Default for WithDtor<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-pub type WithDtorIntFwd = WithDtor<::std::os::raw::c_int>;
 #[repr(C)]
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct PODButContainsDtor {
@@ -268,15 +268,6 @@ impl <T> Default for NestedBase<T> {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
-pub struct Incomplete<T> {
-    pub d: T,
-    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
-}
-impl <T> Default for Incomplete<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct NestedContainer<T> {
     pub c: T,
     pub nested: NestedReplaced<T>,
@@ -284,6 +275,15 @@ pub struct NestedContainer<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 impl <T> Default for NestedContainer<T> {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct Incomplete<T> {
+    pub d: T,
+    pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+}
+impl <T> Default for Incomplete<T> {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]

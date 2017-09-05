@@ -37,26 +37,6 @@ impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
 impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
-pub struct nsFoo {
-    pub mBar: mozilla_StyleShapeSource,
-}
-#[test]
-fn bindgen_test_layout_nsFoo() {
-    assert_eq!(::std::mem::size_of::<nsFoo>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( nsFoo ) ));
-    assert_eq! (::std::mem::align_of::<nsFoo>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( nsFoo ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const nsFoo ) ) . mBar as * const _ as usize }
-                , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( nsFoo ) , "::" ,
-                stringify ! ( mBar ) ));
-}
-impl Clone for nsFoo {
-    fn clone(&self) -> Self { *self }
-}
-#[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct mozilla_FragmentOrURL {
     pub mIsLocalRef: bool,
 }
@@ -126,6 +106,26 @@ impl Clone for Bar {
 }
 impl Default for Bar {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+pub struct nsFoo {
+    pub mBar: mozilla_StyleShapeSource,
+}
+#[test]
+fn bindgen_test_layout_nsFoo() {
+    assert_eq!(::std::mem::size_of::<nsFoo>() , 8usize , concat ! (
+               "Size of: " , stringify ! ( nsFoo ) ));
+    assert_eq! (::std::mem::align_of::<nsFoo>() , 8usize , concat ! (
+                "Alignment of " , stringify ! ( nsFoo ) ));
+    assert_eq! (unsafe {
+                & ( * ( 0 as * const nsFoo ) ) . mBar as * const _ as usize }
+                , 0usize , concat ! (
+                "Alignment of field: " , stringify ! ( nsFoo ) , "::" ,
+                stringify ! ( mBar ) ));
+}
+impl Clone for nsFoo {
+    fn clone(&self) -> Self { *self }
 }
 #[test]
 fn __bindgen_test_layout_mozilla_StyleShapeSource_open0_int_close0_instantiation() {

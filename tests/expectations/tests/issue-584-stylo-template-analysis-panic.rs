@@ -6,24 +6,6 @@
 pub type RefPtr<T> = T;
 
 #[repr(C)]
-#[derive(Debug, Copy)]
-pub struct b {
-    pub _base: g,
-}
-#[test]
-fn bindgen_test_layout_b() {
-    assert_eq!(::std::mem::size_of::<b>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( b ) ));
-    assert_eq! (::std::mem::align_of::<b>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( b ) ));
-}
-impl Clone for b {
-    fn clone(&self) -> Self { *self }
-}
-impl Default for b {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
-#[repr(C)]
 #[derive(Debug, Default, Copy)]
 pub struct A {
     pub _address: u8,
@@ -73,6 +55,24 @@ impl Clone for g {
     fn clone(&self) -> Self { *self }
 }
 impl Default for g {
+    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+}
+#[repr(C)]
+#[derive(Debug, Copy)]
+pub struct b {
+    pub _base: g,
+}
+#[test]
+fn bindgen_test_layout_b() {
+    assert_eq!(::std::mem::size_of::<b>() , 1usize , concat ! (
+               "Size of: " , stringify ! ( b ) ));
+    assert_eq! (::std::mem::align_of::<b>() , 1usize , concat ! (
+                "Alignment of " , stringify ! ( b ) ));
+}
+impl Clone for b {
+    fn clone(&self) -> Self { *self }
+}
+impl Default for b {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 extern "C" {
