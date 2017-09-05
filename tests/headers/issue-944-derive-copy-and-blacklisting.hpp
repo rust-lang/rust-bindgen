@@ -1,4 +1,4 @@
-// bindgen-flags: --blacklist-type BlacklistMe --raw-line '#[derive(Debug)] pub struct BlacklistMe(u8);'
+// bindgen-flags: --blacklist-type BlacklistMe --raw-line 'pub struct BlacklistMe(u8);'
 
 struct BlacklistMe {};
 

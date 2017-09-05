@@ -3,11 +3,10 @@
 
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
-#[derive(Debug)] pub struct BlacklistMe(u8);
+pub struct BlacklistMe(u8);
 
 /// Because this type contains a blacklisted type, it should not derive Copy.
 #[repr(C)]
-#[derive(Debug)]
 pub struct ShouldNotBeCopy {
     pub a: BlacklistMe,
 }

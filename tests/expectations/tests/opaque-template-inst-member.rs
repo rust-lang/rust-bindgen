@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct OpaqueTemplate {
 }
 /// This should not end up deriving Debug/Hash/PartialEq because its `mBlah` field cannot derive
