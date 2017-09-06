@@ -61,6 +61,9 @@ where
             Arg::with_name("no-layout-tests")
                 .long("no-layout-tests")
                 .help("Avoid generating layout tests for any type."),
+            Arg::with_name("no-derive-copy")
+                .long("no-derive-copy")
+                .help("Avoid deriving Copy on any type."),
             Arg::with_name("no-derive-debug")
                 .long("no-derive-debug")
                 .help("Avoid deriving Debug on any type."),
@@ -309,6 +312,10 @@ where
 
     if matches.is_present("no-layout-tests") {
         builder = builder.layout_tests(false);
+    }
+
+    if matches.is_present("no-derive-copy") {
+        builder = builder.derive_copy(false);
     }
 
     if matches.is_present("no-derive-debug") {
