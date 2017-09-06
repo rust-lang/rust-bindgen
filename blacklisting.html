@@ -76,6 +76,9 @@ will still appear in other types' definitions. (If you don't want the type to
 appear in the bindings at
 all, <a href="./opaque.html">make it opaque</a> instead of
 blacklisting it.)</p>
+<p>Blacklisted types are pessimistically assumed not to be able to <code>derive</code> any
+traits, which can transitively affect other types' ability to <code>derive</code> traits or
+not.</p>
 <a class="header" href="./blacklisting.html#library" id="library"><h3>Library</h3></a>
 <ul>
 <li><a href="https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.hide_type"><code>bindgen::Builder::hide_type</code></a></li>
