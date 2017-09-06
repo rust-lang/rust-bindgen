@@ -321,55 +321,69 @@ where
     }
 }
 
+/// Returns the effective target, and whether it was explicitly specified on the
+/// clang flags.
+fn find_effective_target(clang_args: &[String]) -> (String, bool) {
+    use std::env;
+
+    for opt in clang_args {
+        if opt.starts_with("--target=") {
+            let mut split = opt.split('=');
+            split.next();
+            return (split.next().unwrap().to_owned(), true);
+        }
+    }
+
+    // If we're running from a build script, try to find the cargo target.
+    if let Ok(t) = env::var("TARGET") {
+        return (t, false)
+    }
+
+    const HOST_TARGET: &'static str =
+        include_str!(concat!(env!("OUT_DIR"), "/host-target.txt"));
+    (HOST_TARGET.to_owned(), false)
+}
+
 impl<'ctx> BindgenContext<'ctx> {
     /// Construct the context for the given `options`.
     pub fn new(options: BindgenOptions) -> Self {
         use clang_sys;
 
+        // TODO(emilio): Use the CXTargetInfo here when available.
+        //
+        // see: https://reviews.llvm.org/D32389
+        let (effective_target, explicit_target) =
+            find_effective_target(&options.clang_args);
+
         let index = clang::Index::new(false, true);
 
         let parse_options =
             clang_sys::CXTranslationUnit_DetailedPreprocessingRecord;
-        let translation_unit = clang::TranslationUnit::parse(
-            &index,
-            "",
-            &options.clang_args,
-            &options.input_unsaved_files,
-            parse_options,
-        ).expect("TranslationUnit::parse failed");
 
-        // TODO(emilio): Use the CXTargetInfo here when available.
+        let translation_unit = {
+            let clang_args = if explicit_target {
+                Cow::Borrowed(&options.clang_args)
+            } else {
+                let mut args = Vec::with_capacity(options.clang_args.len() + 1);
+                args.push(format!("--target={}", effective_target));
+                args.extend_from_slice(&options.clang_args);
+                Cow::Owned(args)
+            };
+
+            clang::TranslationUnit::parse(
+                &index,
+                "",
+                &clang_args,
+                &options.input_unsaved_files,
+                parse_options,
+            ).expect("TranslationUnit::parse failed")
+        };
+
+        // Mac os, iOS and Win32 need __ for mangled symbols but rust will
+        // automatically prepend the extra _.
         //
-        // see: https://reviews.llvm.org/D32389
-        let mut effective_target = None;
-        for opt in &options.clang_args {
-            if opt.starts_with("--target=") {
-                let mut split = opt.split('=');
-                split.next();
-                effective_target = Some(split.next().unwrap().to_owned());
-                break;
-            }
-        }
-
-        if effective_target.is_none() {
-            use std::env;
-            // If we're running from a build script, try to find the cargo
-            // target.
-            effective_target = env::var("TARGET").ok();
-        }
-
-        if effective_target.is_none() {
-            const HOST_TARGET: &'static str =
-                include_str!(concat!(env!("OUT_DIR"), "/host-target.txt"));
-            effective_target = Some(HOST_TARGET.to_owned());
-        }
-
-        // Mac os, iOS and Win32 need __ for mangled symbols but rust will automatically
-        // prepend the extra _.
-        //
-        // We need to make sure that we don't include __ because rust will turn into
-        // ___.
-        let effective_target = effective_target.unwrap();
+        // We need to make sure that we don't include __ because rust will turn
+        // into ___.
         let needs_mangling_hack = effective_target.contains("darwin") ||
             effective_target.contains("ios") ||
             effective_target == "i686-pc-win32";
@@ -882,7 +896,6 @@ impl<'ctx> BindgenContext<'ctx> {
         use syntax::codemap::{ExpnInfo, MacroBang, NameAndSpan};
         use syntax::ext::base;
         use syntax::parse;
-        use std::mem;
 
         let cfg = ExpansionConfig::default("xxx".to_owned());
         let sess = parse::ParseSess::new();
