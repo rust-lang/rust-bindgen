@@ -1493,7 +1493,9 @@ impl CodeGenerator for CompInfo {
             needs_default_impl = ctx.options().derive_default;
         }
 
-        if item.can_derive_copy(ctx) && !item.annotations().disallow_copy() {
+        if item.can_derive_copy(ctx) && !item.annotations().disallow_copy() &&
+            ctx.options().derive_copy
+        {
             derives.push("Copy");
             if used_template_params.is_some() {
                 // FIXME: This requires extra logic if you have a big array in a
