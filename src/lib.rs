@@ -253,6 +253,10 @@ impl Builder {
             output_vector.push("--no-layout-tests".into());
         }
 
+        if !self.options.derive_copy {
+            output_vector.push("--no-derive-copy".into());
+        }
+
         if !self.options.derive_debug {
             output_vector.push("--no-derive-debug".into());
         }
@@ -735,6 +739,12 @@ impl Builder {
         self
     }
 
+    /// Set whether `Copy` should be derived by default.
+    pub fn derive_copy(mut self, doit: bool) -> Self {
+        self.options.derive_copy = doit;
+        self
+    }
+
     /// Set whether `Debug` should be derived by default.
     pub fn derive_debug(mut self, doit: bool) -> Self {
         self.options.derive_debug = doit;
@@ -1104,6 +1114,10 @@ pub struct BindgenOptions {
     /// True if we should generate layout tests for generated structures.
     pub layout_tests: bool,
 
+    /// True if we should derive Copy trait implementations for C/C++ structures
+    /// and types.
+    pub derive_copy: bool,
+
     /// True if we should derive Debug trait implementations for C/C++ structures
     /// and types.
     pub derive_debug: bool,
@@ -1269,6 +1283,7 @@ impl Default for BindgenOptions {
             emit_ir: false,
             emit_ir_graphviz: None,
             layout_tests: true,
+            derive_copy: true,
             derive_debug: true,
             impl_debug: false,
             derive_default: false,
