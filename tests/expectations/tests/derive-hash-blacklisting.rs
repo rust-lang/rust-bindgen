@@ -8,7 +8,6 @@
 /// This would derive(Hash, Eq, PartialEq) if it didn't contain a blacklisted type,
 /// causing us to conservatively avoid deriving hash/Eq/PartialEq for it.
 #[repr(C)]
-#[derive(Debug, Copy)]
 pub struct WhitelistedOne {
     pub a: Blacklisted<::std::os::raw::c_int>,
 }
@@ -24,15 +23,11 @@ fn bindgen_test_layout_WhitelistedOne() {
                 "Alignment of field: " , stringify ! ( WhitelistedOne ) , "::"
                 , stringify ! ( a ) ));
 }
-impl Clone for WhitelistedOne {
-    fn clone(&self) -> Self { *self }
-}
 impl Default for WhitelistedOne {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 /// This can't derive(Hash/Eq) even if it didn't contain a blacklisted type.
 #[repr(C)]
-#[derive(Debug, Copy)]
 pub struct WhitelistedTwo {
     pub b: Blacklisted<f32>,
 }
@@ -47,9 +42,6 @@ fn bindgen_test_layout_WhitelistedTwo() {
                 usize } , 0usize , concat ! (
                 "Alignment of field: " , stringify ! ( WhitelistedTwo ) , "::"
                 , stringify ! ( b ) ));
-}
-impl Clone for WhitelistedTwo {
-    fn clone(&self) -> Self { *self }
 }
 impl Default for WhitelistedTwo {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

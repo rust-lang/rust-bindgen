@@ -6,7 +6,6 @@
 pub enum Bar {}
 
 #[repr(C)]
-#[derive(Debug, Copy)]
 pub struct Foo {
     pub baz: *mut Bar,
 }
@@ -21,9 +20,6 @@ fn bindgen_test_layout_Foo() {
                 0usize , concat ! (
                 "Alignment of field: " , stringify ! ( Foo ) , "::" ,
                 stringify ! ( baz ) ));
-}
-impl Clone for Foo {
-    fn clone(&self) -> Self { *self }
 }
 impl Default for Foo {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

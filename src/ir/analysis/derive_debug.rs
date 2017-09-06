@@ -90,6 +90,13 @@ impl<'ctx, 'gen> CannotDeriveDebug<'ctx, 'gen> {
 
         ConstrainResult::Changed
     }
+
+    /// A type is not `Debug` if we've determined it is not debug, or if it is
+    /// blacklisted.
+    fn is_not_debug(&self, id: ItemId) -> bool {
+        self.cannot_derive_debug.contains(&id) ||
+            !self.ctx.whitelisted_items().contains(&id)
+    }
 }
 
 impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
@@ -120,6 +127,15 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
             return ConstrainResult::Same;
         }
 
+        // If an item is reachable from the whitelisted items set, but isn't
+        // itself whitelisted, then it must be blacklisted. We assume that
+        // blacklisted items are not `Copy`, since they are presumably
+        // blacklisted because they are too complicated for us to understand.
+        if !self.ctx.whitelisted_items().contains(&id) {
+            trace!("    blacklisted items are assumed not to be Debug");
+            return ConstrainResult::Same;
+        }
+
         let item = self.ctx.resolve_item(id);
         let ty = match item.as_type() {
             Some(ty) => ty,
@@ -129,11 +145,13 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
             }
         };
 
-        if ty.is_opaque(self.ctx, item) {
+        if item.is_opaque(self.ctx, &()) {
             let layout_can_derive = ty.layout(self.ctx).map_or(true, |l| {
                 l.opaque().can_trivially_derive_debug()
             });
-            return if layout_can_derive {
+            return if layout_can_derive &&
+                      !(ty.is_union() &&
+                        self.ctx.options().rust_features().untagged_union()) {
                 trace!("    we can trivially derive Debug for the layout");
                 ConstrainResult::Same
             } else {
@@ -176,7 +194,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
             }
 
             TypeKind::Array(t, len) => {
-                if self.cannot_derive_debug.contains(&t) {
+                if self.is_not_debug(t) {
                     trace!(
                         "    arrays of T for which we cannot derive Debug \
                             also cannot derive Debug"
@@ -196,7 +214,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
-                if self.cannot_derive_debug.contains(&t) {
+                if self.is_not_debug(t) {
                     trace!(
                         "    aliases and type refs to T which cannot derive \
                             Debug also cannot derive Debug"
@@ -237,7 +255,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
 
                 let bases_cannot_derive =
                     info.base_members().iter().any(|base| {
-                        self.cannot_derive_debug.contains(&base.ty)
+                        self.is_not_debug(base.ty)
                     });
                 if bases_cannot_derive {
                     trace!(
@@ -250,11 +268,11 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                 let fields_cannot_derive =
                     info.fields().iter().any(|f| match *f {
                         Field::DataMember(ref data) => {
-                            self.cannot_derive_debug.contains(&data.ty())
+                            self.is_not_debug(data.ty())
                         }
                         Field::Bitfields(ref bfu) => {
                             bfu.bitfields().iter().any(|b| {
-                                self.cannot_derive_debug.contains(&b.ty())
+                                self.is_not_debug(b.ty())
                             })
                         }
                     });
@@ -287,7 +305,7 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
             TypeKind::TemplateInstantiation(ref template) => {
                 let args_cannot_derive =
                     template.template_arguments().iter().any(|arg| {
-                        self.cannot_derive_debug.contains(&arg)
+                        self.is_not_debug(*arg)
                     });
                 if args_cannot_derive {
                     trace!(
@@ -301,8 +319,8 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDebug<'ctx, 'gen> {
                     !template.template_definition().is_opaque(self.ctx, &()),
                     "The early ty.is_opaque check should have handled this case"
                 );
-                let def_cannot_derive = self.cannot_derive_debug.contains(
-                    &template.template_definition(),
+                let def_cannot_derive = self.is_not_debug(
+                    template.template_definition(),
                 );
                 if def_cannot_derive {
                     trace!(

@@ -22,7 +22,6 @@ impl Clone for A {
     fn clone(&self) -> Self { *self }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct e<c> {
     pub d: RefPtr<c>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<c>>,
@@ -36,7 +35,6 @@ pub struct f {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
 pub struct g {
     pub h: f,
 }
@@ -51,14 +49,10 @@ fn bindgen_test_layout_g() {
                 "Alignment of field: " , stringify ! ( g ) , "::" , stringify
                 ! ( h ) ));
 }
-impl Clone for g {
-    fn clone(&self) -> Self { *self }
-}
 impl Default for g {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
 pub struct b {
     pub _base: g,
 }
@@ -68,9 +62,6 @@ fn bindgen_test_layout_b() {
                "Size of: " , stringify ! ( b ) ));
     assert_eq! (::std::mem::align_of::<b>() , 1usize , concat ! (
                 "Alignment of " , stringify ! ( b ) ));
-}
-impl Clone for b {
-    fn clone(&self) -> Self { *self }
 }
 impl Default for b {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }

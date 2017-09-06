@@ -53,7 +53,7 @@ pub fn gen_debug_impl(
                             impl X {
                                 fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
                                     write!(f, $format_string $tokens)
-                                }    
+                                }
                             });
 
     match impl_.unwrap().node {
@@ -127,6 +127,12 @@ impl<'a> ImplDebug<'a> for Item {
     ) -> Option<(String, Vec<TokenTree>)> {
         let name_ident = ctx.rust_ident_raw(name);
 
+        // We don't know if blacklisted items `impl Debug` or not, so we can't
+        // add them to the format string we're building up.
+        if !ctx.whitelisted_items().contains(&self.id()) {
+            return None;
+        }
+
         let ty = match self.as_type() {
             Some(ty) => ty,
             None => {
@@ -168,7 +174,7 @@ impl<'a> ImplDebug<'a> for Item {
                 } else {
                     debug_print(ctx, name, name_ident)
                 }
-            } 
+            }
 
             // The generic is not required to implement Debug, so we can not debug print that type
             TypeKind::TypeParam => {

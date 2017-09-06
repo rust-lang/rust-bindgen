@@ -9,7 +9,6 @@
 /// and replacement for another type that doesn't implement it would prevent it
 /// from building if --no-derive-debug didn't work.
 #[repr(C)]
-#[derive(Copy)]
 pub struct bar {
     pub foo: foo,
     pub baz: ::std::os::raw::c_int,
@@ -30,9 +29,6 @@ fn bindgen_test_layout_bar() {
                 4usize , concat ! (
                 "Alignment of field: " , stringify ! ( bar ) , "::" ,
                 stringify ! ( baz ) ));
-}
-impl Clone for bar {
-    fn clone(&self) -> Self { *self }
 }
 impl Default for bar {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
