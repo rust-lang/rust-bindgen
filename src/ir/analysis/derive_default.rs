@@ -176,7 +176,9 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveDefault<'ctx, 'gen> {
             let layout_can_derive = ty.layout(self.ctx).map_or(true, |l| {
                 l.opaque().can_trivially_derive_default()
             });
-            return if layout_can_derive {
+            return if layout_can_derive &&
+                      !(ty.is_union() &&
+                        self.ctx.options().rust_features().untagged_union()) {
                 trace!("    we can trivially derive Default for the layout");
                 ConstrainResult::Same
             } else {

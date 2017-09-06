@@ -99,6 +99,14 @@ impl Type {
         }
     }
 
+    /// Is this a union?
+    pub fn is_union(&self) -> bool {
+        match self.kind {
+            TypeKind::Comp(ref comp) => comp.is_union(),
+            _ => false,
+        }
+    }
+
     /// Is this type of kind `TypeKind::TypeParam`?
     pub fn is_type_param(&self) -> bool {
         match self.kind {
