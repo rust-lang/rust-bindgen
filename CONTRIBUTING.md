@@ -67,14 +67,6 @@ versions of llvm, or specify the path of the desired libclang explicitly:
 $ export LIBCLANG_PATH=path/to/clang-3.9/lib
 ```
 
-On Linux and macOS, you may also need to add a path to `libclang.so` (usually
-the same path as above) to library search path. This can be done as below:
-
-```
-$ export LD_LIBRARY_PATH=path/to/clang-3.9/lib # for Linux
-$ export DYLD_LIBRARY_PATH=path/to/clang-3.9/lib # for macOS
-```
-
 Additionally, you may want to build and test with the `testing_only_docs`
 feature to ensure that you aren't forgetting to document types and functions. CI
 will catch it if you forget, but the turn around will be a lot slower ;)
