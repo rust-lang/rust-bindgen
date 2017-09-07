@@ -17,35 +17,26 @@ use options::builder_from_flags;
 // Run `rustfmt` on the given source string and return a tuple of the formatted
 // bindings, and rustfmt's stderr.
 fn rustfmt(source: String) -> (String, String) {
-    static INSTALL_RUSTFMT: Once = ONCE_INIT;
+    static CHECK_RUSTFMT: Once = ONCE_INIT;
 
-    INSTALL_RUSTFMT.call_once(|| {
+    CHECK_RUSTFMT.call_once(|| {
         let have_working_rustfmt = process::Command::new("rustup")
             .args(&["run", "nightly", "rustfmt", "--version"])
             .stdout(process::Stdio::null())
             .stderr(process::Stdio::null())
             .status()
-            .expect("should run `rustup run nightly rustfmt --version` OK")
-            .success();
+            .ok()
+            .map_or(false, |status| status.success());
 
-        if have_working_rustfmt {
-            return;
+        if !have_working_rustfmt {
+            panic!("
+The latest `rustfmt` is required to run the `bindgen` test suite. Install
+`rustfmt` with:
+
+    $ rustup update nightly
+    $ rustup run nightly cargo install -f rustfmt-nightly
+");
         }
-
-        // Because `rustfmt` needs to match its exact nightly version, we update
-        // both at the same time.
-
-        let status = process::Command::new("rustup")
-            .args(&["update", "nightly"])
-            .status()
-            .expect("should run `rustup update nightly` OK");
-        assert!(status.success(), "should run `rustup update nightly` OK");
-
-        let status = process::Command::new("rustup")
-            .args(&["run", "nightly", "cargo", "install", "-f", "rustfmt-nightly"])
-            .status()
-            .expect("should run `rustup run nightly cargo install rustfmt-nightly` OK");
-        assert!(status.success(), "should install rustfmt OK");
     });
 
     let mut child = process::Command::new("rustup")
