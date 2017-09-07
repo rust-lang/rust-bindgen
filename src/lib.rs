@@ -567,11 +567,33 @@ impl Builder {
         self
     }
 
-    /// Whether to whitelist types recursively or not. Defaults to true.
+    /// Whether to whitelist recursively or not. Defaults to true.
     ///
-    /// This can be used to get bindgen to generate _exactly_ the types you want
-    /// in your bindings, and then import other types manually via other means
-    /// (like [`raw_line`](#method.raw_line)).
+    /// Given that we have explicitly whitelisted the "initiate_dance_party"
+    /// function in this C header:
+    ///
+    /// ```c
+    /// typedef struct MoonBoots {
+    ///     int bouncy_level;
+    /// } MoonBoots;
+    ///
+    /// void initiate_dance_party(MoonBoots* boots);
+    /// ```
+    ///
+    /// We would normally generate bindings to both the `initiate_dance_party`
+    /// function and the `MoonBoots` struct that it transitively references. By
+    /// configuring with `whitelist_recursively(false)`, `bindgen` will not emit
+    /// bindings for anything except the explicitly whitelisted items, and there
+    /// would be no emitted struct definition for `MoonBoots`. However, the
+    /// `initiate_dance_party` function would still reference `MoonBoots`!
+    ///
+    /// **Disabling this feature will almost certainly cause `bindgen` to emit
+    /// bindings that will not compile!** If you disable this feature, then it
+    /// is *your* responsiblity to provide definitions for every type that is
+    /// referenced from an explicitly whitelisted item. One way to provide the
+    /// definitions is by using the [`Builder::raw_line`](#method.raw_line)
+    /// method, another would be to define them in Rust and then `include!(...)`
+    /// the bindings immediately afterwards.
     pub fn whitelist_recursively(mut self, doit: bool) -> Self {
         self.options.whitelist_recursively = doit;
         self

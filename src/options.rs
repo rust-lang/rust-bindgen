@@ -93,7 +93,10 @@ where
                       https://github.com/rust-lang-nursery/rust-bindgen/issues/426"),
             Arg::with_name("no-recursive-whitelist")
                 .long("no-recursive-whitelist")
-                .help("Avoid whitelisting types recursively."),
+                .help("Disable whitelisting types recursively. This will cause \
+                       bindgen to emit Rust code that won't compile! See the \
+                       `bindgen::Builder::whitelist_recursively` method's \
+                       documentation for details."),
             Arg::with_name("objc-extern-crate")
                 .long("objc-extern-crate")
                 .help("Use extern crate instead of use for objc."),
