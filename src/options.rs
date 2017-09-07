@@ -93,7 +93,31 @@ where
                       https://github.com/rust-lang-nursery/rust-bindgen/issues/426"),
             Arg::with_name("no-recursive-whitelist")
                 .long("no-recursive-whitelist")
-                .help("Avoid whitelisting types recursively."),
+                .help(r#"Disable whitelisting types recursively.
+
+Given that we have explicitly whitelisted the "initiate_dance_party" function in
+this C header:
+
+    typedef struct MoonBoots {
+        int bouncy_level;
+    } MoonBoots;
+
+    void initiate_dance_party(MoonBoots* boots);
+
+We would normally generate bindings to both the `initiate_dance_party` function
+and the `MoonBoots` struct that it transitively references. By configuring with
+`--no-recursive-whitelist`, `bindgen` will not emit bindings for anything except
+the explicitly whitelisted items, and there would be no emitted struct
+definition for `MoonBoots`. However, the `initiate_dance_party` function would
+still reference `MoonBoots`!
+
+Disabling this feature will almost certainly cause `bindgen` to emit bindings
+that will not compile! If you disable this feature, then it is your
+responsiblity to provide definitions for every type that is referenced from an
+explicitly whitelisted item. One way to provide the definitions is by using the
+`--raw-line` flag, another would be to define them in Rust and then
+`include!(...)` the bindings immediately afterwards.
+"#),
             Arg::with_name("objc-extern-crate")
                 .long("objc-extern-crate")
                 .help("Use extern crate instead of use for objc."),
