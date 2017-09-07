@@ -5,12 +5,93 @@ extern crate shlex;
 
 use bindgen::{Builder, builder, clang_version};
 use std::fs;
-use std::io::{BufRead, BufReader, Error, ErrorKind, Read, Write};
+use std::io::{self, BufRead, BufReader, Error, ErrorKind, Read, Write};
 use std::path::PathBuf;
+use std::process;
+use std::sync::{Once, ONCE_INIT};
 
 #[path = "../src/options.rs"]
 mod options;
 use options::builder_from_flags;
+
+// Run `rustfmt` on the given source string and return a tuple of the formatted
+// bindings, and rustfmt's stderr.
+fn rustfmt(source: String) -> (String, String) {
+    static CHECK_RUSTFMT: Once = ONCE_INIT;
+
+    CHECK_RUSTFMT.call_once(|| {
+        let have_working_rustfmt = process::Command::new("rustup")
+            .args(&["run", "nightly", "rustfmt", "--version"])
+            .stdout(process::Stdio::null())
+            .stderr(process::Stdio::null())
+            .status()
+            .ok()
+            .map_or(false, |status| status.success());
+
+        if !have_working_rustfmt {
+            panic!("
+The latest `rustfmt` is required to run the `bindgen` test suite. Install
+`rustfmt` with:
+
+    $ rustup update nightly
+    $ rustup run nightly cargo install -f rustfmt-nightly
+");
+        }
+    });
+
+    let mut child = process::Command::new("rustup")
+        .args(&[
+            "run",
+            "nightly",
+            "rustfmt",
+            "--config-path",
+            concat!(env!("CARGO_MANIFEST_DIR"), "/tests/rustfmt.toml")
+        ])
+        .stdin(process::Stdio::piped())
+        .stdout(process::Stdio::piped())
+        .stderr(process::Stdio::piped())
+        .spawn()
+        .expect("should spawn `rustup run nightly rustfmt`");
+
+    let mut stdin = child.stdin.take().unwrap();
+    let mut stdout = child.stdout.take().unwrap();
+    let mut stderr = child.stderr.take().unwrap();
+
+    // Write to stdin in a new thread, so that we can read from stdout on this
+    // thread. This keeps the child from blocking on writing to its stdout which
+    // might block us from writing to its stdin.
+    let stdin_handle = ::std::thread::spawn(move || {
+        stdin.write_all(source.as_bytes())
+    });
+
+    // Read stderr on a new thread for similar reasons.
+    let stderr_handle = ::std::thread::spawn(move || {
+        let mut output = vec![];
+        io::copy(&mut stderr, &mut output)
+            .map(|_| String::from_utf8_lossy(&output).to_string())
+    });
+
+    let mut output = vec![];
+    io::copy(&mut stdout, &mut output)
+        .expect("Should copy stdout into vec OK");
+
+    // Ignore actual rustfmt status because it is often non-zero for trivial
+    // things.
+    let _ = child.wait().expect("should wait on rustfmt child OK");
+
+    stdin_handle.join()
+        .expect("writer thread should not have panicked")
+        .expect("should have written to child rustfmt's stdin OK");
+
+    let bindings = String::from_utf8(output)
+        .expect("rustfmt should only emit valid utf-8");
+
+    let stderr = stderr_handle.join()
+        .expect("stderr reader thread should not have panicked")
+        .expect("should have read child rustfmt's stderr OK");
+
+    (bindings, stderr)
+}
 
 fn compare_generated_header(
     header: &PathBuf,
@@ -18,29 +99,29 @@ fn compare_generated_header(
 ) -> Result<(), Error> {
     let file_name = try!(header.file_name().ok_or(Error::new(
         ErrorKind::Other,
-        "spawn_bindgen expects a file",
+        "compare_generated_header expects a file",
     )));
 
-    let mut expected = PathBuf::from(header);
-    expected.pop();
-    expected.pop();
-    expected.push("expectations");
-    expected.push("tests");
-    expected.push(file_name);
-    expected.set_extension("rs");
+    let mut expectation = PathBuf::from(header);
+    expectation.pop();
+    expectation.pop();
+    expectation.push("expectations");
+    expectation.push("tests");
+    expectation.push(file_name);
+    expectation.set_extension("rs");
 
     // If the expectation file doesn't exist, see if we have different test
     // expectations for different libclang versions.
-    if !expected.is_file() {
-        let file_name = expected.file_name().unwrap().to_owned();
-        expected.pop();
+    if !expectation.is_file() {
+        let file_name = expectation.file_name().unwrap().to_owned();
+        expectation.pop();
 
         if cfg!(feature = "testing_only_libclang_4") {
-            expected.push("libclang-4");
+            expectation.push("libclang-4");
         } else if cfg!(feature = "testing_only_libclang_3_9") {
-            expected.push("libclang-3.9");
+            expectation.push("libclang-3.9");
         } else if cfg!(feature = "testing_only_libclang_3_8") {
-            expected.push("libclang-3.8");
+            expectation.push("libclang-3.8");
         } else {
             match clang_version().parsed {
                 None => {}
@@ -51,38 +132,45 @@ fn compare_generated_header(
                     } else {
                         format!("{}.{}", maj, min)
                     };
-                    expected.push(format!("libclang-{}", version_str));
+                    expectation.push(format!("libclang-{}", version_str));
                 }
             }
         }
 
-        expected.push(file_name);
+        expectation.push(file_name);
 
-        if !expected.is_file() {
+        if !expectation.is_file() {
             panic!(
                 "missing test expectation file and/or 'testing_only_libclang_$VERSION' \
                     feature for header '{}'; looking for expectation file at '{}'",
                 header.display(),
-                expected.display()
+                expectation.display()
             );
         }
     }
 
     // We skip the generate() error here so we get a full diff below
-    let output = match builder.generate() {
-        Ok(bindings) => bindings.to_string(),
-        Err(_) => "".to_string(),
+    let (actual, rustfmt_stderr) = match builder.generate() {
+        Ok(bindings) => {
+            let actual = bindings.to_string();
+            rustfmt(actual)
+        }
+        Err(()) => ("<error generating bindings>".to_string(), "".to_string()),
     };
+    println!("{}", rustfmt_stderr);
 
-    let mut buffer = String::new();
+    let mut expected = String::new();
     {
-        if let Ok(expected_file) = fs::File::open(&expected) {
-            try!(BufReader::new(expected_file).read_to_string(&mut buffer));
+        if let Ok(expectation_file) = fs::File::open(&expectation) {
+            try!(BufReader::new(expectation_file).read_to_string(&mut expected));
         }
     }
 
-    if output == buffer {
-        if !output.is_empty() {
+    let (expected, rustfmt_stderr) = rustfmt(expected);
+    println!("{}", rustfmt_stderr);
+
+    if actual == expected {
+        if !actual.is_empty() {
             return Ok(());
         }
         return Err(Error::new(
@@ -91,11 +179,13 @@ fn compare_generated_header(
         ));
     }
 
+    println!("{}", rustfmt_stderr);
+
     println!("diff expected generated");
-    println!("--- expected: {:?}", expected);
+    println!("--- expected: {:?}", expectation);
     println!("+++ generated from: {:?}", header);
 
-    for diff in diff::lines(&buffer, &output) {
+    for diff in diff::lines(&expected, &actual) {
         match diff {
             diff::Result::Left(l) => println!("-{}", l),
             diff::Result::Both(l, _) => println!(" {}", l),
@@ -105,8 +195,8 @@ fn compare_generated_header(
 
     // Override the diff.
     {
-        let mut expected_file = try!(fs::File::create(&expected));
-        try!(expected_file.write_all(output.as_bytes()));
+        let mut expectation_file = try!(fs::File::create(&expectation));
+        try!(expectation_file.write_all(actual.as_bytes()));
     }
 
     Err(Error::new(ErrorKind::Other, "Header and binding differ!"))
@@ -215,19 +305,25 @@ include!(concat!(env!("OUT_DIR"), "/tests.rs"));
 
 #[test]
 fn test_header_contents() {
-    let bindings = builder()
+    let actual = builder()
         .header_contents("test.h", "int foo(const char* a);")
         .generate()
         .unwrap()
         .to_string();
-    assert_eq!(
-        bindings,
-        "/* automatically generated by rust-bindgen */
+
+    let (actual, stderr) = rustfmt(actual);
+    println!("{}", stderr);
+
+    let (expected, _) = rustfmt("/* automatically generated by rust-bindgen */
 
 extern \"C\" {
     pub fn foo(a: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
 }
-"
+".to_string());
+
+    assert_eq!(
+        expected,
+        actual
     );
 }
 
@@ -243,10 +339,14 @@ fn test_multiple_header_calls_in_builder() {
         .unwrap()
         .to_string();
 
+    let (actual, stderr) = rustfmt(actual);
+    println!("{}", stderr);
+
     let expected = include_str!(concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/tests/expectations/tests/test_multiple_header_calls_in_builder.rs"
     ));
+    let (expected, _) = rustfmt(expected.to_string());
 
     if actual != expected {
         println!("Generated bindings differ from expected!");

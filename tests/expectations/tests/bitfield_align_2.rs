@@ -6,7 +6,12 @@
 
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum MyEnum { ONE = 0, TWO = 1, THREE = 2, FOUR = 3, }
+pub enum MyEnum {
+    ONE = 0,
+    TWO = 1,
+    THREE = 2,
+    FOUR = 3,
+}
 #[repr(C)]
 #[derive(Debug, Copy)]
 pub struct TaggedPtr {
@@ -15,27 +20,37 @@ pub struct TaggedPtr {
 }
 #[test]
 fn bindgen_test_layout_TaggedPtr() {
-    assert_eq!(::std::mem::size_of::<TaggedPtr>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( TaggedPtr ) ));
-    assert_eq! (::std::mem::align_of::<TaggedPtr>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( TaggedPtr ) ));
+    assert_eq!(
+        ::std::mem::size_of::<TaggedPtr>(),
+        8usize,
+        concat!("Size of: ", stringify!(TaggedPtr))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<TaggedPtr>(),
+        8usize,
+        concat!("Alignment of ", stringify!(TaggedPtr))
+    );
 }
 impl Clone for TaggedPtr {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for TaggedPtr {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 impl TaggedPtr {
     #[inline]
     pub fn tag(&self) -> MyEnum {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 3u64 as u64;
         let val = (unit_field_val & mask) >> 0usize;
@@ -47,31 +62,31 @@ impl TaggedPtr {
         let val = val as u32 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn ptr(&self) -> ::std::os::raw::c_long {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 18446744073709551612u64 as u64;
         let val = (unit_field_val & mask) >> 2usize;
@@ -83,26 +98,25 @@ impl TaggedPtr {
         let val = val as u64 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 2usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn new_bitfield_1(tag: MyEnum, ptr: ::std::os::raw::c_long) -> u64 {
-        ({ ({ 0 } | ((tag as u32 as u64) << 0usize) & (3u64 as u64)) } |
-             ((ptr as u64 as u64) << 2usize) &
-                 (18446744073709551612u64 as u64))
+        ((0 | ((tag as u32 as u64) << 0usize) & (3u64 as u64)) |
+            ((ptr as u64 as u64) << 2usize) & (18446744073709551612u64 as u64))
     }
 }

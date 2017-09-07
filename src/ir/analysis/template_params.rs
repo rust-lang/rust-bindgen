@@ -146,11 +146,8 @@ use std::collections::{HashMap, HashSet};
 /// specially; see `constrain_instantiation_of_blacklisted_template` and its
 /// documentation for details.
 #[derive(Debug, Clone)]
-pub struct UsedTemplateParameters<'ctx, 'gen>
-where
-    'gen: 'ctx,
-{
-    ctx: &'ctx BindgenContext<'gen>,
+pub struct UsedTemplateParameters<'ctx> {
+    ctx: &'ctx BindgenContext,
 
     // The Option is only there for temporary moves out of the hash map. See the
     // comments in `UsedTemplateParameters::constrain` below.
@@ -164,7 +161,7 @@ where
     whitelisted_items: HashSet<ItemId>,
 }
 
-impl<'ctx, 'gen> UsedTemplateParameters<'ctx, 'gen> {
+impl<'ctx> UsedTemplateParameters<'ctx> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             // For each of these kinds of edges, if the referent uses a template
@@ -367,14 +364,14 @@ impl<'ctx, 'gen> UsedTemplateParameters<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
+impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
     type Node = ItemId;
-    type Extra = &'ctx BindgenContext<'gen>;
+    type Extra = &'ctx BindgenContext;
     type Output = HashMap<ItemId, ItemSet>;
 
     fn new(
-        ctx: &'ctx BindgenContext<'gen>,
-    ) -> UsedTemplateParameters<'ctx, 'gen> {
+        ctx: &'ctx BindgenContext,
+    ) -> UsedTemplateParameters<'ctx> {
         let mut used = HashMap::new();
         let mut dependencies = HashMap::new();
         let whitelisted_items: HashSet<_> =
@@ -578,9 +575,9 @@ impl<'ctx, 'gen> MonotoneFramework for UsedTemplateParameters<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> From<UsedTemplateParameters<'ctx, 'gen>>
+impl<'ctx> From<UsedTemplateParameters<'ctx>>
     for HashMap<ItemId, ItemSet> {
-    fn from(used_templ_params: UsedTemplateParameters<'ctx, 'gen>) -> Self {
+    fn from(used_templ_params: UsedTemplateParameters<'ctx>) -> Self {
         used_templ_params
             .used
             .into_iter()

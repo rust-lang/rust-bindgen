@@ -23,10 +23,8 @@ use ir::comp::FieldMethods;
 ///   float if any of the template arguments or template definition
 ///   has.
 #[derive(Debug, Clone)]
-pub struct HasFloat<'ctx, 'gen>
-    where 'gen: 'ctx
-{
-    ctx: &'ctx BindgenContext<'gen>,
+pub struct HasFloat<'ctx> {
+    ctx: &'ctx BindgenContext,
 
     // The incremental result of this analysis's computation. Everything in this
     // set has float.
@@ -42,7 +40,7 @@ pub struct HasFloat<'ctx, 'gen>
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
-impl<'ctx, 'gen> HasFloat<'ctx, 'gen> {
+impl<'ctx> HasFloat<'ctx> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             EdgeKind::BaseMember |
@@ -79,12 +77,12 @@ impl<'ctx, 'gen> HasFloat<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> MonotoneFramework for HasFloat<'ctx, 'gen> {
+impl<'ctx> MonotoneFramework for HasFloat<'ctx> {
     type Node = ItemId;
-    type Extra = &'ctx BindgenContext<'gen>;
+    type Extra = &'ctx BindgenContext;
     type Output = HashSet<ItemId>;
 
-    fn new(ctx: &'ctx BindgenContext<'gen>) -> HasFloat<'ctx, 'gen> {
+    fn new(ctx: &'ctx BindgenContext) -> HasFloat<'ctx> {
         let has_float = HashSet::new();
         let dependencies = generate_dependencies(ctx, Self::consider_edge);
 
@@ -232,8 +230,8 @@ impl<'ctx, 'gen> MonotoneFramework for HasFloat<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> From<HasFloat<'ctx, 'gen>> for HashSet<ItemId> {
-    fn from(analysis: HasFloat<'ctx, 'gen>) -> Self {
+impl<'ctx> From<HasFloat<'ctx>> for HashSet<ItemId> {
+    fn from(analysis: HasFloat<'ctx>) -> Self {
         analysis.has_float
     }
 }

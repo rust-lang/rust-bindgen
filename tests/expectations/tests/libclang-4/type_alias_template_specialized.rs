@@ -11,32 +11,48 @@ pub struct Rooted {
 }
 #[test]
 fn bindgen_test_layout_Rooted() {
-    assert_eq!(::std::mem::size_of::<Rooted>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( Rooted ) ));
-    assert_eq! (::std::mem::align_of::<Rooted>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( Rooted ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Rooted ) ) . ptr as * const _ as usize }
-                , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Rooted ) , "::" ,
-                stringify ! ( ptr ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Rooted>(),
+        4usize,
+        concat!("Size of: ", stringify!(Rooted))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Rooted>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Rooted))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Rooted)).ptr as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Rooted),
+            "::",
+            stringify!(ptr)
+        )
+    );
 }
 impl Clone for Rooted {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for Rooted {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 /// <div rustbindgen replaces="MaybeWrapped"></div>
 pub type MaybeWrapped<a> = a;
 #[test]
 fn __bindgen_test_layout_MaybeWrapped_open0_int_close0_instantiation() {
-    assert_eq!(::std::mem::size_of::<MaybeWrapped<::std::os::raw::c_int>>() ,
-               4usize , concat ! (
-               "Size of template specialization: " , stringify ! (
-               MaybeWrapped<::std::os::raw::c_int> ) ));
-    assert_eq!(::std::mem::align_of::<MaybeWrapped<::std::os::raw::c_int>>() ,
-               4usize , concat ! (
-               "Alignment of template specialization: " , stringify ! (
-               MaybeWrapped<::std::os::raw::c_int> ) ));
+    assert_eq!(
+        ::std::mem::size_of::<MaybeWrapped<::std::os::raw::c_int>>(),
+        4usize,
+        concat!(
+            "Size of template specialization: ",
+            stringify ! ( MaybeWrapped < :: std :: os :: raw :: c_int > )
+        )
+    );
+    assert_eq ! ( :: std :: mem :: align_of :: < MaybeWrapped < :: std :: os :: raw :: c_int > > ( ) , 4usize , concat ! ( "Alignment of template specialization: " , stringify ! ( MaybeWrapped < :: std :: os :: raw :: c_int > ) ) );
 }

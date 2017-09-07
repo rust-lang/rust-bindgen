@@ -37,12 +37,12 @@ impl<'a> Timer<'a> {
     fn print_elapsed(&mut self) {
         if self.output {
             let elapsed = self.elapsed();
-            let time = (elapsed.as_secs() as f32)
-                       + (elapsed.subsec_nanos() as f32) / 1e9;
+            let time = (elapsed.as_secs() as f64) * 1e3
+                       + (elapsed.subsec_nanos() as f64) / 1e6;
             let stderr = io::stderr();
             // Arbitrary output format, subject to change.
             writeln!(stderr.lock(),
-                     "  time: {:.3} ms.\t{}",
+                     "  time: {:>9.3} ms.\t{}",
                      time, self.name)
                      .expect("timer write should not fail");
         }

@@ -5,6 +5,7 @@
 
 pub struct BlacklistMe(u8);
 
+
 /// Because this type contains a blacklisted type, it should not derive Debug.
 #[repr(C)]
 pub struct ShouldManuallyImplDebug {
@@ -12,23 +13,34 @@ pub struct ShouldManuallyImplDebug {
 }
 #[test]
 fn bindgen_test_layout_ShouldManuallyImplDebug() {
-    assert_eq!(::std::mem::size_of::<ShouldManuallyImplDebug>() , 1usize ,
-               concat ! (
-               "Size of: " , stringify ! ( ShouldManuallyImplDebug ) ));
-    assert_eq! (::std::mem::align_of::<ShouldManuallyImplDebug>() , 1usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( ShouldManuallyImplDebug ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ShouldManuallyImplDebug ) ) . a as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( ShouldManuallyImplDebug
-                ) , "::" , stringify ! ( a ) ));
+    assert_eq!(
+        ::std::mem::size_of::<ShouldManuallyImplDebug>(),
+        1usize,
+        concat!("Size of: ", stringify!(ShouldManuallyImplDebug))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ShouldManuallyImplDebug>(),
+        1usize,
+        concat!("Alignment of ", stringify!(ShouldManuallyImplDebug))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ShouldManuallyImplDebug)).a as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ShouldManuallyImplDebug),
+            "::",
+            stringify!(a)
+        )
+    );
 }
 impl Default for ShouldManuallyImplDebug {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 impl ::std::fmt::Debug for ShouldManuallyImplDebug {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        write!(f , "ShouldManuallyImplDebug {{  }}")
+        write!(f, "ShouldManuallyImplDebug {{  }}")
     }
 }

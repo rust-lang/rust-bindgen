@@ -45,7 +45,7 @@ TEST_BINDINGS_BINARY=$(mktemp -t bindings.XXXXXX)
 FLAGS="$(grep "// bindgen-flags: " "$TEST" || echo)"
 FLAGS="${FLAGS/\/\/ bindgen\-flags:/}"
 # Prepend the default flags added in test.rs's `create_bindgen_builder`.
-FLAGS="--with-derive-default --raw-line '' --raw-line '#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]' --raw-line '' $FLAGS"
+FLAGS="--rustfmt-bindings --with-derive-default --raw-line '' --raw-line '#![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]' --raw-line '' $FLAGS"
 
 
 eval ./target/debug/bindgen \
@@ -55,6 +55,8 @@ eval ./target/debug/bindgen \
     --emit-clang-ast \
     -o "\"$BINDINGS\"" \
     $FLAGS
+
+rustup run nightly rustfmt "$BINDINGS" || true
 
 dot -Tpng ir.dot -o ir.png
 
@@ -77,6 +79,8 @@ echo
 EXPECTED=${TEST/headers/expectations\/tests}
 EXPECTED=${EXPECTED/.hpp/.rs}
 EXPECTED=${EXPECTED/.h/.rs}
+
+rustup run nightly rustfmt "$EXPECTED" || true
 
 # Don't exit early if there is a diff.
 diff -U8 "$EXPECTED" "$BINDINGS" || true

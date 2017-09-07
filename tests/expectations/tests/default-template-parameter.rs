@@ -12,19 +12,29 @@ pub struct Foo<T, U> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub _phantom_1: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
 }
-impl <T, U> Default for Foo<T, U> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T, U> Default for Foo<T, U> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[test]
 fn __bindgen_test_layout_Foo_open0_bool__int_close0_instantiation() {
-    assert_eq!(::std::mem::size_of::<Foo<bool, ::std::os::raw::c_int>>() ,
-               8usize , concat ! (
-               "Size of template specialization: " , stringify ! (
-               Foo<bool, ::std::os::raw::c_int> ) ));
-    assert_eq!(::std::mem::align_of::<Foo<bool, ::std::os::raw::c_int>>() ,
-               4usize , concat ! (
-               "Alignment of template specialization: " , stringify ! (
-               Foo<bool, ::std::os::raw::c_int> ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Foo<bool, ::std::os::raw::c_int>>(),
+        8usize,
+        concat!(
+            "Size of template specialization: ",
+            stringify ! ( Foo < bool , :: std :: os :: raw :: c_int > )
+        )
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Foo<bool, ::std::os::raw::c_int>>(),
+        4usize,
+        concat!(
+            "Alignment of template specialization: ",
+            stringify ! ( Foo < bool , :: std :: os :: raw :: c_int > )
+        )
+    );
 }
 extern "C" {
     #[link_name = "_ZL3bar"]

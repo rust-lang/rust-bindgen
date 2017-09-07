@@ -31,11 +31,8 @@ use std::collections::HashSet;
 ///   derived copy if any of the template arguments or template definition
 ///   cannot derive copy.
 #[derive(Debug, Clone)]
-pub struct CannotDeriveCopy<'ctx, 'gen>
-where
-    'gen: 'ctx,
-{
-    ctx: &'ctx BindgenContext<'gen>,
+pub struct CannotDeriveCopy<'ctx> {
+    ctx: &'ctx BindgenContext,
 
     // The incremental result of this analysis's computation. Everything in this
     // set cannot derive copy.
@@ -51,7 +48,7 @@ where
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
-impl<'ctx, 'gen> CannotDeriveCopy<'ctx, 'gen> {
+impl<'ctx> CannotDeriveCopy<'ctx> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             // These are the only edges that can affect whether a type can derive
@@ -97,12 +94,12 @@ impl<'ctx, 'gen> CannotDeriveCopy<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
+impl<'ctx> MonotoneFramework for CannotDeriveCopy<'ctx> {
     type Node = ItemId;
-    type Extra = &'ctx BindgenContext<'gen>;
+    type Extra = &'ctx BindgenContext;
     type Output = HashSet<ItemId>;
 
-    fn new(ctx: &'ctx BindgenContext<'gen>) -> CannotDeriveCopy<'ctx, 'gen> {
+    fn new(ctx: &'ctx BindgenContext) -> CannotDeriveCopy<'ctx> {
         let cannot_derive_copy = HashSet::new();
         let dependencies = generate_dependencies(ctx, Self::consider_edge);
 
@@ -336,8 +333,8 @@ impl<'ctx, 'gen> MonotoneFramework for CannotDeriveCopy<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> From<CannotDeriveCopy<'ctx, 'gen>> for HashSet<ItemId> {
-    fn from(analysis: CannotDeriveCopy<'ctx, 'gen>) -> Self {
+impl<'ctx> From<CannotDeriveCopy<'ctx>> for HashSet<ItemId> {
+    fn from(analysis: CannotDeriveCopy<'ctx>) -> Self {
         analysis.cannot_derive_copy
     }
 }

@@ -64,42 +64,67 @@ pub struct rte_eth_rxmode {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_rxmode() {
-    assert_eq!(::std::mem::size_of::<rte_eth_rxmode>() , 12usize , concat ! (
-               "Size of: " , stringify ! ( rte_eth_rxmode ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_rxmode>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( rte_eth_rxmode ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_rxmode ) ) . mq_mode as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_rxmode ) , "::"
-                , stringify ! ( mq_mode ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_rxmode ) ) . max_rx_pkt_len as *
-                const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_rxmode ) , "::"
-                , stringify ! ( max_rx_pkt_len ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_rxmode ) ) . split_hdr_size as *
-                const _ as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_rxmode ) , "::"
-                , stringify ! ( split_hdr_size ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_rxmode>(),
+        12usize,
+        concat!("Size of: ", stringify!(rte_eth_rxmode))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_rxmode>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_eth_rxmode))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_rxmode)).mq_mode as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_rxmode),
+            "::",
+            stringify!(mq_mode)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_rxmode)).max_rx_pkt_len as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_rxmode),
+            "::",
+            stringify!(max_rx_pkt_len)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_rxmode)).split_hdr_size as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_rxmode),
+            "::",
+            stringify!(split_hdr_size)
+        )
+    );
 }
 impl Clone for rte_eth_rxmode {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_eth_rxmode {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 impl rte_eth_rxmode {
     #[inline]
     pub fn header_split(&self) -> u16 {
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         let mask = 1u64 as u16;
         let val = (unit_field_val & mask) >> 0usize;
@@ -111,31 +136,31 @@ impl rte_eth_rxmode {
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            );
         }
     }
     #[inline]
     pub fn hw_ip_checksum(&self) -> u16 {
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         let mask = 2u64 as u16;
         let val = (unit_field_val & mask) >> 1usize;
@@ -147,31 +172,31 @@ impl rte_eth_rxmode {
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 1usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            );
         }
     }
     #[inline]
     pub fn hw_vlan_filter(&self) -> u16 {
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         let mask = 4u64 as u16;
         let val = (unit_field_val & mask) >> 2usize;
@@ -183,31 +208,31 @@ impl rte_eth_rxmode {
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 2usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            );
         }
     }
     #[inline]
     pub fn hw_vlan_strip(&self) -> u16 {
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         let mask = 8u64 as u16;
         let val = (unit_field_val & mask) >> 3usize;
@@ -219,31 +244,31 @@ impl rte_eth_rxmode {
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 3usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            );
         }
     }
     #[inline]
     pub fn hw_vlan_extend(&self) -> u16 {
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         let mask = 16u64 as u16;
         let val = (unit_field_val & mask) >> 4usize;
@@ -255,31 +280,31 @@ impl rte_eth_rxmode {
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 4usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            );
         }
     }
     #[inline]
     pub fn jumbo_frame(&self) -> u16 {
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         let mask = 32u64 as u16;
         let val = (unit_field_val & mask) >> 5usize;
@@ -291,31 +316,31 @@ impl rte_eth_rxmode {
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 5usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            );
         }
     }
     #[inline]
     pub fn hw_strip_crc(&self) -> u16 {
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         let mask = 64u64 as u16;
         let val = (unit_field_val & mask) >> 6usize;
@@ -327,31 +352,31 @@ impl rte_eth_rxmode {
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 6usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            );
         }
     }
     #[inline]
     pub fn enable_scatter(&self) -> u16 {
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         let mask = 128u64 as u16;
         let val = (unit_field_val & mask) >> 7usize;
@@ -363,31 +388,31 @@ impl rte_eth_rxmode {
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 7usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            );
         }
     }
     #[inline]
     pub fn enable_lro(&self) -> u16 {
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         let mask = 256u64 as u16;
         let val = (unit_field_val & mask) >> 8usize;
@@ -399,63 +424,43 @@ impl rte_eth_rxmode {
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u16 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u16 as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 8usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u16>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u16>(),
+            );
         }
     }
     #[inline]
-    pub fn new_bitfield_1(header_split: u16, hw_ip_checksum: u16,
-                          hw_vlan_filter: u16, hw_vlan_strip: u16,
-                          hw_vlan_extend: u16, jumbo_frame: u16,
-                          hw_strip_crc: u16, enable_scatter: u16,
-                          enable_lro: u16) -> u16 {
-        ({
-             ({
-                  ({
-                       ({
-                            ({
-                                 ({
-                                      ({
-                                           ({
-                                                ({ 0 } |
-                                                     ((header_split as u16 as
-                                                           u16) << 0usize) &
-                                                         (1u64 as u16))
-                                            } |
-                                                ((hw_ip_checksum as u16 as
-                                                      u16) << 1usize) &
-                                                    (2u64 as u16))
-                                       } |
-                                           ((hw_vlan_filter as u16 as u16) <<
-                                                2usize) & (4u64 as u16))
-                                  } |
-                                      ((hw_vlan_strip as u16 as u16) <<
-                                           3usize) & (8u64 as u16))
-                             } |
-                                 ((hw_vlan_extend as u16 as u16) << 4usize) &
-                                     (16u64 as u16))
-                        } |
-                            ((jumbo_frame as u16 as u16) << 5usize) &
-                                (32u64 as u16))
-                   } |
-                       ((hw_strip_crc as u16 as u16) << 6usize) &
-                           (64u64 as u16))
-              } |
-                  ((enable_scatter as u16 as u16) << 7usize) &
-                      (128u64 as u16))
-         } | ((enable_lro as u16 as u16) << 8usize) & (256u64 as u16))
+    pub fn new_bitfield_1(
+        header_split: u16,
+        hw_ip_checksum: u16,
+        hw_vlan_filter: u16,
+        hw_vlan_strip: u16,
+        hw_vlan_extend: u16,
+        jumbo_frame: u16,
+        hw_strip_crc: u16,
+        enable_scatter: u16,
+        enable_lro: u16,
+    ) -> u16 {
+        (((((((((0 | ((header_split as u16 as u16) << 0usize) & (1u64 as u16)) |
+            ((hw_ip_checksum as u16 as u16) << 1usize) & (2u64 as u16)) |
+            ((hw_vlan_filter as u16 as u16) << 2usize) & (4u64 as u16)) |
+            ((hw_vlan_strip as u16 as u16) << 3usize) & (8u64 as u16)) |
+            ((hw_vlan_extend as u16 as u16) << 4usize) & (16u64 as u16)) |
+            ((jumbo_frame as u16 as u16) << 5usize) & (32u64 as u16)) |
+            ((hw_strip_crc as u16 as u16) << 6usize) & (64u64 as u16)) |
+            ((enable_scatter as u16 as u16) << 7usize) & (128u64 as u16)) |
+            ((enable_lro as u16 as u16) << 8usize) & (256u64 as u16))
     }
 }
 #[repr(u32)]
@@ -480,37 +485,57 @@ pub struct rte_eth_txmode {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_txmode() {
-    assert_eq!(::std::mem::size_of::<rte_eth_txmode>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( rte_eth_txmode ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_txmode>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( rte_eth_txmode ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_txmode ) ) . mq_mode as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_txmode ) , "::"
-                , stringify ! ( mq_mode ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_txmode ) ) . pvid as * const _ as
-                usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_txmode ) , "::"
-                , stringify ! ( pvid ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_txmode>(),
+        8usize,
+        concat!("Size of: ", stringify!(rte_eth_txmode))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_txmode>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_eth_txmode))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_txmode)).mq_mode as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_txmode),
+            "::",
+            stringify!(mq_mode)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_txmode)).pvid as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_txmode),
+            "::",
+            stringify!(pvid)
+        )
+    );
 }
 impl Clone for rte_eth_txmode {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_eth_txmode {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 impl rte_eth_txmode {
     #[inline]
     pub fn hw_vlan_reject_tagged(&self) -> u8 {
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u8 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u8 as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            )
         };
         let mask = 1u64 as u8;
         let val = (unit_field_val & mask) >> 0usize;
@@ -522,31 +547,31 @@ impl rte_eth_txmode {
         let val = val as u8 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u8 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u8 as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            );
         }
     }
     #[inline]
     pub fn hw_vlan_reject_untagged(&self) -> u8 {
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u8 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u8 as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            )
         };
         let mask = 2u64 as u8;
         let val = (unit_field_val & mask) >> 1usize;
@@ -558,31 +583,31 @@ impl rte_eth_txmode {
         let val = val as u8 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u8 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u8 as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 1usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            );
         }
     }
     #[inline]
     pub fn hw_vlan_insert_pvid(&self) -> u8 {
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u8 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u8 as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            )
         };
         let mask = 4u64 as u8;
         let val = (unit_field_val & mask) >> 2usize;
@@ -594,35 +619,31 @@ impl rte_eth_txmode {
         let val = val as u8 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u8 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u8 as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 2usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u8>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u8>(),
+            );
         }
     }
     #[inline]
-    pub fn new_bitfield_1(hw_vlan_reject_tagged: u8,
-                          hw_vlan_reject_untagged: u8,
-                          hw_vlan_insert_pvid: u8) -> u8 {
-        ({
-             ({
-                  ({ 0 } |
-                       ((hw_vlan_reject_tagged as u8 as u8) << 0usize) &
-                           (1u64 as u8))
-              } |
-                  ((hw_vlan_reject_untagged as u8 as u8) << 1usize) &
-                      (2u64 as u8))
-         } | ((hw_vlan_insert_pvid as u8 as u8) << 2usize) & (4u64 as u8))
+    pub fn new_bitfield_1(
+        hw_vlan_reject_tagged: u8,
+        hw_vlan_reject_untagged: u8,
+        hw_vlan_insert_pvid: u8,
+    ) -> u8 {
+        (((0 | ((hw_vlan_reject_tagged as u8 as u8) << 0usize) & (1u64 as u8)) |
+            ((hw_vlan_reject_untagged as u8 as u8) << 1usize) & (2u64 as u8)) |
+            ((hw_vlan_insert_pvid as u8 as u8) << 2usize) & (4u64 as u8))
     }
 }
 /// A structure used to configure the Receive Side Scaling (RSS) feature
@@ -652,37 +673,65 @@ pub struct rte_eth_rss_conf {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_rss_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_rss_conf>() , 24usize , concat !
-               ( "Size of: " , stringify ! ( rte_eth_rss_conf ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_rss_conf>() , 8usize , concat !
-                ( "Alignment of " , stringify ! ( rte_eth_rss_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_rss_conf ) ) . rss_key as * const
-                _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_rss_conf ) ,
-                "::" , stringify ! ( rss_key ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_rss_conf ) ) . rss_key_len as *
-                const _ as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_rss_conf ) ,
-                "::" , stringify ! ( rss_key_len ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_rss_conf ) ) . rss_hf as * const
-                _ as usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_rss_conf ) ,
-                "::" , stringify ! ( rss_hf ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_rss_conf>(),
+        24usize,
+        concat!("Size of: ", stringify!(rte_eth_rss_conf))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_rss_conf>(),
+        8usize,
+        concat!("Alignment of ", stringify!(rte_eth_rss_conf))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_rss_conf)).rss_key as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_rss_conf),
+            "::",
+            stringify!(rss_key)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_rss_conf)).rss_key_len as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_rss_conf),
+            "::",
+            stringify!(rss_key_len)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_rss_conf)).rss_hf as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_rss_conf),
+            "::",
+            stringify!(rss_hf)
+        )
+    );
 }
 impl Clone for rte_eth_rss_conf {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_eth_rss_conf {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(u32)]
 /// This enum indicates the possible number of traffic classes
 /// in DCB configratioins
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum rte_eth_nb_tcs { ETH_4_TCS = 4, ETH_8_TCS = 8, }
+pub enum rte_eth_nb_tcs {
+    ETH_4_TCS = 4,
+    ETH_8_TCS = 8,
+}
 #[repr(u32)]
 /// This enum indicates the possible number of queue pools
 /// in VMDQ configurations.
@@ -727,75 +776,129 @@ pub struct rte_eth_vmdq_dcb_conf__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_vmdq_dcb_conf__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<rte_eth_vmdq_dcb_conf__bindgen_ty_1>() ,
-               16usize , concat ! (
-               "Size of: " , stringify ! ( rte_eth_vmdq_dcb_conf__bindgen_ty_1
-               ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_vmdq_dcb_conf__bindgen_ty_1>()
-                , 8usize , concat ! (
-                "Alignment of " , stringify ! (
-                rte_eth_vmdq_dcb_conf__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_dcb_conf__bindgen_ty_1 ) ) .
-                vlan_id as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_eth_vmdq_dcb_conf__bindgen_ty_1 ) , "::" , stringify ! (
-                vlan_id ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_dcb_conf__bindgen_ty_1 ) ) .
-                pools as * const _ as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_eth_vmdq_dcb_conf__bindgen_ty_1 ) , "::" , stringify ! (
-                pools ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_vmdq_dcb_conf__bindgen_ty_1>(),
+        16usize,
+        concat!("Size of: ", stringify!(rte_eth_vmdq_dcb_conf__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_vmdq_dcb_conf__bindgen_ty_1>(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(rte_eth_vmdq_dcb_conf__bindgen_ty_1)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(0 as *const rte_eth_vmdq_dcb_conf__bindgen_ty_1)).vlan_id as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_dcb_conf__bindgen_ty_1),
+            "::",
+            stringify!(vlan_id)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_conf__bindgen_ty_1)).pools as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_dcb_conf__bindgen_ty_1),
+            "::",
+            stringify!(pools)
+        )
+    );
 }
 impl Clone for rte_eth_vmdq_dcb_conf__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[test]
 fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_vmdq_dcb_conf>() , 1040usize ,
-               concat ! ( "Size of: " , stringify ! ( rte_eth_vmdq_dcb_conf )
-               ));
-    assert_eq! (::std::mem::align_of::<rte_eth_vmdq_dcb_conf>() , 8usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( rte_eth_vmdq_dcb_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_dcb_conf ) ) .
-                nb_queue_pools as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_vmdq_dcb_conf )
-                , "::" , stringify ! ( nb_queue_pools ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_dcb_conf ) ) .
-                enable_default_pool as * const _ as usize } , 4usize , concat
-                ! (
-                "Alignment of field: " , stringify ! ( rte_eth_vmdq_dcb_conf )
-                , "::" , stringify ! ( enable_default_pool ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_dcb_conf ) ) . default_pool
-                as * const _ as usize } , 5usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_vmdq_dcb_conf )
-                , "::" , stringify ! ( default_pool ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_dcb_conf ) ) . nb_pool_maps
-                as * const _ as usize } , 6usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_vmdq_dcb_conf )
-                , "::" , stringify ! ( nb_pool_maps ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_dcb_conf ) ) . pool_map as *
-                const _ as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_vmdq_dcb_conf )
-                , "::" , stringify ! ( pool_map ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_dcb_conf ) ) . dcb_tc as *
-                const _ as usize } , 1032usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_vmdq_dcb_conf )
-                , "::" , stringify ! ( dcb_tc ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_vmdq_dcb_conf>(),
+        1040usize,
+        concat!("Size of: ", stringify!(rte_eth_vmdq_dcb_conf))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_vmdq_dcb_conf>(),
+        8usize,
+        concat!("Alignment of ", stringify!(rte_eth_vmdq_dcb_conf))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_conf)).nb_queue_pools as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_dcb_conf),
+            "::",
+            stringify!(nb_queue_pools)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_conf)).enable_default_pool as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_dcb_conf),
+            "::",
+            stringify!(enable_default_pool)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_conf)).default_pool as *const _ as usize },
+        5usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_dcb_conf),
+            "::",
+            stringify!(default_pool)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_conf)).nb_pool_maps as *const _ as usize },
+        6usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_dcb_conf),
+            "::",
+            stringify!(nb_pool_maps)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_conf)).pool_map as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_dcb_conf),
+            "::",
+            stringify!(pool_map)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_conf)).dcb_tc as *const _ as usize },
+        1032usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_dcb_conf),
+            "::",
+            stringify!(dcb_tc)
+        )
+    );
 }
 impl Clone for rte_eth_vmdq_dcb_conf {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_eth_vmdq_dcb_conf {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Hash, PartialEq, Eq)]
@@ -807,27 +910,46 @@ pub struct rte_eth_dcb_rx_conf {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_dcb_rx_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_dcb_rx_conf>() , 12usize , concat
-               ! ( "Size of: " , stringify ! ( rte_eth_dcb_rx_conf ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_dcb_rx_conf>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( rte_eth_dcb_rx_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_dcb_rx_conf ) ) . nb_tcs as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_dcb_rx_conf ) ,
-                "::" , stringify ! ( nb_tcs ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_dcb_rx_conf ) ) . dcb_tc as *
-                const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_dcb_rx_conf ) ,
-                "::" , stringify ! ( dcb_tc ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_dcb_rx_conf>(),
+        12usize,
+        concat!("Size of: ", stringify!(rte_eth_dcb_rx_conf))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_dcb_rx_conf>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_eth_dcb_rx_conf))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_dcb_rx_conf)).nb_tcs as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_dcb_rx_conf),
+            "::",
+            stringify!(nb_tcs)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_dcb_rx_conf)).dcb_tc as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_dcb_rx_conf),
+            "::",
+            stringify!(dcb_tc)
+        )
+    );
 }
 impl Clone for rte_eth_dcb_rx_conf {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_eth_dcb_rx_conf {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Hash, PartialEq, Eq)]
@@ -839,29 +961,46 @@ pub struct rte_eth_vmdq_dcb_tx_conf {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_vmdq_dcb_tx_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_vmdq_dcb_tx_conf>() , 12usize ,
-               concat ! (
-               "Size of: " , stringify ! ( rte_eth_vmdq_dcb_tx_conf ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_vmdq_dcb_tx_conf>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( rte_eth_vmdq_dcb_tx_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_dcb_tx_conf ) ) .
-                nb_queue_pools as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_eth_vmdq_dcb_tx_conf ) , "::" , stringify ! (
-                nb_queue_pools ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_dcb_tx_conf ) ) . dcb_tc as
-                * const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_eth_vmdq_dcb_tx_conf ) , "::" , stringify ! ( dcb_tc ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_vmdq_dcb_tx_conf>(),
+        12usize,
+        concat!("Size of: ", stringify!(rte_eth_vmdq_dcb_tx_conf))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_vmdq_dcb_tx_conf>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_eth_vmdq_dcb_tx_conf))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_tx_conf)).nb_queue_pools as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_dcb_tx_conf),
+            "::",
+            stringify!(nb_queue_pools)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_tx_conf)).dcb_tc as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_dcb_tx_conf),
+            "::",
+            stringify!(dcb_tc)
+        )
+    );
 }
 impl Clone for rte_eth_vmdq_dcb_tx_conf {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_eth_vmdq_dcb_tx_conf {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Hash, PartialEq, Eq)]
@@ -873,27 +1012,46 @@ pub struct rte_eth_dcb_tx_conf {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_dcb_tx_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_dcb_tx_conf>() , 12usize , concat
-               ! ( "Size of: " , stringify ! ( rte_eth_dcb_tx_conf ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_dcb_tx_conf>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( rte_eth_dcb_tx_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_dcb_tx_conf ) ) . nb_tcs as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_dcb_tx_conf ) ,
-                "::" , stringify ! ( nb_tcs ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_dcb_tx_conf ) ) . dcb_tc as *
-                const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_dcb_tx_conf ) ,
-                "::" , stringify ! ( dcb_tc ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_dcb_tx_conf>(),
+        12usize,
+        concat!("Size of: ", stringify!(rte_eth_dcb_tx_conf))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_dcb_tx_conf>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_eth_dcb_tx_conf))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_dcb_tx_conf)).nb_tcs as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_dcb_tx_conf),
+            "::",
+            stringify!(nb_tcs)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_dcb_tx_conf)).dcb_tc as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_dcb_tx_conf),
+            "::",
+            stringify!(dcb_tc)
+        )
+    );
 }
 impl Clone for rte_eth_dcb_tx_conf {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_eth_dcb_tx_conf {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Hash, PartialEq, Eq)]
@@ -903,22 +1061,36 @@ pub struct rte_eth_vmdq_tx_conf {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_vmdq_tx_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_vmdq_tx_conf>() , 4usize , concat
-               ! ( "Size of: " , stringify ! ( rte_eth_vmdq_tx_conf ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_vmdq_tx_conf>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( rte_eth_vmdq_tx_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_tx_conf ) ) . nb_queue_pools
-                as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_vmdq_tx_conf )
-                , "::" , stringify ! ( nb_queue_pools ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_vmdq_tx_conf>(),
+        4usize,
+        concat!("Size of: ", stringify!(rte_eth_vmdq_tx_conf))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_vmdq_tx_conf>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_eth_vmdq_tx_conf))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_tx_conf)).nb_queue_pools as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_tx_conf),
+            "::",
+            stringify!(nb_queue_pools)
+        )
+    );
 }
 impl Clone for rte_eth_vmdq_tx_conf {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_eth_vmdq_tx_conf {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -948,80 +1120,139 @@ pub struct rte_eth_vmdq_rx_conf__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_vmdq_rx_conf__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<rte_eth_vmdq_rx_conf__bindgen_ty_1>() ,
-               16usize , concat ! (
-               "Size of: " , stringify ! ( rte_eth_vmdq_rx_conf__bindgen_ty_1
-               ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_vmdq_rx_conf__bindgen_ty_1>() ,
-                8usize , concat ! (
-                "Alignment of " , stringify ! (
-                rte_eth_vmdq_rx_conf__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_rx_conf__bindgen_ty_1 ) ) .
-                vlan_id as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_eth_vmdq_rx_conf__bindgen_ty_1 ) , "::" , stringify ! (
-                vlan_id ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_rx_conf__bindgen_ty_1 ) ) .
-                pools as * const _ as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_eth_vmdq_rx_conf__bindgen_ty_1 ) , "::" , stringify ! (
-                pools ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_vmdq_rx_conf__bindgen_ty_1>(),
+        16usize,
+        concat!("Size of: ", stringify!(rte_eth_vmdq_rx_conf__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_vmdq_rx_conf__bindgen_ty_1>(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(rte_eth_vmdq_rx_conf__bindgen_ty_1)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(0 as *const rte_eth_vmdq_rx_conf__bindgen_ty_1)).vlan_id as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_rx_conf__bindgen_ty_1),
+            "::",
+            stringify!(vlan_id)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_rx_conf__bindgen_ty_1)).pools as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_rx_conf__bindgen_ty_1),
+            "::",
+            stringify!(pools)
+        )
+    );
 }
 impl Clone for rte_eth_vmdq_rx_conf__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[test]
 fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_vmdq_rx_conf>() , 1040usize ,
-               concat ! ( "Size of: " , stringify ! ( rte_eth_vmdq_rx_conf )
-               ));
-    assert_eq! (::std::mem::align_of::<rte_eth_vmdq_rx_conf>() , 8usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( rte_eth_vmdq_rx_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_rx_conf ) ) . nb_queue_pools
-                as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_vmdq_rx_conf )
-                , "::" , stringify ! ( nb_queue_pools ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_rx_conf ) ) .
-                enable_default_pool as * const _ as usize } , 4usize , concat
-                ! (
-                "Alignment of field: " , stringify ! ( rte_eth_vmdq_rx_conf )
-                , "::" , stringify ! ( enable_default_pool ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_rx_conf ) ) . default_pool
-                as * const _ as usize } , 5usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_vmdq_rx_conf )
-                , "::" , stringify ! ( default_pool ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_rx_conf ) ) .
-                enable_loop_back as * const _ as usize } , 6usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_vmdq_rx_conf )
-                , "::" , stringify ! ( enable_loop_back ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_rx_conf ) ) . nb_pool_maps
-                as * const _ as usize } , 7usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_vmdq_rx_conf )
-                , "::" , stringify ! ( nb_pool_maps ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_rx_conf ) ) . rx_mode as *
-                const _ as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_vmdq_rx_conf )
-                , "::" , stringify ! ( rx_mode ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_vmdq_rx_conf ) ) . pool_map as *
-                const _ as usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_vmdq_rx_conf )
-                , "::" , stringify ! ( pool_map ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_vmdq_rx_conf>(),
+        1040usize,
+        concat!("Size of: ", stringify!(rte_eth_vmdq_rx_conf))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_vmdq_rx_conf>(),
+        8usize,
+        concat!("Alignment of ", stringify!(rte_eth_vmdq_rx_conf))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_rx_conf)).nb_queue_pools as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_rx_conf),
+            "::",
+            stringify!(nb_queue_pools)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_rx_conf)).enable_default_pool as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_rx_conf),
+            "::",
+            stringify!(enable_default_pool)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_rx_conf)).default_pool as *const _ as usize },
+        5usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_rx_conf),
+            "::",
+            stringify!(default_pool)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_rx_conf)).enable_loop_back as *const _ as usize },
+        6usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_rx_conf),
+            "::",
+            stringify!(enable_loop_back)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_rx_conf)).nb_pool_maps as *const _ as usize },
+        7usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_rx_conf),
+            "::",
+            stringify!(nb_pool_maps)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_rx_conf)).rx_mode as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_rx_conf),
+            "::",
+            stringify!(rx_mode)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_vmdq_rx_conf)).pool_map as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_vmdq_rx_conf),
+            "::",
+            stringify!(pool_map)
+        )
+    );
 }
 impl Clone for rte_eth_vmdq_rx_conf {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_eth_vmdq_rx_conf {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(u32)]
 /// Flow Director setting modes: none, signature or perfect.
@@ -1067,38 +1298,71 @@ pub struct rte_eth_ipv4_flow {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_ipv4_flow() {
-    assert_eq!(::std::mem::size_of::<rte_eth_ipv4_flow>() , 12usize , concat !
-               ( "Size of: " , stringify ! ( rte_eth_ipv4_flow ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_ipv4_flow>() , 4usize , concat
-                ! ( "Alignment of " , stringify ! ( rte_eth_ipv4_flow ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_ipv4_flow ) ) . src_ip as * const
-                _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_ipv4_flow ) ,
-                "::" , stringify ! ( src_ip ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_ipv4_flow ) ) . dst_ip as * const
-                _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_ipv4_flow ) ,
-                "::" , stringify ! ( dst_ip ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_ipv4_flow ) ) . tos as * const _
-                as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_ipv4_flow ) ,
-                "::" , stringify ! ( tos ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_ipv4_flow ) ) . ttl as * const _
-                as usize } , 9usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_ipv4_flow ) ,
-                "::" , stringify ! ( ttl ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_ipv4_flow ) ) . proto as * const
-                _ as usize } , 10usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_ipv4_flow ) ,
-                "::" , stringify ! ( proto ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_ipv4_flow>(),
+        12usize,
+        concat!("Size of: ", stringify!(rte_eth_ipv4_flow))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_ipv4_flow>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_eth_ipv4_flow))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_ipv4_flow)).src_ip as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_ipv4_flow),
+            "::",
+            stringify!(src_ip)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_ipv4_flow)).dst_ip as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_ipv4_flow),
+            "::",
+            stringify!(dst_ip)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_ipv4_flow)).tos as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_ipv4_flow),
+            "::",
+            stringify!(tos)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_ipv4_flow)).ttl as *const _ as usize },
+        9usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_ipv4_flow),
+            "::",
+            stringify!(ttl)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_ipv4_flow)).proto as *const _ as usize },
+        10usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_ipv4_flow),
+            "::",
+            stringify!(proto)
+        )
+    );
 }
 impl Clone for rte_eth_ipv4_flow {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 /// A structure used to define the input for IPV6 flow
 #[repr(C)]
@@ -1117,38 +1381,71 @@ pub struct rte_eth_ipv6_flow {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_ipv6_flow() {
-    assert_eq!(::std::mem::size_of::<rte_eth_ipv6_flow>() , 36usize , concat !
-               ( "Size of: " , stringify ! ( rte_eth_ipv6_flow ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_ipv6_flow>() , 4usize , concat
-                ! ( "Alignment of " , stringify ! ( rte_eth_ipv6_flow ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_ipv6_flow ) ) . src_ip as * const
-                _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_ipv6_flow ) ,
-                "::" , stringify ! ( src_ip ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_ipv6_flow ) ) . dst_ip as * const
-                _ as usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_ipv6_flow ) ,
-                "::" , stringify ! ( dst_ip ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_ipv6_flow ) ) . tc as * const _
-                as usize } , 32usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_ipv6_flow ) ,
-                "::" , stringify ! ( tc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_ipv6_flow ) ) . proto as * const
-                _ as usize } , 33usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_ipv6_flow ) ,
-                "::" , stringify ! ( proto ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_ipv6_flow ) ) . hop_limits as *
-                const _ as usize } , 34usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_ipv6_flow ) ,
-                "::" , stringify ! ( hop_limits ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_ipv6_flow>(),
+        36usize,
+        concat!("Size of: ", stringify!(rte_eth_ipv6_flow))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_ipv6_flow>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_eth_ipv6_flow))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_ipv6_flow)).src_ip as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_ipv6_flow),
+            "::",
+            stringify!(src_ip)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_ipv6_flow)).dst_ip as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_ipv6_flow),
+            "::",
+            stringify!(dst_ip)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_ipv6_flow)).tc as *const _ as usize },
+        32usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_ipv6_flow),
+            "::",
+            stringify!(tc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_ipv6_flow)).proto as *const _ as usize },
+        33usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_ipv6_flow),
+            "::",
+            stringify!(proto)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_ipv6_flow)).hop_limits as *const _ as usize },
+        34usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_ipv6_flow),
+            "::",
+            stringify!(hop_limits)
+        )
+    );
 }
 impl Clone for rte_eth_ipv6_flow {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 /// A structure used to configure FDIR masks that are used by the device
 /// to match the various fields of RX packet headers.
@@ -1176,54 +1473,101 @@ pub struct rte_eth_fdir_masks {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_fdir_masks() {
-    assert_eq!(::std::mem::size_of::<rte_eth_fdir_masks>() , 68usize , concat
-               ! ( "Size of: " , stringify ! ( rte_eth_fdir_masks ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_fdir_masks>() , 4usize , concat
-                ! ( "Alignment of " , stringify ! ( rte_eth_fdir_masks ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_fdir_masks ) ) . vlan_tci_mask as
-                * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_fdir_masks ) ,
-                "::" , stringify ! ( vlan_tci_mask ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_fdir_masks ) ) . ipv4_mask as *
-                const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_fdir_masks ) ,
-                "::" , stringify ! ( ipv4_mask ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_fdir_masks ) ) . ipv6_mask as *
-                const _ as usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_fdir_masks ) ,
-                "::" , stringify ! ( ipv6_mask ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_fdir_masks ) ) . src_port_mask as
-                * const _ as usize } , 52usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_fdir_masks ) ,
-                "::" , stringify ! ( src_port_mask ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_fdir_masks ) ) . dst_port_mask as
-                * const _ as usize } , 54usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_fdir_masks ) ,
-                "::" , stringify ! ( dst_port_mask ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_fdir_masks ) ) .
-                mac_addr_byte_mask as * const _ as usize } , 56usize , concat
-                ! (
-                "Alignment of field: " , stringify ! ( rte_eth_fdir_masks ) ,
-                "::" , stringify ! ( mac_addr_byte_mask ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_fdir_masks ) ) . tunnel_id_mask
-                as * const _ as usize } , 60usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_fdir_masks ) ,
-                "::" , stringify ! ( tunnel_id_mask ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_fdir_masks ) ) . tunnel_type_mask
-                as * const _ as usize } , 64usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_fdir_masks ) ,
-                "::" , stringify ! ( tunnel_type_mask ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_fdir_masks>(),
+        68usize,
+        concat!("Size of: ", stringify!(rte_eth_fdir_masks))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_fdir_masks>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_eth_fdir_masks))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_fdir_masks)).vlan_tci_mask as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_fdir_masks),
+            "::",
+            stringify!(vlan_tci_mask)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_fdir_masks)).ipv4_mask as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_fdir_masks),
+            "::",
+            stringify!(ipv4_mask)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_fdir_masks)).ipv6_mask as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_fdir_masks),
+            "::",
+            stringify!(ipv6_mask)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_fdir_masks)).src_port_mask as *const _ as usize },
+        52usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_fdir_masks),
+            "::",
+            stringify!(src_port_mask)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_fdir_masks)).dst_port_mask as *const _ as usize },
+        54usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_fdir_masks),
+            "::",
+            stringify!(dst_port_mask)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_fdir_masks)).mac_addr_byte_mask as *const _ as usize },
+        56usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_fdir_masks),
+            "::",
+            stringify!(mac_addr_byte_mask)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_fdir_masks)).tunnel_id_mask as *const _ as usize },
+        60usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_fdir_masks),
+            "::",
+            stringify!(tunnel_id_mask)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_fdir_masks)).tunnel_type_mask as *const _ as usize },
+        64usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_fdir_masks),
+            "::",
+            stringify!(tunnel_type_mask)
+        )
+    );
 }
 impl Clone for rte_eth_fdir_masks {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(u32)]
 /// Payload type
@@ -1247,29 +1591,46 @@ pub struct rte_eth_flex_payload_cfg {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_flex_payload_cfg() {
-    assert_eq!(::std::mem::size_of::<rte_eth_flex_payload_cfg>() , 36usize ,
-               concat ! (
-               "Size of: " , stringify ! ( rte_eth_flex_payload_cfg ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_flex_payload_cfg>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( rte_eth_flex_payload_cfg ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_flex_payload_cfg ) ) . type_ as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_eth_flex_payload_cfg ) , "::" , stringify ! ( type_ ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_flex_payload_cfg ) ) . src_offset
-                as * const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_eth_flex_payload_cfg ) , "::" , stringify ! ( src_offset )
-                ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_flex_payload_cfg>(),
+        36usize,
+        concat!("Size of: ", stringify!(rte_eth_flex_payload_cfg))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_flex_payload_cfg>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_eth_flex_payload_cfg))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_flex_payload_cfg)).type_ as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_flex_payload_cfg),
+            "::",
+            stringify!(type_)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_flex_payload_cfg)).src_offset as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_flex_payload_cfg),
+            "::",
+            stringify!(src_offset)
+        )
+    );
 }
 impl Clone for rte_eth_flex_payload_cfg {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_eth_flex_payload_cfg {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 /// A structure used to define FDIR masks for flexible payload
 /// for each flow type
@@ -1281,25 +1642,41 @@ pub struct rte_eth_fdir_flex_mask {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_fdir_flex_mask() {
-    assert_eq!(::std::mem::size_of::<rte_eth_fdir_flex_mask>() , 18usize ,
-               concat ! ( "Size of: " , stringify ! ( rte_eth_fdir_flex_mask )
-               ));
-    assert_eq! (::std::mem::align_of::<rte_eth_fdir_flex_mask>() , 2usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( rte_eth_fdir_flex_mask ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_fdir_flex_mask ) ) . flow_type as
-                * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_fdir_flex_mask
-                ) , "::" , stringify ! ( flow_type ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_fdir_flex_mask ) ) . mask as *
-                const _ as usize } , 2usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_fdir_flex_mask
-                ) , "::" , stringify ! ( mask ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_fdir_flex_mask>(),
+        18usize,
+        concat!("Size of: ", stringify!(rte_eth_fdir_flex_mask))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_fdir_flex_mask>(),
+        2usize,
+        concat!("Alignment of ", stringify!(rte_eth_fdir_flex_mask))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_fdir_flex_mask)).flow_type as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_fdir_flex_mask),
+            "::",
+            stringify!(flow_type)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_fdir_flex_mask)).mask as *const _ as usize },
+        2usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_fdir_flex_mask),
+            "::",
+            stringify!(mask)
+        )
+    );
 }
 impl Clone for rte_eth_fdir_flex_mask {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 /// A structure used to define all flexible payload related setting
 /// include flex payload and flex mask
@@ -1315,38 +1692,66 @@ pub struct rte_eth_fdir_flex_conf {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_fdir_flex_conf>() , 688usize ,
-               concat ! ( "Size of: " , stringify ! ( rte_eth_fdir_flex_conf )
-               ));
-    assert_eq! (::std::mem::align_of::<rte_eth_fdir_flex_conf>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( rte_eth_fdir_flex_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_fdir_flex_conf ) ) . nb_payloads
-                as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_fdir_flex_conf
-                ) , "::" , stringify ! ( nb_payloads ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_fdir_flex_conf ) ) . nb_flexmasks
-                as * const _ as usize } , 2usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_fdir_flex_conf
-                ) , "::" , stringify ! ( nb_flexmasks ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_fdir_flex_conf ) ) . flex_set as
-                * const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_fdir_flex_conf
-                ) , "::" , stringify ! ( flex_set ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_fdir_flex_conf ) ) . flex_mask as
-                * const _ as usize } , 292usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_fdir_flex_conf
-                ) , "::" , stringify ! ( flex_mask ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_fdir_flex_conf>(),
+        688usize,
+        concat!("Size of: ", stringify!(rte_eth_fdir_flex_conf))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_fdir_flex_conf>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_eth_fdir_flex_conf))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_fdir_flex_conf)).nb_payloads as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_fdir_flex_conf),
+            "::",
+            stringify!(nb_payloads)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_fdir_flex_conf)).nb_flexmasks as *const _ as usize },
+        2usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_fdir_flex_conf),
+            "::",
+            stringify!(nb_flexmasks)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_fdir_flex_conf)).flex_set as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_fdir_flex_conf),
+            "::",
+            stringify!(flex_set)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_fdir_flex_conf)).flex_mask as *const _ as usize },
+        292usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_fdir_flex_conf),
+            "::",
+            stringify!(flex_mask)
+        )
+    );
 }
 impl Clone for rte_eth_fdir_flex_conf {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_eth_fdir_flex_conf {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 /// A structure used to configure the Flow Director (FDIR) feature
 /// of an Ethernet port.
@@ -1368,46 +1773,86 @@ pub struct rte_fdir_conf {
 }
 #[test]
 fn bindgen_test_layout_rte_fdir_conf() {
-    assert_eq!(::std::mem::size_of::<rte_fdir_conf>() , 772usize , concat ! (
-               "Size of: " , stringify ! ( rte_fdir_conf ) ));
-    assert_eq! (::std::mem::align_of::<rte_fdir_conf>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( rte_fdir_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_fdir_conf ) ) . mode as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_fdir_conf ) , "::"
-                , stringify ! ( mode ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_fdir_conf ) ) . pballoc as * const _
-                as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_fdir_conf ) , "::"
-                , stringify ! ( pballoc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_fdir_conf ) ) . status as * const _
-                as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_fdir_conf ) , "::"
-                , stringify ! ( status ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_fdir_conf ) ) . drop_queue as * const
-                _ as usize } , 12usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_fdir_conf ) , "::"
-                , stringify ! ( drop_queue ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_fdir_conf ) ) . mask as * const _ as
-                usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_fdir_conf ) , "::"
-                , stringify ! ( mask ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_fdir_conf ) ) . flex_conf as * const
-                _ as usize } , 84usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_fdir_conf ) , "::"
-                , stringify ! ( flex_conf ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_fdir_conf>(),
+        772usize,
+        concat!("Size of: ", stringify!(rte_fdir_conf))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_fdir_conf>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_fdir_conf))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_fdir_conf)).mode as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_fdir_conf),
+            "::",
+            stringify!(mode)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_fdir_conf)).pballoc as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_fdir_conf),
+            "::",
+            stringify!(pballoc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_fdir_conf)).status as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_fdir_conf),
+            "::",
+            stringify!(status)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_fdir_conf)).drop_queue as *const _ as usize },
+        12usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_fdir_conf),
+            "::",
+            stringify!(drop_queue)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_fdir_conf)).mask as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_fdir_conf),
+            "::",
+            stringify!(mask)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_fdir_conf)).flex_conf as *const _ as usize },
+        84usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_fdir_conf),
+            "::",
+            stringify!(flex_conf)
+        )
+    );
 }
 impl Clone for rte_fdir_conf {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_fdir_conf {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 /// A structure used to enable/disable specific device interrupts.
 #[repr(C)]
@@ -1420,23 +1865,41 @@ pub struct rte_intr_conf {
 }
 #[test]
 fn bindgen_test_layout_rte_intr_conf() {
-    assert_eq!(::std::mem::size_of::<rte_intr_conf>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( rte_intr_conf ) ));
-    assert_eq! (::std::mem::align_of::<rte_intr_conf>() , 2usize , concat ! (
-                "Alignment of " , stringify ! ( rte_intr_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_intr_conf ) ) . lsc as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_intr_conf ) , "::"
-                , stringify ! ( lsc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_intr_conf ) ) . rxq as * const _ as
-                usize } , 2usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_intr_conf ) , "::"
-                , stringify ! ( rxq ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_intr_conf>(),
+        4usize,
+        concat!("Size of: ", stringify!(rte_intr_conf))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_intr_conf>(),
+        2usize,
+        concat!("Alignment of ", stringify!(rte_intr_conf))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_intr_conf)).lsc as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_intr_conf),
+            "::",
+            stringify!(lsc)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_intr_conf)).rxq as *const _ as usize },
+        2usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_intr_conf),
+            "::",
+            stringify!(rxq)
+        )
+    );
 }
 impl Clone for rte_intr_conf {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 /// A structure used to configure an Ethernet port.
 /// Depending upon the RX multi-queue mode, extra advanced
@@ -1485,43 +1948,66 @@ pub struct rte_eth_conf__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<rte_eth_conf__bindgen_ty_1>() , 2120usize
-               , concat ! (
-               "Size of: " , stringify ! ( rte_eth_conf__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_conf__bindgen_ty_1>() , 8usize
-                , concat ! (
-                "Alignment of " , stringify ! ( rte_eth_conf__bindgen_ty_1 )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_conf__bindgen_ty_1 ) ) . rss_conf
-                as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_eth_conf__bindgen_ty_1 ) , "::" , stringify ! ( rss_conf )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_conf__bindgen_ty_1 ) ) .
-                vmdq_dcb_conf as * const _ as usize } , 24usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_eth_conf__bindgen_ty_1 ) , "::" , stringify ! (
-                vmdq_dcb_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_conf__bindgen_ty_1 ) ) .
-                dcb_rx_conf as * const _ as usize } , 1064usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_eth_conf__bindgen_ty_1 ) , "::" , stringify ! (
-                dcb_rx_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_conf__bindgen_ty_1 ) ) .
-                vmdq_rx_conf as * const _ as usize } , 1080usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_eth_conf__bindgen_ty_1 ) , "::" , stringify ! (
-                vmdq_rx_conf ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_conf__bindgen_ty_1>(),
+        2120usize,
+        concat!("Size of: ", stringify!(rte_eth_conf__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_conf__bindgen_ty_1>(),
+        8usize,
+        concat!("Alignment of ", stringify!(rte_eth_conf__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_conf__bindgen_ty_1)).rss_conf as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_conf__bindgen_ty_1),
+            "::",
+            stringify!(rss_conf)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_conf__bindgen_ty_1)).vmdq_dcb_conf as *const _ as usize },
+        24usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_conf__bindgen_ty_1),
+            "::",
+            stringify!(vmdq_dcb_conf)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_conf__bindgen_ty_1)).dcb_rx_conf as *const _ as usize },
+        1064usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_conf__bindgen_ty_1),
+            "::",
+            stringify!(dcb_rx_conf)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_conf__bindgen_ty_1)).vmdq_rx_conf as *const _ as usize },
+        1080usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_conf__bindgen_ty_1),
+            "::",
+            stringify!(vmdq_rx_conf)
+        )
+    );
 }
 impl Clone for rte_eth_conf__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_eth_conf__bindgen_ty_1 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -1533,93 +2019,169 @@ pub union rte_eth_conf__bindgen_ty_2 {
 }
 #[test]
 fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
-    assert_eq!(::std::mem::size_of::<rte_eth_conf__bindgen_ty_2>() , 12usize ,
-               concat ! (
-               "Size of: " , stringify ! ( rte_eth_conf__bindgen_ty_2 ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_conf__bindgen_ty_2>() , 4usize
-                , concat ! (
-                "Alignment of " , stringify ! ( rte_eth_conf__bindgen_ty_2 )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_conf__bindgen_ty_2 ) ) .
-                vmdq_dcb_tx_conf as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_eth_conf__bindgen_ty_2 ) , "::" , stringify ! (
-                vmdq_dcb_tx_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_conf__bindgen_ty_2 ) ) .
-                dcb_tx_conf as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_eth_conf__bindgen_ty_2 ) , "::" , stringify ! (
-                dcb_tx_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_conf__bindgen_ty_2 ) ) .
-                vmdq_tx_conf as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_eth_conf__bindgen_ty_2 ) , "::" , stringify ! (
-                vmdq_tx_conf ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_conf__bindgen_ty_2>(),
+        12usize,
+        concat!("Size of: ", stringify!(rte_eth_conf__bindgen_ty_2))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_conf__bindgen_ty_2>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_eth_conf__bindgen_ty_2))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(0 as *const rte_eth_conf__bindgen_ty_2)).vmdq_dcb_tx_conf as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_conf__bindgen_ty_2),
+            "::",
+            stringify!(vmdq_dcb_tx_conf)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_conf__bindgen_ty_2)).dcb_tx_conf as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_conf__bindgen_ty_2),
+            "::",
+            stringify!(dcb_tx_conf)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_conf__bindgen_ty_2)).vmdq_tx_conf as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_conf__bindgen_ty_2),
+            "::",
+            stringify!(vmdq_tx_conf)
+        )
+    );
 }
 impl Clone for rte_eth_conf__bindgen_ty_2 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_eth_conf__bindgen_ty_2 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_rte_eth_conf() {
-    assert_eq!(::std::mem::size_of::<rte_eth_conf>() , 2944usize , concat ! (
-               "Size of: " , stringify ! ( rte_eth_conf ) ));
-    assert_eq! (::std::mem::align_of::<rte_eth_conf>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( rte_eth_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_conf ) ) . link_speeds as * const
-                _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
-                stringify ! ( link_speeds ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_conf ) ) . rxmode as * const _ as
-                usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
-                stringify ! ( rxmode ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_conf ) ) . txmode as * const _ as
-                usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
-                stringify ! ( txmode ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_conf ) ) . lpbk_mode as * const _
-                as usize } , 24usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
-                stringify ! ( lpbk_mode ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_conf ) ) . rx_adv_conf as * const
-                _ as usize } , 32usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
-                stringify ! ( rx_adv_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_conf ) ) . tx_adv_conf as * const
-                _ as usize } , 2152usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
-                stringify ! ( tx_adv_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_conf ) ) . dcb_capability_en as *
-                const _ as usize } , 2164usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
-                stringify ! ( dcb_capability_en ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_conf ) ) . fdir_conf as * const _
-                as usize } , 2168usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
-                stringify ! ( fdir_conf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_eth_conf ) ) . intr_conf as * const _
-                as usize } , 2940usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_eth_conf ) , "::" ,
-                stringify ! ( intr_conf ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_eth_conf>(),
+        2944usize,
+        concat!("Size of: ", stringify!(rte_eth_conf))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_eth_conf>(),
+        8usize,
+        concat!("Alignment of ", stringify!(rte_eth_conf))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_conf)).link_speeds as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_conf),
+            "::",
+            stringify!(link_speeds)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_conf)).rxmode as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_conf),
+            "::",
+            stringify!(rxmode)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_conf)).txmode as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_conf),
+            "::",
+            stringify!(txmode)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_conf)).lpbk_mode as *const _ as usize },
+        24usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_conf),
+            "::",
+            stringify!(lpbk_mode)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_conf)).rx_adv_conf as *const _ as usize },
+        32usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_conf),
+            "::",
+            stringify!(rx_adv_conf)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_conf)).tx_adv_conf as *const _ as usize },
+        2152usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_conf),
+            "::",
+            stringify!(tx_adv_conf)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_conf)).dcb_capability_en as *const _ as usize },
+        2164usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_conf),
+            "::",
+            stringify!(dcb_capability_en)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_conf)).fdir_conf as *const _ as usize },
+        2168usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_conf),
+            "::",
+            stringify!(fdir_conf)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_eth_conf)).intr_conf as *const _ as usize },
+        2940usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_eth_conf),
+            "::",
+            stringify!(intr_conf)
+        )
+    );
 }
 impl Clone for rte_eth_conf {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_eth_conf {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

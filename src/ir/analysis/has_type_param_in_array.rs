@@ -23,11 +23,8 @@ use std::collections::HashSet;
 ///   type parameter in array if any of the template arguments or template definition
 ///   has.
 #[derive(Debug, Clone)]
-pub struct HasTypeParameterInArray<'ctx, 'gen>
-where
-    'gen: 'ctx,
-{
-    ctx: &'ctx BindgenContext<'gen>,
+pub struct HasTypeParameterInArray<'ctx> {
+    ctx: &'ctx BindgenContext,
 
     // The incremental result of this analysis's computation. Everything in this
     // set has array.
@@ -43,7 +40,7 @@ where
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
-impl<'ctx, 'gen> HasTypeParameterInArray<'ctx, 'gen> {
+impl<'ctx> HasTypeParameterInArray<'ctx> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             // These are the only edges that can affect whether a type has type parameter
@@ -86,14 +83,14 @@ impl<'ctx, 'gen> HasTypeParameterInArray<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> MonotoneFramework for HasTypeParameterInArray<'ctx, 'gen> {
+impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
     type Node = ItemId;
-    type Extra = &'ctx BindgenContext<'gen>;
+    type Extra = &'ctx BindgenContext;
     type Output = HashSet<ItemId>;
 
     fn new(
-        ctx: &'ctx BindgenContext<'gen>,
-    ) -> HasTypeParameterInArray<'ctx, 'gen> {
+        ctx: &'ctx BindgenContext,
+    ) -> HasTypeParameterInArray<'ctx> {
         let has_type_parameter_in_array = HashSet::new();
         let dependencies = generate_dependencies(ctx, Self::consider_edge);
 
@@ -249,8 +246,8 @@ impl<'ctx, 'gen> MonotoneFramework for HasTypeParameterInArray<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> From<HasTypeParameterInArray<'ctx, 'gen>> for HashSet<ItemId> {
-    fn from(analysis: HasTypeParameterInArray<'ctx, 'gen>) -> Self {
+impl<'ctx> From<HasTypeParameterInArray<'ctx>> for HashSet<ItemId> {
+    fn from(analysis: HasTypeParameterInArray<'ctx>) -> Self {
         analysis.has_type_parameter_in_array
     }
 }

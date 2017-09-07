@@ -4,6 +4,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
 
+
 /// We emit a `[u8; 63usize]` padding field for this struct, which cannot derive
 /// Debug/Hash because 63 is over the hard coded limit. (Yes, this struct doesn't end
 /// up with the reight alignment, we're waiting on `#[repr(align="N")]` to land
@@ -16,19 +17,31 @@ pub struct NoDebug {
 }
 #[test]
 fn bindgen_test_layout_NoDebug() {
-    assert_eq!(::std::mem::size_of::<NoDebug>() , 64usize , concat ! (
-               "Size of: " , stringify ! ( NoDebug ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const NoDebug ) ) . c as * const _ as usize } ,
-                0usize , concat ! (
-                "Alignment of field: " , stringify ! ( NoDebug ) , "::" ,
-                stringify ! ( c ) ));
+    assert_eq!(
+        ::std::mem::size_of::<NoDebug>(),
+        64usize,
+        concat!("Size of: ", stringify!(NoDebug))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const NoDebug)).c as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(NoDebug),
+            "::",
+            stringify!(c)
+        )
+    );
 }
 impl Clone for NoDebug {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for NoDebug {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 /// This should derive Debug/Hash/PartialEq/Eq because the padding size is less than the max derive
 /// Debug/Hash/PartialEq/Eq impl for arrays. However, we conservatively don't derive Debug/Hash because
@@ -43,23 +56,39 @@ pub struct ShouldDeriveDebugButDoesNot {
 }
 #[test]
 fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
-    assert_eq!(::std::mem::size_of::<ShouldDeriveDebugButDoesNot>() , 64usize
-               , concat ! (
-               "Size of: " , stringify ! ( ShouldDeriveDebugButDoesNot ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ShouldDeriveDebugButDoesNot ) ) . c as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                ShouldDeriveDebugButDoesNot ) , "::" , stringify ! ( c ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ShouldDeriveDebugButDoesNot ) ) . d as *
-                const _ as usize } , 32usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                ShouldDeriveDebugButDoesNot ) , "::" , stringify ! ( d ) ));
+    assert_eq!(
+        ::std::mem::size_of::<ShouldDeriveDebugButDoesNot>(),
+        64usize,
+        concat!("Size of: ", stringify!(ShouldDeriveDebugButDoesNot))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ShouldDeriveDebugButDoesNot)).c as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ShouldDeriveDebugButDoesNot),
+            "::",
+            stringify!(c)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ShouldDeriveDebugButDoesNot)).d as *const _ as usize },
+        32usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ShouldDeriveDebugButDoesNot),
+            "::",
+            stringify!(d)
+        )
+    );
 }
 impl Clone for ShouldDeriveDebugButDoesNot {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for ShouldDeriveDebugButDoesNot {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

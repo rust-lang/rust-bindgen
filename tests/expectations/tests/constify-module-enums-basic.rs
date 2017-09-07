@@ -19,27 +19,48 @@ pub struct bar {
 }
 #[test]
 fn bindgen_test_layout_bar() {
-    assert_eq!(::std::mem::size_of::<bar>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( bar ) ));
-    assert_eq! (::std::mem::align_of::<bar>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( bar ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const bar ) ) . this_should_work as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( bar ) , "::" ,
-                stringify ! ( this_should_work ) ));
+    assert_eq!(
+        ::std::mem::size_of::<bar>(),
+        4usize,
+        concat!("Size of: ", stringify!(bar))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<bar>(),
+        4usize,
+        concat!("Alignment of ", stringify!(bar))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const bar)).this_should_work as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(bar),
+            "::",
+            stringify!(this_should_work)
+        )
+    );
 }
 impl Clone for bar {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for bar {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 extern "C" {
-    pub fn func1(arg1: foo::Type, arg2: *mut foo::Type,
-                 arg3: *mut *mut foo::Type) -> *mut foo::Type;
+    pub fn func1(
+        arg1: foo::Type,
+        arg2: *mut foo::Type,
+        arg3: *mut *mut foo::Type,
+    ) -> *mut foo::Type;
 }
 extern "C" {
-    pub fn func2(arg1: foo_alias1, arg2: *mut foo_alias1,
-                 arg3: *mut *mut foo_alias1) -> *mut foo_alias1;
+    pub fn func2(
+        arg1: foo_alias1,
+        arg2: *mut foo_alias1,
+        arg3: *mut *mut foo_alias1,
+    ) -> *mut foo_alias1;
 }

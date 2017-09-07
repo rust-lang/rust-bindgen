@@ -443,11 +443,42 @@ impl DotAttributes for TypeKind {
     where
         W: io::Write,
     {
+        writeln!(out, "<tr><td>type kind</td><td>{}</td></tr>", self.kind_name())?;
+
         if let TypeKind::Comp(ref comp) = *self {
             comp.dot_attributes(ctx, out)?;
         }
 
         Ok(())
+    }
+}
+
+impl TypeKind {
+    fn kind_name(&self) -> &'static str {
+        match *self {
+            TypeKind::Void => "Void",
+            TypeKind::NullPtr => "NullPtr",
+            TypeKind::Comp(..) => "Comp",
+            TypeKind::Opaque => "Opaque",
+            TypeKind::Int(..) => "Int",
+            TypeKind::Float(..) => "Float",
+            TypeKind::Complex(..) => "Complex",
+            TypeKind::Alias(..) => "Alias",
+            TypeKind::TemplateAlias(..) => "TemplateAlias",
+            TypeKind::Array(..) => "Array",
+            TypeKind::Function(..) => "Function",
+            TypeKind::Enum(..) => "Enum",
+            TypeKind::Pointer(..) => "Pointer",
+            TypeKind::BlockPointer => "BlockPointer",
+            TypeKind::Reference(..) => "Reference",
+            TypeKind::TemplateInstantiation(..) => "TemplateInstantiation",
+            TypeKind::UnresolvedTypeRef(..) => "UnresolvedTypeRef",
+            TypeKind::ResolvedTypeRef(..) => "ResolvedTypeRef",
+            TypeKind::TypeParam => "TypeParam",
+            TypeKind::ObjCInterface(..) => "ObjCInterface",
+            TypeKind::ObjCId => "ObjCId",
+            TypeKind::ObjCSel => "ObjCSel",
+        }
     }
 }
 

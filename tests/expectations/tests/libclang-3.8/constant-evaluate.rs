@@ -13,23 +13,23 @@ pub type EasyToOverflow = ::std::os::raw::c_ulonglong;
 pub const k: EasyToOverflow = 2147483648;
 extern "C" {
     #[link_name = "k_expr"]
-    pub static k_expr: EasyToOverflow;
+    pub static mut k_expr: EasyToOverflow;
 }
 extern "C" {
     #[link_name = "BAZ"]
-    pub static BAZ: ::std::os::raw::c_longlong;
+    pub static mut BAZ: ::std::os::raw::c_longlong;
 }
 extern "C" {
     #[link_name = "fuzz"]
-    pub static fuzz: f64;
+    pub static mut fuzz: f64;
 }
 extern "C" {
     #[link_name = "BAZZ"]
-    pub static BAZZ: ::std::os::raw::c_char;
+    pub static mut BAZZ: ::std::os::raw::c_char;
 }
 extern "C" {
     #[link_name = "WAT"]
-    pub static WAT: ::std::os::raw::c_char;
+    pub static mut WAT: ::std::os::raw::c_char;
 }
 extern "C" {
     #[link_name = "bytestring"]

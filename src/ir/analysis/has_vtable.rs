@@ -18,11 +18,8 @@ use std::collections::HashSet;
 /// * If T is an instantiation of an abstract template definition, T has
 ///   vtable if template definition has vtable
 #[derive(Debug, Clone)]
-pub struct HasVtableAnalysis<'ctx, 'gen>
-where
-    'gen: 'ctx,
-{
-    ctx: &'ctx BindgenContext<'gen>,
+pub struct HasVtableAnalysis<'ctx> {
+    ctx: &'ctx BindgenContext,
 
     // The incremental result of this analysis's computation. Everything in this
     // set definitely has a vtable.
@@ -38,7 +35,7 @@ where
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
-impl<'ctx, 'gen> HasVtableAnalysis<'ctx, 'gen> {
+impl<'ctx> HasVtableAnalysis<'ctx> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             // These are the only edges that can affect whether a type has a
@@ -62,12 +59,12 @@ impl<'ctx, 'gen> HasVtableAnalysis<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> MonotoneFramework for HasVtableAnalysis<'ctx, 'gen> {
+impl<'ctx> MonotoneFramework for HasVtableAnalysis<'ctx> {
     type Node = ItemId;
-    type Extra = &'ctx BindgenContext<'gen>;
+    type Extra = &'ctx BindgenContext;
     type Output = HashSet<ItemId>;
 
-    fn new(ctx: &'ctx BindgenContext<'gen>) -> HasVtableAnalysis<'ctx, 'gen> {
+    fn new(ctx: &'ctx BindgenContext) -> HasVtableAnalysis<'ctx> {
         let have_vtable = HashSet::new();
         let dependencies = generate_dependencies(ctx, Self::consider_edge);
 
@@ -147,8 +144,8 @@ impl<'ctx, 'gen> MonotoneFramework for HasVtableAnalysis<'ctx, 'gen> {
     }
 }
 
-impl<'ctx, 'gen> From<HasVtableAnalysis<'ctx, 'gen>> for HashSet<ItemId> {
-    fn from(analysis: HasVtableAnalysis<'ctx, 'gen>) -> Self {
+impl<'ctx> From<HasVtableAnalysis<'ctx>> for HashSet<ItemId> {
+    fn from(analysis: HasVtableAnalysis<'ctx>) -> Self {
         analysis.have_vtable
     }
 }

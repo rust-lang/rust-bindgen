@@ -12,24 +12,32 @@ pub struct MuchBitfield {
 }
 #[test]
 fn bindgen_test_layout_MuchBitfield() {
-    assert_eq!(::std::mem::size_of::<MuchBitfield>() , 5usize , concat ! (
-               "Size of: " , stringify ! ( MuchBitfield ) ));
-    assert_eq! (::std::mem::align_of::<MuchBitfield>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( MuchBitfield ) ));
+    assert_eq!(
+        ::std::mem::size_of::<MuchBitfield>(),
+        5usize,
+        concat!("Size of: ", stringify!(MuchBitfield))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<MuchBitfield>(),
+        1usize,
+        concat!("Alignment of ", stringify!(MuchBitfield))
+    );
 }
 impl Clone for MuchBitfield {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl MuchBitfield {
     #[inline]
     pub fn m0(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 1u64 as u64;
         let val = (unit_field_val & mask) >> 0usize;
@@ -41,31 +49,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m1(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 2u64 as u64;
         let val = (unit_field_val & mask) >> 1usize;
@@ -77,31 +85,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 1usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m2(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 4u64 as u64;
         let val = (unit_field_val & mask) >> 2usize;
@@ -113,31 +121,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 2usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m3(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 8u64 as u64;
         let val = (unit_field_val & mask) >> 3usize;
@@ -149,31 +157,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 3usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m4(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 16u64 as u64;
         let val = (unit_field_val & mask) >> 4usize;
@@ -185,31 +193,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 4usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m5(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 32u64 as u64;
         let val = (unit_field_val & mask) >> 5usize;
@@ -221,31 +229,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 5usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m6(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 64u64 as u64;
         let val = (unit_field_val & mask) >> 6usize;
@@ -257,31 +265,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 6usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m7(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 128u64 as u64;
         let val = (unit_field_val & mask) >> 7usize;
@@ -293,31 +301,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 7usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m8(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 256u64 as u64;
         let val = (unit_field_val & mask) >> 8usize;
@@ -329,31 +337,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 8usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m9(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 512u64 as u64;
         let val = (unit_field_val & mask) >> 9usize;
@@ -365,31 +373,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 9usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m10(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 1024u64 as u64;
         let val = (unit_field_val & mask) >> 10usize;
@@ -401,31 +409,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 10usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m11(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 2048u64 as u64;
         let val = (unit_field_val & mask) >> 11usize;
@@ -437,31 +445,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 11usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m12(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 4096u64 as u64;
         let val = (unit_field_val & mask) >> 12usize;
@@ -473,31 +481,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 12usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m13(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 8192u64 as u64;
         let val = (unit_field_val & mask) >> 13usize;
@@ -509,31 +517,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 13usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m14(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 16384u64 as u64;
         let val = (unit_field_val & mask) >> 14usize;
@@ -545,31 +553,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 14usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m15(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 32768u64 as u64;
         let val = (unit_field_val & mask) >> 15usize;
@@ -581,31 +589,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 15usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m16(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 65536u64 as u64;
         let val = (unit_field_val & mask) >> 16usize;
@@ -617,31 +625,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 16usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m17(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 131072u64 as u64;
         let val = (unit_field_val & mask) >> 17usize;
@@ -653,31 +661,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 17usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m18(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 262144u64 as u64;
         let val = (unit_field_val & mask) >> 18usize;
@@ -689,31 +697,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 18usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m19(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 524288u64 as u64;
         let val = (unit_field_val & mask) >> 19usize;
@@ -725,31 +733,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 19usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m20(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 1048576u64 as u64;
         let val = (unit_field_val & mask) >> 20usize;
@@ -761,31 +769,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 20usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m21(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 2097152u64 as u64;
         let val = (unit_field_val & mask) >> 21usize;
@@ -797,31 +805,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 21usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m22(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 4194304u64 as u64;
         let val = (unit_field_val & mask) >> 22usize;
@@ -833,31 +841,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 22usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m23(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 8388608u64 as u64;
         let val = (unit_field_val & mask) >> 23usize;
@@ -869,31 +877,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 23usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m24(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 16777216u64 as u64;
         let val = (unit_field_val & mask) >> 24usize;
@@ -905,31 +913,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 24usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m25(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 33554432u64 as u64;
         let val = (unit_field_val & mask) >> 25usize;
@@ -941,31 +949,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 25usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m26(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 67108864u64 as u64;
         let val = (unit_field_val & mask) >> 26usize;
@@ -977,31 +985,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 26usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m27(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 134217728u64 as u64;
         let val = (unit_field_val & mask) >> 27usize;
@@ -1013,31 +1021,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 27usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m28(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 268435456u64 as u64;
         let val = (unit_field_val & mask) >> 28usize;
@@ -1049,31 +1057,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 28usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m29(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 536870912u64 as u64;
         let val = (unit_field_val & mask) >> 29usize;
@@ -1085,31 +1093,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 29usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m30(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 1073741824u64 as u64;
         let val = (unit_field_val & mask) >> 30usize;
@@ -1121,31 +1129,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 30usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m31(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 2147483648u64 as u64;
         let val = (unit_field_val & mask) >> 31usize;
@@ -1157,31 +1165,31 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 31usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn m32(&self) -> ::std::os::raw::c_char {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 4294967296u64 as u64;
         let val = (unit_field_val & mask) >> 32usize;
@@ -1193,408 +1201,90 @@ impl MuchBitfield {
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 32usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
-    pub fn new_bitfield_1(m0: ::std::os::raw::c_char,
-                          m1: ::std::os::raw::c_char,
-                          m2: ::std::os::raw::c_char,
-                          m3: ::std::os::raw::c_char,
-                          m4: ::std::os::raw::c_char,
-                          m5: ::std::os::raw::c_char,
-                          m6: ::std::os::raw::c_char,
-                          m7: ::std::os::raw::c_char,
-                          m8: ::std::os::raw::c_char,
-                          m9: ::std::os::raw::c_char,
-                          m10: ::std::os::raw::c_char,
-                          m11: ::std::os::raw::c_char,
-                          m12: ::std::os::raw::c_char,
-                          m13: ::std::os::raw::c_char,
-                          m14: ::std::os::raw::c_char,
-                          m15: ::std::os::raw::c_char,
-                          m16: ::std::os::raw::c_char,
-                          m17: ::std::os::raw::c_char,
-                          m18: ::std::os::raw::c_char,
-                          m19: ::std::os::raw::c_char,
-                          m20: ::std::os::raw::c_char,
-                          m21: ::std::os::raw::c_char,
-                          m22: ::std::os::raw::c_char,
-                          m23: ::std::os::raw::c_char,
-                          m24: ::std::os::raw::c_char,
-                          m25: ::std::os::raw::c_char,
-                          m26: ::std::os::raw::c_char,
-                          m27: ::std::os::raw::c_char,
-                          m28: ::std::os::raw::c_char,
-                          m29: ::std::os::raw::c_char,
-                          m30: ::std::os::raw::c_char,
-                          m31: ::std::os::raw::c_char,
-                          m32: ::std::os::raw::c_char) -> u64 {
-        ({
-             ({
-                  ({
-                       ({
-                            ({
-                                 ({
-                                      ({
-                                           ({
-                                                ({
-                                                     ({
-                                                          ({
-                                                               ({
-                                                                    ({
-                                                                         ({
-                                                                              ({
-                                                                                   ({
-                                                                                        ({
-                                                                                             ({
-                                                                                                  ({
-                                                                                                       ({
-                                                                                                            ({
-                                                                                                                 ({
-                                                                                                                      ({
-                                                                                                                           ({
-                                                                                                                                ({
-                                                                                                                                     ({
-                                                                                                                                          ({
-                                                                                                                                               ({
-                                                                                                                                                    ({
-                                                                                                                                                         ({
-                                                                                                                                                              ({
-                                                                                                                                                                   ({
-                                                                                                                                                                        ({
-                                                                                                                                                                             0
-                                                                                                                                                                         }
-                                                                                                                                                                             |
-                                                                                                                                                                             ((m0
-                                                                                                                                                                                   as
-                                                                                                                                                                                   u8
-                                                                                                                                                                                   as
-                                                                                                                                                                                   u64)
-                                                                                                                                                                                  <<
-                                                                                                                                                                                  0usize)
-                                                                                                                                                                                 &
-                                                                                                                                                                                 (1u64
-                                                                                                                                                                                      as
-                                                                                                                                                                                      u64))
-                                                                                                                                                                    }
-                                                                                                                                                                        |
-                                                                                                                                                                        ((m1
-                                                                                                                                                                              as
-                                                                                                                                                                              u8
-                                                                                                                                                                              as
-                                                                                                                                                                              u64)
-                                                                                                                                                                             <<
-                                                                                                                                                                             1usize)
-                                                                                                                                                                            &
-                                                                                                                                                                            (2u64
-                                                                                                                                                                                 as
-                                                                                                                                                                                 u64))
-                                                                                                                                                               }
-                                                                                                                                                                   |
-                                                                                                                                                                   ((m2
-                                                                                                                                                                         as
-                                                                                                                                                                         u8
-                                                                                                                                                                         as
-                                                                                                                                                                         u64)
-                                                                                                                                                                        <<
-                                                                                                                                                                        2usize)
-                                                                                                                                                                       &
-                                                                                                                                                                       (4u64
-                                                                                                                                                                            as
-                                                                                                                                                                            u64))
-                                                                                                                                                          }
-                                                                                                                                                              |
-                                                                                                                                                              ((m3
-                                                                                                                                                                    as
-                                                                                                                                                                    u8
-                                                                                                                                                                    as
-                                                                                                                                                                    u64)
-                                                                                                                                                                   <<
-                                                                                                                                                                   3usize)
-                                                                                                                                                                  &
-                                                                                                                                                                  (8u64
-                                                                                                                                                                       as
-                                                                                                                                                                       u64))
-                                                                                                                                                     }
-                                                                                                                                                         |
-                                                                                                                                                         ((m4
-                                                                                                                                                               as
-                                                                                                                                                               u8
-                                                                                                                                                               as
-                                                                                                                                                               u64)
-                                                                                                                                                              <<
-                                                                                                                                                              4usize)
-                                                                                                                                                             &
-                                                                                                                                                             (16u64
-                                                                                                                                                                  as
-                                                                                                                                                                  u64))
-                                                                                                                                                }
-                                                                                                                                                    |
-                                                                                                                                                    ((m5
-                                                                                                                                                          as
-                                                                                                                                                          u8
-                                                                                                                                                          as
-                                                                                                                                                          u64)
-                                                                                                                                                         <<
-                                                                                                                                                         5usize)
-                                                                                                                                                        &
-                                                                                                                                                        (32u64
-                                                                                                                                                             as
-                                                                                                                                                             u64))
-                                                                                                                                           }
-                                                                                                                                               |
-                                                                                                                                               ((m6
-                                                                                                                                                     as
-                                                                                                                                                     u8
-                                                                                                                                                     as
-                                                                                                                                                     u64)
-                                                                                                                                                    <<
-                                                                                                                                                    6usize)
-                                                                                                                                                   &
-                                                                                                                                                   (64u64
-                                                                                                                                                        as
-                                                                                                                                                        u64))
-                                                                                                                                      }
-                                                                                                                                          |
-                                                                                                                                          ((m7
-                                                                                                                                                as
-                                                                                                                                                u8
-                                                                                                                                                as
-                                                                                                                                                u64)
-                                                                                                                                               <<
-                                                                                                                                               7usize)
-                                                                                                                                              &
-                                                                                                                                              (128u64
-                                                                                                                                                   as
-                                                                                                                                                   u64))
-                                                                                                                                 }
-                                                                                                                                     |
-                                                                                                                                     ((m8
-                                                                                                                                           as
-                                                                                                                                           u8
-                                                                                                                                           as
-                                                                                                                                           u64)
-                                                                                                                                          <<
-                                                                                                                                          8usize)
-                                                                                                                                         &
-                                                                                                                                         (256u64
-                                                                                                                                              as
-                                                                                                                                              u64))
-                                                                                                                            }
-                                                                                                                                |
-                                                                                                                                ((m9
-                                                                                                                                      as
-                                                                                                                                      u8
-                                                                                                                                      as
-                                                                                                                                      u64)
-                                                                                                                                     <<
-                                                                                                                                     9usize)
-                                                                                                                                    &
-                                                                                                                                    (512u64
-                                                                                                                                         as
-                                                                                                                                         u64))
-                                                                                                                       }
-                                                                                                                           |
-                                                                                                                           ((m10
-                                                                                                                                 as
-                                                                                                                                 u8
-                                                                                                                                 as
-                                                                                                                                 u64)
-                                                                                                                                <<
-                                                                                                                                10usize)
-                                                                                                                               &
-                                                                                                                               (1024u64
-                                                                                                                                    as
-                                                                                                                                    u64))
-                                                                                                                  }
-                                                                                                                      |
-                                                                                                                      ((m11
-                                                                                                                            as
-                                                                                                                            u8
-                                                                                                                            as
-                                                                                                                            u64)
-                                                                                                                           <<
-                                                                                                                           11usize)
-                                                                                                                          &
-                                                                                                                          (2048u64
-                                                                                                                               as
-                                                                                                                               u64))
-                                                                                                             }
-                                                                                                                 |
-                                                                                                                 ((m12
-                                                                                                                       as
-                                                                                                                       u8
-                                                                                                                       as
-                                                                                                                       u64)
-                                                                                                                      <<
-                                                                                                                      12usize)
-                                                                                                                     &
-                                                                                                                     (4096u64
-                                                                                                                          as
-                                                                                                                          u64))
-                                                                                                        }
-                                                                                                            |
-                                                                                                            ((m13
-                                                                                                                  as
-                                                                                                                  u8
-                                                                                                                  as
-                                                                                                                  u64)
-                                                                                                                 <<
-                                                                                                                 13usize)
-                                                                                                                &
-                                                                                                                (8192u64
-                                                                                                                     as
-                                                                                                                     u64))
-                                                                                                   }
-                                                                                                       |
-                                                                                                       ((m14
-                                                                                                             as
-                                                                                                             u8
-                                                                                                             as
-                                                                                                             u64)
-                                                                                                            <<
-                                                                                                            14usize)
-                                                                                                           &
-                                                                                                           (16384u64
-                                                                                                                as
-                                                                                                                u64))
-                                                                                              }
-                                                                                                  |
-                                                                                                  ((m15
-                                                                                                        as
-                                                                                                        u8
-                                                                                                        as
-                                                                                                        u64)
-                                                                                                       <<
-                                                                                                       15usize)
-                                                                                                      &
-                                                                                                      (32768u64
-                                                                                                           as
-                                                                                                           u64))
-                                                                                         }
-                                                                                             |
-                                                                                             ((m16
-                                                                                                   as
-                                                                                                   u8
-                                                                                                   as
-                                                                                                   u64)
-                                                                                                  <<
-                                                                                                  16usize)
-                                                                                                 &
-                                                                                                 (65536u64
-                                                                                                      as
-                                                                                                      u64))
-                                                                                    }
-                                                                                        |
-                                                                                        ((m17
-                                                                                              as
-                                                                                              u8
-                                                                                              as
-                                                                                              u64)
-                                                                                             <<
-                                                                                             17usize)
-                                                                                            &
-                                                                                            (131072u64
-                                                                                                 as
-                                                                                                 u64))
-                                                                               }
-                                                                                   |
-                                                                                   ((m18
-                                                                                         as
-                                                                                         u8
-                                                                                         as
-                                                                                         u64)
-                                                                                        <<
-                                                                                        18usize)
-                                                                                       &
-                                                                                       (262144u64
-                                                                                            as
-                                                                                            u64))
-                                                                          } |
-                                                                              ((m19
-                                                                                    as
-                                                                                    u8
-                                                                                    as
-                                                                                    u64)
-                                                                                   <<
-                                                                                   19usize)
-                                                                                  &
-                                                                                  (524288u64
-                                                                                       as
-                                                                                       u64))
-                                                                     } |
-                                                                         ((m20
-                                                                               as
-                                                                               u8
-                                                                               as
-                                                                               u64)
-                                                                              <<
-                                                                              20usize)
-                                                                             &
-                                                                             (1048576u64
-                                                                                  as
-                                                                                  u64))
-                                                                } |
-                                                                    ((m21 as
-                                                                          u8
-                                                                          as
-                                                                          u64)
-                                                                         <<
-                                                                         21usize)
-                                                                        &
-                                                                        (2097152u64
-                                                                             as
-                                                                             u64))
-                                                           } |
-                                                               ((m22 as u8 as
-                                                                     u64) <<
-                                                                    22usize) &
-                                                                   (4194304u64
-                                                                        as
-                                                                        u64))
-                                                      } |
-                                                          ((m23 as u8 as u64)
-                                                               << 23usize) &
-                                                              (8388608u64 as
-                                                                   u64))
-                                                 } |
-                                                     ((m24 as u8 as u64) <<
-                                                          24usize) &
-                                                         (16777216u64 as u64))
-                                            } |
-                                                ((m25 as u8 as u64) <<
-                                                     25usize) &
-                                                    (33554432u64 as u64))
-                                       } |
-                                           ((m26 as u8 as u64) << 26usize) &
-                                               (67108864u64 as u64))
-                                  } |
-                                      ((m27 as u8 as u64) << 27usize) &
-                                          (134217728u64 as u64))
-                             } |
-                                 ((m28 as u8 as u64) << 28usize) &
-                                     (268435456u64 as u64))
-                        } |
-                            ((m29 as u8 as u64) << 29usize) &
-                                (536870912u64 as u64))
-                   } |
-                       ((m30 as u8 as u64) << 30usize) &
-                           (1073741824u64 as u64))
-              } | ((m31 as u8 as u64) << 31usize) & (2147483648u64 as u64))
-         } | ((m32 as u8 as u64) << 32usize) & (4294967296u64 as u64))
+    pub fn new_bitfield_1(
+        m0: ::std::os::raw::c_char,
+        m1: ::std::os::raw::c_char,
+        m2: ::std::os::raw::c_char,
+        m3: ::std::os::raw::c_char,
+        m4: ::std::os::raw::c_char,
+        m5: ::std::os::raw::c_char,
+        m6: ::std::os::raw::c_char,
+        m7: ::std::os::raw::c_char,
+        m8: ::std::os::raw::c_char,
+        m9: ::std::os::raw::c_char,
+        m10: ::std::os::raw::c_char,
+        m11: ::std::os::raw::c_char,
+        m12: ::std::os::raw::c_char,
+        m13: ::std::os::raw::c_char,
+        m14: ::std::os::raw::c_char,
+        m15: ::std::os::raw::c_char,
+        m16: ::std::os::raw::c_char,
+        m17: ::std::os::raw::c_char,
+        m18: ::std::os::raw::c_char,
+        m19: ::std::os::raw::c_char,
+        m20: ::std::os::raw::c_char,
+        m21: ::std::os::raw::c_char,
+        m22: ::std::os::raw::c_char,
+        m23: ::std::os::raw::c_char,
+        m24: ::std::os::raw::c_char,
+        m25: ::std::os::raw::c_char,
+        m26: ::std::os::raw::c_char,
+        m27: ::std::os::raw::c_char,
+        m28: ::std::os::raw::c_char,
+        m29: ::std::os::raw::c_char,
+        m30: ::std::os::raw::c_char,
+        m31: ::std::os::raw::c_char,
+        m32: ::std::os::raw::c_char,
+    ) -> u64 {
+        (((((((((((((((((((((((((((((((((0 | ((m0 as u8 as u64) << 0usize) & (1u64 as u64)) |
+            ((m1 as u8 as u64) << 1usize) & (2u64 as u64)) |
+            ((m2 as u8 as u64) << 2usize) & (4u64 as u64)) |
+            ((m3 as u8 as u64) << 3usize) & (8u64 as u64)) |
+            ((m4 as u8 as u64) << 4usize) & (16u64 as u64)) |
+            ((m5 as u8 as u64) << 5usize) & (32u64 as u64)) |
+            ((m6 as u8 as u64) << 6usize) & (64u64 as u64)) |
+            ((m7 as u8 as u64) << 7usize) & (128u64 as u64)) |
+            ((m8 as u8 as u64) << 8usize) & (256u64 as u64)) |
+            ((m9 as u8 as u64) << 9usize) & (512u64 as u64)) |
+            ((m10 as u8 as u64) << 10usize) & (1024u64 as u64)) |
+            ((m11 as u8 as u64) << 11usize) & (2048u64 as u64)) |
+            ((m12 as u8 as u64) << 12usize) & (4096u64 as u64)) |
+            ((m13 as u8 as u64) << 13usize) & (8192u64 as u64)) |
+            ((m14 as u8 as u64) << 14usize) & (16384u64 as u64)) |
+            ((m15 as u8 as u64) << 15usize) & (32768u64 as u64)) |
+            ((m16 as u8 as u64) << 16usize) & (65536u64 as u64)) |
+            ((m17 as u8 as u64) << 17usize) & (131072u64 as u64)) |
+            ((m18 as u8 as u64) << 18usize) & (262144u64 as u64)) |
+            ((m19 as u8 as u64) << 19usize) & (524288u64 as u64)) |
+            ((m20 as u8 as u64) << 20usize) & (1048576u64 as u64)) |
+            ((m21 as u8 as u64) << 21usize) & (2097152u64 as u64)) |
+            ((m22 as u8 as u64) << 22usize) & (4194304u64 as u64)) |
+            ((m23 as u8 as u64) << 23usize) & (8388608u64 as u64)) |
+            ((m24 as u8 as u64) << 24usize) & (16777216u64 as u64)) |
+            ((m25 as u8 as u64) << 25usize) & (33554432u64 as u64)) |
+            ((m26 as u8 as u64) << 26usize) & (67108864u64 as u64)) |
+            ((m27 as u8 as u64) << 27usize) & (134217728u64 as u64)) |
+            ((m28 as u8 as u64) << 28usize) & (268435456u64 as u64)) |
+            ((m29 as u8 as u64) << 29usize) & (536870912u64 as u64)) |
+            ((m30 as u8 as u64) << 30usize) & (1073741824u64 as u64)) |
+            ((m31 as u8 as u64) << 31usize) & (2147483648u64 as u64)) |
+            ((m32 as u8 as u64) << 32usize) & (4294967296u64 as u64))
     }
 }

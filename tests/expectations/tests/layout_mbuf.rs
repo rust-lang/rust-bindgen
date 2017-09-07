@@ -19,18 +19,31 @@ pub struct rte_atomic16_t {
 }
 #[test]
 fn bindgen_test_layout_rte_atomic16_t() {
-    assert_eq!(::std::mem::size_of::<rte_atomic16_t>() , 2usize , concat ! (
-               "Size of: " , stringify ! ( rte_atomic16_t ) ));
-    assert_eq! (::std::mem::align_of::<rte_atomic16_t>() , 2usize , concat ! (
-                "Alignment of " , stringify ! ( rte_atomic16_t ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_atomic16_t ) ) . cnt as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_atomic16_t ) , "::"
-                , stringify ! ( cnt ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_atomic16_t>(),
+        2usize,
+        concat!("Size of: ", stringify!(rte_atomic16_t))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_atomic16_t>(),
+        2usize,
+        concat!("Alignment of ", stringify!(rte_atomic16_t))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_atomic16_t)).cnt as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_atomic16_t),
+            "::",
+            stringify!(cnt)
+        )
+    );
 }
 impl Clone for rte_atomic16_t {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 /// The generic rte_mbuf, containing a packet mbuf.
 #[repr(C)]
@@ -96,28 +109,46 @@ pub union rte_mbuf__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_1>() , 2usize ,
-               concat ! ( "Size of: " , stringify ! ( rte_mbuf__bindgen_ty_1 )
-               ));
-    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_1>() , 2usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( rte_mbuf__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf__bindgen_ty_1 ) ) .
-                refcnt_atomic as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_1
-                ) , "::" , stringify ! ( refcnt_atomic ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf__bindgen_ty_1 ) ) . refcnt as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_1
-                ) , "::" , stringify ! ( refcnt ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_mbuf__bindgen_ty_1>(),
+        2usize,
+        concat!("Size of: ", stringify!(rte_mbuf__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_mbuf__bindgen_ty_1>(),
+        2usize,
+        concat!("Alignment of ", stringify!(rte_mbuf__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf__bindgen_ty_1)).refcnt_atomic as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf__bindgen_ty_1),
+            "::",
+            stringify!(refcnt_atomic)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf__bindgen_ty_1)).refcnt as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf__bindgen_ty_1),
+            "::",
+            stringify!(refcnt)
+        )
+    );
 }
 impl Clone for rte_mbuf__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_mbuf__bindgen_ty_1 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -135,28 +166,38 @@ pub struct rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_2__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_2__bindgen_ty_1>() ,
-               4usize , concat ! (
-               "Size of: " , stringify ! (
-               rte_mbuf__bindgen_ty_2__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_2__bindgen_ty_1>()
-                , 4usize , concat ! (
-                "Alignment of " , stringify ! (
-                rte_mbuf__bindgen_ty_2__bindgen_ty_1 ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_mbuf__bindgen_ty_2__bindgen_ty_1>(),
+        4usize,
+        concat!(
+            "Size of: ",
+            stringify!(rte_mbuf__bindgen_ty_2__bindgen_ty_1)
+        )
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_mbuf__bindgen_ty_2__bindgen_ty_1>(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(rte_mbuf__bindgen_ty_2__bindgen_ty_1)
+        )
+    );
 }
 impl Clone for rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     #[inline]
     pub fn l2_type(&self) -> u32 {
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         let mask = 15u64 as u32;
         let val = (unit_field_val & mask) >> 0usize;
@@ -168,31 +209,31 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            );
         }
     }
     #[inline]
     pub fn l3_type(&self) -> u32 {
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         let mask = 240u64 as u32;
         let val = (unit_field_val & mask) >> 4usize;
@@ -204,31 +245,31 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 4usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            );
         }
     }
     #[inline]
     pub fn l4_type(&self) -> u32 {
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         let mask = 3840u64 as u32;
         let val = (unit_field_val & mask) >> 8usize;
@@ -240,31 +281,31 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 8usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            );
         }
     }
     #[inline]
     pub fn tun_type(&self) -> u32 {
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         let mask = 61440u64 as u32;
         let val = (unit_field_val & mask) >> 12usize;
@@ -276,31 +317,31 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 12usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            );
         }
     }
     #[inline]
     pub fn inner_l2_type(&self) -> u32 {
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         let mask = 983040u64 as u32;
         let val = (unit_field_val & mask) >> 16usize;
@@ -312,31 +353,31 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 16usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            );
         }
     }
     #[inline]
     pub fn inner_l3_type(&self) -> u32 {
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         let mask = 15728640u64 as u32;
         let val = (unit_field_val & mask) >> 20usize;
@@ -348,31 +389,31 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 20usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            );
         }
     }
     #[inline]
     pub fn inner_l4_type(&self) -> u32 {
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         let mask = 251658240u64 as u32;
         let val = (unit_field_val & mask) >> 24usize;
@@ -384,74 +425,73 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u32 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u32 as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 24usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u32>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u32>(),
+            );
         }
     }
     #[inline]
-    pub fn new_bitfield_1(l2_type: u32, l3_type: u32, l4_type: u32,
-                          tun_type: u32, inner_l2_type: u32,
-                          inner_l3_type: u32, inner_l4_type: u32) -> u32 {
-        ({
-             ({
-                  ({
-                       ({
-                            ({
-                                 ({
-                                      ({ 0 } |
-                                           ((l2_type as u32 as u32) << 0usize)
-                                               & (15u64 as u32))
-                                  } |
-                                      ((l3_type as u32 as u32) << 4usize) &
-                                          (240u64 as u32))
-                             } |
-                                 ((l4_type as u32 as u32) << 8usize) &
-                                     (3840u64 as u32))
-                        } |
-                            ((tun_type as u32 as u32) << 12usize) &
-                                (61440u64 as u32))
-                   } |
-                       ((inner_l2_type as u32 as u32) << 16usize) &
-                           (983040u64 as u32))
-              } |
-                  ((inner_l3_type as u32 as u32) << 20usize) &
-                      (15728640u64 as u32))
-         } |
-             ((inner_l4_type as u32 as u32) << 24usize) &
-                 (251658240u64 as u32))
+    pub fn new_bitfield_1(
+        l2_type: u32,
+        l3_type: u32,
+        l4_type: u32,
+        tun_type: u32,
+        inner_l2_type: u32,
+        inner_l3_type: u32,
+        inner_l4_type: u32,
+    ) -> u32 {
+        (((((((0 | ((l2_type as u32 as u32) << 0usize) & (15u64 as u32)) |
+            ((l3_type as u32 as u32) << 4usize) & (240u64 as u32)) |
+            ((l4_type as u32 as u32) << 8usize) & (3840u64 as u32)) |
+            ((tun_type as u32 as u32) << 12usize) & (61440u64 as u32)) |
+            ((inner_l2_type as u32 as u32) << 16usize) & (983040u64 as u32)) |
+            ((inner_l3_type as u32 as u32) << 20usize) & (15728640u64 as u32)) |
+            ((inner_l4_type as u32 as u32) << 24usize) & (251658240u64 as u32))
     }
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_2() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_2>() , 4usize ,
-               concat ! ( "Size of: " , stringify ! ( rte_mbuf__bindgen_ty_2 )
-               ));
-    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_2>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( rte_mbuf__bindgen_ty_2 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf__bindgen_ty_2 ) ) . packet_type
-                as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_2
-                ) , "::" , stringify ! ( packet_type ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_mbuf__bindgen_ty_2>(),
+        4usize,
+        concat!("Size of: ", stringify!(rte_mbuf__bindgen_ty_2))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_mbuf__bindgen_ty_2>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_mbuf__bindgen_ty_2))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf__bindgen_ty_2)).packet_type as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf__bindgen_ty_2),
+            "::",
+            stringify!(packet_type)
+        )
+    );
 }
 impl Clone for rte_mbuf__bindgen_ty_2 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_mbuf__bindgen_ty_2 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -487,87 +527,134 @@ pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1>()
-               , 4usize , concat ! (
-               "Size of: " , stringify ! (
-               rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1
-               ) ));
-    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1>()
-                , 2usize , concat ! (
-                "Alignment of " , stringify ! (
-                rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1
-                ) ));
-    assert_eq! (unsafe {
-                & (
-                * (
-                0 as * const
-                rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1
-                ) ) . hash as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1
-                ) , "::" , stringify ! ( hash ) ));
-    assert_eq! (unsafe {
-                & (
-                * (
-                0 as * const
-                rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1
-                ) ) . id as * const _ as usize } , 2usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1
-                ) , "::" , stringify ! ( id ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1>(),
+        4usize,
+        concat!(
+            "Size of: ",
+            stringify!(rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1)
+        )
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1>(),
+        2usize,
+        concat!(
+            "Alignment of ",
+            stringify!(rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(0 as *const rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1))
+                .hash as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1),
+            "::",
+            stringify!(hash)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(0 as *const rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1)).id as
+                *const _ as usize
+        },
+        2usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1),
+            "::",
+            stringify!(id)
+        )
+    );
 }
-impl Clone for
- rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+impl Clone for rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1>()
-               , 4usize , concat ! (
-               "Size of: " , stringify ! (
-               rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1>()
-                , 4usize , concat ! (
-                "Alignment of " , stringify ! (
-                rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & (
-                * (
-                0 as * const
-                rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 ) ) . lo as
-                * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 ) , "::" ,
-                stringify ! ( lo ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1>(),
+        4usize,
+        concat!(
+            "Size of: ",
+            stringify!(rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1)
+        )
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1>(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(0 as *const rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1)).lo as *const _ as
+                usize
+        },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1),
+            "::",
+            stringify!(lo)
+        )
+    );
 }
 impl Clone for rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1>() ,
-               8usize , concat ! (
-               "Size of: " , stringify ! (
-               rte_mbuf__bindgen_ty_3__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1>()
-                , 4usize , concat ! (
-                "Alignment of " , stringify ! (
-                rte_mbuf__bindgen_ty_3__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf__bindgen_ty_3__bindgen_ty_1 ) )
-                . hi as * const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_mbuf__bindgen_ty_3__bindgen_ty_1 ) , "::" , stringify ! (
-                hi ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1>(),
+        8usize,
+        concat!(
+            "Size of: ",
+            stringify!(rte_mbuf__bindgen_ty_3__bindgen_ty_1)
+        )
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_1>(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(rte_mbuf__bindgen_ty_3__bindgen_ty_1)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf__bindgen_ty_3__bindgen_ty_1)).hi as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf__bindgen_ty_3__bindgen_ty_1),
+            "::",
+            stringify!(hi)
+        )
+    );
 }
 impl Clone for rte_mbuf__bindgen_ty_3__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_mbuf__bindgen_ty_3__bindgen_ty_1 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
@@ -577,64 +664,110 @@ pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_2 {
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_2() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_2>() ,
-               8usize , concat ! (
-               "Size of: " , stringify ! (
-               rte_mbuf__bindgen_ty_3__bindgen_ty_2 ) ));
-    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_2>()
-                , 4usize , concat ! (
-                "Alignment of " , stringify ! (
-                rte_mbuf__bindgen_ty_3__bindgen_ty_2 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf__bindgen_ty_3__bindgen_ty_2 ) )
-                . lo as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_mbuf__bindgen_ty_3__bindgen_ty_2 ) , "::" , stringify ! (
-                lo ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf__bindgen_ty_3__bindgen_ty_2 ) )
-                . hi as * const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                rte_mbuf__bindgen_ty_3__bindgen_ty_2 ) , "::" , stringify ! (
-                hi ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_2>(),
+        8usize,
+        concat!(
+            "Size of: ",
+            stringify!(rte_mbuf__bindgen_ty_3__bindgen_ty_2)
+        )
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_mbuf__bindgen_ty_3__bindgen_ty_2>(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(rte_mbuf__bindgen_ty_3__bindgen_ty_2)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf__bindgen_ty_3__bindgen_ty_2)).lo as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf__bindgen_ty_3__bindgen_ty_2),
+            "::",
+            stringify!(lo)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf__bindgen_ty_3__bindgen_ty_2)).hi as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf__bindgen_ty_3__bindgen_ty_2),
+            "::",
+            stringify!(hi)
+        )
+    );
 }
 impl Clone for rte_mbuf__bindgen_ty_3__bindgen_ty_2 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_3() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_3>() , 8usize ,
-               concat ! ( "Size of: " , stringify ! ( rte_mbuf__bindgen_ty_3 )
-               ));
-    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_3>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( rte_mbuf__bindgen_ty_3 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf__bindgen_ty_3 ) ) . rss as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_3
-                ) , "::" , stringify ! ( rss ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf__bindgen_ty_3 ) ) . fdir as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_3
-                ) , "::" , stringify ! ( fdir ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf__bindgen_ty_3 ) ) . sched as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_3
-                ) , "::" , stringify ! ( sched ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf__bindgen_ty_3 ) ) . usr as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_3
-                ) , "::" , stringify ! ( usr ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_mbuf__bindgen_ty_3>(),
+        8usize,
+        concat!("Size of: ", stringify!(rte_mbuf__bindgen_ty_3))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_mbuf__bindgen_ty_3>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_mbuf__bindgen_ty_3))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf__bindgen_ty_3)).rss as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf__bindgen_ty_3),
+            "::",
+            stringify!(rss)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf__bindgen_ty_3)).fdir as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf__bindgen_ty_3),
+            "::",
+            stringify!(fdir)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf__bindgen_ty_3)).sched as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf__bindgen_ty_3),
+            "::",
+            stringify!(sched)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf__bindgen_ty_3)).usr as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf__bindgen_ty_3),
+            "::",
+            stringify!(usr)
+        )
+    );
 }
 impl Clone for rte_mbuf__bindgen_ty_3 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_mbuf__bindgen_ty_3 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -647,28 +780,46 @@ pub union rte_mbuf__bindgen_ty_4 {
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_4() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_4>() , 8usize ,
-               concat ! ( "Size of: " , stringify ! ( rte_mbuf__bindgen_ty_4 )
-               ));
-    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_4>() , 8usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( rte_mbuf__bindgen_ty_4 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf__bindgen_ty_4 ) ) . userdata as
-                * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_4
-                ) , "::" , stringify ! ( userdata ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf__bindgen_ty_4 ) ) . udata64 as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_4
-                ) , "::" , stringify ! ( udata64 ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_mbuf__bindgen_ty_4>(),
+        8usize,
+        concat!("Size of: ", stringify!(rte_mbuf__bindgen_ty_4))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_mbuf__bindgen_ty_4>(),
+        8usize,
+        concat!("Alignment of ", stringify!(rte_mbuf__bindgen_ty_4))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf__bindgen_ty_4)).userdata as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf__bindgen_ty_4),
+            "::",
+            stringify!(userdata)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf__bindgen_ty_4)).udata64 as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf__bindgen_ty_4),
+            "::",
+            stringify!(udata64)
+        )
+    );
 }
 impl Clone for rte_mbuf__bindgen_ty_4 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_mbuf__bindgen_ty_4 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -686,28 +837,38 @@ pub struct rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_5__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_5__bindgen_ty_1>() ,
-               8usize , concat ! (
-               "Size of: " , stringify ! (
-               rte_mbuf__bindgen_ty_5__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_5__bindgen_ty_1>()
-                , 8usize , concat ! (
-                "Alignment of " , stringify ! (
-                rte_mbuf__bindgen_ty_5__bindgen_ty_1 ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_mbuf__bindgen_ty_5__bindgen_ty_1>(),
+        8usize,
+        concat!(
+            "Size of: ",
+            stringify!(rte_mbuf__bindgen_ty_5__bindgen_ty_1)
+        )
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_mbuf__bindgen_ty_5__bindgen_ty_1>(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(rte_mbuf__bindgen_ty_5__bindgen_ty_1)
+        )
+    );
 }
 impl Clone for rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     #[inline]
     pub fn l2_len(&self) -> u64 {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 127u64 as u64;
         let val = (unit_field_val & mask) >> 0usize;
@@ -719,31 +880,31 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         let val = val as u64 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 0usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn l3_len(&self) -> u64 {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 65408u64 as u64;
         let val = (unit_field_val & mask) >> 7usize;
@@ -755,31 +916,31 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         let val = val as u64 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 7usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn l4_len(&self) -> u64 {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 16711680u64 as u64;
         let val = (unit_field_val & mask) >> 16usize;
@@ -791,31 +952,31 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         let val = val as u64 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 16usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn tso_segsz(&self) -> u64 {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 1099494850560u64 as u64;
         let val = (unit_field_val & mask) >> 24usize;
@@ -827,31 +988,31 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         let val = val as u64 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 24usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn outer_l3_len(&self) -> u64 {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 561850441793536u64 as u64;
         let val = (unit_field_val & mask) >> 40usize;
@@ -863,31 +1024,31 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         let val = val as u64 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 40usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
     pub fn outer_l2_len(&self) -> u64 {
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         let mask = 71494644084506624u64 as u64;
         let val = (unit_field_val & mask) >> 49usize;
@@ -899,183 +1060,294 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
         let val = val as u64 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&self._bitfield_1 as *const _ as
-                                                *const u8,
-                                            &mut unit_field_val as *mut u64 as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>())
+            ::std::ptr::copy_nonoverlapping(
+                &self._bitfield_1 as *const _ as *const u8,
+                &mut unit_field_val as *mut u64 as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            )
         };
         unit_field_val &= !mask;
         unit_field_val |= (val << 49usize) & mask;
         unsafe {
-            ::std::ptr::copy_nonoverlapping(&unit_field_val as *const _ as
-                                                *const u8,
-                                            &mut self._bitfield_1 as *mut _ as
-                                                *mut u8,
-                                            ::std::mem::size_of::<u64>());
+            ::std::ptr::copy_nonoverlapping(
+                &unit_field_val as *const _ as *const u8,
+                &mut self._bitfield_1 as *mut _ as *mut u8,
+                ::std::mem::size_of::<u64>(),
+            );
         }
     }
     #[inline]
-    pub fn new_bitfield_1(l2_len: u64, l3_len: u64, l4_len: u64,
-                          tso_segsz: u64, outer_l3_len: u64,
-                          outer_l2_len: u64) -> u64 {
-        ({
-             ({
-                  ({
-                       ({
-                            ({
-                                 ({ 0 } |
-                                      ((l2_len as u64 as u64) << 0usize) &
-                                          (127u64 as u64))
-                             } |
-                                 ((l3_len as u64 as u64) << 7usize) &
-                                     (65408u64 as u64))
-                        } |
-                            ((l4_len as u64 as u64) << 16usize) &
-                                (16711680u64 as u64))
-                   } |
-                       ((tso_segsz as u64 as u64) << 24usize) &
-                           (1099494850560u64 as u64))
-              } |
-                  ((outer_l3_len as u64 as u64) << 40usize) &
-                      (561850441793536u64 as u64))
-         } |
-             ((outer_l2_len as u64 as u64) << 49usize) &
-                 (71494644084506624u64 as u64))
+    pub fn new_bitfield_1(
+        l2_len: u64,
+        l3_len: u64,
+        l4_len: u64,
+        tso_segsz: u64,
+        outer_l3_len: u64,
+        outer_l2_len: u64,
+    ) -> u64 {
+        ((((((0 | ((l2_len as u64 as u64) << 0usize) & (127u64 as u64)) |
+            ((l3_len as u64 as u64) << 7usize) & (65408u64 as u64)) |
+            ((l4_len as u64 as u64) << 16usize) & (16711680u64 as u64)) |
+            ((tso_segsz as u64 as u64) << 24usize) & (1099494850560u64 as u64)) |
+            ((outer_l3_len as u64 as u64) << 40usize) & (561850441793536u64 as u64)) |
+            ((outer_l2_len as u64 as u64) << 49usize) & (71494644084506624u64 as u64))
     }
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_5() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf__bindgen_ty_5>() , 8usize ,
-               concat ! ( "Size of: " , stringify ! ( rte_mbuf__bindgen_ty_5 )
-               ));
-    assert_eq! (::std::mem::align_of::<rte_mbuf__bindgen_ty_5>() , 8usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( rte_mbuf__bindgen_ty_5 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf__bindgen_ty_5 ) ) . tx_offload
-                as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf__bindgen_ty_5
-                ) , "::" , stringify ! ( tx_offload ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_mbuf__bindgen_ty_5>(),
+        8usize,
+        concat!("Size of: ", stringify!(rte_mbuf__bindgen_ty_5))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_mbuf__bindgen_ty_5>(),
+        8usize,
+        concat!("Alignment of ", stringify!(rte_mbuf__bindgen_ty_5))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf__bindgen_ty_5)).tx_offload as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf__bindgen_ty_5),
+            "::",
+            stringify!(tx_offload)
+        )
+    );
 }
 impl Clone for rte_mbuf__bindgen_ty_5 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for rte_mbuf__bindgen_ty_5 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf() {
-    assert_eq!(::std::mem::size_of::<rte_mbuf>() , 128usize , concat ! (
-               "Size of: " , stringify ! ( rte_mbuf ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . cacheline0 as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( cacheline0 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . buf_addr as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( buf_addr ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . buf_physaddr as * const _
-                as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( buf_physaddr ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . buf_len as * const _ as
-                usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( buf_len ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . rearm_data as * const _ as
-                usize } , 18usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( rearm_data ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . data_off as * const _ as
-                usize } , 18usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( data_off ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . nb_segs as * const _ as
-                usize } , 22usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( nb_segs ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . port as * const _ as usize
-                } , 23usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( port ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . ol_flags as * const _ as
-                usize } , 24usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( ol_flags ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . rx_descriptor_fields1 as *
-                const _ as usize } , 32usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( rx_descriptor_fields1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . pkt_len as * const _ as
-                usize } , 36usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( pkt_len ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . data_len as * const _ as
-                usize } , 40usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( data_len ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . vlan_tci as * const _ as
-                usize } , 42usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( vlan_tci ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . hash as * const _ as usize
-                } , 44usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( hash ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . seqn as * const _ as usize
-                } , 52usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( seqn ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . vlan_tci_outer as * const
-                _ as usize } , 56usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( vlan_tci_outer ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . cacheline1 as * const _ as
-                usize } , 64usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( cacheline1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . pool as * const _ as usize
-                } , 72usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( pool ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . next as * const _ as usize
-                } , 80usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( next ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . priv_size as * const _ as
-                usize } , 96usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( priv_size ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_mbuf ) ) . timesync as * const _ as
-                usize } , 98usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_mbuf ) , "::" ,
-                stringify ! ( timesync ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_mbuf>(),
+        128usize,
+        concat!("Size of: ", stringify!(rte_mbuf))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).cacheline0 as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(cacheline0)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).buf_addr as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(buf_addr)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).buf_physaddr as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(buf_physaddr)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).buf_len as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(buf_len)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).rearm_data as *const _ as usize },
+        18usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(rearm_data)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).data_off as *const _ as usize },
+        18usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(data_off)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).nb_segs as *const _ as usize },
+        22usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(nb_segs)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).port as *const _ as usize },
+        23usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(port)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).ol_flags as *const _ as usize },
+        24usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(ol_flags)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).rx_descriptor_fields1 as *const _ as usize },
+        32usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(rx_descriptor_fields1)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).pkt_len as *const _ as usize },
+        36usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(pkt_len)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).data_len as *const _ as usize },
+        40usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(data_len)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).vlan_tci as *const _ as usize },
+        42usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(vlan_tci)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).hash as *const _ as usize },
+        44usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(hash)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).seqn as *const _ as usize },
+        52usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(seqn)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).vlan_tci_outer as *const _ as usize },
+        56usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(vlan_tci_outer)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).cacheline1 as *const _ as usize },
+        64usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(cacheline1)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).pool as *const _ as usize },
+        72usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(pool)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).next as *const _ as usize },
+        80usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(next)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).priv_size as *const _ as usize },
+        96usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(priv_size)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_mbuf)).timesync as *const _ as usize },
+        98usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_mbuf),
+            "::",
+            stringify!(timesync)
+        )
+    );
 }
 impl Default for rte_mbuf {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 /// < Pool from which mbuf was allocated.
 #[repr(C)]
@@ -1084,5 +1356,7 @@ pub struct rte_mempool {
     pub _address: u8,
 }
 impl Clone for rte_mempool {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }

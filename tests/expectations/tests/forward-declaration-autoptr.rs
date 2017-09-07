@@ -15,8 +15,10 @@ pub struct RefPtr<T> {
     pub m_inner: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
-impl <T> Default for RefPtr<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for RefPtr<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -25,28 +27,46 @@ pub struct Bar {
 }
 #[test]
 fn bindgen_test_layout_Bar() {
-    assert_eq!(::std::mem::size_of::<Bar>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( Bar ) ));
-    assert_eq! (::std::mem::align_of::<Bar>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( Bar ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Bar ) ) . m_member as * const _ as usize
-                } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Bar ) , "::" ,
-                stringify ! ( m_member ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Bar>(),
+        8usize,
+        concat!("Size of: ", stringify!(Bar))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Bar>(),
+        8usize,
+        concat!("Alignment of ", stringify!(Bar))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Bar)).m_member as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Bar),
+            "::",
+            stringify!(m_member)
+        )
+    );
 }
 impl Clone for Bar {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for Bar {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[test]
 fn __bindgen_test_layout_RefPtr_open0_Foo_close0_instantiation() {
-    assert_eq!(::std::mem::size_of::<RefPtr<Foo>>() , 8usize , concat ! (
-               "Size of template specialization: " , stringify ! ( RefPtr<Foo>
-               ) ));
-    assert_eq!(::std::mem::align_of::<RefPtr<Foo>>() , 8usize , concat ! (
-               "Alignment of template specialization: " , stringify ! (
-               RefPtr<Foo> ) ));
+    assert_eq!(
+        ::std::mem::size_of::<RefPtr<Foo>>(),
+        8usize,
+        concat!(
+            "Size of template specialization: ",
+            stringify ! ( RefPtr < Foo > )
+        )
+    );
+    assert_eq ! ( :: std :: mem :: align_of :: < RefPtr < Foo > > ( ) , 8usize , concat ! ( "Alignment of template specialization: " , stringify ! ( RefPtr < Foo > ) ) );
 }

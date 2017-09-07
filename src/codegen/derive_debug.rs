@@ -3,21 +3,17 @@ use ir::context::BindgenContext;
 use ir::derive::CanTriviallyDeriveDebug;
 use ir::item::{HasTypeParamInArray, IsOpaque, Item, ItemCanonicalName};
 use ir::ty::{RUST_DERIVE_IN_ARRAY_LIMIT, TypeKind};
-use syntax::ast;
-use syntax::codemap::DUMMY_SP;
-use syntax::parse::token::Token;
-
-use syntax::tokenstream::TokenTree;
+use quote;
 
 pub fn gen_debug_impl(
     ctx: &BindgenContext,
     fields: &[Field],
     item: &Item,
     kind: CompKind,
-) -> Vec<ast::ImplItem> {
+) -> quote::Tokens {
     let struct_name = item.canonical_name(ctx);
     let mut format_string = format!("{} {{{{ ", struct_name);
-    let mut tokens: Vec<TokenTree> = Vec::new();
+    let mut tokens = vec![];
 
     if item.is_opaque(ctx, &()) {
         format_string.push_str("opaque");
@@ -33,14 +29,11 @@ pub fn gen_debug_impl(
                 });
 
 
-                for (i, (fstring, token)) in processed_fields.enumerate() {
+                for (i, (fstring, toks)) in processed_fields.enumerate() {
                     if i > 0 {
                         format_string.push_str(", ");
                     }
-                    if !token.is_empty() {
-                        tokens.push(TokenTree::Token(DUMMY_SP, Token::Comma));
-                        tokens.extend(token);
-                    }
+                    tokens.extend(toks);
                     format_string.push_str(&fstring);
                 }
             }
@@ -48,17 +41,12 @@ pub fn gen_debug_impl(
     }
 
     format_string.push_str(" }}");
+    tokens.insert(0, quote! { #format_string });
 
-    let impl_ = quote_item!(ctx.ext_cx(),
-                            impl X {
-                                fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-                                    write!(f, $format_string $tokens)
-                                }
-                            });
-
-    match impl_.unwrap().node {
-        ast::ItemKind::Impl(_, _, _, _, _, ref items) => items.clone(),
-        _ => unreachable!(),
+    quote! {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+            write!(f, #( #tokens ),*)
+        }
     }
 }
 
@@ -74,7 +62,7 @@ pub trait ImplDebug<'a> {
         &self,
         ctx: &BindgenContext,
         extra: Self::Extra,
-    ) -> Option<(String, Vec<TokenTree>)>;
+    ) -> Option<(String, Vec<quote::Tokens>)>;
 }
 
 impl<'a> ImplDebug<'a> for FieldData {
@@ -84,7 +72,7 @@ impl<'a> ImplDebug<'a> for FieldData {
         &self,
         ctx: &BindgenContext,
         _: Self::Extra,
-    ) -> Option<(String, Vec<TokenTree>)> {
+    ) -> Option<(String, Vec<quote::Tokens>)> {
         if let Some(name) = self.name() {
             ctx.resolve_item(self.ty()).impl_debug(ctx, name)
         } else {
@@ -100,17 +88,18 @@ impl<'a> ImplDebug<'a> for BitfieldUnit {
         &self,
         ctx: &BindgenContext,
         _: Self::Extra,
-    ) -> Option<(String, Vec<TokenTree>)> {
+    ) -> Option<(String, Vec<quote::Tokens>)> {
         let mut format_string = String::new();
-        let mut tokens = Vec::new();
+        let mut tokens = vec![];
         for (i, bu) in self.bitfields().iter().enumerate() {
             if i > 0 {
                 format_string.push_str(", ");
-                tokens.push(TokenTree::Token(DUMMY_SP, Token::Comma));
             }
             format_string.push_str(&format!("{} : {{:?}}", bu.name()));
             let name_ident = ctx.rust_ident_raw(bu.name());
-            tokens.extend(quote_tokens!(ctx.ext_cx(), self.$name_ident()));
+            tokens.push(quote! {
+                self.#name_ident ()
+            });
         }
 
         Some((format_string, tokens))
@@ -123,8 +112,8 @@ impl<'a> ImplDebug<'a> for Item {
     fn impl_debug(
         &self,
         ctx: &BindgenContext,
-        name: Self::Extra,
-    ) -> Option<(String, Vec<TokenTree>)> {
+        name: &str,
+    ) -> Option<(String, Vec<quote::Tokens>)> {
         let name_ident = ctx.rust_ident_raw(name);
 
         // We don't know if blacklisted items `impl Debug` or not, so we can't
@@ -141,13 +130,14 @@ impl<'a> ImplDebug<'a> for Item {
         };
 
         fn debug_print(
-            ctx: &BindgenContext,
             name: &str,
-            name_ident: ast::Ident,
-        ) -> Option<(String, Vec<TokenTree>)> {
+            name_ident: quote::Tokens,
+        ) -> Option<(String, Vec<quote::Tokens>)> {
             Some((
                 format!("{}: {{:?}}", name),
-                quote_tokens!(ctx.ext_cx(), self.$name_ident),
+                vec![quote! {
+                    self.#name_ident
+                }],
             ))
         }
 
@@ -166,13 +156,13 @@ impl<'a> ImplDebug<'a> for Item {
             TypeKind::ObjCInterface(..) |
             TypeKind::ObjCId |
             TypeKind::Comp(..) |
-            TypeKind::ObjCSel => debug_print(ctx, name, name_ident),
+            TypeKind::ObjCSel => debug_print(name, quote! { #name_ident }),
 
             TypeKind::TemplateInstantiation(ref inst) => {
                 if inst.is_opaque(ctx, self) {
                     Some((format!("{}: opaque", name), vec![]))
                 } else {
-                    debug_print(ctx, name, name_ident)
+                    debug_print(name, quote! { #name_ident })
                 }
             }
 
@@ -189,18 +179,18 @@ impl<'a> ImplDebug<'a> for Item {
                     )
                 } else if len < RUST_DERIVE_IN_ARRAY_LIMIT {
                     // The simple case
-                    debug_print(ctx, name, name_ident)
+                    debug_print(name, quote! { #name_ident })
                 } else {
                     // Let's implement our own print function
                     Some((
                         format!("{}: [{{}}]", name),
-                        quote_tokens!(
-                        ctx.ext_cx(),
-                        self.$name_ident
-                            .iter()
-                            .enumerate()
-                            .map(|(i, v)| format!("{}{:?}", if i > 0 { ", " } else { "" }, v))
-                            .collect::<String>()),
+                        vec![quote! {
+                            self.#name_ident
+                                .iter()
+                                .enumerate()
+                                .map(|(i, v)| format!("{}{:?}", if i > 0 { ", " } else { "" }, v))
+                                .collect::<String>()
+                        }],
                     ))
                 }
             }
@@ -217,9 +207,9 @@ impl<'a> ImplDebug<'a> for Item {
                 match *inner_type.kind() {
                     TypeKind::Function(ref sig)
                         if !sig.can_trivially_derive_debug() => {
-                        Some((format!("{}: FunctionPointer", name), vec![]))
+                            Some((format!("{}: FunctionPointer", name), vec![]))
                     }
-                    _ => debug_print(ctx, name, name_ident),
+                    _ => debug_print(name, quote! { #name_ident }),
                 }
             }
 

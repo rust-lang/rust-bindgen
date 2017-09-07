@@ -93,10 +93,10 @@ pub trait HasFloat {
 /// up to (but not including) the implicit root module.
 pub trait ItemAncestors {
     /// Get an iterable over this item's ancestors.
-    fn ancestors<'a, 'b>(
+    fn ancestors<'a>(
         &self,
-        ctx: &'a BindgenContext<'b>,
-    ) -> ItemAncestorsIter<'a, 'b>;
+        ctx: &'a BindgenContext,
+    ) -> ItemAncestorsIter<'a>;
 }
 
 cfg_if! {
@@ -120,20 +120,14 @@ cfg_if! {
 }
 
 /// An iterator over an item and its ancestors.
-pub struct ItemAncestorsIter<'a, 'b>
-where
-    'b: 'a,
-{
+pub struct ItemAncestorsIter<'a> {
     item: ItemId,
-    ctx: &'a BindgenContext<'b>,
+    ctx: &'a BindgenContext,
     seen: DebugOnlyItemSet,
 }
 
-impl<'a, 'b> ItemAncestorsIter<'a, 'b>
-where
-    'b: 'a,
-{
-    fn new(ctx: &'a BindgenContext<'b>, item: ItemId) -> Self {
+impl<'a> ItemAncestorsIter<'a> {
+    fn new(ctx: &'a BindgenContext, item: ItemId) -> Self {
         ItemAncestorsIter {
             item: item,
             ctx: ctx,
@@ -142,10 +136,7 @@ where
     }
 }
 
-impl<'a, 'b> Iterator for ItemAncestorsIter<'a, 'b>
-where
-    'b: 'a,
-{
+impl<'a> Iterator for ItemAncestorsIter<'a> {
     type Item = ItemId;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -238,19 +229,19 @@ impl ItemCanonicalPath for ItemId {
 }
 
 impl ItemAncestors for ItemId {
-    fn ancestors<'a, 'b>(
+    fn ancestors<'a>(
         &self,
-        ctx: &'a BindgenContext<'b>,
-    ) -> ItemAncestorsIter<'a, 'b> {
+        ctx: &'a BindgenContext,
+    ) -> ItemAncestorsIter<'a> {
         ItemAncestorsIter::new(ctx, *self)
     }
 }
 
 impl ItemAncestors for Item {
-    fn ancestors<'a, 'b>(
+    fn ancestors<'a>(
         &self,
-        ctx: &'a BindgenContext<'b>,
-    ) -> ItemAncestorsIter<'a, 'b> {
+        ctx: &'a BindgenContext,
+    ) -> ItemAncestorsIter<'a> {
         self.id().ancestors(ctx)
     }
 }
@@ -638,10 +629,10 @@ impl Item {
     }
 
     /// Take out item NameOptions
-    pub fn name<'item, 'ctx>(
-        &'item self,
-        ctx: &'item BindgenContext<'ctx>,
-    ) -> NameOptions<'item, 'ctx> {
+    pub fn name<'a>(
+        &'a self,
+        ctx: &'a BindgenContext,
+    ) -> NameOptions<'a> {
         NameOptions::new(self, ctx)
     }
 
@@ -1773,18 +1764,15 @@ impl ItemCanonicalPath for Item {
 /// Builder struct for naming variations, which hold inside different
 /// flags for naming options.
 #[derive(Debug)]
-pub struct NameOptions<'item, 'ctx>
-where
-    'ctx: 'item,
-{
-    item: &'item Item,
-    ctx: &'item BindgenContext<'ctx>,
+pub struct NameOptions<'a> {
+    item: &'a Item,
+    ctx: &'a BindgenContext,
     within_namespaces: bool,
 }
 
-impl<'item, 'ctx> NameOptions<'item, 'ctx> {
+impl<'a> NameOptions<'a> {
     /// Construct a new `NameOptions`
-    pub fn new(item: &'item Item, ctx: &'item BindgenContext<'ctx>) -> Self {
+    pub fn new(item: &'a Item, ctx: &'a BindgenContext) -> Self {
         NameOptions {
             item: item,
             ctx: ctx,

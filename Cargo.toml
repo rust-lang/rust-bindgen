@@ -39,24 +39,17 @@ diff = "0.1"
 clap = "2"
 shlex = "0.1"
 
-[build-dependencies]
-quasi_codegen = "0.32"
-
 [dependencies]
 cexpr = "0.2"
 cfg-if = "0.1.0"
+# This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
+clap = "2"
 clang-sys = { version = "0.19.0", features = ["runtime", "clang_3_9"] }
 lazy_static = "0.2.1"
 peeking_take_while = "0.1.2"
-syntex_syntax = "0.58"
+quote = "0.3.15"
 regex = "0.2"
-# This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
-clap = "2"
 which = "1.0.2"
-
-[dependencies.aster]
-features = ["with-syntex"]
-version = "0.41"
 
 [dependencies.env_logger]
 optional = true
@@ -65,10 +58,6 @@ version = "0.4"
 [dependencies.log]
 optional = true
 version = "0.3"
-
-[dependencies.quasi]
-features = ["with-syntex"]
-version = "0.32"
 
 [features]
 default = ["logging"]
