@@ -34,10 +34,10 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
-            Arg::with_name("constified-enum")
-                .long("constified-enum")
-                .help("Mark any enum whose name matches <regex> as a set of \
-                       constants instead of an enumeration.")
+            Arg::with_name("rustified-enum")
+                .long("rustified-enum")
+                .help("Mark any enum whose name matches <regex> as a Rust enum \
+                       instead of a set of constants.")
                 .value_name("regex")
                 .takes_value(true)
                 .multiple(true)
@@ -45,8 +45,7 @@ where
             Arg::with_name("constified-enum-module")
                 .long("constified-enum-module")
                 .help("Mark any enum whose name matches <regex> as a module of \
-                       constants instead of an enumeration. This option \
-                       implies \"--constified-enum.\"")
+                       constants instead of just constants.")
                 .value_name("regex")
                 .takes_value(true)
                 .multiple(true)
@@ -292,9 +291,9 @@ where
         }
     }
 
-    if let Some(constifieds) = matches.values_of("constified-enum") {
-        for regex in constifieds {
-            builder = builder.constified_enum(regex);
+    if let Some(rustifieds) = matches.values_of("rustified-enum") {
+        for regex in rustifieds {
+            builder = builder.rustified_enum(regex);
         }
     }
 

@@ -1,4 +1,4 @@
-// bindgen-flags: --enable-cxx-namespaces
+// bindgen-flags: --enable-cxx-namespaces --rustified-enum .*
 
 namespace Halide {
 struct Type;

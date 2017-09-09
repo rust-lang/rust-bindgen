@@ -1,3 +1,5 @@
+// bindgen-flags: --rustified-enum .*
+
 // You can guess where this is taken from...
 enum nsStyleSVGOpacitySource {
   eStyleSVGOpacitySource_Normal,

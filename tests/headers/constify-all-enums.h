@@ -1,4 +1,3 @@
-// bindgen-flags: --constified-enum foo
 
 enum foo {
   THIS,

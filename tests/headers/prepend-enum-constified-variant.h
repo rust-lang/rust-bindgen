@@ -1,4 +1,4 @@
-// bindgen-flags: --no-prepend-enum-name
+// bindgen-flags: --no-prepend-enum-name --rustified-enum .*
 
 enum AVCodecID {
   AV_CODEC_ID_FIRST_UNKNOWN = 0x18000,

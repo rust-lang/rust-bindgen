@@ -1,3 +1,5 @@
+// bindgen-flags: --rustified-enum .*
+
 enum Foo {
     Bar = 0,
     Qux

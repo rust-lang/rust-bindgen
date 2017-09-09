@@ -29,6 +29,7 @@ fn main() {
 
     let bindings = Builder::default()
         .enable_cxx_namespaces()
+        .rustified_enum(".*")
         .raw_line("pub use self::root::*;")
         .header("cpp/Test.h")
         .clang_args(&["-x", "c++", "-std=c++11"])

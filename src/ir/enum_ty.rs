@@ -128,6 +128,18 @@ impl Enum {
         Ok(Enum::new(repr, variants))
     }
 
+    /// Whether the enum should be a bitfield
+    pub fn is_bitfield(&self, ctx: &BindgenContext, item: &Item) -> bool {
+        let name = item.canonical_name(ctx);
+        let enum_ty = item.expect_type();
+
+        ctx.options().bitfield_enums.matches(&name) ||
+            (enum_ty.name().is_none() &&
+                    self.variants().iter().any(|v| {
+                    ctx.options().bitfield_enums.matches(&v.name())
+                }))
+    }
+
     /// Whether the enum should be an constified enum module
     pub fn is_constified_enum_module(
         &self,
@@ -142,6 +154,18 @@ impl Enum {
                  self.variants().iter().any(|v| {
                     ctx.options().constified_enum_modules.matches(&v.name())
                 }))
+    }
+
+    /// Whether the enum should be a Rust enum
+    pub fn is_rustified_enum(&self, ctx: &BindgenContext, item: &Item) -> bool {
+        let name = item.canonical_name(ctx);
+        let enum_ty = item.expect_type();
+
+        ctx.options().rustified_enums.matches(&name) ||
+            (enum_ty.name().is_none() &&
+                self.variants().iter().any(|v| {
+                    ctx.options().rustified_enums.matches(&v.name())
+            }))
     }
 }
 

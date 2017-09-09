@@ -1,4 +1,4 @@
-
+// bindgen-flags: --rustified-enum .*
 enum MyEnum {
     ONE,
     TWO,
