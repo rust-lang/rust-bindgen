@@ -1,4 +1,4 @@
-// bindgen-flags: -- -std=c++11
+// bindgen-flags: --rustified-enum .* -- -std=c++11
 
 namespace std {
   template <typename Char> class fbstring_core;

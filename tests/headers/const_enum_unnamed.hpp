@@ -1,3 +1,4 @@
+// bindgen-flags: --rustified-enum .*
 
 enum {
   FOO_BAR,

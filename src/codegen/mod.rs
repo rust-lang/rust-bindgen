@@ -2072,7 +2072,41 @@ impl MethodCodegen for Method {
     }
 }
 
-/// A helper type to construct enums, either bitfield ones or rust-style ones.
+/// A helper type that represents different enum variations.
+#[derive(Copy, Clone)]
+enum EnumVariation {
+    Rust,
+    Bitfield,
+    Consts,
+    ModuleConsts
+}
+
+impl EnumVariation {
+    fn is_rust(&self) -> bool {
+        match *self {
+            EnumVariation::Rust => true,
+            _ => false
+        }
+    }
+
+    fn is_bitfield(&self) -> bool {
+        match *self {
+            EnumVariation::Bitfield => true,
+            _ => false
+        }
+    }
+
+    /// Both the `Const` and `ModuleConsts` variants will cause this to return
+    /// true.
+    fn is_const(&self) -> bool {
+        match *self {
+            EnumVariation::Consts | EnumVariation::ModuleConsts => true,
+            _ => false
+        }
+    }
+}
+
+/// A helper type to construct different enum variations.
 enum EnumBuilder<'a> {
     Rust(quote::Tokens),
     Bitfield {
@@ -2088,26 +2122,44 @@ enum EnumBuilder<'a> {
 
 impl<'a> EnumBuilder<'a> {
     /// Create a new enum given an item builder, a canonical name, a name for
-    /// the representation, and whether it should be represented as a rust enum.
+    /// the representation, and which variation it should be generated as.
     fn new(
         name: &'a str,
         attrs: Vec<quote::Tokens>,
         repr: quote::Tokens,
-        bitfield_like: bool,
-        constify: bool,
-        constify_module: bool,
+        enum_variation: EnumVariation
     ) -> Self {
         let ident = quote::Ident::new(name);
-        if bitfield_like {
-            EnumBuilder::Bitfield {
-                canonical_name: name,
-                tokens: quote! {
-                    #( #attrs )*
-                    pub struct #ident (pub #repr);
-                },
+
+        match enum_variation {
+            EnumVariation::Bitfield => {
+                EnumBuilder::Bitfield {
+                    canonical_name: name,
+                    tokens: quote! {
+                        #( #attrs )*
+                        pub struct #ident (pub #repr);
+                    },
+                }
             }
-        } else if constify {
-            if constify_module {
+
+            EnumVariation::Rust => {
+                let mut tokens = quote! {
+                    #( #attrs )*
+                    pub enum #ident
+                };
+                tokens.append("{");
+                EnumBuilder::Rust(tokens)
+            }
+
+            EnumVariation::Consts => {
+                EnumBuilder::Consts(vec![
+                    quote! {
+                        pub type #ident = #repr;
+                    }
+                ])
+            }
+
+            EnumVariation::ModuleConsts => {
                 let ident = quote::Ident::new(CONSTIFIED_ENUM_MODULE_REPR_NAME);
                 let type_definition = quote! {
                     pub type #ident = #repr;
@@ -2117,20 +2169,7 @@ impl<'a> EnumBuilder<'a> {
                     module_name: name,
                     module_items: vec![type_definition],
                 }
-            } else {
-                EnumBuilder::Consts(vec![
-                    quote! {
-                        pub type #ident = #repr;
-                    }
-                ])
             }
-        } else {
-            let mut tokens = quote! {
-                #( #attrs )*
-                pub enum #ident
-            };
-            tokens.append("{");
-            EnumBuilder::Rust(tokens)
         }
     }
 
@@ -2342,27 +2381,16 @@ impl CodeGenerator for Enum {
 
         // FIXME(emilio): These should probably use the path so it can
         // disambiguate between namespaces, just like is_opaque etc.
-        let is_bitfield = {
-            ctx.options().bitfield_enums.matches(&name) ||
-                (enum_ty.name().is_none() &&
-                     self.variants().iter().any(|v| {
-                        ctx.options().bitfield_enums.matches(&v.name())
-                    }))
+        let variation = if self.is_bitfield(ctx, item) {
+            EnumVariation::Bitfield
+        } else if self.is_rustified_enum(ctx, item) {
+            EnumVariation::Rust
+        } else if self.is_constified_enum_module(ctx, item) {
+            EnumVariation::ModuleConsts
+        } else {
+            // We generate consts by default
+            EnumVariation::Consts
         };
-
-        let is_constified_enum_module =
-            self.is_constified_enum_module(ctx, item);
-
-        let is_constified_enum = {
-            is_constified_enum_module ||
-                ctx.options().constified_enums.matches(&name) ||
-                (enum_ty.name().is_none() &&
-                     self.variants().iter().any(|v| {
-                        ctx.options().constified_enums.matches(&v.name())
-                    }))
-        };
-
-        let is_rust_enum = !is_bitfield && !is_constified_enum;
 
         let mut attrs = vec![];
 
@@ -2370,11 +2398,11 @@ impl CodeGenerator for Enum {
         // this is allowed.
         //
         // TODO(emilio): Delegate this to the builders?
-        if is_rust_enum {
+        if variation.is_rust() {
             if !self.variants().is_empty() {
                 attrs.push(attributes::repr(repr_name));
             }
-        } else if is_bitfield {
+        } else if variation.is_bitfield() {
             attrs.push(attributes::repr("C"));
         }
 
@@ -2382,7 +2410,7 @@ impl CodeGenerator for Enum {
             attrs.push(attributes::doc(comment));
         }
 
-        if !is_constified_enum {
+        if !variation.is_const() {
             attrs.push(attributes::derives(
                 &["Debug", "Copy", "Clone", "PartialEq", "Eq", "Hash"],
             ));
@@ -2427,9 +2455,7 @@ impl CodeGenerator for Enum {
             &name,
             attrs,
             repr,
-            is_bitfield,
-            is_constified_enum,
-            is_constified_enum_module,
+            variation
         );
 
         // A map where we keep a value -> variant relation.
@@ -2475,7 +2501,7 @@ impl CodeGenerator for Enum {
 
             match seen_values.entry(variant.val()) {
                 Entry::Occupied(ref entry) => {
-                    if is_rust_enum {
+                    if variation.is_rust() {
                         let variant_name = ctx.rust_mangle(variant.name());
                         let mangled_name =
                             if is_toplevel || enum_ty.name().is_some() {
@@ -2523,7 +2549,7 @@ impl CodeGenerator for Enum {
                     // If it's an unnamed enum, or constification is enforced,
                     // we also generate a constant so it can be properly
                     // accessed.
-                    if (is_rust_enum && enum_ty.name().is_none()) ||
+                    if (variation.is_rust() && enum_ty.name().is_none()) ||
                         variant.force_constification()
                     {
                         let mangled_name = if is_toplevel {

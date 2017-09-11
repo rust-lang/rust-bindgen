@@ -1,3 +1,4 @@
+// bindgen-flags: --rustified-enum .*
 
 template<typename T>
 class nsTArray {

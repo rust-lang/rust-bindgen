@@ -1,4 +1,4 @@
-// bindgen-flags: -- -std=c++11
+// bindgen-flags: --rustified-enum .* -- -std=c++11
 
 enum Foo: unsigned char {
     Bar = 0,

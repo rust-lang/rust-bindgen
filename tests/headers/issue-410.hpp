@@ -1,4 +1,4 @@
-// bindgen-flags: --enable-cxx-namespaces --whitelist-type JS::Value
+// bindgen-flags: --enable-cxx-namespaces --whitelist-type JS::Value --rustified-enum .*
 
 namespace JS {
 class Value;

@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq
+// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq --rustified-enum .*
 //
 enum baz;
 

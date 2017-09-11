@@ -1,4 +1,4 @@
-// bindgen-flags: --bitfield-enum "Foo|Buz|NS_.*|DUMMY_.*" -- -std=c++11
+// bindgen-flags: --bitfield-enum "Foo|Buz|NS_.*|DUMMY_.*" --rustified-enum .* -- -std=c++11
 
 enum Foo {
   Bar = 1 << 1,

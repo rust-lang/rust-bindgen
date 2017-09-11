@@ -197,11 +197,11 @@ impl Builder {
             .count();
 
         self.options
-            .constified_enums
+            .rustified_enums
             .get_items()
             .iter()
             .map(|item| {
-                output_vector.push("--constified-enum".into());
+                output_vector.push("--rustified-enum".into());
                 output_vector.push(
                     item.trim_left_matches("^")
                         .trim_right_matches("$")
@@ -666,21 +666,26 @@ impl Builder {
         self
     }
 
-    /// Mark the given enum (or set of enums, if using a pattern) as a set of
-    /// constants.
+    /// Mark the given enum (or set of enums, if using a pattern) as a Rust
+    /// enum.
     ///
-    /// This makes bindgen generate constants instead of enums. Regular
+    /// This makes bindgen generate enums instead of constants. Regular
     /// expressions are supported.
-    pub fn constified_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.constified_enums.insert(arg);
+    ///
+    /// **Use this with caution.** You should not be using Rust enums unless
+    /// you have complete control of the C/C++ code that you're binding to.
+    /// Take a look at https://github.com/rust-lang/rust/issues/36927 for
+    /// more information.
+    pub fn rustified_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.rustified_enums.insert(arg);
         self
     }
 
     /// Mark the given enum (or set of enums, if using a pattern) as a set of
     /// constants that should be put into a module.
     ///
-    /// This makes bindgen generate a modules containing constants instead of
-    /// enums. Regular expressions are supported.
+    /// This makes bindgen generate modules containing constants instead of
+    /// just constants. Regular expressions are supported.
     pub fn constified_enum_module<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.constified_enum_modules.insert(arg);
         self
@@ -1094,8 +1099,8 @@ pub struct BindgenOptions {
     /// The enum patterns to mark an enum as bitfield.
     pub bitfield_enums: RegexSet,
 
-    /// The enum patterns to mark an enum as constant.
-    pub constified_enums: RegexSet,
+    /// The enum patterns to mark an enum as a Rust enum.
+    pub rustified_enums: RegexSet,
 
     /// The enum patterns to mark an enum as a module of constants.
     pub constified_enum_modules: RegexSet,
@@ -1251,7 +1256,7 @@ impl BindgenOptions {
         self.opaque_types.build();
         self.bitfield_enums.build();
         self.constified_enum_modules.build();
-        self.constified_enums.build();
+        self.rustified_enums.build();
     }
 
     /// Update rust target version
@@ -1286,7 +1291,7 @@ impl Default for BindgenOptions {
             whitelisted_functions: Default::default(),
             whitelisted_vars: Default::default(),
             bitfield_enums: Default::default(),
-            constified_enums: Default::default(),
+            rustified_enums: Default::default(),
             constified_enum_modules: Default::default(),
             builtins: false,
             links: vec![],
