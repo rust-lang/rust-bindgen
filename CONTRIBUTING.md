@@ -19,6 +19,7 @@ out to us in a GitHub issue, or stop by
   - [Testing a Single Header's Bindings Generation and Compiling its Bindings](#testing-a-single-headers-bindings-generation-and-compiling-its-bindings)
   - [Authoring New Tests](#authoring-new-tests)
   - [Test Expectations and `libclang` Versions](#test-expectations-and-libclang-versions)
+- [Code Overview](#code-overview)
 - [Pull Requests and Code Reviews](#pull-requests-and-code-reviews)
 - [Generating Graphviz Dot Files](#generating-graphviz-dot-files)
 - [Debug Logging](#debug-logging)
@@ -191,6 +192,71 @@ Where `$VERSION` is one of:
 * `3_8`
 
 depending on which version of `libclang` you have installed.
+
+## Code Overview
+
+`bindgen` takes C and C++ header files as input and generates corresponding Rust
+`#[repr(C)]` type definitions and `extern` foreign function declarations.
+
+First, we use `libclang` to parse the input headers. See `src/clang.rs` for our
+Rust-y wrappers over the raw C `libclang` API that the `clang-sys` crate
+exposes. We walk over `libclang`'s AST and construct our own internal
+representation (IR).  The `ir` module and submodules (`src/ir/*`) contain the IR
+type definitions and `libclang` AST into IR parsing code.
+
+The umbrella IR type is the `Item`. It contains various nested `enum`s that let
+us drill down and get more specific about the kind of construct that we're
+looking at. Here is a summary of the IR types and their relationships:
+
+* `Item` contains:
+    * An `ItemId` to uniquely identify it.
+    * An `ItemKind`, which is one of:
+        * A `Module`, which is originally a C++ namespace and becomes a Rust
+          module. It contains the set of `ItemId`s of `Item`s that are defined
+          within it.
+        * A `Type`, which contains:
+            * A `Layout`, describing the type's size and alignment.
+            * A `TypeKind`, which is one of:
+                * Some integer type.
+                * Some float type.
+                * A `Pointer` to another type.
+                * A function pointer type, with `ItemId`s of its parameter types
+                  and return type.
+                * An `Alias` to another type (`typedef` or `using X = ...`).
+                * A fixed size `Array` of `n` elements of another type.
+                * A `Comp` compound type, which is either a `struct`, `class`,
+                  or `union`. This is potentially a template definition.
+                * A `TemplateInstantiation` referencing some template definition
+                  and a set of template argument types.
+                * Etc...
+        * A `Function`, which contains:
+            * An ABI
+            * A mangled name
+            * a `FunctionKind`, which describes whether this function is a plain
+              function, method, static method, constructor, destructor, etc.
+            * The `ItemId` of its function pointer type.
+        * A `Var` representing a static variable or `#define` constant, which
+          contains:
+            * Its type's `ItemId`
+            * Optionally, a mangled name
+            * Optionally, a value
+
+The IR forms a graph of interconnected and inter-referencing types and
+functions. The `ir::traversal` module provides IR graph traversal
+infrastructure: edge kind definitions (base member vs field type vs function
+parameter, etc...), the `Trace` trait to enumerate an IR thing's outgoing edges,
+various traversal types.
+
+After constructing the IR, we run a series of analyses on it. These analyses do
+everything from allocate logical bitfields into physical units, compute for
+which types we can `#[derive(Debug)]`, to determining which implicit template
+parameters a given type uses. The analyses are defined in
+`src/ir/analysis/*`. They are implemented as fixed-point algorithms, using the
+`ir::analysis::MonotoneFramework` trait.
+
+The final phase is generating Rust source text from the analyzed IR, and it is
+defined in `src/codegen/*`. We use the `quote` crate, which provides the `quote!
+{ ... }` macro for quasi-quoting Rust forms.
 
 ## Pull Requests and Code Reviews
 
