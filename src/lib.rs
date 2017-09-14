@@ -225,7 +225,7 @@ impl Builder {
             .count();
 
         self.options
-            .hidden_types
+            .blacklisted_types
             .get_items()
             .iter()
             .map(|item| {
@@ -620,8 +620,15 @@ impl Builder {
 
     /// Hide the given type from the generated bindings. Regular expressions are
     /// supported.
-    pub fn hide_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
-        self.options.hidden_types.insert(arg);
+    #[deprecated = "Use blacklist_type instead"]
+    pub fn hide_type<T: AsRef<str>>(self, arg: T) -> Builder {
+        self.blacklist_type(arg)
+    }
+
+    /// Hide the given type from the generated bindings. Regular expressions are
+    /// supported.
+    pub fn blacklist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.blacklisted_types.insert(arg);
         self
     }
 
@@ -1085,7 +1092,7 @@ impl Builder {
 pub struct BindgenOptions {
     /// The set of types that have been blacklisted and should not appear
     /// anywhere in the generated code.
-    pub hidden_types: RegexSet,
+    pub blacklisted_types: RegexSet,
 
     /// The set of types that should be treated as opaque structures in the
     /// generated code.
@@ -1261,7 +1268,7 @@ impl BindgenOptions {
         self.whitelisted_vars.build();
         self.whitelisted_types.build();
         self.whitelisted_functions.build();
-        self.hidden_types.build();
+        self.blacklisted_types.build();
         self.opaque_types.build();
         self.bitfield_enums.build();
         self.constified_enum_modules.build();
@@ -1294,7 +1301,7 @@ impl Default for BindgenOptions {
         BindgenOptions {
             rust_target: rust_target,
             rust_features: rust_target.into(),
-            hidden_types: Default::default(),
+            blacklisted_types: Default::default(),
             opaque_types: Default::default(),
             whitelisted_types: Default::default(),
             whitelisted_functions: Default::default(),

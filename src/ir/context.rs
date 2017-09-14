@@ -270,7 +270,7 @@ impl<'ctx> Iterator for WhitelistedItemsTraversal<'ctx> {
         loop {
             match self.traversal.next() {
                 None => return None,
-                Some(id) if self.ctx.resolve_item(id).is_hidden(self.ctx) => {
+                Some(id) if self.ctx.resolve_item(id).is_blacklisted(self.ctx) => {
                     continue
                 }
                 Some(id) => return Some(id),
@@ -1103,7 +1103,7 @@ impl BindgenContext {
             "We only compute template parameter usage as we enter codegen"
         );
 
-        if self.resolve_item(item).is_hidden(self) {
+        if self.resolve_item(item).is_blacklisted(self) {
             return true;
         }
 
@@ -1765,14 +1765,14 @@ impl BindgenContext {
         }
     }
 
-    /// Is the item with the given `name` hidden? Or is the item with the given
-    /// `name` and `id` replaced by another type, and effectively hidden?
-    pub fn hidden_by_name(&self, path: &[String], id: ItemId) -> bool {
+    /// Is the item with the given `name` blacklisted? Or is the item with the given
+    /// `name` and `id` replaced by another type, and effectively blacklisted?
+    pub fn blacklisted_by_name(&self, path: &[String], id: ItemId) -> bool {
         debug_assert!(
             self.in_codegen_phase(),
             "You're not supposed to call this yet"
         );
-        self.options.hidden_types.matches(&path[1..].join("::")) ||
+        self.options.blacklisted_types.matches(&path[1..].join("::")) ||
             self.is_replaced_type(path, id)
     }
 
