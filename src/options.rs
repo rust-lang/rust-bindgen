@@ -485,7 +485,7 @@ where
 
     if let Some(whitelist) = matches.values_of("whitelist-var") {
         for regex in whitelist {
-            builder = builder.whitelisted_var(regex);
+            builder = builder.whitelist_var(regex);
         }
     }
 

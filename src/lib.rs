@@ -651,10 +651,19 @@ impl Builder {
     /// Whitelist the given variable so that it (and all types that it
     /// transitively refers to) appears in the generated bindings. Regular
     /// expressions are supported.
-    pub fn whitelisted_var<T: AsRef<str>>(mut self, arg: T) -> Builder {
+    pub fn whitelist_var<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.whitelisted_vars.insert(arg);
         self
     }
+
+    /// Whitelist the given variable.
+    ///
+    /// Deprecated: use whitelist_var instead.
+    #[deprecated = "use whitelist_var instead"]
+    pub fn whitelisted_var<T: AsRef<str>>(self, arg: T) -> Builder {
+        self.whitelist_var(arg)
+    }
+
 
     /// Mark the given enum (or set of enums, if using a pattern) as being
     /// bitfield-like. Regular expressions are supported.
