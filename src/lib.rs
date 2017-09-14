@@ -643,9 +643,17 @@ impl Builder {
     /// Whitelist the given function so that it (and all types that it
     /// transitively refers to) appears in the generated bindings. Regular
     /// expressions are supported.
-    pub fn whitelisted_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
+    pub fn whitelist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.whitelisted_functions.insert(arg);
         self
+    }
+
+    /// Whitelist the given function.
+    ///
+    /// Deprecated: use whitelist_function instead.
+    #[deprecated = "use whitelist_function instead"]
+    pub fn whitelisted_function<T: AsRef<str>>(self, arg: T) -> Builder {
+        self.whitelist_function(arg)
     }
 
     /// Whitelist the given variable so that it (and all types that it
