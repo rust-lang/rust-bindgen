@@ -473,7 +473,7 @@ where
 
     if let Some(whitelist) = matches.values_of("whitelist-function") {
         for regex in whitelist {
-            builder = builder.whitelisted_function(regex);
+            builder = builder.whitelist_function(regex);
         }
     }
 
