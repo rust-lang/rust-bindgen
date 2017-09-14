@@ -321,7 +321,7 @@ impl CodeGenerator for Item {
             return;
         }
 
-        if self.is_hidden(ctx) || result.seen(self.id()) {
+        if self.is_blacklisted(ctx) || result.seen(self.id()) {
             debug!(
                 "<Item as CodeGenerator>::codegen: Ignoring hidden or seen: \
                  self = {:?}",

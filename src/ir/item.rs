@@ -603,16 +603,16 @@ impl Item {
         &self.annotations
     }
 
-    /// Whether this item should be hidden.
+    /// Whether this item should be blacklisted.
     ///
     /// This may be due to either annotations or to other kind of configuration.
-    pub fn is_hidden(&self, ctx: &BindgenContext) -> bool {
+    pub fn is_blacklisted(&self, ctx: &BindgenContext) -> bool {
         debug_assert!(
             ctx.in_codegen_phase(),
             "You're not supposed to call this yet"
         );
         self.annotations.hide() ||
-            ctx.hidden_by_name(&self.canonical_path(ctx), self.id)
+            ctx.blacklisted_by_name(&self.canonical_path(ctx), self.id)
     }
 
     /// Is this a reference to another type?
