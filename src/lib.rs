@@ -642,7 +642,15 @@ impl Builder {
     /// Whitelist the given type so that it (and all types that it transitively
     /// refers to) appears in the generated bindings. Regular expressions are
     /// supported.
-    pub fn whitelisted_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
+    #[deprecated = "use whitelist_type instead"]
+    pub fn whitelisted_type<T: AsRef<str>>(self, arg: T) -> Builder {
+        self.whitelist_type(arg)
+    }
+
+    /// Whitelist the given type so that it (and all types that it transitively
+    /// refers to) appears in the generated bindings. Regular expressions are
+    /// supported.
+    pub fn whitelist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.whitelisted_types.insert(arg);
         self
     }
