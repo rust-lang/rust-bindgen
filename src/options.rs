@@ -304,7 +304,7 @@ where
     }
     if let Some(hidden_types) = matches.values_of("blacklist-type") {
         for ty in hidden_types {
-            builder = builder.hide_type(ty);
+            builder = builder.blacklist_type(ty);
         }
     }
 
@@ -479,7 +479,7 @@ where
 
     if let Some(whitelist) = matches.values_of("whitelist-type") {
         for regex in whitelist {
-            builder = builder.whitelisted_type(regex);
+            builder = builder.whitelist_type(regex);
         }
     }
 
