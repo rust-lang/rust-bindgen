@@ -500,6 +500,20 @@ impl Builder {
             output_vector.push(path.into());
         }
 
+        self.options
+            .no_partialeq_types
+            .get_items()
+            .iter()
+            .map(|item| {
+                output_vector.push("--no-partialeq".into());
+                output_vector.push(
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
+                );
+            })
+            .count();
+
         output_vector
     }
 
@@ -1105,6 +1119,13 @@ impl Builder {
             ))
         }
     }
+
+    /// Don't derive `PartialEq` for a given type. Regular
+    /// expressions are supported.
+    pub fn no_partialeq(mut self, arg: String) -> Builder {
+        self.options.no_partialeq_types.insert(arg);
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -1279,7 +1300,11 @@ struct BindgenOptions {
 
     /// The absolute path to the rustfmt configuration file, if None, the standard rustfmt
     /// options are used.
+
     rustfmt_configuration_file: Option<PathBuf>,
+
+    /// The set of types that we should not derive `PartialEq` for.
+    no_partialeq_types: RegexSet,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -1297,6 +1322,7 @@ impl BindgenOptions {
         self.bitfield_enums.build();
         self.constified_enum_modules.build();
         self.rustified_enums.build();
+        self.no_partialeq_types.build();
     }
 
     /// Update rust target version
@@ -1365,6 +1391,7 @@ impl Default for BindgenOptions {
             time_phases: false,
             rustfmt_bindings: false,
             rustfmt_configuration_file: None,
+            no_partialeq_types: Default::default(),
         }
     }
 }

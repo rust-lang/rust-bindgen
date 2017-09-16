@@ -2205,6 +2205,12 @@ impl BindgenContext {
         // float or not.
         self.has_float.as_ref().unwrap().contains(id)
     }
+
+    /// Check if `--no-partialeq` flag is enabled for this item.
+    pub fn no_partialeq_by_name(&self, item: &Item) -> bool {
+        let name = item.canonical_path(self)[1..].join("::");
+        self.options().no_partialeq_types.matches(&name)
+    }
 }
 
 /// A builder struct for configuring item resolution options.
