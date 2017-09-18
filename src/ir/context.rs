@@ -321,7 +321,7 @@ fn find_effective_target(clang_args: &[String]) -> (String, bool) {
 
 impl BindgenContext {
     /// Construct the context for the given `options`.
-    pub fn new(options: BindgenOptions) -> Self {
+    pub(crate) fn new(options: BindgenOptions) -> Self {
         use clang_sys;
 
         // TODO(emilio): Use the CXTargetInfo here when available.
@@ -1795,7 +1795,7 @@ impl BindgenContext {
     }
 
     /// Get the options used to configure this bindgen context.
-    pub fn options(&self) -> &BindgenOptions {
+    pub(crate) fn options(&self) -> &BindgenOptions {
         &self.options
     }
 

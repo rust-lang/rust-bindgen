@@ -7,9 +7,6 @@
 #![deny(missing_docs)]
 #![deny(warnings)]
 #![deny(unused_extern_crates)]
-// We internally use the deprecated BindgenOptions all over the place. Once we
-// remove its `pub` declaration, we can un-deprecate it and remove this pragma.
-#![allow(deprecated)]
 // To avoid rather annoying warnings when matching with CXCursor_xxx as a
 // constant.
 #![allow(non_upper_case_globals)]
@@ -1101,18 +1098,15 @@ impl Builder {
 }
 
 /// Configuration options for generated bindings.
-///
-/// Deprecated: use a `Builder` instead.
 #[derive(Debug)]
-#[deprecated]
-pub struct BindgenOptions {
+struct BindgenOptions {
     /// The set of types that have been blacklisted and should not appear
     /// anywhere in the generated code.
-    pub blacklisted_types: RegexSet,
+    blacklisted_types: RegexSet,
 
     /// The set of types that should be treated as opaque structures in the
     /// generated code.
-    pub opaque_types: RegexSet,
+    opaque_types: RegexSet,
 
     /// The set of types that we should have bindings for in the generated
     /// code.
@@ -1120,133 +1114,133 @@ pub struct BindgenOptions {
     /// This includes all types transitively reachable from any type in this
     /// set. One might think of whitelisted types/vars/functions as GC roots,
     /// and the generated Rust code as including everything that gets marked.
-    pub whitelisted_types: RegexSet,
+    whitelisted_types: RegexSet,
 
     /// Whitelisted functions. See docs for `whitelisted_types` for more.
-    pub whitelisted_functions: RegexSet,
+    whitelisted_functions: RegexSet,
 
     /// Whitelisted variables. See docs for `whitelisted_types` for more.
-    pub whitelisted_vars: RegexSet,
+    whitelisted_vars: RegexSet,
 
     /// The enum patterns to mark an enum as bitfield.
-    pub bitfield_enums: RegexSet,
+    bitfield_enums: RegexSet,
 
     /// The enum patterns to mark an enum as a Rust enum.
-    pub rustified_enums: RegexSet,
+    rustified_enums: RegexSet,
 
     /// The enum patterns to mark an enum as a module of constants.
-    pub constified_enum_modules: RegexSet,
+    constified_enum_modules: RegexSet,
 
     /// Whether we should generate builtins or not.
-    pub builtins: bool,
+    builtins: bool,
 
     /// The set of libraries we should link in the generated Rust code.
-    pub links: Vec<(String, LinkType)>,
+    links: Vec<(String, LinkType)>,
 
     /// True if we should dump the Clang AST for debugging purposes.
-    pub emit_ast: bool,
+    emit_ast: bool,
 
     /// True if we should dump our internal IR for debugging purposes.
-    pub emit_ir: bool,
+    emit_ir: bool,
 
     /// Output graphviz dot file.
-    pub emit_ir_graphviz: Option<String>,
+    emit_ir_graphviz: Option<String>,
 
     /// True if we should emulate C++ namespaces with Rust modules in the
     /// generated bindings.
-    pub enable_cxx_namespaces: bool,
+    enable_cxx_namespaces: bool,
 
     /// True if we should avoid mangling names with namespaces.
-    pub disable_name_namespacing: bool,
+    disable_name_namespacing: bool,
 
     /// True if we should generate layout tests for generated structures.
-    pub layout_tests: bool,
+    layout_tests: bool,
 
     /// True if we should derive Copy trait implementations for C/C++ structures
     /// and types.
-    pub derive_copy: bool,
+    derive_copy: bool,
 
     /// True if we should derive Debug trait implementations for C/C++ structures
     /// and types.
-    pub derive_debug: bool,
+    derive_debug: bool,
 
     /// True if we should implement the Debug trait for C/C++ structures and types
     /// that do not support automatically deriving Debug.
-    pub impl_debug: bool,
+    impl_debug: bool,
 
     /// True if we should derive Default trait implementations for C/C++ structures
     /// and types.
-    pub derive_default: bool,
+    derive_default: bool,
 
     /// True if we should derive Hash trait implementations for C/C++ structures
     /// and types.
-    pub derive_hash: bool,
+    derive_hash: bool,
 
     /// True if we should derive PartialEq trait implementations for C/C++ structures
     /// and types.
-    pub derive_partialeq: bool,
+    derive_partialeq: bool,
 
     /// True if we should derive Eq trait implementations for C/C++ structures
     /// and types.
-    pub derive_eq: bool,
+    derive_eq: bool,
 
     /// True if we should avoid using libstd to use libcore instead.
-    pub use_core: bool,
+    use_core: bool,
 
     /// An optional prefix for the "raw" types, like `c_int`, `c_void`...
-    pub ctypes_prefix: Option<String>,
+    ctypes_prefix: Option<String>,
 
     /// Whether to time the bindgen phases.
-    pub time_phases: bool,
+    time_phases: bool,
 
     /// True if we should generate constant names that are **directly** under
     /// namespaces.
-    pub namespaced_constants: bool,
+    namespaced_constants: bool,
 
     /// True if we should use MSVC name mangling rules.
-    pub msvc_mangling: bool,
+    msvc_mangling: bool,
 
     /// Whether we should convert float types to f32/f64 types.
-    pub convert_floats: bool,
+    convert_floats: bool,
 
     /// The set of raw lines to prepend to the generated Rust code.
-    pub raw_lines: Vec<String>,
+    raw_lines: Vec<String>,
 
     /// The set of arguments to pass straight through to Clang.
-    pub clang_args: Vec<String>,
+    clang_args: Vec<String>,
 
     /// The input header file.
-    pub input_header: Option<String>,
+    input_header: Option<String>,
 
     /// Unsaved files for input.
-    pub input_unsaved_files: Vec<clang::UnsavedFile>,
+    input_unsaved_files: Vec<clang::UnsavedFile>,
 
     /// A user-provided visitor to allow customizing different kinds of
     /// situations.
-    pub parse_callbacks: Option<Box<callbacks::ParseCallbacks>>,
+    parse_callbacks: Option<Box<callbacks::ParseCallbacks>>,
 
     /// Which kind of items should we generate? By default, we'll generate all
     /// of them.
-    pub codegen_config: CodegenConfig,
+    codegen_config: CodegenConfig,
 
     /// Whether to treat inline namespaces conservatively.
     ///
     /// See the builder method description for more details.
-    pub conservative_inline_namespaces: bool,
+    conservative_inline_namespaces: bool,
 
     /// Wether to keep documentation comments in the generated output. See the
     /// documentation for more details.
-    pub generate_comments: bool,
+    generate_comments: bool,
 
     /// Whether to generate inline functions. Defaults to false.
-    pub generate_inline_functions: bool,
+    generate_inline_functions: bool,
 
     /// Wether to whitelist types recursively. Defaults to true.
-    pub whitelist_recursively: bool,
+    whitelist_recursively: bool,
 
     /// Intead of emitting 'use objc;' to files generated from objective c files,
     /// generate '#[macro_use] extern crate objc;'
-    pub objc_extern_crate: bool,
+    objc_extern_crate: bool,
 
     /// Whether to use the clang-provided name mangling. This is true and
     /// probably needed for C++ features.
@@ -1255,10 +1249,10 @@ pub struct BindgenOptions {
     /// some cases for non-mangled functions, see [1], so we allow disabling it.
     ///
     /// [1]: https://github.com/rust-lang-nursery/rust-bindgen/issues/528
-    pub enable_mangling: bool,
+    enable_mangling: bool,
 
     /// Whether to prepend the enum name to bitfield or constant variants.
-    pub prepend_enum_name: bool,
+    prepend_enum_name: bool,
 
     /// Version of the Rust compiler to target
     rust_target: RustTarget,
@@ -1267,11 +1261,11 @@ pub struct BindgenOptions {
     rust_features: RustFeatures,
 
     /// Whether rustfmt should format the generated bindings.
-    pub rustfmt_bindings: bool,
+    rustfmt_bindings: bool,
 
     /// The absolute path to the rustfmt configuration file, if None, the standard rustfmt
     /// options are used.
-    pub rustfmt_configuration_file: Option<PathBuf>,
+    rustfmt_configuration_file: Option<PathBuf>,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -1297,11 +1291,6 @@ impl BindgenOptions {
 
         // Keep rust_features synced with rust_target
         self.rust_features = rust_target.into();
-    }
-
-    /// Get target Rust version
-    pub fn rust_target(&self) -> RustTarget {
-        self.rust_target
     }
 
     /// Get features supported by target Rust version
@@ -1408,10 +1397,7 @@ pub struct Bindings {
 
 impl Bindings {
     /// Generate bindings for the given options.
-    ///
-    /// Deprecated - use a `Builder` instead
-    #[deprecated]
-    pub fn generate(
+    pub(crate) fn generate(
         mut options: BindgenOptions,
     ) -> Result<Bindings, ()> {
         ensure_libclang_is_loaded();
@@ -1737,8 +1723,8 @@ fn commandline_flag_unit_test_function() {
     //Test 2
     let bindings = ::builder()
         .header("input_header")
-        .whitelisted_type("Distinct_Type")
-        .whitelisted_function("safe_function");
+        .whitelist_type("Distinct_Type")
+        .whitelist_function("safe_function");
 
     let command_line_flags = bindings.command_line_flags();
     let test_cases = vec![
