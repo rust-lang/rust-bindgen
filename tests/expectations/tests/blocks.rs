@@ -5,5 +5,5 @@
 
 
 extern "C" {
-    pub fn atexit_b(arg1: *mut ::std::os::raw::c_void);
+    pub fn atexit_b(_: *mut ::std::os::raw::c_void);
 }
