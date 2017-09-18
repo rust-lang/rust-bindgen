@@ -58,10 +58,10 @@ pub mod root {
         );
     }
     extern "C" {
-    #[link_name = "_ZN17JSAutoCompartmentC1EN7mozilla6detail19GuardObjectNotifierE"]
+        #[link_name = "_ZN17JSAutoCompartmentC1EN7mozilla6detail19GuardObjectNotifierE"]
         pub fn JSAutoCompartment_JSAutoCompartment(
             this: *mut root::JSAutoCompartment,
-            arg1: root::mozilla::detail::GuardObjectNotifier,
+            _: root::mozilla::detail::GuardObjectNotifier,
         );
     }
     impl Clone for JSAutoCompartment {
@@ -71,7 +71,7 @@ pub mod root {
     }
     impl JSAutoCompartment {
         #[inline]
-        pub unsafe fn new(arg1: root::mozilla::detail::GuardObjectNotifier) -> Self {
+        pub unsafe fn new(_: root::mozilla::detail::GuardObjectNotifier) -> Self {
             let mut __bindgen_tmp = ::std::mem::uninitialized();
             JSAutoCompartment_JSAutoCompartment(&mut __bindgen_tmp, arg1);
             __bindgen_tmp

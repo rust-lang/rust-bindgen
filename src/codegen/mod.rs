@@ -3645,7 +3645,6 @@ mod utils {
     ) -> Vec<quote::Tokens> {
         use super::ToPtr;
 
-        let mut unnamed_arguments = 0;
         sig.argument_types().iter().map(|&(ref name, ty)| {
             let arg_item = ctx.resolve_item(ty);
             let arg_ty = arg_item.kind().expect_type();
@@ -3680,11 +3679,8 @@ mod utils {
             };
 
             let arg_name = match *name {
-                Some(ref name) => ctx.rust_mangle(name).into_owned(),
-                None => {
-                    unnamed_arguments += 1;
-                    format!("arg{}", unnamed_arguments)
-                }
+                Some(ref name) => ctx.rust_mangle(name),
+                None => "_".into(),
             };
 
             assert!(!arg_name.is_empty());

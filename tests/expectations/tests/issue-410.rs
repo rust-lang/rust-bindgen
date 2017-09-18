@@ -30,8 +30,8 @@ pub mod root {
             );
         }
         extern "C" {
-    #[link_name = "_ZN2JS5Value1aE10JSWhyMagic"]
-            pub fn Value_a(this: *mut root::JS::Value, arg1: root::JSWhyMagic);
+            #[link_name = "_ZN2JS5Value1aE10JSWhyMagic"]
+            pub fn Value_a(this: *mut root::JS::Value, _: root::JSWhyMagic);
         }
         impl Clone for Value {
             fn clone(&self) -> Self {
@@ -40,11 +40,11 @@ pub mod root {
         }
         impl Value {
             #[inline]
-            pub unsafe fn a(&mut self, arg1: root::JSWhyMagic) {
+            pub unsafe fn a(&mut self, _: root::JSWhyMagic) {
                 Value_a(self, arg1)
             }
         }
     }
     #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-    pub enum JSWhyMagic { }
+    pub enum JSWhyMagic {}
 }

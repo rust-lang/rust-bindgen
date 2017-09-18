@@ -80,32 +80,32 @@ pub struct cmdline_token_ops {
     /// parse(token ptr, buf, res pts, buf len)
     pub parse: ::std::option::Option<
         unsafe extern "C" fn(
-            arg1: *mut cmdline_parse_token_hdr_t,
-            arg2: *const ::std::os::raw::c_char,
-            arg3: *mut ::std::os::raw::c_void,
-            arg4: ::std::os::raw::c_uint,
+            _: *mut cmdline_parse_token_hdr_t,
+            _: *const ::std::os::raw::c_char,
+            _: *mut ::std::os::raw::c_void,
+            _: ::std::os::raw::c_uint,
         ) -> ::std::os::raw::c_int,
     >,
     /// return the num of possible choices for this token
     pub complete_get_nb: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut cmdline_parse_token_hdr_t)
+        unsafe extern "C" fn(_: *mut cmdline_parse_token_hdr_t)
             -> ::std::os::raw::c_int,
     >,
     /// return the elt x for this token (token, idx, dstbuf, size)
     pub complete_get_elt: ::std::option::Option<
         unsafe extern "C" fn(
-            arg1: *mut cmdline_parse_token_hdr_t,
-            arg2: ::std::os::raw::c_int,
-            arg3: *mut ::std::os::raw::c_char,
-            arg4: ::std::os::raw::c_uint,
+            _: *mut cmdline_parse_token_hdr_t,
+            _: ::std::os::raw::c_int,
+            _: *mut ::std::os::raw::c_char,
+            _: ::std::os::raw::c_uint,
         ) -> ::std::os::raw::c_int,
     >,
     /// get help for this token (token, dstbuf, size)
     pub get_help: ::std::option::Option<
         unsafe extern "C" fn(
-            arg1: *mut cmdline_parse_token_hdr_t,
-            arg2: *mut ::std::os::raw::c_char,
-            arg3: ::std::os::raw::c_uint,
+            _: *mut cmdline_parse_token_hdr_t,
+            _: *mut ::std::os::raw::c_char,
+            _: ::std::os::raw::c_uint,
         ) -> ::std::os::raw::c_int,
     >,
 }
