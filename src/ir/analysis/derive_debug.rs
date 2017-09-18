@@ -268,6 +268,14 @@ impl<'ctx> MonotoneFramework for CannotDeriveDebug<'ctx> {
                             self.is_not_debug(data.ty())
                         }
                         Field::Bitfields(ref bfu) => {
+                            if bfu.layout().align > RUST_DERIVE_IN_ARRAY_LIMIT {
+                                trace!(
+                                    "   we cannot derive Debug for a bitfield larger then \
+                                        the limit"
+                                );
+                                return true;
+                            }
+
                             bfu.bitfields().iter().any(|b| {
                                 self.is_not_debug(b.ty())
                             })
