@@ -9,6 +9,7 @@ use ir::derive::CanTriviallyDeriveCopy;
 use ir::item::IsOpaque;
 use ir::template::TemplateParameters;
 use ir::traversal::EdgeKind;
+use ir::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
 use ir::ty::TypeKind;
 use std::collections::HashMap;
 use std::collections::HashSet;
