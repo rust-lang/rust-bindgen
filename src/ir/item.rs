@@ -6,7 +6,8 @@ use super::comment;
 use super::comp::MethodKind;
 use super::context::{BindgenContext, ItemId, PartialType};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
-                    CanDeriveHash, CanDerivePartialEq, CanDeriveEq};
+                    CanDeriveHash, CanDerivePartialOrd, CanDerivePartialEq,
+                    CanDeriveEq};
 use super::dot::DotAttributes;
 use super::function::{Function, FunctionKind};
 use super::item_kind::ItemKind;
@@ -330,17 +331,24 @@ impl CanDeriveHash for Item {
     }
 }
 
+impl CanDerivePartialOrd for Item {
+    fn can_derive_partialord(&self, ctx: &BindgenContext) -> bool {
+        ctx.options().derive_partialord &&
+            ctx.lookup_item_id_can_derive_partialeq_or_partialord(self.id())
+    }
+}
+
 impl CanDerivePartialEq for Item {
     fn can_derive_partialeq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_partialeq &&
-            ctx.lookup_item_id_can_derive_partialeq(self.id())
+            ctx.lookup_item_id_can_derive_partialeq_or_partialord(self.id())
     }
 }
 
 impl CanDeriveEq for Item {
     fn can_derive_eq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_eq &&
-            ctx.lookup_item_id_can_derive_partialeq(self.id()) &&
+            ctx.lookup_item_id_can_derive_partialeq_or_partialord(self.id()) &&
             !ctx.lookup_item_id_has_float(&self.id())
     }
 }

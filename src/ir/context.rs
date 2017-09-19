@@ -6,7 +6,8 @@ use super::analysis::{CannotDeriveCopy, CannotDeriveDebug,
                       HasVtableAnalysis, HasDestructorAnalysis, UsedTemplateParameters,
                       HasFloat, analyze};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
-                    CanDeriveHash, CanDerivePartialEq, CanDeriveEq};
+                    CanDeriveHash, CanDerivePartialOrd, CanDerivePartialEq,
+                    CanDeriveEq};
 use super::int::IntKind;
 use super::item::{HasTypeParamInArray, IsOpaque, Item, ItemAncestors,
                   ItemCanonicalPath, ItemSet};
@@ -68,17 +69,24 @@ impl CanDeriveHash for ItemId {
     }
 }
 
+impl CanDerivePartialOrd for ItemId {
+    fn can_derive_partialord(&self, ctx: &BindgenContext) -> bool {
+        ctx.options().derive_partialord &&
+            ctx.lookup_item_id_can_derive_partialeq_or_partialord(*self)
+    }
+}
+
 impl CanDerivePartialEq for ItemId {
     fn can_derive_partialeq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_partialeq &&
-            ctx.lookup_item_id_can_derive_partialeq(*self)
+            ctx.lookup_item_id_can_derive_partialeq_or_partialord(*self)
     }
 }
 
 impl CanDeriveEq for ItemId {
     fn can_derive_eq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_eq &&
-            ctx.lookup_item_id_can_derive_partialeq(*self) &&
+            ctx.lookup_item_id_can_derive_partialeq_or_partialord(*self) &&
             !ctx.lookup_item_id_has_float(&self)
     }
 }
@@ -225,7 +233,7 @@ pub struct BindgenContext {
     ///
     /// This is populated when we enter codegen by `compute_can_derive_partialeq`
     /// and is always `None` before that and `Some` after.
-    cannot_derive_partialeq: Option<HashSet<ItemId>>,
+    cannot_derive_partialeq_or_partialord: Option<HashSet<ItemId>>,
 
     /// The set of (`ItemId's of`) types that has vtable.
     ///
@@ -392,7 +400,7 @@ impl BindgenContext {
             cannot_derive_copy: None,
             cannot_derive_copy_in_array: None,
             cannot_derive_hash: None,
-            cannot_derive_partialeq: None,
+            cannot_derive_partialeq_or_partialord: None,
             have_vtable: None,
             have_destructor: None,
             has_type_param_in_array: None,
@@ -947,7 +955,7 @@ impl BindgenContext {
         self.compute_has_type_param_in_array();
         self.compute_has_float();
         self.compute_cannot_derive_hash();
-        self.compute_cannot_derive_partialeq_or_eq();
+        self.compute_cannot_derive_partialord_partialeq_or_eq();
 
         let ret = cb(self);
         self.in_codegen = false;
@@ -2123,27 +2131,26 @@ impl BindgenContext {
         !self.cannot_derive_hash.as_ref().unwrap().contains(&id)
     }
 
-    /// Compute whether we can derive PartialEq. This method is also used in calculating
-    /// whether we can derive Eq
-    fn compute_cannot_derive_partialeq_or_eq(&mut self) {
-        let _t = self.timer("compute_cannot_derive_partialeq_or_eq");
-        assert!(self.cannot_derive_partialeq.is_none());
-        if self.options.derive_partialeq || self.options.derive_eq {
-            self.cannot_derive_partialeq = Some(analyze::<CannotDerivePartialEqOrPartialOrd>(self));
+    /// Compute whether we can derive PartialOrd, PartialEq or Eq.
+    fn compute_cannot_derive_partialord_partialeq_or_eq(&mut self) {
+        let _t = self.timer("compute_cannot_derive_partialord_partialeq_or_eq");
+        assert!(self.cannot_derive_partialeq_or_partialord.is_none());
+        if self.options.derive_partialord || self.options.derive_partialeq || self.options.derive_eq {
+            self.cannot_derive_partialeq_or_partialord = Some(analyze::<CannotDerivePartialEqOrPartialOrd>(self));
         }
     }
 
     /// Look up whether the item with `id` can
-    /// derive partialeq or not.
-    pub fn lookup_item_id_can_derive_partialeq(&self, id: ItemId) -> bool {
+    /// derive partialeq or partialord.
+    pub fn lookup_item_id_can_derive_partialeq_or_partialord(&self, id: ItemId) -> bool {
         assert!(
             self.in_codegen_phase(),
-            "We only compute can_derive_debug when we enter codegen"
+            "We only compute can_derive_partialeq_or_partialord when we enter codegen"
         );
 
         // Look up the computed value for whether the item with `id` can
         // derive partialeq or not.
-        !self.cannot_derive_partialeq.as_ref().unwrap().contains(&id)
+        !self.cannot_derive_partialeq_or_partialord.as_ref().unwrap().contains(&id)
     }
 
     /// Look up whether the item with `id` can
