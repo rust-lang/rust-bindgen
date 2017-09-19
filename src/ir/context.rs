@@ -2,7 +2,7 @@
 
 use super::analysis::{CannotDeriveCopy, CannotDeriveDebug,
                       CannotDeriveDefault, CannotDeriveHash,
-                      CannotDerivePartialEq, HasTypeParameterInArray,
+                      CannotDerivePartialEqOrPartialOrd, HasTypeParameterInArray,
                       HasVtableAnalysis, HasDestructorAnalysis, UsedTemplateParameters,
                       HasFloat, analyze};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
@@ -2129,7 +2129,7 @@ impl BindgenContext {
         let _t = self.timer("compute_cannot_derive_partialeq_or_eq");
         assert!(self.cannot_derive_partialeq.is_none());
         if self.options.derive_partialeq || self.options.derive_eq {
-            self.cannot_derive_partialeq = Some(analyze::<CannotDerivePartialEq>(self));
+            self.cannot_derive_partialeq = Some(analyze::<CannotDerivePartialEqOrPartialOrd>(self));
         }
     }
 
