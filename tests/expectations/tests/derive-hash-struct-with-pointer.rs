@@ -5,9 +5,9 @@
 
 
 
-/// Pointers can derive Hash/PartialOrd/PartialEq/Eq
+/// Pointers can derive Hash/PartialOrd/Ord/PartialEq/Eq
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialOrd, PartialEq, Eq)]
+#[derive(Debug, Copy, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct ConstPtrMutObj {
     pub bar: *const ::std::os::raw::c_int,
 }
@@ -45,7 +45,7 @@ impl Default for ConstPtrMutObj {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialOrd, PartialEq, Eq)]
+#[derive(Debug, Copy, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct MutPtrMutObj {
     pub bar: *mut ::std::os::raw::c_int,
 }
@@ -83,7 +83,7 @@ impl Default for MutPtrMutObj {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialOrd, PartialEq, Eq)]
+#[derive(Debug, Copy, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct MutPtrConstObj {
     pub bar: *const ::std::os::raw::c_int,
 }
@@ -121,7 +121,7 @@ impl Default for MutPtrConstObj {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialOrd, PartialEq, Eq)]
+#[derive(Debug, Copy, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct ConstPtrConstObj {
     pub bar: *const ::std::os::raw::c_int,
 }

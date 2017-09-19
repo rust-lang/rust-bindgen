@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash --with-derive-partialord --with-derive-partialeq --with-derive-eq --whitelist-type 'Whitelisted.*' --blacklist-type Blacklisted --raw-line "#[repr(C)] #[derive(Debug, Hash, Copy, Clone, PartialEq, Eq)] pub struct Blacklisted<T> {t: T, pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>> }"
+// bindgen-flags: --with-derive-hash --with-derive-partialord --with-derive-ord --with-derive-partialeq --with-derive-eq --whitelist-type 'Whitelisted.*' --blacklist-type Blacklisted --raw-line "#[repr(C)] #[derive(Debug, Hash, Copy, Clone, PartialEq, Eq)] pub struct Blacklisted<T> {t: T, pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>> }"
 //
 template <class T>
 struct Blacklisted {

@@ -5,9 +5,9 @@
 
 
 
-/// Template definition that doesn't contain float can derive hash/partialord/partialeq/eq
+/// Template definition that doesn't contain float can derive Hash/PartialOrd/Ord/PartialEq/Eq
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialOrd, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct foo<T> {
     pub data: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
@@ -17,9 +17,9 @@ impl<T> Default for foo<T> {
         unsafe { ::std::mem::zeroed() }
     }
 }
-/// Can derive hash/partialeq/eq when instantiated with int
+/// Can derive Hash/PartialOrd/Ord/PartialEq/Eq when instantiated with int
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialOrd, PartialEq, Eq)]
+#[derive(Debug, Copy, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct IntStr {
     pub a: foo<::std::os::raw::c_int>,
 }
@@ -56,7 +56,7 @@ impl Default for IntStr {
         unsafe { ::std::mem::zeroed() }
     }
 }
-/// Cannot derive hash/eq when instantiated with float but can derive partialeq
+/// Cannot derive Hash/Eq/Ord when instantiated with float but can derive PartialEq/PartialOrd
 #[repr(C)]
 #[derive(Debug, Copy, PartialOrd, PartialEq)]
 pub struct FloatStr {
