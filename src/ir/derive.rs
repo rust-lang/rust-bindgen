@@ -79,7 +79,7 @@ pub trait CanDeriveHash {
     fn can_derive_hash(&self, ctx: &BindgenContext) -> bool;
 }
 
-/// A trait that encapsulates the logic for whether or not we can derive `PartialEq`
+/// A trait that encapsulates the logic for whether or not we can derive `PartialEq` 
 /// for a given thing.
 ///
 /// This should ideally be a no-op that just returns `true`, but instead needs
@@ -87,9 +87,22 @@ pub trait CanDeriveHash {
 /// derive default or not, because of the limit rust has on 32 items as max in the
 /// array.
 pub trait CanDerivePartialEq {
-    /// Return `true` if `Default` can be derived for this thing, `false`
+    /// Return `true` if `PartialEq` can be derived for this thing, `false`
     /// otherwise.
     fn can_derive_partialeq(&self, ctx: &BindgenContext) -> bool;
+}
+
+/// A trait that encapsulates the logic for whether or not we can derive `PartialOrd`
+/// for a given thing.
+///
+/// This should ideally be a no-op that just returns `true`, but instead needs
+/// to be a recursive method that checks whether all the proper members can
+/// derive default or not, because of the limit rust has on 32 items as max in the
+/// array.
+pub trait CanDerivePartialOrd {
+    /// Return `true` if `PartialOrd` can be derived for this thing, `false`
+    /// otherwise.
+    fn can_derive_partialord(&self, ctx: &BindgenContext) -> bool;
 }
 
 /// A trait that encapsulates the logic for whether or not we can derive `Eq`
@@ -118,12 +131,13 @@ pub trait CanTriviallyDeriveHash {
     fn can_trivially_derive_hash(&self) -> bool;
 }
 
-/// A trait that encapsulates the logic for whether or not we can derive `PartialEq`.
+/// A trait that encapsulates the logic for whether or not we can derive `PartialEq`
+/// or `PartialOrd`.
 /// The difference between this trait and the CanDerivePartialEq is that the type
 /// implementing this trait cannot use recursion or lookup result from fix point
 /// analysis. It's a helper trait for fix point analysis.
-pub trait CanTriviallyDerivePartialEq {
-    /// Return `true` if `PartialEq` can be derived for this thing, `false`
+pub trait CanTriviallyDerivePartialEqOrPartialOrd {
+    /// Return `true` if `PartialEq` or `PartialOrd` can be derived for this thing, `false`
     /// otherwise.
-    fn can_trivially_derive_partialeq(&self) -> bool;
+    fn can_trivially_derive_partialeq_or_partialord(&self) -> bool;
 }

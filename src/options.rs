@@ -83,6 +83,9 @@ where
             Arg::with_name("with-derive-partialeq")
                 .long("with-derive-partialeq")
                 .help("Derive partialeq on any type."),
+            Arg::with_name("with-derive-partialord")
+                .long("with-derive-partialord")
+                .help("Derive partialord on any type."),
             Arg::with_name("with-derive-eq")
                 .long("with-derive-eq")
                 .help("Derive eq on any type. Enable this option also enables --with-derive-partialeq"),
@@ -338,6 +341,10 @@ where
 
     if matches.is_present("with-derive-partialeq") {
         builder = builder.derive_partialeq(true);
+    }
+
+    if matches.is_present("with-derive-partialord") {
+        builder = builder.derive_partialord(true);
     }
 
     if matches.is_present("with-derive-eq") {

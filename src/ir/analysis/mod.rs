@@ -55,8 +55,8 @@ mod has_type_param_in_array;
 pub use self::has_type_param_in_array::HasTypeParameterInArray;
 mod derive_hash;
 pub use self::derive_hash::CannotDeriveHash;
-mod derive_partial_eq;
-pub use self::derive_partial_eq::CannotDerivePartialEq;
+mod derive_partial_eq_or_partial_ord;
+pub use self::derive_partial_eq_or_partial_ord::CannotDerivePartialEqOrPartialOrd;
 mod has_float;
 pub use self::has_float::HasFloat;
 

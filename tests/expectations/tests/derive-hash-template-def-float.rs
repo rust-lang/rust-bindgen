@@ -5,9 +5,9 @@
 
 
 
-/// Template definition containing a float, which cannot derive hash/eq but can derive partialeq.
+/// Template definition containing a float, which cannot derive hash/eq but can derive partialeq and partialord.
 #[repr(C)]
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialOrd, PartialEq)]
 pub struct foo<T> {
     pub data: T,
     pub b: f32,

@@ -5,9 +5,9 @@
 
 
 
-/// Template definition that doesn't contain float can derive hash/partialeq/eq
+/// Template definition that doesn't contain float can derive hash/partialord/partialeq/eq
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialOrd, PartialEq, Eq)]
 pub struct foo<T> {
     pub data: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
@@ -19,7 +19,7 @@ impl<T> Default for foo<T> {
 }
 /// Can derive hash/partialeq/eq when instantiated with int
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Hash, PartialOrd, PartialEq, Eq)]
 pub struct IntStr {
     pub a: foo<::std::os::raw::c_int>,
 }
@@ -58,7 +58,7 @@ impl Default for IntStr {
 }
 /// Cannot derive hash/eq when instantiated with float but can derive partialeq
 #[repr(C)]
-#[derive(Debug, Copy, PartialEq)]
+#[derive(Debug, Copy, PartialOrd, PartialEq)]
 pub struct FloatStr {
     pub a: foo<f32>,
 }
@@ -102,13 +102,31 @@ fn __bindgen_test_layout_foo_open0_int_close0_instantiation() {
         4usize,
         concat!(
             "Size of template specialization: ",
-            stringify ! ( foo < :: std :: os :: raw :: c_int > )
+            stringify!(foo<::std::os::raw::c_int>)
         )
     );
-    assert_eq ! ( :: std :: mem :: align_of :: < foo < :: std :: os :: raw :: c_int > > ( ) , 4usize , concat ! ( "Alignment of template specialization: " , stringify ! ( foo < :: std :: os :: raw :: c_int > ) ) );
+    assert_eq!(
+        ::std::mem::align_of::<foo<::std::os::raw::c_int>>(),
+        4usize,
+        concat!(
+            "Alignment of template specialization: ",
+            stringify!(foo<::std::os::raw::c_int>)
+        )
+    );
 }
 #[test]
 fn __bindgen_test_layout_foo_open0_float_close0_instantiation() {
-    assert_eq ! ( :: std :: mem :: size_of :: < foo < f32 > > ( ) , 4usize , concat ! ( "Size of template specialization: " , stringify ! ( foo < f32 > ) ) );
-    assert_eq ! ( :: std :: mem :: align_of :: < foo < f32 > > ( ) , 4usize , concat ! ( "Alignment of template specialization: " , stringify ! ( foo < f32 > ) ) );
+    assert_eq!(
+        ::std::mem::size_of::<foo<f32>>(),
+        4usize,
+        concat!("Size of template specialization: ", stringify!(foo<f32>))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<foo<f32>>(),
+        4usize,
+        concat!(
+            "Alignment of template specialization: ",
+            stringify!(foo<f32>)
+        )
+    );
 }

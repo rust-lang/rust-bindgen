@@ -261,6 +261,10 @@ impl Builder {
             output_vector.push("--with-derive-hash".into());
         }
 
+        if self.options.derive_partialord {
+            output_vector.push("--with-derive-partialord".into());
+        }
+
         if self.options.derive_partialeq {
             output_vector.push("--with-derive-partialeq".into());
         }
@@ -814,6 +818,12 @@ impl Builder {
         self
     }
 
+    /// Set whether `PartialOrd` should be derived by default.
+    pub fn derive_partialord(mut self, doit: bool) -> Self {
+        self.options.derive_partialord = doit;
+        self
+    }
+
     /// Set whether `PartialEq` should be derived by default.
     /// If we don't compute partialeq, we also cannot compute
     /// eq. Set the derive_eq to `false` when doit is `false`.
@@ -1176,6 +1186,10 @@ struct BindgenOptions {
     /// and types.
     derive_hash: bool,
 
+    /// True if we should derive PartialOrd trait implementations for C/C++ structures
+    /// and types.
+    derive_partialord: bool,
+
     /// True if we should derive PartialEq trait implementations for C/C++ structures
     /// and types.
     derive_partialeq: bool,
@@ -1325,6 +1339,7 @@ impl Default for BindgenOptions {
             impl_debug: false,
             derive_default: false,
             derive_hash: false,
+            derive_partialord: false,
             derive_partialeq: false,
             derive_eq: false,
             enable_cxx_namespaces: false,
