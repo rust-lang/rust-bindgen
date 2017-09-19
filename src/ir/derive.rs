@@ -79,7 +79,7 @@ pub trait CanDeriveHash {
     fn can_derive_hash(&self, ctx: &BindgenContext) -> bool;
 }
 
-/// A trait that encapsulates the logic for whether or not we can derive `PartialEq` 
+/// A trait that encapsulates the logic for whether or not we can derive `PartialEq`
 /// for a given thing.
 ///
 /// This should ideally be a no-op that just returns `true`, but instead needs
@@ -144,13 +144,13 @@ pub trait CanTriviallyDeriveHash {
     fn can_trivially_derive_hash(&self) -> bool;
 }
 
-/// A trait that encapsulates the logic for whether or not we can derive `PartialEq`
-/// or `PartialOrd`.
-/// The difference between this trait and the CanDerivePartialEq is that the type
-/// implementing this trait cannot use recursion or lookup result from fix point
-/// analysis. It's a helper trait for fix point analysis.
+/// A trait that encapsulates the logic for whether or not we can derive
+/// `PartialEq` or `PartialOrd`. The difference between this trait and the
+/// CanDerivePartialEq is that the type implementing this trait cannot use
+/// recursion or lookup result from fix point analysis. It's a helper trait for
+/// fix point analysis.
 pub trait CanTriviallyDerivePartialEqOrPartialOrd {
-    /// Return `true` if `PartialEq` or `PartialOrd` can be derived for this thing, `false`
-    /// otherwise.
+    /// Return `true` if `PartialEq` or `PartialOrd` can be derived for this
+    /// thing, `false` otherwise.
     fn can_trivially_derive_partialeq_or_partialord(&self) -> bool;
 }

@@ -239,8 +239,9 @@ pub struct BindgenContext {
 
     /// The set of (`ItemId`s of) types that can't derive hash.
     ///
-    /// This is populated when we enter codegen by `compute_can_derive_partialeq`
-    /// and is always `None` before that and `Some` after.
+    /// This is populated when we enter codegen by
+    /// `compute_cannot_derive_partialord_partialeq_or_eq` and is always `None`
+    /// before that and `Some` after.
     cannot_derive_partialeq_or_partialord: Option<HashSet<ItemId>>,
 
     /// The set of (`ItemId's of`) types that has vtable.
@@ -2148,8 +2149,7 @@ impl BindgenContext {
         }
     }
 
-    /// Look up whether the item with `id` can
-    /// derive partialeq or partialord.
+    /// Look up whether the item with `id` can derive `Partial{Eq,Ord}`.
     pub fn lookup_item_id_can_derive_partialeq_or_partialord(&self, id: ItemId) -> bool {
         assert!(
             self.in_codegen_phase(),
@@ -2161,8 +2161,7 @@ impl BindgenContext {
         !self.cannot_derive_partialeq_or_partialord.as_ref().unwrap().contains(&id)
     }
 
-    /// Look up whether the item with `id` can
-    /// derive copy or not.
+    /// Look up whether the item with `id` can derive `Copy` or not.
     pub fn lookup_item_id_can_derive_copy(&self, id: ItemId) -> bool {
         assert!(
             self.in_codegen_phase(),

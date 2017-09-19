@@ -843,8 +843,9 @@ impl Builder {
     }
 
     /// Set whether `PartialEq` should be derived by default.
-    /// If we don't compute partialeq, we also cannot compute
-    /// eq. Set the derive_eq to `false` when doit is `false`.
+    ///
+    /// If we don't derive `PartialEq`, we also cannot derive `Eq`, so deriving
+    /// `Eq` is also disabled when `doit` is `false`.
     pub fn derive_partialeq(mut self, doit: bool) -> Self {
         self.options.derive_partialeq = doit;
         if !doit {
@@ -854,16 +855,19 @@ impl Builder {
     }
 
     /// Set whether `Eq` should be derived by default.
-    /// We can't compute Eq without computing PartialEq, so
-    /// we set the same option to derive_partialeq.
+    ///
+    /// We can't derive `Eq` without also deriving `PartialEq`, so we also
+    /// enable deriving `PartialEq` when `doit` is `true`.
     pub fn derive_eq(mut self, doit: bool) -> Self {
         self.options.derive_eq = doit;
-        self.options.derive_partialeq = doit;
+        if doit {
+            self.options.derive_partialeq = doit;
+        }
         self
     }
 
-    /// Set whether or not to time bindgen phases, and print
-    /// information to stderr.
+    /// Set whether or not to time bindgen phases, and print information to
+    /// stderr.
     pub fn time_phases(mut self, doit: bool) -> Self {
         self.options.time_phases = doit;
         self
