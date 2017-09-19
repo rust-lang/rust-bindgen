@@ -88,10 +88,12 @@ where
                 .help("Derive partialord on any type."),
             Arg::with_name("with-derive-eq")
                 .long("with-derive-eq")
-                .help("Derive eq on any type. Enable this option also enables --with-derive-partialeq"),
+                .help("Derive eq on any type. Enable this option also \
+                       enables --with-derive-partialeq"),
             Arg::with_name("with-derive-ord")
                 .long("with-derive-ord")
-                .help("Derive ord on any type"),
+                .help("Derive ord on any type. Enable this option also \
+                       enables --with-derive-partialord"),
             Arg::with_name("no-doc-comments")
                 .long("no-doc-comments")
                 .help("Avoid including doc comments in the output, see: \
