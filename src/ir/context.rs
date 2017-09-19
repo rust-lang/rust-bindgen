@@ -2199,7 +2199,7 @@ impl BindgenContext {
     fn compute_has_float(&mut self) {
         let _t = self.timer("compute_has_float");
         assert!(self.has_float.is_none());
-        if self.options.derive_eq {
+        if self.options.derive_eq || self.options.derive_ord {
             self.has_float = Some(analyze::<HasFloat>(self));
         }
     }
