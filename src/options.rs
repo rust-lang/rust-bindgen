@@ -88,7 +88,12 @@ where
                 .help("Derive partialord on any type."),
             Arg::with_name("with-derive-eq")
                 .long("with-derive-eq")
-                .help("Derive eq on any type. Enable this option also enables --with-derive-partialeq"),
+                .help("Derive eq on any type. Enable this option also \
+                       enables --with-derive-partialeq"),
+            Arg::with_name("with-derive-ord")
+                .long("with-derive-ord")
+                .help("Derive ord on any type. Enable this option also \
+                       enables --with-derive-partialord"),
             Arg::with_name("no-doc-comments")
                 .long("no-doc-comments")
                 .help("Avoid including doc comments in the output, see: \
@@ -349,6 +354,10 @@ where
 
     if matches.is_present("with-derive-eq") {
         builder = builder.derive_eq(true);
+    }
+
+    if matches.is_present("with-derive-ord") {
+        builder = builder.derive_ord(true);
     }
 
     if matches.is_present("no-derive-default") {

@@ -6,8 +6,8 @@ use super::analysis::{CannotDeriveCopy, CannotDeriveDebug,
                       HasVtableAnalysis, HasDestructorAnalysis, UsedTemplateParameters,
                       HasFloat, analyze};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
-                    CanDeriveHash, CanDerivePartialOrd, CanDerivePartialEq,
-                    CanDeriveEq};
+                    CanDeriveHash, CanDerivePartialOrd, CanDeriveOrd,
+                    CanDerivePartialEq, CanDeriveEq};
 use super::int::IntKind;
 use super::item::{HasTypeParamInArray, IsOpaque, Item, ItemAncestors,
                   ItemCanonicalPath, ItemSet};
@@ -86,6 +86,14 @@ impl CanDerivePartialEq for ItemId {
 impl CanDeriveEq for ItemId {
     fn can_derive_eq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_eq &&
+            ctx.lookup_item_id_can_derive_partialeq_or_partialord(*self) &&
+            !ctx.lookup_item_id_has_float(&self)
+    }
+}
+
+impl CanDeriveOrd for ItemId {
+    fn can_derive_ord(&self, ctx: &BindgenContext) -> bool {
+        ctx.options().derive_ord &&
             ctx.lookup_item_id_can_derive_partialeq_or_partialord(*self) &&
             !ctx.lookup_item_id_has_float(&self)
     }
@@ -2191,7 +2199,7 @@ impl BindgenContext {
     fn compute_has_float(&mut self) {
         let _t = self.timer("compute_has_float");
         assert!(self.has_float.is_none());
-        if self.options.derive_eq {
+        if self.options.derive_eq || self.options.derive_ord {
             self.has_float = Some(analyze::<HasFloat>(self));
         }
     }

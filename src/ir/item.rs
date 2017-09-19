@@ -6,8 +6,8 @@ use super::comment;
 use super::comp::MethodKind;
 use super::context::{BindgenContext, ItemId, PartialType};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
-                    CanDeriveHash, CanDerivePartialOrd, CanDerivePartialEq,
-                    CanDeriveEq};
+                    CanDeriveHash, CanDerivePartialOrd, CanDeriveOrd,
+                    CanDerivePartialEq, CanDeriveEq};
 use super::dot::DotAttributes;
 use super::function::{Function, FunctionKind};
 use super::item_kind::ItemKind;
@@ -348,6 +348,14 @@ impl CanDerivePartialEq for Item {
 impl CanDeriveEq for Item {
     fn can_derive_eq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_eq &&
+            ctx.lookup_item_id_can_derive_partialeq_or_partialord(self.id()) &&
+            !ctx.lookup_item_id_has_float(&self.id())
+    }
+}
+
+impl CanDeriveOrd for Item {
+    fn can_derive_ord(&self, ctx: &BindgenContext) -> bool {
+        ctx.options().derive_ord &&
             ctx.lookup_item_id_can_derive_partialeq_or_partialord(self.id()) &&
             !ctx.lookup_item_id_has_float(&self.id())
     }
