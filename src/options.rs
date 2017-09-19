@@ -270,6 +270,13 @@ where
                 .takes_value(true)
                 .multiple(false)
                 .number_of_values(1),
+            Arg::with_name("no-partialeq")
+                .long("no-partialeq")
+                .help("Avoid deriving PartialEq for types matching <regex>.")
+                .value_name("regex")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
         ]) // .args()
         .get_matches_from(args);
 
@@ -544,6 +551,12 @@ where
         }
 
         builder = builder.rustfmt_configuration_file(Some(path));
+    }
+
+    if let Some(no_partialeq) = matches.values_of("no-partialeq") {
+        for regex in no_partialeq {
+            builder = builder.no_partialeq(String::from(regex));
+        }
     }
 
     let verbose = matches.is_present("verbose");

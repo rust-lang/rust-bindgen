@@ -128,6 +128,10 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
             }
         };
 
+        if self.ctx.no_partialeq_by_name(&item) {
+            return self.insert(id)
+        }
+
         trace!("ty: {:?}", ty);
         if item.is_opaque(self.ctx, &()) {
             let layout_can_derive = ty.layout(self.ctx).map_or(true, |l| {
