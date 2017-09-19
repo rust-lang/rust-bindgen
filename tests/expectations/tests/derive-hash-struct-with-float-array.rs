@@ -5,9 +5,9 @@
 
 
 
-/// A struct containing an array of floats that cannot derive hash/eq but can derive partialeq.
+/// A struct containing an array of floats that cannot derive hash/eq but can derive partialeq and partialord
 #[repr(C)]
-#[derive(Debug, Default, Copy, PartialEq)]
+#[derive(Debug, Default, Copy, PartialOrd, PartialEq)]
 pub struct foo {
     pub bar: [f32; 3usize],
 }

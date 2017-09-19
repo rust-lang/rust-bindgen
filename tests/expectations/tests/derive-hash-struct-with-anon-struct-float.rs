@@ -5,14 +5,14 @@
 
 
 
-/// A struct containing a struct containing a float that cannot derive hash/eq but can derive partial eq.
+/// A struct containing a struct containing a float that cannot derive hash/eq but can derive partialeq and partialord
 #[repr(C)]
-#[derive(Debug, Default, Copy, PartialEq)]
+#[derive(Debug, Default, Copy, PartialOrd, PartialEq)]
 pub struct foo {
     pub bar: foo__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, PartialEq)]
+#[derive(Debug, Default, Copy, PartialOrd, PartialEq)]
 pub struct foo__bindgen_ty_1 {
     pub a: f32,
     pub b: f32,

@@ -1,6 +1,6 @@
-// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq
+// bindgen-flags: --with-derive-hash --with-derive-partialord --with-derive-partialeq --with-derive-eq
 //
-/// Template definition that doesn't contain float can derive hash/partialeq/eq
+/// Template definition that doesn't contain float can derive hash/partialord/partialeq/eq
 template <typename T>
 struct foo {
     T data;

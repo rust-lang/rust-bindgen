@@ -1,6 +1,6 @@
-// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq
+// bindgen-flags: --with-derive-hash --with-derive-partialord --with-derive-partialeq --with-derive-eq
 //
-/// Pointers can derive hash/PartialEq/Eq
+/// Pointers can derive Hash/PartialOrd/PartialEq/Eq
 struct ConstPtrMutObj {
     int* const bar;
 };
