@@ -97,7 +97,7 @@ pub trait CanDerivePartialEq {
 ///
 /// This should ideally be a no-op that just returns `true`, but instead needs
 /// to be a recursive method that checks whether all the proper members can
-/// derive default or not, because of the limit rust has on 32 items as max in the
+/// derive partial ord or not, because of the limit rust has on 32 items as max in the
 /// array.
 pub trait CanDerivePartialOrd {
     /// Return `true` if `PartialOrd` can be derived for this thing, `false`
@@ -119,6 +119,19 @@ pub trait CanDeriveEq {
     fn can_derive_eq(&self,
                      ctx: &BindgenContext)
                      -> bool;
+}
+
+/// A trait that encapsulates the logic for whether or not we can derive `Ord`
+/// for a given thing.
+///
+/// This should ideally be a no-op that just returns `true`, but instead needs
+/// to be a recursive method that checks whether all the proper members can
+/// derive ord or not, because of the limit rust has on 32 items as max in the
+/// array.
+pub trait CanDeriveOrd {
+    /// Return `true` if `Ord` can be derived for this thing, `false`
+    /// otherwise.
+    fn can_derive_ord(&self, ctx: &BindgenContext) -> bool;
 }
 
 /// A trait that encapsulates the logic for whether or not we can derive `Hash`.
