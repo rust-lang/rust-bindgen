@@ -308,6 +308,14 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
                                 self.is_not_default(data.ty())
                         }
                         Field::Bitfields(ref bfu) => {
+                            if bfu.layout().align > RUST_DERIVE_IN_ARRAY_LIMIT {
+                                trace!(
+                                    "   we cannot derive Default for a bitfield larger then \
+                                        the limit"
+                                );
+                                return true;
+                            }
+
                             bfu.bitfields().iter().any(|b| {
                                 !self.ctx.whitelisted_items().contains(
                                     &b.ty(),
