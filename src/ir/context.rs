@@ -680,7 +680,8 @@ impl BindgenContext {
  	            "where" |
                 "while" |
  	            "yield" |
-                "bool" => true,
+                "bool" |
+                "_" => true,
                 _ => false,
             }
         {
