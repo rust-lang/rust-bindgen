@@ -1,4 +1,4 @@
-// bindgen-flags: --rust-target 1.0 --with-derive-hash --with-derive-partialeq --with-derive-eq
+// bindgen-flags: --rust-target 1.0 --with-derive-hash --with-derive-partialeq --impl-partialeq --with-derive-eq
 
 class C {
     int a;

@@ -347,21 +347,21 @@ impl CanDeriveHash for Item {
 impl CanDerivePartialOrd for Item {
     fn can_derive_partialord(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_partialord &&
-            ctx.lookup_can_derive_partialeq_or_partialord(self.id())
+            ctx.lookup_can_derive_partialeq_or_partialord(self.id()).is_none()
     }
 }
 
 impl CanDerivePartialEq for Item {
     fn can_derive_partialeq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_partialeq &&
-            ctx.lookup_can_derive_partialeq_or_partialord(self.id())
+            ctx.lookup_can_derive_partialeq_or_partialord(self.id()).is_none()
     }
 }
 
 impl CanDeriveEq for Item {
     fn can_derive_eq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_eq &&
-            ctx.lookup_can_derive_partialeq_or_partialord(self.id()) &&
+            ctx.lookup_can_derive_partialeq_or_partialord(self.id()).is_none() &&
             !ctx.lookup_has_float(self.id())
     }
 }
@@ -369,7 +369,7 @@ impl CanDeriveEq for Item {
 impl CanDeriveOrd for Item {
     fn can_derive_ord(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_ord &&
-            ctx.lookup_can_derive_partialeq_or_partialord(self.id()) &&
+            ctx.lookup_can_derive_partialeq_or_partialord(self.id()).is_none() &&
             !ctx.lookup_has_float(self.id())
     }
 }

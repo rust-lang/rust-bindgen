@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq --rustified-enum .*
+// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq --impl-partialeq --rustified-enum .*
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;

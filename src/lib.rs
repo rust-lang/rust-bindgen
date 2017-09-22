@@ -239,16 +239,20 @@ impl Builder {
             output_vector.push("--no-layout-tests".into());
         }
 
+        if self.options.impl_debug {
+            output_vector.push("--impl-debug".into());
+        }
+
+        if self.options.impl_partialeq {
+            output_vector.push("--impl-partialeq".into());
+        }
+
         if !self.options.derive_copy {
             output_vector.push("--no-derive-copy".into());
         }
 
         if !self.options.derive_debug {
             output_vector.push("--no-derive-debug".into());
-        }
-
-        if self.options.impl_debug {
-            output_vector.push("--impl-debug".into());
         }
 
         if !self.options.derive_default {
@@ -806,6 +810,18 @@ impl Builder {
         self
     }
 
+    /// Set whether `Debug` should be implemented, if it can not be derived automatically.
+    pub fn impl_debug(mut self, doit: bool) -> Self {
+        self.options.impl_debug = doit;
+        self
+    }
+
+    /// Set whether `PartialEq` should be implemented, if it can not be derived automatically.
+    pub fn impl_partialeq(mut self, doit: bool) -> Self {
+        self.options.impl_partialeq = doit;
+        self
+    }
+
     /// Set whether `Copy` should be derived by default.
     pub fn derive_copy(mut self, doit: bool) -> Self {
         self.options.derive_copy = doit;
@@ -815,12 +831,6 @@ impl Builder {
     /// Set whether `Debug` should be derived by default.
     pub fn derive_debug(mut self, doit: bool) -> Self {
         self.options.derive_debug = doit;
-        self
-    }
-
-    /// Set whether `Debug` should be implemented, if it can not be derived automatically.
-    pub fn impl_debug(mut self, doit: bool) -> Self {
-        self.options.impl_debug = doit;
         self
     }
 
@@ -1209,6 +1219,14 @@ struct BindgenOptions {
     /// True if we should generate layout tests for generated structures.
     layout_tests: bool,
 
+    /// True if we should implement the Debug trait for C/C++ structures and types
+    /// that do not support automatically deriving Debug.
+    impl_debug: bool,
+
+    /// True if we should implement the PartialEq trait for C/C++ structures and types
+    /// that do not support autoamically deriving PartialEq.
+    impl_partialeq: bool,
+
     /// True if we should derive Copy trait implementations for C/C++ structures
     /// and types.
     derive_copy: bool,
@@ -1216,10 +1234,6 @@ struct BindgenOptions {
     /// True if we should derive Debug trait implementations for C/C++ structures
     /// and types.
     derive_debug: bool,
-
-    /// True if we should implement the Debug trait for C/C++ structures and types
-    /// that do not support automatically deriving Debug.
-    impl_debug: bool,
 
     /// True if we should derive Default trait implementations for C/C++ structures
     /// and types.
@@ -1386,9 +1400,10 @@ impl Default for BindgenOptions {
             emit_ir: false,
             emit_ir_graphviz: None,
             layout_tests: true,
+            impl_debug: false,
+            impl_partialeq: false,
             derive_copy: true,
             derive_debug: true,
-            impl_debug: false,
             derive_default: false,
             derive_hash: false,
             derive_partialord: false,

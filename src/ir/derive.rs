@@ -117,5 +117,27 @@ pub trait CanTriviallyDeriveHash {
 pub trait CanTriviallyDerivePartialEqOrPartialOrd {
     /// Return `true` if `PartialEq` or `PartialOrd` can trivially be derived
     /// for this thing, `false` otherwise.
-    fn can_trivially_derive_partialeq_or_partialord(&self) -> bool;
+    fn can_trivially_derive_partialeq_or_partialord(&self) -> CanDerive;
+}
+
+/// Reason why exactly we cannot automatically derive a trait.
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum CannotDeriveReason {
+    /// The only thing that stops us from automatically deriving is that
+    /// array with more than maximum number of elements is used.
+    /// 
+    /// This means we probably can "manually" implement such trait.
+    ArrayTooLarge,
+
+    /// Any other reason.
+    Other,
+}
+
+/// Whether it is possible or not to derive trait automatically.
+pub enum CanDerive {
+    /// Yes, we can!
+    Yes,
+
+    /// No, we cannot. Contains reason why exactly we can't derive.
+    No(CannotDeriveReason)
 }

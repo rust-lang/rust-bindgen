@@ -43,6 +43,11 @@ impl Default for NoDebug {
         unsafe { ::std::mem::zeroed() }
     }
 }
+impl ::std::cmp::PartialEq for NoDebug {
+    fn eq(&self, other: &NoDebug) -> bool {
+        self.c == other.c
+    }
+}
 /// This should derive Debug/Hash/PartialEq/Eq because the padding size is less than the max derive
 /// Debug/Hash/PartialEq/Eq impl for arrays. However, we conservatively don't derive Debug/Hash because
 /// we determine Debug derive-ability before we compute padding, which happens at
@@ -90,5 +95,10 @@ impl Clone for ShouldDeriveDebugButDoesNot {
 impl Default for ShouldDeriveDebugButDoesNot {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+impl ::std::cmp::PartialEq for ShouldDeriveDebugButDoesNot {
+    fn eq(&self, other: &ShouldDeriveDebugButDoesNot) -> bool {
+        self.c == other.c && self.d == other.d
     }
 }
