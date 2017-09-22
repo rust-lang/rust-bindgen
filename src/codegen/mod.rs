@@ -1559,7 +1559,7 @@ impl CodeGenerator for CompInfo {
                 struct_layout.saw_vtable();
             }
 
-            for (i, base) in self.base_members().iter().enumerate() {
+            for base in self.base_members() {
                 // Virtual bases are already taken into account by the vtable
                 // pointer.
                 //
@@ -1577,11 +1577,7 @@ impl CodeGenerator for CompInfo {
                 }
 
                 let inner = base.ty.to_rust_ty_or_opaque(ctx, &());
-                let field_name = ctx.rust_ident(if i == 0 {
-                    "_base".into()
-                } else {
-                    format!("_base_{}", i)
-                });
+                let field_name = ctx.rust_ident(&base.field_name);
 
                 struct_layout.saw_base(base_ty);
 
