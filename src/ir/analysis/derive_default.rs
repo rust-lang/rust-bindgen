@@ -171,6 +171,10 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
             }
         };
 
+        if self.ctx.no_default_by_name(&item) {
+            return self.insert(id)
+        }
+
         if item.is_opaque(self.ctx, &()) {
             let layout_can_derive = ty.layout(self.ctx).map_or(true, |l| {
                 l.opaque().can_trivially_derive_default()
