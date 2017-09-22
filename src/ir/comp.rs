@@ -666,6 +666,33 @@ impl CompFields {
             CompFields::AfterComputingBitfieldUnits(fields_and_units),
         );
     }
+
+    fn deanonymize_fields(&mut self) {
+        let fields = match *self {
+            CompFields::AfterComputingBitfieldUnits(ref mut fields) => {
+                fields
+            }
+            CompFields::BeforeComputingBitfieldUnits(_) => {
+                panic!("Not yet computed bitfield units.");
+            }
+        };
+
+        let mut anon_field_counter = 0;
+        for field in fields.iter_mut() {
+            let field_data = match *field {
+                Field::DataMember(ref mut fd) => fd,
+                Field::Bitfields(_) => continue,
+            };
+
+            if let Some(_) = field_data.name  {
+                continue;
+            }
+
+            anon_field_counter += 1;
+            let name = format!("__bindgen_anon_{}", anon_field_counter);
+            field_data.name = Some(name);
+        }
+    }
 }
 
 impl Trace for CompFields {
@@ -1349,6 +1376,11 @@ impl CompInfo {
     /// Compute this compound structure's bitfield allocation units.
     pub fn compute_bitfield_units(&mut self, ctx: &BindgenContext) {
         self.fields.compute_bitfield_units(ctx);
+    }
+
+    /// Assign for each anonymous field a generated name.
+    pub fn deanonymize_fields(&mut self) {
+        self.fields.deanonymize_fields();
     }
 
     /// Returns whether the current union can be represented as a Rust `union`
