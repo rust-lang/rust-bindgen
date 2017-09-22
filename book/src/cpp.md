@@ -25,3 +25,8 @@ You pretty much **must** use [whitelisting](./whitelisting.html) when working
 with C++ to avoid pulling in all of the `std::*` types, many of which `bindgen`
 cannot handle. Additionally, you may want to mark other types
 as [opaque](./opaque.html) that `bindgen` stumbles on.
+
+Note that using `bindgen` with C++ isn't nearly as plug-and-play as using it
+with C is. Improvement is ongoing.
+
+You might want to read up on the [FAQs](./faq.html) as well.
