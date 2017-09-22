@@ -492,7 +492,7 @@ impl Builder {
         }
 
         if !self.options.rustfmt_bindings {
-            output_vector.push("--rustfmt-bindings".into());
+            output_vector.push("--no-rustfmt-bindings".into());
         }
 
         if let Some(path) = self.options
@@ -1412,7 +1412,7 @@ impl Default for BindgenOptions {
             enable_mangling: true,
             prepend_enum_name: true,
             time_phases: false,
-            rustfmt_bindings: false,
+            rustfmt_bindings: true,
             rustfmt_configuration_file: None,
             no_partialeq_types: Default::default(),
         }
@@ -1604,10 +1604,8 @@ impl Bindings {
         let rustfmt = if let Ok(rustfmt) = which::which("rustfmt") {
             rustfmt
         } else {
-            return Err(io::Error::new(
-                io::ErrorKind::Other,
-                "Rustfmt activated, but it could not be found in global path.",
-            ));
+            warn!("Not running rustfmt because it does not exist in PATH");
+            return Ok(());
         };
 
         let mut cmd = Command::new(rustfmt);
