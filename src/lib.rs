@@ -247,7 +247,7 @@ impl Builder {
             output_vector.push("--no-derive-debug".into());
         }
 
-        if !self.options.impl_debug {
+        if self.options.impl_debug {
             output_vector.push("--impl-debug".into());
         }
 
