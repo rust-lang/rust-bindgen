@@ -865,24 +865,6 @@ impl CodeGenerator for TemplateInstantiation {
     }
 }
 
-/// Generates an infinite number of anonymous field names.
-struct AnonFieldNames(usize);
-
-impl Default for AnonFieldNames {
-    fn default() -> AnonFieldNames {
-        AnonFieldNames(0)
-    }
-}
-
-impl Iterator for AnonFieldNames {
-    type Item = String;
-
-    fn next(&mut self) -> Option<String> {
-        self.0 += 1;
-        Some(format!("__bindgen_anon_{}", self.0))
-    }
-}
-
 /// Trait for implementing the code generation of a struct or union field.
 trait FieldCodegen<'a> {
     type Extra;
@@ -894,7 +876,6 @@ trait FieldCodegen<'a> {
         codegen_depth: usize,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
-        anon_field_names: &mut AnonFieldNames,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -915,7 +896,6 @@ impl<'a> FieldCodegen<'a> for Field {
         codegen_depth: usize,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
-        anon_field_names: &mut AnonFieldNames,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -933,7 +913,6 @@ impl<'a> FieldCodegen<'a> for Field {
                     codegen_depth,
                     accessor_kind,
                     parent,
-                    anon_field_names,
                     result,
                     struct_layout,
                     fields,
@@ -948,7 +927,6 @@ impl<'a> FieldCodegen<'a> for Field {
                     codegen_depth,
                     accessor_kind,
                     parent,
-                    anon_field_names,
                     result,
                     struct_layout,
                     fields,
@@ -970,7 +948,6 @@ impl<'a> FieldCodegen<'a> for FieldData {
         codegen_depth: usize,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
-        anon_field_names: &mut AnonFieldNames,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -1030,7 +1007,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
         let field_name =
             self.name()
                 .map(|name| ctx.rust_mangle(name).into_owned())
-                .unwrap_or_else(|| anon_field_names.next().unwrap());
+                .expect("Each field should have a name in codegen!");
         let field_ident = ctx.rust_ident_raw(field_name.as_str());
 
         if !parent.is_union() {
@@ -1164,7 +1141,6 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         codegen_depth: usize,
         accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
-        anon_field_names: &mut AnonFieldNames,
         result: &mut CodegenResult,
         struct_layout: &mut StructLayoutTracker,
         fields: &mut F,
@@ -1213,7 +1189,6 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 codegen_depth,
                 accessor_kind,
                 parent,
-                anon_field_names,
                 result,
                 struct_layout,
                 fields,
@@ -1321,7 +1296,6 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         _codegen_depth: usize,
         _accessor_kind: FieldAccessorKind,
         parent: &CompInfo,
-        _anon_field_names: &mut AnonFieldNames,
         _result: &mut CodegenResult,
         _struct_layout: &mut StructLayoutTracker,
         _fields: &mut F,
@@ -1595,7 +1569,6 @@ impl CodeGenerator for CompInfo {
 
         let mut methods = vec![];
         if !is_opaque {
-            let mut anon_field_names = AnonFieldNames::default();
             let codegen_depth = item.codegen_depth(ctx);
             let fields_should_be_private =
                 item.annotations().private_fields().unwrap_or(false);
@@ -1609,7 +1582,6 @@ impl CodeGenerator for CompInfo {
                     codegen_depth,
                     struct_accessor_kind,
                     self,
-                    &mut anon_field_names,
                     result,
                     &mut struct_layout,
                     &mut fields,

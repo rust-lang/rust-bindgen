@@ -799,6 +799,18 @@ impl BindgenContext {
         }
     }
 
+    /// Assign a new generated name for each anonymous field.
+    fn deanonymize_fields(&mut self) {
+        let _t = self.timer("deanonymize_fields");
+        let comp_types = self.items
+            .values_mut()
+            .filter_map(|item| item.kind_mut().as_type_mut())
+            .filter_map(Type::as_comp_mut);
+        for comp_info in comp_types {
+            comp_info.deanonymize_fields();
+        }
+    }
+
     /// Iterate over all items and replace any item that has been named in a
     /// `replaces="SomeType"` annotation with the replacement type.
     fn process_replacements(&mut self) {
@@ -940,6 +952,8 @@ impl BindgenContext {
             self.compute_bitfield_units();
             self.process_replacements();
         }
+        
+        self.deanonymize_fields();
 
         // And assert once again, because resolving type refs and processing
         // replacements both mutate the IR graph.
