@@ -769,6 +769,8 @@ pub struct Base {
     pub ty: ItemId,
     /// The kind of inheritance we're doing.
     pub kind: BaseKind,
+    /// Name of the field in which this base should be stored.
+    pub field_name: String,
 }
 
 impl Base {
@@ -1155,11 +1157,16 @@ impl CompInfo {
                         BaseKind::Normal
                     };
 
+                    let field_name = match ci.base_members.len() {
+                        0 => "_base".into(),
+                        n => format!("_base_{}", n),
+                    };
                     let type_id =
                         Item::from_ty_or_ref(cur.cur_type(), cur, None, ctx);
                     ci.base_members.push(Base {
                         ty: type_id,
                         kind: kind,
+                        field_name: field_name,
                     });
                 }
                 CXCursor_Constructor |
