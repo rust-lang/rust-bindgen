@@ -26,10 +26,10 @@ impl Foo for id {
         msg_send!(self, method)
     }
     unsafe fn methodWithInt_(self, foo: ::std::os::raw::c_int) {
-        msg_send!(self, methodWithInt: foo: ::std::os::raw::c_int)
+        msg_send!(self, methodWithInt: foo)
     }
     unsafe fn methodWithFoo_(self, foo: id) {
-        msg_send!(self, methodWithFoo: foo: id)
+        msg_send!(self, methodWithFoo: foo)
     }
     unsafe fn methodReturningInt(self) -> ::std::os::raw::c_int {
         msg_send!(self, methodReturningInt)
@@ -43,11 +43,6 @@ impl Foo for id {
         ptr: *mut ::std::os::raw::c_char,
         floatvalue: f32,
     ) {
-        msg_send!(
-            self,
-            methodWithArg1: intvalue: ::std::os::raw::c_int,
-            andArg2: ptr: *mut ::std::os::raw::c_char,
-            andArg3: floatvalue: f32
-        )
+        msg_send ! ( self , methodWithArg1 : intvalue andArg2 : ptr andArg3 : floatvalue )
     }
 }

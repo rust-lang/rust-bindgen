@@ -23,9 +23,6 @@ impl Foo for id {
         self,
         func: ::std::option::Option<unsafe extern "C" fn() -> ::std::os::raw::c_int>,
     ) {
-        msg_send!(
-            self,
-            setFunc: func: ::std::option::Option<unsafe extern "C" fn() -> ::std::os::raw::c_int>
-        )
+        msg_send!(self, setFunc: func)
     }
 }
