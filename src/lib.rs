@@ -1692,7 +1692,7 @@ fn parse(context: &mut BindgenContext) -> Result<(), ()> {
     for d in context.translation_unit().diags().iter() {
         let msg = d.format();
         let is_err = d.severity() >= CXDiagnostic_Error;
-        println!("{}, err: {}", msg, is_err);
+        eprintln!("{}, err: {}", msg, is_err);
         any_error |= is_err;
     }
 
