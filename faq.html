@@ -1,0 +1,162 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>FAQ - The `bindgen` User Guide</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="`bindgen` automatically generates Rust FFI bindings to C and C++ libraries.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <base href="">
+
+        <link rel="stylesheet" href="book.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <link rel="shortcut icon" href="favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+
+        <!-- MathJax -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Fetch JQuery from CDN but have a local fallback -->
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script>
+            if (typeof jQuery == 'undefined') {
+                document.write(unescape("%3Cscript src='jquery.js'%3E%3C/script%3E"));
+            }
+        </script>
+    </head>
+    <body class="light">
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme = localStorage.getItem('theme');
+            if (theme == null) { theme = 'light'; }
+            $('body').removeClass().addClass(theme);
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var sidebar = localStorage.getItem('sidebar');
+            if (sidebar === "hidden") { $("html").addClass("sidebar-hidden") }
+            else if (sidebar === "visible") { $("html").addClass("sidebar-visible") }
+        </script>
+
+        <div id="sidebar" class="sidebar">
+            <ul class="chapter"><li><a href="./introduction.html"><strong>1.</strong> Introduction</a></li><li><a href="./requirements.html"><strong>2.</strong> Requirements</a></li><li><a href="./library-usage.html"><strong>3.</strong> Library Usage with <code>build.rs</code></a></li><li><ul class="section"><li><a href="./tutorial-0.html"><strong>3.1.</strong> Tutorial</a></li><li><ul class="section"><li><a href="./tutorial-1.html"><strong>3.1.1.</strong> Add <code>bindgen</code> as a Build Dependency</a></li><li><a href="./tutorial-2.html"><strong>3.1.2.</strong> Create a <code>wrapper.h</code> Header</a></li><li><a href="./tutorial-3.html"><strong>3.1.3.</strong> Create a <code>build.rs</code> File</a></li><li><a href="./tutorial-4.html"><strong>3.1.4.</strong> Include the Generated Bindings in <code>src/lib.rs</code></a></li><li><a href="./tutorial-5.html"><strong>3.1.5.</strong> Write a Sanity Test</a></li><li><a href="./tutorial-6.html"><strong>3.1.6.</strong> Publish Your Crate!</a></li></ul></li></ul></li><li><a href="./command-line-usage.html"><strong>4.</strong> Command Line Usage</a></li><li><a href="./customizing-generated-bindings.html"><strong>5.</strong> Customizing the Generated Bindings</a></li><li><ul class="section"><li><a href="./whitelisting.html"><strong>5.1.</strong> Whitelisting</a></li><li><a href="./blacklisting.html"><strong>5.2.</strong> Blacklisting</a></li><li><a href="./opaque.html"><strong>5.3.</strong> Treating a Type as an Opaque Blob of Bytes</a></li><li><a href="./replacing-types.html"><strong>5.4.</strong> Replacing One Type with Another</a></li><li><a href="./nocopy.html"><strong>5.5.</strong> Preventing the Derivation of <code>Copy</code> and <code>Clone</code></a></li></ul></li><li><a href="./cpp.html"><strong>6.</strong> Generating Bindings to C++</a></li><li><a href="./using-unions.html"><strong>7.</strong> Using Unions</a></li><li><a href="./faq.html" class="active"><strong>8.</strong> FAQ</a></li></ul>
+        </div>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar" class="menu-bar">
+                    <div class="left-buttons">
+                        <i id="sidebar-toggle" class="fa fa-bars"></i>
+                        <i id="theme-toggle" class="fa fa-paint-brush"></i>
+                    </div>
+
+                    <h1 class="menu-title">The `bindgen` User Guide</h1>
+
+                    <div class="right-buttons">
+                        <i id="print-button" class="fa fa-print" title="Print this book"></i>
+                    </div>
+                </div>
+
+                <div id="content" class="content">
+                    <a class="header" href="./faq.html#frequently-asked-questions" id="frequently-asked-questions"><h1>Frequently Asked Questions</h1></a>
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<ul>
+<li><a href="./faq.html#why-isnt-bindgen-generating-methods-for-this-whitelisted-class">Why isn't <code>bindgen</code> generating methods for this whitelisted class?</a></li>
+<li><a href="./faq.html#why-isnt-bindgen-generating-bindings-to-inline-functions">Why isn't <code>bindgen</code> generating bindings to inline functions?</a></li>
+<li><a href="./faq.html#does-bindgen-support-the-c-standard-template-library-stl">Does <code>bindgen</code> support the C++ Standard Template Library (STL)?</a></li>
+</ul>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<a class="header" href="./faq.html#why-isnt-bindgen-generating-methods-for-this-whitelisted-class" id="why-isnt-bindgen-generating-methods-for-this-whitelisted-class"><h3>Why isn't <code>bindgen</code> generating methods for this whitelisted class?</h3></a>
+<p>Are the methods <code>inline</code> methods, or defined inline in the class? For example:</p>
+<pre><code class="language-c++">class Dooder {
+  public:
+    // Function defined inline in the class.
+    int example_one() { return 1; }
+
+    // `inline` function whose definition is supplied later in the header, or in
+    // another header.
+    inline bool example_two();
+};
+
+inline bool Dooder::example_two() {
+    return true;
+}
+</code></pre>
+<p>If so, see
+<a href="./faq.html#why-isnt-bindgen-generating-bindings-to-inline-functions">&quot;Why isn't <code>bindgen</code> generating bindings to inline functions?&quot;</a></p>
+<p>If not, consider filing an issue!</p>
+<a class="header" href="./faq.html#why-isnt-bindgen-generating-bindings-to-inline-functions" id="why-isnt-bindgen-generating-bindings-to-inline-functions"><h3>Why isn't <code>bindgen</code> generating bindings to inline functions?</h3></a>
+<p>These functions don't typically end up in object files or shared libraries with
+symbols that we can reliably link to, since they are instead inlined into each
+of their call sites. Therefore, we don't generate bindings to them, since that
+creates linking errors.</p>
+<p>However, if you are compiling the C/C++ yourself (rather than using a system
+shared library, for example), then you can pass <code>-fkeep-inline-functions</code> or
+<code>-fno-inline-functions</code> to <code>gcc</code> or <code>clang</code>, and invoke <code>bindgen</code> with either
+the <code>bindgen::Builder::generate_inline_functions</code> method or the
+<code>--generate-inline-functions</code> flag.</p>
+<p>Note that these functions and methods are usually marked inline for a reason:
+they tend to be hot. The above workaround makes them an out-of-line call, which
+might not provide acceptable performance.</p>
+<a class="header" href="./faq.html#does-bindgen-support-the-c-standard-template-library-stl" id="does-bindgen-support-the-c-standard-template-library-stl"><h3>Does <code>bindgen</code> support the C++ Standard Template Library (STL)?</h3></a>
+<p>Sort of. A little. Depends what you mean by &quot;support&quot;.</p>
+<p>Most functions, methods, constructors, and destructors are inline in the
+STL. That ties our hands when it comes to linking: <a href="./faq.html#why-isnt-bindgen-generating-bindings-to-inline-functions">&quot;Why isn't <code>bindgen</code> generating bindings to inline functions?&quot;</a></p>
+<p>As far as generating opaque blobs of bytes with the correct size and alignment,
+<code>bindgen</code> can do pretty well. This is typically enough to let you use types that
+transitively contain STL things. We generally recommend marking <code>std::.*</code> as
+opaque, and then whitelisting only the specific things you need from the library
+you're binding to that is pulling in STL headers.</p>
+
+                </div>
+
+                <!-- Mobile navigation buttons -->
+                
+                    <a href="./using-unions.html" class="mobile-nav-chapters previous">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+
+            </div>
+
+            
+                <a href="./using-unions.html" class="nav-chapters previous" title="You can navigate through the chapters using the arrow keys">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+            
+
+            
+
+        </div>
+
+
+        <!-- Local fallback for Font Awesome -->
+        <script>
+            if ($(".fa").css("font-family") !== "FontAwesome") {
+                $('<link rel="stylesheet" type="text/css" href="_FontAwesome/css/font-awesome.css">').prependTo('head');
+            }
+        </script>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        
+
+        
+
+
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+    </body>
+</html>
