@@ -2426,7 +2426,10 @@ impl CodeGenerator for Enum {
         let repr =
             self.repr()
                 .and_then(|repr| repr.try_to_rust_ty_or_opaque(ctx, &()).ok())
-                .unwrap_or_else(|| helpers::ast_ty::raw_type(ctx, repr_name));
+                .unwrap_or_else(|| {
+                    let repr_name = ctx.rust_ident_raw(repr_name);
+                    quote! { #repr_name }
+                });
 
         let mut builder = EnumBuilder::new(
             &name,
