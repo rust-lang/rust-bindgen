@@ -104,44 +104,43 @@ impl Opaque {
             None
         }
     }
+
+    /// Return `true` if this opaque layout's array size will fit within the
+    /// maximum number of array elements that Rust allows deriving traits
+    /// with. Return `false` otherwise.
+    pub fn array_size_within_derive_limit(&self) -> bool {
+        self.array_size().map_or(false, |size| {
+            size <= RUST_DERIVE_IN_ARRAY_LIMIT
+        })
+    }
 }
 
 impl CanTriviallyDeriveDebug for Opaque {
     fn can_trivially_derive_debug(&self) -> bool {
-        self.array_size().map_or(false, |size| {
-            size <= RUST_DERIVE_IN_ARRAY_LIMIT
-        })
+        self.array_size_within_derive_limit()
     }
 }
 
 impl CanTriviallyDeriveDefault for Opaque {
     fn can_trivially_derive_default(&self) -> bool {
-        self.array_size().map_or(false, |size| {
-            size <= RUST_DERIVE_IN_ARRAY_LIMIT
-        })
+        self.array_size_within_derive_limit()
     }
 }
 
 impl CanTriviallyDeriveCopy for Opaque {
     fn can_trivially_derive_copy(&self) -> bool {
-        self.array_size().map_or(false, |size| {
-            size <= RUST_DERIVE_IN_ARRAY_LIMIT
-        })
+        self.array_size_within_derive_limit()
     }
 }
 
 impl CanTriviallyDeriveHash for Opaque {
     fn can_trivially_derive_hash(&self) -> bool {
-        self.array_size().map_or(false, |size| {
-            size <= RUST_DERIVE_IN_ARRAY_LIMIT
-        })
+        self.array_size_within_derive_limit()
     }
 }
 
 impl CanTriviallyDerivePartialEqOrPartialOrd for Opaque {
     fn can_trivially_derive_partialeq_or_partialord(&self) -> bool {
-        self.array_size().map_or(false, |size| {
-            size <= RUST_DERIVE_IN_ARRAY_LIMIT
-        })
+        self.array_size_within_derive_limit()
     }
 }

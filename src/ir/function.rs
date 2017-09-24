@@ -437,6 +437,26 @@ impl FunctionSig {
         // variadic functions without an initial argument.
         self.is_variadic && !self.argument_types.is_empty()
     }
+
+    /// Are function pointers with this signature able to derive Rust traits?
+    /// Rust only supports deriving traits for function pointers with a limited
+    /// number of parameters and a couple ABIs.
+    ///
+    /// For more details, see:
+    ///
+    /// * https://github.com/rust-lang-nursery/rust-bindgen/issues/547,
+    /// * https://github.com/rust-lang/rust/issues/38848,
+    /// * and https://github.com/rust-lang/rust/issues/40158
+    pub fn function_pointers_can_derive(&self) -> bool {
+        if self.argument_types.len() > RUST_DERIVE_FUNPTR_LIMIT {
+            return false;
+        }
+
+        match self.abi {
+            Abi::C | Abi::Unknown(..) => true,
+            _ => false,
+        }
+    }
 }
 
 impl ClangSubItemParser for Function {
@@ -523,48 +543,20 @@ impl Trace for FunctionSig {
     }
 }
 
-// Function pointers follow special rules, see:
-//
-// https://github.com/rust-lang-nursery/rust-bindgen/issues/547,
-// https://github.com/rust-lang/rust/issues/38848,
-// and https://github.com/rust-lang/rust/issues/40158
-//
-// Note that copy is always derived, so we don't need to implement it.
 impl CanTriviallyDeriveDebug for FunctionSig {
     fn can_trivially_derive_debug(&self) -> bool {
-        if self.argument_types.len() > RUST_DERIVE_FUNPTR_LIMIT {
-            return false;
-        }
-
-        match self.abi {
-            Abi::C | Abi::Unknown(..) => true,
-            _ => false,
-        }
+        self.function_pointers_can_derive()
     }
 }
 
 impl CanTriviallyDeriveHash for FunctionSig {
     fn can_trivially_derive_hash(&self) -> bool {
-        if self.argument_types.len() > RUST_DERIVE_FUNPTR_LIMIT {
-            return false;
-        }
-
-        match self.abi {
-            Abi::C | Abi::Unknown(..) => true,
-            _ => false,
-        }
+        self.function_pointers_can_derive()
     }
 }
 
 impl CanTriviallyDerivePartialEqOrPartialOrd for FunctionSig {
     fn can_trivially_derive_partialeq_or_partialord(&self) -> bool {
-        if self.argument_types.len() > RUST_DERIVE_FUNPTR_LIMIT {
-            return false;
-        }
-
-        match self.abi {
-            Abi::C | Abi::Unknown(..) => true,
-            _ => false,
-        }
+        self.function_pointers_can_derive()
     }
 }

@@ -1,4 +1,5 @@
-//! Determining which types for which we can emit `#[derive(PartialEq)]`.
+//! Determining which types for which we cannot emit `#[derive(PartialEq,
+//! PartialOrd)]`.
 
 use super::{ConstrainResult, MonotoneFramework, generate_dependencies};
 use ir::comp::CompKind;
@@ -13,31 +14,39 @@ use ir::ty::TypeKind;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-/// An analysis that finds for each IR item whether partialeq or partialord cannot be derived.
+/// An analysis that finds for each IR item whether `PartialEq`/`PartialOrd`
+/// cannot be derived.
 ///
-/// We use the monotone constraint function `cannot_derive_partialeq_or_partialord`, defined as
-/// follows:
+/// We use the monotone constraint function
+/// `cannot_derive_partialeq_or_partialord`, defined as follows:
 ///
 /// * If T is Opaque and layout of the type is known, get this layout as opaque
 ///   type and check whether it can be derived using trivial checks.
-/// * If T is Array type, partialeq or partialord cannot be derived if the length of
-///   the array is larger than the limit or the type of data the array contains cannot derive
-///   partialeq or partialord.
+///
+/// * If T is Array type, `PartialEq` or partialord cannot be derived if the
+///   length of the array is larger than the limit or the type of data the array
+///   contains cannot derive `PartialEq`/`PartialOrd`.
+///
 /// * If T is a type alias, a templated alias or an indirection to another type,
-///   partialeq or partialord cannot be derived if the type T refers to cannot be derived partialeq or partialord.
-/// * If T is a compound type, partialeq or partialord cannot be derived if any of its base member
-///   or field cannot be derived partialeq or partialord.
-/// * If T is a pointer, T cannot be derived partialeq or partialord if T is a function pointer
-///   and the function signature cannot be derived partialeq or partialord.
+///   `PartialEq`/`PartialOrd` cannot be derived if the type T refers to cannot be
+///   derived `PartialEq`/`PartialOrd`.
+///
+/// * If T is a compound type, `PartialEq`/`PartialOrd` cannot be derived if any
+///   of its base member or field cannot be derived `PartialEq`/`PartialOrd`.
+///
+/// * If T is a pointer, T cannot be derived `PartialEq`/`PartialOrd` if T is a
+///   function pointer and the function signature cannot be derived
+///   `PartialEq`/`PartialOrd`.
+///
 /// * If T is an instantiation of an abstract template definition, T cannot be
-///   derived partialeq or partialord if any of the template arguments or template definition
-///   cannot derive partialeq or partialord.
+///   derived `PartialEq`/`PartialOrd` if any of the template arguments or
+///   template definition cannot derive `PartialEq`/`PartialOrd`.
 #[derive(Debug, Clone)]
 pub struct CannotDerivePartialEqOrPartialOrd<'ctx> {
     ctx: &'ctx BindgenContext,
 
     // The incremental result of this analysis's computation. Everything in this
-    // set cannot derive partialeq or partialord.
+    // set cannot derive `PartialEq`/`PartialOrd`.
     cannot_derive_partialeq_or_partialord: HashSet<ItemId>,
 
     // Dependencies saying that if a key ItemId has been inserted into the
@@ -46,7 +55,7 @@ pub struct CannotDerivePartialEqOrPartialOrd<'ctx> {
     //
     // This is a subset of the natural IR graph with reversed edges, where we
     // only include the edges from the IR graph that can affect whether a type
-    // can derive partialeq or partialord.
+    // can derive `PartialEq`/`PartialOrd`.
     dependencies: HashMap<ItemId, Vec<ItemId>>,
 }
 
@@ -54,7 +63,7 @@ impl<'ctx> CannotDerivePartialEqOrPartialOrd<'ctx> {
     fn consider_edge(kind: EdgeKind) -> bool {
         match kind {
             // These are the only edges that can affect whether a type can derive
-            // partialeq or partialord.
+            // `PartialEq`/`PartialOrd`.
             EdgeKind::BaseMember |
             EdgeKind::Field |
             EdgeKind::TypeReference |
@@ -115,7 +124,7 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
         trace!("constrain: {:?}", id);
 
         if self.cannot_derive_partialeq_or_partialord.contains(&id) {
-            trace!("    already know it cannot derive PartialEq or PartialOrd");
+            trace!("    already know it cannot derive `PartialEq`/`PartialOrd`");
             return ConstrainResult::Same;
         }
 
@@ -140,10 +149,10 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
             return if layout_can_derive &&
                 !(ty.is_union() &&
                   self.ctx.options().rust_features().untagged_union()) {
-                trace!("    we can trivially derive PartialEq or PartialOrd for the layout");
+                trace!("    we can trivially derive `PartialEq`/`PartialOrd` for the layout");
                 ConstrainResult::Same
             } else {
-                trace!("    we cannot derive PartialEq or PartialOrd for the layout");
+                trace!("    we cannot derive `PartialEq`/`PartialOrd` for the layout");
                 self.insert(id)
             };
         }
@@ -176,24 +185,24 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
             TypeKind::ObjCInterface(..) |
             TypeKind::ObjCId |
             TypeKind::ObjCSel => {
-                trace!("    simple type that can always derive PartialEq or PartialOrd");
+                trace!("    simple type that can always derive `PartialEq`/`PartialOrd`");
                 ConstrainResult::Same
             }
 
             TypeKind::Array(t, len) => {
                 if self.cannot_derive_partialeq_or_partialord.contains(&t) {
                     trace!(
-                        "    arrays of T for which we cannot derive PartialEq or PartialOrd \
-                            also cannot derive PartialEq or PartialOrd"
+                        "    arrays of T for which we cannot derive `PartialEq`/`PartialOrd` \
+                            also cannot derive `PartialEq`/`PartialOrd`"
                     );
                     return self.insert(id);
                 }
 
                 if len <= RUST_DERIVE_IN_ARRAY_LIMIT {
-                    trace!("    array is small enough to derive PartialEq or PartialOrd");
+                    trace!("    array is small enough to derive `PartialEq`/`PartialOrd`");
                     ConstrainResult::Same
                 } else {
-                    trace!("    array is too large to derive PartialEq or PartialOrd");
+                    trace!("    array is too large to derive `PartialEq`/`PartialOrd`");
                     self.insert(id)
                 }
             }
@@ -204,7 +213,7 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
                 if let TypeKind::Function(ref sig) = *inner_type.kind() {
                     if !sig.can_trivially_derive_partialeq_or_partialord() {
                         trace!(
-                            "    function pointer that can't trivially derive PartialEq or PartialOrd"
+                            "    function pointer that can't trivially derive `PartialEq`/`PartialOrd`"
                         );
                         return self.insert(id);
                     }
@@ -216,11 +225,11 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
             TypeKind::Function(ref sig) => {
                 if !sig.can_trivially_derive_partialeq_or_partialord() {
                     trace!(
-                        "    function that can't trivially derive PartialEq or PartialOrd"
+                        "    function that can't trivially derive `PartialEq`/`PartialOrd`"
                     );
                     return self.insert(id);
                 }
-                trace!("    function can derive PartialEq or PartialOrd");
+                trace!("    function can derive `PartialEq`/`PartialOrd`");
                 ConstrainResult::Same
             }
 
@@ -230,13 +239,13 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
                 if self.cannot_derive_partialeq_or_partialord.contains(&t) {
                     trace!(
                         "    aliases and type refs to T which cannot derive \
-                            PartialEq or PartialOrd also cannot derive PartialEq or PartialOrd"
+                            `PartialEq`/`PartialOrd` also cannot derive `PartialEq`/`PartialOrd`"
                     );
                     self.insert(id)
                 } else {
                     trace!(
                         "    aliases and type refs to T which can derive \
-                            PartialEq or PartialOrd can also derive PartialEq or PartialOrd"
+                            `PartialEq`/`PartialOrd` can also derive `PartialEq`/`PartialOrd`"
                     );
                     ConstrainResult::Same
                 }
@@ -250,7 +259,7 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
 
                 if info.kind() == CompKind::Union {
                     if self.ctx.options().rust_features().untagged_union() {
-                        trace!("    cannot derive PartialEq or PartialOrd for Rust unions");
+                        trace!("    cannot derive `PartialEq`/`PartialOrd` for Rust unions");
                         return self.insert(id);
                     }
 
@@ -259,11 +268,11 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
                     })
                     {
                         trace!(
-                            "    union layout can trivially derive PartialEq or PartialOrd"
+                            "    union layout can trivially derive `PartialEq`/`PartialOrd`"
                         );
                         return ConstrainResult::Same;
                     } else {
-                        trace!("    union layout cannot derive PartialEq or PartialOrd");
+                        trace!("    union layout cannot derive `PartialEq`/`PartialOrd`");
                         return self.insert(id);
                     }
                 }
@@ -275,7 +284,7 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
                     });
                 if bases_cannot_derive {
                     trace!(
-                        "    base members cannot derive PartialEq or PartialOrd, so we can't \
+                        "    base members cannot derive `PartialEq`/`PartialOrd`, so we can't \
                             either"
                     );
                     return self.insert(id);
@@ -312,7 +321,7 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
                     });
                 if fields_cannot_derive {
                     trace!(
-                        "    fields cannot derive PartialEq or PartialOrd, so we can't either"
+                        "    fields cannot derive `PartialEq`/`PartialOrd`, so we can't either"
                     );
                     return self.insert(id);
                 }
@@ -328,8 +337,8 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
                     });
                 if args_cannot_derive {
                     trace!(
-                        "    template args cannot derive PartialEq or PartialOrd, so \
-                            insantiation can't either"
+                        "    template args cannot derive `PartialEq`/`PartialOrd`, so \
+                             insantiation can't either"
                     );
                     return self.insert(id);
                 }
@@ -343,13 +352,13 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
                 );
                 if def_cannot_derive {
                     trace!(
-                        "    template definition cannot derive PartialEq or PartialOrd, so \
-                            insantiation can't either"
+                        "    template definition cannot derive `PartialEq`/`PartialOrd`, so \
+                             insantiation can't either"
                     );
                     return self.insert(id);
                 }
 
-                trace!("    template instantiation can derive PartialEq or PartialOrd");
+                trace!("    template instantiation can derive `PartialEq`/`PartialOrd`");
                 ConstrainResult::Same
             }
 
