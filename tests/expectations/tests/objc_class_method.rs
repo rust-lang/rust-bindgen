@@ -30,13 +30,13 @@ impl Foo for id {
     unsafe fn methodWithInt_(foo: ::std::os::raw::c_int) {
         msg_send!(
             objc::runtime::Class::get("Foo").expect("Couldn't find Foo"),
-            methodWithInt: foo: ::std::os::raw::c_int
+            methodWithInt: foo
         )
     }
     unsafe fn methodWithFoo_(foo: id) {
         msg_send!(
             objc::runtime::Class::get("Foo").expect("Couldn't find Foo"),
-            methodWithFoo: foo: id
+            methodWithFoo: foo
         )
     }
     unsafe fn methodReturningInt() -> ::std::os::raw::c_int {
@@ -56,11 +56,6 @@ impl Foo for id {
         ptr: *mut ::std::os::raw::c_char,
         floatvalue: f32,
     ) {
-        msg_send!(
-            objc::runtime::Class::get("Foo").expect("Couldn't find Foo"),
-            methodWithArg1: intvalue: ::std::os::raw::c_int,
-            andArg2: ptr: *mut ::std::os::raw::c_char,
-            andArg3: floatvalue: f32
-        )
+        msg_send ! ( objc :: runtime :: Class :: get ( "Foo" ) . expect ( "Couldn't find Foo" ) , methodWithArg1 : intvalue andArg2 : ptr andArg3 : floatvalue )
     }
 }
