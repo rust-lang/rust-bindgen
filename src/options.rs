@@ -257,15 +257,19 @@ where
                        Useful when debugging bindgen, using C-Reduce, or when \
                        filing issues. The resulting file will be named \
                        something like `__bindgen.i` or `__bindgen.ii`."),
+            Arg::with_name("no-rustfmt-bindings")
+                .long("no-rustfmt-bindings")
+                .help("Do not format the generated bindings with rustfmt."),
             Arg::with_name("rustfmt-bindings")
                 .long("rustfmt-bindings")
-                .help("Format the generated bindings with rustfmt. \
-                       Rustfmt needs to be in the global PATH."),
+                .help("Format the generated bindings with rustfmt. DEPRECATED: \
+                       --rustfmt-bindings is now enabled by default. Disable \
+                       with --no-rustfmt-bindings."),
             Arg::with_name("rustfmt-configuration-file")
                 .long("rustfmt-configuration-file")
                 .help("The absolute path to the rustfmt configuration file. \
                        The configuration file will be used for formatting the bindings. \
-                       Setting this parameter, will automatically set --rustfmt-bindings.")
+                       This parameter is incompatible with --no-rustfmt-bindings.")
                 .value_name("path")
                 .takes_value(true)
                 .multiple(false)
@@ -529,12 +533,20 @@ where
         builder.dump_preprocessed_input()?;
     }
 
-    if matches.is_present("rustfmt-bindings") {
-        builder = builder.rustfmt_bindings(true);
+    let no_rustfmt_bindings = matches.is_present("no-rustfmt-bindings");
+    if no_rustfmt_bindings {
+        builder = builder.rustfmt_bindings(false);
     }
 
     if let Some(path_str) = matches.value_of("rustfmt-configuration-file") {
         let path = PathBuf::from(path_str);
+
+        if no_rustfmt_bindings {
+            return Err(Error::new(
+                ErrorKind::Other,
+                "Cannot supply both --rustfmt-configuration-file and --no-rustfmt-bindings"
+            ));
+        }
 
         if !path.is_absolute() {
             return Err(Error::new(
