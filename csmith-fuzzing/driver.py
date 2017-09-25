@@ -1,33 +1,66 @@
-from subprocess import run, DEVNULL, PIPE
+import os, sys
+from subprocess import run, SubprocessError, DEVNULL, PIPE
+from tempfile import NamedTemporaryFile
 
 csmith_command = [
-        "csmith",
-        "--no-checksum",
-        "--nomain",
-        "--max-block-size", "1",
-        "--max-block-depth", "1",
-        "--output", "generated.h"]
+    "csmith",
+    "--no-checksum",
+    "--nomain",
+    "--max-block-size", "1",
+    "--max-block-depth", "1",
+]
 
-bindgen_command = ["bindgen", "generated.h"]
+def run_logged(cmd):
+    with NamedTemporaryFile() as stdout, NamedTemporaryFile() as stderr:
+        result = run(cmd, stdin=DEVNULL, stdout=stdout, stderr=stderr)
+        if result.returncode != 0:
+            print()
+            print("Error: {} exited with code {}".format(str(cmd), result.returncode))
+            print("-------------------- stdout --------------------")
+            run(["cat", stdout.name])
+            print("-------------------- stderr --------------------")
+            run(["cat", stderr.name])
+        return result
 
-if __name__ == "__main__":
-    print("Bindgen fuzzing with csmith.")
-    print(
-        "This script will write to generated.h, bindgen_stdout, bindgen_stderr and platform.info . "
-        "These files can be deleted after running.")
+def run_bindgen(input, output):
+    return run_logged([
+        "bindgen",
+        "--with-derive-partialeq",
+        "--with-derive-eq",
+        "-o", output.name,
+        input.name,
+        "--",
+        "-I", os.path.abspath(os.path.dirname(sys.argv[0])),
+    ])
+
+def main():
+    print("Fuzzing `bindgen` with C-Smith...\n")
 
     iterations = 0
     while True:
         print("\rIteration: {}".format(iterations), end="", flush=True)
 
-        run(csmith_command, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
-        with open("bindgen_stdout", "wb") as stdout, open("bindgen_stdout", "wb") as stderr:
-            result = run(bindgen_command, stdin=DEVNULL, stdout=stdout, stderr=stderr)
-            if result.returncode != 0:
-                print()
-                print(
-                    "Error: bindgen existed with non zero exit code {} when ran on generated.h . "
-                    "You can find its output in bindgen_stoud and bindgen_stderr."
-                    .format(result.returncode))
-                exit()
+        input = NamedTemporaryFile(delete=False, prefix="input-", suffix=".h")
+        result = run_logged(csmith_command + ["-o", input.name])
+        if result.returncode != 0:
+            exit(1)
+
+        output = NamedTemporaryFile(delete=False, prefix="output-", suffix=".rs")
+        result = run_bindgen(input, output)
+        if result.returncode != 0:
+            print("-------------------- {} --------------------".format(input.name))
+            run(["cat", input.name])
+            print("-------------------- {} --------------------".format(output.name))
+            run(["cat", output.name])
+            exit(1)
+
+        os.remove(input.name)
+        os.remove(output.name)
+
         iterations += 1
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        exit()
