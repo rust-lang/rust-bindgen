@@ -69,33 +69,84 @@
 
                 <div id="content" class="content">
                     <a class="header" href="./cpp.html#generating-bindings-to-c" id="generating-bindings-to-c"><h1>Generating Bindings to C++</h1></a>
-<p><code>bindgen</code> can handle a surprising number of C++ features, but not all of
-them. When <code>bindgen</code> can't translate some C++ construct into Rust, it usually
-comes down to one of two things:</p>
-<ol>
-<li>Rust has no equivalent language feature</li>
-<li>C++ is <em>hard!</em></li>
-</ol>
-<p>Notable C++ features that are unsupported or only partially supported, and for
-which <code>bindgen</code> <em>should</em> generate opaque blobs whenever it finds an occurrence
-of them in a type it is generating bindings for:</p>
-<ul>
-<li>Template specialization</li>
-<li>Partial template specialization</li>
-<li>Traits templates</li>
-<li>SFINAE</li>
-</ul>
+<p><code>bindgen</code> can handle a some C++ features, but not all of them. To set
+expectations: <code>bindgen</code> will give you the type definitions and FFI declarations
+you need to build an API to the C++ library, but using those types in Rust will
+be nowhere near as nice as using them in C++. You will have to manually call
+constructors, destructors, overloaded operators, etc yourself.</p>
 <p>When passing in header files, the file will automatically be treated as C++ if
 it ends in <code>.hpp</code>. If it doesn't, adding <code>-x c++</code> clang args can be used to
 force C++ mode. You probably also want to use <code>-std=c++14</code> or similar clang args
 as well.</p>
 <p>You pretty much <strong>must</strong> use <a href="./whitelisting.html">whitelisting</a> when working
 with C++ to avoid pulling in all of the <code>std::*</code> types, many of which <code>bindgen</code>
-cannot handle. Additionally, you may want to mark other types
-as <a href="./opaque.html">opaque</a> that <code>bindgen</code> stumbles on.</p>
-<p>Note that using <code>bindgen</code> with C++ isn't nearly as plug-and-play as using it
-with C is. Improvement is ongoing.</p>
-<p>You might want to read up on the <a href="./faq.html">FAQs</a> as well.</p>
+cannot handle. Additionally, you may want to mark other types as
+<a href="./opaque.html">opaque</a> that <code>bindgen</code> stumbles on. It is recommended to mark
+all of <code>std::*</code> opaque, and to whitelist only precisely the functions and types
+you intend to use.</p>
+<p>You should read up on the <a href="./faq.html">FAQs</a> as well.</p>
+<a class="header" href="./cpp.html#supported-features" id="supported-features"><h2>Supported Features</h2></a>
+<ul>
+<li>
+<p>Inheritance (for the most part; there are
+<a href="https://github.com/rust-lang-nursery/rust-bindgen/issues/380">some outstanding bugs</a>)</p>
+</li>
+<li>
+<p>Methods</p>
+</li>
+<li>
+<p>Bindings to constructors and destructors (but they aren't implicitly or
+automatically invoked)</p>
+</li>
+<li>
+<p>Function and method overloading</p>
+</li>
+<li>
+<p>Templates <em>without</em> specialization. You should be able to access individual
+fields of the class or struct.</p>
+</li>
+</ul>
+<a class="header" href="./cpp.html#unsupported-features" id="unsupported-features"><h2>Unsupported Features</h2></a>
+<p>When <code>bindgen</code> finds a type that is too difficult or impossible to translate
+into Rust, it will automatically treat it as an opaque blob of bytes. The
+philosophy is that</p>
+<ol>
+<li>
+<p>we should always get layout, size, and alignment correct, and</p>
+</li>
+<li>
+<p>just because one type uses specialization, that shouldn't cause <code>bindgen</code> to
+give up on everything else.</p>
+</li>
+</ol>
+<p>Without further ado, here are C++ features that <code>bindgen</code> does not support or
+cannot translate into Rust:</p>
+<ul>
+<li>
+<p>Inline functions and methods: see
+<a href="./faq.html#why-isnt-bindgen-generating-bindings-to-inline-functions">&quot;Why isn't <code>bindgen</code> generating bindings to inline functions?&quot;</a></p>
+</li>
+<li>
+<p>Template functions, methods of template classes and structs. We don't know
+which monomorphizations exist, and can't create new ones because we aren't a
+C++ compiler.</p>
+</li>
+<li>
+<p>Anything related to template specialization:</p>
+<ul>
+<li>Partial template specialization</li>
+<li>Traits templates</li>
+<li>Specialization Failure Is Not An Error (SFINAE)</li>
+</ul>
+</li>
+<li>
+<p>Cross language inheritance, for example inheriting from a Rust struct in C++.</p>
+</li>
+<li>
+<p>Automatically calling copy and/or move constructors or destructors. Supporting
+this isn't possible with Rust's move semantics.</p>
+</li>
+</ul>
 
                 </div>
 
