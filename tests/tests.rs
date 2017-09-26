@@ -256,6 +256,9 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
 
     let prepend = [
         "bindgen",
+        // We format in `compare_generated_header` ourselves to have a little
+        // more control.
+        "--no-rustfmt-bindings",
         "--with-derive-default",
         header_str,
         "--raw-line",
