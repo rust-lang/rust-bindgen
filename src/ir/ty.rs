@@ -336,7 +336,7 @@ impl Type {
                 ctx.resolve_type(inner).safe_canonical_type(ctx)
             }
             TypeKind::TemplateInstantiation(ref inst) => {
-                ctx.resolve_type(inst.template_definition().as_type_id_unchecked())
+                ctx.resolve_type(inst.template_definition())
                     .safe_canonical_type(ctx)
             }
 
@@ -710,7 +710,7 @@ impl Type {
             }
             TypeKind::TemplateInstantiation(ref inst) => {
                 let definition = inst.template_definition();
-                ctx.resolve_type(definition.as_type_id_unchecked()).is_unsized(ctx, &definition)
+                ctx.resolve_type(definition).is_unsized(ctx, &definition.into())
             }
             TypeKind::TypeParam |
             TypeKind::Int(..) |

@@ -27,7 +27,7 @@
 //! };
 //! ```
 
-use super::context::{BindgenContext, ItemId};
+use super::context::{BindgenContext, ItemId, TypeId};
 use super::item::{IsOpaque, Item, ItemAncestors, ItemCanonicalPath};
 use super::traversal::{EdgeKind, Trace, Tracer};
 use clang;
@@ -206,7 +206,7 @@ pub trait AsTemplateParam {
 #[derive(Clone, Debug)]
 pub struct TemplateInstantiation {
     /// The template definition which this is instantiating.
-    definition: ItemId,
+    definition: TypeId,
     /// The concrete template arguments, which will be substituted in the
     /// definition for the generic template parameters.
     args: Vec<ItemId>,
@@ -215,7 +215,7 @@ pub struct TemplateInstantiation {
 impl TemplateInstantiation {
     /// Construct a new template instantiation from the given parts.
     pub fn new<I>(
-        template_definition: ItemId,
+        template_definition: TypeId,
         template_args: I,
     ) -> TemplateInstantiation
     where
@@ -228,7 +228,7 @@ impl TemplateInstantiation {
     }
 
     /// Get the template definition for this instantiation.
-    pub fn template_definition(&self) -> ItemId {
+    pub fn template_definition(&self) -> TypeId {
         self.definition
     }
 
@@ -305,7 +305,7 @@ impl TemplateInstantiation {
             Item::from_ty_or_ref(definition.cur_type(), definition, None, ctx);
 
         Some(TemplateInstantiation::new(
-            template_definition,
+            template_definition.as_type_id_unchecked(),
             template_args,
         ))
     }
@@ -353,7 +353,7 @@ impl Trace for TemplateInstantiation {
     where
         T: Tracer,
     {
-        tracer.visit_kind(self.definition, EdgeKind::TemplateDeclaration);
+        tracer.visit_kind(self.definition.into(), EdgeKind::TemplateDeclaration);
         for &item in self.template_arguments() {
             tracer.visit_kind(item, EdgeKind::TemplateArgument);
         }

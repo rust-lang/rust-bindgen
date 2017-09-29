@@ -217,7 +217,7 @@ impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
                 }
 
                 let def_has = self.has_type_parameter_in_array.contains(
-                    &template.template_definition(),
+                    &template.template_definition().into(),
                 );
                 if def_has {
                     trace!(

@@ -325,7 +325,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDebug<'ctx> {
                     "The early ty.is_opaque check should have handled this case"
                 );
                 let def_cannot_derive = self.is_not_debug(
-                    template.template_definition(),
+                    template.template_definition().into(),
                 );
                 if def_cannot_derive {
                     trace!(

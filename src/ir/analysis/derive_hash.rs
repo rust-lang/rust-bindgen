@@ -326,7 +326,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
                     "The early ty.is_opaque check should have handled this case"
                 );
                 let def_cannot_derive = self.cannot_derive_hash.contains(
-                    &template.template_definition(),
+                    &template.template_definition().into(),
                 );
                 if def_cannot_derive {
                     trace!(

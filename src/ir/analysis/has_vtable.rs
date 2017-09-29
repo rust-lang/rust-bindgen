@@ -120,7 +120,7 @@ impl<'ctx> MonotoneFramework for HasVtableAnalysis<'ctx> {
             }
 
             TypeKind::TemplateInstantiation(ref inst) => {
-                if self.have_vtable.contains(&inst.template_definition()) {
+                if self.have_vtable.contains(&inst.template_definition().into()) {
                     self.insert(id)
                 } else {
                     ConstrainResult::Same

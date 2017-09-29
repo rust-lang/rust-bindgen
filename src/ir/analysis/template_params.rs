@@ -271,14 +271,14 @@ impl<'ctx> UsedTemplateParameters<'ctx> {
     ) {
         trace!("    template instantiation");
 
-        let decl = self.ctx.resolve_type(instantiation.template_definition().as_type_id_unchecked());
+        let decl = self.ctx.resolve_type(instantiation.template_definition());
         let args = instantiation.template_arguments();
 
         let params = decl.self_template_params(self.ctx).unwrap_or(vec![]);
 
-        debug_assert!(this_id != instantiation.template_definition());
+        debug_assert!(this_id != instantiation.template_definition().into());
         let used_by_def = self.used
-            .get(&instantiation.template_definition())
+            .get(&instantiation.template_definition().into())
             .expect("Should have a used entry for instantiation's template definition")
             .as_ref()
             .expect("And it should be Some because only this_id's set is None, and an \
@@ -411,7 +411,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
             // generic template parameters are used.
             ctx.resolve_item(item).as_type().map(|ty| match ty.kind() {
                 &TypeKind::TemplateInstantiation(ref inst) => {
-                    let decl = ctx.resolve_type(inst.template_definition().as_type_id_unchecked());
+                    let decl = ctx.resolve_type(inst.template_definition());
                     let args = inst.template_arguments();
 
                     // Although template definitions should always have
@@ -520,7 +520,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
             // template definition uses the corresponding template parameter.
             Some(&TypeKind::TemplateInstantiation(ref inst)) => {
                 if self.whitelisted_items.contains(
-                    &inst.template_definition(),
+                    &inst.template_definition().into(),
                 )
                 {
                     self.constrain_instantiation(

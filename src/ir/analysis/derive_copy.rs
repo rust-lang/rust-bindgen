@@ -307,7 +307,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveCopy<'ctx> {
                     "The early ty.is_opaque check should have handled this case"
                 );
                 let def_cannot_derive = self.is_not_copy(
-                    template.template_definition(),
+                    template.template_definition().into(),
                 );
                 if def_cannot_derive {
                     trace!(

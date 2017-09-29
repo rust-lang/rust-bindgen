@@ -205,7 +205,7 @@ impl<'ctx> MonotoneFramework for HasFloat<'ctx> {
                 }
 
                 let def_has = self.has_float
-                    .contains(&template.template_definition());
+                    .contains(&template.template_definition().into());
                 if def_has {
                     trace!("    template definition has float, so \
                             insantiation also has");

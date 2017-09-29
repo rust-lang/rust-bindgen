@@ -1509,7 +1509,7 @@ impl BindgenContext {
 
                         let sub_name = Some(template_decl_cursor.spelling());
                         let sub_inst = TemplateInstantiation::new(
-                            template_decl_id,
+                            template_decl_id.as_type_id_unchecked(),
                             sub_args,
                         );
                         let sub_kind =
@@ -1578,7 +1578,7 @@ impl BindgenContext {
 
         args.reverse();
         let type_kind = TypeKind::TemplateInstantiation(
-            TemplateInstantiation::new(template, args),
+            TemplateInstantiation::new(template.as_type_id_unchecked(), args),
         );
         let name = ty.spelling();
         let name = if name.is_empty() { None } else { Some(name) };

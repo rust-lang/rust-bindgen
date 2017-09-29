@@ -140,7 +140,7 @@ impl<'ctx> MonotoneFramework for HasDestructorAnalysis<'ctx> {
 
             TypeKind::TemplateInstantiation(ref inst) => {
                 let definition_or_arg_destructor =
-                    self.have_destructor.contains(&inst.template_definition())
+                    self.have_destructor.contains(&inst.template_definition().into())
                     ||
                     inst.template_arguments().iter().any(|arg| {
                         self.have_destructor.contains(arg)
