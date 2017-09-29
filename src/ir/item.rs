@@ -1216,7 +1216,8 @@ impl ClangItemParser for Item {
                             ctx,
                         ));
                     }
-                    parent_id.or_else(|| ctx.known_semantic_parent(definition))
+                    ctx.known_semantic_parent(definition)
+                        .or(parent_id)
                         .unwrap_or(ctx.current_module())
                 }
                 None => relevant_parent_id,

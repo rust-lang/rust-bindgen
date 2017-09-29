@@ -751,25 +751,29 @@ impl BindgenContext {
         let typerefs = self.collect_typerefs();
 
         for (id, ty, loc, parent_id) in typerefs {
-            let _resolved =
-                {
-                    let resolved = Item::from_ty(&ty, loc, parent_id, self)
+            let _resolved = {
+                let resolved = Item::from_ty(&ty, loc, parent_id, self)
                     .unwrap_or_else(|_| {
                         warn!("Could not resolve type reference, falling back \
                                to opaque blob");
                         Item::new_opaque_type(self.next_item_id(), &ty, self)
                     });
-                    let item = self.items.get_mut(&id).unwrap();
 
-                    *item.kind_mut().as_type_mut().unwrap().kind_mut() =
-                        TypeKind::ResolvedTypeRef(resolved);
-                    resolved
-                };
+                let item = self.items.get_mut(&id).unwrap();
+                *item.kind_mut().as_type_mut().unwrap().kind_mut() =
+                    TypeKind::ResolvedTypeRef(resolved);
+
+                resolved
+            };
 
             // Something in the STL is trolling me. I don't need this assertion
             // right now, but worth investigating properly once this lands.
             //
             // debug_assert!(self.items.get(&resolved).is_some(), "How?");
+            //
+            // if let Some(parent_id) = parent_id {
+            //     assert_eq!(self.items[&resolved].parent_id(), parent_id);
+            // }
         }
     }
 
@@ -953,7 +957,7 @@ impl BindgenContext {
             self.compute_bitfield_units();
             self.process_replacements();
         }
-        
+
         self.deanonymize_fields();
 
         // And assert once again, because resolving type refs and processing
