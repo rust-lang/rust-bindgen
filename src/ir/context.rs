@@ -1264,7 +1264,8 @@ impl BindgenContext {
     /// Resolve the given `ItemId` into an `Item`.
     ///
     /// Panics if the given id does not resolve to any item.
-    pub fn resolve_item(&self, item_id: ItemId) -> &Item {
+    pub fn resolve_item<Id: Into<ItemId>>(&self, item_id: Id) -> &Item {
+        let item_id = item_id.into();
         match self.items.get(&item_id) {
             Some(item) => item,
             None => panic!("Not an item: {:?}", item_id),
