@@ -599,7 +599,7 @@ impl CodeGenerator for Type {
                 // If this is a known named type, disallow generating anything
                 // for it too.
                 let spelling = self.name().expect("Unnamed alias?");
-                if utils::type_from_named(ctx, spelling, inner).is_some() {
+                if utils::type_from_named(ctx, spelling).is_some() {
                     return;
                 }
 
@@ -2889,8 +2889,8 @@ impl TryToRustTy for Type {
                 inst.try_to_rust_ty(ctx, item)
             }
             TypeKind::ResolvedTypeRef(inner) => inner.try_to_rust_ty(ctx, &()),
-            TypeKind::TemplateAlias(inner, _) |
-            TypeKind::Alias(inner) => {
+            TypeKind::TemplateAlias(..) |
+            TypeKind::Alias(..) => {
                 let template_params = item.used_template_params(ctx)
                     .unwrap_or(vec![])
                     .into_iter()
@@ -2903,7 +2903,6 @@ impl TryToRustTy for Type {
                 } else if let Some(ty) = utils::type_from_named(
                     ctx,
                     spelling,
-                    inner,
                 )
                 {
                     Ok(ty)
@@ -3583,7 +3582,6 @@ mod utils {
     pub fn type_from_named(
         ctx: &BindgenContext,
         name: &str,
-        _inner: ItemId,
     ) -> Option<quote::Tokens> {
         // FIXME: We could use the inner item to check this is really a
         // primitive type but, who the heck overrides these anyway?
