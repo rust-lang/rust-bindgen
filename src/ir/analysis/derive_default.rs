@@ -222,7 +222,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
             }
 
             TypeKind::Array(t, len) => {
-                if self.is_not_default(t) {
+                if self.is_not_default(t.into()) {
                     trace!(
                         "    arrays of T for which we cannot derive Default \
                             also cannot derive Default"
@@ -242,7 +242,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
-                if self.is_not_default(t) {
+                if self.is_not_default(t.into()) {
                     trace!(
                         "    aliases and type refs to T which cannot derive \
                             Default also cannot derive Default"

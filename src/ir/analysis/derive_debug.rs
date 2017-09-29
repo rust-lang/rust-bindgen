@@ -191,7 +191,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDebug<'ctx> {
             }
 
             TypeKind::Array(t, len) => {
-                if self.is_not_debug(t) {
+                if self.is_not_debug(t.into()) {
                     trace!(
                         "    arrays of T for which we cannot derive Debug \
                             also cannot derive Debug"
@@ -211,7 +211,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDebug<'ctx> {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
-                if self.is_not_debug(t) {
+                if self.is_not_debug(t.into()) {
                     trace!(
                         "    aliases and type refs to T which cannot derive \
                             Debug also cannot derive Debug"
@@ -294,7 +294,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDebug<'ctx> {
 
             TypeKind::Pointer(inner) => {
                 let inner_type =
-                    self.ctx.resolve_type(inner.as_type_id_unchecked()).canonical_type(self.ctx);
+                    self.ctx.resolve_type(inner).canonical_type(self.ctx);
                 if let TypeKind::Function(ref sig) = *inner_type.kind() {
                     if !sig.can_trivially_derive_debug() {
                         trace!(

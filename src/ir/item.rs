@@ -156,7 +156,9 @@ impl<'a> Iterator for ItemAncestorsIter<'a> {
     }
 }
 
-impl AsTemplateParam for ItemId {
+impl<T> AsTemplateParam for T
+where
+    T: Copy + Into<ItemId> {
     type Extra = ();
 
     fn as_template_param(
@@ -164,7 +166,7 @@ impl AsTemplateParam for ItemId {
         ctx: &BindgenContext,
         _: &(),
     ) -> Option<ItemId> {
-        ctx.resolve_item(*self).as_template_param(ctx, &())
+        ctx.resolve_item((*self).into()).as_template_param(ctx, &())
     }
 }
 
@@ -952,7 +954,10 @@ impl Item {
     }
 }
 
-impl IsOpaque for ItemId {
+impl<T> IsOpaque for T
+where
+    T: Copy + Into<ItemId>
+{
     type Extra = ();
 
     fn is_opaque(&self, ctx: &BindgenContext, _: &()) -> bool {
@@ -960,7 +965,7 @@ impl IsOpaque for ItemId {
             ctx.in_codegen_phase(),
             "You're not supposed to call this yet"
         );
-        ctx.resolve_item(*self).is_opaque(ctx, &())
+        ctx.resolve_item((*self).into()).is_opaque(ctx, &())
     }
 }
 

@@ -166,7 +166,7 @@ impl<'a> StructLayoutTracker<'a> {
             //
             // This means that the structs in the array are super-unsafe to
             // access, since they won't be properly aligned, but *shrug*.
-            if let Some(layout) = self.ctx.resolve_type(inner.as_type_id_unchecked()).layout(
+            if let Some(layout) = self.ctx.resolve_type(inner).layout(
                 self.ctx,
             )
             {

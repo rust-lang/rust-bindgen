@@ -2728,7 +2728,10 @@ where
     }
 }
 
-impl TryToOpaque for ItemId {
+impl<T> TryToOpaque for T
+where
+    T: Copy + Into<ItemId>
+{
     type Extra = ();
 
     fn try_get_layout(
@@ -2736,11 +2739,14 @@ impl TryToOpaque for ItemId {
         ctx: &BindgenContext,
         _: &(),
     ) -> error::Result<Layout> {
-        ctx.resolve_item(*self).try_get_layout(ctx, &())
+        ctx.resolve_item((*self).into()).try_get_layout(ctx, &())
     }
 }
 
-impl TryToRustTy for ItemId {
+impl<T> TryToRustTy for T
+where
+    T: Copy + Into<ItemId>
+{
     type Extra = ();
 
     fn try_to_rust_ty(
@@ -2748,7 +2754,7 @@ impl TryToRustTy for ItemId {
         ctx: &BindgenContext,
         _: &(),
     ) -> error::Result<quote::Tokens> {
-        ctx.resolve_item(*self).try_to_rust_ty(ctx, &())
+        ctx.resolve_item((*self).into()).try_to_rust_ty(ctx, &())
     }
 }
 
@@ -2930,7 +2936,7 @@ impl TryToRustTy for Type {
             }
             TypeKind::Pointer(inner) |
             TypeKind::Reference(inner) => {
-                let is_const = self.is_const() || ctx.resolve_type(inner.as_type_id_unchecked()).is_const();
+                let is_const = self.is_const() || ctx.resolve_type(inner).is_const();
 
                 let inner = inner.into_resolver().through_type_refs().resolve(ctx);
                 let inner_ty = inner.expect_type();
@@ -3626,7 +3632,7 @@ mod utils {
             let arg_ty = match *arg_ty.canonical_type(ctx).kind() {
                 TypeKind::Array(t, _) => {
                     t.to_rust_ty_or_opaque(ctx, &())
-                        .to_ptr(ctx.resolve_type(t.as_type_id_unchecked()).is_const())
+                        .to_ptr(ctx.resolve_type(t).is_const())
                 },
                 TypeKind::Pointer(inner) => {
                     let inner = ctx.resolve_item(inner);

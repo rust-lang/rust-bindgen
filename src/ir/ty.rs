@@ -1,7 +1,7 @@
 //! Everything related to types in our intermediate representation.
 
 use super::comp::CompInfo;
-use super::context::{BindgenContext, ItemId};
+use super::context::{BindgenContext, ItemId, TypeId};
 use super::dot::DotAttributes;
 use super::enum_ty::Enum;
 use super::function::FunctionSig;
@@ -212,10 +212,10 @@ impl Type {
     pub fn is_incomplete_array(&self, ctx: &BindgenContext) -> Option<ItemId> {
         match self.kind {
             TypeKind::Array(item, len) => {
-                if len == 0 { Some(item) } else { None }
+                if len == 0 { Some(item.into()) } else { None }
             }
             TypeKind::ResolvedTypeRef(inner) => {
-                ctx.resolve_type(inner.as_type_id_unchecked()).is_incomplete_array(ctx)
+                ctx.resolve_type(inner).is_incomplete_array(ctx)
             }
             _ => None,
         }
@@ -238,7 +238,7 @@ impl Type {
                     ))
                 }
                 TypeKind::ResolvedTypeRef(inner) => {
-                    ctx.resolve_type(inner.as_type_id_unchecked()).layout(ctx)
+                    ctx.resolve_type(inner).layout(ctx)
                 }
                 _ => None,
             }
@@ -275,8 +275,8 @@ impl Type {
         ctx: &BindgenContext,
     ) -> Option<Cow<'a, str>> {
         let name_info = match *self.kind() {
-            TypeKind::Pointer(inner) => Some((inner, Cow::Borrowed("ptr"))),
-            TypeKind::Reference(inner) => Some((inner, Cow::Borrowed("ref"))),
+            TypeKind::Pointer(inner) => Some((inner.into(), Cow::Borrowed("ptr"))),
+            TypeKind::Reference(inner) => Some((inner.into(), Cow::Borrowed("ref"))),
             TypeKind::Array(inner, length) => {
                 Some((inner, format!("array{}", length).into()))
             }
@@ -333,7 +333,7 @@ impl Type {
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(inner) |
             TypeKind::TemplateAlias(inner, _) => {
-                ctx.resolve_type(inner.as_type_id_unchecked()).safe_canonical_type(ctx)
+                ctx.resolve_type(inner).safe_canonical_type(ctx)
             }
             TypeKind::TemplateInstantiation(ref inst) => {
                 ctx.resolve_type(inst.template_definition().as_type_id_unchecked())
@@ -546,7 +546,7 @@ impl TemplateParameters for TypeKind {
     ) -> Option<Vec<ItemId>> {
         match *self {
             TypeKind::ResolvedTypeRef(id) => {
-                ctx.resolve_type(id.as_type_id_unchecked()).self_template_params(ctx)
+                ctx.resolve_type(id).self_template_params(ctx)
             }
             TypeKind::Comp(ref comp) => comp.self_template_params(ctx),
             TypeKind::TemplateAlias(_, ref args) => Some(args.clone()),
@@ -626,14 +626,14 @@ pub enum TypeKind {
     Complex(FloatKind),
 
     /// A type alias, with a name, that points to another type.
-    Alias(ItemId),
+    Alias(TypeId),
 
     /// A templated alias, pointing to an inner type, just as `Alias`, but with
     /// template parameters.
-    TemplateAlias(ItemId, Vec<ItemId>),
+    TemplateAlias(TypeId, Vec<ItemId>),
 
-    /// An array of a type and a lenght.
-    Array(ItemId, usize),
+    /// An array of a type and a length.
+    Array(TypeId, usize),
 
     /// A function type, with a given signature.
     Function(FunctionSig),
@@ -643,13 +643,13 @@ pub enum TypeKind {
 
     /// A pointer to a type. The bool field represents whether it's const or
     /// not.
-    Pointer(ItemId),
+    Pointer(TypeId),
 
     /// A pointer to an Apple block.
     BlockPointer,
 
     /// A reference to a type, as in: int& foo().
-    Reference(ItemId),
+    Reference(TypeId),
 
     /// An instantiation of an abstract template definition with a set of
     /// concrete template arguments.
@@ -673,7 +673,7 @@ pub enum TypeKind {
     ///
     /// These are generated after we resolve a forward declaration, or when we
     /// replace one type with another.
-    ResolvedTypeRef(ItemId),
+    ResolvedTypeRef(TypeId),
 
     /// A named type, that is, a template parameter.
     TypeParam,
@@ -701,12 +701,12 @@ impl Type {
             TypeKind::Comp(ref ci) => ci.is_unsized(ctx, itemid),
             TypeKind::Opaque => self.layout.map_or(true, |l| l.size == 0),
             TypeKind::Array(inner, size) => {
-                size == 0 || ctx.resolve_type(inner.as_type_id_unchecked()).is_unsized(ctx, &inner)
+                size == 0 || ctx.resolve_type(inner).is_unsized(ctx, &inner.into())
             }
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(inner) |
             TypeKind::TemplateAlias(inner, _) => {
-                ctx.resolve_type(inner.as_type_id_unchecked()).is_unsized(ctx, &inner)
+                ctx.resolve_type(inner).is_unsized(ctx, &inner.into())
             }
             TypeKind::TemplateInstantiation(ref inst) => {
                 let definition = inst.template_definition();
@@ -1000,7 +1000,7 @@ impl Type {
                                     }
                                 };
 
-                                TypeKind::TemplateAlias(inner_type, args)
+                                TypeKind::TemplateAlias(inner_type.as_type_id_unchecked(), args)
                             }
                             CXCursor_TemplateRef => {
                                 let referenced = location.referenced().unwrap();
@@ -1116,7 +1116,7 @@ impl Type {
                     }
                     let inner =
                         Item::from_ty_or_ref(pointee, location, None, ctx);
-                    TypeKind::Pointer(inner)
+                    TypeKind::Pointer(inner.as_type_id_unchecked())
                 }
                 CXType_BlockPointer => TypeKind::BlockPointer,
                 // XXX: RValueReference is most likely wrong, but I don't think we
@@ -1129,7 +1129,7 @@ impl Type {
                         None,
                         ctx,
                     );
-                    TypeKind::Reference(inner)
+                    TypeKind::Reference(inner.as_type_id_unchecked())
                 }
                 // XXX DependentSizedArray is wrong
                 CXType_VariableArray |
@@ -1140,7 +1140,7 @@ impl Type {
                         None,
                         ctx,
                     ).expect("Not able to resolve array element?");
-                    TypeKind::Pointer(inner)
+                    TypeKind::Pointer(inner.as_type_id_unchecked())
                 }
                 CXType_IncompleteArray => {
                     let inner = Item::from_ty(
@@ -1149,7 +1149,7 @@ impl Type {
                         None,
                         ctx,
                     ).expect("Not able to resolve array element?");
-                    TypeKind::Array(inner, 0)
+                    TypeKind::Array(inner.as_type_id_unchecked(), 0)
                 }
                 CXType_FunctionNoProto |
                 CXType_FunctionProto => {
@@ -1161,7 +1161,7 @@ impl Type {
                     let inner = cursor.typedef_type().expect("Not valid Type?");
                     let inner =
                         Item::from_ty_or_ref(inner, location, None, ctx);
-                    TypeKind::Alias(inner)
+                    TypeKind::Alias(inner.as_type_id_unchecked())
                 }
                 CXType_Enum => {
                     let enum_ = Enum::from_ty(ty, ctx).expect("Not an enum?");
@@ -1207,7 +1207,7 @@ impl Type {
                         None,
                         ctx,
                     ).expect("Not able to resolve array element?");
-                    TypeKind::Array(inner, ty.num_elements().unwrap())
+                    TypeKind::Array(inner.as_type_id_unchecked(), ty.num_elements().unwrap())
                 }
                 CXType_Elaborated => {
                     return Self::from_clang_ty(
@@ -1261,10 +1261,10 @@ impl Trace for Type {
             TypeKind::Array(inner, _) |
             TypeKind::Alias(inner) |
             TypeKind::ResolvedTypeRef(inner) => {
-                tracer.visit_kind(inner, EdgeKind::TypeReference);
+                tracer.visit_kind(inner.into(), EdgeKind::TypeReference);
             }
             TypeKind::TemplateAlias(inner, ref template_params) => {
-                tracer.visit_kind(inner, EdgeKind::TypeReference);
+                tracer.visit_kind(inner.into(), EdgeKind::TypeReference);
                 for &item in template_params {
                     tracer.visit_kind(
                         item,

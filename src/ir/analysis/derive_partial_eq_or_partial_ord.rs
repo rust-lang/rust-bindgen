@@ -190,7 +190,7 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
             }
 
             TypeKind::Array(t, len) => {
-                if self.cannot_derive_partialeq_or_partialord.contains(&t) {
+                if self.cannot_derive_partialeq_or_partialord.contains(&t.into()) {
                     trace!(
                         "    arrays of T for which we cannot derive `PartialEq`/`PartialOrd` \
                             also cannot derive `PartialEq`/`PartialOrd`"
@@ -209,7 +209,7 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
 
             TypeKind::Pointer(inner) => {
                 let inner_type =
-                    self.ctx.resolve_type(inner.as_type_id_unchecked()).canonical_type(self.ctx);
+                    self.ctx.resolve_type(inner).canonical_type(self.ctx);
                 if let TypeKind::Function(ref sig) = *inner_type.kind() {
                     if !sig.can_trivially_derive_partialeq_or_partialord() {
                         trace!(
@@ -236,7 +236,7 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
-                if self.cannot_derive_partialeq_or_partialord.contains(&t) {
+                if self.cannot_derive_partialeq_or_partialord.contains(&t.into()) {
                     trace!(
                         "    aliases and type refs to T which cannot derive \
                             `PartialEq`/`PartialOrd` also cannot derive `PartialEq`/`PartialOrd`"

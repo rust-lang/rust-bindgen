@@ -140,7 +140,7 @@ impl<'ctx> MonotoneFramework for HasFloat<'ctx> {
             }
 
             TypeKind::Array(t, _) => {
-                if self.has_float.contains(&t) {
+                if self.has_float.contains(&t.into()) {
                     trace!("    Array with type T that has float also has float");
                     return self.insert(id)
                 }
@@ -151,7 +151,7 @@ impl<'ctx> MonotoneFramework for HasFloat<'ctx> {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
-                if self.has_float.contains(&t) {
+                if self.has_float.contains(&t.into()) {
                     trace!("    aliases and type refs to T which have float \
                             also have float");
                     self.insert(id)

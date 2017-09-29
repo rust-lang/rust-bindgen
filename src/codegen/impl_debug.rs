@@ -203,7 +203,7 @@ impl<'a> ImplDebug<'a> for Item {
             }
 
             TypeKind::Pointer(inner) => {
-                let inner_type = ctx.resolve_type(inner.as_type_id_unchecked()).canonical_type(ctx);
+                let inner_type = ctx.resolve_type(inner).canonical_type(ctx);
                 match *inner_type.kind() {
                     TypeKind::Function(ref sig)
                         if !sig.can_trivially_derive_debug() => {

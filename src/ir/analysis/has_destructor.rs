@@ -103,7 +103,7 @@ impl<'ctx> MonotoneFramework for HasDestructorAnalysis<'ctx> {
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) |
             TypeKind::ResolvedTypeRef(t) => {
-                if self.have_destructor.contains(&t) {
+                if self.have_destructor.contains(&t.into()) {
                     self.insert(id)
                 } else {
                     ConstrainResult::Same

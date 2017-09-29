@@ -177,7 +177,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveCopy<'ctx> {
             }
 
             TypeKind::Array(t, len) => {
-                let cant_derive_copy = self.is_not_copy(t);
+                let cant_derive_copy = self.is_not_copy(t.into());
                 if cant_derive_copy {
                     trace!(
                         "    arrays of T for which we cannot derive Copy \
@@ -198,7 +198,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveCopy<'ctx> {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
-                let cant_derive_copy = self.is_not_copy(t);
+                let cant_derive_copy = self.is_not_copy(t.into());
                 if cant_derive_copy {
                     trace!(
                         "    arrays of T for which we cannot derive Copy \

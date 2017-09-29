@@ -98,7 +98,7 @@ impl<'ctx> MonotoneFramework for HasVtableAnalysis<'ctx> {
             TypeKind::Alias(t) |
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::Reference(t) => {
-                if self.have_vtable.contains(&t) {
+                if self.have_vtable.contains(&t.into()) {
                     self.insert(id)
                 } else {
                     ConstrainResult::Same

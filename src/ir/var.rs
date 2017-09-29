@@ -179,7 +179,7 @@ impl ClangSubItemParser for Var {
                             true,
                             ctx,
                         );
-                        (TypeKind::Pointer(char_ty), VarType::String(val))
+                        (TypeKind::Pointer(char_ty.as_type_id_unchecked()), VarType::String(val))
                     }
                     EvalResult::Int(Wrapping(value)) => {
                         let kind = ctx.parse_callbacks()

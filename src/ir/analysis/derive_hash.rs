@@ -178,7 +178,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
             }
 
             TypeKind::Array(t, len) => {
-                if self.cannot_derive_hash.contains(&t) {
+                if self.cannot_derive_hash.contains(&t.into()) {
                     trace!(
                         "    arrays of T for which we cannot derive Hash \
                             also cannot derive Hash"
@@ -197,7 +197,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
 
             TypeKind::Pointer(inner) => {
                 let inner_type =
-                    self.ctx.resolve_type(inner.as_type_id_unchecked()).canonical_type(self.ctx);
+                    self.ctx.resolve_type(inner).canonical_type(self.ctx);
                 if let TypeKind::Function(ref sig) = *inner_type.kind() {
                     if !sig.can_trivially_derive_hash() {
                         trace!(
@@ -222,7 +222,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
-                if self.cannot_derive_hash.contains(&t) {
+                if self.cannot_derive_hash.contains(&t.into()) {
                     trace!(
                         "    aliases and type refs to T which cannot derive \
                             Hash also cannot derive Hash"

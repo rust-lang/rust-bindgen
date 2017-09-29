@@ -46,6 +46,12 @@ impl From<TypeId> for ItemId {
     }
 }
 
+impl<'a> From<&'a TypeId> for ItemId {
+    fn from(tid: &'a TypeId) -> ItemId {
+        tid.0
+    }
+}
+
 impl From<ItemId> for usize {
     fn from(id: ItemId) -> usize {
         id.0
@@ -792,8 +798,7 @@ impl BindgenContext {
 
                 let item = self.items.get_mut(&id).unwrap();
                 *item.kind_mut().as_type_mut().unwrap().kind_mut() =
-                    TypeKind::ResolvedTypeRef(resolved);
-
+                    TypeKind::ResolvedTypeRef(resolved.as_type_id_unchecked());
                 resolved
             };
 
@@ -902,7 +907,7 @@ impl BindgenContext {
             let new_parent = {
                 let item = self.items.get_mut(&id).unwrap();
                 *item.kind_mut().as_type_mut().unwrap().kind_mut() =
-                    TypeKind::ResolvedTypeRef(replacement);
+                    TypeKind::ResolvedTypeRef(replacement.as_type_id_unchecked());
                 item.parent_id()
             };
 
@@ -1701,7 +1706,7 @@ impl BindgenContext {
         let spelling = ty.spelling();
         let is_const = ty.is_const();
         let layout = ty.fallible_layout().ok();
-        let type_kind = TypeKind::ResolvedTypeRef(wrapped_id);
+        let type_kind = TypeKind::ResolvedTypeRef(wrapped_id.as_type_id_unchecked());
         let ty = Type::new(Some(spelling), layout, type_kind, is_const);
         let item = Item::new(
             with_id,
@@ -2286,6 +2291,13 @@ impl ItemId {
     }
 }
 
+impl TypeId {
+    pub fn into_resolver(self) -> ItemResolver {
+        let id: ItemId = self.into();
+        id.into()
+    }
+}
+
 impl From<ItemId> for ItemResolver {
     fn from(id: ItemId) -> ItemResolver {
         ItemResolver::new(id)
@@ -2325,14 +2337,14 @@ impl ItemResolver {
             match ty_kind {
                 Some(&TypeKind::ResolvedTypeRef(next_id))
                     if self.through_type_refs => {
-                    id = next_id;
+                    id = next_id.into();
                 }
                 // We intentionally ignore template aliases here, as they are
                 // more complicated, and don't represent a simple renaming of
                 // some type.
                 Some(&TypeKind::Alias(next_id))
                     if self.through_type_aliases => {
-                    id = next_id;
+                    id = next_id.into();
                 }
                 _ => return item,
             }
