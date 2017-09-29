@@ -147,7 +147,7 @@ impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
 
             TypeKind::Array(t, _) => {
                 let inner_ty =
-                    self.ctx.resolve_type(t).canonical_type(self.ctx);
+                    self.ctx.resolve_type(t.as_type_id_unchecked()).canonical_type(self.ctx);
                 match *inner_ty.kind() {
                     TypeKind::TypeParam => {
                         trace!("    Array with Named type has type parameter");

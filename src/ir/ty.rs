@@ -215,7 +215,7 @@ impl Type {
                 if len == 0 { Some(item) } else { None }
             }
             TypeKind::ResolvedTypeRef(inner) => {
-                ctx.resolve_type(inner).is_incomplete_array(ctx)
+                ctx.resolve_type(inner.as_type_id_unchecked()).is_incomplete_array(ctx)
             }
             _ => None,
         }
@@ -238,7 +238,7 @@ impl Type {
                     ))
                 }
                 TypeKind::ResolvedTypeRef(inner) => {
-                    ctx.resolve_type(inner).layout(ctx)
+                    ctx.resolve_type(inner.as_type_id_unchecked()).layout(ctx)
                 }
                 _ => None,
             }
@@ -333,10 +333,10 @@ impl Type {
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(inner) |
             TypeKind::TemplateAlias(inner, _) => {
-                ctx.resolve_type(inner).safe_canonical_type(ctx)
+                ctx.resolve_type(inner.as_type_id_unchecked()).safe_canonical_type(ctx)
             }
             TypeKind::TemplateInstantiation(ref inst) => {
-                ctx.resolve_type(inst.template_definition())
+                ctx.resolve_type(inst.template_definition().as_type_id_unchecked())
                     .safe_canonical_type(ctx)
             }
 
@@ -546,7 +546,7 @@ impl TemplateParameters for TypeKind {
     ) -> Option<Vec<ItemId>> {
         match *self {
             TypeKind::ResolvedTypeRef(id) => {
-                ctx.resolve_type(id).self_template_params(ctx)
+                ctx.resolve_type(id.as_type_id_unchecked()).self_template_params(ctx)
             }
             TypeKind::Comp(ref comp) => comp.self_template_params(ctx),
             TypeKind::TemplateAlias(_, ref args) => Some(args.clone()),
@@ -701,16 +701,16 @@ impl Type {
             TypeKind::Comp(ref ci) => ci.is_unsized(ctx, itemid),
             TypeKind::Opaque => self.layout.map_or(true, |l| l.size == 0),
             TypeKind::Array(inner, size) => {
-                size == 0 || ctx.resolve_type(inner).is_unsized(ctx, &inner)
+                size == 0 || ctx.resolve_type(inner.as_type_id_unchecked()).is_unsized(ctx, &inner)
             }
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(inner) |
             TypeKind::TemplateAlias(inner, _) => {
-                ctx.resolve_type(inner).is_unsized(ctx, &inner)
+                ctx.resolve_type(inner.as_type_id_unchecked()).is_unsized(ctx, &inner)
             }
             TypeKind::TemplateInstantiation(ref inst) => {
                 let definition = inst.template_definition();
-                ctx.resolve_type(definition).is_unsized(ctx, &definition)
+                ctx.resolve_type(definition.as_type_id_unchecked()).is_unsized(ctx, &definition)
             }
             TypeKind::TypeParam |
             TypeKind::Int(..) |

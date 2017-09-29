@@ -209,7 +209,7 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
 
             TypeKind::Pointer(inner) => {
                 let inner_type =
-                    self.ctx.resolve_type(inner).canonical_type(self.ctx);
+                    self.ctx.resolve_type(inner.as_type_id_unchecked()).canonical_type(self.ctx);
                 if let TypeKind::Function(ref sig) = *inner_type.kind() {
                     if !sig.can_trivially_derive_partialeq_or_partialord() {
                         trace!(

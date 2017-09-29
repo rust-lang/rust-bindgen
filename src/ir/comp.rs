@@ -176,7 +176,7 @@ impl Field {
                                  layout, ..
                              }) => Some(layout),
             Field::DataMember(ref data) => {
-                ctx.resolve_type(data.ty).layout(ctx)
+                ctx.resolve_type(data.ty.as_type_id_unchecked()).layout(ctx)
             }
         }
     }
@@ -538,7 +538,7 @@ fn bitfields_to_allocation_units<E, I>(
 
     for bitfield in raw_bitfields {
         let bitfield_width = bitfield.bitfield().unwrap() as usize;
-        let bitfield_layout = ctx.resolve_type(bitfield.ty())
+        let bitfield_layout = ctx.resolve_type(bitfield.ty().as_type_id_unchecked())
             .layout(ctx)
             .expect("Bitfield without layout? Gah!");
         let bitfield_size = bitfield_layout.size;
@@ -913,7 +913,7 @@ impl CompInfo {
     pub fn is_unsized(&self, ctx: &BindgenContext, itemid: &ItemId) -> bool {
         !ctx.lookup_item_id_has_vtable(itemid) && self.fields().is_empty() &&
             self.base_members.iter().all(|base| {
-                ctx.resolve_type(base.ty).canonical_type(ctx).is_unsized(
+                ctx.resolve_type(base.ty.as_type_id_unchecked()).canonical_type(ctx).is_unsized(
                     ctx,
                     &base.ty,
                 )
@@ -1362,7 +1362,7 @@ impl CompInfo {
             // Unfortunately, given the way we implement --match-pat, and also
             // that you can inherit from templated types, we need to handle
             // other cases here too.
-            ctx.resolve_type(base.ty)
+            ctx.resolve_type(base.ty.as_type_id_unchecked())
                 .canonical_type(ctx)
                 .as_comp()
                 .map_or(false, |_| ctx.lookup_item_id_has_vtable(&base.ty))

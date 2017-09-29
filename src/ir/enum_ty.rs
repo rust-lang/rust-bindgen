@@ -72,7 +72,7 @@ impl Enum {
 
         // Assume signedness since the default type by the C standard is an int.
         let is_signed = repr.and_then(
-            |r| ctx.resolve_type(r).safe_canonical_type(ctx),
+            |r| ctx.resolve_type(r.as_type_id_unchecked()).safe_canonical_type(ctx),
         ).map_or(true, |ty| match *ty.kind() {
                 TypeKind::Int(ref int_kind) => int_kind.is_signed(),
                 ref other => {

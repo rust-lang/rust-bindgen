@@ -271,7 +271,7 @@ impl<'ctx> UsedTemplateParameters<'ctx> {
     ) {
         trace!("    template instantiation");
 
-        let decl = self.ctx.resolve_type(instantiation.template_definition());
+        let decl = self.ctx.resolve_type(instantiation.template_definition().as_type_id_unchecked());
         let args = instantiation.template_arguments();
 
         let params = decl.self_template_params(self.ctx).unwrap_or(vec![]);
@@ -411,7 +411,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
             // generic template parameters are used.
             ctx.resolve_item(item).as_type().map(|ty| match ty.kind() {
                 &TypeKind::TemplateInstantiation(ref inst) => {
-                    let decl = ctx.resolve_type(inst.template_definition());
+                    let decl = ctx.resolve_type(inst.template_definition().as_type_id_unchecked());
                     let args = inst.template_arguments();
 
                     // Although template definitions should always have

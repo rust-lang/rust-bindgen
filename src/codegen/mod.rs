@@ -689,7 +689,7 @@ impl CodeGenerator for Type {
                     let params: Vec<_> = params.into_iter()
                         .filter_map(|p| p.as_template_param(ctx, &()))
                         .collect();
-                    if params.iter().any(|p| ctx.resolve_type(*p).is_invalid_type_param()) {
+                    if params.iter().any(|p| ctx.resolve_type(p.as_type_id_unchecked()).is_invalid_type_param()) {
                         warn!(
                             "Item contained invalid template \
                              parameter: {:?}",
@@ -1112,7 +1112,7 @@ impl Bitfield {
         ctor_impl: quote::Tokens,
         unit_field_int_ty: &quote::Tokens,
     ) -> quote::Tokens {
-        let bitfield_ty = ctx.resolve_type(self.ty());
+        let bitfield_ty = ctx.resolve_type(self.ty().as_type_id_unchecked());
         let bitfield_ty_layout = bitfield_ty.layout(ctx).expect(
             "Bitfield without layout? Gah!",
         );
@@ -1542,7 +1542,7 @@ impl CodeGenerator for CompInfo {
                     continue;
                 }
 
-                let base_ty = ctx.resolve_type(base.ty);
+                let base_ty = ctx.resolve_type(base.ty.as_type_id_unchecked());
                 // NB: We won't include unsized types in our base chain because they
                 // would contribute to our size given the dummy field we insert for
                 // unsized types.
@@ -1673,7 +1673,7 @@ impl CodeGenerator for CompInfo {
                 let mut param_names = vec![];
 
                 for (idx, ty) in params.iter().enumerate() {
-                    let param = ctx.resolve_type(*ty);
+                    let param = ctx.resolve_type(ty.as_type_id_unchecked());
                     let name = param.name().unwrap();
                     let ident = ctx.rust_ident(name);
                     param_names.push(ident.clone());
@@ -2318,7 +2318,7 @@ impl CodeGenerator for Enum {
         let enum_ty = item.expect_type();
         let layout = enum_ty.layout(ctx);
 
-        let repr = self.repr().map(|repr| ctx.resolve_type(repr));
+        let repr = self.repr().map(|repr| ctx.resolve_type(repr.as_type_id_unchecked()));
         let repr = match repr {
             Some(repr) => {
                 match *repr.canonical_type(ctx).kind() {
@@ -2932,7 +2932,7 @@ impl TryToRustTy for Type {
             }
             TypeKind::Pointer(inner) |
             TypeKind::Reference(inner) => {
-                let is_const = self.is_const() || ctx.resolve_type(inner).is_const();
+                let is_const = self.is_const() || ctx.resolve_type(inner.as_type_id_unchecked()).is_const();
 
                 let inner = inner.into_resolver().through_type_refs().resolve(ctx);
                 let inner_ty = inner.expect_type();
@@ -3641,7 +3641,7 @@ mod utils {
             let arg_ty = match *arg_ty.canonical_type(ctx).kind() {
                 TypeKind::Array(t, _) => {
                     t.to_rust_ty_or_opaque(ctx, &())
-                        .to_ptr(ctx.resolve_type(t).is_const())
+                        .to_ptr(ctx.resolve_type(t.as_type_id_unchecked()).is_const())
                 },
                 TypeKind::Pointer(inner) => {
                     let inner = ctx.resolve_item(inner);

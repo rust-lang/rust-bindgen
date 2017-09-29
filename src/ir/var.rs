@@ -236,7 +236,7 @@ impl ClangSubItemParser for Var {
                 // tests/headers/inner_const.hpp
                 //
                 // That's fine because in that case we know it's not a literal.
-                let canonical_ty = ctx.safe_resolve_type(ty).and_then(|t| {
+                let canonical_ty = ctx.safe_resolve_type(ty.as_type_id_unchecked()).and_then(|t| {
                     t.safe_canonical_type(ctx)
                 });
 

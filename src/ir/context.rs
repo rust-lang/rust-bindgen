@@ -32,15 +32,46 @@ use std::iter::IntoIterator;
 use std::mem;
 
 /// A single identifier for an item.
-///
-/// TODO: Build stronger abstractions on top of this, like TypeId(ItemId)?
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ItemId(usize);
+
+/// An identifier for an `Item` whose `ItemKind` is known to be
+/// `ItemKind::Type`.
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct TypeId(ItemId);
+
+impl From<TypeId> for ItemId {
+    fn from(tid: TypeId) -> ItemId {
+        tid.0
+    }
+}
+
+impl From<ItemId> for usize {
+    fn from(id: ItemId) -> usize {
+        id.0
+    }
+}
 
 impl ItemId {
     /// Get a numeric representation of this id.
     pub fn as_usize(&self) -> usize {
-        self.0
+        (*self).into()
+    }
+
+    /// Convert this `ItemId` into a `TypeId` if its associated item is a type,
+    /// otherwise return `None`.
+    pub fn as_type_id(&self, ctx: &BindgenContext) -> Option<TypeId> {
+        if ctx.resolve_item(*self).kind().is_type() {
+            Some(self.as_type_id_unchecked())
+        } else {
+            None
+        }
+    }
+
+    /// Convert this `ItemId` into a `TypeId` without actually checking whether
+    /// this id actually points to a `Type`.
+    pub fn as_type_id_unchecked(&self) -> TypeId {
+        TypeId(*self)
     }
 }
 
@@ -1212,16 +1243,16 @@ impl BindgenContext {
     ///
     /// Panics if there is no item for the given `ItemId` or if the resolved
     /// item is not a `Type`.
-    pub fn resolve_type(&self, type_id: ItemId) -> &Type {
-        self.items.get(&type_id).unwrap().kind().expect_type()
+    pub fn resolve_type(&self, type_id: TypeId) -> &Type {
+        self.items.get(&type_id.into()).unwrap().kind().expect_type()
     }
 
     /// Resolve the given `ItemId` as a type, or `None` if there is no item with
     /// the given id.
     ///
     /// Panics if the id resolves to an item that is not a type.
-    pub fn safe_resolve_type(&self, type_id: ItemId) -> Option<&Type> {
-        self.items.get(&type_id).map(|t| t.kind().expect_type())
+    pub fn safe_resolve_type(&self, type_id: TypeId) -> Option<&Type> {
+        self.items.get(&type_id.into()).map(|t| t.kind().expect_type())
     }
 
     /// Resolve the given `ItemId` into an `Item`, or `None` if no such item
@@ -1371,7 +1402,7 @@ impl BindgenContext {
     ) -> Option<ItemId> {
         use clang_sys;
 
-        let num_expected_args = match self.resolve_type(template)
+        let num_expected_args = match self.resolve_type(template.as_type_id_unchecked())
             .num_self_template_params(self) {
             Some(n) => n,
             None => {
