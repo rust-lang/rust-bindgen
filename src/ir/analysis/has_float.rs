@@ -176,12 +176,12 @@ impl<'ctx> MonotoneFramework for HasFloat<'ctx> {
                     .any(|f| {
                         match *f {
                             Field::DataMember(ref data) => {
-                                self.has_float.contains(&data.ty())
+                                self.has_float.contains(&data.ty().into())
                             }
                             Field::Bitfields(ref bfu) => {
                                 bfu.bitfields()
                                     .iter().any(|b| {
-                                        self.has_float.contains(&b.ty())
+                                        self.has_float.contains(&b.ty().into())
                                     })
                             },
                         }

@@ -9,8 +9,7 @@ use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
                     CanDeriveHash, CanDerivePartialOrd, CanDeriveOrd,
                     CanDerivePartialEq, CanDeriveEq};
 use super::int::IntKind;
-use super::item::{HasTypeParamInArray, IsOpaque, Item, ItemAncestors,
-                  ItemCanonicalPath, ItemSet};
+use super::item::{IsOpaque, Item, ItemAncestors, ItemCanonicalPath, ItemSet};
 use super::item_kind::ItemKind;
 use super::module::{Module, ModuleKind};
 use super::template::{TemplateInstantiation, TemplateParameters};
@@ -81,20 +80,29 @@ impl ItemId {
     }
 }
 
-impl CanDeriveDebug for ItemId {
+impl<T> CanDeriveDebug for T
+where
+    T: Copy + Into<ItemId>
+{
     fn can_derive_debug(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_debug && ctx.lookup_item_id_can_derive_debug(*self)
     }
 }
 
-impl CanDeriveDefault for ItemId {
+impl<T> CanDeriveDefault for T
+where
+    T: Copy + Into<ItemId>
+{
     fn can_derive_default(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_default &&
             ctx.lookup_item_id_can_derive_default(*self)
     }
 }
 
-impl<'a> CanDeriveCopy<'a> for ItemId {
+impl<'a, T> CanDeriveCopy<'a> for T
+where
+    T: Copy + Into<ItemId>
+{
     fn can_derive_copy(&self, ctx: &BindgenContext) -> bool {
         ctx.lookup_item_id_can_derive_copy(*self)
     }
@@ -106,33 +114,45 @@ impl CanDeriveHash for ItemId {
     }
 }
 
-impl CanDerivePartialOrd for ItemId {
+impl<T> CanDerivePartialOrd for T
+where
+    T: Copy + Into<ItemId>
+{
     fn can_derive_partialord(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_partialord &&
             ctx.lookup_item_id_can_derive_partialeq_or_partialord(*self)
     }
 }
 
-impl CanDerivePartialEq for ItemId {
+impl<T> CanDerivePartialEq for T
+where
+    T: Copy + Into<ItemId>
+{
     fn can_derive_partialeq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_partialeq &&
             ctx.lookup_item_id_can_derive_partialeq_or_partialord(*self)
     }
 }
 
-impl CanDeriveEq for ItemId {
+impl<T> CanDeriveEq for T
+where
+    T: Copy + Into<ItemId>
+{
     fn can_derive_eq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_eq &&
             ctx.lookup_item_id_can_derive_partialeq_or_partialord(*self) &&
-            !ctx.lookup_item_id_has_float(&self)
+            !ctx.lookup_item_id_has_float(*self)
     }
 }
 
-impl CanDeriveOrd for ItemId {
+impl<T> CanDeriveOrd for T
+where
+    T: Copy + Into<ItemId>
+{
     fn can_derive_ord(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_ord &&
             ctx.lookup_item_id_can_derive_partialeq_or_partialord(*self) &&
-            !ctx.lookup_item_id_has_float(&self)
+            !ctx.lookup_item_id_has_float(*self)
     }
 }
 
@@ -2224,7 +2244,7 @@ impl BindgenContext {
     }
 
     /// Look up whether the item with `id` can derive `Copy` or not.
-    pub fn lookup_item_id_can_derive_copy(&self, id: ItemId) -> bool {
+    pub fn lookup_item_id_can_derive_copy<Id: Into<ItemId>>(&self, id: Id) -> bool {
         assert!(
             self.in_codegen_phase(),
             "We only compute can_derive_debug when we enter codegen"
@@ -2232,7 +2252,8 @@ impl BindgenContext {
 
         // Look up the computed value for whether the item with `id` can
         // derive `Copy` or not.
-        !id.has_type_param_in_array(self) &&
+        let id = id.into();
+        !self.lookup_item_id_has_type_param_in_array(id) &&
             !self.cannot_derive_copy.as_ref().unwrap().contains(&id)
     }
 
@@ -2245,7 +2266,7 @@ impl BindgenContext {
     }
 
     /// Look up whether the item with `id` has type parameter in array or not.
-    pub fn lookup_item_id_has_type_param_in_array(&self, id: &ItemId) -> bool {
+    pub fn lookup_item_id_has_type_param_in_array<Id: Into<ItemId>>(&self, id: Id) -> bool {
         assert!(
             self.in_codegen_phase(),
             "We only compute has array when we enter codegen"
@@ -2253,7 +2274,7 @@ impl BindgenContext {
 
         // Look up the computed value for whether the item with `id` has
         // type parameter in array or not.
-        self.has_type_param_in_array.as_ref().unwrap().contains(id)
+        self.has_type_param_in_array.as_ref().unwrap().contains(&id.into())
     }
 
     /// Compute whether the type has float.
@@ -2266,13 +2287,13 @@ impl BindgenContext {
     }
 
     /// Look up whether the item with `id` has array or not.
-    pub fn lookup_item_id_has_float(&self, id: &ItemId) -> bool {
+    pub fn lookup_item_id_has_float<Id: Into<ItemId>>(&self, id: Id) -> bool {
         assert!(self.in_codegen_phase(),
                 "We only compute has float when we enter codegen");
 
         // Look up the computed value for whether the item with `id` has
         // float or not.
-        self.has_float.as_ref().unwrap().contains(id)
+        self.has_float.as_ref().unwrap().contains(&id.into())
     }
 
     /// Check if `--no-partialeq` flag is enabled for this item.

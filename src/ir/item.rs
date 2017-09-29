@@ -291,7 +291,7 @@ impl Trace for Item {
                 tracer.visit(fun.signature());
             }
             ItemKind::Var(ref var) => {
-                tracer.visit_kind(var.ty(), EdgeKind::VarType);
+                tracer.visit_kind(var.ty().into(), EdgeKind::VarType);
             }
             ItemKind::Module(_) => {
                 // Module -> children edges are "weak", and we do not want to
@@ -351,7 +351,7 @@ impl CanDeriveEq for Item {
     fn can_derive_eq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_eq &&
             ctx.lookup_item_id_can_derive_partialeq_or_partialord(self.id()) &&
-            !ctx.lookup_item_id_has_float(&self.id())
+            !ctx.lookup_item_id_has_float(self.id())
     }
 }
 
@@ -359,7 +359,7 @@ impl CanDeriveOrd for Item {
     fn can_derive_ord(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_ord &&
             ctx.lookup_item_id_can_derive_partialeq_or_partialord(self.id()) &&
-            !ctx.lookup_item_id_has_float(&self.id())
+            !ctx.lookup_item_id_has_float(self.id())
     }
 }
 
@@ -995,13 +995,16 @@ impl HasVtable for Item {
     }
 }
 
-impl HasTypeParamInArray for ItemId {
+impl<T> HasTypeParamInArray for T
+where
+    T: Copy + Into<ItemId>
+{
     fn has_type_param_in_array(&self, ctx: &BindgenContext) -> bool {
         debug_assert!(
             ctx.in_codegen_phase(),
             "You're not supposed to call this yet"
         );
-        ctx.lookup_item_id_has_type_param_in_array(self)
+        ctx.lookup_item_id_has_type_param_in_array(*self)
     }
 }
 
@@ -1011,15 +1014,18 @@ impl HasTypeParamInArray for Item {
             ctx.in_codegen_phase(),
             "You're not supposed to call this yet"
         );
-        ctx.lookup_item_id_has_type_param_in_array(&self.id())
+        ctx.lookup_item_id_has_type_param_in_array(self.id())
     }
 }
 
-impl HasFloat for ItemId {
+impl<T> HasFloat for T
+where
+    T: Copy + Into<ItemId>
+{
     fn has_float(&self, ctx: &BindgenContext) -> bool {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
-        ctx.lookup_item_id_has_float(self)
+        ctx.lookup_item_id_has_float(*self)
     }
 }
 
@@ -1027,7 +1033,7 @@ impl HasFloat for Item {
     fn has_float(&self, ctx: &BindgenContext) -> bool {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
-        ctx.lookup_item_id_has_float(&self.id())
+        ctx.lookup_item_id_has_float(self.id())
     }
 }
 

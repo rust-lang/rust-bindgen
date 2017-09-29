@@ -1,7 +1,7 @@
 //! Compound types (unions and structs) in our intermediate representation.
 
 use super::annotations::Annotations;
-use super::context::{BindgenContext, ItemId};
+use super::context::{BindgenContext, ItemId, TypeId};
 use super::dot::DotAttributes;
 use super::item::{IsOpaque, Item};
 use super::layout::Layout;
@@ -110,7 +110,7 @@ pub trait FieldMethods {
     fn name(&self) -> Option<&str>;
 
     /// Get the type of this field.
-    fn ty(&self) -> ItemId;
+    fn ty(&self) -> TypeId;
 
     /// Get the comment for this field.
     fn comment(&self) -> Option<&str>;
@@ -176,7 +176,7 @@ impl Field {
                                  layout, ..
                              }) => Some(layout),
             Field::DataMember(ref data) => {
-                ctx.resolve_type(data.ty.as_type_id_unchecked()).layout(ctx)
+                ctx.resolve_type(data.ty).layout(ctx)
             }
         }
     }
@@ -191,13 +191,13 @@ impl Trace for Field {
     {
         match *self {
             Field::DataMember(ref data) => {
-                tracer.visit_kind(data.ty, EdgeKind::Field);
+                tracer.visit_kind(data.ty.into(), EdgeKind::Field);
             }
             Field::Bitfields(BitfieldUnit {
                                  ref bitfields, ..
                              }) => {
                 for bf in bitfields {
-                    tracer.visit_kind(bf.ty(), EdgeKind::Field);
+                    tracer.visit_kind(bf.ty().into(), EdgeKind::Field);
                 }
             }
         }
@@ -343,7 +343,7 @@ impl FieldMethods for Bitfield {
         self.data.name()
     }
 
-    fn ty(&self) -> ItemId {
+    fn ty(&self) -> TypeId {
         self.data.ty()
     }
 
@@ -380,7 +380,7 @@ impl RawField {
     /// Construct a new `RawField`.
     fn new(
         name: Option<String>,
-        ty: ItemId,
+        ty: TypeId,
         comment: Option<String>,
         annotations: Option<Annotations>,
         bitfield: Option<u32>,
@@ -404,7 +404,7 @@ impl FieldMethods for RawField {
         self.0.name()
     }
 
-    fn ty(&self) -> ItemId {
+    fn ty(&self) -> TypeId {
         self.0.ty()
     }
 
@@ -538,7 +538,7 @@ fn bitfields_to_allocation_units<E, I>(
 
     for bitfield in raw_bitfields {
         let bitfield_width = bitfield.bitfield().unwrap() as usize;
-        let bitfield_layout = ctx.resolve_type(bitfield.ty().as_type_id_unchecked())
+        let bitfield_layout = ctx.resolve_type(bitfield.ty())
             .layout(ctx)
             .expect("Bitfield without layout? Gah!");
         let bitfield_size = bitfield_layout.size;
@@ -705,7 +705,7 @@ impl Trace for CompFields {
         match *self {
             CompFields::BeforeComputingBitfieldUnits(ref fields) => {
                 for f in fields {
-                    tracer.visit_kind(f.ty(), EdgeKind::Field);
+                    tracer.visit_kind(f.ty().into(), EdgeKind::Field);
                 }
             }
             CompFields::AfterComputingBitfieldUnits(ref fields) => {
@@ -724,7 +724,7 @@ pub struct FieldData {
     name: Option<String>,
 
     /// The inner type.
-    ty: ItemId,
+    ty: TypeId,
 
     /// The doc comment on the field if any.
     comment: Option<String>,
@@ -747,7 +747,7 @@ impl FieldMethods for FieldData {
         self.name.as_ref().map(|n| &**n)
     }
 
-    fn ty(&self) -> ItemId {
+    fn ty(&self) -> TypeId {
         self.ty
     }
 
@@ -1104,12 +1104,12 @@ impl CompInfo {
                     let name = if name.is_empty() { None } else { Some(name) };
 
                     let field = RawField::new(name,
-                                           field_type,
-                                           comment,
-                                           annotations,
-                                           bit_width,
-                                           is_mutable,
-                                           offset);
+                                              field_type.as_type_id_unchecked(),
+                                              comment,
+                                              annotations,
+                                              bit_width,
+                                              is_mutable,
+                                              offset);
                     ci.fields.append_raw_field(field);
 
                     // No we look for things like attributes and stuff.
@@ -1163,7 +1163,7 @@ impl CompInfo {
                         let ty = cur.cur_type();
                         let offset = cur.offset_of_field().ok();
                         maybe_anonymous_struct_field =
-                            Some((inner, ty, offset));
+                            Some((inner.as_type_id_unchecked(), ty, offset));
                     }
                 }
                 CXCursor_PackedAttr => {

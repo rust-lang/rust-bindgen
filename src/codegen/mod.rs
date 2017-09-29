@@ -1112,7 +1112,7 @@ impl Bitfield {
         ctor_impl: quote::Tokens,
         unit_field_int_ty: &quote::Tokens,
     ) -> quote::Tokens {
-        let bitfield_ty = ctx.resolve_type(self.ty().as_type_id_unchecked());
+        let bitfield_ty = ctx.resolve_type(self.ty());
         let bitfield_ty_layout = bitfield_ty.layout(ctx).expect(
             "Bitfield without layout? Gah!",
         );

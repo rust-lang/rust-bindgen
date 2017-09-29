@@ -279,9 +279,9 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
                     info.fields().iter().any(|f| match *f {
                         Field::DataMember(ref data) => {
                             !self.ctx.whitelisted_items().contains(
-                                &data.ty(),
+                                &data.ty().into(),
                             ) ||
-                                self.cannot_derive_hash.contains(&data.ty())
+                                self.cannot_derive_hash.contains(&data.ty().into())
                         }
                         Field::Bitfields(ref bfu) => {
                             if bfu.layout().align > RUST_DERIVE_IN_ARRAY_LIMIT {
@@ -294,9 +294,9 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
 
                             bfu.bitfields().iter().any(|b| {
                                 !self.ctx.whitelisted_items().contains(
-                                    &b.ty(),
+                                    &b.ty().into(),
                                 ) ||
-                                    self.cannot_derive_hash.contains(&b.ty())
+                                    self.cannot_derive_hash.contains(&b.ty().into())
                             })
                         }
                     });

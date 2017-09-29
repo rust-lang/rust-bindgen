@@ -295,10 +295,10 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
                     info.fields().iter().any(|f| match *f {
                         Field::DataMember(ref data) => {
                             !self.ctx.whitelisted_items().contains(
-                                &data.ty(),
+                                &data.ty().into(),
                             ) ||
                                 self.cannot_derive_partialeq_or_partialord.contains(
-                                    &data.ty(),
+                                    &data.ty().into(),
                                 )
                         }
                         Field::Bitfields(ref bfu) => {
@@ -312,10 +312,10 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
 
                             bfu.bitfields().iter().any(|b| {
                                 !self.ctx.whitelisted_items().contains(
-                                    &b.ty(),
+                                    &b.ty().into(),
                                 ) ||
                                     self.cannot_derive_partialeq_or_partialord.contains(
-                                        &b.ty(),
+                                        &b.ty().into(),
                                     )
                             })
                         }

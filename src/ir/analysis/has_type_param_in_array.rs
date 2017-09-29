@@ -191,7 +191,7 @@ impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
                 }
                 let fields_have = info.fields().iter().any(|f| match *f {
                     Field::DataMember(ref data) => {
-                        self.has_type_parameter_in_array.contains(&data.ty())
+                        self.has_type_parameter_in_array.contains(&data.ty().into())
                     }
                     Field::Bitfields(..) => false,
                 });

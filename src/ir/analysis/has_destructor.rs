@@ -126,7 +126,7 @@ impl<'ctx> MonotoneFramework for HasDestructorAnalysis<'ctx> {
                             info.fields().iter().any(|field| {
                                 match *field {
                                     Field::DataMember(ref data) =>
-                                        self.have_destructor.contains(&data.ty()),
+                                        self.have_destructor.contains(&data.ty().into()),
                                     Field::Bitfields(_) => false
                                 }
                             });

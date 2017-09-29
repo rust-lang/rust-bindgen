@@ -305,7 +305,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
                     info.fields().iter().any(|f| match *f {
                         Field::DataMember(ref data) => {
                             !self.ctx.whitelisted_items().contains(
-                                &data.ty(),
+                                &data.ty().into(),
                             ) ||
                                 self.is_not_default(data.ty())
                         }
@@ -320,7 +320,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
 
                             bfu.bitfields().iter().any(|b| {
                                 !self.ctx.whitelisted_items().contains(
-                                    &b.ty(),
+                                    &b.ty().into(),
                                 ) ||
                                     self.is_not_default(b.ty())
                             })
