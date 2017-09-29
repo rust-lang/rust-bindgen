@@ -151,12 +151,12 @@ impl<'a> CodegenResult<'a> {
         self.saw_objc = true;
     }
 
-    fn seen(&self, item: ItemId) -> bool {
-        self.items_seen.contains(&item)
+    fn seen<Id: Into<ItemId>>(&self, item: Id) -> bool {
+        self.items_seen.contains(&item.into())
     }
 
-    fn set_seen(&mut self, item: ItemId) {
-        self.items_seen.insert(item);
+    fn set_seen<Id: Into<ItemId>>(&mut self, item: Id) {
+        self.items_seen.insert(item.into());
     }
 
     fn seen_function(&self, name: &str) -> bool {

@@ -203,7 +203,8 @@ impl<'ctx> UsedTemplateParameters<'ctx> {
         }
     }
 
-    fn take_this_id_usage_set(&mut self, this_id: ItemId) -> ItemSet {
+    fn take_this_id_usage_set<Id: Into<ItemId>>(&mut self, this_id: Id) -> ItemSet {
+        let this_id = this_id.into();
         self.used
             .get_mut(&this_id)
             .expect(

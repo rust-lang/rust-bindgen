@@ -1840,7 +1840,8 @@ impl BindgenContext {
 
     /// Is the item with the given `name` blacklisted? Or is the item with the given
     /// `name` and `id` replaced by another type, and effectively blacklisted?
-    pub fn blacklisted_by_name(&self, path: &[String], id: ItemId) -> bool {
+    pub fn blacklisted_by_name<Id: Into<ItemId>>(&self, path: &[String], id: Id) -> bool {
+        let id = id.into();
         debug_assert!(
             self.in_codegen_phase(),
             "You're not supposed to call this yet"
@@ -1851,7 +1852,8 @@ impl BindgenContext {
 
     /// Has the item with the given `name` and `id` been replaced by another
     /// type?
-    pub fn is_replaced_type(&self, path: &[String], id: ItemId) -> bool {
+    pub fn is_replaced_type<Id: Into<ItemId>>(&self, path: &[String], id: Id) -> bool {
+        let id = id.into();
         match self.replacements.get(path) {
             Some(replaced_by) if *replaced_by != id => true,
             _ => false,
@@ -2133,7 +2135,8 @@ impl BindgenContext {
 
     /// Look up whether the item with `id` can
     /// derive debug or not.
-    pub fn lookup_item_id_can_derive_debug(&self, id: ItemId) -> bool {
+    pub fn lookup_item_id_can_derive_debug<Id: Into<ItemId>>(&self, id: Id) -> bool {
+        let id = id.into();
         assert!(
             self.in_codegen_phase(),
             "We only compute can_derive_debug when we enter codegen"
@@ -2156,7 +2159,8 @@ impl BindgenContext {
 
     /// Look up whether the item with `id` can
     /// derive default or not.
-    pub fn lookup_item_id_can_derive_default(&self, id: ItemId) -> bool {
+    pub fn lookup_item_id_can_derive_default<Id: Into<ItemId>>(&self, id: Id) -> bool {
+        let id = id.into();
         assert!(
             self.in_codegen_phase(),
             "We only compute can_derive_default when we enter codegen"
@@ -2185,7 +2189,8 @@ impl BindgenContext {
 
     /// Look up whether the item with `id` can
     /// derive hash or not.
-    pub fn lookup_item_id_can_derive_hash(&self, id: ItemId) -> bool {
+    pub fn lookup_item_id_can_derive_hash<Id: Into<ItemId>>(&self, id: Id) -> bool {
+        let id = id.into();
         assert!(
             self.in_codegen_phase(),
             "We only compute can_derive_debug when we enter codegen"
@@ -2206,7 +2211,8 @@ impl BindgenContext {
     }
 
     /// Look up whether the item with `id` can derive `Partial{Eq,Ord}`.
-    pub fn lookup_item_id_can_derive_partialeq_or_partialord(&self, id: ItemId) -> bool {
+    pub fn lookup_item_id_can_derive_partialeq_or_partialord<Id: Into<ItemId>>(&self, id: Id) -> bool {
+        let id = id.into();
         assert!(
             self.in_codegen_phase(),
             "We only compute can_derive_partialeq_or_partialord when we enter codegen"
@@ -2298,15 +2304,19 @@ impl TypeId {
     }
 }
 
-impl From<ItemId> for ItemResolver {
-    fn from(id: ItemId) -> ItemResolver {
+impl<T> From<T> for ItemResolver
+where
+    T: Into<ItemId>
+{
+    fn from(id: T) -> ItemResolver {
         ItemResolver::new(id)
     }
 }
 
 impl ItemResolver {
     /// Construct a new `ItemResolver` from the given id.
-    pub fn new(id: ItemId) -> ItemResolver {
+    pub fn new<Id: Into<ItemId>>(id: Id) -> ItemResolver {
+        let id = id.into();
         ItemResolver {
             id: id,
             through_type_refs: false,
@@ -2361,7 +2371,8 @@ pub struct PartialType {
 
 impl PartialType {
     /// Construct a new `PartialType`.
-    pub fn new(decl: Cursor, id: ItemId) -> PartialType {
+    pub fn new<Id: Into<ItemId>>(decl: Cursor, id: Id) -> PartialType {
+        let id = id.into();
         // assert!(decl == decl.canonical());
         PartialType {
             decl: decl,

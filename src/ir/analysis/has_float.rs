@@ -62,7 +62,8 @@ impl<'ctx> HasFloat<'ctx> {
         }
     }
 
-    fn insert(&mut self, id: ItemId) -> ConstrainResult {
+    fn insert<Id: Into<ItemId>>(&mut self, id: Id) -> ConstrainResult {
+        let id = id.into();
         trace!("inserting {:?} into the has_float set", id);
 
         let was_not_already_in_set = self.has_float.insert(id);

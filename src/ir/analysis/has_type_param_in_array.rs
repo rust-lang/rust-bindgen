@@ -64,7 +64,8 @@ impl<'ctx> HasTypeParameterInArray<'ctx> {
         }
     }
 
-    fn insert(&mut self, id: ItemId) -> ConstrainResult {
+    fn insert<Id: Into<ItemId>>(&mut self, id: Id) -> ConstrainResult {
+        let id = id.into();
         trace!(
             "inserting {:?} into the has_type_parameter_in_array set",
             id

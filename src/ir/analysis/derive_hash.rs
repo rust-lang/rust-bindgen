@@ -74,7 +74,8 @@ impl<'ctx> CannotDeriveHash<'ctx> {
         }
     }
 
-    fn insert(&mut self, id: ItemId) -> ConstrainResult {
+    fn insert<Id: Into<ItemId>>(&mut self, id: Id) -> ConstrainResult {
+        let id = id.into();
         trace!("inserting {:?} into the cannot_derive_hash set", id);
 
         let was_not_already_in_set = self.cannot_derive_hash.insert(id);

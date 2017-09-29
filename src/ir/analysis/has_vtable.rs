@@ -47,7 +47,8 @@ impl<'ctx> HasVtableAnalysis<'ctx> {
         }
     }
 
-    fn insert(&mut self, id: ItemId) -> ConstrainResult {
+    fn insert<Id: Into<ItemId>>(&mut self, id: Id) -> ConstrainResult {
+        let id = id.into();
         let was_not_already_in_set = self.have_vtable.insert(id);
         assert!(
             was_not_already_in_set,

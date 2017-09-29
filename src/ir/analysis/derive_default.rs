@@ -71,7 +71,8 @@ impl<'ctx> CannotDeriveDefault<'ctx> {
         }
     }
 
-    fn insert(&mut self, id: ItemId) -> ConstrainResult {
+    fn insert<Id: Into<ItemId>>(&mut self, id: Id) -> ConstrainResult {
+        let id = id.into();
         trace!("inserting {:?} into the cannot_derive_default set", id);
 
         let was_not_already_in_set = self.cannot_derive_default.insert(id);
@@ -85,7 +86,8 @@ impl<'ctx> CannotDeriveDefault<'ctx> {
         ConstrainResult::Changed
     }
 
-    fn is_not_default(&self, id: ItemId) -> bool {
+    fn is_not_default<Id: Into<ItemId>>(&self, id: Id) -> bool {
+        let id = id.into();
         self.cannot_derive_default.contains(&id) ||
             !self.ctx.whitelisted_items().contains(&id)
     }
@@ -222,7 +224,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
             }
 
             TypeKind::Array(t, len) => {
-                if self.is_not_default(t.into()) {
+                if self.is_not_default(t) {
                     trace!(
                         "    arrays of T for which we cannot derive Default \
                             also cannot derive Default"
@@ -242,7 +244,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
-                if self.is_not_default(t.into()) {
+                if self.is_not_default(t) {
                     trace!(
                         "    aliases and type refs to T which cannot derive \
                             Default also cannot derive Default"
@@ -353,7 +355,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
                     "The early ty.is_opaque check should have handled this case"
                 );
                 let def_cannot_derive =
-                    self.is_not_default(template.template_definition().into());
+                    self.is_not_default(template.template_definition());
                 if def_cannot_derive {
                     trace!(
                         "    template definition cannot derive Default, so \

@@ -111,7 +111,7 @@ cfg_if! {
                 DebugOnlyItemSet
             }
 
-            fn contains(&self,_id: &ItemId) -> bool {
+            fn contains(&self, _id: &ItemId) -> bool {
                 false
             }
 
@@ -474,8 +474,8 @@ impl Item {
     /// Set this item's parent id.
     ///
     /// This is only used so replacements get generated in the proper module.
-    pub fn set_parent_for_replacement(&mut self, id: ItemId) {
-        self.parent_id = id;
+    pub fn set_parent_for_replacement<Id: Into<ItemId>>(&mut self, id: Id) {
+        self.parent_id = id.into();
     }
 
     /// Returns the depth this item is indented to.

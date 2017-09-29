@@ -83,7 +83,8 @@ impl<'ctx> CannotDerivePartialEqOrPartialOrd<'ctx> {
         }
     }
 
-    fn insert(&mut self, id: ItemId) -> ConstrainResult {
+    fn insert<Id: Into<ItemId>>(&mut self, id: Id) -> ConstrainResult {
+        let id = id.into();
         trace!("inserting {:?} into the cannot_derive_partialeq_or_partialord set", id);
 
         let was_not_already_in_set = self.cannot_derive_partialeq_or_partialord.insert(id);
