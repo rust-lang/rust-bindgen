@@ -2907,7 +2907,7 @@ impl TryToRustTy for Type {
                 {
                     Ok(ty)
                 } else {
-                    utils::build_templated_path(item, ctx, vec![]) //template_params)
+                    utils::build_path(item, ctx)
                 }
             }
             TypeKind::Comp(ref info) => {
@@ -2918,8 +2918,7 @@ impl TryToRustTy for Type {
                     return self.try_to_opaque(ctx, item);
                 }
 
-                // let template_params = template_params.unwrap_or(vec![]);
-                utils::build_templated_path(item, ctx, vec![])
+                utils::build_path(item, ctx)
             }
             TypeKind::Opaque => self.try_to_opaque(ctx, item),
             TypeKind::BlockPointer => {
@@ -3325,8 +3324,8 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<quote::Tokens> {
 }
 
 mod utils {
-    use super::{ToRustTyOrOpaque, TryToRustTy, error};
-    use ir::context::{BindgenContext, ItemId};
+    use super::{ToRustTyOrOpaque, error};
+    use ir::context::BindgenContext;
     use ir::function::FunctionSig;
     use ir::item::{Item, ItemCanonicalPath};
     use ir::ty::TypeKind;
@@ -3548,28 +3547,16 @@ mod utils {
         result.extend(old_items.into_iter());
     }
 
-    pub fn build_templated_path(
+    pub fn build_path(
         item: &Item,
         ctx: &BindgenContext,
-        template_params: Vec<ItemId>,
     ) -> error::Result<quote::Tokens> {
         let path = item.namespace_aware_canonical_path(ctx);
-
-        let template_params = template_params
-            .iter()
-            .map(|param| param.try_to_rust_ty(ctx, &()))
-            .collect::<error::Result<Vec<_>>>()?;
 
         let mut tokens = quote! {};
         tokens.append_separated(path.into_iter().map(quote::Ident::new), "::");
 
-        if template_params.is_empty() {
-            Ok(tokens)
-        } else {
-            Ok(quote! {
-                #tokens < #( #template_params ),* >
-            })
-        }
+        Ok(tokens)
     }
 
     fn primitive_ty(ctx: &BindgenContext, name: &str) -> quote::Tokens {
