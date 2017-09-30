@@ -108,7 +108,10 @@ where
     }
 }
 
-impl CanDeriveHash for ItemId {
+impl<T> CanDeriveHash for T
+where
+    T: Copy + Into<ItemId>
+{
     fn can_derive_hash(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_hash && ctx.lookup_item_id_can_derive_hash(*self)
     }
@@ -1122,7 +1125,7 @@ impl BindgenContext {
     }
 
     /// Look up whether the item with `id` has vtable or not.
-    pub fn lookup_item_id_has_vtable(&self, id: &ItemId) -> bool {
+    pub fn lookup_item_id_has_vtable<Id: Into<ItemId>>(&self, id: Id) -> bool {
         assert!(
             self.in_codegen_phase(),
             "We only compute vtables when we enter codegen"
@@ -1130,7 +1133,7 @@ impl BindgenContext {
 
         // Look up the computed value for whether the item with `id` has a
         // vtable or not.
-        self.have_vtable.as_ref().unwrap().contains(id)
+        self.have_vtable.as_ref().unwrap().contains(&id.into())
     }
 
     /// Compute whether the type has a destructor.
@@ -1282,8 +1285,8 @@ impl BindgenContext {
 
     /// Resolve the given `ItemId` into an `Item`, or `None` if no such item
     /// exists.
-    pub fn resolve_item_fallible(&self, item_id: ItemId) -> Option<&Item> {
-        self.items.get(&item_id)
+    pub fn resolve_item_fallible<Id: Into<ItemId>>(&self, id: Id) -> Option<&Item> {
+        self.items.get(&id.into())
     }
 
     /// Resolve the given `ItemId` into an `Item`.

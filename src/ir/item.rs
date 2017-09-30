@@ -128,9 +128,9 @@ pub struct ItemAncestorsIter<'a> {
 }
 
 impl<'a> ItemAncestorsIter<'a> {
-    fn new(ctx: &'a BindgenContext, item: ItemId) -> Self {
+    fn new<Id: Into<ItemId>>(ctx: &'a BindgenContext, id: Id) -> Self {
         ItemAncestorsIter {
-            item: item,
+            item: id.into(),
             ctx: ctx,
             seen: DebugOnlyItemSet::new(),
         }
@@ -199,8 +199,10 @@ impl AsTemplateParam for ItemKind {
     }
 }
 
-// Pure convenience
-impl ItemCanonicalName for ItemId {
+impl<T> ItemCanonicalName for T
+where
+    T: Copy + Into<ItemId>
+{
     fn canonical_name(&self, ctx: &BindgenContext) -> String {
         debug_assert!(
             ctx.in_codegen_phase(),
@@ -210,7 +212,10 @@ impl ItemCanonicalName for ItemId {
     }
 }
 
-impl ItemCanonicalPath for ItemId {
+impl<T> ItemCanonicalPath for T
+    where
+    T: Copy + Into<ItemId>
+{
     fn namespace_aware_canonical_path(
         &self,
         ctx: &BindgenContext,
@@ -231,7 +236,10 @@ impl ItemCanonicalPath for ItemId {
     }
 }
 
-impl ItemAncestors for ItemId {
+impl<T> ItemAncestors for T
+where
+    T: Copy + Into<ItemId>
+{
     fn ancestors<'a>(
         &self,
         ctx: &'a BindgenContext,
@@ -249,7 +257,10 @@ impl ItemAncestors for Item {
     }
 }
 
-impl Trace for ItemId {
+impl<Id> Trace for Id
+where
+    Id: Copy + Into<ItemId>
+{
     type Extra = ();
 
     fn trace<T>(&self, ctx: &BindgenContext, tracer: &mut T, extra: &())
@@ -983,15 +994,18 @@ impl IsOpaque for Item {
     }
 }
 
-impl HasVtable for ItemId {
+impl<T> HasVtable for T
+where
+    T: Copy + Into<ItemId>
+{
     fn has_vtable(&self, ctx: &BindgenContext) -> bool {
-        ctx.lookup_item_id_has_vtable(self)
+        ctx.lookup_item_id_has_vtable(*self)
     }
 }
 
 impl HasVtable for Item {
     fn has_vtable(&self, ctx: &BindgenContext) -> bool {
-        ctx.lookup_item_id_has_vtable(&self.id())
+        ctx.lookup_item_id_has_vtable(self.id())
     }
 }
 
@@ -1065,7 +1079,10 @@ impl DotAttributes for Item {
     }
 }
 
-impl TemplateParameters for ItemId {
+impl<T> TemplateParameters for T
+where
+    T: Copy + Into<ItemId>
+{
     fn self_template_params(
         &self,
         ctx: &BindgenContext,

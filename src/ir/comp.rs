@@ -1,5 +1,6 @@
 //! Compound types (unions and structs) in our intermediate representation.
 
+use super::analysis::HasVtable;
 use super::annotations::Annotations;
 use super::context::{BindgenContext, ItemId, TypeId};
 use super::dot::DotAttributes;
@@ -910,12 +911,12 @@ impl CompInfo {
     }
 
     /// Is this compound type unsized?
-    pub fn is_unsized(&self, ctx: &BindgenContext, itemid: &ItemId) -> bool {
-        !ctx.lookup_item_id_has_vtable(itemid) && self.fields().is_empty() &&
+    pub fn is_unsized<Id: Into<ItemId>>(&self, ctx: &BindgenContext, id: Id) -> bool {
+        !ctx.lookup_item_id_has_vtable(id.into()) && self.fields().is_empty() &&
             self.base_members.iter().all(|base| {
                 ctx.resolve_type(base.ty.as_type_id_unchecked()).canonical_type(ctx).is_unsized(
                     ctx,
-                    &base.ty,
+                    base.ty,
                 )
             })
     }
@@ -1354,8 +1355,7 @@ impl CompInfo {
         ctx: &BindgenContext,
         item: &Item,
     ) -> bool {
-        ctx.lookup_item_id_has_vtable(&item.id()) &&
-        !self.base_members.iter().any(|base| {
+        item.has_vtable(ctx) && !self.base_members.iter().any(|base| {
             // NB: Ideally, we could rely in all these types being `comp`, and
             // life would be beautiful.
             //
@@ -1365,7 +1365,7 @@ impl CompInfo {
             ctx.resolve_type(base.ty.as_type_id_unchecked())
                 .canonical_type(ctx)
                 .as_comp()
-                .map_or(false, |_| ctx.lookup_item_id_has_vtable(&base.ty))
+                .map_or(false, |_| base.ty.has_vtable(ctx))
         })
     }
 

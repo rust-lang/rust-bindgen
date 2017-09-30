@@ -6,6 +6,7 @@ pub mod struct_layout;
 use self::helpers::attributes;
 use self::struct_layout::StructLayoutTracker;
 
+use ir::analysis::HasVtable;
 use ir::annotations::FieldAccessorKind;
 use ir::comment;
 use ir::comp::{Base, Bitfield, BitfieldUnit, CompInfo, CompKind, Field,
@@ -1546,7 +1547,7 @@ impl CodeGenerator for CompInfo {
                 // NB: We won't include unsized types in our base chain because they
                 // would contribute to our size given the dummy field we insert for
                 // unsized types.
-                if base_ty.is_unsized(ctx, &base.ty) {
+                if base_ty.is_unsized(ctx, base.ty) {
                     continue;
                 }
 
@@ -1625,7 +1626,7 @@ impl CodeGenerator for CompInfo {
                     warn!("Opaque type without layout! Expect dragons!");
                 }
             }
-        } else if !is_union && !self.is_unsized(ctx, &item.id()) {
+        } else if !is_union && !self.is_unsized(ctx, item.id()) {
             if let Some(padding_field) =
                 layout.and_then(|layout| struct_layout.pad_struct(layout))
             {
@@ -1649,7 +1650,7 @@ impl CodeGenerator for CompInfo {
         //
         // NOTE: This check is conveniently here to avoid the dummy fields we
         // may add for unused template parameters.
-        if self.is_unsized(ctx, &item.id()) {
+        if self.is_unsized(ctx, item.id()) {
             let has_address = if is_opaque {
                 // Generate the address field if it's an opaque type and
                 // couldn't determine the layout of the blob.
@@ -1758,9 +1759,8 @@ impl CodeGenerator for CompInfo {
                     // FIXME when [issue #465](https://github.com/rust-lang-nursery/rust-bindgen/issues/465) ready
                     let too_many_base_vtables = self.base_members()
                         .iter()
-                        .filter(|base| ctx.lookup_item_id_has_vtable(&base.ty))
-                        .count() >
-                        1;
+                        .filter(|base| base.ty.has_vtable(ctx))
+                        .count() > 1;
 
                     let should_skip_field_offset_checks = is_opaque ||
                         too_many_base_vtables;
