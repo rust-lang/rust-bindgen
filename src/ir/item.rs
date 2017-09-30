@@ -465,7 +465,7 @@ impl Item {
     ) -> TypeId {
         let ty = Opaque::from_clang_ty(ty);
         let kind = ItemKind::Type(ty);
-        let parent = ctx.root_module();
+        let parent = ctx.root_module().into();
         ctx.add_item(Item::new(with_id, None, None, parent, kind), None, None);
         with_id.as_type_id_unchecked()
     }
@@ -577,7 +577,7 @@ impl Item {
         // FIXME: Workaround for some types falling behind when parsing weird
         // stl classes, for example.
         if ctx.options().enable_cxx_namespaces && self.kind().is_module() &&
-            self.id() != ctx.root_module()
+            self.id() != ctx.root_module().into()
         {
             return false;
         }
@@ -589,7 +589,7 @@ impl Item {
                 None => return false,
             };
 
-            if parent_item.id() == ctx.root_module() {
+            if parent_item.id() == ctx.root_module().into() {
                 return true;
             } else if ctx.options().enable_cxx_namespaces ||
                        !parent_item.kind().is_module()
@@ -834,7 +834,7 @@ impl Item {
         let mut names: Vec<_> = target
             .parent_id()
             .ancestors(ctx)
-            .filter(|id| *id != ctx.root_module())
+            .filter(|id| *id != ctx.root_module().into())
             .take_while(|id| {
                 // Stop iterating ancestors once we reach a non-inline namespace
                 // when opt.within_namespaces is set.
@@ -1162,7 +1162,7 @@ impl ClangItemParser for Item {
 
         let ty = Type::new(None, None, kind, is_const);
         let id = ctx.next_item_id();
-        let module = ctx.root_module();
+        let module = ctx.root_module().into();
         ctx.add_item(
             Item::new(id, None, None, module, ItemKind::Type(ty)),
             None,
@@ -1189,7 +1189,7 @@ impl ClangItemParser for Item {
         let comment = cursor.raw_comment();
         let annotations = Annotations::new(&cursor);
 
-        let current_module = ctx.current_module();
+        let current_module = ctx.current_module().into();
         let relevant_parent_id = parent_id.unwrap_or(current_module);
 
         macro_rules! try_parse {
@@ -1246,7 +1246,7 @@ impl ClangItemParser for Item {
                     }
                     ctx.known_semantic_parent(definition)
                         .or(parent_id)
-                        .unwrap_or(ctx.current_module())
+                        .unwrap_or(ctx.current_module().into())
                 }
                 None => relevant_parent_id,
             };
@@ -1368,7 +1368,7 @@ impl ClangItemParser for Item {
                 potential_id,
                 None,
                 None,
-                parent_id.unwrap_or(current_module),
+                parent_id.unwrap_or(current_module.into()),
                 ItemKind::Type(Type::new(None, None, kind, is_const)),
             ),
             Some(clang::Cursor::null()),
@@ -1477,7 +1477,7 @@ impl ClangItemParser for Item {
             }
         }
 
-        let current_module = ctx.current_module();
+        let current_module = ctx.current_module().into();
         let partial_ty = PartialType::new(declaration_to_look_for, id);
         if valid_decl {
             ctx.begin_parsing(partial_ty);
@@ -1700,7 +1700,7 @@ impl ClangItemParser for Item {
         // referenced with namespace prefixes, and they can't inherit anything
         // from their parent either, so it is simplest to just hang them off
         // something we know will always exist.
-        let parent = ctx.root_module();
+        let parent = ctx.root_module().into();
 
         if let Some(id) = ctx.get_type_param(&definition) {
             if let Some(with_id) = with_id {
@@ -1786,7 +1786,7 @@ impl ItemCanonicalPath for Item {
         let target = ctx.resolve_item(self.name_target(ctx));
         let mut path: Vec<_> = target
             .ancestors(ctx)
-            .chain(iter::once(ctx.root_module()))
+            .chain(iter::once(ctx.root_module().into()))
             .map(|id| ctx.resolve_item(id))
             .filter(|item| {
                 item.id() == target.id() ||

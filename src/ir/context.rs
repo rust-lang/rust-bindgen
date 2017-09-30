@@ -30,7 +30,7 @@ use std::collections::btree_map::{self, BTreeMap};
 use std::iter::IntoIterator;
 use std::mem;
 
-/// A single identifier for an item.
+/// An identifier for some kind of IR item.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ItemId(usize);
 
@@ -38,6 +38,11 @@ pub struct ItemId(usize);
 /// `ItemKind::Type`.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct TypeId(ItemId);
+
+/// An identifier for an `Item` whose `ItemKind` is known to be
+/// `ItemKind::Module`.
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct ModuleId(ItemId);
 
 impl From<TypeId> for ItemId {
     fn from(tid: TypeId) -> ItemId {
@@ -48,6 +53,18 @@ impl From<TypeId> for ItemId {
 impl<'a> From<&'a TypeId> for ItemId {
     fn from(tid: &'a TypeId) -> ItemId {
         tid.0
+    }
+}
+
+impl From<ModuleId> for ItemId {
+    fn from(mid: ModuleId) -> ItemId {
+        mid.0
+    }
+}
+
+impl<'a> From<&'a ModuleId> for ItemId {
+    fn from(mid: &'a ModuleId) -> ItemId {
+        mid.0
     }
 }
 
@@ -85,6 +102,30 @@ impl ItemId {
     /// this id actually points to a `Type`.
     pub fn as_type_id_unchecked(&self) -> TypeId {
         TypeId(*self)
+    }
+
+    /// Convert this `ItemId` into a `ModuleId` if its associated item is a module,
+    /// otherwise return `None`.
+    pub fn as_module_id(&self, ctx: &BindgenContext) -> Option<ModuleId> {
+        if ctx.resolve_item(*self).kind().is_module() {
+            Some(ModuleId(*self))
+        } else {
+            None
+        }
+    }
+
+    /// Convert this `ItemId` into a `ModuleId`.
+    ///
+    /// If this `ItemId` does not point to a module, then panic.
+    pub fn expect_module_id(&self, ctx: &BindgenContext) -> ModuleId {
+        self.as_module_id(ctx)
+            .expect("expect_module_id called with ItemId that doesn't point to a module")
+    }
+
+    /// Convert this `ItemId` into a `ModuleId` without actually checking whether
+    /// this id actually points to a `Module`.
+    pub fn as_module_id_unchecked(&self) -> ModuleId {
+        ModuleId(*self)
     }
 }
 
@@ -200,13 +241,13 @@ pub struct BindgenContext {
     type_params: HashMap<clang::Cursor, TypeId>,
 
     /// A cursor to module map. Similar reason than above.
-    modules: HashMap<Cursor, ItemId>,
+    modules: HashMap<Cursor, ModuleId>,
 
     /// The root module, this is guaranteed to be an item of kind Module.
-    root_module: ItemId,
+    root_module: ModuleId,
 
     /// Current module being traversed.
-    current_module: ItemId,
+    current_module: ModuleId,
 
     /// A HashMap keyed on a type definition, and whose value is the parent id
     /// of the declaration.
@@ -449,14 +490,16 @@ impl BindgenContext {
             effective_target == "i686-pc-win32";
 
         let root_module = Self::build_root_module(ItemId(0));
+        let root_module_id = root_module.id().as_module_id_unchecked();
+
         let mut me = BindgenContext {
             items: Default::default(),
             types: Default::default(),
             type_params: Default::default(),
             modules: Default::default(),
             next_item_id: ItemId(1),
-            root_module: root_module.id(),
-            current_module: root_module.id(),
+            root_module: root_module_id,
+            current_module: root_module_id,
             semantic_parents: Default::default(),
             currently_parsed_types: vec![],
             parsed_macros: Default::default(),
@@ -551,7 +594,7 @@ impl BindgenContext {
         let is_template_instantiation = is_type &&
             item.expect_type().is_template_instantiation();
 
-        if item.id() != self.root_module {
+        if item.id() != self.root_module.into() {
             self.add_item_to_module(&item);
         }
 
@@ -615,7 +658,7 @@ impl BindgenContext {
     /// codegen'd, even if its parent is not whitelisted. See issue #769 for
     /// details.
     fn add_item_to_module(&mut self, item: &Item) {
-        assert!(item.id() != self.root_module);
+        assert!(item.id() != self.root_module.into());
         assert!(!self.items.contains_key(&item.id()));
 
         if let Some(parent) = self.items.get_mut(&item.parent_id()) {
@@ -638,7 +681,7 @@ impl BindgenContext {
         );
 
         self.items
-            .get_mut(&self.current_module)
+            .get_mut(&self.current_module.into())
             .expect("Should always have an item for self.current_module")
             .as_module_mut()
             .expect("self.current_module should always be a module")
@@ -966,7 +1009,7 @@ impl BindgenContext {
                 let immut_self = &*self;
                 old_parent
                     .ancestors(immut_self)
-                    .chain(Some(immut_self.root_module))
+                    .chain(Some(immut_self.root_module.into()))
                     .find(|id| {
                         let item = immut_self.resolve_item(*id);
                         item.as_module().map_or(false, |m| {
@@ -984,7 +1027,7 @@ impl BindgenContext {
                     immut_self.resolve_item(*id).is_module()
                 })
             };
-            let new_module = new_module.unwrap_or(self.root_module);
+            let new_module = new_module.unwrap_or(self.root_module.into());
 
             if new_module == old_module {
                 // Already in the correct module.
@@ -1091,7 +1134,7 @@ impl BindgenContext {
             assert!(self.current_module == self.root_module);
 
             for (&id, _item) in self.items() {
-                if id == self.root_module {
+                if id == self.root_module.into() {
                     continue;
                 }
 
@@ -1102,7 +1145,7 @@ impl BindgenContext {
                             .through_type_aliases()
                             .resolve(self)
                             .id();
-                        id.ancestors(self).chain(Some(self.root_module)).any(
+                        id.ancestors(self).chain(Some(self.root_module.into())).any(
                             |ancestor| {
                                 debug!(
                                     "Checking if {:?} is a child of {:?}",
@@ -1271,7 +1314,7 @@ impl BindgenContext {
     }
 
     /// Get the root module.
-    pub fn root_module(&self) -> ItemId {
+    pub fn root_module(&self) -> ModuleId {
         self.root_module
     }
 
@@ -1309,7 +1352,7 @@ impl BindgenContext {
     }
 
     /// Get the current module.
-    pub fn current_module(&self) -> ItemId {
+    pub fn current_module(&self) -> ModuleId {
         self.current_module
     }
 
@@ -1561,7 +1604,7 @@ impl BindgenContext {
                             sub_id,
                             None,
                             None,
-                            self.current_module,
+                            self.current_module.into(),
                             ItemKind::Type(sub_ty),
                         );
 
@@ -1625,7 +1668,7 @@ impl BindgenContext {
             with_id,
             None,
             None,
-            self.current_module,
+            self.current_module.into(),
             ItemKind::Type(ty),
         );
 
@@ -1745,7 +1788,7 @@ impl BindgenContext {
             with_id,
             None,
             None,
-            parent_id.unwrap_or(self.current_module),
+            parent_id.unwrap_or(self.current_module.into()),
             ItemKind::Type(ty),
         );
         self.add_builtin_item(item);
@@ -1809,7 +1852,7 @@ impl BindgenContext {
         let ty = Type::new(Some(spelling), layout, type_kind, is_const);
         let id = self.next_item_id();
         let item =
-            Item::new(id, None, None, self.root_module, ItemKind::Type(ty));
+            Item::new(id, None, None, self.root_module.into(), ItemKind::Type(ty));
         self.add_builtin_item(item);
         Some(id.as_type_id_unchecked())
     }
@@ -1970,7 +2013,7 @@ impl BindgenContext {
 
     /// Given a CXCursor_Namespace cursor, return the item id of the
     /// corresponding module, or create one on the fly.
-    pub fn module(&mut self, cursor: clang::Cursor) -> ItemId {
+    pub fn module(&mut self, cursor: clang::Cursor) -> ModuleId {
         use clang_sys::*;
         assert_eq!(cursor.kind(), CXCursor_Namespace, "Be a nice person");
         let cursor = cursor.canonical();
@@ -1986,11 +2029,12 @@ impl BindgenContext {
             module_id,
             None,
             None,
-            self.current_module,
+            self.current_module.into(),
             ItemKind::Module(module),
         );
 
-        self.modules.insert(cursor, module.id());
+        let module_id = module.id().as_module_id_unchecked();
+        self.modules.insert(cursor, module_id);
 
         self.add_item(module, None, None);
 
@@ -1999,7 +2043,7 @@ impl BindgenContext {
 
     /// Start traversing the module with the given `module_id`, invoke the
     /// callback `cb`, and then return to traversing the original module.
-    pub fn with_module<F>(&mut self, module_id: ItemId, cb: F)
+    pub fn with_module<F>(&mut self, module_id: ModuleId, cb: F)
     where
         F: FnOnce(&mut Self),
     {

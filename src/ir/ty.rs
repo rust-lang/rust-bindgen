@@ -702,16 +702,16 @@ impl Type {
             TypeKind::Comp(ref ci) => ci.is_unsized(ctx, id),
             TypeKind::Opaque => self.layout.map_or(true, |l| l.size == 0),
             TypeKind::Array(inner, size) => {
-                size == 0 || ctx.resolve_type(inner).is_unsized(ctx, &inner.into())
+                size == 0 || ctx.resolve_type(inner).is_unsized(ctx, inner)
             }
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(inner) |
             TypeKind::TemplateAlias(inner, _) => {
-                ctx.resolve_type(inner).is_unsized(ctx, &inner.into())
+                ctx.resolve_type(inner).is_unsized(ctx, inner)
             }
             TypeKind::TemplateInstantiation(ref inst) => {
                 let definition = inst.template_definition();
-                ctx.resolve_type(definition).is_unsized(ctx, &definition.into())
+                ctx.resolve_type(definition).is_unsized(ctx, definition)
             }
             TypeKind::TypeParam |
             TypeKind::Int(..) |

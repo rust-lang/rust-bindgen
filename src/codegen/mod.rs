@@ -379,7 +379,7 @@ impl CodeGenerator for Module {
                 }
             }
 
-            if item.id() == ctx.root_module() {
+            if item.id() == ctx.root_module().into() {
                 if result.saw_bindgen_union {
                     utils::prepend_union_types(ctx, &mut *result);
                 }
