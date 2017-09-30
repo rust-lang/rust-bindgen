@@ -1425,13 +1425,13 @@ impl BindgenContext {
     fn instantiate_template(
         &mut self,
         with_id: ItemId,
-        template: ItemId,
+        template: TypeId,
         ty: &clang::Type,
         location: clang::Cursor,
     ) -> Option<ItemId> {
         use clang_sys;
 
-        let num_expected_args = match self.resolve_type(template.as_type_id_unchecked())
+        let num_expected_args = match self.resolve_type(template)
             .num_self_template_params(self) {
             Some(n) => n,
             None => {
@@ -1485,7 +1485,7 @@ impl BindgenContext {
                     let ty = Item::from_ty_or_ref(
                         child.cur_type(),
                         *child,
-                        Some(template),
+                        Some(template.into()),
                         self,
                     );
                     args.push(ty);
@@ -1507,7 +1507,7 @@ impl BindgenContext {
                         let ty = Item::from_ty_or_ref(
                             child.cur_type(),
                             *child,
-                            Some(template),
+                            Some(template.into()),
                             self,
                         );
                         args.push(ty);
@@ -1601,7 +1601,7 @@ impl BindgenContext {
 
         args.reverse();
         let type_kind = TypeKind::TemplateInstantiation(
-            TemplateInstantiation::new(template.as_type_id_unchecked(), args),
+            TemplateInstantiation::new(template, args),
         );
         let name = ty.spelling();
         let name = if name.is_empty() { None } else { Some(name) };
@@ -1699,7 +1699,7 @@ impl BindgenContext {
                         return None;
                     }
 
-                    return self.instantiate_template(with_id, id, ty, location)
+                    return self.instantiate_template(with_id, id.as_type_id_unchecked(), ty, location)
                         .or_else(|| Some(id));
                 }
 
