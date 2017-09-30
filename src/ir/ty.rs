@@ -1280,7 +1280,7 @@ impl Trace for Type {
             TypeKind::Function(ref sig) => sig.trace(context, tracer, &()),
             TypeKind::Enum(ref en) => {
                 if let Some(repr) = en.repr() {
-                    tracer.visit(repr);
+                    tracer.visit(repr.into());
                 }
             }
             TypeKind::UnresolvedTypeRef(_, _, Some(id)) => {

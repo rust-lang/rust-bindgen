@@ -2318,7 +2318,7 @@ impl CodeGenerator for Enum {
         let enum_ty = item.expect_type();
         let layout = enum_ty.layout(ctx);
 
-        let repr = self.repr().map(|repr| ctx.resolve_type(repr.as_type_id_unchecked()));
+        let repr = self.repr().map(|repr| ctx.resolve_type(repr));
         let repr = match repr {
             Some(repr) => {
                 match *repr.canonical_type(ctx).kind() {
