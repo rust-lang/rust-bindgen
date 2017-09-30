@@ -34,38 +34,105 @@ use std::mem;
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ItemId(usize);
 
-/// An identifier for an `Item` whose `ItemKind` is known to be
-/// `ItemKind::Type`.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct TypeId(ItemId);
+macro_rules! item_id_newtype {
+    (
+        $( #[$attr:meta] )*
+        pub struct $name:ident(ItemId)
+        where
+            $( #[$checked_attr:meta] )*
+            checked = $checked:ident with $check_method:ident,
+            $( #[$expected_attr:meta] )*
+            expected = $expected:ident,
+            $( #[$unchecked_attr:meta] )*
+            unchecked = $unchecked:ident;
+    ) => {
+        $( #[$attr] )*
+        #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+        pub struct $name(ItemId);
 
-/// An identifier for an `Item` whose `ItemKind` is known to be
-/// `ItemKind::Module`.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct ModuleId(ItemId);
+        impl $name {
+            /// Create an `ItemResolver` from this id.
+            pub fn into_resolver(self) -> ItemResolver {
+                let id: ItemId = self.into();
+                id.into()
+            }
+        }
 
-impl From<TypeId> for ItemId {
-    fn from(tid: TypeId) -> ItemId {
-        tid.0
+        impl From<$name> for ItemId {
+            fn from(id: $name) -> ItemId {
+                id.0
+            }
+        }
+
+        impl<'a> From<&'a $name> for ItemId {
+            fn from(id: &'a $name) -> ItemId {
+                id.0
+            }
+        }
+
+        impl ItemId {
+            $( #[$checked_attr] )*
+            pub fn $checked(&self, ctx: &BindgenContext) -> Option<$name> {
+                if ctx.resolve_item(*self).kind().$check_method() {
+                    Some($name(*self))
+                } else {
+                    None
+                }
+            }
+
+            $( #[$expected_attr] )*
+            pub fn $expected(&self, ctx: &BindgenContext) -> $name {
+                self.$checked(ctx)
+                    .expect(concat!(
+                        stringify!($expected),
+                        " called with ItemId that points to the wrong ItemKind"
+                    ))
+            }
+
+            $( #[$unchecked_attr] )*
+            pub fn $unchecked(&self) -> $name {
+                $name(*self)
+            }
+        }
     }
 }
 
-impl<'a> From<&'a TypeId> for ItemId {
-    fn from(tid: &'a TypeId) -> ItemId {
-        tid.0
-    }
+item_id_newtype! {
+    /// An identifier for an `Item` whose `ItemKind` is known to be
+    /// `ItemKind::Type`.
+    pub struct TypeId(ItemId)
+    where
+        /// Convert this `ItemId` into a `TypeId` if its associated item is a type,
+        /// otherwise return `None`.
+        checked = as_type_id with is_type,
+
+        /// Convert this `ItemId` into a `TypeId`.
+        ///
+        /// If this `ItemId` does not point to a type, then panic.
+        expected = expect_type_id,
+
+        /// Convert this `ItemId` into a `TypeId` without actually checking whether
+        /// this id actually points to a `Type`.
+        unchecked = as_type_id_unchecked;
 }
 
-impl From<ModuleId> for ItemId {
-    fn from(mid: ModuleId) -> ItemId {
-        mid.0
-    }
-}
+item_id_newtype! {
+    /// An identifier for an `Item` whose `ItemKind` is known to be
+    /// `ItemKind::Module`.
+    pub struct ModuleId(ItemId)
+    where
+        /// Convert this `ItemId` into a `ModuleId` if its associated item is a
+        /// module, otherwise return `None`.
+        checked = as_module_id with is_module,
 
-impl<'a> From<&'a ModuleId> for ItemId {
-    fn from(mid: &'a ModuleId) -> ItemId {
-        mid.0
-    }
+        /// Convert this `ItemId` into a `ModuleId`.
+        ///
+        /// If this `ItemId` does not point to a module, then panic.
+        expected = expect_module_id,
+
+        /// Convert this `ItemId` into a `ModuleId` without actually checking
+        /// whether this id actually points to a `Module`.
+        unchecked = as_module_id_unchecked;
 }
 
 impl From<ItemId> for usize {
@@ -78,54 +145,6 @@ impl ItemId {
     /// Get a numeric representation of this id.
     pub fn as_usize(&self) -> usize {
         (*self).into()
-    }
-
-    /// Convert this `ItemId` into a `TypeId` if its associated item is a type,
-    /// otherwise return `None`.
-    pub fn as_type_id(&self, ctx: &BindgenContext) -> Option<TypeId> {
-        if ctx.resolve_item(*self).kind().is_type() {
-            Some(TypeId(*self))
-        } else {
-            None
-        }
-    }
-
-    /// Convert this `ItemId` into a `TypeId`.
-    ///
-    /// If this `ItemId` does not point to a type, then panic.
-    pub fn expect_type_id(&self, ctx: &BindgenContext) -> TypeId {
-        self.as_type_id(ctx)
-            .expect("expect_type_id called with ItemId that doesn't point to a type")
-    }
-
-    /// Convert this `ItemId` into a `TypeId` without actually checking whether
-    /// this id actually points to a `Type`.
-    pub fn as_type_id_unchecked(&self) -> TypeId {
-        TypeId(*self)
-    }
-
-    /// Convert this `ItemId` into a `ModuleId` if its associated item is a module,
-    /// otherwise return `None`.
-    pub fn as_module_id(&self, ctx: &BindgenContext) -> Option<ModuleId> {
-        if ctx.resolve_item(*self).kind().is_module() {
-            Some(ModuleId(*self))
-        } else {
-            None
-        }
-    }
-
-    /// Convert this `ItemId` into a `ModuleId`.
-    ///
-    /// If this `ItemId` does not point to a module, then panic.
-    pub fn expect_module_id(&self, ctx: &BindgenContext) -> ModuleId {
-        self.as_module_id(ctx)
-            .expect("expect_module_id called with ItemId that doesn't point to a module")
-    }
-
-    /// Convert this `ItemId` into a `ModuleId` without actually checking whether
-    /// this id actually points to a `Module`.
-    pub fn as_module_id_unchecked(&self) -> ModuleId {
-        ModuleId(*self)
     }
 }
 
@@ -2372,13 +2391,6 @@ impl ItemId {
     /// Create an `ItemResolver` from this item id.
     pub fn into_resolver(self) -> ItemResolver {
         self.into()
-    }
-}
-
-impl TypeId {
-    pub fn into_resolver(self) -> ItemResolver {
-        let id: ItemId = self.into();
-        id.into()
     }
 }
 
