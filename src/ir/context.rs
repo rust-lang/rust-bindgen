@@ -926,19 +926,19 @@ impl BindgenContext {
                     // We set this just after parsing the annotation. It's
                     // very unlikely, but this can happen.
                     if self.items.get(replacement).is_some() {
-                        replacements.push((*id, *replacement));
+                        replacements.push((id.expect_type_id(self), replacement.expect_type_id(self)));
                     }
                 }
             }
         }
 
-        for (id, replacement) in replacements {
-            debug!("Replacing {:?} with {:?}", id, replacement);
+        for (id, replacement_id) in replacements {
+            debug!("Replacing {:?} with {:?}", id, replacement_id);
 
             let new_parent = {
-                let item = self.items.get_mut(&id).unwrap();
+                let item = self.items.get_mut(&id.into()).unwrap();
                 *item.kind_mut().as_type_mut().unwrap().kind_mut() =
-                    TypeKind::ResolvedTypeRef(replacement.as_type_id_unchecked());
+                    TypeKind::ResolvedTypeRef(replacement_id);
                 item.parent_id()
             };
 
@@ -947,7 +947,7 @@ impl BindgenContext {
             //
             // First, we'll make sure that its parent id is correct.
 
-            let old_parent = self.resolve_item(replacement).parent_id();
+            let old_parent = self.resolve_item(replacement_id).parent_id();
             if new_parent == old_parent {
                 // Same parent and therefore also same containing
                 // module. Nothing to do here.
@@ -955,7 +955,7 @@ impl BindgenContext {
             }
 
             self.items
-                .get_mut(&replacement)
+                .get_mut(&replacement_id.into())
                 .unwrap()
                 .set_parent_for_replacement(new_parent);
 
@@ -970,7 +970,7 @@ impl BindgenContext {
                     .find(|id| {
                         let item = immut_self.resolve_item(*id);
                         item.as_module().map_or(false, |m| {
-                            m.children().contains(&replacement)
+                            m.children().contains(&replacement_id.into())
                         })
                     })
             };
@@ -997,7 +997,7 @@ impl BindgenContext {
                 .as_module_mut()
                 .unwrap()
                 .children_mut()
-                .remove(&replacement);
+                .remove(&replacement_id.into());
 
             self.items
                 .get_mut(&new_module)
@@ -1005,7 +1005,7 @@ impl BindgenContext {
                 .as_module_mut()
                 .unwrap()
                 .children_mut()
-                .insert(replacement);
+                .insert(replacement_id.into());
         }
     }
 
