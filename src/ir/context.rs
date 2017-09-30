@@ -73,6 +73,14 @@ impl ItemId {
         }
     }
 
+    /// Convert this `ItemId` into a `TypeId`.
+    ///
+    /// If this `ItemId` does not point to a type, then panic.
+    pub fn expect_type_id(&self, ctx: &BindgenContext) -> TypeId {
+        self.as_type_id(ctx)
+            .expect("expect_type_id called with ItemId that doesn't point to a type")
+    }
+
     /// Convert this `ItemId` into a `TypeId` without actually checking whether
     /// this id actually points to a `Type`.
     pub fn as_type_id_unchecked(&self) -> TypeId {

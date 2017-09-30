@@ -850,7 +850,7 @@ pub struct CompInfo {
     /// }
     ///
     /// static Foo::Bar const = {3};
-    inner_types: Vec<ItemId>,
+    inner_types: Vec<TypeId>,
 
     /// Set of static constants declared inside this class.
     inner_vars: Vec<ItemId>,
@@ -1155,6 +1155,8 @@ impl CompInfo {
                         .expect("Inner ClassDecl");
                     assert_eq!(ctx.resolve_item(inner).parent_id(), potential_id);
 
+                    let inner = inner.expect_type_id(ctx);
+
                     ci.inner_types.push(inner);
 
                     // A declaration of an union or a struct without name could
@@ -1163,8 +1165,7 @@ impl CompInfo {
                        cur.kind() != CXCursor_EnumDecl {
                         let ty = cur.cur_type();
                         let offset = cur.offset_of_field().ok();
-                        maybe_anonymous_struct_field =
-                            Some((inner.as_type_id_unchecked(), ty, offset));
+                        maybe_anonymous_struct_field = Some((inner, ty, offset));
                     }
                 }
                 CXCursor_PackedAttr => {
@@ -1328,7 +1329,7 @@ impl CompInfo {
 
     /// Get the set of types that were declared within this compound type
     /// (e.g. nested class definitions).
-    pub fn inner_types(&self) -> &[ItemId] {
+    pub fn inner_types(&self) -> &[TypeId] {
         &self.inner_types
     }
 
@@ -1486,8 +1487,8 @@ impl Trace for CompInfo {
             tracer.visit_kind(p.into(), EdgeKind::TemplateParameterDefinition);
         }
 
-        for &ty in self.inner_types() {
-            tracer.visit_kind(ty, EdgeKind::InnerType);
+        for ty in self.inner_types() {
+            tracer.visit_kind(ty.into(), EdgeKind::InnerType);
         }
 
         for &var in self.inner_vars() {
