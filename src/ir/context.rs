@@ -135,6 +135,25 @@ item_id_newtype! {
         unchecked = as_module_id_unchecked;
 }
 
+item_id_newtype! {
+    /// An identifier for an `Item` whose `ItemKind` is known to be
+    /// `ItemKind::Var`.
+    pub struct VarId(ItemId)
+    where
+        /// Convert this `ItemId` into a `VarId` if its associated item is a var,
+        /// otherwise return `None`.
+        checked = as_var_id with is_var,
+
+        /// Convert this `ItemId` into a `VarId`.
+        ///
+        /// If this `ItemId` does not point to a var, then panic.
+        expected = expect_var_id,
+
+        /// Convert this `ItemId` into a `VarId` without actually checking whether
+        /// this id actually points to a `Var`.
+        unchecked = as_var_id_unchecked;
+}
+
 impl From<ItemId> for usize {
     fn from(id: ItemId) -> usize {
         id.0
