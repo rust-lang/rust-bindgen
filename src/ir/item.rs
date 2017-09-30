@@ -4,7 +4,7 @@ use super::analysis::HasVtable;
 use super::annotations::Annotations;
 use super::comment;
 use super::comp::MethodKind;
-use super::context::{BindgenContext, ItemId, PartialType};
+use super::context::{BindgenContext, ItemId, PartialType, TypeId};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
                     CanDeriveHash, CanDerivePartialOrd, CanDeriveOrd,
                     CanDerivePartialEq, CanDeriveEq};
@@ -165,7 +165,7 @@ where
         &self,
         ctx: &BindgenContext,
         _: &(),
-    ) -> Option<ItemId> {
+    ) -> Option<TypeId> {
         ctx.resolve_item((*self).into()).as_template_param(ctx, &())
     }
 }
@@ -177,7 +177,7 @@ impl AsTemplateParam for Item {
         &self,
         ctx: &BindgenContext,
         _: &(),
-    ) -> Option<ItemId> {
+    ) -> Option<TypeId> {
         self.kind.as_template_param(ctx, self)
     }
 }
@@ -189,7 +189,7 @@ impl AsTemplateParam for ItemKind {
         &self,
         ctx: &BindgenContext,
         item: &Item,
-    ) -> Option<ItemId> {
+    ) -> Option<TypeId> {
         match *self {
             ItemKind::Type(ref ty) => ty.as_template_param(ctx, item),
             ItemKind::Module(..) |
@@ -299,7 +299,7 @@ impl Trace for Item {
             ItemKind::Function(ref fun) => {
                 // Just the same way, it has not real meaning for a function to
                 // be opaque, so we trace across it.
-                tracer.visit(fun.signature());
+                tracer.visit(fun.signature().into());
             }
             ItemKind::Var(ref var) => {
                 tracer.visit_kind(var.ty().into(), EdgeKind::VarType);
@@ -462,12 +462,12 @@ impl Item {
         with_id: ItemId,
         ty: &clang::Type,
         ctx: &mut BindgenContext,
-    ) -> ItemId {
+    ) -> TypeId {
         let ty = Opaque::from_clang_ty(ty);
         let kind = ItemKind::Type(ty);
         let parent = ctx.root_module();
         ctx.add_item(Item::new(with_id, None, None, parent, kind), None, None);
-        with_id
+        with_id.as_type_id_unchecked()
     }
 
     /// Get this `Item`'s identifier.
@@ -1086,7 +1086,7 @@ where
     fn self_template_params(
         &self,
         ctx: &BindgenContext,
-    ) -> Option<Vec<ItemId>> {
+    ) -> Option<Vec<TypeId>> {
         ctx.resolve_item_fallible(*self).and_then(|item| {
             item.self_template_params(ctx)
         })
@@ -1097,7 +1097,7 @@ impl TemplateParameters for Item {
     fn self_template_params(
         &self,
         ctx: &BindgenContext,
-    ) -> Option<Vec<ItemId>> {
+    ) -> Option<Vec<TypeId>> {
         self.kind.self_template_params(ctx)
     }
 }
@@ -1106,7 +1106,7 @@ impl TemplateParameters for ItemKind {
     fn self_template_params(
         &self,
         ctx: &BindgenContext,
-    ) -> Option<Vec<ItemId>> {
+    ) -> Option<Vec<TypeId>> {
         match *self {
             ItemKind::Type(ref ty) => ty.self_template_params(ctx),
             // If we start emitting bindings to explicitly instantiated
@@ -1126,7 +1126,7 @@ fn visit_child(
     ty: &clang::Type,
     parent_id: Option<ItemId>,
     ctx: &mut BindgenContext,
-    result: &mut Result<ItemId, ParseError>,
+    result: &mut Result<TypeId, ParseError>,
 ) -> clang_sys::CXChildVisitResult {
     use clang_sys::*;
     if result.is_ok() {
@@ -1150,7 +1150,7 @@ impl ClangItemParser for Item {
         kind: TypeKind,
         is_const: bool,
         ctx: &mut BindgenContext,
-    ) -> ItemId {
+    ) -> TypeId {
         // Feel free to add more here, I'm just lazy.
         match kind {
             TypeKind::Void |
@@ -1168,7 +1168,7 @@ impl ClangItemParser for Item {
             None,
             None,
         );
-        id
+        id.as_type_id_unchecked()
     }
 
 
@@ -1242,7 +1242,7 @@ impl ClangItemParser for Item {
                             cursor,
                             parent_id,
                             ctx,
-                        ));
+                        ).into());
                     }
                     ctx.known_semantic_parent(definition)
                         .or(parent_id)
@@ -1257,7 +1257,7 @@ impl ClangItemParser for Item {
                 Some(relevant_parent_id),
                 ctx,
             ) {
-                Ok(ty) => return Ok(ty),
+                Ok(ty) => return Ok(ty.into()),
                 Err(ParseError::Recurse) => return Err(ParseError::Recurse),
                 Err(ParseError::Continue) => {}
             }
@@ -1304,7 +1304,7 @@ impl ClangItemParser for Item {
         location: clang::Cursor,
         parent_id: Option<ItemId>,
         ctx: &mut BindgenContext,
-    ) -> ItemId {
+    ) -> TypeId {
         let id = ctx.next_item_id();
         Self::from_ty_or_ref_with_id(id, ty, location, parent_id, ctx)
     }
@@ -1325,7 +1325,7 @@ impl ClangItemParser for Item {
         location: clang::Cursor,
         parent_id: Option<ItemId>,
         ctx: &mut BindgenContext,
-    ) -> ItemId {
+    ) -> TypeId {
         debug!(
             "from_ty_or_ref_with_id: {:?} {:?}, {:?}, {:?}",
             potential_id,
@@ -1374,7 +1374,7 @@ impl ClangItemParser for Item {
             Some(clang::Cursor::null()),
             None,
         );
-        potential_id
+        potential_id.as_type_id_unchecked()
     }
 
     fn from_ty(
@@ -1382,7 +1382,7 @@ impl ClangItemParser for Item {
         location: clang::Cursor,
         parent_id: Option<ItemId>,
         ctx: &mut BindgenContext,
-    ) -> Result<ItemId, ParseError> {
+    ) -> Result<TypeId, ParseError> {
         let id = ctx.next_item_id();
         Item::from_ty_with_id(id, ty, location, parent_id, ctx)
     }
@@ -1401,7 +1401,7 @@ impl ClangItemParser for Item {
         location: clang::Cursor,
         parent_id: Option<ItemId>,
         ctx: &mut BindgenContext,
-    ) -> Result<ItemId, ParseError> {
+    ) -> Result<TypeId, ParseError> {
         use clang_sys::*;
 
         debug!(
@@ -1485,7 +1485,7 @@ impl ClangItemParser for Item {
         let result = Type::from_clang_ty(id, ty, location, parent_id, ctx);
         let relevant_parent_id = parent_id.unwrap_or(current_module);
         let ret = match result {
-            Ok(ParseResult::AlreadyResolved(ty)) => Ok(ty),
+            Ok(ParseResult::AlreadyResolved(ty)) => Ok(ty.as_type_id_unchecked()),
             Ok(ParseResult::New(item, declaration)) => {
                 ctx.add_item(
                     Item::new(
@@ -1498,7 +1498,7 @@ impl ClangItemParser for Item {
                     declaration,
                     Some(location),
                 );
-                Ok(id)
+                Ok(id.as_type_id_unchecked())
             }
             Err(ParseError::Continue) => Err(ParseError::Continue),
             Err(ParseError::Recurse) => {
@@ -1561,7 +1561,7 @@ impl ClangItemParser for Item {
         with_id: Option<ItemId>,
         location: clang::Cursor,
         ctx: &mut BindgenContext,
-    ) -> Option<ItemId> {
+    ) -> Option<TypeId> {
         let ty = location.cur_type();
 
         debug!(
@@ -1724,7 +1724,7 @@ impl ClangItemParser for Item {
             ItemKind::Type(Type::named(name)),
         );
         ctx.add_type_param(item, definition);
-        Some(id)
+        Some(id.as_type_id_unchecked())
     }
 }
 

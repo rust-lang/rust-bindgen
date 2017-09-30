@@ -383,7 +383,7 @@ impl AsTemplateParam for Type {
         &self,
         ctx: &BindgenContext,
         item: &Item,
-    ) -> Option<ItemId> {
+    ) -> Option<TypeId> {
         self.kind.as_template_param(ctx, item)
     }
 }
@@ -395,9 +395,9 @@ impl AsTemplateParam for TypeKind {
         &self,
         ctx: &BindgenContext,
         item: &Item,
-    ) -> Option<ItemId> {
+    ) -> Option<TypeId> {
         match *self {
-            TypeKind::TypeParam => Some(item.id()),
+            TypeKind::TypeParam => Some(item.id().as_type_id_unchecked()),
             TypeKind::ResolvedTypeRef(id) => id.as_template_param(ctx, &()),
             _ => None,
         }
@@ -534,7 +534,7 @@ impl TemplateParameters for Type {
     fn self_template_params(
         &self,
         ctx: &BindgenContext,
-    ) -> Option<Vec<ItemId>> {
+    ) -> Option<Vec<TypeId>> {
         self.kind.self_template_params(ctx)
     }
 }
@@ -543,7 +543,7 @@ impl TemplateParameters for TypeKind {
     fn self_template_params(
         &self,
         ctx: &BindgenContext,
-    ) -> Option<Vec<ItemId>> {
+    ) -> Option<Vec<TypeId>> {
         match *self {
             TypeKind::ResolvedTypeRef(id) => {
                 ctx.resolve_type(id).self_template_params(ctx)
@@ -630,7 +630,7 @@ pub enum TypeKind {
 
     /// A templated alias, pointing to an inner type, just as `Alias`, but with
     /// template parameters.
-    TemplateAlias(TypeId, Vec<ItemId>),
+    TemplateAlias(TypeId, Vec<TypeId>),
 
     /// An array of a type and a length.
     Array(TypeId, usize),
@@ -756,7 +756,7 @@ impl Type {
             );
             if let Some(ty) = already_resolved {
                 debug!("{:?} already resolved: {:?}", ty, location);
-                return Ok(ParseResult::AlreadyResolved(ty));
+                return Ok(ParseResult::AlreadyResolved(ty.into()));
             }
         }
 
@@ -1001,7 +1001,7 @@ impl Type {
                                     }
                                 };
 
-                                TypeKind::TemplateAlias(inner_type.as_type_id_unchecked(), args)
+                                TypeKind::TemplateAlias(inner_type, args)
                             }
                             CXCursor_TemplateRef => {
                                 let referenced = location.referenced().unwrap();
@@ -1036,14 +1036,14 @@ impl Type {
                                     referenced_ty
                                 );
 
-                                let item = Item::from_ty_or_ref_with_id(
+                                let id = Item::from_ty_or_ref_with_id(
                                     potential_id,
                                     referenced_ty,
                                     declaration,
                                     parent_id,
                                     ctx,
                                 );
-                                return Ok(ParseResult::AlreadyResolved(item));
+                                return Ok(ParseResult::AlreadyResolved(id.into()));
                             }
                             CXCursor_NamespaceRef => {
                                 return Err(ParseError::Continue);
@@ -1117,7 +1117,7 @@ impl Type {
                     }
                     let inner =
                         Item::from_ty_or_ref(pointee, location, None, ctx);
-                    TypeKind::Pointer(inner.as_type_id_unchecked())
+                    TypeKind::Pointer(inner)
                 }
                 CXType_BlockPointer => TypeKind::BlockPointer,
                 // XXX: RValueReference is most likely wrong, but I don't think we
@@ -1130,7 +1130,7 @@ impl Type {
                         None,
                         ctx,
                     );
-                    TypeKind::Reference(inner.as_type_id_unchecked())
+                    TypeKind::Reference(inner)
                 }
                 // XXX DependentSizedArray is wrong
                 CXType_VariableArray |
@@ -1141,7 +1141,7 @@ impl Type {
                         None,
                         ctx,
                     ).expect("Not able to resolve array element?");
-                    TypeKind::Pointer(inner.as_type_id_unchecked())
+                    TypeKind::Pointer(inner)
                 }
                 CXType_IncompleteArray => {
                     let inner = Item::from_ty(
@@ -1150,7 +1150,7 @@ impl Type {
                         None,
                         ctx,
                     ).expect("Not able to resolve array element?");
-                    TypeKind::Array(inner.as_type_id_unchecked(), 0)
+                    TypeKind::Array(inner, 0)
                 }
                 CXType_FunctionNoProto |
                 CXType_FunctionProto => {
@@ -1162,7 +1162,7 @@ impl Type {
                     let inner = cursor.typedef_type().expect("Not valid Type?");
                     let inner =
                         Item::from_ty_or_ref(inner, location, None, ctx);
-                    TypeKind::Alias(inner.as_type_id_unchecked())
+                    TypeKind::Alias(inner)
                 }
                 CXType_Enum => {
                     let enum_ = Enum::from_ty(ty, ctx).expect("Not an enum?");
@@ -1208,7 +1208,7 @@ impl Type {
                         None,
                         ctx,
                     ).expect("Not able to resolve array element?");
-                    TypeKind::Array(inner.as_type_id_unchecked(), ty.num_elements().unwrap())
+                    TypeKind::Array(inner, ty.num_elements().unwrap())
                 }
                 CXType_Elaborated => {
                     return Self::from_clang_ty(
@@ -1266,9 +1266,9 @@ impl Trace for Type {
             }
             TypeKind::TemplateAlias(inner, ref template_params) => {
                 tracer.visit_kind(inner.into(), EdgeKind::TypeReference);
-                for &item in template_params {
+                for param in template_params {
                     tracer.visit_kind(
-                        item,
+                        param.into(),
                         EdgeKind::TemplateParameterDefinition,
                     );
                 }

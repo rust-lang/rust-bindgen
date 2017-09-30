@@ -690,7 +690,7 @@ impl CodeGenerator for Type {
                     let params: Vec<_> = params.into_iter()
                         .filter_map(|p| p.as_template_param(ctx, &()))
                         .collect();
-                    if params.iter().any(|p| ctx.resolve_type(p.as_type_id_unchecked()).is_invalid_type_param()) {
+                    if params.iter().any(|p| ctx.resolve_type(*p).is_invalid_type_param()) {
                         warn!(
                             "Item contained invalid template \
                              parameter: {:?}",
@@ -1674,7 +1674,7 @@ impl CodeGenerator for CompInfo {
                 let mut param_names = vec![];
 
                 for (idx, ty) in params.iter().enumerate() {
-                    let param = ctx.resolve_type(ty.as_type_id_unchecked());
+                    let param = ctx.resolve_type(*ty);
                     let name = param.name().unwrap();
                     let ident = ctx.rust_ident(name);
                     param_names.push(ident.clone());

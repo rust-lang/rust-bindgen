@@ -185,11 +185,11 @@ pub struct BindgenContext {
 
     /// Clang USR to type map. This is needed to be able to associate types with
     /// item ids during parsing.
-    types: HashMap<TypeKey, ItemId>,
+    types: HashMap<TypeKey, TypeId>,
 
     /// Maps from a cursor to the item id of the named template type parameter
     /// for that cursor.
-    type_params: HashMap<clang::Cursor, ItemId>,
+    type_params: HashMap<clang::Cursor, TypeId>,
 
     /// A cursor to module map. Similar reason than above.
     modules: HashMap<Cursor, ItemId>,
@@ -597,7 +597,7 @@ impl BindgenContext {
                 TypeKey::Declaration(declaration)
             };
 
-            let old = self.types.insert(key, id);
+            let old = self.types.insert(key, id.as_type_id_unchecked());
             debug_assert_eq!(old, None);
         }
     }
@@ -664,7 +664,7 @@ impl BindgenContext {
             "should not have already associated an item with the given id"
         );
 
-        let old_named_ty = self.type_params.insert(definition, id);
+        let old_named_ty = self.type_params.insert(definition, id.as_type_id_unchecked());
         assert!(
             old_named_ty.is_none(),
             "should not have already associated a named type with this id"
@@ -673,7 +673,7 @@ impl BindgenContext {
 
     /// Get the named type defined at the given cursor location, if we've
     /// already added one.
-    pub fn get_type_param(&self, definition: &clang::Cursor) -> Option<ItemId> {
+    pub fn get_type_param(&self, definition: &clang::Cursor) -> Option<TypeId> {
         assert_eq!(
             definition.kind(),
             clang_sys::CXCursor_TemplateTypeParameter
@@ -821,7 +821,7 @@ impl BindgenContext {
 
                 let item = self.items.get_mut(&id).unwrap();
                 *item.kind_mut().as_type_mut().unwrap().kind_mut() =
-                    TypeKind::ResolvedTypeRef(resolved.as_type_id_unchecked());
+                    TypeKind::ResolvedTypeRef(resolved);
                 resolved
             };
 
@@ -1166,7 +1166,7 @@ impl BindgenContext {
                 used_params.entry(id).or_insert(
                     id.self_template_params(self).map_or(
                         Default::default(),
-                        |params| params.into_iter().collect(),
+                        |params| params.into_iter().map(|p| p.into()).collect(),
                     ),
                 );
             }
@@ -1191,7 +1191,7 @@ impl BindgenContext {
     pub fn uses_template_parameter(
         &self,
         item: ItemId,
-        template_param: ItemId,
+        template_param: TypeId,
     ) -> bool {
         assert!(
             self.in_codegen_phase(),
@@ -1340,7 +1340,7 @@ impl BindgenContext {
     fn get_declaration_info_for_template_instantiation(
         &self,
         instantiation: &Cursor,
-    ) -> Option<(Cursor, ItemId, usize)> {
+    ) -> Option<(Cursor, TypeId, usize)> {
         instantiation
             .cur_type()
             .canonical_declaration(Some(instantiation))
@@ -1428,7 +1428,7 @@ impl BindgenContext {
         template: TypeId,
         ty: &clang::Type,
         location: clang::Cursor,
-    ) -> Option<ItemId> {
+    ) -> Option<TypeId> {
         use clang_sys;
 
         let num_expected_args = match self.resolve_type(template)
@@ -1525,14 +1525,14 @@ impl BindgenContext {
                             return None;
                         }
 
-                        let mut sub_args: Vec<_> = args.drain(
-                            args_len - num_expected_template_args..,
-                        ).collect();
+                        let mut sub_args: Vec<_> = args
+                            .drain(args_len - num_expected_template_args..)
+                            .collect();
                         sub_args.reverse();
 
                         let sub_name = Some(template_decl_cursor.spelling());
                         let sub_inst = TemplateInstantiation::new(
-                            template_decl_id.as_type_id_unchecked(),
+                            template_decl_id,
                             sub_args,
                         );
                         let sub_kind =
@@ -1564,7 +1564,7 @@ impl BindgenContext {
                         self.add_item_to_module(&sub_item);
                         debug_assert!(sub_id == sub_item.id());
                         self.items.insert(sub_id, sub_item);
-                        args.push(sub_id);
+                        args.push(sub_id.as_type_id_unchecked());
                     }
                 }
                 _ => {
@@ -1624,7 +1624,7 @@ impl BindgenContext {
         self.add_item_to_module(&item);
         debug_assert!(with_id == item.id());
         self.items.insert(with_id, item);
-        Some(with_id)
+        Some(with_id.as_type_id_unchecked())
     }
 
     /// If we have already resolved the type for the given type declaration,
@@ -1632,7 +1632,7 @@ impl BindgenContext {
     pub fn get_resolved_type(
         &self,
         decl: &clang::CanonicalTypeDeclaration,
-    ) -> Option<ItemId> {
+    ) -> Option<TypeId> {
         self.types
             .get(&TypeKey::Declaration(*decl.cursor()))
             .or_else(|| {
@@ -1651,7 +1651,7 @@ impl BindgenContext {
         parent_id: Option<ItemId>,
         ty: &clang::Type,
         location: Option<clang::Cursor>,
-    ) -> Option<ItemId> {
+    ) -> Option<TypeId> {
         use clang_sys::{CXCursor_TypeAliasTemplateDecl, CXCursor_TypeRef};
         debug!(
             "builtin_or_resolved_ty: {:?}, {:?}, {:?}",
@@ -1699,7 +1699,7 @@ impl BindgenContext {
                         return None;
                     }
 
-                    return self.instantiate_template(with_id, id.as_type_id_unchecked(), ty, location)
+                    return self.instantiate_template(with_id, id, ty, location)
                         .or_else(|| Some(id));
                 }
 
@@ -1722,14 +1722,14 @@ impl BindgenContext {
     pub fn build_ty_wrapper(
         &mut self,
         with_id: ItemId,
-        wrapped_id: ItemId,
+        wrapped_id: TypeId,
         parent_id: Option<ItemId>,
         ty: &clang::Type,
-    ) -> ItemId {
+    ) -> TypeId {
         let spelling = ty.spelling();
         let is_const = ty.is_const();
         let layout = ty.fallible_layout().ok();
-        let type_kind = TypeKind::ResolvedTypeRef(wrapped_id.as_type_id_unchecked());
+        let type_kind = TypeKind::ResolvedTypeRef(wrapped_id);
         let ty = Type::new(Some(spelling), layout, type_kind, is_const);
         let item = Item::new(
             with_id,
@@ -1739,7 +1739,7 @@ impl BindgenContext {
             ItemKind::Type(ty),
         );
         self.add_builtin_item(item);
-        with_id
+        with_id.as_type_id_unchecked()
     }
 
     /// Returns the next item id to be used for an item.
@@ -1749,7 +1749,7 @@ impl BindgenContext {
         ret
     }
 
-    fn build_builtin_ty(&mut self, ty: &clang::Type) -> Option<ItemId> {
+    fn build_builtin_ty(&mut self, ty: &clang::Type) -> Option<TypeId> {
         use clang_sys::*;
         let type_kind = match ty.kind() {
             CXType_NullPtr => TypeKind::NullPtr,
@@ -1801,7 +1801,7 @@ impl BindgenContext {
         let item =
             Item::new(id, None, None, self.root_module, ItemKind::Type(ty));
         self.add_builtin_item(item);
-        Some(id)
+        Some(id.as_type_id_unchecked())
     }
 
     /// Get the current Clang translation unit that is being processed.
@@ -2390,13 +2390,13 @@ impl ItemResolver {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct PartialType {
     decl: Cursor,
-    id: ItemId,
+    id: TypeId,
 }
 
 impl PartialType {
     /// Construct a new `PartialType`.
     pub fn new<Id: Into<ItemId>>(decl: Cursor, id: Id) -> PartialType {
-        let id = id.into();
+        let id = id.into().as_type_id_unchecked();
         // assert!(decl == decl.canonical());
         PartialType {
             decl: decl,
@@ -2411,7 +2411,7 @@ impl PartialType {
 
     /// The item ID allocated for this type. This is *NOT* a key for an entry in
     /// the context's item set yet!
-    pub fn id(&self) -> ItemId {
+    pub fn id(&self) -> TypeId {
         self.id
     }
 }
@@ -2420,7 +2420,7 @@ impl TemplateParameters for PartialType {
     fn self_template_params(
         &self,
         _ctx: &BindgenContext,
-    ) -> Option<Vec<ItemId>> {
+    ) -> Option<Vec<TypeId>> {
         // Maybe at some point we will eagerly parse named types, but for now we
         // don't and this information is unavailable.
         None

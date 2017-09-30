@@ -144,7 +144,7 @@ impl<'ctx> MonotoneFramework for HasDestructorAnalysis<'ctx> {
                     self.have_destructor.contains(&inst.template_definition().into())
                     ||
                     inst.template_arguments().iter().any(|arg| {
-                        self.have_destructor.contains(arg)
+                        self.have_destructor.contains(&arg.into())
                     });
                 if definition_or_arg_destructor {
                     self.insert(id)

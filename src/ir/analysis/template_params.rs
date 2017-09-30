@@ -294,7 +294,7 @@ impl<'ctx> UsedTemplateParameters<'ctx> {
                 param
             );
 
-            if used_by_def.contains(param) {
+            if used_by_def.contains(&param.into()) {
                 trace!("        param is used by template definition");
 
                 let arg = arg.into_resolver()

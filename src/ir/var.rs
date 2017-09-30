@@ -179,7 +179,7 @@ impl ClangSubItemParser for Var {
                             true,
                             ctx,
                         );
-                        (TypeKind::Pointer(char_ty.as_type_id_unchecked()), VarType::String(val))
+                        (TypeKind::Pointer(char_ty), VarType::String(val))
                     }
                     EvalResult::Int(Wrapping(value)) => {
                         let kind = ctx.parse_callbacks()
@@ -203,7 +203,7 @@ impl ClangSubItemParser for Var {
                 let ty = Item::builtin_type(type_kind, true, ctx);
 
                 Ok(ParseResult::New(
-                    Var::new(name, None, ty.as_type_id_unchecked(), Some(val), true),
+                    Var::new(name, None, ty, Some(val), true),
                     Some(cursor),
                 ))
             }
@@ -236,7 +236,7 @@ impl ClangSubItemParser for Var {
                 // tests/headers/inner_const.hpp
                 //
                 // That's fine because in that case we know it's not a literal.
-                let canonical_ty = ctx.safe_resolve_type(ty.as_type_id_unchecked()).and_then(|t| {
+                let canonical_ty = ctx.safe_resolve_type(ty).and_then(|t| {
                     t.safe_canonical_type(ctx)
                 });
 
@@ -278,7 +278,7 @@ impl ClangSubItemParser for Var {
                 };
 
                 let mangling = cursor_mangling(ctx, &cursor);
-                let var = Var::new(name, mangling, ty.as_type_id_unchecked(), value, is_const);
+                let var = Var::new(name, mangling, ty, value, is_const);
 
                 Ok(ParseResult::New(var, Some(cursor)))
             }

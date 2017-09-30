@@ -334,7 +334,7 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
             TypeKind::TemplateInstantiation(ref template) => {
                 let args_cannot_derive =
                     template.template_arguments().iter().any(|arg| {
-                        self.cannot_derive_partialeq_or_partialord.contains(&arg)
+                        self.cannot_derive_partialeq_or_partialord.contains(&arg.into())
                     });
                 if args_cannot_derive {
                     trace!(

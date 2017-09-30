@@ -198,7 +198,7 @@ impl<'ctx> MonotoneFramework for HasFloat<'ctx> {
             TypeKind::TemplateInstantiation(ref template) => {
                 let args_have = template.template_arguments()
                     .iter()
-                    .any(|arg| self.has_float.contains(&arg));
+                    .any(|arg| self.has_float.contains(&arg.into()));
                 if args_have {
                     trace!("    template args have float, so \
                             insantiation also has float");

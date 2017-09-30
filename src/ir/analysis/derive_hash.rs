@@ -312,7 +312,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
             TypeKind::TemplateInstantiation(ref template) => {
                 let args_cannot_derive =
                     template.template_arguments().iter().any(|arg| {
-                        self.cannot_derive_hash.contains(&arg)
+                        self.cannot_derive_hash.contains(&arg.into())
                     });
                 if args_cannot_derive {
                     trace!(

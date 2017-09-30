@@ -1,7 +1,7 @@
 //! Intermediate representation for C/C++ functions and methods.
 
 use super::comp::MethodKind;
-use super::context::{BindgenContext, ItemId};
+use super::context::{BindgenContext, TypeId};
 use super::dot::DotAttributes;
 use super::item::Item;
 use super::traversal::{EdgeKind, Trace, Tracer};
@@ -62,7 +62,7 @@ pub struct Function {
     mangled_name: Option<String>,
 
     /// The id pointing to the current function signature.
-    signature: ItemId,
+    signature: TypeId,
 
     /// The doc comment on the function, if any.
     comment: Option<String>,
@@ -76,7 +76,7 @@ impl Function {
     pub fn new(
         name: String,
         mangled_name: Option<String>,
-        sig: ItemId,
+        sig: TypeId,
         comment: Option<String>,
         kind: FunctionKind,
     ) -> Self {
@@ -99,8 +99,8 @@ impl Function {
         self.mangled_name.as_ref().map(|n| &**n)
     }
 
-    /// Get this function's signature.
-    pub fn signature(&self) -> ItemId {
+    /// Get this function's signature type.
+    pub fn signature(&self) -> TypeId {
         self.signature
     }
 
@@ -180,11 +180,11 @@ impl quote::ToTokens for Abi {
 #[derive(Debug)]
 pub struct FunctionSig {
     /// The return type of the function.
-    return_type: ItemId,
+    return_type: TypeId,
 
     /// The type of the arguments, optionally with the name of the argument when
     /// declared.
-    argument_types: Vec<(Option<String>, ItemId)>,
+    argument_types: Vec<(Option<String>, TypeId)>,
 
     /// Whether this function is variadic.
     is_variadic: bool,
@@ -287,8 +287,8 @@ pub fn cursor_mangling(
 impl FunctionSig {
     /// Construct a new function signature.
     pub fn new(
-        return_type: ItemId,
-        arguments: Vec<(Option<String>, ItemId)>,
+        return_type: TypeId,
+        arguments: Vec<(Option<String>, TypeId)>,
         is_variadic: bool,
         abi: Abi,
     ) -> Self {
@@ -390,7 +390,7 @@ impl FunctionSig {
             } else if is_virtual {
                 let void = Item::builtin_type(TypeKind::Void, false, ctx);
                 let ptr =
-                    Item::builtin_type(TypeKind::Pointer(void.as_type_id_unchecked()), false, ctx);
+                    Item::builtin_type(TypeKind::Pointer(void), false, ctx);
                 args.insert(0, (Some("this".into()), ptr));
             }
         }
@@ -412,16 +412,16 @@ impl FunctionSig {
             warn!("Unknown calling convention: {:?}", call_conv);
         }
 
-        Ok(Self::new(ret, args, ty.is_variadic(), abi))
+        Ok(Self::new(ret.into(), args, ty.is_variadic(), abi))
     }
 
     /// Get this function signature's return type.
-    pub fn return_type(&self) -> ItemId {
+    pub fn return_type(&self) -> TypeId {
         self.return_type
     }
 
     /// Get this function signature's argument (name, type) pairs.
-    pub fn argument_types(&self) -> &[(Option<String>, ItemId)] {
+    pub fn argument_types(&self) -> &[(Option<String>, TypeId)] {
         &self.argument_types
     }
 
@@ -535,10 +535,10 @@ impl Trace for FunctionSig {
     where
         T: Tracer,
     {
-        tracer.visit_kind(self.return_type(), EdgeKind::FunctionReturn);
+        tracer.visit_kind(self.return_type().into(), EdgeKind::FunctionReturn);
 
         for &(_, ty) in self.argument_types() {
-            tracer.visit_kind(ty, EdgeKind::FunctionParameter);
+            tracer.visit_kind(ty.into(), EdgeKind::FunctionParameter);
         }
     }
 }

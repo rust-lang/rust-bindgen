@@ -825,7 +825,7 @@ pub struct CompInfo {
     /// concrete template arguments, and should always be a
     /// `Type(TypeKind::TypeParam(name))`. For concrete template arguments, see
     /// `TypeKind::TemplateInstantiation`.
-    template_params: Vec<ItemId>,
+    template_params: Vec<TypeId>,
 
     /// The method declarations inside this class, if in C++ mode.
     methods: Vec<Method>,
@@ -1105,7 +1105,7 @@ impl CompInfo {
                     let name = if name.is_empty() { None } else { Some(name) };
 
                     let field = RawField::new(name,
-                                              field_type.as_type_id_unchecked(),
+                                              field_type,
                                               comment,
                                               annotations,
                                               bit_width,
@@ -1193,7 +1193,7 @@ impl CompInfo {
                     let type_id =
                         Item::from_ty_or_ref(cur.cur_type(), cur, None, ctx);
                     ci.base_members.push(Base {
-                        ty: type_id.as_type_id_unchecked(),
+                        ty: type_id,
                         kind: kind,
                         field_name: field_name,
                     });
@@ -1465,7 +1465,7 @@ impl TemplateParameters for CompInfo {
     fn self_template_params(
         &self,
         _ctx: &BindgenContext,
-    ) -> Option<Vec<ItemId>> {
+    ) -> Option<Vec<TypeId>> {
         if self.template_params.is_empty() {
             None
         } else {
@@ -1483,7 +1483,7 @@ impl Trace for CompInfo {
     {
         let params = item.all_template_params(context).unwrap_or(vec![]);
         for p in params {
-            tracer.visit_kind(p, EdgeKind::TemplateParameterDefinition);
+            tracer.visit_kind(p.into(), EdgeKind::TemplateParameterDefinition);
         }
 
         for &ty in self.inner_types() {

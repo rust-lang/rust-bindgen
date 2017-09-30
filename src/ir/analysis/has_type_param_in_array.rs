@@ -207,7 +207,7 @@ impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
             TypeKind::TemplateInstantiation(ref template) => {
                 let args_have =
                     template.template_arguments().iter().any(|arg| {
-                        self.has_type_parameter_in_array.contains(&arg)
+                        self.has_type_parameter_in_array.contains(&arg.into())
                     });
                 if args_have {
                     trace!(
