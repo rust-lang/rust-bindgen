@@ -384,8 +384,12 @@ impl FunctionSig {
             if !is_static && !is_virtual {
                 let class = Item::parse(cursor.semantic_parent(), None, ctx)
                     .expect("Expected to parse the class");
+                // The `class` most likely is not finished parsing yet, so use
+                // the unchecked variant.
+                let class = class.as_type_id_unchecked();
+
                 let ptr =
-                    Item::builtin_type(TypeKind::Pointer(class.as_type_id_unchecked()), is_const, ctx);
+                    Item::builtin_type(TypeKind::Pointer(class), is_const, ctx);
                 args.insert(0, (Some("this".into()), ptr));
             } else if is_virtual {
                 let void = Item::builtin_type(TypeKind::Void, false, ctx);

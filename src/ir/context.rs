@@ -67,7 +67,7 @@ impl ItemId {
     /// otherwise return `None`.
     pub fn as_type_id(&self, ctx: &BindgenContext) -> Option<TypeId> {
         if ctx.resolve_item(*self).kind().is_type() {
-            Some(self.as_type_id_unchecked())
+            Some(TypeId(*self))
         } else {
             None
         }
@@ -1348,7 +1348,7 @@ impl BindgenContext {
     fn get_declaration_info_for_template_instantiation(
         &self,
         instantiation: &Cursor,
-    ) -> Option<(Cursor, TypeId, usize)> {
+    ) -> Option<(Cursor, ItemId, usize)> {
         instantiation
             .cur_type()
             .canonical_declaration(Some(instantiation))
@@ -1359,7 +1359,7 @@ impl BindgenContext {
                             |num_params| {
                                 (
                                     *canon_decl.cursor(),
-                                    template_decl_id,
+                                    template_decl_id.into(),
                                     num_params,
                                 )
                             },
@@ -1540,7 +1540,9 @@ impl BindgenContext {
 
                         let sub_name = Some(template_decl_cursor.spelling());
                         let sub_inst = TemplateInstantiation::new(
-                            template_decl_id,
+                            // This isn't guaranteed to be a type that we've
+                            // already finished parsing yet.
+                            template_decl_id.as_type_id_unchecked(),
                             sub_args,
                         );
                         let sub_kind =
@@ -2398,13 +2400,14 @@ impl ItemResolver {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct PartialType {
     decl: Cursor,
-    id: TypeId,
+    // Just an ItemId, and not a TypeId, because we haven't finished this type
+    // yet, so there's still time for things to go wrong.
+    id: ItemId,
 }
 
 impl PartialType {
     /// Construct a new `PartialType`.
-    pub fn new<Id: Into<ItemId>>(decl: Cursor, id: Id) -> PartialType {
-        let id = id.into().as_type_id_unchecked();
+    pub fn new(decl: Cursor, id: ItemId) -> PartialType {
         // assert!(decl == decl.canonical());
         PartialType {
             decl: decl,
@@ -2419,7 +2422,7 @@ impl PartialType {
 
     /// The item ID allocated for this type. This is *NOT* a key for an entry in
     /// the context's item set yet!
-    pub fn id(&self) -> TypeId {
+    pub fn id(&self) -> ItemId {
         self.id
     }
 }
