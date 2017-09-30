@@ -1543,7 +1543,7 @@ impl CodeGenerator for CompInfo {
                     continue;
                 }
 
-                let base_ty = ctx.resolve_type(base.ty.as_type_id_unchecked());
+                let base_ty = ctx.resolve_type(base.ty);
                 // NB: We won't include unsized types in our base chain because they
                 // would contribute to our size given the dummy field we insert for
                 // unsized types.

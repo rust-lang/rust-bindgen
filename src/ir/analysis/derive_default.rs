@@ -290,7 +290,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
 
                 let bases_cannot_derive =
                     info.base_members().iter().any(|base| {
-                        !self.ctx.whitelisted_items().contains(&base.ty) ||
+                        !self.ctx.whitelisted_items().contains(&base.ty.into()) ||
                             self.is_not_default(base.ty)
                     });
                 if bases_cannot_derive {

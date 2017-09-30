@@ -794,7 +794,7 @@ pub enum BaseKind {
 #[derive(Clone, Debug)]
 pub struct Base {
     /// The type of this base class.
-    pub ty: ItemId,
+    pub ty: TypeId,
     /// The kind of inheritance we're doing.
     pub kind: BaseKind,
     /// Name of the field in which this base should be stored.
@@ -914,7 +914,7 @@ impl CompInfo {
     pub fn is_unsized<Id: Into<ItemId>>(&self, ctx: &BindgenContext, id: Id) -> bool {
         !ctx.lookup_item_id_has_vtable(id.into()) && self.fields().is_empty() &&
             self.base_members.iter().all(|base| {
-                ctx.resolve_type(base.ty.as_type_id_unchecked()).canonical_type(ctx).is_unsized(
+                ctx.resolve_type(base.ty).canonical_type(ctx).is_unsized(
                     ctx,
                     base.ty,
                 )
@@ -1193,7 +1193,7 @@ impl CompInfo {
                     let type_id =
                         Item::from_ty_or_ref(cur.cur_type(), cur, None, ctx);
                     ci.base_members.push(Base {
-                        ty: type_id,
+                        ty: type_id.as_type_id_unchecked(),
                         kind: kind,
                         field_name: field_name,
                     });
@@ -1362,7 +1362,7 @@ impl CompInfo {
             // Unfortunately, given the way we implement --match-pat, and also
             // that you can inherit from templated types, we need to handle
             // other cases here too.
-            ctx.resolve_type(base.ty.as_type_id_unchecked())
+            ctx.resolve_type(base.ty)
                 .canonical_type(ctx)
                 .as_comp()
                 .map_or(false, |_| base.ty.has_vtable(ctx))
@@ -1513,7 +1513,7 @@ impl Trace for CompInfo {
         }
 
         for base in self.base_members() {
-            tracer.visit_kind(base.ty, EdgeKind::BaseMember);
+            tracer.visit_kind(base.ty.into(), EdgeKind::BaseMember);
         }
 
         self.fields.trace(context, tracer, &());

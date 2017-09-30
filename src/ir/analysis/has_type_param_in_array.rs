@@ -183,7 +183,7 @@ impl<'ctx> MonotoneFramework for HasTypeParameterInArray<'ctx> {
 
             TypeKind::Comp(ref info) => {
                 let bases_have = info.base_members().iter().any(|base| {
-                    self.has_type_parameter_in_array.contains(&base.ty)
+                    self.has_type_parameter_in_array.contains(&base.ty.into())
                 });
                 if bases_have {
                     trace!("    bases have array, so we also have");

@@ -111,7 +111,7 @@ impl<'ctx> MonotoneFramework for HasVtableAnalysis<'ctx> {
                     return self.insert(id);
                 }
                 let bases_has_vtable = info.base_members().iter().any(|base| {
-                    self.have_vtable.contains(&base.ty)
+                    self.have_vtable.contains(&base.ty.into())
                 });
                 if bases_has_vtable {
                     self.insert(id)

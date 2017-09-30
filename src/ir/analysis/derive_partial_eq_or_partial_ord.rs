@@ -280,8 +280,8 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
 
                 let bases_cannot_derive =
                     info.base_members().iter().any(|base| {
-                        !self.ctx.whitelisted_items().contains(&base.ty) ||
-                            self.cannot_derive_partialeq_or_partialord.contains(&base.ty)
+                        !self.ctx.whitelisted_items().contains(&base.ty.into()) ||
+                            self.cannot_derive_partialeq_or_partialord.contains(&base.ty.into())
                     });
                 if bases_cannot_derive {
                     trace!(

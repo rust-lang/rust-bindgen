@@ -264,8 +264,8 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
 
                 let bases_cannot_derive =
                     info.base_members().iter().any(|base| {
-                        !self.ctx.whitelisted_items().contains(&base.ty) ||
-                            self.cannot_derive_hash.contains(&base.ty)
+                        !self.ctx.whitelisted_items().contains(&base.ty.into()) ||
+                            self.cannot_derive_hash.contains(&base.ty.into())
                     });
                 if bases_cannot_derive {
                     trace!(
