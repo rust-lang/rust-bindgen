@@ -1152,6 +1152,7 @@ impl CompInfo {
 
                     let inner = Item::parse(cur, Some(potential_id), ctx)
                         .expect("Inner ClassDecl");
+                    assert_eq!(ctx.resolve_item(inner).parent_id(), potential_id);
 
                     ci.inner_types.push(inner);
 
