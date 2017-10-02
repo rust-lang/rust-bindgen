@@ -1,7 +1,8 @@
 //! Compound types (unions and structs) in our intermediate representation.
 
+use super::analysis::HasVtable;
 use super::annotations::Annotations;
-use super::context::{BindgenContext, ItemId};
+use super::context::{BindgenContext, FunctionId, ItemId, TypeId, VarId};
 use super::dot::DotAttributes;
 use super::item::{IsOpaque, Item};
 use super::layout::Layout;
@@ -52,13 +53,13 @@ pub struct Method {
     /// item, but a `Function` one.
     ///
     /// This is tricky and probably this field should be renamed.
-    signature: ItemId,
+    signature: FunctionId,
     is_const: bool,
 }
 
 impl Method {
     /// Construct a new `Method`.
-    pub fn new(kind: MethodKind, signature: ItemId, is_const: bool) -> Self {
+    pub fn new(kind: MethodKind, signature: FunctionId, is_const: bool) -> Self {
         Method {
             kind: kind,
             signature: signature,
@@ -93,8 +94,8 @@ impl Method {
         self.kind == MethodKind::Static
     }
 
-    /// Get the `ItemId` for the `Function` signature for this method.
-    pub fn signature(&self) -> ItemId {
+    /// Get the id for the `Function` signature for this method.
+    pub fn signature(&self) -> FunctionId {
         self.signature
     }
 
@@ -110,7 +111,7 @@ pub trait FieldMethods {
     fn name(&self) -> Option<&str>;
 
     /// Get the type of this field.
-    fn ty(&self) -> ItemId;
+    fn ty(&self) -> TypeId;
 
     /// Get the comment for this field.
     fn comment(&self) -> Option<&str>;
@@ -191,13 +192,13 @@ impl Trace for Field {
     {
         match *self {
             Field::DataMember(ref data) => {
-                tracer.visit_kind(data.ty, EdgeKind::Field);
+                tracer.visit_kind(data.ty.into(), EdgeKind::Field);
             }
             Field::Bitfields(BitfieldUnit {
                                  ref bitfields, ..
                              }) => {
                 for bf in bitfields {
-                    tracer.visit_kind(bf.ty(), EdgeKind::Field);
+                    tracer.visit_kind(bf.ty().into(), EdgeKind::Field);
                 }
             }
         }
@@ -343,7 +344,7 @@ impl FieldMethods for Bitfield {
         self.data.name()
     }
 
-    fn ty(&self) -> ItemId {
+    fn ty(&self) -> TypeId {
         self.data.ty()
     }
 
@@ -380,7 +381,7 @@ impl RawField {
     /// Construct a new `RawField`.
     fn new(
         name: Option<String>,
-        ty: ItemId,
+        ty: TypeId,
         comment: Option<String>,
         annotations: Option<Annotations>,
         bitfield: Option<u32>,
@@ -404,7 +405,7 @@ impl FieldMethods for RawField {
         self.0.name()
     }
 
-    fn ty(&self) -> ItemId {
+    fn ty(&self) -> TypeId {
         self.0.ty()
     }
 
@@ -705,7 +706,7 @@ impl Trace for CompFields {
         match *self {
             CompFields::BeforeComputingBitfieldUnits(ref fields) => {
                 for f in fields {
-                    tracer.visit_kind(f.ty(), EdgeKind::Field);
+                    tracer.visit_kind(f.ty().into(), EdgeKind::Field);
                 }
             }
             CompFields::AfterComputingBitfieldUnits(ref fields) => {
@@ -724,7 +725,7 @@ pub struct FieldData {
     name: Option<String>,
 
     /// The inner type.
-    ty: ItemId,
+    ty: TypeId,
 
     /// The doc comment on the field if any.
     comment: Option<String>,
@@ -747,7 +748,7 @@ impl FieldMethods for FieldData {
         self.name.as_ref().map(|n| &**n)
     }
 
-    fn ty(&self) -> ItemId {
+    fn ty(&self) -> TypeId {
         self.ty
     }
 
@@ -793,7 +794,7 @@ pub enum BaseKind {
 #[derive(Clone, Debug)]
 pub struct Base {
     /// The type of this base class.
-    pub ty: ItemId,
+    pub ty: TypeId,
     /// The kind of inheritance we're doing.
     pub kind: BaseKind,
     /// Name of the field in which this base should be stored.
@@ -824,17 +825,17 @@ pub struct CompInfo {
     /// concrete template arguments, and should always be a
     /// `Type(TypeKind::TypeParam(name))`. For concrete template arguments, see
     /// `TypeKind::TemplateInstantiation`.
-    template_params: Vec<ItemId>,
+    template_params: Vec<TypeId>,
 
     /// The method declarations inside this class, if in C++ mode.
     methods: Vec<Method>,
 
     /// The different constructors this struct or class contains.
-    constructors: Vec<ItemId>,
+    constructors: Vec<FunctionId>,
 
     /// The destructor of this type. The bool represents whether this destructor
     /// is virtual.
-    destructor: Option<(bool, ItemId)>,
+    destructor: Option<(bool, FunctionId)>,
 
     /// Vector of classes this one inherits from.
     base_members: Vec<Base>,
@@ -849,10 +850,10 @@ pub struct CompInfo {
     /// }
     ///
     /// static Foo::Bar const = {3};
-    inner_types: Vec<ItemId>,
+    inner_types: Vec<TypeId>,
 
     /// Set of static constants declared inside this class.
-    inner_vars: Vec<ItemId>,
+    inner_vars: Vec<VarId>,
 
     /// Whether this type should generate an vtable (TODO: Should be able to
     /// look at the virtual methods and ditch this field).
@@ -910,12 +911,12 @@ impl CompInfo {
     }
 
     /// Is this compound type unsized?
-    pub fn is_unsized(&self, ctx: &BindgenContext, itemid: &ItemId) -> bool {
-        !ctx.lookup_item_id_has_vtable(itemid) && self.fields().is_empty() &&
+    pub fn is_unsized(&self, ctx: &BindgenContext, id: TypeId) -> bool {
+        !ctx.lookup_has_vtable(id) && self.fields().is_empty() &&
             self.base_members.iter().all(|base| {
                 ctx.resolve_type(base.ty).canonical_type(ctx).is_unsized(
                     ctx,
-                    &base.ty,
+                    base.ty,
                 )
             })
     }
@@ -983,12 +984,12 @@ impl CompInfo {
     }
 
     /// Get this type's set of constructors.
-    pub fn constructors(&self) -> &[ItemId] {
+    pub fn constructors(&self) -> &[FunctionId] {
         &self.constructors
     }
 
     /// Get this type's destructor.
-    pub fn destructor(&self) -> Option<(bool, ItemId)> {
+    pub fn destructor(&self) -> Option<(bool, FunctionId)> {
         self.destructor
     }
 
@@ -1104,12 +1105,12 @@ impl CompInfo {
                     let name = if name.is_empty() { None } else { Some(name) };
 
                     let field = RawField::new(name,
-                                           field_type,
-                                           comment,
-                                           annotations,
-                                           bit_width,
-                                           is_mutable,
-                                           offset);
+                                              field_type,
+                                              comment,
+                                              annotations,
+                                              bit_width,
+                                              is_mutable,
+                                              offset);
                     ci.fields.append_raw_field(field);
 
                     // No we look for things like attributes and stuff.
@@ -1154,6 +1155,8 @@ impl CompInfo {
                         .expect("Inner ClassDecl");
                     assert_eq!(ctx.resolve_item(inner).parent_id(), potential_id);
 
+                    let inner = inner.expect_type_id(ctx);
+
                     ci.inner_types.push(inner);
 
                     // A declaration of an union or a struct without name could
@@ -1162,8 +1165,7 @@ impl CompInfo {
                        cur.kind() != CXCursor_EnumDecl {
                         let ty = cur.cur_type();
                         let offset = cur.offset_of_field().ok();
-                        maybe_anonymous_struct_field =
-                            Some((inner, ty, offset));
+                        maybe_anonymous_struct_field = Some((inner, ty, offset));
                     }
                 }
                 CXCursor_PackedAttr => {
@@ -1231,6 +1233,8 @@ impl CompInfo {
                             _ => return CXChildVisit_Continue,
                         };
 
+                    let signature = signature.expect_function_id(ctx);
+
                     match cur.kind() {
                         CXCursor_Constructor => {
                             ci.constructors.push(signature);
@@ -1274,7 +1278,7 @@ impl CompInfo {
                     if let Ok(item) = Item::parse(cur,
                                                   Some(potential_id),
                                                   ctx) {
-                        ci.inner_vars.push(item);
+                        ci.inner_vars.push(item.as_var_id_unchecked());
                     }
                 }
                 // Intentionally not handled
@@ -1327,12 +1331,12 @@ impl CompInfo {
 
     /// Get the set of types that were declared within this compound type
     /// (e.g. nested class definitions).
-    pub fn inner_types(&self) -> &[ItemId] {
+    pub fn inner_types(&self) -> &[TypeId] {
         &self.inner_types
     }
 
     /// Get the set of static variables declared within this compound type.
-    pub fn inner_vars(&self) -> &[ItemId] {
+    pub fn inner_vars(&self) -> &[VarId] {
         &self.inner_vars
     }
 
@@ -1354,8 +1358,7 @@ impl CompInfo {
         ctx: &BindgenContext,
         item: &Item,
     ) -> bool {
-        ctx.lookup_item_id_has_vtable(&item.id()) &&
-        !self.base_members.iter().any(|base| {
+        item.has_vtable(ctx) && !self.base_members.iter().any(|base| {
             // NB: Ideally, we could rely in all these types being `comp`, and
             // life would be beautiful.
             //
@@ -1365,7 +1368,7 @@ impl CompInfo {
             ctx.resolve_type(base.ty)
                 .canonical_type(ctx)
                 .as_comp()
-                .map_or(false, |_| ctx.lookup_item_id_has_vtable(&base.ty))
+                .map_or(false, |_| base.ty.has_vtable(ctx))
         })
     }
 
@@ -1465,7 +1468,7 @@ impl TemplateParameters for CompInfo {
     fn self_template_params(
         &self,
         _ctx: &BindgenContext,
-    ) -> Option<Vec<ItemId>> {
+    ) -> Option<Vec<TypeId>> {
         if self.template_params.is_empty() {
             None
         } else {
@@ -1483,27 +1486,27 @@ impl Trace for CompInfo {
     {
         let params = item.all_template_params(context).unwrap_or(vec![]);
         for p in params {
-            tracer.visit_kind(p, EdgeKind::TemplateParameterDefinition);
+            tracer.visit_kind(p.into(), EdgeKind::TemplateParameterDefinition);
         }
 
-        for &ty in self.inner_types() {
-            tracer.visit_kind(ty, EdgeKind::InnerType);
+        for ty in self.inner_types() {
+            tracer.visit_kind(ty.into(), EdgeKind::InnerType);
         }
 
         for &var in self.inner_vars() {
-            tracer.visit_kind(var, EdgeKind::InnerVar);
+            tracer.visit_kind(var.into(), EdgeKind::InnerVar);
         }
 
         for method in self.methods() {
             if method.is_destructor() {
-                tracer.visit_kind(method.signature, EdgeKind::Destructor);
+                tracer.visit_kind(method.signature.into(), EdgeKind::Destructor);
             } else {
-                tracer.visit_kind(method.signature, EdgeKind::Method);
+                tracer.visit_kind(method.signature.into(), EdgeKind::Method);
             }
         }
 
-        for &ctor in self.constructors() {
-            tracer.visit_kind(ctor, EdgeKind::Constructor);
+        for ctor in self.constructors() {
+            tracer.visit_kind(ctor.into(), EdgeKind::Constructor);
         }
 
         // Base members and fields are not generated for opaque types (but all
@@ -1513,7 +1516,7 @@ impl Trace for CompInfo {
         }
 
         for base in self.base_members() {
-            tracer.visit_kind(base.ty, EdgeKind::BaseMember);
+            tracer.visit_kind(base.ty.into(), EdgeKind::BaseMember);
         }
 
         self.fields.trace(context, tracer, &());

@@ -73,7 +73,8 @@ impl<'ctx> CannotDeriveCopy<'ctx> {
         }
     }
 
-    fn insert(&mut self, id: ItemId) -> ConstrainResult {
+    fn insert<Id: Into<ItemId>>(&mut self, id: Id) -> ConstrainResult {
+        let id = id.into();
         trace!("inserting {:?} into the cannot_derive_copy set", id);
 
         let was_not_already_in_set = self.cannot_derive_copy.insert(id);
@@ -89,7 +90,8 @@ impl<'ctx> CannotDeriveCopy<'ctx> {
 
     /// A type is not `Copy` if we've determined it is not copy, or if it is
     /// blacklisted.
-    fn is_not_copy(&self, id: ItemId) -> bool {
+    fn is_not_copy<Id: Into<ItemId>>(&self, id: Id) -> bool {
+        let id = id.into();
         self.cannot_derive_copy.contains(&id) ||
             !self.ctx.whitelisted_items().contains(&id)
     }
@@ -222,7 +224,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveCopy<'ctx> {
                 // NOTE: Take into account that while unions in C and C++ are copied by
                 // default, the may have an explicit destructor in C++, so we can't
                 // defer this check just for the union case.
-                if self.ctx.lookup_item_id_has_destructor(&id) {
+                if self.ctx.lookup_has_destructor(id.expect_type_id(self.ctx)) {
                     trace!("    comp has destructor which cannot derive copy");
                     return self.insert(id);
                 }
@@ -307,7 +309,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveCopy<'ctx> {
                     "The early ty.is_opaque check should have handled this case"
                 );
                 let def_cannot_derive = self.is_not_copy(
-                    template.template_definition(),
+                    template.template_definition()
                 );
                 if def_cannot_derive {
                     trace!(

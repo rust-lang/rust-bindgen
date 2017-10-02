@@ -74,7 +74,8 @@ impl<'ctx> CannotDeriveHash<'ctx> {
         }
     }
 
-    fn insert(&mut self, id: ItemId) -> ConstrainResult {
+    fn insert<Id: Into<ItemId>>(&mut self, id: Id) -> ConstrainResult {
+        let id = id.into();
         trace!("inserting {:?} into the cannot_derive_hash set", id);
 
         let was_not_already_in_set = self.cannot_derive_hash.insert(id);
@@ -178,7 +179,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
             }
 
             TypeKind::Array(t, len) => {
-                if self.cannot_derive_hash.contains(&t) {
+                if self.cannot_derive_hash.contains(&t.into()) {
                     trace!(
                         "    arrays of T for which we cannot derive Hash \
                             also cannot derive Hash"
@@ -222,7 +223,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
-                if self.cannot_derive_hash.contains(&t) {
+                if self.cannot_derive_hash.contains(&t.into()) {
                     trace!(
                         "    aliases and type refs to T which cannot derive \
                             Hash also cannot derive Hash"
@@ -263,8 +264,8 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
 
                 let bases_cannot_derive =
                     info.base_members().iter().any(|base| {
-                        !self.ctx.whitelisted_items().contains(&base.ty) ||
-                            self.cannot_derive_hash.contains(&base.ty)
+                        !self.ctx.whitelisted_items().contains(&base.ty.into()) ||
+                            self.cannot_derive_hash.contains(&base.ty.into())
                     });
                 if bases_cannot_derive {
                     trace!(
@@ -278,9 +279,9 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
                     info.fields().iter().any(|f| match *f {
                         Field::DataMember(ref data) => {
                             !self.ctx.whitelisted_items().contains(
-                                &data.ty(),
+                                &data.ty().into(),
                             ) ||
-                                self.cannot_derive_hash.contains(&data.ty())
+                                self.cannot_derive_hash.contains(&data.ty().into())
                         }
                         Field::Bitfields(ref bfu) => {
                             if bfu.layout().align > RUST_DERIVE_IN_ARRAY_LIMIT {
@@ -293,9 +294,9 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
 
                             bfu.bitfields().iter().any(|b| {
                                 !self.ctx.whitelisted_items().contains(
-                                    &b.ty(),
+                                    &b.ty().into(),
                                 ) ||
-                                    self.cannot_derive_hash.contains(&b.ty())
+                                    self.cannot_derive_hash.contains(&b.ty().into())
                             })
                         }
                     });
@@ -311,7 +312,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
             TypeKind::TemplateInstantiation(ref template) => {
                 let args_cannot_derive =
                     template.template_arguments().iter().any(|arg| {
-                        self.cannot_derive_hash.contains(&arg)
+                        self.cannot_derive_hash.contains(&arg.into())
                     });
                 if args_cannot_derive {
                     trace!(
@@ -326,7 +327,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
                     "The early ty.is_opaque check should have handled this case"
                 );
                 let def_cannot_derive = self.cannot_derive_hash.contains(
-                    &template.template_definition(),
+                    &template.template_definition().into(),
                 );
                 if def_cannot_derive {
                     trace!(

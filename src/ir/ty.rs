@@ -1,7 +1,7 @@
 //! Everything related to types in our intermediate representation.
 
 use super::comp::CompInfo;
-use super::context::{BindgenContext, ItemId};
+use super::context::{BindgenContext, ItemId, TypeId};
 use super::dot::DotAttributes;
 use super::enum_ty::Enum;
 use super::function::FunctionSig;
@@ -212,7 +212,7 @@ impl Type {
     pub fn is_incomplete_array(&self, ctx: &BindgenContext) -> Option<ItemId> {
         match self.kind {
             TypeKind::Array(item, len) => {
-                if len == 0 { Some(item) } else { None }
+                if len == 0 { Some(item.into()) } else { None }
             }
             TypeKind::ResolvedTypeRef(inner) => {
                 ctx.resolve_type(inner).is_incomplete_array(ctx)
@@ -275,8 +275,8 @@ impl Type {
         ctx: &BindgenContext,
     ) -> Option<Cow<'a, str>> {
         let name_info = match *self.kind() {
-            TypeKind::Pointer(inner) => Some((inner, Cow::Borrowed("ptr"))),
-            TypeKind::Reference(inner) => Some((inner, Cow::Borrowed("ref"))),
+            TypeKind::Pointer(inner) => Some((inner.into(), Cow::Borrowed("ptr"))),
+            TypeKind::Reference(inner) => Some((inner.into(), Cow::Borrowed("ref"))),
             TypeKind::Array(inner, length) => {
                 Some((inner, format!("array{}", length).into()))
             }
@@ -383,7 +383,7 @@ impl AsTemplateParam for Type {
         &self,
         ctx: &BindgenContext,
         item: &Item,
-    ) -> Option<ItemId> {
+    ) -> Option<TypeId> {
         self.kind.as_template_param(ctx, item)
     }
 }
@@ -395,9 +395,9 @@ impl AsTemplateParam for TypeKind {
         &self,
         ctx: &BindgenContext,
         item: &Item,
-    ) -> Option<ItemId> {
+    ) -> Option<TypeId> {
         match *self {
-            TypeKind::TypeParam => Some(item.id()),
+            TypeKind::TypeParam => Some(item.id().expect_type_id(ctx)),
             TypeKind::ResolvedTypeRef(id) => id.as_template_param(ctx, &()),
             _ => None,
         }
@@ -534,7 +534,7 @@ impl TemplateParameters for Type {
     fn self_template_params(
         &self,
         ctx: &BindgenContext,
-    ) -> Option<Vec<ItemId>> {
+    ) -> Option<Vec<TypeId>> {
         self.kind.self_template_params(ctx)
     }
 }
@@ -543,7 +543,7 @@ impl TemplateParameters for TypeKind {
     fn self_template_params(
         &self,
         ctx: &BindgenContext,
-    ) -> Option<Vec<ItemId>> {
+    ) -> Option<Vec<TypeId>> {
         match *self {
             TypeKind::ResolvedTypeRef(id) => {
                 ctx.resolve_type(id).self_template_params(ctx)
@@ -626,14 +626,14 @@ pub enum TypeKind {
     Complex(FloatKind),
 
     /// A type alias, with a name, that points to another type.
-    Alias(ItemId),
+    Alias(TypeId),
 
     /// A templated alias, pointing to an inner type, just as `Alias`, but with
     /// template parameters.
-    TemplateAlias(ItemId, Vec<ItemId>),
+    TemplateAlias(TypeId, Vec<TypeId>),
 
-    /// An array of a type and a lenght.
-    Array(ItemId, usize),
+    /// An array of a type and a length.
+    Array(TypeId, usize),
 
     /// A function type, with a given signature.
     Function(FunctionSig),
@@ -643,13 +643,13 @@ pub enum TypeKind {
 
     /// A pointer to a type. The bool field represents whether it's const or
     /// not.
-    Pointer(ItemId),
+    Pointer(TypeId),
 
     /// A pointer to an Apple block.
     BlockPointer,
 
     /// A reference to a type, as in: int& foo().
-    Reference(ItemId),
+    Reference(TypeId),
 
     /// An instantiation of an abstract template definition with a set of
     /// concrete template arguments.
@@ -673,7 +673,7 @@ pub enum TypeKind {
     ///
     /// These are generated after we resolve a forward declaration, or when we
     /// replace one type with another.
-    ResolvedTypeRef(ItemId),
+    ResolvedTypeRef(TypeId),
 
     /// A named type, that is, a template parameter.
     TypeParam,
@@ -693,24 +693,24 @@ impl Type {
     /// derive whether we should generate a dummy `_address` field for structs,
     /// to comply to the C and C++ layouts, that specify that every type needs
     /// to be addressable.
-    pub fn is_unsized(&self, ctx: &BindgenContext, itemid: &ItemId) -> bool {
+    pub fn is_unsized(&self, ctx: &BindgenContext, id: TypeId) -> bool {
         debug_assert!(ctx.in_codegen_phase(), "Not yet");
 
         match self.kind {
             TypeKind::Void => true,
-            TypeKind::Comp(ref ci) => ci.is_unsized(ctx, itemid),
+            TypeKind::Comp(ref ci) => ci.is_unsized(ctx, id),
             TypeKind::Opaque => self.layout.map_or(true, |l| l.size == 0),
             TypeKind::Array(inner, size) => {
-                size == 0 || ctx.resolve_type(inner).is_unsized(ctx, &inner)
+                size == 0 || ctx.resolve_type(inner).is_unsized(ctx, inner)
             }
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(inner) |
             TypeKind::TemplateAlias(inner, _) => {
-                ctx.resolve_type(inner).is_unsized(ctx, &inner)
+                ctx.resolve_type(inner).is_unsized(ctx, inner)
             }
             TypeKind::TemplateInstantiation(ref inst) => {
                 let definition = inst.template_definition();
-                ctx.resolve_type(definition).is_unsized(ctx, &definition)
+                ctx.resolve_type(definition).is_unsized(ctx, definition)
             }
             TypeKind::TypeParam |
             TypeKind::Int(..) |
@@ -755,7 +755,7 @@ impl Type {
             );
             if let Some(ty) = already_resolved {
                 debug!("{:?} already resolved: {:?}", ty, location);
-                return Ok(ParseResult::AlreadyResolved(ty));
+                return Ok(ParseResult::AlreadyResolved(ty.into()));
             }
         }
 
@@ -1035,14 +1035,14 @@ impl Type {
                                     referenced_ty
                                 );
 
-                                let item = Item::from_ty_or_ref_with_id(
+                                let id = Item::from_ty_or_ref_with_id(
                                     potential_id,
                                     referenced_ty,
                                     declaration,
                                     parent_id,
                                     ctx,
                                 );
-                                return Ok(ParseResult::AlreadyResolved(item));
+                                return Ok(ParseResult::AlreadyResolved(id.into()));
                             }
                             CXCursor_NamespaceRef => {
                                 return Err(ParseError::Continue);
@@ -1261,13 +1261,13 @@ impl Trace for Type {
             TypeKind::Array(inner, _) |
             TypeKind::Alias(inner) |
             TypeKind::ResolvedTypeRef(inner) => {
-                tracer.visit_kind(inner, EdgeKind::TypeReference);
+                tracer.visit_kind(inner.into(), EdgeKind::TypeReference);
             }
             TypeKind::TemplateAlias(inner, ref template_params) => {
-                tracer.visit_kind(inner, EdgeKind::TypeReference);
-                for &item in template_params {
+                tracer.visit_kind(inner.into(), EdgeKind::TypeReference);
+                for param in template_params {
                     tracer.visit_kind(
-                        item,
+                        param.into(),
                         EdgeKind::TemplateParameterDefinition,
                     );
                 }
@@ -1279,7 +1279,7 @@ impl Trace for Type {
             TypeKind::Function(ref sig) => sig.trace(context, tracer, &()),
             TypeKind::Enum(ref en) => {
                 if let Some(repr) = en.repr() {
-                    tracer.visit(repr);
+                    tracer.visit(repr.into());
                 }
             }
             TypeKind::UnresolvedTypeRef(_, _, Some(id)) => {

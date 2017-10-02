@@ -83,7 +83,8 @@ impl<'ctx> CannotDerivePartialEqOrPartialOrd<'ctx> {
         }
     }
 
-    fn insert(&mut self, id: ItemId) -> ConstrainResult {
+    fn insert<Id: Into<ItemId>>(&mut self, id: Id) -> ConstrainResult {
+        let id = id.into();
         trace!("inserting {:?} into the cannot_derive_partialeq_or_partialord set", id);
 
         let was_not_already_in_set = self.cannot_derive_partialeq_or_partialord.insert(id);
@@ -190,7 +191,7 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
             }
 
             TypeKind::Array(t, len) => {
-                if self.cannot_derive_partialeq_or_partialord.contains(&t) {
+                if self.cannot_derive_partialeq_or_partialord.contains(&t.into()) {
                     trace!(
                         "    arrays of T for which we cannot derive `PartialEq`/`PartialOrd` \
                             also cannot derive `PartialEq`/`PartialOrd`"
@@ -236,7 +237,7 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
             TypeKind::Alias(t) => {
-                if self.cannot_derive_partialeq_or_partialord.contains(&t) {
+                if self.cannot_derive_partialeq_or_partialord.contains(&t.into()) {
                     trace!(
                         "    aliases and type refs to T which cannot derive \
                             `PartialEq`/`PartialOrd` also cannot derive `PartialEq`/`PartialOrd`"
@@ -279,8 +280,8 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
 
                 let bases_cannot_derive =
                     info.base_members().iter().any(|base| {
-                        !self.ctx.whitelisted_items().contains(&base.ty) ||
-                            self.cannot_derive_partialeq_or_partialord.contains(&base.ty)
+                        !self.ctx.whitelisted_items().contains(&base.ty.into()) ||
+                            self.cannot_derive_partialeq_or_partialord.contains(&base.ty.into())
                     });
                 if bases_cannot_derive {
                     trace!(
@@ -294,10 +295,10 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
                     info.fields().iter().any(|f| match *f {
                         Field::DataMember(ref data) => {
                             !self.ctx.whitelisted_items().contains(
-                                &data.ty(),
+                                &data.ty().into(),
                             ) ||
                                 self.cannot_derive_partialeq_or_partialord.contains(
-                                    &data.ty(),
+                                    &data.ty().into(),
                                 )
                         }
                         Field::Bitfields(ref bfu) => {
@@ -311,10 +312,10 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
 
                             bfu.bitfields().iter().any(|b| {
                                 !self.ctx.whitelisted_items().contains(
-                                    &b.ty(),
+                                    &b.ty().into(),
                                 ) ||
                                     self.cannot_derive_partialeq_or_partialord.contains(
-                                        &b.ty(),
+                                        &b.ty().into(),
                                     )
                             })
                         }
@@ -333,7 +334,7 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
             TypeKind::TemplateInstantiation(ref template) => {
                 let args_cannot_derive =
                     template.template_arguments().iter().any(|arg| {
-                        self.cannot_derive_partialeq_or_partialord.contains(&arg)
+                        self.cannot_derive_partialeq_or_partialord.contains(&arg.into())
                     });
                 if args_cannot_derive {
                     trace!(
@@ -348,7 +349,7 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
                     "The early ty.is_opaque check should have handled this case"
                 );
                 let def_cannot_derive = self.cannot_derive_partialeq_or_partialord.contains(
-                    &template.template_definition(),
+                    &template.template_definition().into(),
                 );
                 if def_cannot_derive {
                     trace!(

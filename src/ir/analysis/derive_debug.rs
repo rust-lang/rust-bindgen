@@ -74,7 +74,8 @@ impl<'ctx> CannotDeriveDebug<'ctx> {
         }
     }
 
-    fn insert(&mut self, id: ItemId) -> ConstrainResult {
+    fn insert<Id: Into<ItemId>>(&mut self, id: Id) -> ConstrainResult {
+        let id = id.into();
         trace!("inserting {:?} into the cannot_derive_debug set", id);
 
         let was_not_already_in_set = self.cannot_derive_debug.insert(id);
@@ -90,7 +91,8 @@ impl<'ctx> CannotDeriveDebug<'ctx> {
 
     /// A type is not `Debug` if we've determined it is not debug, or if it is
     /// blacklisted.
-    fn is_not_debug(&self, id: ItemId) -> bool {
+    fn is_not_debug<Id: Into<ItemId>>(&self, id: Id) -> bool {
+        let id = id.into();
         self.cannot_derive_debug.contains(&id) ||
             !self.ctx.whitelisted_items().contains(&id)
     }
@@ -325,7 +327,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDebug<'ctx> {
                     "The early ty.is_opaque check should have handled this case"
                 );
                 let def_cannot_derive = self.is_not_debug(
-                    template.template_definition(),
+                    template.template_definition()
                 );
                 if def_cannot_derive {
                     trace!(

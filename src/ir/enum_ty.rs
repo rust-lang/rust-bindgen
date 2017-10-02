@@ -1,6 +1,6 @@
 //! Intermediate representation for C/C++ enumerations.
 
-use super::context::{BindgenContext, ItemId};
+use super::context::{BindgenContext, TypeId};
 use super::item::Item;
 use super::ty::TypeKind;
 use clang;
@@ -27,7 +27,7 @@ pub struct Enum {
     ///
     /// It's `None` if the enum is a forward declaration and isn't defined
     /// anywhere else, see `tests/headers/func_ptr_in_struct.h`.
-    repr: Option<ItemId>,
+    repr: Option<TypeId>,
 
     /// The different variants, with explicit values.
     variants: Vec<EnumVariant>,
@@ -35,7 +35,7 @@ pub struct Enum {
 
 impl Enum {
     /// Construct a new `Enum` with the given representation and variants.
-    pub fn new(repr: Option<ItemId>, variants: Vec<EnumVariant>) -> Self {
+    pub fn new(repr: Option<TypeId>, variants: Vec<EnumVariant>) -> Self {
         Enum {
             repr: repr,
             variants: variants,
@@ -43,7 +43,7 @@ impl Enum {
     }
 
     /// Get this enumeration's representation.
-    pub fn repr(&self) -> Option<ItemId> {
+    pub fn repr(&self) -> Option<TypeId> {
         self.repr
     }
 

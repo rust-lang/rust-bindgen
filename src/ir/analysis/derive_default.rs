@@ -71,7 +71,8 @@ impl<'ctx> CannotDeriveDefault<'ctx> {
         }
     }
 
-    fn insert(&mut self, id: ItemId) -> ConstrainResult {
+    fn insert<Id: Into<ItemId>>(&mut self, id: Id) -> ConstrainResult {
+        let id = id.into();
         trace!("inserting {:?} into the cannot_derive_default set", id);
 
         let was_not_already_in_set = self.cannot_derive_default.insert(id);
@@ -85,7 +86,8 @@ impl<'ctx> CannotDeriveDefault<'ctx> {
         ConstrainResult::Changed
     }
 
-    fn is_not_default(&self, id: ItemId) -> bool {
+    fn is_not_default<Id: Into<ItemId>>(&self, id: Id) -> bool {
+        let id = id.into();
         self.cannot_derive_default.contains(&id) ||
             !self.ctx.whitelisted_items().contains(&id)
     }
@@ -288,7 +290,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
 
                 let bases_cannot_derive =
                     info.base_members().iter().any(|base| {
-                        !self.ctx.whitelisted_items().contains(&base.ty) ||
+                        !self.ctx.whitelisted_items().contains(&base.ty.into()) ||
                             self.is_not_default(base.ty)
                     });
                 if bases_cannot_derive {
@@ -303,7 +305,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
                     info.fields().iter().any(|f| match *f {
                         Field::DataMember(ref data) => {
                             !self.ctx.whitelisted_items().contains(
-                                &data.ty(),
+                                &data.ty().into(),
                             ) ||
                                 self.is_not_default(data.ty())
                         }
@@ -318,7 +320,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
 
                             bfu.bitfields().iter().any(|b| {
                                 !self.ctx.whitelisted_items().contains(
-                                    &b.ty(),
+                                    &b.ty().into(),
                                 ) ||
                                     self.is_not_default(b.ty())
                             })

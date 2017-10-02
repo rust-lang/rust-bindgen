@@ -203,7 +203,8 @@ impl<'ctx> UsedTemplateParameters<'ctx> {
         }
     }
 
-    fn take_this_id_usage_set(&mut self, this_id: ItemId) -> ItemSet {
+    fn take_this_id_usage_set<Id: Into<ItemId>>(&mut self, this_id: Id) -> ItemSet {
+        let this_id = this_id.into();
         self.used
             .get_mut(&this_id)
             .expect(
@@ -278,7 +279,7 @@ impl<'ctx> UsedTemplateParameters<'ctx> {
 
         debug_assert!(this_id != instantiation.template_definition());
         let used_by_def = self.used
-            .get(&instantiation.template_definition())
+            .get(&instantiation.template_definition().into())
             .expect("Should have a used entry for instantiation's template definition")
             .as_ref()
             .expect("And it should be Some because only this_id's set is None, and an \
@@ -293,7 +294,7 @@ impl<'ctx> UsedTemplateParameters<'ctx> {
                 param
             );
 
-            if used_by_def.contains(param) {
+            if used_by_def.contains(&param.into()) {
                 trace!("        param is used by template definition");
 
                 let arg = arg.into_resolver()
@@ -520,7 +521,7 @@ impl<'ctx> MonotoneFramework for UsedTemplateParameters<'ctx> {
             // template definition uses the corresponding template parameter.
             Some(&TypeKind::TemplateInstantiation(ref inst)) => {
                 if self.whitelisted_items.contains(
-                    &inst.template_definition(),
+                    &inst.template_definition().into(),
                 )
                 {
                     self.constrain_instantiation(

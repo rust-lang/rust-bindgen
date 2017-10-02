@@ -6,6 +6,7 @@ pub mod struct_layout;
 use self::helpers::attributes;
 use self::struct_layout::StructLayoutTracker;
 
+use ir::analysis::HasVtable;
 use ir::annotations::FieldAccessorKind;
 use ir::comment;
 use ir::comp::{Base, Bitfield, BitfieldUnit, CompInfo, CompKind, Field,
@@ -151,12 +152,12 @@ impl<'a> CodegenResult<'a> {
         self.saw_objc = true;
     }
 
-    fn seen(&self, item: ItemId) -> bool {
-        self.items_seen.contains(&item)
+    fn seen<Id: Into<ItemId>>(&self, item: Id) -> bool {
+        self.items_seen.contains(&item.into())
     }
 
-    fn set_seen(&mut self, item: ItemId) {
-        self.items_seen.insert(item);
+    fn set_seen<Id: Into<ItemId>>(&mut self, item: Id) {
+        self.items_seen.insert(item.into());
     }
 
     fn seen_function(&self, name: &str) -> bool {
@@ -599,7 +600,7 @@ impl CodeGenerator for Type {
                 // If this is a known named type, disallow generating anything
                 // for it too.
                 let spelling = self.name().expect("Unnamed alias?");
-                if utils::type_from_named(ctx, spelling, inner).is_some() {
+                if utils::type_from_named(ctx, spelling).is_some() {
                     return;
                 }
 
@@ -1546,7 +1547,7 @@ impl CodeGenerator for CompInfo {
                 // NB: We won't include unsized types in our base chain because they
                 // would contribute to our size given the dummy field we insert for
                 // unsized types.
-                if base_ty.is_unsized(ctx, &base.ty) {
+                if base_ty.is_unsized(ctx, base.ty) {
                     continue;
                 }
 
@@ -1625,7 +1626,7 @@ impl CodeGenerator for CompInfo {
                     warn!("Opaque type without layout! Expect dragons!");
                 }
             }
-        } else if !is_union && !self.is_unsized(ctx, &item.id()) {
+        } else if !is_union && !self.is_unsized(ctx, item.id().expect_type_id(ctx)) {
             if let Some(padding_field) =
                 layout.and_then(|layout| struct_layout.pad_struct(layout))
             {
@@ -1649,7 +1650,7 @@ impl CodeGenerator for CompInfo {
         //
         // NOTE: This check is conveniently here to avoid the dummy fields we
         // may add for unused template parameters.
-        if self.is_unsized(ctx, &item.id()) {
+        if self.is_unsized(ctx, item.id().expect_type_id(ctx)) {
             let has_address = if is_opaque {
                 // Generate the address field if it's an opaque type and
                 // couldn't determine the layout of the blob.
@@ -1758,9 +1759,8 @@ impl CodeGenerator for CompInfo {
                     // FIXME when [issue #465](https://github.com/rust-lang-nursery/rust-bindgen/issues/465) ready
                     let too_many_base_vtables = self.base_members()
                         .iter()
-                        .filter(|base| ctx.lookup_item_id_has_vtable(&base.ty))
-                        .count() >
-                        1;
+                        .filter(|base| base.ty.has_vtable(ctx))
+                        .count() > 1;
 
                     let should_skip_field_offset_checks = is_opaque ||
                         too_many_base_vtables;
@@ -2728,7 +2728,10 @@ where
     }
 }
 
-impl TryToOpaque for ItemId {
+impl<T> TryToOpaque for T
+where
+    T: Copy + Into<ItemId>
+{
     type Extra = ();
 
     fn try_get_layout(
@@ -2736,11 +2739,14 @@ impl TryToOpaque for ItemId {
         ctx: &BindgenContext,
         _: &(),
     ) -> error::Result<Layout> {
-        ctx.resolve_item(*self).try_get_layout(ctx, &())
+        ctx.resolve_item((*self).into()).try_get_layout(ctx, &())
     }
 }
 
-impl TryToRustTy for ItemId {
+impl<T> TryToRustTy for T
+where
+    T: Copy + Into<ItemId>
+{
     type Extra = ();
 
     fn try_to_rust_ty(
@@ -2748,7 +2754,7 @@ impl TryToRustTy for ItemId {
         ctx: &BindgenContext,
         _: &(),
     ) -> error::Result<quote::Tokens> {
-        ctx.resolve_item(*self).try_to_rust_ty(ctx, &())
+        ctx.resolve_item((*self).into()).try_to_rust_ty(ctx, &())
     }
 }
 
@@ -2889,8 +2895,8 @@ impl TryToRustTy for Type {
                 inst.try_to_rust_ty(ctx, item)
             }
             TypeKind::ResolvedTypeRef(inner) => inner.try_to_rust_ty(ctx, &()),
-            TypeKind::TemplateAlias(inner, _) |
-            TypeKind::Alias(inner) => {
+            TypeKind::TemplateAlias(..) |
+            TypeKind::Alias(..) => {
                 let template_params = item.used_template_params(ctx)
                     .unwrap_or(vec![])
                     .into_iter()
@@ -2903,12 +2909,11 @@ impl TryToRustTy for Type {
                 } else if let Some(ty) = utils::type_from_named(
                     ctx,
                     spelling,
-                    inner,
                 )
                 {
                     Ok(ty)
                 } else {
-                    utils::build_templated_path(item, ctx, vec![]) //template_params)
+                    utils::build_path(item, ctx)
                 }
             }
             TypeKind::Comp(ref info) => {
@@ -2919,8 +2924,7 @@ impl TryToRustTy for Type {
                     return self.try_to_opaque(ctx, item);
                 }
 
-                // let template_params = template_params.unwrap_or(vec![]);
-                utils::build_templated_path(item, ctx, vec![])
+                utils::build_path(item, ctx)
             }
             TypeKind::Opaque => self.try_to_opaque(ctx, item),
             TypeKind::BlockPointer => {
@@ -3326,8 +3330,8 @@ pub fn codegen(context: &mut BindgenContext) -> Vec<quote::Tokens> {
 }
 
 mod utils {
-    use super::{ToRustTyOrOpaque, TryToRustTy, error};
-    use ir::context::{BindgenContext, ItemId};
+    use super::{ToRustTyOrOpaque, error};
+    use ir::context::BindgenContext;
     use ir::function::FunctionSig;
     use ir::item::{Item, ItemCanonicalPath};
     use ir::ty::TypeKind;
@@ -3549,28 +3553,16 @@ mod utils {
         result.extend(old_items.into_iter());
     }
 
-    pub fn build_templated_path(
+    pub fn build_path(
         item: &Item,
         ctx: &BindgenContext,
-        template_params: Vec<ItemId>,
     ) -> error::Result<quote::Tokens> {
         let path = item.namespace_aware_canonical_path(ctx);
-
-        let template_params = template_params
-            .iter()
-            .map(|param| param.try_to_rust_ty(ctx, &()))
-            .collect::<error::Result<Vec<_>>>()?;
 
         let mut tokens = quote! {};
         tokens.append_separated(path.into_iter().map(quote::Ident::new), "::");
 
-        if template_params.is_empty() {
-            Ok(tokens)
-        } else {
-            Ok(quote! {
-                #tokens < #( #template_params ),* >
-            })
-        }
+        Ok(tokens)
     }
 
     fn primitive_ty(ctx: &BindgenContext, name: &str) -> quote::Tokens {
@@ -3583,7 +3575,6 @@ mod utils {
     pub fn type_from_named(
         ctx: &BindgenContext,
         name: &str,
-        _inner: ItemId,
     ) -> Option<quote::Tokens> {
         // FIXME: We could use the inner item to check this is really a
         // primitive type but, who the heck overrides these anyway?

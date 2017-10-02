@@ -47,7 +47,8 @@ impl<'ctx> HasVtableAnalysis<'ctx> {
         }
     }
 
-    fn insert(&mut self, id: ItemId) -> ConstrainResult {
+    fn insert<Id: Into<ItemId>>(&mut self, id: Id) -> ConstrainResult {
+        let id = id.into();
         let was_not_already_in_set = self.have_vtable.insert(id);
         assert!(
             was_not_already_in_set,
@@ -98,7 +99,7 @@ impl<'ctx> MonotoneFramework for HasVtableAnalysis<'ctx> {
             TypeKind::Alias(t) |
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::Reference(t) => {
-                if self.have_vtable.contains(&t) {
+                if self.have_vtable.contains(&t.into()) {
                     self.insert(id)
                 } else {
                     ConstrainResult::Same
@@ -110,7 +111,7 @@ impl<'ctx> MonotoneFramework for HasVtableAnalysis<'ctx> {
                     return self.insert(id);
                 }
                 let bases_has_vtable = info.base_members().iter().any(|base| {
-                    self.have_vtable.contains(&base.ty)
+                    self.have_vtable.contains(&base.ty.into())
                 });
                 if bases_has_vtable {
                     self.insert(id)
@@ -120,7 +121,7 @@ impl<'ctx> MonotoneFramework for HasVtableAnalysis<'ctx> {
             }
 
             TypeKind::TemplateInstantiation(ref inst) => {
-                if self.have_vtable.contains(&inst.template_definition()) {
+                if self.have_vtable.contains(&inst.template_definition().into()) {
                     self.insert(id)
                 } else {
                     ConstrainResult::Same
