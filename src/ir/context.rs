@@ -31,7 +31,7 @@ use std::iter::IntoIterator;
 use std::mem;
 
 /// An identifier for some kind of IR item.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Copy, Clone, Eq, PartialOrd, Ord, Hash)]
 pub struct ItemId(usize);
 
 macro_rules! item_id_newtype {
@@ -47,7 +47,7 @@ macro_rules! item_id_newtype {
             unchecked = $unchecked:ident;
     ) => {
         $( #[$attr] )*
-        #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+        #[derive(Debug, Copy, Clone, Eq, PartialOrd, Ord, Hash)]
         pub struct $name(ItemId);
 
         impl $name {
@@ -55,6 +55,16 @@ macro_rules! item_id_newtype {
             pub fn into_resolver(self) -> ItemResolver {
                 let id: ItemId = self.into();
                 id.into()
+            }
+        }
+
+        impl<T> ::std::cmp::PartialEq<T> for $name
+        where
+            T: Copy + Into<ItemId>
+        {
+            fn eq(&self, rhs: &T) -> bool {
+                let rhs: ItemId = (*rhs).into();
+                self.0 == rhs
             }
         }
 
@@ -183,6 +193,16 @@ impl ItemId {
     /// Get a numeric representation of this id.
     pub fn as_usize(&self) -> usize {
         (*self).into()
+    }
+}
+
+impl<T> ::std::cmp::PartialEq<T> for ItemId
+where
+    T: Copy + Into<ItemId>
+{
+    fn eq(&self, rhs: &T) -> bool {
+        let rhs: ItemId = (*rhs).into();
+        self.0 == rhs.0
     }
 }
 
@@ -651,7 +671,7 @@ impl BindgenContext {
         let is_template_instantiation = is_type &&
             item.expect_type().is_template_instantiation();
 
-        if item.id() != self.root_module.into() {
+        if item.id() != self.root_module {
             self.add_item_to_module(&item);
         }
 
@@ -715,7 +735,7 @@ impl BindgenContext {
     /// codegen'd, even if its parent is not whitelisted. See issue #769 for
     /// details.
     fn add_item_to_module(&mut self, item: &Item) {
-        assert!(item.id() != self.root_module.into());
+        assert!(item.id() != self.root_module);
         assert!(!self.items.contains_key(&item.id()));
 
         if let Some(parent) = self.items.get_mut(&item.parent_id()) {
@@ -1191,7 +1211,7 @@ impl BindgenContext {
             assert!(self.current_module == self.root_module);
 
             for (&id, _item) in self.items() {
-                if id == self.root_module.into() {
+                if id == self.root_module {
                     continue;
                 }
 

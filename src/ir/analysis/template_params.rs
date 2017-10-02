@@ -277,7 +277,7 @@ impl<'ctx> UsedTemplateParameters<'ctx> {
 
         let params = decl.self_template_params(self.ctx).unwrap_or(vec![]);
 
-        debug_assert!(this_id != instantiation.template_definition().into());
+        debug_assert!(this_id != instantiation.template_definition());
         let used_by_def = self.used
             .get(&instantiation.template_definition().into())
             .expect("Should have a used entry for instantiation's template definition")

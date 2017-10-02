@@ -2,7 +2,7 @@
 
 use super::analysis::HasVtable;
 use super::annotations::Annotations;
-use super::context::{BindgenContext, ItemId, TypeId, VarId};
+use super::context::{BindgenContext, FunctionId, ItemId, TypeId, VarId};
 use super::dot::DotAttributes;
 use super::item::{IsOpaque, Item};
 use super::layout::Layout;
@@ -53,13 +53,13 @@ pub struct Method {
     /// item, but a `Function` one.
     ///
     /// This is tricky and probably this field should be renamed.
-    signature: ItemId,
+    signature: FunctionId,
     is_const: bool,
 }
 
 impl Method {
     /// Construct a new `Method`.
-    pub fn new(kind: MethodKind, signature: ItemId, is_const: bool) -> Self {
+    pub fn new(kind: MethodKind, signature: FunctionId, is_const: bool) -> Self {
         Method {
             kind: kind,
             signature: signature,
@@ -94,8 +94,8 @@ impl Method {
         self.kind == MethodKind::Static
     }
 
-    /// Get the `ItemId` for the `Function` signature for this method.
-    pub fn signature(&self) -> ItemId {
+    /// Get the id for the `Function` signature for this method.
+    pub fn signature(&self) -> FunctionId {
         self.signature
     }
 
@@ -831,11 +831,11 @@ pub struct CompInfo {
     methods: Vec<Method>,
 
     /// The different constructors this struct or class contains.
-    constructors: Vec<ItemId>,
+    constructors: Vec<FunctionId>,
 
     /// The destructor of this type. The bool represents whether this destructor
     /// is virtual.
-    destructor: Option<(bool, ItemId)>,
+    destructor: Option<(bool, FunctionId)>,
 
     /// Vector of classes this one inherits from.
     base_members: Vec<Base>,
@@ -984,12 +984,12 @@ impl CompInfo {
     }
 
     /// Get this type's set of constructors.
-    pub fn constructors(&self) -> &[ItemId] {
+    pub fn constructors(&self) -> &[FunctionId] {
         &self.constructors
     }
 
     /// Get this type's destructor.
-    pub fn destructor(&self) -> Option<(bool, ItemId)> {
+    pub fn destructor(&self) -> Option<(bool, FunctionId)> {
         self.destructor
     }
 
@@ -1232,6 +1232,8 @@ impl CompInfo {
                                 .is_function() => item,
                             _ => return CXChildVisit_Continue,
                         };
+
+                    let signature = signature.expect_function_id(ctx);
 
                     match cur.kind() {
                         CXCursor_Constructor => {
@@ -1497,14 +1499,14 @@ impl Trace for CompInfo {
 
         for method in self.methods() {
             if method.is_destructor() {
-                tracer.visit_kind(method.signature, EdgeKind::Destructor);
+                tracer.visit_kind(method.signature.into(), EdgeKind::Destructor);
             } else {
-                tracer.visit_kind(method.signature, EdgeKind::Method);
+                tracer.visit_kind(method.signature.into(), EdgeKind::Method);
             }
         }
 
-        for &ctor in self.constructors() {
-            tracer.visit_kind(ctor, EdgeKind::Constructor);
+        for ctor in self.constructors() {
+            tracer.visit_kind(ctor.into(), EdgeKind::Constructor);
         }
 
         // Base members and fields are not generated for opaque types (but all

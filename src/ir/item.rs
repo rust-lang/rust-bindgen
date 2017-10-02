@@ -577,7 +577,7 @@ impl Item {
         // FIXME: Workaround for some types falling behind when parsing weird
         // stl classes, for example.
         if ctx.options().enable_cxx_namespaces && self.kind().is_module() &&
-            self.id() != ctx.root_module().into()
+            self.id() != ctx.root_module()
         {
             return false;
         }
@@ -589,7 +589,7 @@ impl Item {
                 None => return false,
             };
 
-            if parent_item.id() == ctx.root_module().into() {
+            if parent_item.id() == ctx.root_module() {
                 return true;
             } else if ctx.options().enable_cxx_namespaces ||
                        !parent_item.kind().is_module()
@@ -834,7 +834,7 @@ impl Item {
         let mut names: Vec<_> = target
             .parent_id()
             .ancestors(ctx)
-            .filter(|id| *id != ctx.root_module().into())
+            .filter(|id| *id != ctx.root_module())
             .take_while(|id| {
                 // Stop iterating ancestors once we reach a non-inline namespace
                 // when opt.within_namespaces is set.
