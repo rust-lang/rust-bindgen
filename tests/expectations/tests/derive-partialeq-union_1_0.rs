@@ -47,6 +47,7 @@ impl<T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
     }
 }
 impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
+/// This should manually derive PartialEq.
 #[repr(C)]
 #[derive(Copy)]
 pub struct ShouldDerivePartialEq {
