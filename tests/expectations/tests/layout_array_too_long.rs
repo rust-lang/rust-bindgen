@@ -31,31 +31,56 @@ pub struct ip_frag {
 }
 #[test]
 fn bindgen_test_layout_ip_frag() {
-    assert_eq!(::std::mem::size_of::<ip_frag>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( ip_frag ) ));
-    assert_eq! (::std::mem::align_of::<ip_frag>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( ip_frag ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ip_frag ) ) . ofs as * const _ as usize }
-                , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( ip_frag ) , "::" ,
-                stringify ! ( ofs ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ip_frag ) ) . len as * const _ as usize }
-                , 2usize , concat ! (
-                "Alignment of field: " , stringify ! ( ip_frag ) , "::" ,
-                stringify ! ( len ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ip_frag ) ) . mb as * const _ as usize }
-                , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( ip_frag ) , "::" ,
-                stringify ! ( mb ) ));
+    assert_eq!(
+        ::std::mem::size_of::<ip_frag>(),
+        16usize,
+        concat!("Size of: ", stringify!(ip_frag))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ip_frag>(),
+        8usize,
+        concat!("Alignment of ", stringify!(ip_frag))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ip_frag)).ofs as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ip_frag),
+            "::",
+            stringify!(ofs)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ip_frag)).len as *const _ as usize },
+        2usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ip_frag),
+            "::",
+            stringify!(len)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ip_frag)).mb as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ip_frag),
+            "::",
+            stringify!(mb)
+        )
+    );
 }
 impl Clone for ip_frag {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for ip_frag {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 /// @internal <src addr, dst_addr, id> to uniquely indetify fragmented datagram.
 #[repr(C)]
@@ -70,28 +95,51 @@ pub struct ip_frag_key {
 }
 #[test]
 fn bindgen_test_layout_ip_frag_key() {
-    assert_eq!(::std::mem::size_of::<ip_frag_key>() , 40usize , concat ! (
-               "Size of: " , stringify ! ( ip_frag_key ) ));
-    assert_eq! (::std::mem::align_of::<ip_frag_key>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( ip_frag_key ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ip_frag_key ) ) . src_dst as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( ip_frag_key ) , "::" ,
-                stringify ! ( src_dst ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ip_frag_key ) ) . id as * const _ as
-                usize } , 32usize , concat ! (
-                "Alignment of field: " , stringify ! ( ip_frag_key ) , "::" ,
-                stringify ! ( id ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ip_frag_key ) ) . key_len as * const _ as
-                usize } , 36usize , concat ! (
-                "Alignment of field: " , stringify ! ( ip_frag_key ) , "::" ,
-                stringify ! ( key_len ) ));
+    assert_eq!(
+        ::std::mem::size_of::<ip_frag_key>(),
+        40usize,
+        concat!("Size of: ", stringify!(ip_frag_key))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ip_frag_key>(),
+        8usize,
+        concat!("Alignment of ", stringify!(ip_frag_key))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ip_frag_key)).src_dst as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ip_frag_key),
+            "::",
+            stringify!(src_dst)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ip_frag_key)).id as *const _ as usize },
+        32usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ip_frag_key),
+            "::",
+            stringify!(id)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ip_frag_key)).key_len as *const _ as usize },
+        36usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ip_frag_key),
+            "::",
+            stringify!(key_len)
+        )
+    );
 }
 impl Clone for ip_frag_key {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 /// @internal Fragmented packet to reassemble.
 /// First two entries in the frags[] array are for the last and first fragments.
@@ -122,77 +170,141 @@ pub struct ip_frag_pkt__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<ip_frag_pkt__bindgen_ty_1>() , 16usize ,
-               concat ! (
-               "Size of: " , stringify ! ( ip_frag_pkt__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<ip_frag_pkt__bindgen_ty_1>() , 8usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( ip_frag_pkt__bindgen_ty_1 )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ip_frag_pkt__bindgen_ty_1 ) ) . tqe_next
-                as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                ip_frag_pkt__bindgen_ty_1 ) , "::" , stringify ! ( tqe_next )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ip_frag_pkt__bindgen_ty_1 ) ) . tqe_prev
-                as * const _ as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                ip_frag_pkt__bindgen_ty_1 ) , "::" , stringify ! ( tqe_prev )
-                ));
+    assert_eq!(
+        ::std::mem::size_of::<ip_frag_pkt__bindgen_ty_1>(),
+        16usize,
+        concat!("Size of: ", stringify!(ip_frag_pkt__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ip_frag_pkt__bindgen_ty_1>(),
+        8usize,
+        concat!("Alignment of ", stringify!(ip_frag_pkt__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ip_frag_pkt__bindgen_ty_1)).tqe_next as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ip_frag_pkt__bindgen_ty_1),
+            "::",
+            stringify!(tqe_next)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ip_frag_pkt__bindgen_ty_1)).tqe_prev as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ip_frag_pkt__bindgen_ty_1),
+            "::",
+            stringify!(tqe_prev)
+        )
+    );
 }
 impl Clone for ip_frag_pkt__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for ip_frag_pkt__bindgen_ty_1 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_ip_frag_pkt() {
-    assert_eq!(::std::mem::size_of::<ip_frag_pkt>() , 192usize , concat ! (
-               "Size of: " , stringify ! ( ip_frag_pkt ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ip_frag_pkt ) ) . lru as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( ip_frag_pkt ) , "::" ,
-                stringify ! ( lru ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ip_frag_pkt ) ) . key as * const _ as
-                usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( ip_frag_pkt ) , "::" ,
-                stringify ! ( key ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ip_frag_pkt ) ) . start as * const _ as
-                usize } , 56usize , concat ! (
-                "Alignment of field: " , stringify ! ( ip_frag_pkt ) , "::" ,
-                stringify ! ( start ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ip_frag_pkt ) ) . total_size as * const _
-                as usize } , 64usize , concat ! (
-                "Alignment of field: " , stringify ! ( ip_frag_pkt ) , "::" ,
-                stringify ! ( total_size ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ip_frag_pkt ) ) . frag_size as * const _
-                as usize } , 68usize , concat ! (
-                "Alignment of field: " , stringify ! ( ip_frag_pkt ) , "::" ,
-                stringify ! ( frag_size ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ip_frag_pkt ) ) . last_idx as * const _
-                as usize } , 72usize , concat ! (
-                "Alignment of field: " , stringify ! ( ip_frag_pkt ) , "::" ,
-                stringify ! ( last_idx ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ip_frag_pkt ) ) . frags as * const _ as
-                usize } , 80usize , concat ! (
-                "Alignment of field: " , stringify ! ( ip_frag_pkt ) , "::" ,
-                stringify ! ( frags ) ));
+    assert_eq!(
+        ::std::mem::size_of::<ip_frag_pkt>(),
+        192usize,
+        concat!("Size of: ", stringify!(ip_frag_pkt))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ip_frag_pkt)).lru as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ip_frag_pkt),
+            "::",
+            stringify!(lru)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ip_frag_pkt)).key as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ip_frag_pkt),
+            "::",
+            stringify!(key)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ip_frag_pkt)).start as *const _ as usize },
+        56usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ip_frag_pkt),
+            "::",
+            stringify!(start)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ip_frag_pkt)).total_size as *const _ as usize },
+        64usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ip_frag_pkt),
+            "::",
+            stringify!(total_size)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ip_frag_pkt)).frag_size as *const _ as usize },
+        68usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ip_frag_pkt),
+            "::",
+            stringify!(frag_size)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ip_frag_pkt)).last_idx as *const _ as usize },
+        72usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ip_frag_pkt),
+            "::",
+            stringify!(last_idx)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ip_frag_pkt)).frags as *const _ as usize },
+        80usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ip_frag_pkt),
+            "::",
+            stringify!(frags)
+        )
+    );
 }
 impl Clone for ip_frag_pkt {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for ip_frag_pkt {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
+}
+impl ::std::cmp::PartialEq for ip_frag_pkt {
+    fn eq(&self, other: &ip_frag_pkt) -> bool {
+        self.lru == other.lru && self.key == other.key && self.start == other.start &&
+            self.total_size == other.total_size && self.frag_size == other.frag_size &&
+            self.last_idx == other.last_idx && self.frags == other.frags
+    }
 }
 /// < fragment mbuf
 #[repr(C)]
@@ -201,5 +313,7 @@ pub struct rte_mbuf {
     pub _address: u8,
 }
 impl Clone for rte_mbuf {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }

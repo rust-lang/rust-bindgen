@@ -66,14 +66,18 @@ where
             Arg::with_name("no-derive-debug")
                 .long("no-derive-debug")
                 .help("Avoid deriving Debug on any type."),
-            Arg::with_name("impl-debug")
-                .long("impl-debug")
-                .help("Create Debug implementation, if it can not be derived \
-                       automatically."),
             Arg::with_name("no-derive-default")
                 .long("no-derive-default")
                 .hidden(true)
                 .help("Avoid deriving Default on any type."),
+            Arg::with_name("impl-debug")
+                .long("impl-debug")
+                .help("Create Debug implementation, if it can not be derived \
+                       automatically."),
+            Arg::with_name("impl-partialeq")
+                .long("impl-partialeq")
+                .help("Create PartialEq implementation, if it can not be derived \
+                       automatically."),
             Arg::with_name("with-derive-default")
                 .long("with-derive-default")
                 .help("Derive Default on any type."),
@@ -345,6 +349,10 @@ where
 
     if matches.is_present("impl-debug") {
         builder = builder.impl_debug(true);
+    }
+
+    if matches.is_present("impl-partialeq") {
+        builder = builder.impl_partialeq(true);
     }
 
     if matches.is_present("with-derive-default") {

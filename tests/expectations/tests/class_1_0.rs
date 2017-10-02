@@ -7,13 +7,15 @@
 #[repr(C)]
 #[derive(Default)]
 pub struct __IncompleteArrayField<T>(::std::marker::PhantomData<T>);
-impl <T> __IncompleteArrayField<T> {
+impl<T> __IncompleteArrayField<T> {
     #[inline]
     pub fn new() -> Self {
         __IncompleteArrayField(::std::marker::PhantomData)
     }
     #[inline]
-    pub unsafe fn as_ptr(&self) -> *const T { ::std::mem::transmute(self) }
+    pub unsafe fn as_ptr(&self) -> *const T {
+        ::std::mem::transmute(self)
+    }
     #[inline]
     pub unsafe fn as_mut_ptr(&mut self) -> *mut T {
         ::std::mem::transmute(self)
@@ -27,47 +29,61 @@ impl <T> __IncompleteArrayField<T> {
         ::std::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
     }
 }
-impl <T> ::std::fmt::Debug for __IncompleteArrayField<T> {
+impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         fmt.write_str("__IncompleteArrayField")
     }
 }
-impl <T> ::std::clone::Clone for __IncompleteArrayField<T> {
+impl<T> ::std::clone::Clone for __IncompleteArrayField<T> {
     #[inline]
-    fn clone(&self) -> Self { Self::new() }
+    fn clone(&self) -> Self {
+        Self::new()
+    }
 }
-impl <T> ::std::marker::Copy for __IncompleteArrayField<T> { }
+impl<T> ::std::marker::Copy for __IncompleteArrayField<T> {}
 #[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
-impl <T> __BindgenUnionField<T> {
+impl<T> __BindgenUnionField<T> {
     #[inline]
-    pub fn new() -> Self { __BindgenUnionField(::std::marker::PhantomData) }
+    pub fn new() -> Self {
+        __BindgenUnionField(::std::marker::PhantomData)
+    }
     #[inline]
-    pub unsafe fn as_ref(&self) -> &T { ::std::mem::transmute(self) }
+    pub unsafe fn as_ref(&self) -> &T {
+        ::std::mem::transmute(self)
+    }
     #[inline]
-    pub unsafe fn as_mut(&mut self) -> &mut T { ::std::mem::transmute(self) }
+    pub unsafe fn as_mut(&mut self) -> &mut T {
+        ::std::mem::transmute(self)
+    }
 }
-impl <T> ::std::default::Default for __BindgenUnionField<T> {
+impl<T> ::std::default::Default for __BindgenUnionField<T> {
     #[inline]
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
-impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
+impl<T> ::std::clone::Clone for __BindgenUnionField<T> {
     #[inline]
-    fn clone(&self) -> Self { Self::new() }
+    fn clone(&self) -> Self {
+        Self::new()
+    }
 }
-impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
-impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
+impl<T> ::std::marker::Copy for __BindgenUnionField<T> {}
+impl<T> ::std::fmt::Debug for __BindgenUnionField<T> {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         fmt.write_str("__BindgenUnionField")
     }
 }
-impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
-    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
+impl<T> ::std::hash::Hash for __BindgenUnionField<T> {
+    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) {}
 }
-impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
-    fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
+impl<T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
+    fn eq(&self, _other: &__BindgenUnionField<T>) -> bool {
+        true
+    }
 }
-impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
+impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 #[repr(C)]
 #[derive(Copy)]
 pub struct C {
@@ -76,25 +92,46 @@ pub struct C {
 }
 #[test]
 fn bindgen_test_layout_C() {
-    assert_eq!(::std::mem::size_of::<C>() , 40usize , concat ! (
-               "Size of: " , stringify ! ( C ) ));
-    assert_eq! (::std::mem::align_of::<C>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( C ) ));
-    assert_eq! (unsafe { & ( * ( 0 as * const C ) ) . a as * const _ as usize
-                } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
-                ! ( a ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const C ) ) . big_array as * const _ as usize }
-                , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
-                ! ( big_array ) ));
+    assert_eq!(
+        ::std::mem::size_of::<C>(),
+        40usize,
+        concat!("Size of: ", stringify!(C))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<C>(),
+        4usize,
+        concat!("Alignment of ", stringify!(C))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const C)).a as *const _ as usize },
+        0usize,
+        concat!("Alignment of field: ", stringify!(C), "::", stringify!(a))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const C)).big_array as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(C),
+            "::",
+            stringify!(big_array)
+        )
+    );
 }
 impl Clone for C {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for C {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
+}
+impl ::std::cmp::PartialEq for C {
+    fn eq(&self, other: &C) -> bool {
+        self.a == other.a && &self.big_array[..] == &other.big_array[..]
+    }
 }
 #[repr(C)]
 pub struct C_with_zero_length_array {
@@ -104,33 +141,53 @@ pub struct C_with_zero_length_array {
 }
 #[test]
 fn bindgen_test_layout_C_with_zero_length_array() {
-    assert_eq!(::std::mem::size_of::<C_with_zero_length_array>() , 40usize ,
-               concat ! (
-               "Size of: " , stringify ! ( C_with_zero_length_array ) ));
-    assert_eq! (::std::mem::align_of::<C_with_zero_length_array>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( C_with_zero_length_array ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const C_with_zero_length_array ) ) . a as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                C_with_zero_length_array ) , "::" , stringify ! ( a ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const C_with_zero_length_array ) ) . big_array
-                as * const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                C_with_zero_length_array ) , "::" , stringify ! ( big_array )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const C_with_zero_length_array ) ) .
-                zero_length_array as * const _ as usize } , 37usize , concat !
-                (
-                "Alignment of field: " , stringify ! (
-                C_with_zero_length_array ) , "::" , stringify ! (
-                zero_length_array ) ));
+    assert_eq!(
+        ::std::mem::size_of::<C_with_zero_length_array>(),
+        40usize,
+        concat!("Size of: ", stringify!(C_with_zero_length_array))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<C_with_zero_length_array>(),
+        4usize,
+        concat!("Alignment of ", stringify!(C_with_zero_length_array))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const C_with_zero_length_array)).a as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(C_with_zero_length_array),
+            "::",
+            stringify!(a)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const C_with_zero_length_array)).big_array as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(C_with_zero_length_array),
+            "::",
+            stringify!(big_array)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(0 as *const C_with_zero_length_array)).zero_length_array as *const _ as usize
+        },
+        37usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(C_with_zero_length_array),
+            "::",
+            stringify!(zero_length_array)
+        )
+    );
 }
 impl Default for C_with_zero_length_array {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct C_with_incomplete_array {
@@ -140,15 +197,21 @@ pub struct C_with_incomplete_array {
 }
 #[test]
 fn bindgen_test_layout_C_with_incomplete_array() {
-    assert_eq!(::std::mem::size_of::<C_with_incomplete_array>() , 40usize ,
-               concat ! (
-               "Size of: " , stringify ! ( C_with_incomplete_array ) ));
-    assert_eq! (::std::mem::align_of::<C_with_incomplete_array>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( C_with_incomplete_array ) ));
+    assert_eq!(
+        ::std::mem::size_of::<C_with_incomplete_array>(),
+        40usize,
+        concat!("Size of: ", stringify!(C_with_incomplete_array))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<C_with_incomplete_array>(),
+        4usize,
+        concat!("Alignment of ", stringify!(C_with_incomplete_array))
+    );
 }
 impl Default for C_with_incomplete_array {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct C_with_zero_length_array_and_incomplete_array {
@@ -159,17 +222,27 @@ pub struct C_with_zero_length_array_and_incomplete_array {
 }
 #[test]
 fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
-    assert_eq!(::std::mem::size_of::<C_with_zero_length_array_and_incomplete_array>()
-               , 40usize , concat ! (
-               "Size of: " , stringify ! (
-               C_with_zero_length_array_and_incomplete_array ) ));
-    assert_eq! (::std::mem::align_of::<C_with_zero_length_array_and_incomplete_array>()
-                , 4usize , concat ! (
-                "Alignment of " , stringify ! (
-                C_with_zero_length_array_and_incomplete_array ) ));
+    assert_eq!(
+        ::std::mem::size_of::<C_with_zero_length_array_and_incomplete_array>(),
+        40usize,
+        concat!(
+            "Size of: ",
+            stringify!(C_with_zero_length_array_and_incomplete_array)
+        )
+    );
+    assert_eq!(
+        ::std::mem::align_of::<C_with_zero_length_array_and_incomplete_array>(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(C_with_zero_length_array_and_incomplete_array)
+        )
+    );
 }
 impl Default for C_with_zero_length_array_and_incomplete_array {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Hash, PartialEq, Eq)]
@@ -178,15 +251,26 @@ pub struct WithDtor {
 }
 #[test]
 fn bindgen_test_layout_WithDtor() {
-    assert_eq!(::std::mem::size_of::<WithDtor>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( WithDtor ) ));
-    assert_eq! (::std::mem::align_of::<WithDtor>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( WithDtor ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const WithDtor ) ) . b as * const _ as usize }
-                , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( WithDtor ) , "::" ,
-                stringify ! ( b ) ));
+    assert_eq!(
+        ::std::mem::size_of::<WithDtor>(),
+        4usize,
+        concat!("Size of: ", stringify!(WithDtor))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<WithDtor>(),
+        4usize,
+        concat!("Alignment of ", stringify!(WithDtor))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const WithDtor)).b as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(WithDtor),
+            "::",
+            stringify!(b)
+        )
+    );
 }
 #[repr(C)]
 pub struct IncompleteArrayNonCopiable {
@@ -195,16 +279,21 @@ pub struct IncompleteArrayNonCopiable {
 }
 #[test]
 fn bindgen_test_layout_IncompleteArrayNonCopiable() {
-    assert_eq!(::std::mem::size_of::<IncompleteArrayNonCopiable>() , 8usize ,
-               concat ! (
-               "Size of: " , stringify ! ( IncompleteArrayNonCopiable ) ));
-    assert_eq! (::std::mem::align_of::<IncompleteArrayNonCopiable>() , 8usize
-                , concat ! (
-                "Alignment of " , stringify ! ( IncompleteArrayNonCopiable )
-                ));
+    assert_eq!(
+        ::std::mem::size_of::<IncompleteArrayNonCopiable>(),
+        8usize,
+        concat!("Size of: ", stringify!(IncompleteArrayNonCopiable))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<IncompleteArrayNonCopiable>(),
+        8usize,
+        concat!("Alignment of ", stringify!(IncompleteArrayNonCopiable))
+    );
 }
 impl Default for IncompleteArrayNonCopiable {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq)]
@@ -215,23 +304,41 @@ pub struct Union {
 }
 #[test]
 fn bindgen_test_layout_Union() {
-    assert_eq!(::std::mem::size_of::<Union>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( Union ) ));
-    assert_eq! (::std::mem::align_of::<Union>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( Union ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Union ) ) . d as * const _ as usize } ,
-                0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Union ) , "::" ,
-                stringify ! ( d ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Union ) ) . i as * const _ as usize } ,
-                0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Union ) , "::" ,
-                stringify ! ( i ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Union>(),
+        4usize,
+        concat!("Size of: ", stringify!(Union))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Union>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Union))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Union)).d as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Union),
+            "::",
+            stringify!(d)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Union)).i as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Union),
+            "::",
+            stringify!(i)
+        )
+    );
 }
 impl Clone for Union {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq)]
@@ -240,18 +347,31 @@ pub struct WithUnion {
 }
 #[test]
 fn bindgen_test_layout_WithUnion() {
-    assert_eq!(::std::mem::size_of::<WithUnion>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( WithUnion ) ));
-    assert_eq! (::std::mem::align_of::<WithUnion>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( WithUnion ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const WithUnion ) ) . data as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( WithUnion ) , "::" ,
-                stringify ! ( data ) ));
+    assert_eq!(
+        ::std::mem::size_of::<WithUnion>(),
+        4usize,
+        concat!("Size of: ", stringify!(WithUnion))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<WithUnion>(),
+        4usize,
+        concat!("Alignment of ", stringify!(WithUnion))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const WithUnion)).data as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(WithUnion),
+            "::",
+            stringify!(data)
+        )
+    );
 }
 impl Clone for WithUnion {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
@@ -260,41 +380,49 @@ pub struct RealAbstractionWithTonsOfMethods {
 }
 #[test]
 fn bindgen_test_layout_RealAbstractionWithTonsOfMethods() {
-    assert_eq!(::std::mem::size_of::<RealAbstractionWithTonsOfMethods>() ,
-               1usize , concat ! (
-               "Size of: " , stringify ! ( RealAbstractionWithTonsOfMethods )
-               ));
-    assert_eq! (::std::mem::align_of::<RealAbstractionWithTonsOfMethods>() ,
-                1usize , concat ! (
-                "Alignment of " , stringify ! (
-                RealAbstractionWithTonsOfMethods ) ));
+    assert_eq!(
+        ::std::mem::size_of::<RealAbstractionWithTonsOfMethods>(),
+        1usize,
+        concat!("Size of: ", stringify!(RealAbstractionWithTonsOfMethods))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<RealAbstractionWithTonsOfMethods>(),
+        1usize,
+        concat!(
+            "Alignment of ",
+            stringify!(RealAbstractionWithTonsOfMethods)
+        )
+    );
 }
 extern "C" {
     #[link_name = "_ZNK32RealAbstractionWithTonsOfMethods3barEv"]
-    pub fn RealAbstractionWithTonsOfMethods_bar(this:
-                                                    *const RealAbstractionWithTonsOfMethods);
+    pub fn RealAbstractionWithTonsOfMethods_bar(this: *const RealAbstractionWithTonsOfMethods);
 }
 extern "C" {
     #[link_name = "_ZN32RealAbstractionWithTonsOfMethods3barEv"]
-    pub fn RealAbstractionWithTonsOfMethods_bar1(this:
-                                                     *mut RealAbstractionWithTonsOfMethods);
+    pub fn RealAbstractionWithTonsOfMethods_bar1(this: *mut RealAbstractionWithTonsOfMethods);
 }
 extern "C" {
     #[link_name = "_ZN32RealAbstractionWithTonsOfMethods3barEi"]
-    pub fn RealAbstractionWithTonsOfMethods_bar2(this:
-                                                     *mut RealAbstractionWithTonsOfMethods,
-                                                 foo: ::std::os::raw::c_int);
+    pub fn RealAbstractionWithTonsOfMethods_bar2(
+        this: *mut RealAbstractionWithTonsOfMethods,
+        foo: ::std::os::raw::c_int,
+    );
 }
 extern "C" {
     #[link_name = "_ZN32RealAbstractionWithTonsOfMethods3staEv"]
     pub fn RealAbstractionWithTonsOfMethods_sta();
 }
 impl Clone for RealAbstractionWithTonsOfMethods {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl RealAbstractionWithTonsOfMethods {
     #[inline]
-    pub unsafe fn bar(&self) { RealAbstractionWithTonsOfMethods_bar(self) }
+    pub unsafe fn bar(&self) {
+        RealAbstractionWithTonsOfMethods_bar(self)
+    }
     #[inline]
     pub unsafe fn bar1(&mut self) {
         RealAbstractionWithTonsOfMethods_bar1(self)
@@ -304,5 +432,7 @@ impl RealAbstractionWithTonsOfMethods {
         RealAbstractionWithTonsOfMethods_bar2(self, foo)
     }
     #[inline]
-    pub unsafe fn sta() { RealAbstractionWithTonsOfMethods_sta() }
+    pub unsafe fn sta() {
+        RealAbstractionWithTonsOfMethods_sta()
+    }
 }

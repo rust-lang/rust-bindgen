@@ -806,6 +806,27 @@ impl Base {
     pub fn is_virtual(&self) -> bool {
         self.kind == BaseKind::Virtual
     }
+
+    /// Whether this base class should have it's own field for storage.
+    pub fn requires_storage(&self, ctx: &BindgenContext) -> bool {
+        // Virtual bases are already taken into account by the vtable
+        // pointer.
+        //
+        // FIXME(emilio): Is this always right?
+        if self.is_virtual() {
+            return false;
+        }
+
+        let base_ty = ctx.resolve_type(self.ty);
+        // NB: We won't include unsized types in our base chain because they
+        // would contribute to our size given the dummy field we insert for
+        // unsized types.
+        if base_ty.is_unsized(ctx, self.ty) {
+            return false;
+        }
+
+        true
+    }
 }
 
 /// A compound type.

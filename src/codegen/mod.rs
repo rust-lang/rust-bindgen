@@ -1,4 +1,5 @@
 mod impl_debug;
+mod impl_partialeq;
 mod error;
 mod helpers;
 pub mod struct_layout;
@@ -14,7 +15,7 @@ use ir::comp::{Base, Bitfield, BitfieldUnit, CompInfo, CompKind, Field,
 use ir::context::{BindgenContext, ItemId};
 use ir::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
                  CanDeriveHash, CanDerivePartialOrd, CanDeriveOrd,
-                 CanDerivePartialEq, CanDeriveEq};
+                 CanDerivePartialEq, CanDeriveEq, CannotDeriveReason};
 use ir::dot;
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
 use ir::function::{Abi, Function, FunctionSig};
@@ -1420,6 +1421,7 @@ impl CodeGenerator for CompInfo {
         let mut needs_clone_impl = false;
         let mut needs_default_impl = false;
         let mut needs_debug_impl = false;
+        let mut needs_partialeq_impl = false;
         if let Some(comment) = item.comment(ctx) {
             attributes.push(attributes::doc(comment));
         }
@@ -1475,6 +1477,14 @@ impl CodeGenerator for CompInfo {
 
         if item.can_derive_partialeq(ctx) {
             derives.push("PartialEq");
+        } else {
+            needs_partialeq_impl = 
+                ctx.options().derive_partialeq && 
+                ctx.options().impl_partialeq &&
+                ctx.lookup_can_derive_partialeq_or_partialord(item.id())
+                    .map_or(true, |x| {
+                        x == CannotDeriveReason::ArrayTooLarge
+                    });
         }
 
         if item.can_derive_eq(ctx) {
@@ -1535,25 +1545,14 @@ impl CodeGenerator for CompInfo {
             }
 
             for base in self.base_members() {
-                // Virtual bases are already taken into account by the vtable
-                // pointer.
-                //
-                // FIXME(emilio): Is this always right?
-                if base.is_virtual() {
-                    continue;
-                }
-
-                let base_ty = ctx.resolve_type(base.ty);
-                // NB: We won't include unsized types in our base chain because they
-                // would contribute to our size given the dummy field we insert for
-                // unsized types.
-                if base_ty.is_unsized(ctx, base.ty) {
+                if !base.requires_storage(ctx) {
                     continue;
                 }
 
                 let inner = base.ty.to_rust_ty_or_opaque(ctx, &());
                 let field_name = ctx.rust_ident(&base.field_name);
 
+                let base_ty = ctx.resolve_type(base.ty);
                 struct_layout.saw_base(base_ty);
 
                 fields.push(quote! {
@@ -1667,32 +1666,33 @@ impl CodeGenerator for CompInfo {
             }
         }
 
-        let mut generics = quote! {};
+        let mut generic_param_names = vec![];
 
         if let Some(ref params) = used_template_params {
-            if !params.is_empty() {
-                let mut param_names = vec![];
+            for (idx, ty) in params.iter().enumerate() {
+                let param = ctx.resolve_type(*ty);
+                let name = param.name().unwrap();
+                let ident = ctx.rust_ident(name);
+                generic_param_names.push(ident.clone());
 
-                for (idx, ty) in params.iter().enumerate() {
-                    let param = ctx.resolve_type(*ty);
-                    let name = param.name().unwrap();
-                    let ident = ctx.rust_ident(name);
-                    param_names.push(ident.clone());
-
-                    let prefix = ctx.trait_prefix();
-                    let field_name = ctx.rust_ident(format!("_phantom_{}", idx));
-                    fields.push(quote! {
-                        pub #field_name : ::#prefix::marker::PhantomData<
-                            ::#prefix::cell::UnsafeCell<#ident>
-                        > ,
-                    });
-                }
-
-                generics = quote! {
-                    < #( #param_names ),* >
-                };
+                let prefix = ctx.trait_prefix();
+                let field_name = ctx.rust_ident(format!("_phantom_{}", idx));
+                fields.push(quote! {
+                    pub #field_name : ::#prefix::marker::PhantomData<
+                        ::#prefix::cell::UnsafeCell<#ident>
+                    > ,
+                });
             }
         }
+
+        let generics = if !generic_param_names.is_empty() {
+            let generic_param_names = generic_param_names.clone();
+            quote! {
+                < #( #generic_param_names ),* >
+            }
+        } else {
+            quote! { }
+        };
 
         tokens.append(quote! {
             #generics {
@@ -1894,6 +1894,27 @@ impl CodeGenerator for CompInfo {
                     #impl_
                 }
             });
+        }
+
+        if needs_partialeq_impl {
+            if let Some(impl_) = impl_partialeq::gen_partialeq_impl(ctx, self, item, &ty_for_impl) {
+                
+                let partialeq_bounds = if !generic_param_names.is_empty() {
+                    let bounds = generic_param_names.iter().map(|t| {
+                        quote! { #t: PartialEq }
+                    });
+                    quote! { where #( #bounds ),* }
+                } else {
+                    quote! { }
+                };
+
+                let prefix = ctx.trait_prefix();
+                result.push(quote! {
+                    impl #generics ::#prefix::cmp::PartialEq for #ty_for_impl #partialeq_bounds {
+                        #impl_
+                    }
+                });
+            }
         }
 
         if !methods.is_empty() {
