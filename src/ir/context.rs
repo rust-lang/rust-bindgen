@@ -154,6 +154,25 @@ item_id_newtype! {
         unchecked = as_var_id_unchecked;
 }
 
+item_id_newtype! {
+    /// An identifier for an `Item` whose `ItemKind` is known to be
+    /// `ItemKind::Function`.
+    pub struct FunctionId(ItemId)
+    where
+        /// Convert this `ItemId` into a `FunctionId` if its associated item is a function,
+        /// otherwise return `None`.
+        checked = as_function_id with is_function,
+
+        /// Convert this `ItemId` into a `FunctionId`.
+        ///
+        /// If this `ItemId` does not point to a function, then panic.
+        expected = expect_function_id,
+
+        /// Convert this `ItemId` into a `FunctionId` without actually checking whether
+        /// this id actually points to a `Function`.
+        unchecked = as_function_id_unchecked;
+}
+
 impl From<ItemId> for usize {
     fn from(id: ItemId) -> usize {
         id.0
