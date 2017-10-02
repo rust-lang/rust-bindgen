@@ -999,13 +999,17 @@ where
     T: Copy + Into<ItemId>
 {
     fn has_vtable(&self, ctx: &BindgenContext) -> bool {
-        ctx.lookup_item_id_has_vtable(*self)
+        let id: ItemId = (*self).into();
+        id.as_type_id(ctx)
+            .map_or(false, |id| ctx.lookup_item_id_has_vtable(id))
     }
 }
 
 impl HasVtable for Item {
     fn has_vtable(&self, ctx: &BindgenContext) -> bool {
-        ctx.lookup_item_id_has_vtable(self.id())
+        self.id()
+            .as_type_id(ctx)
+            .map_or(false, |id| ctx.lookup_item_id_has_vtable(id))
     }
 }
 

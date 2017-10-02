@@ -1253,7 +1253,7 @@ impl BindgenContext {
     }
 
     /// Look up whether the item with `id` has vtable or not.
-    pub fn lookup_item_id_has_vtable<Id: Into<ItemId>>(&self, id: Id) -> bool {
+    pub fn lookup_item_id_has_vtable(&self, id: TypeId) -> bool {
         assert!(
             self.in_codegen_phase(),
             "We only compute vtables when we enter codegen"

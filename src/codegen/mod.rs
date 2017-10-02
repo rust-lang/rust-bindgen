@@ -1626,7 +1626,7 @@ impl CodeGenerator for CompInfo {
                     warn!("Opaque type without layout! Expect dragons!");
                 }
             }
-        } else if !is_union && !self.is_unsized(ctx, item.id()) {
+        } else if !is_union && !self.is_unsized(ctx, item.id().expect_type_id(ctx)) {
             if let Some(padding_field) =
                 layout.and_then(|layout| struct_layout.pad_struct(layout))
             {
@@ -1650,7 +1650,7 @@ impl CodeGenerator for CompInfo {
         //
         // NOTE: This check is conveniently here to avoid the dummy fields we
         // may add for unused template parameters.
-        if self.is_unsized(ctx, item.id()) {
+        if self.is_unsized(ctx, item.id().expect_type_id(ctx)) {
             let has_address = if is_opaque {
                 // Generate the address field if it's an opaque type and
                 // couldn't determine the layout of the blob.
