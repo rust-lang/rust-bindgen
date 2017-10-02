@@ -368,12 +368,10 @@ impl<'ctx> MonotoneFramework for CannotDerivePartialEqOrPartialOrd<'ctx> {
    fn constrain(&mut self, id: ItemId) -> ConstrainResult {
         trace!("constrain: {:?}", id);
 
-        if Some(CannotDeriveReason::Other)
-            == self.cannot_derive_partialeq_or_partialord.get(&id).cloned()
+        if let Some(CannotDeriveReason::Other) =
+            self.cannot_derive_partialeq_or_partialord.get(&id).cloned()
         {
-            trace!(
-                "    already know it cannot derive `PartialEq`/`PartialOrd`"
-            );
+            trace!("    already know it cannot derive `PartialEq`/`PartialOrd`");
             return ConstrainResult::Same;
         }
 
