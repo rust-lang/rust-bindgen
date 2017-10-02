@@ -2,7 +2,7 @@
 
 use super::analysis::HasVtable;
 use super::annotations::Annotations;
-use super::context::{BindgenContext, ItemId, TypeId};
+use super::context::{BindgenContext, ItemId, TypeId, VarId};
 use super::dot::DotAttributes;
 use super::item::{IsOpaque, Item};
 use super::layout::Layout;
@@ -853,7 +853,7 @@ pub struct CompInfo {
     inner_types: Vec<TypeId>,
 
     /// Set of static constants declared inside this class.
-    inner_vars: Vec<ItemId>,
+    inner_vars: Vec<VarId>,
 
     /// Whether this type should generate an vtable (TODO: Should be able to
     /// look at the virtual methods and ditch this field).
@@ -1276,7 +1276,7 @@ impl CompInfo {
                     if let Ok(item) = Item::parse(cur,
                                                   Some(potential_id),
                                                   ctx) {
-                        ci.inner_vars.push(item);
+                        ci.inner_vars.push(item.as_var_id_unchecked());
                     }
                 }
                 // Intentionally not handled
@@ -1334,7 +1334,7 @@ impl CompInfo {
     }
 
     /// Get the set of static variables declared within this compound type.
-    pub fn inner_vars(&self) -> &[ItemId] {
+    pub fn inner_vars(&self) -> &[VarId] {
         &self.inner_vars
     }
 
@@ -1492,7 +1492,7 @@ impl Trace for CompInfo {
         }
 
         for &var in self.inner_vars() {
-            tracer.visit_kind(var, EdgeKind::InnerVar);
+            tracer.visit_kind(var.into(), EdgeKind::InnerVar);
         }
 
         for method in self.methods() {
