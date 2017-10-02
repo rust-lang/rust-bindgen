@@ -1272,13 +1272,13 @@ impl BindgenContext {
     }
 
     /// Look up whether the item with `id` has a destructor.
-    pub fn lookup_item_id_has_destructor(&self, id: &ItemId) -> bool {
+    pub fn lookup_item_id_has_destructor(&self, id: TypeId) -> bool {
         assert!(
             self.in_codegen_phase(),
             "We only compute destructors when we enter codegen"
         );
 
-        self.have_destructor.as_ref().unwrap().contains(id)
+        self.have_destructor.as_ref().unwrap().contains(&id.into())
     }
 
     fn find_used_template_parameters(&mut self) {
