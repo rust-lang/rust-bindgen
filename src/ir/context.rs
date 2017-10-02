@@ -211,7 +211,7 @@ where
     T: Copy + Into<ItemId>
 {
     fn can_derive_debug(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_debug && ctx.lookup_item_id_can_derive_debug(*self)
+        ctx.options().derive_debug && ctx.lookup_can_derive_debug(*self)
     }
 }
 
@@ -221,7 +221,7 @@ where
 {
     fn can_derive_default(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_default &&
-            ctx.lookup_item_id_can_derive_default(*self)
+            ctx.lookup_can_derive_default(*self)
     }
 }
 
@@ -230,7 +230,7 @@ where
     T: Copy + Into<ItemId>
 {
     fn can_derive_copy(&self, ctx: &BindgenContext) -> bool {
-        ctx.lookup_item_id_can_derive_copy(*self)
+        ctx.lookup_can_derive_copy(*self)
     }
 }
 
@@ -239,7 +239,7 @@ where
     T: Copy + Into<ItemId>
 {
     fn can_derive_hash(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_hash && ctx.lookup_item_id_can_derive_hash(*self)
+        ctx.options().derive_hash && ctx.lookup_can_derive_hash(*self)
     }
 }
 
@@ -249,7 +249,7 @@ where
 {
     fn can_derive_partialord(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_partialord &&
-            ctx.lookup_item_id_can_derive_partialeq_or_partialord(*self)
+            ctx.lookup_can_derive_partialeq_or_partialord(*self)
     }
 }
 
@@ -259,7 +259,7 @@ where
 {
     fn can_derive_partialeq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_partialeq &&
-            ctx.lookup_item_id_can_derive_partialeq_or_partialord(*self)
+            ctx.lookup_can_derive_partialeq_or_partialord(*self)
     }
 }
 
@@ -269,8 +269,8 @@ where
 {
     fn can_derive_eq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_eq &&
-            ctx.lookup_item_id_can_derive_partialeq_or_partialord(*self) &&
-            !ctx.lookup_item_id_has_float(*self)
+            ctx.lookup_can_derive_partialeq_or_partialord(*self) &&
+            !ctx.lookup_has_float(*self)
     }
 }
 
@@ -280,8 +280,8 @@ where
 {
     fn can_derive_ord(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_ord &&
-            ctx.lookup_item_id_can_derive_partialeq_or_partialord(*self) &&
-            !ctx.lookup_item_id_has_float(*self)
+            ctx.lookup_can_derive_partialeq_or_partialord(*self) &&
+            !ctx.lookup_has_float(*self)
     }
 }
 
@@ -1253,7 +1253,7 @@ impl BindgenContext {
     }
 
     /// Look up whether the item with `id` has vtable or not.
-    pub fn lookup_item_id_has_vtable(&self, id: TypeId) -> bool {
+    pub fn lookup_has_vtable(&self, id: TypeId) -> bool {
         assert!(
             self.in_codegen_phase(),
             "We only compute vtables when we enter codegen"
@@ -1272,7 +1272,7 @@ impl BindgenContext {
     }
 
     /// Look up whether the item with `id` has a destructor.
-    pub fn lookup_item_id_has_destructor(&self, id: TypeId) -> bool {
+    pub fn lookup_has_destructor(&self, id: TypeId) -> bool {
         assert!(
             self.in_codegen_phase(),
             "We only compute destructors when we enter codegen"
@@ -2289,7 +2289,7 @@ impl BindgenContext {
 
     /// Look up whether the item with `id` can
     /// derive debug or not.
-    pub fn lookup_item_id_can_derive_debug<Id: Into<ItemId>>(&self, id: Id) -> bool {
+    pub fn lookup_can_derive_debug<Id: Into<ItemId>>(&self, id: Id) -> bool {
         let id = id.into();
         assert!(
             self.in_codegen_phase(),
@@ -2313,7 +2313,7 @@ impl BindgenContext {
 
     /// Look up whether the item with `id` can
     /// derive default or not.
-    pub fn lookup_item_id_can_derive_default<Id: Into<ItemId>>(&self, id: Id) -> bool {
+    pub fn lookup_can_derive_default<Id: Into<ItemId>>(&self, id: Id) -> bool {
         let id = id.into();
         assert!(
             self.in_codegen_phase(),
@@ -2343,7 +2343,7 @@ impl BindgenContext {
 
     /// Look up whether the item with `id` can
     /// derive hash or not.
-    pub fn lookup_item_id_can_derive_hash<Id: Into<ItemId>>(&self, id: Id) -> bool {
+    pub fn lookup_can_derive_hash<Id: Into<ItemId>>(&self, id: Id) -> bool {
         let id = id.into();
         assert!(
             self.in_codegen_phase(),
@@ -2365,7 +2365,7 @@ impl BindgenContext {
     }
 
     /// Look up whether the item with `id` can derive `Partial{Eq,Ord}`.
-    pub fn lookup_item_id_can_derive_partialeq_or_partialord<Id: Into<ItemId>>(&self, id: Id) -> bool {
+    pub fn lookup_can_derive_partialeq_or_partialord<Id: Into<ItemId>>(&self, id: Id) -> bool {
         let id = id.into();
         assert!(
             self.in_codegen_phase(),
@@ -2378,7 +2378,7 @@ impl BindgenContext {
     }
 
     /// Look up whether the item with `id` can derive `Copy` or not.
-    pub fn lookup_item_id_can_derive_copy<Id: Into<ItemId>>(&self, id: Id) -> bool {
+    pub fn lookup_can_derive_copy<Id: Into<ItemId>>(&self, id: Id) -> bool {
         assert!(
             self.in_codegen_phase(),
             "We only compute can_derive_debug when we enter codegen"
@@ -2387,7 +2387,7 @@ impl BindgenContext {
         // Look up the computed value for whether the item with `id` can
         // derive `Copy` or not.
         let id = id.into();
-        !self.lookup_item_id_has_type_param_in_array(id) &&
+        !self.lookup_has_type_param_in_array(id) &&
             !self.cannot_derive_copy.as_ref().unwrap().contains(&id)
     }
 
@@ -2400,7 +2400,7 @@ impl BindgenContext {
     }
 
     /// Look up whether the item with `id` has type parameter in array or not.
-    pub fn lookup_item_id_has_type_param_in_array<Id: Into<ItemId>>(&self, id: Id) -> bool {
+    pub fn lookup_has_type_param_in_array<Id: Into<ItemId>>(&self, id: Id) -> bool {
         assert!(
             self.in_codegen_phase(),
             "We only compute has array when we enter codegen"
@@ -2421,7 +2421,7 @@ impl BindgenContext {
     }
 
     /// Look up whether the item with `id` has array or not.
-    pub fn lookup_item_id_has_float<Id: Into<ItemId>>(&self, id: Id) -> bool {
+    pub fn lookup_has_float<Id: Into<ItemId>>(&self, id: Id) -> bool {
         assert!(self.in_codegen_phase(),
                 "We only compute has float when we enter codegen");
 

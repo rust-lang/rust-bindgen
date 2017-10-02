@@ -320,57 +320,57 @@ impl Trace for Item {
 impl CanDeriveDebug for Item {
     fn can_derive_debug(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_debug &&
-            ctx.lookup_item_id_can_derive_debug(self.id())
+            ctx.lookup_can_derive_debug(self.id())
     }
 }
 
 impl CanDeriveDefault for Item {
     fn can_derive_default(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_default &&
-            ctx.lookup_item_id_can_derive_default(self.id())
+            ctx.lookup_can_derive_default(self.id())
     }
 }
 
 impl<'a> CanDeriveCopy<'a> for Item {
     fn can_derive_copy(&self, ctx: &BindgenContext) -> bool {
-        ctx.lookup_item_id_can_derive_copy(self.id())
+        ctx.lookup_can_derive_copy(self.id())
     }
 }
 
 impl CanDeriveHash for Item {
     fn can_derive_hash(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_hash &&
-            ctx.lookup_item_id_can_derive_hash(self.id())
+            ctx.lookup_can_derive_hash(self.id())
     }
 }
 
 impl CanDerivePartialOrd for Item {
     fn can_derive_partialord(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_partialord &&
-            ctx.lookup_item_id_can_derive_partialeq_or_partialord(self.id())
+            ctx.lookup_can_derive_partialeq_or_partialord(self.id())
     }
 }
 
 impl CanDerivePartialEq for Item {
     fn can_derive_partialeq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_partialeq &&
-            ctx.lookup_item_id_can_derive_partialeq_or_partialord(self.id())
+            ctx.lookup_can_derive_partialeq_or_partialord(self.id())
     }
 }
 
 impl CanDeriveEq for Item {
     fn can_derive_eq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_eq &&
-            ctx.lookup_item_id_can_derive_partialeq_or_partialord(self.id()) &&
-            !ctx.lookup_item_id_has_float(self.id())
+            ctx.lookup_can_derive_partialeq_or_partialord(self.id()) &&
+            !ctx.lookup_has_float(self.id())
     }
 }
 
 impl CanDeriveOrd for Item {
     fn can_derive_ord(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_ord &&
-            ctx.lookup_item_id_can_derive_partialeq_or_partialord(self.id()) &&
-            !ctx.lookup_item_id_has_float(self.id())
+            ctx.lookup_can_derive_partialeq_or_partialord(self.id()) &&
+            !ctx.lookup_has_float(self.id())
     }
 }
 
@@ -1001,7 +1001,7 @@ where
     fn has_vtable(&self, ctx: &BindgenContext) -> bool {
         let id: ItemId = (*self).into();
         id.as_type_id(ctx)
-            .map_or(false, |id| ctx.lookup_item_id_has_vtable(id))
+            .map_or(false, |id| ctx.lookup_has_vtable(id))
     }
 }
 
@@ -1009,7 +1009,7 @@ impl HasVtable for Item {
     fn has_vtable(&self, ctx: &BindgenContext) -> bool {
         self.id()
             .as_type_id(ctx)
-            .map_or(false, |id| ctx.lookup_item_id_has_vtable(id))
+            .map_or(false, |id| ctx.lookup_has_vtable(id))
     }
 }
 
@@ -1022,7 +1022,7 @@ where
             ctx.in_codegen_phase(),
             "You're not supposed to call this yet"
         );
-        ctx.lookup_item_id_has_type_param_in_array(*self)
+        ctx.lookup_has_type_param_in_array(*self)
     }
 }
 
@@ -1032,7 +1032,7 @@ impl HasTypeParamInArray for Item {
             ctx.in_codegen_phase(),
             "You're not supposed to call this yet"
         );
-        ctx.lookup_item_id_has_type_param_in_array(self.id())
+        ctx.lookup_has_type_param_in_array(self.id())
     }
 }
 
@@ -1043,7 +1043,7 @@ where
     fn has_float(&self, ctx: &BindgenContext) -> bool {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
-        ctx.lookup_item_id_has_float(*self)
+        ctx.lookup_has_float(*self)
     }
 }
 
@@ -1051,7 +1051,7 @@ impl HasFloat for Item {
     fn has_float(&self, ctx: &BindgenContext) -> bool {
         debug_assert!(ctx.in_codegen_phase(),
                       "You're not supposed to call this yet");
-        ctx.lookup_item_id_has_float(self.id())
+        ctx.lookup_has_float(self.id())
     }
 }
 

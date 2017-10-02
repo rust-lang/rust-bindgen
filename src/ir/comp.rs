@@ -912,7 +912,7 @@ impl CompInfo {
 
     /// Is this compound type unsized?
     pub fn is_unsized(&self, ctx: &BindgenContext, id: TypeId) -> bool {
-        !ctx.lookup_item_id_has_vtable(id) && self.fields().is_empty() &&
+        !ctx.lookup_has_vtable(id) && self.fields().is_empty() &&
             self.base_members.iter().all(|base| {
                 ctx.resolve_type(base.ty).canonical_type(ctx).is_unsized(
                     ctx,
