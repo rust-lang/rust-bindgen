@@ -1473,8 +1473,25 @@ impl DotAttributes for CompInfo {
 impl IsOpaque for CompInfo {
     type Extra = ();
 
-    fn is_opaque(&self, _: &BindgenContext, _: &()) -> bool {
-        self.has_non_type_template_params
+    fn is_opaque(&self, ctx: &BindgenContext, _: &()) -> bool {
+        // Early return to avoid extra computation
+        if self.has_non_type_template_params {
+            return true
+        }
+
+        self.fields().iter().any(|f| match *f {
+            Field::DataMember(_) => {
+                false
+            },
+            Field::Bitfields(ref unit) => {
+                    unit.bitfields().iter().any(|bf| {
+                    let bitfield_layout = ctx.resolve_type(bf.ty())
+                        .layout(ctx)
+                        .expect("Bitfield without layout? Gah!");
+                    bf.width() / 8 > bitfield_layout.size as u32
+                })
+            }
+        })
     }
 }
 

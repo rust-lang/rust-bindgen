@@ -5,13 +5,26 @@
 
 
 #[repr(C)]
+#[derive(Debug, Default, Copy)]
 pub struct _bindgen_ty_1 {
-    pub _bitfield_1: [u8; 128usize],
-    pub __bindgen_align: [u64; 0usize],
+    pub _bindgen_opaque_blob: [u64; 10usize],
 }
-impl Default for _bindgen_ty_1 {
-    fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
+#[test]
+fn bindgen_test_layout__bindgen_ty_1() {
+    assert_eq!(
+        ::std::mem::size_of::<_bindgen_ty_1>(),
+        80usize,
+        concat!("Size of: ", stringify!(_bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<_bindgen_ty_1>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_bindgen_ty_1))
+    );
+}
+impl Clone for _bindgen_ty_1 {
+    fn clone(&self) -> Self {
+        *self
     }
 }
 extern "C" {
