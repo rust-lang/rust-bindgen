@@ -276,7 +276,7 @@ impl DotAttributes for Bitfield {
         writeln!(
             out,
             "<tr><td>{} : {}</td><td>{:?}</td></tr>",
-            self.name(),
+            self.name().unwrap_or("(anonymous)"),
             self.width(),
             self.ty()
         )
@@ -298,7 +298,6 @@ impl Bitfield {
     /// Construct a new bitfield.
     fn new(offset_into_unit: usize, raw: RawField) -> Bitfield {
         assert!(raw.bitfield().is_some());
-        assert!(raw.name().is_some());
 
         Bitfield {
             offset_into_unit: offset_into_unit,
@@ -331,11 +330,6 @@ impl Bitfield {
     /// Get the bit width of this bitfield.
     pub fn width(&self) -> u32 {
         self.data.bitfield().unwrap()
-    }
-
-    /// Get the name of this bitfield.
-    pub fn name(&self) -> &str {
-        self.data.name().unwrap()
     }
 }
 
@@ -581,13 +575,12 @@ fn bitfields_to_allocation_units<E, I>(
             }
         }
 
-        // Only keep named bitfields around. Unnamed bitfields (with > 0
-        // bitsize) are used for padding. Because the `Bitfield` struct stores
-        // the bit-offset into its allocation unit where its bits begin, we
-        // don't need any padding bits hereafter.
-        if bitfield.name().is_some() {
-            bitfields_in_unit.push(Bitfield::new(offset, bitfield));
-        }
+        // Always keep all bitfields around. While unnamed bitifields are used
+        // for padding (and usually not needed hereafter), large unnamed
+        // bitfields over their types size cause weird allocation size behavior from clang.
+        // Therefore, all bitfields needed to be kept around in order to check for this
+        // and make the struct opaque in this case
+        bitfields_in_unit.push(Bitfield::new(offset, bitfield));
 
         max_align = cmp::max(max_align, bitfield_align);
 
