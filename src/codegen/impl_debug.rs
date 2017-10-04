@@ -95,11 +95,14 @@ impl<'a> ImplDebug<'a> for BitfieldUnit {
             if i > 0 {
                 format_string.push_str(", ");
             }
-            format_string.push_str(&format!("{} : {{:?}}", bu.name()));
-            let name_ident = ctx.rust_ident_raw(bu.name());
-            tokens.push(quote! {
-                self.#name_ident ()
-            });
+
+            if let Some(name) = bu.name() {
+                format_string.push_str(&format!("{} : {{:?}}", name));
+                let name_ident = ctx.rust_ident_raw(name);
+                tokens.push(quote! {
+                    self.#name_ident ()
+                });
+            }
         }
 
         Some((format_string, tokens))

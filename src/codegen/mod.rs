@@ -1185,6 +1185,10 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         let mut ctor_impl = quote! { 0 };
 
         for bf in self.bitfields() {
+            // Codegen not allowed for anonymous bitfields
+            if bf.name().is_none() {
+                continue;
+            }
             bf.codegen(
                 ctx,
                 fields_should_be_private,
@@ -1198,7 +1202,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 (&unit_field_name, unit_field_int_ty.clone()),
             );
 
-            let param_name = bitfield_getter_name(ctx, parent, bf.name());
+            let param_name = bitfield_getter_name(ctx, parent, bf.name().unwrap());
             let bitfield_ty_item = ctx.resolve_item(bf.ty());
             let bitfield_ty = bitfield_ty_item.expect_type();
             let bitfield_ty =
@@ -1307,9 +1311,11 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         F: Extend<quote::Tokens>,
         M: Extend<quote::Tokens>,
     {
+        // Should never be called with name() as None, as codegen can't be done
+        // on an anonymous bitfield
         let prefix = ctx.trait_prefix();
-        let getter_name = bitfield_getter_name(ctx, parent, self.name());
-        let setter_name = bitfield_setter_name(ctx, parent, self.name());
+        let getter_name = bitfield_getter_name(ctx, parent, self.name().unwrap());
+        let setter_name = bitfield_setter_name(ctx, parent, self.name().unwrap());
         let unit_field_ident = quote::Ident::new(unit_field_name);
 
         let bitfield_ty_item = ctx.resolve_item(self.ty());

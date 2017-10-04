@@ -18,4 +18,3 @@ extern "C" {
     #[link_name = "a"]
     pub static mut a: _bindgen_ty_1;
 }
-
