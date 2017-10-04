@@ -15,6 +15,7 @@ use super::module::{Module, ModuleKind};
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
+use super::function::Function;
 use super::super::time::Timer;
 use BindgenOptions;
 use callbacks::ParseCallbacks;
@@ -994,12 +995,31 @@ impl BindgenContext {
     /// Assign a new generated name for each anonymous field.
     fn deanonymize_fields(&mut self) {
         let _t = self.timer("deanonymize_fields");
-        let comp_types = self.items
-            .values_mut()
-            .filter_map(|item| item.kind_mut().as_type_mut())
-            .filter_map(Type::as_comp_mut);
-        for comp_info in comp_types {
-            comp_info.deanonymize_fields();
+
+        let comp_item_ids: Vec<ItemId> = self.items
+            .iter()
+            .filter_map(|(id, item)| {
+                if let Some(ty) = item.kind().as_type() {
+                    if let Some(_comp) = ty.as_comp() {
+                        return Some(id);
+                    }
+                }
+                None
+            })
+            .cloned()
+            .collect();
+
+        for id in comp_item_ids {
+            let mut item = self.items.remove(&id).unwrap();
+
+            item.kind_mut()
+                .as_type_mut()
+                .unwrap()
+                .as_comp_mut()
+                .unwrap()
+                .deanonymize_fields(self);
+
+            self.items.insert(id, item);
         }
     }
 
@@ -1391,12 +1411,20 @@ impl BindgenContext {
         self.root_module
     }
 
-    /// Resolve the given `ItemId` as a type.
+    /// Resolve a type with the given id.
     ///
-    /// Panics if there is no item for the given `ItemId` or if the resolved
+    /// Panics if there is no item for the given `TypeId` or if the resolved
     /// item is not a `Type`.
     pub fn resolve_type(&self, type_id: TypeId) -> &Type {
-        self.items.get(&type_id.into()).unwrap().kind().expect_type()
+        self.resolve_item(type_id).kind().expect_type()
+    }
+
+    /// Resolve a function with the given id.
+    /// 
+    /// Panics if there is no item for the given `FunctionId` or if the resolved
+    /// item is not a `Function`. 
+    pub fn resolve_func(&self, func_id: FunctionId) -> &Function {
+        self.resolve_item(func_id).kind().expect_function()
     }
 
     /// Resolve the given `ItemId` as a type, or `None` if there is no item with
