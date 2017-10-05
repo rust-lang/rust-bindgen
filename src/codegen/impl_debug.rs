@@ -28,7 +28,6 @@ pub fn gen_debug_impl(
                     &Field::Bitfields(ref bu) => bu.impl_debug(ctx, ()),
                 });
 
-
                 for (i, (fstring, toks)) in processed_fields.enumerate() {
                     if i > 0 {
                         format_string.push_str(", ");
@@ -91,14 +90,15 @@ impl<'a> ImplDebug<'a> for BitfieldUnit {
     ) -> Option<(String, Vec<quote::Tokens>)> {
         let mut format_string = String::new();
         let mut tokens = vec![];
-        for (i, bu) in self.bitfields().iter().enumerate() {
+        for (i, bitfield) in self.bitfields().iter().enumerate() {
             if i > 0 {
                 format_string.push_str(", ");
             }
 
-            if let Some(name) = bu.name() {
-                format_string.push_str(&format!("{} : {{:?}}", name));
-                let name_ident = ctx.rust_ident_raw(name);
+            if let Some(bitfield_name) = bitfield.name() {
+                format_string.push_str(&format!("{} : {{:?}}", bitfield_name));
+                let getter_name = bitfield.getter_name();
+                let name_ident = ctx.rust_ident_raw(getter_name);
                 tokens.push(quote! {
                     self.#name_ident ()
                 });
