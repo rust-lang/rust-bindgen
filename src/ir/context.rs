@@ -1137,8 +1137,6 @@ impl BindgenContext {
     {
         self.in_codegen = true;
 
-        self.assert_no_dangling_references();
-
         if !self.collected_typerefs() {
             self.resolve_typerefs();
             self.compute_bitfield_units();
@@ -1147,8 +1145,6 @@ impl BindgenContext {
 
         self.deanonymize_fields();
 
-        // And assert once again, because resolving type refs and processing
-        // replacements both mutate the IR graph.
         self.assert_no_dangling_references();
 
         // Compute the whitelisted set after processing replacements and
