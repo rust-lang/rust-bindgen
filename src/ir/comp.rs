@@ -17,6 +17,7 @@ use peeking_take_while::PeekableExt;
 use std::cmp;
 use std::io;
 use std::mem;
+use std::collections::HashMap;
 
 /// The kind of compound type.
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -292,6 +293,16 @@ pub struct Bitfield {
 
     /// The field data for this bitfield.
     data: FieldData,
+
+    /// Name of the generated Rust getter for this bitfield.
+    /// 
+    /// Should be assigned before codegen.
+    getter_name: Option<String>,
+
+    /// Name of the generated Rust setter for this bitfield.
+    /// 
+    /// Should be assigned before codegen.
+    setter_name: Option<String>,
 }
 
 impl Bitfield {
@@ -302,6 +313,8 @@ impl Bitfield {
         Bitfield {
             offset_into_unit: offset_into_unit,
             data: raw.0,
+            getter_name: None,
+            setter_name: None,
         }
     }
 
@@ -330,6 +343,30 @@ impl Bitfield {
     /// Get the bit width of this bitfield.
     pub fn width(&self) -> u32 {
         self.data.bitfield().unwrap()
+    }
+
+    /// Name of the generated Rust getter for this bitfield.
+    /// 
+    /// Panics if called before assigning bitfield accessor names or if 
+    /// this bitfield have no name.
+    pub fn getter_name(&self) -> &str {
+        assert!(self.name().is_some(), "`Bitfield::getter_name` called on anonymous field");
+        self.getter_name.as_ref().expect(
+            "`Bitfield::getter_name` should only be called after\
+             assigning bitfield accessor names",
+        )
+    }
+
+    /// Name of the generated Rust setter for this bitfield.
+    /// 
+    /// Panics if called before assigning bitfield accessor names or if 
+    /// this bitfield have no name.
+    pub fn setter_name(&self) -> &str {
+        assert!(self.name().is_some(), "`Bitfield::setter_name` called on anonymous field");
+        self.setter_name.as_ref().expect(
+            "`Bitfield::setter_name` should only be called\
+             after assigning bitfield accessor names",
+        )
     }
 }
 
@@ -661,30 +698,79 @@ impl CompFields {
         );
     }
 
-    fn deanonymize_fields(&mut self) {
+    fn deanonymize_fields(&mut self, ctx: &BindgenContext, methods: &[Method]) {
         let fields = match *self {
-            CompFields::AfterComputingBitfieldUnits(ref mut fields) => {
-                fields
-            }
+            CompFields::AfterComputingBitfieldUnits(ref mut fields) => fields,
             CompFields::BeforeComputingBitfieldUnits(_) => {
                 panic!("Not yet computed bitfield units.");
             }
         };
 
+        fn has_method(methods: &[Method], ctx: &BindgenContext, name: &str) -> bool {
+            methods.iter().any(|method| {
+                let method_name = ctx.resolve_func(method.signature()).name();
+                method_name == name || ctx.rust_mangle(&method_name) == name
+            })
+        }
+
+        struct AccessorNamesPair {
+            getter: String,
+            setter: String,
+        }
+
+        let mut accessor_names: HashMap<String, AccessorNamesPair> = fields
+            .iter()
+            .flat_map(|field| match *field {
+                Field::Bitfields(ref bu) => &*bu.bitfields,
+                Field::DataMember(_) => &[],
+            })
+            .filter_map(|bitfield| bitfield.name())
+            .map(|bitfield_name| {
+                let bitfield_name = bitfield_name.to_string();
+                let getter = {
+                    let mut getter = ctx.rust_mangle(&bitfield_name).to_string();
+                    if has_method(methods, ctx, &getter) {
+                        getter.push_str("_bindgen_bitfield");
+                    }
+                    getter
+                };
+                let setter = {
+                    let setter = format!("set_{}", bitfield_name);
+                    let mut setter = ctx.rust_mangle(&setter).to_string();
+                    if has_method(methods, ctx, &setter) {
+                        setter.push_str("_bindgen_bitfield");
+                    }
+                    setter
+                };
+                (bitfield_name, AccessorNamesPair { getter, setter })
+            })
+            .collect();
+
         let mut anon_field_counter = 0;
         for field in fields.iter_mut() {
-            let field_data = match *field {
-                Field::DataMember(ref mut fd) => fd,
-                Field::Bitfields(_) => continue,
-            };
+            match *field {
+                Field::DataMember(FieldData { ref mut name, .. }) => {
+                    if let Some(_) = *name {
+                        continue;
+                    }
 
-            if let Some(_) = field_data.name  {
-                continue;
+                    anon_field_counter += 1;
+                    let generated_name = format!("__bindgen_anon_{}", anon_field_counter);
+                    *name = Some(generated_name);
+                }
+                Field::Bitfields(ref mut bu) => for bitfield in &mut bu.bitfields {
+                    if bitfield.name().is_none() {
+                        continue;
+                    }
+
+                    if let Some(AccessorNamesPair { getter, setter }) =
+                        accessor_names.remove(bitfield.name().unwrap())
+                    {
+                        bitfield.getter_name = Some(getter);
+                        bitfield.setter_name = Some(setter);
+                    }
+                },
             }
-
-            anon_field_counter += 1;
-            let name = format!("__bindgen_anon_{}", anon_field_counter);
-            field_data.name = Some(name);
         }
     }
 }
@@ -1397,8 +1483,8 @@ impl CompInfo {
     }
 
     /// Assign for each anonymous field a generated name.
-    pub fn deanonymize_fields(&mut self) {
-        self.fields.deanonymize_fields();
+    pub fn deanonymize_fields(&mut self, ctx: &BindgenContext) {
+        self.fields.deanonymize_fields(ctx, &self.methods);
     }
 
     /// Returns whether the current union can be represented as a Rust `union`
@@ -1484,7 +1570,7 @@ impl IsOpaque for CompInfo {
                 false
             },
             Field::Bitfields(ref unit) => {
-                    unit.bitfields().iter().any(|bf| {
+                unit.bitfields().iter().any(|bf| {
                     let bitfield_layout = ctx.resolve_type(bf.ty())
                         .layout(ctx)
                         .expect("Bitfield without layout? Gah!");

@@ -51,8 +51,9 @@ pub fn gen_partialeq_impl(
                     tokens.push(gen_field(ctx, ty_item, name));
                 }
                 Field::Bitfields(ref bu) => for bitfield in bu.bitfields() {
-                    if let Some(name) = bitfield.name() {
-                        let name_ident = ctx.rust_ident_raw(name);
+                    if let Some(_) = bitfield.name() {
+                        let getter_name = bitfield.getter_name();
+                        let name_ident = ctx.rust_ident_raw(getter_name);
                         tokens.push(quote! {
                             self.#name_ident () == other.#name_ident ()
                         });

@@ -1202,7 +1202,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 (&unit_field_name, unit_field_int_ty.clone()),
             );
 
-            let param_name = bitfield_getter_name(ctx, parent, bf.name().unwrap());
+            let param_name = bitfield_getter_name(ctx, bf);
             let bitfield_ty_item = ctx.resolve_item(bf.ty());
             let bitfield_ty = bitfield_ty_item.expect_type();
             let bitfield_ty =
@@ -1236,59 +1236,21 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
     }
 }
 
-fn parent_has_method(
-    ctx: &BindgenContext,
-    parent: &CompInfo,
-    name: &str,
-) -> bool {
-    parent.methods().iter().any(|method| {
-        let method_name = match *ctx.resolve_item(method.signature()).kind() {
-            ItemKind::Function(ref func) => func.name(),
-            ref otherwise => {
-                panic!(
-                    "a method's signature should always be a \
-                 item of kind ItemKind::Function, found: \
-                 {:?}",
-                    otherwise
-                )
-            }
-        };
-
-        method_name == name || ctx.rust_mangle(&method_name) == name
-    })
-}
-
 fn bitfield_getter_name(
     ctx: &BindgenContext,
-    parent: &CompInfo,
-    bitfield_name: &str,
+    bitfield: &Bitfield,
 ) -> quote::Tokens {
-    let name = ctx.rust_mangle(bitfield_name);
-
-    if parent_has_method(ctx, parent, &name) {
-        let mut name = name.to_string();
-        name.push_str("_bindgen_bitfield");
-        let name = ctx.rust_ident(name);
-        return quote! { #name };
-    }
-
-    let name = ctx.rust_ident(name);
+    let name = bitfield.getter_name();
+    let name = ctx.rust_ident_raw(name);
     quote! { #name }
 }
 
 fn bitfield_setter_name(
     ctx: &BindgenContext,
-    parent: &CompInfo,
-    bitfield_name: &str,
+    bitfield: &Bitfield,
 ) -> quote::Tokens {
-    let setter = format!("set_{}", bitfield_name);
-    let mut setter = ctx.rust_mangle(&setter).to_string();
-
-    if parent_has_method(ctx, parent, &setter) {
-        setter.push_str("_bindgen_bitfield");
-    }
-
-    let setter = ctx.rust_ident(setter);
+    let setter = bitfield.setter_name();
+    let setter = ctx.rust_ident_raw(setter);
     quote! { #setter }
 }
 
@@ -1301,7 +1263,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         _fields_should_be_private: bool,
         _codegen_depth: usize,
         _accessor_kind: FieldAccessorKind,
-        parent: &CompInfo,
+        _parent: &CompInfo,
         _result: &mut CodegenResult,
         _struct_layout: &mut StructLayoutTracker,
         _fields: &mut F,
@@ -1311,11 +1273,9 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         F: Extend<quote::Tokens>,
         M: Extend<quote::Tokens>,
     {
-        // Should never be called with name() as None, as codegen can't be done
-        // on an anonymous bitfield
         let prefix = ctx.trait_prefix();
-        let getter_name = bitfield_getter_name(ctx, parent, self.name().unwrap());
-        let setter_name = bitfield_setter_name(ctx, parent, self.name().unwrap());
+        let getter_name = bitfield_getter_name(ctx, self);
+        let setter_name = bitfield_setter_name(ctx, self);
         let unit_field_ident = quote::Ident::new(unit_field_name);
 
         let bitfield_ty_item = ctx.resolve_item(self.ty());

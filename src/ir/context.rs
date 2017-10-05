@@ -15,6 +15,7 @@ use super::module::{Module, ModuleKind};
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
+use super::function::Function;
 use super::super::time::Timer;
 use BindgenOptions;
 use callbacks::ParseCallbacks;
@@ -964,6 +965,30 @@ impl BindgenContext {
         }
     }
 
+    /// Temporarily loan `Item` with the given `ItemId`. This provides means to
+    /// mutably borrow `Item` while having a reference to `BindgenContext`.
+    ///
+    /// `Item` with the given `ItemId` is removed from the context, given
+    /// closure is executed and then `Item` is placed back.
+    ///
+    /// # Panics
+    ///
+    /// Panics if attempt to resolve given `ItemId` inside the given
+    /// closure is made.
+    fn with_loaned_item<F, T>(&mut self, id: ItemId, f: F) -> T
+    where
+        F: (FnOnce(&BindgenContext, &mut Item) -> T)
+    {
+        let mut item = self.items.remove(&id).unwrap();
+
+        let result = f(self, &mut item);
+
+        let existing = self.items.insert(id, item);
+        assert!(existing.is_none());
+
+        result
+    }
+
     /// Compute the bitfield allocation units for all `TypeKind::Comp` items we
     /// parsed.
     fn compute_bitfield_units(&mut self) {
@@ -972,34 +997,43 @@ impl BindgenContext {
         let need_bitfield_allocation =
             mem::replace(&mut self.need_bitfield_allocation, vec![]);
         for id in need_bitfield_allocation {
-            // To appease the borrow checker, we temporarily remove this item
-            // from the context, and then replace it once we are done computing
-            // its bitfield units. We will never try and resolve this
-            // `TypeKind::Comp` item's id (which would now cause a panic) during
-            // bitfield unit computation because it is a non-scalar by
-            // definition, and non-scalar types may not be used as bitfields.
-            let mut item = self.items.remove(&id).unwrap();
-
-            item.kind_mut()
-                .as_type_mut()
-                .unwrap()
-                .as_comp_mut()
-                .unwrap()
-                .compute_bitfield_units(&*self);
-
-            self.items.insert(id, item);
+            self.with_loaned_item(id, |ctx, item| {
+                item.kind_mut()
+                    .as_type_mut()
+                    .unwrap()
+                    .as_comp_mut()
+                    .unwrap()
+                    .compute_bitfield_units(ctx);
+            });
         }
     }
 
     /// Assign a new generated name for each anonymous field.
     fn deanonymize_fields(&mut self) {
         let _t = self.timer("deanonymize_fields");
-        let comp_types = self.items
-            .values_mut()
-            .filter_map(|item| item.kind_mut().as_type_mut())
-            .filter_map(Type::as_comp_mut);
-        for comp_info in comp_types {
-            comp_info.deanonymize_fields();
+
+        let comp_item_ids: Vec<ItemId> = self.items
+            .iter()
+            .filter_map(|(id, item)| {
+                if let Some(ty) = item.kind().as_type() {
+                    if let Some(_comp) = ty.as_comp() {
+                        return Some(id);
+                    }
+                }
+                None
+            })
+            .cloned()
+            .collect();
+
+        for id in comp_item_ids {
+            self.with_loaned_item(id, |ctx, item| {
+                item.kind_mut()
+                    .as_type_mut()
+                    .unwrap()
+                    .as_comp_mut()
+                    .unwrap()
+                    .deanonymize_fields(ctx);
+            });
         }
     }
 
@@ -1391,12 +1425,20 @@ impl BindgenContext {
         self.root_module
     }
 
-    /// Resolve the given `ItemId` as a type.
+    /// Resolve a type with the given id.
     ///
-    /// Panics if there is no item for the given `ItemId` or if the resolved
+    /// Panics if there is no item for the given `TypeId` or if the resolved
     /// item is not a `Type`.
     pub fn resolve_type(&self, type_id: TypeId) -> &Type {
-        self.items.get(&type_id.into()).unwrap().kind().expect_type()
+        self.resolve_item(type_id).kind().expect_type()
+    }
+
+    /// Resolve a function with the given id.
+    /// 
+    /// Panics if there is no item for the given `FunctionId` or if the resolved
+    /// item is not a `Function`. 
+    pub fn resolve_func(&self, func_id: FunctionId) -> &Function {
+        self.resolve_item(func_id).kind().expect_function()
     }
 
     /// Resolve the given `ItemId` as a type, or `None` if there is no item with
