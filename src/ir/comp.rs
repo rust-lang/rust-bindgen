@@ -17,6 +17,7 @@ use peeking_take_while::PeekableExt;
 use std::cmp;
 use std::io;
 use std::mem;
+use std::collections::HashMap;
 
 /// The kind of compound type.
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -342,11 +343,6 @@ impl Bitfield {
     /// Get the bit width of this bitfield.
     pub fn width(&self) -> u32 {
         self.data.bitfield().unwrap()
-    }
-
-    /// Get the name of this bitfield.
-    fn name(&self) -> Option<&str> {
-        self.data.name()
     }
 
     /// Name of the generated Rust getter for this bitfield.
@@ -703,8 +699,6 @@ impl CompFields {
     }
 
     fn deanonymize_fields(&mut self, ctx: &BindgenContext, methods: &[Method]) {
-        use std::collections::HashMap;
-
         let fields = match *self {
             CompFields::AfterComputingBitfieldUnits(ref mut fields) => fields,
             CompFields::BeforeComputingBitfieldUnits(_) => {

@@ -975,17 +975,18 @@ impl BindgenContext {
     ///
     /// Panics if attempt to resolve given `ItemId` inside the given
     /// closure is made.
-    fn with_loaned_item<F: FnOnce(&BindgenContext, &mut Item)>(
-        &mut self,
-        item_id: ItemId,
-        f: F,
-    ) {
-        let mut item = self.items.remove(&item_id).unwrap();
+    fn with_loaned_item<F, T>(&mut self, id: ItemId, f: F) -> T
+    where
+        F: (FnOnce(&BindgenContext, &mut Item) -> T)
+    {
+        let mut item = self.items.remove(&id).unwrap();
 
-        f(self, &mut item);
+        let result = f(self, &mut item);
 
-        let existing = self.items.insert(item_id, item);
+        let existing = self.items.insert(id, item);
         assert!(existing.is_none());
+
+        result
     }
 
     /// Compute the bitfield allocation units for all `TypeKind::Comp` items we
