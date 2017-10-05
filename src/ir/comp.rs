@@ -712,11 +712,7 @@ impl CompFields {
             }
         };
 
-        fn has_method(
-            methods: &[Method],
-            ctx: &BindgenContext,
-            name: &str,
-        ) -> bool {
+        fn has_method(methods: &[Method], ctx: &BindgenContext, name: &str) -> bool {
             methods.iter().any(|method| {
                 let method_name = ctx.resolve_func(method.signature()).name();
                 method_name == name || ctx.rust_mangle(&method_name) == name
@@ -738,8 +734,7 @@ impl CompFields {
             .map(|bitfield_name| {
                 let bitfield_name = bitfield_name.to_string();
                 let getter = {
-                    let mut getter =
-                        ctx.rust_mangle(&bitfield_name).to_string();
+                    let mut getter = ctx.rust_mangle(&bitfield_name).to_string();
                     if has_method(methods, ctx, &getter) {
                         getter.push_str("_bindgen_bitfield");
                     }
@@ -753,49 +748,33 @@ impl CompFields {
                     }
                     setter
                 };
-                (
-                    bitfield_name,
-                    AccessorNamesPair {
-                        getter,
-                        setter,
-                    },
-                )
+                (bitfield_name, AccessorNamesPair { getter, setter })
             })
             .collect();
 
         let mut anon_field_counter = 0;
         for field in fields.iter_mut() {
             match *field {
-                Field::DataMember(FieldData {
-                    ref mut name, ..
-                }) => {
+                Field::DataMember(FieldData { ref mut name, .. }) => {
                     if let Some(_) = *name {
                         continue;
                     }
 
                     anon_field_counter += 1;
-                    let generated_name =
-                        format!("__bindgen_anon_{}", anon_field_counter);
+                    let generated_name = format!("__bindgen_anon_{}", anon_field_counter);
                     *name = Some(generated_name);
                 }
-                Field::Bitfields(ref mut bu) => for bitfield in
-                    &mut bu.bitfields
-                {
+                Field::Bitfields(ref mut bu) => for bitfield in &mut bu.bitfields {
                     if bitfield.name().is_none() {
                         continue;
                     }
 
-                    let (getter, setter) =
-                        match accessor_names.remove(bitfield.name().unwrap()) {
-                            Some(AccessorNamesPair {
-                                getter,
-                                setter,
-                            }) => (getter, setter),
-                            None => continue,
-                        };
-
-                    bitfield.getter_name = Some(getter);
-                    bitfield.setter_name = Some(setter);
+                    if let Some(AccessorNamesPair { getter, setter }) =
+                        accessor_names.remove(bitfield.name().unwrap())
+                    {
+                        bitfield.getter_name = Some(getter);
+                        bitfield.setter_name = Some(setter);
+                    }
                 },
             }
         }
@@ -1597,7 +1576,7 @@ impl IsOpaque for CompInfo {
                 false
             },
             Field::Bitfields(ref unit) => {
-                    unit.bitfields().iter().any(|bf| {
+                unit.bitfields().iter().any(|bf| {
                     let bitfield_layout = ctx.resolve_type(bf.ty())
                         .layout(ctx)
                         .expect("Bitfield without layout? Gah!");
