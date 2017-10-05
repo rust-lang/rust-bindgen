@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os, sys
 from subprocess import run, SubprocessError, DEVNULL, PIPE
 from tempfile import NamedTemporaryFile
