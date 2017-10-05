@@ -965,6 +965,29 @@ impl BindgenContext {
         }
     }
 
+    /// Temporarily loan `Item` with the given `ItemId`. This provides means to
+    /// mutably borrow `Item` while having a reference to `BindgenContext`.
+    ///
+    /// `Item` with the given `ItemId` is removed from the context, given
+    /// closure is executed and then `Item` is placed back.
+    ///
+    /// # Panics
+    ///
+    /// Panics if attempt to resolve given `ItemId` inside the given
+    /// closure is made.
+    fn with_loaned_item<F: FnOnce(&BindgenContext, &mut Item)>(
+        &mut self,
+        item_id: ItemId,
+        f: F,
+    ) {
+        let mut item = self.items.remove(&item_id).unwrap();
+
+        f(self, &mut item);
+
+        let existing = self.items.insert(item_id, item);
+        assert!(existing.is_none());
+    }
+
     /// Compute the bitfield allocation units for all `TypeKind::Comp` items we
     /// parsed.
     fn compute_bitfield_units(&mut self) {
@@ -973,22 +996,14 @@ impl BindgenContext {
         let need_bitfield_allocation =
             mem::replace(&mut self.need_bitfield_allocation, vec![]);
         for id in need_bitfield_allocation {
-            // To appease the borrow checker, we temporarily remove this item
-            // from the context, and then replace it once we are done computing
-            // its bitfield units. We will never try and resolve this
-            // `TypeKind::Comp` item's id (which would now cause a panic) during
-            // bitfield unit computation because it is a non-scalar by
-            // definition, and non-scalar types may not be used as bitfields.
-            let mut item = self.items.remove(&id).unwrap();
-
-            item.kind_mut()
-                .as_type_mut()
-                .unwrap()
-                .as_comp_mut()
-                .unwrap()
-                .compute_bitfield_units(&*self);
-
-            self.items.insert(id, item);
+            self.with_loaned_item(id, |ctx, item| {
+                item.kind_mut()
+                    .as_type_mut()
+                    .unwrap()
+                    .as_comp_mut()
+                    .unwrap()
+                    .compute_bitfield_units(ctx);
+            });
         }
     }
 
@@ -1010,16 +1025,14 @@ impl BindgenContext {
             .collect();
 
         for id in comp_item_ids {
-            let mut item = self.items.remove(&id).unwrap();
-
-            item.kind_mut()
-                .as_type_mut()
-                .unwrap()
-                .as_comp_mut()
-                .unwrap()
-                .deanonymize_fields(self);
-
-            self.items.insert(id, item);
+            self.with_loaned_item(id, |ctx, item| {
+                item.kind_mut()
+                    .as_type_mut()
+                    .unwrap()
+                    .as_comp_mut()
+                    .unwrap()
+                    .deanonymize_fields(ctx);
+            });
         }
     }
 
