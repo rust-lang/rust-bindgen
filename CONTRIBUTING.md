@@ -19,6 +19,7 @@ out to us in a GitHub issue, or stop by
   - [Testing a Single Header's Bindings Generation and Compiling its Bindings](#testing-a-single-headers-bindings-generation-and-compiling-its-bindings)
   - [Authoring New Tests](#authoring-new-tests)
   - [Test Expectations and `libclang` Versions](#test-expectations-and-libclang-versions)
+  - [Fuzzing `bindgen` with `csmith`](#fuzzing-bindgen-with-csmith)
 - [Code Overview](#code-overview)
 - [Pull Requests and Code Reviews](#pull-requests-and-code-reviews)
 - [Generating Graphviz Dot Files](#generating-graphviz-dot-files)
@@ -192,6 +193,14 @@ Where `$VERSION` is one of:
 * `3_8`
 
 depending on which version of `libclang` you have installed.
+
+### Fuzzing `bindgen` with `csmith`
+
+We <3 finding hidden bugs and the people who help us find them! One way to help
+uncover hidden bugs is by running `csmith` to generate random headers to test
+`bindgen` against.
+
+See [./csmith-fuzzing/README.md](./csmith-fuzzing/README.md) for details.
 
 ## Code Overview
 
