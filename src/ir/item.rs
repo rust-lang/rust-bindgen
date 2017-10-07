@@ -1090,10 +1090,12 @@ where
     fn self_template_params(
         &self,
         ctx: &BindgenContext,
-    ) -> Option<Vec<TypeId>> {
-        ctx.resolve_item_fallible(*self).and_then(|item| {
+    ) -> Vec<TypeId> {
+        if let Some(item) = ctx.resolve_item_fallible(*self) {
             item.self_template_params(ctx)
-        })
+        } else {
+            Vec::new()
+        }
     }
 }
 
@@ -1101,7 +1103,7 @@ impl TemplateParameters for Item {
     fn self_template_params(
         &self,
         ctx: &BindgenContext,
-    ) -> Option<Vec<TypeId>> {
+    ) -> Vec<TypeId> {
         self.kind.self_template_params(ctx)
     }
 }
@@ -1110,7 +1112,7 @@ impl TemplateParameters for ItemKind {
     fn self_template_params(
         &self,
         ctx: &BindgenContext,
-    ) -> Option<Vec<TypeId>> {
+    ) -> Vec<TypeId> {
         match *self {
             ItemKind::Type(ref ty) => ty.self_template_params(ctx),
             // If we start emitting bindings to explicitly instantiated
@@ -1118,7 +1120,7 @@ impl TemplateParameters for ItemKind {
             // template params.
             ItemKind::Function(_) |
             ItemKind::Module(_) |
-            ItemKind::Var(_) => None,
+            ItemKind::Var(_) => Vec::new(),
         }
     }
 }
