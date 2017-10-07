@@ -99,7 +99,7 @@ impl Clone for _bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 extern "C" {
-    #[link_name = "bazz"]
+    #[link_name = "\u{1}bazz"]
     pub static mut bazz: _bindgen_ty_1;
 }
 pub type fooFunction =

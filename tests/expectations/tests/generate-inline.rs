@@ -17,7 +17,7 @@ fn bindgen_test_layout_Foo() {
                 "Alignment of " , stringify ! ( Foo ) ));
 }
 extern "C" {
-    #[link_name = "_ZN3Foo3barEv"]
+    #[link_name = "\u{1}_ZN3Foo3barEv"]
     pub fn Foo_bar() -> ::std::os::raw::c_int;
 }
 impl Clone for Foo {
@@ -28,6 +28,6 @@ impl Foo {
     pub unsafe fn bar() -> ::std::os::raw::c_int { Foo_bar() }
 }
 extern "C" {
-    #[link_name = "_Z3foov"]
+    #[link_name = "\u{1}_Z3foov"]
     pub fn foo() -> ::std::os::raw::c_int;
 }

@@ -391,9 +391,6 @@ pub struct BindgenContext {
     /// bitfield allocation units computed. Drained in `compute_bitfield_units`.
     need_bitfield_allocation: Vec<ItemId>,
 
-    /// Whether we need the mangling hack which removes the prefixing underscore.
-    needs_mangling_hack: bool,
-
     /// The set of (`ItemId`s of) types that can't derive debug.
     ///
     /// This is populated when we enter codegen by `compute_cannot_derive_debug`
@@ -558,15 +555,6 @@ impl BindgenContext {
             ).expect("TranslationUnit::parse failed")
         };
 
-        // Mac os, iOS and Win32 need __ for mangled symbols but rust will
-        // automatically prepend the extra _.
-        //
-        // We need to make sure that we don't include __ because rust will turn
-        // into ___.
-        let needs_mangling_hack = effective_target.contains("darwin") ||
-            effective_target.contains("ios") ||
-            effective_target == "i686-pc-win32";
-
         let root_module = Self::build_root_module(ItemId(0));
         let root_module_id = root_module.id().as_module_id_unchecked();
 
@@ -592,7 +580,6 @@ impl BindgenContext {
             codegen_items: None,
             used_template_parameters: None,
             need_bitfield_allocation: Default::default(),
-            needs_mangling_hack: needs_mangling_hack,
             cannot_derive_debug: None,
             cannot_derive_default: None,
             cannot_derive_copy: None,
@@ -1413,11 +1400,6 @@ impl BindgenContext {
     fn build_root_module(id: ItemId) -> Item {
         let module = Module::new(Some("root".into()), ModuleKind::Normal);
         Item::new(id, None, None, id, ItemKind::Module(module))
-    }
-
-    /// Returns the target triple bindgen is running over.
-    pub fn needs_mangling_hack(&self) -> bool {
-        self.needs_mangling_hack
     }
 
     /// Get the root module.

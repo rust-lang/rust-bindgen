@@ -5,7 +5,7 @@
 
 
 extern "C" {
-    #[link_name = "_ZL1k"]
+    #[link_name = "\u{1}_ZL1k"]
     pub static mut k: bool;
 }
 #[repr(C)]
@@ -14,7 +14,7 @@ pub struct A {
     pub _address: u8,
 }
 extern "C" {
-    #[link_name = "_ZN1A1kE"]
+    #[link_name = "\u{1}_ZN1A1kE"]
     pub static mut A_k: bool;
 }
 #[test]
@@ -37,6 +37,6 @@ impl Clone for A {
 }
 pub type foo = bool;
 extern "C" {
-    #[link_name = "_ZL2k2"]
+    #[link_name = "\u{1}_ZL2k2"]
     pub static mut k2: foo;
 }

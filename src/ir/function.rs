@@ -206,23 +206,6 @@ fn get_abi(cc: CXCallingConv) -> Abi {
     }
 }
 
-fn mangling_hack_if_needed(ctx: &BindgenContext, symbol: &mut String) {
-    if ctx.needs_mangling_hack() {
-        match symbol.chars().next().unwrap() {
-            // Stripping leading underscore for all names on Darwin and
-            // C linkage functions on Win32.
-            '_' => {
-                symbol.remove(0);
-            }
-            // Stop Rust from prepending underscore for variables on Win32.
-            '?' => {
-                symbol.insert(0, '\x01');
-            }
-            _ => {}
-        }
-    }
-}
-
 /// Get the mangled name for the cursor's referent.
 pub fn cursor_mangling(
     ctx: &BindgenContext,
@@ -241,8 +224,7 @@ pub fn cursor_mangling(
     }
 
     if let Ok(mut manglings) = cursor.cxx_manglings() {
-        if let Some(mut m) = manglings.pop() {
-            mangling_hack_if_needed(ctx, &mut m);
+        if let Some(m) = manglings.pop() {
             return Some(m);
         }
     }
@@ -251,8 +233,6 @@ pub fn cursor_mangling(
     if mangling.is_empty() {
         return None;
     }
-
-    mangling_hack_if_needed(ctx, &mut mangling);
 
     if cursor.kind() == clang_sys::CXCursor_Destructor {
         // With old (3.8-) libclang versions, and the Itanium ABI, clang returns

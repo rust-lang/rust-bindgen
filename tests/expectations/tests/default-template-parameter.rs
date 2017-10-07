@@ -37,6 +37,6 @@ fn __bindgen_test_layout_Foo_open0_bool__int_close0_instantiation() {
     );
 }
 extern "C" {
-    #[link_name = "_ZL3bar"]
+    #[link_name = "\u{1}_ZL3bar"]
     pub static mut bar: Foo<bool, ::std::os::raw::c_int>;
 }

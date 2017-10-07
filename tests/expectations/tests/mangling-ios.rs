@@ -5,5 +5,6 @@
 
 
 extern "C" {
+    #[link_name = "\u{1}_foo"]
     pub fn foo();
 }

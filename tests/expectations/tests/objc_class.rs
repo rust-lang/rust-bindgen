@@ -10,7 +10,7 @@ extern crate objc;
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
 extern "C" {
-    #[link_name = "fooVar"]
+    #[link_name = "\u{1}fooVar"]
     pub static mut fooVar: *mut id;
 }
 pub trait Foo {

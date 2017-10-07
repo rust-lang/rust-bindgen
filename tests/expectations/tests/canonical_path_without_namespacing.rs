@@ -20,6 +20,6 @@ impl Clone for Bar {
     fn clone(&self) -> Self { *self }
 }
 extern "C" {
-    #[link_name = "_Z3bazPN3foo3BarE"]
+    #[link_name = "\u{1}_Z3bazPN3foo3BarE"]
     pub fn baz(arg1: *mut Bar);
 }

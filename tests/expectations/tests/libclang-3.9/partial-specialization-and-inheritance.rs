@@ -20,7 +20,7 @@ pub struct Usage {
     pub _address: u8,
 }
 extern "C" {
-    #[link_name = "_ZN5Usage13static_memberE"]
+    #[link_name = "\u{1}_ZN5Usage13static_memberE"]
     pub static mut Usage_static_member: [u32; 2usize];
 }
 #[test]

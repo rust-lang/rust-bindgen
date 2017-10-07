@@ -5,7 +5,7 @@
 
 
 extern "C" {
-    #[link_name = "_Z3fooPKcz"]
+    #[link_name = "\u{1}_Z3fooPKcz"]
     pub fn foo(fmt: *const ::std::os::raw::c_char, ...);
 }
 #[repr(C)]
@@ -21,7 +21,7 @@ fn bindgen_test_layout_Bar() {
                 "Alignment of " , stringify ! ( Bar ) ));
 }
 extern "C" {
-    #[link_name = "_ZN3Bar3fooEPKcz"]
+    #[link_name = "\u{1}_ZN3Bar3fooEPKcz"]
     pub fn Bar_foo(this: *mut Bar, fmt: *const ::std::os::raw::c_char, ...);
 }
 impl Clone for Bar {

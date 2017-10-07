@@ -22,7 +22,7 @@ fn bindgen_test_layout_Foo() {
                 stringify ! ( bar ) ));
 }
 extern "C" {
-    #[link_name = "_ZN3FooD1Ev"]
+    #[link_name = "\u{1}_ZN3FooD1Ev"]
     pub fn Foo_Foo_destructor(this: *mut Foo);
 }
 impl Foo {

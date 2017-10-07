@@ -67,7 +67,7 @@ impl Default for b {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 extern "C" {
-    #[link_name = "_Z25Servo_Element_GetSnapshotv"]
+    #[link_name = "\u{1}_Z25Servo_Element_GetSnapshotv"]
     pub fn Servo_Element_GetSnapshot() -> A;
 }
 #[test]

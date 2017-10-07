@@ -17,7 +17,7 @@ fn bindgen_test_layout_Foo() {
                 "Alignment of " , stringify ! ( Foo ) ));
 }
 extern "C" {
-    #[link_name = "_ZN3Foo4typeEv"]
+    #[link_name = "\u{1}_ZN3Foo4typeEv"]
     pub fn Foo_type(this: *mut Foo) -> ::std::os::raw::c_int;
 }
 impl Clone for Foo {

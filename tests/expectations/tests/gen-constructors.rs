@@ -23,7 +23,7 @@ fn bindgen_test_layout_Foo() {
     );
 }
 extern "C" {
-    #[link_name = "_ZN3FooC1Ei"]
+    #[link_name = "\u{1}_ZN3FooC1Ei"]
     pub fn Foo_Foo(this: *mut Foo, a: ::std::os::raw::c_int);
 }
 impl Clone for Foo {

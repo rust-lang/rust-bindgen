@@ -5,19 +5,19 @@
 
 
 extern "C" {
-    #[link_name = "_Z8Evaluatec"]
+    #[link_name = "\u{1}_Z8Evaluatec"]
     pub fn Evaluate(r: ::std::os::raw::c_char) -> bool;
 }
 extern "C" {
-    #[link_name = "_Z8Evaluateii"]
+    #[link_name = "\u{1}_Z8Evaluateii"]
     pub fn Evaluate1(x: ::std::os::raw::c_int, y: ::std::os::raw::c_int)
      -> bool;
 }
 extern "C" {
-    #[link_name = "_ZN3foo10MyFunctionEv"]
+    #[link_name = "\u{1}_ZN3foo10MyFunctionEv"]
     pub fn foo_MyFunction();
 }
 extern "C" {
-    #[link_name = "_ZN3bar10MyFunctionEv"]
+    #[link_name = "\u{1}_ZN3bar10MyFunctionEv"]
     pub fn bar_MyFunction();
 }

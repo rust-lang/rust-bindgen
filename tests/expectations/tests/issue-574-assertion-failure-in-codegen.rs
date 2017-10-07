@@ -30,7 +30,7 @@ impl Clone for _bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 extern "C" {
-    #[link_name = "AutoIdVector"]
+    #[link_name = "\u{1}AutoIdVector"]
     pub static mut AutoIdVector: _bindgen_ty_1;
 }
 #[test]

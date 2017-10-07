@@ -5,7 +5,7 @@
 
 
 extern "C" {
-    #[link_name = "_Z3fooP9Container"]
+    #[link_name = "\u{1}_Z3fooP9Container"]
     pub fn foo(c: *mut Container);
 }
 #[repr(C)]

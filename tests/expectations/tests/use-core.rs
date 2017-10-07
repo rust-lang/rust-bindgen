@@ -71,7 +71,7 @@ impl Default for _bindgen_ty_1 {
     fn default() -> Self { unsafe { ::core::mem::zeroed() } }
 }
 extern "C" {
-    #[link_name = "bazz"]
+    #[link_name = "\u{1}bazz"]
     pub static mut bazz: _bindgen_ty_1;
 }
 pub type fooFunction =

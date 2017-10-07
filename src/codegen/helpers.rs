@@ -45,6 +45,9 @@ pub mod attributes {
     }
 
     pub fn link_name(name: &str) -> quote::Tokens {
+        // LLVM mangles the name by default but it's already mangled.
+        // Prefixing the name with \u{1} should tell LLVM to not mangle it.
+        let name = format!("\u{1}{}", name);
         quote! {
             #[link_name = #name]
         }

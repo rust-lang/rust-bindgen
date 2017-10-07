@@ -48,7 +48,7 @@ impl Default for Bar {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 extern "C" {
-    #[link_name = "_Z10baz_structP3Foo"]
+    #[link_name = "\u{1}_Z10baz_structP3Foo"]
     pub fn baz_struct(f: *mut Foo);
 }
 #[repr(C)]
@@ -57,7 +57,7 @@ pub struct Union {
     _unused: [u8; 0],
 }
 extern "C" {
-    #[link_name = "_Z9baz_unionP5Union"]
+    #[link_name = "\u{1}_Z9baz_unionP5Union"]
     pub fn baz_union(u: *mut Union);
 }
 #[repr(C)]
@@ -66,6 +66,6 @@ pub struct Quux {
     _unused: [u8; 0],
 }
 extern "C" {
-    #[link_name = "_Z9baz_classP4Quux"]
+    #[link_name = "\u{1}_Z9baz_classP4Quux"]
     pub fn baz_class(q: *mut Quux);
 }

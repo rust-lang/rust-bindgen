@@ -12,30 +12,30 @@ pub enum _bindgen_ty_1 { foo = 4, bar = 8, }
 pub type EasyToOverflow = ::std::os::raw::c_ulonglong;
 pub const k: EasyToOverflow = 2147483648;
 extern "C" {
-    #[link_name = "k_expr"]
+    #[link_name = "\u{1}k_expr"]
     pub static mut k_expr: EasyToOverflow;
 }
 extern "C" {
-    #[link_name = "BAZ"]
+    #[link_name = "\u{1}BAZ"]
     pub static mut BAZ: ::std::os::raw::c_longlong;
 }
 extern "C" {
-    #[link_name = "fuzz"]
+    #[link_name = "\u{1}fuzz"]
     pub static mut fuzz: f64;
 }
 extern "C" {
-    #[link_name = "BAZZ"]
+    #[link_name = "\u{1}BAZZ"]
     pub static mut BAZZ: ::std::os::raw::c_char;
 }
 extern "C" {
-    #[link_name = "WAT"]
+    #[link_name = "\u{1}WAT"]
     pub static mut WAT: ::std::os::raw::c_char;
 }
 extern "C" {
-    #[link_name = "bytestring"]
+    #[link_name = "\u{1}bytestring"]
     pub static mut bytestring: *const ::std::os::raw::c_char;
 }
 extern "C" {
-    #[link_name = "NOT_UTF8"]
+    #[link_name = "\u{1}NOT_UTF8"]
     pub static mut NOT_UTF8: *const ::std::os::raw::c_char;
 }
