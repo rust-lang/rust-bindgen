@@ -22,7 +22,7 @@ fn bindgen_test_layout_Bar() {
                 stringify ! ( m_baz ) ));
 }
 extern "C" {
-    #[link_name = "_ZN3BarC1Ei"]
+    #[link_name = "\u{1}_ZN3BarC1Ei"]
     pub fn Bar_Bar(this: *mut Bar, baz: ::std::os::raw::c_int);
 }
 impl Clone for Bar {
@@ -42,7 +42,7 @@ pub struct Baz {
     pub _address: u8,
 }
 extern "C" {
-    #[link_name = "_ZN3Baz3FOOE"]
+    #[link_name = "\u{1}_ZN3Baz3FOOE"]
     pub static mut Baz_FOO: [Bar; 0usize];
 }
 #[test]

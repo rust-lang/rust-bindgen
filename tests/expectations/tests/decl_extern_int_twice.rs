@@ -5,6 +5,6 @@
 
 
 extern "C" {
-    #[link_name = "foo"]
+    #[link_name = "\u{1}foo"]
     pub static mut foo: ::std::os::raw::c_int;
 }

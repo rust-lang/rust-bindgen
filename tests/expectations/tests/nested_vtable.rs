@@ -25,7 +25,7 @@ impl Default for nsISupports {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 extern "C" {
-    #[link_name = "_ZN11nsISupports14QueryInterfaceEv"]
+    #[link_name = "\u{1}_ZN11nsISupports14QueryInterfaceEv"]
     pub fn nsISupports_QueryInterface(this: *mut ::std::os::raw::c_void)
      -> *mut nsISupports;
 }

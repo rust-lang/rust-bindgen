@@ -9,7 +9,7 @@ pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
     extern "C" {
-    #[link_name = "_Z9top_levelv"]
+    #[link_name = "\u{1}_Z9top_levelv"]
         pub fn top_level();
     }
     pub mod whatever {
@@ -17,7 +17,7 @@ pub mod root {
         use self::super::super::root;
         pub type whatever_int_t = ::std::os::raw::c_int;
         extern "C" {
-    #[link_name = "_ZN8whatever11in_whateverEv"]
+    #[link_name = "\u{1}_ZN8whatever11in_whateverEv"]
             pub fn in_whatever();
         }
     }
@@ -25,7 +25,7 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         extern "C" {
-    #[link_name = "_ZN12_GLOBAL__N_13fooEv"]
+    #[link_name = "\u{1}_ZN12_GLOBAL__N_13fooEv"]
             pub fn foo();
         }
         #[repr(C)]
@@ -52,7 +52,7 @@ pub mod root {
             );
         }
         extern "C" {
-    #[link_name = "_ZN12_GLOBAL__N_11A20lets_hope_this_worksEv"]
+    #[link_name = "\u{1}_ZN12_GLOBAL__N_11A20lets_hope_this_worksEv"]
             pub fn A_lets_hope_this_works(
                 this: *mut root::_bindgen_mod_id_13::A,
             ) -> ::std::os::raw::c_int;
@@ -99,15 +99,15 @@ pub mod root {
             }
         }
         extern "C" {
-    #[link_name = "_ZN1w3hehEv"]
+    #[link_name = "\u{1}_ZN1w3hehEv"]
             pub fn heh() -> root::w::whatever_int_t;
         }
         extern "C" {
-    #[link_name = "_ZN1w3fooEv"]
+    #[link_name = "\u{1}_ZN1w3fooEv"]
             pub fn foo() -> root::C<::std::os::raw::c_int>;
         }
         extern "C" {
-    #[link_name = "_ZN1w4barrEv"]
+    #[link_name = "\u{1}_ZN1w4barrEv"]
             pub fn barr() -> root::C<f32>;
         }
     }

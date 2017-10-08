@@ -5,198 +5,198 @@
 
 
 extern "C" {
-    #[link_name = "u8"]
+    #[link_name = "\u{1}u8"]
     pub static mut u8: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "u16"]
+    #[link_name = "\u{1}u16"]
     pub static mut u16: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "u32"]
+    #[link_name = "\u{1}u32"]
     pub static mut u32: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "u64"]
+    #[link_name = "\u{1}u64"]
     pub static mut u64: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "i8"]
+    #[link_name = "\u{1}i8"]
     pub static mut i8: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "i16"]
+    #[link_name = "\u{1}i16"]
     pub static mut i16: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "i32"]
+    #[link_name = "\u{1}i32"]
     pub static mut i32: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "i64"]
+    #[link_name = "\u{1}i64"]
     pub static mut i64: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "f32"]
+    #[link_name = "\u{1}f32"]
     pub static mut f32: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "f64"]
+    #[link_name = "\u{1}f64"]
     pub static mut f64: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "usize"]
+    #[link_name = "\u{1}usize"]
     pub static mut usize: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "isize"]
+    #[link_name = "\u{1}isize"]
     pub static mut isize: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "as"]
+    #[link_name = "\u{1}as"]
     pub static mut as_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "box"]
+    #[link_name = "\u{1}box"]
     pub static mut box_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "crate"]
+    #[link_name = "\u{1}crate"]
     pub static mut crate_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "false"]
+    #[link_name = "\u{1}false"]
     pub static mut false_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "fn"]
+    #[link_name = "\u{1}fn"]
     pub static mut fn_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "impl"]
+    #[link_name = "\u{1}impl"]
     pub static mut impl_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "in"]
+    #[link_name = "\u{1}in"]
     pub static mut in_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "let"]
+    #[link_name = "\u{1}let"]
     pub static mut let_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "loop"]
+    #[link_name = "\u{1}loop"]
     pub static mut loop_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "match"]
+    #[link_name = "\u{1}match"]
     pub static mut match_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "mod"]
+    #[link_name = "\u{1}mod"]
     pub static mut mod_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "move"]
+    #[link_name = "\u{1}move"]
     pub static mut move_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "mut"]
+    #[link_name = "\u{1}mut"]
     pub static mut mut_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "pub"]
+    #[link_name = "\u{1}pub"]
     pub static mut pub_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "ref"]
+    #[link_name = "\u{1}ref"]
     pub static mut ref_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "self"]
+    #[link_name = "\u{1}self"]
     pub static mut self_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "Self"]
+    #[link_name = "\u{1}Self"]
     pub static mut Self_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "super"]
+    #[link_name = "\u{1}super"]
     pub static mut super_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "trait"]
+    #[link_name = "\u{1}trait"]
     pub static mut trait_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "true"]
+    #[link_name = "\u{1}true"]
     pub static mut true_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "type"]
+    #[link_name = "\u{1}type"]
     pub static mut type_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "unsafe"]
+    #[link_name = "\u{1}unsafe"]
     pub static mut unsafe_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "use"]
+    #[link_name = "\u{1}use"]
     pub static mut use_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "where"]
+    #[link_name = "\u{1}where"]
     pub static mut where_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "abstract"]
+    #[link_name = "\u{1}abstract"]
     pub static mut abstract_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "alignof"]
+    #[link_name = "\u{1}alignof"]
     pub static mut alignof_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "become"]
+    #[link_name = "\u{1}become"]
     pub static mut become_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "final"]
+    #[link_name = "\u{1}final"]
     pub static mut final_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "macro"]
+    #[link_name = "\u{1}macro"]
     pub static mut macro_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "offsetof"]
+    #[link_name = "\u{1}offsetof"]
     pub static mut offsetof_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "override"]
+    #[link_name = "\u{1}override"]
     pub static mut override_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "priv"]
+    #[link_name = "\u{1}priv"]
     pub static mut priv_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "proc"]
+    #[link_name = "\u{1}proc"]
     pub static mut proc_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "pure"]
+    #[link_name = "\u{1}pure"]
     pub static mut pure_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "unsized"]
+    #[link_name = "\u{1}unsized"]
     pub static mut unsized_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "virtual"]
+    #[link_name = "\u{1}virtual"]
     pub static mut virtual_: ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "yield"]
+    #[link_name = "\u{1}yield"]
     pub static mut yield_: ::std::os::raw::c_int;
 }

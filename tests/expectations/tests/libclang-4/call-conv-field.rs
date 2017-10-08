@@ -37,6 +37,6 @@ impl Default for JNINativeInterface_ {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
 extern "stdcall" {
-    #[link_name = "_bar@0"]
+    #[link_name = "\u{1}_bar@0"]
     pub fn bar();
 }

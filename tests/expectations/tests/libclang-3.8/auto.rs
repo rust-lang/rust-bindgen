@@ -10,7 +10,7 @@ pub struct Foo {
     pub _address: u8,
 }
 extern "C" {
-    #[link_name = "_ZN3Foo4kFooE"]
+    #[link_name = "\u{1}_ZN3Foo4kFooE"]
     pub static mut Foo_kFoo: bool;
 }
 #[test]
@@ -37,6 +37,6 @@ pub struct Bar {
     pub _address: u8,
 }
 extern "C" {
-    #[link_name = "_Z5Test2v"]
+    #[link_name = "\u{1}_Z5Test2v"]
     pub fn Test2() -> ::std::os::raw::c_uint;
 }

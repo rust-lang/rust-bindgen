@@ -62,11 +62,11 @@ fn bindgen_test_layout_Opaque() {
                 "Alignment of " , stringify ! ( Opaque ) ));
 }
 extern "C" {
-    #[link_name = "_ZN6Opaque17eleven_out_of_tenEv"]
+    #[link_name = "\u{1}_ZN6Opaque17eleven_out_of_tenEv"]
     pub fn Opaque_eleven_out_of_ten(this: *mut Opaque) -> SuchWow;
 }
 extern "C" {
-    #[link_name = "_ZN6OpaqueC1E6Pupper"]
+    #[link_name = "\u{1}_ZN6OpaqueC1E6Pupper"]
     pub fn Opaque_Opaque(this: *mut Opaque, pup: Pupper);
 }
 impl Clone for Opaque {
@@ -85,7 +85,7 @@ impl Opaque {
     }
 }
 extern "C" {
-    #[link_name = "_ZN6Opaque11MAJESTIC_AFE"]
+    #[link_name = "\u{1}_ZN6Opaque11MAJESTIC_AFE"]
     pub static mut Opaque_MAJESTIC_AF: Doggo;
 }
 #[repr(C)]

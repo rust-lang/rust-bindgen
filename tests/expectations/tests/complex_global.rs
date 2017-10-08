@@ -11,14 +11,14 @@ pub struct __BindgenComplex<T> {
     pub im: T,
 }
 extern "C" {
-    #[link_name = "globalValueFloat"]
+    #[link_name = "\u{1}globalValueFloat"]
     pub static mut globalValueFloat: __BindgenComplex<f32>;
 }
 extern "C" {
-    #[link_name = "globalValueDouble"]
+    #[link_name = "\u{1}globalValueDouble"]
     pub static mut globalValueDouble: __BindgenComplex<f64>;
 }
 extern "C" {
-    #[link_name = "globalValueLongDouble"]
+    #[link_name = "\u{1}globalValueLongDouble"]
     pub static mut globalValueLongDouble: __BindgenComplex<f64>;
 }

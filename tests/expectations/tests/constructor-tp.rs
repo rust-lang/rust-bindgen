@@ -22,7 +22,7 @@ fn bindgen_test_layout_Bar() {
                 "Alignment of " , stringify ! ( Bar ) ));
 }
 extern "C" {
-    #[link_name = "_ZN3BarC1Ev"]
+    #[link_name = "\u{1}_ZN3BarC1Ev"]
     pub fn Bar_Bar(this: *mut Bar);
 }
 impl Clone for Bar {

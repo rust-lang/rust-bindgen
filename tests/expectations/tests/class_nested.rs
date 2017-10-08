@@ -115,7 +115,7 @@ impl Clone for A_C {
     }
 }
 extern "C" {
-    #[link_name = "var"]
+    #[link_name = "\u{1}var"]
     pub static mut var: A_B;
 }
 #[test]
@@ -131,7 +131,7 @@ fn __bindgen_test_layout_A_D_open0_int_close0_instantiation() {
     assert_eq ! ( :: std :: mem :: align_of :: < A_D < :: std :: os :: raw :: c_int > > ( ) , 4usize , concat ! ( "Alignment of template specialization: " , stringify ! ( A_D < :: std :: os :: raw :: c_int > ) ) );
 }
 extern "C" {
-    #[link_name = "baz"]
+    #[link_name = "\u{1}baz"]
     pub static mut baz: A_D<::std::os::raw::c_int>;
 }
 #[repr(C)]
