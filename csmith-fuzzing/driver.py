@@ -28,29 +28,12 @@ def run_logged(cmd):
             cat(stdout.name, title="stderr")
         return result
 
-def run_bindgen(input, output):
-    return run_logged([
-        "bindgen",
-        "--with-derive-partialeq",
-        "--with-derive-eq",
-        "--with-derive-partialord",
-        "--with-derive-ord",
-        "--with-derive-hash",
-        "--with-derive-default",
-        "-o", output.name,
-        input.name,
-        "--",
-        "-I", os.path.abspath(os.path.dirname(sys.argv[0])),
-    ])
-
-def run_rustc(output, test):
-    return run_logged([
-        "rustc",
-        "--crate-type", "lib",
-        "--test",
-        output.name,
-        "-o", test.name,
-    ])
+BINDGEN_ARGS = "--with-derive-partialeq \
+--with-derive-eq \
+--with-derive-partialord \
+--with-derive-ord \
+--with-derive-hash \
+--with-derive-default"
 
 def main():
     print("Fuzzing `bindgen` with C-Smith...\n")
@@ -65,36 +48,22 @@ def main():
         if result.returncode != 0:
             exit(1)
 
-        output = NamedTemporaryFile(delete=False, prefix="output-", suffix=".rs")
-        output.close()
-        result = run_bindgen(input, output)
+        result = run_logged([
+            "./predicate.py",
+            "--bindgen-args",
+            "{} -- -I{}".format(BINDGEN_ARGS, os.path.abspath(os.path.dirname(sys.argv[0]))),
+            input.name
+        ])
         if result.returncode != 0:
             cat(input.name)
-            cat(output.name)
-            exit(1)
-
-        test = NamedTemporaryFile(delete=False, prefix="test-")
-        test.close()
-        result = run_rustc(output, test)
-        if result.returncode != 0:
-            cat(input.name)
-            cat(output.name)
-            exit(1)
-
-        result = run_logged([test.name])
-        if result.returncode != 0:
-            cat(input.name)
-            cat(output.name)
             exit(1)
 
         os.remove(input.name)
-        os.remove(output.name)
-        os.remove(test.name)
-
         iterations += 1
 
 if __name__ == "__main__":
     try:
+        os.chdir(os.path.abspath(os.path.dirname(sys.argv[0])))
         main()
     except KeyboardInterrupt:
         exit()
