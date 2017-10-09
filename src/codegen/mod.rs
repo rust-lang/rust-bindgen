@@ -1945,6 +1945,10 @@ impl MethodCodegen for Method {
             _ => panic!("How in the world?"),
         };
 
+        if let (Abi::ThisCall, false) = (signature.abi(), ctx.options().rust_features().thiscall_abi()) {
+            return;
+        }
+
         // Do not generate variadic methods, since rust does not allow
         // implementing them, and we don't do a good job at it anyway.
         if signature.is_variadic() {
@@ -3058,9 +3062,17 @@ impl TryToRustTy for FunctionSig {
         let arguments = utils::fnsig_arguments(ctx, &self);
         let abi = self.abi();
 
-        Ok(quote! {
-            unsafe extern #abi fn ( #( #arguments ),* ) #ret
-        })
+        match abi {
+            Abi::ThisCall if !ctx.options().rust_features().thiscall_abi() => {
+                warn!("Skipping function with thiscall ABI that isn't supported by the configured Rust target");
+                Ok(quote::Tokens::new())
+            }
+            _ => {
+                Ok(quote! {
+                    unsafe extern #abi fn ( #( #arguments ),* ) #ret
+                })
+            }
+        }
     }
 }
 
@@ -3132,6 +3144,10 @@ impl CodeGenerator for Function {
         }
 
         let abi = match signature.abi() {
+            Abi::ThisCall if !ctx.options().rust_features().thiscall_abi() => {
+                warn!("Skipping function with thiscall ABI that isn't supported by the configured Rust target");
+                return;
+            }
             Abi::Unknown(unknown_abi) => {
                 panic!(
                     "Invalid or unknown abi {:?} for function {:?} ({:?})",
