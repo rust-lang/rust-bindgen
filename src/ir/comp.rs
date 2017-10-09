@@ -1498,7 +1498,7 @@ impl CompInfo {
                 Field::DataMember(ref field_data) => {
                     field_data.ty().can_derive_copy(ctx)
                 }
-                Field::Bitfields(_) => false,
+                Field::Bitfields(_) => true,
             })
     }
 }
