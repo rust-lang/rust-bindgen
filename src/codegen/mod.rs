@@ -1152,7 +1152,21 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         F: Extend<quote::Tokens>,
         M: Extend<quote::Tokens>,
     {
-        let field_ty = helpers::blob(self.layout());
+        let field_ty = if parent.is_union() && !parent.can_be_rust_union(ctx) {
+            let ty = helpers::blob(self.layout());
+            if ctx.options().enable_cxx_namespaces {
+                quote! {
+                    root::__BindgenUnionField<#ty>
+                }
+            } else {
+                quote! {
+                    __BindgenUnionField<#ty>
+                }
+            }
+        } else {
+            helpers::blob(self.layout())
+        };
+        
         let unit_field_name = format!("_bitfield_{}", self.nth());
         let unit_field_ident = ctx.rust_ident(&unit_field_name);
 
