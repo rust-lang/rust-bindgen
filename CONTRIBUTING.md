@@ -25,6 +25,7 @@ out to us in a GitHub issue, or stop by
 - [Generating Graphviz Dot Files](#generating-graphviz-dot-files)
 - [Debug Logging](#debug-logging)
 - [Using `creduce` to Minimize Test Cases](#using-creduce-to-minimize-test-cases)
+  - [Getting `creduce`](#getting-creduce)
   - [Isolating Your Test Case](#isolating-your-test-case)
   - [Writing a Predicate Script](#writing-a-predicate-script)
 
@@ -337,11 +338,25 @@ $ RUST_LOG=bindgen cargo test
 
 ## Using `creduce` to Minimize Test Cases
 
-If you are hacking on `bindgen` and find a test case that causes an unexpected
-panic, results in bad Rust bindings, or some other incorrectness in `bindgen`,
-then using `creduce` can help reduce the test case to a minimal one.
+If you find a test case that triggers an unexpected panic in `bindgen`, causes
+`bindgen` to emit bindings that won't compile, define structs with the wrong
+size/alignment, or results in any other kind of incorrectness, then using
+`creduce` can help reduce the test case to a minimal one that still exhibits
+that same bad behavior.
 
-[Follow these instructions for building and/or installing `creduce`.](https://github.com/csmith-project/creduce/blob/master/INSTALL)
+***Reduced test cases are SUPER helpful when filing bug reports!***
+
+### Getting `creduce`
+
+Often, you can install `creduce` from your OS's package manager:
+
+```
+$ sudo apt install creduce
+$ brew install creduce
+$ # Etc...
+```
+
+[Otherwise, follow these instructions for building and/or installing `creduce`.](https://github.com/csmith-project/creduce/blob/master/INSTALL)
 
 Running `creduce` requires two things:
 
@@ -352,7 +367,7 @@ Running `creduce` requires two things:
 
 With those two things in hand, running `creduce` looks like this:
 
-    $ creduce ./predicate.sh ./isolated_test_case.h
+    $ creduce ./predicate.sh ./isolated-test-case.h
 
 ### Isolating Your Test Case
 
@@ -369,12 +384,9 @@ standalone test case.
 
 ### Writing a Predicate Script
 
-Writing a `predicate.sh` script for a `bindgen` test case is fairly
-straightforward. One potential gotcha is that `creduce` can and will attempt to
-reduce test cases into invalid C/C++ code. That might be useful for C/C++
-compilers, but we generally only care about valid C/C++ input headers.
-
-Here is a skeleton predicate script:
+Writing a `predicate.sh` script for a `bindgen` test case is straightforward. We
+already have a general purpose predicate script that you can use, you just have
+to wrap and configure it.
 
 ```bash
 #!/usr/bin/env bash
@@ -384,39 +396,61 @@ Here is a skeleton predicate script:
 # * we access any undefined variable.
 set -eu
 
-# Print out Rust backtraces on panic. Useful for minimizing a particular panic.
-export RUST_BACKTRACE=1
-
-# If the `libclang.so` you're using for `bindgen` isn't the system
-# `libclang.so`, let the linker find it.
-export LD_LIBRARY_PATH=~/path/to/your/directory/containing/libclang
-
-# Make sure that the reduced test case is valid C/C++ by compiling it. If it
-# isn't valid C/C++, this command will exit with a nonzero exit code and cause
-# the whole script to do the same.
-clang[++ --std=c++14] -c ./pre_processed_header.hpp
-
-# Run `bindgen` and `grep` for the thing your hunting down! Make sure to include
-# `2>&1` to get at stderr if you're hunting down a panic.
-~/src/rust-bindgen/target/debug/bindgen \
-    ./pre_processed_header.hpp \
-    [ <extra flags> ] \
-    2>&1 \
-    | grep "<pattern in generated bindings or a panic string or ...>"
+# Invoke the general purpose predicate script that comes in the
+# `bindgen` repository.
+#
+# You'll need to replace `--whatever-flags` with things that are specific to the
+# incorrectness you're trying to pin down. See below for details.
+path/to/rust-bindgen/csmith-fuzzing/predicate.py \
+    --whatever-flags \
+    ./isolated-test-case.h
 ```
 
-When hunting down a panic, I `grep`ed like this:
+When hunting down a particular panic emanating from inside `bindgen`, you can
+invoke `predicate.py` like this:
 
-    ... | grep "thread main panicked at '<panic error message here>'"
+```bash
+path/to/rust-bindgen/csmith-fuzzing/predicate.py \
+    --expect-bindgen-fail \
+    --bindgen-grep "thread main panicked at '<insert panic message here>'" \
+    ./isolated-test-case.h
+```
 
-When hunting down bad codegen for a base member, I `grep`ed like this:
+Alternatively, when hunting down a bad `#[derive(Eq)]` that is causing `rustc`
+to fail to compile `bindgen`'s emitted bindings, you can invoke `predicate.py`
+like this:
 
-    ... | grep "pub _base: MyInvalidBaseTypeThatShouldntBeHere"
+```bash
+path/to/rust-bindgen/csmith-fuzzing/predicate.py \
+    --bindings-grep NameOfTheStructThatIsErroneouslyDerivingEq \
+    --expect-compile-fail \
+    --rustc-grep 'error[E0277]: the trait bound `f64: std::cmp::Eq` is not satisfied' \
+    ./isolated-test-case.h
+```
 
-That's pretty much it! I want to impress upon you that `creduce` is *really*
-helpful and has enabled me to reduce 30k lines of test case into 5 lines. And it
-works pretty quickly too. Super valuable tool to have in your belt when hacking
-on `bindgen`!
+Or, when minimizing a failing layout test in the compiled bindings, you can
+invoke `predicate.py` like this:
+
+```bash
+path/to/rust-bindgen/csmith-fuzzing/predicate.py \
+    --bindings-grep MyStruct \
+    --expect-layout-tests-fail \
+    --layout-tests-grep "thread 'bindgen_test_layout_MyStruct' panicked" \
+    ./isolated-test-case.h
+```
+
+For details on all the flags that you can pass to `predicate.py`, run:
+
+```
+$ path/to/rust-bindgen/csmith-fuzzing/predicate.py --help
+```
+
+And you can always write your own, arbitrary predicate script if you prefer.
+(Although, maybe we should add extra functionality to `predicate.py` -- file an
+issue if you think so!)
+
+`creduce` is *really* helpful and can cut hundreds of thousands of lines of test
+case down to 5 lines.
 
 Happy bug hunting and test case reducing!
 
