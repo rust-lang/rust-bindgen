@@ -50,13 +50,13 @@ impl bitfield {
                 ::std::mem::size_of::<u8>(),
             )
         };
-        let mask = 1u64 as u8;
+        let mask = 0x1 as u8;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_a(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 1u64 as u8;
+        let mask = 0x1 as u8;
         let val = val as u16 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -86,13 +86,13 @@ impl bitfield {
                 ::std::mem::size_of::<u8>(),
             )
         };
-        let mask = 2u64 as u8;
+        let mask = 0x2 as u8;
         let val = (unit_field_val & mask) >> 1usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_b(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 2u64 as u8;
+        let mask = 0x2 as u8;
         let val = val as u16 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -122,13 +122,13 @@ impl bitfield {
                 ::std::mem::size_of::<u8>(),
             )
         };
-        let mask = 4u64 as u8;
+        let mask = 0x4 as u8;
         let val = (unit_field_val & mask) >> 2usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_c(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 4u64 as u8;
+        let mask = 0x4 as u8;
         let val = val as u16 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -158,13 +158,13 @@ impl bitfield {
                 ::std::mem::size_of::<u8>(),
             )
         };
-        let mask = 192u64 as u8;
+        let mask = 0xc0 as u8;
         let val = (unit_field_val & mask) >> 6usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_d(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 192u64 as u8;
+        let mask = 0xc0 as u8;
         let val = val as u16 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -191,10 +191,10 @@ impl bitfield {
         c: ::std::os::raw::c_ushort,
         d: ::std::os::raw::c_ushort,
     ) -> u8 {
-        ((((0 | ((a as u16 as u8) << 0usize) & (1u64 as u8)) |
-            ((b as u16 as u8) << 1usize) & (2u64 as u8)) |
-            ((c as u16 as u8) << 2usize) & (4u64 as u8)) |
-            ((d as u16 as u8) << 6usize) & (192u64 as u8))
+        ((((0 | ((a as u16 as u8) << 0usize) & (0x1 as u8))
+            | ((b as u16 as u8) << 1usize) & (0x2 as u8))
+            | ((c as u16 as u8) << 2usize) & (0x4 as u8))
+            | ((d as u16 as u8) << 6usize) & (0xc0 as u8))
     }
     #[inline]
     pub fn f(&self) -> ::std::os::raw::c_uint {
@@ -206,13 +206,13 @@ impl bitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 3u64 as u64;
+        let mask = 0x3 as u64;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_f(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 3u64 as u64;
+        let mask = 0x3 as u64;
         let val = val as u32 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -242,13 +242,13 @@ impl bitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 18446744069414584320u64 as u64;
+        let mask = 0xffffffff00000000 as u64;
         let val = (unit_field_val & mask) >> 32usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_g(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 18446744069414584320u64 as u64;
+        let mask = 0xffffffff00000000 as u64;
         let val = val as u32 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -270,7 +270,7 @@ impl bitfield {
     }
     #[inline]
     pub fn new_bitfield_2(f: ::std::os::raw::c_uint, g: ::std::os::raw::c_uint) -> u64 {
-        ((0 | ((f as u32 as u64) << 0usize) & (3u64 as u64)) |
-            ((g as u32 as u64) << 32usize) & (18446744069414584320u64 as u64))
+        ((0 | ((f as u32 as u64) << 0usize) & (0x3 as u64))
+            | ((g as u32 as u64) << 32usize) & (0xffffffff00000000 as u64))
     }
 }

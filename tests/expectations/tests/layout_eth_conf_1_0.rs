@@ -46,7 +46,7 @@ impl<T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
         true
     }
 }
-impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
+impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 pub const ETH_MQ_RX_RSS_FLAG: ::std::os::raw::c_uint = 1;
 pub const ETH_MQ_RX_DCB_FLAG: ::std::os::raw::c_uint = 2;
 pub const ETH_MQ_RX_VMDQ_FLAG: ::std::os::raw::c_uint = 4;
@@ -169,13 +169,13 @@ impl rte_eth_rxmode {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 1u64 as u16;
+        let mask = 0x1 as u16;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_header_split(&mut self, val: u16) {
-        let mask = 1u64 as u16;
+        let mask = 0x1 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -205,13 +205,13 @@ impl rte_eth_rxmode {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 2u64 as u16;
+        let mask = 0x2 as u16;
         let val = (unit_field_val & mask) >> 1usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_hw_ip_checksum(&mut self, val: u16) {
-        let mask = 2u64 as u16;
+        let mask = 0x2 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -241,13 +241,13 @@ impl rte_eth_rxmode {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 4u64 as u16;
+        let mask = 0x4 as u16;
         let val = (unit_field_val & mask) >> 2usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_hw_vlan_filter(&mut self, val: u16) {
-        let mask = 4u64 as u16;
+        let mask = 0x4 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -277,13 +277,13 @@ impl rte_eth_rxmode {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 8u64 as u16;
+        let mask = 0x8 as u16;
         let val = (unit_field_val & mask) >> 3usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_hw_vlan_strip(&mut self, val: u16) {
-        let mask = 8u64 as u16;
+        let mask = 0x8 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -313,13 +313,13 @@ impl rte_eth_rxmode {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 16u64 as u16;
+        let mask = 0x10 as u16;
         let val = (unit_field_val & mask) >> 4usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_hw_vlan_extend(&mut self, val: u16) {
-        let mask = 16u64 as u16;
+        let mask = 0x10 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -349,13 +349,13 @@ impl rte_eth_rxmode {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 32u64 as u16;
+        let mask = 0x20 as u16;
         let val = (unit_field_val & mask) >> 5usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_jumbo_frame(&mut self, val: u16) {
-        let mask = 32u64 as u16;
+        let mask = 0x20 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -385,13 +385,13 @@ impl rte_eth_rxmode {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 64u64 as u16;
+        let mask = 0x40 as u16;
         let val = (unit_field_val & mask) >> 6usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_hw_strip_crc(&mut self, val: u16) {
-        let mask = 64u64 as u16;
+        let mask = 0x40 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -421,13 +421,13 @@ impl rte_eth_rxmode {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 128u64 as u16;
+        let mask = 0x80 as u16;
         let val = (unit_field_val & mask) >> 7usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_enable_scatter(&mut self, val: u16) {
-        let mask = 128u64 as u16;
+        let mask = 0x80 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -457,13 +457,13 @@ impl rte_eth_rxmode {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 256u64 as u16;
+        let mask = 0x100 as u16;
         let val = (unit_field_val & mask) >> 8usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_enable_lro(&mut self, val: u16) {
-        let mask = 256u64 as u16;
+        let mask = 0x100 as u16;
         let val = val as u16 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -495,15 +495,15 @@ impl rte_eth_rxmode {
         enable_scatter: u16,
         enable_lro: u16,
     ) -> u16 {
-        (((((((((0 | ((header_split as u16 as u16) << 0usize) & (1u64 as u16)) |
-            ((hw_ip_checksum as u16 as u16) << 1usize) & (2u64 as u16)) |
-            ((hw_vlan_filter as u16 as u16) << 2usize) & (4u64 as u16)) |
-            ((hw_vlan_strip as u16 as u16) << 3usize) & (8u64 as u16)) |
-            ((hw_vlan_extend as u16 as u16) << 4usize) & (16u64 as u16)) |
-            ((jumbo_frame as u16 as u16) << 5usize) & (32u64 as u16)) |
-            ((hw_strip_crc as u16 as u16) << 6usize) & (64u64 as u16)) |
-            ((enable_scatter as u16 as u16) << 7usize) & (128u64 as u16)) |
-            ((enable_lro as u16 as u16) << 8usize) & (256u64 as u16))
+        (((((((((0 | ((header_split as u16 as u16) << 0usize) & (0x1 as u16))
+            | ((hw_ip_checksum as u16 as u16) << 1usize) & (0x2 as u16))
+            | ((hw_vlan_filter as u16 as u16) << 2usize) & (0x4 as u16))
+            | ((hw_vlan_strip as u16 as u16) << 3usize) & (0x8 as u16))
+            | ((hw_vlan_extend as u16 as u16) << 4usize) & (0x10 as u16))
+            | ((jumbo_frame as u16 as u16) << 5usize) & (0x20 as u16))
+            | ((hw_strip_crc as u16 as u16) << 6usize) & (0x40 as u16))
+            | ((enable_scatter as u16 as u16) << 7usize) & (0x80 as u16))
+            | ((enable_lro as u16 as u16) << 8usize) & (0x100 as u16))
     }
 }
 #[repr(u32)]
@@ -580,13 +580,13 @@ impl rte_eth_txmode {
                 ::std::mem::size_of::<u8>(),
             )
         };
-        let mask = 1u64 as u8;
+        let mask = 0x1 as u8;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_hw_vlan_reject_tagged(&mut self, val: u8) {
-        let mask = 1u64 as u8;
+        let mask = 0x1 as u8;
         let val = val as u8 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -616,13 +616,13 @@ impl rte_eth_txmode {
                 ::std::mem::size_of::<u8>(),
             )
         };
-        let mask = 2u64 as u8;
+        let mask = 0x2 as u8;
         let val = (unit_field_val & mask) >> 1usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_hw_vlan_reject_untagged(&mut self, val: u8) {
-        let mask = 2u64 as u8;
+        let mask = 0x2 as u8;
         let val = val as u8 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -652,13 +652,13 @@ impl rte_eth_txmode {
                 ::std::mem::size_of::<u8>(),
             )
         };
-        let mask = 4u64 as u8;
+        let mask = 0x4 as u8;
         let val = (unit_field_val & mask) >> 2usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_hw_vlan_insert_pvid(&mut self, val: u8) {
-        let mask = 4u64 as u8;
+        let mask = 0x4 as u8;
         let val = val as u8 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -684,9 +684,9 @@ impl rte_eth_txmode {
         hw_vlan_reject_untagged: u8,
         hw_vlan_insert_pvid: u8,
     ) -> u8 {
-        (((0 | ((hw_vlan_reject_tagged as u8 as u8) << 0usize) & (1u64 as u8)) |
-            ((hw_vlan_reject_untagged as u8 as u8) << 1usize) & (2u64 as u8)) |
-            ((hw_vlan_insert_pvid as u8 as u8) << 2usize) & (4u64 as u8))
+        (((0 | ((hw_vlan_reject_tagged as u8 as u8) << 0usize) & (0x1 as u8))
+            | ((hw_vlan_reject_untagged as u8 as u8) << 1usize) & (0x2 as u8))
+            | ((hw_vlan_insert_pvid as u8 as u8) << 2usize) & (0x4 as u8))
     }
 }
 /// A structure used to configure the Receive Side Scaling (RSS) feature

@@ -143,6 +143,13 @@ pub mod ast_ty {
         tokens
     }
 
+    /// Returns hex representation of the given value.
+    pub fn hex_expr(val: u64) -> quote::Tokens {
+        let mut tokens = quote! {};
+        tokens.append(format!("{:#x}", val));
+        tokens
+    }
+
     pub fn byte_array_expr(bytes: &[u8]) -> quote::Tokens {
         let mut bytes: Vec<_> = bytes.iter().cloned().collect();
         bytes.push(0);

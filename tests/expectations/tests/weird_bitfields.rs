@@ -184,13 +184,13 @@ impl Weird {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 65535u64 as u32;
+        let mask = 0xffff as u32;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_bitTest(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 65535u64 as u32;
+        let mask = 0xffff as u32;
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -220,13 +220,13 @@ impl Weird {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 2147418112u64 as u32;
+        let mask = 0x7fff0000 as u32;
         let val = (unit_field_val & mask) >> 16usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_bitTest2(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 2147418112u64 as u32;
+        let mask = 0x7fff0000 as u32;
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -251,8 +251,8 @@ impl Weird {
         bitTest: ::std::os::raw::c_uint,
         bitTest2: ::std::os::raw::c_uint,
     ) -> u32 {
-        ((0 | ((bitTest as u32 as u32) << 0usize) & (65535u64 as u32)) |
-            ((bitTest2 as u32 as u32) << 16usize) & (2147418112u64 as u32))
+        ((0 | ((bitTest as u32 as u32) << 0usize) & (0xffff as u32))
+            | ((bitTest2 as u32 as u32) << 16usize) & (0x7fff0000 as u32))
     }
     #[inline]
     pub fn mFillOpacitySource(&self) -> nsStyleSVGOpacitySource {
@@ -264,13 +264,13 @@ impl Weird {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 7u64 as u16;
+        let mask = 0x7 as u16;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_mFillOpacitySource(&mut self, val: nsStyleSVGOpacitySource) {
-        let mask = 7u64 as u16;
+        let mask = 0x7 as u16;
         let val = val as u32 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -300,13 +300,13 @@ impl Weird {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 56u64 as u16;
+        let mask = 0x38 as u16;
         let val = (unit_field_val & mask) >> 3usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_mStrokeOpacitySource(&mut self, val: nsStyleSVGOpacitySource) {
-        let mask = 56u64 as u16;
+        let mask = 0x38 as u16;
         let val = val as u32 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -336,13 +336,13 @@ impl Weird {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 64u64 as u16;
+        let mask = 0x40 as u16;
         let val = (unit_field_val & mask) >> 6usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_mStrokeDasharrayFromObject(&mut self, val: bool) {
-        let mask = 64u64 as u16;
+        let mask = 0x40 as u16;
         let val = val as u8 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -372,13 +372,13 @@ impl Weird {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 128u64 as u16;
+        let mask = 0x80 as u16;
         let val = (unit_field_val & mask) >> 7usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_mStrokeDashoffsetFromObject(&mut self, val: bool) {
-        let mask = 128u64 as u16;
+        let mask = 0x80 as u16;
         let val = val as u8 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -408,13 +408,13 @@ impl Weird {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 256u64 as u16;
+        let mask = 0x100 as u16;
         let val = (unit_field_val & mask) >> 8usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_mStrokeWidthFromObject(&mut self, val: bool) {
-        let mask = 256u64 as u16;
+        let mask = 0x100 as u16;
         let val = val as u8 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -442,10 +442,10 @@ impl Weird {
         mStrokeDashoffsetFromObject: bool,
         mStrokeWidthFromObject: bool,
     ) -> u16 {
-        (((((0 | ((mFillOpacitySource as u32 as u16) << 0usize) & (7u64 as u16)) |
-            ((mStrokeOpacitySource as u32 as u16) << 3usize) & (56u64 as u16)) |
-            ((mStrokeDasharrayFromObject as u8 as u16) << 6usize) & (64u64 as u16)) |
-            ((mStrokeDashoffsetFromObject as u8 as u16) << 7usize) & (128u64 as u16)) |
-            ((mStrokeWidthFromObject as u8 as u16) << 8usize) & (256u64 as u16))
+        (((((0 | ((mFillOpacitySource as u32 as u16) << 0usize) & (0x7 as u16))
+            | ((mStrokeOpacitySource as u32 as u16) << 3usize) & (0x38 as u16))
+            | ((mStrokeDasharrayFromObject as u8 as u16) << 6usize) & (0x40 as u16))
+            | ((mStrokeDashoffsetFromObject as u8 as u16) << 7usize) & (0x80 as u16))
+            | ((mStrokeWidthFromObject as u8 as u16) << 8usize) & (0x100 as u16))
     }
 }

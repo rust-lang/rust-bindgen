@@ -82,13 +82,13 @@ impl U4 {
                 ::std::mem::size_of::<u8>(),
             )
         };
-        let mask = 1u64 as u8;
+        let mask = 0x1 as u8;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_derp(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 1u64 as u8;
+        let mask = 0x1 as u8;
         let val = val as u32 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -110,7 +110,7 @@ impl U4 {
     }
     #[inline]
     pub fn new_bitfield_1(derp: ::std::os::raw::c_uint) -> u8 {
-        (0 | ((derp as u32 as u8) << 0usize) & (1u64 as u8))
+        (0 | ((derp as u32 as u8) << 0usize) & (0x1 as u8))
     }
 }
 #[repr(C)]
@@ -148,13 +148,13 @@ impl B {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 2147483647u64 as u32;
+        let mask = 0x7fffffff as u32;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_foo(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 2147483647u64 as u32;
+        let mask = 0x7fffffff as u32;
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -184,13 +184,13 @@ impl B {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 2147483648u64 as u32;
+        let mask = 0x80000000 as u32;
         let val = (unit_field_val & mask) >> 31usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_bar(&mut self, val: ::std::os::raw::c_uchar) {
-        let mask = 2147483648u64 as u32;
+        let mask = 0x80000000 as u32;
         let val = val as u8 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -212,8 +212,8 @@ impl B {
     }
     #[inline]
     pub fn new_bitfield_1(foo: ::std::os::raw::c_uint, bar: ::std::os::raw::c_uchar) -> u32 {
-        ((0 | ((foo as u32 as u32) << 0usize) & (2147483647u64 as u32))
-            | ((bar as u8 as u32) << 31usize) & (2147483648u64 as u32))
+        ((0 | ((foo as u32 as u32) << 0usize) & (0x7fffffff as u32))
+            | ((bar as u8 as u32) << 31usize) & (0x80000000 as u32))
     }
 }
 #[repr(C)]

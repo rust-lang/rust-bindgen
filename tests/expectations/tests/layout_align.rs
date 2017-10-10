@@ -122,13 +122,13 @@ impl rte_eth_link {
                 ::std::mem::size_of::<u8>(),
             )
         };
-        let mask = 1u64 as u8;
+        let mask = 0x1 as u8;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_link_duplex(&mut self, val: u16) {
-        let mask = 1u64 as u8;
+        let mask = 0x1 as u8;
         let val = val as u16 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -158,13 +158,13 @@ impl rte_eth_link {
                 ::std::mem::size_of::<u8>(),
             )
         };
-        let mask = 2u64 as u8;
+        let mask = 0x2 as u8;
         let val = (unit_field_val & mask) >> 1usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_link_autoneg(&mut self, val: u16) {
-        let mask = 2u64 as u8;
+        let mask = 0x2 as u8;
         let val = val as u16 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -194,13 +194,13 @@ impl rte_eth_link {
                 ::std::mem::size_of::<u8>(),
             )
         };
-        let mask = 4u64 as u8;
+        let mask = 0x4 as u8;
         let val = (unit_field_val & mask) >> 2usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_link_status(&mut self, val: u16) {
-        let mask = 4u64 as u8;
+        let mask = 0x4 as u8;
         let val = val as u16 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -222,8 +222,8 @@ impl rte_eth_link {
     }
     #[inline]
     pub fn new_bitfield_1(link_duplex: u16, link_autoneg: u16, link_status: u16) -> u8 {
-        (((0 | ((link_duplex as u16 as u8) << 0usize) & (1u64 as u8)) |
-            ((link_autoneg as u16 as u8) << 1usize) & (2u64 as u8)) |
-            ((link_status as u16 as u8) << 2usize) & (4u64 as u8))
+        (((0 | ((link_duplex as u16 as u8) << 0usize) & (0x1 as u8))
+            | ((link_autoneg as u16 as u8) << 1usize) & (0x2 as u8))
+            | ((link_status as u16 as u8) << 2usize) & (0x4 as u8))
     }
 }

@@ -46,7 +46,7 @@ impl<T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
         true
     }
 }
-impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
+impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 pub const JSVAL_TAG_SHIFT: ::std::os::raw::c_uint = 47;
 pub const JSVAL_PAYLOAD_MASK: ::std::os::raw::c_ulonglong = 140737488355327;
 pub const JSVAL_TAG_MASK: ::std::os::raw::c_longlong = -140737488355328;
@@ -166,13 +166,13 @@ impl jsval_layout__bindgen_ty_1 {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 140737488355327u64 as u64;
+        let mask = 0x7fffffffffff as u64;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u64) }
     }
     #[inline]
     pub fn set_payload47(&mut self, val: u64) {
-        let mask = 140737488355327u64 as u64;
+        let mask = 0x7fffffffffff as u64;
         let val = val as u64 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -202,13 +202,13 @@ impl jsval_layout__bindgen_ty_1 {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 18446603336221196288u64 as u64;
+        let mask = 0xffff800000000000 as u64;
         let val = (unit_field_val & mask) >> 47usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_tag(&mut self, val: JSValueTag) {
-        let mask = 18446603336221196288u64 as u64;
+        let mask = 0xffff800000000000 as u64;
         let val = val as u32 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -230,8 +230,8 @@ impl jsval_layout__bindgen_ty_1 {
     }
     #[inline]
     pub fn new_bitfield_1(payload47: u64, tag: JSValueTag) -> u64 {
-        ((0 | ((payload47 as u64 as u64) << 0usize) & (140737488355327u64 as u64)) |
-            ((tag as u32 as u64) << 47usize) & (18446603336221196288u64 as u64))
+        ((0 | ((payload47 as u64 as u64) << 0usize) & (0x7fffffffffff as u64))
+            | ((tag as u32 as u64) << 47usize) & (0xffff800000000000 as u64))
     }
 }
 #[repr(C)]

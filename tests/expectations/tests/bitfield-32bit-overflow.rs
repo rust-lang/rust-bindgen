@@ -39,13 +39,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 1u64 as u64;
+        let mask = 0x1 as u64;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m0(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 1u64 as u64;
+        let mask = 0x1 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -75,13 +75,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 2u64 as u64;
+        let mask = 0x2 as u64;
         let val = (unit_field_val & mask) >> 1usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m1(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 2u64 as u64;
+        let mask = 0x2 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -111,13 +111,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 4u64 as u64;
+        let mask = 0x4 as u64;
         let val = (unit_field_val & mask) >> 2usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m2(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 4u64 as u64;
+        let mask = 0x4 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -147,13 +147,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 8u64 as u64;
+        let mask = 0x8 as u64;
         let val = (unit_field_val & mask) >> 3usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m3(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 8u64 as u64;
+        let mask = 0x8 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -183,13 +183,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 16u64 as u64;
+        let mask = 0x10 as u64;
         let val = (unit_field_val & mask) >> 4usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m4(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 16u64 as u64;
+        let mask = 0x10 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -219,13 +219,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 32u64 as u64;
+        let mask = 0x20 as u64;
         let val = (unit_field_val & mask) >> 5usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m5(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 32u64 as u64;
+        let mask = 0x20 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -255,13 +255,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 64u64 as u64;
+        let mask = 0x40 as u64;
         let val = (unit_field_val & mask) >> 6usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m6(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 64u64 as u64;
+        let mask = 0x40 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -291,13 +291,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 128u64 as u64;
+        let mask = 0x80 as u64;
         let val = (unit_field_val & mask) >> 7usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m7(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 128u64 as u64;
+        let mask = 0x80 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -327,13 +327,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 256u64 as u64;
+        let mask = 0x100 as u64;
         let val = (unit_field_val & mask) >> 8usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m8(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 256u64 as u64;
+        let mask = 0x100 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -363,13 +363,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 512u64 as u64;
+        let mask = 0x200 as u64;
         let val = (unit_field_val & mask) >> 9usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m9(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 512u64 as u64;
+        let mask = 0x200 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -399,13 +399,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 1024u64 as u64;
+        let mask = 0x400 as u64;
         let val = (unit_field_val & mask) >> 10usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m10(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 1024u64 as u64;
+        let mask = 0x400 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -435,13 +435,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 2048u64 as u64;
+        let mask = 0x800 as u64;
         let val = (unit_field_val & mask) >> 11usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m11(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 2048u64 as u64;
+        let mask = 0x800 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -471,13 +471,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 4096u64 as u64;
+        let mask = 0x1000 as u64;
         let val = (unit_field_val & mask) >> 12usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m12(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 4096u64 as u64;
+        let mask = 0x1000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -507,13 +507,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 8192u64 as u64;
+        let mask = 0x2000 as u64;
         let val = (unit_field_val & mask) >> 13usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m13(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 8192u64 as u64;
+        let mask = 0x2000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -543,13 +543,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 16384u64 as u64;
+        let mask = 0x4000 as u64;
         let val = (unit_field_val & mask) >> 14usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m14(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 16384u64 as u64;
+        let mask = 0x4000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -579,13 +579,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 32768u64 as u64;
+        let mask = 0x8000 as u64;
         let val = (unit_field_val & mask) >> 15usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m15(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 32768u64 as u64;
+        let mask = 0x8000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -615,13 +615,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 65536u64 as u64;
+        let mask = 0x10000 as u64;
         let val = (unit_field_val & mask) >> 16usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m16(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 65536u64 as u64;
+        let mask = 0x10000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -651,13 +651,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 131072u64 as u64;
+        let mask = 0x20000 as u64;
         let val = (unit_field_val & mask) >> 17usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m17(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 131072u64 as u64;
+        let mask = 0x20000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -687,13 +687,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 262144u64 as u64;
+        let mask = 0x40000 as u64;
         let val = (unit_field_val & mask) >> 18usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m18(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 262144u64 as u64;
+        let mask = 0x40000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -723,13 +723,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 524288u64 as u64;
+        let mask = 0x80000 as u64;
         let val = (unit_field_val & mask) >> 19usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m19(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 524288u64 as u64;
+        let mask = 0x80000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -759,13 +759,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 1048576u64 as u64;
+        let mask = 0x100000 as u64;
         let val = (unit_field_val & mask) >> 20usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m20(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 1048576u64 as u64;
+        let mask = 0x100000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -795,13 +795,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 2097152u64 as u64;
+        let mask = 0x200000 as u64;
         let val = (unit_field_val & mask) >> 21usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m21(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 2097152u64 as u64;
+        let mask = 0x200000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -831,13 +831,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 4194304u64 as u64;
+        let mask = 0x400000 as u64;
         let val = (unit_field_val & mask) >> 22usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m22(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 4194304u64 as u64;
+        let mask = 0x400000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -867,13 +867,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 8388608u64 as u64;
+        let mask = 0x800000 as u64;
         let val = (unit_field_val & mask) >> 23usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m23(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 8388608u64 as u64;
+        let mask = 0x800000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -903,13 +903,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 16777216u64 as u64;
+        let mask = 0x1000000 as u64;
         let val = (unit_field_val & mask) >> 24usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m24(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 16777216u64 as u64;
+        let mask = 0x1000000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -939,13 +939,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 33554432u64 as u64;
+        let mask = 0x2000000 as u64;
         let val = (unit_field_val & mask) >> 25usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m25(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 33554432u64 as u64;
+        let mask = 0x2000000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -975,13 +975,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 67108864u64 as u64;
+        let mask = 0x4000000 as u64;
         let val = (unit_field_val & mask) >> 26usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m26(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 67108864u64 as u64;
+        let mask = 0x4000000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -1011,13 +1011,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 134217728u64 as u64;
+        let mask = 0x8000000 as u64;
         let val = (unit_field_val & mask) >> 27usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m27(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 134217728u64 as u64;
+        let mask = 0x8000000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -1047,13 +1047,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 268435456u64 as u64;
+        let mask = 0x10000000 as u64;
         let val = (unit_field_val & mask) >> 28usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m28(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 268435456u64 as u64;
+        let mask = 0x10000000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -1083,13 +1083,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 536870912u64 as u64;
+        let mask = 0x20000000 as u64;
         let val = (unit_field_val & mask) >> 29usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m29(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 536870912u64 as u64;
+        let mask = 0x20000000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -1119,13 +1119,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 1073741824u64 as u64;
+        let mask = 0x40000000 as u64;
         let val = (unit_field_val & mask) >> 30usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m30(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 1073741824u64 as u64;
+        let mask = 0x40000000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -1155,13 +1155,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 2147483648u64 as u64;
+        let mask = 0x80000000 as u64;
         let val = (unit_field_val & mask) >> 31usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m31(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 2147483648u64 as u64;
+        let mask = 0x80000000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -1191,13 +1191,13 @@ impl MuchBitfield {
                 ::std::mem::size_of::<u64>(),
             )
         };
-        let mask = 4294967296u64 as u64;
+        let mask = 0x100000000 as u64;
         let val = (unit_field_val & mask) >> 32usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_m32(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 4294967296u64 as u64;
+        let mask = 0x100000000 as u64;
         let val = val as u8 as u64;
         let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -1253,38 +1253,38 @@ impl MuchBitfield {
         m31: ::std::os::raw::c_char,
         m32: ::std::os::raw::c_char,
     ) -> u64 {
-        (((((((((((((((((((((((((((((((((0 | ((m0 as u8 as u64) << 0usize) & (1u64 as u64)) |
-            ((m1 as u8 as u64) << 1usize) & (2u64 as u64)) |
-            ((m2 as u8 as u64) << 2usize) & (4u64 as u64)) |
-            ((m3 as u8 as u64) << 3usize) & (8u64 as u64)) |
-            ((m4 as u8 as u64) << 4usize) & (16u64 as u64)) |
-            ((m5 as u8 as u64) << 5usize) & (32u64 as u64)) |
-            ((m6 as u8 as u64) << 6usize) & (64u64 as u64)) |
-            ((m7 as u8 as u64) << 7usize) & (128u64 as u64)) |
-            ((m8 as u8 as u64) << 8usize) & (256u64 as u64)) |
-            ((m9 as u8 as u64) << 9usize) & (512u64 as u64)) |
-            ((m10 as u8 as u64) << 10usize) & (1024u64 as u64)) |
-            ((m11 as u8 as u64) << 11usize) & (2048u64 as u64)) |
-            ((m12 as u8 as u64) << 12usize) & (4096u64 as u64)) |
-            ((m13 as u8 as u64) << 13usize) & (8192u64 as u64)) |
-            ((m14 as u8 as u64) << 14usize) & (16384u64 as u64)) |
-            ((m15 as u8 as u64) << 15usize) & (32768u64 as u64)) |
-            ((m16 as u8 as u64) << 16usize) & (65536u64 as u64)) |
-            ((m17 as u8 as u64) << 17usize) & (131072u64 as u64)) |
-            ((m18 as u8 as u64) << 18usize) & (262144u64 as u64)) |
-            ((m19 as u8 as u64) << 19usize) & (524288u64 as u64)) |
-            ((m20 as u8 as u64) << 20usize) & (1048576u64 as u64)) |
-            ((m21 as u8 as u64) << 21usize) & (2097152u64 as u64)) |
-            ((m22 as u8 as u64) << 22usize) & (4194304u64 as u64)) |
-            ((m23 as u8 as u64) << 23usize) & (8388608u64 as u64)) |
-            ((m24 as u8 as u64) << 24usize) & (16777216u64 as u64)) |
-            ((m25 as u8 as u64) << 25usize) & (33554432u64 as u64)) |
-            ((m26 as u8 as u64) << 26usize) & (67108864u64 as u64)) |
-            ((m27 as u8 as u64) << 27usize) & (134217728u64 as u64)) |
-            ((m28 as u8 as u64) << 28usize) & (268435456u64 as u64)) |
-            ((m29 as u8 as u64) << 29usize) & (536870912u64 as u64)) |
-            ((m30 as u8 as u64) << 30usize) & (1073741824u64 as u64)) |
-            ((m31 as u8 as u64) << 31usize) & (2147483648u64 as u64)) |
-            ((m32 as u8 as u64) << 32usize) & (4294967296u64 as u64))
+        (((((((((((((((((((((((((((((((((0 | ((m0 as u8 as u64) << 0usize) & (0x1 as u64))
+            | ((m1 as u8 as u64) << 1usize) & (0x2 as u64))
+            | ((m2 as u8 as u64) << 2usize) & (0x4 as u64))
+            | ((m3 as u8 as u64) << 3usize) & (0x8 as u64))
+            | ((m4 as u8 as u64) << 4usize) & (0x10 as u64))
+            | ((m5 as u8 as u64) << 5usize) & (0x20 as u64))
+            | ((m6 as u8 as u64) << 6usize) & (0x40 as u64))
+            | ((m7 as u8 as u64) << 7usize) & (0x80 as u64))
+            | ((m8 as u8 as u64) << 8usize) & (0x100 as u64))
+            | ((m9 as u8 as u64) << 9usize) & (0x200 as u64))
+            | ((m10 as u8 as u64) << 10usize) & (0x400 as u64))
+            | ((m11 as u8 as u64) << 11usize) & (0x800 as u64))
+            | ((m12 as u8 as u64) << 12usize) & (0x1000 as u64))
+            | ((m13 as u8 as u64) << 13usize) & (0x2000 as u64))
+            | ((m14 as u8 as u64) << 14usize) & (0x4000 as u64))
+            | ((m15 as u8 as u64) << 15usize) & (0x8000 as u64))
+            | ((m16 as u8 as u64) << 16usize) & (0x10000 as u64))
+            | ((m17 as u8 as u64) << 17usize) & (0x20000 as u64))
+            | ((m18 as u8 as u64) << 18usize) & (0x40000 as u64))
+            | ((m19 as u8 as u64) << 19usize) & (0x80000 as u64))
+            | ((m20 as u8 as u64) << 20usize) & (0x100000 as u64))
+            | ((m21 as u8 as u64) << 21usize) & (0x200000 as u64))
+            | ((m22 as u8 as u64) << 22usize) & (0x400000 as u64))
+            | ((m23 as u8 as u64) << 23usize) & (0x800000 as u64))
+            | ((m24 as u8 as u64) << 24usize) & (0x1000000 as u64))
+            | ((m25 as u8 as u64) << 25usize) & (0x2000000 as u64))
+            | ((m26 as u8 as u64) << 26usize) & (0x4000000 as u64))
+            | ((m27 as u8 as u64) << 27usize) & (0x8000000 as u64))
+            | ((m28 as u8 as u64) << 28usize) & (0x10000000 as u64))
+            | ((m29 as u8 as u64) << 29usize) & (0x20000000 as u64))
+            | ((m30 as u8 as u64) << 30usize) & (0x40000000 as u64))
+            | ((m31 as u8 as u64) << 31usize) & (0x80000000 as u64))
+            | ((m32 as u8 as u64) << 32usize) & (0x100000000 as u64))
     }
 }
