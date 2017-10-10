@@ -140,6 +140,8 @@ rust_feature_def!(
     => untagged_union;
     /// Constant function ([RFC 911](https://github.com/rust-lang/rfcs/blob/master/text/0911-const-fn.md))
     => const_fn;
+    /// `thiscall` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/42202))
+    => thiscall_abi;
 );
 
 impl From<RustTarget> for RustFeatures {
@@ -152,6 +154,7 @@ impl From<RustTarget> for RustFeatures {
 
         if rust_target >= RustTarget::Nightly {
             features.const_fn = true;
+            features.thiscall_abi = true;
         }
 
         features
