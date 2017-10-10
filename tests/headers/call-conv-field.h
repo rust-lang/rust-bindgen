@@ -1,4 +1,4 @@
-// bindgen-flags: -- -target i686-pc-win32
+// bindgen-flags: -- --target=i686-pc-win32
 // bindgen-unstable
 // bindgen-generate-bindings-on-linux-only
 //

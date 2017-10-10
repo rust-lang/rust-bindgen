@@ -235,18 +235,13 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
         }
     }
 
-    // Windows platform has various different conventions than *nix platforms,
-    // e.g. default enum underlying type, struct padding, mangling. Most tests
-    // were written and checked on Linux and macOS, and thus they could fail on
-    // Windows. We just make those tests targetting Linux instead as far as one
-    // isn't annotated for a specific target.
-    if cfg!(target_os = "windows") {
-        if flags.iter().all(|flag| !flag.starts_with("--target=")) {
-            if !flags.iter().any(|flag| flag == "--") {
-                flags.push("--".into());
-            }
-            flags.push("--target=x86_64-unknown-linux".into());
+    // Different platforms have various different conventions like struct padding, mangling, etc.
+    // We make the default target as x86_64-unknown-linux
+    if flags.iter().all(|flag| !flag.starts_with("--target=")) {
+        if !flags.iter().any(|flag| flag == "--") {
+            flags.push("--".into());
         }
+        flags.push("--target=x86_64-unknown-linux".into());
     }
 
     // Fool builder_from_flags() into believing it has real env::args_os...
