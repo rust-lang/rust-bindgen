@@ -46,7 +46,7 @@ impl<T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
         true
     }
 }
-impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
+impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct foo {
@@ -89,13 +89,13 @@ impl foo__bindgen_ty_1 {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 127u64 as u32;
+        let mask = 0x7f as u32;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b(&mut self, val: ::std::os::raw::c_int) {
-        let mask = 127u64 as u32;
+        let mask = 0x7f as u32;
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -125,13 +125,13 @@ impl foo__bindgen_ty_1 {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 4294967168u64 as u32;
+        let mask = 0xffffff80 as u32;
         let val = (unit_field_val & mask) >> 7usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_c(&mut self, val: ::std::os::raw::c_int) {
-        let mask = 4294967168u64 as u32;
+        let mask = 0xffffff80 as u32;
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -153,8 +153,8 @@ impl foo__bindgen_ty_1 {
     }
     #[inline]
     pub fn new_bitfield_1(b: ::std::os::raw::c_int, c: ::std::os::raw::c_int) -> u32 {
-        ((0 | ((b as u32 as u32) << 0usize) & (127u64 as u32)) |
-            ((c as u32 as u32) << 7usize) & (4294967168u64 as u32))
+        ((0 | ((b as u32 as u32) << 0usize) & (0x7f as u32))
+            | ((c as u32 as u32) << 7usize) & (0xffffff80 as u32))
     }
 }
 #[test]

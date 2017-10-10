@@ -51,13 +51,13 @@ impl Foo {
                 ::std::mem::size_of::<u8>(),
             )
         };
-        let mask = 7u64 as u8;
+        let mask = 0x7 as u8;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_type__bindgen_bitfield(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 7u64 as u8;
+        let mask = 0x7 as u8;
         let val = val as u8 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -79,7 +79,7 @@ impl Foo {
     }
     #[inline]
     pub fn new_bitfield_1(type__bindgen_bitfield: ::std::os::raw::c_char) -> u8 {
-        (0 | ((type__bindgen_bitfield as u8 as u8) << 0usize) & (7u64 as u8))
+        (0 | ((type__bindgen_bitfield as u8 as u8) << 0usize) & (0x7 as u8))
     }
     #[inline]
     pub unsafe fn type_(&mut self) -> ::std::os::raw::c_char {

@@ -1121,7 +1121,7 @@ impl Bitfield {
         let bitfield_int_ty = helpers::blob(bitfield_ty_layout);
 
         let offset = self.offset_into_unit();
-        let mask = self.mask();
+        let mask = helpers::ast_ty::hex_expr(self.mask());
 
         // Don't use variables or blocks because const functions do not allow
         // them.
@@ -1304,7 +1304,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
             bitfield_ty.to_rust_ty_or_opaque(ctx, bitfield_ty_item);
 
         let offset = self.offset_into_unit();
-        let mask = self.mask();
+        let mask = helpers::ast_ty::hex_expr(self.mask());
 
         methods.extend(Some(quote! {
             #[inline]

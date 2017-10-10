@@ -51,13 +51,13 @@ impl A {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 1u64 as u16;
+        let mask = 0x1 as u16;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b1(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 1u64 as u16;
+        let mask = 0x1 as u16;
         let val = val as u32 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -87,13 +87,13 @@ impl A {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 2u64 as u16;
+        let mask = 0x2 as u16;
         let val = (unit_field_val & mask) >> 1usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b2(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 2u64 as u16;
+        let mask = 0x2 as u16;
         let val = val as u32 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -123,13 +123,13 @@ impl A {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 4u64 as u16;
+        let mask = 0x4 as u16;
         let val = (unit_field_val & mask) >> 2usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b3(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 4u64 as u16;
+        let mask = 0x4 as u16;
         let val = val as u32 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -159,13 +159,13 @@ impl A {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 8u64 as u16;
+        let mask = 0x8 as u16;
         let val = (unit_field_val & mask) >> 3usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b4(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 8u64 as u16;
+        let mask = 0x8 as u16;
         let val = val as u32 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -195,13 +195,13 @@ impl A {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 16u64 as u16;
+        let mask = 0x10 as u16;
         let val = (unit_field_val & mask) >> 4usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b5(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 16u64 as u16;
+        let mask = 0x10 as u16;
         let val = val as u32 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -231,13 +231,13 @@ impl A {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 32u64 as u16;
+        let mask = 0x20 as u16;
         let val = (unit_field_val & mask) >> 5usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b6(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 32u64 as u16;
+        let mask = 0x20 as u16;
         let val = val as u32 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -267,13 +267,13 @@ impl A {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 64u64 as u16;
+        let mask = 0x40 as u16;
         let val = (unit_field_val & mask) >> 6usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b7(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 64u64 as u16;
+        let mask = 0x40 as u16;
         let val = val as u32 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -303,13 +303,13 @@ impl A {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 128u64 as u16;
+        let mask = 0x80 as u16;
         let val = (unit_field_val & mask) >> 7usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b8(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 128u64 as u16;
+        let mask = 0x80 as u16;
         let val = val as u32 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -339,13 +339,13 @@ impl A {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 256u64 as u16;
+        let mask = 0x100 as u16;
         let val = (unit_field_val & mask) >> 8usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b9(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 256u64 as u16;
+        let mask = 0x100 as u16;
         let val = val as u32 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -375,13 +375,13 @@ impl A {
                 ::std::mem::size_of::<u16>(),
             )
         };
-        let mask = 512u64 as u16;
+        let mask = 0x200 as u16;
         let val = (unit_field_val & mask) >> 9usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b10(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 512u64 as u16;
+        let mask = 0x200 as u16;
         let val = val as u32 as u16;
         let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -414,16 +414,16 @@ impl A {
         b9: ::std::os::raw::c_uint,
         b10: ::std::os::raw::c_uint,
     ) -> u16 {
-        ((((((((((0 | ((b1 as u32 as u16) << 0usize) & (1u64 as u16)) |
-            ((b2 as u32 as u16) << 1usize) & (2u64 as u16)) |
-            ((b3 as u32 as u16) << 2usize) & (4u64 as u16)) |
-            ((b4 as u32 as u16) << 3usize) & (8u64 as u16)) |
-            ((b5 as u32 as u16) << 4usize) & (16u64 as u16)) |
-            ((b6 as u32 as u16) << 5usize) & (32u64 as u16)) |
-            ((b7 as u32 as u16) << 6usize) & (64u64 as u16)) |
-            ((b8 as u32 as u16) << 7usize) & (128u64 as u16)) |
-            ((b9 as u32 as u16) << 8usize) & (256u64 as u16)) |
-            ((b10 as u32 as u16) << 9usize) & (512u64 as u16))
+        ((((((((((0 | ((b1 as u32 as u16) << 0usize) & (0x1 as u16))
+            | ((b2 as u32 as u16) << 1usize) & (0x2 as u16))
+            | ((b3 as u32 as u16) << 2usize) & (0x4 as u16))
+            | ((b4 as u32 as u16) << 3usize) & (0x8 as u16))
+            | ((b5 as u32 as u16) << 4usize) & (0x10 as u16))
+            | ((b6 as u32 as u16) << 5usize) & (0x20 as u16))
+            | ((b7 as u32 as u16) << 6usize) & (0x40 as u16))
+            | ((b8 as u32 as u16) << 7usize) & (0x80 as u16))
+            | ((b9 as u32 as u16) << 8usize) & (0x100 as u16))
+            | ((b10 as u32 as u16) << 9usize) & (0x200 as u16))
     }
 }
 #[repr(C)]
@@ -461,13 +461,13 @@ impl B {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 2147483647u64 as u32;
+        let mask = 0x7fffffff as u32;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_foo(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 2147483647u64 as u32;
+        let mask = 0x7fffffff as u32;
         let val = val as u32 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -497,13 +497,13 @@ impl B {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 2147483648u64 as u32;
+        let mask = 0x80000000 as u32;
         let val = (unit_field_val & mask) >> 31usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_bar(&mut self, val: ::std::os::raw::c_uchar) {
-        let mask = 2147483648u64 as u32;
+        let mask = 0x80000000 as u32;
         let val = val as u8 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -525,8 +525,8 @@ impl B {
     }
     #[inline]
     pub fn new_bitfield_1(foo: ::std::os::raw::c_uint, bar: ::std::os::raw::c_uchar) -> u32 {
-        ((0 | ((foo as u32 as u32) << 0usize) & (2147483647u64 as u32)) |
-            ((bar as u8 as u32) << 31usize) & (2147483648u64 as u32))
+        ((0 | ((foo as u32 as u32) << 0usize) & (0x7fffffff as u32))
+            | ((bar as u8 as u32) << 31usize) & (0x80000000 as u32))
     }
 }
 #[repr(C)]
@@ -575,13 +575,13 @@ impl C {
                 ::std::mem::size_of::<u8>(),
             )
         };
-        let mask = 1u64 as u8;
+        let mask = 0x1 as u8;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b1(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 1u64 as u8;
+        let mask = 0x1 as u8;
         let val = val as u32 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -611,13 +611,13 @@ impl C {
                 ::std::mem::size_of::<u8>(),
             )
         };
-        let mask = 2u64 as u8;
+        let mask = 0x2 as u8;
         let val = (unit_field_val & mask) >> 1usize;
         unsafe { ::std::mem::transmute(val as u32) }
     }
     #[inline]
     pub fn set_b2(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 2u64 as u8;
+        let mask = 0x2 as u8;
         let val = val as u32 as u8;
         let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -639,8 +639,8 @@ impl C {
     }
     #[inline]
     pub fn new_bitfield_1(b1: ::std::os::raw::c_uint, b2: ::std::os::raw::c_uint) -> u8 {
-        ((0 | ((b1 as u32 as u8) << 0usize) & (1u64 as u8)) |
-            ((b2 as u32 as u8) << 1usize) & (2u64 as u8))
+        ((0 | ((b1 as u32 as u8) << 0usize) & (0x1 as u8))
+            | ((b2 as u32 as u8) << 1usize) & (0x2 as u8))
     }
 }
 #[repr(C)]
@@ -679,13 +679,13 @@ impl Date1 {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 7u64 as u32;
+        let mask = 0x7 as u32;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nWeekDay(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 7u64 as u32;
+        let mask = 0x7 as u32;
         let val = val as u16 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -715,13 +715,13 @@ impl Date1 {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 504u64 as u32;
+        let mask = 0x1f8 as u32;
         let val = (unit_field_val & mask) >> 3usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nMonthDay(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 504u64 as u32;
+        let mask = 0x1f8 as u32;
         let val = val as u16 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -751,13 +751,13 @@ impl Date1 {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 15872u64 as u32;
+        let mask = 0x3e00 as u32;
         let val = (unit_field_val & mask) >> 9usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nMonth(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 15872u64 as u32;
+        let mask = 0x3e00 as u32;
         let val = val as u16 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -787,13 +787,13 @@ impl Date1 {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 16711680u64 as u32;
+        let mask = 0xff0000 as u32;
         let val = (unit_field_val & mask) >> 16usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nYear(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 16711680u64 as u32;
+        let mask = 0xff0000 as u32;
         let val = val as u16 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -820,10 +820,10 @@ impl Date1 {
         nMonth: ::std::os::raw::c_ushort,
         nYear: ::std::os::raw::c_ushort,
     ) -> u32 {
-        ((((0 | ((nWeekDay as u16 as u32) << 0usize) & (7u64 as u32)) |
-            ((nMonthDay as u16 as u32) << 3usize) & (504u64 as u32)) |
-            ((nMonth as u16 as u32) << 9usize) & (15872u64 as u32)) |
-            ((nYear as u16 as u32) << 16usize) & (16711680u64 as u32))
+        ((((0 | ((nWeekDay as u16 as u32) << 0usize) & (0x7 as u32))
+            | ((nMonthDay as u16 as u32) << 3usize) & (0x1f8 as u32))
+            | ((nMonth as u16 as u32) << 9usize) & (0x3e00 as u32))
+            | ((nYear as u16 as u32) << 16usize) & (0xff0000 as u32))
     }
 }
 #[repr(C)]
@@ -861,13 +861,13 @@ impl Date2 {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 7u64 as u32;
+        let mask = 0x7 as u32;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nWeekDay(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 7u64 as u32;
+        let mask = 0x7 as u32;
         let val = val as u16 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -897,13 +897,13 @@ impl Date2 {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 504u64 as u32;
+        let mask = 0x1f8 as u32;
         let val = (unit_field_val & mask) >> 3usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nMonthDay(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 504u64 as u32;
+        let mask = 0x1f8 as u32;
         let val = val as u16 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -933,13 +933,13 @@ impl Date2 {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 15872u64 as u32;
+        let mask = 0x3e00 as u32;
         let val = (unit_field_val & mask) >> 9usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nMonth(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 15872u64 as u32;
+        let mask = 0x3e00 as u32;
         let val = val as u16 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -969,13 +969,13 @@ impl Date2 {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 16711680u64 as u32;
+        let mask = 0xff0000 as u32;
         let val = (unit_field_val & mask) >> 16usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nYear(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 16711680u64 as u32;
+        let mask = 0xff0000 as u32;
         let val = val as u16 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -1005,13 +1005,13 @@ impl Date2 {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 4278190080u64 as u32;
+        let mask = 0xff000000 as u32;
         let val = (unit_field_val & mask) >> 24usize;
         unsafe { ::std::mem::transmute(val as u8) }
     }
     #[inline]
     pub fn set_byte(&mut self, val: ::std::os::raw::c_uchar) {
-        let mask = 4278190080u64 as u32;
+        let mask = 0xff000000 as u32;
         let val = val as u8 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -1039,11 +1039,11 @@ impl Date2 {
         nYear: ::std::os::raw::c_ushort,
         byte: ::std::os::raw::c_uchar,
     ) -> u32 {
-        (((((0 | ((nWeekDay as u16 as u32) << 0usize) & (7u64 as u32)) |
-            ((nMonthDay as u16 as u32) << 3usize) & (504u64 as u32)) |
-            ((nMonth as u16 as u32) << 9usize) & (15872u64 as u32)) |
-            ((nYear as u16 as u32) << 16usize) & (16711680u64 as u32)) |
-            ((byte as u8 as u32) << 24usize) & (4278190080u64 as u32))
+        (((((0 | ((nWeekDay as u16 as u32) << 0usize) & (0x7 as u32))
+            | ((nMonthDay as u16 as u32) << 3usize) & (0x1f8 as u32))
+            | ((nMonth as u16 as u32) << 9usize) & (0x3e00 as u32))
+            | ((nYear as u16 as u32) << 16usize) & (0xff0000 as u32))
+            | ((byte as u8 as u32) << 24usize) & (0xff000000 as u32))
     }
 }
 #[repr(C)]
@@ -1092,13 +1092,13 @@ impl Date3 {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 7u64 as u32;
+        let mask = 0x7 as u32;
         let val = (unit_field_val & mask) >> 0usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nWeekDay(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 7u64 as u32;
+        let mask = 0x7 as u32;
         let val = val as u16 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -1128,13 +1128,13 @@ impl Date3 {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 504u64 as u32;
+        let mask = 0x1f8 as u32;
         let val = (unit_field_val & mask) >> 3usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nMonthDay(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 504u64 as u32;
+        let mask = 0x1f8 as u32;
         let val = val as u16 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -1164,13 +1164,13 @@ impl Date3 {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 15872u64 as u32;
+        let mask = 0x3e00 as u32;
         let val = (unit_field_val & mask) >> 9usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nMonth(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 15872u64 as u32;
+        let mask = 0x3e00 as u32;
         let val = val as u16 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -1200,13 +1200,13 @@ impl Date3 {
                 ::std::mem::size_of::<u32>(),
             )
         };
-        let mask = 16711680u64 as u32;
+        let mask = 0xff0000 as u32;
         let val = (unit_field_val & mask) >> 16usize;
         unsafe { ::std::mem::transmute(val as u16) }
     }
     #[inline]
     pub fn set_nYear(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 16711680u64 as u32;
+        let mask = 0xff0000 as u32;
         let val = val as u16 as u32;
         let mut unit_field_val: u32 = unsafe { ::std::mem::uninitialized() };
         unsafe {
@@ -1233,9 +1233,9 @@ impl Date3 {
         nMonth: ::std::os::raw::c_ushort,
         nYear: ::std::os::raw::c_ushort,
     ) -> u32 {
-        ((((0 | ((nWeekDay as u16 as u32) << 0usize) & (7u64 as u32)) |
-            ((nMonthDay as u16 as u32) << 3usize) & (504u64 as u32)) |
-            ((nMonth as u16 as u32) << 9usize) & (15872u64 as u32)) |
-            ((nYear as u16 as u32) << 16usize) & (16711680u64 as u32))
+        ((((0 | ((nWeekDay as u16 as u32) << 0usize) & (0x7 as u32))
+            | ((nMonthDay as u16 as u32) << 3usize) & (0x1f8 as u32))
+            | ((nMonth as u16 as u32) << 9usize) & (0x3e00 as u32))
+            | ((nYear as u16 as u32) << 16usize) & (0xff0000 as u32))
     }
 }
