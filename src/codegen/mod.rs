@@ -1612,10 +1612,13 @@ impl CodeGenerator for CompInfo {
                 fields.push(padding_field);
             }
 
-            if let Some(align_field) =
-                layout.and_then(|layout| struct_layout.align_struct(layout))
-            {
-                fields.push(align_field);
+            if let Some(layout) = layout {
+                if struct_layout.requires_explicit_align(layout) {
+                    let ty = helpers::blob(Layout::new(0, layout.align));
+                    fields.push(quote! {
+                        pub __bindgen_align: #ty ,
+                    });
+                }
             }
         }
 
