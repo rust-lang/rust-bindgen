@@ -302,6 +302,7 @@ include!(concat!(env!("OUT_DIR"), "/tests.rs"));
 fn test_header_contents() {
     let actual = builder()
         .header_contents("test.h", "int foo(const char* a);")
+        .clang_arg("--target=x86_64-unknown-linux")
         .generate()
         .unwrap()
         .to_string();
@@ -330,6 +331,7 @@ fn test_multiple_header_calls_in_builder() {
             "/tests/headers/func_ptr.h"
         ))
         .header(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/char.h"))
+        .clang_arg("--target=x86_64-unknown-linux")
         .generate()
         .unwrap()
         .to_string();
