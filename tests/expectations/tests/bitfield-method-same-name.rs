@@ -4,11 +4,10 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
 
-#[repr(C)]
+#[repr(C, packed)]
 #[derive(Debug, Default, Copy)]
 pub struct Foo {
     pub _bitfield_1: u8,
-    pub __bindgen_align: [u8; 0usize],
 }
 #[test]
 fn bindgen_test_layout_Foo() {
