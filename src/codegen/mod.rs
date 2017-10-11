@@ -1380,6 +1380,8 @@ impl CodeGenerator for CompInfo {
 
         let used_template_params = item.used_template_params(ctx);
 
+        let mut packed = self.packed();
+
         // generate tuple struct if struct or union is a forward declaration,
         // skip for now if template parameters are needed.
         //
@@ -1397,97 +1399,8 @@ impl CodeGenerator for CompInfo {
             return;
         }
 
-        let mut attributes = vec![];
-        let mut needs_clone_impl = false;
-        let mut needs_default_impl = false;
-        let mut needs_debug_impl = false;
-        let mut needs_partialeq_impl = false;
-        if let Some(comment) = item.comment(ctx) {
-            attributes.push(attributes::doc(comment));
-        }
-        if self.packed() {
-            attributes.push(attributes::repr_list(&["C", "packed"]));
-        } else {
-            attributes.push(attributes::repr("C"));
-        }
-
-        let is_union = self.kind() == CompKind::Union;
-        let mut derives = vec![];
-        if item.can_derive_debug(ctx) {
-            derives.push("Debug");
-        } else {
-            needs_debug_impl = ctx.options().derive_debug &&
-                ctx.options().impl_debug
-        }
-
-        if item.can_derive_default(ctx) {
-            derives.push("Default");
-        } else {
-            needs_default_impl = ctx.options().derive_default;
-        }
-
-        if item.can_derive_copy(ctx) && !item.annotations().disallow_copy() &&
-            ctx.options().derive_copy
-        {
-            derives.push("Copy");
-            if used_template_params.is_some() {
-                // FIXME: This requires extra logic if you have a big array in a
-                // templated struct. The reason for this is that the magic:
-                //     fn clone(&self) -> Self { *self }
-                // doesn't work for templates.
-                //
-                // It's not hard to fix though.
-                derives.push("Clone");
-            } else {
-                needs_clone_impl = true;
-            }
-        }
-
-        if item.can_derive_hash(ctx) {
-            derives.push("Hash");
-        }
-
-        if item.can_derive_partialord(ctx) {
-            derives.push("PartialOrd");
-        }
-
-        if item.can_derive_ord(ctx) {
-            derives.push("Ord");
-        }
-
-        if item.can_derive_partialeq(ctx) {
-            derives.push("PartialEq");
-        } else {
-            needs_partialeq_impl = 
-                ctx.options().derive_partialeq && 
-                ctx.options().impl_partialeq &&
-                ctx.lookup_can_derive_partialeq_or_partialord(item.id())
-                    .map_or(true, |x| {
-                        x == CannotDeriveReason::ArrayTooLarge
-                    });
-        }
-
-        if item.can_derive_eq(ctx) {
-            derives.push("Eq");
-        }
-
-        if !derives.is_empty() {
-            attributes.push(attributes::derives(&derives))
-        }
-
         let canonical_name = item.canonical_name(ctx);
         let canonical_ident = ctx.rust_ident(&canonical_name);
-        let mut tokens = if is_union && self.can_be_rust_union(ctx) {
-            quote! {
-                #( #attributes )*
-                pub union #canonical_ident
-            }
-        } else {
-            quote! {
-                #( #attributes )*
-                pub struct #canonical_ident
-            }
-        };
 
         // Generate the vtable from the method list if appropriate.
         //
@@ -1540,6 +1453,8 @@ impl CodeGenerator for CompInfo {
                 });
             }
         }
+
+        let is_union = self.kind() == CompKind::Union;
         if is_union {
             result.saw_union();
             if !self.can_be_rust_union(ctx) {
@@ -1612,10 +1527,17 @@ impl CodeGenerator for CompInfo {
                 fields.push(padding_field);
             }
 
-            if let Some(align_field) =
-                layout.and_then(|layout| struct_layout.align_struct(layout))
-            {
-                fields.push(align_field);
+            if let Some(layout) = layout {
+                if struct_layout.requires_explicit_align(layout) {
+                    if layout.align == 1 {
+                        packed = true;
+                    } else {
+                        let ty = helpers::blob(Layout::new(0, layout.align));
+                        fields.push(quote! {
+                            pub __bindgen_align: #ty ,
+                        });
+                    }
+                }
             }
         }
 
@@ -1672,6 +1594,95 @@ impl CodeGenerator for CompInfo {
             }
         } else {
             quote! { }
+        };
+
+        let mut attributes = vec![];
+        let mut needs_clone_impl = false;
+        let mut needs_default_impl = false;
+        let mut needs_debug_impl = false;
+        let mut needs_partialeq_impl = false;
+        if let Some(comment) = item.comment(ctx) {
+            attributes.push(attributes::doc(comment));
+        }
+        if packed {
+            attributes.push(attributes::repr_list(&["C", "packed"]));
+        } else {
+            attributes.push(attributes::repr("C"));
+        }
+
+        let mut derives = vec![];
+        if item.can_derive_debug(ctx) {
+            derives.push("Debug");
+        } else {
+            needs_debug_impl = ctx.options().derive_debug &&
+                ctx.options().impl_debug
+        }
+
+        if item.can_derive_default(ctx) {
+            derives.push("Default");
+        } else {
+            needs_default_impl = ctx.options().derive_default;
+        }
+
+        if item.can_derive_copy(ctx) && !item.annotations().disallow_copy() &&
+            ctx.options().derive_copy
+        {
+            derives.push("Copy");
+            if used_template_params.is_some() {
+                // FIXME: This requires extra logic if you have a big array in a
+                // templated struct. The reason for this is that the magic:
+                //     fn clone(&self) -> Self { *self }
+                // doesn't work for templates.
+                //
+                // It's not hard to fix though.
+                derives.push("Clone");
+            } else {
+                needs_clone_impl = true;
+            }
+        }
+
+        if item.can_derive_hash(ctx) {
+            derives.push("Hash");
+        }
+
+        if item.can_derive_partialord(ctx) {
+            derives.push("PartialOrd");
+        }
+
+        if item.can_derive_ord(ctx) {
+            derives.push("Ord");
+        }
+
+        if item.can_derive_partialeq(ctx) {
+            derives.push("PartialEq");
+        } else {
+            needs_partialeq_impl = 
+                ctx.options().derive_partialeq && 
+                ctx.options().impl_partialeq &&
+                ctx.lookup_can_derive_partialeq_or_partialord(item.id())
+                    .map_or(true, |x| {
+                        x == CannotDeriveReason::ArrayTooLarge
+                    });
+        }
+
+        if item.can_derive_eq(ctx) {
+            derives.push("Eq");
+        }
+
+        if !derives.is_empty() {
+            attributes.push(attributes::derives(&derives))
+        }
+
+        let mut tokens = if is_union && self.can_be_rust_union(ctx) {
+            quote! {
+                #( #attributes )*
+                pub union #canonical_ident
+            }
+        } else {
+            quote! {
+                #( #attributes )*
+                pub struct #canonical_ident
+            }
         };
 
         tokens.append(quote! {

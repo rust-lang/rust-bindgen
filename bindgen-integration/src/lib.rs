@@ -183,8 +183,7 @@ fn test_bitfields_sixth() {
 fn test_bitfield_constructors() {
     use std::mem;
     let mut first = bindings::bitfields::First {
-        _bitfield_1: unsafe { mem::transmute(bindings::bitfields::First::new_bitfield_1(1, 2, 3)) },
-        __bindgen_align: [],
+        _bitfield_1: unsafe { mem::transmute(bindings::bitfields::First::new_bitfield_1(1, 2, 3)) }
     };
     assert!(unsafe {
         first.assert(1, 2, 3)

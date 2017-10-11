@@ -288,18 +288,9 @@ impl<'a> StructLayoutTracker<'a> {
         }
     }
 
-    pub fn align_struct(&self, layout: Layout) -> Option<quote::Tokens> {
-        if self.max_field_align < layout.align &&
+    pub fn requires_explicit_align(&self, layout: Layout) -> bool {
+        self.max_field_align < layout.align &&
             layout.align <= mem::size_of::<*mut ()>()
-        {
-            let ty = helpers::blob(Layout::new(0, layout.align));
-
-            Some(quote! {
-                pub __bindgen_align: #ty ,
-            })
-        } else {
-            None
-        }
     }
 
     fn padding_bytes(&self, layout: Layout) -> usize {
