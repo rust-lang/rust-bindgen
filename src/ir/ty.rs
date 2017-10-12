@@ -369,7 +369,14 @@ impl IsOpaque for Type {
             TypeKind::TemplateInstantiation(ref inst) => {
                 inst.is_opaque(ctx, item)
             }
-            TypeKind::Comp(ref comp) => comp.is_opaque(ctx, &()),
+            TypeKind::Comp(ref comp) => {
+                if comp.is_opaque(ctx, &()) {
+                    return true;
+                }
+
+                let computed_layout = comp.compute_layout(ctx);
+                self.layout.map_or(false, |layout| layout != computed_layout)
+            },
             TypeKind::ResolvedTypeRef(to) => to.is_opaque(ctx, &()),
             _ => false,
         }
