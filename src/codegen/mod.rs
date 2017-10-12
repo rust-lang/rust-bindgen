@@ -961,7 +961,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
     {
         // Bitfields are handled by `FieldCodegen` implementations for
         // `BitfieldUnit` and `Bitfield`.
-        assert!(self.bitfield().is_none());
+        assert!(self.bitfield_width().is_none());
 
         let field_item = self.ty().into_resolver().through_type_refs().resolve(ctx);
         let field_ty = field_item.expect_type();
@@ -1166,7 +1166,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         } else {
             helpers::blob(self.layout())
         };
-        
+
         let unit_field_name = format!("_bitfield_{}", self.nth());
         let unit_field_ident = ctx.rust_ident(&unit_field_name);
 
@@ -1656,8 +1656,8 @@ impl CodeGenerator for CompInfo {
         if item.can_derive_partialeq(ctx) {
             derives.push("PartialEq");
         } else {
-            needs_partialeq_impl = 
-                ctx.options().derive_partialeq && 
+            needs_partialeq_impl =
+                ctx.options().derive_partialeq &&
                 ctx.options().impl_partialeq &&
                 ctx.lookup_can_derive_partialeq_or_partialord(item.id())
                     .map_or(true, |x| {
@@ -1889,7 +1889,7 @@ impl CodeGenerator for CompInfo {
 
         if needs_partialeq_impl {
             if let Some(impl_) = impl_partialeq::gen_partialeq_impl(ctx, self, item, &ty_for_impl) {
-                
+
                 let partialeq_bounds = if !generic_param_names.is_empty() {
                     let bounds = generic_param_names.iter().map(|t| {
                         quote! { #t: PartialEq }
