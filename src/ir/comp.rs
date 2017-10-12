@@ -118,7 +118,7 @@ pub trait FieldMethods {
     fn comment(&self) -> Option<&str>;
 
     /// If this is a bitfield, how many bits does it need?
-    fn bitfield(&self) -> Option<u32>;
+    fn bitfield_width(&self) -> Option<u32>;
 
     /// Is this field marked as `mutable`?
     fn is_mutable(&self) -> bool;
@@ -295,12 +295,12 @@ pub struct Bitfield {
     data: FieldData,
 
     /// Name of the generated Rust getter for this bitfield.
-    /// 
+    ///
     /// Should be assigned before codegen.
     getter_name: Option<String>,
 
     /// Name of the generated Rust setter for this bitfield.
-    /// 
+    ///
     /// Should be assigned before codegen.
     setter_name: Option<String>,
 }
@@ -308,7 +308,7 @@ pub struct Bitfield {
 impl Bitfield {
     /// Construct a new bitfield.
     fn new(offset_into_unit: usize, raw: RawField) -> Bitfield {
-        assert!(raw.bitfield().is_some());
+        assert!(raw.bitfield_width().is_some());
 
         Bitfield {
             offset_into_unit: offset_into_unit,
@@ -342,12 +342,12 @@ impl Bitfield {
 
     /// Get the bit width of this bitfield.
     pub fn width(&self) -> u32 {
-        self.data.bitfield().unwrap()
+        self.data.bitfield_width().unwrap()
     }
 
     /// Name of the generated Rust getter for this bitfield.
-    /// 
-    /// Panics if called before assigning bitfield accessor names or if 
+    ///
+    /// Panics if called before assigning bitfield accessor names or if
     /// this bitfield have no name.
     pub fn getter_name(&self) -> &str {
         assert!(self.name().is_some(), "`Bitfield::getter_name` called on anonymous field");
@@ -358,8 +358,8 @@ impl Bitfield {
     }
 
     /// Name of the generated Rust setter for this bitfield.
-    /// 
-    /// Panics if called before assigning bitfield accessor names or if 
+    ///
+    /// Panics if called before assigning bitfield accessor names or if
     /// this bitfield have no name.
     pub fn setter_name(&self) -> &str {
         assert!(self.name().is_some(), "`Bitfield::setter_name` called on anonymous field");
@@ -383,8 +383,8 @@ impl FieldMethods for Bitfield {
         self.data.comment()
     }
 
-    fn bitfield(&self) -> Option<u32> {
-        self.data.bitfield()
+    fn bitfield_width(&self) -> Option<u32> {
+        self.data.bitfield_width()
     }
 
     fn is_mutable(&self) -> bool {
@@ -415,7 +415,7 @@ impl RawField {
         ty: TypeId,
         comment: Option<String>,
         annotations: Option<Annotations>,
-        bitfield: Option<u32>,
+        bitfield_width: Option<u32>,
         mutable: bool,
         offset: Option<usize>,
     ) -> RawField {
@@ -424,7 +424,7 @@ impl RawField {
             ty: ty,
             comment: comment,
             annotations: annotations.unwrap_or_default(),
-            bitfield: bitfield,
+            bitfield_width: bitfield_width,
             mutable: mutable,
             offset: offset,
         })
@@ -444,8 +444,8 @@ impl FieldMethods for RawField {
         self.0.comment()
     }
 
-    fn bitfield(&self) -> Option<u32> {
-        self.0.bitfield()
+    fn bitfield_width(&self) -> Option<u32> {
+        self.0.bitfield_width()
     }
 
     fn is_mutable(&self) -> bool {
@@ -481,7 +481,7 @@ where
         {
             let non_bitfields = raw_fields
                 .by_ref()
-                .peeking_take_while(|f| f.bitfield().is_none())
+                .peeking_take_while(|f| f.bitfield_width().is_none())
                 .map(|f| Field::DataMember(f.0));
             fields.extend(non_bitfields);
         }
@@ -491,7 +491,7 @@ where
         // the Itanium C++ ABI.
         let mut bitfields = raw_fields
             .by_ref()
-            .peeking_take_while(|f| f.bitfield().is_some())
+            .peeking_take_while(|f| f.bitfield_width().is_some())
             .peekable();
 
         if bitfields.peek().is_none() {
@@ -569,7 +569,7 @@ fn bitfields_to_allocation_units<E, I>(
     const is_ms_struct: bool = false;
 
     for bitfield in raw_bitfields {
-        let bitfield_width = bitfield.bitfield().unwrap() as usize;
+        let bitfield_width = bitfield.bitfield_width().unwrap() as usize;
         let bitfield_layout = ctx.resolve_type(bitfield.ty())
             .layout(ctx)
             .expect("Bitfield without layout? Gah!");
@@ -813,7 +813,7 @@ pub struct FieldData {
     annotations: Annotations,
 
     /// If this field is a bitfield, and how many bits does it contain if it is.
-    bitfield: Option<u32>,
+    bitfield_width: Option<u32>,
 
     /// If the C++ field is marked as `mutable`
     mutable: bool,
@@ -835,8 +835,8 @@ impl FieldMethods for FieldData {
         self.comment.as_ref().map(|c| &**c)
     }
 
-    fn bitfield(&self) -> Option<u32> {
-        self.bitfield
+    fn bitfield_width(&self) -> Option<u32> {
+        self.bitfield_width
     }
 
     fn is_mutable(&self) -> bool {
