@@ -1152,17 +1152,15 @@ impl BindgenContext {
 
     /// Enter the code generation phase, invoke the given callback `cb`, and
     /// leave the code generation phase.
-    pub fn gen<F, Out>(&mut self, cb: F) -> Out
+    pub(crate) fn gen<F, Out>(mut self, cb: F) -> (Out, BindgenOptions)
     where
         F: FnOnce(&Self) -> Out,
     {
         self.in_codegen = true;
 
-        if !self.collected_typerefs() {
-            self.resolve_typerefs();
-            self.compute_bitfield_units();
-            self.process_replacements();
-        }
+        self.resolve_typerefs();
+        self.compute_bitfield_units();
+        self.process_replacements();
 
         self.deanonymize_fields();
 
@@ -1189,9 +1187,8 @@ impl BindgenContext {
         self.compute_cannot_derive_hash();
         self.compute_cannot_derive_partialord_partialeq_or_eq();
 
-        let ret = cb(self);
-        self.in_codegen = false;
-        ret
+        let ret = cb(&self);
+        (ret, self.options)
     }
 
     /// When the `testing_only_extra_assertions` feature is enabled, this
@@ -1416,9 +1413,9 @@ impl BindgenContext {
     }
 
     /// Resolve a function with the given id.
-    /// 
+    ///
     /// Panics if there is no item for the given `FunctionId` or if the resolved
-    /// item is not a `Function`. 
+    /// item is not a `Function`.
     pub fn resolve_func(&self, func_id: FunctionId) -> &Function {
         self.resolve_item(func_id).kind().expect_function()
     }

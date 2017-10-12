@@ -7,6 +7,8 @@ pub mod struct_layout;
 use self::helpers::attributes;
 use self::struct_layout::StructLayoutTracker;
 
+use super::BindgenOptions;
+
 use ir::analysis::HasVtable;
 use ir::annotations::FieldAccessorKind;
 use ir::comment;
@@ -3327,7 +3329,7 @@ impl CodeGenerator for ObjCInterface {
     }
 }
 
-pub fn codegen(context: &mut BindgenContext) -> Vec<quote::Tokens> {
+pub(crate) fn codegen(context: BindgenContext) -> (Vec<quote::Tokens>, BindgenOptions) {
     context.gen(|context| {
         let _t = context.timer("codegen");
         let counter = Cell::new(0);
