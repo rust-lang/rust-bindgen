@@ -5,14 +5,24 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct detail_PointerType {
     pub _address: u8,
 }
 pub type detail_PointerType_Type<T> = *mut T;
+impl Clone for detail_PointerType {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct UniquePtr {
     pub _address: u8,
 }
 pub type UniquePtr_Pointer = detail_PointerType;
+impl Clone for UniquePtr {
+    fn clone(&self) -> Self {
+        *self
+    }
+}

@@ -12,11 +12,16 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Debug, Default, Copy)]
         pub struct Maybe {
             pub _address: u8,
         }
         pub type Maybe_ValueType<T> = T;
+        impl Clone for Maybe {
+            fn clone(&self) -> Self {
+                *self
+            }
+        }
     }
     #[repr(C)]
     #[derive(Debug, Default, Copy)]
@@ -25,19 +30,30 @@ pub mod root {
     }
     #[test]
     fn bindgen_test_layout_CapturingContentInfo() {
-        assert_eq!(::std::mem::size_of::<CapturingContentInfo>() , 1usize ,
-                   concat ! (
-                   "Size of: " , stringify ! ( CapturingContentInfo ) ));
-        assert_eq! (::std::mem::align_of::<CapturingContentInfo>() , 1usize ,
-                    concat ! (
-                    "Alignment of " , stringify ! ( CapturingContentInfo ) ));
-        assert_eq! (unsafe {
-                    & ( * ( 0 as * const CapturingContentInfo ) ) . a as *
-                    const _ as usize } , 0usize , concat ! (
-                    "Alignment of field: " , stringify ! (
-                    CapturingContentInfo ) , "::" , stringify ! ( a ) ));
+        assert_eq!(
+            ::std::mem::size_of::<CapturingContentInfo>(),
+            1usize,
+            concat!("Size of: ", stringify!(CapturingContentInfo))
+        );
+        assert_eq!(
+            ::std::mem::align_of::<CapturingContentInfo>(),
+            1usize,
+            concat!("Alignment of ", stringify!(CapturingContentInfo))
+        );
+        assert_eq!(
+            unsafe { &(*(0 as *const CapturingContentInfo)).a as *const _ as usize },
+            0usize,
+            concat!(
+                "Alignment of field: ",
+                stringify!(CapturingContentInfo),
+                "::",
+                stringify!(a)
+            )
+        );
     }
     impl Clone for CapturingContentInfo {
-        fn clone(&self) -> Self { *self }
+        fn clone(&self) -> Self {
+            *self
+        }
     }
 }

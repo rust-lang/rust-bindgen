@@ -5,7 +5,12 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct VariadicFunctionObject {
     pub _address: u8,
+}
+impl Clone for VariadicFunctionObject {
+    fn clone(&self) -> Self {
+        *self
+    }
 }

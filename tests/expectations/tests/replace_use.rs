@@ -7,9 +7,14 @@
 
 /// <div rustbindgen replaces="nsTArray"></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct nsTArray {
     pub y: ::std::os::raw::c_uint,
+}
+impl Clone for nsTArray {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]

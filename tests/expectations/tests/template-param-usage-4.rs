@@ -11,10 +11,17 @@ pub struct UsesTemplateParameter<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct UsesTemplateParameter_DoesNotUseTemplateParameters {
     pub x: ::std::os::raw::c_int,
 }
-impl <T> Default for UsesTemplateParameter<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl Clone for UsesTemplateParameter_DoesNotUseTemplateParameters {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl<T> Default for UsesTemplateParameter<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

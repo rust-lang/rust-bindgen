@@ -6,60 +6,131 @@
 
 #[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
-impl <T> __BindgenUnionField<T> {
+impl<T> __BindgenUnionField<T> {
     #[inline]
-    pub fn new() -> Self { __BindgenUnionField(::std::marker::PhantomData) }
+    pub fn new() -> Self {
+        __BindgenUnionField(::std::marker::PhantomData)
+    }
     #[inline]
-    pub unsafe fn as_ref(&self) -> &T { ::std::mem::transmute(self) }
+    pub unsafe fn as_ref(&self) -> &T {
+        ::std::mem::transmute(self)
+    }
     #[inline]
-    pub unsafe fn as_mut(&mut self) -> &mut T { ::std::mem::transmute(self) }
+    pub unsafe fn as_mut(&mut self) -> &mut T {
+        ::std::mem::transmute(self)
+    }
 }
-impl <T> ::std::default::Default for __BindgenUnionField<T> {
+impl<T> ::std::default::Default for __BindgenUnionField<T> {
     #[inline]
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
-impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
+impl<T> ::std::clone::Clone for __BindgenUnionField<T> {
     #[inline]
-    fn clone(&self) -> Self { Self::new() }
+    fn clone(&self) -> Self {
+        Self::new()
+    }
 }
-impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
-impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
+impl<T> ::std::marker::Copy for __BindgenUnionField<T> {}
+impl<T> ::std::fmt::Debug for __BindgenUnionField<T> {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         fmt.write_str("__BindgenUnionField")
     }
 }
-impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
-    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
+impl<T> ::std::hash::Hash for __BindgenUnionField<T> {
+    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) {}
 }
-impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
-    fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
+impl<T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
+    fn eq(&self, _other: &__BindgenUnionField<T>) -> bool {
+        true
+    }
 }
-impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
+impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct NastyStruct {
     pub mIsSome: bool,
     pub mStorage: NastyStruct__bindgen_ty_1,
     pub __bindgen_anon_1: NastyStruct__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct NastyStruct__bindgen_ty_1 {
     pub mFoo: __BindgenUnionField<*mut ::std::os::raw::c_void>,
     pub mDummy: __BindgenUnionField<::std::os::raw::c_ulong>,
     pub bindgen_union_field: u64,
 }
+#[test]
+fn bindgen_test_layout_NastyStruct__bindgen_ty_1() {
+    assert_eq!(
+        ::std::mem::size_of::<NastyStruct__bindgen_ty_1>(),
+        8usize,
+        concat!("Size of: ", stringify!(NastyStruct__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<NastyStruct__bindgen_ty_1>(),
+        8usize,
+        concat!("Alignment of ", stringify!(NastyStruct__bindgen_ty_1))
+    );
+}
+impl Clone for NastyStruct__bindgen_ty_1 {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct NastyStruct__bindgen_ty_2 {
     pub wat: __BindgenUnionField<::std::os::raw::c_short>,
     pub wut: __BindgenUnionField<*mut ::std::os::raw::c_int>,
     pub bindgen_union_field: u64,
 }
+#[test]
+fn bindgen_test_layout_NastyStruct__bindgen_ty_2() {
+    assert_eq!(
+        ::std::mem::size_of::<NastyStruct__bindgen_ty_2>(),
+        8usize,
+        concat!("Size of: ", stringify!(NastyStruct__bindgen_ty_2))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<NastyStruct__bindgen_ty_2>(),
+        8usize,
+        concat!("Alignment of ", stringify!(NastyStruct__bindgen_ty_2))
+    );
+}
+impl Clone for NastyStruct__bindgen_ty_2 {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl Clone for NastyStruct {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct Whatever {
     pub mTPtr: __BindgenUnionField<*mut ::std::os::raw::c_void>,
     pub mInt: __BindgenUnionField<::std::os::raw::c_int>,
     pub bindgen_union_field: u64,
+}
+#[test]
+fn bindgen_test_layout_Whatever() {
+    assert_eq!(
+        ::std::mem::size_of::<Whatever>(),
+        8usize,
+        concat!("Size of: ", stringify!(Whatever))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Whatever>(),
+        8usize,
+        concat!("Alignment of ", stringify!(Whatever))
+    );
+}
+impl Clone for Whatever {
+    fn clone(&self) -> Self {
+        *self
+    }
 }

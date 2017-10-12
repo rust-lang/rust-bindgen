@@ -5,8 +5,13 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct std_allocator_traits {
     pub _address: u8,
 }
 pub type std_allocator_traits___size_type<_Alloc> = _Alloc;
+impl Clone for std_allocator_traits {
+    fn clone(&self) -> Self {
+        *self
+    }
+}

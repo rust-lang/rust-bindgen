@@ -13,12 +13,19 @@ pub struct std_basic_string<CharT> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<CharT>>,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy)]
 pub struct std_basic_string_Alloc_hider {
     pub storage: *mut ::std::os::raw::c_void,
 }
+impl Clone for std_basic_string_Alloc_hider {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 impl Default for std_basic_string_Alloc_hider {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug)]
@@ -26,9 +33,13 @@ pub struct std_basic_string__bindgen_ty_1<CharT> {
     pub inline_storage: [CharT; 4usize],
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<CharT>>,
 }
-impl <CharT> Default for std_basic_string__bindgen_ty_1<CharT> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<CharT> Default for std_basic_string__bindgen_ty_1<CharT> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
-impl <CharT> Default for std_basic_string<CharT> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<CharT> Default for std_basic_string<CharT> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

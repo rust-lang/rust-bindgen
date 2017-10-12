@@ -5,17 +5,32 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct Test {
     pub _address: u8,
 }
+impl Clone for Test {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct Outer {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct Outer_Inner {
     pub _address: u8,
+}
+impl Clone for Outer_Inner {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl Clone for Outer {
+    fn clone(&self) -> Self {
+        *self
+    }
 }

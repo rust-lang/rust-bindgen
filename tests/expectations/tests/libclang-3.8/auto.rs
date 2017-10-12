@@ -32,9 +32,14 @@ impl Clone for Foo {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct Bar {
     pub _address: u8,
+}
+impl Clone for Bar {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 extern "C" {
     #[link_name = "\u{1}_Z5Test2v"]

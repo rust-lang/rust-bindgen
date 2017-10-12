@@ -5,7 +5,12 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct Foo {
     pub bar: ::std::os::raw::c_int,
+}
+impl Clone for Foo {
+    fn clone(&self) -> Self {
+        *self
+    }
 }

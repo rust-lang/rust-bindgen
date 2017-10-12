@@ -11,20 +11,31 @@ pub struct mozilla_FragmentOrURL {
 }
 #[test]
 fn bindgen_test_layout_mozilla_FragmentOrURL() {
-    assert_eq!(::std::mem::size_of::<mozilla_FragmentOrURL>() , 1usize ,
-               concat ! ( "Size of: " , stringify ! ( mozilla_FragmentOrURL )
-               ));
-    assert_eq! (::std::mem::align_of::<mozilla_FragmentOrURL>() , 1usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( mozilla_FragmentOrURL ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const mozilla_FragmentOrURL ) ) . mIsLocalRef
-                as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( mozilla_FragmentOrURL )
-                , "::" , stringify ! ( mIsLocalRef ) ));
+    assert_eq!(
+        ::std::mem::size_of::<mozilla_FragmentOrURL>(),
+        1usize,
+        concat!("Size of: ", stringify!(mozilla_FragmentOrURL))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<mozilla_FragmentOrURL>(),
+        1usize,
+        concat!("Alignment of ", stringify!(mozilla_FragmentOrURL))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const mozilla_FragmentOrURL)).mIsLocalRef as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(mozilla_FragmentOrURL),
+            "::",
+            stringify!(mIsLocalRef)
+        )
+    );
 }
 impl Clone for mozilla_FragmentOrURL {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
@@ -33,29 +44,72 @@ pub struct mozilla_Position {
 }
 #[test]
 fn bindgen_test_layout_mozilla_Position() {
-    assert_eq!(::std::mem::size_of::<mozilla_Position>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( mozilla_Position ) ));
-    assert_eq! (::std::mem::align_of::<mozilla_Position>() , 1usize , concat !
-                ( "Alignment of " , stringify ! ( mozilla_Position ) ));
+    assert_eq!(
+        ::std::mem::size_of::<mozilla_Position>(),
+        1usize,
+        concat!("Size of: ", stringify!(mozilla_Position))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<mozilla_Position>(),
+        1usize,
+        concat!("Alignment of ", stringify!(mozilla_Position))
+    );
 }
 impl Clone for mozilla_Position {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
+#[derive(Copy)]
 pub struct mozilla_StyleShapeSource {
     pub __bindgen_anon_1: mozilla_StyleShapeSource__bindgen_ty_1,
 }
 #[repr(C)]
+#[derive(Copy)]
 pub union mozilla_StyleShapeSource__bindgen_ty_1 {
     pub mPosition: *mut mozilla_Position,
     pub mFragmentOrURL: *mut mozilla_FragmentOrURL,
     _bindgen_union_align: u64,
 }
+#[test]
+fn bindgen_test_layout_mozilla_StyleShapeSource__bindgen_ty_1() {
+    assert_eq!(
+        ::std::mem::size_of::<mozilla_StyleShapeSource__bindgen_ty_1>(),
+        8usize,
+        concat!(
+            "Size of: ",
+            stringify!(mozilla_StyleShapeSource__bindgen_ty_1)
+        )
+    );
+    assert_eq!(
+        ::std::mem::align_of::<mozilla_StyleShapeSource__bindgen_ty_1>(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(mozilla_StyleShapeSource__bindgen_ty_1)
+        )
+    );
+}
+impl Clone for mozilla_StyleShapeSource__bindgen_ty_1 {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 impl Default for mozilla_StyleShapeSource__bindgen_ty_1 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
+}
+impl Clone for mozilla_StyleShapeSource {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for mozilla_StyleShapeSource {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Hash, PartialEq, Eq)]
@@ -64,49 +118,91 @@ pub struct Bar {
 }
 #[test]
 fn bindgen_test_layout_Bar() {
-    assert_eq!(::std::mem::size_of::<Bar>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( Bar ) ));
-    assert_eq! (::std::mem::align_of::<Bar>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( Bar ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Bar ) ) . mFoo as * const _ as usize } ,
-                0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Bar ) , "::" ,
-                stringify ! ( mFoo ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Bar>(),
+        8usize,
+        concat!("Size of: ", stringify!(Bar))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Bar>(),
+        8usize,
+        concat!("Alignment of ", stringify!(Bar))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Bar)).mFoo as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Bar),
+            "::",
+            stringify!(mFoo)
+        )
+    );
 }
 impl Clone for Bar {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for Bar {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
+#[derive(Copy)]
 pub struct nsFoo {
     pub mBar: mozilla_StyleShapeSource,
 }
 #[test]
 fn bindgen_test_layout_nsFoo() {
-    assert_eq!(::std::mem::size_of::<nsFoo>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( nsFoo ) ));
-    assert_eq! (::std::mem::align_of::<nsFoo>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( nsFoo ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const nsFoo ) ) . mBar as * const _ as usize }
-                , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( nsFoo ) , "::" ,
-                stringify ! ( mBar ) ));
+    assert_eq!(
+        ::std::mem::size_of::<nsFoo>(),
+        8usize,
+        concat!("Size of: ", stringify!(nsFoo))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<nsFoo>(),
+        8usize,
+        concat!("Alignment of ", stringify!(nsFoo))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const nsFoo)).mBar as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(nsFoo),
+            "::",
+            stringify!(mBar)
+        )
+    );
+}
+impl Clone for nsFoo {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for nsFoo {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[test]
 fn __bindgen_test_layout_mozilla_StyleShapeSource_open0_int_close0_instantiation() {
-    assert_eq!(::std::mem::size_of::<mozilla_StyleShapeSource>() , 8usize ,
-               concat ! (
-               "Size of template specialization: " , stringify ! (
-               mozilla_StyleShapeSource ) ));
-    assert_eq!(::std::mem::align_of::<mozilla_StyleShapeSource>() , 8usize ,
-               concat ! (
-               "Alignment of template specialization: " , stringify ! (
-               mozilla_StyleShapeSource ) ));
+    assert_eq!(
+        ::std::mem::size_of::<mozilla_StyleShapeSource>(),
+        8usize,
+        concat!(
+            "Size of template specialization: ",
+            stringify!(mozilla_StyleShapeSource)
+        )
+    );
+    assert_eq!(
+        ::std::mem::align_of::<mozilla_StyleShapeSource>(),
+        8usize,
+        concat!(
+            "Alignment of template specialization: ",
+            stringify!(mozilla_StyleShapeSource)
+        )
+    );
 }

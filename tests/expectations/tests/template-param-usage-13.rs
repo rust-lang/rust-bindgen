@@ -5,9 +5,14 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct BaseIgnoresT {
     pub x: ::std::os::raw::c_int,
+}
+impl Clone for BaseIgnoresT {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -16,6 +21,8 @@ pub struct CrtpUsesU<U> {
     pub usage: U,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
 }
-impl <U> Default for CrtpUsesU<U> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<U> Default for CrtpUsesU<U> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

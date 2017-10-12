@@ -10,13 +10,20 @@ pub struct Foo<T> {
     pub t_member: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
-impl <T> Default for Foo<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for Foo<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct Bar {
     pub member: ::std::os::raw::c_char,
+}
+impl Clone for Bar {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -24,12 +31,19 @@ pub struct Quux<V> {
     pub v_member: V,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<V>>,
 }
-impl <V> Default for Quux<V> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<V> Default for Quux<V> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct Lobo {
     pub also_member: ::std::os::raw::c_char,
+}
+impl Clone for Lobo {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 pub type AliasWithAnonType = ::std::os::raw::c_char;

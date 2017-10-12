@@ -5,15 +5,27 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy)]
 pub struct std_char_traits {
     pub _address: u8,
 }
+impl Clone for std_char_traits {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 impl Default for std_char_traits {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct __gnu_cxx_char_traits {
     pub _address: u8,
+}
+impl Clone for __gnu_cxx_char_traits {
+    fn clone(&self) -> Self {
+        *self
+    }
 }

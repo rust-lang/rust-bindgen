@@ -8,8 +8,13 @@
 /// This is like `opaque-template-inst-member.hpp` except exercising the cases
 /// where we are OK to derive Debug/Hash/PartialEq.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct OpaqueTemplate {}
+impl Clone for OpaqueTemplate {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 /// Should derive Debug/Hash/PartialEq.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
