@@ -74,14 +74,7 @@ pub enum JSWhyMagic {
 #[repr(C)]
 #[derive(Copy)]
 pub union jsval_layout {
-    pub asBits: u64,
-    pub debugView: jsval_layout__bindgen_ty_1,
-    pub s: jsval_layout__bindgen_ty_2,
-    pub asDouble: f64,
-    pub asPtr: *mut ::std::os::raw::c_void,
-    pub asWord: usize,
-    pub asUIntPtr: usize,
-    _bindgen_union_align: u64,
+    pub _bindgen_opaque_blob: u64,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Hash, PartialEq, Eq)]
@@ -314,76 +307,6 @@ fn bindgen_test_layout_jsval_layout() {
         8usize,
         concat!("Alignment of ", stringify!(jsval_layout))
     );
-    assert_eq!(
-        unsafe { &(*(0 as *const jsval_layout)).asBits as *const _ as usize },
-        0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(asBits)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(0 as *const jsval_layout)).debugView as *const _ as usize },
-        0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(debugView)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(0 as *const jsval_layout)).s as *const _ as usize },
-        0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(s)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(0 as *const jsval_layout)).asDouble as *const _ as usize },
-        0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(asDouble)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(0 as *const jsval_layout)).asPtr as *const _ as usize },
-        0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(asPtr)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(0 as *const jsval_layout)).asWord as *const _ as usize },
-        0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(asWord)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(0 as *const jsval_layout)).asUIntPtr as *const _ as usize },
-        0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(jsval_layout),
-            "::",
-            stringify!(asUIntPtr)
-        )
-    );
 }
 impl Clone for jsval_layout {
     fn clone(&self) -> Self {
@@ -396,7 +319,7 @@ impl Default for jsval_layout {
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct Value {
     pub data: jsval_layout,
 }
@@ -426,10 +349,5 @@ fn bindgen_test_layout_Value() {
 impl Clone for Value {
     fn clone(&self) -> Self {
         *self
-    }
-}
-impl Default for Value {
-    fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
     }
 }

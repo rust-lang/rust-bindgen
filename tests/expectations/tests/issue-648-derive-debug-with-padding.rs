@@ -10,10 +10,8 @@
 /// up with the reight alignment, we're waiting on `#[repr(align="N")]` to land
 /// in rustc).
 #[repr(C)]
-#[derive(Copy)]
 pub struct NoDebug {
-    pub c: ::std::os::raw::c_char,
-    pub __bindgen_padding_0: [u8; 63usize],
+    pub _bindgen_opaque_blob: [u8; 64usize],
 }
 #[test]
 fn bindgen_test_layout_NoDebug() {
@@ -22,30 +20,10 @@ fn bindgen_test_layout_NoDebug() {
         64usize,
         concat!("Size of: ", stringify!(NoDebug))
     );
-    assert_eq!(
-        unsafe { &(*(0 as *const NoDebug)).c as *const _ as usize },
-        0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(NoDebug),
-            "::",
-            stringify!(c)
-        )
-    );
-}
-impl Clone for NoDebug {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for NoDebug {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
-    }
-}
-impl ::std::cmp::PartialEq for NoDebug {
-    fn eq(&self, other: &NoDebug) -> bool {
-        self.c == other.c
     }
 }
 /// This should derive Debug/Hash/PartialEq/Eq because the padding size is less than the max derive
@@ -53,11 +31,8 @@ impl ::std::cmp::PartialEq for NoDebug {
 /// we determine Debug derive-ability before we compute padding, which happens at
 /// codegen. (Again, we expect to get the alignment wrong for similar reasons.)
 #[repr(C)]
-#[derive(Copy)]
 pub struct ShouldDeriveDebugButDoesNot {
-    pub c: [::std::os::raw::c_char; 32usize],
-    pub d: ::std::os::raw::c_char,
-    pub __bindgen_padding_0: [u8; 31usize],
+    pub _bindgen_opaque_blob: [u8; 64usize],
 }
 #[test]
 fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
@@ -66,39 +41,9 @@ fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
         64usize,
         concat!("Size of: ", stringify!(ShouldDeriveDebugButDoesNot))
     );
-    assert_eq!(
-        unsafe { &(*(0 as *const ShouldDeriveDebugButDoesNot)).c as *const _ as usize },
-        0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(ShouldDeriveDebugButDoesNot),
-            "::",
-            stringify!(c)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(0 as *const ShouldDeriveDebugButDoesNot)).d as *const _ as usize },
-        32usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(ShouldDeriveDebugButDoesNot),
-            "::",
-            stringify!(d)
-        )
-    );
-}
-impl Clone for ShouldDeriveDebugButDoesNot {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for ShouldDeriveDebugButDoesNot {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
-    }
-}
-impl ::std::cmp::PartialEq for ShouldDeriveDebugButDoesNot {
-    fn eq(&self, other: &ShouldDeriveDebugButDoesNot) -> bool {
-        self.c == other.c && self.d == other.d
     }
 }
