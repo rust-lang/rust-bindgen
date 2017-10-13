@@ -5,9 +5,8 @@
 
 
 #[repr(C)]
-#[derive(Copy)]
 pub struct rte_mbuf {
-    pub __bindgen_anon_1: rte_mbuf__bindgen_ty_1,
+    pub _bindgen_opaque_blob: [u8; 0usize],
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -44,11 +43,6 @@ fn bindgen_test_layout_rte_mbuf() {
         0usize,
         concat!("Size of: ", stringify!(rte_mbuf))
     );
-}
-impl Clone for rte_mbuf {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for rte_mbuf {
     fn default() -> Self {

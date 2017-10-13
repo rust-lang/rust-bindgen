@@ -1565,6 +1565,10 @@ impl IsOpaque for CompInfo {
             return true
         }
 
+        if self.found_unknown_attr {
+            return true;
+        }
+
         self.fields().iter().any(|f| match *f {
             Field::DataMember(_) => {
                 false
