@@ -194,6 +194,15 @@ impl Type {
         }
     }
 
+    /// Cast this type to an integer kind, or `None` if it is not an integer
+    /// type.
+    pub fn as_integer(&self) -> Option<IntKind> {
+        match self.kind {
+            TypeKind::Int(int_kind) => Some(int_kind),
+            _ => None,
+        }
+    }
+
     /// Is this a `const` qualified type?
     pub fn is_const(&self) -> bool {
         self.is_const
