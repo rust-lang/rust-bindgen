@@ -3,8 +3,8 @@
 use super::analysis::{CannotDeriveCopy, CannotDeriveDebug,
                       CannotDeriveDefault, CannotDeriveHash,
                       CannotDerivePartialEqOrPartialOrd, HasTypeParameterInArray,
-                      HasVtableAnalysis, HasDestructorAnalysis, UsedTemplateParameters,
-                      HasFloat, analyze};
+                      HasVtableAnalysis, HasVtableResult, HasDestructorAnalysis,
+                      UsedTemplateParameters, HasFloat, analyze};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
                     CanDeriveHash, CanDerivePartialOrd, CanDeriveOrd,
                     CanDerivePartialEq, CanDeriveEq, CannotDeriveReason};
@@ -432,7 +432,7 @@ pub struct BindgenContext {
     ///
     /// Populated when we enter codegen by `compute_has_vtable`; always `None`
     /// before that and `Some` after.
-    have_vtable: Option<HashSet<ItemId>>,
+    have_vtable: Option<HashMap<ItemId, HasVtableResult>>,
 
     /// The set of (`ItemId's of`) types that has destructor.
     ///
@@ -1275,7 +1275,7 @@ impl BindgenContext {
 
         // Look up the computed value for whether the item with `id` has a
         // vtable or not.
-        self.have_vtable.as_ref().unwrap().contains(&id.into())
+        self.have_vtable.as_ref().unwrap().contains_key(&id.into())
     }
 
     /// Compute whether the type has a destructor.
