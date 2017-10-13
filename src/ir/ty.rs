@@ -378,7 +378,23 @@ impl IsOpaque for Type {
             TypeKind::TemplateInstantiation(ref inst) => {
                 inst.is_opaque(ctx, item)
             }
-            TypeKind::Comp(ref comp) => comp.is_opaque(ctx, &()),
+            TypeKind::Comp(ref comp) => {
+                if comp.is_opaque(ctx, &()) {
+                    return true;
+                }
+
+                // This will fail because there is no vtable info yet.
+                if comp.is_unsized(ctx, item.id().expect_type_id(ctx)) {
+                    return false;
+                }
+
+                let computed_layout = comp.compute_layout(ctx);
+                self.layout.map_or(false, |layout| { 
+                    let result = layout != computed_layout;
+                    println!("is_opaque: {:?} !={} {:?}", layout, result, computed_layout);
+                    result
+                })
+            },
             TypeKind::ResolvedTypeRef(to) => to.is_opaque(ctx, &()),
             _ => false,
         }

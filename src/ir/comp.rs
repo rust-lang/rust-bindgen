@@ -1021,21 +1021,8 @@ impl CompInfo {
             })
     }
 
-    /// Compute the layout of this type.
-    ///
-    /// This is called as a fallback under some circumstances where LLVM doesn't
-    /// give us the correct layout.
-    ///
-    /// If we're a union without known layout, we try to compute it from our
-    /// members. This is not ideal, but clang fails to report the size for these
-    /// kind of unions, see test/headers/template_union.hpp
-    pub fn layout(&self, ctx: &BindgenContext) -> Option<Layout> {
+    pub fn compute_layout(&self, ctx: &BindgenContext) -> Layout {
         use std::cmp;
-
-        // We can't do better than clang here, sorry.
-        if self.kind == CompKind::Struct {
-            return None;
-        }
 
         let mut max_size = 0;
         let mut max_align = 0;
@@ -1048,7 +1035,22 @@ impl CompInfo {
             }
         }
 
-        Some(Layout::new(max_size, max_align))
+        Layout::new(max_size, max_align)
+    }
+
+    /// Compute the layout of this type.
+    ///
+    /// This is called as a fallback under some circumstances where LLVM doesn't
+    /// give us the correct layout.
+    ///
+    /// If we're a union without known layout, we try to compute it from our
+    /// members. This is not ideal, but clang fails to report the size for these
+    /// kind of unions, see test/headers/template_union.hpp
+    pub fn layout(&self, ctx: &BindgenContext) -> Option<Layout> {
+        match self.kind {
+            CompKind::Struct => None,
+            CompKind::Union => Some(self.compute_layout(ctx)),
+        }
     }
 
     /// Get this type's set of fields.
