@@ -6,35 +6,47 @@
 
 #[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
-impl <T> __BindgenUnionField<T> {
+impl<T> __BindgenUnionField<T> {
     #[inline]
-    pub fn new() -> Self { __BindgenUnionField(::std::marker::PhantomData) }
+    pub fn new() -> Self {
+        __BindgenUnionField(::std::marker::PhantomData)
+    }
     #[inline]
-    pub unsafe fn as_ref(&self) -> &T { ::std::mem::transmute(self) }
+    pub unsafe fn as_ref(&self) -> &T {
+        ::std::mem::transmute(self)
+    }
     #[inline]
-    pub unsafe fn as_mut(&mut self) -> &mut T { ::std::mem::transmute(self) }
+    pub unsafe fn as_mut(&mut self) -> &mut T {
+        ::std::mem::transmute(self)
+    }
 }
-impl <T> ::std::default::Default for __BindgenUnionField<T> {
+impl<T> ::std::default::Default for __BindgenUnionField<T> {
     #[inline]
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
-impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
+impl<T> ::std::clone::Clone for __BindgenUnionField<T> {
     #[inline]
-    fn clone(&self) -> Self { Self::new() }
+    fn clone(&self) -> Self {
+        Self::new()
+    }
 }
-impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
-impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
+impl<T> ::std::marker::Copy for __BindgenUnionField<T> {}
+impl<T> ::std::fmt::Debug for __BindgenUnionField<T> {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         fmt.write_str("__BindgenUnionField")
     }
 }
-impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
-    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
+impl<T> ::std::hash::Hash for __BindgenUnionField<T> {
+    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) {}
 }
-impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
-    fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
+impl<T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
+    fn eq(&self, _other: &__BindgenUnionField<T>) -> bool {
+        true
+    }
 }
-impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
+impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct TErrorResult {
@@ -47,7 +59,9 @@ pub const TErrorResult_UnionState_HasException: TErrorResult_UnionState =
     TErrorResult_UnionState::HasMessage;
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum TErrorResult_UnionState { HasMessage = 0, }
+pub enum TErrorResult_UnionState {
+    HasMessage = 0,
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct TErrorResult_Message {
@@ -66,7 +80,9 @@ pub struct TErrorResult__bindgen_ty_1 {
     pub bindgen_union_field: u64,
 }
 impl Default for TErrorResult {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Hash, PartialEq, Eq)]
@@ -75,23 +91,43 @@ pub struct ErrorResult {
 }
 #[test]
 fn bindgen_test_layout_ErrorResult() {
-    assert_eq!(::std::mem::size_of::<ErrorResult>() , 24usize , concat ! (
-               "Size of: " , stringify ! ( ErrorResult ) ));
-    assert_eq! (::std::mem::align_of::<ErrorResult>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( ErrorResult ) ));
+    assert_eq!(
+        ::std::mem::size_of::<ErrorResult>(),
+        24usize,
+        concat!("Size of: ", stringify!(ErrorResult))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ErrorResult>(),
+        8usize,
+        concat!("Alignment of ", stringify!(ErrorResult))
+    );
 }
 impl Clone for ErrorResult {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for ErrorResult {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[test]
 fn __bindgen_test_layout_TErrorResult_open0_int_close0_instantiation() {
-    assert_eq!(::std::mem::size_of::<TErrorResult>() , 24usize , concat ! (
-               "Size of template specialization: " , stringify ! (
-               TErrorResult ) ));
-    assert_eq!(::std::mem::align_of::<TErrorResult>() , 8usize , concat ! (
-               "Alignment of template specialization: " , stringify ! (
-               TErrorResult ) ));
+    assert_eq!(
+        ::std::mem::size_of::<TErrorResult>(),
+        24usize,
+        concat!(
+            "Size of template specialization: ",
+            stringify!(TErrorResult)
+        )
+    );
+    assert_eq!(
+        ::std::mem::align_of::<TErrorResult>(),
+        8usize,
+        concat!(
+            "Alignment of template specialization: ",
+            stringify!(TErrorResult)
+        )
+    );
 }

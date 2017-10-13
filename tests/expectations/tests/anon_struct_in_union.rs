@@ -22,53 +22,90 @@ pub struct s__bindgen_ty_1_inner {
 }
 #[test]
 fn bindgen_test_layout_s__bindgen_ty_1_inner() {
-    assert_eq!(::std::mem::size_of::<s__bindgen_ty_1_inner>() , 4usize ,
-               concat ! ( "Size of: " , stringify ! ( s__bindgen_ty_1_inner )
-               ));
-    assert_eq! (::std::mem::align_of::<s__bindgen_ty_1_inner>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( s__bindgen_ty_1_inner ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const s__bindgen_ty_1_inner ) ) . b as * const
-                _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( s__bindgen_ty_1_inner )
-                , "::" , stringify ! ( b ) ));
+    assert_eq!(
+        ::std::mem::size_of::<s__bindgen_ty_1_inner>(),
+        4usize,
+        concat!("Size of: ", stringify!(s__bindgen_ty_1_inner))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<s__bindgen_ty_1_inner>(),
+        4usize,
+        concat!("Alignment of ", stringify!(s__bindgen_ty_1_inner))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const s__bindgen_ty_1_inner)).b as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(s__bindgen_ty_1_inner),
+            "::",
+            stringify!(b)
+        )
+    );
 }
 impl Clone for s__bindgen_ty_1_inner {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[test]
 fn bindgen_test_layout_s__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<s__bindgen_ty_1>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( s__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<s__bindgen_ty_1>() , 4usize , concat !
-                ( "Alignment of " , stringify ! ( s__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const s__bindgen_ty_1 ) ) . field as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( s__bindgen_ty_1 ) ,
-                "::" , stringify ! ( field ) ));
+    assert_eq!(
+        ::std::mem::size_of::<s__bindgen_ty_1>(),
+        4usize,
+        concat!("Size of: ", stringify!(s__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<s__bindgen_ty_1>(),
+        4usize,
+        concat!("Alignment of ", stringify!(s__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const s__bindgen_ty_1)).field as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(s__bindgen_ty_1),
+            "::",
+            stringify!(field)
+        )
+    );
 }
 impl Clone for s__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for s__bindgen_ty_1 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_s() {
-    assert_eq!(::std::mem::size_of::<s>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( s ) ));
-    assert_eq! (::std::mem::align_of::<s>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( s ) ));
-    assert_eq! (unsafe { & ( * ( 0 as * const s ) ) . u as * const _ as usize
-                } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( s ) , "::" , stringify
-                ! ( u ) ));
+    assert_eq!(
+        ::std::mem::size_of::<s>(),
+        4usize,
+        concat!("Size of: ", stringify!(s))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<s>(),
+        4usize,
+        concat!("Alignment of ", stringify!(s))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const s)).u as *const _ as usize },
+        0usize,
+        concat!("Alignment of field: ", stringify!(s), "::", stringify!(u))
+    );
 }
 impl Clone for s {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for s {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

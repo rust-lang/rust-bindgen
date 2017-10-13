@@ -19,18 +19,31 @@ pub mod root {
         }
         #[test]
         fn bindgen_test_layout_Bar() {
-            assert_eq!(::std::mem::size_of::<Bar>() , 4usize , concat ! (
-                       "Size of: " , stringify ! ( Bar ) ));
-            assert_eq! (::std::mem::align_of::<Bar>() , 4usize , concat ! (
-                        "Alignment of " , stringify ! ( Bar ) ));
-            assert_eq! (unsafe {
-                        & ( * ( 0 as * const Bar ) ) . bazz as * const _ as
-                        usize } , 0usize , concat ! (
-                        "Alignment of field: " , stringify ! ( Bar ) , "::" ,
-                        stringify ! ( bazz ) ));
+            assert_eq!(
+                ::std::mem::size_of::<Bar>(),
+                4usize,
+                concat!("Size of: ", stringify!(Bar))
+            );
+            assert_eq!(
+                ::std::mem::align_of::<Bar>(),
+                4usize,
+                concat!("Alignment of ", stringify!(Bar))
+            );
+            assert_eq!(
+                unsafe { &(*(0 as *const Bar)).bazz as *const _ as usize },
+                0usize,
+                concat!(
+                    "Alignment of field: ",
+                    stringify!(Bar),
+                    "::",
+                    stringify!(bazz)
+                )
+            );
         }
         impl Clone for Bar {
-            fn clone(&self) -> Self { *self }
+            fn clone(&self) -> Self {
+                *self
+            }
         }
     }
     pub type ReferencesBar = root::foo::Bar;

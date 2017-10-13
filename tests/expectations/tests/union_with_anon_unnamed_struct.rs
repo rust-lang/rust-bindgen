@@ -21,50 +21,92 @@ pub struct pixel__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_pixel__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<pixel__bindgen_ty_1>() , 4usize , concat
-               ! ( "Size of: " , stringify ! ( pixel__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<pixel__bindgen_ty_1>() , 1usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( pixel__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const pixel__bindgen_ty_1 ) ) . r as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( pixel__bindgen_ty_1 ) ,
-                "::" , stringify ! ( r ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const pixel__bindgen_ty_1 ) ) . g as * const _
-                as usize } , 1usize , concat ! (
-                "Alignment of field: " , stringify ! ( pixel__bindgen_ty_1 ) ,
-                "::" , stringify ! ( g ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const pixel__bindgen_ty_1 ) ) . b as * const _
-                as usize } , 2usize , concat ! (
-                "Alignment of field: " , stringify ! ( pixel__bindgen_ty_1 ) ,
-                "::" , stringify ! ( b ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const pixel__bindgen_ty_1 ) ) . a as * const _
-                as usize } , 3usize , concat ! (
-                "Alignment of field: " , stringify ! ( pixel__bindgen_ty_1 ) ,
-                "::" , stringify ! ( a ) ));
+    assert_eq!(
+        ::std::mem::size_of::<pixel__bindgen_ty_1>(),
+        4usize,
+        concat!("Size of: ", stringify!(pixel__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<pixel__bindgen_ty_1>(),
+        1usize,
+        concat!("Alignment of ", stringify!(pixel__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const pixel__bindgen_ty_1)).r as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(pixel__bindgen_ty_1),
+            "::",
+            stringify!(r)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const pixel__bindgen_ty_1)).g as *const _ as usize },
+        1usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(pixel__bindgen_ty_1),
+            "::",
+            stringify!(g)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const pixel__bindgen_ty_1)).b as *const _ as usize },
+        2usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(pixel__bindgen_ty_1),
+            "::",
+            stringify!(b)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const pixel__bindgen_ty_1)).a as *const _ as usize },
+        3usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(pixel__bindgen_ty_1),
+            "::",
+            stringify!(a)
+        )
+    );
 }
 impl Clone for pixel__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[test]
 fn bindgen_test_layout_pixel() {
-    assert_eq!(::std::mem::size_of::<pixel>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( pixel ) ));
-    assert_eq! (::std::mem::align_of::<pixel>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( pixel ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const pixel ) ) . rgba as * const _ as usize }
-                , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( pixel ) , "::" ,
-                stringify ! ( rgba ) ));
+    assert_eq!(
+        ::std::mem::size_of::<pixel>(),
+        4usize,
+        concat!("Size of: ", stringify!(pixel))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<pixel>(),
+        4usize,
+        concat!("Alignment of ", stringify!(pixel))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const pixel)).rgba as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(pixel),
+            "::",
+            stringify!(rgba)
+        )
+    );
 }
 impl Clone for pixel {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for pixel {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

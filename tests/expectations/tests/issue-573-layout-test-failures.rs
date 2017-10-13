@@ -16,24 +16,42 @@ pub struct AutoIdVector {
 }
 #[test]
 fn bindgen_test_layout_AutoIdVector() {
-    assert_eq!(::std::mem::size_of::<AutoIdVector>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( AutoIdVector ) ));
-    assert_eq! (::std::mem::align_of::<AutoIdVector>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( AutoIdVector ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const AutoIdVector ) ) . ar as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( AutoIdVector ) , "::" ,
-                stringify ! ( ar ) ));
+    assert_eq!(
+        ::std::mem::size_of::<AutoIdVector>(),
+        1usize,
+        concat!("Size of: ", stringify!(AutoIdVector))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<AutoIdVector>(),
+        1usize,
+        concat!("Alignment of ", stringify!(AutoIdVector))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const AutoIdVector)).ar as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(AutoIdVector),
+            "::",
+            stringify!(ar)
+        )
+    );
 }
 impl Clone for AutoIdVector {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[test]
 fn __bindgen_test_layout_Outer_open0_int_close0_instantiation() {
-    assert_eq!(::std::mem::size_of::<Outer>() , 1usize , concat ! (
-               "Size of template specialization: " , stringify ! ( Outer ) ));
-    assert_eq!(::std::mem::align_of::<Outer>() , 1usize , concat ! (
-               "Alignment of template specialization: " , stringify ! ( Outer
-               ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Outer>(),
+        1usize,
+        concat!("Size of template specialization: ", stringify!(Outer))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Outer>(),
+        1usize,
+        concat!("Alignment of template specialization: ", stringify!(Outer))
+    );
 }

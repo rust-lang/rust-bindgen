@@ -96,8 +96,8 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(0 as *const NotTemplateWrapper_sentry)).i_am_not_template_wrapper_sentry as
-                        *const _ as usize
+                    &(*(0 as *const NotTemplateWrapper_sentry)).i_am_not_template_wrapper_sentry
+                        as *const _ as usize
                 },
                 0usize,
                 concat!(
@@ -138,8 +138,8 @@ pub mod root {
             assert_eq!(
                 unsafe {
                     &(*(0 as *const InlineNotTemplateWrapper_sentry))
-                        .i_am_inline_not_template_wrapper_sentry as *const _ as
-                        usize
+                        .i_am_inline_not_template_wrapper_sentry as *const _
+                        as usize
                 },
                 0usize,
                 concat!(

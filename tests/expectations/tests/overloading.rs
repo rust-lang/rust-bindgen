@@ -10,8 +10,7 @@ extern "C" {
 }
 extern "C" {
     #[link_name = "\u{1}_Z8Evaluateii"]
-    pub fn Evaluate1(x: ::std::os::raw::c_int, y: ::std::os::raw::c_int)
-     -> bool;
+    pub fn Evaluate1(x: ::std::os::raw::c_int, y: ::std::os::raw::c_int) -> bool;
 }
 extern "C" {
     #[link_name = "\u{1}_ZN3foo10MyFunctionEv"]

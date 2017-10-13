@@ -159,9 +159,16 @@ pub mod root {
             1usize,
             concat!(
                 "Size of template specialization: ",
-                stringify ! ( root :: zoidberg :: Template < root :: zoidberg :: Foo > )
+                stringify!(root::zoidberg::Template<root::zoidberg::Foo>)
             )
         );
-        assert_eq ! ( :: std :: mem :: align_of :: < root :: zoidberg :: Template < root :: zoidberg :: Foo > > ( ) , 1usize , concat ! ( "Alignment of template specialization: " , stringify ! ( root :: zoidberg :: Template < root :: zoidberg :: Foo > ) ) );
+        assert_eq!(
+            ::std::mem::align_of::<root::zoidberg::Template<root::zoidberg::Foo>>(),
+            1usize,
+            concat!(
+                "Alignment of template specialization: ",
+                stringify!(root::zoidberg::Template<root::zoidberg::Foo>)
+            )
+        );
     }
 }

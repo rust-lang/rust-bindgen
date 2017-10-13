@@ -11,21 +11,31 @@ pub struct Foo {
 }
 #[test]
 fn bindgen_test_layout_Foo() {
-    assert_eq!(::std::mem::size_of::<Foo>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( Foo ) ));
-    assert_eq! (::std::mem::align_of::<Foo>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( Foo ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Foo>(),
+        1usize,
+        concat!("Size of: ", stringify!(Foo))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Foo>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Foo))
+    );
 }
 extern "C" {
     #[link_name = "\u{1}_ZN3Foo3barEv"]
     pub fn Foo_bar() -> ::std::os::raw::c_int;
 }
 impl Clone for Foo {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Foo {
     #[inline]
-    pub unsafe fn bar() -> ::std::os::raw::c_int { Foo_bar() }
+    pub unsafe fn bar() -> ::std::os::raw::c_int {
+        Foo_bar()
+    }
 }
 extern "C" {
     #[link_name = "\u{1}_Z3foov"]

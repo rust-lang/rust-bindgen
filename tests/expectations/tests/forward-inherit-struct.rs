@@ -15,5 +15,7 @@ pub struct Rooted {
     pub _address: u8,
 }
 impl Default for Rooted {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

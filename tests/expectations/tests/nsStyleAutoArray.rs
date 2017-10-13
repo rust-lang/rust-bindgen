@@ -10,8 +10,10 @@ pub struct nsTArray<T> {
     pub mBuff: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
-impl <T> Default for nsTArray<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for nsTArray<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -25,6 +27,8 @@ pub struct nsStyleAutoArray<T> {
 pub enum nsStyleAutoArray_WithSingleInitialElement {
     WITH_SINGLE_INITIAL_ELEMENT = 0,
 }
-impl <T> Default for nsStyleAutoArray<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for nsStyleAutoArray<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

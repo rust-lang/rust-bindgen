@@ -9,5 +9,4 @@
 pub struct Proxy {
     pub _address: u8,
 }
-pub type Proxy_foo<T> =
-    ::std::option::Option<unsafe extern "C" fn(bar: *mut T)>;
+pub type Proxy_foo<T> = ::std::option::Option<unsafe extern "C" fn(bar: *mut T)>;

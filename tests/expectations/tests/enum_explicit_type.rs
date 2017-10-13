@@ -6,19 +6,34 @@
 
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum Foo { Bar = 0, Qux = 1, }
+pub enum Foo {
+    Bar = 0,
+    Qux = 1,
+}
 #[repr(i8)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum Neg { MinusOne = -1, One = 1, }
+pub enum Neg {
+    MinusOne = -1,
+    One = 1,
+}
 #[repr(u16)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum Bigger { Much = 255, Larger = 256, }
+pub enum Bigger {
+    Much = 255,
+    Larger = 256,
+}
 #[repr(i64)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum MuchLong { MuchLow = -4294967296, }
+pub enum MuchLong {
+    MuchLow = -4294967296,
+}
 #[repr(i64)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum MuchLongLong { I64_MIN = -9223372036854775808, }
+pub enum MuchLongLong {
+    I64_MIN = -9223372036854775808,
+}
 #[repr(u64)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum MuchULongLong { MuchHigh = 4294967296, }
+pub enum MuchULongLong {
+    MuchHigh = 4294967296,
+}

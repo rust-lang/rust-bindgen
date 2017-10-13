@@ -10,8 +10,10 @@ pub struct BaseUsesT<T> {
     pub t: *mut T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
-impl <T> Default for BaseUsesT<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for BaseUsesT<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -20,6 +22,8 @@ pub struct CrtpUsesU<U> {
     pub usage: U,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
 }
-impl <U> Default for CrtpUsesU<U> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<U> Default for CrtpUsesU<U> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

@@ -4,8 +4,7 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
 
-pub const nsCSSPropertyID_eCSSProperty_COUNT_unexistingVariantValue:
-          nsCSSPropertyID =
+pub const nsCSSPropertyID_eCSSProperty_COUNT_unexistingVariantValue: nsCSSPropertyID =
     nsCSSPropertyID::eCSSProperty_COUNT_unexistingVariantValue;
 pub const nsCSSPropertyID_eCSSProperty_COUNT: nsCSSPropertyID =
     nsCSSPropertyID::eCSSPropertyAlias_aa;

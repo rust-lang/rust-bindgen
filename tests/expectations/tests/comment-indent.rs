@@ -26,23 +26,39 @@ pub mod root {
     }
     #[test]
     fn bindgen_test_layout_Foo_Bar() {
-        assert_eq!(::std::mem::size_of::<Foo_Bar>() , 1usize , concat ! (
-                   "Size of: " , stringify ! ( Foo_Bar ) ));
-        assert_eq! (::std::mem::align_of::<Foo_Bar>() , 1usize , concat ! (
-                    "Alignment of " , stringify ! ( Foo_Bar ) ));
+        assert_eq!(
+            ::std::mem::size_of::<Foo_Bar>(),
+            1usize,
+            concat!("Size of: ", stringify!(Foo_Bar))
+        );
+        assert_eq!(
+            ::std::mem::align_of::<Foo_Bar>(),
+            1usize,
+            concat!("Alignment of ", stringify!(Foo_Bar))
+        );
     }
     impl Clone for Foo_Bar {
-        fn clone(&self) -> Self { *self }
+        fn clone(&self) -> Self {
+            *self
+        }
     }
     #[test]
     fn bindgen_test_layout_Foo() {
-        assert_eq!(::std::mem::size_of::<Foo>() , 1usize , concat ! (
-                   "Size of: " , stringify ! ( Foo ) ));
-        assert_eq! (::std::mem::align_of::<Foo>() , 1usize , concat ! (
-                    "Alignment of " , stringify ! ( Foo ) ));
+        assert_eq!(
+            ::std::mem::size_of::<Foo>(),
+            1usize,
+            concat!("Size of: ", stringify!(Foo))
+        );
+        assert_eq!(
+            ::std::mem::align_of::<Foo>(),
+            1usize,
+            concat!("Alignment of ", stringify!(Foo))
+        );
     }
     impl Clone for Foo {
-        fn clone(&self) -> Self { *self }
+        fn clone(&self) -> Self {
+            *self
+        }
     }
     pub mod test {
         #[allow(unused_imports)]
@@ -63,18 +79,31 @@ pub mod root {
         }
         #[test]
         fn bindgen_test_layout_Baz() {
-            assert_eq!(::std::mem::size_of::<Baz>() , 4usize , concat ! (
-                       "Size of: " , stringify ! ( Baz ) ));
-            assert_eq! (::std::mem::align_of::<Baz>() , 4usize , concat ! (
-                        "Alignment of " , stringify ! ( Baz ) ));
-            assert_eq! (unsafe {
-                        & ( * ( 0 as * const Baz ) ) . member as * const _ as
-                        usize } , 0usize , concat ! (
-                        "Alignment of field: " , stringify ! ( Baz ) , "::" ,
-                        stringify ! ( member ) ));
+            assert_eq!(
+                ::std::mem::size_of::<Baz>(),
+                4usize,
+                concat!("Size of: ", stringify!(Baz))
+            );
+            assert_eq!(
+                ::std::mem::align_of::<Baz>(),
+                4usize,
+                concat!("Alignment of ", stringify!(Baz))
+            );
+            assert_eq!(
+                unsafe { &(*(0 as *const Baz)).member as *const _ as usize },
+                0usize,
+                concat!(
+                    "Alignment of field: ",
+                    stringify!(Baz),
+                    "::",
+                    stringify!(member)
+                )
+            );
         }
         impl Clone for Baz {
-            fn clone(&self) -> Self { *self }
+            fn clone(&self) -> Self {
+                *self
+            }
         }
         /// I'm in an inline namespace, and as such I shouldn't get generated inside
         /// a rust module, except when the relevant option is specified. Also, this
@@ -86,15 +115,23 @@ pub mod root {
         }
         #[test]
         fn bindgen_test_layout_InInlineNS() {
-            assert_eq!(::std::mem::size_of::<InInlineNS>() , 1usize , concat !
-                       ( "Size of: " , stringify ! ( InInlineNS ) ));
-            assert_eq! (::std::mem::align_of::<InInlineNS>() , 1usize , concat
-                        ! ( "Alignment of " , stringify ! ( InInlineNS ) ));
+            assert_eq!(
+                ::std::mem::size_of::<InInlineNS>(),
+                1usize,
+                concat!("Size of: ", stringify!(InInlineNS))
+            );
+            assert_eq!(
+                ::std::mem::align_of::<InInlineNS>(),
+                1usize,
+                concat!("Alignment of ", stringify!(InInlineNS))
+            );
         }
         impl Clone for InInlineNS {
-            fn clone(&self) -> Self { *self }
+            fn clone(&self) -> Self {
+                *self
+            }
         }
-        
+
         #[repr(C)]
         #[derive(Debug, Default, Copy)]
         pub struct Bazz {
@@ -102,13 +139,21 @@ pub mod root {
         }
         #[test]
         fn bindgen_test_layout_Bazz() {
-            assert_eq!(::std::mem::size_of::<Bazz>() , 1usize , concat ! (
-                       "Size of: " , stringify ! ( Bazz ) ));
-            assert_eq! (::std::mem::align_of::<Bazz>() , 1usize , concat ! (
-                        "Alignment of " , stringify ! ( Bazz ) ));
+            assert_eq!(
+                ::std::mem::size_of::<Bazz>(),
+                1usize,
+                concat!("Size of: ", stringify!(Bazz))
+            );
+            assert_eq!(
+                ::std::mem::align_of::<Bazz>(),
+                1usize,
+                concat!("Alignment of ", stringify!(Bazz))
+            );
         }
         impl Clone for Bazz {
-            fn clone(&self) -> Self { *self }
+            fn clone(&self) -> Self {
+                *self
+            }
         }
     }
 }

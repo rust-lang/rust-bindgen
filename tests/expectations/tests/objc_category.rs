@@ -2,8 +2,7 @@
 
 
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
-
-#![cfg(target_os="macos")]
+#![cfg(target_os = "macos")]
 
 #[macro_use]
 extern crate objc;
@@ -13,11 +12,15 @@ pub trait Foo {
     unsafe fn method(self);
 }
 impl Foo for id {
-    unsafe fn method(self) { msg_send!(self , method) }
+    unsafe fn method(self) {
+        msg_send!(self, method)
+    }
 }
 pub trait Foo_BarCategory {
     unsafe fn categoryMethod(self);
 }
 impl Foo_BarCategory for id {
-    unsafe fn categoryMethod(self) { msg_send!(self , categoryMethod) }
+    unsafe fn categoryMethod(self) {
+        msg_send!(self, categoryMethod)
+    }
 }

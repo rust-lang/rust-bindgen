@@ -13,23 +13,41 @@ pub struct HasPrivate {
 }
 #[test]
 fn bindgen_test_layout_HasPrivate() {
-    assert_eq!(::std::mem::size_of::<HasPrivate>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( HasPrivate ) ));
-    assert_eq! (::std::mem::align_of::<HasPrivate>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( HasPrivate ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const HasPrivate ) ) . mNotPrivate as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( HasPrivate ) , "::" ,
-                stringify ! ( mNotPrivate ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const HasPrivate ) ) . mIsPrivate as * const _
-                as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( HasPrivate ) , "::" ,
-                stringify ! ( mIsPrivate ) ));
+    assert_eq!(
+        ::std::mem::size_of::<HasPrivate>(),
+        8usize,
+        concat!("Size of: ", stringify!(HasPrivate))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<HasPrivate>(),
+        4usize,
+        concat!("Alignment of ", stringify!(HasPrivate))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const HasPrivate)).mNotPrivate as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(HasPrivate),
+            "::",
+            stringify!(mNotPrivate)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const HasPrivate)).mIsPrivate as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(HasPrivate),
+            "::",
+            stringify!(mIsPrivate)
+        )
+    );
 }
 impl Clone for HasPrivate {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 /// <div rustbindgen private></div>
 #[repr(C)]
@@ -40,23 +58,41 @@ pub struct VeryPrivate {
 }
 #[test]
 fn bindgen_test_layout_VeryPrivate() {
-    assert_eq!(::std::mem::size_of::<VeryPrivate>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( VeryPrivate ) ));
-    assert_eq! (::std::mem::align_of::<VeryPrivate>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( VeryPrivate ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const VeryPrivate ) ) . mIsPrivate as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( VeryPrivate ) , "::" ,
-                stringify ! ( mIsPrivate ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const VeryPrivate ) ) . mIsAlsoPrivate as *
-                const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( VeryPrivate ) , "::" ,
-                stringify ! ( mIsAlsoPrivate ) ));
+    assert_eq!(
+        ::std::mem::size_of::<VeryPrivate>(),
+        8usize,
+        concat!("Size of: ", stringify!(VeryPrivate))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<VeryPrivate>(),
+        4usize,
+        concat!("Alignment of ", stringify!(VeryPrivate))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const VeryPrivate)).mIsPrivate as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(VeryPrivate),
+            "::",
+            stringify!(mIsPrivate)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const VeryPrivate)).mIsAlsoPrivate as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(VeryPrivate),
+            "::",
+            stringify!(mIsAlsoPrivate)
+        )
+    );
 }
 impl Clone for VeryPrivate {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 /// <div rustbindgen private></div>
 #[repr(C)]
@@ -68,21 +104,39 @@ pub struct ContradictPrivate {
 }
 #[test]
 fn bindgen_test_layout_ContradictPrivate() {
-    assert_eq!(::std::mem::size_of::<ContradictPrivate>() , 8usize , concat !
-               ( "Size of: " , stringify ! ( ContradictPrivate ) ));
-    assert_eq! (::std::mem::align_of::<ContradictPrivate>() , 4usize , concat
-                ! ( "Alignment of " , stringify ! ( ContradictPrivate ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ContradictPrivate ) ) . mNotPrivate as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( ContradictPrivate ) ,
-                "::" , stringify ! ( mNotPrivate ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const ContradictPrivate ) ) . mIsPrivate as *
-                const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( ContradictPrivate ) ,
-                "::" , stringify ! ( mIsPrivate ) ));
+    assert_eq!(
+        ::std::mem::size_of::<ContradictPrivate>(),
+        8usize,
+        concat!("Size of: ", stringify!(ContradictPrivate))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ContradictPrivate>(),
+        4usize,
+        concat!("Alignment of ", stringify!(ContradictPrivate))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ContradictPrivate)).mNotPrivate as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ContradictPrivate),
+            "::",
+            stringify!(mNotPrivate)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const ContradictPrivate)).mIsPrivate as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(ContradictPrivate),
+            "::",
+            stringify!(mIsPrivate)
+        )
+    );
 }
 impl Clone for ContradictPrivate {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }

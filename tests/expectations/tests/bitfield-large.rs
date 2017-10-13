@@ -11,11 +11,16 @@ pub struct HasBigBitfield {
 }
 #[test]
 fn bindgen_test_layout_HasBigBitfield() {
-    assert_eq!(::std::mem::size_of::<HasBigBitfield>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( HasBigBitfield ) ));
+    assert_eq!(
+        ::std::mem::size_of::<HasBigBitfield>(),
+        16usize,
+        concat!("Size of: ", stringify!(HasBigBitfield))
+    );
 }
 impl Clone for HasBigBitfield {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
@@ -24,9 +29,14 @@ pub struct HasTwoBigBitfields {
 }
 #[test]
 fn bindgen_test_layout_HasTwoBigBitfields() {
-    assert_eq!(::std::mem::size_of::<HasTwoBigBitfields>() , 16usize , concat
-               ! ( "Size of: " , stringify ! ( HasTwoBigBitfields ) ));
+    assert_eq!(
+        ::std::mem::size_of::<HasTwoBigBitfields>(),
+        16usize,
+        concat!("Size of: ", stringify!(HasTwoBigBitfields))
+    );
 }
 impl Clone for HasTwoBigBitfields {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }

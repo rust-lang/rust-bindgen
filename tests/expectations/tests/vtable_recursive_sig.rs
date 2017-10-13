@@ -13,16 +13,26 @@ pub struct Base {
 }
 #[test]
 fn bindgen_test_layout_Base() {
-    assert_eq!(::std::mem::size_of::<Base>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( Base ) ));
-    assert_eq! (::std::mem::align_of::<Base>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( Base ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Base>(),
+        8usize,
+        concat!("Size of: ", stringify!(Base))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Base>(),
+        8usize,
+        concat!("Alignment of ", stringify!(Base))
+    );
 }
 impl Clone for Base {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for Base {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 extern "C" {
     #[link_name = "\u{1}_ZN4Base9AsDerivedEv"]
@@ -35,14 +45,24 @@ pub struct Derived {
 }
 #[test]
 fn bindgen_test_layout_Derived() {
-    assert_eq!(::std::mem::size_of::<Derived>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( Derived ) ));
-    assert_eq! (::std::mem::align_of::<Derived>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( Derived ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Derived>(),
+        8usize,
+        concat!("Size of: ", stringify!(Derived))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Derived>(),
+        8usize,
+        concat!("Alignment of ", stringify!(Derived))
+    );
 }
 impl Clone for Derived {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for Derived {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

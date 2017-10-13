@@ -11,17 +11,26 @@ pub struct a {
 }
 #[test]
 fn bindgen_test_layout_a() {
-    assert_eq!(::std::mem::size_of::<a>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( a ) ));
-    assert_eq! (::std::mem::align_of::<a>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( a ) ));
-    assert_eq! (unsafe { & ( * ( 0 as * const a ) ) . b as * const _ as usize
-                } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( a ) , "::" , stringify
-                ! ( b ) ));
+    assert_eq!(
+        ::std::mem::size_of::<a>(),
+        4usize,
+        concat!("Size of: ", stringify!(a))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<a>(),
+        4usize,
+        concat!("Alignment of ", stringify!(a))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const a)).b as *const _ as usize },
+        0usize,
+        concat!("Alignment of field: ", stringify!(a), "::", stringify!(b))
+    );
 }
 impl Clone for a {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
@@ -30,15 +39,24 @@ pub struct c {
 }
 #[test]
 fn bindgen_test_layout_c() {
-    assert_eq!(::std::mem::size_of::<c>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( c ) ));
-    assert_eq! (::std::mem::align_of::<c>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( c ) ));
-    assert_eq! (unsafe { & ( * ( 0 as * const c ) ) . d as * const _ as usize
-                } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( c ) , "::" , stringify
-                ! ( d ) ));
+    assert_eq!(
+        ::std::mem::size_of::<c>(),
+        4usize,
+        concat!("Size of: ", stringify!(c))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<c>(),
+        4usize,
+        concat!("Alignment of ", stringify!(c))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const c)).d as *const _ as usize },
+        0usize,
+        concat!("Alignment of field: ", stringify!(c), "::", stringify!(d))
+    );
 }
 impl Clone for c {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }

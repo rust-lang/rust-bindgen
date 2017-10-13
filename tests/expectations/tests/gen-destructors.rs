@@ -11,15 +11,26 @@ pub struct Foo {
 }
 #[test]
 fn bindgen_test_layout_Foo() {
-    assert_eq!(::std::mem::size_of::<Foo>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( Foo ) ));
-    assert_eq! (::std::mem::align_of::<Foo>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( Foo ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Foo ) ) . bar as * const _ as usize } ,
-                0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Foo ) , "::" ,
-                stringify ! ( bar ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Foo>(),
+        4usize,
+        concat!("Size of: ", stringify!(Foo))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Foo>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Foo))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Foo)).bar as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Foo),
+            "::",
+            stringify!(bar)
+        )
+    );
 }
 extern "C" {
     #[link_name = "\u{1}_ZN3FooD1Ev"]
@@ -27,5 +38,7 @@ extern "C" {
 }
 impl Foo {
     #[inline]
-    pub unsafe fn destruct(&mut self) { Foo_Foo_destructor(self) }
+    pub unsafe fn destruct(&mut self) {
+        Foo_Foo_destructor(self)
+    }
 }

@@ -13,26 +13,46 @@ pub union WithBigArray {
 }
 #[test]
 fn bindgen_test_layout_WithBigArray() {
-    assert_eq!(::std::mem::size_of::<WithBigArray>() , 132usize , concat ! (
-               "Size of: " , stringify ! ( WithBigArray ) ));
-    assert_eq! (::std::mem::align_of::<WithBigArray>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( WithBigArray ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const WithBigArray ) ) . a as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( WithBigArray ) , "::" ,
-                stringify ! ( a ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const WithBigArray ) ) . b as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( WithBigArray ) , "::" ,
-                stringify ! ( b ) ));
+    assert_eq!(
+        ::std::mem::size_of::<WithBigArray>(),
+        132usize,
+        concat!("Size of: ", stringify!(WithBigArray))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<WithBigArray>(),
+        4usize,
+        concat!("Alignment of ", stringify!(WithBigArray))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const WithBigArray)).a as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(WithBigArray),
+            "::",
+            stringify!(a)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const WithBigArray)).b as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(WithBigArray),
+            "::",
+            stringify!(b)
+        )
+    );
 }
 impl Clone for WithBigArray {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for WithBigArray {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -43,26 +63,46 @@ pub union WithBigArray2 {
 }
 #[test]
 fn bindgen_test_layout_WithBigArray2() {
-    assert_eq!(::std::mem::size_of::<WithBigArray2>() , 36usize , concat ! (
-               "Size of: " , stringify ! ( WithBigArray2 ) ));
-    assert_eq! (::std::mem::align_of::<WithBigArray2>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( WithBigArray2 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const WithBigArray2 ) ) . a as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( WithBigArray2 ) , "::"
-                , stringify ! ( a ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const WithBigArray2 ) ) . b as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( WithBigArray2 ) , "::"
-                , stringify ! ( b ) ));
+    assert_eq!(
+        ::std::mem::size_of::<WithBigArray2>(),
+        36usize,
+        concat!("Size of: ", stringify!(WithBigArray2))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<WithBigArray2>(),
+        4usize,
+        concat!("Alignment of ", stringify!(WithBigArray2))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const WithBigArray2)).a as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(WithBigArray2),
+            "::",
+            stringify!(a)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const WithBigArray2)).b as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(WithBigArray2),
+            "::",
+            stringify!(b)
+        )
+    );
 }
 impl Clone for WithBigArray2 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for WithBigArray2 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Copy)]
@@ -73,24 +113,44 @@ pub union WithBigMember {
 }
 #[test]
 fn bindgen_test_layout_WithBigMember() {
-    assert_eq!(::std::mem::size_of::<WithBigMember>() , 132usize , concat ! (
-               "Size of: " , stringify ! ( WithBigMember ) ));
-    assert_eq! (::std::mem::align_of::<WithBigMember>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( WithBigMember ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const WithBigMember ) ) . a as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( WithBigMember ) , "::"
-                , stringify ! ( a ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const WithBigMember ) ) . b as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( WithBigMember ) , "::"
-                , stringify ! ( b ) ));
+    assert_eq!(
+        ::std::mem::size_of::<WithBigMember>(),
+        132usize,
+        concat!("Size of: ", stringify!(WithBigMember))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<WithBigMember>(),
+        4usize,
+        concat!("Alignment of ", stringify!(WithBigMember))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const WithBigMember)).a as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(WithBigMember),
+            "::",
+            stringify!(a)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const WithBigMember)).b as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(WithBigMember),
+            "::",
+            stringify!(b)
+        )
+    );
 }
 impl Clone for WithBigMember {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for WithBigMember {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

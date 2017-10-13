@@ -10,8 +10,10 @@ pub struct Foo<T> {
     pub t_member: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
-impl <T> Default for Foo<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for Foo<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
@@ -24,8 +26,10 @@ pub struct Quux<V> {
     pub v_member: V,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<V>>,
 }
-impl <V> Default for Quux<V> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<V> Default for Quux<V> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]

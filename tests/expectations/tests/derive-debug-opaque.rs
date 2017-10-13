@@ -10,17 +10,25 @@ pub struct Opaque {
 }
 #[test]
 fn bindgen_test_layout_Opaque() {
-    assert_eq!(::std::mem::size_of::<Opaque>() , 164usize , concat ! (
-               "Size of: " , stringify ! ( Opaque ) ));
-    assert_eq! (::std::mem::align_of::<Opaque>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( Opaque ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Opaque>(),
+        164usize,
+        concat!("Size of: ", stringify!(Opaque))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Opaque>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Opaque))
+    );
 }
 impl Default for Opaque {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 impl ::std::fmt::Debug for Opaque {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        write!(f , "Opaque {{ opaque }}")
+        write!(f, "Opaque {{ opaque }}")
     }
 }
 #[repr(C)]
@@ -29,21 +37,34 @@ pub struct OpaqueUser {
 }
 #[test]
 fn bindgen_test_layout_OpaqueUser() {
-    assert_eq!(::std::mem::size_of::<OpaqueUser>() , 164usize , concat ! (
-               "Size of: " , stringify ! ( OpaqueUser ) ));
-    assert_eq! (::std::mem::align_of::<OpaqueUser>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( OpaqueUser ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const OpaqueUser ) ) . opaque as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( OpaqueUser ) , "::" ,
-                stringify ! ( opaque ) ));
+    assert_eq!(
+        ::std::mem::size_of::<OpaqueUser>(),
+        164usize,
+        concat!("Size of: ", stringify!(OpaqueUser))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<OpaqueUser>(),
+        4usize,
+        concat!("Alignment of ", stringify!(OpaqueUser))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const OpaqueUser)).opaque as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(OpaqueUser),
+            "::",
+            stringify!(opaque)
+        )
+    );
 }
 impl Default for OpaqueUser {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 impl ::std::fmt::Debug for OpaqueUser {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        write!(f , "OpaqueUser {{ opaque: {:?} }}" , self . opaque)
+        write!(f, "OpaqueUser {{ opaque: {:?} }}", self.opaque)
     }
 }

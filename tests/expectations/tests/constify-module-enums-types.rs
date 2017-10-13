@@ -52,66 +52,126 @@ pub struct bar {
 }
 #[test]
 fn bindgen_test_layout_bar() {
-    assert_eq!(::std::mem::size_of::<bar>() , 48usize , concat ! (
-               "Size of: " , stringify ! ( bar ) ));
-    assert_eq! (::std::mem::align_of::<bar>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( bar ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const bar ) ) . member1 as * const _ as usize }
-                , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( bar ) , "::" ,
-                stringify ! ( member1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const bar ) ) . member2 as * const _ as usize }
-                , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( bar ) , "::" ,
-                stringify ! ( member2 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const bar ) ) . member3 as * const _ as usize }
-                , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( bar ) , "::" ,
-                stringify ! ( member3 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const bar ) ) . member4 as * const _ as usize }
-                , 12usize , concat ! (
-                "Alignment of field: " , stringify ! ( bar ) , "::" ,
-                stringify ! ( member4 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const bar ) ) . member5 as * const _ as usize }
-                , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( bar ) , "::" ,
-                stringify ! ( member5 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const bar ) ) . member6 as * const _ as usize }
-                , 24usize , concat ! (
-                "Alignment of field: " , stringify ! ( bar ) , "::" ,
-                stringify ! ( member6 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const bar ) ) . member7 as * const _ as usize }
-                , 32usize , concat ! (
-                "Alignment of field: " , stringify ! ( bar ) , "::" ,
-                stringify ! ( member7 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const bar ) ) . member8 as * const _ as usize }
-                , 36usize , concat ! (
-                "Alignment of field: " , stringify ! ( bar ) , "::" ,
-                stringify ! ( member8 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const bar ) ) . member9 as * const _ as usize }
-                , 40usize , concat ! (
-                "Alignment of field: " , stringify ! ( bar ) , "::" ,
-                stringify ! ( member9 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const bar ) ) . member10 as * const _ as usize
-                } , 44usize , concat ! (
-                "Alignment of field: " , stringify ! ( bar ) , "::" ,
-                stringify ! ( member10 ) ));
+    assert_eq!(
+        ::std::mem::size_of::<bar>(),
+        48usize,
+        concat!("Size of: ", stringify!(bar))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<bar>(),
+        8usize,
+        concat!("Alignment of ", stringify!(bar))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const bar)).member1 as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(bar),
+            "::",
+            stringify!(member1)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const bar)).member2 as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(bar),
+            "::",
+            stringify!(member2)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const bar)).member3 as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(bar),
+            "::",
+            stringify!(member3)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const bar)).member4 as *const _ as usize },
+        12usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(bar),
+            "::",
+            stringify!(member4)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const bar)).member5 as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(bar),
+            "::",
+            stringify!(member5)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const bar)).member6 as *const _ as usize },
+        24usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(bar),
+            "::",
+            stringify!(member6)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const bar)).member7 as *const _ as usize },
+        32usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(bar),
+            "::",
+            stringify!(member7)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const bar)).member8 as *const _ as usize },
+        36usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(bar),
+            "::",
+            stringify!(member8)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const bar)).member9 as *const _ as usize },
+        40usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(bar),
+            "::",
+            stringify!(member9)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const bar)).member10 as *const _ as usize },
+        44usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(bar),
+            "::",
+            stringify!(member10)
+        )
+    );
 }
 impl Clone for bar {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for bar {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -120,21 +180,36 @@ pub struct Baz {
 }
 #[test]
 fn bindgen_test_layout_Baz() {
-    assert_eq!(::std::mem::size_of::<Baz>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( Baz ) ));
-    assert_eq! (::std::mem::align_of::<Baz>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( Baz ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Baz ) ) . member1 as * const _ as usize }
-                , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Baz ) , "::" ,
-                stringify ! ( member1 ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Baz>(),
+        4usize,
+        concat!("Size of: ", stringify!(Baz))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Baz>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Baz))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Baz)).member1 as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Baz),
+            "::",
+            stringify!(member1)
+        )
+    );
 }
 impl Clone for Baz {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for Baz {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub mod one_Foo {
     pub type Type = ::std::os::raw::c_int;
@@ -148,31 +223,52 @@ pub struct Bar {
 }
 #[test]
 fn bindgen_test_layout_Bar() {
-    assert_eq!(::std::mem::size_of::<Bar>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( Bar ) ));
-    assert_eq! (::std::mem::align_of::<Bar>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( Bar ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Bar ) ) . baz as * const _ as usize } ,
-                0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Bar ) , "::" ,
-                stringify ! ( baz ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Bar>(),
+        8usize,
+        concat!("Size of: ", stringify!(Bar))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Bar>(),
+        8usize,
+        concat!("Alignment of ", stringify!(Bar))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Bar)).baz as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Bar),
+            "::",
+            stringify!(baz)
+        )
+    );
 }
 impl Clone for Bar {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for Bar {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 extern "C" {
     #[link_name = "\u{1}_Z5func13fooPS_PS0_"]
-    pub fn func1(arg1: foo::Type, arg2: *mut foo::Type,
-                 arg3: *mut *mut foo::Type) -> *mut foo::Type;
+    pub fn func1(
+        arg1: foo::Type,
+        arg2: *mut foo::Type,
+        arg3: *mut *mut foo::Type,
+    ) -> *mut foo::Type;
 }
 extern "C" {
     #[link_name = "\u{1}_Z5func23fooPS_PS0_"]
-    pub fn func2(arg1: foo_alias1, arg2: *mut foo_alias1,
-                 arg3: *mut *mut foo_alias1) -> *mut foo_alias1;
+    pub fn func2(
+        arg1: foo_alias1,
+        arg2: *mut foo_alias1,
+        arg3: *mut *mut foo_alias1,
+    ) -> *mut foo_alias1;
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -180,8 +276,10 @@ pub struct Thing<T> {
     pub thing: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
-impl <T> Default for Thing<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for Thing<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 extern "C" {
     #[link_name = "\u{1}_Z5func35ThingI3fooE"]

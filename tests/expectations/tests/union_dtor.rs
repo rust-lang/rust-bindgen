@@ -12,27 +12,45 @@ pub union UnionWithDtor {
 }
 #[test]
 fn bindgen_test_layout_UnionWithDtor() {
-    assert_eq!(::std::mem::size_of::<UnionWithDtor>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( UnionWithDtor ) ));
-    assert_eq! (::std::mem::align_of::<UnionWithDtor>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( UnionWithDtor ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const UnionWithDtor ) ) . mFoo as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( UnionWithDtor ) , "::"
-                , stringify ! ( mFoo ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const UnionWithDtor ) ) . mBar as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( UnionWithDtor ) , "::"
-                , stringify ! ( mBar ) ));
+    assert_eq!(
+        ::std::mem::size_of::<UnionWithDtor>(),
+        8usize,
+        concat!("Size of: ", stringify!(UnionWithDtor))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<UnionWithDtor>(),
+        8usize,
+        concat!("Alignment of ", stringify!(UnionWithDtor))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const UnionWithDtor)).mFoo as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(UnionWithDtor),
+            "::",
+            stringify!(mFoo)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const UnionWithDtor)).mBar as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(UnionWithDtor),
+            "::",
+            stringify!(mBar)
+        )
+    );
 }
 extern "C" {
     #[link_name = "\u{1}_ZN13UnionWithDtorD1Ev"]
     pub fn UnionWithDtor_UnionWithDtor_destructor(this: *mut UnionWithDtor);
 }
 impl Default for UnionWithDtor {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 impl UnionWithDtor {
     #[inline]

@@ -16,33 +16,59 @@ pub struct Foo_Bar {
 }
 #[test]
 fn bindgen_test_layout_Foo_Bar() {
-    assert_eq!(::std::mem::size_of::<Foo_Bar>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( Foo_Bar ) ));
-    assert_eq! (::std::mem::align_of::<Foo_Bar>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( Foo_Bar ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Foo_Bar ) ) . abc as * const _ as usize }
-                , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Foo_Bar ) , "::" ,
-                stringify ! ( abc ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Foo_Bar>(),
+        4usize,
+        concat!("Size of: ", stringify!(Foo_Bar))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Foo_Bar>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Foo_Bar))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Foo_Bar)).abc as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Foo_Bar),
+            "::",
+            stringify!(abc)
+        )
+    );
 }
 impl Clone for Foo_Bar {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[test]
 fn bindgen_test_layout_Foo() {
-    assert_eq!(::std::mem::size_of::<Foo>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( Foo ) ));
-    assert_eq! (::std::mem::align_of::<Foo>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( Foo ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Foo ) ) . bar as * const _ as usize } ,
-                0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Foo ) , "::" ,
-                stringify ! ( bar ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Foo>(),
+        4usize,
+        concat!("Size of: ", stringify!(Foo))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Foo>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Foo))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Foo)).bar as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Foo),
+            "::",
+            stringify!(bar)
+        )
+    );
 }
 impl Clone for Foo {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
@@ -56,26 +82,47 @@ pub struct Baz_Bar {
 }
 #[test]
 fn bindgen_test_layout_Baz_Bar() {
-    assert_eq!(::std::mem::size_of::<Baz_Bar>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( Baz_Bar ) ));
-    assert_eq! (::std::mem::align_of::<Baz_Bar>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( Baz_Bar ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Baz_Bar ) ) . abc as * const _ as usize }
-                , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Baz_Bar ) , "::" ,
-                stringify ! ( abc ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Baz_Bar>(),
+        4usize,
+        concat!("Size of: ", stringify!(Baz_Bar))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Baz_Bar>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Baz_Bar))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Baz_Bar)).abc as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Baz_Bar),
+            "::",
+            stringify!(abc)
+        )
+    );
 }
 impl Clone for Baz_Bar {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[test]
 fn bindgen_test_layout_Baz() {
-    assert_eq!(::std::mem::size_of::<Baz>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( Baz ) ));
-    assert_eq! (::std::mem::align_of::<Baz>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( Baz ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Baz>(),
+        1usize,
+        concat!("Size of: ", stringify!(Baz))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Baz>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Baz))
+    );
 }
 impl Clone for Baz {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }

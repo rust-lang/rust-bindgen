@@ -93,8 +93,15 @@ fn __bindgen_test_layout_Template_open0_char_close0_instantiation() {
         1usize,
         concat!(
             "Size of template specialization: ",
-            stringify ! ( Template < :: std :: os :: raw :: c_char > )
+            stringify!(Template<::std::os::raw::c_char>)
         )
     );
-    assert_eq ! ( :: std :: mem :: align_of :: < Template < :: std :: os :: raw :: c_char > > ( ) , 1usize , concat ! ( "Alignment of template specialization: " , stringify ! ( Template < :: std :: os :: raw :: c_char > ) ) );
+    assert_eq!(
+        ::std::mem::align_of::<Template<::std::os::raw::c_char>>(),
+        1usize,
+        concat!(
+            "Alignment of template specialization: ",
+            stringify!(Template<::std::os::raw::c_char>)
+        )
+    );
 }

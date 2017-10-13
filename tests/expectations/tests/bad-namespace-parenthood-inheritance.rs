@@ -10,7 +10,9 @@ pub struct std_char_traits {
     pub _address: u8,
 }
 impl Default for std_char_traits {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]

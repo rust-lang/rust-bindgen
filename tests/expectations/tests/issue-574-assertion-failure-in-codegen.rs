@@ -16,18 +16,31 @@ pub struct _bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<_bindgen_ty_1>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( _bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<_bindgen_ty_1>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( _bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const _bindgen_ty_1 ) ) . ar as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( _bindgen_ty_1 ) , "::"
-                , stringify ! ( ar ) ));
+    assert_eq!(
+        ::std::mem::size_of::<_bindgen_ty_1>(),
+        1usize,
+        concat!("Size of: ", stringify!(_bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<_bindgen_ty_1>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const _bindgen_ty_1)).ar as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(_bindgen_ty_1),
+            "::",
+            stringify!(ar)
+        )
+    );
 }
 impl Clone for _bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 extern "C" {
     #[link_name = "\u{1}AutoIdVector"]
@@ -35,9 +48,14 @@ extern "C" {
 }
 #[test]
 fn __bindgen_test_layout_a_open0_int_close0_instantiation() {
-    assert_eq!(::std::mem::size_of::<a>() , 1usize , concat ! (
-               "Size of template specialization: " , stringify ! ( a ) ));
-    assert_eq!(::std::mem::align_of::<a>() , 1usize , concat ! (
-               "Alignment of template specialization: " , stringify ! ( a )
-               ));
+    assert_eq!(
+        ::std::mem::size_of::<a>(),
+        1usize,
+        concat!("Size of template specialization: ", stringify!(a))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<a>(),
+        1usize,
+        concat!("Alignment of template specialization: ", stringify!(a))
+    );
 }

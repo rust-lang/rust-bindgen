@@ -31,21 +31,36 @@ pub mod root {
             }
             #[test]
             fn bindgen_test_layout_bar() {
-                assert_eq!(::std::mem::size_of::<bar>() , 4usize , concat ! (
-                           "Size of: " , stringify ! ( bar ) ));
-                assert_eq! (::std::mem::align_of::<bar>() , 4usize , concat !
-                            ( "Alignment of " , stringify ! ( bar ) ));
-                assert_eq! (unsafe {
-                            & ( * ( 0 as * const bar ) ) . this_should_work as
-                            * const _ as usize } , 0usize , concat ! (
-                            "Alignment of field: " , stringify ! ( bar ) ,
-                            "::" , stringify ! ( this_should_work ) ));
+                assert_eq!(
+                    ::std::mem::size_of::<bar>(),
+                    4usize,
+                    concat!("Size of: ", stringify!(bar))
+                );
+                assert_eq!(
+                    ::std::mem::align_of::<bar>(),
+                    4usize,
+                    concat!("Alignment of ", stringify!(bar))
+                );
+                assert_eq!(
+                    unsafe { &(*(0 as *const bar)).this_should_work as *const _ as usize },
+                    0usize,
+                    concat!(
+                        "Alignment of field: ",
+                        stringify!(bar),
+                        "::",
+                        stringify!(this_should_work)
+                    )
+                );
             }
             impl Clone for bar {
-                fn clone(&self) -> Self { *self }
+                fn clone(&self) -> Self {
+                    *self
+                }
             }
             impl Default for bar {
-                fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+                fn default() -> Self {
+                    unsafe { ::std::mem::zeroed() }
+                }
             }
         }
     }
