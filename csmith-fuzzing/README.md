@@ -18,13 +18,13 @@ tests in the bindings fail, then we report an issue containing the test case!
 
 ## Prerequisites
 
-Requires `python3`, `csmith` and `bindgen` to be in `$PATH`.
+Requires `python3`, `csmith`, and `creduce` to be in `$PATH`.
 
-Many OS package managers have a `csmith` package:
+Many OS package managers have `csmith` and `creduce` packages:
 
 ```
-$ sudo apt install csmith
-$ brew install csmith
+$ sudo apt install csmith creduce
+$ brew install csmith creduce
 $ # Etc...
 ```
 

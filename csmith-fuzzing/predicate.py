@@ -110,10 +110,16 @@ def exit_1(msg, child=None):
     print(msg)
 
     if child:
-        print("---------- stdout ----------------------------------------------")
-        print(decode(child.stdout))
-        print("---------- stderr ----------------------------------------------")
-        print(decode(child.stderr))
+        stdout = decode(child.stdout)
+        for line in stdout.splitlines():
+            sys.stdout.write("+")
+            sys.stdout.write(line)
+            sys.stdout.write("\n")
+        stderr = decode(child.stderr)
+        for line in stderr.splitlines():
+            sys.stderr.write("+")
+            sys.stderr.write(line)
+            sys.stderr.write("\n")
 
     raise ExitOne()
 
