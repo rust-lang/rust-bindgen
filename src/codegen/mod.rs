@@ -478,7 +478,19 @@ impl CodeGenerator for Var {
                     });
                 }
                 VarType::Int(val) => {
-                    let val = helpers::ast_ty::int_expr(val);
+                    let int_kind = self.ty()
+                        .into_resolver()
+                        .through_type_aliases()
+                        .through_type_refs()
+                        .resolve(ctx)
+                        .expect_type()
+                        .as_integer()
+                        .unwrap();
+                    let val = if int_kind.is_signed() {
+                        helpers::ast_ty::int_expr(val)
+                    } else {
+                        helpers::ast_ty::uint_expr(val as _)
+                    };
                     result.push(quote! {
                         pub const #canonical_ident : #ty = #val ;
                     });
