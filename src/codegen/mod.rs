@@ -1424,7 +1424,7 @@ impl CodeGenerator for CompInfo {
         //
         // FIXME: Once we generate proper vtables, we need to codegen the
         // vtable, but *not* generate a field for it in the case that
-        // needs_explicit_vtable is false but has_vtable is true.
+        // HasVtable::has_vtable_ptr is false but HasVtable::has_vtable is true.
         //
         // Also, we need to generate the vtable in such a way it "inherits" from
         // the parent too.
@@ -1434,7 +1434,7 @@ impl CodeGenerator for CompInfo {
             StructLayoutTracker::new(ctx, self, &canonical_name);
 
         if !is_opaque {
-            if self.needs_explicit_vtable(ctx, item) {
+            if item.has_vtable_ptr(ctx) {
                 let vtable =
                     Vtable::new(item.id(), self.methods(), self.base_members());
                 vtable.codegen(ctx, result, item);
