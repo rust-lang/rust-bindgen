@@ -163,6 +163,7 @@ impl<'ctx> MonotoneFramework for HasVtableAnalysis<'ctx> {
     }
 
     fn constrain(&mut self, id: ItemId) -> ConstrainResult {
+        trace!("constrain {:?}", id);
 
         let item = self.ctx.resolve_item(id);
         let ty = match item.as_type() {
@@ -176,17 +177,21 @@ impl<'ctx> MonotoneFramework for HasVtableAnalysis<'ctx> {
             TypeKind::Alias(t) |
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::Reference(t) => {
+                trace!("    aliases and references forward to their inner type");
                 self.forward(t, id)
             }
 
             TypeKind::Comp(ref info) => {
+                trace!("    comp considers its own methods and bases");
                 let mut result = HasVtableResult::No;
 
                 if info.has_own_virtual_method() {
+                    trace!("    comp has its own virtual method");
                     result |= HasVtableResult::SelfHasVtable;
                 }
 
                 let bases_has_vtable = info.base_members().iter().any(|base| {
+                    trace!("    comp has a base with a vtable: {:?}", base);
                     self.have_vtable.contains_key(&base.ty.into())
                 });
                 if bases_has_vtable {
