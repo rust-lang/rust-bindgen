@@ -1267,7 +1267,7 @@ impl BindgenContext {
     }
 
     /// Look up whether the item with `id` has vtable or not.
-    pub fn lookup_has_vtable(&self, id: TypeId) -> bool {
+    pub fn lookup_has_vtable(&self, id: TypeId) -> HasVtableResult {
         assert!(
             self.in_codegen_phase(),
             "We only compute vtables when we enter codegen"
@@ -1275,7 +1275,12 @@ impl BindgenContext {
 
         // Look up the computed value for whether the item with `id` has a
         // vtable or not.
-        self.have_vtable.as_ref().unwrap().contains_key(&id.into())
+        self.have_vtable
+            .as_ref()
+            .unwrap()
+            .get(&id.into())
+            .cloned()
+            .unwrap_or(HasVtableResult::No)
     }
 
     /// Compute whether the type has a destructor.

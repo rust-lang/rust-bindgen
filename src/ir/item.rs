@@ -1,6 +1,6 @@
 //! Bindgen's core intermediate representation type.
 
-use super::analysis::HasVtable;
+use super::analysis::{HasVtable, HasVtableResult};
 use super::annotations::Annotations;
 use super::comment;
 use super::comp::MethodKind;
@@ -1001,15 +1001,29 @@ where
     fn has_vtable(&self, ctx: &BindgenContext) -> bool {
         let id: ItemId = (*self).into();
         id.as_type_id(ctx)
-            .map_or(false, |id| ctx.lookup_has_vtable(id))
+            .map_or(false, |id| match ctx.lookup_has_vtable(id) {
+                HasVtableResult::No => false,
+                _ => true,
+            })
+    }
+
+    fn has_vtable_ptr(&self, ctx: &BindgenContext) -> bool {
+        let id: ItemId = (*self).into();
+        id.as_type_id(ctx)
+            .map_or(false, |id| match ctx.lookup_has_vtable(id) {
+                HasVtableResult::SelfHasVtable => true,
+                _ => false,
+            })
     }
 }
 
 impl HasVtable for Item {
     fn has_vtable(&self, ctx: &BindgenContext) -> bool {
-        self.id()
-            .as_type_id(ctx)
-            .map_or(false, |id| ctx.lookup_has_vtable(id))
+        self.id().has_vtable(ctx)
+    }
+
+    fn has_vtable_ptr(&self, ctx: &BindgenContext) -> bool {
+        self.id().has_vtable_ptr(ctx)
     }
 }
 

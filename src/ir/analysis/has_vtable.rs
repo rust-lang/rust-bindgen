@@ -242,4 +242,8 @@ impl<'ctx> From<HasVtableAnalysis<'ctx>> for HashMap<ItemId, HasVtableResult> {
 pub trait HasVtable {
     /// Return `true` if this thing has vtable, `false` otherwise.
     fn has_vtable(&self, ctx: &BindgenContext) -> bool;
+
+    /// Return `true` if this thing has an actual vtable pointer in itself, as
+    /// opposed to transitively in a base member.
+    fn has_vtable_ptr(&self, ctx: &BindgenContext) -> bool;
 }
