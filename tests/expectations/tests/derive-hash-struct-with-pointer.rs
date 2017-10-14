@@ -7,7 +7,7 @@
 
 /// Pointers can derive Hash/PartialOrd/Ord/PartialEq/Eq
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct ConstPtrMutObj {
     pub bar: *const ::std::os::raw::c_int,
 }
@@ -34,18 +34,13 @@ fn bindgen_test_layout_ConstPtrMutObj() {
         )
     );
 }
-impl Clone for ConstPtrMutObj {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for ConstPtrMutObj {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct MutPtrMutObj {
     pub bar: *mut ::std::os::raw::c_int,
 }
@@ -72,18 +67,13 @@ fn bindgen_test_layout_MutPtrMutObj() {
         )
     );
 }
-impl Clone for MutPtrMutObj {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for MutPtrMutObj {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct MutPtrConstObj {
     pub bar: *const ::std::os::raw::c_int,
 }
@@ -110,18 +100,13 @@ fn bindgen_test_layout_MutPtrConstObj() {
         )
     );
 }
-impl Clone for MutPtrConstObj {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for MutPtrConstObj {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct ConstPtrConstObj {
     pub bar: *const ::std::os::raw::c_int,
 }
@@ -147,11 +132,6 @@ fn bindgen_test_layout_ConstPtrConstObj() {
             stringify!(bar)
         )
     );
-}
-impl Clone for ConstPtrConstObj {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for ConstPtrConstObj {
     fn default() -> Self {

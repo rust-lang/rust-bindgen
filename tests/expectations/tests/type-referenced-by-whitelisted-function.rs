@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct dl_phdr_info {
     pub x: ::std::os::raw::c_int,
 }
@@ -31,11 +31,6 @@ fn bindgen_test_layout_dl_phdr_info() {
             stringify!(x)
         )
     );
-}
-impl Clone for dl_phdr_info {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 extern "C" {
     pub fn dl_iterate_phdr(arg1: *mut dl_phdr_info) -> ::std::os::raw::c_int;

@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct Nice {
     pub pointer: Nice_Function,
     pub large_array: [::std::os::raw::c_int; 34usize],
@@ -43,11 +43,6 @@ fn bindgen_test_layout_Nice() {
             stringify!(large_array)
         )
     );
-}
-impl Clone for Nice {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for Nice {
     fn default() -> Self {

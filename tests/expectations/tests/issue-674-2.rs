@@ -19,7 +19,7 @@ pub mod root {
         pub type Rooted_ElementType<T> = T;
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy)]
+    #[derive(Debug, Default, Copy, Clone)]
     pub struct c {
         pub b: u8,
     }
@@ -41,13 +41,8 @@ pub mod root {
             concat!("Alignment of field: ", stringify!(c), "::", stringify!(b))
         );
     }
-    impl Clone for c {
-        fn clone(&self) -> Self {
-            *self
-        }
-    }
     #[repr(C)]
-    #[derive(Debug, Default, Copy)]
+    #[derive(Debug, Default, Copy, Clone)]
     pub struct B {
         pub a: root::c,
     }
@@ -68,11 +63,6 @@ pub mod root {
             0usize,
             concat!("Alignment of field: ", stringify!(B), "::", stringify!(a))
         );
-    }
-    impl Clone for B {
-        fn clone(&self) -> Self {
-            *self
-        }
     }
     #[repr(C)]
     #[derive(Debug, Default, Copy, Clone)]

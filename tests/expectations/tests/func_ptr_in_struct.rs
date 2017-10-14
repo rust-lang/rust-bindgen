@@ -7,7 +7,7 @@
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum baz {}
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Foo {
     pub bar: ::std::option::Option<
         unsafe extern "C" fn(x: ::std::os::raw::c_int, y: ::std::os::raw::c_int) -> baz,
@@ -35,11 +35,6 @@ fn bindgen_test_layout_Foo() {
             stringify!(bar)
         )
     );
-}
-impl Clone for Foo {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for Foo {
     fn default() -> Self {

@@ -6,7 +6,7 @@
 
 pub type AnotherInt = ::std::os::raw::c_int;
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct C {
     pub c: C_MyInt,
     pub ptr: *mut C_MyInt,
@@ -75,11 +75,6 @@ extern "C" {
     #[link_name = "\u{1}_ZN1C13anotherMethodEi"]
     pub fn C_anotherMethod(this: *mut C, c: AnotherInt);
 }
-impl Clone for C {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for C {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -104,7 +99,7 @@ impl C {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct D {
     pub _base: C,
     pub ptr: *mut C_MyInt,
@@ -126,11 +121,6 @@ fn bindgen_test_layout_D() {
         72usize,
         concat!("Alignment of field: ", stringify!(D), "::", stringify!(ptr))
     );
-}
-impl Clone for D {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for D {
     fn default() -> Self {

@@ -5,14 +5,14 @@
 
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct A {
     pub c: ::std::os::raw::c_uint,
     pub named_union: A__bindgen_ty_1,
     pub __bindgen_anon_1: A__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct A_Segment {
     pub begin: ::std::os::raw::c_int,
     pub end: ::std::os::raw::c_int,
@@ -50,13 +50,8 @@ fn bindgen_test_layout_A_Segment() {
         )
     );
 }
-impl Clone for A_Segment {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union A__bindgen_ty_1 {
     pub f: ::std::os::raw::c_int,
     _bindgen_union_align: u32,
@@ -84,18 +79,13 @@ fn bindgen_test_layout_A__bindgen_ty_1() {
         )
     );
 }
-impl Clone for A__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for A__bindgen_ty_1 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union A__bindgen_ty_2 {
     pub d: ::std::os::raw::c_int,
     _bindgen_union_align: u32,
@@ -122,11 +112,6 @@ fn bindgen_test_layout_A__bindgen_ty_2() {
             stringify!(d)
         )
     );
-}
-impl Clone for A__bindgen_ty_2 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for A__bindgen_ty_2 {
     fn default() -> Self {
@@ -161,23 +146,18 @@ fn bindgen_test_layout_A() {
         )
     );
 }
-impl Clone for A {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for A {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct B {
     pub d: ::std::os::raw::c_uint,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct B_Segment {
     pub begin: ::std::os::raw::c_int,
     pub end: ::std::os::raw::c_int,
@@ -215,11 +195,6 @@ fn bindgen_test_layout_B_Segment() {
         )
     );
 }
-impl Clone for B_Segment {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[test]
 fn bindgen_test_layout_B() {
     assert_eq!(
@@ -238,11 +213,6 @@ fn bindgen_test_layout_B() {
         concat!("Alignment of field: ", stringify!(B), "::", stringify!(d))
     );
 }
-impl Clone for B {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum StepSyntax {
@@ -252,20 +222,20 @@ pub enum StepSyntax {
     FunctionalWithEndKeyword = 3,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct C {
     pub d: ::std::os::raw::c_uint,
     pub __bindgen_anon_1: C__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union C__bindgen_ty_1 {
     pub mFunc: C__bindgen_ty_1__bindgen_ty_1,
     pub __bindgen_anon_1: C__bindgen_ty_1__bindgen_ty_2,
     _bindgen_union_align: [u32; 4usize],
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct C__bindgen_ty_1__bindgen_ty_1 {
     pub mX1: f32,
     pub mY1: f32,
@@ -325,13 +295,8 @@ fn bindgen_test_layout_C__bindgen_ty_1__bindgen_ty_1() {
         )
     );
 }
-impl Clone for C__bindgen_ty_1__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct C__bindgen_ty_1__bindgen_ty_2 {
     pub mStepSyntax: StepSyntax,
     pub mSteps: ::std::os::raw::c_uint,
@@ -369,11 +334,6 @@ fn bindgen_test_layout_C__bindgen_ty_1__bindgen_ty_2() {
         )
     );
 }
-impl Clone for C__bindgen_ty_1__bindgen_ty_2 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for C__bindgen_ty_1__bindgen_ty_2 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -402,18 +362,13 @@ fn bindgen_test_layout_C__bindgen_ty_1() {
         )
     );
 }
-impl Clone for C__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for C__bindgen_ty_1 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct C_Segment {
     pub begin: ::std::os::raw::c_int,
     pub end: ::std::os::raw::c_int,
@@ -451,11 +406,6 @@ fn bindgen_test_layout_C_Segment() {
         )
     );
 }
-impl Clone for C_Segment {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[test]
 fn bindgen_test_layout_C() {
     assert_eq!(
@@ -473,11 +423,6 @@ fn bindgen_test_layout_C() {
         0usize,
         concat!("Alignment of field: ", stringify!(C), "::", stringify!(d))
     );
-}
-impl Clone for C {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for C {
     fn default() -> Self {

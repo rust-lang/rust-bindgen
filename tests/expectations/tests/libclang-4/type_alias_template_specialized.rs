@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct Rooted {
     pub ptr: MaybeWrapped<::std::os::raw::c_int>,
 }
@@ -32,11 +32,6 @@ fn bindgen_test_layout_Rooted() {
         )
     );
 }
-impl Clone for Rooted {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for Rooted {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -51,8 +46,15 @@ fn __bindgen_test_layout_MaybeWrapped_open0_int_close0_instantiation() {
         4usize,
         concat!(
             "Size of template specialization: ",
-            stringify ! ( MaybeWrapped < :: std :: os :: raw :: c_int > )
+            stringify!(MaybeWrapped<::std::os::raw::c_int>)
         )
     );
-    assert_eq ! ( :: std :: mem :: align_of :: < MaybeWrapped < :: std :: os :: raw :: c_int > > ( ) , 4usize , concat ! ( "Alignment of template specialization: " , stringify ! ( MaybeWrapped < :: std :: os :: raw :: c_int > ) ) );
+    assert_eq!(
+        ::std::mem::align_of::<MaybeWrapped<::std::os::raw::c_int>>(),
+        4usize,
+        concat!(
+            "Alignment of template specialization: ",
+            stringify!(MaybeWrapped<::std::os::raw::c_int>)
+        )
+    );
 }

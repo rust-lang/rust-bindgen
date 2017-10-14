@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
 pub struct Doggo {
     pub x: ::std::os::raw::c_int,
 }
@@ -32,13 +32,8 @@ fn bindgen_test_layout_Doggo() {
         )
     );
 }
-impl Clone for Doggo {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq)]
 pub struct Null {
     pub _address: u8,
 }
@@ -55,11 +50,6 @@ fn bindgen_test_layout_Null() {
         concat!("Alignment of ", stringify!(Null))
     );
 }
-impl Clone for Null {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 /// This type is an opaque union. Unions can't derive anything interesting like
 /// Debug or Default, even if their layout can, because it would require knowing
 /// which variant is in use. Opaque unions still end up as a `union` in the Rust
@@ -67,7 +57,7 @@ impl Clone for Null {
 /// probably emit an opaque struct for opaque unions... but until then, we have
 /// this test to make sure that opaque unions don't derive and still compile.
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union DoggoOrNull {
     pub _bindgen_opaque_blob: u32,
 }
@@ -83,11 +73,6 @@ fn bindgen_test_layout_DoggoOrNull() {
         4usize,
         concat!("Alignment of ", stringify!(DoggoOrNull))
     );
-}
-impl Clone for DoggoOrNull {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for DoggoOrNull {
     fn default() -> Self {

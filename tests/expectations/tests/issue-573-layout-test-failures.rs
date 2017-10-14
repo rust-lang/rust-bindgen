@@ -10,7 +10,7 @@ pub struct Outer {
     pub i: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct AutoIdVector {
     pub ar: Outer,
 }
@@ -36,11 +36,6 @@ fn bindgen_test_layout_AutoIdVector() {
             stringify!(ar)
         )
     );
-}
-impl Clone for AutoIdVector {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 #[test]
 fn __bindgen_test_layout_Outer_open0_int_close0_instantiation() {

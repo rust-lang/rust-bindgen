@@ -15,7 +15,7 @@ pub mod root {
     }
     pub type nsRefPtrHashtable_UserDataType<PtrType> = *mut PtrType;
     #[repr(C)]
-    #[derive(Debug, Default, Copy)]
+    #[derive(Debug, Default, Copy, Clone)]
     pub struct a {
         pub b: u8,
     }
@@ -37,13 +37,8 @@ pub mod root {
             concat!("Alignment of field: ", stringify!(a), "::", stringify!(b))
         );
     }
-    impl Clone for a {
-        fn clone(&self) -> Self {
-            *self
-        }
-    }
     #[repr(C)]
-    #[derive(Debug, Default, Copy)]
+    #[derive(Debug, Default, Copy, Clone)]
     pub struct nsCSSValue {
         pub c: root::a,
     }
@@ -69,10 +64,5 @@ pub mod root {
                 stringify!(c)
             )
         );
-    }
-    impl Clone for nsCSSValue {
-        fn clone(&self) -> Self {
-            *self
-        }
     }
 }

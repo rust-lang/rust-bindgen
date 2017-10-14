@@ -10,7 +10,7 @@ pub struct A {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct B {
     pub _bindgen_opaque_blob: u8,
 }
@@ -27,17 +27,12 @@ fn bindgen_test_layout_B() {
         concat!("Alignment of ", stringify!(B))
     );
 }
-impl Clone for B {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 extern "C" {
     #[link_name = "\u{1}_ZN1B1aE"]
     pub static mut B_a: A;
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct C {
     pub b: B,
 }
@@ -58,9 +53,4 @@ fn bindgen_test_layout_C() {
         0usize,
         concat!("Alignment of field: ", stringify!(C), "::", stringify!(b))
     );
-}
-impl Clone for C {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

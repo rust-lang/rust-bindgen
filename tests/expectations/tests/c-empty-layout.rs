@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Foo {}
 #[test]
 fn bindgen_test_layout_Foo() {
@@ -19,9 +19,4 @@ fn bindgen_test_layout_Foo() {
         1usize,
         concat!("Alignment of ", stringify!(Foo))
     );
-}
-impl Clone for Foo {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

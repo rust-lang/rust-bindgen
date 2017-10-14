@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct NoPartialEq {
     pub _address: u8,
 }
@@ -22,13 +22,8 @@ fn bindgen_test_layout_NoPartialEq() {
         concat!("Alignment of ", stringify!(NoPartialEq))
     );
 }
-impl Clone for NoPartialEq {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct WhitelistMe {
     pub a: NoPartialEq,
 }
@@ -54,9 +49,4 @@ fn bindgen_test_layout_WhitelistMe() {
             stringify!(a)
         )
     );
-}
-impl Clone for WhitelistMe {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

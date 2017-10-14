@@ -6,7 +6,7 @@
 
 pub const __: ::std::os::raw::c_int = 10;
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct ptr_t {
     pub __: [::std::os::raw::c_uchar; 8usize],
 }
@@ -32,9 +32,4 @@ fn bindgen_test_layout_ptr_t() {
             stringify!(__)
         )
     );
-}
-impl Clone for ptr_t {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

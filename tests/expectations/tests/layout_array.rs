@@ -49,7 +49,7 @@ pub type rte_mempool_get_count = ::std::option::Option<
 >;
 /// Structure defining mempool operations structure
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct rte_mempool_ops {
     /// < Name of mempool ops struct.
     pub name: [::std::os::raw::c_char; 32usize],
@@ -133,11 +133,6 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
 }
-impl Clone for rte_mempool_ops {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_mempool_ops {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -152,7 +147,7 @@ impl ::std::cmp::PartialEq for rte_mempool_ops {
 }
 /// The rte_spinlock_t type.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_spinlock_t {
     /// < lock status 0 = unlocked, 1 = locked
     pub locked: ::std::os::raw::c_int,
@@ -180,11 +175,6 @@ fn bindgen_test_layout_rte_spinlock_t() {
         )
     );
 }
-impl Clone for rte_spinlock_t {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 /// Structure storing the table of registered ops structs, each of which contain
 /// the function pointers for the mempool ops functions.
 /// Each process has its own storage for this ops struct array so that
@@ -193,7 +183,7 @@ impl Clone for rte_spinlock_t {
 /// any function pointers stored directly in the mempool struct would not be.
 /// This results in us simply having "ops_index" in the mempool struct.
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct rte_mempool_ops_table {
     /// < Spinlock for add/delete.
     pub sl: rte_spinlock_t,
@@ -241,11 +231,6 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         )
     );
 }
-impl Clone for rte_mempool_ops_table {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_mempool_ops_table {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -253,7 +238,7 @@ impl Default for rte_mempool_ops_table {
 }
 /// Structure to hold malloc heap
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct malloc_heap {
     pub lock: rte_spinlock_t,
     pub free_head: [malloc_heap__bindgen_ty_1; 13usize],
@@ -261,7 +246,7 @@ pub struct malloc_heap {
     pub total_size: usize,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct malloc_heap__bindgen_ty_1 {
     pub lh_first: *mut malloc_elem,
 }
@@ -287,11 +272,6 @@ fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
             stringify!(lh_first)
         )
     );
-}
-impl Clone for malloc_heap__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for malloc_heap__bindgen_ty_1 {
     fn default() -> Self {
@@ -346,11 +326,6 @@ fn bindgen_test_layout_malloc_heap() {
         )
     );
 }
-impl Clone for malloc_heap {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for malloc_heap {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -363,12 +338,7 @@ impl ::std::cmp::PartialEq for malloc_heap {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct malloc_elem {
     pub _address: u8,
-}
-impl Clone for malloc_elem {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

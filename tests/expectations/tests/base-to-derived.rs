@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct false_type {
     pub _address: u8,
 }
@@ -21,9 +21,4 @@ fn bindgen_test_layout_false_type() {
         1usize,
         concat!("Alignment of ", stringify!(false_type))
     );
-}
-impl Clone for false_type {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

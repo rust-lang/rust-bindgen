@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct mach_msg_type_descriptor_t {
     pub _bitfield_1: u32,
     pub __bindgen_align: [u32; 0usize],
@@ -22,11 +22,6 @@ fn bindgen_test_layout_mach_msg_type_descriptor_t() {
         4usize,
         concat!("Alignment of ", stringify!(mach_msg_type_descriptor_t))
     );
-}
-impl Clone for mach_msg_type_descriptor_t {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl mach_msg_type_descriptor_t {
     #[inline]

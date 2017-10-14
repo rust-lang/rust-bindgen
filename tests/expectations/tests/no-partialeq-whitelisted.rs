@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct NoPartialEq {
     pub i: ::std::os::raw::c_int,
 }
@@ -31,9 +31,4 @@ fn bindgen_test_layout_NoPartialEq() {
             stringify!(i)
         )
     );
-}
-impl Clone for NoPartialEq {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

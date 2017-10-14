@@ -10,7 +10,7 @@ pub struct Foo {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Bar {
     pub _address: u8,
 }
@@ -30,11 +30,6 @@ fn bindgen_test_layout_Bar() {
 extern "C" {
     #[link_name = "\u{1}_ZN3BarC1Ev"]
     pub fn Bar_Bar(this: *mut Bar);
-}
-impl Clone for Bar {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Bar {
     #[inline]

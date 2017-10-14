@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct _bindgen_ty_1 {
     pub _bindgen_opaque_blob: [u64; 10usize],
 }
@@ -21,11 +21,6 @@ fn bindgen_test_layout__bindgen_ty_1() {
         8usize,
         concat!("Alignment of ", stringify!(_bindgen_ty_1))
     );
-}
-impl Clone for _bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 extern "C" {
     #[link_name = "\u{1}a"]

@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct A {
     pub foo: ::std::os::raw::c_int,
 }
@@ -27,15 +27,10 @@ fn bindgen_test_layout_A() {
         concat!("Alignment of field: ", stringify!(A), "::", stringify!(foo))
     );
 }
-impl Clone for A {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
 pub struct B__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct B {
     pub vtable_: *const B__bindgen_vtable,
     pub bar: ::std::os::raw::c_int,
@@ -58,11 +53,6 @@ fn bindgen_test_layout_B() {
         concat!("Alignment of field: ", stringify!(B), "::", stringify!(bar))
     );
 }
-impl Clone for B {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for B {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -71,7 +61,7 @@ impl Default for B {
 #[repr(C)]
 pub struct C__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct C {
     pub vtable_: *const C__bindgen_vtable,
     pub baz: ::std::os::raw::c_int,
@@ -94,18 +84,13 @@ fn bindgen_test_layout_C() {
         concat!("Alignment of field: ", stringify!(C), "::", stringify!(baz))
     );
 }
-impl Clone for C {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for C {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct D {
     pub _base: C,
     pub _base_1: B,
@@ -123,11 +108,6 @@ fn bindgen_test_layout_D() {
         8usize,
         concat!("Alignment of ", stringify!(D))
     );
-}
-impl Clone for D {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for D {
     fn default() -> Self {

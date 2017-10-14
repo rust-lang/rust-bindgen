@@ -38,7 +38,7 @@ pub struct mozilla_Foo {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct C {
     pub mB: B<::std::os::raw::c_uint>,
     pub mBConstPtr: B<*const ::std::os::raw::c_int>,
@@ -214,11 +214,6 @@ fn bindgen_test_layout_C() {
         )
     );
 }
-impl Clone for C {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for C {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -261,7 +256,7 @@ impl<T> Default for Rooted<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct RootedContainer {
     pub root: Rooted<*mut ::std::os::raw::c_void>,
 }
@@ -287,11 +282,6 @@ fn bindgen_test_layout_RootedContainer() {
             stringify!(root)
         )
     );
-}
-impl Clone for RootedContainer {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for RootedContainer {
     fn default() -> Self {
@@ -348,7 +338,7 @@ impl Default for PODButContainsDtor {
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Opaque {}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct POD {
     pub opaque_member: u32,
 }
@@ -374,11 +364,6 @@ fn bindgen_test_layout_POD() {
             stringify!(opaque_member)
         )
     );
-}
-impl Clone for POD {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 /// <div rustbindgen replaces="NestedReplaced"></div>
 #[repr(C)]
@@ -428,7 +413,7 @@ impl<T> Default for Incomplete<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Untemplated {
     pub _address: u8,
 }
@@ -444,11 +429,6 @@ fn bindgen_test_layout_Untemplated() {
         1usize,
         concat!("Alignment of ", stringify!(Untemplated))
     );
-}
-impl Clone for Untemplated {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]

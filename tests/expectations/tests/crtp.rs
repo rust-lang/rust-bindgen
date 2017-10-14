@@ -10,7 +10,7 @@ pub struct Base {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Derived {
     pub _address: u8,
 }
@@ -26,11 +26,6 @@ fn bindgen_test_layout_Derived() {
         1usize,
         concat!("Alignment of ", stringify!(Derived))
     );
-}
-impl Clone for Derived {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 #[repr(C)]
 #[derive(Debug, Default)]

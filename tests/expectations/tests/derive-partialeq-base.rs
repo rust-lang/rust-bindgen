@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct Base {
     pub large: [::std::os::raw::c_int; 33usize],
 }
@@ -32,11 +32,6 @@ fn bindgen_test_layout_Base() {
         )
     );
 }
-impl Clone for Base {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for Base {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -48,7 +43,7 @@ impl ::std::cmp::PartialEq for Base {
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct ShouldDerivePartialEq {
     pub _base: Base,
 }
@@ -64,11 +59,6 @@ fn bindgen_test_layout_ShouldDerivePartialEq() {
         4usize,
         concat!("Alignment of ", stringify!(ShouldDerivePartialEq))
     );
-}
-impl Clone for ShouldDerivePartialEq {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for ShouldDerivePartialEq {
     fn default() -> Self {

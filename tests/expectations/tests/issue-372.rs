@@ -9,7 +9,7 @@ pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]
-    #[derive(Debug, Copy)]
+    #[derive(Debug, Copy, Clone)]
     pub struct i {
         pub j: *mut root::i,
         pub k: *mut root::i,
@@ -43,18 +43,13 @@ pub mod root {
             concat!("Alignment of field: ", stringify!(i), "::", stringify!(l))
         );
     }
-    impl Clone for i {
-        fn clone(&self) -> Self {
-            *self
-        }
-    }
     impl Default for i {
         fn default() -> Self {
             unsafe { ::std::mem::zeroed() }
         }
     }
     #[repr(C)]
-    #[derive(Debug, Copy)]
+    #[derive(Debug, Copy, Clone)]
     pub struct d {
         pub m: root::i,
     }
@@ -75,11 +70,6 @@ pub mod root {
             0usize,
             concat!("Alignment of field: ", stringify!(d), "::", stringify!(m))
         );
-    }
-    impl Clone for d {
-        fn clone(&self) -> Self {
-            *self
-        }
     }
     impl Default for d {
         fn default() -> Self {

@@ -10,7 +10,7 @@
 /// up with the reight alignment, we're waiting on `#[repr(align="N")]` to land
 /// in rustc).
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct NoDebug {
     pub c: ::std::os::raw::c_char,
     pub __bindgen_padding_0: [u8; 63usize],
@@ -33,11 +33,6 @@ fn bindgen_test_layout_NoDebug() {
         )
     );
 }
-impl Clone for NoDebug {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for NoDebug {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -53,7 +48,7 @@ impl ::std::cmp::PartialEq for NoDebug {
 /// we determine Debug derive-ability before we compute padding, which happens at
 /// codegen. (Again, we expect to get the alignment wrong for similar reasons.)
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct ShouldDeriveDebugButDoesNot {
     pub c: [::std::os::raw::c_char; 32usize],
     pub d: ::std::os::raw::c_char,
@@ -86,11 +81,6 @@ fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
             stringify!(d)
         )
     );
-}
-impl Clone for ShouldDeriveDebugButDoesNot {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for ShouldDeriveDebugButDoesNot {
     fn default() -> Self {

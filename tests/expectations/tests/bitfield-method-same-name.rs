@@ -5,7 +5,7 @@
 
 
 #[repr(C, packed)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Foo {
     pub _bitfield_1: u8,
 }
@@ -33,11 +33,6 @@ extern "C" {
 extern "C" {
     #[link_name = "\u{1}_ZN3Foo8set_typeEc"]
     pub fn Foo_set_type(this: *mut Foo, c: ::std::os::raw::c_char);
-}
-impl Clone for Foo {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Foo {
     #[inline]

@@ -7,12 +7,12 @@
 
 /// A struct containing a struct containing a float that cannot derive Hash/Eq/Ord but can derive PartialEq/PartialOrd
 #[repr(C)]
-#[derive(Debug, Default, Copy, PartialOrd, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, PartialOrd, PartialEq)]
 pub struct foo {
     pub bar: foo__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, PartialOrd, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, PartialOrd, PartialEq)]
 pub struct foo__bindgen_ty_1 {
     pub a: f32,
     pub b: f32,
@@ -50,11 +50,6 @@ fn bindgen_test_layout_foo__bindgen_ty_1() {
         )
     );
 }
-impl Clone for foo__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[test]
 fn bindgen_test_layout_foo() {
     assert_eq!(
@@ -77,9 +72,4 @@ fn bindgen_test_layout_foo() {
             stringify!(bar)
         )
     );
-}
-impl Clone for foo {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

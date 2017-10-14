@@ -9,7 +9,7 @@ pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]
-    #[derive(Copy)]
+    #[derive(Copy, Clone)]
     pub union bar {
         pub baz: ::std::os::raw::c_int,
         _bindgen_union_align: u32,
@@ -36,11 +36,6 @@ pub mod root {
                 stringify!(baz)
             )
         );
-    }
-    impl Clone for bar {
-        fn clone(&self) -> Self {
-            *self
-        }
     }
     impl Default for bar {
         fn default() -> Self {

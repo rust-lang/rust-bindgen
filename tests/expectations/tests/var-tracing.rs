@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Bar {
     pub m_baz: ::std::os::raw::c_int,
 }
@@ -36,11 +36,6 @@ extern "C" {
     #[link_name = "\u{1}_ZN3BarC1Ei"]
     pub fn Bar_Bar(this: *mut Bar, baz: ::std::os::raw::c_int);
 }
-impl Clone for Bar {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Bar {
     #[inline]
     pub unsafe fn new(baz: ::std::os::raw::c_int) -> Self {
@@ -50,7 +45,7 @@ impl Bar {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Baz {
     pub _address: u8,
 }
@@ -70,9 +65,4 @@ fn bindgen_test_layout_Baz() {
         1usize,
         concat!("Alignment of ", stringify!(Baz))
     );
-}
-impl Clone for Baz {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct whatever {
     pub _address: u8,
 }
@@ -22,13 +22,8 @@ fn bindgen_test_layout_whatever() {
         concat!("Alignment of ", stringify!(whatever))
     );
 }
-impl Clone for whatever {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct whatever_child {
     pub _address: u8,
 }
@@ -45,13 +40,8 @@ fn bindgen_test_layout_whatever_child() {
         concat!("Alignment of ", stringify!(whatever_child))
     );
 }
-impl Clone for whatever_child {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct whatever_child_with_member {
     pub m_member: ::std::os::raw::c_int,
 }
@@ -77,9 +67,4 @@ fn bindgen_test_layout_whatever_child_with_member() {
             stringify!(m_member)
         )
     );
-}
-impl Clone for whatever_child_with_member {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

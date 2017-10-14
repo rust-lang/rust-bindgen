@@ -10,7 +10,7 @@ pub mod one_Foo {
     pub const Variant2: Type = 1;
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct Bar {
     pub baz1: one_Foo::Type,
     pub baz2: *mut one_Foo::Type,
@@ -47,11 +47,6 @@ fn bindgen_test_layout_Bar() {
             stringify!(baz2)
         )
     );
-}
-impl Clone for Bar {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for Bar {
     fn default() -> Self {

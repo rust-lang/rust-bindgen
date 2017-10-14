@@ -9,7 +9,7 @@
 /// and --with-derive-partialeq --impl-partialeq --impl-debug is provided,
 /// this struct should manually implement `Debug` and `PartialEq`.
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct Foo {
     pub large: [::std::os::raw::c_int; 33usize],
     pub _bitfield_1: [u8; 2usize],
@@ -49,11 +49,6 @@ extern "C" {
 extern "C" {
     #[link_name = "\u{1}_ZN3Foo8set_typeEc"]
     pub fn Foo_set_type(this: *mut Foo, c: ::std::os::raw::c_char);
-}
-impl Clone for Foo {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for Foo {
     fn default() -> Self {

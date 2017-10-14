@@ -15,7 +15,7 @@ pub mod root {
             #[allow(unused_imports)]
             use self::super::super::super::root;
             #[repr(C)]
-            #[derive(Debug, Default, Copy)]
+            #[derive(Debug, Default, Copy, Clone)]
             pub struct Helper {
                 pub _address: u8,
             }
@@ -32,14 +32,9 @@ pub mod root {
                     concat!("Alignment of ", stringify!(Helper))
                 );
             }
-            impl Clone for Helper {
-                fn clone(&self) -> Self {
-                    *self
-                }
-            }
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct Test {
             pub helper: root::outer::inner::Helper,
         }
@@ -65,11 +60,6 @@ pub mod root {
                     stringify!(helper)
                 )
             );
-        }
-        impl Clone for Test {
-            fn clone(&self) -> Self {
-                *self
-            }
         }
     }
 }

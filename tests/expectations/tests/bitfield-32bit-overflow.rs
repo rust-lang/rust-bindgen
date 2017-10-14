@@ -5,7 +5,7 @@
 
 
 #[repr(C, packed)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct MuchBitfield {
     pub _bitfield_1: [u8; 5usize],
 }
@@ -21,11 +21,6 @@ fn bindgen_test_layout_MuchBitfield() {
         1usize,
         concat!("Alignment of ", stringify!(MuchBitfield))
     );
-}
-impl Clone for MuchBitfield {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl MuchBitfield {
     #[inline]

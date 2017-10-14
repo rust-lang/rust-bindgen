@@ -9,12 +9,12 @@ pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]
-    #[derive(Debug, Default, Copy)]
+    #[derive(Debug, Default, Copy, Clone)]
     pub struct jsval_layout {
         pub __bindgen_anon_1: root::jsval_layout__bindgen_ty_1,
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy)]
+    #[derive(Debug, Default, Copy, Clone)]
     pub struct jsval_layout__bindgen_ty_1 {
         pub _address: u8,
     }
@@ -31,11 +31,6 @@ pub mod root {
             concat!("Alignment of ", stringify!(jsval_layout__bindgen_ty_1))
         );
     }
-    impl Clone for jsval_layout__bindgen_ty_1 {
-        fn clone(&self) -> Self {
-            *self
-        }
-    }
     #[test]
     fn bindgen_test_layout_jsval_layout() {
         assert_eq!(
@@ -48,10 +43,5 @@ pub mod root {
             1usize,
             concat!("Alignment of ", stringify!(jsval_layout))
         );
-    }
-    impl Clone for jsval_layout {
-        fn clone(&self) -> Self {
-            *self
-        }
     }
 }

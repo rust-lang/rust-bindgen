@@ -21,7 +21,7 @@ impl<T> Default for RefPtr<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct Bar {
     pub m_member: RefPtr<Foo>,
 }
@@ -47,11 +47,6 @@ fn bindgen_test_layout_Bar() {
             stringify!(m_member)
         )
     );
-}
-impl Clone for Bar {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for Bar {
     fn default() -> Self {

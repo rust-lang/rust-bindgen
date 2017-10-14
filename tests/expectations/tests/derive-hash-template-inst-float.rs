@@ -19,7 +19,7 @@ impl<T> Default for foo<T> {
 }
 /// Can derive Hash/PartialOrd/Ord/PartialEq/Eq when instantiated with int
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct IntStr {
     pub a: foo<::std::os::raw::c_int>,
 }
@@ -46,11 +46,6 @@ fn bindgen_test_layout_IntStr() {
         )
     );
 }
-impl Clone for IntStr {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for IntStr {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -58,7 +53,7 @@ impl Default for IntStr {
 }
 /// Cannot derive Hash/Eq/Ord when instantiated with float but can derive PartialEq/PartialOrd
 #[repr(C)]
-#[derive(Debug, Copy, PartialOrd, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialOrd, PartialEq)]
 pub struct FloatStr {
     pub a: foo<f32>,
 }
@@ -84,11 +79,6 @@ fn bindgen_test_layout_FloatStr() {
             stringify!(a)
         )
     );
-}
-impl Clone for FloatStr {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for FloatStr {
     fn default() -> Self {

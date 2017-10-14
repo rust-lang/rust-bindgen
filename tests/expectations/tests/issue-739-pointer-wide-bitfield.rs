@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Foo {
     pub _bitfield_1: [u64; 4usize],
     pub __bindgen_align: [u64; 0usize],
@@ -22,9 +22,4 @@ fn bindgen_test_layout_Foo() {
         8usize,
         concat!("Alignment of ", stringify!(Foo))
     );
-}
-impl Clone for Foo {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

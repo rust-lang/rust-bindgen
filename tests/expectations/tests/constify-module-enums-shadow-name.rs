@@ -12,7 +12,7 @@ pub mod foo {
     pub const Type__: Type = 3;
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct bar {
     pub member: foo::Type,
 }
@@ -38,11 +38,6 @@ fn bindgen_test_layout_bar() {
             stringify!(member)
         )
     );
-}
-impl Clone for bar {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for bar {
     fn default() -> Self {

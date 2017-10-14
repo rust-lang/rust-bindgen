@@ -5,12 +5,12 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct A {
     pub member_a: ::std::os::raw::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct A_B {
     pub member_b: ::std::os::raw::c_int,
 }
@@ -36,11 +36,6 @@ fn bindgen_test_layout_A_B() {
             stringify!(member_b)
         )
     );
-}
-impl Clone for A_B {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
@@ -76,13 +71,8 @@ fn bindgen_test_layout_A() {
         )
     );
 }
-impl Clone for A {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct A_C {
     pub baz: ::std::os::raw::c_int,
 }
@@ -108,11 +98,6 @@ fn bindgen_test_layout_A_C() {
             stringify!(baz)
         )
     );
-}
-impl Clone for A_C {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 extern "C" {
     #[link_name = "\u{1}var"]
@@ -142,7 +127,7 @@ extern "C" {
     pub static mut baz: A_D<::std::os::raw::c_int>;
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct D {
     pub member: A_B,
 }
@@ -168,11 +153,6 @@ fn bindgen_test_layout_D() {
             stringify!(member)
         )
     );
-}
-impl Clone for D {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]

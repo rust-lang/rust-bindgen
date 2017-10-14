@@ -50,7 +50,7 @@ pub struct rte_ring {
     pub ring: __IncompleteArrayField<*mut ::std::os::raw::c_void>,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct rte_ring_prod {
     pub watermark: ::std::os::raw::c_uint,
 }
@@ -77,13 +77,8 @@ fn bindgen_test_layout_rte_ring_prod() {
         )
     );
 }
-impl Clone for rte_ring_prod {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct rte_ring_cons {
     pub sc_dequeue: ::std::os::raw::c_uint,
 }
@@ -110,11 +105,6 @@ fn bindgen_test_layout_rte_ring_cons() {
         )
     );
 }
-impl Clone for rte_ring_cons {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[test]
 fn bindgen_test_layout_rte_ring() {
     assert_eq!(
@@ -134,12 +124,7 @@ impl Default for rte_ring {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct rte_memzone {
     pub _address: u8,
-}
-impl Clone for rte_memzone {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct JNINativeInterface_ {
     pub GetVersion: ::std::option::Option<
         unsafe extern "stdcall" fn(env: *mut ::std::os::raw::c_void)
@@ -45,11 +45,6 @@ fn bindgen_test_layout_JNINativeInterface_() {
             stringify!(__hack)
         )
     );
-}
-impl Clone for JNINativeInterface_ {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for JNINativeInterface_ {
     fn default() -> Self {

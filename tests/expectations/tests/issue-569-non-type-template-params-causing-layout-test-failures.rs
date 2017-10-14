@@ -24,7 +24,7 @@ impl Default for JS_Base {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct JS_AutoIdVector {
     pub _base: JS_Base,
 }
@@ -40,11 +40,6 @@ fn bindgen_test_layout_JS_AutoIdVector() {
         1usize,
         concat!("Alignment of ", stringify!(JS_AutoIdVector))
     );
-}
-impl Clone for JS_AutoIdVector {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for JS_AutoIdVector {
     fn default() -> Self {

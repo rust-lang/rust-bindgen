@@ -7,7 +7,7 @@
 pub type Array16 = u8;
 pub type ArrayInt4 = [u32; 4usize];
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct UsesArray {
     pub array_char_16: [u8; 16usize],
     pub array_bool_8: [u8; 8usize],
@@ -55,9 +55,4 @@ fn bindgen_test_layout_UsesArray() {
             stringify!(array_int_4)
         )
     );
-}
-impl Clone for UsesArray {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

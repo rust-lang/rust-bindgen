@@ -9,7 +9,7 @@ extern "C" {
     pub fn foo(c: *mut Container);
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Container {
     pub _bindgen_opaque_blob: [u32; 2usize],
 }
@@ -25,9 +25,4 @@ fn bindgen_test_layout_Container() {
         4usize,
         concat!("Alignment of ", stringify!(Container))
     );
-}
-impl Clone for Container {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

@@ -12,7 +12,7 @@ pub type MARKER8 = [u8; 0usize];
 pub type MARKER64 = [u64; 0usize];
 /// The atomic counter structure.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_atomic16_t {
     /// < An internal counter value.
     pub cnt: i16,
@@ -39,11 +39,6 @@ fn bindgen_test_layout_rte_atomic16_t() {
             stringify!(cnt)
         )
     );
-}
-impl Clone for rte_atomic16_t {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 /// The generic rte_mbuf, containing a packet mbuf.
 #[repr(C)]
@@ -99,7 +94,7 @@ pub struct rte_mbuf {
 /// or non-atomic) is controlled by the CONFIG_RTE_MBUF_REFCNT_ATOMIC
 /// config option.
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_1 {
     /// < Atomically accessed refcnt
     pub refcnt_atomic: rte_atomic16_t,
@@ -140,18 +135,13 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_1() {
         )
     );
 }
-impl Clone for rte_mbuf__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_mbuf__bindgen_ty_1 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_2 {
     /// < L2/L3/L4 and tunnel information.
     pub packet_type: u32,
@@ -159,7 +149,7 @@ pub union rte_mbuf__bindgen_ty_2 {
     _bindgen_union_align: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     pub _bitfield_1: [u8; 4usize],
     pub __bindgen_align: [u32; 0usize],
@@ -182,11 +172,6 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_2__bindgen_ty_1() {
             stringify!(rte_mbuf__bindgen_ty_2__bindgen_ty_1)
         )
     );
-}
-impl Clone for rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     #[inline]
@@ -483,18 +468,13 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_2() {
         )
     );
 }
-impl Clone for rte_mbuf__bindgen_ty_2 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_mbuf__bindgen_ty_2 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_3 {
     /// < RSS hash result if RSS enabled
     pub rss: u32,
@@ -507,20 +487,20 @@ pub union rte_mbuf__bindgen_ty_3 {
     _bindgen_union_align: [u32; 2usize],
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_1 {
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1,
     pub hi: u32,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 {
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1,
     pub lo: u32,
     _bindgen_union_align: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {
     pub hash: u16,
     pub id: u16,
@@ -570,11 +550,6 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindg
         )
     );
 }
-impl Clone for rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1() {
     assert_eq!(
@@ -606,11 +581,6 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1() {
             stringify!(lo)
         )
     );
-}
-impl Clone for rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 {
     fn default() -> Self {
@@ -646,18 +616,13 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_1() {
         )
     );
 }
-impl Clone for rte_mbuf__bindgen_ty_3__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_mbuf__bindgen_ty_3__bindgen_ty_1 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_2 {
     pub lo: u32,
     pub hi: u32,
@@ -700,11 +665,6 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_3__bindgen_ty_2() {
             stringify!(hi)
         )
     );
-}
-impl Clone for rte_mbuf__bindgen_ty_3__bindgen_ty_2 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_3() {
@@ -759,18 +719,13 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_3() {
         )
     );
 }
-impl Clone for rte_mbuf__bindgen_ty_3 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_mbuf__bindgen_ty_3 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_4 {
     /// < Can be used for external metadata
     pub userdata: *mut ::std::os::raw::c_void,
@@ -811,18 +766,13 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_4() {
         )
     );
 }
-impl Clone for rte_mbuf__bindgen_ty_4 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_mbuf__bindgen_ty_4 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_5 {
     /// < combined for easy fetch
     pub tx_offload: u64,
@@ -830,7 +780,7 @@ pub union rte_mbuf__bindgen_ty_5 {
     _bindgen_union_align: u64,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     pub _bitfield_1: [u16; 4usize],
     pub __bindgen_align: [u64; 0usize],
@@ -853,11 +803,6 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_5__bindgen_ty_1() {
             stringify!(rte_mbuf__bindgen_ty_5__bindgen_ty_1)
         )
     );
-}
-impl Clone for rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     #[inline]
@@ -1116,11 +1061,6 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_5() {
         )
     );
 }
-impl Clone for rte_mbuf__bindgen_ty_5 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_mbuf__bindgen_ty_5 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -1351,12 +1291,7 @@ impl Default for rte_mbuf {
 }
 /// < Pool from which mbuf was allocated.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mempool {
     pub _address: u8,
-}
-impl Clone for rte_mempool {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

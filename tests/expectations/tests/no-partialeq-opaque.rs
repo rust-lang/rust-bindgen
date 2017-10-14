@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct NoPartialEq {
     pub _bindgen_opaque_blob: u32,
 }
@@ -21,9 +21,4 @@ fn bindgen_test_layout_NoPartialEq() {
         4usize,
         concat!("Alignment of ", stringify!(NoPartialEq))
     );
-}
-impl Clone for NoPartialEq {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

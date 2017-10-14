@@ -15,7 +15,7 @@ pub mod root {
             #[allow(unused_imports)]
             use self::super::super::super::root;
             #[repr(C)]
-            #[derive(Debug, Default, Copy)]
+            #[derive(Debug, Default, Copy, Clone)]
             pub struct GuardObjectNotifier {
                 pub _address: u8,
             }
@@ -32,15 +32,10 @@ pub mod root {
                     concat!("Alignment of ", stringify!(GuardObjectNotifier))
                 );
             }
-            impl Clone for GuardObjectNotifier {
-                fn clone(&self) -> Self {
-                    *self
-                }
-            }
         }
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy)]
+    #[derive(Debug, Default, Copy, Clone)]
     pub struct JSAutoCompartment {
         pub _address: u8,
     }
@@ -63,11 +58,6 @@ pub mod root {
             this: *mut root::JSAutoCompartment,
             arg1: root::mozilla::detail::GuardObjectNotifier,
         );
-    }
-    impl Clone for JSAutoCompartment {
-        fn clone(&self) -> Self {
-            *self
-        }
     }
     impl JSAutoCompartment {
         #[inline]

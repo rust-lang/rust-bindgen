@@ -5,14 +5,14 @@
 
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union pixel {
     pub rgba: ::std::os::raw::c_uint,
     pub __bindgen_anon_1: pixel__bindgen_ty_1,
     _bindgen_union_align: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct pixel__bindgen_ty_1 {
     pub r: ::std::os::raw::c_uchar,
     pub g: ::std::os::raw::c_uchar,
@@ -72,11 +72,6 @@ fn bindgen_test_layout_pixel__bindgen_ty_1() {
         )
     );
 }
-impl Clone for pixel__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[test]
 fn bindgen_test_layout_pixel() {
     assert_eq!(
@@ -99,11 +94,6 @@ fn bindgen_test_layout_pixel() {
             stringify!(rgba)
         )
     );
-}
-impl Clone for pixel {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for pixel {
     fn default() -> Self {

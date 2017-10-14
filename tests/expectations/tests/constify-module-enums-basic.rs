@@ -13,7 +13,7 @@ pub mod foo {
 pub use self::foo::Type as foo_alias1;
 pub use self::foo_alias1 as foo_alias2;
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct bar {
     pub this_should_work: foo::Type,
 }
@@ -39,11 +39,6 @@ fn bindgen_test_layout_bar() {
             stringify!(this_should_work)
         )
     );
-}
-impl Clone for bar {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for bar {
     fn default() -> Self {

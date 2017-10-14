@@ -7,7 +7,7 @@
 
 /// Deriving PartialEq for rust unions is not supported.
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union ShouldNotDerivePartialEq {
     pub a: ::std::os::raw::c_char,
     pub b: ::std::os::raw::c_int,
@@ -45,11 +45,6 @@ fn bindgen_test_layout_ShouldNotDerivePartialEq() {
             stringify!(b)
         )
     );
-}
-impl Clone for ShouldNotDerivePartialEq {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for ShouldNotDerivePartialEq {
     fn default() -> Self {

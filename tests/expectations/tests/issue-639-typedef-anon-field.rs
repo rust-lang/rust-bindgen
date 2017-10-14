@@ -5,12 +5,12 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Foo {
     pub bar: Foo_Bar,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Foo_Bar {
     pub abc: ::std::os::raw::c_int,
 }
@@ -37,11 +37,6 @@ fn bindgen_test_layout_Foo_Bar() {
         )
     );
 }
-impl Clone for Foo_Bar {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[test]
 fn bindgen_test_layout_Foo() {
     assert_eq!(
@@ -65,18 +60,13 @@ fn bindgen_test_layout_Foo() {
         )
     );
 }
-impl Clone for Foo {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Baz {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Baz_Bar {
     pub abc: ::std::os::raw::c_int,
 }
@@ -103,11 +93,6 @@ fn bindgen_test_layout_Baz_Bar() {
         )
     );
 }
-impl Clone for Baz_Bar {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[test]
 fn bindgen_test_layout_Baz() {
     assert_eq!(
@@ -120,9 +105,4 @@ fn bindgen_test_layout_Baz() {
         1usize,
         concat!("Alignment of ", stringify!(Baz))
     );
-}
-impl Clone for Baz {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

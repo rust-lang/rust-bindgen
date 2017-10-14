@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct TestOverload {
     pub _address: u8,
 }
@@ -30,11 +30,6 @@ extern "C" {
     #[link_name = "\u{1}_ZN12TestOverloadC1Ed"]
     pub fn TestOverload_TestOverload1(this: *mut TestOverload, arg1: f64);
 }
-impl Clone for TestOverload {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl TestOverload {
     #[inline]
     pub unsafe fn new(arg1: ::std::os::raw::c_int) -> Self {
@@ -50,7 +45,7 @@ impl TestOverload {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct TestPublicNoArgs {
     pub _address: u8,
 }
@@ -70,11 +65,6 @@ fn bindgen_test_layout_TestPublicNoArgs() {
 extern "C" {
     #[link_name = "\u{1}_ZN16TestPublicNoArgsC1Ev"]
     pub fn TestPublicNoArgs_TestPublicNoArgs(this: *mut TestPublicNoArgs);
-}
-impl Clone for TestPublicNoArgs {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl TestPublicNoArgs {
     #[inline]

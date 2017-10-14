@@ -5,12 +5,12 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct foo {
     pub bar: foo__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct foo__bindgen_ty_1 {
     pub x: ::std::os::raw::c_uint,
     pub y: ::std::os::raw::c_uint,
@@ -48,11 +48,6 @@ fn bindgen_test_layout_foo__bindgen_ty_1() {
         )
     );
 }
-impl Clone for foo__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[test]
 fn bindgen_test_layout_foo() {
     assert_eq!(
@@ -75,9 +70,4 @@ fn bindgen_test_layout_foo() {
             stringify!(bar)
         )
     );
-}
-impl Clone for foo {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

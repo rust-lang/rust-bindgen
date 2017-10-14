@@ -12,7 +12,7 @@ pub enum nsStyleSVGOpacitySource {
     eStyleSVGOpacitySource_ContextStrokeOpacity = 2,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct Weird {
     pub mStrokeDasharrayLength: ::std::os::raw::c_uint,
     pub _bitfield_1: [u16; 2usize],
@@ -162,11 +162,6 @@ fn bindgen_test_layout_Weird() {
             stringify!(mTextRendering)
         )
     );
-}
-impl Clone for Weird {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for Weird {
     fn default() -> Self {

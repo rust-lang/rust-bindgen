@@ -75,7 +75,7 @@ impl Default for rte_kni_fifo {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct rte_eth_link {
     /// < ETH_SPEED_NUM_
     pub link_speed: u32,
@@ -105,11 +105,6 @@ fn bindgen_test_layout_rte_eth_link() {
             stringify!(link_speed)
         )
     );
-}
-impl Clone for rte_eth_link {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl rte_eth_link {
     #[inline]

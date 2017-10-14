@@ -12,7 +12,7 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct Bar {
             pub foo: ::std::os::raw::c_int,
             pub baz: bool,
@@ -50,17 +50,12 @@ pub mod root {
                 )
             );
         }
-        impl Clone for Bar {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
     }
     pub mod bar {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Copy)]
+        #[derive(Debug, Copy, Clone)]
         pub struct Foo {
             pub ptr: *mut root::foo::Bar,
         }
@@ -86,11 +81,6 @@ pub mod root {
                     stringify!(ptr)
                 )
             );
-        }
-        impl Clone for Foo {
-            fn clone(&self) -> Self {
-                *self
-            }
         }
         impl Default for Foo {
             fn default() -> Self {

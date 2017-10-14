@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union nsStyleUnion {
     pub mInt: ::std::os::raw::c_int,
     pub mFloat: f32,
@@ -54,11 +54,6 @@ fn bindgen_test_layout_nsStyleUnion() {
             stringify!(mPointer)
         )
     );
-}
-impl Clone for nsStyleUnion {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for nsStyleUnion {
     fn default() -> Self {

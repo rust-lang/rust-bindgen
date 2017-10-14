@@ -42,7 +42,7 @@ impl<T> ::std::clone::Clone for __IncompleteArrayField<T> {
 }
 impl<T> ::std::marker::Copy for __IncompleteArrayField<T> {}
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct C {
     pub a: ::std::os::raw::c_int,
     pub big_array: [::std::os::raw::c_char; 33usize],
@@ -74,11 +74,6 @@ fn bindgen_test_layout_C() {
             stringify!(big_array)
         )
     );
-}
-impl Clone for C {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for C {
     fn default() -> Self {
@@ -334,7 +329,7 @@ impl Default for IncompleteArrayNonCopiable {
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union Union {
     pub d: f32,
     pub i: ::std::os::raw::c_int,
@@ -373,18 +368,13 @@ fn bindgen_test_layout_Union() {
         )
     );
 }
-impl Clone for Union {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for Union {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct WithUnion {
     pub data: Union,
 }
@@ -411,18 +401,13 @@ fn bindgen_test_layout_WithUnion() {
         )
     );
 }
-impl Clone for WithUnion {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for WithUnion {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialOrd, Ord, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct RealAbstractionWithTonsOfMethods {
     pub _address: u8,
 }
@@ -460,11 +445,6 @@ extern "C" {
 extern "C" {
     #[link_name = "\u{1}_ZN32RealAbstractionWithTonsOfMethods3staEv"]
     pub fn RealAbstractionWithTonsOfMethods_sta();
-}
-impl Clone for RealAbstractionWithTonsOfMethods {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl RealAbstractionWithTonsOfMethods {
     #[inline]

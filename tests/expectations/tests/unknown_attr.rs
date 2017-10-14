@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct max_align_t {
     pub __clang_max_align_nonce1: ::std::os::raw::c_longlong,
     pub __bindgen_padding_0: u64,
@@ -39,9 +39,4 @@ fn bindgen_test_layout_max_align_t() {
             stringify!(__clang_max_align_nonce2)
         )
     );
-}
-impl Clone for max_align_t {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

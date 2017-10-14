@@ -102,7 +102,7 @@ impl ::std::ops::BitAndAssign for _bindgen_ty_1 {
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct _bindgen_ty_1(pub ::std::os::raw::c_uint);
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Dummy {
     pub _address: u8,
 }
@@ -149,9 +149,4 @@ fn bindgen_test_layout_Dummy() {
         1usize,
         concat!("Alignment of ", stringify!(Dummy))
     );
-}
-impl Clone for Dummy {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Calc {
     pub w: ::std::os::raw::c_int,
 }
@@ -32,24 +32,19 @@ fn bindgen_test_layout_Calc() {
         )
     );
 }
-impl Clone for Calc {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Test {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Test_Size {
     pub mWidth: Test_Size_Dimension,
     pub mHeight: Test_Size_Dimension,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Test_Size_Dimension {
     pub _base: Calc,
 }
@@ -65,11 +60,6 @@ fn bindgen_test_layout_Test_Size_Dimension() {
         4usize,
         concat!("Alignment of ", stringify!(Test_Size_Dimension))
     );
-}
-impl Clone for Test_Size_Dimension {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 #[test]
 fn bindgen_test_layout_Test_Size() {
@@ -104,11 +94,6 @@ fn bindgen_test_layout_Test_Size() {
         )
     );
 }
-impl Clone for Test_Size {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[test]
 fn bindgen_test_layout_Test() {
     assert_eq!(
@@ -121,9 +106,4 @@ fn bindgen_test_layout_Test() {
         1usize,
         concat!("Alignment of ", stringify!(Test))
     );
-}
-impl Clone for Test {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

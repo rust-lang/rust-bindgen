@@ -15,7 +15,7 @@ pub enum _bindgen_ty_1 {
 #[repr(C)]
 pub struct C__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct C {
     pub vtable_: *const C__bindgen_vtable,
     pub i: ::std::os::raw::c_int,
@@ -37,11 +37,6 @@ fn bindgen_test_layout_C() {
         8usize,
         concat!("Alignment of field: ", stringify!(C), "::", stringify!(i))
     );
-}
-impl Clone for C {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for C {
     fn default() -> Self {

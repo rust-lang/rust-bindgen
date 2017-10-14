@@ -7,7 +7,7 @@
 
 /// A struct containing an array of floats that cannot derive Hash/Eq/Ord but can derive PartialEq/PartialOrd
 #[repr(C)]
-#[derive(Debug, Default, Copy, PartialOrd, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, PartialOrd, PartialEq)]
 pub struct foo {
     pub bar: [f32; 3usize],
 }
@@ -33,9 +33,4 @@ fn bindgen_test_layout_foo() {
             stringify!(bar)
         )
     );
-}
-impl Clone for foo {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
