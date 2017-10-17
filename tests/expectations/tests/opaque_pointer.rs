@@ -31,8 +31,13 @@ impl Clone for OtherOpaque {
 }
 /// <div rustbindgen opaque></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct Opaque {}
+impl Clone for Opaque {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 #[repr(C)]
 #[derive(Debug, Copy, Hash, PartialEq)]
 pub struct WithOpaquePtr {

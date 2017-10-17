@@ -12,14 +12,24 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Debug, Default, Copy)]
         pub struct Wrapper {
             pub _address: u8,
         }
+        impl Clone for Wrapper {
+            fn clone(&self) -> Self {
+                *self
+            }
+        }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Debug, Default, Copy)]
         pub struct Wrapper_sentry {
             pub i_am_wrapper_sentry: ::std::os::raw::c_int,
+        }
+        impl Clone for Wrapper_sentry {
+            fn clone(&self) -> Self {
+                *self
+            }
         }
         #[repr(C)]
         #[derive(Debug, Default, Copy)]
@@ -96,8 +106,8 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(0 as *const NotTemplateWrapper_sentry)).i_am_not_template_wrapper_sentry as
-                        *const _ as usize
+                    &(*(0 as *const NotTemplateWrapper_sentry)).i_am_not_template_wrapper_sentry
+                        as *const _ as usize
                 },
                 0usize,
                 concat!(
@@ -138,8 +148,8 @@ pub mod root {
             assert_eq!(
                 unsafe {
                     &(*(0 as *const InlineNotTemplateWrapper_sentry))
-                        .i_am_inline_not_template_wrapper_sentry as *const _ as
-                        usize
+                        .i_am_inline_not_template_wrapper_sentry as *const _
+                        as usize
                 },
                 0usize,
                 concat!(
@@ -174,14 +184,24 @@ pub mod root {
             }
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Debug, Default, Copy)]
         pub struct InlineTemplateWrapper {
             pub _address: u8,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Debug, Default, Copy)]
         pub struct InlineTemplateWrapper_sentry {
             pub i_am_inline_template_wrapper_sentry: ::std::os::raw::c_int,
+        }
+        impl Clone for InlineTemplateWrapper_sentry {
+            fn clone(&self) -> Self {
+                *self
+            }
+        }
+        impl Clone for InlineTemplateWrapper {
+            fn clone(&self) -> Self {
+                *self
+            }
         }
         #[repr(C)]
         #[derive(Debug, Default, Copy)]
@@ -373,14 +393,24 @@ pub mod root {
         }
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Debug, Default, Copy)]
     pub struct OutsideNamespaceWrapper {
         pub _address: u8,
     }
+    impl Clone for OutsideNamespaceWrapper {
+        fn clone(&self) -> Self {
+            *self
+        }
+    }
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Debug, Default, Copy)]
     pub struct OutsideNamespaceWrapper_sentry {
         pub i_am_outside_namespace_wrapper_sentry: ::std::os::raw::c_int,
+    }
+    impl Clone for OutsideNamespaceWrapper_sentry {
+        fn clone(&self) -> Self {
+            *self
+        }
     }
     #[repr(C)]
     #[derive(Debug, Default, Copy)]

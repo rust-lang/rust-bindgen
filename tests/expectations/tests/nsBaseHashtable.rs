@@ -5,31 +5,54 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct nsBaseHashtableET {
     pub _address: u8,
 }
+impl Clone for nsBaseHashtableET {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct nsTHashtable {
     pub _address: u8,
 }
+impl Clone for nsTHashtable {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy)]
 pub struct nsBaseHashtable {
     pub _address: u8,
 }
 pub type nsBaseHashtable_KeyType = [u8; 0usize];
 pub type nsBaseHashtable_EntryType = nsBaseHashtableET;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy)]
 pub struct nsBaseHashtable_LookupResult {
     pub mEntry: *mut nsBaseHashtable_EntryType,
     pub mTable: *mut nsBaseHashtable,
 }
+impl Clone for nsBaseHashtable_LookupResult {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 impl Default for nsBaseHashtable_LookupResult {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+impl nsBaseHashtable_LookupResult {
+    #[inline]
+    pub unsafe fn new(arg1: *mut nsBaseHashtable_EntryType, arg2: *mut nsBaseHashtable) -> Self {
+        let mut __bindgen_tmp = ::std::mem::uninitialized();
+        nsBaseHashtable_LookupResult_LookupResult(&mut __bindgen_tmp, arg1, arg2);
+        __bindgen_tmp
     }
 }
 #[repr(C)]
@@ -41,6 +64,27 @@ pub struct nsBaseHashtable_EntryPtr {
 impl Default for nsBaseHashtable_EntryPtr {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+impl nsBaseHashtable_EntryPtr {
+    #[inline]
+    pub unsafe fn new(
+        arg1: *mut nsBaseHashtable,
+        arg2: *mut nsBaseHashtable_EntryType,
+        arg3: bool,
+    ) -> Self {
+        let mut __bindgen_tmp = ::std::mem::uninitialized();
+        nsBaseHashtable_EntryPtr_EntryPtr(&mut __bindgen_tmp, arg1, arg2, arg3);
+        __bindgen_tmp
+    }
+    #[inline]
+    pub unsafe fn destruct(&mut self) {
+        nsBaseHashtable_EntryPtr_EntryPtr_destructor(self)
+    }
+}
+impl Clone for nsBaseHashtable {
+    fn clone(&self) -> Self {
+        *self
     }
 }
 impl Default for nsBaseHashtable {

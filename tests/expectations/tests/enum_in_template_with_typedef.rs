@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct std_fbstring_core {
     pub _address: u8,
 }
@@ -14,4 +14,11 @@ pub const std_fbstring_core_Category_Bar: std_fbstring_core_Category =
     std_fbstring_core_Category::Foo;
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum std_fbstring_core_Category { Foo = 0, }
+pub enum std_fbstring_core_Category {
+    Foo = 0,
+}
+impl Clone for std_fbstring_core {
+    fn clone(&self) -> Self {
+        *self
+    }
+}

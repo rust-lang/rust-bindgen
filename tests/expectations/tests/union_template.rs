@@ -5,31 +5,81 @@
 
 
 #[repr(C)]
+#[derive(Copy)]
 pub struct NastyStruct {
     pub mIsSome: bool,
     pub mStorage: NastyStruct__bindgen_ty_1,
     pub __bindgen_anon_1: NastyStruct__bindgen_ty_2,
 }
 #[repr(C)]
+#[derive(Copy)]
 pub union NastyStruct__bindgen_ty_1 {
     pub mFoo: *mut ::std::os::raw::c_void,
     pub mDummy: ::std::os::raw::c_ulong,
     _bindgen_union_align: u64,
 }
+#[test]
+fn bindgen_test_layout_NastyStruct__bindgen_ty_1() {
+    assert_eq!(
+        ::std::mem::size_of::<NastyStruct__bindgen_ty_1>(),
+        8usize,
+        concat!("Size of: ", stringify!(NastyStruct__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<NastyStruct__bindgen_ty_1>(),
+        8usize,
+        concat!("Alignment of ", stringify!(NastyStruct__bindgen_ty_1))
+    );
+}
+impl Clone for NastyStruct__bindgen_ty_1 {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 impl Default for NastyStruct__bindgen_ty_1 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
+#[derive(Copy)]
 pub union NastyStruct__bindgen_ty_2 {
     pub wat: ::std::os::raw::c_short,
     pub wut: *mut ::std::os::raw::c_int,
     _bindgen_union_align: u64,
 }
+#[test]
+fn bindgen_test_layout_NastyStruct__bindgen_ty_2() {
+    assert_eq!(
+        ::std::mem::size_of::<NastyStruct__bindgen_ty_2>(),
+        8usize,
+        concat!("Size of: ", stringify!(NastyStruct__bindgen_ty_2))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<NastyStruct__bindgen_ty_2>(),
+        8usize,
+        concat!("Alignment of ", stringify!(NastyStruct__bindgen_ty_2))
+    );
+}
+impl Clone for NastyStruct__bindgen_ty_2 {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 impl Default for NastyStruct__bindgen_ty_2 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
+}
+impl Clone for NastyStruct {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for NastyStruct {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub union Whatever {
@@ -37,6 +87,21 @@ pub union Whatever {
     pub mInt: ::std::os::raw::c_int,
     _bindgen_union_align: u64,
 }
+#[test]
+fn bindgen_test_layout_Whatever() {
+    assert_eq!(
+        ::std::mem::size_of::<Whatever>(),
+        8usize,
+        concat!("Size of: ", stringify!(Whatever))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Whatever>(),
+        8usize,
+        concat!("Alignment of ", stringify!(Whatever))
+    );
+}
 impl Default for Whatever {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

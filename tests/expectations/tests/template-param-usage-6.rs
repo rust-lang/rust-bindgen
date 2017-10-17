@@ -5,8 +5,13 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct DoesNotUseTemplateParameter {
     pub x: ::std::os::raw::c_int,
 }
 pub type DoesNotUseTemplateParameter_ButAliasDoesUseIt<T> = T;
+impl Clone for DoesNotUseTemplateParameter {
+    fn clone(&self) -> Self {
+        *self
+    }
+}

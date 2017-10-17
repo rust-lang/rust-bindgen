@@ -5,13 +5,20 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy)]
 pub struct LinkedList {
     pub next: *mut LinkedList,
     pub prev: *mut LinkedList,
 }
+impl Clone for LinkedList {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 impl Default for LinkedList {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy)]
@@ -20,28 +27,50 @@ pub struct InstantiateIt {
 }
 #[test]
 fn bindgen_test_layout_InstantiateIt() {
-    assert_eq!(::std::mem::size_of::<InstantiateIt>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( InstantiateIt ) ));
-    assert_eq! (::std::mem::align_of::<InstantiateIt>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( InstantiateIt ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const InstantiateIt ) ) . m_list as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( InstantiateIt ) , "::"
-                , stringify ! ( m_list ) ));
+    assert_eq!(
+        ::std::mem::size_of::<InstantiateIt>(),
+        16usize,
+        concat!("Size of: ", stringify!(InstantiateIt))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<InstantiateIt>(),
+        8usize,
+        concat!("Alignment of ", stringify!(InstantiateIt))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const InstantiateIt)).m_list as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(InstantiateIt),
+            "::",
+            stringify!(m_list)
+        )
+    );
 }
 impl Clone for InstantiateIt {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for InstantiateIt {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[test]
 fn __bindgen_test_layout_LinkedList_open0_int_close0_instantiation() {
-    assert_eq!(::std::mem::size_of::<LinkedList>() , 16usize , concat ! (
-               "Size of template specialization: " , stringify ! ( LinkedList
-               ) ));
-    assert_eq!(::std::mem::align_of::<LinkedList>() , 8usize , concat ! (
-               "Alignment of template specialization: " , stringify ! (
-               LinkedList ) ));
+    assert_eq!(
+        ::std::mem::size_of::<LinkedList>(),
+        16usize,
+        concat!("Size of template specialization: ", stringify!(LinkedList))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<LinkedList>(),
+        8usize,
+        concat!(
+            "Alignment of template specialization: ",
+            stringify!(LinkedList)
+        )
+    );
 }

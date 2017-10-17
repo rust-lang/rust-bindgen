@@ -5,12 +5,22 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct RefPtr {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct RefPtr_Proxy {
     pub _address: u8,
+}
+impl Clone for RefPtr_Proxy {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl Clone for RefPtr {
+    fn clone(&self) -> Self {
+        *self
+    }
 }

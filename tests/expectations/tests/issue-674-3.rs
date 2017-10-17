@@ -9,11 +9,16 @@ pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Debug, Default, Copy)]
     pub struct nsRefPtrHashtable {
         pub _address: u8,
     }
     pub type nsRefPtrHashtable_UserDataType<PtrType> = *mut PtrType;
+    impl Clone for nsRefPtrHashtable {
+        fn clone(&self) -> Self {
+            *self
+        }
+    }
     #[repr(C)]
     #[derive(Debug, Default, Copy)]
     pub struct a {
@@ -21,18 +26,26 @@ pub mod root {
     }
     #[test]
     fn bindgen_test_layout_a() {
-        assert_eq!(::std::mem::size_of::<a>() , 1usize , concat ! (
-                   "Size of: " , stringify ! ( a ) ));
-        assert_eq! (::std::mem::align_of::<a>() , 1usize , concat ! (
-                    "Alignment of " , stringify ! ( a ) ));
-        assert_eq! (unsafe {
-                    & ( * ( 0 as * const a ) ) . b as * const _ as usize } ,
-                    0usize , concat ! (
-                    "Alignment of field: " , stringify ! ( a ) , "::" ,
-                    stringify ! ( b ) ));
+        assert_eq!(
+            ::std::mem::size_of::<a>(),
+            1usize,
+            concat!("Size of: ", stringify!(a))
+        );
+        assert_eq!(
+            ::std::mem::align_of::<a>(),
+            1usize,
+            concat!("Alignment of ", stringify!(a))
+        );
+        assert_eq!(
+            unsafe { &(*(0 as *const a)).b as *const _ as usize },
+            0usize,
+            concat!("Alignment of field: ", stringify!(a), "::", stringify!(b))
+        );
     }
     impl Clone for a {
-        fn clone(&self) -> Self { *self }
+        fn clone(&self) -> Self {
+            *self
+        }
     }
     #[repr(C)]
     #[derive(Debug, Default, Copy)]
@@ -41,17 +54,30 @@ pub mod root {
     }
     #[test]
     fn bindgen_test_layout_nsCSSValue() {
-        assert_eq!(::std::mem::size_of::<nsCSSValue>() , 1usize , concat ! (
-                   "Size of: " , stringify ! ( nsCSSValue ) ));
-        assert_eq! (::std::mem::align_of::<nsCSSValue>() , 1usize , concat ! (
-                    "Alignment of " , stringify ! ( nsCSSValue ) ));
-        assert_eq! (unsafe {
-                    & ( * ( 0 as * const nsCSSValue ) ) . c as * const _ as
-                    usize } , 0usize , concat ! (
-                    "Alignment of field: " , stringify ! ( nsCSSValue ) , "::"
-                    , stringify ! ( c ) ));
+        assert_eq!(
+            ::std::mem::size_of::<nsCSSValue>(),
+            1usize,
+            concat!("Size of: ", stringify!(nsCSSValue))
+        );
+        assert_eq!(
+            ::std::mem::align_of::<nsCSSValue>(),
+            1usize,
+            concat!("Alignment of ", stringify!(nsCSSValue))
+        );
+        assert_eq!(
+            unsafe { &(*(0 as *const nsCSSValue)).c as *const _ as usize },
+            0usize,
+            concat!(
+                "Alignment of field: ",
+                stringify!(nsCSSValue),
+                "::",
+                stringify!(c)
+            )
+        );
     }
     impl Clone for nsCSSValue {
-        fn clone(&self) -> Self { *self }
+        fn clone(&self) -> Self {
+            *self
+        }
     }
 }

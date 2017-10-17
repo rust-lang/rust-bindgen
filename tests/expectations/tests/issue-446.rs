@@ -5,18 +5,32 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy)]
 pub struct List {
     pub next: *mut List,
 }
+impl Clone for List {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 impl Default for List {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy)]
 pub struct PersistentRooted {
     pub root_list: List,
 }
+impl Clone for PersistentRooted {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 impl Default for PersistentRooted {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

@@ -5,7 +5,12 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct TemplateWithVar {
     pub _address: u8,
+}
+impl Clone for TemplateWithVar {
+    fn clone(&self) -> Self {
+        *self
+    }
 }

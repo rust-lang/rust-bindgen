@@ -6,7 +6,12 @@
 // If the output of this changes, please ensure issue-833-1.hpp changes too
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct nsTArray {
     pub _address: u8,
+}
+impl Clone for nsTArray {
+    fn clone(&self) -> Self {
+        *self
+    }
 }

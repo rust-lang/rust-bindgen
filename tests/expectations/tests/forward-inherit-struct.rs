@@ -5,15 +5,27 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct js_RootedBase {
     pub _address: u8,
 }
+impl Clone for js_RootedBase {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy)]
 pub struct Rooted {
     pub _address: u8,
 }
+impl Clone for Rooted {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 impl Default for Rooted {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

@@ -5,9 +5,14 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct Foo {
     pub _address: u8,
+}
+impl Clone for Foo {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
@@ -16,17 +21,25 @@ pub struct Bar {
 }
 #[test]
 fn bindgen_test_layout_Bar() {
-    assert_eq!(::std::mem::size_of::<Bar>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( Bar ) ));
-    assert_eq! (::std::mem::align_of::<Bar>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( Bar ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Bar>(),
+        1usize,
+        concat!("Size of: ", stringify!(Bar))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Bar>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Bar))
+    );
 }
 extern "C" {
     #[link_name = "\u{1}_ZN3BarC1Ev"]
     pub fn Bar_Bar(this: *mut Bar);
 }
 impl Clone for Bar {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Bar {
     #[inline]

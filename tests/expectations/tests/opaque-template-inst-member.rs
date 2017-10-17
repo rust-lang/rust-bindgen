@@ -5,8 +5,13 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct OpaqueTemplate {}
+impl Clone for OpaqueTemplate {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 /// This should not end up deriving Debug/Hash because its `mBlah` field cannot derive
 /// Debug/Hash because the instantiation's definition cannot derive Debug/Hash.
 #[repr(C)]

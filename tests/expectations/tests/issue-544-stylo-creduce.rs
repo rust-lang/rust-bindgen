@@ -5,7 +5,12 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct a {
     pub _address: u8,
+}
+impl Clone for a {
+    fn clone(&self) -> Self {
+        *self
+    }
 }

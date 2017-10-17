@@ -5,9 +5,14 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct RandomTemplate {
     pub _address: u8,
+}
+impl Clone for RandomTemplate {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 /// <div rustbindgen opaque></div>
 pub type ShouldBeOpaque = u8;

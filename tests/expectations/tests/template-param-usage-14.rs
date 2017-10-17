@@ -5,16 +5,28 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct BaseIgnoresT {
     pub x: ::std::os::raw::c_int,
 }
+impl Clone for BaseIgnoresT {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy)]
 pub struct CrtpIgnoresU {
     pub _base: BaseIgnoresT,
     pub y: ::std::os::raw::c_int,
 }
+impl Clone for CrtpIgnoresU {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 impl Default for CrtpIgnoresU {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

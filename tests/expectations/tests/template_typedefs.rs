@@ -6,7 +6,7 @@
 
 pub type foo = ::std::option::Option<unsafe extern "C" fn(arg1: ::std::os::raw::c_int)>;
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy)]
 pub struct Foo {
     pub _address: u8,
 }
@@ -15,3 +15,8 @@ pub type Foo_FooPtrTypedef<T> = *mut Foo_Char<T>;
 pub type Foo_nsCOMArrayEnumFunc<T> = ::std::option::Option<
     unsafe extern "C" fn(aElement: *mut T, aData: *mut ::std::os::raw::c_void) -> bool,
 >;
+impl Clone for Foo {
+    fn clone(&self) -> Self {
+        *self
+    }
+}

@@ -36,7 +36,7 @@ use parse::ClangItemParser;
 /// Template declaration (and such declaration's template parameters) related
 /// methods.
 ///
-/// This trait's methods distinguish between `None` and `Some([])` for
+/// This trait's methods distinguish between [] and [T] for
 /// declarations that are not templates and template declarations with zero
 /// parameters, in general.
 ///
@@ -81,23 +81,23 @@ use parse::ClangItemParser;
 /// +------+----------------------+--------------------------+------------------------+----
 /// |Decl. | self_template_params | num_self_template_params | all_template_parameters| ...
 /// +------+----------------------+--------------------------+------------------------+----
-/// |Foo   | Some([T, U])         | Some(2)                  | Some([T, U])           | ...
-/// |Bar   | Some([V])            | Some(1)                  | Some([T, U, V])        | ...
-/// |Inner | None                 | None                     | Some([T, U])           | ...
-/// |Lol   | Some([W])            | Some(1)                  | Some([T, U, W])        | ...
-/// |Wtf   | Some([X])            | Some(1)                  | Some([T, U, X])        | ...
-/// |Qux   | None                 | None                     | None                   | ...
+/// |Foo   | [T, U]               | 2                        | [T, U]                 | ...
+/// |Bar   | [V]                  | 1                        | [T, U, V]              | ...
+/// |Inner | []                   | 0                        | [T, U]                 | ...
+/// |Lol   | [W]                  | 1                        | [T, U, W]              | ...
+/// |Wtf   | [X]                  | 1                        | [T, U, X]              | ...
+/// |Qux   | []                   | 0                        | []                     | ...
 /// +------+----------------------+--------------------------+------------------------+----
 ///
 /// ----+------+-----+----------------------+
 /// ... |Decl. | ... | used_template_params |
 /// ----+------+-----+----------------------+
-/// ... |Foo   | ... | Some([T, U])         |
-/// ... |Bar   | ... | Some([V])            |
-/// ... |Inner | ... | None                 |
-/// ... |Lol   | ... | Some([T])            |
-/// ... |Wtf   | ... | Some([T])            |
-/// ... |Qux   | ... | None                 |
+/// ... |Foo   | ... | [T, U]               |
+/// ... |Bar   | ... | [V]                  |
+/// ... |Inner | ... | []                   |
+/// ... |Lol   | ... | [T]                  |
+/// ... |Wtf   | ... | [T]                  |
+/// ... |Qux   | ... | []                   |
 /// ----+------+-----+----------------------+
 pub trait TemplateParameters {
     /// Get the set of `ItemId`s that make up this template declaration's free
@@ -109,24 +109,24 @@ pub trait TemplateParameters {
     /// anything but types, so we must treat them as opaque, and avoid
     /// instantiating them.
     fn self_template_params(&self, ctx: &BindgenContext)
-        -> Option<Vec<TypeId>>;
+        -> Vec<TypeId>;
 
     /// Get the number of free template parameters this template declaration
     /// has.
     ///
-    /// Implementations *may* return `Some` from this method when
-    /// `template_params` returns `None`. This is useful when we only have
+    /// Implementations *may* return a number > 0 from this method when
+    /// `template_params` returns []. This is useful when we only have
     /// partial information about the template declaration, such as when we are
     /// in the middle of parsing it.
-    fn num_self_template_params(&self, ctx: &BindgenContext) -> Option<usize> {
-        self.self_template_params(ctx).map(|params| params.len())
+    fn num_self_template_params(&self, ctx: &BindgenContext) -> usize {
+        self.self_template_params(ctx).len()
     }
 
     /// Get the complete set of template parameters that can affect this
     /// declaration.
     ///
     /// Note that this item doesn't need to be a template declaration itself for
-    /// `Some` to be returned here (in contrast to `self_template_params`). If
+    /// [T] to be returned here (in contrast to `self_template_params`). If
     /// this item is a member of a template declaration, then the parent's
     /// template parameters are included here.
     ///
@@ -136,30 +136,28 @@ pub trait TemplateParameters {
     /// how we would fully reference such a member type in C++:
     /// `Foo<int,char>::Inner`. `Foo` *must* be instantiated with template
     /// arguments before we can gain access to the `Inner` member type.
-    fn all_template_params(&self, ctx: &BindgenContext) -> Option<Vec<TypeId>>
+    fn all_template_params(&self, ctx: &BindgenContext) -> Vec<TypeId>
     where
         Self: ItemAncestors,
     {
         let each_self_params: Vec<Vec<_>> = self.ancestors(ctx)
-            .filter_map(|id| id.self_template_params(ctx))
+            .map(|id| id.self_template_params(ctx))
             .collect();
         if each_self_params.is_empty() {
-            None
+            Vec::new()
         } else {
-            Some(
-                each_self_params
-                    .into_iter()
-                    .rev()
-                    .flat_map(|params| params)
-                    .collect(),
-            )
+            each_self_params
+                .into_iter()
+                .rev()
+                .flat_map(|params| params)
+                .collect()
         }
     }
 
     /// Get only the set of template parameters that this item uses. This is a
     /// subset of `all_template_params` and does not necessarily contain any of
     /// `self_template_params`.
-    fn used_template_params(&self, ctx: &BindgenContext) -> Option<Vec<TypeId>>
+    fn used_template_params(&self, ctx: &BindgenContext) -> Vec<TypeId>
     where
         Self: AsRef<ItemId>,
     {
@@ -169,14 +167,10 @@ pub trait TemplateParameters {
         );
 
         let id = *self.as_ref();
-        ctx.resolve_item(id).all_template_params(ctx).map(
-            |all_params| {
-                all_params
-                    .into_iter()
-                    .filter(|p| ctx.uses_template_parameter(id, *p))
-                    .collect()
-            },
-        )
+        ctx.resolve_item(id).all_template_params(ctx)
+            .into_iter()
+            .filter(|p| ctx.uses_template_parameter(id, *p))
+            .collect()
     }
 }
 

@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct DataType {
     pub _address: u8,
 }
@@ -13,19 +13,21 @@ pub type DataType_value_type<_Tp> = _Tp;
 pub type DataType_work_type<_Tp> = DataType_value_type<_Tp>;
 pub type DataType_channel_type<_Tp> = DataType_value_type<_Tp>;
 pub type DataType_vec_type<_Tp> = DataType_value_type<_Tp>;
-pub const DataType_generic_type: DataType__bindgen_ty_1 =
-    DataType__bindgen_ty_1::generic_type;
-pub const DataType_depth: DataType__bindgen_ty_1 =
-    DataType__bindgen_ty_1::generic_type;
-pub const DataType_channels: DataType__bindgen_ty_1 =
-    DataType__bindgen_ty_1::generic_type;
-pub const DataType_fmt: DataType__bindgen_ty_1 =
-    DataType__bindgen_ty_1::generic_type;
-pub const DataType_type_: DataType__bindgen_ty_1 =
-    DataType__bindgen_ty_1::generic_type;
+pub const DataType_generic_type: DataType__bindgen_ty_1 = DataType__bindgen_ty_1::generic_type;
+pub const DataType_depth: DataType__bindgen_ty_1 = DataType__bindgen_ty_1::generic_type;
+pub const DataType_channels: DataType__bindgen_ty_1 = DataType__bindgen_ty_1::generic_type;
+pub const DataType_fmt: DataType__bindgen_ty_1 = DataType__bindgen_ty_1::generic_type;
+pub const DataType_type_: DataType__bindgen_ty_1 = DataType__bindgen_ty_1::generic_type;
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum DataType__bindgen_ty_1 { generic_type = 0, }
+pub enum DataType__bindgen_ty_1 {
+    generic_type = 0,
+}
+impl Clone for DataType {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct Foo {
@@ -35,14 +37,24 @@ pub const Foo_Bar: Foo__bindgen_ty_1 = Foo__bindgen_ty_1::Bar;
 pub const Foo_Baz: Foo__bindgen_ty_1 = Foo__bindgen_ty_1::Bar;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum Foo__bindgen_ty_1 { Bar = 0, }
+pub enum Foo__bindgen_ty_1 {
+    Bar = 0,
+}
 #[test]
 fn bindgen_test_layout_Foo() {
-    assert_eq!(::std::mem::size_of::<Foo>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( Foo ) ));
-    assert_eq! (::std::mem::align_of::<Foo>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( Foo ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Foo>(),
+        1usize,
+        concat!("Size of: ", stringify!(Foo))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Foo>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Foo))
+    );
 }
 impl Clone for Foo {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
