@@ -522,6 +522,20 @@ impl Builder {
             })
             .count();
 
+        self.options
+            .no_copy_types
+            .get_items()
+            .iter()
+            .map(|item| {
+                output_vector.push("--no-copy".into());
+                output_vector.push(
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
+                );
+            })
+            .count();
+
         output_vector
     }
 
@@ -1158,6 +1172,13 @@ impl Builder {
         self.options.no_partialeq_types.insert(arg);
         self
     }
+
+    /// Don't derive `Copy` for a given type. Regular
+    /// expressions are supported.
+    pub fn no_copy(mut self, arg: String) -> Self {
+        self.options.no_copy_types.insert(arg);
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -1345,6 +1366,9 @@ struct BindgenOptions {
 
     /// The set of types that we should not derive `PartialEq` for.
     no_partialeq_types: RegexSet,
+
+    /// The set of types that we should not derive `Copy` for.
+    no_copy_types: RegexSet,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -1363,6 +1387,7 @@ impl BindgenOptions {
         self.constified_enum_modules.build();
         self.rustified_enums.build();
         self.no_partialeq_types.build();
+        self.no_copy_types.build();
     }
 
     /// Update rust target version
@@ -1434,6 +1459,7 @@ impl Default for BindgenOptions {
             rustfmt_bindings: true,
             rustfmt_configuration_file: None,
             no_partialeq_types: Default::default(),
+            no_copy_types: Default::default(),
         }
     }
 }
