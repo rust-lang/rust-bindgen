@@ -10,7 +10,9 @@ pub struct List {
     pub next: *mut List,
 }
 impl Default for List {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -18,5 +20,7 @@ pub struct PersistentRooted {
     pub root_list: List,
 }
 impl Default for PersistentRooted {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

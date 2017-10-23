@@ -17,18 +17,31 @@ pub struct TestDouble {
 }
 #[test]
 fn bindgen_test_layout_TestDouble() {
-    assert_eq!(::std::mem::size_of::<TestDouble>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( TestDouble ) ));
-    assert_eq! (::std::mem::align_of::<TestDouble>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( TestDouble ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const TestDouble ) ) . mMember as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( TestDouble ) , "::" ,
-                stringify ! ( mMember ) ));
+    assert_eq!(
+        ::std::mem::size_of::<TestDouble>(),
+        16usize,
+        concat!("Size of: ", stringify!(TestDouble))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<TestDouble>(),
+        8usize,
+        concat!("Alignment of ", stringify!(TestDouble))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const TestDouble)).mMember as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(TestDouble),
+            "::",
+            stringify!(mMember)
+        )
+    );
 }
 impl Clone for TestDouble {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Hash, PartialEq, Eq)]
@@ -37,21 +50,36 @@ pub struct TestDoublePtr {
 }
 #[test]
 fn bindgen_test_layout_TestDoublePtr() {
-    assert_eq!(::std::mem::size_of::<TestDoublePtr>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( TestDoublePtr ) ));
-    assert_eq! (::std::mem::align_of::<TestDoublePtr>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( TestDoublePtr ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const TestDoublePtr ) ) . mMember as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( TestDoublePtr ) , "::"
-                , stringify ! ( mMember ) ));
+    assert_eq!(
+        ::std::mem::size_of::<TestDoublePtr>(),
+        8usize,
+        concat!("Size of: ", stringify!(TestDoublePtr))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<TestDoublePtr>(),
+        8usize,
+        concat!("Alignment of ", stringify!(TestDoublePtr))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const TestDoublePtr)).mMember as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(TestDoublePtr),
+            "::",
+            stringify!(mMember)
+        )
+    );
 }
 impl Clone for TestDoublePtr {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for TestDoublePtr {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, PartialEq)]
@@ -60,18 +88,31 @@ pub struct TestFloat {
 }
 #[test]
 fn bindgen_test_layout_TestFloat() {
-    assert_eq!(::std::mem::size_of::<TestFloat>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( TestFloat ) ));
-    assert_eq! (::std::mem::align_of::<TestFloat>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( TestFloat ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const TestFloat ) ) . mMember as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( TestFloat ) , "::" ,
-                stringify ! ( mMember ) ));
+    assert_eq!(
+        ::std::mem::size_of::<TestFloat>(),
+        8usize,
+        concat!("Size of: ", stringify!(TestFloat))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<TestFloat>(),
+        4usize,
+        concat!("Alignment of ", stringify!(TestFloat))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const TestFloat)).mMember as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(TestFloat),
+            "::",
+            stringify!(mMember)
+        )
+    );
 }
 impl Clone for TestFloat {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Hash, PartialEq, Eq)]
@@ -80,19 +121,34 @@ pub struct TestFloatPtr {
 }
 #[test]
 fn bindgen_test_layout_TestFloatPtr() {
-    assert_eq!(::std::mem::size_of::<TestFloatPtr>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( TestFloatPtr ) ));
-    assert_eq! (::std::mem::align_of::<TestFloatPtr>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( TestFloatPtr ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const TestFloatPtr ) ) . mMember as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( TestFloatPtr ) , "::" ,
-                stringify ! ( mMember ) ));
+    assert_eq!(
+        ::std::mem::size_of::<TestFloatPtr>(),
+        8usize,
+        concat!("Size of: ", stringify!(TestFloatPtr))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<TestFloatPtr>(),
+        8usize,
+        concat!("Alignment of ", stringify!(TestFloatPtr))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const TestFloatPtr)).mMember as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(TestFloatPtr),
+            "::",
+            stringify!(mMember)
+        )
+    );
 }
 impl Clone for TestFloatPtr {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for TestFloatPtr {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

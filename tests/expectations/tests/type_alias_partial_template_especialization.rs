@@ -11,6 +11,8 @@ pub struct Rooted<T> {
     pub ptr: MaybeWrapped<T>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
-impl <T> Default for Rooted<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for Rooted<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

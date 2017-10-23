@@ -125,10 +125,17 @@ fn __bindgen_test_layout_A_D_open0_int_close0_instantiation() {
         4usize,
         concat!(
             "Size of template specialization: ",
-            stringify ! ( A_D < :: std :: os :: raw :: c_int > )
+            stringify!(A_D<::std::os::raw::c_int>)
         )
     );
-    assert_eq ! ( :: std :: mem :: align_of :: < A_D < :: std :: os :: raw :: c_int > > ( ) , 4usize , concat ! ( "Alignment of template specialization: " , stringify ! ( A_D < :: std :: os :: raw :: c_int > ) ) );
+    assert_eq!(
+        ::std::mem::align_of::<A_D<::std::os::raw::c_int>>(),
+        4usize,
+        concat!(
+            "Alignment of template specialization: ",
+            stringify!(A_D<::std::os::raw::c_int>)
+        )
+    );
 }
 extern "C" {
     #[link_name = "\u{1}baz"]
@@ -141,9 +148,26 @@ pub struct D {
 }
 #[test]
 fn bindgen_test_layout_D() {
-    assert_eq ! ( :: std :: mem :: size_of :: < D > ( ) , 4usize , concat ! ( "Size of: " , stringify ! ( D ) ) );
-    assert_eq ! ( :: std :: mem :: align_of :: < D > ( ) , 4usize , concat ! ( "Alignment of " , stringify ! ( D ) ) );
-    assert_eq ! ( unsafe { & ( * ( 0 as * const D ) ) . member as * const _ as usize } , 0usize , concat ! ( "Alignment of field: " , stringify ! ( D ) , "::" , stringify ! ( member ) ) );
+    assert_eq!(
+        ::std::mem::size_of::<D>(),
+        4usize,
+        concat!("Size of: ", stringify!(D))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<D>(),
+        4usize,
+        concat!("Alignment of ", stringify!(D))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const D)).member as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(D),
+            "::",
+            stringify!(member)
+        )
+    );
 }
 impl Clone for D {
     fn clone(&self) -> Self {

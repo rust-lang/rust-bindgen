@@ -21,9 +21,13 @@ pub struct DoublyIndirectUsage_IndirectUsage<T, U> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub _phantom_1: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
 }
-impl <T, U> Default for DoublyIndirectUsage_IndirectUsage<T, U> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T, U> Default for DoublyIndirectUsage_IndirectUsage<T, U> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
-impl <T, U> Default for DoublyIndirectUsage<T, U> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T, U> Default for DoublyIndirectUsage<T, U> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

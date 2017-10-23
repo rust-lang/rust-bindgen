@@ -9,8 +9,7 @@
 pub struct Foo {
     pub _address: u8,
 }
-pub type Foo_FunctionPtr<T> =
-    ::std::option::Option<unsafe extern "C" fn() -> T>;
+pub type Foo_FunctionPtr<T> = ::std::option::Option<unsafe extern "C" fn() -> T>;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct RefPtr {
@@ -21,6 +20,7 @@ pub struct RefPtr {
 pub struct RefPtr_Proxy {
     pub _address: u8,
 }
-pub type RefPtr_Proxy_member_function<R, Args> =
-    ::std::option::Option<unsafe extern "C" fn(arg1: Args) -> R>;
+pub type RefPtr_Proxy_member_function<R, Args> = ::std::option::Option<
+    unsafe extern "C" fn(arg1: Args) -> R,
+>;
 pub type Returner<T> = ::std::option::Option<unsafe extern "C" fn() -> T>;

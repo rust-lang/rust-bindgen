@@ -11,5 +11,7 @@ pub struct Foo {
 pub type Foo_FirstAlias = [u8; 0usize];
 pub type Foo_SecondAlias = [u8; 0usize];
 impl Default for Foo {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

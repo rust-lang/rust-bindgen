@@ -15,6 +15,8 @@ pub struct UsesTemplateParameter<T> {
 pub struct UsesTemplateParameter_DoesNotUseTemplateParameters {
     pub x: ::std::os::raw::c_int,
 }
-impl <T> Default for UsesTemplateParameter<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for UsesTemplateParameter<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

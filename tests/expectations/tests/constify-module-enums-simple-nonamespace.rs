@@ -17,24 +17,44 @@ pub struct Bar {
 }
 #[test]
 fn bindgen_test_layout_Bar() {
-    assert_eq!(::std::mem::size_of::<Bar>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( Bar ) ));
-    assert_eq! (::std::mem::align_of::<Bar>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( Bar ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Bar ) ) . baz1 as * const _ as usize } ,
-                0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Bar ) , "::" ,
-                stringify ! ( baz1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Bar ) ) . baz2 as * const _ as usize } ,
-                8usize , concat ! (
-                "Alignment of field: " , stringify ! ( Bar ) , "::" ,
-                stringify ! ( baz2 ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Bar>(),
+        16usize,
+        concat!("Size of: ", stringify!(Bar))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Bar>(),
+        8usize,
+        concat!("Alignment of ", stringify!(Bar))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Bar)).baz1 as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Bar),
+            "::",
+            stringify!(baz1)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Bar)).baz2 as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Bar),
+            "::",
+            stringify!(baz2)
+        )
+    );
 }
 impl Clone for Bar {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for Bar {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

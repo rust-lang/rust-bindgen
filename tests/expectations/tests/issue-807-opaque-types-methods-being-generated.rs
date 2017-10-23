@@ -11,13 +11,21 @@ pub struct Pupper {
 }
 #[test]
 fn bindgen_test_layout_Pupper() {
-    assert_eq!(::std::mem::size_of::<Pupper>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( Pupper ) ));
-    assert_eq! (::std::mem::align_of::<Pupper>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( Pupper ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Pupper>(),
+        1usize,
+        concat!("Size of: ", stringify!(Pupper))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Pupper>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Pupper))
+    );
 }
 impl Clone for Pupper {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
@@ -26,13 +34,21 @@ pub struct Doggo {
 }
 #[test]
 fn bindgen_test_layout_Doggo() {
-    assert_eq!(::std::mem::size_of::<Doggo>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( Doggo ) ));
-    assert_eq! (::std::mem::align_of::<Doggo>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( Doggo ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Doggo>(),
+        1usize,
+        concat!("Size of: ", stringify!(Doggo))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Doggo>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Doggo))
+    );
 }
 impl Clone for Doggo {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
@@ -41,13 +57,21 @@ pub struct SuchWow {
 }
 #[test]
 fn bindgen_test_layout_SuchWow() {
-    assert_eq!(::std::mem::size_of::<SuchWow>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( SuchWow ) ));
-    assert_eq! (::std::mem::align_of::<SuchWow>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( SuchWow ) ));
+    assert_eq!(
+        ::std::mem::size_of::<SuchWow>(),
+        1usize,
+        concat!("Size of: ", stringify!(SuchWow))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<SuchWow>(),
+        1usize,
+        concat!("Alignment of ", stringify!(SuchWow))
+    );
 }
 impl Clone for SuchWow {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
@@ -56,10 +80,16 @@ pub struct Opaque {
 }
 #[test]
 fn bindgen_test_layout_Opaque() {
-    assert_eq!(::std::mem::size_of::<Opaque>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( Opaque ) ));
-    assert_eq! (::std::mem::align_of::<Opaque>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( Opaque ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Opaque>(),
+        1usize,
+        concat!("Size of: ", stringify!(Opaque))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Opaque>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Opaque))
+    );
 }
 extern "C" {
     #[link_name = "\u{1}_ZN6Opaque17eleven_out_of_tenEv"]
@@ -70,7 +100,9 @@ extern "C" {
     pub fn Opaque_Opaque(this: *mut Opaque, pup: Pupper);
 }
 impl Clone for Opaque {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Opaque {
     #[inline]
@@ -95,16 +127,29 @@ pub struct Whitelisted {
 }
 #[test]
 fn bindgen_test_layout_Whitelisted() {
-    assert_eq!(::std::mem::size_of::<Whitelisted>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( Whitelisted ) ));
-    assert_eq! (::std::mem::align_of::<Whitelisted>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( Whitelisted ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Whitelisted ) ) . some_member as * const
-                _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Whitelisted ) , "::" ,
-                stringify ! ( some_member ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Whitelisted>(),
+        1usize,
+        concat!("Size of: ", stringify!(Whitelisted))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Whitelisted>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Whitelisted))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Whitelisted)).some_member as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Whitelisted),
+            "::",
+            stringify!(some_member)
+        )
+    );
 }
 impl Clone for Whitelisted {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }

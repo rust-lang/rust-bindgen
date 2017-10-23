@@ -17,9 +17,13 @@ pub struct WhitelistMe_Inner<T> {
     pub bar: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
-impl <T> Default for WhitelistMe_Inner<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for WhitelistMe_Inner<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
-impl <T> Default for WhitelistMe<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for WhitelistMe<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

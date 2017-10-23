@@ -11,8 +11,10 @@ pub struct Point<T> {
     pub y: T,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
-impl <T> Default for Point<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for Point<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub type IntPoint2D = Point<::std::os::raw::c_int>;
 pub type IntVec2D = Point<::std::os::raw::c_int>;

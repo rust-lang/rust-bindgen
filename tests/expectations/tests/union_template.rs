@@ -17,7 +17,9 @@ pub union NastyStruct__bindgen_ty_1 {
     _bindgen_union_align: u64,
 }
 impl Default for NastyStruct__bindgen_ty_1 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub union NastyStruct__bindgen_ty_2 {
@@ -26,10 +28,14 @@ pub union NastyStruct__bindgen_ty_2 {
     _bindgen_union_align: u64,
 }
 impl Default for NastyStruct__bindgen_ty_2 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 impl Default for NastyStruct {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub union Whatever {
@@ -38,5 +44,7 @@ pub union Whatever {
     _bindgen_union_align: u64,
 }
 impl Default for Whatever {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

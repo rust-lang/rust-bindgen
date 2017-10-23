@@ -6,35 +6,47 @@
 
 #[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
-impl <T> __BindgenUnionField<T> {
+impl<T> __BindgenUnionField<T> {
     #[inline]
-    pub fn new() -> Self { __BindgenUnionField(::std::marker::PhantomData) }
+    pub fn new() -> Self {
+        __BindgenUnionField(::std::marker::PhantomData)
+    }
     #[inline]
-    pub unsafe fn as_ref(&self) -> &T { ::std::mem::transmute(self) }
+    pub unsafe fn as_ref(&self) -> &T {
+        ::std::mem::transmute(self)
+    }
     #[inline]
-    pub unsafe fn as_mut(&mut self) -> &mut T { ::std::mem::transmute(self) }
+    pub unsafe fn as_mut(&mut self) -> &mut T {
+        ::std::mem::transmute(self)
+    }
 }
-impl <T> ::std::default::Default for __BindgenUnionField<T> {
+impl<T> ::std::default::Default for __BindgenUnionField<T> {
     #[inline]
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
-impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
+impl<T> ::std::clone::Clone for __BindgenUnionField<T> {
     #[inline]
-    fn clone(&self) -> Self { Self::new() }
+    fn clone(&self) -> Self {
+        Self::new()
+    }
 }
-impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
-impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
+impl<T> ::std::marker::Copy for __BindgenUnionField<T> {}
+impl<T> ::std::fmt::Debug for __BindgenUnionField<T> {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         fmt.write_str("__BindgenUnionField")
     }
 }
-impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
-    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
+impl<T> ::std::hash::Hash for __BindgenUnionField<T> {
+    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) {}
 }
-impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
-    fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
+impl<T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
+    fn eq(&self, _other: &__BindgenUnionField<T>) -> bool {
+        true
+    }
 }
-impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
+impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct basic_string {
@@ -51,13 +63,17 @@ pub struct basic_string___long {
     pub __data_: basic_string_pointer,
 }
 impl Default for basic_string___long {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub const basic_string___min_cap: basic_string__bindgen_ty_1 =
     basic_string__bindgen_ty_1::__min_cap;
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum basic_string__bindgen_ty_1 { __min_cap = 0, }
+pub enum basic_string__bindgen_ty_1 {
+    __min_cap = 0,
+}
 #[repr(C)]
 pub struct basic_string___short {
     pub __bindgen_anon_1: basic_string___short__bindgen_ty_1,
@@ -70,10 +86,14 @@ pub union basic_string___short__bindgen_ty_1 {
     _bindgen_union_align: u8,
 }
 impl Default for basic_string___short__bindgen_ty_1 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 impl Default for basic_string___short {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct basic_string___ulx {
@@ -82,20 +102,26 @@ pub struct basic_string___ulx {
     pub bindgen_union_field: [u8; 0usize],
 }
 impl Default for basic_string___ulx {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 pub const basic_string___n_words: basic_string__bindgen_ty_2 =
     basic_string__bindgen_ty_2::__n_words;
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum basic_string__bindgen_ty_2 { __n_words = 0, }
+pub enum basic_string__bindgen_ty_2 {
+    __n_words = 0,
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct basic_string___raw {
     pub __words: *mut basic_string_size_type,
 }
 impl Default for basic_string___raw {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct basic_string___rep {
@@ -109,8 +135,12 @@ pub struct basic_string___rep__bindgen_ty_1 {
     pub bindgen_union_field: [u8; 0usize],
 }
 impl Default for basic_string___rep__bindgen_ty_1 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 impl Default for basic_string___rep {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

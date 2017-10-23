@@ -11,16 +11,29 @@ pub struct Foo {
 }
 #[test]
 fn bindgen_test_layout_Foo() {
-    assert_eq!(::std::mem::size_of::<Foo>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( Foo ) ));
-    assert_eq! (::std::mem::align_of::<Foo>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( Foo ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Foo ) ) . baz as * const _ as usize } ,
-                0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Foo ) , "::" ,
-                stringify ! ( baz ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Foo>(),
+        8usize,
+        concat!("Size of: ", stringify!(Foo))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Foo>(),
+        8usize,
+        concat!("Alignment of ", stringify!(Foo))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Foo)).baz as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Foo),
+            "::",
+            stringify!(baz)
+        )
+    );
 }
 impl Default for Foo {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

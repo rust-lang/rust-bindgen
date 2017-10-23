@@ -16,13 +16,21 @@ pub struct B {
 }
 #[test]
 fn bindgen_test_layout_B() {
-    assert_eq!(::std::mem::size_of::<B>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( B ) ));
-    assert_eq! (::std::mem::align_of::<B>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( B ) ));
+    assert_eq!(
+        ::std::mem::size_of::<B>(),
+        1usize,
+        concat!("Size of: ", stringify!(B))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<B>(),
+        1usize,
+        concat!("Alignment of ", stringify!(B))
+    );
 }
 impl Clone for B {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 extern "C" {
     #[link_name = "\u{1}_ZN1B1aE"]
@@ -35,15 +43,24 @@ pub struct C {
 }
 #[test]
 fn bindgen_test_layout_C() {
-    assert_eq!(::std::mem::size_of::<C>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( C ) ));
-    assert_eq! (::std::mem::align_of::<C>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( C ) ));
-    assert_eq! (unsafe { & ( * ( 0 as * const C ) ) . b as * const _ as usize
-                } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
-                ! ( b ) ));
+    assert_eq!(
+        ::std::mem::size_of::<C>(),
+        1usize,
+        concat!("Size of: ", stringify!(C))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<C>(),
+        1usize,
+        concat!("Alignment of ", stringify!(C))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const C)).b as *const _ as usize },
+        0usize,
+        concat!("Alignment of field: ", stringify!(C), "::", stringify!(b))
+    );
 }
 impl Clone for C {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }

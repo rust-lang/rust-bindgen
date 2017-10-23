@@ -13,4 +13,7 @@ pub enum Foo {
 }
 #[repr(u16)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum Bar { One = 1, Big = 2, }
+pub enum Bar {
+    One = 1,
+    Big = 2,
+}

@@ -13,16 +13,26 @@ pub struct VirtualMethods {
 }
 #[test]
 fn bindgen_test_layout_VirtualMethods() {
-    assert_eq!(::std::mem::size_of::<VirtualMethods>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( VirtualMethods ) ));
-    assert_eq! (::std::mem::align_of::<VirtualMethods>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( VirtualMethods ) ));
+    assert_eq!(
+        ::std::mem::size_of::<VirtualMethods>(),
+        8usize,
+        concat!("Size of: ", stringify!(VirtualMethods))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<VirtualMethods>(),
+        8usize,
+        concat!("Alignment of ", stringify!(VirtualMethods))
+    );
 }
 impl Clone for VirtualMethods {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for VirtualMethods {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -36,25 +46,37 @@ pub struct ServoElementSnapshotTable {
 }
 #[test]
 fn bindgen_test_layout_ServoElementSnapshotTable() {
-    assert_eq!(::std::mem::size_of::<ServoElementSnapshotTable>() , 4usize ,
-               concat ! (
-               "Size of: " , stringify ! ( ServoElementSnapshotTable ) ));
-    assert_eq! (::std::mem::align_of::<ServoElementSnapshotTable>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( ServoElementSnapshotTable )
-                ));
+    assert_eq!(
+        ::std::mem::size_of::<ServoElementSnapshotTable>(),
+        4usize,
+        concat!("Size of: ", stringify!(ServoElementSnapshotTable))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ServoElementSnapshotTable>(),
+        4usize,
+        concat!("Alignment of ", stringify!(ServoElementSnapshotTable))
+    );
 }
 impl Clone for ServoElementSnapshotTable {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for ServoElementSnapshotTable {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[test]
 fn __bindgen_test_layout_Set_open0_VirtualMethods_close0_instantiation() {
-    assert_eq!(::std::mem::size_of::<Set>() , 4usize , concat ! (
-               "Size of template specialization: " , stringify ! ( Set ) ));
-    assert_eq!(::std::mem::align_of::<Set>() , 4usize , concat ! (
-               "Alignment of template specialization: " , stringify ! ( Set )
-               ));
+    assert_eq!(
+        ::std::mem::size_of::<Set>(),
+        4usize,
+        concat!("Size of template specialization: ", stringify!(Set))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Set>(),
+        4usize,
+        concat!("Alignment of template specialization: ", stringify!(Set))
+    );
 }

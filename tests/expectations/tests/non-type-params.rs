@@ -15,26 +15,49 @@ pub struct UsesArray {
 }
 #[test]
 fn bindgen_test_layout_UsesArray() {
-    assert_eq!(::std::mem::size_of::<UsesArray>() , 40usize , concat ! (
-               "Size of: " , stringify ! ( UsesArray ) ));
-    assert_eq! (::std::mem::align_of::<UsesArray>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( UsesArray ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const UsesArray ) ) . array_char_16 as * const
-                _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( UsesArray ) , "::" ,
-                stringify ! ( array_char_16 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const UsesArray ) ) . array_bool_8 as * const _
-                as usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( UsesArray ) , "::" ,
-                stringify ! ( array_bool_8 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const UsesArray ) ) . array_int_4 as * const _
-                as usize } , 24usize , concat ! (
-                "Alignment of field: " , stringify ! ( UsesArray ) , "::" ,
-                stringify ! ( array_int_4 ) ));
+    assert_eq!(
+        ::std::mem::size_of::<UsesArray>(),
+        40usize,
+        concat!("Size of: ", stringify!(UsesArray))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<UsesArray>(),
+        4usize,
+        concat!("Alignment of ", stringify!(UsesArray))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const UsesArray)).array_char_16 as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(UsesArray),
+            "::",
+            stringify!(array_char_16)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const UsesArray)).array_bool_8 as *const _ as usize },
+        16usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(UsesArray),
+            "::",
+            stringify!(array_bool_8)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const UsesArray)).array_int_4 as *const _ as usize },
+        24usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(UsesArray),
+            "::",
+            stringify!(array_int_4)
+        )
+    );
 }
 impl Clone for UsesArray {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }

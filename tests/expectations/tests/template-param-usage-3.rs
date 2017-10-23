@@ -18,10 +18,13 @@ pub struct UsesTemplateParameter_AlsoUsesTemplateParameterAndMore<T, U> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
     pub _phantom_1: ::std::marker::PhantomData<::std::cell::UnsafeCell<U>>,
 }
-impl <T, U> Default for
- UsesTemplateParameter_AlsoUsesTemplateParameterAndMore<T, U> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T, U> Default for UsesTemplateParameter_AlsoUsesTemplateParameterAndMore<T, U> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
-impl <T> Default for UsesTemplateParameter<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for UsesTemplateParameter<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

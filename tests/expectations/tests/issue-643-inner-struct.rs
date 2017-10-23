@@ -7,13 +7,15 @@
 #[repr(C)]
 #[derive(Default)]
 pub struct __IncompleteArrayField<T>(::std::marker::PhantomData<T>);
-impl <T> __IncompleteArrayField<T> {
+impl<T> __IncompleteArrayField<T> {
     #[inline]
     pub fn new() -> Self {
         __IncompleteArrayField(::std::marker::PhantomData)
     }
     #[inline]
-    pub unsafe fn as_ptr(&self) -> *const T { ::std::mem::transmute(self) }
+    pub unsafe fn as_ptr(&self) -> *const T {
+        ::std::mem::transmute(self)
+    }
     #[inline]
     pub unsafe fn as_mut_ptr(&mut self) -> *mut T {
         ::std::mem::transmute(self)
@@ -27,16 +29,18 @@ impl <T> __IncompleteArrayField<T> {
         ::std::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
     }
 }
-impl <T> ::std::fmt::Debug for __IncompleteArrayField<T> {
+impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         fmt.write_str("__IncompleteArrayField")
     }
 }
-impl <T> ::std::clone::Clone for __IncompleteArrayField<T> {
+impl<T> ::std::clone::Clone for __IncompleteArrayField<T> {
     #[inline]
-    fn clone(&self) -> Self { Self::new() }
+    fn clone(&self) -> Self {
+        Self::new()
+    }
 }
-impl <T> ::std::marker::Copy for __IncompleteArrayField<T> { }
+impl<T> ::std::marker::Copy for __IncompleteArrayField<T> {}
 #[repr(C)]
 #[derive(Debug)]
 pub struct rte_ring {
@@ -52,18 +56,31 @@ pub struct rte_ring_prod {
 }
 #[test]
 fn bindgen_test_layout_rte_ring_prod() {
-    assert_eq!(::std::mem::size_of::<rte_ring_prod>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( rte_ring_prod ) ));
-    assert_eq! (::std::mem::align_of::<rte_ring_prod>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( rte_ring_prod ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_ring_prod ) ) . watermark as * const
-                _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_ring_prod ) , "::"
-                , stringify ! ( watermark ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_ring_prod>(),
+        4usize,
+        concat!("Size of: ", stringify!(rte_ring_prod))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_ring_prod>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_ring_prod))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_ring_prod)).watermark as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_ring_prod),
+            "::",
+            stringify!(watermark)
+        )
+    );
 }
 impl Clone for rte_ring_prod {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
@@ -72,28 +89,49 @@ pub struct rte_ring_cons {
 }
 #[test]
 fn bindgen_test_layout_rte_ring_cons() {
-    assert_eq!(::std::mem::size_of::<rte_ring_cons>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( rte_ring_cons ) ));
-    assert_eq! (::std::mem::align_of::<rte_ring_cons>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( rte_ring_cons ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const rte_ring_cons ) ) . sc_dequeue as * const
-                _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( rte_ring_cons ) , "::"
-                , stringify ! ( sc_dequeue ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_ring_cons>(),
+        4usize,
+        concat!("Size of: ", stringify!(rte_ring_cons))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_ring_cons>(),
+        4usize,
+        concat!("Alignment of ", stringify!(rte_ring_cons))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const rte_ring_cons)).sc_dequeue as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(rte_ring_cons),
+            "::",
+            stringify!(sc_dequeue)
+        )
+    );
 }
 impl Clone for rte_ring_cons {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[test]
 fn bindgen_test_layout_rte_ring() {
-    assert_eq!(::std::mem::size_of::<rte_ring>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( rte_ring ) ));
-    assert_eq! (::std::mem::align_of::<rte_ring>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( rte_ring ) ));
+    assert_eq!(
+        ::std::mem::size_of::<rte_ring>(),
+        16usize,
+        concat!("Size of: ", stringify!(rte_ring))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_ring>(),
+        8usize,
+        concat!("Alignment of ", stringify!(rte_ring))
+    );
 }
 impl Default for rte_ring {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy)]
@@ -101,5 +139,7 @@ pub struct rte_memzone {
     pub _address: u8,
 }
 impl Clone for rte_memzone {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }

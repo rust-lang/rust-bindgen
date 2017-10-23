@@ -25,71 +25,139 @@ pub struct Test {
 }
 #[test]
 fn bindgen_test_layout_Test() {
-    assert_eq!(::std::mem::size_of::<Test>() , 12usize , concat ! (
-               "Size of: " , stringify ! ( Test ) ));
-    assert_eq! (::std::mem::align_of::<Test>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( Test ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Test ) ) . ch as * const _ as usize } ,
-                0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Test ) , "::" ,
-                stringify ! ( ch ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Test ) ) . u as * const _ as usize } ,
-                1usize , concat ! (
-                "Alignment of field: " , stringify ! ( Test ) , "::" ,
-                stringify ! ( u ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Test ) ) . d as * const _ as usize } ,
-                2usize , concat ! (
-                "Alignment of field: " , stringify ! ( Test ) , "::" ,
-                stringify ! ( d ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Test ) ) . cch as * const _ as usize } ,
-                3usize , concat ! (
-                "Alignment of field: " , stringify ! ( Test ) , "::" ,
-                stringify ! ( cch ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Test ) ) . cu as * const _ as usize } ,
-                4usize , concat ! (
-                "Alignment of field: " , stringify ! ( Test ) , "::" ,
-                stringify ! ( cu ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Test ) ) . cd as * const _ as usize } ,
-                5usize , concat ! (
-                "Alignment of field: " , stringify ! ( Test ) , "::" ,
-                stringify ! ( cd ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Test ) ) . Cch as * const _ as usize } ,
-                6usize , concat ! (
-                "Alignment of field: " , stringify ! ( Test ) , "::" ,
-                stringify ! ( Cch ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Test ) ) . Cu as * const _ as usize } ,
-                7usize , concat ! (
-                "Alignment of field: " , stringify ! ( Test ) , "::" ,
-                stringify ! ( Cu ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Test ) ) . Cd as * const _ as usize } ,
-                8usize , concat ! (
-                "Alignment of field: " , stringify ! ( Test ) , "::" ,
-                stringify ! ( Cd ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Test ) ) . Ccch as * const _ as usize } ,
-                9usize , concat ! (
-                "Alignment of field: " , stringify ! ( Test ) , "::" ,
-                stringify ! ( Ccch ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Test ) ) . Ccu as * const _ as usize } ,
-                10usize , concat ! (
-                "Alignment of field: " , stringify ! ( Test ) , "::" ,
-                stringify ! ( Ccu ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Test ) ) . Ccd as * const _ as usize } ,
-                11usize , concat ! (
-                "Alignment of field: " , stringify ! ( Test ) , "::" ,
-                stringify ! ( Ccd ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Test>(),
+        12usize,
+        concat!("Size of: ", stringify!(Test))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Test>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Test))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Test)).ch as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Test),
+            "::",
+            stringify!(ch)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Test)).u as *const _ as usize },
+        1usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Test),
+            "::",
+            stringify!(u)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Test)).d as *const _ as usize },
+        2usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Test),
+            "::",
+            stringify!(d)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Test)).cch as *const _ as usize },
+        3usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Test),
+            "::",
+            stringify!(cch)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Test)).cu as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Test),
+            "::",
+            stringify!(cu)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Test)).cd as *const _ as usize },
+        5usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Test),
+            "::",
+            stringify!(cd)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Test)).Cch as *const _ as usize },
+        6usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Test),
+            "::",
+            stringify!(Cch)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Test)).Cu as *const _ as usize },
+        7usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Test),
+            "::",
+            stringify!(Cu)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Test)).Cd as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Test),
+            "::",
+            stringify!(Cd)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Test)).Ccch as *const _ as usize },
+        9usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Test),
+            "::",
+            stringify!(Ccch)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Test)).Ccu as *const _ as usize },
+        10usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Test),
+            "::",
+            stringify!(Ccu)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Test)).Ccd as *const _ as usize },
+        11usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Test),
+            "::",
+            stringify!(Ccd)
+        )
+    );
 }
 impl Clone for Test {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }

@@ -13,13 +13,21 @@ pub struct nsSlots {
 }
 #[test]
 fn bindgen_test_layout_nsSlots() {
-    assert_eq!(::std::mem::size_of::<nsSlots>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( nsSlots ) ));
-    assert_eq! (::std::mem::align_of::<nsSlots>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( nsSlots ) ));
+    assert_eq!(
+        ::std::mem::size_of::<nsSlots>(),
+        8usize,
+        concat!("Size of: ", stringify!(nsSlots))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<nsSlots>(),
+        8usize,
+        concat!("Alignment of ", stringify!(nsSlots))
+    );
 }
 impl Default for nsSlots {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 extern "C" {
     #[link_name = "\u{1}_ZN7nsSlotsD0Ev"]

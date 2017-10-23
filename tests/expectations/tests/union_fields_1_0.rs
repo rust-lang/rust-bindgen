@@ -6,35 +6,47 @@
 
 #[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
-impl <T> __BindgenUnionField<T> {
+impl<T> __BindgenUnionField<T> {
     #[inline]
-    pub fn new() -> Self { __BindgenUnionField(::std::marker::PhantomData) }
+    pub fn new() -> Self {
+        __BindgenUnionField(::std::marker::PhantomData)
+    }
     #[inline]
-    pub unsafe fn as_ref(&self) -> &T { ::std::mem::transmute(self) }
+    pub unsafe fn as_ref(&self) -> &T {
+        ::std::mem::transmute(self)
+    }
     #[inline]
-    pub unsafe fn as_mut(&mut self) -> &mut T { ::std::mem::transmute(self) }
+    pub unsafe fn as_mut(&mut self) -> &mut T {
+        ::std::mem::transmute(self)
+    }
 }
-impl <T> ::std::default::Default for __BindgenUnionField<T> {
+impl<T> ::std::default::Default for __BindgenUnionField<T> {
     #[inline]
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
-impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
+impl<T> ::std::clone::Clone for __BindgenUnionField<T> {
     #[inline]
-    fn clone(&self) -> Self { Self::new() }
+    fn clone(&self) -> Self {
+        Self::new()
+    }
 }
-impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
-impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
+impl<T> ::std::marker::Copy for __BindgenUnionField<T> {}
+impl<T> ::std::fmt::Debug for __BindgenUnionField<T> {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         fmt.write_str("__BindgenUnionField")
     }
 }
-impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
-    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
+impl<T> ::std::hash::Hash for __BindgenUnionField<T> {
+    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) {}
 }
-impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
-    fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
+impl<T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
+    fn eq(&self, _other: &__BindgenUnionField<T>) -> bool {
+        true
+    }
 }
-impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
+impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq)]
 pub struct nsStyleUnion {
@@ -45,26 +57,49 @@ pub struct nsStyleUnion {
 }
 #[test]
 fn bindgen_test_layout_nsStyleUnion() {
-    assert_eq!(::std::mem::size_of::<nsStyleUnion>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( nsStyleUnion ) ));
-    assert_eq! (::std::mem::align_of::<nsStyleUnion>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( nsStyleUnion ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const nsStyleUnion ) ) . mInt as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( nsStyleUnion ) , "::" ,
-                stringify ! ( mInt ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const nsStyleUnion ) ) . mFloat as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( nsStyleUnion ) , "::" ,
-                stringify ! ( mFloat ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const nsStyleUnion ) ) . mPointer as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( nsStyleUnion ) , "::" ,
-                stringify ! ( mPointer ) ));
+    assert_eq!(
+        ::std::mem::size_of::<nsStyleUnion>(),
+        8usize,
+        concat!("Size of: ", stringify!(nsStyleUnion))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<nsStyleUnion>(),
+        8usize,
+        concat!("Alignment of ", stringify!(nsStyleUnion))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const nsStyleUnion)).mInt as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(nsStyleUnion),
+            "::",
+            stringify!(mInt)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const nsStyleUnion)).mFloat as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(nsStyleUnion),
+            "::",
+            stringify!(mFloat)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const nsStyleUnion)).mPointer as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(nsStyleUnion),
+            "::",
+            stringify!(mPointer)
+        )
+    );
 }
 impl Clone for nsStyleUnion {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }

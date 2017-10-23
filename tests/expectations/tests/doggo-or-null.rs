@@ -11,18 +11,31 @@ pub struct Doggo {
 }
 #[test]
 fn bindgen_test_layout_Doggo() {
-    assert_eq!(::std::mem::size_of::<Doggo>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( Doggo ) ));
-    assert_eq! (::std::mem::align_of::<Doggo>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( Doggo ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Doggo ) ) . x as * const _ as usize } ,
-                0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Doggo ) , "::" ,
-                stringify ! ( x ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Doggo>(),
+        4usize,
+        concat!("Size of: ", stringify!(Doggo))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Doggo>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Doggo))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Doggo)).x as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Doggo),
+            "::",
+            stringify!(x)
+        )
+    );
 }
 impl Clone for Doggo {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq)]
@@ -31,13 +44,21 @@ pub struct Null {
 }
 #[test]
 fn bindgen_test_layout_Null() {
-    assert_eq!(::std::mem::size_of::<Null>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( Null ) ));
-    assert_eq! (::std::mem::align_of::<Null>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( Null ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Null>(),
+        1usize,
+        concat!("Size of: ", stringify!(Null))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Null>(),
+        1usize,
+        concat!("Alignment of ", stringify!(Null))
+    );
 }
 impl Clone for Null {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 /// This type is an opaque union. Unions can't derive anything interesting like
 /// Debug or Default, even if their layout can, because it would require knowing
@@ -52,14 +73,24 @@ pub union DoggoOrNull {
 }
 #[test]
 fn bindgen_test_layout_DoggoOrNull() {
-    assert_eq!(::std::mem::size_of::<DoggoOrNull>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( DoggoOrNull ) ));
-    assert_eq! (::std::mem::align_of::<DoggoOrNull>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( DoggoOrNull ) ));
+    assert_eq!(
+        ::std::mem::size_of::<DoggoOrNull>(),
+        4usize,
+        concat!("Size of: ", stringify!(DoggoOrNull))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<DoggoOrNull>(),
+        4usize,
+        concat!("Alignment of ", stringify!(DoggoOrNull))
+    );
 }
 impl Clone for DoggoOrNull {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for DoggoOrNull {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

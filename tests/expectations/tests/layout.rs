@@ -7,13 +7,15 @@
 #[repr(C)]
 #[derive(Default)]
 pub struct __IncompleteArrayField<T>(::std::marker::PhantomData<T>);
-impl <T> __IncompleteArrayField<T> {
+impl<T> __IncompleteArrayField<T> {
     #[inline]
     pub fn new() -> Self {
         __IncompleteArrayField(::std::marker::PhantomData)
     }
     #[inline]
-    pub unsafe fn as_ptr(&self) -> *const T { ::std::mem::transmute(self) }
+    pub unsafe fn as_ptr(&self) -> *const T {
+        ::std::mem::transmute(self)
+    }
     #[inline]
     pub unsafe fn as_mut_ptr(&mut self) -> *mut T {
         ::std::mem::transmute(self)
@@ -27,16 +29,18 @@ impl <T> __IncompleteArrayField<T> {
         ::std::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
     }
 }
-impl <T> ::std::fmt::Debug for __IncompleteArrayField<T> {
+impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         fmt.write_str("__IncompleteArrayField")
     }
 }
-impl <T> ::std::clone::Clone for __IncompleteArrayField<T> {
+impl<T> ::std::clone::Clone for __IncompleteArrayField<T> {
     #[inline]
-    fn clone(&self) -> Self { Self::new() }
+    fn clone(&self) -> Self {
+        Self::new()
+    }
 }
-impl <T> ::std::marker::Copy for __IncompleteArrayField<T> { }
+impl<T> ::std::marker::Copy for __IncompleteArrayField<T> {}
 #[repr(C, packed)]
 #[derive(Debug, Default)]
 pub struct header {
@@ -47,6 +51,9 @@ pub struct header {
 }
 #[test]
 fn bindgen_test_layout_header() {
-    assert_eq!(::std::mem::size_of::<header>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( header ) ));
+    assert_eq!(
+        ::std::mem::size_of::<header>(),
+        16usize,
+        concat!("Size of: ", stringify!(header))
+    );
 }

@@ -10,21 +10,34 @@ pub struct Instance {
 }
 #[test]
 fn bindgen_test_layout_Instance() {
-    assert_eq!(::std::mem::size_of::<Instance>() , 200usize , concat ! (
-               "Size of: " , stringify ! ( Instance ) ));
-    assert_eq! (::std::mem::align_of::<Instance>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( Instance ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const Instance ) ) . val as * const _ as usize
-                } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( Instance ) , "::" ,
-                stringify ! ( val ) ));
+    assert_eq!(
+        ::std::mem::size_of::<Instance>(),
+        200usize,
+        concat!("Size of: ", stringify!(Instance))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<Instance>(),
+        4usize,
+        concat!("Alignment of ", stringify!(Instance))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const Instance)).val as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(Instance),
+            "::",
+            stringify!(val)
+        )
+    );
 }
 impl Default for Instance {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 impl ::std::fmt::Debug for Instance {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        write!(f , "Instance {{ val: opaque }}")
+        write!(f, "Instance {{ val: opaque }}")
     }
 }

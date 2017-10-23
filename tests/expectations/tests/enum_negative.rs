@@ -6,4 +6,7 @@
 
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum Foo { Bar = -2, Qux = 1, }
+pub enum Foo {
+    Bar = -2,
+    Qux = 1,
+}

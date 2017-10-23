@@ -11,6 +11,8 @@ pub struct JS_Rooted<T> {
     pub ptr: JS_detail_Wrapped<T>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
-impl <T> Default for JS_Rooted<T> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T> Default for JS_Rooted<T> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

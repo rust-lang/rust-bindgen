@@ -301,9 +301,9 @@ impl Default for ip_frag_pkt {
 }
 impl ::std::cmp::PartialEq for ip_frag_pkt {
     fn eq(&self, other: &ip_frag_pkt) -> bool {
-        self.lru == other.lru && self.key == other.key && self.start == other.start &&
-            self.total_size == other.total_size && self.frag_size == other.frag_size &&
-            self.last_idx == other.last_idx && self.frags == other.frags
+        self.lru == other.lru && self.key == other.key && self.start == other.start
+            && self.total_size == other.total_size && self.frag_size == other.frag_size
+            && self.last_idx == other.last_idx && self.frags == other.frags
     }
 }
 /// < fragment mbuf

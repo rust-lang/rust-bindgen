@@ -8,39 +8,47 @@
 pub mod root {
     #[repr(C)]
     pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
-    impl <T> __BindgenUnionField<T> {
+    impl<T> __BindgenUnionField<T> {
         #[inline]
         pub fn new() -> Self {
             __BindgenUnionField(::std::marker::PhantomData)
         }
         #[inline]
-        pub unsafe fn as_ref(&self) -> &T { ::std::mem::transmute(self) }
+        pub unsafe fn as_ref(&self) -> &T {
+            ::std::mem::transmute(self)
+        }
         #[inline]
         pub unsafe fn as_mut(&mut self) -> &mut T {
             ::std::mem::transmute(self)
         }
     }
-    impl <T> ::std::default::Default for __BindgenUnionField<T> {
+    impl<T> ::std::default::Default for __BindgenUnionField<T> {
         #[inline]
-        fn default() -> Self { Self::new() }
+        fn default() -> Self {
+            Self::new()
+        }
     }
-    impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
+    impl<T> ::std::clone::Clone for __BindgenUnionField<T> {
         #[inline]
-        fn clone(&self) -> Self { Self::new() }
+        fn clone(&self) -> Self {
+            Self::new()
+        }
     }
-    impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
-    impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
+    impl<T> ::std::marker::Copy for __BindgenUnionField<T> {}
+    impl<T> ::std::fmt::Debug for __BindgenUnionField<T> {
         fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
             fmt.write_str("__BindgenUnionField")
         }
     }
-    impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
-        fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
+    impl<T> ::std::hash::Hash for __BindgenUnionField<T> {
+        fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) {}
     }
-    impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
-        fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
+    impl<T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
+        fn eq(&self, _other: &__BindgenUnionField<T>) -> bool {
+            true
+        }
     }
-    impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
+    impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]
@@ -51,17 +59,30 @@ pub mod root {
     }
     #[test]
     fn bindgen_test_layout_bar() {
-        assert_eq!(::std::mem::size_of::<bar>() , 4usize , concat ! (
-                   "Size of: " , stringify ! ( bar ) ));
-        assert_eq! (::std::mem::align_of::<bar>() , 4usize , concat ! (
-                    "Alignment of " , stringify ! ( bar ) ));
-        assert_eq! (unsafe {
-                    & ( * ( 0 as * const bar ) ) . baz as * const _ as usize }
-                    , 0usize , concat ! (
-                    "Alignment of field: " , stringify ! ( bar ) , "::" ,
-                    stringify ! ( baz ) ));
+        assert_eq!(
+            ::std::mem::size_of::<bar>(),
+            4usize,
+            concat!("Size of: ", stringify!(bar))
+        );
+        assert_eq!(
+            ::std::mem::align_of::<bar>(),
+            4usize,
+            concat!("Alignment of ", stringify!(bar))
+        );
+        assert_eq!(
+            unsafe { &(*(0 as *const bar)).baz as *const _ as usize },
+            0usize,
+            concat!(
+                "Alignment of field: ",
+                stringify!(bar),
+                "::",
+                stringify!(baz)
+            )
+        );
     }
     impl Clone for bar {
-        fn clone(&self) -> Self { *self }
+        fn clone(&self) -> Self {
+            *self
+        }
     }
 }

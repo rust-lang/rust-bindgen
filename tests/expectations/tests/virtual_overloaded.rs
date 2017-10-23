@@ -13,24 +13,32 @@ pub struct C {
 }
 #[test]
 fn bindgen_test_layout_C() {
-    assert_eq!(::std::mem::size_of::<C>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( C ) ));
-    assert_eq! (::std::mem::align_of::<C>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( C ) ));
+    assert_eq!(
+        ::std::mem::size_of::<C>(),
+        8usize,
+        concat!("Size of: ", stringify!(C))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<C>(),
+        8usize,
+        concat!("Alignment of ", stringify!(C))
+    );
 }
 impl Clone for C {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for C {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 extern "C" {
     #[link_name = "\u{1}_ZN1C8do_thingEc"]
-    pub fn C_do_thing(this: *mut ::std::os::raw::c_void,
-                      arg1: ::std::os::raw::c_char);
+    pub fn C_do_thing(this: *mut ::std::os::raw::c_void, arg1: ::std::os::raw::c_char);
 }
 extern "C" {
     #[link_name = "\u{1}_ZN1C8do_thingEi"]
-    pub fn C_do_thing1(this: *mut ::std::os::raw::c_void,
-                       arg1: ::std::os::raw::c_int);
+    pub fn C_do_thing1(this: *mut ::std::os::raw::c_void, arg1: ::std::os::raw::c_int);
 }

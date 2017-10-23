@@ -14,6 +14,8 @@ pub struct IndirectUsage<T, U> {
 }
 pub type IndirectUsage_Typedefed<T> = T;
 pub type IndirectUsage_Aliased<U> = U;
-impl <T, U> Default for IndirectUsage<T, U> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<T, U> Default for IndirectUsage<T, U> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

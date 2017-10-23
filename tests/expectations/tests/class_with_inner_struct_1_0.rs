@@ -6,35 +6,47 @@
 
 #[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
-impl <T> __BindgenUnionField<T> {
+impl<T> __BindgenUnionField<T> {
     #[inline]
-    pub fn new() -> Self { __BindgenUnionField(::std::marker::PhantomData) }
+    pub fn new() -> Self {
+        __BindgenUnionField(::std::marker::PhantomData)
+    }
     #[inline]
-    pub unsafe fn as_ref(&self) -> &T { ::std::mem::transmute(self) }
+    pub unsafe fn as_ref(&self) -> &T {
+        ::std::mem::transmute(self)
+    }
     #[inline]
-    pub unsafe fn as_mut(&mut self) -> &mut T { ::std::mem::transmute(self) }
+    pub unsafe fn as_mut(&mut self) -> &mut T {
+        ::std::mem::transmute(self)
+    }
 }
-impl <T> ::std::default::Default for __BindgenUnionField<T> {
+impl<T> ::std::default::Default for __BindgenUnionField<T> {
     #[inline]
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
-impl <T> ::std::clone::Clone for __BindgenUnionField<T> {
+impl<T> ::std::clone::Clone for __BindgenUnionField<T> {
     #[inline]
-    fn clone(&self) -> Self { Self::new() }
+    fn clone(&self) -> Self {
+        Self::new()
+    }
 }
-impl <T> ::std::marker::Copy for __BindgenUnionField<T> { }
-impl <T> ::std::fmt::Debug for __BindgenUnionField<T> {
+impl<T> ::std::marker::Copy for __BindgenUnionField<T> {}
+impl<T> ::std::fmt::Debug for __BindgenUnionField<T> {
     fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         fmt.write_str("__BindgenUnionField")
     }
 }
-impl <T> ::std::hash::Hash for __BindgenUnionField<T> {
-    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) { }
+impl<T> ::std::hash::Hash for __BindgenUnionField<T> {
+    fn hash<H: ::std::hash::Hasher>(&self, _state: &mut H) {}
 }
-impl <T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
-    fn eq(&self, _other: &__BindgenUnionField<T>) -> bool { true }
+impl<T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
+    fn eq(&self, _other: &__BindgenUnionField<T>) -> bool {
+        true
+    }
 }
-impl <T> ::std::cmp::Eq for __BindgenUnionField<T> { }
+impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct A {
@@ -50,23 +62,41 @@ pub struct A_Segment {
 }
 #[test]
 fn bindgen_test_layout_A_Segment() {
-    assert_eq!(::std::mem::size_of::<A_Segment>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( A_Segment ) ));
-    assert_eq! (::std::mem::align_of::<A_Segment>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( A_Segment ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const A_Segment ) ) . begin as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( A_Segment ) , "::" ,
-                stringify ! ( begin ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const A_Segment ) ) . end as * const _ as usize
-                } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( A_Segment ) , "::" ,
-                stringify ! ( end ) ));
+    assert_eq!(
+        ::std::mem::size_of::<A_Segment>(),
+        8usize,
+        concat!("Size of: ", stringify!(A_Segment))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<A_Segment>(),
+        4usize,
+        concat!("Alignment of ", stringify!(A_Segment))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const A_Segment)).begin as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(A_Segment),
+            "::",
+            stringify!(begin)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const A_Segment)).end as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(A_Segment),
+            "::",
+            stringify!(end)
+        )
+    );
 }
 impl Clone for A_Segment {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
@@ -76,18 +106,31 @@ pub struct A__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_A__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<A__bindgen_ty_1>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( A__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<A__bindgen_ty_1>() , 4usize , concat !
-                ( "Alignment of " , stringify ! ( A__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const A__bindgen_ty_1 ) ) . f as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( A__bindgen_ty_1 ) ,
-                "::" , stringify ! ( f ) ));
+    assert_eq!(
+        ::std::mem::size_of::<A__bindgen_ty_1>(),
+        4usize,
+        concat!("Size of: ", stringify!(A__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<A__bindgen_ty_1>(),
+        4usize,
+        concat!("Alignment of ", stringify!(A__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const A__bindgen_ty_1)).f as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(A__bindgen_ty_1),
+            "::",
+            stringify!(f)
+        )
+    );
 }
 impl Clone for A__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
@@ -97,37 +140,64 @@ pub struct A__bindgen_ty_2 {
 }
 #[test]
 fn bindgen_test_layout_A__bindgen_ty_2() {
-    assert_eq!(::std::mem::size_of::<A__bindgen_ty_2>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( A__bindgen_ty_2 ) ));
-    assert_eq! (::std::mem::align_of::<A__bindgen_ty_2>() , 4usize , concat !
-                ( "Alignment of " , stringify ! ( A__bindgen_ty_2 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const A__bindgen_ty_2 ) ) . d as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( A__bindgen_ty_2 ) ,
-                "::" , stringify ! ( d ) ));
+    assert_eq!(
+        ::std::mem::size_of::<A__bindgen_ty_2>(),
+        4usize,
+        concat!("Size of: ", stringify!(A__bindgen_ty_2))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<A__bindgen_ty_2>(),
+        4usize,
+        concat!("Alignment of ", stringify!(A__bindgen_ty_2))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const A__bindgen_ty_2)).d as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(A__bindgen_ty_2),
+            "::",
+            stringify!(d)
+        )
+    );
 }
 impl Clone for A__bindgen_ty_2 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[test]
 fn bindgen_test_layout_A() {
-    assert_eq!(::std::mem::size_of::<A>() , 12usize , concat ! (
-               "Size of: " , stringify ! ( A ) ));
-    assert_eq! (::std::mem::align_of::<A>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( A ) ));
-    assert_eq! (unsafe { & ( * ( 0 as * const A ) ) . c as * const _ as usize
-                } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( A ) , "::" , stringify
-                ! ( c ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const A ) ) . named_union as * const _ as usize
-                } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( A ) , "::" , stringify
-                ! ( named_union ) ));
+    assert_eq!(
+        ::std::mem::size_of::<A>(),
+        12usize,
+        concat!("Size of: ", stringify!(A))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<A>(),
+        4usize,
+        concat!("Alignment of ", stringify!(A))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const A)).c as *const _ as usize },
+        0usize,
+        concat!("Alignment of field: ", stringify!(A), "::", stringify!(c))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const A)).named_union as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(A),
+            "::",
+            stringify!(named_union)
+        )
+    );
 }
 impl Clone for A {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
@@ -142,37 +212,64 @@ pub struct B_Segment {
 }
 #[test]
 fn bindgen_test_layout_B_Segment() {
-    assert_eq!(::std::mem::size_of::<B_Segment>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( B_Segment ) ));
-    assert_eq! (::std::mem::align_of::<B_Segment>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( B_Segment ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const B_Segment ) ) . begin as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( B_Segment ) , "::" ,
-                stringify ! ( begin ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const B_Segment ) ) . end as * const _ as usize
-                } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( B_Segment ) , "::" ,
-                stringify ! ( end ) ));
+    assert_eq!(
+        ::std::mem::size_of::<B_Segment>(),
+        8usize,
+        concat!("Size of: ", stringify!(B_Segment))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<B_Segment>(),
+        4usize,
+        concat!("Alignment of ", stringify!(B_Segment))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const B_Segment)).begin as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(B_Segment),
+            "::",
+            stringify!(begin)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const B_Segment)).end as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(B_Segment),
+            "::",
+            stringify!(end)
+        )
+    );
 }
 impl Clone for B_Segment {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[test]
 fn bindgen_test_layout_B() {
-    assert_eq!(::std::mem::size_of::<B>() , 4usize , concat ! (
-               "Size of: " , stringify ! ( B ) ));
-    assert_eq! (::std::mem::align_of::<B>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( B ) ));
-    assert_eq! (unsafe { & ( * ( 0 as * const B ) ) . d as * const _ as usize
-                } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( B ) , "::" , stringify
-                ! ( d ) ));
+    assert_eq!(
+        ::std::mem::size_of::<B>(),
+        4usize,
+        concat!("Size of: ", stringify!(B))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<B>(),
+        4usize,
+        concat!("Alignment of ", stringify!(B))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const B)).d as *const _ as usize },
+        0usize,
+        concat!("Alignment of field: ", stringify!(B), "::", stringify!(d))
+    );
 }
 impl Clone for B {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -205,40 +302,61 @@ pub struct C__bindgen_ty_1__bindgen_ty_1 {
 }
 #[test]
 fn bindgen_test_layout_C__bindgen_ty_1__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<C__bindgen_ty_1__bindgen_ty_1>() ,
-               16usize , concat ! (
-               "Size of: " , stringify ! ( C__bindgen_ty_1__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<C__bindgen_ty_1__bindgen_ty_1>() ,
-                4usize , concat ! (
-                "Alignment of " , stringify ! ( C__bindgen_ty_1__bindgen_ty_1
-                ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const C__bindgen_ty_1__bindgen_ty_1 ) ) . mX1
-                as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                C__bindgen_ty_1__bindgen_ty_1 ) , "::" , stringify ! ( mX1 )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const C__bindgen_ty_1__bindgen_ty_1 ) ) . mY1
-                as * const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                C__bindgen_ty_1__bindgen_ty_1 ) , "::" , stringify ! ( mY1 )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const C__bindgen_ty_1__bindgen_ty_1 ) ) . mX2
-                as * const _ as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                C__bindgen_ty_1__bindgen_ty_1 ) , "::" , stringify ! ( mX2 )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const C__bindgen_ty_1__bindgen_ty_1 ) ) . mY2
-                as * const _ as usize } , 12usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                C__bindgen_ty_1__bindgen_ty_1 ) , "::" , stringify ! ( mY2 )
-                ));
+    assert_eq!(
+        ::std::mem::size_of::<C__bindgen_ty_1__bindgen_ty_1>(),
+        16usize,
+        concat!("Size of: ", stringify!(C__bindgen_ty_1__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<C__bindgen_ty_1__bindgen_ty_1>(),
+        4usize,
+        concat!("Alignment of ", stringify!(C__bindgen_ty_1__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const C__bindgen_ty_1__bindgen_ty_1)).mX1 as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(C__bindgen_ty_1__bindgen_ty_1),
+            "::",
+            stringify!(mX1)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const C__bindgen_ty_1__bindgen_ty_1)).mY1 as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(C__bindgen_ty_1__bindgen_ty_1),
+            "::",
+            stringify!(mY1)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const C__bindgen_ty_1__bindgen_ty_1)).mX2 as *const _ as usize },
+        8usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(C__bindgen_ty_1__bindgen_ty_1),
+            "::",
+            stringify!(mX2)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const C__bindgen_ty_1__bindgen_ty_1)).mY2 as *const _ as usize },
+        12usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(C__bindgen_ty_1__bindgen_ty_1),
+            "::",
+            stringify!(mY2)
+        )
+    );
 }
 impl Clone for C__bindgen_ty_1__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Copy, Hash, PartialEq, Eq)]
@@ -248,46 +366,74 @@ pub struct C__bindgen_ty_1__bindgen_ty_2 {
 }
 #[test]
 fn bindgen_test_layout_C__bindgen_ty_1__bindgen_ty_2() {
-    assert_eq!(::std::mem::size_of::<C__bindgen_ty_1__bindgen_ty_2>() , 8usize
-               , concat ! (
-               "Size of: " , stringify ! ( C__bindgen_ty_1__bindgen_ty_2 ) ));
-    assert_eq! (::std::mem::align_of::<C__bindgen_ty_1__bindgen_ty_2>() ,
-                4usize , concat ! (
-                "Alignment of " , stringify ! ( C__bindgen_ty_1__bindgen_ty_2
-                ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const C__bindgen_ty_1__bindgen_ty_2 ) ) .
-                mStepSyntax as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                C__bindgen_ty_1__bindgen_ty_2 ) , "::" , stringify ! (
-                mStepSyntax ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const C__bindgen_ty_1__bindgen_ty_2 ) ) .
-                mSteps as * const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                C__bindgen_ty_1__bindgen_ty_2 ) , "::" , stringify ! ( mSteps
-                ) ));
+    assert_eq!(
+        ::std::mem::size_of::<C__bindgen_ty_1__bindgen_ty_2>(),
+        8usize,
+        concat!("Size of: ", stringify!(C__bindgen_ty_1__bindgen_ty_2))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<C__bindgen_ty_1__bindgen_ty_2>(),
+        4usize,
+        concat!("Alignment of ", stringify!(C__bindgen_ty_1__bindgen_ty_2))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const C__bindgen_ty_1__bindgen_ty_2)).mStepSyntax as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(C__bindgen_ty_1__bindgen_ty_2),
+            "::",
+            stringify!(mStepSyntax)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const C__bindgen_ty_1__bindgen_ty_2)).mSteps as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(C__bindgen_ty_1__bindgen_ty_2),
+            "::",
+            stringify!(mSteps)
+        )
+    );
 }
 impl Clone for C__bindgen_ty_1__bindgen_ty_2 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for C__bindgen_ty_1__bindgen_ty_2 {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[test]
 fn bindgen_test_layout_C__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<C__bindgen_ty_1>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( C__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<C__bindgen_ty_1>() , 4usize , concat !
-                ( "Alignment of " , stringify ! ( C__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const C__bindgen_ty_1 ) ) . mFunc as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( C__bindgen_ty_1 ) ,
-                "::" , stringify ! ( mFunc ) ));
+    assert_eq!(
+        ::std::mem::size_of::<C__bindgen_ty_1>(),
+        16usize,
+        concat!("Size of: ", stringify!(C__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<C__bindgen_ty_1>(),
+        4usize,
+        concat!("Alignment of ", stringify!(C__bindgen_ty_1))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const C__bindgen_ty_1)).mFunc as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(C__bindgen_ty_1),
+            "::",
+            stringify!(mFunc)
+        )
+    );
 }
 impl Clone for C__bindgen_ty_1 {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
@@ -297,35 +443,62 @@ pub struct C_Segment {
 }
 #[test]
 fn bindgen_test_layout_C_Segment() {
-    assert_eq!(::std::mem::size_of::<C_Segment>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( C_Segment ) ));
-    assert_eq! (::std::mem::align_of::<C_Segment>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( C_Segment ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const C_Segment ) ) . begin as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( C_Segment ) , "::" ,
-                stringify ! ( begin ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const C_Segment ) ) . end as * const _ as usize
-                } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( C_Segment ) , "::" ,
-                stringify ! ( end ) ));
+    assert_eq!(
+        ::std::mem::size_of::<C_Segment>(),
+        8usize,
+        concat!("Size of: ", stringify!(C_Segment))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<C_Segment>(),
+        4usize,
+        concat!("Alignment of ", stringify!(C_Segment))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const C_Segment)).begin as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(C_Segment),
+            "::",
+            stringify!(begin)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const C_Segment)).end as *const _ as usize },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(C_Segment),
+            "::",
+            stringify!(end)
+        )
+    );
 }
 impl Clone for C_Segment {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[test]
 fn bindgen_test_layout_C() {
-    assert_eq!(::std::mem::size_of::<C>() , 20usize , concat ! (
-               "Size of: " , stringify ! ( C ) ));
-    assert_eq! (::std::mem::align_of::<C>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( C ) ));
-    assert_eq! (unsafe { & ( * ( 0 as * const C ) ) . d as * const _ as usize
-                } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( C ) , "::" , stringify
-                ! ( d ) ));
+    assert_eq!(
+        ::std::mem::size_of::<C>(),
+        20usize,
+        concat!("Size of: ", stringify!(C))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<C>(),
+        4usize,
+        concat!("Alignment of ", stringify!(C))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const C)).d as *const _ as usize },
+        0usize,
+        concat!("Alignment of field: ", stringify!(C), "::", stringify!(d))
+    );
 }
 impl Clone for C {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }

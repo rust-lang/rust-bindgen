@@ -14,20 +14,31 @@ pub struct nsID {
 }
 #[test]
 fn bindgen_test_layout_nsID() {
-    assert_eq!(::std::mem::size_of::<nsID>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( nsID ) ));
-    assert_eq! (::std::mem::align_of::<nsID>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( nsID ) ));
+    assert_eq!(
+        ::std::mem::size_of::<nsID>(),
+        8usize,
+        concat!("Size of: ", stringify!(nsID))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<nsID>(),
+        8usize,
+        concat!("Alignment of ", stringify!(nsID))
+    );
 }
 impl Clone for nsID {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for nsID {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 extern "C" {
     #[link_name = "\u{1}_ZN4nsID16ToProvidedStringERA10_c"]
-    pub fn nsID_ToProvidedString(this: *mut ::std::os::raw::c_void,
-                                 aDest:
-                                     *mut [::std::os::raw::c_char; 10usize]);
+    pub fn nsID_ToProvidedString(
+        this: *mut ::std::os::raw::c_void,
+        aDest: *mut [::std::os::raw::c_char; 10usize],
+    );
 }

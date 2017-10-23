@@ -13,21 +13,31 @@ pub struct A {
 pub type A_a = b;
 #[test]
 fn bindgen_test_layout_A() {
-    assert_eq!(::std::mem::size_of::<A>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( A ) ));
-    assert_eq! (::std::mem::align_of::<A>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( A ) ));
+    assert_eq!(
+        ::std::mem::size_of::<A>(),
+        1usize,
+        concat!("Size of: ", stringify!(A))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<A>(),
+        1usize,
+        concat!("Alignment of ", stringify!(A))
+    );
 }
 impl Clone for A {
-    fn clone(&self) -> Self { *self }
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 #[repr(C)]
 pub struct e<c> {
     pub d: RefPtr<c>,
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<c>>,
 }
-impl <c> Default for e<c> {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+impl<c> Default for e<c> {
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -40,17 +50,26 @@ pub struct g {
 }
 #[test]
 fn bindgen_test_layout_g() {
-    assert_eq!(::std::mem::size_of::<g>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( g ) ));
-    assert_eq! (::std::mem::align_of::<g>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( g ) ));
-    assert_eq! (unsafe { & ( * ( 0 as * const g ) ) . h as * const _ as usize
-                } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( g ) , "::" , stringify
-                ! ( h ) ));
+    assert_eq!(
+        ::std::mem::size_of::<g>(),
+        1usize,
+        concat!("Size of: ", stringify!(g))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<g>(),
+        1usize,
+        concat!("Alignment of ", stringify!(g))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const g)).h as *const _ as usize },
+        0usize,
+        concat!("Alignment of field: ", stringify!(g), "::", stringify!(h))
+    );
 }
 impl Default for g {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 #[repr(C)]
 pub struct b {
@@ -58,13 +77,21 @@ pub struct b {
 }
 #[test]
 fn bindgen_test_layout_b() {
-    assert_eq!(::std::mem::size_of::<b>() , 1usize , concat ! (
-               "Size of: " , stringify ! ( b ) ));
-    assert_eq! (::std::mem::align_of::<b>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( b ) ));
+    assert_eq!(
+        ::std::mem::size_of::<b>(),
+        1usize,
+        concat!("Size of: ", stringify!(b))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<b>(),
+        1usize,
+        concat!("Alignment of ", stringify!(b))
+    );
 }
 impl Default for b {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }
 extern "C" {
     #[link_name = "\u{1}_Z25Servo_Element_GetSnapshotv"]
@@ -72,9 +99,14 @@ extern "C" {
 }
 #[test]
 fn __bindgen_test_layout_f_open0_e_open1_int_close1_close0_instantiation() {
-    assert_eq!(::std::mem::size_of::<f>() , 1usize , concat ! (
-               "Size of template specialization: " , stringify ! ( f ) ));
-    assert_eq!(::std::mem::align_of::<f>() , 1usize , concat ! (
-               "Alignment of template specialization: " , stringify ! ( f )
-               ));
+    assert_eq!(
+        ::std::mem::size_of::<f>(),
+        1usize,
+        concat!("Size of template specialization: ", stringify!(f))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<f>(),
+        1usize,
+        concat!("Alignment of template specialization: ", stringify!(f))
+    );
 }

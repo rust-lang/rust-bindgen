@@ -16,5 +16,7 @@ pub struct CrtpIgnoresU {
     pub y: ::std::os::raw::c_int,
 }
 impl Default for CrtpIgnoresU {
-    fn default() -> Self { unsafe { ::std::mem::zeroed() } }
+    fn default() -> Self {
+        unsafe { ::std::mem::zeroed() }
+    }
 }

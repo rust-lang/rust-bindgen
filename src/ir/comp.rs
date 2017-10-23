@@ -1012,7 +1012,7 @@ impl CompInfo {
 
     /// Is this compound type unsized?
     pub fn is_unsized(&self, ctx: &BindgenContext, id: TypeId) -> bool {
-        !ctx.lookup_has_vtable(id) && self.fields().is_empty() &&
+        !id.has_vtable(ctx) && self.fields().is_empty() &&
             self.base_members.iter().all(|base| {
                 ctx.resolve_type(base.ty).canonical_type(ctx).is_unsized(
                     ctx,
@@ -1449,27 +1449,6 @@ impl CompInfo {
     /// Is this compound type packed?
     pub fn packed(&self) -> bool {
         self.packed
-    }
-
-    /// Returns whether this type needs an explicit vtable because it has
-    /// virtual methods and none of its base classes has already a vtable.
-    pub fn needs_explicit_vtable(
-        &self,
-        ctx: &BindgenContext,
-        item: &Item,
-    ) -> bool {
-        item.has_vtable(ctx) && !self.base_members.iter().any(|base| {
-            // NB: Ideally, we could rely in all these types being `comp`, and
-            // life would be beautiful.
-            //
-            // Unfortunately, given the way we implement --match-pat, and also
-            // that you can inherit from templated types, we need to handle
-            // other cases here too.
-            ctx.resolve_type(base.ty)
-                .canonical_type(ctx)
-                .as_comp()
-                .map_or(false, |_| base.ty.has_vtable(ctx))
-        })
     }
 
     /// Returns true if compound type has been forward declared

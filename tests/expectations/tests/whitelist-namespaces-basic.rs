@@ -21,13 +21,21 @@ pub mod root {
             }
             #[test]
             fn bindgen_test_layout_Helper() {
-                assert_eq!(::std::mem::size_of::<Helper>() , 1usize , concat !
-                           ( "Size of: " , stringify ! ( Helper ) ));
-                assert_eq! (::std::mem::align_of::<Helper>() , 1usize , concat
-                            ! ( "Alignment of " , stringify ! ( Helper ) ));
+                assert_eq!(
+                    ::std::mem::size_of::<Helper>(),
+                    1usize,
+                    concat!("Size of: ", stringify!(Helper))
+                );
+                assert_eq!(
+                    ::std::mem::align_of::<Helper>(),
+                    1usize,
+                    concat!("Alignment of ", stringify!(Helper))
+                );
             }
             impl Clone for Helper {
-                fn clone(&self) -> Self { *self }
+                fn clone(&self) -> Self {
+                    *self
+                }
             }
         }
     }

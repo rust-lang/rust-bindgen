@@ -30,7 +30,7 @@ pub mod root {
             );
         }
         extern "C" {
-    #[link_name = "\u{1}_ZN2JS5Value1aE10JSWhyMagic"]
+            #[link_name = "\u{1}_ZN2JS5Value1aE10JSWhyMagic"]
             pub fn Value_a(this: *mut root::JS::Value, arg1: root::JSWhyMagic);
         }
         impl Clone for Value {
@@ -46,5 +46,5 @@ pub mod root {
         }
     }
     #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-    pub enum JSWhyMagic { }
+    pub enum JSWhyMagic {}
 }

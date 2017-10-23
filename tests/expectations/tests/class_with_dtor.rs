@@ -56,8 +56,15 @@ fn __bindgen_test_layout_HandleWithDtor_open0_int_close0_instantiation() {
         8usize,
         concat!(
             "Size of template specialization: ",
-            stringify ! ( HandleWithDtor < :: std :: os :: raw :: c_int > )
+            stringify!(HandleWithDtor<::std::os::raw::c_int>)
         )
     );
-    assert_eq ! ( :: std :: mem :: align_of :: < HandleWithDtor < :: std :: os :: raw :: c_int > > ( ) , 8usize , concat ! ( "Alignment of template specialization: " , stringify ! ( HandleWithDtor < :: std :: os :: raw :: c_int > ) ) );
+    assert_eq!(
+        ::std::mem::align_of::<HandleWithDtor<::std::os::raw::c_int>>(),
+        8usize,
+        concat!(
+            "Alignment of template specialization: ",
+            stringify!(HandleWithDtor<::std::os::raw::c_int>)
+        )
+    );
 }
