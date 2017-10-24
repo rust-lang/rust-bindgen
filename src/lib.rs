@@ -1542,7 +1542,27 @@ impl Bindings {
             }
         }
 
+        #[cfg(unix)]
+        fn can_read(perms: &std::fs::Permissions) -> bool {
+            use std::os::unix::fs::PermissionsExt;
+            perms.mode() & 0o444 > 0
+        }
+
+        #[cfg(not(unix))]
+        fn can_read(_: &std::fs::Permissions) -> bool {
+            true
+        }
+
         if let Some(h) = options.input_header.as_ref() {
+            let md = std::fs::metadata(h).ok().unwrap();
+            if !md.is_file() {
+                eprintln!("error: '{}' is a folder", h);
+                return Err(());
+            }
+            if !can_read(&md.permissions()) {
+                eprintln!("error: insufficient permissions to read '{}'", h);
+                return Err(());
+            }
             options.clang_args.push(h.clone())
         }
 
