@@ -187,7 +187,10 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
                     return self.insert(id);
                 }
 
-                if len <= RUST_DERIVE_IN_ARRAY_LIMIT {
+                if len == 0 {
+                    trace!("    cannot derive `Hash` for incomplete arrays");
+                    self.insert(id)
+                } else if len <= RUST_DERIVE_IN_ARRAY_LIMIT {
                     trace!("    array is small enough to derive Hash");
                     ConstrainResult::Same
                 } else {

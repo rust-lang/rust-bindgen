@@ -190,6 +190,47 @@ impl Default for C_with_zero_length_array {
     }
 }
 #[repr(C)]
+#[derive(Debug, Default)]
+pub struct C_with_zero_length_array_2 {
+    pub a: ::std::os::raw::c_int,
+    pub zero_length_array: __IncompleteArrayField<::std::os::raw::c_char>,
+}
+#[test]
+fn bindgen_test_layout_C_with_zero_length_array_2() {
+    assert_eq!(
+        ::std::mem::size_of::<C_with_zero_length_array_2>(),
+        4usize,
+        concat!("Size of: ", stringify!(C_with_zero_length_array_2))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<C_with_zero_length_array_2>(),
+        4usize,
+        concat!("Alignment of ", stringify!(C_with_zero_length_array_2))
+    );
+    assert_eq!(
+        unsafe { &(*(0 as *const C_with_zero_length_array_2)).a as *const _ as usize },
+        0usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(C_with_zero_length_array_2),
+            "::",
+            stringify!(a)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(0 as *const C_with_zero_length_array_2)).zero_length_array as *const _ as usize
+        },
+        4usize,
+        concat!(
+            "Alignment of field: ",
+            stringify!(C_with_zero_length_array_2),
+            "::",
+            stringify!(zero_length_array)
+        )
+    );
+}
+#[repr(C)]
 pub struct C_with_incomplete_array {
     pub a: ::std::os::raw::c_int,
     pub big_array: [::std::os::raw::c_char; 33usize],
@@ -212,6 +253,25 @@ impl Default for C_with_incomplete_array {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
+}
+#[repr(C)]
+#[derive(Debug, Default)]
+pub struct C_with_incomplete_array_2 {
+    pub a: ::std::os::raw::c_int,
+    pub incomplete_array: __IncompleteArrayField<::std::os::raw::c_char>,
+}
+#[test]
+fn bindgen_test_layout_C_with_incomplete_array_2() {
+    assert_eq!(
+        ::std::mem::size_of::<C_with_incomplete_array_2>(),
+        4usize,
+        concat!("Size of: ", stringify!(C_with_incomplete_array_2))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<C_with_incomplete_array_2>(),
+        4usize,
+        concat!("Alignment of ", stringify!(C_with_incomplete_array_2))
+    );
 }
 #[repr(C)]
 pub struct C_with_zero_length_array_and_incomplete_array {
@@ -243,6 +303,32 @@ impl Default for C_with_zero_length_array_and_incomplete_array {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
+}
+#[repr(C)]
+#[derive(Debug, Default)]
+pub struct C_with_zero_length_array_and_incomplete_array_2 {
+    pub a: ::std::os::raw::c_int,
+    pub zero_length_array: __IncompleteArrayField<::std::os::raw::c_char>,
+    pub incomplete_array: __IncompleteArrayField<::std::os::raw::c_char>,
+}
+#[test]
+fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array_2() {
+    assert_eq!(
+        ::std::mem::size_of::<C_with_zero_length_array_and_incomplete_array_2>(),
+        4usize,
+        concat!(
+            "Size of: ",
+            stringify!(C_with_zero_length_array_and_incomplete_array_2)
+        )
+    );
+    assert_eq!(
+        ::std::mem::align_of::<C_with_zero_length_array_and_incomplete_array_2>(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(C_with_zero_length_array_and_incomplete_array_2)
+        )
+    );
 }
 #[repr(C)]
 #[derive(Debug, Default, Hash, PartialEq, Eq)]
