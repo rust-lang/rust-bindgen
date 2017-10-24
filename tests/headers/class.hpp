@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq
+// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq --with-derive-partialord --with-derive-ord
 //
 class C {
     int a;
@@ -13,6 +13,11 @@ class C_with_zero_length_array {
     char zero_length_array[0];
 };
 
+class C_with_zero_length_array_2 {
+    int a;
+    char zero_length_array[0];
+};
+
 class C_with_incomplete_array {
     int a;
     // More than rust limits (32)
@@ -20,10 +25,21 @@ class C_with_incomplete_array {
     char incomplete_array[];
 };
 
+class C_with_incomplete_array_2 {
+    int a;
+    char incomplete_array[];
+};
+
 class C_with_zero_length_array_and_incomplete_array {
     int a;
     // More than rust limits (32)
     char big_array[33];
+    char zero_length_array[0];
+    char incomplete_array[];
+};
+
+class C_with_zero_length_array_and_incomplete_array_2 {
+    int a;
     char zero_length_array[0];
     char incomplete_array[];
 };
