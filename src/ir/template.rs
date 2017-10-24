@@ -214,16 +214,13 @@ pub struct TemplateInstantiation {
 
 impl TemplateInstantiation {
     /// Construct a new template instantiation from the given parts.
-    pub fn new<I>(
-        template_definition: TypeId,
-        template_args: I,
-    ) -> TemplateInstantiation
+    pub fn new<I>(definition: TypeId, args: I) -> TemplateInstantiation
     where
         I: IntoIterator<Item = TypeId>,
     {
         TemplateInstantiation {
-            definition: template_definition,
-            args: template_args.into_iter().collect(),
+            definition,
+            args: args.into_iter().collect(),
         }
     }
 

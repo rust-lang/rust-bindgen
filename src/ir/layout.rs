@@ -33,8 +33,8 @@ impl Layout {
     /// packed.
     pub fn new(size: usize, align: usize) -> Self {
         Layout {
-            size: size,
-            align: align,
+            size,
+            align,
             packed: false,
         }
     }

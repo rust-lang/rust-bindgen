@@ -62,9 +62,9 @@ impl Method {
     /// Construct a new `Method`.
     pub fn new(kind: MethodKind, signature: FunctionId, is_const: bool) -> Self {
         Method {
-            kind: kind,
-            signature: signature,
-            is_const: is_const,
+            kind,
+            signature,
+            is_const,
         }
     }
 
@@ -311,7 +311,7 @@ impl Bitfield {
         assert!(raw.bitfield_width().is_some());
 
         Bitfield {
-            offset_into_unit: offset_into_unit,
+            offset_into_unit,
             data: raw.0,
             getter_name: None,
             setter_name: None,
@@ -420,13 +420,13 @@ impl RawField {
         offset: Option<usize>,
     ) -> RawField {
         RawField(FieldData {
-            name: name,
-            ty: ty,
-            comment: comment,
+            name,
+            ty,
+            comment,
             annotations: annotations.unwrap_or_default(),
-            bitfield_width: bitfield_width,
-            mutable: mutable,
-            offset: offset,
+            bitfield_width,
+            mutable,
+            offset,
         })
     }
 }

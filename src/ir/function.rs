@@ -88,18 +88,18 @@ impl Function {
     pub fn new(
         name: String,
         mangled_name: Option<String>,
-        sig: TypeId,
+        signature: TypeId,
         comment: Option<String>,
         kind: FunctionKind,
         linkage: Linkage
     ) -> Self {
         Function {
-            name: name,
-            mangled_name: mangled_name,
-            signature: sig,
-            comment: comment,
-            kind: kind,
-            linkage: linkage
+            name,
+            mangled_name,
+            signature,
+            comment,
+            kind,
+            linkage,
         }
     }
 
