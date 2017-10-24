@@ -20,7 +20,7 @@ use ir::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
                  CanDerivePartialEq, CanDeriveEq, CannotDeriveReason};
 use ir::dot;
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
-use ir::function::{Abi, Function, FunctionSig};
+use ir::function::{Abi, Function, FunctionSig, Linkage};
 use ir::int::IntKind;
 use ir::item::{IsOpaque, Item, ItemCanonicalName, ItemCanonicalPath};
 use ir::item_kind::ItemKind;
@@ -3126,6 +3126,13 @@ impl CodeGenerator for Function {
     ) {
         debug!("<Function as CodeGenerator>::codegen: item = {:?}", item);
         debug_assert!(item.is_enabled_for_codegen(ctx));
+
+        // We can't currently do anything with Internal functions so just
+        // avoid generating anything for them.
+        match self.linkage() {
+            Linkage::Internal => return,
+            Linkage::External => {}
+        }
 
         // Similar to static member variables in a class template, we can't
         // generate bindings to template functions, because the set of

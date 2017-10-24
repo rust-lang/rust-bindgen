@@ -49,6 +49,15 @@ impl FunctionKind {
     }
 }
 
+/// The style of linkage
+#[derive(Debug, Clone, Copy)]
+pub enum Linkage {
+    /// Externally visible and can be linked against
+    External,
+    /// Not exposed externally. 'static inline' functions will have this kind of linkage
+    Internal
+}
+
 /// A function declaration, with a signature, arguments, and argument names.
 ///
 /// The argument names vector must be the same length as the ones in the
@@ -69,6 +78,9 @@ pub struct Function {
 
     /// The kind of function this is.
     kind: FunctionKind,
+
+    /// The linkage of the function.
+    linkage: Linkage,
 }
 
 impl Function {
@@ -79,6 +91,7 @@ impl Function {
         sig: TypeId,
         comment: Option<String>,
         kind: FunctionKind,
+        linkage: Linkage
     ) -> Self {
         Function {
             name: name,
@@ -86,6 +99,7 @@ impl Function {
             signature: sig,
             comment: comment,
             kind: kind,
+            linkage: linkage
         }
     }
 
@@ -108,6 +122,12 @@ impl Function {
     pub fn kind(&self) -> FunctionKind {
         self.kind
     }
+
+    /// Get this function's linkage.
+    pub fn linkage(&self) -> Linkage {
+        self.linkage
+    }
+
 }
 
 impl DotAttributes for Function {
@@ -477,11 +497,11 @@ impl ClangSubItemParser for Function {
         }
 
         let linkage = cursor.linkage();
-        if linkage != CXLinkage_External &&
-            linkage != CXLinkage_UniqueExternal
-        {
-            return Err(ParseError::Continue);
-        }
+        let linkage = match linkage {
+            CXLinkage_External | CXLinkage_UniqueExternal => Linkage::External,
+            CXLinkage_Internal => Linkage::Internal,
+            _ => return Err(ParseError::Continue)
+        };
 
         // Grab the signature using Item::from_ty.
         let sig =
@@ -511,7 +531,7 @@ impl ClangSubItemParser for Function {
 
         let comment = cursor.raw_comment();
 
-        let function = Self::new(name, mangled_name, sig, comment, kind);
+        let function = Self::new(name, mangled_name, sig, comment, kind, linkage);
         Ok(ParseResult::New(function, Some(cursor)))
     }
 }
