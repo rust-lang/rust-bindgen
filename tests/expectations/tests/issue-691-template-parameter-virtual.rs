@@ -7,7 +7,7 @@
 #[repr(C)]
 pub struct VirtualMethods__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct VirtualMethods {
     pub vtable_: *const VirtualMethods__bindgen_vtable,
 }
@@ -24,11 +24,6 @@ fn bindgen_test_layout_VirtualMethods() {
         concat!("Alignment of ", stringify!(VirtualMethods))
     );
 }
-impl Clone for VirtualMethods {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for VirtualMethods {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -40,7 +35,7 @@ pub struct Set {
     pub bar: ::std::os::raw::c_int,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct ServoElementSnapshotTable {
     pub _base: Set,
 }
@@ -56,11 +51,6 @@ fn bindgen_test_layout_ServoElementSnapshotTable() {
         4usize,
         concat!("Alignment of ", stringify!(ServoElementSnapshotTable))
     );
-}
-impl Clone for ServoElementSnapshotTable {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for ServoElementSnapshotTable {
     fn default() -> Self {

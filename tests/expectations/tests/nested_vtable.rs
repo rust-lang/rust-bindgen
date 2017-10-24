@@ -7,7 +7,7 @@
 #[repr(C)]
 pub struct nsISupports__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct nsISupports {
     pub vtable_: *const nsISupports__bindgen_vtable,
 }
@@ -24,11 +24,6 @@ fn bindgen_test_layout_nsISupports() {
         concat!("Alignment of ", stringify!(nsISupports))
     );
 }
-impl Clone for nsISupports {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for nsISupports {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -39,7 +34,7 @@ extern "C" {
     pub fn nsISupports_QueryInterface(this: *mut ::std::os::raw::c_void) -> *mut nsISupports;
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct nsIRunnable {
     pub _base: nsISupports,
 }
@@ -56,18 +51,13 @@ fn bindgen_test_layout_nsIRunnable() {
         concat!("Alignment of ", stringify!(nsIRunnable))
     );
 }
-impl Clone for nsIRunnable {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for nsIRunnable {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct Runnable {
     pub _base: nsIRunnable,
 }
@@ -83,11 +73,6 @@ fn bindgen_test_layout_Runnable() {
         8usize,
         concat!("Alignment of ", stringify!(Runnable))
     );
-}
-impl Clone for Runnable {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for Runnable {
     fn default() -> Self {

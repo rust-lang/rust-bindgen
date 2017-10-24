@@ -11,7 +11,7 @@ pub struct __BindgenComplex<T> {
     pub im: T,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct TestDouble {
     pub mMember: __BindgenComplex<f64>,
 }
@@ -38,13 +38,8 @@ fn bindgen_test_layout_TestDouble() {
         )
     );
 }
-impl Clone for TestDouble {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct TestDoublePtr {
     pub mMember: *mut __BindgenComplex<f64>,
 }
@@ -71,18 +66,13 @@ fn bindgen_test_layout_TestDoublePtr() {
         )
     );
 }
-impl Clone for TestDoublePtr {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for TestDoublePtr {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct TestFloat {
     pub mMember: __BindgenComplex<f32>,
 }
@@ -109,13 +99,8 @@ fn bindgen_test_layout_TestFloat() {
         )
     );
 }
-impl Clone for TestFloat {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct TestFloatPtr {
     pub mMember: *mut __BindgenComplex<f32>,
 }
@@ -141,11 +126,6 @@ fn bindgen_test_layout_TestFloatPtr() {
             stringify!(mMember)
         )
     );
-}
-impl Clone for TestFloatPtr {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for TestFloatPtr {
     fn default() -> Self {

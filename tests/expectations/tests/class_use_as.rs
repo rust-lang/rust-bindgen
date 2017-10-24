@@ -7,7 +7,7 @@
 
 /// <div rustbindgen="true" replaces="whatever"></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct whatever {
     pub replacement: ::std::os::raw::c_int,
 }
@@ -34,13 +34,8 @@ fn bindgen_test_layout_whatever() {
         )
     );
 }
-impl Clone for whatever {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct container {
     pub c: whatever,
 }
@@ -66,9 +61,4 @@ fn bindgen_test_layout_container() {
             stringify!(c)
         )
     );
-}
-impl Clone for container {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

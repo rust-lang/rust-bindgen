@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct UnknownUnits {
     pub _address: u8,
 }
@@ -21,11 +21,6 @@ fn bindgen_test_layout_UnknownUnits() {
         1usize,
         concat!("Alignment of ", stringify!(UnknownUnits))
     );
-}
-impl Clone for UnknownUnits {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 pub type Float = f32;
 #[repr(C)]

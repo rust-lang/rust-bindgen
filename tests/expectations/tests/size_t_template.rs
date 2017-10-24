@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct C {
     pub arr: [u32; 3usize],
 }
@@ -26,9 +26,4 @@ fn bindgen_test_layout_C() {
         0usize,
         concat!("Alignment of field: ", stringify!(C), "::", stringify!(arr))
     );
-}
-impl Clone for C {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

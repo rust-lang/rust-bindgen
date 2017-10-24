@@ -19,7 +19,7 @@ pub mod root {
         pub type Maybe_ValueType<T> = T;
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy)]
+    #[derive(Debug, Default, Copy, Clone)]
     pub struct CapturingContentInfo {
         pub a: u8,
     }
@@ -45,10 +45,5 @@ pub mod root {
                 stringify!(a)
             )
         );
-    }
-    impl Clone for CapturingContentInfo {
-        fn clone(&self) -> Self {
-            *self
-        }
     }
 }

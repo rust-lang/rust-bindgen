@@ -22,7 +22,7 @@ pub mod root {
             pub i_am_wrapper_sentry: ::std::os::raw::c_int,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct sentry {
             pub i_am_plain_sentry: bool,
         }
@@ -49,13 +49,8 @@ pub mod root {
                 )
             );
         }
-        impl Clone for sentry {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct NotTemplateWrapper {
             pub _address: u8,
         }
@@ -72,13 +67,8 @@ pub mod root {
                 concat!("Alignment of ", stringify!(NotTemplateWrapper))
             );
         }
-        impl Clone for NotTemplateWrapper {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct NotTemplateWrapper_sentry {
             pub i_am_not_template_wrapper_sentry: ::std::os::raw::c_char,
         }
@@ -108,18 +98,13 @@ pub mod root {
                 )
             );
         }
-        impl Clone for NotTemplateWrapper_sentry {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct InlineNotTemplateWrapper {
             pub _address: u8,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct InlineNotTemplateWrapper_sentry {
             pub i_am_inline_not_template_wrapper_sentry: bool,
         }
@@ -150,11 +135,6 @@ pub mod root {
                 )
             );
         }
-        impl Clone for InlineNotTemplateWrapper_sentry {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         #[test]
         fn bindgen_test_layout_InlineNotTemplateWrapper() {
             assert_eq!(
@@ -168,11 +148,6 @@ pub mod root {
                 concat!("Alignment of ", stringify!(InlineNotTemplateWrapper))
             );
         }
-        impl Clone for InlineNotTemplateWrapper {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
         pub struct InlineTemplateWrapper {
@@ -184,12 +159,12 @@ pub mod root {
             pub i_am_inline_template_wrapper_sentry: ::std::os::raw::c_int,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct OuterDoubleWrapper {
             pub _address: u8,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct OuterDoubleWrapper_InnerDoubleWrapper {
             pub _address: u8,
         }
@@ -212,11 +187,6 @@ pub mod root {
                 )
             );
         }
-        impl Clone for OuterDoubleWrapper_InnerDoubleWrapper {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         #[test]
         fn bindgen_test_layout_OuterDoubleWrapper() {
             assert_eq!(
@@ -230,13 +200,8 @@ pub mod root {
                 concat!("Alignment of ", stringify!(OuterDoubleWrapper))
             );
         }
-        impl Clone for OuterDoubleWrapper {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct OuterDoubleWrapper_InnerDoubleWrapper_sentry {
             pub i_am_double_wrapper_sentry: ::std::os::raw::c_int,
         }
@@ -272,23 +237,18 @@ pub mod root {
                 )
             );
         }
-        impl Clone for OuterDoubleWrapper_InnerDoubleWrapper_sentry {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct OuterDoubleInlineWrapper {
             pub _address: u8,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct OuterDoubleInlineWrapper_InnerDoubleInlineWrapper {
             pub _address: u8,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry {
             pub i_am_double_wrapper_inline_sentry: ::std::os::raw::c_int,
         }
@@ -324,11 +284,6 @@ pub mod root {
                 )
             );
         }
-        impl Clone for OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         #[test]
         fn bindgen_test_layout_OuterDoubleInlineWrapper_InnerDoubleInlineWrapper() {
             assert_eq!(
@@ -348,11 +303,6 @@ pub mod root {
                 )
             );
         }
-        impl Clone for OuterDoubleInlineWrapper_InnerDoubleInlineWrapper {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         #[test]
         fn bindgen_test_layout_OuterDoubleInlineWrapper() {
             assert_eq!(
@@ -366,11 +316,6 @@ pub mod root {
                 concat!("Alignment of ", stringify!(OuterDoubleInlineWrapper))
             );
         }
-        impl Clone for OuterDoubleInlineWrapper {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
     }
     #[repr(C)]
     #[derive(Debug, Default, Copy, Clone)]
@@ -383,7 +328,7 @@ pub mod root {
         pub i_am_outside_namespace_wrapper_sentry: ::std::os::raw::c_int,
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy)]
+    #[derive(Debug, Default, Copy, Clone)]
     pub struct sentry {
         pub i_am_outside_namespace_sentry: ::std::os::raw::c_int,
     }
@@ -409,10 +354,5 @@ pub mod root {
                 stringify!(i_am_outside_namespace_sentry)
             )
         );
-    }
-    impl Clone for sentry {
-        fn clone(&self) -> Self {
-            *self
-        }
     }
 }

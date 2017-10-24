@@ -16,7 +16,7 @@ impl<T> Default for Template<T> {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct ContainsInstantiation {
     pub not_opaque: Template<::std::os::raw::c_char>,
 }
@@ -43,18 +43,13 @@ fn bindgen_test_layout_ContainsInstantiation() {
         )
     );
 }
-impl Clone for ContainsInstantiation {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for ContainsInstantiation {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct ContainsOpaqueInstantiation {
     pub opaque: u32,
 }
@@ -80,11 +75,6 @@ fn bindgen_test_layout_ContainsOpaqueInstantiation() {
             stringify!(opaque)
         )
     );
-}
-impl Clone for ContainsOpaqueInstantiation {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 #[test]
 fn __bindgen_test_layout_Template_open0_char_close0_instantiation() {

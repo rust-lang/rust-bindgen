@@ -9,7 +9,7 @@ pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]
-    #[derive(Debug, Default, Copy)]
+    #[derive(Debug, Default, Copy, Clone)]
     pub struct Test {
         pub _address: u8,
     }
@@ -25,10 +25,5 @@ pub mod root {
             1usize,
             concat!("Alignment of ", stringify!(Test))
         );
-    }
-    impl Clone for Test {
-        fn clone(&self) -> Self {
-            *self
-        }
     }
 }

@@ -29,7 +29,7 @@ pub mod root {
             pub fn foo();
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct A {
             pub b: root::whatever::whatever_int_t,
         }
@@ -56,11 +56,6 @@ pub mod root {
             pub fn A_lets_hope_this_works(
                 this: *mut root::_bindgen_mod_id_13::A,
             ) -> ::std::os::raw::c_int;
-        }
-        impl Clone for A {
-            fn clone(&self) -> Self {
-                *self
-            }
         }
         impl A {
             #[inline]

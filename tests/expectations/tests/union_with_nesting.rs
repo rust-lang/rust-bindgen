@@ -5,20 +5,20 @@
 
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union foo {
     pub a: ::std::os::raw::c_uint,
     pub __bindgen_anon_1: foo__bindgen_ty_1,
     _bindgen_union_align: u32,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct foo__bindgen_ty_1 {
     pub __bindgen_anon_1: foo__bindgen_ty_1__bindgen_ty_1,
     pub __bindgen_anon_2: foo__bindgen_ty_1__bindgen_ty_2,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union foo__bindgen_ty_1__bindgen_ty_1 {
     pub b1: ::std::os::raw::c_ushort,
     pub b2: ::std::os::raw::c_ushort,
@@ -57,18 +57,13 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_1() {
         )
     );
 }
-impl Clone for foo__bindgen_ty_1__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for foo__bindgen_ty_1__bindgen_ty_1 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union foo__bindgen_ty_1__bindgen_ty_2 {
     pub c1: ::std::os::raw::c_ushort,
     pub c2: ::std::os::raw::c_ushort,
@@ -107,11 +102,6 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_2() {
         )
     );
 }
-impl Clone for foo__bindgen_ty_1__bindgen_ty_2 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for foo__bindgen_ty_1__bindgen_ty_2 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -129,11 +119,6 @@ fn bindgen_test_layout_foo__bindgen_ty_1() {
         2usize,
         concat!("Alignment of ", stringify!(foo__bindgen_ty_1))
     );
-}
-impl Clone for foo__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for foo__bindgen_ty_1 {
     fn default() -> Self {
@@ -157,11 +142,6 @@ fn bindgen_test_layout_foo() {
         0usize,
         concat!("Alignment of field: ", stringify!(foo), "::", stringify!(a))
     );
-}
-impl Clone for foo {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for foo {
     fn default() -> Self {

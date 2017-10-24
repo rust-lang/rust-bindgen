@@ -12,7 +12,7 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+        #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
         pub struct typedef_struct {
             pub foo: ::std::os::raw::c_int,
         }
@@ -39,11 +39,6 @@ pub mod root {
                 )
             );
         }
-        impl Clone for typedef_struct {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         #[repr(u32)]
         #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
         pub enum typedef_enum {
@@ -54,7 +49,7 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+        #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
         pub struct _bindgen_ty_1 {
             pub foo: ::std::os::raw::c_int,
         }
@@ -80,11 +75,6 @@ pub mod root {
                     stringify!(foo)
                 )
             );
-        }
-        impl Clone for _bindgen_ty_1 {
-            fn clone(&self) -> Self {
-                *self
-            }
         }
         pub type typedef_struct = root::_bindgen_mod_id_12::_bindgen_ty_1;
         pub const _bindgen_mod_id_12_BAR: root::_bindgen_mod_id_12::_bindgen_ty_2 =

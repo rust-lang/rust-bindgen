@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct A {
     pub x: ::std::os::raw::c_uchar,
     pub _bitfield_1: [u8; 2usize],
@@ -34,11 +34,6 @@ fn bindgen_test_layout_A() {
         3usize,
         concat!("Alignment of field: ", stringify!(A), "::", stringify!(y))
     );
-}
-impl Clone for A {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl A {
     #[inline]
@@ -427,7 +422,7 @@ impl A {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct B {
     pub _bitfield_1: u32,
     pub __bindgen_align: [u32; 0usize],
@@ -444,11 +439,6 @@ fn bindgen_test_layout_B() {
         4usize,
         concat!("Alignment of ", stringify!(B))
     );
-}
-impl Clone for B {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl B {
     #[inline]
@@ -530,7 +520,7 @@ impl B {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct C {
     pub x: ::std::os::raw::c_uchar,
     pub _bitfield_1: u8,
@@ -558,11 +548,6 @@ fn bindgen_test_layout_C() {
         4usize,
         concat!("Alignment of field: ", stringify!(C), "::", stringify!(baz))
     );
-}
-impl Clone for C {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl C {
     #[inline]
@@ -644,7 +629,7 @@ impl C {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Date1 {
     pub _bitfield_1: [u8; 3usize],
     pub __bindgen_padding_0: u8,
@@ -662,11 +647,6 @@ fn bindgen_test_layout_Date1() {
         2usize,
         concat!("Alignment of ", stringify!(Date1))
     );
-}
-impl Clone for Date1 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Date1 {
     #[inline]
@@ -827,7 +807,7 @@ impl Date1 {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Date2 {
     pub _bitfield_1: [u8; 4usize],
     pub __bindgen_align: [u16; 0usize],
@@ -844,11 +824,6 @@ fn bindgen_test_layout_Date2() {
         2usize,
         concat!("Alignment of ", stringify!(Date2))
     );
-}
-impl Clone for Date2 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Date2 {
     #[inline]
@@ -1047,7 +1022,7 @@ impl Date2 {
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Date3 {
     pub _bitfield_1: [u8; 3usize],
     pub byte: ::std::os::raw::c_uchar,
@@ -1075,11 +1050,6 @@ fn bindgen_test_layout_Date3() {
             stringify!(byte)
         )
     );
-}
-impl Clone for Date3 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Date3 {
     #[inline]

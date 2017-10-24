@@ -5,12 +5,12 @@
 
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct foo {
     pub bar: foo__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union foo__bindgen_ty_1 {
     pub a: ::std::os::raw::c_uint,
     pub b: ::std::os::raw::c_ushort,
@@ -49,11 +49,6 @@ fn bindgen_test_layout_foo__bindgen_ty_1() {
         )
     );
 }
-impl Clone for foo__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for foo__bindgen_ty_1 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -81,11 +76,6 @@ fn bindgen_test_layout_foo() {
             stringify!(bar)
         )
     );
-}
-impl Clone for foo {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for foo {
     fn default() -> Self {

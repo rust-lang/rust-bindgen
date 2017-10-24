@@ -90,6 +90,8 @@ macro_rules! rust_target_base {
             => Stable_1_0 => 1.0;
             /// Rust stable 1.19
             => Stable_1_19 => 1.19;
+            /// Rust stable 1.21
+            => Stable_1_21 => 1.21;
             /// Nightly rust
             => Nightly => nightly;
         );
@@ -100,7 +102,7 @@ rust_target_base!(rust_target_def);
 rust_target_base!(rust_target_values_def);
 
 /// Latest stable release of Rust
-pub const LATEST_STABLE_RUST: RustTarget = RustTarget::Stable_1_19;
+pub const LATEST_STABLE_RUST: RustTarget = RustTarget::Stable_1_21;
 
 /// Create RustFeatures struct definition, new(), and a getter for each field
 macro_rules! rust_feature_def {
@@ -142,6 +144,8 @@ rust_feature_def!(
     => const_fn;
     /// `thiscall` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/42202))
     => thiscall_abi;
+    /// builtin impls for `Clone` ([PR](https://github.com/rust-lang/rust/pull/43690))
+    => builtin_clone_impls;
 );
 
 impl From<RustTarget> for RustFeatures {
@@ -150,6 +154,10 @@ impl From<RustTarget> for RustFeatures {
 
         if rust_target >= RustTarget::Stable_1_19 {
             features.untagged_union = true;
+        }
+
+        if rust_target >= RustTarget::Stable_1_21 {
+            features.builtin_clone_impls = true;
         }
 
         if rust_target >= RustTarget::Nightly {
@@ -183,6 +191,7 @@ mod test {
     fn str_to_target() {
         test_target("1.0", RustTarget::Stable_1_0);
         test_target("1.19", RustTarget::Stable_1_19);
+        test_target("1.21", RustTarget::Stable_1_21);
         test_target("nightly", RustTarget::Nightly);
     }
 }

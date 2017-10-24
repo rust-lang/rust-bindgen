@@ -5,14 +5,14 @@
 
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union foo {
     pub a: ::std::os::raw::c_int,
     pub __bindgen_anon_1: foo__bindgen_ty_1,
     _bindgen_union_align: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct foo__bindgen_ty_1 {
     pub _bitfield_1: u32,
     pub __bindgen_align: [u32; 0usize],
@@ -29,11 +29,6 @@ fn bindgen_test_layout_foo__bindgen_ty_1() {
         4usize,
         concat!("Alignment of ", stringify!(foo__bindgen_ty_1))
     );
-}
-impl Clone for foo__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl foo__bindgen_ty_1 {
     #[inline]
@@ -131,11 +126,6 @@ fn bindgen_test_layout_foo() {
         0usize,
         concat!("Alignment of field: ", stringify!(foo), "::", stringify!(a))
     );
-}
-impl Clone for foo {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for foo {
     fn default() -> Self {

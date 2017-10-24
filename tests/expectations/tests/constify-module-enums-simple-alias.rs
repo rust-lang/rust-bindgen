@@ -14,7 +14,7 @@ pub use self::Foo::Type as Foo_alias1;
 pub use self::Foo_alias1 as Foo_alias2;
 pub use self::Foo_alias2 as Foo_alias3;
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct Bar {
     pub baz1: Foo::Type,
     pub baz2: Foo_alias1,
@@ -117,11 +117,6 @@ fn bindgen_test_layout_Bar() {
             stringify!(baz_ptr4)
         )
     );
-}
-impl Clone for Bar {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for Bar {
     fn default() -> Self {

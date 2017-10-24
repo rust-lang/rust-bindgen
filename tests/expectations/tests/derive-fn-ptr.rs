@@ -25,7 +25,7 @@ pub type my_fun_t = ::std::option::Option<
     ),
 >;
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct Foo {
     pub callback: my_fun_t,
 }
@@ -52,11 +52,6 @@ fn bindgen_test_layout_Foo() {
         )
     );
 }
-impl Clone for Foo {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for Foo {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -79,7 +74,7 @@ pub type my_fun2_t = ::std::option::Option<
     ),
 >;
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Bar {
     pub callback: my_fun2_t,
 }
@@ -105,11 +100,6 @@ fn bindgen_test_layout_Bar() {
             stringify!(callback)
         )
     );
-}
-impl Clone for Bar {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for Bar {
     fn default() -> Self {

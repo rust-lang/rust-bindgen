@@ -12,7 +12,7 @@ pub mod root {
     ///
     /// This class is really really interesting, look!
     #[repr(C)]
-    #[derive(Debug, Default, Copy)]
+    #[derive(Debug, Default, Copy, Clone)]
     pub struct Foo {
         pub _address: u8,
     }
@@ -20,7 +20,7 @@ pub mod root {
     ///
     /// This class is not so interesting, but worth a bit of docs too!
     #[repr(C)]
-    #[derive(Debug, Default, Copy)]
+    #[derive(Debug, Default, Copy, Clone)]
     pub struct Foo_Bar {
         pub _address: u8,
     }
@@ -37,11 +37,6 @@ pub mod root {
             concat!("Alignment of ", stringify!(Foo_Bar))
         );
     }
-    impl Clone for Foo_Bar {
-        fn clone(&self) -> Self {
-            *self
-        }
-    }
     #[test]
     fn bindgen_test_layout_Foo() {
         assert_eq!(
@@ -55,18 +50,13 @@ pub mod root {
             concat!("Alignment of ", stringify!(Foo))
         );
     }
-    impl Clone for Foo {
-        fn clone(&self) -> Self {
-            *self
-        }
-    }
     pub mod test {
         #[allow(unused_imports)]
         use self::super::super::root;
         /// I'm in a namespace, and thus I may be on a rust module, most of the time.
         /// My documentation is pretty extensive, I guess.
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct Baz {
             /// This member is plain awesome, just amazing.
             ///
@@ -100,16 +90,11 @@ pub mod root {
                 )
             );
         }
-        impl Clone for Baz {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         /// I'm in an inline namespace, and as such I shouldn't get generated inside
         /// a rust module, except when the relevant option is specified. Also, this
         /// comment shouldn't be misaligned.
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct InInlineNS {
             pub _address: u8,
         }
@@ -126,14 +111,9 @@ pub mod root {
                 concat!("Alignment of ", stringify!(InInlineNS))
             );
         }
-        impl Clone for InInlineNS {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
 
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct Bazz {
             pub _address: u8,
         }
@@ -149,11 +129,6 @@ pub mod root {
                 1usize,
                 concat!("Alignment of ", stringify!(Bazz))
             );
-        }
-        impl Clone for Bazz {
-            fn clone(&self) -> Self {
-                *self
-            }
         }
     }
 }

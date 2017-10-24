@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct a {
     pub b: ::std::os::raw::c_int,
 }
@@ -27,13 +27,8 @@ fn bindgen_test_layout_a() {
         concat!("Alignment of field: ", stringify!(a), "::", stringify!(b))
     );
 }
-impl Clone for a {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct c {
     pub d: ::std::os::raw::c_int,
 }
@@ -54,9 +49,4 @@ fn bindgen_test_layout_c() {
         0usize,
         concat!("Alignment of field: ", stringify!(c), "::", stringify!(d))
     );
-}
-impl Clone for c {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

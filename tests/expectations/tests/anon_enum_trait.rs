@@ -24,7 +24,7 @@ pub enum DataType__bindgen_ty_1 {
     generic_type = 0,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Foo {
     pub _address: u8,
 }
@@ -47,9 +47,4 @@ fn bindgen_test_layout_Foo() {
         1usize,
         concat!("Alignment of ", stringify!(Foo))
     );
-}
-impl Clone for Foo {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

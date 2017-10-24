@@ -7,7 +7,7 @@
 pub type mbedtls_mpi_uint = ::std::os::raw::c_uint;
 /// \brief          MPI structure
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct mbedtls_mpi {
     /// <  integer sign
     pub s: ::std::os::raw::c_int,
@@ -58,11 +58,6 @@ fn bindgen_test_layout_mbedtls_mpi() {
             stringify!(p)
         )
     );
-}
-impl Clone for mbedtls_mpi {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for mbedtls_mpi {
     fn default() -> Self {

@@ -15,7 +15,7 @@ pub mod root {
             #[allow(unused_imports)]
             use self::super::super::super::root;
             #[repr(C)]
-            #[derive(Debug, Default, Copy)]
+            #[derive(Debug, Default, Copy, Clone)]
             pub struct Helper {
                 pub _address: u8,
             }
@@ -31,11 +31,6 @@ pub mod root {
                     1usize,
                     concat!("Alignment of ", stringify!(Helper))
                 );
-            }
-            impl Clone for Helper {
-                fn clone(&self) -> Self {
-                    *self
-                }
             }
         }
     }

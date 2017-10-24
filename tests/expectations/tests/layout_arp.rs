@@ -22,7 +22,7 @@ pub const ARP_OP_INVREPLY: ::std::os::raw::c_uint = 9;
 /// administrator and does not contain OUIs.
 /// See http://standards.ieee.org/regauth/groupmac/tutorial.html
 #[repr(C, packed)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct ether_addr {
     /// < Addr bytes in tx order
     pub addr_bytes: [u8; 6usize],
@@ -50,14 +50,9 @@ fn bindgen_test_layout_ether_addr() {
         )
     );
 }
-impl Clone for ether_addr {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 /// ARP header IPv4 payload.
 #[repr(C, packed)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct arp_ipv4 {
     /// < sender hardware address
     pub arp_sha: ether_addr,
@@ -121,14 +116,9 @@ fn bindgen_test_layout_arp_ipv4() {
         )
     );
 }
-impl Clone for arp_ipv4 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 /// ARP header.
 #[repr(C, packed)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct arp_hdr {
     pub arp_hrd: u16,
     pub arp_pro: u16,
@@ -209,9 +199,4 @@ fn bindgen_test_layout_arp_hdr() {
             stringify!(arp_data)
         )
     );
-}
-impl Clone for arp_hdr {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

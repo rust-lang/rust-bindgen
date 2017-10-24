@@ -11,7 +11,7 @@ pub struct __BindgenComplex<T> {
     pub im: T,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct foo {
     pub bar: ::std::os::raw::c_float,
     pub baz: ::std::os::raw::c_float,
@@ -92,11 +92,6 @@ fn bindgen_test_layout_foo() {
             stringify!(complexDouble)
         )
     );
-}
-impl Clone for foo {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for foo {
     fn default() -> Self {

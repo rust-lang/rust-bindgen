@@ -25,7 +25,7 @@ pub mod root {
             #[allow(unused_imports)]
             use self::super::super::super::root;
             #[repr(C)]
-            #[derive(Debug, Copy)]
+            #[derive(Debug, Copy, Clone)]
             pub struct bar {
                 pub this_should_work: root::ns1::ns2::foo::Type,
             }
@@ -51,11 +51,6 @@ pub mod root {
                         stringify!(this_should_work)
                     )
                 );
-            }
-            impl Clone for bar {
-                fn clone(&self) -> Self {
-                    *self
-                }
             }
             impl Default for bar {
                 fn default() -> Self {

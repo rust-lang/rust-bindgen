@@ -9,7 +9,7 @@ mod libc {
 }
 
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct foo {
     pub a: libc::c_int,
     pub b: libc::c_int,
@@ -47,11 +47,6 @@ fn bindgen_test_layout_foo() {
             stringify!(bar)
         )
     );
-}
-impl Clone for foo {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for foo {
     fn default() -> Self {

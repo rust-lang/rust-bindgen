@@ -23,7 +23,7 @@ pub mod root {
             }
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+        #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
         pub struct Foo {
             pub c: ::std::os::raw::c_char,
         }
@@ -45,13 +45,8 @@ pub mod root {
                 concat!("Alignment of field: ", stringify!(Foo), "::", stringify!(c))
             );
         }
-        impl Clone for Foo {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+        #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
         pub struct Bar {
             pub i: ::std::os::raw::c_int,
         }
@@ -73,13 +68,8 @@ pub mod root {
                 concat!("Alignment of field: ", stringify!(Bar), "::", stringify!(i))
             );
         }
-        impl Clone for Bar {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         #[repr(C)]
-        #[derive(Debug, Copy, Hash, PartialEq, Eq)]
+        #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
         pub struct ContainsInstantiation {
             pub not_opaque: root::zoidberg::Template<root::zoidberg::Foo>,
         }
@@ -106,18 +96,13 @@ pub mod root {
                 )
             );
         }
-        impl Clone for ContainsInstantiation {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         impl Default for ContainsInstantiation {
             fn default() -> Self {
                 unsafe { ::std::mem::zeroed() }
             }
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+        #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
         pub struct ContainsOpaqueInstantiation {
             pub opaque: u32,
         }
@@ -145,11 +130,6 @@ pub mod root {
                     stringify!(opaque)
                 )
             );
-        }
-        impl Clone for ContainsOpaqueInstantiation {
-            fn clone(&self) -> Self {
-                *self
-            }
         }
     }
     #[test]

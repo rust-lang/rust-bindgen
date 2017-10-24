@@ -15,7 +15,7 @@ pub struct Derived {
     pub b: bool,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Usage {
     pub _address: u8,
 }
@@ -35,9 +35,4 @@ fn bindgen_test_layout_Usage() {
         1usize,
         concat!("Alignment of ", stringify!(Usage))
     );
-}
-impl Clone for Usage {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

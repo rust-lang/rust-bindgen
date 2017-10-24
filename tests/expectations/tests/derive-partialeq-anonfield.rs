@@ -5,12 +5,12 @@
 
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct rte_mbuf {
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_1 {
     _bindgen_union_align: [u8; 0usize],
 }
@@ -27,11 +27,6 @@ fn bindgen_test_layout_rte_mbuf__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(rte_mbuf__bindgen_ty_1))
     );
 }
-impl Clone for rte_mbuf__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_mbuf__bindgen_ty_1 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -44,11 +39,6 @@ fn bindgen_test_layout_rte_mbuf() {
         0usize,
         concat!("Size of: ", stringify!(rte_mbuf))
     );
-}
-impl Clone for rte_mbuf {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for rte_mbuf {
     fn default() -> Self {

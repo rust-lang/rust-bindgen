@@ -52,7 +52,7 @@ pub enum rte_eth_rx_mq_mode {
 }
 /// A structure used to configure the RX features of an Ethernet port.
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_rxmode {
     /// The multi-queue packet distribution mode to be used, e.g. RSS.
     pub mq_mode: rte_eth_rx_mq_mode,
@@ -104,11 +104,6 @@ fn bindgen_test_layout_rte_eth_rxmode() {
             stringify!(split_hdr_size)
         )
     );
-}
-impl Clone for rte_eth_rxmode {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for rte_eth_rxmode {
     fn default() -> Self {
@@ -475,7 +470,7 @@ pub enum rte_eth_tx_mq_mode {
 }
 /// A structure used to configure the TX features of an Ethernet port.
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_txmode {
     /// < TX multi-queues mode.
     pub mq_mode: rte_eth_tx_mq_mode,
@@ -515,11 +510,6 @@ fn bindgen_test_layout_rte_eth_txmode() {
             stringify!(pvid)
         )
     );
-}
-impl Clone for rte_eth_txmode {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for rte_eth_txmode {
     fn default() -> Self {
@@ -662,7 +652,7 @@ impl rte_eth_txmode {
 /// types of IPv4/IPv6 packets to which the RSS hashing must be applied.
 /// Supplying an *rss_hf* equal to zero disables the RSS feature.
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_rss_conf {
     /// < If not NULL, 40-byte hash key.
     pub rss_key: *mut u8,
@@ -714,11 +704,6 @@ fn bindgen_test_layout_rte_eth_rss_conf() {
         )
     );
 }
-impl Clone for rte_eth_rss_conf {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_eth_rss_conf {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -752,7 +737,7 @@ pub enum rte_eth_nb_pools {
 /// A default pool may be used, if desired, to route all traffic which
 /// does not match the vlan filter rules.
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct rte_eth_vmdq_dcb_conf {
     /// < With DCB, 16 or 32 pools
     pub nb_queue_pools: rte_eth_nb_pools,
@@ -767,7 +752,7 @@ pub struct rte_eth_vmdq_dcb_conf {
     pub dcb_tc: [u8; 8usize],
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_vmdq_dcb_conf__bindgen_ty_1 {
     /// < The vlan id of the received frame
     pub vlan_id: u16,
@@ -811,11 +796,6 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf__bindgen_ty_1() {
             stringify!(pools)
         )
     );
-}
-impl Clone for rte_eth_vmdq_dcb_conf__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 #[test]
 fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
@@ -890,18 +870,13 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
         )
     );
 }
-impl Clone for rte_eth_vmdq_dcb_conf {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_eth_vmdq_dcb_conf {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_dcb_rx_conf {
     /// < Possible DCB TCs, 4 or 8 TCs
     pub nb_tcs: rte_eth_nb_tcs,
@@ -941,18 +916,13 @@ fn bindgen_test_layout_rte_eth_dcb_rx_conf() {
         )
     );
 }
-impl Clone for rte_eth_dcb_rx_conf {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_eth_dcb_rx_conf {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_vmdq_dcb_tx_conf {
     /// < With DCB, 16 or 32 pools.
     pub nb_queue_pools: rte_eth_nb_pools,
@@ -992,18 +962,13 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_tx_conf() {
         )
     );
 }
-impl Clone for rte_eth_vmdq_dcb_tx_conf {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_eth_vmdq_dcb_tx_conf {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_dcb_tx_conf {
     /// < Possible DCB TCs, 4 or 8 TCs.
     pub nb_tcs: rte_eth_nb_tcs,
@@ -1043,18 +1008,13 @@ fn bindgen_test_layout_rte_eth_dcb_tx_conf() {
         )
     );
 }
-impl Clone for rte_eth_dcb_tx_conf {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_eth_dcb_tx_conf {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_vmdq_tx_conf {
     /// < VMDq mode, 64 pools.
     pub nb_queue_pools: rte_eth_nb_pools,
@@ -1082,18 +1042,13 @@ fn bindgen_test_layout_rte_eth_vmdq_tx_conf() {
         )
     );
 }
-impl Clone for rte_eth_vmdq_tx_conf {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_eth_vmdq_tx_conf {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct rte_eth_vmdq_rx_conf {
     /// < VMDq only mode, 8 or 64 pools
     pub nb_queue_pools: rte_eth_nb_pools,
@@ -1111,7 +1066,7 @@ pub struct rte_eth_vmdq_rx_conf {
     pub pool_map: [rte_eth_vmdq_rx_conf__bindgen_ty_1; 64usize],
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_vmdq_rx_conf__bindgen_ty_1 {
     /// < The vlan id of the received frame
     pub vlan_id: u16,
@@ -1155,11 +1110,6 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf__bindgen_ty_1() {
             stringify!(pools)
         )
     );
-}
-impl Clone for rte_eth_vmdq_rx_conf__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 #[test]
 fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
@@ -1244,11 +1194,6 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
         )
     );
 }
-impl Clone for rte_eth_vmdq_rx_conf {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_eth_vmdq_rx_conf {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -1283,7 +1228,7 @@ pub enum rte_fdir_status_mode {
 }
 /// A structure used to define the input for IPV4 flow
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_ipv4_flow {
     /// < IPv4 source address in big endian.
     pub src_ip: u32,
@@ -1359,14 +1304,9 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
         )
     );
 }
-impl Clone for rte_eth_ipv4_flow {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 /// A structure used to define the input for IPV6 flow
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_ipv6_flow {
     /// < IPv6 source address in big endian.
     pub src_ip: [u32; 4usize],
@@ -1442,15 +1382,10 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
         )
     );
 }
-impl Clone for rte_eth_ipv6_flow {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 /// A structure used to configure FDIR masks that are used by the device
 /// to match the various fields of RX packet headers.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_fdir_masks {
     /// < Bit mask for vlan_tci in big endian
     pub vlan_tci_mask: u16,
@@ -1564,11 +1499,6 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
         )
     );
 }
-impl Clone for rte_eth_fdir_masks {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(u32)]
 /// Payload type
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -1583,7 +1513,7 @@ pub enum rte_eth_payload_type {
 /// A structure used to select bytes extracted from the protocol layers to
 /// flexible payload for filter
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_flex_payload_cfg {
     /// < Payload type
     pub type_: rte_eth_payload_type,
@@ -1622,11 +1552,6 @@ fn bindgen_test_layout_rte_eth_flex_payload_cfg() {
         )
     );
 }
-impl Clone for rte_eth_flex_payload_cfg {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_eth_flex_payload_cfg {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -1635,7 +1560,7 @@ impl Default for rte_eth_flex_payload_cfg {
 /// A structure used to define FDIR masks for flexible payload
 /// for each flow type
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_fdir_flex_mask {
     pub flow_type: u16,
     pub mask: [u8; 16usize],
@@ -1673,15 +1598,10 @@ fn bindgen_test_layout_rte_eth_fdir_flex_mask() {
         )
     );
 }
-impl Clone for rte_eth_fdir_flex_mask {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 /// A structure used to define all flexible payload related setting
 /// include flex payload and flex mask
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_eth_fdir_flex_conf {
     /// < The number of following payload cfg
     pub nb_payloads: u16,
@@ -1743,11 +1663,6 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
         )
     );
 }
-impl Clone for rte_eth_fdir_flex_conf {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_eth_fdir_flex_conf {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -1758,7 +1673,7 @@ impl Default for rte_eth_fdir_flex_conf {
 ///
 /// If mode is RTE_FDIR_DISABLE, the pballoc value is ignored.
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_fdir_conf {
     /// < Flow Director mode.
     pub mode: rte_fdir_mode,
@@ -1844,11 +1759,6 @@ fn bindgen_test_layout_rte_fdir_conf() {
         )
     );
 }
-impl Clone for rte_fdir_conf {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_fdir_conf {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -1856,7 +1766,7 @@ impl Default for rte_fdir_conf {
 }
 /// A structure used to enable/disable specific device interrupts.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_intr_conf {
     /// enable/disable lsc interrupt. 0 (default) - disable, 1 enable
     pub lsc: u16,
@@ -1896,16 +1806,11 @@ fn bindgen_test_layout_rte_intr_conf() {
         )
     );
 }
-impl Clone for rte_intr_conf {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 /// A structure used to configure an Ethernet port.
 /// Depending upon the RX multi-queue mode, extra advanced
 /// configuration settings may be needed.
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct rte_eth_conf {
     /// < bitmap of ETH_LINK_SPEED_XXX of speeds to be
     /// used. ETH_LINK_SPEED_FIXED disables link
@@ -1938,7 +1843,7 @@ pub struct rte_eth_conf {
     pub intr_conf: rte_intr_conf,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct rte_eth_conf__bindgen_ty_1 {
     /// < Port RSS configuration
     pub rss_conf: rte_eth_rss_conf,
@@ -1999,18 +1904,13 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
         )
     );
 }
-impl Clone for rte_eth_conf__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for rte_eth_conf__bindgen_ty_1 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union rte_eth_conf__bindgen_ty_2 {
     pub vmdq_dcb_tx_conf: rte_eth_vmdq_dcb_tx_conf,
     pub dcb_tx_conf: rte_eth_dcb_tx_conf,
@@ -2061,11 +1961,6 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
             stringify!(vmdq_tx_conf)
         )
     );
-}
-impl Clone for rte_eth_conf__bindgen_ty_2 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for rte_eth_conf__bindgen_ty_2 {
     fn default() -> Self {
@@ -2174,11 +2069,6 @@ fn bindgen_test_layout_rte_eth_conf() {
             stringify!(intr_conf)
         )
     );
-}
-impl Clone for rte_eth_conf {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for rte_eth_conf {
     fn default() -> Self {

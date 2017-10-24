@@ -7,7 +7,7 @@
 
 /// <div rustbindgen opaque>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct opaque {
     pub _bindgen_opaque_blob: u32,
 }
@@ -24,13 +24,8 @@ fn bindgen_test_layout_opaque() {
         concat!("Alignment of ", stringify!(opaque))
     );
 }
-impl Clone for opaque {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct container {
     pub contained: opaque,
 }
@@ -56,9 +51,4 @@ fn bindgen_test_layout_container() {
             stringify!(contained)
         )
     );
-}
-impl Clone for container {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

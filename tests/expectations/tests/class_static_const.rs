@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct A {
     pub _address: u8,
 }
@@ -24,9 +24,4 @@ fn bindgen_test_layout_A() {
         1usize,
         concat!("Alignment of ", stringify!(A))
     );
-}
-impl Clone for A {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

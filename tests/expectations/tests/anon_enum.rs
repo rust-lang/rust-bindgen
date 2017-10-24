@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub struct Test {
     pub foo: ::std::os::raw::c_int,
     pub bar: f32,
@@ -48,11 +48,6 @@ fn bindgen_test_layout_Test() {
             stringify!(bar)
         )
     );
-}
-impl Clone for Test {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]

@@ -12,12 +12,12 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct Bar {
             pub foo: ::std::os::raw::c_int,
         }
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct Bar_Baz {
             pub foo: ::std::os::raw::c_int,
         }
@@ -44,11 +44,6 @@ pub mod root {
                 )
             );
         }
-        impl Clone for Bar_Baz {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         #[test]
         fn bindgen_test_layout_Bar() {
             assert_eq!(
@@ -72,13 +67,8 @@ pub mod root {
                 )
             );
         }
-        impl Clone for Bar {
-            fn clone(&self) -> Self {
-                *self
-            }
-        }
         #[repr(C)]
-        #[derive(Debug, Default, Copy)]
+        #[derive(Debug, Default, Copy, Clone)]
         pub struct Baz {
             pub baz: ::std::os::raw::c_int,
         }
@@ -104,11 +94,6 @@ pub mod root {
                     stringify!(baz)
                 )
             );
-        }
-        impl Clone for Baz {
-            fn clone(&self) -> Self {
-                *self
-            }
         }
     }
 }

@@ -8,7 +8,7 @@
 /// Stores a pointer to the ops struct, and the offset: the place to
 /// write the parsed result in the destination structure.
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct cmdline_token_hdr {
     pub ops: *mut cmdline_token_ops,
     pub offset: ::std::os::raw::c_uint,
@@ -46,11 +46,6 @@ fn bindgen_test_layout_cmdline_token_hdr() {
         )
     );
 }
-impl Clone for cmdline_token_hdr {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for cmdline_token_hdr {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -75,7 +70,7 @@ pub type cmdline_parse_token_hdr_t = cmdline_token_hdr;
 /// get_help() fills the dstbuf with the help for the token. It returns
 /// -1 on error and 0 on success.
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct cmdline_token_ops {
     /// parse(token ptr, buf, res pts, buf len)
     pub parse: ::std::option::Option<
@@ -162,11 +157,6 @@ fn bindgen_test_layout_cmdline_token_ops() {
         )
     );
 }
-impl Clone for cmdline_token_ops {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for cmdline_token_ops {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -185,7 +175,7 @@ pub enum cmdline_numtype {
     INT64 = 7,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct cmdline_token_num_data {
     pub type_: cmdline_numtype,
 }
@@ -212,18 +202,13 @@ fn bindgen_test_layout_cmdline_token_num_data() {
         )
     );
 }
-impl Clone for cmdline_token_num_data {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for cmdline_token_num_data {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct cmdline_token_num {
     pub hdr: cmdline_token_hdr,
     pub num_data: cmdline_token_num_data,
@@ -260,11 +245,6 @@ fn bindgen_test_layout_cmdline_token_num() {
             stringify!(num_data)
         )
     );
-}
-impl Clone for cmdline_token_num {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for cmdline_token_num {
     fn default() -> Self {

@@ -16,7 +16,7 @@ impl Default for LinkedList {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct InstantiateIt {
     pub m_list: LinkedList,
 }
@@ -42,11 +42,6 @@ fn bindgen_test_layout_InstantiateIt() {
             stringify!(m_list)
         )
     );
-}
-impl Clone for InstantiateIt {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for InstantiateIt {
     fn default() -> Self {

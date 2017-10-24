@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union U4 {
     pub _bitfield_1: u8,
     _bindgen_union_align: u32,
@@ -22,11 +22,6 @@ fn bindgen_test_layout_U4() {
         4usize,
         concat!("Alignment of ", stringify!(U4))
     );
-}
-impl Clone for U4 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for U4 {
     fn default() -> Self {
@@ -76,7 +71,7 @@ impl U4 {
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union B {
     pub _bitfield_1: u32,
     _bindgen_union_align: u32,
@@ -93,11 +88,6 @@ fn bindgen_test_layout_B() {
         4usize,
         concat!("Alignment of ", stringify!(B))
     );
-}
-impl Clone for B {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for B {
     fn default() -> Self {

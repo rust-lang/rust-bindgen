@@ -15,7 +15,7 @@ pub struct Derived {
     pub b: bool,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Usage {
     pub _address: u8,
 }
@@ -39,11 +39,6 @@ fn bindgen_test_layout_Usage() {
 extern "C" {
     #[link_name = "\u{1}_ZN5UsageC1Ev"]
     pub fn Usage_Usage(this: *mut Usage);
-}
-impl Clone for Usage {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Usage {
     #[inline]

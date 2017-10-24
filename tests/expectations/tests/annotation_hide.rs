@@ -7,7 +7,7 @@
 
 /// <div rustbindgen opaque></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct D {
     pub _bindgen_opaque_blob: u32,
 }
@@ -24,13 +24,8 @@ fn bindgen_test_layout_D() {
         concat!("Alignment of ", stringify!(D))
     );
 }
-impl Clone for D {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct NotAnnotated {
     pub f: ::std::os::raw::c_int,
 }
@@ -56,9 +51,4 @@ fn bindgen_test_layout_NotAnnotated() {
             stringify!(f)
         )
     );
-}
-impl Clone for NotAnnotated {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

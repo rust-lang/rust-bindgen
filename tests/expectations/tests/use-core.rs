@@ -6,7 +6,7 @@
 extern crate core;
 
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct foo {
     pub a: ::std::os::raw::c_int,
     pub b: ::std::os::raw::c_int,
@@ -45,18 +45,13 @@ fn bindgen_test_layout_foo() {
         )
     );
 }
-impl Clone for foo {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for foo {
     fn default() -> Self {
         unsafe { ::core::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union _bindgen_ty_1 {
     pub bar: ::std::os::raw::c_int,
     pub baz: ::std::os::raw::c_long,
@@ -94,11 +89,6 @@ fn bindgen_test_layout__bindgen_ty_1() {
             stringify!(baz)
         )
     );
-}
-impl Clone for _bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for _bindgen_ty_1 {
     fn default() -> Self {

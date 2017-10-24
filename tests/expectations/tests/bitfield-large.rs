@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct HasBigBitfield {
     pub _bitfield_1: [u8; 16usize],
 }
@@ -17,13 +17,8 @@ fn bindgen_test_layout_HasBigBitfield() {
         concat!("Size of: ", stringify!(HasBigBitfield))
     );
 }
-impl Clone for HasBigBitfield {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct HasTwoBigBitfields {
     pub _bitfield_1: [u8; 16usize],
 }
@@ -34,9 +29,4 @@ fn bindgen_test_layout_HasTwoBigBitfields() {
         16usize,
         concat!("Size of: ", stringify!(HasTwoBigBitfields))
     );
-}
-impl Clone for HasTwoBigBitfields {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

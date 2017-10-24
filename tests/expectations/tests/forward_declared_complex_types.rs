@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Foo_empty {
     pub _address: u8,
 }
@@ -22,18 +22,13 @@ fn bindgen_test_layout_Foo_empty() {
         concat!("Alignment of ", stringify!(Foo_empty))
     );
 }
-impl Clone for Foo_empty {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Foo {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct Bar {
     pub f: *mut Foo,
 }
@@ -54,11 +49,6 @@ fn bindgen_test_layout_Bar() {
         0usize,
         concat!("Alignment of field: ", stringify!(Bar), "::", stringify!(f))
     );
-}
-impl Clone for Bar {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for Bar {
     fn default() -> Self {

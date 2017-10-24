@@ -7,7 +7,7 @@
 #[repr(C)]
 pub struct Base__bindgen_vtable(::std::os::raw::c_void);
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct Base {
     pub vtable_: *const Base__bindgen_vtable,
 }
@@ -24,11 +24,6 @@ fn bindgen_test_layout_Base() {
         concat!("Alignment of ", stringify!(Base))
     );
 }
-impl Clone for Base {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for Base {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -39,7 +34,7 @@ extern "C" {
     pub fn Base_AsDerived(this: *mut ::std::os::raw::c_void) -> *mut Derived;
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct Derived {
     pub _base: Base,
 }
@@ -55,11 +50,6 @@ fn bindgen_test_layout_Derived() {
         8usize,
         concat!("Alignment of ", stringify!(Derived))
     );
-}
-impl Clone for Derived {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for Derived {
     fn default() -> Self {

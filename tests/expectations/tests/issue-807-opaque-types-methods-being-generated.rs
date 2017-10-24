@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Pupper {
     pub _address: u8,
 }
@@ -22,13 +22,8 @@ fn bindgen_test_layout_Pupper() {
         concat!("Alignment of ", stringify!(Pupper))
     );
 }
-impl Clone for Pupper {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Doggo {
     pub _address: u8,
 }
@@ -45,13 +40,8 @@ fn bindgen_test_layout_Doggo() {
         concat!("Alignment of ", stringify!(Doggo))
     );
 }
-impl Clone for Doggo {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct SuchWow {
     pub _address: u8,
 }
@@ -68,13 +58,8 @@ fn bindgen_test_layout_SuchWow() {
         concat!("Alignment of ", stringify!(SuchWow))
     );
 }
-impl Clone for SuchWow {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Opaque {
     pub _bindgen_opaque_blob: u8,
 }
@@ -99,11 +84,6 @@ extern "C" {
     #[link_name = "\u{1}_ZN6OpaqueC1E6Pupper"]
     pub fn Opaque_Opaque(this: *mut Opaque, pup: Pupper);
 }
-impl Clone for Opaque {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Opaque {
     #[inline]
     pub unsafe fn eleven_out_of_ten(&mut self) -> SuchWow {
@@ -121,7 +101,7 @@ extern "C" {
     pub static mut Opaque_MAJESTIC_AF: Doggo;
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Whitelisted {
     pub some_member: Opaque,
 }
@@ -147,9 +127,4 @@ fn bindgen_test_layout_Whitelisted() {
             stringify!(some_member)
         )
     );
-}
-impl Clone for Whitelisted {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

@@ -37,7 +37,7 @@ pub use self::anon_enum::Type as anon_enum_alias1;
 pub use self::anon_enum_alias1 as anon_enum_alias2;
 pub use self::anon_enum_alias2 as anon_enum_alias3;
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct bar {
     pub member1: foo::Type,
     pub member2: foo_alias1,
@@ -163,18 +163,13 @@ fn bindgen_test_layout_bar() {
         )
     );
 }
-impl Clone for bar {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for bar {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct Baz {
     pub member1: ns2_Foo::Type,
 }
@@ -201,11 +196,6 @@ fn bindgen_test_layout_Baz() {
         )
     );
 }
-impl Clone for Baz {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for Baz {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -217,7 +207,7 @@ pub mod one_Foo {
     pub const Variant2: Type = 1;
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct Bar {
     pub baz: *mut one_Foo::Type,
 }
@@ -243,11 +233,6 @@ fn bindgen_test_layout_Bar() {
             stringify!(baz)
         )
     );
-}
-impl Clone for Bar {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for Bar {
     fn default() -> Self {

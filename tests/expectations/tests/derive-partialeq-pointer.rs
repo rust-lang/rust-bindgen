@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Bar {
     pub b: *mut a,
 }
@@ -27,23 +27,18 @@ fn bindgen_test_layout_Bar() {
         concat!("Alignment of field: ", stringify!(Bar), "::", stringify!(b))
     );
 }
-impl Clone for Bar {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for Bar {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct c {
     pub __bindgen_anon_1: c__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union c__bindgen_ty_1 {
     _bindgen_union_align: u8,
     pub _address: u8,
@@ -60,11 +55,6 @@ fn bindgen_test_layout_c__bindgen_ty_1() {
         1usize,
         concat!("Alignment of ", stringify!(c__bindgen_ty_1))
     );
-}
-impl Clone for c__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for c__bindgen_ty_1 {
     fn default() -> Self {
@@ -84,18 +74,13 @@ fn bindgen_test_layout_c() {
         concat!("Alignment of ", stringify!(c))
     );
 }
-impl Clone for c {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for c {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct a {
     pub d: c,
 }
@@ -116,11 +101,6 @@ fn bindgen_test_layout_a() {
         0usize,
         concat!("Alignment of field: ", stringify!(a), "::", stringify!(d))
     );
-}
-impl Clone for a {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for a {
     fn default() -> Self {

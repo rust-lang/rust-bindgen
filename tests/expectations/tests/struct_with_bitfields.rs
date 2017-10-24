@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct bitfield {
     pub _bitfield_1: u8,
     pub e: ::std::os::raw::c_int,
@@ -33,11 +33,6 @@ fn bindgen_test_layout_bitfield() {
             stringify!(e)
         )
     );
-}
-impl Clone for bitfield {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl bitfield {
     #[inline]

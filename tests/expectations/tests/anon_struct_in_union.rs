@@ -5,18 +5,18 @@
 
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct s {
     pub u: s__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub union s__bindgen_ty_1 {
     pub field: s__bindgen_ty_1_inner,
     _bindgen_union_align: u32,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct s__bindgen_ty_1_inner {
     pub b: ::std::os::raw::c_int,
 }
@@ -43,11 +43,6 @@ fn bindgen_test_layout_s__bindgen_ty_1_inner() {
         )
     );
 }
-impl Clone for s__bindgen_ty_1_inner {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[test]
 fn bindgen_test_layout_s__bindgen_ty_1() {
     assert_eq!(
@@ -71,11 +66,6 @@ fn bindgen_test_layout_s__bindgen_ty_1() {
         )
     );
 }
-impl Clone for s__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for s__bindgen_ty_1 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -98,11 +88,6 @@ fn bindgen_test_layout_s() {
         0usize,
         concat!("Alignment of field: ", stringify!(s), "::", stringify!(u))
     );
-}
-impl Clone for s {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for s {
     fn default() -> Self {

@@ -13,7 +13,7 @@ pub enum MyEnum {
     FOUR = 3,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct TaggedPtr {
     pub _bitfield_1: u64,
     pub __bindgen_align: [u64; 0usize],
@@ -30,11 +30,6 @@ fn bindgen_test_layout_TaggedPtr() {
         8usize,
         concat!("Alignment of ", stringify!(TaggedPtr))
     );
-}
-impl Clone for TaggedPtr {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for TaggedPtr {
     fn default() -> Self {

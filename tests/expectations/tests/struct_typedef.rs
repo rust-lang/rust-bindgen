@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct typedef_named_struct {
     pub has_name: bool,
 }
@@ -32,13 +32,8 @@ fn bindgen_test_layout_typedef_named_struct() {
         )
     );
 }
-impl Clone for typedef_named_struct {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct _bindgen_ty_1 {
     pub no_name: *mut ::std::os::raw::c_void,
 }
@@ -64,11 +59,6 @@ fn bindgen_test_layout__bindgen_ty_1() {
             stringify!(no_name)
         )
     );
-}
-impl Clone for _bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for _bindgen_ty_1 {
     fn default() -> Self {

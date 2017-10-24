@@ -11,7 +11,7 @@ pub type id = *mut objc::runtime::Object;
 pub trait Foo {}
 impl Foo for id {}
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct FooStruct {
     pub foo: *mut id,
 }
@@ -37,11 +37,6 @@ fn bindgen_test_layout_FooStruct() {
             stringify!(foo)
         )
     );
-}
-impl Clone for FooStruct {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for FooStruct {
     fn default() -> Self {

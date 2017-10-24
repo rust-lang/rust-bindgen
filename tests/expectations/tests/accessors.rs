@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct SomeAccessors {
     pub mNoAccessor: ::std::os::raw::c_int,
     /// <div rustbindgen accessor></div>
@@ -68,11 +68,6 @@ fn bindgen_test_layout_SomeAccessors() {
         )
     );
 }
-impl Clone for SomeAccessors {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl SomeAccessors {
     #[inline]
     pub fn get_mBothAccessors(&self) -> &::std::os::raw::c_int {
@@ -97,7 +92,7 @@ impl SomeAccessors {
 }
 /// <div rustbindgen accessor></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct AllAccessors {
     pub mBothAccessors: ::std::os::raw::c_int,
     pub mAlsoBothAccessors: ::std::os::raw::c_int,
@@ -135,11 +130,6 @@ fn bindgen_test_layout_AllAccessors() {
         )
     );
 }
-impl Clone for AllAccessors {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl AllAccessors {
     #[inline]
     pub fn get_mBothAccessors(&self) -> &::std::os::raw::c_int {
@@ -160,7 +150,7 @@ impl AllAccessors {
 }
 /// <div rustbindgen accessor="unsafe"></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct AllUnsafeAccessors {
     pub mBothAccessors: ::std::os::raw::c_int,
     pub mAlsoBothAccessors: ::std::os::raw::c_int,
@@ -198,11 +188,6 @@ fn bindgen_test_layout_AllUnsafeAccessors() {
         )
     );
 }
-impl Clone for AllUnsafeAccessors {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl AllUnsafeAccessors {
     #[inline]
     pub unsafe fn get_mBothAccessors(&self) -> &::std::os::raw::c_int {
@@ -223,7 +208,7 @@ impl AllUnsafeAccessors {
 }
 /// <div rustbindgen accessor></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct ContradictAccessors {
     pub mBothAccessors: ::std::os::raw::c_int,
     /// <div rustbindgen accessor="false"></div>
@@ -286,11 +271,6 @@ fn bindgen_test_layout_ContradictAccessors() {
         )
     );
 }
-impl Clone for ContradictAccessors {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl ContradictAccessors {
     #[inline]
     pub fn get_mBothAccessors(&self) -> &::std::os::raw::c_int {
@@ -315,7 +295,7 @@ impl ContradictAccessors {
 }
 /// <div rustbindgen accessor replaces="Replaced"></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Replaced {
     pub mAccessor: ::std::os::raw::c_int,
 }
@@ -342,11 +322,6 @@ fn bindgen_test_layout_Replaced() {
         )
     );
 }
-impl Clone for Replaced {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Replaced {
     #[inline]
     pub fn get_mAccessor(&self) -> &::std::os::raw::c_int {
@@ -359,7 +334,7 @@ impl Replaced {
 }
 /// <div rustbindgen accessor></div>
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Wrapper {
     pub mReplaced: Replaced,
 }
@@ -385,11 +360,6 @@ fn bindgen_test_layout_Wrapper() {
             stringify!(mReplaced)
         )
     );
-}
-impl Clone for Wrapper {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Wrapper {
     #[inline]

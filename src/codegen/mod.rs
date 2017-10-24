@@ -1642,7 +1642,10 @@ impl CodeGenerator for CompInfo {
             ctx.options().derive_copy
         {
             derives.push("Copy");
-            if used_template_params.is_some() {
+
+            if ctx.options().rust_features().builtin_clone_impls() || 
+                used_template_params.is_some() 
+            {
                 // FIXME: This requires extra logic if you have a big array in a
                 // templated struct. The reason for this is that the magic:
                 //     fn clone(&self) -> Self { *self }

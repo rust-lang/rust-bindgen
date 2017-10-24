@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct a {
     pub val_a: *mut b,
 }
@@ -32,18 +32,13 @@ fn bindgen_test_layout_a() {
         )
     );
 }
-impl Clone for a {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for a {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct b {
     pub val_b: ::std::os::raw::c_int,
 }
@@ -69,9 +64,4 @@ fn bindgen_test_layout_b() {
             stringify!(val_b)
         )
     );
-}
-impl Clone for b {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

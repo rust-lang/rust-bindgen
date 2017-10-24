@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct S {
     pub large_array: [::std::os::raw::c_char; 33usize],
 }
@@ -31,11 +31,6 @@ fn bindgen_test_layout_S() {
             stringify!(large_array)
         )
     );
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for S {
     fn default() -> Self {

@@ -20,7 +20,7 @@ pub enum _bindgen_ty_1 {
 }
 /// @internal fragmented mbuf
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct ip_frag {
     /// < offset into the packet
     pub ofs: u16,
@@ -72,11 +72,6 @@ fn bindgen_test_layout_ip_frag() {
         )
     );
 }
-impl Clone for ip_frag {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for ip_frag {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -84,7 +79,7 @@ impl Default for ip_frag {
 }
 /// @internal <src addr, dst_addr, id> to uniquely indetify fragmented datagram.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct ip_frag_key {
     /// < src address, first 8 bytes used for IPv4
     pub src_dst: [u64; 4usize],
@@ -136,15 +131,10 @@ fn bindgen_test_layout_ip_frag_key() {
         )
     );
 }
-impl Clone for ip_frag_key {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 /// @internal Fragmented packet to reassemble.
 /// First two entries in the frags[] array are for the last and first fragments.
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct ip_frag_pkt {
     /// < LRU list
     pub lru: ip_frag_pkt__bindgen_ty_1,
@@ -163,7 +153,7 @@ pub struct ip_frag_pkt {
     pub __bindgen_padding_0: [u64; 6usize],
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct ip_frag_pkt__bindgen_ty_1 {
     pub tqe_next: *mut ip_frag_pkt,
     pub tqe_prev: *mut *mut ip_frag_pkt,
@@ -200,11 +190,6 @@ fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
             stringify!(tqe_prev)
         )
     );
-}
-impl Clone for ip_frag_pkt__bindgen_ty_1 {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for ip_frag_pkt__bindgen_ty_1 {
     fn default() -> Self {
@@ -289,11 +274,6 @@ fn bindgen_test_layout_ip_frag_pkt() {
         )
     );
 }
-impl Clone for ip_frag_pkt {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for ip_frag_pkt {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -308,12 +288,7 @@ impl ::std::cmp::PartialEq for ip_frag_pkt {
 }
 /// < fragment mbuf
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mbuf {
     pub _address: u8,
-}
-impl Clone for rte_mbuf {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct mozilla_FragmentOrURL {
     pub mIsLocalRef: bool,
 }
@@ -32,13 +32,8 @@ fn bindgen_test_layout_mozilla_FragmentOrURL() {
         )
     );
 }
-impl Clone for mozilla_FragmentOrURL {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct mozilla_Position {
     pub _address: u8,
 }
@@ -54,11 +49,6 @@ fn bindgen_test_layout_mozilla_Position() {
         1usize,
         concat!("Alignment of ", stringify!(mozilla_Position))
     );
-}
-impl Clone for mozilla_Position {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 #[repr(C)]
 pub struct mozilla_StyleShapeSource {
@@ -81,7 +71,7 @@ impl Default for mozilla_StyleShapeSource {
     }
 }
 #[repr(C)]
-#[derive(Debug, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Bar {
     pub mFoo: *mut nsFoo,
 }
@@ -107,11 +97,6 @@ fn bindgen_test_layout_Bar() {
             stringify!(mFoo)
         )
     );
-}
-impl Clone for Bar {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for Bar {
     fn default() -> Self {

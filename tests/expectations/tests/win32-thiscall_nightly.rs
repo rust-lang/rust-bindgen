@@ -6,7 +6,7 @@
 #![feature(abi_thiscall)]
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Foo {
     pub _address: u8,
 }
@@ -30,11 +30,6 @@ extern "thiscall" {
 extern "thiscall" {
     #[link_name = "\u{1}?test2@Foo@@QAEHH@Z"]
     pub fn Foo_test2(this: *mut Foo, var: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
-}
-impl Clone for Foo {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Foo {
     #[inline]

@@ -12,7 +12,7 @@ pub type Char = ::std::os::raw::c_char;
 pub type SChar = ::std::os::raw::c_schar;
 pub type UChar = ::std::os::raw::c_uchar;
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct Test {
     pub ch: ::std::os::raw::c_char,
     pub u: ::std::os::raw::c_uchar,
@@ -159,9 +159,4 @@ fn bindgen_test_layout_Test() {
             stringify!(Ccd)
         )
     );
-}
-impl Clone for Test {
-    fn clone(&self) -> Self {
-        *self
-    }
 }

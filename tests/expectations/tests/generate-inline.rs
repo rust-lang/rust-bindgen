@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Foo {
     pub _address: u8,
 }
@@ -25,11 +25,6 @@ fn bindgen_test_layout_Foo() {
 extern "C" {
     #[link_name = "\u{1}_ZN3Foo3barEv"]
     pub fn Foo_bar() -> ::std::os::raw::c_int;
-}
-impl Clone for Foo {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Foo {
     #[inline]

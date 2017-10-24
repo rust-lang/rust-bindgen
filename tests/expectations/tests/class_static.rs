@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct MyClass {
     pub _address: u8,
 }
@@ -29,11 +29,6 @@ fn bindgen_test_layout_MyClass() {
         1usize,
         concat!("Alignment of ", stringify!(MyClass))
     );
-}
-impl Clone for MyClass {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 extern "C" {
     #[link_name = "\u{1}_ZL26example_check_no_collision"]

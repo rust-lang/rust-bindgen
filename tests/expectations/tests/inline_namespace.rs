@@ -14,7 +14,7 @@ pub mod root {
         pub type Ty = ::std::os::raw::c_int;
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy)]
+    #[derive(Debug, Default, Copy, Clone)]
     pub struct Bar {
         pub baz: root::foo::Ty,
     }
@@ -40,10 +40,5 @@ pub mod root {
                 stringify!(baz)
             )
         );
-    }
-    impl Clone for Bar {
-        fn clone(&self) -> Self {
-            *self
-        }
     }
 }

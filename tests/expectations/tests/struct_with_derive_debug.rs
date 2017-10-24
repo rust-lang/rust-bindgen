@@ -5,7 +5,7 @@
 
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct LittleArray {
     pub a: [::std::os::raw::c_int; 32usize],
 }
@@ -32,13 +32,8 @@ fn bindgen_test_layout_LittleArray() {
         )
     );
 }
-impl Clone for LittleArray {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct BigArray {
     pub a: [::std::os::raw::c_int; 33usize],
 }
@@ -65,18 +60,13 @@ fn bindgen_test_layout_BigArray() {
         )
     );
 }
-impl Clone for BigArray {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for BigArray {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct WithLittleArray {
     pub a: LittleArray,
 }
@@ -103,13 +93,8 @@ fn bindgen_test_layout_WithLittleArray() {
         )
     );
 }
-impl Clone for WithLittleArray {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 #[repr(C)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct WithBigArray {
     pub a: BigArray,
 }
@@ -135,11 +120,6 @@ fn bindgen_test_layout_WithBigArray() {
             stringify!(a)
         )
     );
-}
-impl Clone for WithBigArray {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for WithBigArray {
     fn default() -> Self {

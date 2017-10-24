@@ -21,7 +21,7 @@ impl<T> Default for BaseWithVtable<T> {
 }
 /// This should not have an explicit vtable.
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct DerivedWithNoVirtualMethods {
     pub _base: BaseWithVtable<*mut ::std::os::raw::c_char>,
 }
@@ -38,11 +38,6 @@ fn bindgen_test_layout_DerivedWithNoVirtualMethods() {
         concat!("Alignment of ", stringify!(DerivedWithNoVirtualMethods))
     );
 }
-impl Clone for DerivedWithNoVirtualMethods {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for DerivedWithNoVirtualMethods {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -50,7 +45,7 @@ impl Default for DerivedWithNoVirtualMethods {
 }
 /// This should not have an explicit vtable.
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct DerivedWithVirtualMethods {
     pub _base: BaseWithVtable<*mut ::std::os::raw::c_char>,
 }
@@ -66,11 +61,6 @@ fn bindgen_test_layout_DerivedWithVirtualMethods() {
         8usize,
         concat!("Alignment of ", stringify!(DerivedWithVirtualMethods))
     );
-}
-impl Clone for DerivedWithVirtualMethods {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for DerivedWithVirtualMethods {
     fn default() -> Self {
@@ -93,7 +83,7 @@ impl<U> Default for BaseWithoutVtable<U> {
 pub struct DerivedWithVtable__bindgen_vtable(::std::os::raw::c_void);
 /// This should have an explicit vtable.
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct DerivedWithVtable {
     pub vtable_: *const DerivedWithVtable__bindgen_vtable,
     pub _base: BaseWithoutVtable<*mut ::std::os::raw::c_char>,
@@ -111,11 +101,6 @@ fn bindgen_test_layout_DerivedWithVtable() {
         concat!("Alignment of ", stringify!(DerivedWithVtable))
     );
 }
-impl Clone for DerivedWithVtable {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
 impl Default for DerivedWithVtable {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
@@ -123,7 +108,7 @@ impl Default for DerivedWithVtable {
 }
 /// This should not have any vtable.
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct DerivedWithoutVtable {
     pub _base: BaseWithoutVtable<*mut ::std::os::raw::c_char>,
 }
@@ -139,11 +124,6 @@ fn bindgen_test_layout_DerivedWithoutVtable() {
         8usize,
         concat!("Alignment of ", stringify!(DerivedWithoutVtable))
     );
-}
-impl Clone for DerivedWithoutVtable {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 impl Default for DerivedWithoutVtable {
     fn default() -> Self {
