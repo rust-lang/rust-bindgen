@@ -21,8 +21,8 @@ impl Edge {
     /// Construct a new edge whose referent is `to` and is of the given `kind`.
     pub fn new(to: ItemId, kind: EdgeKind) -> Edge {
         Edge {
-            to: to,
-            kind: kind,
+            to,
+            kind,
         }
     }
 }

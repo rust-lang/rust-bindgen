@@ -46,18 +46,18 @@ impl Var {
     /// Construct a new `Var`.
     pub fn new(
         name: String,
-        mangled: Option<String>,
+        mangled_name: Option<String>,
         ty: TypeId,
         val: Option<VarType>,
         is_const: bool,
     ) -> Var {
         assert!(!name.is_empty());
         Var {
-            name: name,
-            mangled_name: mangled,
-            ty: ty,
-            val: val,
-            is_const: is_const,
+            name,
+            mangled_name,
+            ty,
+            val,
+            is_const,
         }
     }
 

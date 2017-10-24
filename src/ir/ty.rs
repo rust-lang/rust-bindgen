@@ -69,10 +69,10 @@ impl Type {
         is_const: bool,
     ) -> Self {
         Type {
-            name: name,
-            layout: layout,
-            kind: kind,
-            is_const: is_const,
+            name,
+            layout,
+            kind,
+            is_const,
         }
     }
 

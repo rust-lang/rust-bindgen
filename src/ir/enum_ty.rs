@@ -37,8 +37,8 @@ impl Enum {
     /// Construct a new `Enum` with the given representation and variants.
     pub fn new(repr: Option<TypeId>, variants: Vec<EnumVariant>) -> Self {
         Enum {
-            repr: repr,
-            variants: variants,
+            repr,
+            variants,
         }
     }
 
@@ -204,10 +204,10 @@ impl EnumVariant {
         custom_behavior: Option<EnumVariantCustomBehavior>,
     ) -> Self {
         EnumVariant {
-            name: name,
-            comment: comment,
-            val: val,
-            custom_behavior: custom_behavior,
+            name,
+            comment,
+            val,
+            custom_behavior,
         }
     }
 

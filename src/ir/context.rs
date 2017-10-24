@@ -491,7 +491,7 @@ impl<'ctx> WhitelistedItemsTraversal<'ctx> {
         R: IntoIterator<Item = ItemId>,
     {
         WhitelistedItemsTraversal {
-            ctx: ctx,
+            ctx,
             traversal: ItemTraversal::new(ctx, roots, predicate),
         }
     }
