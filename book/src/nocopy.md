@@ -6,6 +6,16 @@ Clone)]` to a translated type definition will compile, it still shouldn't do
 that for reasons it can't know. In these cases, the `nocopy` annotation can be
 used to prevent bindgen to autoderive the `Copy` and `Clone` traits for a type.
 
+###Library
+
+* [`bindgen::Builder::no_copy`](https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.no_copy)
+
+### Command Line
+
+* `--no-copy <regex>`
+
+### Annotations
+
 ```c
 /**
  * Although bindgen can't know, this struct is not safe to move because pthread
