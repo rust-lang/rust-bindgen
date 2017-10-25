@@ -1,6 +1,6 @@
 //! Bindgen's core intermediate representation type.
 
-use super::analysis::{HasVtable, HasVtableResult};
+use super::analysis::{HasVtable, HasVtableResult, Sizedness, SizednessResult};
 use super::annotations::Annotations;
 use super::comment;
 use super::comp::MethodKind;
@@ -1024,6 +1024,23 @@ impl HasVtable for Item {
 
     fn has_vtable_ptr(&self, ctx: &BindgenContext) -> bool {
         self.id().has_vtable_ptr(ctx)
+    }
+}
+
+impl<T> Sizedness for T
+where
+    T: Copy + Into<ItemId>
+{
+    fn sizedness(&self, ctx: &BindgenContext) -> SizednessResult {
+        let id: ItemId = (*self).into();
+        id.as_type_id(ctx)
+            .map_or(SizednessResult::default(), |id| ctx.lookup_sizedness(id))
+    }
+}
+
+impl Sizedness for Item {
+    fn sizedness(&self, ctx: &BindgenContext) -> SizednessResult {
+        self.id().sizedness(ctx)
     }
 }
 

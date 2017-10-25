@@ -58,6 +58,9 @@ mod derive_partial_eq_or_partial_ord;
 pub use self::derive_partial_eq_or_partial_ord::CannotDerivePartialEqOrPartialOrd;
 mod has_float;
 pub use self::has_float::HasFloat;
+mod sizedness;
+pub use self::sizedness::{Sizedness, SizednessAnalysis, SizednessResult};
+
 use ir::context::{BindgenContext, ItemId};
 
 use ir::traversal::{EdgeKind, Trace};

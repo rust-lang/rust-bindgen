@@ -1,10 +1,11 @@
 //! Common context that is passed around during parsing and codegen.
 
-use super::analysis::{CannotDeriveCopy, CannotDeriveDebug,
-                      CannotDeriveDefault, CannotDeriveHash,
-                      CannotDerivePartialEqOrPartialOrd, HasTypeParameterInArray,
-                      HasVtableAnalysis, HasVtableResult, HasDestructorAnalysis,
-                      UsedTemplateParameters, HasFloat, analyze};
+use super::analysis::{CannotDeriveCopy, CannotDeriveDebug, CannotDeriveDefault,
+                      CannotDeriveHash, CannotDerivePartialEqOrPartialOrd,
+                      HasTypeParameterInArray, HasVtableAnalysis,
+                      HasVtableResult, HasDestructorAnalysis,
+                      UsedTemplateParameters, HasFloat, SizednessAnalysis,
+                      SizednessResult, analyze};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
                     CanDeriveHash, CanDerivePartialOrd, CanDeriveOrd,
                     CanDerivePartialEq, CanDeriveEq, CannotDeriveReason};
@@ -428,6 +429,12 @@ pub struct BindgenContext {
     /// before that and `Some` after.
     cannot_derive_partialeq_or_partialord: Option<HashMap<ItemId, CannotDeriveReason>>,
 
+    /// The sizedness of types.
+    ///
+    /// This is populated by `compute_sizedness` and is always `None` before
+    /// that function is invoked and `Some` afterwards.
+    sizedness: Option<HashMap<TypeId, SizednessResult>>,
+
     /// The set of (`ItemId's of`) types that has vtable.
     ///
     /// Populated when we enter codegen by `compute_has_vtable`; always `None`
@@ -586,6 +593,7 @@ impl BindgenContext {
             cannot_derive_copy_in_array: None,
             cannot_derive_hash: None,
             cannot_derive_partialeq_or_partialord: None,
+            sizedness: None,
             have_vtable: None,
             have_destructor: None,
             has_type_param_in_array: None,
@@ -1177,6 +1185,7 @@ impl BindgenContext {
         self.assert_every_item_in_a_module();
 
         self.compute_has_vtable();
+        self.compute_sizedness();
         self.compute_has_destructor();
         self.find_used_template_parameters();
         self.compute_cannot_derive_debug();
@@ -1257,6 +1266,29 @@ impl BindgenContext {
                 );
             }
         }
+    }
+
+    /// Compute for every type whether it is sized or not, and whether it is
+    /// sized or not as a base class.
+    fn compute_sizedness(&mut self) {
+        let _t = self.timer("compute_sizedness");
+        assert!(self.sizedness.is_none());
+        self.sizedness = Some(analyze::<SizednessAnalysis>(self));
+    }
+
+    /// Look up whether the type with the given id is sized or not.
+    pub fn lookup_sizedness(&self, id: TypeId) -> SizednessResult {
+        assert!(
+            self.in_codegen_phase(),
+            "We only compute sizedness after we've entered codegen"
+        );
+
+        self.sizedness
+            .as_ref()
+            .unwrap()
+            .get(&id)
+            .cloned()
+            .unwrap_or(SizednessResult::ZeroSized)
     }
 
     /// Compute whether the type has vtable.

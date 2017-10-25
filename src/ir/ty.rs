@@ -698,50 +698,6 @@ pub enum TypeKind {
 }
 
 impl Type {
-    /// Whether this type is unsized, that is, has no members. This is used to
-    /// derive whether we should generate a dummy `_address` field for structs,
-    /// to comply to the C and C++ layouts, that specify that every type needs
-    /// to be addressable.
-    pub fn is_unsized(&self, ctx: &BindgenContext, id: TypeId) -> bool {
-        debug_assert!(ctx.in_codegen_phase(), "Not yet");
-
-        match self.kind {
-            TypeKind::Void => true,
-            TypeKind::Comp(ref ci) => ci.is_unsized(ctx, id),
-            TypeKind::Opaque => self.layout.map_or(true, |l| l.size == 0),
-            TypeKind::Array(inner, size) => {
-                size == 0 || ctx.resolve_type(inner).is_unsized(ctx, inner)
-            }
-            TypeKind::ResolvedTypeRef(inner) |
-            TypeKind::Alias(inner) |
-            TypeKind::TemplateAlias(inner, _) => {
-                ctx.resolve_type(inner).is_unsized(ctx, inner)
-            }
-            TypeKind::TemplateInstantiation(ref inst) => {
-                let definition = inst.template_definition();
-                ctx.resolve_type(definition).is_unsized(ctx, definition)
-            }
-            TypeKind::TypeParam |
-            TypeKind::Int(..) |
-            TypeKind::Float(..) |
-            TypeKind::Complex(..) |
-            TypeKind::Function(..) |
-            TypeKind::Enum(..) |
-            TypeKind::Reference(..) |
-            TypeKind::NullPtr |
-            TypeKind::BlockPointer |
-            TypeKind::ObjCId |
-            TypeKind::ObjCSel |
-            TypeKind::Pointer(..) => false,
-
-            TypeKind::ObjCInterface(..) => true, // dunno?
-
-            TypeKind::UnresolvedTypeRef(..) => {
-                unreachable!("Should have been resolved after parsing!");
-            }
-        }
-    }
-
     /// This is another of the nasty methods. This one is the one that takes
     /// care of the core logic of converting a clang type to a `Type`.
     ///
