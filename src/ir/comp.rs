@@ -1,6 +1,6 @@
 //! Compound types (unions and structs) in our intermediate representation.
 
-use super::analysis::HasVtable;
+use super::analysis::Sizedness;
 use super::annotations::Annotations;
 use super::context::{BindgenContext, FunctionId, ItemId, TypeId, VarId};
 use super::dot::DotAttributes;
@@ -896,11 +896,10 @@ impl Base {
             return false;
         }
 
-        let base_ty = ctx.resolve_type(self.ty);
-        // NB: We won't include unsized types in our base chain because they
+        // NB: We won't include zero-sized types in our base chain because they
         // would contribute to our size given the dummy field we insert for
-        // unsized types.
-        if base_ty.is_unsized(ctx, self.ty) {
+        // zero-sized types.
+        if self.ty.is_zero_sized(ctx) {
             return false;
         }
 
@@ -1008,17 +1007,6 @@ impl CompInfo {
             found_unknown_attr: false,
             is_forward_declaration: false,
         }
-    }
-
-    /// Is this compound type unsized?
-    pub fn is_unsized(&self, ctx: &BindgenContext, id: TypeId) -> bool {
-        !id.has_vtable(ctx) && self.fields().is_empty() &&
-            self.base_members.iter().all(|base| {
-                ctx.resolve_type(base.ty).canonical_type(ctx).is_unsized(
-                    ctx,
-                    base.ty,
-                )
-            })
     }
 
     /// Compute the layout of this type.

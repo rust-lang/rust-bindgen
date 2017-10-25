@@ -9,7 +9,7 @@ use self::struct_layout::StructLayoutTracker;
 
 use super::BindgenOptions;
 
-use ir::analysis::HasVtable;
+use ir::analysis::{HasVtable, Sizedness};
 use ir::annotations::FieldAccessorKind;
 use ir::comment;
 use ir::comp::{Base, Bitfield, BitfieldUnit, CompInfo, CompKind, Field,
@@ -1534,7 +1534,7 @@ impl CodeGenerator for CompInfo {
                     warn!("Opaque type without layout! Expect dragons!");
                 }
             }
-        } else if !is_union && !self.is_unsized(ctx, item.id().expect_type_id(ctx)) {
+        } else if !is_union && !item.is_zero_sized(ctx) {
             if let Some(padding_field) =
                 layout.and_then(|layout| struct_layout.pad_struct(layout))
             {
@@ -1565,7 +1565,7 @@ impl CodeGenerator for CompInfo {
         //
         // NOTE: This check is conveniently here to avoid the dummy fields we
         // may add for unused template parameters.
-        if self.is_unsized(ctx, item.id().expect_type_id(ctx)) {
+        if item.is_zero_sized(ctx) {
             let has_address = if is_opaque {
                 // Generate the address field if it's an opaque type and
                 // couldn't determine the layout of the blob.
@@ -1643,8 +1643,8 @@ impl CodeGenerator for CompInfo {
         {
             derives.push("Copy");
 
-            if ctx.options().rust_features().builtin_clone_impls() || 
-                used_template_params.is_some() 
+            if ctx.options().rust_features().builtin_clone_impls() ||
+                used_template_params.is_some()
             {
                 // FIXME: This requires extra logic if you have a big array in a
                 // templated struct. The reason for this is that the magic:

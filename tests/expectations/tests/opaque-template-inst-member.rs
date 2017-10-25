@@ -6,7 +6,9 @@
 
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
-pub struct OpaqueTemplate {}
+pub struct OpaqueTemplate {
+    pub _address: u8,
+}
 /// This should not end up deriving Debug/Hash because its `mBlah` field cannot derive
 /// Debug/Hash because the instantiation's definition cannot derive Debug/Hash.
 #[repr(C)]

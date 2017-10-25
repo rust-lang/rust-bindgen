@@ -9,7 +9,9 @@
 /// where we are OK to derive Debug/Hash/PartialEq.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
-pub struct OpaqueTemplate {}
+pub struct OpaqueTemplate {
+    pub _address: u8,
+}
 /// Should derive Debug/Hash/PartialEq.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
