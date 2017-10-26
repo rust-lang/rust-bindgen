@@ -4,6 +4,12 @@ mod error;
 mod helpers;
 pub mod struct_layout;
 
+#[cfg(test)]
+#[allow(warnings)]
+pub(crate) mod bitfield_unit;
+#[cfg(test)]
+mod bitfield_unit_tests;
+
 use self::helpers::attributes;
 use self::struct_layout::StructLayoutTracker;
 
@@ -96,6 +102,9 @@ struct CodegenResult<'a> {
     /// Whether Objective C types have been seen at least once.
     saw_objc: bool,
 
+    /// Whether a bitfield allocation unit has been seen at least once.
+    saw_bitfield_unit: bool,
+
     items_seen: HashSet<ItemId>,
     /// The set of generated function/var names, needed because in C/C++ is
     /// legal to do something like:
@@ -130,6 +139,7 @@ impl<'a> CodegenResult<'a> {
             saw_bindgen_union: false,
             saw_incomplete_array: false,
             saw_objc: false,
+            saw_bitfield_unit: false,
             codegen_id: codegen_id,
             items_seen: Default::default(),
             functions_seen: Default::default(),
@@ -153,6 +163,10 @@ impl<'a> CodegenResult<'a> {
 
     fn saw_objc(&mut self) {
         self.saw_objc = true;
+    }
+
+    fn saw_bitfield_unit(&mut self) {
+        self.saw_bitfield_unit = true;
     }
 
     fn seen<Id: Into<ItemId>>(&self, item: Id) -> bool {
@@ -200,6 +214,7 @@ impl<'a> CodegenResult<'a> {
         self.saw_union |= new.saw_union;
         self.saw_incomplete_array |= new.saw_incomplete_array;
         self.saw_objc |= new.saw_objc;
+        self.saw_bitfield_unit |= new.saw_bitfield_unit;
 
         new.items
     }
@@ -394,6 +409,9 @@ impl CodeGenerator for Module {
                 }
                 if result.saw_objc {
                     utils::prepend_objc_header(ctx, &mut *result);
+                }
+                if result.saw_bitfield_unit {
+                    utils::prepend_bitfield_unit_type(&mut *result);
                 }
             }
         };
@@ -1119,14 +1137,13 @@ impl Bitfield {
     ///
     /// 1. Adding a parameter with this bitfield's name and its type.
     ///
-    /// 2. Bitwise or'ing the parameter into the final value of the constructed
-    /// bitfield unit.
+    /// 2. Setting the relevant bits on the `__bindgen_bitfield_unit` variable
+    ///    that's being constructed.
     fn extend_ctor_impl(
         &self,
         ctx: &BindgenContext,
         param_name: quote::Tokens,
-        ctor_impl: quote::Tokens,
-        unit_field_int_ty: &quote::Tokens,
+        mut ctor_impl: quote::Tokens,
     ) -> quote::Tokens {
         let bitfield_ty = ctx.resolve_type(self.ty());
         let bitfield_ty_layout = bitfield_ty.layout(ctx).expect(
@@ -1135,15 +1152,23 @@ impl Bitfield {
         let bitfield_int_ty = helpers::blob(bitfield_ty_layout);
 
         let offset = self.offset_into_unit();
-        let mask = helpers::ast_ty::hex_expr(self.mask());
+        let width = self.width() as u8;
+        let prefix = ctx.trait_prefix();
 
-        // Don't use variables or blocks because const functions do not allow
-        // them.
-        quote! {
-            (#ctor_impl |
-             ((#param_name as #bitfield_int_ty as #unit_field_int_ty) << #offset) &
-             (#mask as #unit_field_int_ty))
-        }
+        ctor_impl.append(quote! {
+            __bindgen_bitfield_unit.set(
+                #offset,
+                #width,
+                {
+                    let #param_name: #bitfield_int_ty = unsafe {
+                        ::#prefix::mem::transmute(#param_name)
+                    };
+                    #param_name as u64
+                }
+            );
+        });
+
+        ctor_impl
     }
 }
 
@@ -1166,19 +1191,23 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         F: Extend<quote::Tokens>,
         M: Extend<quote::Tokens>,
     {
-        let field_ty = if parent.is_union() && !parent.can_be_rust_union(ctx) {
-            let ty = helpers::blob(self.layout());
-            if ctx.options().enable_cxx_namespaces {
-                quote! {
-                    root::__BindgenUnionField<#ty>
+        result.saw_bitfield_unit();
+
+        let field_ty = {
+            let ty = helpers::bitfield_unit(ctx, self.layout());
+            if parent.is_union() && !parent.can_be_rust_union(ctx) {
+                if ctx.options().enable_cxx_namespaces {
+                    quote! {
+                        root::__BindgenUnionField<#ty>
+                    }
+                } else {
+                    quote! {
+                        __BindgenUnionField<#ty>
+                    }
                 }
             } else {
-                quote! {
-                    __BindgenUnionField<#ty>
-                }
+                ty
             }
-        } else {
-            helpers::blob(self.layout())
         };
 
         let unit_field_name = format!("_bitfield_{}", self.nth());
@@ -1189,34 +1218,21 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         };
         fields.extend(Some(field));
 
-        let mut field_int_size = self.layout().size;
-        if !field_int_size.is_power_of_two() {
-            field_int_size = field_int_size.next_power_of_two();
-        }
-
-        let unit_field_int_ty = match field_int_size {
-            8 => quote! { u64 },
-            4 => quote! { u32 },
-            2 => quote! { u16 },
-            1 => quote! { u8  },
-            size => {
-                debug_assert!(size > 8);
-                // Can't generate bitfield accessors for unit sizes larger than
-                // 64 bits at the moment.
-                struct_layout.saw_bitfield_unit(self.layout());
-                return;
-            }
-        };
+        let unit_field_ty = helpers::bitfield_unit(ctx, self.layout());
 
         let ctor_name = self.ctor_name();
         let mut ctor_params = vec![];
-        let mut ctor_impl = quote! { 0 };
+        let mut ctor_impl = quote! {};
+        let mut generate_ctor = true;
 
         for bf in self.bitfields() {
             // Codegen not allowed for anonymous bitfields
             if bf.name().is_none() {
                 continue;
             }
+
+            let mut bitfield_representable_as_int = true;
+
             bf.codegen(
                 ctx,
                 fields_should_be_private,
@@ -1227,8 +1243,14 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 struct_layout,
                 fields,
                 methods,
-                (&unit_field_name, unit_field_int_ty.clone(), self.layout().size),
+                (&unit_field_name, &mut bitfield_representable_as_int),
             );
+
+            // Generating a constructor requires the bitfield to be representable as an integer.
+            if !bitfield_representable_as_int {
+                generate_ctor = false;
+                continue;
+            }
 
             let param_name = bitfield_getter_name(ctx, bf);
             let bitfield_ty_item = ctx.resolve_item(bf.ty());
@@ -1243,22 +1265,19 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 ctx,
                 param_name,
                 ctor_impl,
-                &unit_field_int_ty,
             );
         }
 
-        let const_ = if ctx.options().rust_features().const_fn() {
-            quote! { const }
-        } else {
-            quote! { }
-        };
-
-        methods.extend(Some(quote! {
-            #[inline]
-            pub #const_ fn #ctor_name ( #( #ctor_params ),* ) -> #unit_field_int_ty {
-                #ctor_impl
-            }
-        }));
+        if generate_ctor {
+            methods.extend(Some(quote! {
+                #[inline]
+                pub fn #ctor_name ( #( #ctor_params ),* ) -> #unit_field_ty {
+                    let mut __bindgen_bitfield_unit: #unit_field_ty = Default::default();
+                    #ctor_impl
+                    __bindgen_bitfield_unit
+                }
+            }));
+        }
 
         struct_layout.saw_bitfield_unit(self.layout());
     }
@@ -1283,7 +1302,7 @@ fn bitfield_setter_name(
 }
 
 impl<'a> FieldCodegen<'a> for Bitfield {
-    type Extra = (&'a str, quote::Tokens, usize);
+    type Extra = (&'a str, &'a mut bool);
 
     fn codegen<F, M>(
         &self,
@@ -1291,12 +1310,12 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         _fields_should_be_private: bool,
         _codegen_depth: usize,
         _accessor_kind: FieldAccessorKind,
-        _parent: &CompInfo,
+        parent: &CompInfo,
         _result: &mut CodegenResult,
         _struct_layout: &mut StructLayoutTracker,
         _fields: &mut F,
         methods: &mut M,
-        (unit_field_name, unit_field_int_ty, unit_field_size): (&'a str, quote::Tokens, usize),
+        (unit_field_name, bitfield_representable_as_int): (&'a str, &mut bool),
     ) where
         F: Extend<quote::Tokens>,
         M: Extend<quote::Tokens>,
@@ -1312,65 +1331,73 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         let bitfield_ty_layout = bitfield_ty.layout(ctx).expect(
             "Bitfield without layout? Gah!",
         );
-        let bitfield_int_ty = helpers::blob(bitfield_ty_layout);
+        let bitfield_int_ty = match helpers::integer_type(bitfield_ty_layout) {
+            Some(int_ty) => {
+                *bitfield_representable_as_int = true;
+                int_ty
+            }
+            None => {
+                *bitfield_representable_as_int = false;
+                return;
+            }
+        };
 
         let bitfield_ty =
             bitfield_ty.to_rust_ty_or_opaque(ctx, bitfield_ty_item);
 
         let offset = self.offset_into_unit();
-        let mask = helpers::ast_ty::hex_expr(self.mask());
 
-        methods.extend(Some(quote! {
-            #[inline]
-            pub fn #getter_name(&self) -> #bitfield_ty {
-                let mut unit_field_val: #unit_field_int_ty = unsafe {
-                    ::#prefix::mem::uninitialized()
-                };
+        let width = self.width() as u8;
 
-                unsafe {
-                    ::#prefix::ptr::copy_nonoverlapping(
-                        &self.#unit_field_ident as *const _ as *const u8,
-                        &mut unit_field_val as *mut #unit_field_int_ty as *mut u8,
-                        #unit_field_size,
-                    )
-                };
-
-                let mask = #mask as #unit_field_int_ty;
-                let val = (unit_field_val & mask) >> #offset;
-                unsafe {
-                    ::#prefix::mem::transmute(val as #bitfield_int_ty)
+        if parent.is_union() && !parent.can_be_rust_union(ctx) {
+            methods.extend(Some(quote! {
+                #[inline]
+                pub fn #getter_name(&self) -> #bitfield_ty {
+                    unsafe {
+                        ::#prefix::mem::transmute(
+                            self.#unit_field_ident.as_ref().get(#offset, #width)
+                                as #bitfield_int_ty
+                        )
+                    }
                 }
-            }
 
-            #[inline]
-            pub fn #setter_name(&mut self, val: #bitfield_ty) {
-                let mask = #mask as #unit_field_int_ty;
-                let val = val as #bitfield_int_ty as #unit_field_int_ty;
-
-                let mut unit_field_val: #unit_field_int_ty = unsafe {
-                    ::#prefix::mem::uninitialized()
-                };
-
-                unsafe {
-                    ::#prefix::ptr::copy_nonoverlapping(
-                        &self.#unit_field_ident as *const _ as *const u8,
-                        &mut unit_field_val as *mut #unit_field_int_ty as *mut u8,
-                        #unit_field_size,
-                    )
-                };
-
-                unit_field_val &= !mask;
-                unit_field_val |= (val << #offset) & mask;
-
-                unsafe {
-                    ::#prefix::ptr::copy_nonoverlapping(
-                        &unit_field_val as *const _ as *const u8,
-                        &mut self.#unit_field_ident as *mut _ as *mut u8,
-                        #unit_field_size,
-                    );
+                #[inline]
+                pub fn #setter_name(&mut self, val: #bitfield_ty) {
+                    unsafe {
+                        let val: #bitfield_int_ty = ::#prefix::mem::transmute(val);
+                        self.#unit_field_ident.as_mut().set(
+                            #offset,
+                            #width,
+                            val as u64
+                        )
+                    }
                 }
-            }
-        }));
+            }));
+        } else {
+            methods.extend(Some(quote! {
+                #[inline]
+                pub fn #getter_name(&self) -> #bitfield_ty {
+                    unsafe {
+                        ::#prefix::mem::transmute(
+                            self.#unit_field_ident.get(#offset, #width)
+                                as #bitfield_int_ty
+                        )
+                    }
+                }
+
+                #[inline]
+                pub fn #setter_name(&mut self, val: #bitfield_ty) {
+                    unsafe {
+                        let val: #bitfield_int_ty = ::#prefix::mem::transmute(val);
+                        self.#unit_field_ident.set(
+                            #offset,
+                            #width,
+                            val as u64
+                        )
+                    }
+                }
+            }));
+        }
     }
 }
 
@@ -3392,6 +3419,15 @@ mod utils {
     use ir::ty::TypeKind;
     use quote;
     use std::mem;
+
+    pub fn prepend_bitfield_unit_type(result: &mut Vec<quote::Tokens>) {
+        let mut bitfield_unit_type = quote! {};
+        bitfield_unit_type.append(include_str!("./bitfield_unit.rs"));
+
+        let items = vec![bitfield_unit_type];
+        let old_items = mem::replace(result, items);
+        result.extend(old_items);
+    }
 
     pub fn prepend_objc_header(
         ctx: &BindgenContext,

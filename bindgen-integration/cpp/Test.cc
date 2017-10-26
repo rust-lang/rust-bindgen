@@ -69,11 +69,11 @@ Date2::assert(unsigned short nWeekDay,
               unsigned short nYear,
               unsigned short byte)
 {
-  return this->nWeekDay == nWeekDay &&
-      this->nMonthDay == nMonthDay &&
-      this->nMonth == nMonth &&
-      this->nYear == nYear &&
-      this->byte == byte;
+    return this->nWeekDay == nWeekDay &&
+        this->nMonthDay == nMonthDay &&
+        this->nMonth == nMonth &&
+        this->nYear == nYear &&
+        this->byte == byte;
 }
 
 bool
@@ -83,11 +83,11 @@ Fifth::assert(unsigned short nWeekDay,
               unsigned short nYear,
               unsigned char byte)
 {
-  return this->nWeekDay == nWeekDay &&
-      this->nMonthDay == nMonthDay &&
-      this->nMonth == nMonth &&
-      this->nYear == nYear &&
-      this->byte == byte;
+    return this->nWeekDay == nWeekDay &&
+        this->nMonthDay == nMonthDay &&
+        this->nMonth == nMonth &&
+        this->nYear == nYear &&
+        this->byte == byte;
 }
 
 bool
@@ -95,10 +95,27 @@ Sixth::assert(unsigned char byte,
               unsigned char nWeekDay,
               unsigned char nMonth,
               unsigned char nMonthDay) {
-  return this->nWeekDay == nWeekDay &&
-      this->nMonthDay == nMonthDay &&
-      this->nMonth == nMonth &&
-      this->byte == byte;
+    return this->nWeekDay == nWeekDay &&
+        this->nMonthDay == nMonthDay &&
+        this->nMonth == nMonth &&
+        this->byte == byte;
+};
+
+bool
+Seventh::assert(bool first,
+                int second,
+                unsigned short third,
+                unsigned int fourth,
+                unsigned short fifth,
+                bool sixth,
+                int seventh) {
+  return this->first_one_bit == first &&
+      this->second_thirty_bits == second &&
+      this->third_two_bits == third &&
+      this->fourth_thirty_bits == fourth &&
+      this->fifth_two_bits == fifth &&
+      this->sixth_one_bit == sixth &&
+      this->seventh_thirty_bits == seventh;
 };
 
 } // namespace bitfields

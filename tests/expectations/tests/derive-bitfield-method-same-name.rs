@@ -4,6 +4,85 @@
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
 
+#[repr(C)]
+#[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub struct __BindgenBitfieldUnit<Storage, Align>
+where
+    Storage: AsRef<[u8]> + AsMut<[u8]>,
+{
+    storage: Storage,
+    align: [Align; 0],
+}
+
+impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
+where
+    Storage: AsRef<[u8]> + AsMut<[u8]>,
+{
+    #[inline]
+    pub fn new(storage: Storage) -> Self {
+        Self { storage, align: [] }
+    }
+
+    #[inline]
+    pub fn get_bit(&self, index: usize) -> bool {
+        debug_assert!(index / 8 < self.storage.as_ref().len());
+
+        let byte_index = index / 8;
+        let byte = self.storage.as_ref()[byte_index];
+
+        let bit_index = index % 8;
+        let mask = 1 << bit_index;
+
+        byte & mask == mask
+    }
+
+    #[inline]
+    pub fn set_bit(&mut self, index: usize, val: bool) {
+        debug_assert!(index / 8 < self.storage.as_ref().len());
+
+        let byte_index = index / 8;
+        let byte = &mut self.storage.as_mut()[byte_index];
+
+        let bit_index = index % 8;
+        let mask = 1 << bit_index;
+
+        if val {
+            *byte |= mask;
+        } else {
+            *byte &= !mask;
+        }
+    }
+
+    #[inline]
+    pub fn get(&self, bit_offset: usize, bit_width: u8) -> u64 {
+        debug_assert!(bit_width <= 64);
+        debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
+        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+
+        let mut val = 0;
+
+        for i in 0..(bit_width as usize) {
+            if self.get_bit(i + bit_offset) {
+                val |= 1 << i;
+            }
+        }
+
+        val
+    }
+
+    #[inline]
+    pub fn set(&mut self, bit_offset: usize, bit_width: u8, val: u64) {
+        debug_assert!(bit_width <= 64);
+        debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
+        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+
+        for i in 0..(bit_width as usize) {
+            let mask = 1 << i;
+            let val_bit_is_set = val & mask == mask;
+            self.set_bit(i + bit_offset, val_bit_is_set);
+        }
+    }
+}
 
 /// Because this struct have array larger than 32 items
 /// and --with-derive-partialeq --impl-partialeq --impl-debug is provided,
@@ -12,7 +91,7 @@
 #[derive(Copy, Clone)]
 pub struct Foo {
     pub large: [::std::os::raw::c_int; 33usize],
-    pub _bitfield_1: [u8; 2usize],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize], u8>,
     pub __bindgen_padding_0: u16,
 }
 #[test]
@@ -78,43 +157,27 @@ impl ::std::cmp::PartialEq for Foo {
 impl Foo {
     #[inline]
     pub fn type__bindgen_bitfield(&self) -> ::std::os::raw::c_char {
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        let mask = 0x7 as u16;
-        let val = (unit_field_val & mask) >> 0usize;
-        unsafe { ::std::mem::transmute(val as u8) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 3u8) as u8) }
     }
     #[inline]
     pub fn set_type__bindgen_bitfield(&mut self, val: ::std::os::raw::c_char) {
-        let mask = 0x7 as u16;
-        let val = val as u8 as u16;
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 0usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                2usize,
-            );
+            let val: u8 = ::std::mem::transmute(val);
+            self._bitfield_1.set(0usize, 3u8, val as u64)
         }
     }
     #[inline]
-    pub fn new_bitfield_1(type__bindgen_bitfield: ::std::os::raw::c_char) -> u16 {
-        (0 | ((type__bindgen_bitfield as u8 as u16) << 0usize) & (0x7 as u16))
+    pub fn new_bitfield_1(
+        type__bindgen_bitfield: ::std::os::raw::c_char,
+    ) -> __BindgenBitfieldUnit<[u8; 2usize], u8> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize], u8> =
+            Default::default();
+        __bindgen_bitfield_unit.set(0usize, 3u8, {
+            let type__bindgen_bitfield: u8 =
+                unsafe { ::std::mem::transmute(type__bindgen_bitfield) };
+            type__bindgen_bitfield as u64
+        });
+        __bindgen_bitfield_unit
     }
     #[inline]
     pub unsafe fn type_(&mut self) -> ::std::os::raw::c_char {
