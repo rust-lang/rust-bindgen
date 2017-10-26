@@ -73,6 +73,15 @@
 basis. Sometimes, it might not understand that although adding <code>#[derive(Copy, Clone)]</code> to a translated type definition will compile, it still shouldn't do
 that for reasons it can't know. In these cases, the <code>nocopy</code> annotation can be
 used to prevent bindgen to autoderive the <code>Copy</code> and <code>Clone</code> traits for a type.</p>
+<p>###Library</p>
+<ul>
+<li><a href="https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.no_copy"><code>bindgen::Builder::no_copy</code></a></li>
+</ul>
+<a class="header" href="./nocopy.html#command-line" id="command-line"><h3>Command Line</h3></a>
+<ul>
+<li><code>--no-copy &lt;regex&gt;</code></li>
+</ul>
+<a class="header" href="./nocopy.html#annotations" id="annotations"><h3>Annotations</h3></a>
 <pre><code class="language-c">/**
  * Although bindgen can't know, this struct is not safe to move because pthread
  * mutexes can't move in memory!
