@@ -285,6 +285,13 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("no-copy")
+                .long("no-copy")
+                .help("Avoid deriving Copy for types matching <regex>.")
+                .value_name("regex")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
         ]) // .args()
         .get_matches_from(args);
 
@@ -576,6 +583,12 @@ where
     if let Some(no_partialeq) = matches.values_of("no-partialeq") {
         for regex in no_partialeq {
             builder = builder.no_partialeq(String::from(regex));
+        }
+    }
+
+    if let Some(no_partialeq) = matches.values_of("no-copy") {
+        for regex in no_partialeq {
+            builder = builder.no_copy(String::from(regex));
         }
     }
 

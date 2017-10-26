@@ -2489,6 +2489,12 @@ impl BindgenContext {
         let name = item.canonical_path(self)[1..].join("::");
         self.options().no_partialeq_types.matches(&name)
     }
+
+    /// Check if `--no-copy` flag is enabled for this item.
+    pub fn no_copy_by_name(&self, item: &Item) -> bool {
+        let name = item.canonical_path(self)[1..].join("::");
+        self.options().no_copy_types.matches(&name)
+    }
 }
 
 /// A builder struct for configuring item resolution options.
