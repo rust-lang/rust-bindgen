@@ -45,7 +45,7 @@ The latest `rustfmt` is required to run the `bindgen` test suite. Install
             "nightly",
             "rustfmt",
             "--config-path",
-            concat!(env!("CARGO_MANIFEST_DIR"), "/tests/rustfmt.toml")
+            concat!(env!("CARGO_MANIFEST_DIR"), "/rustfmt.toml")
         ])
         .stdin(process::Stdio::piped())
         .stdout(process::Stdio::piped())
