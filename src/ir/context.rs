@@ -2495,6 +2495,12 @@ impl BindgenContext {
         let name = item.canonical_path(self)[1..].join("::");
         self.options().no_copy_types.matches(&name)
     }
+
+    /// Chech if `--no-hash` flag is enabled for this item.
+    pub fn no_hash_by_name(&self, item: &Item) -> bool {
+        let name = item.canonical_path(self)[1..].join("::");
+        self.options().no_hash_types.matches(&name)
+    }
 }
 
 /// A builder struct for configuring item resolution options.
