@@ -536,6 +536,20 @@ impl Builder {
             })
             .count();
 
+        self.options
+            .no_hash_types
+            .get_items()
+            .iter()
+            .map(|item| {
+                output_vector.push("--no-hash".into());
+                output_vector.push(
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
+                );
+            })
+            .count();
+
         output_vector
     }
 
@@ -1179,6 +1193,13 @@ impl Builder {
         self.options.no_copy_types.insert(arg);
         self
     }
+
+    /// Don't derive `Hash` for a given type. Regular
+    /// expressions are supported.
+    pub fn no_hash(mut self, arg: String) -> Builder {
+        self.options.no_hash_types.insert(arg);
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -1369,6 +1390,9 @@ struct BindgenOptions {
 
     /// The set of types that we should not derive `Copy` for.
     no_copy_types: RegexSet,
+
+    /// The set of types that we should not derive `Hash` for.
+    no_hash_types: RegexSet,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -1388,6 +1412,7 @@ impl BindgenOptions {
         self.rustified_enums.build();
         self.no_partialeq_types.build();
         self.no_copy_types.build();
+        self.no_hash_types.build();
     }
 
     /// Update rust target version
@@ -1460,6 +1485,7 @@ impl Default for BindgenOptions {
             rustfmt_configuration_file: None,
             no_partialeq_types: Default::default(),
             no_copy_types: Default::default(),
+            no_hash_types: Default::default(),
         }
     }
 }

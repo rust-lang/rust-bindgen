@@ -292,6 +292,13 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("no-hash")
+                .long("no-hash")
+                .help("Avoid deriving Hash for types matching <regex>.")
+                .value_name("regex")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
         ]) // .args()
         .get_matches_from(args);
 
@@ -589,6 +596,12 @@ where
     if let Some(no_partialeq) = matches.values_of("no-copy") {
         for regex in no_partialeq {
             builder = builder.no_copy(String::from(regex));
+        }
+    }
+
+    if let Some(no_hash) = matches.values_of("no-hash") {
+        for regex in no_hash {
+            builder = builder.no_hash(String::from(regex));
         }
     }
 
