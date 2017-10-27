@@ -16,9 +16,9 @@ transitively used by a definition that matches them.
 
 ### Library
 
-* [`bindgen::Builder::whitelisted_type`](https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.whitelisted_type)
-* [`bindgen::Builder::whitelisted_function`](https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.whitelisted_function)
-* [`bindgen::Builder::whitelisted_var`](https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.whitelisted_function)
+* [`bindgen::Builder::whitelist_type`](https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.whitelist_type)
+* [`bindgen::Builder::whitelist_function`](https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.whitelist_function)
+* [`bindgen::Builder::whitelist_var`](https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.whitelist_var)
 
 ### Command Line
 
