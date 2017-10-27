@@ -593,8 +593,8 @@ where
         }
     }
 
-    if let Some(no_partialeq) = matches.values_of("no-copy") {
-        for regex in no_partialeq {
+    if let Some(no_copy) = matches.values_of("no-copy") {
+        for regex in no_copy {
             builder = builder.no_copy(String::from(regex));
         }
     }
