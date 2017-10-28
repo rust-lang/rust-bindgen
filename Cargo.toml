@@ -33,6 +33,7 @@ path = "src/lib.rs"
 name = "bindgen"
 path = "src/main.rs"
 doc = false
+required-features = ["binaries"]
 
 [dev-dependencies]
 diff = "0.1"
@@ -42,8 +43,7 @@ shlex = "0.1"
 [dependencies]
 cexpr = "0.2"
 cfg-if = "0.1.0"
-# This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
-clap = "2"
+clap = { version = "2", optional = true }
 clang-sys = { version = "0.21.0", features = ["runtime", "clang_3_9"] }
 lazy_static = "0.2.1"
 peeking_take_while = "0.1.2"
@@ -60,6 +60,7 @@ optional = true
 version = "0.3"
 
 [features]
+binaries = ["clap"]
 default = ["logging"]
 logging = ["env_logger", "log"]
 static = []
