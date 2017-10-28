@@ -80,6 +80,7 @@ use ir::item::Item;
 use parse::{ClangItemParser, ParseError};
 use regex_set::RegexSet;
 
+use std::borrow::Cow;
 use std::fs::{File, OpenOptions};
 use std::io::{self, Write};
 use std::iter;
@@ -1678,30 +1679,32 @@ impl Bindings {
 
         let bindings = self.module.as_str().to_string();
 
-        match self.rustfmt_generated_string(bindings) {
+        match self.rustfmt_generated_string(&bindings) {
             Ok(rustfmt_bindings) => {
-                writer.write(rustfmt_bindings.as_str().as_bytes())?;
+                writer.write(rustfmt_bindings.as_bytes())?;
             },
-            Err(err) => eprintln!("{:?}", err),
+            Err(err) => {
+                eprintln!("{:?}", err);
+                writer.write(bindings.as_str().as_bytes())?;
+            },
         }
         Ok(())
     }
 
     /// Checks if rustfmt_bindings is set and runs rustfmt on the string
-    fn rustfmt_generated_string(&self, source: String) -> io::Result<String> {
+    fn rustfmt_generated_string<'a>(
+        &self,
+        source: &'a str,
+    ) -> io::Result<Cow<'a, str>> {
         let _t = time::Timer::new("rustfmt_generated_string")
             .with_output(self.options.time_phases);
 
         if !self.options.rustfmt_bindings {
-            return Ok(source);
+            return Ok(Cow::Borrowed(source));
         }
 
-        let rustfmt = if let Ok(rustfmt) = which::which("rustfmt") {
-            rustfmt
-        } else {
-            eprintln!("warning: could not find usable rustfmt to pretty print bindings");
-            return Ok(source);
-        };
+        let rustfmt = which::which("rustfmt")
+            .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_owned()))?;
 
         // Prefer using the `rustfmt-nightly` version of `rustmft`, if
         // possible. It requires being run via `rustup run nightly ...`.
@@ -1726,52 +1729,47 @@ impl Bindings {
             cmd.args(&["--config-path", path]);
         }
 
-        match cmd.spawn() {
-            Ok(mut child) => {
-                let mut child_stdin = child.stdin.take().unwrap();
-                let mut child_stdout = child.stdout.take().unwrap();
+        let mut child = cmd.spawn()?;
+        let mut child_stdin = child.stdin.take().unwrap();
+        let mut child_stdout = child.stdout.take().unwrap();
 
-                // Write to stdin in a new thread, so that we can read from stdout on this
-                // thread. This keeps the child from blocking on writing to its stdout which
-                // might block us from writing to its stdin.
-                let stdin_handle = ::std::thread::spawn(move || {
-                    let _ = child_stdin.write_all(source.as_bytes());
-                    source
-                });
+        let source = source.to_owned();
 
-                let mut output = vec![];
-                io::copy(&mut child_stdout, &mut output)?;
+        // Write to stdin in a new thread, so that we can read from stdout on this
+        // thread. This keeps the child from blocking on writing to its stdout which
+        // might block us from writing to its stdin.
+        let stdin_handle = ::std::thread::spawn(move || {
+            let _ = child_stdin.write_all(source.as_bytes());
+            source
+        });
 
-                let status = child.wait()?;
-                let source = stdin_handle.join()
-                    .expect("The thread writing to rustfmt's stdin doesn't do \
-                             anything that could panic");
+        let mut output = vec![];
+        io::copy(&mut child_stdout, &mut output)?;
 
-                match String::from_utf8(output) {
-                    Ok(bindings) => {
-                        match status.code() {
-                            Some(0) => Ok(bindings),
-                            Some(2) => Err(io::Error::new(
-                                io::ErrorKind::Other,
-                                "Rustfmt parsing errors.".to_string(),
-                            )),
-                            Some(3) => {
-                                warn!("Rustfmt could not format some lines.");
-                                Ok(bindings)
-                            }
-                            _ => Err(io::Error::new(
-                                io::ErrorKind::Other,
-                                "Internal rustfmt error".to_string(),
-                            )),
-                        }
-                    },
-                    _ => Ok(source)
+        let status = child.wait()?;
+        let source = stdin_handle.join()
+            .expect("The thread writing to rustfmt's stdin doesn't do \
+                     anything that could panic");
+
+        match String::from_utf8(output) {
+            Ok(bindings) => {
+                match status.code() {
+                    Some(0) => Ok(Cow::Owned(bindings)),
+                    Some(2) => Err(io::Error::new(
+                        io::ErrorKind::Other,
+                        "Rustfmt parsing errors.".to_string(),
+                    )),
+                    Some(3) => {
+                        warn!("Rustfmt could not format some lines.");
+                        Ok(Cow::Owned(bindings))
+                    }
+                    _ => Err(io::Error::new(
+                        io::ErrorKind::Other,
+                        "Internal rustfmt error".to_string(),
+                    )),
                 }
-            }
-            Err(e) => {
-                eprintln!("Error spawning rustfmt: {}", e);
-                Ok(source)
-            }
+            },
+            _ => Ok(Cow::Owned(source))
         }
     }
 }
