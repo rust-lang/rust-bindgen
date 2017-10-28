@@ -268,6 +268,7 @@ impl AppendImplicitTemplateParams for quote::Tokens {
             TypeKind::Void |
             TypeKind::NullPtr |
             TypeKind::Pointer(..) |
+            TypeKind::Reference(..) |
             TypeKind::Int(..) |
             TypeKind::Float(..) |
             TypeKind::Complex(..) |
@@ -280,7 +281,6 @@ impl AppendImplicitTemplateParams for quote::Tokens {
             TypeKind::ObjCId |
             TypeKind::ObjCSel |
             TypeKind::TemplateInstantiation(..) => return,
-
             _ => {},
         }
 
