@@ -319,58 +319,49 @@ impl Trace for Item {
 
 impl CanDeriveDebug for Item {
     fn can_derive_debug(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_debug &&
-            ctx.lookup_can_derive_debug(self.id())
+        self.id().can_derive_debug(ctx)
     }
 }
 
 impl CanDeriveDefault for Item {
     fn can_derive_default(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_default &&
-            ctx.lookup_can_derive_default(self.id())
+        self.id().can_derive_default(ctx)
     }
 }
 
 impl<'a> CanDeriveCopy<'a> for Item {
     fn can_derive_copy(&self, ctx: &BindgenContext) -> bool {
-        ctx.lookup_can_derive_copy(self.id())
+        self.id().can_derive_copy(ctx)
     }
 }
 
 impl CanDeriveHash for Item {
     fn can_derive_hash(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_hash &&
-            ctx.lookup_can_derive_hash(self.id())
+        self.id().can_derive_hash(ctx)
     }
 }
 
 impl CanDerivePartialOrd for Item {
     fn can_derive_partialord(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_partialord &&
-            ctx.lookup_can_derive_partialeq_or_partialord(self.id()).is_none()
+        self.id().can_derive_partialord(ctx)
     }
 }
 
 impl CanDerivePartialEq for Item {
     fn can_derive_partialeq(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_partialeq &&
-            ctx.lookup_can_derive_partialeq_or_partialord(self.id()).is_none()
+        self.id().can_derive_partialeq(ctx)
     }
 }
 
 impl CanDeriveEq for Item {
     fn can_derive_eq(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_eq &&
-            ctx.lookup_can_derive_partialeq_or_partialord(self.id()).is_none() &&
-            !ctx.lookup_has_float(self.id())
+        self.id().can_derive_eq(ctx)
     }
 }
 
 impl CanDeriveOrd for Item {
     fn can_derive_ord(&self, ctx: &BindgenContext) -> bool {
-        ctx.options().derive_ord &&
-            ctx.lookup_can_derive_partialeq_or_partialord(self.id()).is_none() &&
-            !ctx.lookup_has_float(self.id())
+        self.id().can_derive_ord(ctx)
     }
 }
 
