@@ -23,7 +23,7 @@ dependencies = [
 
 [[package]]
 name = "bindgen"
-version = "0.31.1"
+version = "0.31.2"
 dependencies = [
  "cexpr 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "cfg-if 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
