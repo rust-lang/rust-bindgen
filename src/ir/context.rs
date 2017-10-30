@@ -8,7 +8,7 @@ use super::analysis::{CannotDeriveCopy, CannotDeriveDebug, CannotDeriveDefault,
                       SizednessResult, analyze};
 use super::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
                     CanDeriveHash, CanDerivePartialOrd, CanDeriveOrd,
-                    CanDerivePartialEq, CanDeriveEq, CannotDeriveReason};
+                    CanDerivePartialEq, CanDeriveEq, CanDerive};
 use super::int::IntKind;
 use super::item::{IsOpaque, Item, ItemAncestors, ItemCanonicalPath, ItemSet};
 use super::item_kind::ItemKind;
@@ -251,7 +251,7 @@ where
 {
     fn can_derive_partialord(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_partialord &&
-            ctx.lookup_can_derive_partialeq_or_partialord(*self).is_none()
+            ctx.lookup_can_derive_partialeq_or_partialord(*self) == CanDerive::Yes
     }
 }
 
@@ -261,7 +261,7 @@ where
 {
     fn can_derive_partialeq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_partialeq &&
-            ctx.lookup_can_derive_partialeq_or_partialord(*self).is_none()
+            ctx.lookup_can_derive_partialeq_or_partialord(*self) == CanDerive::Yes
     }
 }
 
@@ -271,7 +271,7 @@ where
 {
     fn can_derive_eq(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_eq &&
-            ctx.lookup_can_derive_partialeq_or_partialord(*self).is_none() &&
+            ctx.lookup_can_derive_partialeq_or_partialord(*self) == CanDerive::Yes &&
             !ctx.lookup_has_float(*self)
     }
 }
@@ -282,7 +282,7 @@ where
 {
     fn can_derive_ord(&self, ctx: &BindgenContext) -> bool {
         ctx.options().derive_ord &&
-            ctx.lookup_can_derive_partialeq_or_partialord(*self).is_none() &&
+            ctx.lookup_can_derive_partialeq_or_partialord(*self) == CanDerive::Yes &&
             !ctx.lookup_has_float(*self)
     }
 }
@@ -427,7 +427,7 @@ pub struct BindgenContext {
     /// This is populated when we enter codegen by
     /// `compute_cannot_derive_partialord_partialeq_or_eq` and is always `None`
     /// before that and `Some` after.
-    cannot_derive_partialeq_or_partialord: Option<HashMap<ItemId, CannotDeriveReason>>,
+    cannot_derive_partialeq_or_partialord: Option<HashMap<ItemId, CanDerive>>,
 
     /// The sizedness of types.
     ///
@@ -2419,7 +2419,7 @@ impl BindgenContext {
     }
 
     /// Look up whether the item with `id` can derive `Partial{Eq,Ord}`.
-    pub fn lookup_can_derive_partialeq_or_partialord<Id: Into<ItemId>>(&self, id: Id) -> Option<CannotDeriveReason> {
+    pub fn lookup_can_derive_partialeq_or_partialord<Id: Into<ItemId>>(&self, id: Id) -> CanDerive {
         let id = id.into();
         assert!(
             self.in_codegen_phase(),
@@ -2428,7 +2428,11 @@ impl BindgenContext {
 
         // Look up the computed value for whether the item with `id` can
         // derive partialeq or not.
-        self.cannot_derive_partialeq_or_partialord.as_ref().unwrap().get(&id).cloned()
+        self.cannot_derive_partialeq_or_partialord.as_ref()
+            .unwrap()
+            .get(&id)
+            .cloned()
+            .unwrap_or(CanDerive::Yes)
     }
 
     /// Look up whether the item with `id` can derive `Copy` or not.

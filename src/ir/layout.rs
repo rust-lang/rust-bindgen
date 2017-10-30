@@ -2,7 +2,7 @@
 
 use super::derive::{CanTriviallyDeriveCopy, CanTriviallyDeriveDebug,
                     CanTriviallyDeriveDefault, CanTriviallyDeriveHash,
-                    CanTriviallyDerivePartialEqOrPartialOrd, CanDerive, CannotDeriveReason};
+                    CanTriviallyDerivePartialEqOrPartialOrd, CanDerive};
 use super::ty::{RUST_DERIVE_IN_ARRAY_LIMIT, Type, TypeKind};
 use clang;
 use std::{cmp, mem};
@@ -141,11 +141,11 @@ impl CanTriviallyDeriveHash for Opaque {
 
 impl CanTriviallyDerivePartialEqOrPartialOrd for Opaque {
     fn can_trivially_derive_partialeq_or_partialord(&self) -> CanDerive {
-        self.array_size().map_or(CanDerive::No(CannotDeriveReason::Other), |size| {
+        self.array_size().map_or(CanDerive::No, |size| {
             if size <= RUST_DERIVE_IN_ARRAY_LIMIT {
                 CanDerive::Yes
             } else {
-                CanDerive::No(CannotDeriveReason::ArrayTooLarge)
+                CanDerive::ArrayTooLarge
             }
         })
     }

@@ -13,6 +13,9 @@
 
 use super::context::BindgenContext;
 
+use std::cmp;
+use std::ops;
+
 /// A trait that encapsulates the logic for whether or not we can derive `Debug`
 /// for a given thing.
 pub trait CanDeriveDebug {
@@ -115,29 +118,79 @@ pub trait CanTriviallyDeriveHash {
 /// derive `PartialEq` or `PartialOrd` without looking at any other types or
 /// results of fix point analyses. This is a helper for the fix point analysis.
 pub trait CanTriviallyDerivePartialEqOrPartialOrd {
-    /// Return `true` if `PartialEq` or `PartialOrd` can trivially be derived
-    /// for this thing, `false` otherwise.
+    /// Return `Yes` if `PartialEq` or `PartialOrd` can trivially be derived
+    /// for this thing.
     fn can_trivially_derive_partialeq_or_partialord(&self) -> CanDerive;
 }
 
-/// Reason why exactly we cannot automatically derive a trait.
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
-pub enum CannotDeriveReason {
+/// Whether it is possible or not to automatically derive trait for an item.
+/// 
+/// ```ignore
+///         No
+///          ^
+///          |
+///    ArrayTooLarge
+///          ^
+///          |
+///         Yes
+/// ```
+/// 
+/// Initially we assume that we can derive trait for all types and then
+/// update our understanding as we learn more about each type.
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Ord)]
+pub enum CanDerive {
+    /// No, we cannot.
+    No,
+
     /// The only thing that stops us from automatically deriving is that
     /// array with more than maximum number of elements is used.
     /// 
     /// This means we probably can "manually" implement such trait.
     ArrayTooLarge,
 
-    /// Any other reason.
-    Other,
+    /// Yes, we can derive automatically.
+    Yes,
 }
 
-/// Whether it is possible or not to derive trait automatically.
-pub enum CanDerive {
-    /// Yes, we can!
-    Yes,
+impl Default for CanDerive {
+    fn default() -> CanDerive {
+        CanDerive::Yes
+    }
+}
 
-    /// No, we cannot. Contains reason why exactly we can't derive.
-    No(CannotDeriveReason)
+impl cmp::PartialOrd for CanDerive {
+    fn partial_cmp(&self, rhs: &Self) -> Option<cmp::Ordering> {
+        use self::CanDerive::*;
+
+        let ordering = match (*self, *rhs) {
+            (x, y) if x == y => cmp::Ordering::Equal,
+            (No, _) => cmp::Ordering::Greater,
+            (_, No) => cmp::Ordering::Less,
+            (ArrayTooLarge, _) => cmp::Ordering::Greater,
+            (_, ArrayTooLarge) => cmp::Ordering::Less,
+            _ => unreachable!()
+        };
+        Some(ordering)
+    }
+}
+
+impl CanDerive {
+    /// Take the least upper bound of `self` and `rhs`.
+    pub fn join(self, rhs: Self) -> Self {
+        cmp::max(self, rhs)
+    }
+}
+
+impl ops::BitOr for CanDerive {
+    type Output = Self;
+
+    fn bitor(self, rhs: Self) -> Self::Output {
+        self.join(rhs)
+    }
+}
+
+impl ops::BitOrAssign for CanDerive {
+    fn bitor_assign(&mut self, rhs: Self) {
+        *self = self.join(rhs)
+    }
 }

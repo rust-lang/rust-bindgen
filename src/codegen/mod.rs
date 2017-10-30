@@ -17,7 +17,7 @@ use ir::comp::{Base, Bitfield, BitfieldUnit, CompInfo, CompKind, Field,
 use ir::context::{BindgenContext, ItemId};
 use ir::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
                  CanDeriveHash, CanDerivePartialOrd, CanDeriveOrd,
-                 CanDerivePartialEq, CanDeriveEq, CannotDeriveReason};
+                 CanDerivePartialEq, CanDeriveEq, CanDerive};
 use ir::dot;
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
 use ir::function::{Abi, Function, FunctionSig, Linkage};
@@ -1676,10 +1676,7 @@ impl CodeGenerator for CompInfo {
             needs_partialeq_impl =
                 ctx.options().derive_partialeq &&
                 ctx.options().impl_partialeq &&
-                ctx.lookup_can_derive_partialeq_or_partialord(item.id())
-                    .map_or(true, |x| {
-                        x == CannotDeriveReason::ArrayTooLarge
-                    });
+                ctx.lookup_can_derive_partialeq_or_partialord(item.id()) == CanDerive::ArrayTooLarge;
         }
 
         if item.can_derive_eq(ctx) {
