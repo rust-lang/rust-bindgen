@@ -925,18 +925,21 @@ impl Type {
                                         CXCursor_TypeAliasDecl => {
                                             let current = cur.cur_type();
 
-                                            debug_assert!(current.kind() ==
-                                                          CXType_Typedef);
+                                            debug_assert_eq!(
+                                                current.kind(),
+                                                CXType_Typedef
+                                            );
 
                                             name = current.spelling();
 
                                             let inner_ty = cur.typedef_type()
                                                 .expect("Not valid Type?");
-                                            inner =
-                                                Item::from_ty(&inner_ty,
-                                                              cur,
-                                                              Some(potential_id),
-                                                              ctx);
+                                            inner = Ok(Item::from_ty_or_ref(
+                                                inner_ty,
+                                                cur,
+                                                Some(potential_id),
+                                                ctx,
+                                            ));
                                         }
                                         CXCursor_TemplateTypeParameter => {
                                             let param =
