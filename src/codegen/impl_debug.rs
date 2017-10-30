@@ -117,7 +117,7 @@ impl<'a> ImplDebug<'a> for Item {
         ctx: &BindgenContext,
         name: &str,
     ) -> Option<(String, Vec<quote::Tokens>)> {
-        let name_ident = ctx.rust_ident_raw(name);
+        let name_ident = ctx.rust_ident(name);
 
         // We don't know if blacklisted items `impl Debug` or not, so we can't
         // add them to the format string we're building up.
