@@ -595,12 +595,8 @@ fn bitfields_to_allocation_units<E, I>(
 
                 // Now we're working on a fresh bitfield allocation unit, so reset
                 // the current unit size and alignment.
-                #[allow(unused_assignments)]
-                {
-                    unit_size_in_bits = 0;
-                    offset = 0;
-                    unit_align = 0;
-                }
+                offset = 0;
+                unit_align = 0;
             }
         } else {
             if offset != 0 &&
