@@ -1512,7 +1512,7 @@ impl ClangItemParser for Item {
         let result = Type::from_clang_ty(id, ty, location, parent_id, ctx);
         let relevant_parent_id = parent_id.unwrap_or(current_module);
         let ret = match result {
-            Ok(ParseResult::AlreadyResolved(ty)) => Ok(ty.expect_type_id(ctx)),
+            Ok(ParseResult::AlreadyResolved(ty)) => Ok(ty.as_type_id_unchecked()),
             Ok(ParseResult::New(item, declaration)) => {
                 ctx.add_item(
                     Item::new(
