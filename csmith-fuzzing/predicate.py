@@ -144,7 +144,7 @@ def main():
         exit_code = 2
         print("Unexpected exception:", e)
 
-    for p in TEMP_FILES:
+    for path in TEMP_FILES:
         try:
             os.remove(path)
         except:
