@@ -335,9 +335,12 @@ impl<'a> StructLayoutTracker<'a> {
             new_field_layout
         );
 
+        // Avoid divide-by-zero errors if align is 0.
+        let align = cmp::max(1, layout.align);
+
         if self.last_field_was_bitfield &&
-            new_field_layout.align <= layout.size % layout.align &&
-            new_field_layout.size <= layout.size % layout.align
+            new_field_layout.align <= layout.size % align &&
+            new_field_layout.size <= layout.size % align
         {
             // The new field will be coalesced into some of the remaining bits.
             //
