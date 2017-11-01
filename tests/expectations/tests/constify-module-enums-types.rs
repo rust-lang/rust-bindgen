@@ -66,7 +66,7 @@ fn bindgen_test_layout_bar() {
         unsafe { &(*(0 as *const bar)).member1 as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(bar),
             "::",
             stringify!(member1)
@@ -76,7 +76,7 @@ fn bindgen_test_layout_bar() {
         unsafe { &(*(0 as *const bar)).member2 as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(bar),
             "::",
             stringify!(member2)
@@ -86,7 +86,7 @@ fn bindgen_test_layout_bar() {
         unsafe { &(*(0 as *const bar)).member3 as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(bar),
             "::",
             stringify!(member3)
@@ -96,7 +96,7 @@ fn bindgen_test_layout_bar() {
         unsafe { &(*(0 as *const bar)).member4 as *const _ as usize },
         12usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(bar),
             "::",
             stringify!(member4)
@@ -106,7 +106,7 @@ fn bindgen_test_layout_bar() {
         unsafe { &(*(0 as *const bar)).member5 as *const _ as usize },
         16usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(bar),
             "::",
             stringify!(member5)
@@ -116,7 +116,7 @@ fn bindgen_test_layout_bar() {
         unsafe { &(*(0 as *const bar)).member6 as *const _ as usize },
         24usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(bar),
             "::",
             stringify!(member6)
@@ -126,7 +126,7 @@ fn bindgen_test_layout_bar() {
         unsafe { &(*(0 as *const bar)).member7 as *const _ as usize },
         32usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(bar),
             "::",
             stringify!(member7)
@@ -136,7 +136,7 @@ fn bindgen_test_layout_bar() {
         unsafe { &(*(0 as *const bar)).member8 as *const _ as usize },
         36usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(bar),
             "::",
             stringify!(member8)
@@ -146,7 +146,7 @@ fn bindgen_test_layout_bar() {
         unsafe { &(*(0 as *const bar)).member9 as *const _ as usize },
         40usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(bar),
             "::",
             stringify!(member9)
@@ -156,7 +156,7 @@ fn bindgen_test_layout_bar() {
         unsafe { &(*(0 as *const bar)).member10 as *const _ as usize },
         44usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(bar),
             "::",
             stringify!(member10)
@@ -189,7 +189,7 @@ fn bindgen_test_layout_Baz() {
         unsafe { &(*(0 as *const Baz)).member1 as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Baz),
             "::",
             stringify!(member1)
@@ -226,12 +226,7 @@ fn bindgen_test_layout_Bar() {
     assert_eq!(
         unsafe { &(*(0 as *const Bar)).baz as *const _ as usize },
         0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(Bar),
-            "::",
-            stringify!(baz)
-        )
+        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz))
     );
 }
 impl Default for Bar {

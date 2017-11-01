@@ -31,28 +31,28 @@ fn bindgen_test_layout_C() {
     assert_eq!(
         unsafe { &(*(0 as *const C)).c as *const _ as usize },
         0usize,
-        concat!("Alignment of field: ", stringify!(C), "::", stringify!(c))
+        concat!("Offset of field: ", stringify!(C), "::", stringify!(c))
     );
     assert_eq!(
         unsafe { &(*(0 as *const C)).ptr as *const _ as usize },
         8usize,
-        concat!("Alignment of field: ", stringify!(C), "::", stringify!(ptr))
+        concat!("Offset of field: ", stringify!(C), "::", stringify!(ptr))
     );
     assert_eq!(
         unsafe { &(*(0 as *const C)).arr as *const _ as usize },
         16usize,
-        concat!("Alignment of field: ", stringify!(C), "::", stringify!(arr))
+        concat!("Offset of field: ", stringify!(C), "::", stringify!(arr))
     );
     assert_eq!(
         unsafe { &(*(0 as *const C)).d as *const _ as usize },
         56usize,
-        concat!("Alignment of field: ", stringify!(C), "::", stringify!(d))
+        concat!("Offset of field: ", stringify!(C), "::", stringify!(d))
     );
     assert_eq!(
         unsafe { &(*(0 as *const C)).other_ptr as *const _ as usize },
         64usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(other_ptr)
@@ -119,7 +119,7 @@ fn bindgen_test_layout_D() {
     assert_eq!(
         unsafe { &(*(0 as *const D)).ptr as *const _ as usize },
         72usize,
-        concat!("Alignment of field: ", stringify!(D), "::", stringify!(ptr))
+        concat!("Offset of field: ", stringify!(D), "::", stringify!(ptr))
     );
 }
 impl Default for D {

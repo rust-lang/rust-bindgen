@@ -25,7 +25,7 @@ fn bindgen_test_layout_LittleArray() {
         unsafe { &(*(0 as *const LittleArray)).a as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(LittleArray),
             "::",
             stringify!(a)
@@ -53,7 +53,7 @@ fn bindgen_test_layout_BigArray() {
         unsafe { &(*(0 as *const BigArray)).a as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(BigArray),
             "::",
             stringify!(a)
@@ -86,7 +86,7 @@ fn bindgen_test_layout_WithLittleArray() {
         unsafe { &(*(0 as *const WithLittleArray)).a as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(WithLittleArray),
             "::",
             stringify!(a)
@@ -114,7 +114,7 @@ fn bindgen_test_layout_WithBigArray() {
         unsafe { &(*(0 as *const WithBigArray)).a as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(WithBigArray),
             "::",
             stringify!(a)

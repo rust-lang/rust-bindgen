@@ -52,7 +52,7 @@ fn bindgen_test_layout_Bar() {
     assert_eq!(
         unsafe { &(*(0 as *const Bar)).f as *const _ as usize },
         0usize,
-        concat!("Alignment of field: ", stringify!(Bar), "::", stringify!(f))
+        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(f))
     );
 }
 impl Clone for Bar {

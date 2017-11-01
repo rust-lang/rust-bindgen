@@ -30,7 +30,7 @@ fn bindgen_test_layout_A_B() {
         unsafe { &(*(0 as *const A_B)).member_b as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(A_B),
             "::",
             stringify!(member_b)
@@ -64,7 +64,7 @@ fn bindgen_test_layout_A() {
         unsafe { &(*(0 as *const A)).member_a as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(A),
             "::",
             stringify!(member_a)
@@ -91,12 +91,7 @@ fn bindgen_test_layout_A_C() {
     assert_eq!(
         unsafe { &(*(0 as *const A_C)).baz as *const _ as usize },
         0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(A_C),
-            "::",
-            stringify!(baz)
-        )
+        concat!("Offset of field: ", stringify!(A_C), "::", stringify!(baz))
     );
 }
 extern "C" {
@@ -146,12 +141,7 @@ fn bindgen_test_layout_D() {
     assert_eq!(
         unsafe { &(*(0 as *const D)).member as *const _ as usize },
         0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(D),
-            "::",
-            stringify!(member)
-        )
+        concat!("Offset of field: ", stringify!(D), "::", stringify!(member))
     );
 }
 #[repr(C)]

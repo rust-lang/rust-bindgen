@@ -27,7 +27,7 @@ fn bindgen_test_layout_HasPrivate() {
         unsafe { &(*(0 as *const HasPrivate)).mNotPrivate as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(HasPrivate),
             "::",
             stringify!(mNotPrivate)
@@ -37,7 +37,7 @@ fn bindgen_test_layout_HasPrivate() {
         unsafe { &(*(0 as *const HasPrivate)).mIsPrivate as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(HasPrivate),
             "::",
             stringify!(mIsPrivate)
@@ -67,7 +67,7 @@ fn bindgen_test_layout_VeryPrivate() {
         unsafe { &(*(0 as *const VeryPrivate)).mIsPrivate as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(VeryPrivate),
             "::",
             stringify!(mIsPrivate)
@@ -77,7 +77,7 @@ fn bindgen_test_layout_VeryPrivate() {
         unsafe { &(*(0 as *const VeryPrivate)).mIsAlsoPrivate as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(VeryPrivate),
             "::",
             stringify!(mIsAlsoPrivate)
@@ -108,7 +108,7 @@ fn bindgen_test_layout_ContradictPrivate() {
         unsafe { &(*(0 as *const ContradictPrivate)).mNotPrivate as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ContradictPrivate),
             "::",
             stringify!(mNotPrivate)
@@ -118,7 +118,7 @@ fn bindgen_test_layout_ContradictPrivate() {
         unsafe { &(*(0 as *const ContradictPrivate)).mIsPrivate as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ContradictPrivate),
             "::",
             stringify!(mIsPrivate)

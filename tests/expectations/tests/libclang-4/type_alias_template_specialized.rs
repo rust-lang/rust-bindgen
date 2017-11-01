@@ -25,7 +25,7 @@ fn bindgen_test_layout_Rooted() {
         unsafe { &(*(0 as *const Rooted)).ptr as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Rooted),
             "::",
             stringify!(ptr)

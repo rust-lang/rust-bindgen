@@ -33,7 +33,7 @@ fn bindgen_test_layout_WhitelistedOne() {
         unsafe { &(*(0 as *const WhitelistedOne)).a as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(WhitelistedOne),
             "::",
             stringify!(a)
@@ -66,7 +66,7 @@ fn bindgen_test_layout_WhitelistedTwo() {
         unsafe { &(*(0 as *const WhitelistedTwo)).b as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(WhitelistedTwo),
             "::",
             stringify!(b)

@@ -34,7 +34,7 @@ pub mod root {
         assert_eq!(
             unsafe { &(*(0 as *const a)).b as *const _ as usize },
             0usize,
-            concat!("Alignment of field: ", stringify!(a), "::", stringify!(b))
+            concat!("Offset of field: ", stringify!(a), "::", stringify!(b))
         );
     }
     #[repr(C)]
@@ -58,7 +58,7 @@ pub mod root {
             unsafe { &(*(0 as *const nsCSSValue)).c as *const _ as usize },
             0usize,
             concat!(
-                "Alignment of field: ",
+                "Offset of field: ",
                 stringify!(nsCSSValue),
                 "::",
                 stringify!(c)

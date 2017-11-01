@@ -29,7 +29,7 @@ fn bindgen_test_layout_JNINativeInterface_() {
         unsafe { &(*(0 as *const JNINativeInterface_)).GetVersion as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(JNINativeInterface_),
             "::",
             stringify!(GetVersion)
@@ -39,7 +39,7 @@ fn bindgen_test_layout_JNINativeInterface_() {
         unsafe { &(*(0 as *const JNINativeInterface_)).__hack as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(JNINativeInterface_),
             "::",
             stringify!(__hack)

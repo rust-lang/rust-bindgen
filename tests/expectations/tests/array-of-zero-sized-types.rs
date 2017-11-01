@@ -47,7 +47,7 @@ fn bindgen_test_layout_HasArrayOfEmpty() {
         unsafe { &(*(0 as *const HasArrayOfEmpty)).empties as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(HasArrayOfEmpty),
             "::",
             stringify!(empties)

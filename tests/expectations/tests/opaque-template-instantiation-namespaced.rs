@@ -42,7 +42,7 @@ pub mod root {
             assert_eq!(
                 unsafe { &(*(0 as *const Foo)).c as *const _ as usize },
                 0usize,
-                concat!("Alignment of field: ", stringify!(Foo), "::", stringify!(c))
+                concat!("Offset of field: ", stringify!(Foo), "::", stringify!(c))
             );
         }
         #[repr(C)]
@@ -65,7 +65,7 @@ pub mod root {
             assert_eq!(
                 unsafe { &(*(0 as *const Bar)).i as *const _ as usize },
                 0usize,
-                concat!("Alignment of field: ", stringify!(Bar), "::", stringify!(i))
+                concat!("Offset of field: ", stringify!(Bar), "::", stringify!(i))
             );
         }
         #[repr(C)]
@@ -89,7 +89,7 @@ pub mod root {
                 unsafe { &(*(0 as *const ContainsInstantiation)).not_opaque as *const _ as usize },
                 0usize,
                 concat!(
-                    "Alignment of field: ",
+                    "Offset of field: ",
                     stringify!(ContainsInstantiation),
                     "::",
                     stringify!(not_opaque)
@@ -124,7 +124,7 @@ pub mod root {
                 },
                 0usize,
                 concat!(
-                    "Alignment of field: ",
+                    "Offset of field: ",
                     stringify!(ContainsOpaqueInstantiation),
                     "::",
                     stringify!(opaque)

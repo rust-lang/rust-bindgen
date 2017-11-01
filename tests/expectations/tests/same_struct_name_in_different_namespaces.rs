@@ -31,7 +31,7 @@ fn bindgen_test_layout_JS_shadow_Zone() {
         unsafe { &(*(0 as *const JS_shadow_Zone)).x as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(JS_shadow_Zone),
             "::",
             stringify!(x)
@@ -41,7 +41,7 @@ fn bindgen_test_layout_JS_shadow_Zone() {
         unsafe { &(*(0 as *const JS_shadow_Zone)).y as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(JS_shadow_Zone),
             "::",
             stringify!(y)

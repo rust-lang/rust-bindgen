@@ -30,7 +30,7 @@ fn bindgen_test_layout_AutoIdVector() {
         unsafe { &(*(0 as *const AutoIdVector)).ar as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(AutoIdVector),
             "::",
             stringify!(ar)

@@ -28,7 +28,7 @@ fn bindgen_test_layout_nsStyleUnion() {
         unsafe { &(*(0 as *const nsStyleUnion)).mInt as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(nsStyleUnion),
             "::",
             stringify!(mInt)
@@ -38,7 +38,7 @@ fn bindgen_test_layout_nsStyleUnion() {
         unsafe { &(*(0 as *const nsStyleUnion)).mFloat as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(nsStyleUnion),
             "::",
             stringify!(mFloat)
@@ -48,7 +48,7 @@ fn bindgen_test_layout_nsStyleUnion() {
         unsafe { &(*(0 as *const nsStyleUnion)).mPointer as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(nsStyleUnion),
             "::",
             stringify!(mPointer)

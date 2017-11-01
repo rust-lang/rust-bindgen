@@ -43,7 +43,7 @@ fn bindgen_test_layout_Test() {
         unsafe { &(*(0 as *const Test)).ch as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Test),
             "::",
             stringify!(ch)
@@ -53,7 +53,7 @@ fn bindgen_test_layout_Test() {
         unsafe { &(*(0 as *const Test)).u as *const _ as usize },
         1usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Test),
             "::",
             stringify!(u)
@@ -63,7 +63,7 @@ fn bindgen_test_layout_Test() {
         unsafe { &(*(0 as *const Test)).d as *const _ as usize },
         2usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Test),
             "::",
             stringify!(d)
@@ -73,7 +73,7 @@ fn bindgen_test_layout_Test() {
         unsafe { &(*(0 as *const Test)).cch as *const _ as usize },
         3usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Test),
             "::",
             stringify!(cch)
@@ -83,7 +83,7 @@ fn bindgen_test_layout_Test() {
         unsafe { &(*(0 as *const Test)).cu as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Test),
             "::",
             stringify!(cu)
@@ -93,7 +93,7 @@ fn bindgen_test_layout_Test() {
         unsafe { &(*(0 as *const Test)).cd as *const _ as usize },
         5usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Test),
             "::",
             stringify!(cd)
@@ -103,7 +103,7 @@ fn bindgen_test_layout_Test() {
         unsafe { &(*(0 as *const Test)).Cch as *const _ as usize },
         6usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Test),
             "::",
             stringify!(Cch)
@@ -113,7 +113,7 @@ fn bindgen_test_layout_Test() {
         unsafe { &(*(0 as *const Test)).Cu as *const _ as usize },
         7usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Test),
             "::",
             stringify!(Cu)
@@ -123,7 +123,7 @@ fn bindgen_test_layout_Test() {
         unsafe { &(*(0 as *const Test)).Cd as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Test),
             "::",
             stringify!(Cd)
@@ -133,7 +133,7 @@ fn bindgen_test_layout_Test() {
         unsafe { &(*(0 as *const Test)).Ccch as *const _ as usize },
         9usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Test),
             "::",
             stringify!(Ccch)
@@ -143,7 +143,7 @@ fn bindgen_test_layout_Test() {
         unsafe { &(*(0 as *const Test)).Ccu as *const _ as usize },
         10usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Test),
             "::",
             stringify!(Ccu)
@@ -153,7 +153,7 @@ fn bindgen_test_layout_Test() {
         unsafe { &(*(0 as *const Test)).Ccd as *const _ as usize },
         11usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Test),
             "::",
             stringify!(Ccd)

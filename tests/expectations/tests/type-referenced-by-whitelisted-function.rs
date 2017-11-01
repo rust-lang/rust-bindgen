@@ -25,7 +25,7 @@ fn bindgen_test_layout_dl_phdr_info() {
         unsafe { &(*(0 as *const dl_phdr_info)).x as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(dl_phdr_info),
             "::",
             stringify!(x)

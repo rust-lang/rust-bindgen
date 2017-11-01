@@ -26,7 +26,7 @@ fn bindgen_test_layout_C() {
         unsafe { &(*(0 as *const C)).m_member as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(m_member)
@@ -36,7 +36,7 @@ fn bindgen_test_layout_C() {
         unsafe { &(*(0 as *const C)).m_other as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(m_other)
@@ -64,7 +64,7 @@ fn bindgen_test_layout_NonCopiable() {
         unsafe { &(*(0 as *const NonCopiable)).m_member as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(NonCopiable),
             "::",
             stringify!(m_member)
@@ -100,7 +100,7 @@ fn bindgen_test_layout_NonCopiableWithNonCopiableMutableMember() {
         },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(NonCopiableWithNonCopiableMutableMember),
             "::",
             stringify!(m_member)

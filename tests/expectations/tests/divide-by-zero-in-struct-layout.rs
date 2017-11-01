@@ -30,12 +30,11 @@ impl WithBitfieldAndAttrPacked {
         0
     }
 }
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct WithBitfieldAndPacked {
     pub _bitfield_1: [u8; 0usize],
     pub a: ::std::os::raw::c_uint,
-    pub __bindgen_padding_0: u8,
 }
 impl WithBitfieldAndPacked {
     #[inline]

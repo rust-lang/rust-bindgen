@@ -27,7 +27,7 @@ fn bindgen_test_layout_ConstPtrMutObj() {
         unsafe { &(*(0 as *const ConstPtrMutObj)).bar as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ConstPtrMutObj),
             "::",
             stringify!(bar)
@@ -60,7 +60,7 @@ fn bindgen_test_layout_MutPtrMutObj() {
         unsafe { &(*(0 as *const MutPtrMutObj)).bar as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(MutPtrMutObj),
             "::",
             stringify!(bar)
@@ -93,7 +93,7 @@ fn bindgen_test_layout_MutPtrConstObj() {
         unsafe { &(*(0 as *const MutPtrConstObj)).bar as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(MutPtrConstObj),
             "::",
             stringify!(bar)
@@ -126,7 +126,7 @@ fn bindgen_test_layout_ConstPtrConstObj() {
         unsafe { &(*(0 as *const ConstPtrConstObj)).bar as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ConstPtrConstObj),
             "::",
             stringify!(bar)

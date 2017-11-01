@@ -99,7 +99,7 @@ fn bindgen_test_layout_rte_eth_link() {
         unsafe { &(*(0 as *const rte_eth_link)).link_speed as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_eth_link),
             "::",
             stringify!(link_speed)

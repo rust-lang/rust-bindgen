@@ -27,7 +27,7 @@ fn bindgen_test_layout_ShouldDeriveClone() {
         unsafe { &(*(0 as *const ShouldDeriveClone)).large as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ShouldDeriveClone),
             "::",
             stringify!(large)

@@ -26,7 +26,7 @@ fn bindgen_test_layout_nsTArray_base() {
         unsafe { &(*(0 as *const nsTArray_base)).d as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(nsTArray_base),
             "::",
             stringify!(d)
@@ -69,7 +69,7 @@ fn bindgen_test_layout_nsIContent() {
         unsafe { &(*(0 as *const nsIContent)).foo as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(nsIContent),
             "::",
             stringify!(foo)

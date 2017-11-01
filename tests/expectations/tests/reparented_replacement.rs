@@ -32,12 +32,7 @@ pub mod root {
             assert_eq!(
                 unsafe { &(*(0 as *const Bar)).bazz as *const _ as usize },
                 0usize,
-                concat!(
-                    "Alignment of field: ",
-                    stringify!(Bar),
-                    "::",
-                    stringify!(bazz)
-                )
+                concat!("Offset of field: ", stringify!(Bar), "::", stringify!(bazz))
             );
         }
     }

@@ -27,7 +27,7 @@ fn bindgen_test_layout_bitfield() {
         unsafe { &(*(0 as *const bitfield)).e as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(bitfield),
             "::",
             stringify!(e)

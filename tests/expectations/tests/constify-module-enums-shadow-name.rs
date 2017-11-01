@@ -32,7 +32,7 @@ fn bindgen_test_layout_bar() {
         unsafe { &(*(0 as *const bar)).member as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(bar),
             "::",
             stringify!(member)

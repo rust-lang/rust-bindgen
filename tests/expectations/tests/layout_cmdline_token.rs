@@ -29,7 +29,7 @@ fn bindgen_test_layout_cmdline_token_hdr() {
         unsafe { &(*(0 as *const cmdline_token_hdr)).ops as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(cmdline_token_hdr),
             "::",
             stringify!(ops)
@@ -39,7 +39,7 @@ fn bindgen_test_layout_cmdline_token_hdr() {
         unsafe { &(*(0 as *const cmdline_token_hdr)).offset as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(cmdline_token_hdr),
             "::",
             stringify!(offset)
@@ -120,7 +120,7 @@ fn bindgen_test_layout_cmdline_token_ops() {
         unsafe { &(*(0 as *const cmdline_token_ops)).parse as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(cmdline_token_ops),
             "::",
             stringify!(parse)
@@ -130,7 +130,7 @@ fn bindgen_test_layout_cmdline_token_ops() {
         unsafe { &(*(0 as *const cmdline_token_ops)).complete_get_nb as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(cmdline_token_ops),
             "::",
             stringify!(complete_get_nb)
@@ -140,7 +140,7 @@ fn bindgen_test_layout_cmdline_token_ops() {
         unsafe { &(*(0 as *const cmdline_token_ops)).complete_get_elt as *const _ as usize },
         16usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(cmdline_token_ops),
             "::",
             stringify!(complete_get_elt)
@@ -150,7 +150,7 @@ fn bindgen_test_layout_cmdline_token_ops() {
         unsafe { &(*(0 as *const cmdline_token_ops)).get_help as *const _ as usize },
         24usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(cmdline_token_ops),
             "::",
             stringify!(get_help)
@@ -195,7 +195,7 @@ fn bindgen_test_layout_cmdline_token_num_data() {
         unsafe { &(*(0 as *const cmdline_token_num_data)).type_ as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(cmdline_token_num_data),
             "::",
             stringify!(type_)
@@ -229,7 +229,7 @@ fn bindgen_test_layout_cmdline_token_num() {
         unsafe { &(*(0 as *const cmdline_token_num)).hdr as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(cmdline_token_num),
             "::",
             stringify!(hdr)
@@ -239,7 +239,7 @@ fn bindgen_test_layout_cmdline_token_num() {
         unsafe { &(*(0 as *const cmdline_token_num)).num_data as *const _ as usize },
         16usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(cmdline_token_num),
             "::",
             stringify!(num_data)

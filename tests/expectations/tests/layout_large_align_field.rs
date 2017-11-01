@@ -82,7 +82,7 @@ fn bindgen_test_layout_ip_frag() {
         unsafe { &(*(0 as *const ip_frag)).ofs as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag),
             "::",
             stringify!(ofs)
@@ -92,7 +92,7 @@ fn bindgen_test_layout_ip_frag() {
         unsafe { &(*(0 as *const ip_frag)).len as *const _ as usize },
         2usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag),
             "::",
             stringify!(len)
@@ -102,7 +102,7 @@ fn bindgen_test_layout_ip_frag() {
         unsafe { &(*(0 as *const ip_frag)).mb as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag),
             "::",
             stringify!(mb)
@@ -141,7 +141,7 @@ fn bindgen_test_layout_ip_frag_key() {
         unsafe { &(*(0 as *const ip_frag_key)).src_dst as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_key),
             "::",
             stringify!(src_dst)
@@ -151,7 +151,7 @@ fn bindgen_test_layout_ip_frag_key() {
         unsafe { &(*(0 as *const ip_frag_key)).id as *const _ as usize },
         32usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_key),
             "::",
             stringify!(id)
@@ -161,7 +161,7 @@ fn bindgen_test_layout_ip_frag_key() {
         unsafe { &(*(0 as *const ip_frag_key)).key_len as *const _ as usize },
         36usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_key),
             "::",
             stringify!(key_len)
@@ -211,7 +211,7 @@ fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
         unsafe { &(*(0 as *const ip_frag_pkt__bindgen_ty_1)).tqe_next as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_pkt__bindgen_ty_1),
             "::",
             stringify!(tqe_next)
@@ -221,7 +221,7 @@ fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
         unsafe { &(*(0 as *const ip_frag_pkt__bindgen_ty_1)).tqe_prev as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_pkt__bindgen_ty_1),
             "::",
             stringify!(tqe_prev)
@@ -244,7 +244,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
         unsafe { &(*(0 as *const ip_frag_pkt)).lru as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_pkt),
             "::",
             stringify!(lru)
@@ -254,7 +254,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
         unsafe { &(*(0 as *const ip_frag_pkt)).key as *const _ as usize },
         16usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_pkt),
             "::",
             stringify!(key)
@@ -264,7 +264,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
         unsafe { &(*(0 as *const ip_frag_pkt)).start as *const _ as usize },
         56usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_pkt),
             "::",
             stringify!(start)
@@ -274,7 +274,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
         unsafe { &(*(0 as *const ip_frag_pkt)).total_size as *const _ as usize },
         64usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_pkt),
             "::",
             stringify!(total_size)
@@ -284,7 +284,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
         unsafe { &(*(0 as *const ip_frag_pkt)).frag_size as *const _ as usize },
         68usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_pkt),
             "::",
             stringify!(frag_size)
@@ -294,7 +294,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
         unsafe { &(*(0 as *const ip_frag_pkt)).last_idx as *const _ as usize },
         72usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_pkt),
             "::",
             stringify!(last_idx)
@@ -304,7 +304,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
         unsafe { &(*(0 as *const ip_frag_pkt)).frags as *const _ as usize },
         80usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_pkt),
             "::",
             stringify!(frags)
@@ -338,7 +338,7 @@ fn bindgen_test_layout_ip_pkt_list() {
         unsafe { &(*(0 as *const ip_pkt_list)).tqh_first as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_pkt_list),
             "::",
             stringify!(tqh_first)
@@ -348,7 +348,7 @@ fn bindgen_test_layout_ip_pkt_list() {
         unsafe { &(*(0 as *const ip_pkt_list)).tqh_last as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_pkt_list),
             "::",
             stringify!(tqh_last)
@@ -389,7 +389,7 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
         unsafe { &(*(0 as *const ip_frag_tbl_stat)).find_num as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_tbl_stat),
             "::",
             stringify!(find_num)
@@ -399,7 +399,7 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
         unsafe { &(*(0 as *const ip_frag_tbl_stat)).add_num as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_tbl_stat),
             "::",
             stringify!(add_num)
@@ -409,7 +409,7 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
         unsafe { &(*(0 as *const ip_frag_tbl_stat)).del_num as *const _ as usize },
         16usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_tbl_stat),
             "::",
             stringify!(del_num)
@@ -419,7 +419,7 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
         unsafe { &(*(0 as *const ip_frag_tbl_stat)).reuse_num as *const _ as usize },
         24usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_tbl_stat),
             "::",
             stringify!(reuse_num)
@@ -429,7 +429,7 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
         unsafe { &(*(0 as *const ip_frag_tbl_stat)).fail_total as *const _ as usize },
         32usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_tbl_stat),
             "::",
             stringify!(fail_total)
@@ -439,7 +439,7 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
         unsafe { &(*(0 as *const ip_frag_tbl_stat)).fail_nospace as *const _ as usize },
         40usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ip_frag_tbl_stat),
             "::",
             stringify!(fail_nospace)
@@ -489,7 +489,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         unsafe { &(*(0 as *const rte_ip_frag_tbl)).max_cycles as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ip_frag_tbl),
             "::",
             stringify!(max_cycles)
@@ -499,7 +499,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         unsafe { &(*(0 as *const rte_ip_frag_tbl)).entry_mask as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ip_frag_tbl),
             "::",
             stringify!(entry_mask)
@@ -509,7 +509,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         unsafe { &(*(0 as *const rte_ip_frag_tbl)).max_entries as *const _ as usize },
         12usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ip_frag_tbl),
             "::",
             stringify!(max_entries)
@@ -519,7 +519,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         unsafe { &(*(0 as *const rte_ip_frag_tbl)).use_entries as *const _ as usize },
         16usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ip_frag_tbl),
             "::",
             stringify!(use_entries)
@@ -529,7 +529,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         unsafe { &(*(0 as *const rte_ip_frag_tbl)).bucket_entries as *const _ as usize },
         20usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ip_frag_tbl),
             "::",
             stringify!(bucket_entries)
@@ -539,7 +539,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         unsafe { &(*(0 as *const rte_ip_frag_tbl)).nb_entries as *const _ as usize },
         24usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ip_frag_tbl),
             "::",
             stringify!(nb_entries)
@@ -549,7 +549,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         unsafe { &(*(0 as *const rte_ip_frag_tbl)).nb_buckets as *const _ as usize },
         28usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ip_frag_tbl),
             "::",
             stringify!(nb_buckets)
@@ -559,7 +559,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         unsafe { &(*(0 as *const rte_ip_frag_tbl)).last as *const _ as usize },
         32usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ip_frag_tbl),
             "::",
             stringify!(last)
@@ -569,7 +569,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         unsafe { &(*(0 as *const rte_ip_frag_tbl)).lru as *const _ as usize },
         40usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ip_frag_tbl),
             "::",
             stringify!(lru)
@@ -579,7 +579,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         unsafe { &(*(0 as *const rte_ip_frag_tbl)).stat as *const _ as usize },
         64usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ip_frag_tbl),
             "::",
             stringify!(stat)
@@ -589,7 +589,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         unsafe { &(*(0 as *const rte_ip_frag_tbl)).pkt as *const _ as usize },
         128usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ip_frag_tbl),
             "::",
             stringify!(pkt)

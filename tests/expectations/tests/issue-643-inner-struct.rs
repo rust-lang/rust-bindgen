@@ -70,7 +70,7 @@ fn bindgen_test_layout_rte_ring_prod() {
         unsafe { &(*(0 as *const rte_ring_prod)).watermark as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ring_prod),
             "::",
             stringify!(watermark)
@@ -98,7 +98,7 @@ fn bindgen_test_layout_rte_ring_cons() {
         unsafe { &(*(0 as *const rte_ring_cons)).sc_dequeue as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ring_cons),
             "::",
             stringify!(sc_dequeue)

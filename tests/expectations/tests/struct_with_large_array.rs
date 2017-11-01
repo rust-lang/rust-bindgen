@@ -25,7 +25,7 @@ fn bindgen_test_layout_S() {
         unsafe { &(*(0 as *const S)).large_array as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(S),
             "::",
             stringify!(large_array)

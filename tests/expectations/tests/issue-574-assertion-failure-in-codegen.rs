@@ -30,7 +30,7 @@ fn bindgen_test_layout__bindgen_ty_1() {
         unsafe { &(*(0 as *const _bindgen_ty_1)).ar as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(_bindgen_ty_1),
             "::",
             stringify!(ar)

@@ -25,7 +25,7 @@ fn bindgen_test_layout_typedef_named_struct() {
         unsafe { &(*(0 as *const typedef_named_struct)).has_name as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(typedef_named_struct),
             "::",
             stringify!(has_name)
@@ -53,7 +53,7 @@ fn bindgen_test_layout__bindgen_ty_1() {
         unsafe { &(*(0 as *const _bindgen_ty_1)).no_name as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(_bindgen_ty_1),
             "::",
             stringify!(no_name)
