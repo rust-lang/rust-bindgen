@@ -595,12 +595,8 @@ fn bitfields_to_allocation_units<E, I>(
 
                 // Now we're working on a fresh bitfield allocation unit, so reset
                 // the current unit size and alignment.
-                #[allow(unused_assignments)]
-                {
-                    unit_size_in_bits = 0;
-                    offset = 0;
-                    unit_align = 0;
-                }
+                offset = 0;
+                unit_align = 0;
             }
         } else {
             if offset != 0 &&
@@ -612,19 +608,27 @@ fn bitfields_to_allocation_units<E, I>(
             }
         }
 
+        // According to the x86[-64] ABI spec: "Unnamed bit-fields’ types do not
+        // affect the alignment of a structure or union". This makes sense: such
+        // bit-fields are only used for padding, and we can't perform an
+        // un-aligned read of something we can't read because we can't even name
+        // it.
+        if bitfield.name().is_some() {
+            max_align = cmp::max(max_align, bitfield_align);
+
+            // NB: The `bitfield_width` here is completely, absolutely
+            // intentional.  Alignment of the allocation unit is based on the
+            // maximum bitfield width, not (directly) on the bitfields' types'
+            // alignment.
+            unit_align = cmp::max(unit_align, bitfield_width);
+        }
+
         // Always keep all bitfields around. While unnamed bitifields are used
         // for padding (and usually not needed hereafter), large unnamed
         // bitfields over their types size cause weird allocation size behavior from clang.
         // Therefore, all bitfields needed to be kept around in order to check for this
         // and make the struct opaque in this case
         bitfields_in_unit.push(Bitfield::new(offset, bitfield));
-
-        max_align = cmp::max(max_align, bitfield_align);
-
-        // NB: The `bitfield_width` here is completely, absolutely intentional.
-        // Alignment of the allocation unit is based on the maximum bitfield
-        // width, not (directly) on the bitfields' types' alignment.
-        unit_align = cmp::max(unit_align, bitfield_width);
 
         unit_size_in_bits = offset + bitfield_width;
 

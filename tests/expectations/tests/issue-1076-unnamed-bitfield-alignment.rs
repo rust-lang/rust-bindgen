@@ -6,26 +6,26 @@
 
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
-pub struct S2 {
-    pub _bitfield_1: u8,
+pub struct S1 {
+    pub _bitfield_1: [u8; 2usize],
     pub __bindgen_padding_0: u8,
 }
 #[test]
-fn bindgen_test_layout_S2() {
+fn bindgen_test_layout_S1() {
     assert_eq!(
-        ::std::mem::size_of::<S2>(),
-        2usize,
-        concat!("Size of: ", stringify!(S2))
+        ::std::mem::size_of::<S1>(),
+        3usize,
+        concat!("Size of: ", stringify!(S1))
     );
     assert_eq!(
-        ::std::mem::align_of::<S2>(),
+        ::std::mem::align_of::<S1>(),
         1usize,
-        concat!("Alignment of ", stringify!(S2))
+        concat!("Alignment of ", stringify!(S1))
     );
 }
-impl S2 {
+impl S1 {
     #[inline]
-    pub fn new_bitfield_1() -> u8 {
+    pub fn new_bitfield_1() -> u16 {
         0
     }
 }
