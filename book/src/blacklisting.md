@@ -14,7 +14,7 @@ not.
 
 ### Library
 
-* [`bindgen::Builder::hide_type`](https://docs.rs/bindgen/0.23.1/bindgen/struct.Builder.html#method.hide_type)
+* [`bindgen::Builder::blacklist_type`](https://docs.rs/bindgen/0.31.3/bindgen/struct.Builder.html#method.blacklist_type)
 
 ### Command Line
 
