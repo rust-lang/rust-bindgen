@@ -83,7 +83,7 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_1() {
         unsafe { &(*(0 as *const foo__bindgen_ty_1__bindgen_ty_1)).c1 as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(foo__bindgen_ty_1__bindgen_ty_1),
             "::",
             stringify!(c1)
@@ -93,7 +93,7 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_1() {
         unsafe { &(*(0 as *const foo__bindgen_ty_1__bindgen_ty_1)).c2 as *const _ as usize },
         2usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(foo__bindgen_ty_1__bindgen_ty_1),
             "::",
             stringify!(c2)
@@ -129,7 +129,7 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_2() {
         unsafe { &(*(0 as *const foo__bindgen_ty_1__bindgen_ty_2)).d1 as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(foo__bindgen_ty_1__bindgen_ty_2),
             "::",
             stringify!(d1)
@@ -139,7 +139,7 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_2() {
         unsafe { &(*(0 as *const foo__bindgen_ty_1__bindgen_ty_2)).d2 as *const _ as usize },
         1usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(foo__bindgen_ty_1__bindgen_ty_2),
             "::",
             stringify!(d2)
@@ -149,7 +149,7 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_2() {
         unsafe { &(*(0 as *const foo__bindgen_ty_1__bindgen_ty_2)).d3 as *const _ as usize },
         2usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(foo__bindgen_ty_1__bindgen_ty_2),
             "::",
             stringify!(d3)
@@ -159,7 +159,7 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_2() {
         unsafe { &(*(0 as *const foo__bindgen_ty_1__bindgen_ty_2)).d4 as *const _ as usize },
         3usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(foo__bindgen_ty_1__bindgen_ty_2),
             "::",
             stringify!(d4)
@@ -187,7 +187,7 @@ fn bindgen_test_layout_foo__bindgen_ty_1() {
         unsafe { &(*(0 as *const foo__bindgen_ty_1)).b as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(foo__bindgen_ty_1),
             "::",
             stringify!(b)
@@ -214,7 +214,7 @@ fn bindgen_test_layout_foo() {
     assert_eq!(
         unsafe { &(*(0 as *const foo)).a as *const _ as usize },
         0usize,
-        concat!("Alignment of field: ", stringify!(foo), "::", stringify!(a))
+        concat!("Offset of field: ", stringify!(foo), "::", stringify!(a))
     );
 }
 impl Clone for foo {

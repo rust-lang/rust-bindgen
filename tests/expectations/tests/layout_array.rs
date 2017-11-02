@@ -76,7 +76,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         unsafe { &(*(0 as *const rte_mempool_ops)).name as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_mempool_ops),
             "::",
             stringify!(name)
@@ -86,7 +86,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         unsafe { &(*(0 as *const rte_mempool_ops)).alloc as *const _ as usize },
         32usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_mempool_ops),
             "::",
             stringify!(alloc)
@@ -96,7 +96,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         unsafe { &(*(0 as *const rte_mempool_ops)).free as *const _ as usize },
         40usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_mempool_ops),
             "::",
             stringify!(free)
@@ -106,7 +106,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         unsafe { &(*(0 as *const rte_mempool_ops)).enqueue as *const _ as usize },
         48usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_mempool_ops),
             "::",
             stringify!(enqueue)
@@ -116,7 +116,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         unsafe { &(*(0 as *const rte_mempool_ops)).dequeue as *const _ as usize },
         56usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_mempool_ops),
             "::",
             stringify!(dequeue)
@@ -126,7 +126,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         unsafe { &(*(0 as *const rte_mempool_ops)).get_count as *const _ as usize },
         64usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_mempool_ops),
             "::",
             stringify!(get_count)
@@ -168,7 +168,7 @@ fn bindgen_test_layout_rte_spinlock_t() {
         unsafe { &(*(0 as *const rte_spinlock_t)).locked as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_spinlock_t),
             "::",
             stringify!(locked)
@@ -204,7 +204,7 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         unsafe { &(*(0 as *const rte_mempool_ops_table)).sl as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_mempool_ops_table),
             "::",
             stringify!(sl)
@@ -214,7 +214,7 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         unsafe { &(*(0 as *const rte_mempool_ops_table)).num_ops as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_mempool_ops_table),
             "::",
             stringify!(num_ops)
@@ -224,7 +224,7 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         unsafe { &(*(0 as *const rte_mempool_ops_table)).ops as *const _ as usize },
         64usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_mempool_ops_table),
             "::",
             stringify!(ops)
@@ -266,7 +266,7 @@ fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
         unsafe { &(*(0 as *const malloc_heap__bindgen_ty_1)).lh_first as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(malloc_heap__bindgen_ty_1),
             "::",
             stringify!(lh_first)
@@ -289,7 +289,7 @@ fn bindgen_test_layout_malloc_heap() {
         unsafe { &(*(0 as *const malloc_heap)).lock as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(malloc_heap),
             "::",
             stringify!(lock)
@@ -299,7 +299,7 @@ fn bindgen_test_layout_malloc_heap() {
         unsafe { &(*(0 as *const malloc_heap)).free_head as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(malloc_heap),
             "::",
             stringify!(free_head)
@@ -309,7 +309,7 @@ fn bindgen_test_layout_malloc_heap() {
         unsafe { &(*(0 as *const malloc_heap)).alloc_count as *const _ as usize },
         112usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(malloc_heap),
             "::",
             stringify!(alloc_count)
@@ -319,7 +319,7 @@ fn bindgen_test_layout_malloc_heap() {
         unsafe { &(*(0 as *const malloc_heap)).total_size as *const _ as usize },
         120usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(malloc_heap),
             "::",
             stringify!(total_size)

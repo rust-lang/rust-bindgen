@@ -45,7 +45,7 @@ fn bindgen_test_layout_Foo() {
         unsafe { &(*(0 as *const Foo)).callback as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Foo),
             "::",
             stringify!(callback)
@@ -94,7 +94,7 @@ fn bindgen_test_layout_Bar() {
         unsafe { &(*(0 as *const Bar)).callback as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Bar),
             "::",
             stringify!(callback)

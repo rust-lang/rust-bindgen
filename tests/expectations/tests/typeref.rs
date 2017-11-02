@@ -25,7 +25,7 @@ fn bindgen_test_layout_mozilla_FragmentOrURL() {
         unsafe { &(*(0 as *const mozilla_FragmentOrURL)).mIsLocalRef as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(mozilla_FragmentOrURL),
             "::",
             stringify!(mIsLocalRef)
@@ -90,12 +90,7 @@ fn bindgen_test_layout_Bar() {
     assert_eq!(
         unsafe { &(*(0 as *const Bar)).mFoo as *const _ as usize },
         0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(Bar),
-            "::",
-            stringify!(mFoo)
-        )
+        concat!("Offset of field: ", stringify!(Bar), "::", stringify!(mFoo))
     );
 }
 impl Default for Bar {
@@ -123,7 +118,7 @@ fn bindgen_test_layout_nsFoo() {
         unsafe { &(*(0 as *const nsFoo)).mBar as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(nsFoo),
             "::",
             stringify!(mBar)

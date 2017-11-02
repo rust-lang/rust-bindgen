@@ -45,7 +45,7 @@ fn bindgen_test_layout_NotAnnotated() {
         unsafe { &(*(0 as *const NotAnnotated)).f as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(NotAnnotated),
             "::",
             stringify!(f)

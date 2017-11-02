@@ -72,12 +72,7 @@ pub mod root {
         assert_eq!(
             unsafe { &(*(0 as *const bar)).baz as *const _ as usize },
             0usize,
-            concat!(
-                "Alignment of field: ",
-                stringify!(bar),
-                "::",
-                stringify!(baz)
-            )
+            concat!("Offset of field: ", stringify!(bar), "::", stringify!(baz))
         );
     }
     impl Clone for bar {

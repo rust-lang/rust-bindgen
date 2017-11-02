@@ -27,7 +27,7 @@ fn bindgen_test_layout_whatever() {
         unsafe { &(*(0 as *const whatever)).replacement as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(whatever),
             "::",
             stringify!(replacement)
@@ -55,7 +55,7 @@ fn bindgen_test_layout_container() {
         unsafe { &(*(0 as *const container)).c as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(container),
             "::",
             stringify!(c)

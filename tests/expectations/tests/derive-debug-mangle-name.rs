@@ -34,7 +34,7 @@ fn bindgen_test_layout_perf_event_attr__bindgen_ty_1() {
         unsafe { &(*(0 as *const perf_event_attr__bindgen_ty_1)).b as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(perf_event_attr__bindgen_ty_1),
             "::",
             stringify!(b)
@@ -44,7 +44,7 @@ fn bindgen_test_layout_perf_event_attr__bindgen_ty_1() {
         unsafe { &(*(0 as *const perf_event_attr__bindgen_ty_1)).c as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(perf_event_attr__bindgen_ty_1),
             "::",
             stringify!(c)
@@ -77,7 +77,7 @@ fn bindgen_test_layout_perf_event_attr() {
         unsafe { &(*(0 as *const perf_event_attr)).type_ as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(perf_event_attr),
             "::",
             stringify!(type_)
@@ -87,7 +87,7 @@ fn bindgen_test_layout_perf_event_attr() {
         unsafe { &(*(0 as *const perf_event_attr)).a as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(perf_event_attr),
             "::",
             stringify!(a)

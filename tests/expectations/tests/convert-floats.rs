@@ -35,38 +35,23 @@ fn bindgen_test_layout_foo() {
     assert_eq!(
         unsafe { &(*(0 as *const foo)).bar as *const _ as usize },
         0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(foo),
-            "::",
-            stringify!(bar)
-        )
+        concat!("Offset of field: ", stringify!(foo), "::", stringify!(bar))
     );
     assert_eq!(
         unsafe { &(*(0 as *const foo)).baz as *const _ as usize },
         4usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(foo),
-            "::",
-            stringify!(baz)
-        )
+        concat!("Offset of field: ", stringify!(foo), "::", stringify!(baz))
     );
     assert_eq!(
         unsafe { &(*(0 as *const foo)).bazz as *const _ as usize },
         8usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(foo),
-            "::",
-            stringify!(bazz)
-        )
+        concat!("Offset of field: ", stringify!(foo), "::", stringify!(bazz))
     );
     assert_eq!(
         unsafe { &(*(0 as *const foo)).bazzz as *const _ as usize },
         16usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(foo),
             "::",
             stringify!(bazzz)
@@ -76,7 +61,7 @@ fn bindgen_test_layout_foo() {
         unsafe { &(*(0 as *const foo)).complexFloat as *const _ as usize },
         24usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(foo),
             "::",
             stringify!(complexFloat)
@@ -86,7 +71,7 @@ fn bindgen_test_layout_foo() {
         unsafe { &(*(0 as *const foo)).complexDouble as *const _ as usize },
         32usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(foo),
             "::",
             stringify!(complexDouble)

@@ -46,7 +46,7 @@ fn bindgen_test_layout_Weird() {
         unsafe { &(*(0 as *const Weird)).mStrokeDasharrayLength as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Weird),
             "::",
             stringify!(mStrokeDasharrayLength)
@@ -56,7 +56,7 @@ fn bindgen_test_layout_Weird() {
         unsafe { &(*(0 as *const Weird)).mClipRule as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Weird),
             "::",
             stringify!(mClipRule)
@@ -66,7 +66,7 @@ fn bindgen_test_layout_Weird() {
         unsafe { &(*(0 as *const Weird)).mColorInterpolation as *const _ as usize },
         9usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Weird),
             "::",
             stringify!(mColorInterpolation)
@@ -76,7 +76,7 @@ fn bindgen_test_layout_Weird() {
         unsafe { &(*(0 as *const Weird)).mColorInterpolationFilters as *const _ as usize },
         10usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Weird),
             "::",
             stringify!(mColorInterpolationFilters)
@@ -86,7 +86,7 @@ fn bindgen_test_layout_Weird() {
         unsafe { &(*(0 as *const Weird)).mFillRule as *const _ as usize },
         11usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Weird),
             "::",
             stringify!(mFillRule)
@@ -96,7 +96,7 @@ fn bindgen_test_layout_Weird() {
         unsafe { &(*(0 as *const Weird)).mImageRendering as *const _ as usize },
         12usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Weird),
             "::",
             stringify!(mImageRendering)
@@ -106,7 +106,7 @@ fn bindgen_test_layout_Weird() {
         unsafe { &(*(0 as *const Weird)).mPaintOrder as *const _ as usize },
         13usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Weird),
             "::",
             stringify!(mPaintOrder)
@@ -116,7 +116,7 @@ fn bindgen_test_layout_Weird() {
         unsafe { &(*(0 as *const Weird)).mShapeRendering as *const _ as usize },
         14usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Weird),
             "::",
             stringify!(mShapeRendering)
@@ -126,7 +126,7 @@ fn bindgen_test_layout_Weird() {
         unsafe { &(*(0 as *const Weird)).mStrokeLinecap as *const _ as usize },
         15usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Weird),
             "::",
             stringify!(mStrokeLinecap)
@@ -136,7 +136,7 @@ fn bindgen_test_layout_Weird() {
         unsafe { &(*(0 as *const Weird)).mStrokeLinejoin as *const _ as usize },
         16usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Weird),
             "::",
             stringify!(mStrokeLinejoin)
@@ -146,7 +146,7 @@ fn bindgen_test_layout_Weird() {
         unsafe { &(*(0 as *const Weird)).mTextAnchor as *const _ as usize },
         17usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Weird),
             "::",
             stringify!(mTextAnchor)
@@ -156,7 +156,7 @@ fn bindgen_test_layout_Weird() {
         unsafe { &(*(0 as *const Weird)).mTextRendering as *const _ as usize },
         18usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Weird),
             "::",
             stringify!(mTextRendering)

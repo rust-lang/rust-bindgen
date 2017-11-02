@@ -31,7 +31,7 @@ fn bindgen_test_layout_TestDouble() {
         unsafe { &(*(0 as *const TestDouble)).mMember as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(TestDouble),
             "::",
             stringify!(mMember)
@@ -59,7 +59,7 @@ fn bindgen_test_layout_TestDoublePtr() {
         unsafe { &(*(0 as *const TestDoublePtr)).mMember as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(TestDoublePtr),
             "::",
             stringify!(mMember)
@@ -92,7 +92,7 @@ fn bindgen_test_layout_TestFloat() {
         unsafe { &(*(0 as *const TestFloat)).mMember as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(TestFloat),
             "::",
             stringify!(mMember)
@@ -120,7 +120,7 @@ fn bindgen_test_layout_TestFloatPtr() {
         unsafe { &(*(0 as *const TestFloatPtr)).mMember as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(TestFloatPtr),
             "::",
             stringify!(mMember)

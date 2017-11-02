@@ -26,7 +26,7 @@ fn bindgen_test_layout_NoDebug() {
         unsafe { &(*(0 as *const NoDebug)).c as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(NoDebug),
             "::",
             stringify!(c)
@@ -65,7 +65,7 @@ fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
         unsafe { &(*(0 as *const ShouldDeriveDebugButDoesNot)).c as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ShouldDeriveDebugButDoesNot),
             "::",
             stringify!(c)
@@ -75,7 +75,7 @@ fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
         unsafe { &(*(0 as *const ShouldDeriveDebugButDoesNot)).d as *const _ as usize },
         32usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ShouldDeriveDebugButDoesNot),
             "::",
             stringify!(d)

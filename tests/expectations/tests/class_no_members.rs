@@ -61,7 +61,7 @@ fn bindgen_test_layout_whatever_child_with_member() {
         unsafe { &(*(0 as *const whatever_child_with_member)).m_member as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(whatever_child_with_member),
             "::",
             stringify!(m_member)

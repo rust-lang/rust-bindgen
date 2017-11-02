@@ -63,7 +63,7 @@ fn bindgen_test_layout_ZeroSizedArray() {
         unsafe { &(*(0 as *const ZeroSizedArray)).arr as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ZeroSizedArray),
             "::",
             stringify!(arr)
@@ -92,7 +92,7 @@ fn bindgen_test_layout_ContainsZeroSizedArray() {
         unsafe { &(*(0 as *const ContainsZeroSizedArray)).zsa as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ContainsZeroSizedArray),
             "::",
             stringify!(zsa)

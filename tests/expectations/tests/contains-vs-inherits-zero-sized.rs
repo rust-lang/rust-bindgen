@@ -47,7 +47,7 @@ fn bindgen_test_layout_Inherits() {
         unsafe { &(*(0 as *const Inherits)).b as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Inherits),
             "::",
             stringify!(b)
@@ -78,7 +78,7 @@ fn bindgen_test_layout_Contains() {
         unsafe { &(*(0 as *const Contains)).empty as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Contains),
             "::",
             stringify!(empty)
@@ -88,7 +88,7 @@ fn bindgen_test_layout_Contains() {
         unsafe { &(*(0 as *const Contains)).b as *const _ as usize },
         1usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Contains),
             "::",
             stringify!(b)

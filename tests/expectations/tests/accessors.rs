@@ -31,7 +31,7 @@ fn bindgen_test_layout_SomeAccessors() {
         unsafe { &(*(0 as *const SomeAccessors)).mNoAccessor as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(SomeAccessors),
             "::",
             stringify!(mNoAccessor)
@@ -41,7 +41,7 @@ fn bindgen_test_layout_SomeAccessors() {
         unsafe { &(*(0 as *const SomeAccessors)).mBothAccessors as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(SomeAccessors),
             "::",
             stringify!(mBothAccessors)
@@ -51,7 +51,7 @@ fn bindgen_test_layout_SomeAccessors() {
         unsafe { &(*(0 as *const SomeAccessors)).mUnsafeAccessors as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(SomeAccessors),
             "::",
             stringify!(mUnsafeAccessors)
@@ -61,7 +61,7 @@ fn bindgen_test_layout_SomeAccessors() {
         unsafe { &(*(0 as *const SomeAccessors)).mImmutableAccessor as *const _ as usize },
         12usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(SomeAccessors),
             "::",
             stringify!(mImmutableAccessor)
@@ -113,7 +113,7 @@ fn bindgen_test_layout_AllAccessors() {
         unsafe { &(*(0 as *const AllAccessors)).mBothAccessors as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(AllAccessors),
             "::",
             stringify!(mBothAccessors)
@@ -123,7 +123,7 @@ fn bindgen_test_layout_AllAccessors() {
         unsafe { &(*(0 as *const AllAccessors)).mAlsoBothAccessors as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(AllAccessors),
             "::",
             stringify!(mAlsoBothAccessors)
@@ -171,7 +171,7 @@ fn bindgen_test_layout_AllUnsafeAccessors() {
         unsafe { &(*(0 as *const AllUnsafeAccessors)).mBothAccessors as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(AllUnsafeAccessors),
             "::",
             stringify!(mBothAccessors)
@@ -181,7 +181,7 @@ fn bindgen_test_layout_AllUnsafeAccessors() {
         unsafe { &(*(0 as *const AllUnsafeAccessors)).mAlsoBothAccessors as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(AllUnsafeAccessors),
             "::",
             stringify!(mAlsoBothAccessors)
@@ -234,7 +234,7 @@ fn bindgen_test_layout_ContradictAccessors() {
         unsafe { &(*(0 as *const ContradictAccessors)).mBothAccessors as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ContradictAccessors),
             "::",
             stringify!(mBothAccessors)
@@ -244,7 +244,7 @@ fn bindgen_test_layout_ContradictAccessors() {
         unsafe { &(*(0 as *const ContradictAccessors)).mNoAccessors as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ContradictAccessors),
             "::",
             stringify!(mNoAccessors)
@@ -254,7 +254,7 @@ fn bindgen_test_layout_ContradictAccessors() {
         unsafe { &(*(0 as *const ContradictAccessors)).mUnsafeAccessors as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ContradictAccessors),
             "::",
             stringify!(mUnsafeAccessors)
@@ -264,7 +264,7 @@ fn bindgen_test_layout_ContradictAccessors() {
         unsafe { &(*(0 as *const ContradictAccessors)).mImmutableAccessor as *const _ as usize },
         12usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ContradictAccessors),
             "::",
             stringify!(mImmutableAccessor)
@@ -315,7 +315,7 @@ fn bindgen_test_layout_Replaced() {
         unsafe { &(*(0 as *const Replaced)).mAccessor as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Replaced),
             "::",
             stringify!(mAccessor)
@@ -354,7 +354,7 @@ fn bindgen_test_layout_Wrapper() {
         unsafe { &(*(0 as *const Wrapper)).mReplaced as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Wrapper),
             "::",
             stringify!(mReplaced)

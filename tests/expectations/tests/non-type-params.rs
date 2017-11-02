@@ -29,7 +29,7 @@ fn bindgen_test_layout_UsesArray() {
         unsafe { &(*(0 as *const UsesArray)).array_char_16 as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(UsesArray),
             "::",
             stringify!(array_char_16)
@@ -39,7 +39,7 @@ fn bindgen_test_layout_UsesArray() {
         unsafe { &(*(0 as *const UsesArray)).array_bool_8 as *const _ as usize },
         16usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(UsesArray),
             "::",
             stringify!(array_bool_8)
@@ -49,7 +49,7 @@ fn bindgen_test_layout_UsesArray() {
         unsafe { &(*(0 as *const UsesArray)).array_int_4 as *const _ as usize },
         24usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(UsesArray),
             "::",
             stringify!(array_int_4)

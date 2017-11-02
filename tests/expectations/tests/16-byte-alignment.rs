@@ -48,7 +48,7 @@ fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1() {
         },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1),
             "::",
             stringify!(dport)
@@ -60,7 +60,7 @@ fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1() {
         },
         2usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1),
             "::",
             stringify!(sport)
@@ -83,7 +83,7 @@ fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1() {
         unsafe { &(*(0 as *const rte_ipv4_tuple__bindgen_ty_1)).sctp_tag as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ipv4_tuple__bindgen_ty_1),
             "::",
             stringify!(sctp_tag)
@@ -111,7 +111,7 @@ fn bindgen_test_layout_rte_ipv4_tuple() {
         unsafe { &(*(0 as *const rte_ipv4_tuple)).src_addr as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ipv4_tuple),
             "::",
             stringify!(src_addr)
@@ -121,7 +121,7 @@ fn bindgen_test_layout_rte_ipv4_tuple() {
         unsafe { &(*(0 as *const rte_ipv4_tuple)).dst_addr as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ipv4_tuple),
             "::",
             stringify!(dst_addr)
@@ -177,7 +177,7 @@ fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1() {
         },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1),
             "::",
             stringify!(dport)
@@ -189,7 +189,7 @@ fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1() {
         },
         2usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1),
             "::",
             stringify!(sport)
@@ -212,7 +212,7 @@ fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1() {
         unsafe { &(*(0 as *const rte_ipv6_tuple__bindgen_ty_1)).sctp_tag as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ipv6_tuple__bindgen_ty_1),
             "::",
             stringify!(sctp_tag)
@@ -240,7 +240,7 @@ fn bindgen_test_layout_rte_ipv6_tuple() {
         unsafe { &(*(0 as *const rte_ipv6_tuple)).src_addr as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ipv6_tuple),
             "::",
             stringify!(src_addr)
@@ -250,7 +250,7 @@ fn bindgen_test_layout_rte_ipv6_tuple() {
         unsafe { &(*(0 as *const rte_ipv6_tuple)).dst_addr as *const _ as usize },
         16usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_ipv6_tuple),
             "::",
             stringify!(dst_addr)
@@ -280,7 +280,7 @@ fn bindgen_test_layout_rte_thash_tuple() {
         unsafe { &(*(0 as *const rte_thash_tuple)).v4 as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_thash_tuple),
             "::",
             stringify!(v4)
@@ -290,7 +290,7 @@ fn bindgen_test_layout_rte_thash_tuple() {
         unsafe { &(*(0 as *const rte_thash_tuple)).v6 as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_thash_tuple),
             "::",
             stringify!(v6)

@@ -27,7 +27,7 @@ fn bindgen_test_layout_ShouldNotBeCopy() {
         unsafe { &(*(0 as *const ShouldNotBeCopy)).a as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ShouldNotBeCopy),
             "::",
             stringify!(a)

@@ -43,7 +43,7 @@ fn bindgen_test_layout_ether_addr() {
         unsafe { &(*(0 as *const ether_addr)).addr_bytes as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ether_addr),
             "::",
             stringify!(addr_bytes)
@@ -79,7 +79,7 @@ fn bindgen_test_layout_arp_ipv4() {
         unsafe { &(*(0 as *const arp_ipv4)).arp_sha as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(arp_ipv4),
             "::",
             stringify!(arp_sha)
@@ -89,7 +89,7 @@ fn bindgen_test_layout_arp_ipv4() {
         unsafe { &(*(0 as *const arp_ipv4)).arp_sip as *const _ as usize },
         6usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(arp_ipv4),
             "::",
             stringify!(arp_sip)
@@ -99,7 +99,7 @@ fn bindgen_test_layout_arp_ipv4() {
         unsafe { &(*(0 as *const arp_ipv4)).arp_tha as *const _ as usize },
         10usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(arp_ipv4),
             "::",
             stringify!(arp_tha)
@@ -109,7 +109,7 @@ fn bindgen_test_layout_arp_ipv4() {
         unsafe { &(*(0 as *const arp_ipv4)).arp_tip as *const _ as usize },
         16usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(arp_ipv4),
             "::",
             stringify!(arp_tip)
@@ -143,7 +143,7 @@ fn bindgen_test_layout_arp_hdr() {
         unsafe { &(*(0 as *const arp_hdr)).arp_hrd as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(arp_hdr),
             "::",
             stringify!(arp_hrd)
@@ -153,7 +153,7 @@ fn bindgen_test_layout_arp_hdr() {
         unsafe { &(*(0 as *const arp_hdr)).arp_pro as *const _ as usize },
         2usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(arp_hdr),
             "::",
             stringify!(arp_pro)
@@ -163,7 +163,7 @@ fn bindgen_test_layout_arp_hdr() {
         unsafe { &(*(0 as *const arp_hdr)).arp_hln as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(arp_hdr),
             "::",
             stringify!(arp_hln)
@@ -173,7 +173,7 @@ fn bindgen_test_layout_arp_hdr() {
         unsafe { &(*(0 as *const arp_hdr)).arp_pln as *const _ as usize },
         5usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(arp_hdr),
             "::",
             stringify!(arp_pln)
@@ -183,7 +183,7 @@ fn bindgen_test_layout_arp_hdr() {
         unsafe { &(*(0 as *const arp_hdr)).arp_op as *const _ as usize },
         6usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(arp_hdr),
             "::",
             stringify!(arp_op)
@@ -193,7 +193,7 @@ fn bindgen_test_layout_arp_hdr() {
         unsafe { &(*(0 as *const arp_hdr)).arp_data as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(arp_hdr),
             "::",
             stringify!(arp_data)

@@ -36,7 +36,7 @@ fn bindgen_test_layout_ContainsInstantiation() {
         unsafe { &(*(0 as *const ContainsInstantiation)).not_opaque as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ContainsInstantiation),
             "::",
             stringify!(not_opaque)
@@ -69,7 +69,7 @@ fn bindgen_test_layout_ContainsOpaqueInstantiation() {
         unsafe { &(*(0 as *const ContainsOpaqueInstantiation)).opaque as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ContainsOpaqueInstantiation),
             "::",
             stringify!(opaque)

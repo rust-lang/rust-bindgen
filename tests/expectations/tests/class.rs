@@ -62,13 +62,13 @@ fn bindgen_test_layout_C() {
     assert_eq!(
         unsafe { &(*(0 as *const C)).a as *const _ as usize },
         0usize,
-        concat!("Alignment of field: ", stringify!(C), "::", stringify!(a))
+        concat!("Offset of field: ", stringify!(C), "::", stringify!(a))
     );
     assert_eq!(
         unsafe { &(*(0 as *const C)).big_array as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(big_array)
@@ -102,7 +102,7 @@ fn bindgen_test_layout_C_with_zero_length_array() {
         unsafe { &(*(0 as *const C_with_zero_length_array)).a as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C_with_zero_length_array),
             "::",
             stringify!(a)
@@ -112,7 +112,7 @@ fn bindgen_test_layout_C_with_zero_length_array() {
         unsafe { &(*(0 as *const C_with_zero_length_array)).big_array as *const _ as usize },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C_with_zero_length_array),
             "::",
             stringify!(big_array)
@@ -124,7 +124,7 @@ fn bindgen_test_layout_C_with_zero_length_array() {
         },
         37usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C_with_zero_length_array),
             "::",
             stringify!(zero_length_array)
@@ -158,7 +158,7 @@ fn bindgen_test_layout_C_with_zero_length_array_2() {
         unsafe { &(*(0 as *const C_with_zero_length_array_2)).a as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C_with_zero_length_array_2),
             "::",
             stringify!(a)
@@ -170,7 +170,7 @@ fn bindgen_test_layout_C_with_zero_length_array_2() {
         },
         4usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C_with_zero_length_array_2),
             "::",
             stringify!(zero_length_array)
@@ -298,7 +298,7 @@ fn bindgen_test_layout_WithDtor() {
         unsafe { &(*(0 as *const WithDtor)).b as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(WithDtor),
             "::",
             stringify!(b)
@@ -350,22 +350,12 @@ fn bindgen_test_layout_Union() {
     assert_eq!(
         unsafe { &(*(0 as *const Union)).d as *const _ as usize },
         0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(Union),
-            "::",
-            stringify!(d)
-        )
+        concat!("Offset of field: ", stringify!(Union), "::", stringify!(d))
     );
     assert_eq!(
         unsafe { &(*(0 as *const Union)).i as *const _ as usize },
         0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(Union),
-            "::",
-            stringify!(i)
-        )
+        concat!("Offset of field: ", stringify!(Union), "::", stringify!(i))
     );
 }
 impl Default for Union {
@@ -394,7 +384,7 @@ fn bindgen_test_layout_WithUnion() {
         unsafe { &(*(0 as *const WithUnion)).data as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(WithUnion),
             "::",
             stringify!(data)

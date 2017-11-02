@@ -27,12 +27,12 @@ fn bindgen_test_layout_A() {
     assert_eq!(
         unsafe { &(*(0 as *const A)).x as *const _ as usize },
         0usize,
-        concat!("Alignment of field: ", stringify!(A), "::", stringify!(x))
+        concat!("Offset of field: ", stringify!(A), "::", stringify!(x))
     );
     assert_eq!(
         unsafe { &(*(0 as *const A)).y as *const _ as usize },
         3usize,
-        concat!("Alignment of field: ", stringify!(A), "::", stringify!(y))
+        concat!("Offset of field: ", stringify!(A), "::", stringify!(y))
     );
 }
 impl A {
@@ -541,12 +541,12 @@ fn bindgen_test_layout_C() {
     assert_eq!(
         unsafe { &(*(0 as *const C)).x as *const _ as usize },
         0usize,
-        concat!("Alignment of field: ", stringify!(C), "::", stringify!(x))
+        concat!("Offset of field: ", stringify!(C), "::", stringify!(x))
     );
     assert_eq!(
         unsafe { &(*(0 as *const C)).baz as *const _ as usize },
         4usize,
-        concat!("Alignment of field: ", stringify!(C), "::", stringify!(baz))
+        concat!("Offset of field: ", stringify!(C), "::", stringify!(baz))
     );
 }
 impl C {
@@ -1044,7 +1044,7 @@ fn bindgen_test_layout_Date3() {
         unsafe { &(*(0 as *const Date3)).byte as *const _ as usize },
         3usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Date3),
             "::",
             stringify!(byte)

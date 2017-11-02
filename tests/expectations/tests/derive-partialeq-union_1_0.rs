@@ -71,7 +71,7 @@ fn bindgen_test_layout_ShouldDerivePartialEq() {
         unsafe { &(*(0 as *const ShouldDerivePartialEq)).a as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ShouldDerivePartialEq),
             "::",
             stringify!(a)
@@ -81,7 +81,7 @@ fn bindgen_test_layout_ShouldDerivePartialEq() {
         unsafe { &(*(0 as *const ShouldDerivePartialEq)).b as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ShouldDerivePartialEq),
             "::",
             stringify!(b)

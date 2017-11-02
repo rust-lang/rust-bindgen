@@ -32,7 +32,7 @@ fn bindgen_test_layout_mbedtls_mpi() {
         unsafe { &(*(0 as *const mbedtls_mpi)).s as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(mbedtls_mpi),
             "::",
             stringify!(s)
@@ -42,7 +42,7 @@ fn bindgen_test_layout_mbedtls_mpi() {
         unsafe { &(*(0 as *const mbedtls_mpi)).n as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(mbedtls_mpi),
             "::",
             stringify!(n)
@@ -52,7 +52,7 @@ fn bindgen_test_layout_mbedtls_mpi() {
         unsafe { &(*(0 as *const mbedtls_mpi)).p as *const _ as usize },
         16usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(mbedtls_mpi),
             "::",
             stringify!(p)

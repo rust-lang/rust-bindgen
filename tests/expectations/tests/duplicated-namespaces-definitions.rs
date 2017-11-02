@@ -32,22 +32,12 @@ pub mod root {
             assert_eq!(
                 unsafe { &(*(0 as *const Bar)).foo as *const _ as usize },
                 0usize,
-                concat!(
-                    "Alignment of field: ",
-                    stringify!(Bar),
-                    "::",
-                    stringify!(foo)
-                )
+                concat!("Offset of field: ", stringify!(Bar), "::", stringify!(foo))
             );
             assert_eq!(
                 unsafe { &(*(0 as *const Bar)).baz as *const _ as usize },
                 4usize,
-                concat!(
-                    "Alignment of field: ",
-                    stringify!(Bar),
-                    "::",
-                    stringify!(baz)
-                )
+                concat!("Offset of field: ", stringify!(Bar), "::", stringify!(baz))
             );
         }
     }
@@ -74,12 +64,7 @@ pub mod root {
             assert_eq!(
                 unsafe { &(*(0 as *const Foo)).ptr as *const _ as usize },
                 0usize,
-                concat!(
-                    "Alignment of field: ",
-                    stringify!(Foo),
-                    "::",
-                    stringify!(ptr)
-                )
+                concat!("Offset of field: ", stringify!(Foo), "::", stringify!(ptr))
             );
         }
         impl Default for Foo {

@@ -37,7 +37,7 @@ pub mod root {
                 unsafe { &(*(0 as *const Bar_Baz)).foo as *const _ as usize },
                 0usize,
                 concat!(
-                    "Alignment of field: ",
+                    "Offset of field: ",
                     stringify!(Bar_Baz),
                     "::",
                     stringify!(foo)
@@ -59,12 +59,7 @@ pub mod root {
             assert_eq!(
                 unsafe { &(*(0 as *const Bar)).foo as *const _ as usize },
                 0usize,
-                concat!(
-                    "Alignment of field: ",
-                    stringify!(Bar),
-                    "::",
-                    stringify!(foo)
-                )
+                concat!("Offset of field: ", stringify!(Bar), "::", stringify!(foo))
             );
         }
         #[repr(C)]
@@ -87,12 +82,7 @@ pub mod root {
             assert_eq!(
                 unsafe { &(*(0 as *const Baz)).baz as *const _ as usize },
                 0usize,
-                concat!(
-                    "Alignment of field: ",
-                    stringify!(Baz),
-                    "::",
-                    stringify!(baz)
-                )
+                concat!("Offset of field: ", stringify!(Baz), "::", stringify!(baz))
             );
         }
     }

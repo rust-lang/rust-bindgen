@@ -48,7 +48,7 @@ pub mod root {
             assert_eq!(
                 unsafe { &(*(0 as *const A)).b as *const _ as usize },
                 0usize,
-                concat!("Alignment of field: ", stringify!(A), "::", stringify!(b))
+                concat!("Offset of field: ", stringify!(A), "::", stringify!(b))
             );
         }
         extern "C" {

@@ -39,7 +39,7 @@ pub mod root {
             unsafe { &(*(0 as *const CapturingContentInfo)).a as *const _ as usize },
             0usize,
             concat!(
-                "Alignment of field: ",
+                "Offset of field: ",
                 stringify!(CapturingContentInfo),
                 "::",
                 stringify!(a)

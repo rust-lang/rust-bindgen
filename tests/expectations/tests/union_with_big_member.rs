@@ -27,7 +27,7 @@ fn bindgen_test_layout_WithBigArray() {
         unsafe { &(*(0 as *const WithBigArray)).a as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(WithBigArray),
             "::",
             stringify!(a)
@@ -37,7 +37,7 @@ fn bindgen_test_layout_WithBigArray() {
         unsafe { &(*(0 as *const WithBigArray)).b as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(WithBigArray),
             "::",
             stringify!(b)
@@ -72,7 +72,7 @@ fn bindgen_test_layout_WithBigArray2() {
         unsafe { &(*(0 as *const WithBigArray2)).a as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(WithBigArray2),
             "::",
             stringify!(a)
@@ -82,7 +82,7 @@ fn bindgen_test_layout_WithBigArray2() {
         unsafe { &(*(0 as *const WithBigArray2)).b as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(WithBigArray2),
             "::",
             stringify!(b)
@@ -117,7 +117,7 @@ fn bindgen_test_layout_WithBigMember() {
         unsafe { &(*(0 as *const WithBigMember)).a as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(WithBigMember),
             "::",
             stringify!(a)
@@ -127,7 +127,7 @@ fn bindgen_test_layout_WithBigMember() {
         unsafe { &(*(0 as *const WithBigMember)).b as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(WithBigMember),
             "::",
             stringify!(b)

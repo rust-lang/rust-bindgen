@@ -32,7 +32,7 @@ pub mod root {
                 unsafe { &(*(0 as *const typedef_struct)).foo as *const _ as usize },
                 0usize,
                 concat!(
-                    "Alignment of field: ",
+                    "Offset of field: ",
                     stringify!(typedef_struct),
                     "::",
                     stringify!(foo)
@@ -69,7 +69,7 @@ pub mod root {
                 unsafe { &(*(0 as *const _bindgen_ty_1)).foo as *const _ as usize },
                 0usize,
                 concat!(
-                    "Alignment of field: ",
+                    "Offset of field: ",
                     stringify!(_bindgen_ty_1),
                     "::",
                     stringify!(foo)

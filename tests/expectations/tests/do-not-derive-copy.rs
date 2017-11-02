@@ -28,7 +28,7 @@ fn bindgen_test_layout_WouldBeCopyButWeAreNotDerivingCopy() {
         unsafe { &(*(0 as *const WouldBeCopyButWeAreNotDerivingCopy)).x as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(WouldBeCopyButWeAreNotDerivingCopy),
             "::",
             stringify!(x)

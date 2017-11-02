@@ -42,7 +42,7 @@ pub mod root {
                 unsafe { &(*(0 as *const sentry)).i_am_plain_sentry as *const _ as usize },
                 0usize,
                 concat!(
-                    "Alignment of field: ",
+                    "Offset of field: ",
                     stringify!(sentry),
                     "::",
                     stringify!(i_am_plain_sentry)
@@ -91,7 +91,7 @@ pub mod root {
                 },
                 0usize,
                 concat!(
-                    "Alignment of field: ",
+                    "Offset of field: ",
                     stringify!(NotTemplateWrapper_sentry),
                     "::",
                     stringify!(i_am_not_template_wrapper_sentry)
@@ -128,7 +128,7 @@ pub mod root {
                 },
                 0usize,
                 concat!(
-                    "Alignment of field: ",
+                    "Offset of field: ",
                     stringify!(InlineNotTemplateWrapper_sentry),
                     "::",
                     stringify!(i_am_inline_not_template_wrapper_sentry)
@@ -230,7 +230,7 @@ pub mod root {
                 },
                 0usize,
                 concat!(
-                    "Alignment of field: ",
+                    "Offset of field: ",
                     stringify!(OuterDoubleWrapper_InnerDoubleWrapper_sentry),
                     "::",
                     stringify!(i_am_double_wrapper_sentry)
@@ -277,7 +277,7 @@ pub mod root {
                 },
                 0usize,
                 concat!(
-                    "Alignment of field: ",
+                    "Offset of field: ",
                     stringify!(OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry),
                     "::",
                     stringify!(i_am_double_wrapper_inline_sentry)
@@ -348,7 +348,7 @@ pub mod root {
             unsafe { &(*(0 as *const sentry)).i_am_outside_namespace_sentry as *const _ as usize },
             0usize,
             concat!(
-                "Alignment of field: ",
+                "Offset of field: ",
                 stringify!(sentry),
                 "::",
                 stringify!(i_am_outside_namespace_sentry)

@@ -38,12 +38,7 @@ fn bindgen_test_layout_IntStr() {
     assert_eq!(
         unsafe { &(*(0 as *const IntStr)).a as *const _ as usize },
         0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(IntStr),
-            "::",
-            stringify!(a)
-        )
+        concat!("Offset of field: ", stringify!(IntStr), "::", stringify!(a))
     );
 }
 impl Default for IntStr {
@@ -73,7 +68,7 @@ fn bindgen_test_layout_FloatStr() {
         unsafe { &(*(0 as *const FloatStr)).a as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(FloatStr),
             "::",
             stringify!(a)

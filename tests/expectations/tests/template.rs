@@ -71,13 +71,13 @@ fn bindgen_test_layout_C() {
     assert_eq!(
         unsafe { &(*(0 as *const C)).mB as *const _ as usize },
         0usize,
-        concat!("Alignment of field: ", stringify!(C), "::", stringify!(mB))
+        concat!("Offset of field: ", stringify!(C), "::", stringify!(mB))
     );
     assert_eq!(
         unsafe { &(*(0 as *const C)).mBConstPtr as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(mBConstPtr)
@@ -87,7 +87,7 @@ fn bindgen_test_layout_C() {
         unsafe { &(*(0 as *const C)).mBConstStructPtr as *const _ as usize },
         16usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(mBConstStructPtr)
@@ -97,7 +97,7 @@ fn bindgen_test_layout_C() {
         unsafe { &(*(0 as *const C)).mBConstStructPtrArray as *const _ as usize },
         24usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(mBConstStructPtrArray)
@@ -107,7 +107,7 @@ fn bindgen_test_layout_C() {
         unsafe { &(*(0 as *const C)).mBConst as *const _ as usize },
         32usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(mBConst)
@@ -117,7 +117,7 @@ fn bindgen_test_layout_C() {
         unsafe { &(*(0 as *const C)).mBVolatile as *const _ as usize },
         36usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(mBVolatile)
@@ -127,7 +127,7 @@ fn bindgen_test_layout_C() {
         unsafe { &(*(0 as *const C)).mBConstBool as *const _ as usize },
         40usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(mBConstBool)
@@ -137,7 +137,7 @@ fn bindgen_test_layout_C() {
         unsafe { &(*(0 as *const C)).mBConstChar as *const _ as usize },
         42usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(mBConstChar)
@@ -147,7 +147,7 @@ fn bindgen_test_layout_C() {
         unsafe { &(*(0 as *const C)).mBArray as *const _ as usize },
         44usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(mBArray)
@@ -157,7 +157,7 @@ fn bindgen_test_layout_C() {
         unsafe { &(*(0 as *const C)).mBPtrArray as *const _ as usize },
         48usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(mBPtrArray)
@@ -167,7 +167,7 @@ fn bindgen_test_layout_C() {
         unsafe { &(*(0 as *const C)).mBArrayPtr as *const _ as usize },
         56usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(mBArrayPtr)
@@ -176,18 +176,13 @@ fn bindgen_test_layout_C() {
     assert_eq!(
         unsafe { &(*(0 as *const C)).mBRef as *const _ as usize },
         64usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(C),
-            "::",
-            stringify!(mBRef)
-        )
+        concat!("Offset of field: ", stringify!(C), "::", stringify!(mBRef))
     );
     assert_eq!(
         unsafe { &(*(0 as *const C)).mBConstRef as *const _ as usize },
         72usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(mBConstRef)
@@ -197,7 +192,7 @@ fn bindgen_test_layout_C() {
         unsafe { &(*(0 as *const C)).mPtrRef as *const _ as usize },
         80usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(mPtrRef)
@@ -207,7 +202,7 @@ fn bindgen_test_layout_C() {
         unsafe { &(*(0 as *const C)).mArrayRef as *const _ as usize },
         88usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(C),
             "::",
             stringify!(mArrayRef)
@@ -276,7 +271,7 @@ fn bindgen_test_layout_RootedContainer() {
         unsafe { &(*(0 as *const RootedContainer)).root as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(RootedContainer),
             "::",
             stringify!(root)
@@ -321,7 +316,7 @@ fn bindgen_test_layout_PODButContainsDtor() {
         unsafe { &(*(0 as *const PODButContainsDtor)).member as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(PODButContainsDtor),
             "::",
             stringify!(member)
@@ -360,7 +355,7 @@ fn bindgen_test_layout_POD() {
         unsafe { &(*(0 as *const POD)).opaque_member as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(POD),
             "::",
             stringify!(opaque_member)

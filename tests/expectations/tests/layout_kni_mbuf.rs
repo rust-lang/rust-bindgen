@@ -42,7 +42,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         unsafe { &(*(0 as *const rte_kni_mbuf)).buf_addr as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_kni_mbuf),
             "::",
             stringify!(buf_addr)
@@ -52,7 +52,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         unsafe { &(*(0 as *const rte_kni_mbuf)).buf_physaddr as *const _ as usize },
         8usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_kni_mbuf),
             "::",
             stringify!(buf_physaddr)
@@ -62,7 +62,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         unsafe { &(*(0 as *const rte_kni_mbuf)).pad0 as *const _ as usize },
         16usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_kni_mbuf),
             "::",
             stringify!(pad0)
@@ -72,7 +72,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         unsafe { &(*(0 as *const rte_kni_mbuf)).data_off as *const _ as usize },
         18usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_kni_mbuf),
             "::",
             stringify!(data_off)
@@ -82,7 +82,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         unsafe { &(*(0 as *const rte_kni_mbuf)).pad1 as *const _ as usize },
         20usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_kni_mbuf),
             "::",
             stringify!(pad1)
@@ -92,7 +92,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         unsafe { &(*(0 as *const rte_kni_mbuf)).nb_segs as *const _ as usize },
         22usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_kni_mbuf),
             "::",
             stringify!(nb_segs)
@@ -102,7 +102,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         unsafe { &(*(0 as *const rte_kni_mbuf)).pad4 as *const _ as usize },
         23usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_kni_mbuf),
             "::",
             stringify!(pad4)
@@ -112,7 +112,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         unsafe { &(*(0 as *const rte_kni_mbuf)).ol_flags as *const _ as usize },
         24usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_kni_mbuf),
             "::",
             stringify!(ol_flags)
@@ -122,7 +122,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         unsafe { &(*(0 as *const rte_kni_mbuf)).pad2 as *const _ as usize },
         32usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_kni_mbuf),
             "::",
             stringify!(pad2)
@@ -132,7 +132,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         unsafe { &(*(0 as *const rte_kni_mbuf)).pkt_len as *const _ as usize },
         36usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_kni_mbuf),
             "::",
             stringify!(pkt_len)
@@ -142,7 +142,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         unsafe { &(*(0 as *const rte_kni_mbuf)).data_len as *const _ as usize },
         40usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_kni_mbuf),
             "::",
             stringify!(data_len)
@@ -152,7 +152,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         unsafe { &(*(0 as *const rte_kni_mbuf)).pad3 as *const _ as usize },
         64usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_kni_mbuf),
             "::",
             stringify!(pad3)
@@ -162,7 +162,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         unsafe { &(*(0 as *const rte_kni_mbuf)).pool as *const _ as usize },
         72usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_kni_mbuf),
             "::",
             stringify!(pool)
@@ -172,7 +172,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         unsafe { &(*(0 as *const rte_kni_mbuf)).next as *const _ as usize },
         80usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(rte_kni_mbuf),
             "::",
             stringify!(next)

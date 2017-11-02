@@ -30,17 +30,17 @@ pub mod root {
         assert_eq!(
             unsafe { &(*(0 as *const i)).j as *const _ as usize },
             0usize,
-            concat!("Alignment of field: ", stringify!(i), "::", stringify!(j))
+            concat!("Offset of field: ", stringify!(i), "::", stringify!(j))
         );
         assert_eq!(
             unsafe { &(*(0 as *const i)).k as *const _ as usize },
             8usize,
-            concat!("Alignment of field: ", stringify!(i), "::", stringify!(k))
+            concat!("Offset of field: ", stringify!(i), "::", stringify!(k))
         );
         assert_eq!(
             unsafe { &(*(0 as *const i)).l as *const _ as usize },
             16usize,
-            concat!("Alignment of field: ", stringify!(i), "::", stringify!(l))
+            concat!("Offset of field: ", stringify!(i), "::", stringify!(l))
         );
     }
     impl Default for i {
@@ -68,7 +68,7 @@ pub mod root {
         assert_eq!(
             unsafe { &(*(0 as *const d)).m as *const _ as usize },
             0usize,
-            concat!("Alignment of field: ", stringify!(d), "::", stringify!(m))
+            concat!("Offset of field: ", stringify!(d), "::", stringify!(m))
         );
     }
     impl Default for d {
@@ -111,7 +111,7 @@ pub mod root {
         assert_eq!(
             unsafe { &(*(0 as *const F)).w as *const _ as usize },
             0usize,
-            concat!("Alignment of field: ", stringify!(F), "::", stringify!(w))
+            concat!("Offset of field: ", stringify!(F), "::", stringify!(w))
         );
     }
     impl Default for F {

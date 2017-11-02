@@ -26,11 +26,6 @@ fn bindgen_test_layout_foo() {
     assert_eq!(
         unsafe { &(*(0 as *const foo)).bar as *const _ as usize },
         0usize,
-        concat!(
-            "Alignment of field: ",
-            stringify!(foo),
-            "::",
-            stringify!(bar)
-        )
+        concat!("Offset of field: ", stringify!(foo), "::", stringify!(bar))
     );
 }

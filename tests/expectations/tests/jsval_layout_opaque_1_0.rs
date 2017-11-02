@@ -271,7 +271,7 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
         },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
             "::",
             stringify!(i32)
@@ -283,7 +283,7 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
         },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
             "::",
             stringify!(u32)
@@ -295,7 +295,7 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
         },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(jsval_layout__bindgen_ty_2__bindgen_ty_1),
             "::",
             stringify!(why)
@@ -323,7 +323,7 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
         unsafe { &(*(0 as *const jsval_layout__bindgen_ty_2)).payload as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(jsval_layout__bindgen_ty_2),
             "::",
             stringify!(payload)
@@ -351,7 +351,7 @@ fn bindgen_test_layout_jsval_layout() {
         unsafe { &(*(0 as *const jsval_layout)).asBits as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(jsval_layout),
             "::",
             stringify!(asBits)
@@ -361,7 +361,7 @@ fn bindgen_test_layout_jsval_layout() {
         unsafe { &(*(0 as *const jsval_layout)).debugView as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(jsval_layout),
             "::",
             stringify!(debugView)
@@ -371,7 +371,7 @@ fn bindgen_test_layout_jsval_layout() {
         unsafe { &(*(0 as *const jsval_layout)).s as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(jsval_layout),
             "::",
             stringify!(s)
@@ -381,7 +381,7 @@ fn bindgen_test_layout_jsval_layout() {
         unsafe { &(*(0 as *const jsval_layout)).asDouble as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(jsval_layout),
             "::",
             stringify!(asDouble)
@@ -391,7 +391,7 @@ fn bindgen_test_layout_jsval_layout() {
         unsafe { &(*(0 as *const jsval_layout)).asPtr as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(jsval_layout),
             "::",
             stringify!(asPtr)
@@ -401,7 +401,7 @@ fn bindgen_test_layout_jsval_layout() {
         unsafe { &(*(0 as *const jsval_layout)).asWord as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(jsval_layout),
             "::",
             stringify!(asWord)
@@ -411,7 +411,7 @@ fn bindgen_test_layout_jsval_layout() {
         unsafe { &(*(0 as *const jsval_layout)).asUIntPtr as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(jsval_layout),
             "::",
             stringify!(asUIntPtr)
@@ -444,7 +444,7 @@ fn bindgen_test_layout_Value() {
         unsafe { &(*(0 as *const Value)).data as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(Value),
             "::",
             stringify!(data)

@@ -27,7 +27,7 @@ fn bindgen_test_layout_ShouldNotDeriveHash() {
         unsafe { &(*(0 as *const ShouldNotDeriveHash)).a as *const _ as usize },
         0usize,
         concat!(
-            "Alignment of field: ",
+            "Offset of field: ",
             stringify!(ShouldNotDeriveHash),
             "::",
             stringify!(a)
