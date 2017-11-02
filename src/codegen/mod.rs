@@ -1394,7 +1394,9 @@ impl CodeGenerator for CompInfo {
 
         let used_template_params = item.used_template_params(ctx);
 
-        let mut packed = self.packed();
+        let ty = item.expect_type();
+        let layout = ty.layout(ctx);
+        let mut packed = self.is_packed(ctx, &layout);
 
         // generate tuple struct if struct or union is a forward declaration,
         // skip for now if template parameters are needed.
@@ -1431,7 +1433,7 @@ impl CodeGenerator for CompInfo {
         let is_opaque = item.is_opaque(ctx, &());
         let mut fields = vec![];
         let mut struct_layout =
-            StructLayoutTracker::new(ctx, self, &canonical_name);
+            StructLayoutTracker::new(ctx, self, ty, &canonical_name);
 
         if !is_opaque {
             if item.has_vtable_ptr(ctx) {
@@ -1618,7 +1620,7 @@ impl CodeGenerator for CompInfo {
         if let Some(comment) = item.comment(ctx) {
             attributes.push(attributes::doc(comment));
         }
-        if packed {
+        if packed && !is_opaque {
             attributes.push(attributes::repr_list(&["C", "packed"]));
         } else {
             attributes.push(attributes::repr("C"));

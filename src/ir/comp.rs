@@ -974,8 +974,8 @@ pub struct CompInfo {
     /// size_t)
     has_non_type_template_params: bool,
 
-    /// Whether this struct layout is packed.
-    packed: bool,
+    /// Whether we saw `__attribute__((packed))` on or within this type.
+    packed_attr: bool,
 
     /// Used to know if we've found an opaque attribute that could cause us to
     /// generate a type with invalid layout. This is explicitly used to avoid us
@@ -1007,7 +1007,7 @@ impl CompInfo {
             has_destructor: false,
             has_nonempty_base: false,
             has_non_type_template_params: false,
-            packed: false,
+            packed_attr: false,
             found_unknown_attr: false,
             is_forward_declaration: false,
         }
@@ -1261,7 +1261,7 @@ impl CompInfo {
                     }
                 }
                 CXCursor_PackedAttr => {
-                    ci.packed = true;
+                    ci.packed_attr = true;
                 }
                 CXCursor_TemplateTypeParameter => {
                     let param = Item::type_param(None, cur, ctx)
@@ -1439,8 +1439,31 @@ impl CompInfo {
     }
 
     /// Is this compound type packed?
-    pub fn packed(&self) -> bool {
-        self.packed
+    pub fn is_packed(&self, ctx: &BindgenContext, layout: &Option<Layout>) -> bool {
+        if self.packed_attr {
+            return true
+        }
+
+        // Even though `libclang` doesn't expose `#pragma packed(...)`, we can
+        // detect it through its effects.
+        if let Some(ref parent_layout) = *layout {
+            if self.fields().iter().any(|f| match *f {
+                Field::Bitfields(ref unit) => {
+                    unit.layout().align > parent_layout.align
+                }
+                Field::DataMember(ref data) => {
+                    let field_ty = ctx.resolve_type(data.ty());
+                    field_ty.layout(ctx).map_or(false, |field_ty_layout| {
+                        field_ty_layout.align > parent_layout.align
+                    })
+                }
+            }) {
+                info!("Found a struct that was defined within `#pragma packed(...)`");
+                return true;
+            }
+        }
+
+        false
     }
 
     /// Returns true if compound type has been forward declared
@@ -1504,8 +1527,8 @@ impl DotAttributes for CompInfo {
             )?;
         }
 
-        if self.packed {
-            writeln!(out, "<tr><td>packed</td><td>true</td></tr>")?;
+        if self.packed_attr {
+            writeln!(out, "<tr><td>packed_attr</td><td>true</td></tr>")?;
         }
 
         if self.is_forward_declaration {
@@ -1528,15 +1551,17 @@ impl DotAttributes for CompInfo {
 }
 
 impl IsOpaque for CompInfo {
-    type Extra = ();
+    type Extra = Option<Layout>;
 
-    fn is_opaque(&self, ctx: &BindgenContext, _: &()) -> bool {
-        // Early return to avoid extra computation
+    fn is_opaque(&self, ctx: &BindgenContext, layout: &Option<Layout>) -> bool {
         if self.has_non_type_template_params {
             return true
         }
 
-        self.fields().iter().any(|f| match *f {
+        // Bitfields with a width that is larger than their unit's width have
+        // some strange things going on, and the best we can do is make the
+        // whole struct opaque.
+        if self.fields().iter().any(|f| match *f {
             Field::DataMember(_) => {
                 false
             },
@@ -1548,7 +1573,23 @@ impl IsOpaque for CompInfo {
                     bf.width() / 8 > bitfield_layout.size as u32
                 })
             }
-        })
+        }) {
+            return true;
+        }
+
+        // We don't have `#[repr(packed = "N")]` in Rust yet, so the best we can
+        // do is make this struct opaque.
+        //
+        // See https://github.com/rust-lang-nursery/rust-bindgen/issues/537 and
+        // https://github.com/rust-lang/rust/issues/33158
+        if self.is_packed(ctx, layout) && layout.map_or(false, |l| l.align > 1) {
+            warn!("Found a type that is both packed and aligned to greater than \
+                   1; Rust doesn't have `#[repr(packed = \"N\")]` yet, so we \
+                   are treating it as opaque");
+            return true;
+        }
+
+        false
     }
 }
 
