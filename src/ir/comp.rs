@@ -463,10 +463,13 @@ impl FieldMethods for RawField {
 
 /// Convert the given ordered set of raw fields into a list of either plain data
 /// members, and/or bitfield units containing multiple bitfields.
+///
+/// If we do not have the layout for a bitfield's type, then we can't reliably
+/// compute its allocation unit. In such cases, we return an error.
 fn raw_fields_to_fields_and_bitfield_units<I>(
     ctx: &BindgenContext,
     raw_fields: I,
-) -> Vec<Field>
+) -> Result<Vec<Field>, ()>
 where
     I: IntoIterator<Item = RawField>,
 {
@@ -503,7 +506,7 @@ where
             &mut bitfield_unit_count,
             &mut fields,
             bitfields,
-        );
+        )?;
     }
 
     assert!(
@@ -511,7 +514,7 @@ where
         "The above loop should consume all items in `raw_fields`"
     );
 
-    fields
+    Ok(fields)
 }
 
 /// Given a set of contiguous raw bitfields, group and allocate them into
@@ -521,7 +524,8 @@ fn bitfields_to_allocation_units<E, I>(
     bitfield_unit_count: &mut usize,
     fields: &mut E,
     raw_bitfields: I,
-) where
+) -> Result<(), ()>
+where
     E: Extend<Field>,
     I: IntoIterator<Item = RawField>,
 {
@@ -572,7 +576,7 @@ fn bitfields_to_allocation_units<E, I>(
         let bitfield_width = bitfield.bitfield_width().unwrap() as usize;
         let bitfield_layout = ctx.resolve_type(bitfield.ty())
             .layout(ctx)
-            .expect("Bitfield without layout? Gah!");
+            .ok_or(())?;
         let bitfield_size = bitfield_layout.size;
         let bitfield_align = bitfield_layout.align;
 
@@ -649,6 +653,8 @@ fn bitfields_to_allocation_units<E, I>(
             bitfields_in_unit,
         );
     }
+
+    Ok(())
 }
 
 /// A compound structure's fields are initially raw, and have bitfields that
@@ -662,6 +668,7 @@ fn bitfields_to_allocation_units<E, I>(
 enum CompFields {
     BeforeComputingBitfieldUnits(Vec<RawField>),
     AfterComputingBitfieldUnits(Vec<Field>),
+    ErrorComputingBitfieldUnits,
 }
 
 impl Default for CompFields {
@@ -676,7 +683,7 @@ impl CompFields {
             CompFields::BeforeComputingBitfieldUnits(ref mut raws) => {
                 raws.push(raw);
             }
-            CompFields::AfterComputingBitfieldUnits(_) => {
+            _ => {
                 panic!(
                     "Must not append new fields after computing bitfield allocation units"
                 );
@@ -689,22 +696,36 @@ impl CompFields {
             CompFields::BeforeComputingBitfieldUnits(ref mut raws) => {
                 mem::replace(raws, vec![])
             }
-            CompFields::AfterComputingBitfieldUnits(_) => {
+            _ => {
                 panic!("Already computed bitfield units");
             }
         };
 
-        let fields_and_units =
+        let result =
             raw_fields_to_fields_and_bitfield_units(ctx, raws);
-        mem::replace(
-            self,
-            CompFields::AfterComputingBitfieldUnits(fields_and_units),
-        );
+
+        match result {
+            Ok(fields_and_units) => {
+                mem::replace(
+                    self,
+                    CompFields::AfterComputingBitfieldUnits(fields_and_units));
+            }
+            Err(()) => {
+                mem::replace(
+                    self,
+                    CompFields::ErrorComputingBitfieldUnits
+                );
+            }
+        }
     }
 
     fn deanonymize_fields(&mut self, ctx: &BindgenContext, methods: &[Method]) {
         let fields = match *self {
             CompFields::AfterComputingBitfieldUnits(ref mut fields) => fields,
+            CompFields::ErrorComputingBitfieldUnits => {
+                // Nothing to do here.
+                return;
+            }
             CompFields::BeforeComputingBitfieldUnits(_) => {
                 panic!("Not yet computed bitfield units.");
             }
@@ -787,6 +808,7 @@ impl Trace for CompFields {
         T: Tracer,
     {
         match *self {
+            CompFields::ErrorComputingBitfieldUnits => {}
             CompFields::BeforeComputingBitfieldUnits(ref fields) => {
                 for f in fields {
                     tracer.visit_kind(f.ty().into(), EdgeKind::Field);
@@ -1046,6 +1068,7 @@ impl CompInfo {
     /// Get this type's set of fields.
     pub fn fields(&self) -> &[Field] {
         match self.fields {
+            CompFields::ErrorComputingBitfieldUnits => &[],
             CompFields::AfterComputingBitfieldUnits(ref fields) => fields,
             CompFields::BeforeComputingBitfieldUnits(_) => {
                 panic!("Should always have computed bitfield units first");
@@ -1556,6 +1579,14 @@ impl IsOpaque for CompInfo {
     fn is_opaque(&self, ctx: &BindgenContext, layout: &Option<Layout>) -> bool {
         if self.has_non_type_template_params {
             return true
+        }
+
+        // When we do not have the layout for a bitfield's type (for example, it
+        // is a type parameter), then we can't compute bitfield units. We are
+        // left with no choice but to make the whole struct opaque, or else we
+        // might generate structs with incorrect sizes and alignments.
+        if let CompFields::ErrorComputingBitfieldUnits = self.fields {
+            return true;
         }
 
         // Bitfields with a width that is larger than their unit's width have
