@@ -1607,16 +1607,20 @@ impl Bindings {
         }
 
         if let Some(h) = options.input_header.as_ref() {
-            let md = std::fs::metadata(h).ok().unwrap();
-            if !md.is_file() {
-                eprintln!("error: '{}' is a folder", h);
+            if let Ok(md) = std::fs::metadata(h) {
+                if !md.is_file() {
+                    eprintln!("error: '{}' is a folder", h);
+                    return Err(());
+                }
+                if !can_read(&md.permissions()) {
+                    eprintln!("error: insufficient permissions to read '{}'", h);
+                    return Err(());
+                }
+                options.clang_args.push(h.clone())
+            } else {
+                eprintln!("error: header '{}' does not exist.", h);
                 return Err(());
             }
-            if !can_read(&md.permissions()) {
-                eprintln!("error: insufficient permissions to read '{}'", h);
-                return Err(());
-            }
-            options.clang_args.push(h.clone())
         }
 
         for f in options.input_unsaved_files.iter() {
