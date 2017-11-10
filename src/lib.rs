@@ -1721,7 +1721,6 @@ impl Bindings {
         };
 
         cmd
-            .args(&["--write-mode=display"])
             .stdin(Stdio::piped())
             .stdout(Stdio::piped());
 
