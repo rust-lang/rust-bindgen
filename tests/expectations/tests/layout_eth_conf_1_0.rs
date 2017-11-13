@@ -166,7 +166,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         let mask = 0x1 as u16;
@@ -182,7 +182,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         unit_field_val &= !mask;
@@ -191,7 +191,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             );
         }
     }
@@ -202,7 +202,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         let mask = 0x2 as u16;
@@ -218,7 +218,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         unit_field_val &= !mask;
@@ -227,7 +227,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             );
         }
     }
@@ -238,7 +238,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         let mask = 0x4 as u16;
@@ -254,7 +254,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         unit_field_val &= !mask;
@@ -263,7 +263,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             );
         }
     }
@@ -274,7 +274,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         let mask = 0x8 as u16;
@@ -290,7 +290,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         unit_field_val &= !mask;
@@ -299,7 +299,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             );
         }
     }
@@ -310,7 +310,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         let mask = 0x10 as u16;
@@ -326,7 +326,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         unit_field_val &= !mask;
@@ -335,7 +335,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             );
         }
     }
@@ -346,7 +346,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         let mask = 0x20 as u16;
@@ -362,7 +362,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         unit_field_val &= !mask;
@@ -371,7 +371,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             );
         }
     }
@@ -382,7 +382,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         let mask = 0x40 as u16;
@@ -398,7 +398,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         unit_field_val &= !mask;
@@ -407,7 +407,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             );
         }
     }
@@ -418,7 +418,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         let mask = 0x80 as u16;
@@ -434,7 +434,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         unit_field_val &= !mask;
@@ -443,7 +443,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             );
         }
     }
@@ -454,7 +454,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         let mask = 0x100 as u16;
@@ -470,7 +470,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         unit_field_val &= !mask;
@@ -479,7 +479,7 @@ impl rte_eth_rxmode {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             );
         }
     }
@@ -577,7 +577,7 @@ impl rte_eth_txmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u8 as *mut u8,
-                ::std::mem::size_of::<u8>(),
+                1usize,
             )
         };
         let mask = 0x1 as u8;
@@ -593,7 +593,7 @@ impl rte_eth_txmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u8 as *mut u8,
-                ::std::mem::size_of::<u8>(),
+                1usize,
             )
         };
         unit_field_val &= !mask;
@@ -602,7 +602,7 @@ impl rte_eth_txmode {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u8>(),
+                1usize,
             );
         }
     }
@@ -613,7 +613,7 @@ impl rte_eth_txmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u8 as *mut u8,
-                ::std::mem::size_of::<u8>(),
+                1usize,
             )
         };
         let mask = 0x2 as u8;
@@ -629,7 +629,7 @@ impl rte_eth_txmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u8 as *mut u8,
-                ::std::mem::size_of::<u8>(),
+                1usize,
             )
         };
         unit_field_val &= !mask;
@@ -638,7 +638,7 @@ impl rte_eth_txmode {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u8>(),
+                1usize,
             );
         }
     }
@@ -649,7 +649,7 @@ impl rte_eth_txmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u8 as *mut u8,
-                ::std::mem::size_of::<u8>(),
+                1usize,
             )
         };
         let mask = 0x4 as u8;
@@ -665,7 +665,7 @@ impl rte_eth_txmode {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u8 as *mut u8,
-                ::std::mem::size_of::<u8>(),
+                1usize,
             )
         };
         unit_field_val &= !mask;
@@ -674,7 +674,7 @@ impl rte_eth_txmode {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u8>(),
+                1usize,
             );
         }
     }
