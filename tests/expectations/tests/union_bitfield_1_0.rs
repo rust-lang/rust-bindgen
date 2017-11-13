@@ -79,7 +79,7 @@ impl U4 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u8 as *mut u8,
-                ::std::mem::size_of::<u8>(),
+                1usize,
             )
         };
         let mask = 0x1 as u8;
@@ -95,7 +95,7 @@ impl U4 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u8 as *mut u8,
-                ::std::mem::size_of::<u8>(),
+                1usize,
             )
         };
         unit_field_val &= !mask;
@@ -104,7 +104,7 @@ impl U4 {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u8>(),
+                1usize,
             );
         }
     }
@@ -145,7 +145,7 @@ impl B {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         let mask = 0x7fffffff as u32;
@@ -161,7 +161,7 @@ impl B {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         unit_field_val &= !mask;
@@ -170,7 +170,7 @@ impl B {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             );
         }
     }
@@ -181,7 +181,7 @@ impl B {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         let mask = 0x80000000 as u32;
@@ -197,7 +197,7 @@ impl B {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         unit_field_val &= !mask;
@@ -206,7 +206,7 @@ impl B {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             );
         }
     }

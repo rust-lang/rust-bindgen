@@ -115,7 +115,7 @@ impl jsval_layout__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u64 as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             )
         };
         let mask = 0x7fffffffffff as u64;
@@ -131,7 +131,7 @@ impl jsval_layout__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u64 as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             )
         };
         unit_field_val &= !mask;
@@ -140,7 +140,7 @@ impl jsval_layout__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             );
         }
     }
@@ -151,7 +151,7 @@ impl jsval_layout__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u64 as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             )
         };
         let mask = 0xffff800000000000 as u64;
@@ -167,7 +167,7 @@ impl jsval_layout__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u64 as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             )
         };
         unit_field_val &= !mask;
@@ -176,7 +176,7 @@ impl jsval_layout__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             );
         }
     }

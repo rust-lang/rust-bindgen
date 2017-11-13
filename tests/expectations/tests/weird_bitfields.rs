@@ -176,7 +176,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         let mask = 0xffff as u32;
@@ -192,7 +192,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         unit_field_val &= !mask;
@@ -201,7 +201,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             );
         }
     }
@@ -212,7 +212,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         let mask = 0x7fff0000 as u32;
@@ -228,7 +228,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         unit_field_val &= !mask;
@@ -237,7 +237,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             );
         }
     }
@@ -256,7 +256,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_2 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         let mask = 0x7 as u16;
@@ -272,7 +272,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_2 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         unit_field_val &= !mask;
@@ -281,7 +281,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_2 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             );
         }
     }
@@ -292,7 +292,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_2 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         let mask = 0x38 as u16;
@@ -308,7 +308,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_2 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         unit_field_val &= !mask;
@@ -317,7 +317,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_2 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             );
         }
     }
@@ -328,7 +328,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_2 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         let mask = 0x40 as u16;
@@ -344,7 +344,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_2 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         unit_field_val &= !mask;
@@ -353,7 +353,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_2 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             );
         }
     }
@@ -364,7 +364,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_2 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         let mask = 0x80 as u16;
@@ -380,7 +380,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_2 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         unit_field_val &= !mask;
@@ -389,7 +389,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_2 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             );
         }
     }
@@ -400,7 +400,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_2 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         let mask = 0x100 as u16;
@@ -416,7 +416,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_2 as *const _ as *const u8,
                 &mut unit_field_val as *mut u16 as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             )
         };
         unit_field_val &= !mask;
@@ -425,7 +425,7 @@ impl Weird {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_2 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u16>(),
+                2usize,
             );
         }
     }

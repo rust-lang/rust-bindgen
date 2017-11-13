@@ -31,7 +31,7 @@ impl mach_msg_type_descriptor_t {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         let mask = 0xffffff as u32;
@@ -47,7 +47,7 @@ impl mach_msg_type_descriptor_t {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         unit_field_val &= !mask;
@@ -56,7 +56,7 @@ impl mach_msg_type_descriptor_t {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             );
         }
     }
@@ -67,7 +67,7 @@ impl mach_msg_type_descriptor_t {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         let mask = 0xff000000 as u32;
@@ -83,7 +83,7 @@ impl mach_msg_type_descriptor_t {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         unit_field_val &= !mask;
@@ -92,7 +92,7 @@ impl mach_msg_type_descriptor_t {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             );
         }
     }

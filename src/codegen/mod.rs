@@ -1201,7 +1201,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
             1 => quote! { u8  },
             size => {
                 debug_assert!(size > 8);
-                // Can't generate bitfield accessors for unit sizes larget than
+                // Can't generate bitfield accessors for unit sizes larger than
                 // 64 bits at the moment.
                 struct_layout.saw_bitfield_unit(self.layout());
                 return;
@@ -1227,7 +1227,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
                 struct_layout,
                 fields,
                 methods,
-                (&unit_field_name, unit_field_int_ty.clone()),
+                (&unit_field_name, unit_field_int_ty.clone(), self.layout().size),
             );
 
             let param_name = bitfield_getter_name(ctx, bf);
@@ -1283,7 +1283,7 @@ fn bitfield_setter_name(
 }
 
 impl<'a> FieldCodegen<'a> for Bitfield {
-    type Extra = (&'a str, quote::Tokens);
+    type Extra = (&'a str, quote::Tokens, usize);
 
     fn codegen<F, M>(
         &self,
@@ -1296,7 +1296,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         _struct_layout: &mut StructLayoutTracker,
         _fields: &mut F,
         methods: &mut M,
-        (unit_field_name, unit_field_int_ty): (&'a str, quote::Tokens),
+        (unit_field_name, unit_field_int_ty, unit_field_size): (&'a str, quote::Tokens, usize),
     ) where
         F: Extend<quote::Tokens>,
         M: Extend<quote::Tokens>,
@@ -1331,7 +1331,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                     ::#prefix::ptr::copy_nonoverlapping(
                         &self.#unit_field_ident as *const _ as *const u8,
                         &mut unit_field_val as *mut #unit_field_int_ty as *mut u8,
-                        ::#prefix::mem::size_of::<#unit_field_int_ty>(),
+                        #unit_field_size,
                     )
                 };
 
@@ -1355,7 +1355,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                     ::#prefix::ptr::copy_nonoverlapping(
                         &self.#unit_field_ident as *const _ as *const u8,
                         &mut unit_field_val as *mut #unit_field_int_ty as *mut u8,
-                        ::#prefix::mem::size_of::< #unit_field_int_ty >(),
+                        #unit_field_size,
                     )
                 };
 
@@ -1366,7 +1366,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
                     ::#prefix::ptr::copy_nonoverlapping(
                         &unit_field_val as *const _ as *const u8,
                         &mut self.#unit_field_ident as *mut _ as *mut u8,
-                        ::#prefix::mem::size_of::< #unit_field_int_ty >(),
+                        #unit_field_size,
                     );
                 }
             }

@@ -181,7 +181,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         let mask = 0xf as u32;
@@ -197,7 +197,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         unit_field_val &= !mask;
@@ -206,7 +206,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             );
         }
     }
@@ -217,7 +217,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         let mask = 0xf0 as u32;
@@ -233,7 +233,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         unit_field_val &= !mask;
@@ -242,7 +242,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             );
         }
     }
@@ -253,7 +253,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         let mask = 0xf00 as u32;
@@ -269,7 +269,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         unit_field_val &= !mask;
@@ -278,7 +278,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             );
         }
     }
@@ -289,7 +289,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         let mask = 0xf000 as u32;
@@ -305,7 +305,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         unit_field_val &= !mask;
@@ -314,7 +314,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             );
         }
     }
@@ -325,7 +325,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         let mask = 0xf0000 as u32;
@@ -341,7 +341,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         unit_field_val &= !mask;
@@ -350,7 +350,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             );
         }
     }
@@ -361,7 +361,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         let mask = 0xf00000 as u32;
@@ -377,7 +377,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         unit_field_val &= !mask;
@@ -386,7 +386,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             );
         }
     }
@@ -397,7 +397,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         let mask = 0xf000000 as u32;
@@ -413,7 +413,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u32 as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             )
         };
         unit_field_val &= !mask;
@@ -422,7 +422,7 @@ impl rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u32>(),
+                4usize,
             );
         }
     }
@@ -812,7 +812,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u64 as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             )
         };
         let mask = 0x7f as u64;
@@ -828,7 +828,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u64 as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             )
         };
         unit_field_val &= !mask;
@@ -837,7 +837,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             );
         }
     }
@@ -848,7 +848,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u64 as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             )
         };
         let mask = 0xff80 as u64;
@@ -864,7 +864,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u64 as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             )
         };
         unit_field_val &= !mask;
@@ -873,7 +873,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             );
         }
     }
@@ -884,7 +884,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u64 as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             )
         };
         let mask = 0xff0000 as u64;
@@ -900,7 +900,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u64 as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             )
         };
         unit_field_val &= !mask;
@@ -909,7 +909,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             );
         }
     }
@@ -920,7 +920,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u64 as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             )
         };
         let mask = 0xffff000000 as u64;
@@ -936,7 +936,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u64 as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             )
         };
         unit_field_val &= !mask;
@@ -945,7 +945,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             );
         }
     }
@@ -956,7 +956,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u64 as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             )
         };
         let mask = 0x1ff0000000000 as u64;
@@ -972,7 +972,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u64 as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             )
         };
         unit_field_val &= !mask;
@@ -981,7 +981,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             );
         }
     }
@@ -992,7 +992,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u64 as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             )
         };
         let mask = 0xfe000000000000 as u64;
@@ -1008,7 +1008,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &self._bitfield_1 as *const _ as *const u8,
                 &mut unit_field_val as *mut u64 as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             )
         };
         unit_field_val &= !mask;
@@ -1017,7 +1017,7 @@ impl rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
             ::std::ptr::copy_nonoverlapping(
                 &unit_field_val as *const _ as *const u8,
                 &mut self._bitfield_1 as *mut _ as *mut u8,
-                ::std::mem::size_of::<u64>(),
+                8usize,
             );
         }
     }
