@@ -28,6 +28,7 @@ fn main() {
     let macros = Arc::new(RwLock::new(HashSet::new()));
 
     let bindings = Builder::default()
+        .rustfmt_bindings(false)
         .enable_cxx_namespaces()
         .rustified_enum(".*")
         .raw_line("pub use self::root::*;")

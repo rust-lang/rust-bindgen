@@ -19,6 +19,7 @@ out to us in a GitHub issue, or stop by
   - [Testing a Single Header's Bindings Generation and Compiling its Bindings](#testing-a-single-headers-bindings-generation-and-compiling-its-bindings)
   - [Authoring New Tests](#authoring-new-tests)
   - [Test Expectations and `libclang` Versions](#test-expectations-and-libclang-versions)
+  - [Integration Tests](#integration-tests)
   - [Fuzzing `bindgen` with `csmith`](#fuzzing-bindgen-with-csmith)
 - [Code Overview](#code-overview)
 - [Pull Requests and Code Reviews](#pull-requests-and-code-reviews)
@@ -88,9 +89,9 @@ output Rust bindings live in `tests/expectations/tests`. For example,
 `tests/headers/my_header.h`'s expected generated Rust bindings would be
 `tests/expectations/tests/my_header.rs`.
 
-There is also the `./bindgen-integration` crate, which uses `bindgen` to
+There are also some integration tests in the `./bindgen-integration` crate, which uses `bindgen` to
 generate bindings to some C++ code, and then uses the bindings, asserting that
-values are what we expect them to be both on the Rust and C++ side.
+values are what we expect them to be, both on the Rust and C++ side.
 
 The generated and expected bindings are run through `rustfmt` before they are
 compared. Make sure you have `rustfmt` up to date:
@@ -99,6 +100,10 @@ compared. Make sure you have `rustfmt` up to date:
 $ rustup update nightly
 $ rustup run nightly cargo install -f rustfmt-nightly
 ```
+
+Note: running `cargo test` from the root directory of `bindgen`'s repository does not
+automatically test the generated bindings or run the integration tests.
+These steps must be performed manually when needed.
 
 ### Testing Bindings Generation
 
@@ -117,7 +122,7 @@ should be sufficient to test your local modifications.
 If your local changes are introducing expected modifications in the
 `tests/expectations/tests/*` bindings files, then you should test that the
 generated bindings files still compile, and that their struct layout tests still
-pass.
+pass. Also, run the integration tests (see below).
 
 You can do this with these commands:
 
@@ -137,6 +142,9 @@ searching for test headers. For example, to test
 ```
 $ ./tests/test-one.sh going
 ```
+
+Note that `test-one.sh` does not recompile `bindgen`, so if you change the code,
+you'll need to rebuild it before running the script again.
 
 ### Authoring New Tests
 
@@ -194,6 +202,19 @@ Where `$VERSION` is one of:
 * `3_8`
 
 depending on which version of `libclang` you have installed.
+
+### Integration Tests
+
+The `./bindgen-integration` crate uses `bindgen` to
+generate bindings to some C++ code, and then uses the bindings, asserting that
+values are what we expect them to be, both on the Rust and C++ side.
+
+To run the integration tests, issue the following:
+
+```
+$ cd bindgen-integration
+$ cargo test
+```
 
 ### Fuzzing `bindgen` with `csmith`
 
