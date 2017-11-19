@@ -24,7 +24,7 @@ fn bindgen_test_layout_bitfield() {
         concat!("Alignment of ", stringify!(bitfield))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const bitfield)).e as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<bitfield>())).e as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",

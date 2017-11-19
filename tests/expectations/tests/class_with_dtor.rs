@@ -34,7 +34,7 @@ fn bindgen_test_layout_WithoutDtor() {
         concat!("Alignment of ", stringify!(WithoutDtor))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const WithoutDtor)).shouldBeWithDtor as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<WithoutDtor>())).shouldBeWithDtor as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

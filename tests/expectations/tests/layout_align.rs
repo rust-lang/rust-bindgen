@@ -96,7 +96,7 @@ fn bindgen_test_layout_rte_eth_link() {
         concat!("Alignment of ", stringify!(rte_eth_link))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_link)).link_speed as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_link>())).link_speed as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

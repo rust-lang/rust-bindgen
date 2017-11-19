@@ -25,7 +25,7 @@ fn bindgen_test_layout_ShouldImplClone() {
         concat!("Alignment of ", stringify!(ShouldImplClone))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ShouldImplClone)).large as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ShouldImplClone>())).large as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

@@ -22,7 +22,7 @@ fn bindgen_test_layout_NoHash() {
         concat!("Alignment of ", stringify!(NoHash))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const NoHash)).i as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<NoHash>())).i as *const _ as usize },
         0usize,
         concat!("Offset of field: ", stringify!(NoHash), "::", stringify!(i))
     );

@@ -24,7 +24,7 @@ fn bindgen_test_layout_ShouldNotDeriveHash() {
         concat!("Alignment of ", stringify!(ShouldNotDeriveHash))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ShouldNotDeriveHash)).a as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ShouldNotDeriveHash>())).a as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

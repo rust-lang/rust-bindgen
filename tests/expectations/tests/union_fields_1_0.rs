@@ -68,7 +68,7 @@ fn bindgen_test_layout_nsStyleUnion() {
         concat!("Alignment of ", stringify!(nsStyleUnion))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const nsStyleUnion)).mInt as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<nsStyleUnion>())).mInt as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -78,7 +78,7 @@ fn bindgen_test_layout_nsStyleUnion() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const nsStyleUnion)).mFloat as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<nsStyleUnion>())).mFloat as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -88,7 +88,7 @@ fn bindgen_test_layout_nsStyleUnion() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const nsStyleUnion)).mPointer as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<nsStyleUnion>())).mPointer as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

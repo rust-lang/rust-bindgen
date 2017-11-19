@@ -22,7 +22,7 @@ fn bindgen_test_layout_LittleArray() {
         concat!("Alignment of ", stringify!(LittleArray))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const LittleArray)).a as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<LittleArray>())).a as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -50,7 +50,7 @@ fn bindgen_test_layout_BigArray() {
         concat!("Alignment of ", stringify!(BigArray))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const BigArray)).a as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<BigArray>())).a as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -83,7 +83,7 @@ fn bindgen_test_layout_WithLittleArray() {
         concat!("Alignment of ", stringify!(WithLittleArray))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const WithLittleArray)).a as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<WithLittleArray>())).a as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -111,7 +111,7 @@ fn bindgen_test_layout_WithBigArray() {
         concat!("Alignment of ", stringify!(WithBigArray))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const WithBigArray)).a as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<WithBigArray>())).a as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

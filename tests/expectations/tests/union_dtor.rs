@@ -23,7 +23,7 @@ fn bindgen_test_layout_UnionWithDtor() {
         concat!("Alignment of ", stringify!(UnionWithDtor))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const UnionWithDtor)).mFoo as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<UnionWithDtor>())).mFoo as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -33,7 +33,7 @@ fn bindgen_test_layout_UnionWithDtor() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const UnionWithDtor)).mBar as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<UnionWithDtor>())).mBar as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

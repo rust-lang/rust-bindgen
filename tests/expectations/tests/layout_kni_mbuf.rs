@@ -39,7 +39,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         concat!("Size of: ", stringify!(rte_kni_mbuf))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_kni_mbuf)).buf_addr as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_kni_mbuf>())).buf_addr as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -49,7 +49,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_kni_mbuf)).buf_physaddr as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_kni_mbuf>())).buf_physaddr as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -59,7 +59,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_kni_mbuf)).pad0 as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_kni_mbuf>())).pad0 as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -69,7 +69,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_kni_mbuf)).data_off as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_kni_mbuf>())).data_off as *const _ as usize },
         18usize,
         concat!(
             "Offset of field: ",
@@ -79,7 +79,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_kni_mbuf)).pad1 as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_kni_mbuf>())).pad1 as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -89,7 +89,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_kni_mbuf)).nb_segs as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_kni_mbuf>())).nb_segs as *const _ as usize },
         22usize,
         concat!(
             "Offset of field: ",
@@ -99,7 +99,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_kni_mbuf)).pad4 as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_kni_mbuf>())).pad4 as *const _ as usize },
         23usize,
         concat!(
             "Offset of field: ",
@@ -109,7 +109,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_kni_mbuf)).ol_flags as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_kni_mbuf>())).ol_flags as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -119,7 +119,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_kni_mbuf)).pad2 as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_kni_mbuf>())).pad2 as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -129,7 +129,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_kni_mbuf)).pkt_len as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_kni_mbuf>())).pkt_len as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -139,7 +139,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_kni_mbuf)).data_len as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_kni_mbuf>())).data_len as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -149,7 +149,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_kni_mbuf)).pad3 as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_kni_mbuf>())).pad3 as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -159,7 +159,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_kni_mbuf)).pool as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_kni_mbuf>())).pool as *const _ as usize },
         72usize,
         concat!(
             "Offset of field: ",
@@ -169,7 +169,7 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_kni_mbuf)).next as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_kni_mbuf>())).next as *const _ as usize },
         80usize,
         concat!(
             "Offset of field: ",

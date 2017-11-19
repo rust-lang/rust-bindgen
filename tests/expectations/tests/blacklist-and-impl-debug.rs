@@ -24,7 +24,7 @@ fn bindgen_test_layout_ShouldManuallyImplDebug() {
         concat!("Alignment of ", stringify!(ShouldManuallyImplDebug))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ShouldManuallyImplDebug)).a as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ShouldManuallyImplDebug>())).a as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

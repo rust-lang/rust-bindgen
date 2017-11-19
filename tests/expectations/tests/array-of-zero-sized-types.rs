@@ -44,7 +44,7 @@ fn bindgen_test_layout_HasArrayOfEmpty() {
         concat!("Alignment of ", stringify!(HasArrayOfEmpty))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const HasArrayOfEmpty)).empties as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<HasArrayOfEmpty>())).empties as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

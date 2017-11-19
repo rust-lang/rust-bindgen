@@ -28,7 +28,7 @@ fn bindgen_test_layout_SomeAccessors() {
         concat!("Alignment of ", stringify!(SomeAccessors))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const SomeAccessors)).mNoAccessor as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<SomeAccessors>())).mNoAccessor as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -38,7 +38,7 @@ fn bindgen_test_layout_SomeAccessors() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const SomeAccessors)).mBothAccessors as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<SomeAccessors>())).mBothAccessors as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -48,7 +48,7 @@ fn bindgen_test_layout_SomeAccessors() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const SomeAccessors)).mUnsafeAccessors as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<SomeAccessors>())).mUnsafeAccessors as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -58,7 +58,9 @@ fn bindgen_test_layout_SomeAccessors() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const SomeAccessors)).mImmutableAccessor as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<SomeAccessors>())).mImmutableAccessor as *const _ as usize
+        },
         12usize,
         concat!(
             "Offset of field: ",
@@ -110,7 +112,7 @@ fn bindgen_test_layout_AllAccessors() {
         concat!("Alignment of ", stringify!(AllAccessors))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const AllAccessors)).mBothAccessors as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<AllAccessors>())).mBothAccessors as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -120,7 +122,7 @@ fn bindgen_test_layout_AllAccessors() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const AllAccessors)).mAlsoBothAccessors as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<AllAccessors>())).mAlsoBothAccessors as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -168,7 +170,9 @@ fn bindgen_test_layout_AllUnsafeAccessors() {
         concat!("Alignment of ", stringify!(AllUnsafeAccessors))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const AllUnsafeAccessors)).mBothAccessors as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<AllUnsafeAccessors>())).mBothAccessors as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -178,7 +182,9 @@ fn bindgen_test_layout_AllUnsafeAccessors() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const AllUnsafeAccessors)).mAlsoBothAccessors as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<AllUnsafeAccessors>())).mAlsoBothAccessors as *const _ as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -231,7 +237,9 @@ fn bindgen_test_layout_ContradictAccessors() {
         concat!("Alignment of ", stringify!(ContradictAccessors))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ContradictAccessors)).mBothAccessors as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ContradictAccessors>())).mBothAccessors as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -241,7 +249,9 @@ fn bindgen_test_layout_ContradictAccessors() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ContradictAccessors)).mNoAccessors as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ContradictAccessors>())).mNoAccessors as *const _ as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -251,7 +261,9 @@ fn bindgen_test_layout_ContradictAccessors() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ContradictAccessors)).mUnsafeAccessors as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ContradictAccessors>())).mUnsafeAccessors as *const _ as usize
+        },
         8usize,
         concat!(
             "Offset of field: ",
@@ -261,7 +273,9 @@ fn bindgen_test_layout_ContradictAccessors() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ContradictAccessors)).mImmutableAccessor as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ContradictAccessors>())).mImmutableAccessor as *const _ as usize
+        },
         12usize,
         concat!(
             "Offset of field: ",
@@ -312,7 +326,7 @@ fn bindgen_test_layout_Replaced() {
         concat!("Alignment of ", stringify!(Replaced))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Replaced)).mAccessor as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Replaced>())).mAccessor as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -351,7 +365,7 @@ fn bindgen_test_layout_Wrapper() {
         concat!("Alignment of ", stringify!(Wrapper))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Wrapper)).mReplaced as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Wrapper>())).mReplaced as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

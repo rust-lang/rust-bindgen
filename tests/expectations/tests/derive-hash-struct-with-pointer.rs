@@ -24,7 +24,7 @@ fn bindgen_test_layout_ConstPtrMutObj() {
         concat!("Alignment of ", stringify!(ConstPtrMutObj))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ConstPtrMutObj)).bar as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ConstPtrMutObj>())).bar as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -57,7 +57,7 @@ fn bindgen_test_layout_MutPtrMutObj() {
         concat!("Alignment of ", stringify!(MutPtrMutObj))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const MutPtrMutObj)).bar as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<MutPtrMutObj>())).bar as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -90,7 +90,7 @@ fn bindgen_test_layout_MutPtrConstObj() {
         concat!("Alignment of ", stringify!(MutPtrConstObj))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const MutPtrConstObj)).bar as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<MutPtrConstObj>())).bar as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -123,7 +123,7 @@ fn bindgen_test_layout_ConstPtrConstObj() {
         concat!("Alignment of ", stringify!(ConstPtrConstObj))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ConstPtrConstObj)).bar as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ConstPtrConstObj>())).bar as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

@@ -33,7 +33,9 @@ fn bindgen_test_layout_ContainsInstantiation() {
         concat!("Alignment of ", stringify!(ContainsInstantiation))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ContainsInstantiation)).not_opaque as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ContainsInstantiation>())).not_opaque as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -66,7 +68,9 @@ fn bindgen_test_layout_ContainsOpaqueInstantiation() {
         concat!("Alignment of ", stringify!(ContainsOpaqueInstantiation))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ContainsOpaqueInstantiation)).opaque as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ContainsOpaqueInstantiation>())).opaque as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",

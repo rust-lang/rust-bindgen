@@ -25,7 +25,7 @@ fn bindgen_test_layout_AlignedToOne() {
         concat!("Alignment of ", stringify!(AlignedToOne))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const AlignedToOne)).i as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<AlignedToOne>())).i as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -77,7 +77,7 @@ fn bindgen_test_layout_PackedToOne() {
         concat!("Alignment of ", stringify!(PackedToOne))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const PackedToOne)).x as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<PackedToOne>())).x as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -87,7 +87,7 @@ fn bindgen_test_layout_PackedToOne() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const PackedToOne)).y as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<PackedToOne>())).y as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",

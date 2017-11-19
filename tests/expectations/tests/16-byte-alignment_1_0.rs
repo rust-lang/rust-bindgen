@@ -87,7 +87,8 @@ fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(0 as *const rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1)).dport as *const _ as usize
+            &(*(::std::ptr::null::<rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1>())).dport as *const _
+                as usize
         },
         0usize,
         concat!(
@@ -99,7 +100,8 @@ fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(0 as *const rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1)).sport as *const _ as usize
+            &(*(::std::ptr::null::<rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1>())).sport as *const _
+                as usize
         },
         2usize,
         concat!(
@@ -128,7 +130,9 @@ fn bindgen_test_layout_rte_ipv4_tuple__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(rte_ipv4_tuple__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ipv4_tuple__bindgen_ty_1)).sctp_tag as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_ipv4_tuple__bindgen_ty_1>())).sctp_tag as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -156,7 +160,7 @@ fn bindgen_test_layout_rte_ipv4_tuple() {
         concat!("Alignment of ", stringify!(rte_ipv4_tuple))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ipv4_tuple)).src_addr as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_ipv4_tuple>())).src_addr as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -166,7 +170,7 @@ fn bindgen_test_layout_rte_ipv4_tuple() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ipv4_tuple)).dst_addr as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_ipv4_tuple>())).dst_addr as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -221,7 +225,8 @@ fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(0 as *const rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1)).dport as *const _ as usize
+            &(*(::std::ptr::null::<rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1>())).dport as *const _
+                as usize
         },
         0usize,
         concat!(
@@ -233,7 +238,8 @@ fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(0 as *const rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1)).sport as *const _ as usize
+            &(*(::std::ptr::null::<rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1>())).sport as *const _
+                as usize
         },
         2usize,
         concat!(
@@ -262,7 +268,9 @@ fn bindgen_test_layout_rte_ipv6_tuple__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(rte_ipv6_tuple__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ipv6_tuple__bindgen_ty_1)).sctp_tag as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_ipv6_tuple__bindgen_ty_1>())).sctp_tag as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -290,7 +298,7 @@ fn bindgen_test_layout_rte_ipv6_tuple() {
         concat!("Alignment of ", stringify!(rte_ipv6_tuple))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ipv6_tuple)).src_addr as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_ipv6_tuple>())).src_addr as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -300,7 +308,7 @@ fn bindgen_test_layout_rte_ipv6_tuple() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ipv6_tuple)).dst_addr as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_ipv6_tuple>())).dst_addr as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -330,7 +338,7 @@ fn bindgen_test_layout_rte_thash_tuple() {
         concat!("Size of: ", stringify!(rte_thash_tuple))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_thash_tuple)).v4 as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_thash_tuple>())).v4 as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -340,7 +348,7 @@ fn bindgen_test_layout_rte_thash_tuple() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_thash_tuple)).v6 as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_thash_tuple>())).v6 as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

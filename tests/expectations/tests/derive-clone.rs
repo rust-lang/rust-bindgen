@@ -24,7 +24,7 @@ fn bindgen_test_layout_ShouldDeriveClone() {
         concat!("Alignment of ", stringify!(ShouldDeriveClone))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ShouldDeriveClone)).large as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ShouldDeriveClone>())).large as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

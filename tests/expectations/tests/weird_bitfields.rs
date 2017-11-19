@@ -43,7 +43,7 @@ fn bindgen_test_layout_Weird() {
         concat!("Alignment of ", stringify!(Weird))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Weird)).mStrokeDasharrayLength as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Weird>())).mStrokeDasharrayLength as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -53,7 +53,7 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Weird)).mClipRule as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Weird>())).mClipRule as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -63,7 +63,7 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Weird)).mColorInterpolation as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Weird>())).mColorInterpolation as *const _ as usize },
         9usize,
         concat!(
             "Offset of field: ",
@@ -73,7 +73,9 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Weird)).mColorInterpolationFilters as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<Weird>())).mColorInterpolationFilters as *const _ as usize
+        },
         10usize,
         concat!(
             "Offset of field: ",
@@ -83,7 +85,7 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Weird)).mFillRule as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Weird>())).mFillRule as *const _ as usize },
         11usize,
         concat!(
             "Offset of field: ",
@@ -93,7 +95,7 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Weird)).mImageRendering as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Weird>())).mImageRendering as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -103,7 +105,7 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Weird)).mPaintOrder as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Weird>())).mPaintOrder as *const _ as usize },
         13usize,
         concat!(
             "Offset of field: ",
@@ -113,7 +115,7 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Weird)).mShapeRendering as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Weird>())).mShapeRendering as *const _ as usize },
         14usize,
         concat!(
             "Offset of field: ",
@@ -123,7 +125,7 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Weird)).mStrokeLinecap as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Weird>())).mStrokeLinecap as *const _ as usize },
         15usize,
         concat!(
             "Offset of field: ",
@@ -133,7 +135,7 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Weird)).mStrokeLinejoin as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Weird>())).mStrokeLinejoin as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -143,7 +145,7 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Weird)).mTextAnchor as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Weird>())).mTextAnchor as *const _ as usize },
         17usize,
         concat!(
             "Offset of field: ",
@@ -153,7 +155,7 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Weird)).mTextRendering as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Weird>())).mTextRendering as *const _ as usize },
         18usize,
         concat!(
             "Offset of field: ",

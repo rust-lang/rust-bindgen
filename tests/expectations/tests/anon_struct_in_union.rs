@@ -33,7 +33,7 @@ fn bindgen_test_layout_s__bindgen_ty_1_inner() {
         concat!("Alignment of ", stringify!(s__bindgen_ty_1_inner))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const s__bindgen_ty_1_inner)).b as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<s__bindgen_ty_1_inner>())).b as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -56,7 +56,7 @@ fn bindgen_test_layout_s__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(s__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const s__bindgen_ty_1)).field as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<s__bindgen_ty_1>())).field as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -84,7 +84,7 @@ fn bindgen_test_layout_s() {
         concat!("Alignment of ", stringify!(s))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const s)).u as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<s>())).u as *const _ as usize },
         0usize,
         concat!("Offset of field: ", stringify!(s), "::", stringify!(u))
     );

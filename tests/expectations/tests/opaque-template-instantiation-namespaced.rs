@@ -40,7 +40,7 @@ pub mod root {
                 concat!("Alignment of ", stringify!(Foo))
             );
             assert_eq!(
-                unsafe { &(*(0 as *const Foo)).c as *const _ as usize },
+                unsafe { &(*(::std::ptr::null::<Foo>())).c as *const _ as usize },
                 0usize,
                 concat!("Offset of field: ", stringify!(Foo), "::", stringify!(c))
             );
@@ -63,7 +63,7 @@ pub mod root {
                 concat!("Alignment of ", stringify!(Bar))
             );
             assert_eq!(
-                unsafe { &(*(0 as *const Bar)).i as *const _ as usize },
+                unsafe { &(*(::std::ptr::null::<Bar>())).i as *const _ as usize },
                 0usize,
                 concat!("Offset of field: ", stringify!(Bar), "::", stringify!(i))
             );
@@ -86,7 +86,10 @@ pub mod root {
                 concat!("Alignment of ", stringify!(ContainsInstantiation))
             );
             assert_eq!(
-                unsafe { &(*(0 as *const ContainsInstantiation)).not_opaque as *const _ as usize },
+                unsafe {
+                    &(*(::std::ptr::null::<ContainsInstantiation>())).not_opaque as *const _
+                        as usize
+                },
                 0usize,
                 concat!(
                     "Offset of field: ",
@@ -120,7 +123,8 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(0 as *const ContainsOpaqueInstantiation)).opaque as *const _ as usize
+                    &(*(::std::ptr::null::<ContainsOpaqueInstantiation>())).opaque as *const _
+                        as usize
                 },
                 0usize,
                 concat!(

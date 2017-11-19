@@ -29,7 +29,7 @@ pub mod root {
                 concat!("Alignment of ", stringify!(typedef_struct))
             );
             assert_eq!(
-                unsafe { &(*(0 as *const typedef_struct)).foo as *const _ as usize },
+                unsafe { &(*(::std::ptr::null::<typedef_struct>())).foo as *const _ as usize },
                 0usize,
                 concat!(
                     "Offset of field: ",
@@ -66,7 +66,7 @@ pub mod root {
                 concat!("Alignment of ", stringify!(_bindgen_ty_1))
             );
             assert_eq!(
-                unsafe { &(*(0 as *const _bindgen_ty_1)).foo as *const _ as usize },
+                unsafe { &(*(::std::ptr::null::<_bindgen_ty_1>())).foo as *const _ as usize },
                 0usize,
                 concat!(
                     "Offset of field: ",

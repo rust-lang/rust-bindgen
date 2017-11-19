@@ -22,7 +22,7 @@ fn bindgen_test_layout_Base() {
         concat!("Alignment of ", stringify!(Base))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Base)).large as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Base>())).large as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

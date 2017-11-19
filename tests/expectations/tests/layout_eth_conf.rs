@@ -75,7 +75,7 @@ fn bindgen_test_layout_rte_eth_rxmode() {
         concat!("Alignment of ", stringify!(rte_eth_rxmode))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_rxmode)).mq_mode as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_rxmode>())).mq_mode as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -85,7 +85,7 @@ fn bindgen_test_layout_rte_eth_rxmode() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_rxmode)).max_rx_pkt_len as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_rxmode>())).max_rx_pkt_len as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -95,7 +95,7 @@ fn bindgen_test_layout_rte_eth_rxmode() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_rxmode)).split_hdr_size as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_rxmode>())).split_hdr_size as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -491,7 +491,7 @@ fn bindgen_test_layout_rte_eth_txmode() {
         concat!("Alignment of ", stringify!(rte_eth_txmode))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_txmode)).mq_mode as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_txmode>())).mq_mode as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -501,7 +501,7 @@ fn bindgen_test_layout_rte_eth_txmode() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_txmode)).pvid as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_txmode>())).pvid as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -674,7 +674,7 @@ fn bindgen_test_layout_rte_eth_rss_conf() {
         concat!("Alignment of ", stringify!(rte_eth_rss_conf))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_rss_conf)).rss_key as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_rss_conf>())).rss_key as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -684,7 +684,7 @@ fn bindgen_test_layout_rte_eth_rss_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_rss_conf)).rss_key_len as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_rss_conf>())).rss_key_len as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -694,7 +694,7 @@ fn bindgen_test_layout_rte_eth_rss_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_rss_conf)).rss_hf as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_rss_conf>())).rss_hf as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -776,7 +776,8 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(0 as *const rte_eth_vmdq_dcb_conf__bindgen_ty_1)).vlan_id as *const _ as usize
+            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_conf__bindgen_ty_1>())).vlan_id as *const _
+                as usize
         },
         0usize,
         concat!(
@@ -787,7 +788,10 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_conf__bindgen_ty_1)).pools as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_conf__bindgen_ty_1>())).pools as *const _
+                as usize
+        },
         8usize,
         concat!(
             "Offset of field: ",
@@ -810,7 +814,9 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
         concat!("Alignment of ", stringify!(rte_eth_vmdq_dcb_conf))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_conf)).nb_queue_pools as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_conf>())).nb_queue_pools as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -820,7 +826,10 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_conf)).enable_default_pool as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_conf>())).enable_default_pool as *const _
+                as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -830,7 +839,9 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_conf)).default_pool as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_conf>())).default_pool as *const _ as usize
+        },
         5usize,
         concat!(
             "Offset of field: ",
@@ -840,7 +851,9 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_conf)).nb_pool_maps as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_conf>())).nb_pool_maps as *const _ as usize
+        },
         6usize,
         concat!(
             "Offset of field: ",
@@ -850,7 +863,7 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_conf)).pool_map as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_vmdq_dcb_conf>())).pool_map as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -860,7 +873,7 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_conf)).dcb_tc as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_vmdq_dcb_conf>())).dcb_tc as *const _ as usize },
         1032usize,
         concat!(
             "Offset of field: ",
@@ -896,7 +909,7 @@ fn bindgen_test_layout_rte_eth_dcb_rx_conf() {
         concat!("Alignment of ", stringify!(rte_eth_dcb_rx_conf))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_dcb_rx_conf)).nb_tcs as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_dcb_rx_conf>())).nb_tcs as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -906,7 +919,7 @@ fn bindgen_test_layout_rte_eth_dcb_rx_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_dcb_rx_conf)).dcb_tc as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_dcb_rx_conf>())).dcb_tc as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -942,7 +955,9 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_tx_conf() {
         concat!("Alignment of ", stringify!(rte_eth_vmdq_dcb_tx_conf))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_tx_conf)).nb_queue_pools as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_vmdq_dcb_tx_conf>())).nb_queue_pools as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -952,7 +967,7 @@ fn bindgen_test_layout_rte_eth_vmdq_dcb_tx_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_dcb_tx_conf)).dcb_tc as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_vmdq_dcb_tx_conf>())).dcb_tc as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -988,7 +1003,7 @@ fn bindgen_test_layout_rte_eth_dcb_tx_conf() {
         concat!("Alignment of ", stringify!(rte_eth_dcb_tx_conf))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_dcb_tx_conf)).nb_tcs as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_dcb_tx_conf>())).nb_tcs as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -998,7 +1013,7 @@ fn bindgen_test_layout_rte_eth_dcb_tx_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_dcb_tx_conf)).dcb_tc as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_dcb_tx_conf>())).dcb_tc as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -1032,7 +1047,9 @@ fn bindgen_test_layout_rte_eth_vmdq_tx_conf() {
         concat!("Alignment of ", stringify!(rte_eth_vmdq_tx_conf))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_tx_conf)).nb_queue_pools as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_vmdq_tx_conf>())).nb_queue_pools as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1090,7 +1107,8 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(0 as *const rte_eth_vmdq_rx_conf__bindgen_ty_1)).vlan_id as *const _ as usize
+            &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf__bindgen_ty_1>())).vlan_id as *const _
+                as usize
         },
         0usize,
         concat!(
@@ -1101,7 +1119,10 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_rx_conf__bindgen_ty_1)).pools as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf__bindgen_ty_1>())).pools as *const _
+                as usize
+        },
         8usize,
         concat!(
             "Offset of field: ",
@@ -1124,7 +1145,9 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
         concat!("Alignment of ", stringify!(rte_eth_vmdq_rx_conf))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_rx_conf)).nb_queue_pools as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf>())).nb_queue_pools as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1134,7 +1157,10 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_rx_conf)).enable_default_pool as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf>())).enable_default_pool as *const _
+                as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -1144,7 +1170,9 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_rx_conf)).default_pool as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf>())).default_pool as *const _ as usize
+        },
         5usize,
         concat!(
             "Offset of field: ",
@@ -1154,7 +1182,9 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_rx_conf)).enable_loop_back as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf>())).enable_loop_back as *const _ as usize
+        },
         6usize,
         concat!(
             "Offset of field: ",
@@ -1164,7 +1194,9 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_rx_conf)).nb_pool_maps as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf>())).nb_pool_maps as *const _ as usize
+        },
         7usize,
         concat!(
             "Offset of field: ",
@@ -1174,7 +1206,7 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_rx_conf)).rx_mode as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf>())).rx_mode as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -1184,7 +1216,7 @@ fn bindgen_test_layout_rte_eth_vmdq_rx_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_vmdq_rx_conf)).pool_map as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_vmdq_rx_conf>())).pool_map as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -1254,7 +1286,7 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
         concat!("Alignment of ", stringify!(rte_eth_ipv4_flow))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_ipv4_flow)).src_ip as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_ipv4_flow>())).src_ip as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1264,7 +1296,7 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_ipv4_flow)).dst_ip as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_ipv4_flow>())).dst_ip as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -1274,7 +1306,7 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_ipv4_flow)).tos as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_ipv4_flow>())).tos as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -1284,7 +1316,7 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_ipv4_flow)).ttl as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_ipv4_flow>())).ttl as *const _ as usize },
         9usize,
         concat!(
             "Offset of field: ",
@@ -1294,7 +1326,7 @@ fn bindgen_test_layout_rte_eth_ipv4_flow() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_ipv4_flow)).proto as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_ipv4_flow>())).proto as *const _ as usize },
         10usize,
         concat!(
             "Offset of field: ",
@@ -1332,7 +1364,7 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
         concat!("Alignment of ", stringify!(rte_eth_ipv6_flow))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_ipv6_flow)).src_ip as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_ipv6_flow>())).src_ip as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1342,7 +1374,7 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_ipv6_flow)).dst_ip as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_ipv6_flow>())).dst_ip as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -1352,7 +1384,7 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_ipv6_flow)).tc as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_ipv6_flow>())).tc as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -1362,7 +1394,7 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_ipv6_flow)).proto as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_ipv6_flow>())).proto as *const _ as usize },
         33usize,
         concat!(
             "Offset of field: ",
@@ -1372,7 +1404,7 @@ fn bindgen_test_layout_rte_eth_ipv6_flow() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_ipv6_flow)).hop_limits as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_ipv6_flow>())).hop_limits as *const _ as usize },
         34usize,
         concat!(
             "Offset of field: ",
@@ -1419,7 +1451,9 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
         concat!("Alignment of ", stringify!(rte_eth_fdir_masks))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_fdir_masks)).vlan_tci_mask as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_fdir_masks>())).vlan_tci_mask as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1429,7 +1463,7 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_fdir_masks)).ipv4_mask as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_fdir_masks>())).ipv4_mask as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -1439,7 +1473,7 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_fdir_masks)).ipv6_mask as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_fdir_masks>())).ipv6_mask as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -1449,7 +1483,9 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_fdir_masks)).src_port_mask as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_fdir_masks>())).src_port_mask as *const _ as usize
+        },
         52usize,
         concat!(
             "Offset of field: ",
@@ -1459,7 +1495,9 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_fdir_masks)).dst_port_mask as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_fdir_masks>())).dst_port_mask as *const _ as usize
+        },
         54usize,
         concat!(
             "Offset of field: ",
@@ -1469,7 +1507,9 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_fdir_masks)).mac_addr_byte_mask as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_fdir_masks>())).mac_addr_byte_mask as *const _ as usize
+        },
         56usize,
         concat!(
             "Offset of field: ",
@@ -1479,7 +1519,9 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_fdir_masks)).tunnel_id_mask as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_fdir_masks>())).tunnel_id_mask as *const _ as usize
+        },
         60usize,
         concat!(
             "Offset of field: ",
@@ -1489,7 +1531,9 @@ fn bindgen_test_layout_rte_eth_fdir_masks() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_fdir_masks)).tunnel_type_mask as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_fdir_masks>())).tunnel_type_mask as *const _ as usize
+        },
         64usize,
         concat!(
             "Offset of field: ",
@@ -1532,7 +1576,7 @@ fn bindgen_test_layout_rte_eth_flex_payload_cfg() {
         concat!("Alignment of ", stringify!(rte_eth_flex_payload_cfg))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_flex_payload_cfg)).type_ as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_flex_payload_cfg>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1542,7 +1586,9 @@ fn bindgen_test_layout_rte_eth_flex_payload_cfg() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_flex_payload_cfg)).src_offset as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_flex_payload_cfg>())).src_offset as *const _ as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -1578,7 +1624,9 @@ fn bindgen_test_layout_rte_eth_fdir_flex_mask() {
         concat!("Alignment of ", stringify!(rte_eth_fdir_flex_mask))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_fdir_flex_mask)).flow_type as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_fdir_flex_mask>())).flow_type as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1588,7 +1636,7 @@ fn bindgen_test_layout_rte_eth_fdir_flex_mask() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_fdir_flex_mask)).mask as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_fdir_flex_mask>())).mask as *const _ as usize },
         2usize,
         concat!(
             "Offset of field: ",
@@ -1623,7 +1671,9 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
         concat!("Alignment of ", stringify!(rte_eth_fdir_flex_conf))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_fdir_flex_conf)).nb_payloads as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_fdir_flex_conf>())).nb_payloads as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1633,7 +1683,9 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_fdir_flex_conf)).nb_flexmasks as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_fdir_flex_conf>())).nb_flexmasks as *const _ as usize
+        },
         2usize,
         concat!(
             "Offset of field: ",
@@ -1643,7 +1695,7 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_fdir_flex_conf)).flex_set as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_fdir_flex_conf>())).flex_set as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -1653,7 +1705,9 @@ fn bindgen_test_layout_rte_eth_fdir_flex_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_fdir_flex_conf)).flex_mask as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_fdir_flex_conf>())).flex_mask as *const _ as usize
+        },
         292usize,
         concat!(
             "Offset of field: ",
@@ -1699,7 +1753,7 @@ fn bindgen_test_layout_rte_fdir_conf() {
         concat!("Alignment of ", stringify!(rte_fdir_conf))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_fdir_conf)).mode as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_fdir_conf>())).mode as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1709,7 +1763,7 @@ fn bindgen_test_layout_rte_fdir_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_fdir_conf)).pballoc as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_fdir_conf>())).pballoc as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -1719,7 +1773,7 @@ fn bindgen_test_layout_rte_fdir_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_fdir_conf)).status as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_fdir_conf>())).status as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -1729,7 +1783,7 @@ fn bindgen_test_layout_rte_fdir_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_fdir_conf)).drop_queue as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_fdir_conf>())).drop_queue as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -1739,7 +1793,7 @@ fn bindgen_test_layout_rte_fdir_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_fdir_conf)).mask as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_fdir_conf>())).mask as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -1749,7 +1803,7 @@ fn bindgen_test_layout_rte_fdir_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_fdir_conf)).flex_conf as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_fdir_conf>())).flex_conf as *const _ as usize },
         84usize,
         concat!(
             "Offset of field: ",
@@ -1786,7 +1840,7 @@ fn bindgen_test_layout_rte_intr_conf() {
         concat!("Alignment of ", stringify!(rte_intr_conf))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_intr_conf)).lsc as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_intr_conf>())).lsc as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1796,7 +1850,7 @@ fn bindgen_test_layout_rte_intr_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_intr_conf)).rxq as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_intr_conf>())).rxq as *const _ as usize },
         2usize,
         concat!(
             "Offset of field: ",
@@ -1864,7 +1918,9 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(rte_eth_conf__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_conf__bindgen_ty_1)).rss_conf as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_conf__bindgen_ty_1>())).rss_conf as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1874,7 +1930,10 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_conf__bindgen_ty_1)).vmdq_dcb_conf as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_conf__bindgen_ty_1>())).vmdq_dcb_conf as *const _
+                as usize
+        },
         24usize,
         concat!(
             "Offset of field: ",
@@ -1884,7 +1943,9 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_conf__bindgen_ty_1)).dcb_rx_conf as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_conf__bindgen_ty_1>())).dcb_rx_conf as *const _ as usize
+        },
         1064usize,
         concat!(
             "Offset of field: ",
@@ -1894,7 +1955,9 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_conf__bindgen_ty_1)).vmdq_rx_conf as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_conf__bindgen_ty_1>())).vmdq_rx_conf as *const _ as usize
+        },
         1080usize,
         concat!(
             "Offset of field: ",
@@ -1931,7 +1994,8 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(0 as *const rte_eth_conf__bindgen_ty_2)).vmdq_dcb_tx_conf as *const _ as usize
+            &(*(::std::ptr::null::<rte_eth_conf__bindgen_ty_2>())).vmdq_dcb_tx_conf as *const _
+                as usize
         },
         0usize,
         concat!(
@@ -1942,7 +2006,9 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_conf__bindgen_ty_2)).dcb_tx_conf as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_conf__bindgen_ty_2>())).dcb_tx_conf as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1952,7 +2018,9 @@ fn bindgen_test_layout_rte_eth_conf__bindgen_ty_2() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_conf__bindgen_ty_2)).vmdq_tx_conf as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_eth_conf__bindgen_ty_2>())).vmdq_tx_conf as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1980,7 +2048,7 @@ fn bindgen_test_layout_rte_eth_conf() {
         concat!("Alignment of ", stringify!(rte_eth_conf))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_conf)).link_speeds as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_conf>())).link_speeds as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -1990,7 +2058,7 @@ fn bindgen_test_layout_rte_eth_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_conf)).rxmode as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_conf>())).rxmode as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -2000,7 +2068,7 @@ fn bindgen_test_layout_rte_eth_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_conf)).txmode as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_conf>())).txmode as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -2010,7 +2078,7 @@ fn bindgen_test_layout_rte_eth_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_conf)).lpbk_mode as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_conf>())).lpbk_mode as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -2020,7 +2088,7 @@ fn bindgen_test_layout_rte_eth_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_conf)).rx_adv_conf as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_conf>())).rx_adv_conf as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -2030,7 +2098,7 @@ fn bindgen_test_layout_rte_eth_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_conf)).tx_adv_conf as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_conf>())).tx_adv_conf as *const _ as usize },
         2152usize,
         concat!(
             "Offset of field: ",
@@ -2040,7 +2108,7 @@ fn bindgen_test_layout_rte_eth_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_conf)).dcb_capability_en as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_conf>())).dcb_capability_en as *const _ as usize },
         2164usize,
         concat!(
             "Offset of field: ",
@@ -2050,7 +2118,7 @@ fn bindgen_test_layout_rte_eth_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_conf)).fdir_conf as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_conf>())).fdir_conf as *const _ as usize },
         2168usize,
         concat!(
             "Offset of field: ",
@@ -2060,7 +2128,7 @@ fn bindgen_test_layout_rte_eth_conf() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_eth_conf)).intr_conf as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_eth_conf>())).intr_conf as *const _ as usize },
         2940usize,
         concat!(
             "Offset of field: ",

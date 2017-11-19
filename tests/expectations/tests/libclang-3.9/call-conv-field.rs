@@ -26,7 +26,7 @@ fn bindgen_test_layout_JNINativeInterface_() {
         concat!("Alignment of ", stringify!(JNINativeInterface_))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const JNINativeInterface_)).GetVersion as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<JNINativeInterface_>())).GetVersion as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -36,7 +36,7 @@ fn bindgen_test_layout_JNINativeInterface_() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const JNINativeInterface_)).__hack as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<JNINativeInterface_>())).__hack as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",

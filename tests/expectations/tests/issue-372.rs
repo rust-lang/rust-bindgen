@@ -28,17 +28,17 @@ pub mod root {
             concat!("Alignment of ", stringify!(i))
         );
         assert_eq!(
-            unsafe { &(*(0 as *const i)).j as *const _ as usize },
+            unsafe { &(*(::std::ptr::null::<i>())).j as *const _ as usize },
             0usize,
             concat!("Offset of field: ", stringify!(i), "::", stringify!(j))
         );
         assert_eq!(
-            unsafe { &(*(0 as *const i)).k as *const _ as usize },
+            unsafe { &(*(::std::ptr::null::<i>())).k as *const _ as usize },
             8usize,
             concat!("Offset of field: ", stringify!(i), "::", stringify!(k))
         );
         assert_eq!(
-            unsafe { &(*(0 as *const i)).l as *const _ as usize },
+            unsafe { &(*(::std::ptr::null::<i>())).l as *const _ as usize },
             16usize,
             concat!("Offset of field: ", stringify!(i), "::", stringify!(l))
         );
@@ -66,7 +66,7 @@ pub mod root {
             concat!("Alignment of ", stringify!(d))
         );
         assert_eq!(
-            unsafe { &(*(0 as *const d)).m as *const _ as usize },
+            unsafe { &(*(::std::ptr::null::<d>())).m as *const _ as usize },
             0usize,
             concat!("Offset of field: ", stringify!(d), "::", stringify!(m))
         );
@@ -109,7 +109,7 @@ pub mod root {
             concat!("Alignment of ", stringify!(F))
         );
         assert_eq!(
-            unsafe { &(*(0 as *const F)).w as *const _ as usize },
+            unsafe { &(*(::std::ptr::null::<F>())).w as *const _ as usize },
             0usize,
             concat!("Offset of field: ", stringify!(F), "::", stringify!(w))
         );

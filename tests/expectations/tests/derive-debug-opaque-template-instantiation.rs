@@ -21,7 +21,7 @@ fn bindgen_test_layout_Instance() {
         concat!("Alignment of ", stringify!(Instance))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Instance)).val as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Instance>())).val as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

@@ -28,7 +28,7 @@ fn bindgen_test_layout_TestDouble() {
         concat!("Alignment of ", stringify!(TestDouble))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const TestDouble)).mMember as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<TestDouble>())).mMember as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -56,7 +56,7 @@ fn bindgen_test_layout_TestDoublePtr() {
         concat!("Alignment of ", stringify!(TestDoublePtr))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const TestDoublePtr)).mMember as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<TestDoublePtr>())).mMember as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -89,7 +89,7 @@ fn bindgen_test_layout_TestFloat() {
         concat!("Alignment of ", stringify!(TestFloat))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const TestFloat)).mMember as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<TestFloat>())).mMember as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -117,7 +117,7 @@ fn bindgen_test_layout_TestFloatPtr() {
         concat!("Alignment of ", stringify!(TestFloatPtr))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const TestFloatPtr)).mMember as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<TestFloatPtr>())).mMember as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
