@@ -23,7 +23,7 @@ fn bindgen_test_layout_C() {
         concat!("Alignment of ", stringify!(C))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const C)).large_array as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<C>())).large_array as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",

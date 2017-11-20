@@ -36,7 +36,7 @@ pub mod root {
             concat!("Alignment of ", stringify!(CapturingContentInfo))
         );
         assert_eq!(
-            unsafe { &(*(0 as *const CapturingContentInfo)).a as *const _ as usize },
+            unsafe { &(*(::std::ptr::null::<CapturingContentInfo>())).a as *const _ as usize },
             0usize,
             concat!(
                 "Offset of field: ",

@@ -39,7 +39,9 @@ pub mod root {
                 concat!("Alignment of ", stringify!(sentry))
             );
             assert_eq!(
-                unsafe { &(*(0 as *const sentry)).i_am_plain_sentry as *const _ as usize },
+                unsafe {
+                    &(*(::std::ptr::null::<sentry>())).i_am_plain_sentry as *const _ as usize
+                },
                 0usize,
                 concat!(
                     "Offset of field: ",
@@ -86,8 +88,8 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(0 as *const NotTemplateWrapper_sentry)).i_am_not_template_wrapper_sentry
-                        as *const _ as usize
+                    &(*(::std::ptr::null::<NotTemplateWrapper_sentry>()))
+                        .i_am_not_template_wrapper_sentry as *const _ as usize
                 },
                 0usize,
                 concat!(
@@ -122,7 +124,7 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(0 as *const InlineNotTemplateWrapper_sentry))
+                    &(*(::std::ptr::null::<InlineNotTemplateWrapper_sentry>()))
                         .i_am_inline_not_template_wrapper_sentry as *const _
                         as usize
                 },
@@ -225,7 +227,7 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(0 as *const OuterDoubleWrapper_InnerDoubleWrapper_sentry))
+                    &(*(::std::ptr::null::<OuterDoubleWrapper_InnerDoubleWrapper_sentry>()))
                         .i_am_double_wrapper_sentry as *const _ as usize
                 },
                 0usize,
@@ -272,7 +274,9 @@ pub mod root {
             );
             assert_eq!(
                 unsafe {
-                    &(*(0 as *const OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry))
+                    &(*(::std::ptr::null::<
+                        OuterDoubleInlineWrapper_InnerDoubleInlineWrapper_sentry,
+                    >()))
                         .i_am_double_wrapper_inline_sentry as *const _ as usize
                 },
                 0usize,
@@ -345,7 +349,10 @@ pub mod root {
             concat!("Alignment of ", stringify!(sentry))
         );
         assert_eq!(
-            unsafe { &(*(0 as *const sentry)).i_am_outside_namespace_sentry as *const _ as usize },
+            unsafe {
+                &(*(::std::ptr::null::<sentry>())).i_am_outside_namespace_sentry as *const _
+                    as usize
+            },
             0usize,
             concat!(
                 "Offset of field: ",

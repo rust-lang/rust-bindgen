@@ -29,7 +29,7 @@ fn bindgen_test_layout_foo__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(foo__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const foo__bindgen_ty_1)).a as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<foo__bindgen_ty_1>())).a as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -39,7 +39,7 @@ fn bindgen_test_layout_foo__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const foo__bindgen_ty_1)).b as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<foo__bindgen_ty_1>())).b as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -68,7 +68,7 @@ fn bindgen_test_layout_foo__bindgen_ty_2() {
         concat!("Alignment of ", stringify!(foo__bindgen_ty_2))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const foo__bindgen_ty_2)).a as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<foo__bindgen_ty_2>())).a as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -78,7 +78,7 @@ fn bindgen_test_layout_foo__bindgen_ty_2() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const foo__bindgen_ty_2)).b as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<foo__bindgen_ty_2>())).b as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -101,12 +101,12 @@ fn bindgen_test_layout_foo() {
         concat!("Alignment of ", stringify!(foo))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const foo)).bar as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<foo>())).bar as *const _ as usize },
         0usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(bar))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const foo)).baz as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<foo>())).baz as *const _ as usize },
         16usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(baz))
     );

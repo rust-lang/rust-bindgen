@@ -267,7 +267,8 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(0 as *const jsval_layout__bindgen_ty_2__bindgen_ty_1)).i32 as *const _ as usize
+            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>())).i32 as *const _
+                as usize
         },
         0usize,
         concat!(
@@ -279,7 +280,8 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(0 as *const jsval_layout__bindgen_ty_2__bindgen_ty_1)).u32 as *const _ as usize
+            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>())).u32 as *const _
+                as usize
         },
         0usize,
         concat!(
@@ -291,7 +293,8 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(0 as *const jsval_layout__bindgen_ty_2__bindgen_ty_1)).why as *const _ as usize
+            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>())).why as *const _
+                as usize
         },
         0usize,
         concat!(
@@ -320,7 +323,9 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
         concat!("Alignment of ", stringify!(jsval_layout__bindgen_ty_2))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const jsval_layout__bindgen_ty_2)).payload as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2>())).payload as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -348,7 +353,7 @@ fn bindgen_test_layout_jsval_layout() {
         concat!("Alignment of ", stringify!(jsval_layout))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const jsval_layout)).asBits as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<jsval_layout>())).asBits as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -358,7 +363,7 @@ fn bindgen_test_layout_jsval_layout() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const jsval_layout)).debugView as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<jsval_layout>())).debugView as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -368,7 +373,7 @@ fn bindgen_test_layout_jsval_layout() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const jsval_layout)).s as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<jsval_layout>())).s as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -378,7 +383,7 @@ fn bindgen_test_layout_jsval_layout() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const jsval_layout)).asDouble as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<jsval_layout>())).asDouble as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -388,7 +393,7 @@ fn bindgen_test_layout_jsval_layout() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const jsval_layout)).asPtr as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<jsval_layout>())).asPtr as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -398,7 +403,7 @@ fn bindgen_test_layout_jsval_layout() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const jsval_layout)).asWord as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<jsval_layout>())).asWord as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -408,7 +413,7 @@ fn bindgen_test_layout_jsval_layout() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const jsval_layout)).asUIntPtr as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<jsval_layout>())).asUIntPtr as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -441,7 +446,7 @@ fn bindgen_test_layout_Value() {
         concat!("Alignment of ", stringify!(Value))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Value)).data as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Value>())).data as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

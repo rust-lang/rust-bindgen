@@ -23,7 +23,7 @@ fn bindgen_test_layout_NoDebug() {
         concat!("Size of: ", stringify!(NoDebug))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const NoDebug)).c as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<NoDebug>())).c as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -62,7 +62,7 @@ fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
         concat!("Size of: ", stringify!(ShouldDeriveDebugButDoesNot))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ShouldDeriveDebugButDoesNot)).c as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ShouldDeriveDebugButDoesNot>())).c as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -72,7 +72,7 @@ fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ShouldDeriveDebugButDoesNot)).d as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ShouldDeriveDebugButDoesNot>())).d as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",

@@ -33,7 +33,7 @@ fn bindgen_test_layout_InstantiateIt() {
         concat!("Alignment of ", stringify!(InstantiateIt))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const InstantiateIt)).m_list as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<InstantiateIt>())).m_list as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

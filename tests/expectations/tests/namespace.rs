@@ -46,7 +46,7 @@ pub mod root {
                 concat!("Alignment of ", stringify!(A))
             );
             assert_eq!(
-                unsafe { &(*(0 as *const A)).b as *const _ as usize },
+                unsafe { &(*(::std::ptr::null::<A>())).b as *const _ as usize },
                 0usize,
                 concat!("Offset of field: ", stringify!(A), "::", stringify!(b))
             );

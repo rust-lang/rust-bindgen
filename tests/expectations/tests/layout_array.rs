@@ -73,7 +73,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         concat!("Size of: ", stringify!(rte_mempool_ops))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_mempool_ops)).name as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_mempool_ops>())).name as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -83,7 +83,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_mempool_ops)).alloc as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_mempool_ops>())).alloc as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -93,7 +93,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_mempool_ops)).free as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_mempool_ops>())).free as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -103,7 +103,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_mempool_ops)).enqueue as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_mempool_ops>())).enqueue as *const _ as usize },
         48usize,
         concat!(
             "Offset of field: ",
@@ -113,7 +113,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_mempool_ops)).dequeue as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_mempool_ops>())).dequeue as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -123,7 +123,7 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_mempool_ops)).get_count as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_mempool_ops>())).get_count as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -165,7 +165,7 @@ fn bindgen_test_layout_rte_spinlock_t() {
         concat!("Alignment of ", stringify!(rte_spinlock_t))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_spinlock_t)).locked as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_spinlock_t>())).locked as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -201,7 +201,7 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         concat!("Size of: ", stringify!(rte_mempool_ops_table))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_mempool_ops_table)).sl as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_mempool_ops_table>())).sl as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -211,7 +211,7 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_mempool_ops_table)).num_ops as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_mempool_ops_table>())).num_ops as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -221,7 +221,7 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_mempool_ops_table)).ops as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_mempool_ops_table>())).ops as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -263,7 +263,9 @@ fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(malloc_heap__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const malloc_heap__bindgen_ty_1)).lh_first as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<malloc_heap__bindgen_ty_1>())).lh_first as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -286,7 +288,7 @@ fn bindgen_test_layout_malloc_heap() {
         concat!("Size of: ", stringify!(malloc_heap))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const malloc_heap)).lock as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<malloc_heap>())).lock as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -296,7 +298,7 @@ fn bindgen_test_layout_malloc_heap() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const malloc_heap)).free_head as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<malloc_heap>())).free_head as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -306,7 +308,7 @@ fn bindgen_test_layout_malloc_heap() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const malloc_heap)).alloc_count as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<malloc_heap>())).alloc_count as *const _ as usize },
         112usize,
         concat!(
             "Offset of field: ",
@@ -316,7 +318,7 @@ fn bindgen_test_layout_malloc_heap() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const malloc_heap)).total_size as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<malloc_heap>())).total_size as *const _ as usize },
         120usize,
         concat!(
             "Offset of field: ",

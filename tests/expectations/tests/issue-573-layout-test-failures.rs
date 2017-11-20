@@ -27,7 +27,7 @@ fn bindgen_test_layout_AutoIdVector() {
         concat!("Alignment of ", stringify!(AutoIdVector))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const AutoIdVector)).ar as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<AutoIdVector>())).ar as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

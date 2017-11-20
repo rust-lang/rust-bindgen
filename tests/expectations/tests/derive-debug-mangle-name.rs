@@ -31,7 +31,7 @@ fn bindgen_test_layout_perf_event_attr__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(perf_event_attr__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const perf_event_attr__bindgen_ty_1)).b as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<perf_event_attr__bindgen_ty_1>())).b as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -41,7 +41,7 @@ fn bindgen_test_layout_perf_event_attr__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const perf_event_attr__bindgen_ty_1)).c as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<perf_event_attr__bindgen_ty_1>())).c as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -74,7 +74,7 @@ fn bindgen_test_layout_perf_event_attr() {
         concat!("Alignment of ", stringify!(perf_event_attr))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const perf_event_attr)).type_ as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<perf_event_attr>())).type_ as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -84,7 +84,7 @@ fn bindgen_test_layout_perf_event_attr() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const perf_event_attr)).a as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<perf_event_attr>())).a as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",

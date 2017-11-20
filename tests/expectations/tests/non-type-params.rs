@@ -26,7 +26,7 @@ fn bindgen_test_layout_UsesArray() {
         concat!("Alignment of ", stringify!(UsesArray))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const UsesArray)).array_char_16 as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<UsesArray>())).array_char_16 as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -36,7 +36,7 @@ fn bindgen_test_layout_UsesArray() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const UsesArray)).array_bool_8 as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<UsesArray>())).array_bool_8 as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -46,7 +46,7 @@ fn bindgen_test_layout_UsesArray() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const UsesArray)).array_int_4 as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<UsesArray>())).array_int_4 as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",

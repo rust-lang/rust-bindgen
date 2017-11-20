@@ -25,7 +25,9 @@ fn bindgen_test_layout_WouldBeCopyButWeAreNotDerivingCopy() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const WouldBeCopyButWeAreNotDerivingCopy)).x as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<WouldBeCopyButWeAreNotDerivingCopy>())).x as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",

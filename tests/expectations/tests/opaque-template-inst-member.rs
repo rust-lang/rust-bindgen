@@ -29,7 +29,7 @@ fn bindgen_test_layout_ContainsOpaqueTemplate() {
         concat!("Alignment of ", stringify!(ContainsOpaqueTemplate))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ContainsOpaqueTemplate)).mBlah as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ContainsOpaqueTemplate>())).mBlah as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -39,7 +39,7 @@ fn bindgen_test_layout_ContainsOpaqueTemplate() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ContainsOpaqueTemplate)).mBaz as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ContainsOpaqueTemplate>())).mBaz as *const _ as usize },
         404usize,
         concat!(
             "Offset of field: ",
@@ -79,7 +79,7 @@ fn bindgen_test_layout_InheritsOpaqueTemplate() {
         concat!("Alignment of ", stringify!(InheritsOpaqueTemplate))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const InheritsOpaqueTemplate)).wow as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<InheritsOpaqueTemplate>())).wow as *const _ as usize },
         408usize,
         concat!(
             "Offset of field: ",

@@ -103,12 +103,12 @@ fn bindgen_test_layout_C() {
         concat!("Alignment of ", stringify!(C))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const C)).a as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<C>())).a as *const _ as usize },
         0usize,
         concat!("Offset of field: ", stringify!(C), "::", stringify!(a))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const C)).big_array as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<C>())).big_array as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -152,7 +152,7 @@ fn bindgen_test_layout_C_with_zero_length_array() {
         concat!("Alignment of ", stringify!(C_with_zero_length_array))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const C_with_zero_length_array)).a as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<C_with_zero_length_array>())).a as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -162,7 +162,9 @@ fn bindgen_test_layout_C_with_zero_length_array() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const C_with_zero_length_array)).big_array as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<C_with_zero_length_array>())).big_array as *const _ as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -173,7 +175,8 @@ fn bindgen_test_layout_C_with_zero_length_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(0 as *const C_with_zero_length_array)).zero_length_array as *const _ as usize
+            &(*(::std::ptr::null::<C_with_zero_length_array>())).zero_length_array as *const _
+                as usize
         },
         37usize,
         concat!(
@@ -208,7 +211,7 @@ fn bindgen_test_layout_C_with_zero_length_array_2() {
         concat!("Alignment of ", stringify!(C_with_zero_length_array_2))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const C_with_zero_length_array_2)).a as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<C_with_zero_length_array_2>())).a as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -219,7 +222,8 @@ fn bindgen_test_layout_C_with_zero_length_array_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(0 as *const C_with_zero_length_array_2)).zero_length_array as *const _ as usize
+            &(*(::std::ptr::null::<C_with_zero_length_array_2>())).zero_length_array as *const _
+                as usize
         },
         4usize,
         concat!(
@@ -348,7 +352,7 @@ fn bindgen_test_layout_WithDtor() {
         concat!("Alignment of ", stringify!(WithDtor))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const WithDtor)).b as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<WithDtor>())).b as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -401,12 +405,12 @@ fn bindgen_test_layout_Union() {
         concat!("Alignment of ", stringify!(Union))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Union)).d as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Union>())).d as *const _ as usize },
         0usize,
         concat!("Offset of field: ", stringify!(Union), "::", stringify!(d))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Union)).i as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Union>())).i as *const _ as usize },
         0usize,
         concat!("Offset of field: ", stringify!(Union), "::", stringify!(i))
     );
@@ -434,7 +438,7 @@ fn bindgen_test_layout_WithUnion() {
         concat!("Alignment of ", stringify!(WithUnion))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const WithUnion)).data as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<WithUnion>())).data as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

@@ -37,7 +37,9 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(foo__bindgen_ty_1__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const foo__bindgen_ty_1__bindgen_ty_1)).c1 as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_1>())).c1 as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -47,7 +49,9 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const foo__bindgen_ty_1__bindgen_ty_1)).c2 as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_1>())).c2 as *const _ as usize
+        },
         2usize,
         concat!(
             "Offset of field: ",
@@ -78,7 +82,9 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_2() {
         concat!("Alignment of ", stringify!(foo__bindgen_ty_1__bindgen_ty_2))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const foo__bindgen_ty_1__bindgen_ty_2)).d1 as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_2>())).d1 as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -88,7 +94,9 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_2() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const foo__bindgen_ty_1__bindgen_ty_2)).d2 as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_2>())).d2 as *const _ as usize
+        },
         1usize,
         concat!(
             "Offset of field: ",
@@ -98,7 +106,9 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_2() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const foo__bindgen_ty_1__bindgen_ty_2)).d3 as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_2>())).d3 as *const _ as usize
+        },
         2usize,
         concat!(
             "Offset of field: ",
@@ -108,7 +118,9 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_2() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const foo__bindgen_ty_1__bindgen_ty_2)).d4 as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_2>())).d4 as *const _ as usize
+        },
         3usize,
         concat!(
             "Offset of field: ",
@@ -131,7 +143,7 @@ fn bindgen_test_layout_foo__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(foo__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const foo__bindgen_ty_1)).b as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<foo__bindgen_ty_1>())).b as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -159,7 +171,7 @@ fn bindgen_test_layout_foo() {
         concat!("Alignment of ", stringify!(foo))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const foo)).a as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<foo>())).a as *const _ as usize },
         0usize,
         concat!("Offset of field: ", stringify!(foo), "::", stringify!(a))
     );

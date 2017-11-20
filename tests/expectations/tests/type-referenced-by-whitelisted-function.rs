@@ -22,7 +22,7 @@ fn bindgen_test_layout_dl_phdr_info() {
         concat!("Alignment of ", stringify!(dl_phdr_info))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const dl_phdr_info)).x as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<dl_phdr_info>())).x as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

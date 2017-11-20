@@ -24,7 +24,7 @@ fn bindgen_test_layout_Nice() {
         concat!("Alignment of ", stringify!(Nice))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Nice)).pointer as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Nice>())).pointer as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -34,7 +34,7 @@ fn bindgen_test_layout_Nice() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Nice)).large_array as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Nice>())).large_array as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",

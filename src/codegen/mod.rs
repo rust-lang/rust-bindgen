@@ -1791,7 +1791,7 @@ impl CodeGenerator for CompInfo {
                                         Some(quote! {
                                             assert_eq!(
                                                 unsafe {
-                                                    &(*(0 as *const #canonical_ident)).#field_name as *const _ as usize
+                                                    &(*(::#prefix::ptr::null::<#canonical_ident>())).#field_name as *const _ as usize
                                                 },
                                                 #field_offset,
                                                 concat!("Offset of field: ", stringify!(#canonical_ident), "::", stringify!(#field_name))

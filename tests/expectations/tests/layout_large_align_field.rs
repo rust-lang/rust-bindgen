@@ -79,7 +79,7 @@ fn bindgen_test_layout_ip_frag() {
         concat!("Alignment of ", stringify!(ip_frag))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag)).ofs as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag>())).ofs as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -89,7 +89,7 @@ fn bindgen_test_layout_ip_frag() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag)).len as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag>())).len as *const _ as usize },
         2usize,
         concat!(
             "Offset of field: ",
@@ -99,7 +99,7 @@ fn bindgen_test_layout_ip_frag() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag)).mb as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag>())).mb as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -138,7 +138,7 @@ fn bindgen_test_layout_ip_frag_key() {
         concat!("Alignment of ", stringify!(ip_frag_key))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_key)).src_dst as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag_key>())).src_dst as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -148,7 +148,7 @@ fn bindgen_test_layout_ip_frag_key() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_key)).id as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag_key>())).id as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -158,7 +158,7 @@ fn bindgen_test_layout_ip_frag_key() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_key)).key_len as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag_key>())).key_len as *const _ as usize },
         36usize,
         concat!(
             "Offset of field: ",
@@ -208,7 +208,9 @@ fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(ip_frag_pkt__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_pkt__bindgen_ty_1)).tqe_next as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ip_frag_pkt__bindgen_ty_1>())).tqe_next as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -218,7 +220,9 @@ fn bindgen_test_layout_ip_frag_pkt__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_pkt__bindgen_ty_1)).tqe_prev as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ip_frag_pkt__bindgen_ty_1>())).tqe_prev as *const _ as usize
+        },
         8usize,
         concat!(
             "Offset of field: ",
@@ -241,7 +245,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
         concat!("Size of: ", stringify!(ip_frag_pkt))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_pkt)).lru as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag_pkt>())).lru as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -251,7 +255,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_pkt)).key as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag_pkt>())).key as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -261,7 +265,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_pkt)).start as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag_pkt>())).start as *const _ as usize },
         56usize,
         concat!(
             "Offset of field: ",
@@ -271,7 +275,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_pkt)).total_size as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag_pkt>())).total_size as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -281,7 +285,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_pkt)).frag_size as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag_pkt>())).frag_size as *const _ as usize },
         68usize,
         concat!(
             "Offset of field: ",
@@ -291,7 +295,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_pkt)).last_idx as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag_pkt>())).last_idx as *const _ as usize },
         72usize,
         concat!(
             "Offset of field: ",
@@ -301,7 +305,7 @@ fn bindgen_test_layout_ip_frag_pkt() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_pkt)).frags as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag_pkt>())).frags as *const _ as usize },
         80usize,
         concat!(
             "Offset of field: ",
@@ -335,7 +339,7 @@ fn bindgen_test_layout_ip_pkt_list() {
         concat!("Alignment of ", stringify!(ip_pkt_list))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_pkt_list)).tqh_first as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_pkt_list>())).tqh_first as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -345,7 +349,7 @@ fn bindgen_test_layout_ip_pkt_list() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_pkt_list)).tqh_last as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_pkt_list>())).tqh_last as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -386,7 +390,7 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
         concat!("Size of: ", stringify!(ip_frag_tbl_stat))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_tbl_stat)).find_num as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag_tbl_stat>())).find_num as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -396,7 +400,7 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_tbl_stat)).add_num as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag_tbl_stat>())).add_num as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -406,7 +410,7 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_tbl_stat)).del_num as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag_tbl_stat>())).del_num as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -416,7 +420,7 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_tbl_stat)).reuse_num as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag_tbl_stat>())).reuse_num as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -426,7 +430,7 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_tbl_stat)).fail_total as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag_tbl_stat>())).fail_total as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -436,7 +440,7 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const ip_frag_tbl_stat)).fail_nospace as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<ip_frag_tbl_stat>())).fail_nospace as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -486,7 +490,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         concat!("Size of: ", stringify!(rte_ip_frag_tbl))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ip_frag_tbl)).max_cycles as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_ip_frag_tbl>())).max_cycles as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -496,7 +500,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ip_frag_tbl)).entry_mask as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_ip_frag_tbl>())).entry_mask as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -506,7 +510,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ip_frag_tbl)).max_entries as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_ip_frag_tbl>())).max_entries as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",
@@ -516,7 +520,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ip_frag_tbl)).use_entries as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_ip_frag_tbl>())).use_entries as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",
@@ -526,7 +530,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ip_frag_tbl)).bucket_entries as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_ip_frag_tbl>())).bucket_entries as *const _ as usize },
         20usize,
         concat!(
             "Offset of field: ",
@@ -536,7 +540,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ip_frag_tbl)).nb_entries as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_ip_frag_tbl>())).nb_entries as *const _ as usize },
         24usize,
         concat!(
             "Offset of field: ",
@@ -546,7 +550,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ip_frag_tbl)).nb_buckets as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_ip_frag_tbl>())).nb_buckets as *const _ as usize },
         28usize,
         concat!(
             "Offset of field: ",
@@ -556,7 +560,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ip_frag_tbl)).last as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_ip_frag_tbl>())).last as *const _ as usize },
         32usize,
         concat!(
             "Offset of field: ",
@@ -566,7 +570,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ip_frag_tbl)).lru as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_ip_frag_tbl>())).lru as *const _ as usize },
         40usize,
         concat!(
             "Offset of field: ",
@@ -576,7 +580,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ip_frag_tbl)).stat as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_ip_frag_tbl>())).stat as *const _ as usize },
         64usize,
         concat!(
             "Offset of field: ",
@@ -586,7 +590,7 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const rte_ip_frag_tbl)).pkt as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<rte_ip_frag_tbl>())).pkt as *const _ as usize },
         128usize,
         concat!(
             "Offset of field: ",

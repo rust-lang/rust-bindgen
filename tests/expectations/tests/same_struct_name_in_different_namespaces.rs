@@ -28,7 +28,7 @@ fn bindgen_test_layout_JS_shadow_Zone() {
         concat!("Alignment of ", stringify!(JS_shadow_Zone))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const JS_shadow_Zone)).x as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<JS_shadow_Zone>())).x as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -38,7 +38,7 @@ fn bindgen_test_layout_JS_shadow_Zone() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const JS_shadow_Zone)).y as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<JS_shadow_Zone>())).y as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",

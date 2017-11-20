@@ -67,7 +67,7 @@ fn bindgen_test_layout_WithBigArray() {
         concat!("Alignment of ", stringify!(WithBigArray))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const WithBigArray)).a as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<WithBigArray>())).a as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -77,7 +77,7 @@ fn bindgen_test_layout_WithBigArray() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const WithBigArray)).b as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<WithBigArray>())).b as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -117,7 +117,7 @@ fn bindgen_test_layout_WithBigArray2() {
         concat!("Alignment of ", stringify!(WithBigArray2))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const WithBigArray2)).a as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<WithBigArray2>())).a as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -127,7 +127,7 @@ fn bindgen_test_layout_WithBigArray2() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const WithBigArray2)).b as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<WithBigArray2>())).b as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -162,7 +162,7 @@ fn bindgen_test_layout_WithBigMember() {
         concat!("Alignment of ", stringify!(WithBigMember))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const WithBigMember)).a as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<WithBigMember>())).a as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -172,7 +172,7 @@ fn bindgen_test_layout_WithBigMember() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const WithBigMember)).b as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<WithBigMember>())).b as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

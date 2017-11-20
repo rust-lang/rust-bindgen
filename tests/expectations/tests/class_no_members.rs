@@ -58,7 +58,9 @@ fn bindgen_test_layout_whatever_child_with_member() {
         concat!("Alignment of ", stringify!(whatever_child_with_member))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const whatever_child_with_member)).m_member as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<whatever_child_with_member>())).m_member as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",

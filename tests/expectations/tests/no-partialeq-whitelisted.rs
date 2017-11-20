@@ -22,7 +22,7 @@ fn bindgen_test_layout_NoPartialEq() {
         concat!("Alignment of ", stringify!(NoPartialEq))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const NoPartialEq)).i as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<NoPartialEq>())).i as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",

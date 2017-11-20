@@ -29,7 +29,7 @@ fn bindgen_test_layout_mbedtls_mpi() {
         concat!("Alignment of ", stringify!(mbedtls_mpi))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const mbedtls_mpi)).s as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<mbedtls_mpi>())).s as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -39,7 +39,7 @@ fn bindgen_test_layout_mbedtls_mpi() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const mbedtls_mpi)).n as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<mbedtls_mpi>())).n as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -49,7 +49,7 @@ fn bindgen_test_layout_mbedtls_mpi() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const mbedtls_mpi)).p as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<mbedtls_mpi>())).p as *const _ as usize },
         16usize,
         concat!(
             "Offset of field: ",

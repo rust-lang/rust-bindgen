@@ -22,7 +22,7 @@ fn bindgen_test_layout_Calc() {
         concat!("Alignment of ", stringify!(Calc))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Calc)).w as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Calc>())).w as *const _ as usize },
         0usize,
         concat!("Offset of field: ", stringify!(Calc), "::", stringify!(w))
     );
@@ -69,7 +69,7 @@ fn bindgen_test_layout_Test_Size() {
         concat!("Alignment of ", stringify!(Test_Size))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Test_Size)).mWidth as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Test_Size>())).mWidth as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -79,7 +79,7 @@ fn bindgen_test_layout_Test_Size() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const Test_Size)).mHeight as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<Test_Size>())).mHeight as *const _ as usize },
         4usize,
         concat!(
             "Offset of field: ",

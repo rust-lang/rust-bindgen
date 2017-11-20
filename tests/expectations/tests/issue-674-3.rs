@@ -32,7 +32,7 @@ pub mod root {
             concat!("Alignment of ", stringify!(a))
         );
         assert_eq!(
-            unsafe { &(*(0 as *const a)).b as *const _ as usize },
+            unsafe { &(*(::std::ptr::null::<a>())).b as *const _ as usize },
             0usize,
             concat!("Offset of field: ", stringify!(a), "::", stringify!(b))
         );
@@ -55,7 +55,7 @@ pub mod root {
             concat!("Alignment of ", stringify!(nsCSSValue))
         );
         assert_eq!(
-            unsafe { &(*(0 as *const nsCSSValue)).c as *const _ as usize },
+            unsafe { &(*(::std::ptr::null::<nsCSSValue>())).c as *const _ as usize },
             0usize,
             concat!(
                 "Offset of field: ",

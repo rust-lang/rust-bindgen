@@ -50,7 +50,7 @@ fn bindgen_test_layout_WithOpaquePtr() {
         concat!("Alignment of ", stringify!(WithOpaquePtr))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const WithOpaquePtr)).whatever as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<WithOpaquePtr>())).whatever as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -60,7 +60,7 @@ fn bindgen_test_layout_WithOpaquePtr() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const WithOpaquePtr)).other as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<WithOpaquePtr>())).other as *const _ as usize },
         8usize,
         concat!(
             "Offset of field: ",
@@ -70,7 +70,7 @@ fn bindgen_test_layout_WithOpaquePtr() {
         )
     );
     assert_eq!(
-        unsafe { &(*(0 as *const WithOpaquePtr)).t as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<WithOpaquePtr>())).t as *const _ as usize },
         12usize,
         concat!(
             "Offset of field: ",

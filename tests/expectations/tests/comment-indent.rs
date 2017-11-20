@@ -80,7 +80,7 @@ pub mod root {
                 concat!("Alignment of ", stringify!(Baz))
             );
             assert_eq!(
-                unsafe { &(*(0 as *const Baz)).member as *const _ as usize },
+                unsafe { &(*(::std::ptr::null::<Baz>())).member as *const _ as usize },
                 0usize,
                 concat!(
                     "Offset of field: ",

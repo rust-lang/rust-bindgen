@@ -23,7 +23,7 @@ fn bindgen_test_layout_nsTArray_base() {
         concat!("Alignment of ", stringify!(nsTArray_base))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const nsTArray_base)).d as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<nsTArray_base>())).d as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
@@ -66,7 +66,7 @@ fn bindgen_test_layout_nsIContent() {
         concat!("Alignment of ", stringify!(nsIContent))
     );
     assert_eq!(
-        unsafe { &(*(0 as *const nsIContent)).foo as *const _ as usize },
+        unsafe { &(*(::std::ptr::null::<nsIContent>())).foo as *const _ as usize },
         0usize,
         concat!(
             "Offset of field: ",
