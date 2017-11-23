@@ -121,6 +121,24 @@ struct Sixth {
                 unsigned char nMonthDay);
 };
 
+struct Seventh {
+    bool first_one_bit : 1;
+    unsigned int second_thirty_bits : 30;
+    unsigned short third_two_bits : 2;
+    unsigned int fourth_thirty_bits : 30;
+    unsigned short fifth_two_bits : 2;
+    bool sixth_one_bit : 1;
+    unsigned int seventh_thirty_bits : 30;
+
+    /// Returns true if the bitfields match the arguments, false otherwise.
+    bool assert(bool first,
+                int second,
+                unsigned short third,
+                unsigned int fourth,
+                unsigned short fifth,
+                bool sixth,
+                int seventh);
+};
 
 } // namespace bitfields
 

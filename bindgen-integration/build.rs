@@ -20,7 +20,7 @@ impl ParseCallbacks for MacroCallback {
 }
 
 fn main() {
-    gcc::Config::new()
+    gcc::Build::new()
         .cpp(true)
         .file("cpp/Test.cc")
         .compile("libtest.a");

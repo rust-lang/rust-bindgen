@@ -5,6 +5,85 @@
 
 
 #[repr(C)]
+#[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub struct __BindgenBitfieldUnit<Storage, Align>
+where
+    Storage: AsRef<[u8]> + AsMut<[u8]>,
+{
+    storage: Storage,
+    align: [Align; 0],
+}
+
+impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
+where
+    Storage: AsRef<[u8]> + AsMut<[u8]>,
+{
+    #[inline]
+    pub fn new(storage: Storage) -> Self {
+        Self { storage, align: [] }
+    }
+
+    #[inline]
+    pub fn get_bit(&self, index: usize) -> bool {
+        debug_assert!(index / 8 < self.storage.as_ref().len());
+
+        let byte_index = index / 8;
+        let byte = self.storage.as_ref()[byte_index];
+
+        let bit_index = index % 8;
+        let mask = 1 << bit_index;
+
+        byte & mask == mask
+    }
+
+    #[inline]
+    pub fn set_bit(&mut self, index: usize, val: bool) {
+        debug_assert!(index / 8 < self.storage.as_ref().len());
+
+        let byte_index = index / 8;
+        let byte = &mut self.storage.as_mut()[byte_index];
+
+        let bit_index = index % 8;
+        let mask = 1 << bit_index;
+
+        if val {
+            *byte |= mask;
+        } else {
+            *byte &= !mask;
+        }
+    }
+
+    #[inline]
+    pub fn get(&self, bit_offset: usize, bit_width: u8) -> u64 {
+        debug_assert!(bit_width <= 64);
+        debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
+        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+
+        let mut val = 0;
+
+        for i in 0..(bit_width as usize) {
+            if self.get_bit(i + bit_offset) {
+                val |= 1 << i;
+            }
+        }
+
+        val
+    }
+
+    #[inline]
+    pub fn set(&mut self, bit_offset: usize, bit_width: u8, val: u64) {
+        debug_assert!(bit_width <= 64);
+        debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
+        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+
+        for i in 0..(bit_width as usize) {
+            let mask = 1 << i;
+            let val_bit_is_set = val & mask == mask;
+            self.set_bit(i + bit_offset, val_bit_is_set);
+        }
+    }
+}
+#[repr(C)]
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
 impl<T> __BindgenUnionField<T> {
     #[inline]
@@ -103,7 +182,7 @@ pub struct rte_eth_rxmode {
     pub max_rx_pkt_len: u32,
     /// < hdr buf size (header_split enabled).
     pub split_hdr_size: u16,
-    pub _bitfield_1: [u8; 2usize],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize], u8>,
 }
 #[test]
 fn bindgen_test_layout_rte_eth_rxmode() {
@@ -161,326 +240,101 @@ impl Default for rte_eth_rxmode {
 impl rte_eth_rxmode {
     #[inline]
     pub fn header_split(&self) -> u16 {
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        let mask = 0x1 as u16;
-        let val = (unit_field_val & mask) >> 0usize;
-        unsafe { ::std::mem::transmute(val as u16) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u16) }
     }
     #[inline]
     pub fn set_header_split(&mut self, val: u16) {
-        let mask = 0x1 as u16;
-        let val = val as u16 as u16;
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 0usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                2usize,
-            );
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
         }
     }
     #[inline]
     pub fn hw_ip_checksum(&self) -> u16 {
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        let mask = 0x2 as u16;
-        let val = (unit_field_val & mask) >> 1usize;
-        unsafe { ::std::mem::transmute(val as u16) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u16) }
     }
     #[inline]
     pub fn set_hw_ip_checksum(&mut self, val: u16) {
-        let mask = 0x2 as u16;
-        let val = val as u16 as u16;
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 1usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                2usize,
-            );
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set(1usize, 1u8, val as u64)
         }
     }
     #[inline]
     pub fn hw_vlan_filter(&self) -> u16 {
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        let mask = 0x4 as u16;
-        let val = (unit_field_val & mask) >> 2usize;
-        unsafe { ::std::mem::transmute(val as u16) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u16) }
     }
     #[inline]
     pub fn set_hw_vlan_filter(&mut self, val: u16) {
-        let mask = 0x4 as u16;
-        let val = val as u16 as u16;
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 2usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                2usize,
-            );
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set(2usize, 1u8, val as u64)
         }
     }
     #[inline]
     pub fn hw_vlan_strip(&self) -> u16 {
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        let mask = 0x8 as u16;
-        let val = (unit_field_val & mask) >> 3usize;
-        unsafe { ::std::mem::transmute(val as u16) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(3usize, 1u8) as u16) }
     }
     #[inline]
     pub fn set_hw_vlan_strip(&mut self, val: u16) {
-        let mask = 0x8 as u16;
-        let val = val as u16 as u16;
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 3usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                2usize,
-            );
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set(3usize, 1u8, val as u64)
         }
     }
     #[inline]
     pub fn hw_vlan_extend(&self) -> u16 {
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        let mask = 0x10 as u16;
-        let val = (unit_field_val & mask) >> 4usize;
-        unsafe { ::std::mem::transmute(val as u16) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(4usize, 1u8) as u16) }
     }
     #[inline]
     pub fn set_hw_vlan_extend(&mut self, val: u16) {
-        let mask = 0x10 as u16;
-        let val = val as u16 as u16;
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 4usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                2usize,
-            );
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set(4usize, 1u8, val as u64)
         }
     }
     #[inline]
     pub fn jumbo_frame(&self) -> u16 {
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        let mask = 0x20 as u16;
-        let val = (unit_field_val & mask) >> 5usize;
-        unsafe { ::std::mem::transmute(val as u16) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(5usize, 1u8) as u16) }
     }
     #[inline]
     pub fn set_jumbo_frame(&mut self, val: u16) {
-        let mask = 0x20 as u16;
-        let val = val as u16 as u16;
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 5usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                2usize,
-            );
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set(5usize, 1u8, val as u64)
         }
     }
     #[inline]
     pub fn hw_strip_crc(&self) -> u16 {
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        let mask = 0x40 as u16;
-        let val = (unit_field_val & mask) >> 6usize;
-        unsafe { ::std::mem::transmute(val as u16) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(6usize, 1u8) as u16) }
     }
     #[inline]
     pub fn set_hw_strip_crc(&mut self, val: u16) {
-        let mask = 0x40 as u16;
-        let val = val as u16 as u16;
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 6usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                2usize,
-            );
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set(6usize, 1u8, val as u64)
         }
     }
     #[inline]
     pub fn enable_scatter(&self) -> u16 {
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        let mask = 0x80 as u16;
-        let val = (unit_field_val & mask) >> 7usize;
-        unsafe { ::std::mem::transmute(val as u16) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(7usize, 1u8) as u16) }
     }
     #[inline]
     pub fn set_enable_scatter(&mut self, val: u16) {
-        let mask = 0x80 as u16;
-        let val = val as u16 as u16;
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 7usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                2usize,
-            );
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set(7usize, 1u8, val as u64)
         }
     }
     #[inline]
     pub fn enable_lro(&self) -> u16 {
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        let mask = 0x100 as u16;
-        let val = (unit_field_val & mask) >> 8usize;
-        unsafe { ::std::mem::transmute(val as u16) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(8usize, 1u8) as u16) }
     }
     #[inline]
     pub fn set_enable_lro(&mut self, val: u16) {
-        let mask = 0x100 as u16;
-        let val = val as u16 as u16;
-        let mut unit_field_val: u16 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u16 as *mut u8,
-                2usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 8usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                2usize,
-            );
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set(8usize, 1u8, val as u64)
         }
     }
     #[inline]
@@ -494,16 +348,46 @@ impl rte_eth_rxmode {
         hw_strip_crc: u16,
         enable_scatter: u16,
         enable_lro: u16,
-    ) -> u16 {
-        (((((((((0 | ((header_split as u16 as u16) << 0usize) & (0x1 as u16))
-            | ((hw_ip_checksum as u16 as u16) << 1usize) & (0x2 as u16))
-            | ((hw_vlan_filter as u16 as u16) << 2usize) & (0x4 as u16))
-            | ((hw_vlan_strip as u16 as u16) << 3usize) & (0x8 as u16))
-            | ((hw_vlan_extend as u16 as u16) << 4usize) & (0x10 as u16))
-            | ((jumbo_frame as u16 as u16) << 5usize) & (0x20 as u16))
-            | ((hw_strip_crc as u16 as u16) << 6usize) & (0x40 as u16))
-            | ((enable_scatter as u16 as u16) << 7usize) & (0x80 as u16))
-            | ((enable_lro as u16 as u16) << 8usize) & (0x100 as u16))
+    ) -> __BindgenBitfieldUnit<[u8; 2usize], u8> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize], u8> =
+            Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let header_split: u16 = unsafe { ::std::mem::transmute(header_split) };
+            header_split as u64
+        });
+        __bindgen_bitfield_unit.set(1usize, 1u8, {
+            let hw_ip_checksum: u16 = unsafe { ::std::mem::transmute(hw_ip_checksum) };
+            hw_ip_checksum as u64
+        });
+        __bindgen_bitfield_unit.set(2usize, 1u8, {
+            let hw_vlan_filter: u16 = unsafe { ::std::mem::transmute(hw_vlan_filter) };
+            hw_vlan_filter as u64
+        });
+        __bindgen_bitfield_unit.set(3usize, 1u8, {
+            let hw_vlan_strip: u16 = unsafe { ::std::mem::transmute(hw_vlan_strip) };
+            hw_vlan_strip as u64
+        });
+        __bindgen_bitfield_unit.set(4usize, 1u8, {
+            let hw_vlan_extend: u16 = unsafe { ::std::mem::transmute(hw_vlan_extend) };
+            hw_vlan_extend as u64
+        });
+        __bindgen_bitfield_unit.set(5usize, 1u8, {
+            let jumbo_frame: u16 = unsafe { ::std::mem::transmute(jumbo_frame) };
+            jumbo_frame as u64
+        });
+        __bindgen_bitfield_unit.set(6usize, 1u8, {
+            let hw_strip_crc: u16 = unsafe { ::std::mem::transmute(hw_strip_crc) };
+            hw_strip_crc as u64
+        });
+        __bindgen_bitfield_unit.set(7usize, 1u8, {
+            let enable_scatter: u16 = unsafe { ::std::mem::transmute(enable_scatter) };
+            enable_scatter as u64
+        });
+        __bindgen_bitfield_unit.set(8usize, 1u8, {
+            let enable_lro: u16 = unsafe { ::std::mem::transmute(enable_lro) };
+            enable_lro as u64
+        });
+        __bindgen_bitfield_unit
     }
 }
 #[repr(u32)]
@@ -523,7 +407,7 @@ pub struct rte_eth_txmode {
     /// < TX multi-queues mode.
     pub mq_mode: rte_eth_tx_mq_mode,
     pub pvid: u16,
-    pub _bitfield_1: u8,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize], u8>,
     pub __bindgen_padding_0: u8,
 }
 #[test]
@@ -572,110 +456,35 @@ impl Default for rte_eth_txmode {
 impl rte_eth_txmode {
     #[inline]
     pub fn hw_vlan_reject_tagged(&self) -> u8 {
-        let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u8 as *mut u8,
-                1usize,
-            )
-        };
-        let mask = 0x1 as u8;
-        let val = (unit_field_val & mask) >> 0usize;
-        unsafe { ::std::mem::transmute(val as u8) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
     }
     #[inline]
     pub fn set_hw_vlan_reject_tagged(&mut self, val: u8) {
-        let mask = 0x1 as u8;
-        let val = val as u8 as u8;
-        let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u8 as *mut u8,
-                1usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 0usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                1usize,
-            );
+            let val: u8 = ::std::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
         }
     }
     #[inline]
     pub fn hw_vlan_reject_untagged(&self) -> u8 {
-        let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u8 as *mut u8,
-                1usize,
-            )
-        };
-        let mask = 0x2 as u8;
-        let val = (unit_field_val & mask) >> 1usize;
-        unsafe { ::std::mem::transmute(val as u8) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u8) }
     }
     #[inline]
     pub fn set_hw_vlan_reject_untagged(&mut self, val: u8) {
-        let mask = 0x2 as u8;
-        let val = val as u8 as u8;
-        let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u8 as *mut u8,
-                1usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 1usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                1usize,
-            );
+            let val: u8 = ::std::mem::transmute(val);
+            self._bitfield_1.set(1usize, 1u8, val as u64)
         }
     }
     #[inline]
     pub fn hw_vlan_insert_pvid(&self) -> u8 {
-        let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u8 as *mut u8,
-                1usize,
-            )
-        };
-        let mask = 0x4 as u8;
-        let val = (unit_field_val & mask) >> 2usize;
-        unsafe { ::std::mem::transmute(val as u8) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u8) }
     }
     #[inline]
     pub fn set_hw_vlan_insert_pvid(&mut self, val: u8) {
-        let mask = 0x4 as u8;
-        let val = val as u8 as u8;
-        let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u8 as *mut u8,
-                1usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 2usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                1usize,
-            );
+            let val: u8 = ::std::mem::transmute(val);
+            self._bitfield_1.set(2usize, 1u8, val as u64)
         }
     }
     #[inline]
@@ -683,10 +492,23 @@ impl rte_eth_txmode {
         hw_vlan_reject_tagged: u8,
         hw_vlan_reject_untagged: u8,
         hw_vlan_insert_pvid: u8,
-    ) -> u8 {
-        (((0 | ((hw_vlan_reject_tagged as u8 as u8) << 0usize) & (0x1 as u8))
-            | ((hw_vlan_reject_untagged as u8 as u8) << 1usize) & (0x2 as u8))
-            | ((hw_vlan_insert_pvid as u8 as u8) << 2usize) & (0x4 as u8))
+    ) -> __BindgenBitfieldUnit<[u8; 1usize], u8> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize], u8> =
+            Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let hw_vlan_reject_tagged: u8 = unsafe { ::std::mem::transmute(hw_vlan_reject_tagged) };
+            hw_vlan_reject_tagged as u64
+        });
+        __bindgen_bitfield_unit.set(1usize, 1u8, {
+            let hw_vlan_reject_untagged: u8 =
+                unsafe { ::std::mem::transmute(hw_vlan_reject_untagged) };
+            hw_vlan_reject_untagged as u64
+        });
+        __bindgen_bitfield_unit.set(2usize, 1u8, {
+            let hw_vlan_insert_pvid: u8 = unsafe { ::std::mem::transmute(hw_vlan_insert_pvid) };
+            hw_vlan_insert_pvid as u64
+        });
+        __bindgen_bitfield_unit
     }
 }
 /// A structure used to configure the Receive Side Scaling (RSS) feature

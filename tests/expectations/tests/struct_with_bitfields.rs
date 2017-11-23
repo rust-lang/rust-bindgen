@@ -5,11 +5,90 @@
 
 
 #[repr(C)]
+#[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub struct __BindgenBitfieldUnit<Storage, Align>
+where
+    Storage: AsRef<[u8]> + AsMut<[u8]>,
+{
+    storage: Storage,
+    align: [Align; 0],
+}
+
+impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
+where
+    Storage: AsRef<[u8]> + AsMut<[u8]>,
+{
+    #[inline]
+    pub fn new(storage: Storage) -> Self {
+        Self { storage, align: [] }
+    }
+
+    #[inline]
+    pub fn get_bit(&self, index: usize) -> bool {
+        debug_assert!(index / 8 < self.storage.as_ref().len());
+
+        let byte_index = index / 8;
+        let byte = self.storage.as_ref()[byte_index];
+
+        let bit_index = index % 8;
+        let mask = 1 << bit_index;
+
+        byte & mask == mask
+    }
+
+    #[inline]
+    pub fn set_bit(&mut self, index: usize, val: bool) {
+        debug_assert!(index / 8 < self.storage.as_ref().len());
+
+        let byte_index = index / 8;
+        let byte = &mut self.storage.as_mut()[byte_index];
+
+        let bit_index = index % 8;
+        let mask = 1 << bit_index;
+
+        if val {
+            *byte |= mask;
+        } else {
+            *byte &= !mask;
+        }
+    }
+
+    #[inline]
+    pub fn get(&self, bit_offset: usize, bit_width: u8) -> u64 {
+        debug_assert!(bit_width <= 64);
+        debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
+        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+
+        let mut val = 0;
+
+        for i in 0..(bit_width as usize) {
+            if self.get_bit(i + bit_offset) {
+                val |= 1 << i;
+            }
+        }
+
+        val
+    }
+
+    #[inline]
+    pub fn set(&mut self, bit_offset: usize, bit_width: u8, val: u64) {
+        debug_assert!(bit_width <= 64);
+        debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
+        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+
+        for i in 0..(bit_width as usize) {
+            let mask = 1 << i;
+            let val_bit_is_set = val & mask == mask;
+            self.set_bit(i + bit_offset, val_bit_is_set);
+        }
+    }
+}
+#[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct bitfield {
-    pub _bitfield_1: u8,
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize], u8>,
     pub e: ::std::os::raw::c_int,
-    pub _bitfield_2: [u32; 2usize],
+    pub _bitfield_2: __BindgenBitfieldUnit<[u8; 8usize], u32>,
 }
 #[test]
 fn bindgen_test_layout_bitfield() {
@@ -37,146 +116,46 @@ fn bindgen_test_layout_bitfield() {
 impl bitfield {
     #[inline]
     pub fn a(&self) -> ::std::os::raw::c_ushort {
-        let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u8 as *mut u8,
-                1usize,
-            )
-        };
-        let mask = 0x1 as u8;
-        let val = (unit_field_val & mask) >> 0usize;
-        unsafe { ::std::mem::transmute(val as u16) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u16) }
     }
     #[inline]
     pub fn set_a(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 0x1 as u8;
-        let val = val as u16 as u8;
-        let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u8 as *mut u8,
-                1usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 0usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                1usize,
-            );
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
         }
     }
     #[inline]
     pub fn b(&self) -> ::std::os::raw::c_ushort {
-        let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u8 as *mut u8,
-                1usize,
-            )
-        };
-        let mask = 0x2 as u8;
-        let val = (unit_field_val & mask) >> 1usize;
-        unsafe { ::std::mem::transmute(val as u16) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u16) }
     }
     #[inline]
     pub fn set_b(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 0x2 as u8;
-        let val = val as u16 as u8;
-        let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u8 as *mut u8,
-                1usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 1usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                1usize,
-            );
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set(1usize, 1u8, val as u64)
         }
     }
     #[inline]
     pub fn c(&self) -> ::std::os::raw::c_ushort {
-        let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u8 as *mut u8,
-                1usize,
-            )
-        };
-        let mask = 0x4 as u8;
-        let val = (unit_field_val & mask) >> 2usize;
-        unsafe { ::std::mem::transmute(val as u16) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u16) }
     }
     #[inline]
     pub fn set_c(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 0x4 as u8;
-        let val = val as u16 as u8;
-        let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u8 as *mut u8,
-                1usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 2usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                1usize,
-            );
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set(2usize, 1u8, val as u64)
         }
     }
     #[inline]
     pub fn d(&self) -> ::std::os::raw::c_ushort {
-        let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u8 as *mut u8,
-                1usize,
-            )
-        };
-        let mask = 0xc0 as u8;
-        let val = (unit_field_val & mask) >> 6usize;
-        unsafe { ::std::mem::transmute(val as u16) }
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(6usize, 2u8) as u16) }
     }
     #[inline]
     pub fn set_d(&mut self, val: ::std::os::raw::c_ushort) {
-        let mask = 0xc0 as u8;
-        let val = val as u16 as u8;
-        let mut unit_field_val: u8 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_1 as *const _ as *const u8,
-                &mut unit_field_val as *mut u8 as *mut u8,
-                1usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 6usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_1 as *mut _ as *mut u8,
-                1usize,
-            );
+            let val: u16 = ::std::mem::transmute(val);
+            self._bitfield_1.set(6usize, 2u8, val as u64)
         }
     }
     #[inline]
@@ -185,87 +164,64 @@ impl bitfield {
         b: ::std::os::raw::c_ushort,
         c: ::std::os::raw::c_ushort,
         d: ::std::os::raw::c_ushort,
-    ) -> u8 {
-        ((((0 | ((a as u16 as u8) << 0usize) & (0x1 as u8))
-            | ((b as u16 as u8) << 1usize) & (0x2 as u8))
-            | ((c as u16 as u8) << 2usize) & (0x4 as u8))
-            | ((d as u16 as u8) << 6usize) & (0xc0 as u8))
+    ) -> __BindgenBitfieldUnit<[u8; 1usize], u8> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize], u8> =
+            Default::default();
+        __bindgen_bitfield_unit.set(0usize, 1u8, {
+            let a: u16 = unsafe { ::std::mem::transmute(a) };
+            a as u64
+        });
+        __bindgen_bitfield_unit.set(1usize, 1u8, {
+            let b: u16 = unsafe { ::std::mem::transmute(b) };
+            b as u64
+        });
+        __bindgen_bitfield_unit.set(2usize, 1u8, {
+            let c: u16 = unsafe { ::std::mem::transmute(c) };
+            c as u64
+        });
+        __bindgen_bitfield_unit.set(6usize, 2u8, {
+            let d: u16 = unsafe { ::std::mem::transmute(d) };
+            d as u64
+        });
+        __bindgen_bitfield_unit
     }
     #[inline]
     pub fn f(&self) -> ::std::os::raw::c_uint {
-        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_2 as *const _ as *const u8,
-                &mut unit_field_val as *mut u64 as *mut u8,
-                8usize,
-            )
-        };
-        let mask = 0x3 as u64;
-        let val = (unit_field_val & mask) >> 0usize;
-        unsafe { ::std::mem::transmute(val as u32) }
+        unsafe { ::std::mem::transmute(self._bitfield_2.get(0usize, 2u8) as u32) }
     }
     #[inline]
     pub fn set_f(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 0x3 as u64;
-        let val = val as u32 as u64;
-        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_2 as *const _ as *const u8,
-                &mut unit_field_val as *mut u64 as *mut u8,
-                8usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 0usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_2 as *mut _ as *mut u8,
-                8usize,
-            );
+            let val: u32 = ::std::mem::transmute(val);
+            self._bitfield_2.set(0usize, 2u8, val as u64)
         }
     }
     #[inline]
     pub fn g(&self) -> ::std::os::raw::c_uint {
-        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_2 as *const _ as *const u8,
-                &mut unit_field_val as *mut u64 as *mut u8,
-                8usize,
-            )
-        };
-        let mask = 0xffffffff00000000 as u64;
-        let val = (unit_field_val & mask) >> 32usize;
-        unsafe { ::std::mem::transmute(val as u32) }
+        unsafe { ::std::mem::transmute(self._bitfield_2.get(32usize, 32u8) as u32) }
     }
     #[inline]
     pub fn set_g(&mut self, val: ::std::os::raw::c_uint) {
-        let mask = 0xffffffff00000000 as u64;
-        let val = val as u32 as u64;
-        let mut unit_field_val: u64 = unsafe { ::std::mem::uninitialized() };
         unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &self._bitfield_2 as *const _ as *const u8,
-                &mut unit_field_val as *mut u64 as *mut u8,
-                8usize,
-            )
-        };
-        unit_field_val &= !mask;
-        unit_field_val |= (val << 32usize) & mask;
-        unsafe {
-            ::std::ptr::copy_nonoverlapping(
-                &unit_field_val as *const _ as *const u8,
-                &mut self._bitfield_2 as *mut _ as *mut u8,
-                8usize,
-            );
+            let val: u32 = ::std::mem::transmute(val);
+            self._bitfield_2.set(32usize, 32u8, val as u64)
         }
     }
     #[inline]
-    pub fn new_bitfield_2(f: ::std::os::raw::c_uint, g: ::std::os::raw::c_uint) -> u64 {
-        ((0 | ((f as u32 as u64) << 0usize) & (0x3 as u64))
-            | ((g as u32 as u64) << 32usize) & (0xffffffff00000000 as u64))
+    pub fn new_bitfield_2(
+        f: ::std::os::raw::c_uint,
+        g: ::std::os::raw::c_uint,
+    ) -> __BindgenBitfieldUnit<[u8; 8usize], u32> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize], u32> =
+            Default::default();
+        __bindgen_bitfield_unit.set(0usize, 2u8, {
+            let f: u32 = unsafe { ::std::mem::transmute(f) };
+            f as u64
+        });
+        __bindgen_bitfield_unit.set(32usize, 32u8, {
+            let g: u32 = unsafe { ::std::mem::transmute(g) };
+            g as u64
+        });
+        __bindgen_bitfield_unit
     }
 }
