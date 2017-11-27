@@ -2419,8 +2419,6 @@ impl CodeGenerator for Enum {
             }
         };
 
-        // FIXME(emilio): These should probably use the path so it can
-        // disambiguate between namespaces, just like is_opaque etc.
         let variation = if self.is_bitfield(ctx, item) {
             EnumVariation::Bitfield
         } else if self.is_rustified_enum(ctx, item) {

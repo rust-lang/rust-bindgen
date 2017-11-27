@@ -39,7 +39,13 @@ Released YYYY/MM/DD
 
 ## Changed
 
-* TODO (or remove section if none)
+* The `bindgen::Builder::{constified_enum_module,{bitfield,rustified}_enum}`
+  builder methods and their corresponding CLI flags now compare their argument
+  to the C/C++ `enum`'s "canonical path", which includes leading namespaces,
+  rather than its "canonical name", which does not. This is a breaking change
+  that requires callers which target a namespaced C++ enum to call e.g.
+  `bitfield_enum("<namespace>::<enum_name>")` rather than e.g.
+  `bitfield_enum("<enum_name>")`. [#1162][]
 
 ## Deprecated
 
