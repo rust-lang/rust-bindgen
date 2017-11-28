@@ -1,4 +1,4 @@
-// bindgen-flags: --enable-cxx-namespaces --constified-enum-module foo
+// bindgen-flags: --enable-cxx-namespaces --constified-enum-module ns1::ns2::foo
 
 namespace ns1 {
   namespace ns2 {

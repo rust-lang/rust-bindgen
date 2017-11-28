@@ -1,4 +1,4 @@
-// bindgen-flags: --constified-enum-module one_Foo
+// bindgen-flags: --constified-enum-module one::Foo
 
 namespace one {
   enum class Foo {
