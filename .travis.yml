@@ -38,6 +38,7 @@ env:
     - LLVM_VERSION="4.0.0" BINDGEN_JOB="expectations" BINDGEN_PROFILE=
     - LLVM_VERSION="4.0.0" BINDGEN_JOB="expectations" BINDGEN_PROFILE="--release"
     - LLVM_VERSION="4.0.0" BINDGEN_JOB="misc"
+    - LLVM_VERSION="4.0.0" BINDGEN_JOB="quickchecking"
 
 matrix:
   fast_finish: true

@@ -1,9 +1,9 @@
-extern crate property_test;
 extern crate quickcheck;
+extern crate quickchecking;
 extern crate rand;
 extern crate tempdir;
 
-use property_test::fuzzers;
+use quickchecking::fuzzers;
 use quickcheck::{QuickCheck, StdGen, TestResult};
 use std::fs::File;
 use std::io::Write;
@@ -18,7 +18,7 @@ fn run_predicate_script(header: fuzzers::HeaderC, header_name: &str) -> Result<O
     let header_path = dir.path().join(header_name);
 
     let mut header_file = File::create(&header_path)?;
-    header_file.write_all(header.def.as_bytes())?;
+    header_file.write_all(header.to_string().as_bytes())?;
     header_file.sync_all()?;
 
     let header_path_string;
@@ -39,20 +39,17 @@ fn run_predicate_script(header: fuzzers::HeaderC, header_name: &str) -> Result<O
     // Copy generated temp files to test directory for inspection.
     // Preserved for anyone interested in validating the behavior.
 
-    // let mut debug_output_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    // debug_output_path.push("tests");
-    // Command::new("cp")
-    //     .arg("-a")
-    //     .arg(&dir.path().to_str().unwrap())
-    //     .arg(&debug_output_path.to_str().unwrap())
-    //     .output()?;
+    let mut debug_output_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    debug_output_path.push("tests");
+    Command::new("cp")
+        .arg("-a")
+        .arg(&dir.path().to_str().unwrap())
+        .arg(&debug_output_path.to_str().unwrap())
+        .output()?;
 
     Ok(Command::new(&predicate_script_path_string)
         .arg(&header_path_string)
         .output()?)
-
-    // omit close, from tempdir crate's docs:
-    // "Closing the directory is actually optional, as it would be done on drop."
 }
 
 fn bindgen_prop(header: fuzzers::HeaderC) -> TestResult {
@@ -67,10 +64,10 @@ fn bindgen_prop(header: fuzzers::HeaderC) -> TestResult {
 
 #[test]
 fn test_bindgen() {
-    // enough to generate any value in the PrimitiveTypeC `base_type` list
+    // Enough to generate any value in the PrimitiveTypeC `base_type` list.
     let generate_range: usize = 32;
     QuickCheck::new()
-        // generating is relatively quick (generate_range 150 takes ~5 seconds)
+        // Generating is relatively quick (generate_range 150 takes ~5 seconds)
         // but running predicate.py takes ~30 seconds per source file / test
         // when the generation range is just 32. It can take a lot longer with a
         // higher generate_range. Up the number of tests or generate_range if

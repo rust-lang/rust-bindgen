@@ -38,6 +38,11 @@ case "$BINDGEN_JOB" in
         # ./ci/assert-rustfmt.sh
         ;;
 
+    "quickchecking")
+        cd ./tests/quickchecking
+        # TODO: Actually run quickchecks once `bindgen` is reliable enough.
+        cargo check
+        ;;
     *)
         echo "Error! Unknown \$BINDGEN_JOB: '$BINDGEN_JOB'"
         exit 1
