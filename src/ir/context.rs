@@ -2092,7 +2092,7 @@ impl BindgenContext {
             ::clang_sys::CXCursor_Namespace,
             "Be a nice person"
         );
-        let tokens = match self.translation_unit.tokens(&cursor) {
+        let tokens = match cursor.tokens() {
             Some(tokens) => tokens,
             None => return (None, ModuleKind::Normal),
         };
