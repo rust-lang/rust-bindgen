@@ -2,9 +2,19 @@
 name = "quickchecking"
 description = "Bindgen property tests with quickcheck. Generate random valid C code and pass it to the csmith/predicate.py script"
 version = "0.1.0"
-authors = ["Shea Newton <snewton@polysync.io>"]
+authors = ["Shea Newton <sheanewt@gmail.com>"]
+
+[lib]
+name = "quickchecking"
+path = "src/lib.rs"
+
+[[bin]]
+name = "quickchecking"
+path = "src/bin.rs"
 
 [dependencies]
+clap = "2.28"
+lazy_static = "1.0"
 quickcheck = "0.4"
-tempdir = "0.3"
 rand = "0.3"
+tempdir = "0.3"
