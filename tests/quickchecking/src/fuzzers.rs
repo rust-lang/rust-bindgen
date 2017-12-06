@@ -45,6 +45,8 @@ pub struct BasicTypeDeclarationC {
     pub type_qualifier: TypeQualifierC,
     /// The declaration's pointer level, i.e. `***`.
     pub pointer_level: PointerLevelC,
+    /// The declaration's array dimension, i.e. [][][].
+    pub array_dimension: ArrayDimensionC,
     /// The declaration's identifier, i.e. ident_N.
     pub ident_id: String,
 }
@@ -55,6 +57,8 @@ pub struct BasicTypeDeclarationC {
 pub struct StructDeclarationC {
     /// The declaration's fields.
     pub fields: DeclarationListC,
+    /// The declaration's array dimension, i.e. [][][].
+    pub array_dimension: ArrayDimensionC,
     /// The declaration's identifier, i.e. struct_N.
     pub ident_id: String,
 }
@@ -65,6 +69,8 @@ pub struct StructDeclarationC {
 pub struct UnionDeclarationC {
     /// The declaration's fields.
     pub fields: DeclarationListC,
+    /// The declaration's array dimension, i.e. [][][].
+    pub array_dimension: ArrayDimensionC,
     /// The declaration's identifier, i.e. union_N.
     pub ident_id: String,
 }
@@ -147,7 +153,7 @@ pub struct DeclarationListC {
 
 /// HeaderC is used in generation of C headers to represent a collection of
 /// declarations.
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct HeaderC {
     /// The header's declarations.
     pub def: DeclarationListC,
@@ -256,7 +262,8 @@ impl Arbitrary for BaseTypeC {
             "unsigned long long int",
             "float",
             "double",
-            // "long double",
+            #[cfg(feature = "long-doubles")]
+            "long double",
             "void*",
         ];
         BaseTypeC {
@@ -315,10 +322,17 @@ impl Arbitrary for ArrayDimensionC {
         // Keep these small, clang complains when they get too big.
         let dimensions = g.gen_range(0, 5);
         let mut def = String::new();
-        // Don't allow size 0 dimension until #684 and #1153 are closed.
-        // 16 is an arbitrary "not too big" number for capping array size.
+
+        let lower_bound;
+        if cfg!(feature = "zero-sized-arrays") {
+            lower_bound = 0;
+        } else {
+            lower_bound = 1;
+        }
+
         for _ in 1..dimensions {
-            def += &format!("[{}]", g.gen_range(1, 16));
+            // 16 is an arbitrary "not too big" number for capping array size.
+            def += &format!("[{}]", g.gen_range(lower_bound, 16));
         }
         ArrayDimensionC { def }
     }
@@ -347,6 +361,7 @@ impl Arbitrary for BasicTypeDeclarationC {
             type_qualifier: Arbitrary::arbitrary(g),
             type_name: Arbitrary::arbitrary(g),
             pointer_level: Arbitrary::arbitrary(g),
+            array_dimension: Arbitrary::arbitrary(g),
             ident_id: format!("{}", usize::arbitrary(g)),
         }
     }
@@ -357,11 +372,12 @@ impl fmt::Display for BasicTypeDeclarationC {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "{} {} {} ident_{};",
+            "{} {} {} ident_{}{};",
             self.type_qualifier,
             self.type_name,
             self.pointer_level,
-            self.ident_id
+            self.ident_id,
+            self.array_dimension
         )
     }
 }
@@ -398,6 +414,7 @@ impl Arbitrary for StructDeclarationC {
         StructDeclarationC {
             fields,
             ident_id: format!("{}", usize::arbitrary(g)),
+            array_dimension: Arbitrary::arbitrary(g),
         }
     }
 }
@@ -405,7 +422,13 @@ impl Arbitrary for StructDeclarationC {
 /// Enables to string and format for StructDeclarationC types.
 impl fmt::Display for StructDeclarationC {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "struct {{ {} }} struct_{};", self.fields, self.ident_id)
+        write!(
+            f,
+            "struct {{ {} }} struct_{}{};",
+            self.fields,
+            self.ident_id,
+            self.array_dimension
+        )
     }
 }
 
@@ -441,6 +464,7 @@ impl Arbitrary for UnionDeclarationC {
         UnionDeclarationC {
             fields,
             ident_id: format!("{}", usize::arbitrary(g)),
+            array_dimension: Arbitrary::arbitrary(g),
         }
     }
 }
@@ -448,7 +472,13 @@ impl Arbitrary for UnionDeclarationC {
 /// Enables to string and format for UnionDeclarationC types.
 impl fmt::Display for UnionDeclarationC {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "union {{ {} }} union_{};", self.fields, self.ident_id)
+        write!(
+            f,
+            "union {{ {} }} union_{}{};",
+            self.fields,
+            self.ident_id,
+            self.array_dimension
+        )
     }
 }
 
@@ -595,5 +625,13 @@ impl fmt::Display for HeaderC {
             display += &format!("{}", decl);
         }
         write!(f, "{}", display)
+    }
+}
+
+/// Use Display trait for Debug so that any failing property tests report
+/// generated C code rather than the data structures that contain it.
+impl fmt::Debug for HeaderC {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self)
     }
 }

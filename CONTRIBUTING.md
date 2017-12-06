@@ -21,6 +21,7 @@ out to us in a GitHub issue, or stop by
   - [Test Expectations and `libclang` Versions](#test-expectations-and-libclang-versions)
   - [Integration Tests](#integration-tests)
   - [Fuzzing `bindgen` with `csmith`](#fuzzing-bindgen-with-csmith)
+  - [Property tests for `bindgen` with `quickchecking`](#property-tests-for-bindgen-with-quickchecking)
 - [Code Overview](#code-overview)
 - [Pull Requests and Code Reviews](#pull-requests-and-code-reviews)
 - [Generating Graphviz Dot Files](#generating-graphviz-dot-files)
@@ -223,6 +224,14 @@ uncover hidden bugs is by running `csmith` to generate random headers to test
 `bindgen` against.
 
 See [./csmith-fuzzing/README.md](./csmith-fuzzing/README.md) for details.
+
+### Property tests for `bindgen` with `quickchecking`
+
+The `tests/quickchecking` crate genertates property tests for `bindgen`.
+From the crate's directory you can run the tests with `cargo run`. For details
+on additional configuration including how to preserve / inspect the generated 
+property tests, see 
+[./tests/quickchecking/README.md](./tests/quickchecking/README.md).
 
 ## Code Overview
 
