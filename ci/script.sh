@@ -41,7 +41,7 @@ case "$BINDGEN_JOB" in
     "quickchecking")
         cd ./tests/quickchecking
         # TODO: Actually run quickchecks once `bindgen` is reliable enough.
-        cargo check
+        cargo test
         ;;
     *)
         echo "Error! Unknown \$BINDGEN_JOB: '$BINDGEN_JOB'"
