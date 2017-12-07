@@ -45,7 +45,7 @@ cfg-if = "0.1.0"
 # This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
 clap = "2"
 clang-sys = { version = "0.21.0", features = ["runtime", "clang_3_9"] }
-lazy_static = "0.2.1"
+lazy_static = "1"
 peeking_take_while = "0.1.2"
 quote = "0.3.15"
 regex = "0.2"
