@@ -214,6 +214,7 @@ fn bindgen_test_layout_B() {
     );
 }
 #[repr(i32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum StepSyntax {
     Keyword = 0,

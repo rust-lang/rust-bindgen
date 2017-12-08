@@ -58,6 +58,7 @@ pub struct TErrorResult {
 pub const TErrorResult_UnionState_HasException: TErrorResult_UnionState =
     TErrorResult_UnionState::HasMessage;
 #[repr(i32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum TErrorResult_UnionState {
     HasMessage = 0,

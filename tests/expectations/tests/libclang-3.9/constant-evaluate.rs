@@ -7,6 +7,7 @@
 pub const foo: _bindgen_ty_1 = _bindgen_ty_1::foo;
 pub const bar: _bindgen_ty_1 = _bindgen_ty_1::bar;
 #[repr(u32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum _bindgen_ty_1 {
     foo = 4,

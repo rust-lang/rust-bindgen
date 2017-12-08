@@ -6,6 +6,7 @@
 
 pub const AV_CODEC_ID_TTF: AVCodecID = AVCodecID::AV_CODEC_ID_FIRST_UNKNOWN;
 #[repr(u32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum AVCodecID {
     AV_CODEC_ID_FIRST_UNKNOWN = 98304,

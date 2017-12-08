@@ -87,6 +87,7 @@ pub const JSVAL_TAG_SHIFT: ::std::os::raw::c_uint = 47;
 pub const JSVAL_PAYLOAD_MASK: ::std::os::raw::c_ulonglong = 140737488355327;
 pub const JSVAL_TAG_MASK: ::std::os::raw::c_longlong = -140737488355328;
 #[repr(u8)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum JSValueType {
     JSVAL_TYPE_DOUBLE = 0,
@@ -102,6 +103,7 @@ pub enum JSValueType {
     JSVAL_TYPE_MISSING = 33,
 }
 #[repr(u32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum JSValueTag {
     JSVAL_TAG_MAX_DOUBLE = 131056,
@@ -115,6 +117,7 @@ pub enum JSValueTag {
     JSVAL_TAG_OBJECT = 131064,
 }
 #[repr(u64)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum JSValueShiftedTag {
     JSVAL_SHIFTED_TAG_MAX_DOUBLE = 18444492278190833663,
@@ -128,6 +131,7 @@ pub enum JSValueShiftedTag {
     JSVAL_SHIFTED_TAG_OBJECT = 18445618173802708992,
 }
 #[repr(u32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum JSWhyMagic {
     JS_ELEMENTS_HOLE = 0,

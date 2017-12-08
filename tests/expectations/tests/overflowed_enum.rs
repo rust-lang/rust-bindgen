@@ -5,6 +5,7 @@
 
 
 #[repr(u32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Foo {
     BAP_ARM = 9698489,
@@ -12,6 +13,7 @@ pub enum Foo {
     BAP_X86_64 = 3128633167,
 }
 #[repr(u16)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Bar {
     One = 1,

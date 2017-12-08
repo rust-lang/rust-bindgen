@@ -272,6 +272,7 @@ impl Clone for B {
     }
 }
 #[repr(i32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum StepSyntax {
     Keyword = 0,

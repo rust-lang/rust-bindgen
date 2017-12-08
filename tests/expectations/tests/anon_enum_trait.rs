@@ -19,6 +19,7 @@ pub const DataType_channels: DataType__bindgen_ty_1 = DataType__bindgen_ty_1::ge
 pub const DataType_fmt: DataType__bindgen_ty_1 = DataType__bindgen_ty_1::generic_type;
 pub const DataType_type_: DataType__bindgen_ty_1 = DataType__bindgen_ty_1::generic_type;
 #[repr(i32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum DataType__bindgen_ty_1 {
     generic_type = 0,
@@ -31,6 +32,7 @@ pub struct Foo {
 pub const Foo_Bar: Foo__bindgen_ty_1 = Foo__bindgen_ty_1::Bar;
 pub const Foo_Baz: Foo__bindgen_ty_1 = Foo__bindgen_ty_1::Bar;
 #[repr(u32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Foo__bindgen_ty_1 {
     Bar = 0,

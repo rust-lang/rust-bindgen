@@ -5,12 +5,14 @@
 
 
 #[repr(u32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Foo {
     Bar = 0,
     Qux = 1,
 }
 #[repr(i32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Neg {
     MinusOne = -1,

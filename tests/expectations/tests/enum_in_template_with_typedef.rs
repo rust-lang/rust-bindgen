@@ -13,6 +13,7 @@ pub type std_fbstring_core_category_type = u8;
 pub const std_fbstring_core_Category_Bar: std_fbstring_core_Category =
     std_fbstring_core_Category::Foo;
 #[repr(u8)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum std_fbstring_core_Category {
     Foo = 0,

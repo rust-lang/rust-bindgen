@@ -23,6 +23,7 @@ pub struct nsStyleAutoArray<T> {
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
 }
 #[repr(i32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum nsStyleAutoArray_WithSingleInitialElement {
     WITH_SINGLE_INITIAL_ELEMENT = 0,

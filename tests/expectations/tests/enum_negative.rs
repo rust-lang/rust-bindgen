@@ -5,6 +5,7 @@
 
 
 #[repr(i32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Foo {
     Bar = -2,

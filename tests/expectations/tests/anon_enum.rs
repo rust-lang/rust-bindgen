@@ -12,6 +12,7 @@ pub struct Test {
 }
 pub const Test_T_NONE: Test__bindgen_ty_1 = Test__bindgen_ty_1::T_NONE;
 #[repr(u32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Test__bindgen_ty_1 {
     T_NONE = 0,
@@ -40,6 +41,7 @@ fn bindgen_test_layout_Test() {
     );
 }
 #[repr(u32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Baz {
     Foo = 0,

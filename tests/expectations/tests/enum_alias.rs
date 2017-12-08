@@ -5,6 +5,7 @@
 
 
 #[repr(u8)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Bar {
     VAL = 0,

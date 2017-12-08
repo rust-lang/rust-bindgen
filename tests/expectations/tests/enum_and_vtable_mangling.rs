@@ -7,6 +7,7 @@
 pub const match_: _bindgen_ty_1 = _bindgen_ty_1::match_;
 pub const whatever_else: _bindgen_ty_1 = _bindgen_ty_1::whatever_else;
 #[repr(u32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum _bindgen_ty_1 {
     match_ = 0,
