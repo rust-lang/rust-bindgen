@@ -9,21 +9,25 @@
   - [Removed](#removed)
   - [Fixed](#fixed)
   - [Security](#security)
-- [0.31.0](#0310)
+- [0.32.0](#0320)
   - [Added](#added-1)
   - [Changed](#changed-1)
-  - [Deprecated](#deprecated-1)
-  - [Removed](#removed-1)
   - [Fixed](#fixed-1)
-- [0.30.0](#0300)
+- [0.31.0](#0310)
   - [Added](#added-2)
   - [Changed](#changed-2)
-  - [Deprecated](#deprecated-2)
+  - [Deprecated](#deprecated-1)
+  - [Removed](#removed-1)
   - [Fixed](#fixed-2)
-- [0.29.0](#0290)
+- [0.30.0](#0300)
   - [Added](#added-3)
   - [Changed](#changed-3)
+  - [Deprecated](#deprecated-2)
   - [Fixed](#fixed-3)
+- [0.29.0](#0290)
+  - [Added](#added-4)
+  - [Changed](#changed-4)
+  - [Fixed](#fixed-4)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -39,13 +43,7 @@ Released YYYY/MM/DD
 
 ## Changed
 
-* The `bindgen::Builder::{constified_enum_module,{bitfield,rustified}_enum}`
-  builder methods and their corresponding CLI flags now compare their argument
-  to the C/C++ `enum`'s "canonical path", which includes leading namespaces,
-  rather than its "canonical name", which does not. This is a breaking change
-  that requires callers which target a namespaced C++ enum to call e.g.
-  `bitfield_enum("<namespace>::<enum_name>")` rather than e.g.
-  `bitfield_enum("<enum_name>")`. [#1162][]
+* TODO (or remove section if none)
 
 ## Deprecated
 
@@ -62,6 +60,92 @@ Released YYYY/MM/DD
 ## Security
 
 * TODO (or remove section if none)
+
+--------------------------------------------------------------------------------
+
+# 0.32.0
+
+Released 2017/12/08
+
+## Added
+
+* Added support for bit-field allocation units that are larger than 64 bits
+  wide. Note that individual bit-fields within such units are still restricted
+  to being no wider than 64 bits. [#1158][]
+
+* We can now generate random C header files and test that `bindgen` can process
+  them with the `quickcheck` crate. Initial support landed in [#1159][] with a
+  few more additions in follow up pull requests.
+
+## Changed
+
+* The `bindgen::Builder::{constified_enum_module,{bitfield,rustified}_enum}`
+  builder methods and their corresponding CLI flags now compare their argument
+  to the C/C++ `enum`'s "canonical path", which includes leading namespaces,
+  rather than its "canonical name", which does not. This is a breaking change
+  that requires callers which target a namespaced C++ enum to call e.g.
+  `bitfield_enum("<namespace>::<enum_name>")` rather than e.g.
+  `bitfield_enum("<enum_name>")`. [#1162][]
+
+* When a struct is packed to a smaller alignment that is still greater than one,
+  `bindgen` cannot emit Rust bindings that match the input source. Before, it
+  would emit `#[repr(packed)]` anyways, which packs to an alignment of one, but
+  this can lead to misalignment and UB. Now, `bindgen` will detect these
+  situations and convert the struct into an opaque blob of bytes with the proper
+  alignment. We are eagerly awaiting support for `#[repr(packed(N))]` in
+  Rust. [#1136][]
+
+## Fixed
+
+* There was a perfect storm of conditions that could cause `bindgen` not to emit
+  any bindings if spawning `rustfmt` to format the bindings failed. This is now
+  fixed. [#1112][]
+
+* In some circumstances, `bindgen` would emit type parameters twice for
+  references to template instantiations. This is now fixed. [#1113][]
+
+* When a C/C++ struct had a field named with a Rust keyword, and `impl_debug`
+  was enabled, the generated `impl Debug for ...` blocks could reference the
+  field by the Rust keyword name, rather than the non-keyword field name we
+  actually end up generating. This is now fixed. [#1123][]
+
+* There was a regression in 0.31.0 where C++ template aliases to opaque types
+  would sometimes not treat the aliased type as opaque. This is now
+  fixed. [#1118][]
+
+* There was a regression in 0.31.0 that could cause `bindgen` to panic when
+  parsing nested template classes. This is now fixed. [#1127][]
+
+* Unnamed bit-fields do not affect alignment of their struct or class in C/C++,
+  however `bindgen` interpreted them as doing so, which could generate
+  `#[repr(C)]` structs expecting to have an incorrect alignment. This is now
+  fixed. [#1076][]
+
+* When a zero-sized type was used in a bit-field, `bindgen` could
+  divide-by-zero. This is now fixed. [#1137][]
+
+* When a template parameter is used in a bit-field, `bindgen` would panic. This
+  is now fixed. [#1140][]
+
+* There was a regression in 0.31.0 where if `bindgen` was given a header file
+  that did not exist, it would panic. This is now fixed, and it will instead
+  properly report the error. [#1146][]
+
+* In some cases, generated bit-field getters and setters could access memory
+  beyond `self`. This is now fixed. [#954][]
+
+[#1162]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1162
+[#1113]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1113
+[#1112]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1112
+[#1123]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1123
+[#1127]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1127
+[#1136]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1136
+[#1137]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1137
+[#1140]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1140
+[#1146]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1146
+[#1118]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1118
+[#1076]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1076
+[#1158]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1158
 
 --------------------------------------------------------------------------------
 
