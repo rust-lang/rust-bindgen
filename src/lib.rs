@@ -178,6 +178,7 @@ impl Builder {
             output_vector.push(header);
         }
 
+        output_vector.push("--rust-target".into());
         output_vector.push(self.options.rust_target.into());
 
         self.options
@@ -1898,6 +1899,7 @@ fn commandline_flag_unit_test_function() {
     let command_line_flags = bindings.command_line_flags();
 
     let test_cases = vec![
+        "--rust-target",
         "--no-derive-default",
         "--generate",
         "function,types,vars,methods,constructors,destructors",
@@ -1917,6 +1919,7 @@ fn commandline_flag_unit_test_function() {
 
     let command_line_flags = bindings.command_line_flags();
     let test_cases = vec![
+        "--rust-target",
         "input_header",
         "--no-derive-default",
         "--generate",
