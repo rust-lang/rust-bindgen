@@ -1,5 +1,5 @@
-//! An application to run property tests for `bindgen` with _fuzzed_ C headers 
-//! using `quickcheck` 
+//! An application to run property tests for `bindgen` with _fuzzed_ C headers
+//! using `quickcheck`
 //!
 //! ## Usage
 //!
@@ -77,7 +77,7 @@ fn main() {
                     "Sets the range quickcheck uses during generation. \
                      Corresponds to things like arbitrary usize and \
                      arbitrary vector length. This number doesn't have \
-                     to grow much for that execution time to increase \
+                     to grow much for execution time to increase \
                      significantly.",
                 )
                 .takes_value(true)
