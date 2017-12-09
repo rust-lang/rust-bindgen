@@ -227,7 +227,7 @@ See [./csmith-fuzzing/README.md](./csmith-fuzzing/README.md) for details.
 
 ### Property tests for `bindgen` with `quickchecking`
 
-The `tests/quickchecking` crate genertates property tests for `bindgen`.
+The `tests/quickchecking` crate generates property tests for `bindgen`.
 From the crate's directory you can run the tests with `cargo run`. For details
 on additional configuration including how to preserve / inspect the generated 
 property tests, see 
