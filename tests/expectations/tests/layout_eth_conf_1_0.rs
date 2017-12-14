@@ -159,6 +159,7 @@ pub const RTE_ETH_FLOW_GENEVE: ::std::os::raw::c_uint = 20;
 pub const RTE_ETH_FLOW_NVGRE: ::std::os::raw::c_uint = 21;
 pub const RTE_ETH_FLOW_MAX: ::std::os::raw::c_uint = 22;
 #[repr(u32)]
+#[repr(C)]
 /// A set of values to identify what method is to be used to route
 /// packets to multiple queues.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -391,6 +392,7 @@ impl rte_eth_rxmode {
     }
 }
 #[repr(u32)]
+#[repr(C)]
 /// A set of values to identify what method is to be used to transmit
 /// packets using multi-TCs.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -590,6 +592,7 @@ impl Default for rte_eth_rss_conf {
     }
 }
 #[repr(u32)]
+#[repr(C)]
 /// This enum indicates the possible number of traffic classes
 /// in DCB configratioins
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -598,6 +601,7 @@ pub enum rte_eth_nb_tcs {
     ETH_8_TCS = 8,
 }
 #[repr(u32)]
+#[repr(C)]
 /// This enum indicates the possible number of queue pools
 /// in VMDQ configurations.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -1152,6 +1156,7 @@ impl Default for rte_eth_vmdq_rx_conf {
     }
 }
 #[repr(u32)]
+#[repr(C)]
 /// Flow Director setting modes: none, signature or perfect.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum rte_fdir_mode {
@@ -1162,6 +1167,7 @@ pub enum rte_fdir_mode {
     RTE_FDIR_MODE_PERFECT_TUNNEL = 4,
 }
 #[repr(u32)]
+#[repr(C)]
 /// Memory space that can be configured to store Flow Director filters
 /// in the board memory.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -1171,6 +1177,7 @@ pub enum rte_fdir_pballoc_type {
     RTE_FDIR_PBALLOC_256K = 2,
 }
 #[repr(u32)]
+#[repr(C)]
 /// Select report mode of FDIR hash information in RX descriptors.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum rte_fdir_status_mode {
@@ -1479,6 +1486,7 @@ impl Clone for rte_eth_fdir_masks {
     }
 }
 #[repr(u32)]
+#[repr(C)]
 /// Payload type
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum rte_eth_payload_type {

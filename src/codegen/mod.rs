@@ -2148,7 +2148,10 @@ impl EnumVariation {
 
 /// A helper type to construct different enum variations.
 enum EnumBuilder<'a> {
-    Rust(quote::Tokens),
+    Rust {
+        tokens: quote::Tokens,
+        emitted_any_variants: bool,
+    },
     Bitfield {
         canonical_name: &'a str,
         tokens: quote::Tokens,
@@ -2188,7 +2191,10 @@ impl<'a> EnumBuilder<'a> {
                     pub enum #ident
                 };
                 tokens.append("{");
-                EnumBuilder::Rust(tokens)
+                EnumBuilder::Rust {
+                    tokens,
+                    emitted_any_variants: false,
+                }
             }
 
             EnumVariation::Consts => {
@@ -2229,12 +2235,15 @@ impl<'a> EnumBuilder<'a> {
         };
 
         match self {
-            EnumBuilder::Rust(tokens) => {
+            EnumBuilder::Rust { tokens, emitted_any_variants: _ } => {
                 let name = ctx.rust_ident(variant_name);
-                EnumBuilder::Rust(quote! {
-                    #tokens
-                    #name = #expr,
-                })
+                EnumBuilder::Rust {
+                    tokens: quote! {
+                        #tokens
+                        #name = #expr,
+                    },
+                    emitted_any_variants: true,
+                }
             }
 
             EnumBuilder::Bitfield { .. } => {
@@ -2295,9 +2304,12 @@ impl<'a> EnumBuilder<'a> {
         result: &mut CodegenResult<'b>,
     ) -> quote::Tokens {
         match self {
-            EnumBuilder::Rust(mut t) => {
-                t.append("}");
-                t
+            EnumBuilder::Rust { mut tokens, emitted_any_variants } => {
+                if !emitted_any_variants {
+                    tokens.append(quote! { __bindgen_cannot_repr_c_on_empty_enum = 0 });
+                }
+                tokens.append("}");
+                tokens
             }
             EnumBuilder::Bitfield {
                 canonical_name,
@@ -2432,15 +2444,12 @@ impl CodeGenerator for Enum {
 
         let mut attrs = vec![];
 
-        // FIXME: Rust forbids repr with empty enums. Remove this condition when
-        // this is allowed.
-        //
         // TODO(emilio): Delegate this to the builders?
         if variation.is_rust() {
-            if !self.variants().is_empty() {
-                attrs.push(attributes::repr(repr_name));
-            }
-        } else if variation.is_bitfield() {
+            attrs.push(attributes::repr(repr_name));
+        }
+
+        if variation.is_bitfield() || variation.is_rust() {
             attrs.push(attributes::repr("C"));
         }
 

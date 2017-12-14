@@ -46,6 +46,11 @@ parser.add_argument(
     help="An argument string that `bindgen` should be invoked with. By default, all traits are derived. Note that the input header and output bindings file will automatically be provided by this script, and you should not manually specify them.")
 
 parser.add_argument(
+    "--save-temp-files",
+    action="store_true",
+    help="Do not delete temporary files.")
+
+parser.add_argument(
     "input",
     type=str,
     default="input.h",
@@ -144,11 +149,12 @@ def main():
         exit_code = 2
         print("Unexpected exception:", e)
 
-    for path in TEMP_FILES:
-        try:
-            os.remove(path)
-        except Exception as e:
-            print("Unexpected exception:", e)
+    if not args.save_temp_files:
+        for path in TEMP_FILES:
+            try:
+                os.remove(path)
+            except Exception as e:
+                print("Unexpected exception:", e)
 
     sys.exit(exit_code)
 

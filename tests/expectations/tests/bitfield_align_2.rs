@@ -84,6 +84,7 @@ where
     }
 }
 #[repr(u32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum MyEnum {
     ONE = 0,

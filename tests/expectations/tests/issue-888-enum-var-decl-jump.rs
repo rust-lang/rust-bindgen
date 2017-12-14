@@ -34,6 +34,10 @@ pub mod root {
             );
         }
     }
+    #[repr(u32)]
+    #[repr(C)]
     #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-    pub enum a {}
+    pub enum a {
+        __bindgen_cannot_repr_c_on_empty_enum = 0,
+    }
 }

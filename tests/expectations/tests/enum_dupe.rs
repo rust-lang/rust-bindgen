@@ -6,6 +6,7 @@
 
 pub const Foo_Dupe: Foo = Foo::Bar;
 #[repr(u32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Foo {
     Bar = 1,

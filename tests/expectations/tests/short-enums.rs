@@ -5,16 +5,19 @@
 
 
 #[repr(u8)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum one_byte_t {
     SOME_VALUE = 1,
 }
 #[repr(u16)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum two_byte_t {
     SOME_OTHER_VALUE = 256,
 }
 #[repr(u32)]
+#[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum four_byte_t {
     SOME_BIGGER_VALUE = 16777216,
