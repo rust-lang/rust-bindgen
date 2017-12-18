@@ -63,6 +63,19 @@ Released YYYY/MM/DD
 
 --------------------------------------------------------------------------------
 
+# 0.32.1
+
+Released 2017/12/18
+
+## Fixed
+
+* When translating C/C++ `enum`s into Rust `enum`s using `rustified_enum` /
+  `--rustified-enum`, properly add `#[repr(C)]` to the emitted `enum`. [#1183][]
+
+[#1183]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1183
+
+--------------------------------------------------------------------------------
+
 # 0.32.0
 
 Released 2017/12/08
