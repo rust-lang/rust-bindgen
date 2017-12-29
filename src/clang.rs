@@ -606,9 +606,14 @@ impl Cursor {
         unsafe { clang_CXXMethod_isConst(self.x) != 0 }
     }
 
-    /// Is this cursor's referent a member function that is declared `const`?
+    /// Is this cursor's referent a member function that is virtual?
     pub fn method_is_virtual(&self) -> bool {
         unsafe { clang_CXXMethod_isVirtual(self.x) != 0 }
+    }
+
+    /// Is this cursor's referent a member function that is pure virtual?
+    pub fn method_is_pure_virtual(&self) -> bool {
+        unsafe { clang_CXXMethod_isPureVirtual(self.x) != 0 }
     }
 
     /// Is this cursor's referent a struct or class with virtual members?

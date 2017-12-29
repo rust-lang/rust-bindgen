@@ -37,13 +37,40 @@ pub enum MethodKind {
     /// A destructor.
     Destructor,
     /// A virtual destructor.
-    VirtualDestructor,
+    VirtualDestructor {
+        /// Whether it's pure virtual.
+        pure_virtual: bool,
+    },
     /// A static method.
     Static,
     /// A normal method.
     Normal,
     /// A virtual method.
-    Virtual,
+    Virtual {
+        /// Whether it's pure virtual.
+        pure_virtual: bool,
+    },
+}
+
+
+impl MethodKind {
+    /// Is this a destructor method?
+    pub fn is_destructor(&self) -> bool {
+        match *self {
+            MethodKind::Destructor |
+            MethodKind::VirtualDestructor { .. } => true,
+            _ => false,
+        }
+    }
+
+    /// Is this a pure virtual method?
+    pub fn is_pure_virtual(&self) -> bool {
+        match *self {
+            MethodKind::Virtual { pure_virtual } |
+            MethodKind::VirtualDestructor { pure_virtual } => pure_virtual,
+            _ => false,
+        }
+    }
 }
 
 /// A struct representing a C++ method, either static, normal, or virtual.
@@ -73,12 +100,6 @@ impl Method {
         self.kind
     }
 
-    /// Is this a destructor method?
-    pub fn is_destructor(&self) -> bool {
-        self.kind == MethodKind::Destructor ||
-            self.kind == MethodKind::VirtualDestructor
-    }
-
     /// Is this a constructor?
     pub fn is_constructor(&self) -> bool {
         self.kind == MethodKind::Constructor
@@ -86,8 +107,11 @@ impl Method {
 
     /// Is this a virtual method?
     pub fn is_virtual(&self) -> bool {
-        self.kind == MethodKind::Virtual ||
-            self.kind == MethodKind::VirtualDestructor
+        match self.kind {
+            MethodKind::Virtual { .. } |
+            MethodKind::VirtualDestructor { .. } => true,
+            _ => false,
+        }
     }
 
     /// Is this a static method?
@@ -960,7 +984,7 @@ pub struct CompInfo {
 
     /// The destructor of this type. The bool represents whether this destructor
     /// is virtual.
-    destructor: Option<(bool, FunctionId)>,
+    destructor: Option<(MethodKind, FunctionId)>,
 
     /// Vector of classes this one inherits from.
     base_members: Vec<Base>,
@@ -1104,7 +1128,7 @@ impl CompInfo {
     }
 
     /// Get this type's destructor.
-    pub fn destructor(&self) -> Option<(bool, FunctionId)> {
+    pub fn destructor(&self) -> Option<(MethodKind, FunctionId)> {
         self.destructor
     }
 
@@ -1355,14 +1379,23 @@ impl CompInfo {
                             ci.constructors.push(signature);
                         }
                         CXCursor_Destructor => {
-                            ci.destructor = Some((is_virtual, signature));
+                            let kind = if is_virtual {
+                                MethodKind::VirtualDestructor {
+                                    pure_virtual: cur.method_is_pure_virtual(),
+                                }
+                            } else {
+                                MethodKind::Destructor
+                            };
+                            ci.destructor = Some((kind, signature));
                         }
                         CXCursor_CXXMethod => {
                             let is_const = cur.method_is_const();
                             let method_kind = if is_static {
                                 MethodKind::Static
                             } else if is_virtual {
-                                MethodKind::Virtual
+                                MethodKind::Virtual {
+                                    pure_virtual: cur.method_is_pure_virtual(),
+                                }
                             } else {
                                 MethodKind::Normal
                             };
@@ -1658,11 +1691,11 @@ impl Trace for CompInfo {
         }
 
         for method in self.methods() {
-            if method.is_destructor() {
-                tracer.visit_kind(method.signature.into(), EdgeKind::Destructor);
-            } else {
-                tracer.visit_kind(method.signature.into(), EdgeKind::Method);
-            }
+            tracer.visit_kind(method.signature.into(), EdgeKind::Method);
+        }
+
+        if let Some((_kind, signature)) = self.destructor() {
+            tracer.visit_kind(signature.into(), EdgeKind::Destructor);
         }
 
         for ctor in self.constructors() {
