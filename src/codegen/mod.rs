@@ -26,7 +26,7 @@ use ir::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
                  CanDerivePartialEq, CanDeriveEq, CanDerive};
 use ir::dot;
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
-use ir::function::{Abi, Function, FunctionSig, Linkage};
+use ir::function::{Abi, Function, FunctionKind, FunctionSig, Linkage};
 use ir::int::IntKind;
 use ir::item::{IsOpaque, Item, ItemCanonicalName, ItemCanonicalPath};
 use ir::item_kind::ItemKind;
@@ -1878,13 +1878,8 @@ impl CodeGenerator for CompInfo {
             }
 
             if ctx.options().codegen_config.destructors {
-                if let Some((is_virtual, destructor)) = self.destructor() {
-                    let kind = if is_virtual {
-                        MethodKind::VirtualDestructor
-                    } else {
-                        MethodKind::Destructor
-                    };
-
+                if let Some((kind, destructor)) = self.destructor() {
+                    debug_assert!(kind.is_destructor());
                     Method::new(kind, destructor, false).codegen_method(
                         ctx,
                         &mut methods,
@@ -1990,9 +1985,9 @@ impl MethodCodegen for Method {
             match self.kind() {
                 MethodKind::Constructor => cc.constructors,
                 MethodKind::Destructor => cc.destructors,
-                MethodKind::VirtualDestructor => cc.destructors,
+                MethodKind::VirtualDestructor { .. } => cc.destructors,
                 MethodKind::Static | MethodKind::Normal |
-                MethodKind::Virtual => cc.methods,
+                MethodKind::Virtual { .. } => cc.methods,
             }
         });
 
@@ -3172,6 +3167,15 @@ impl CodeGenerator for Function {
         match self.linkage() {
             Linkage::Internal => return,
             Linkage::External => {}
+        }
+
+        // Pure virtual methods have no actual symbol, so we can't generate
+        // something meaningful for them.
+        match self.kind() {
+            FunctionKind::Method(ref method_kind) if method_kind.is_pure_virtual() => {
+                return;
+            }
+            _ => {},
         }
 
         // Similar to static member variables in a class template, we can't

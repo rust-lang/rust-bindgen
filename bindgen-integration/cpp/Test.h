@@ -15,6 +15,10 @@ public:
   static const int* countdown();
 };
 
+class ITest {
+  virtual void foo() = 0;
+};
+
 namespace testing {
 
 typedef Test TypeAlias;
