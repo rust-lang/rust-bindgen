@@ -1711,15 +1711,7 @@ impl Bindings {
         let rustfmt = which::which("rustfmt")
             .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_owned()))?;
 
-        // Prefer using the `rustfmt-nightly` version of `rustmft`, if
-        // possible. It requires being run via `rustup run nightly ...`.
-        let mut cmd = if let Ok(rustup) = which::which("rustup") {
-            let mut cmd = Command::new(rustup);
-            cmd.args(&["run", "nightly", "rustfmt", "--"]);
-            cmd
-        } else {
-            Command::new(rustfmt)
-        };
+        let mut cmd = Command::new(rustfmt);
 
         cmd
             .stdin(Stdio::piped())
