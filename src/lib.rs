@@ -1609,7 +1609,7 @@ impl Bindings {
 
         if let Some(h) = options.input_header.as_ref() {
             if let Ok(md) = std::fs::metadata(h) {
-                if !md.is_file() {
+                if md.is_dir() {
                     eprintln!("error: '{}' is a folder", h);
                     return Err(());
                 }
