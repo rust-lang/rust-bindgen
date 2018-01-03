@@ -65,3 +65,9 @@ cannot translate into Rust:
 
 * Automatically calling copy and/or move constructors or destructors. Supporting
   this isn't possible with Rust's move semantics.
+
+* Exceptions: if a function called through a `bindgen`-generated interface
+  raises an exception that is not caught by the function itself, this will
+  generate undefined behaviour. See
+  [the tracking issue for exceptions](https://github.com/rust-lang-nursery/rust-bindgen/issues/1208)
+  for more details.
