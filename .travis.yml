@@ -1,12 +1,5 @@
 language: rust
 
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - gcc-5
-
 os:
   - linux
 
