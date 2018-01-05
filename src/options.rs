@@ -237,9 +237,9 @@ where
                 .help("Generate inline functions."),
             Arg::with_name("whitelist-type")
                 .long("whitelist-type")
-                .help("Whitelist the type. Other non-whitelisted types will \
+                .help("Only generate types matching <regex>. Other non-whitelisted types will \
                        not be generated.")
-                .value_name("type")
+                .value_name("regex")
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
