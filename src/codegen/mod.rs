@@ -3249,12 +3249,6 @@ impl CodeGenerator for Function {
             abi => abi,
         };
 
-        let variadic = if signature.is_variadic() {
-            quote! { ... }
-        } else {
-            quote! {}
-        };
-
         let ident = ctx.rust_ident(canonical_name);
         let mut tokens = quote! { extern #abi };
         tokens.append("{\n");
@@ -3262,8 +3256,6 @@ impl CodeGenerator for Function {
             tokens.append_separated(attributes, "\n");
             tokens.append("\n");
         }
-        let mut args = args;
-        args.push(variadic);
         tokens.append(quote! {
             pub fn #ident ( #( #args ),* ) #ret;
         });
@@ -3719,7 +3711,7 @@ mod utils {
         use super::ToPtr;
 
         let mut unnamed_arguments = 0;
-        sig.argument_types().iter().map(|&(ref name, ty)| {
+        let mut args = sig.argument_types().iter().map(|&(ref name, ty)| {
             let arg_item = ctx.resolve_item(ty);
             let arg_ty = arg_item.kind().expect_type();
 
@@ -3766,6 +3758,12 @@ mod utils {
             quote! {
                 #arg_name : #arg_ty
             }
-        }).collect()
+        }).collect::<Vec<_>>();
+
+        if sig.is_variadic() {
+            args.push(quote! { ... })
+        }
+
+        args
     }
 }
