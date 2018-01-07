@@ -11,11 +11,8 @@ namespace whatever {
 namespace {
     namespace empty {}
 
-    void foo();
     struct A {
         whatever::whatever_int_t b;
-    public:
-        int lets_hope_this_works();
     };
 }
 
@@ -26,10 +23,8 @@ class C: public A {
     T m_c_arr[10];
 };
 
-
 template<>
 class C<int>;
-
 
 namespace w {
     typedef unsigned int whatever_int_t;
