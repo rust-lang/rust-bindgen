@@ -2,9 +2,10 @@
 
 ## Bitfield Strategy Overview
 
-As Rust does not support bitfields, Bindgen generates an opaque struct for each with the following characteristics
+As Rust does not support bitfields, Bindgen generates a struct for each with the following characteristics
 * Immutable getter functions for each bitfield named ```<bitfield>```
-* Setter functions for each bitfield named ```set_<bitfield>```
+* Setter functions for each contiguous bsock of bitfields named ```set_<bitfield>```
+* Far each contiguous block of bitfields, Bindgen emits an opaque physical field that contains one or more logical bitfields
 * A static constructor  ```new_bitfield_{1, 2, ...}``` with a parameter for each bitfield contained within the opaque physical field.
 
 ## Bitfield examples
@@ -36,6 +37,7 @@ Bindgen creates a set of field getters and setters for interacting with the bits
     println!("b set to {}", bfield.b());
     bfield.set_c(3);
     println!("c set to {}", bfield.c());
+    
     unsafe { print_bitfield(bfield) };
 ```
 
@@ -56,6 +58,7 @@ Overflowing a bitfield will result in the same behavior as in C/C++: the bitfiel
     bfield.set_b(1);
     bfield.set_c(12);
     println!("c set to {} due to overflow", bfield.c());
+    
     unsafe { print_bitfield(bfield) };
 ```
 
@@ -74,7 +77,9 @@ Note: This requires the Builder's derive_default to be set to true, otherwise th
     let bfield = StructWithBitfields{
         _bitfield_1: StructWithBitfields::new_bitfield_1(0,0,0),
         ..Default::default()
-    };    unsafe { print_bitfield(bfield) };
+    };
+    
+    unsafe { print_bitfield(bfield) };
 ```
 
 This will print out
