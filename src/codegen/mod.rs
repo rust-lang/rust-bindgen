@@ -2112,6 +2112,7 @@ impl MethodCodegen for Method {
 enum EnumVariation {
     Rust,
     Bitfield,
+    Bitflags,
     Consts,
     ModuleConsts
 }
@@ -2120,7 +2121,13 @@ impl EnumVariation {
     fn is_rust(&self) -> bool {
         match *self {
             EnumVariation::Rust => true,
-            _ => false
+            _ => false,
+        }
+    }
+    fn is_bitflags(&self) -> bool {
+        match *self {
+            EnumVariation::Bitflags => true,
+            _ => false,
         }
     }
 
@@ -2146,6 +2153,10 @@ enum EnumBuilder<'a> {
     Rust {
         tokens: quote::Tokens,
         emitted_any_variants: bool,
+    },
+    Bitflags {
+        struct_def: quote::Tokens,
+        variants: quote::Tokens,
     },
     Bitfield {
         canonical_name: &'a str,
@@ -2177,6 +2188,16 @@ impl<'a> EnumBuilder<'a> {
                         #( #attrs )*
                         pub struct #ident (pub #repr);
                     },
+                }
+            }
+            EnumVariation::Bitflags => {
+                let name = quote::Ident::new(name);
+                EnumBuilder::Bitflags {
+                    struct_def: quote! {
+                        #( #attrs )*
+                        pub struct #name : #repr
+                    },
+                    variants: quote!(),
                 }
             }
 
@@ -2255,6 +2276,20 @@ impl<'a> EnumBuilder<'a> {
                 });
 
                 self
+            }
+            EnumBuilder::Bitflags {  struct_def, variants,} => {
+                let name = ctx.rust_ident(variant_name);
+                let mut next = quote! {
+                    #variants
+                    const #name = #expr;
+                };
+                // Generated code is not beautified by rustfmt
+                // so we insert some newlines, making it somewhat readable
+                next.append("\n");
+                EnumBuilder::Bitflags {
+                    struct_def,
+                    variants: next,
+                }
             }
 
             EnumBuilder::Consts {
@@ -2355,6 +2390,20 @@ impl<'a> EnumBuilder<'a> {
 
                 tokens
             }
+            EnumBuilder::Bitflags { variants, struct_def, } => {
+                // few more newlines
+                let mut n = quote::Tokens::new();
+                n.append("\n");
+
+                quote! {
+                    bitflags! { #n
+                        #struct_def { #n
+                             #variants      #n
+                        } #n
+                    } #n
+                }
+            }
+
             EnumBuilder::Consts(tokens) => quote! { #( #tokens )* },
             EnumBuilder::ModuleConsts {
                 module_items,
@@ -2428,6 +2477,8 @@ impl CodeGenerator for Enum {
 
         let variation = if self.is_bitfield(ctx, item) {
             EnumVariation::Bitfield
+        } else if self.is_bitflag(ctx, item) {
+            EnumVariation::Bitflags
         } else if self.is_rustified_enum(ctx, item) {
             EnumVariation::Rust
         } else if self.is_constified_enum_module(ctx, item) {
@@ -2444,7 +2495,7 @@ impl CodeGenerator for Enum {
             attrs.push(attributes::repr(repr_name));
         }
 
-        if variation.is_bitfield() || variation.is_rust() {
+        if variation.is_bitfield() || variation.is_rust() || variation.is_bitflags() {
             attrs.push(attributes::repr("C"));
         }
 
@@ -2452,7 +2503,7 @@ impl CodeGenerator for Enum {
             attrs.push(attributes::doc(comment));
         }
 
-        if !variation.is_const() {
+        if !variation.is_const() && !variation.is_bitflags() {
             attrs.push(attributes::derives(
                 &["Debug", "Copy", "Clone", "PartialEq", "Eq", "Hash"],
             ));

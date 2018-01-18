@@ -74,11 +74,11 @@ impl Enum {
         let is_signed = repr.and_then(
             |r| ctx.resolve_type(r).safe_canonical_type(ctx),
         ).map_or(true, |ty| match *ty.kind() {
-                TypeKind::Int(ref int_kind) => int_kind.is_signed(),
-                ref other => {
-                    panic!("Since when enums can be non-integers? {:?}", other)
-                }
-            });
+            TypeKind::Int(ref int_kind) => int_kind.is_signed(),
+            ref other => {
+                panic!("Since when enums can be non-integers? {:?}", other)
+            }
+        });
 
         let type_name = ty.spelling();
         let type_name = if type_name.is_empty() {
@@ -133,11 +133,22 @@ impl Enum {
         let path = item.canonical_path(ctx);
         let enum_ty = item.expect_type();
 
-        ctx.options().bitfield_enums.matches(&path[1..].join("::")) ||
+        !ctx.options().use_bitflags && (ctx.options().bitfield_enums.matches(&path[1..].join("::")) ||
             (enum_ty.name().is_none() &&
-                    self.variants().iter().any(|v| {
+                self.variants().iter().any(|v| {
                     ctx.options().bitfield_enums.matches(&v.name())
-                }))
+                })))
+    }
+
+    pub fn is_bitflag(&self, ctx: &BindgenContext, item: &Item) -> bool {
+        let path = item.canonical_path(ctx);
+        let enum_ty = item.expect_type();
+
+        ctx.options().use_bitflags && (ctx.options().bitfield_enums.matches(&path[1..].join("::")) ||
+            (enum_ty.name().is_none() &&
+                self.variants().iter().any(|v| {
+                    ctx.options().bitfield_enums.matches(&v.name())
+                })))
     }
 
     /// Whether the enum should be an constified enum module
@@ -151,7 +162,7 @@ impl Enum {
 
         ctx.options().constified_enum_modules.matches(&path[1..].join("::")) ||
             (enum_ty.name().is_none() &&
-                 self.variants().iter().any(|v| {
+                self.variants().iter().any(|v| {
                     ctx.options().constified_enum_modules.matches(&v.name())
                 }))
     }
@@ -165,7 +176,7 @@ impl Enum {
             (enum_ty.name().is_none() &&
                 self.variants().iter().any(|v| {
                     ctx.options().rustified_enums.matches(&v.name())
-            }))
+                }))
     }
 }
 
