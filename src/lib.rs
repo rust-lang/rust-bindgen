@@ -833,6 +833,11 @@ impl Builder {
         self.options.convert_floats = false;
         self
     }
+    /// Generate bitflags! macro for bitfield matched enums
+    pub fn use_bitflags(mut self) -> Self {
+        self.options.use_bitflags = true;
+        self
+    }
 
     /// Set whether layout tests should be generated.
     pub fn layout_tests(mut self, doit: bool) -> Self {
@@ -1322,6 +1327,9 @@ struct BindgenOptions {
     /// Whether we should convert float types to f32/f64 types.
     convert_floats: bool,
 
+    /// Whether we should generate bitflags! macro for bitfield enums
+    use_bitflags : bool,
+
     /// The set of raw lines to prepend to the generated Rust code.
     raw_lines: Vec<String>,
 
@@ -1469,6 +1477,7 @@ impl Default for BindgenOptions {
             namespaced_constants: true,
             msvc_mangling: false,
             convert_floats: true,
+            use_bitflags : false,
             raw_lines: vec![],
             clang_args: vec![],
             input_header: None,

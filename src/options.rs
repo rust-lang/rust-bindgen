@@ -178,6 +178,9 @@ where
             Arg::with_name("no-convert-floats")
                 .long("no-convert-floats")
                 .help("Do not automatically convert floats to f32/f64."),
+            Arg::with_name("use-bitflags")
+                  .long("use-bitflags")
+                  .help("Use bitflags! macro to generate code for bitfield enums"),
             Arg::with_name("no-prepend-enum-name")
                 .long("no-prepend-enum-name")
                 .help("Do not prepend the enum name to bitfield or constant variants."),
@@ -472,6 +475,10 @@ where
 
     if matches.is_present("no-convert-floats") {
         builder = builder.no_convert_floats();
+    }
+
+    if matches.is_present("use-bitflags") {
+        builder = builder.use_bitflags();
     }
 
     if matches.is_present("no-doc-comments") {
