@@ -1970,7 +1970,14 @@ impl BindgenContext {
                     CXType_Float => FloatKind::Float,
                     CXType_Double => FloatKind::Double,
                     CXType_LongDouble => FloatKind::LongDouble,
-                    _ => panic!("Non floating-type complex?"),
+                    CXType_Float128 => FloatKind::Float128,
+                    _ => {
+                        panic!(
+                            "Non floating-type complex? {:?}, {:?}",
+                            ty,
+                            float_type,
+                        )
+                    },
                 };
                 TypeKind::Complex(float_kind)
             }
