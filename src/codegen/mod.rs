@@ -2442,9 +2442,7 @@ impl CodeGenerator for Enum {
         // TODO(emilio): Delegate this to the builders?
         if variation.is_rust() {
             attrs.push(attributes::repr(repr_name));
-        }
-
-        if variation.is_bitfield() || variation.is_rust() {
+        } else if variation.is_bitfield() {
             attrs.push(attributes::repr("C"));
         }
 
