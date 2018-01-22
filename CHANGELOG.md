@@ -63,6 +63,26 @@ Released YYYY/MM/DD
 
 --------------------------------------------------------------------------------
 
+# 0.32.2
+
+Released 2017/01/22
+
+## Fixed
+
+* Avoid symbol generation for pure virtual functions. [#1197][]
+* Handling of `_Complex _Float128`. [#1087][]
+* Regression on code generation for variadic functions. [#1216][]
+* Enum code generation generates conflicting repr hint warning. [#1224][]
+* Constified code generation for enums with an explicit type of `bool`. [#1145][]
+* Bindgen will now call `rustfmt` directly instead of via `rustup`. [#1184][]
+
+[#1197]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1197
+[#1087]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1087
+[#1216]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1216
+[#1224]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1224
+[#1145]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1145
+[#1184]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1184
+
 # 0.32.1
 
 Released 2017/12/18
