@@ -65,7 +65,7 @@ Released YYYY/MM/DD
 
 # 0.32.2
 
-Released 2017/01/22
+Released 2018/01/22
 
 ## Fixed
 
