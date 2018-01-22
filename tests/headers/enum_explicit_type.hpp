@@ -26,3 +26,7 @@ enum MuchLongLong: long long {
 enum MuchULongLong: unsigned long long {
     MuchHigh = 4294967296,
 };
+
+enum BoolEnumsAreFun: bool {
+    Value = true,
+};
