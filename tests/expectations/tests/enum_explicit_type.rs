@@ -35,3 +35,8 @@ pub enum MuchLongLong {
 pub enum MuchULongLong {
     MuchHigh = 4294967296,
 }
+#[repr(u8)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum BoolEnumsAreFun {
+    Value = 1,
+}
