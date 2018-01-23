@@ -23,6 +23,7 @@ extern crate lazy_static;
 extern crate peeking_take_while;
 #[macro_use]
 extern crate quote;
+extern crate proc_macro2;
 extern crate regex;
 extern crate which;
 
@@ -1682,7 +1683,7 @@ impl Bindings {
             writer.write("\n".as_bytes())?;
         }
 
-        let bindings = self.module.as_str().to_string();
+        let bindings = self.module.to_string();
 
         match self.rustfmt_generated_string(&bindings) {
             Ok(rustfmt_bindings) => {
@@ -1690,7 +1691,7 @@ impl Bindings {
             },
             Err(err) => {
                 eprintln!("{:?}", err);
-                writer.write(bindings.as_str().as_bytes())?;
+                writer.write(bindings.as_bytes())?;
             },
         }
         Ok(())
