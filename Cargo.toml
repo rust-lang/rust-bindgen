@@ -13,7 +13,7 @@ name = "bindgen"
 readme = "README.md"
 repository = "https://github.com/rust-lang-nursery/rust-bindgen"
 documentation = "https://docs.rs/bindgen"
-version = "0.32.2"
+version = "0.32.3"
 build = "build.rs"
 
 include = [
