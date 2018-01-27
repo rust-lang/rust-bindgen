@@ -1191,22 +1191,22 @@ impl Builder {
 
     /// Don't derive `PartialEq` for a given type. Regular
     /// expressions are supported.
-    pub fn no_partialeq(mut self, arg: String) -> Builder {
-        self.options.no_partialeq_types.insert(arg);
+    pub fn no_partialeq<T: Into<String>>(mut self, arg: T) -> Builder {
+        self.options.no_partialeq_types.insert(arg.into());
         self
     }
 
     /// Don't derive `Copy` for a given type. Regular
     /// expressions are supported.
-    pub fn no_copy(mut self, arg: String) -> Self {
-        self.options.no_copy_types.insert(arg);
+    pub fn no_copy<T: Into<String>>(mut self, arg: T) -> Self {
+        self.options.no_copy_types.insert(arg.into());
         self
     }
 
     /// Don't derive `Hash` for a given type. Regular
     /// expressions are supported.
-    pub fn no_hash(mut self, arg: String) -> Builder {
-        self.options.no_hash_types.insert(arg);
+    pub fn no_hash<T: Into<String>>(mut self, arg: T) -> Builder {
+        self.options.no_hash_types.insert(arg.into());
         self
     }
 }
