@@ -1991,6 +1991,7 @@ impl MethodCodegen for Method {
             }
         });
 
+        // TODO(emilio): We could generate final stuff at least.
         if self.is_virtual() {
             return; // FIXME
         }
