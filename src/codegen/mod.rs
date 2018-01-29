@@ -614,14 +614,20 @@ impl CodeGenerator for Type {
                     .resolve(ctx);
                 let name = item.canonical_name(ctx);
 
-                // Try to catch the common pattern:
-                //
-                // typedef struct foo { ... } foo;
-                //
-                // here.
-                //
-                if inner_item.canonical_name(ctx) == name {
-                    return;
+                {
+                    let through_type_aliases = inner.into_resolver()
+                        .through_type_refs()
+                        .through_type_aliases()
+                        .resolve(ctx);
+
+                    // Try to catch the common pattern:
+                    //
+                    // typedef struct foo { ... } foo;
+                    //
+                    // here, and also other more complex cases like #946.
+                    if through_type_aliases.canonical_name(ctx) == name {
+                        return;
+                    }
                 }
 
                 // If this is a known named type, disallow generating anything
