@@ -1425,23 +1425,6 @@ impl CodeGenerator for CompInfo {
         let layout = ty.layout(ctx);
         let mut packed = self.is_packed(ctx, &layout);
 
-        // generate tuple struct if struct or union is a forward declaration,
-        // skip for now if template parameters are needed.
-        //
-        // NB: We generate a proper struct to avoid struct/function name
-        // collisions.
-        if self.is_forward_declaration() && used_template_params.is_none() {
-            let struct_name = item.canonical_name(ctx);
-            let struct_name = ctx.rust_ident_raw(struct_name);
-            let tuple_struct = quote! {
-                #[repr(C)]
-                #[derive(Debug, Copy, Clone)]
-                pub struct #struct_name { _unused: [u8; 0] }
-            };
-            result.push(tuple_struct);
-            return;
-        }
-
         let canonical_name = item.canonical_name(ctx);
         let canonical_ident = ctx.rust_ident(&canonical_name);
 
@@ -1497,14 +1480,6 @@ impl CodeGenerator for CompInfo {
             }
         }
 
-        let is_union = self.kind() == CompKind::Union;
-        if is_union {
-            result.saw_union();
-            if !self.can_be_rust_union(ctx) {
-                result.saw_bindgen_union();
-            }
-        }
-
         let mut methods = vec![];
         if !is_opaque {
             let codegen_depth = item.codegen_depth(ctx);
@@ -1529,8 +1504,14 @@ impl CodeGenerator for CompInfo {
             }
         }
 
+        let is_union = self.kind() == CompKind::Union;
         let layout = item.kind().expect_type().layout(ctx);
-        if is_union && !is_opaque {
+        if is_union && !is_opaque && !self.is_forward_declaration() {
+            result.saw_union();
+            if !self.can_be_rust_union(ctx) {
+                result.saw_bindgen_union();
+            }
+
             let layout = layout.expect("Unable to get layout information?");
             let ty = helpers::blob(layout);
 
@@ -1594,7 +1575,11 @@ impl CodeGenerator for CompInfo {
         //
         // NOTE: This check is conveniently here to avoid the dummy fields we
         // may add for unused template parameters.
-        if item.is_zero_sized(ctx) {
+        if self.is_forward_declaration() {
+            fields.push(quote! {
+                _unused: [u8; 0],
+            });
+        } else if item.is_zero_sized(ctx) {
             let has_address = if is_opaque {
                 // Generate the address field if it's an opaque type and
                 // couldn't determine the layout of the blob.
@@ -1664,12 +1649,11 @@ impl CodeGenerator for CompInfo {
         if item.can_derive_default(ctx) {
             derives.push("Default");
         } else {
-            needs_default_impl = ctx.options().derive_default;
+            needs_default_impl =
+                ctx.options().derive_default && !self.is_forward_declaration();
         }
 
-        if item.can_derive_copy(ctx) && !item.annotations().disallow_copy() &&
-            ctx.options().derive_copy
-        {
+        if item.can_derive_copy(ctx) && !item.annotations().disallow_copy() {
             derives.push("Copy");
 
             if ctx.options().rust_features().builtin_clone_impls() ||
@@ -1762,7 +1746,7 @@ impl CodeGenerator for CompInfo {
                 }
             }
 
-            if ctx.options().layout_tests {
+            if ctx.options().layout_tests && !self.is_forward_declaration() {
                 if let Some(layout) = layout {
                     let fn_name =
                         format!("bindgen_test_layout_{}", canonical_ident.as_str());

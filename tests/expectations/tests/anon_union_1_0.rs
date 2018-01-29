@@ -61,14 +61,14 @@ pub enum TErrorResult_UnionState {
     HasMessage = 0,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone)]
 pub struct TErrorResult_Message {
-    pub _address: u8,
+    _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone)]
 pub struct TErrorResult_DOMExceptionInfo {
-    pub _address: u8,
+    _unused: [u8; 0],
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
