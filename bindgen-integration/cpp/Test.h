@@ -19,6 +19,19 @@ class ITest {
   virtual void foo() = 0;
 };
 
+class VirtualDestructor {
+public:
+  static unsigned sDestructorCount;
+  virtual ~VirtualDestructor() = 0;
+};
+
+class InheritsFromVirtualDestructor final : public VirtualDestructor {
+public:
+  static unsigned sDestructorCount;
+  InheritsFromVirtualDestructor();
+  ~InheritsFromVirtualDestructor() final;
+};
+
 namespace testing {
 
 typedef Test TypeAlias;

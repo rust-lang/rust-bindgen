@@ -3,6 +3,18 @@
 const int Test::COUNTDOWN[] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 };
 const int* Test::COUNTDOWN_PTR = Test::COUNTDOWN;
 
+unsigned VirtualDestructor::sDestructorCount = 0;
+VirtualDestructor::~VirtualDestructor() {
+  sDestructorCount++;
+}
+
+unsigned InheritsFromVirtualDestructor::sDestructorCount = 0;
+InheritsFromVirtualDestructor::InheritsFromVirtualDestructor() = default;
+
+InheritsFromVirtualDestructor::~InheritsFromVirtualDestructor() {
+  sDestructorCount++;
+}
+
 const int* Test::countdown() {
   return COUNTDOWN;
 }

@@ -260,3 +260,22 @@ fn test_destructors() {
 
     assert!(v, "Should've been restored when going out of scope");
 }
+
+impl Drop for bindings::InheritsFromVirtualDestructor {
+    fn drop(&mut self) {
+        unsafe { bindings::InheritsFromVirtualDestructor_InheritsFromVirtualDestructor_destructor(self) }
+    }
+}
+
+#[test]
+fn test_virtual_dtor() {
+    unsafe {
+        {
+            let b = bindings::InheritsFromVirtualDestructor::new();
+            // Let it go out of scope.
+        }
+
+        assert_eq!(bindings::InheritsFromVirtualDestructor_sDestructorCount, 1);
+        assert_eq!(bindings::VirtualDestructor_sDestructorCount, 1);
+    }
+}
