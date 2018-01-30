@@ -2,6 +2,12 @@
 
 #define TESTMACRO
 
+enum {
+  MY_ANNOYING_MACRO =
+#define MY_ANNOYING_MACRO 1
+    MY_ANNOYING_MACRO,
+};
+
 class Test {
   int m_int;
   double m_double;

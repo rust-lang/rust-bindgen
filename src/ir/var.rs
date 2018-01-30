@@ -1,5 +1,6 @@
 //! Intermediate representation of variables.
 
+use callbacks::MacroParsingBehavior;
 use super::context::{BindgenContext, TypeId};
 use super::dot::DotAttributes;
 use super::function::cursor_mangling;
@@ -122,9 +123,13 @@ impl ClangSubItemParser for Var {
         use cexpr::literal::CChar;
         match cursor.kind() {
             CXCursor_MacroDefinition => {
-
-                if let Some(visitor) = ctx.parse_callbacks() {
-                    visitor.parsed_macro(&cursor.spelling());
+                if let Some(callbacks) = ctx.parse_callbacks() {
+                    match callbacks.will_parse_macro(&cursor.spelling()) {
+                        MacroParsingBehavior::Ignore => {
+                            return Err(ParseError::Continue);
+                        }
+                        MacroParsingBehavior::Default => {}
+                    }
                 }
 
                 let value = parse_macro(ctx, &cursor);
