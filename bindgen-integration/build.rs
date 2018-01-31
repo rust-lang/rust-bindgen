@@ -6,7 +6,7 @@ use std::env;
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
 use bindgen::Builder;
-use bindgen::callbacks::ParseCallbacks;
+use bindgen::callbacks::{MacroParsingBehavior, ParseCallbacks};
 
 #[derive(Debug)]
 struct MacroCallback {
@@ -14,8 +14,14 @@ struct MacroCallback {
 }
 
 impl ParseCallbacks for MacroCallback {
-    fn parsed_macro(&self, _name: &str) {
-        self.macros.write().unwrap().insert(String::from(_name));
+    fn will_parse_macro(&self, name: &str) -> MacroParsingBehavior {
+        self.macros.write().unwrap().insert(name.into());
+
+        if name == "MY_ANNOYING_MACRO" {
+            return MacroParsingBehavior::Ignore
+        }
+
+        MacroParsingBehavior::Default
     }
 }
 
