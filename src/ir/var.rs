@@ -113,6 +113,21 @@ impl DotAttributes for Var {
     }
 }
 
+// TODO(emilio): we could make this more (or less) granular, I guess.
+fn default_macro_constant_type(value: i64) -> IntKind {
+    if value < 0 {
+        if value < i32::min_value() as i64 {
+            IntKind::I64
+        } else {
+            IntKind::I32
+        }
+    } else if value > u32::max_value() as i64 {
+        IntKind::U64
+    } else {
+        IntKind::U32
+    }
+}
+
 impl ClangSubItemParser for Var {
     fn parse(
         cursor: clang::Cursor,
@@ -189,17 +204,7 @@ impl ClangSubItemParser for Var {
                     EvalResult::Int(Wrapping(value)) => {
                         let kind = ctx.parse_callbacks()
                             .and_then(|c| c.int_macro(&name, value))
-                            .unwrap_or_else(|| if value < 0 {
-                                if value < i32::min_value() as i64 {
-                                    IntKind::LongLong
-                                } else {
-                                    IntKind::Int
-                                }
-                            } else if value > u32::max_value() as i64 {
-                                IntKind::ULongLong
-                            } else {
-                                IntKind::UInt
-                            });
+                            .unwrap_or_else(|| default_macro_constant_type(value));
 
                         (TypeKind::Int(kind), VarType::Int(value))
                     }
