@@ -1668,12 +1668,8 @@ impl TemplateParameters for CompInfo {
     fn self_template_params(
         &self,
         _ctx: &BindgenContext,
-    ) -> Option<Vec<TypeId>> {
-        if self.template_params.is_empty() {
-            None
-        } else {
-            Some(self.template_params.clone())
-        }
+    ) -> Vec<TypeId> {
+        self.template_params.clone()
     }
 }
 
@@ -1684,7 +1680,7 @@ impl Trace for CompInfo {
     where
         T: Tracer,
     {
-        let params = item.all_template_params(context).unwrap_or(vec![]);
+        let params = item.all_template_params(context);
         for p in params {
             tracer.visit_kind(p.into(), EdgeKind::TemplateParameterDefinition);
         }
