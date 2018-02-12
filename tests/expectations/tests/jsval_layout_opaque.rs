@@ -128,24 +128,43 @@ pub enum JSValueShiftedTag {
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum JSWhyMagic {
+    /// a hole in a native object's elements
     JS_ELEMENTS_HOLE = 0,
+    /// there is not a pending iterator value
     JS_NO_ITER_VALUE = 1,
+    /// exception value thrown when closing a generator
     JS_GENERATOR_CLOSING = 2,
+    /// compiler sentinel value
     JS_NO_CONSTANT = 3,
+    /// used in debug builds to catch tracing errors
     JS_THIS_POISON = 4,
+    /// used in debug builds to catch tracing errors
     JS_ARG_POISON = 5,
+    /// an empty subnode in the AST serializer
     JS_SERIALIZE_NO_NODE = 6,
+    /// lazy arguments value on the stack
     JS_LAZY_ARGUMENTS = 7,
+    /// optimized-away 'arguments' value
     JS_OPTIMIZED_ARGUMENTS = 8,
+    /// magic value passed to natives to indicate construction
     JS_IS_CONSTRUCTING = 9,
+    /// arguments.callee has been overwritten
     JS_OVERWRITTEN_CALLEE = 10,
+    /// value of static block object slot
     JS_BLOCK_NEEDS_CLONE = 11,
+    /// see class js::HashableValue
     JS_HASH_KEY_EMPTY = 12,
+    /// error while running Ion code
     JS_ION_ERROR = 13,
+    /// missing recover instruction result
     JS_ION_BAILOUT = 14,
+    /// optimized out slot
     JS_OPTIMIZED_OUT = 15,
+    /// uninitialized lexical bindings that produce ReferenceError on touch.
     JS_UNINITIALIZED_LEXICAL = 16,
+    /// for local use
     JS_GENERIC_MAGIC = 17,
+    /// for local use
     JS_WHY_MAGIC_COUNT = 18,
 }
 #[repr(C)]

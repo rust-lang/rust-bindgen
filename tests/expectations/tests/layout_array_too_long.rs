@@ -11,8 +11,11 @@ pub const IP_MAX_FRAG_NUM: _bindgen_ty_1 = _bindgen_ty_1::IP_MAX_FRAG_NUM;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum _bindgen_ty_1 {
+    /// < index of last fragment
     IP_LAST_FRAG_IDX = 0,
+    /// < index of first fragment
     IP_FIRST_FRAG_IDX = 1,
+    /// < minimum number of fragments
     IP_MIN_FRAG_NUM = 2,
     IP_MAX_FRAG_NUM = 4,
 }
