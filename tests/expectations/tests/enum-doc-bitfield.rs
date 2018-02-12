@@ -12,6 +12,11 @@ pub const B_VAR_C: B = B(2);
 pub const B_VAR_D: B = B(3);
 /// < Document field with following exclamation
 pub const B_VAR_E: B = B(4);
+/// Document field with preceeding star, with a loong long multiline
+/// comment.
+///
+/// Very interesting documentation, definitely.
+pub const B_VAR_F: B = B(5);
 impl ::std::ops::BitOr<B> for B {
     type Output = Self;
     #[inline]

@@ -12,5 +12,10 @@ pub const B_VAR_C: B = 2;
 pub const B_VAR_D: B = 3;
 /// < Document field with following exclamation
 pub const B_VAR_E: B = 4;
+/// Document field with preceeding star, with a loong long multiline
+/// comment.
+///
+/// Very interesting documentation, definitely.
+pub const B_VAR_F: B = 5;
 /// Document enum
 pub type B = u32;
