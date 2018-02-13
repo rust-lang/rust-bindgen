@@ -2129,36 +2129,54 @@ impl EnumVariation {
 /// A helper type to construct different enum variations.
 enum EnumBuilder<'a> {
     Rust {
+        codegen_depth: usize,
         attrs: Vec<quote::Tokens>,
         ident: proc_macro2::Term,
         tokens: quote::Tokens,
         emitted_any_variants: bool,
     },
     Bitfield {
+        codegen_depth: usize,
         canonical_name: &'a str,
         tokens: quote::Tokens,
     },
-    Consts(Vec<quote::Tokens>),
+    Consts {
+        variants: Vec<quote::Tokens>,
+        codegen_depth: usize,
+    },
     ModuleConsts {
+        codegen_depth: usize,
         module_name: &'a str,
         module_items: Vec<quote::Tokens>,
     },
 }
 
 impl<'a> EnumBuilder<'a> {
+    /// Returns the depth of the code generation for a variant of this enum.
+    fn codegen_depth(&self) -> usize {
+        match *self {
+            EnumBuilder::Rust { codegen_depth, .. } |
+            EnumBuilder::Bitfield { codegen_depth, .. } |
+            EnumBuilder::ModuleConsts { codegen_depth, .. } |
+            EnumBuilder::Consts { codegen_depth, .. } => codegen_depth,
+        }
+    }
+
     /// Create a new enum given an item builder, a canonical name, a name for
     /// the representation, and which variation it should be generated as.
     fn new(
         name: &'a str,
         attrs: Vec<quote::Tokens>,
         repr: quote::Tokens,
-        enum_variation: EnumVariation
+        enum_variation: EnumVariation,
+        enum_codegen_depth: usize,
     ) -> Self {
         let ident = proc_macro2::Term::intern(name);
 
         match enum_variation {
             EnumVariation::Bitfield => {
                 EnumBuilder::Bitfield {
+                    codegen_depth: enum_codegen_depth,
                     canonical_name: name,
                     tokens: quote! {
                         #( #attrs )*
@@ -2170,6 +2188,7 @@ impl<'a> EnumBuilder<'a> {
             EnumVariation::Rust => {
                 let tokens = quote!();
                 EnumBuilder::Rust {
+                    codegen_depth: enum_codegen_depth + 1,
                     attrs,
                     ident,
                     tokens,
@@ -2178,20 +2197,26 @@ impl<'a> EnumBuilder<'a> {
             }
 
             EnumVariation::Consts => {
-                EnumBuilder::Consts(vec![
-                    quote! {
-                        pub type #ident = #repr;
-                    }
-                ])
+                EnumBuilder::Consts {
+                    variants: vec![
+                        quote! {
+                            #( #attrs )*
+                            pub type #ident = #repr;
+                        }
+                    ],
+                    codegen_depth: enum_codegen_depth,
+                }
             }
 
             EnumVariation::ModuleConsts => {
                 let ident = proc_macro2::Term::intern(CONSTIFIED_ENUM_MODULE_REPR_NAME);
                 let type_definition = quote! {
+                    #( #attrs )*
                     pub type #ident = #repr;
                 };
 
                 EnumBuilder::ModuleConsts {
+                    codegen_depth: enum_codegen_depth + 1,
                     module_name: name,
                     module_items: vec![type_definition],
                 }
@@ -2214,14 +2239,24 @@ impl<'a> EnumBuilder<'a> {
             EnumVariantValue::Unsigned(v) => helpers::ast_ty::uint_expr(v),
         };
 
+        let mut doc = quote! {};
+        if ctx.options().generate_comments {
+            if let Some(raw_comment) = variant.comment() {
+                let comment = comment::preprocess(raw_comment, self.codegen_depth());
+                doc = attributes::doc(comment);
+            }
+        }
+
         match self {
-            EnumBuilder::Rust { attrs, ident, tokens, emitted_any_variants: _ } => {
+            EnumBuilder::Rust { attrs, ident, tokens, emitted_any_variants: _, codegen_depth } => {
                 let name = ctx.rust_ident(variant_name);
                 EnumBuilder::Rust {
                     attrs,
                     ident,
+                    codegen_depth,
                     tokens: quote! {
                         #tokens
+                        #doc
                         #name = #expr,
                     },
                     emitted_any_variants: true,
@@ -2238,6 +2273,7 @@ impl<'a> EnumBuilder<'a> {
 
                 let ident = ctx.rust_ident(constant_name);
                 result.push(quote! {
+                    #doc
                     pub const #ident : #rust_ty = #rust_ty ( #expr );
                 });
 
@@ -2256,24 +2292,28 @@ impl<'a> EnumBuilder<'a> {
 
                 let ident = ctx.rust_ident(constant_name);
                 result.push(quote! {
+                    #doc
                     pub const #ident : #rust_ty = #expr ;
                 });
 
                 self
             }
             EnumBuilder::ModuleConsts {
+                codegen_depth,
                 module_name,
                 mut module_items,
             } => {
                 let name = ctx.rust_ident(variant_name);
                 let ty = ctx.rust_ident(CONSTIFIED_ENUM_MODULE_REPR_NAME);
                 module_items.push(quote! {
+                    #doc
                     pub const #name : #ty = #expr ;
                 });
 
                 EnumBuilder::ModuleConsts {
                     module_name,
                     module_items,
+                    codegen_depth,
                 }
             }
         }
@@ -2286,23 +2326,24 @@ impl<'a> EnumBuilder<'a> {
         result: &mut CodegenResult<'b>,
     ) -> quote::Tokens {
         match self {
-            EnumBuilder::Rust { attrs, ident, tokens, emitted_any_variants } => {
+            EnumBuilder::Rust { attrs, ident, tokens, emitted_any_variants, .. } => {
                 let variants = if !emitted_any_variants {
                     quote!(__bindgen_cannot_repr_c_on_empty_enum = 0)
                 } else {
                     tokens
                 };
 
-                quote! (
+                quote! {
                     #( #attrs )*
                     pub enum #ident {
                         #variants
                     }
-                )
+                }
             }
             EnumBuilder::Bitfield {
                 canonical_name,
                 tokens,
+                ..
             } => {
                 let rust_ty_name = ctx.rust_ident_raw(canonical_name);
                 let prefix = ctx.trait_prefix();
@@ -2349,10 +2390,11 @@ impl<'a> EnumBuilder<'a> {
 
                 tokens
             }
-            EnumBuilder::Consts(tokens) => quote! { #( #tokens )* },
+            EnumBuilder::Consts { variants, .. } => quote! { #( #variants )* },
             EnumBuilder::ModuleConsts {
                 module_items,
                 module_name,
+                ..
             } => {
                 let ident = ctx.rust_ident(module_name);
                 quote! {
@@ -2489,7 +2531,8 @@ impl CodeGenerator for Enum {
             &name,
             attrs,
             repr,
-            variation
+            variation,
+            item.codegen_depth(ctx),
         );
 
         // A map where we keep a value -> variant relation.
@@ -2522,8 +2565,7 @@ impl CodeGenerator for Enum {
         let mut iter = self.variants().iter().peekable();
         while let Some(variant) = iter.next().or_else(|| {
             constified_variants.pop_front()
-        })
-        {
+        }) {
             if variant.hidden() {
                 continue;
             }

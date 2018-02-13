@@ -161,13 +161,21 @@ pub const RTE_ETH_FLOW_MAX: u32 = 22;
 /// packets to multiple queues.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum rte_eth_rx_mq_mode {
+    /// None of DCB,RSS or VMDQ mode
     ETH_MQ_RX_NONE = 0,
+    /// For RX side, only RSS is on
     ETH_MQ_RX_RSS = 1,
+    /// For RX side,only DCB is on.
     ETH_MQ_RX_DCB = 2,
+    /// Both DCB and RSS enable
     ETH_MQ_RX_DCB_RSS = 3,
+    /// Only VMDQ, no RSS nor DCB
     ETH_MQ_RX_VMDQ_ONLY = 4,
+    /// RSS mode with VMDQ
     ETH_MQ_RX_VMDQ_RSS = 5,
+    /// Use VMDQ+DCB to route traffic to queues
     ETH_MQ_RX_VMDQ_DCB = 6,
+    /// Enable both VMDQ and DCB in VMDq
     ETH_MQ_RX_VMDQ_DCB_RSS = 7,
 }
 /// A structure used to configure the RX features of an Ethernet port.
@@ -393,9 +401,13 @@ impl rte_eth_rxmode {
 /// packets using multi-TCs.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum rte_eth_tx_mq_mode {
+    /// < It is in neither DCB nor VT mode.
     ETH_MQ_TX_NONE = 0,
+    /// < For TX side,only DCB is on.
     ETH_MQ_TX_DCB = 1,
+    /// < For TX side,both DCB and VT is on.
     ETH_MQ_TX_VMDQ_DCB = 2,
+    /// < Only VT on, no DCB
     ETH_MQ_TX_VMDQ_ONLY = 3,
 }
 /// A structure used to configure the TX features of an Ethernet port.
@@ -592,7 +604,9 @@ impl Default for rte_eth_rss_conf {
 /// in DCB configratioins
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum rte_eth_nb_tcs {
+    /// < 4 TCs with DCB.
     ETH_4_TCS = 4,
+    /// < 8 TCs with DCB.
     ETH_8_TCS = 8,
 }
 #[repr(u32)]
@@ -600,9 +614,13 @@ pub enum rte_eth_nb_tcs {
 /// in VMDQ configurations.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum rte_eth_nb_pools {
+    /// < 8 VMDq pools.
     ETH_8_POOLS = 8,
+    /// < 16 VMDq pools.
     ETH_16_POOLS = 16,
+    /// < 32 VMDq pools.
     ETH_32_POOLS = 32,
+    /// < 64 VMDq pools.
     ETH_64_POOLS = 64,
 }
 /// A structure used to configure the VMDQ+DCB feature
@@ -1153,10 +1171,15 @@ impl Default for rte_eth_vmdq_rx_conf {
 /// Flow Director setting modes: none, signature or perfect.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum rte_fdir_mode {
+    /// < Disable FDIR support.
     RTE_FDIR_MODE_NONE = 0,
+    /// < Enable FDIR signature filter mode.
     RTE_FDIR_MODE_SIGNATURE = 1,
+    /// < Enable FDIR perfect filter mode.
     RTE_FDIR_MODE_PERFECT = 2,
+    /// < Enable FDIR filter mode - MAC VLAN.
     RTE_FDIR_MODE_PERFECT_MAC_VLAN = 3,
+    /// < Enable FDIR filter mode - tunnel.
     RTE_FDIR_MODE_PERFECT_TUNNEL = 4,
 }
 #[repr(u32)]
@@ -1164,16 +1187,22 @@ pub enum rte_fdir_mode {
 /// in the board memory.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum rte_fdir_pballoc_type {
+    /// < 64k.
     RTE_FDIR_PBALLOC_64K = 0,
+    /// < 128k.
     RTE_FDIR_PBALLOC_128K = 1,
+    /// < 256k.
     RTE_FDIR_PBALLOC_256K = 2,
 }
 #[repr(u32)]
 /// Select report mode of FDIR hash information in RX descriptors.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum rte_fdir_status_mode {
+    /// < Never report FDIR hash.
     RTE_FDIR_NO_REPORT_STATUS = 0,
+    /// < Only report FDIR hash for matching pkts.
     RTE_FDIR_REPORT_STATUS = 1,
+    /// < Always report FDIR hash.
     RTE_FDIR_REPORT_STATUS_ALWAYS = 2,
 }
 /// A structure used to define the input for IPV4 flow
