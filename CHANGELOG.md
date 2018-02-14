@@ -9,31 +9,89 @@
   - [Removed](#removed)
   - [Fixed](#fixed)
   - [Security](#security)
-- [0.32.0](#0320)
+- [0.33.1](#0331)
+  - [Fixed](#fixed-1)
+- [0.33.0](#0330)
   - [Added](#added-1)
   - [Changed](#changed-1)
-  - [Fixed](#fixed-1)
-- [0.31.0](#0310)
-  - [Added](#added-2)
-  - [Changed](#changed-2)
   - [Deprecated](#deprecated-1)
   - [Removed](#removed-1)
   - [Fixed](#fixed-2)
-- [0.30.0](#0300)
+  - [Security](#security-1)
+- [0.32.2](#0322)
+  - [Fixed](#fixed-3)
+- [0.32.1](#0321)
+  - [Fixed](#fixed-4)
+- [0.32.0](#0320)
+  - [Added](#added-2)
+  - [Changed](#changed-2)
+  - [Fixed](#fixed-5)
+- [0.31.0](#0310)
   - [Added](#added-3)
   - [Changed](#changed-3)
   - [Deprecated](#deprecated-2)
-  - [Fixed](#fixed-3)
-- [0.29.0](#0290)
+  - [Removed](#removed-2)
+  - [Fixed](#fixed-6)
+- [0.30.0](#0300)
   - [Added](#added-4)
   - [Changed](#changed-4)
-  - [Fixed](#fixed-4)
+  - [Deprecated](#deprecated-3)
+  - [Fixed](#fixed-7)
+- [0.29.0](#0290)
+  - [Added](#added-5)
+  - [Changed](#changed-5)
+  - [Fixed](#fixed-8)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 --------------------------------------------------------------------------------
 
 # Unreleased
+
+Released YYYY/MM/DD
+
+## Added
+
+* TODO (or remove section if none)
+
+## Changed
+
+* TODO (or remove section if none)
+
+## Deprecated
+
+* TODO (or remove section if none)
+
+## Removed
+
+* TODO (or remove section if none)
+
+## Fixed
+
+* TODO (or remove section if none)
+
+## Security
+
+* TODO (or remove section if none)
+
+--------------------------------------------------------------------------------
+
+# 0.33.1
+
+Released 2018/02/14
+
+## Fixed
+
+* Reverted the dependency update to `quote = "0.4"` and addition of the
+  `proc_macro2` dependency. The `proc_macro2` crate depends on `rustc` internal
+  libraries, which means that CLIs which use it must be run under `rustup`,
+  which is not acceptable for `bindgen`. [#1248][]
+
+[#1248]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1248
+
+--------------------------------------------------------------------------------
+
+# 0.33.0
 
 Released YYYY/MM/DD
 

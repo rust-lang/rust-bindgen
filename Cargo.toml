@@ -13,7 +13,7 @@ name = "bindgen"
 readme = "README.md"
 repository = "https://github.com/rust-lang-nursery/rust-bindgen"
 documentation = "https://docs.rs/bindgen"
-version = "0.33.0"
+version = "0.33.1"
 build = "build.rs"
 
 include = [
@@ -47,10 +47,9 @@ clap = "2"
 clang-sys = { version = "0.21.0", features = ["runtime", "clang_3_9"] }
 lazy_static = "1"
 peeking_take_while = "0.1.2"
-quote = "0.4"
+quote = "0.3.15"
 regex = "0.2"
 which = "1.0.2"
-proc-macro2 = "0.2"
 
 [dependencies.env_logger]
 optional = true

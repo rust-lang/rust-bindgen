@@ -193,7 +193,7 @@ impl Abi {
 
 impl quote::ToTokens for Abi {
     fn to_tokens(&self, tokens: &mut quote::Tokens) {
-        tokens.append_all(match *self {
+        tokens.append(match *self {
             Abi::C => quote! { "C" },
             Abi::Stdcall => quote! { "stdcall" },
             Abi::Fastcall => quote! { "fastcall" },
