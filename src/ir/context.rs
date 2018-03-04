@@ -475,13 +475,13 @@ impl<'ctx> Iterator for WhitelistedItemsTraversal<'ctx> {
 
     fn next(&mut self) -> Option<ItemId> {
         loop {
-            match self.traversal.next() {
-                None => return None,
-                Some(id) if self.ctx.resolve_item(id).is_blacklisted(self.ctx) => {
-                    continue
-                }
-                Some(id) => return Some(id),
+            let id = self.traversal.next()?;
+
+            if self.ctx.resolve_item(id).is_blacklisted(self.ctx) {
+                continue
             }
+
+            return Some(id);
         }
     }
 }
@@ -1009,10 +1009,8 @@ impl BindgenContext {
         let comp_item_ids: Vec<ItemId> = self.items
             .iter()
             .filter_map(|(id, item)| {
-                if let Some(ty) = item.kind().as_type() {
-                    if let Some(_comp) = ty.as_comp() {
-                        return Some(id);
-                    }
+                if item.kind().as_type()?.is_comp() {
+                    return Some(id);
                 }
                 None
             })
@@ -1673,10 +1671,7 @@ impl BindgenContext {
                 }
                 clang_sys::CXCursor_TemplateRef => {
                     let (template_decl_cursor, template_decl_id, num_expected_template_args) =
-                        match self.get_declaration_info_for_template_instantiation(child) {
-                            Some(info) => info,
-                            None => return None,
-                        };
+                        self.get_declaration_info_for_template_instantiation(child)?;
 
                     if num_expected_template_args == 0 ||
                         child.has_at_least_num_children(
