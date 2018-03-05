@@ -1060,6 +1060,7 @@ impl BindgenContext {
             match *ty.kind() {
                 TypeKind::Comp(..) |
                 TypeKind::TemplateAlias(..) |
+                TypeKind::Enum(..) |
                 TypeKind::Alias(..) => {}
                 _ => continue,
             }
@@ -2060,7 +2061,7 @@ impl BindgenContext {
 
     /// Has the item with the given `name` and `id` been replaced by another
     /// type?
-    pub fn is_replaced_type<Id: Into<ItemId>>(&self, path: &[String], id: Id) -> bool {
+    fn is_replaced_type<Id: Into<ItemId>>(&self, path: &[String], id: Id) -> bool {
         let id = id.into();
         match self.replacements.get(path) {
             Some(replaced_by) if *replaced_by != id => true,
