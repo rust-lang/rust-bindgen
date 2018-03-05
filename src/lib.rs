@@ -147,13 +147,13 @@ impl Default for CodegenConfig {
 /// use bindgen::builder;
 ///
 /// // Configure and generate bindings.
-/// let bindings = try!(builder().header("path/to/input/header")
-///                              .whitelisted_type("SomeCoolClass")
-///                              .whitelisted_function("do_some_cool_thing")
-///                              .generate());
+/// let bindings = builder().header("path/to/input/header")
+///     .whitelisted_type("SomeCoolClass")
+///     .whitelisted_function("do_some_cool_thing")
+///     .generate()?;
 ///
 /// // Write the generated bindings to an output file.
-/// try!(bindings.write_to_file("path/to/output.rs"));
+/// bindings.write_to_file("path/to/output.rs")?;
 /// ```
 #[derive(Debug, Default)]
 pub struct Builder {
@@ -1648,7 +1648,7 @@ impl Bindings {
         {
             let _t = time::Timer::new("parse")
                                   .with_output(time_phases);
-            try!(parse(&mut context));
+            parse(&mut context)?;
         }
 
         let (items, options) = codegen::codegen(context);

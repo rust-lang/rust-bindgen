@@ -97,10 +97,10 @@ fn compare_generated_header(
     header: &PathBuf,
     builder: Builder,
 ) -> Result<(), Error> {
-    let file_name = try!(header.file_name().ok_or(Error::new(
+    let file_name = header.file_name().ok_or(Error::new(
         ErrorKind::Other,
         "compare_generated_header expects a file",
-    )));
+    ))?;
 
     let mut expectation = PathBuf::from(header);
     expectation.pop();
@@ -162,7 +162,7 @@ fn compare_generated_header(
     let mut expected = String::new();
     {
         if let Ok(expectation_file) = fs::File::open(&expectation) {
-            try!(BufReader::new(expectation_file).read_to_string(&mut expected));
+            BufReader::new(expectation_file).read_to_string(&mut expected)?;
         }
     }
 
@@ -195,22 +195,22 @@ fn compare_generated_header(
 
     // Override the diff.
     {
-        let mut expectation_file = try!(fs::File::create(&expectation));
-        try!(expectation_file.write_all(actual.as_bytes()));
+        let mut expectation_file = fs::File::create(&expectation)?;
+        expectation_file.write_all(actual.as_bytes())?;
     }
 
     Err(Error::new(ErrorKind::Other, "Header and binding differ!"))
 }
 
 fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
-    let source = try!(fs::File::open(header));
+    let source = fs::File::open(header)?;
     let reader = BufReader::new(source);
 
     // Scoop up bindgen-flags from test header
     let mut flags = Vec::with_capacity(2);
 
     for line in reader.lines() {
-        let line = try!(line);
+        let line = line?;
         if !line.starts_with("// bindgen") {
             continue;
         }
@@ -249,10 +249,10 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
     // - add header filename as 1st element
     // - prepend raw lines so they're in the right order for expected output
     // - append the test header's bindgen flags
-    let header_str = try!(header.to_str().ok_or(Error::new(
+    let header_str = header.to_str().ok_or(Error::new(
         ErrorKind::Other,
         "Invalid header file name",
-    )));
+    ))?;
 
     let prepend = [
         "bindgen",
