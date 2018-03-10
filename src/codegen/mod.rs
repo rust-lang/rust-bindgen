@@ -1527,6 +1527,7 @@ impl CodeGenerator for CompInfo {
             });
         }
 
+        let mut explicit_align = None;
         if is_opaque {
             // Opaque item should not have generated methods, fields.
             debug_assert!(fields.is_empty());
@@ -1534,6 +1535,8 @@ impl CodeGenerator for CompInfo {
 
             match layout {
                 Some(l) => {
+                    explicit_align = Some(l.align);
+
                     let ty = helpers::blob(l);
                     fields.push(quote! {
                         pub _bindgen_opaque_blob: #ty ,
@@ -1555,6 +1558,7 @@ impl CodeGenerator for CompInfo {
                     if layout.align == 1 {
                         packed = true;
                     } else {
+                        explicit_align = Some(layout.align);
                         let ty = helpers::blob(Layout::new(0, layout.align));
                         fields.push(quote! {
                             pub __bindgen_align: #ty ,
@@ -1636,6 +1640,18 @@ impl CodeGenerator for CompInfo {
         } else {
             attributes.push(attributes::repr("C"));
         }
+
+        if ctx.options().rust_features().repr_align() {
+            if let Some(explicit) = explicit_align {
+                // Ensure that the struct has the correct alignment even in
+                // presence of alignas.
+                let explicit = helpers::ast_ty::int_expr(explicit as i64);
+                attributes.push(quote! {
+                    #[repr(align(#explicit))]
+                });
+            }
+        }
+
 
         let mut derives = vec![];
         if item.can_derive_debug(ctx) {

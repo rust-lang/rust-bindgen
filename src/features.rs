@@ -92,6 +92,8 @@ macro_rules! rust_target_base {
             => Stable_1_19 => 1.19;
             /// Rust stable 1.21
             => Stable_1_21 => 1.21;
+            /// Rust stable 1.24
+            => Stable_1_24 => 1.24;
             /// Nightly rust
             => Nightly => nightly;
         );
@@ -144,6 +146,8 @@ rust_feature_def!(
     => thiscall_abi;
     /// builtin impls for `Clone` ([PR](https://github.com/rust-lang/rust/pull/43690))
     => builtin_clone_impls;
+    /// repr(align) https://github.com/rust-lang/rust/pull/47006
+    => repr_align;
 );
 
 impl From<RustTarget> for RustFeatures {
@@ -156,6 +160,10 @@ impl From<RustTarget> for RustFeatures {
 
         if rust_target >= RustTarget::Stable_1_21 {
             features.builtin_clone_impls = true;
+        }
+
+        if rust_target >= RustTarget::Stable_1_24 {
+            features.repr_align = true;
         }
 
         if rust_target >= RustTarget::Nightly {
