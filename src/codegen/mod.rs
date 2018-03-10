@@ -1641,7 +1641,7 @@ impl CodeGenerator for CompInfo {
             attributes.push(attributes::repr("C"));
         }
 
-        if ctx.options().rust_features().repr_align() {
+        if ctx.options().rust_features().repr_align {
             if let Some(explicit) = explicit_align {
                 // Ensure that the struct has the correct alignment even in
                 // presence of alignas.
@@ -1671,7 +1671,7 @@ impl CodeGenerator for CompInfo {
         if item.can_derive_copy(ctx) && !item.annotations().disallow_copy() {
             derives.push("Copy");
 
-            if ctx.options().rust_features().builtin_clone_impls() ||
+            if ctx.options().rust_features().builtin_clone_impls ||
                 used_template_params.is_some()
             {
                 // FIXME: This requires extra logic if you have a big array in a
@@ -2012,7 +2012,7 @@ impl MethodCodegen for Method {
             _ => panic!("How in the world?"),
         };
 
-        if let (Abi::ThisCall, false) = (signature.abi(), ctx.options().rust_features().thiscall_abi()) {
+        if let (Abi::ThisCall, false) = (signature.abi(), ctx.options().rust_features().thiscall_abi) {
             return;
         }
 
@@ -3183,7 +3183,7 @@ impl TryToRustTy for FunctionSig {
         let abi = self.abi();
 
         match abi {
-            Abi::ThisCall if !ctx.options().rust_features().thiscall_abi() => {
+            Abi::ThisCall if !ctx.options().rust_features().thiscall_abi => {
                 warn!("Skipping function with thiscall ABI that isn't supported by the configured Rust target");
                 Ok(quote::Tokens::new())
             }
@@ -3280,7 +3280,7 @@ impl CodeGenerator for Function {
         }
 
         let abi = match signature.abi() {
-            Abi::ThisCall if !ctx.options().rust_features().thiscall_abi() => {
+            Abi::ThisCall if !ctx.options().rust_features().thiscall_abi => {
                 warn!("Skipping function with thiscall ABI that isn't supported by the configured Rust target");
                 return;
             }

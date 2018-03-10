@@ -113,7 +113,10 @@ macro_rules! rust_feature_def {
         #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
         pub struct RustFeatures {
             $(
-                $feature: bool,
+                $(
+                    #[$attr]
+                )*
+                pub $feature: bool,
             )*
         }
 
@@ -126,15 +129,6 @@ macro_rules! rust_feature_def {
                     )*
                 }
             }
-
-            $(
-                $(
-                    #[$attr]
-                )*
-                pub fn $feature(&self) -> bool {
-                    self.$feature
-                }
-            )*
         }
     }
 }
