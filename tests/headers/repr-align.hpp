@@ -4,3 +4,8 @@ struct alignas(8) a {
   int b;
   int c;
 };
+
+struct alignas(double) b {
+  int b;
+  int c;
+};
