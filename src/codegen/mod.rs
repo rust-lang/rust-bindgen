@@ -2461,12 +2461,14 @@ impl CodeGenerator for Enum {
             }
         };
 
+        // ModuleConsts has higher precedence before Rust in order to avoid problems with
+        // overlapping match patterns
         let variation = if self.is_bitfield(ctx, item) {
             EnumVariation::Bitfield
-        } else if self.is_rustified_enum(ctx, item) {
-            EnumVariation::Rust
         } else if self.is_constified_enum_module(ctx, item) {
             EnumVariation::ModuleConsts
+        } else if self.is_rustified_enum(ctx, item) {
+            EnumVariation::Rust
         } else {
             // We generate consts by default
             EnumVariation::Consts
