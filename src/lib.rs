@@ -600,6 +600,12 @@ impl Builder {
         self
     }
 
+    /// Disable support for native Rust unions, if supported.
+    pub fn disable_untagged_union(mut self) -> Self {
+        self.options.rust_features.untagged_union = false;
+        self
+    }
+
     /// Set the output graphviz file.
     pub fn emit_ir_graphviz<T: Into<String>>(mut self, path: T) -> Builder {
         let path = path.into();
