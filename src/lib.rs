@@ -155,6 +155,23 @@ impl Default for CodegenConfig {
 /// // Write the generated bindings to an output file.
 /// bindings.write_to_file("path/to/output.rs")?;
 /// ```
+///
+/// # Enums
+///
+/// Bindgen can map C/C++ enums into Rust in different ways. The way bindgen maps enums depends on
+/// the pattern passed to several methods:
+///
+/// 1. [`bitfield_enum()`](#method.bitfield_enum)
+/// 2. [`constified_enum_module()`](#method.constified_enum_module)
+/// 3. [`rustified_enum()`](#method.rustified_enum)
+///
+/// For each C enum, bindgen tries to match the pattern in the following order:
+///
+/// 1. Bitfield enum
+/// 2. Constified enum module
+/// 3. Rustified enum
+///
+/// If none of the above patterns match, then bindgen will generate a set of Rust constants.
 #[derive(Debug, Default)]
 pub struct Builder {
     options: BindgenOptions,
