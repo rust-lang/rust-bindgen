@@ -46,7 +46,7 @@ impl<T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
 }
 impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct TErrorResult {
     pub mResult: ::std::os::raw::c_int,
     pub __bindgen_anon_1: TErrorResult__bindgen_ty_1,
@@ -61,21 +61,54 @@ pub enum TErrorResult_UnionState {
     HasMessage = 0,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy)]
 pub struct TErrorResult_Message {
     _unused: [u8; 0],
 }
+impl Clone for TErrorResult_Message {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy)]
 pub struct TErrorResult_DOMExceptionInfo {
     _unused: [u8; 0],
 }
+impl Clone for TErrorResult_DOMExceptionInfo {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct TErrorResult__bindgen_ty_1 {
     pub mMessage: __BindgenUnionField<*mut TErrorResult_Message>,
     pub mDOMExceptionInfo: __BindgenUnionField<*mut TErrorResult_DOMExceptionInfo>,
     pub bindgen_union_field: u64,
+}
+#[test]
+fn bindgen_test_layout_TErrorResult__bindgen_ty_1() {
+    assert_eq!(
+        ::std::mem::size_of::<TErrorResult__bindgen_ty_1>(),
+        8usize,
+        concat!("Size of: ", stringify!(TErrorResult__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<TErrorResult__bindgen_ty_1>(),
+        8usize,
+        concat!("Alignment of ", stringify!(TErrorResult__bindgen_ty_1))
+    );
+}
+impl Clone for TErrorResult__bindgen_ty_1 {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl Clone for TErrorResult {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for TErrorResult {
     fn default() -> Self {

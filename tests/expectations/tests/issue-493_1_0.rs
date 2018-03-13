@@ -46,7 +46,7 @@ impl<T> ::std::cmp::PartialEq for __BindgenUnionField<T> {
 }
 impl<T> ::std::cmp::Eq for __BindgenUnionField<T> {}
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct basic_string {
     pub _address: u8,
 }
@@ -54,11 +54,16 @@ pub type basic_string_size_type = ::std::os::raw::c_ulonglong;
 pub type basic_string_value_type = ::std::os::raw::c_char;
 pub type basic_string_pointer = *mut basic_string_value_type;
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct basic_string___long {
     pub __cap_: basic_string_size_type,
     pub __size_: basic_string_size_type,
     pub __data_: basic_string_pointer,
+}
+impl Clone for basic_string___long {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for basic_string___long {
     fn default() -> Self {
@@ -73,17 +78,43 @@ pub enum basic_string__bindgen_ty_1 {
     __min_cap = 0,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct basic_string___short {
     pub __bindgen_anon_1: basic_string___short__bindgen_ty_1,
     pub __data_: *mut basic_string_value_type,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Hash, PartialEq, Eq)]
 pub struct basic_string___short__bindgen_ty_1 {
     pub __size_: __BindgenUnionField<::std::os::raw::c_uchar>,
     pub __lx: __BindgenUnionField<basic_string_value_type>,
     pub bindgen_union_field: u8,
+}
+#[test]
+fn bindgen_test_layout_basic_string___short__bindgen_ty_1() {
+    assert_eq!(
+        ::std::mem::size_of::<basic_string___short__bindgen_ty_1>(),
+        1usize,
+        concat!("Size of: ", stringify!(basic_string___short__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<basic_string___short__bindgen_ty_1>(),
+        1usize,
+        concat!(
+            "Alignment of ",
+            stringify!(basic_string___short__bindgen_ty_1)
+        )
+    );
+}
+impl Clone for basic_string___short__bindgen_ty_1 {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+impl Clone for basic_string___short {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for basic_string___short {
     fn default() -> Self {
@@ -91,11 +122,29 @@ impl Default for basic_string___short {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy)]
 pub struct basic_string___ulx {
     pub __lx: __BindgenUnionField<basic_string___long>,
     pub __lxx: __BindgenUnionField<basic_string___short>,
     pub bindgen_union_field: [u8; 0usize],
+}
+#[test]
+fn bindgen_test_layout_basic_string___ulx() {
+    assert_eq!(
+        ::std::mem::size_of::<basic_string___ulx>(),
+        0usize,
+        concat!("Size of: ", stringify!(basic_string___ulx))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<basic_string___ulx>(),
+        0usize,
+        concat!("Alignment of ", stringify!(basic_string___ulx))
+    );
+}
+impl Clone for basic_string___ulx {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for basic_string___ulx {
     fn default() -> Self {
@@ -110,9 +159,14 @@ pub enum basic_string__bindgen_ty_2 {
     __n_words = 0,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Copy, Hash, PartialEq, Eq)]
 pub struct basic_string___raw {
     pub __words: *mut basic_string_size_type,
+}
+impl Clone for basic_string___raw {
+    fn clone(&self) -> Self {
+        *self
+    }
 }
 impl Default for basic_string___raw {
     fn default() -> Self {
@@ -120,25 +174,56 @@ impl Default for basic_string___raw {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy)]
 pub struct basic_string___rep {
     pub __bindgen_anon_1: basic_string___rep__bindgen_ty_1,
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy)]
 pub struct basic_string___rep__bindgen_ty_1 {
     pub __l: __BindgenUnionField<basic_string___long>,
     pub __s: __BindgenUnionField<basic_string___short>,
     pub __r: __BindgenUnionField<basic_string___raw>,
     pub bindgen_union_field: [u8; 0usize],
 }
+#[test]
+fn bindgen_test_layout_basic_string___rep__bindgen_ty_1() {
+    assert_eq!(
+        ::std::mem::size_of::<basic_string___rep__bindgen_ty_1>(),
+        0usize,
+        concat!("Size of: ", stringify!(basic_string___rep__bindgen_ty_1))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<basic_string___rep__bindgen_ty_1>(),
+        0usize,
+        concat!(
+            "Alignment of ",
+            stringify!(basic_string___rep__bindgen_ty_1)
+        )
+    );
+}
+impl Clone for basic_string___rep__bindgen_ty_1 {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 impl Default for basic_string___rep__bindgen_ty_1 {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
     }
 }
+impl Clone for basic_string___rep {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
 impl Default for basic_string___rep {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
+    }
+}
+impl Clone for basic_string {
+    fn clone(&self) -> Self {
+        *self
     }
 }

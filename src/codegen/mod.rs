@@ -299,20 +299,20 @@ impl AppendImplicitTemplateParams for quote::Tokens {
             _ => {},
         }
 
-        if let Some(params) = item.used_template_params(ctx) {
-            if params.is_empty() {
-                return;
-            }
+        let params = item.used_template_params(ctx);
 
-            let params = params.into_iter().map(|p| {
-                p.try_to_rust_ty(ctx, &())
-                    .expect("template params cannot fail to be a rust type")
-            });
-
-            self.append(quote! {
-                < #( #params ),* >
-            });
+        if params.is_empty() {
+            return;
         }
+
+        let params = params.into_iter().map(|p| {
+            p.try_to_rust_ty(ctx, &())
+                .expect("template params cannot fail to be a rust type")
+        });
+
+        self.append(quote! {
+            < #( #params ),* >
+        });
     }
 }
 
@@ -480,10 +480,8 @@ impl CodeGenerator for Var {
         // number of actual variables for a single declaration are open ended
         // and we don't know what instantiations do or don't exist.
         let type_params = item.all_template_params(ctx);
-        if let Some(params) = type_params {
-            if !params.is_empty() {
-                return;
-            }
+        if !type_params.is_empty() {
+            return;
         }
 
         let ty = self.ty().to_rust_ty_or_opaque(ctx, &());
@@ -636,12 +634,8 @@ impl CodeGenerator for Type {
                     return;
                 }
 
-                let mut outer_params = item.used_template_params(ctx)
-                    .and_then(|ps| if ps.is_empty() {
-                        None
-                    } else {
-                        Some(ps)
-                    });
+                let used_params = item.used_template_params(ctx);
+                let mut outer_params = if used_params.is_empty() { None } else { Some(used_params) };
 
                 let inner_rust_type = if item.is_opaque(ctx, &()) {
                     outer_params = None;
@@ -1597,21 +1591,20 @@ impl CodeGenerator for CompInfo {
 
         let mut generic_param_names = vec![];
 
-        if let Some(ref params) = used_template_params {
-            for (idx, ty) in params.iter().enumerate() {
-                let param = ctx.resolve_type(*ty);
-                let name = param.name().unwrap();
-                let ident = ctx.rust_ident(name);
-                generic_param_names.push(ident.clone());
 
-                let prefix = ctx.trait_prefix();
-                let field_name = ctx.rust_ident(format!("_phantom_{}", idx));
-                fields.push(quote! {
-                    pub #field_name : ::#prefix::marker::PhantomData<
-                        ::#prefix::cell::UnsafeCell<#ident>
-                    > ,
-                });
-            }
+        for (idx, ty) in used_template_params.iter().enumerate() {
+            let param = ctx.resolve_type(*ty);
+            let name = param.name().unwrap();
+            let ident = ctx.rust_ident(name);
+            generic_param_names.push(ident.clone());
+
+            let prefix = ctx.trait_prefix();
+            let field_name = ctx.rust_ident(format!("_phantom_{}", idx));
+            fields.push(quote! {
+                pub #field_name : ::#prefix::marker::PhantomData<
+                    ::#prefix::cell::UnsafeCell<#ident>
+                > ,
+            });
         }
 
         let generics = if !generic_param_names.is_empty() {
@@ -1656,7 +1649,7 @@ impl CodeGenerator for CompInfo {
             derives.push("Copy");
 
             if ctx.options().rust_features().builtin_clone_impls() ||
-                used_template_params.is_some()
+                !used_template_params.is_empty()
             {
                 // FIXME: This requires extra logic if you have a big array in a
                 // templated struct. The reason for this is that the magic:
@@ -1738,7 +1731,7 @@ impl CodeGenerator for CompInfo {
             );
         }
 
-        if used_template_params.is_none() {
+        if used_template_params.is_empty() {
             if !is_opaque {
                 for var in self.inner_vars() {
                     ctx.resolve_item(*var).codegen(ctx, result, &());
@@ -2993,7 +2986,6 @@ impl TryToRustTy for Type {
             TypeKind::TemplateAlias(..) |
             TypeKind::Alias(..) => {
                 let template_params = item.used_template_params(ctx)
-                    .unwrap_or(vec![])
                     .into_iter()
                     .filter(|param| param.is_template_param(ctx, &()))
                     .collect::<Vec<_>>();
@@ -3014,7 +3006,7 @@ impl TryToRustTy for Type {
             TypeKind::Comp(ref info) => {
                 let template_params = item.used_template_params(ctx);
                 if info.has_non_type_template_params() ||
-                    (item.is_opaque(ctx, &()) && template_params.is_some())
+                    (item.is_opaque(ctx, &()) && !template_params.is_empty())
                 {
                     return self.try_to_opaque(ctx, item);
                 }
@@ -3108,18 +3100,16 @@ impl TryToRustTy for TemplateInstantiation {
         let def_path = def.namespace_aware_canonical_path(ctx);
         ty.append_separated(def_path.into_iter().map(|p| ctx.rust_ident(p)), "::");
 
-        let def_params = match def.self_template_params(ctx) {
-            Some(params) => params,
-            None => {
-                // This can happen if we generated an opaque type for a partial
-                // template specialization, and we've hit an instantiation of
-                // that partial specialization.
-                extra_assert!(
-                    def.is_opaque(ctx, &())
-                );
-                return Err(error::Error::InstantiationOfOpaqueType);
-            }
-        };
+        let def_params = def.self_template_params(ctx);
+        if def_params.is_empty() {
+            // This can happen if we generated an opaque type for a partial
+            // template specialization, and we've hit an instantiation of
+            // that partial specialization.
+            extra_assert!(
+                def.is_opaque(ctx, &())
+            );
+            return Err(error::Error::InstantiationOfOpaqueType);
+        }
 
         // TODO: If the definition type is a template class/struct
         // definition's member template definition, it could rely on
@@ -3213,10 +3203,8 @@ impl CodeGenerator for Function {
         // instantiations is open ended and we have no way of knowing which
         // monomorphizations actually exist.
         let type_params = item.all_template_params(ctx);
-        if let Some(params) = type_params {
-            if !params.is_empty() {
-                return;
-            }
+        if !type_params.is_empty() {
+            return;
         }
 
         let name = self.name();
