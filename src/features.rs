@@ -92,8 +92,8 @@ macro_rules! rust_target_base {
             => Stable_1_19 => 1.19;
             /// Rust stable 1.21
             => Stable_1_21 => 1.21;
-            /// Rust stable 1.24
-            => Stable_1_24 => 1.24;
+            /// Rust stable 1.25
+            => Stable_1_25 => 1.25;
             /// Nightly rust
             => Nightly => nightly;
         );
@@ -156,7 +156,7 @@ impl From<RustTarget> for RustFeatures {
             features.builtin_clone_impls = true;
         }
 
-        if rust_target >= RustTarget::Stable_1_24 {
+        if rust_target >= RustTarget::Stable_1_25 {
             features.repr_align = true;
         }
 
@@ -191,6 +191,7 @@ mod test {
         test_target("1.0", RustTarget::Stable_1_0);
         test_target("1.19", RustTarget::Stable_1_19);
         test_target("1.21", RustTarget::Stable_1_21);
+        test_target("1.25", RustTarget::Stable_1_25);
         test_target("nightly", RustTarget::Nightly);
     }
 }
