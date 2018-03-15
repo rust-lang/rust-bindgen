@@ -7,6 +7,7 @@ use ir::context::BindgenContext;
 use ir::layout::Layout;
 use ir::ty::{Type, TypeKind};
 use quote;
+use proc_macro2;
 use std::cmp;
 
 /// Trace the layout of struct.
@@ -310,7 +311,7 @@ impl<'a> StructLayoutTracker<'a> {
 
         self.padding_count += 1;
 
-        let padding_field_name = quote::Ident::new(format!("__bindgen_padding_{}", padding_count));
+        let padding_field_name = proc_macro2::Term::intern(&format!("__bindgen_padding_{}", padding_count));
 
         self.max_field_align = cmp::max(self.max_field_align, layout.align);
 
