@@ -1776,8 +1776,9 @@ impl CodeGenerator for CompInfo {
                     let align = layout.align;
 
                     let check_struct_align =
-                        if align > ctx.target_pointer_size() {
-                            // FIXME when [RFC 1358](https://github.com/rust-lang/rust/issues/33626) ready
+                        if align > ctx.target_pointer_size() &&
+                            !ctx.options().rust_features().repr_align
+                        {
                             None
                         } else {
                             Some(quote! {

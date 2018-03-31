@@ -286,8 +286,18 @@ impl<'a> StructLayoutTracker<'a> {
     }
 
     pub fn requires_explicit_align(&self, layout: Layout) -> bool {
-        self.max_field_align < layout.align &&
-            layout.align <= self.ctx.target_pointer_size()
+        if self.max_field_align >= layout.align {
+            return false;
+        }
+        // At this point we require explicit alignment, but we may not be able
+        // to generate the right bits, let's double check.
+        if self.ctx.options().rust_features().repr_align {
+            return true;
+        }
+
+        // We can only generate up-to a word of alignment unless we support
+        // repr(align).
+        layout.align <= self.ctx.target_pointer_size()
     }
 
     fn padding_bytes(&self, layout: Layout) -> usize {
