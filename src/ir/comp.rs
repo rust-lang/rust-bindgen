@@ -1290,9 +1290,10 @@ impl CompInfo {
                         return CXChildVisit_Continue;
                     }
 
+                    // Even if this is a definition, we may not be the semantic
+                    // parent, see #1281.
                     let inner = Item::parse(cur, Some(potential_id), ctx)
                         .expect("Inner ClassDecl");
-                    assert_eq!(ctx.resolve_item(inner).parent_id(), potential_id);
 
                     let inner = inner.expect_type_id(ctx);
 
