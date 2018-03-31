@@ -16,7 +16,6 @@ use clang::{self, Cursor};
 use parse::{ClangItemParser, ParseError, ParseResult};
 use std::borrow::Cow;
 use std::io;
-use std::mem;
 
 /// The base representation of a type in bindgen.
 ///
@@ -232,8 +231,6 @@ impl Type {
 
     /// What is the layout of this type?
     pub fn layout(&self, ctx: &BindgenContext) -> Option<Layout> {
-        use std::mem;
-
         self.layout.or_else(|| {
             match self.kind {
                 TypeKind::Comp(ref ci) => ci.layout(ctx),
@@ -242,8 +239,8 @@ impl Type {
                 TypeKind::Pointer(..) |
                 TypeKind::BlockPointer => {
                     Some(Layout::new(
-                        mem::size_of::<*mut ()>(),
-                        mem::align_of::<*mut ()>(),
+                        ctx.target_pointer_size(),
+                        ctx.target_pointer_size(),
                     ))
                 }
                 TypeKind::ResolvedTypeRef(inner) => {
@@ -594,17 +591,6 @@ pub enum FloatKind {
     LongDouble,
     /// A `__float128`.
     Float128,
-}
-
-impl FloatKind {
-    /// If this type has a known size, return it (in bytes).
-    pub fn known_size(&self) -> usize {
-        match *self {
-            FloatKind::Float => mem::size_of::<f32>(),
-            FloatKind::Double | FloatKind::LongDouble => mem::size_of::<f64>(),
-            FloatKind::Float128 => mem::size_of::<f64>() * 2,
-        }
-    }
 }
 
 /// The different kinds of types that we can parse.

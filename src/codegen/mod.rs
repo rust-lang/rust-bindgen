@@ -45,7 +45,6 @@ use std::collections::{HashSet, VecDeque};
 use std::collections::hash_map::{Entry, HashMap};
 use std::fmt::Write;
 use std::iter;
-use std::mem;
 use std::ops;
 
 // Name of type defined in constified enum module
@@ -1777,7 +1776,7 @@ impl CodeGenerator for CompInfo {
                     let align = layout.align;
 
                     let check_struct_align =
-                        if align > mem::size_of::<*mut ()>() {
+                        if align > ctx.target_pointer_size() {
                             // FIXME when [RFC 1358](https://github.com/rust-lang/rust/issues/33626) ready
                             None
                         } else {
@@ -2720,9 +2719,8 @@ trait TryToOpaque {
 /// leverage the blanket impl for this trait.
 trait ToOpaque: TryToOpaque {
     fn get_layout(&self, ctx: &BindgenContext, extra: &Self::Extra) -> Layout {
-        self.try_get_layout(ctx, extra).unwrap_or_else(
-            |_| Layout::for_size(1),
-        )
+        self.try_get_layout(ctx, extra)
+            .unwrap_or_else(|_| Layout::for_size(ctx, 1))
     }
 
     fn to_opaque(
