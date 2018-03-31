@@ -343,19 +343,6 @@ impl Builder {
             output_vector.push("--disable-name-namespacing".into());
         }
 
-        self.options
-            .links
-            .iter()
-            .map(|&(ref item, _)| {
-                output_vector.push("--framework".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
-            })
-            .count();
-
         if !self.options.codegen_config.functions {
             output_vector.push("--ignore-functions".into());
         }
@@ -389,19 +376,6 @@ impl Builder {
             output_vector.push("--ignore-methods".into());
         }
 
-        self.options
-            .links
-            .iter()
-            .map(|&(ref item, _)| {
-                output_vector.push("--clang-args".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
-            })
-            .count();
-
         if !self.options.convert_floats {
             output_vector.push("--no-convert-floats".into());
         }
@@ -429,19 +403,6 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--raw-line".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
-            })
-            .count();
-
-        self.options
-            .links
-            .iter()
-            .map(|&(ref item, _)| {
-                output_vector.push("--static".into());
                 output_vector.push(
                     item.trim_left_matches("^")
                         .trim_right_matches("$")
@@ -821,26 +782,6 @@ impl Builder {
         for arg in iter {
             self = self.clang_arg(arg.as_ref())
         }
-        self
-    }
-
-    /// Make the generated bindings link the given shared library.
-    pub fn link<T: Into<String>>(mut self, library: T) -> Builder {
-        self.options.links.push((library.into(), LinkType::Default));
-        self
-    }
-
-    /// Make the generated bindings link the given static library.
-    pub fn link_static<T: Into<String>>(mut self, library: T) -> Builder {
-        self.options.links.push((library.into(), LinkType::Static));
-        self
-    }
-
-    /// Make the generated bindings link the given framework.
-    pub fn link_framework<T: Into<String>>(mut self, library: T) -> Builder {
-        self.options.links.push(
-            (library.into(), LinkType::Framework),
-        );
         self
     }
 
@@ -1277,9 +1218,6 @@ struct BindgenOptions {
     /// Whether we should generate builtins or not.
     builtins: bool,
 
-    /// The set of libraries we should link in the generated Rust code.
-    links: Vec<(String, LinkType)>,
-
     /// True if we should dump the Clang AST for debugging purposes.
     emit_ast: bool,
 
@@ -1484,7 +1422,6 @@ impl Default for BindgenOptions {
             rustified_enums: Default::default(),
             constified_enum_modules: Default::default(),
             builtins: false,
-            links: vec![],
             emit_ast: false,
             emit_ir: false,
             emit_ir_graphviz: None,
@@ -1527,19 +1464,6 @@ impl Default for BindgenOptions {
             no_hash_types: Default::default(),
         }
     }
-}
-
-/// The linking type to use with a given library.
-///
-/// TODO: #104: This is ignored at the moment, but shouldn't be.
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub enum LinkType {
-    /// Use shared library linking. This is the default.
-    Default,
-    /// Use static linking.
-    Static,
-    /// The library is an OSX framework.
-    Framework,
 }
 
 fn ensure_libclang_is_loaded() {
