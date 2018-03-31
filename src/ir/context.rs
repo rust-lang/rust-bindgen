@@ -2291,7 +2291,11 @@ impl BindgenContext {
             if self.options().whitelist_recursively {
                 traversal::all_edges
             } else {
-                traversal::no_edges
+                // Only follow InnerType edges from the whitelisted roots.
+                // Such inner types (e.g. anonymous structs/unions) are
+                // always emitted by codegen, and they need to be whitelisted
+                // to make sure they are processed by e.g. the derive analysis.
+                traversal::only_inner_type_edges
             };
 
         let whitelisted = WhitelistedItemsTraversal::new(
