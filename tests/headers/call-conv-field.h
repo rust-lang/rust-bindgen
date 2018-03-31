@@ -1,11 +1,8 @@
-// bindgen-flags: -- --target=i686-pc-win32
+// bindgen-flags: --raw-line "#![cfg(not(test))]" -- --target=i686-pc-win32
 // bindgen-unstable
-// bindgen-generate-bindings-on-linux-only
 //
-// The linux-only thing is a hack around our lack of understanding when
-// bindgen's target_os != the bindings' target_os :(
-//
-// https://github.com/rust-lang-nursery/rust-bindgen/issues/593
+// We can only check that this builds, but not that it actually passes, because
+// we have no CI on the target platform.
 
 struct JNINativeInterface_ {
   int (__stdcall *GetVersion)(void *env);
