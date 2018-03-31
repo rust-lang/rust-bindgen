@@ -13,6 +13,7 @@ use ir::derive::{CanTriviallyDeriveDebug, CanTriviallyDeriveHash,
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use quote;
 use std::io;
+use regex::Regex;
 
 const RUST_DERIVE_FUNPTR_LIMIT: usize = 12;
 
@@ -327,6 +328,11 @@ impl FunctionSig {
         ctx: &mut BindgenContext,
     ) -> Result<Self, ParseError> {
         use clang_sys::*;
+
+        lazy_static! {
+            static ref OperatorRegex: Regex = Regex::new("^operator[^a-zA-Z0-9_]").unwrap();
+        }
+
         debug!("FunctionSig::from_ty {:?} {:?}", ty, cursor);
 
         // Skip function templates
@@ -336,7 +342,7 @@ impl FunctionSig {
 
         // Don't parse operatorxx functions in C++
         let spelling = cursor.spelling();
-        if spelling.starts_with("operator") {
+        if OperatorRegex.is_match(spelling.as_str()) {
             return Err(ParseError::Continue);
         }
 
