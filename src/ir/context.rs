@@ -366,6 +366,9 @@ pub struct BindgenContext {
     /// The translation unit for parsing.
     translation_unit: clang::TranslationUnit,
 
+    /// Target information that can be useful for some stuff.
+    target_info: Option<clang::TargetInfo>,
+
     /// The options given by the user via cli or other medium.
     options: BindgenOptions,
 
@@ -503,6 +506,9 @@ impl<'ctx> WhitelistedItemsTraversal<'ctx> {
     }
 }
 
+const HOST_TARGET: &'static str =
+    include_str!(concat!(env!("OUT_DIR"), "/host-target.txt"));
+
 /// Returns the effective target, and whether it was explicitly specified on the
 /// clang flags.
 fn find_effective_target(clang_args: &[String]) -> (String, bool) {
@@ -521,8 +527,6 @@ fn find_effective_target(clang_args: &[String]) -> (String, bool) {
         return (t, false)
     }
 
-    const HOST_TARGET: &'static str =
-        include_str!(concat!(env!("OUT_DIR"), "/host-target.txt"));
     (HOST_TARGET.to_owned(), false)
 }
 
@@ -561,6 +565,17 @@ impl BindgenContext {
             ).expect("TranslationUnit::parse failed")
         };
 
+        let target_info = clang::TargetInfo::new(&translation_unit);
+
+        #[cfg(debug_assertions)]
+        {
+            if let Some(ref ti) = target_info {
+                if effective_target == HOST_TARGET {
+                    assert_eq!(ti.pointer_width / 8, mem::size_of::<*mut ()>());
+                }
+            }
+        }
+
         let root_module = Self::build_root_module(ItemId(0));
         let root_module_id = root_module.id().as_module_id_unchecked();
 
@@ -578,9 +593,10 @@ impl BindgenContext {
             replacements: Default::default(),
             collected_typerefs: false,
             in_codegen: false,
-            index: index,
-            translation_unit: translation_unit,
-            options: options,
+            index,
+            translation_unit,
+            target_info,
+            options,
             generated_bindegen_complex: Cell::new(false),
             whitelisted: None,
             codegen_items: None,
@@ -609,6 +625,15 @@ impl BindgenContext {
     /// nothing.
     pub fn timer<'a>(&self, name: &'a str) -> Timer<'a> {
         Timer::new(name).with_output(self.options.time_phases)
+    }
+
+    /// Returns the pointer width to use for the target for the current
+    /// translation.
+    pub fn target_pointer_size(&self) -> usize {
+        if let Some(ref ti) = self.target_info {
+            return ti.pointer_width / 8;
+        }
+        mem::size_of::<*mut ()>()
     }
 
     /// Get the stack of partially parsed types that we are in the middle of
