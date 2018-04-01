@@ -10,33 +10,33 @@ env:
   global:
     - CARGO_TARGET_DIR=/tmp/bindgen
   matrix:
-    - LLVM_VERSION="3.8.1" BINDGEN_JOB="test"         BINDGEN_PROFILE=
-    - LLVM_VERSION="3.8.1" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="3.8.1" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
-    - LLVM_VERSION="3.8.1" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="3.9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=
-    - LLVM_VERSION="3.9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="3.9.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
-    - LLVM_VERSION="3.9.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="4.0.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=
-    - LLVM_VERSION="4.0.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="4.0.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
-    - LLVM_VERSION="4.0.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="5.0.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=
-    - LLVM_VERSION="5.0.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="5.0.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=            BINDGEN_FEATURES="testing_only_extra_assertions"
-    - LLVM_VERSION="5.0.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release" BINDGEN_FEATURES="testing_only_extra_assertions"
-    - LLVM_VERSION="5.0.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
-    - LLVM_VERSION="5.0.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="5.0.0" BINDGEN_JOB="expectations" BINDGEN_PROFILE=
-    - LLVM_VERSION="5.0.0" BINDGEN_JOB="expectations" BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="5.0.0" BINDGEN_JOB="misc"
-    - LLVM_VERSION="5.0.0" BINDGEN_JOB="quickchecking"
+    - LLVM_VERSION="3.8" BINDGEN_JOB="test"         BINDGEN_PROFILE=
+    - LLVM_VERSION="3.8" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
+    - LLVM_VERSION="3.8" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
+    - LLVM_VERSION="3.8" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
+    - LLVM_VERSION="3.9" BINDGEN_JOB="test"         BINDGEN_PROFILE=
+    - LLVM_VERSION="3.9" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
+    - LLVM_VERSION="3.9" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
+    - LLVM_VERSION="3.9" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
+    - LLVM_VERSION="4.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=
+    - LLVM_VERSION="4.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
+    - LLVM_VERSION="4.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
+    - LLVM_VERSION="4.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
+    - LLVM_VERSION="5.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=
+    - LLVM_VERSION="5.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
+    - LLVM_VERSION="5.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=            BINDGEN_FEATURES="testing_only_extra_assertions"
+    - LLVM_VERSION="5.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release" BINDGEN_FEATURES="testing_only_extra_assertions"
+    - LLVM_VERSION="5.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
+    - LLVM_VERSION="5.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
+    - LLVM_VERSION="5.0" BINDGEN_JOB="expectations" BINDGEN_PROFILE=
+    - LLVM_VERSION="5.0" BINDGEN_JOB="expectations" BINDGEN_PROFILE="--release"
+    - LLVM_VERSION="5.0" BINDGEN_JOB="misc"
+    - LLVM_VERSION="5.0" BINDGEN_JOB="quickchecking"
 
 matrix:
   fast_finish: true
   allow_failures:
-    - env: LLVM_VERSION=5.0.0 BINDGEN_JOB=rustfmt
+    - env: LLVM_VERSION=5.0 BINDGEN_JOB=rustfmt
 
 cache:
   directories:
