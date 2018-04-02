@@ -2111,7 +2111,7 @@ impl MethodCodegen for Method {
 #[derive(Copy, Clone)]
 enum EnumVariation {
     Rust,
-    Bitfield,
+    Bitfield { use_associated_consts: bool },
     Consts,
     ModuleConsts
 }
@@ -2126,7 +2126,7 @@ impl EnumVariation {
 
     fn is_bitfield(&self) -> bool {
         match *self {
-            EnumVariation::Bitfield => true,
+            EnumVariation::Bitfield {..} => true,
             _ => false
         }
     }
@@ -2153,6 +2153,7 @@ enum EnumBuilder<'a> {
     Bitfield {
         codegen_depth: usize,
         canonical_name: &'a str,
+        use_associated_consts: bool,
         tokens: quote::Tokens,
     },
     Consts {
@@ -2189,10 +2190,11 @@ impl<'a> EnumBuilder<'a> {
         let ident = quote::Ident::new(name);
 
         match enum_variation {
-            EnumVariation::Bitfield => {
+            EnumVariation::Bitfield { use_associated_consts, .. } => {
                 EnumBuilder::Bitfield {
                     codegen_depth: enum_codegen_depth,
                     canonical_name: name,
+                    use_associated_consts,
                     tokens: quote! {
                         #( #attrs )*
                         pub struct #ident (pub #repr);
@@ -2278,19 +2280,28 @@ impl<'a> EnumBuilder<'a> {
                 }
             }
 
-            EnumBuilder::Bitfield { .. } => {
-                let constant_name = match mangling_prefix {
-                    Some(prefix) => {
-                        Cow::Owned(format!("{}_{}", prefix, variant_name))
-                    }
-                    None => variant_name,
-                };
-
-                let ident = ctx.rust_ident(constant_name);
-                result.push(quote! {
-                    #doc
-                    pub const #ident : #rust_ty = #rust_ty ( #expr );
-                });
+            EnumBuilder::Bitfield { canonical_name, use_associated_consts, .. } => {
+                if use_associated_consts {
+                    let enum_ident = ctx.rust_ident(canonical_name);
+                    let variant_ident = ctx.rust_ident(variant_name);
+                    result.push(quote! {
+                        impl #enum_ident {
+                            #doc
+                            pub const #variant_ident : #rust_ty = #rust_ty ( #expr );
+                        }
+                    });
+                } else {
+                    let ident = ctx.rust_ident(match mangling_prefix {
+                        Some(prefix) => {
+                            Cow::Owned(format!("{}_{}", prefix, variant_name))
+                        }
+                        None => variant_name,
+                    });
+                    result.push(quote! {
+                        #doc
+                        pub const #ident : #rust_ty = #rust_ty ( #expr );
+                    });
+                }
 
                 self
             }
@@ -2482,7 +2493,9 @@ impl CodeGenerator for Enum {
         let variation = if self.is_constified_enum_module(ctx, item) {
             EnumVariation::ModuleConsts
         } else if self.is_bitfield(ctx, item) {
-            EnumVariation::Bitfield
+            EnumVariation::Bitfield {
+                use_associated_consts: ctx.options().use_associated_consts
+            }
         } else if self.is_rustified_enum(ctx, item) {
             EnumVariation::Rust
         } else {
