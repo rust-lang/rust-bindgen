@@ -2111,7 +2111,7 @@ impl MethodCodegen for Method {
 #[derive(Copy, Clone)]
 enum EnumVariation {
     Rust,
-    Bitfield { use_associated_consts: bool },
+    Bitfield,
     Consts,
     ModuleConsts
 }
@@ -2153,7 +2153,6 @@ enum EnumBuilder<'a> {
     Bitfield {
         codegen_depth: usize,
         canonical_name: &'a str,
-        use_associated_consts: bool,
         tokens: quote::Tokens,
     },
     Consts {
@@ -2190,11 +2189,10 @@ impl<'a> EnumBuilder<'a> {
         let ident = quote::Ident::new(name);
 
         match enum_variation {
-            EnumVariation::Bitfield { use_associated_consts, .. } => {
+            EnumVariation::Bitfield => {
                 EnumBuilder::Bitfield {
                     codegen_depth: enum_codegen_depth,
                     canonical_name: name,
-                    use_associated_consts,
                     tokens: quote! {
                         #( #attrs )*
                         pub struct #ident (pub #repr);
@@ -2280,8 +2278,8 @@ impl<'a> EnumBuilder<'a> {
                 }
             }
 
-            EnumBuilder::Bitfield { canonical_name, use_associated_consts, .. } => {
-                if use_associated_consts {
+            EnumBuilder::Bitfield { canonical_name, .. } => {
+                if ctx.options().rust_features().associated_const {
                     let enum_ident = ctx.rust_ident(canonical_name);
                     let variant_ident = ctx.rust_ident(variant_name);
                     result.push(quote! {
@@ -2493,9 +2491,7 @@ impl CodeGenerator for Enum {
         let variation = if self.is_constified_enum_module(ctx, item) {
             EnumVariation::ModuleConsts
         } else if self.is_bitfield(ctx, item) {
-            EnumVariation::Bitfield {
-                use_associated_consts: ctx.options().use_associated_consts
-            }
+            EnumVariation::Bitfield
         } else if self.is_rustified_enum(ctx, item) {
             EnumVariation::Rust
         } else {

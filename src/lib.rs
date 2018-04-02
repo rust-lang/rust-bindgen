@@ -1235,12 +1235,6 @@ impl Builder {
         self.options.no_hash_types.insert(arg.into());
         self
     }
-
-    /// Use associated constants for bitfields.
-    pub fn use_associated_consts(mut self, doIt: bool) -> Builder {
-        self.options.use_associated_consts = doIt;
-        self
-    }
 }
 
 /// Configuration options for generated bindings.
@@ -1437,9 +1431,6 @@ struct BindgenOptions {
 
     /// The set of types that we should not derive `Hash` for.
     no_hash_types: RegexSet,
-
-    /// Whether to generated associated constants for bitfields.
-    use_associated_consts: bool,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -1534,7 +1525,6 @@ impl Default for BindgenOptions {
             no_partialeq_types: Default::default(),
             no_copy_types: Default::default(),
             no_hash_types: Default::default(),
-            use_associated_consts: false,
         }
     }
 }
