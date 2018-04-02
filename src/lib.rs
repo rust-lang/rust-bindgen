@@ -4,6 +4,9 @@
 //! functions and use types defined in the header.
 //!
 //! See the [`Builder`](./struct.Builder.html) struct for usage.
+//!
+//! See the [Users Guide](https://rust-lang-nursery.github.io/rust-bindgen/) for
+//! additional documentation.
 #![deny(missing_docs)]
 #![deny(warnings)]
 #![deny(unused_extern_crates)]
