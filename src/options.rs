@@ -149,12 +149,6 @@ where
                 .help("Disable namespacing via mangling, causing bindgen to \
                        generate names like \"Baz\" instead of \"foo_bar_Baz\" \
                        for an input name \"foo::bar::Baz\"."),
-            Arg::with_name("framework")
-                .long("framework-link")
-                .help("Link to framework.")
-                .takes_value(true)
-                .multiple(true)
-                .number_of_values(1),
             Arg::with_name("ignore-functions")
                 .long("ignore-functions")
                 .help("Do not generate bindings for functions or methods. This \
@@ -168,13 +162,6 @@ where
             Arg::with_name("ignore-methods")
                 .long("ignore-methods")
                 .help("Do not generate bindings for methods."),
-            Arg::with_name("dynamic")
-                .short("l")
-                .long("link")
-                .help("Link to dynamic library.")
-                .takes_value(true)
-                .multiple(true)
-                .number_of_values(1),
             Arg::with_name("no-convert-floats")
                 .long("no-convert-floats")
                 .help("Do not automatically convert floats to f32/f64."),
@@ -207,12 +194,6 @@ where
                 .long("rust-target")
                 .help(&rust_target_help)
                 .takes_value(true),
-            Arg::with_name("static")
-                .long("static-link")
-                .help("Link to static library.")
-                .takes_value(true)
-                .multiple(true)
-                .number_of_values(1),
             Arg::with_name("use-core")
                 .long("use-core")
                 .help("Use types from Rust core instead of std."),
@@ -409,12 +390,6 @@ where
         builder = builder.ctypes_prefix(prefix);
     }
 
-    if let Some(links) = matches.values_of("dynamic") {
-        for library in links {
-            builder = builder.link(library);
-        }
-    }
-
     if let Some(what_to_generate) = matches.value_of("generate") {
         let mut config = CodegenConfig::nothing();
         for what in what_to_generate.split(",") {
@@ -456,12 +431,6 @@ where
         builder = builder.disable_name_namespacing();
     }
 
-    if let Some(links) = matches.values_of("framework") {
-        for framework in links {
-            builder = builder.link_framework(framework);
-        }
-    }
-
     if matches.is_present("ignore-functions") {
         builder = builder.ignore_functions();
     }
@@ -495,12 +464,6 @@ where
     if let Some(lines) = matches.values_of("raw-line") {
         for line in lines {
             builder = builder.raw_line(line);
-        }
-    }
-
-    if let Some(links) = matches.values_of("static") {
-        for library in links {
-            builder = builder.link_static(library);
         }
     }
 
