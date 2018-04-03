@@ -32,5 +32,5 @@ fn bindgen_test_layout_Rooted() {
         )
     );
 }
-/// <div rustbindgen replaces="MaybeWrapped"></div>
+#[doc = " <div rustbindgen replaces=\"MaybeWrapped\"></div>"]
 pub type MaybeWrapped<a> = a;

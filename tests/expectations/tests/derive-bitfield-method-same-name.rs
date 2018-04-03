@@ -81,9 +81,7 @@ where
         }
     }
 }
-/// Because this struct have array larger than 32 items
-/// and --with-derive-partialeq --impl-partialeq --impl-debug is provided,
-/// this struct should manually implement `Debug` and `PartialEq`.
+#[doc = " Because this struct have array larger than 32 items\n and --with-derive-partialeq --impl-partialeq --impl-debug is provided,\n this struct should manually implement `Debug` and `PartialEq`."]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Foo {

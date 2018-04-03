@@ -3,29 +3,29 @@
 use ir::context::BindgenContext;
 use ir::layout::Layout;
 use quote;
-use proc_macro2;
 use std::mem;
+use proc_macro2::{Term, Span};
 
 pub mod attributes {
     use quote;
-    use proc_macro2;
+    use proc_macro2::{Term, Span};
 
     pub fn repr(which: &str) -> quote::Tokens {
-        let which = proc_macro2::Term::intern(which);
+        let which = Term::new(which, Span::call_site());
         quote! {
             #[repr( #which )]
         }
     }
 
     pub fn repr_list(which_ones: &[&str]) -> quote::Tokens {
-        let which_ones = which_ones.iter().cloned().map(proc_macro2::Term::intern);
+        let which_ones = which_ones.iter().cloned().map(|one| Term::new(one, Span::call_site()));
         quote! {
             #[repr( #( #which_ones ),* )]
         }
     }
 
     pub fn derives(which_ones: &[&str]) -> quote::Tokens {
-        let which_ones = which_ones.iter().cloned().map(proc_macro2::Term::intern);
+        let which_ones = which_ones.iter().cloned().map(|one| Term::new(one, Span::call_site()));
         quote! {
             #[derive( #( #which_ones ),* )]
         }
@@ -38,11 +38,7 @@ pub mod attributes {
     }
 
     pub fn doc(comment: String) -> quote::Tokens {
-        // Doc comments are already preprocessed into nice `///` formats by the
-        // time they get here. Just make sure that we have newlines around it so
-        // that nothing else gets wrapped into the comment.
-        let comment = proc_macro2::Literal::doccomment(&comment);
-        quote! {#comment}
+        quote!(#[doc=#comment])
     }
 
     pub fn link_name(name: &str) -> quote::Tokens {
@@ -72,7 +68,7 @@ pub fn blob(layout: Layout) -> quote::Tokens {
         }
     };
 
-    let ty_name = proc_macro2::Term::intern(ty_name);
+    let ty_name = Term::new(ty_name, Span::call_site());
 
     let data_len = opaque.array_size().unwrap_or(layout.size);
 
@@ -166,13 +162,13 @@ pub mod ast_ty {
 
     pub fn int_expr(val: i64) -> quote::Tokens {
         // Don't use quote! { #val } because that adds the type suffix.
-        let val = proc_macro2::Literal::integer(val);
+        let val = proc_macro2::Literal::i64_unsuffixed(val);
         quote!(#val)
     }
 
     pub fn uint_expr(val: u64) -> quote::Tokens {
         // Don't use quote! { #val } because that adds the type suffix.
-        let val = proc_macro2::Term::intern(&val.to_string());
+        let val = proc_macro2::Literal::u64_unsuffixed(val);
         quote!(#val)
     }
 
@@ -195,7 +191,7 @@ pub mod ast_ty {
         f: f64,
     ) -> Result<quote::Tokens, ()> {
         if f.is_finite() {
-            let val = proc_macro2::Literal::float(f);
+            let val = proc_macro2::Literal::f64_unsuffixed(f);
 
             return Ok(quote!(#val));
         }

@@ -38,7 +38,7 @@ use ir::ty::{Type, TypeKind};
 use ir::var::Var;
 
 use quote;
-use proc_macro2;
+use proc_macro2::{self, Term, Span};
 
 use std::borrow::Cow;
 use std::cell::Cell;
@@ -75,7 +75,7 @@ fn root_import(ctx: &BindgenContext, module: &Item) -> quote::Tokens {
 
 
     let mut tokens = quote! {};
-    tokens.append_separated(path, proc_macro2::Term::intern("::"));
+    tokens.append_separated(path, Term::new("::", Span::call_site()));
 
     quote! {
         #[allow(unused_imports)]
@@ -706,7 +706,7 @@ impl CodeGenerator for Type {
                         pub use
                     });
                     let path = top_level_path(ctx, item);
-                    tokens.append_separated(path, proc_macro2::Term::intern("::"));
+                    tokens.append_separated(path, Term::new("::", Span::call_site()));
                     tokens.append_all(quote! {
                         :: #inner_rust_type  as #rust_name ;
                     });
@@ -1123,7 +1123,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
 impl BitfieldUnit {
     /// Get the constructor name for this bitfield unit.
     fn ctor_name(&self) -> quote::Tokens {
-        let ctor_name = proc_macro2::Term::intern(&format!("new_bitfield_{}", self.nth()));
+        let ctor_name = Term::new(&format!("new_bitfield_{}", self.nth()), Span::call_site());
         quote! {
             #ctor_name
         }
@@ -1322,7 +1322,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         let prefix = ctx.trait_prefix();
         let getter_name = bitfield_getter_name(ctx, self);
         let setter_name = bitfield_setter_name(ctx, self);
-        let unit_field_ident = proc_macro2::Term::intern(unit_field_name);
+        let unit_field_ident = Term::new(unit_field_name, Span::call_site());
 
         let bitfield_ty_item = ctx.resolve_item(self.ty());
         let bitfield_ty = bitfield_ty_item.expect_type();
@@ -2147,7 +2147,7 @@ enum EnumBuilder<'a> {
     Rust {
         codegen_depth: usize,
         attrs: Vec<quote::Tokens>,
-        ident: proc_macro2::Term,
+        ident: Term,
         tokens: quote::Tokens,
         emitted_any_variants: bool,
     },
@@ -2187,7 +2187,7 @@ impl<'a> EnumBuilder<'a> {
         enum_variation: EnumVariation,
         enum_codegen_depth: usize,
     ) -> Self {
-        let ident = proc_macro2::Term::intern(name);
+        let ident = Term::new(name, Span::call_site());
 
         match enum_variation {
             EnumVariation::Bitfield => {
@@ -2225,7 +2225,7 @@ impl<'a> EnumBuilder<'a> {
             }
 
             EnumVariation::ModuleConsts => {
-                let ident = proc_macro2::Term::intern(CONSTIFIED_ENUM_MODULE_REPR_NAME);
+                let ident = Term::new(CONSTIFIED_ENUM_MODULE_REPR_NAME, Span::call_site());
                 let type_definition = quote! {
                     #( #attrs )*
                     pub type #ident = #repr;
@@ -2514,12 +2514,12 @@ impl CodeGenerator for Enum {
             ctx: &BindgenContext,
             enum_: &Type,
             // Only to avoid recomputing every time.
-            enum_canonical_name: &proc_macro2::Term,
+            enum_canonical_name: &Term,
             // May be the same as "variant" if it's because the
             // enum is unnamed and we still haven't seen the
             // value.
             variant_name: &str,
-            referenced_name: &proc_macro2::Term,
+            referenced_name: &Term,
             enum_rust_ty: quote::Tokens,
             result: &mut CodegenResult<'a>,
         ) {
@@ -2554,7 +2554,7 @@ impl CodeGenerator for Enum {
         );
 
         // A map where we keep a value -> variant relation.
-        let mut seen_values = HashMap::<_, proc_macro2::Term>::new();
+        let mut seen_values = HashMap::<_, Term>::new();
         let enum_rust_ty = item.to_rust_ty_or_opaque(ctx, &());
         let is_toplevel = item.is_toplevel(ctx);
 
@@ -2652,12 +2652,13 @@ impl CodeGenerator for Enum {
                             let parent_name =
                                 parent_canonical_name.as_ref().unwrap();
 
-                            proc_macro2::Term::intern(
+                            Term::new(
                                 &format!(
                                     "{}_{}",
                                     parent_name,
                                     variant_name.as_str()
-                                )
+                                ),
+                                Span::call_site()
                             )
                         };
 
@@ -3000,7 +3001,7 @@ impl TryToRustTy for Type {
             }
             TypeKind::Enum(..) => {
                 let path = item.namespace_aware_canonical_path(ctx);
-                let path = proc_macro2::Term::intern(&path.join("::"));
+                let path = Term::new(&path.join("::"), Span::call_site());
                 Ok(quote!(#path))
             }
             TypeKind::TemplateInstantiation(ref inst) => {
@@ -3123,7 +3124,7 @@ impl TryToRustTy for TemplateInstantiation {
 
         let mut ty = quote! {};
         let def_path = def.namespace_aware_canonical_path(ctx);
-        ty.append_separated(def_path.into_iter().map(|p| ctx.rust_ident(p)), proc_macro2::Term::intern("::"));
+        ty.append_separated(def_path.into_iter().map(|p| ctx.rust_ident(p)), Term::new("::", Span::call_site()));
 
         let def_params = match def.self_template_params(ctx) {
             Some(params) => params,
@@ -3462,11 +3463,11 @@ mod utils {
     use ir::item::{Item, ItemCanonicalPath};
     use ir::ty::TypeKind;
     use quote;
-    use proc_macro2;
+    use proc_macro2::{Term, Span};
     use std::mem;
 
     pub fn prepend_bitfield_unit_type(result: &mut Vec<quote::Tokens>) {
-        let bitfield_unit_type = proc_macro2::Term::intern(include_str!("./bitfield_unit.rs"));
+        let bitfield_unit_type = Term::new(include_str!("./bitfield_unit.rs"), Span::call_site());
         let bitfield_unit_type = quote!(#bitfield_unit_type);
 
         let items = vec![bitfield_unit_type];
@@ -3693,9 +3694,10 @@ mod utils {
         item: &Item,
         ctx: &BindgenContext,
     ) -> error::Result<quote::Tokens> {
-        use proc_macro2;
+        use proc_macro2::{Term, Span};
+
         let path = item.namespace_aware_canonical_path(ctx);
-        let path = proc_macro2::Term::intern(&path.join("::"));
+        let path = Term::new(&path.join("::"), Span::call_site());
         let tokens = quote! {#path};
         //tokens.append_separated(path, "::");
 

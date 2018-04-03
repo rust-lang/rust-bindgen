@@ -13,7 +13,7 @@ use clang_sys::CXCursor_ObjCInstanceMethodDecl;
 use clang_sys::CXCursor_ObjCProtocolDecl;
 use clang_sys::CXCursor_ObjCProtocolRef;
 use quote;
-use proc_macro2;
+use proc_macro2::{Term, Span};
 
 /// Objective C interface as used in TypeKind
 ///
@@ -217,7 +217,7 @@ impl ObjCMethod {
         let split_name: Vec<_> = self.name
             .split(':')
             .filter(|p| !p.is_empty())
-            .map(proc_macro2::Term::intern)
+            .map(|name| Term::new(name, Span::call_site()))
             .collect();
 
         // No arguments
@@ -243,7 +243,7 @@ impl ObjCMethod {
             let arg = arg.to_string();
             let name_and_sig: Vec<&str> = arg.split(' ').collect();
             let name = name_and_sig[0];
-            args_without_types.push(proc_macro2::Term::intern(name))
+            args_without_types.push(Term::new(name, Span::call_site()))
         };
 
         let args = split_name
