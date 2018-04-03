@@ -9,7 +9,7 @@ use std::io::Write;
 use std::path::Path;
 
 const LIBCLANG_VERSION_DIRS: &'static [&'static str] =
-    &["libclang-3.8", "libclang-3.9", "libclang-4"];
+    &["libclang-3.8", "libclang-3.9", "libclang-4", "libclang-5"];
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");

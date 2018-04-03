@@ -1812,3 +1812,35 @@ impl Drop for EvalResult {
         unsafe { clang_EvalResult_dispose(self.x) };
     }
 }
+
+/// Target information obtained from libclang.
+#[derive(Debug)]
+pub struct TargetInfo {
+    /// The target triple.
+    pub triple: String,
+    /// The width of the pointer _in bits_.
+    pub pointer_width: usize,
+}
+
+impl TargetInfo {
+    /// Tries to obtain target information from libclang.
+    pub fn new(tu: &TranslationUnit) -> Option<Self> {
+        if !clang_getTranslationUnitTargetInfo::is_loaded() {
+            return None;
+        }
+        let triple;
+        let pointer_width;
+        unsafe {
+            let ti = clang_getTranslationUnitTargetInfo(tu.x);
+            triple = cxstring_into_string(clang_TargetInfo_getTriple(ti));
+            pointer_width = clang_TargetInfo_getPointerWidth(ti);
+            clang_TargetInfo_dispose(ti);
+        }
+        assert!(pointer_width > 0);
+        assert_eq!(pointer_width % 8, 0);
+        Some(TargetInfo {
+            triple,
+            pointer_width: pointer_width as usize,
+        })
+    }
+}

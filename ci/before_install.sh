@@ -6,31 +6,55 @@ if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
     rvm get head || true
 fi
 
-function llvm_download_if_needed() {
-    export LLVM_VERSION_TRIPLE="${LLVM_VERSION}"
-    export LLVM=clang+llvm-${LLVM_VERSION_TRIPLE}-x86_64-$1
-
-    local llvm_build_dir="$HOME/.llvm-builds/${LLVM}"
-
-    if [ -d "${llvm_build_dir}" ]; then
-        echo "Using cached LLVM build for ${LLVM} in ${llvm_build_dir}";
+function llvm_linux_target_triple() {
+    if [ "$1" == "5.0" ]; then
+        echo "linux-x86_64-ubuntu14.04"
     else
-        wget http://llvm.org/releases/${LLVM_VERSION_TRIPLE}/${LLVM}.tar.xz
-        mkdir -p "${llvm_build_dir}"
-        tar -xf ${LLVM}.tar.xz -C "${llvm_build_dir}" --strip-components=1
-    fi
-
-    export LLVM_CONFIG_PATH="${llvm_build_dir}/bin/llvm-config"
-    if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
-        cp "${llvm_build_dir}/lib/libclang.dylib" /usr/local/lib/libclang.dylib
+        echo "x86_64-linux-gnu-ubuntu-14.04"
     fi
 }
 
+function llvm_version_triple() {
+    if [ "$1" == "3.5" ]; then
+        echo "3.5.2"
+    elif [ "$1" == "3.6" ]; then
+        echo "3.6.2"
+    elif [ "$1" == "3.7" ]; then
+        echo "3.7.1"
+    elif [ "$1" == "3.8" ]; then
+        echo "3.8.1"
+    elif [ "$1" == "3.9" ]; then
+        echo "3.9.0"
+    elif [ "$1" == "4.0" ]; then
+        echo "4.0.0"
+    elif [ "$1" == "5.0" ]; then
+        echo "5.0.0"
+    fi
+}
+
+function llvm_download() {
+    export LLVM_VERSION_TRIPLE=`llvm_version_triple ${LLVM_VERSION}`
+    export LLVM=clang+llvm-${LLVM_VERSION_TRIPLE}-$1
+    export LLVM_DIRECTORY="$HOME/.llvm/${LLVM}"
+
+    if [ -d "${LLVM_DIRECTORY}" ]; then
+        echo "Using cached LLVM download for ${LLVM}..."
+    else
+        wget http://releases.llvm.org/${LLVM_VERSION_TRIPLE}/${LLVM}.tar.xz
+        mkdir -p "${LLVM_DIRECTORY}"
+        tar xf ${LLVM}.tar.xz -C "${LLVM_DIRECTORY}" --strip-components=1
+    fi
+
+    export LLVM_CONFIG_PATH="${LLVM_DIRECTORY}/bin/llvm-config"
+}
 
 if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
-    llvm_download_if_needed linux-gnu-ubuntu-14.04
+    llvm_download `llvm_linux_target_triple ${LLVM_VERSION}`
+    export LD_LIBRARY_PATH="${LLVM_DIRECTORY}/lib":$LD_LIBRARY_PATH
 else
-    llvm_download_if_needed apple-darwin
+    llvm_download x86_64-apple-darwin
+    cp "${LLVM_DIRECTORY}/lib/libclang.dylib" /usr/local/lib/libclang.dylib
+    export DYLD_LIBRARY_PATH="${LLVM_DIRECTORY}/lib":$DYLD_LIBRARY_PATH
 fi
 
 popd

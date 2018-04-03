@@ -118,6 +118,8 @@ fn compare_generated_header(
 
         if cfg!(feature = "testing_only_libclang_4") {
             expectation.push("libclang-4");
+        } else if cfg!(feature = "testing_only_libclang_5") {
+            expectation.push("libclang-5");
         } else if cfg!(feature = "testing_only_libclang_3_9") {
             expectation.push("libclang-3.9");
         } else if cfg!(feature = "testing_only_libclang_3_8") {
@@ -127,7 +129,9 @@ fn compare_generated_header(
                 None => {}
                 Some(version) => {
                     let (maj, min) = version;
-                    let version_str = if maj >= 4 {
+                    let version_str = if maj >= 5 {
+                        "5".to_owned()
+                    } else if maj == 4 {
                         "4".to_owned()
                     } else {
                         format!("{}.{}", maj, min)
