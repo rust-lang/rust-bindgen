@@ -1,4 +1,4 @@
-set -e
+set -ex
 pushd ~
 
 # Workaround for Travis CI macOS bug (https://github.com/travis-ci/travis-ci/issues/6307)
