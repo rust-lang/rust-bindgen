@@ -2,10 +2,18 @@
 
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
-pub const Foo_Bar: Foo = Foo(2);
-pub const Foo_Baz: Foo = Foo(4);
-pub const Foo_Duplicated: Foo = Foo(4);
-pub const Foo_Negative: Foo = Foo(-3);
+impl Foo {
+    pub const Bar: Foo = Foo(2);
+}
+impl Foo {
+    pub const Baz: Foo = Foo(4);
+}
+impl Foo {
+    pub const Duplicated: Foo = Foo(4);
+}
+impl Foo {
+    pub const Negative: Foo = Foo(-3);
+}
 impl ::std::ops::BitOr<Foo> for Foo {
     type Output = Self;
     #[inline]
@@ -35,10 +43,18 @@ impl ::std::ops::BitAndAssign for Foo {
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Foo(pub i32);
-pub const Buz_Bar: Buz = Buz(2);
-pub const Buz_Baz: Buz = Buz(4);
-pub const Buz_Duplicated: Buz = Buz(4);
-pub const Buz_Negative: Buz = Buz(-3);
+impl Buz {
+    pub const Bar: Buz = Buz(2);
+}
+impl Buz {
+    pub const Baz: Buz = Buz(4);
+}
+impl Buz {
+    pub const Duplicated: Buz = Buz(4);
+}
+impl Buz {
+    pub const Negative: Buz = Buz(-3);
+}
 impl ::std::ops::BitOr<Buz> for Buz {
     type Output = Self;
     #[inline]
@@ -68,8 +84,12 @@ impl ::std::ops::BitAndAssign for Buz {
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Buz(pub i8);
-pub const NS_FOO: _bindgen_ty_1 = _bindgen_ty_1(1);
-pub const NS_BAR: _bindgen_ty_1 = _bindgen_ty_1(2);
+impl _bindgen_ty_1 {
+    pub const NS_FOO: _bindgen_ty_1 = _bindgen_ty_1(1);
+}
+impl _bindgen_ty_1 {
+    pub const NS_BAR: _bindgen_ty_1 = _bindgen_ty_1(2);
+}
 impl ::std::ops::BitOr<_bindgen_ty_1> for _bindgen_ty_1 {
     type Output = Self;
     #[inline]
@@ -104,8 +124,12 @@ pub struct _bindgen_ty_1(pub u32);
 pub struct Dummy {
     pub _address: u8,
 }
-pub const Dummy_DUMMY_FOO: Dummy__bindgen_ty_1 = Dummy__bindgen_ty_1(1);
-pub const Dummy_DUMMY_BAR: Dummy__bindgen_ty_1 = Dummy__bindgen_ty_1(2);
+impl Dummy__bindgen_ty_1 {
+    pub const DUMMY_FOO: Dummy__bindgen_ty_1 = Dummy__bindgen_ty_1(1);
+}
+impl Dummy__bindgen_ty_1 {
+    pub const DUMMY_BAR: Dummy__bindgen_ty_1 = Dummy__bindgen_ty_1(2);
+}
 impl ::std::ops::BitOr<Dummy__bindgen_ty_1> for Dummy__bindgen_ty_1 {
     type Output = Self;
     #[inline]

@@ -2,9 +2,15 @@
 
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
-pub const MyDupeEnum_A: MyDupeEnum = MyDupeEnum(0);
-pub const MyDupeEnum_A_alias: MyDupeEnum = MyDupeEnum(0);
-pub const MyDupeEnum_B: MyDupeEnum = MyDupeEnum(1);
+impl MyDupeEnum {
+    pub const A: MyDupeEnum = MyDupeEnum(0);
+}
+impl MyDupeEnum {
+    pub const A_alias: MyDupeEnum = MyDupeEnum(0);
+}
+impl MyDupeEnum {
+    pub const B: MyDupeEnum = MyDupeEnum(1);
+}
 impl ::std::ops::BitOr<MyDupeEnum> for MyDupeEnum {
     type Output = Self;
     #[inline]
@@ -34,9 +40,15 @@ impl ::std::ops::BitAndAssign for MyDupeEnum {
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct MyDupeEnum(pub u32);
-pub const MyOtherDupeEnum_C: MyOtherDupeEnum = MyOtherDupeEnum(0);
-pub const MyOtherDupeEnum_C_alias: MyOtherDupeEnum = MyOtherDupeEnum(0);
-pub const MyOtherDupeEnum_D: MyOtherDupeEnum = MyOtherDupeEnum(1);
+impl MyOtherDupeEnum {
+    pub const C: MyOtherDupeEnum = MyOtherDupeEnum(0);
+}
+impl MyOtherDupeEnum {
+    pub const C_alias: MyOtherDupeEnum = MyOtherDupeEnum(0);
+}
+impl MyOtherDupeEnum {
+    pub const D: MyOtherDupeEnum = MyOtherDupeEnum(1);
+}
 impl ::std::ops::BitOr<MyOtherDupeEnum> for MyOtherDupeEnum {
     type Output = Self;
     #[inline]
