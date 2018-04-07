@@ -1681,8 +1681,7 @@ impl Trace for CompInfo {
     where
         T: Tracer,
     {
-        let params = item.all_template_params(context).unwrap_or(vec![]);
-        for p in params {
+        for p in item.all_template_params(context) {
             tracer.visit_kind(p.into(), EdgeKind::TemplateParameterDefinition);
         }
 

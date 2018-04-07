@@ -81,12 +81,12 @@ use parse::ClangItemParser;
 /// +------+----------------------+--------------------------+------------------------+----
 /// |Decl. | self_template_params | num_self_template_params | all_template_parameters| ...
 /// +------+----------------------+--------------------------+------------------------+----
-/// |Foo   | [T, U]               | 2                        | Some([T, U])           | ...
-/// |Bar   | [V]                  | 1                        | Some([T, U, V])        | ...
-/// |Inner | []                   | 0                        | Some([T, U])           | ...
-/// |Lol   | [W]                  | 1                        | Some([T, U, W])        | ...
-/// |Wtf   | [X]                  | 1                        | Some([T, U, X])        | ...
-/// |Qux   | []                   | 0                        | None                   | ...
+/// |Foo   | [T, U]               | 2                        | [T, U]                 | ...
+/// |Bar   | [V]                  | 1                        | [T, U, V]              | ...
+/// |Inner | []                   | 0                        | [T, U]                 | ...
+/// |Lol   | [W]                  | 1                        | [T, U, W]              | ...
+/// |Wtf   | [X]                  | 1                        | [T, U, X]              | ...
+/// |Qux   | []                   | 0                        | []                     | ...
 /// +------+----------------------+--------------------------+------------------------+----
 ///
 /// ----+------+-----+----------------------+
@@ -131,19 +131,14 @@ pub trait TemplateParameters {
     /// how we would fully reference such a member type in C++:
     /// `Foo<int,char>::Inner`. `Foo` *must* be instantiated with template
     /// arguments before we can gain access to the `Inner` member type.
-    fn all_template_params(&self, ctx: &BindgenContext) -> Option<Vec<TypeId>>
+    fn all_template_params(&self, ctx: &BindgenContext) -> Vec<TypeId>
     where
         Self: ItemAncestors,
     {
         let ancestors: Vec<_> = self.ancestors(ctx).collect();
-        let all_template_params: Vec<_> = ancestors.into_iter().rev().flat_map(|id| {
+        ancestors.into_iter().rev().flat_map(|id| {
             id.self_template_params(ctx).into_iter()
-        }).collect();
-        if all_template_params.len() > 0 {
-            Some(all_template_params)
-        } else {
-            None
-        }
+        }).collect()
     }
 
     /// Get only the set of template parameters that this item uses. This is a
@@ -159,14 +154,14 @@ pub trait TemplateParameters {
         );
 
         let id = *self.as_ref();
-        ctx.resolve_item(id).all_template_params(ctx).map(
-            |all_params| {
-                all_params
-                    .into_iter()
-                    .filter(|p| ctx.uses_template_parameter(id, *p))
-                    .collect()
-            },
-        )
+        let all_template_params: Vec<_> = ctx.resolve_item(id).all_template_params(ctx);
+        if all_template_params.len() > 0 {
+            Some(all_template_params.into_iter()
+                .filter(|p| ctx.uses_template_parameter(id, *p))
+                .collect())
+        } else {
+            None
+        }
     }
 }
 

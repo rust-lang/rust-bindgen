@@ -479,11 +479,8 @@ impl CodeGenerator for Var {
         // We can't generate bindings to static variables of templates. The
         // number of actual variables for a single declaration are open ended
         // and we don't know what instantiations do or don't exist.
-        let type_params = item.all_template_params(ctx);
-        if let Some(params) = type_params {
-            if !params.is_empty() {
-                return;
-            }
+        if !item.all_template_params(ctx).is_empty() {
+            return;
         }
 
         let ty = self.ty().to_rust_ty_or_opaque(ctx, &());
@@ -3240,11 +3237,8 @@ impl CodeGenerator for Function {
         // generate bindings to template functions, because the set of
         // instantiations is open ended and we have no way of knowing which
         // monomorphizations actually exist.
-        let type_params = item.all_template_params(ctx);
-        if let Some(params) = type_params {
-            if !params.is_empty() {
-                return;
-            }
+        if !item.all_template_params(ctx).is_empty() {
+            return;
         }
 
         let name = self.name();
