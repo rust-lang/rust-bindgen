@@ -92,12 +92,12 @@ use parse::ClangItemParser;
 /// ----+------+-----+----------------------+
 /// ... |Decl. | ... | used_template_params |
 /// ----+------+-----+----------------------+
-/// ... |Foo   | ... | Some([T, U])         |
-/// ... |Bar   | ... | Some([V])            |
-/// ... |Inner | ... | None                 |
-/// ... |Lol   | ... | Some([T])            |
-/// ... |Wtf   | ... | Some([T])            |
-/// ... |Qux   | ... | None                 |
+/// ... |Foo   | ... | [T, U]               |
+/// ... |Bar   | ... | [V]                  |
+/// ... |Inner | ... | []                   |
+/// ... |Lol   | ... | [T]                  |
+/// ... |Wtf   | ... | [T]                  |
+/// ... |Qux   | ... | []                   |
 /// ----+------+-----+----------------------+
 pub trait TemplateParameters {
     /// Get the set of `ItemId`s that make up this template declaration's free
@@ -144,7 +144,7 @@ pub trait TemplateParameters {
     /// Get only the set of template parameters that this item uses. This is a
     /// subset of `all_template_params` and does not necessarily contain any of
     /// `self_template_params`.
-    fn used_template_params(&self, ctx: &BindgenContext) -> Option<Vec<TypeId>>
+    fn used_template_params(&self, ctx: &BindgenContext) -> Vec<TypeId>
     where
         Self: AsRef<ItemId>,
     {
@@ -154,14 +154,10 @@ pub trait TemplateParameters {
         );
 
         let id = *self.as_ref();
-        let all_template_params: Vec<_> = ctx.resolve_item(id).all_template_params(ctx);
-        if all_template_params.len() > 0 {
-            Some(all_template_params.into_iter()
-                .filter(|p| ctx.uses_template_parameter(id, *p))
-                .collect())
-        } else {
-            None
-        }
+        ctx.resolve_item(id).all_template_params(ctx)
+                    .into_iter()
+                    .filter(|p| ctx.uses_template_parameter(id, *p))
+                    .collect()
     }
 }
 
