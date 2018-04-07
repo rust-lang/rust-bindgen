@@ -10,11 +10,19 @@ pub const ARP_OP_REVREQUEST: u32 = 3;
 pub const ARP_OP_REVREPLY: u32 = 4;
 pub const ARP_OP_INVREQUEST: u32 = 8;
 pub const ARP_OP_INVREPLY: u32 = 9;
-#[doc = " Ethernet address:\n A universally administered address is uniquely assigned to a device by its\n manufacturer. The first three octets (in transmission order) contain the\n Organizationally Unique Identifier (OUI). The following three (MAC-48 and\n EUI-48) octets are assigned by that organization with the only constraint\n of uniqueness.\n A locally administered address is assigned to a device by a network\n administrator and does not contain OUIs.\n See http://standards.ieee.org/regauth/groupmac/tutorial.html"]
+/// Ethernet address:
+/// A universally administered address is uniquely assigned to a device by its
+/// manufacturer. The first three octets (in transmission order) contain the
+/// Organizationally Unique Identifier (OUI). The following three (MAC-48 and
+/// EUI-48) octets are assigned by that organization with the only constraint
+/// of uniqueness.
+/// A locally administered address is assigned to a device by a network
+/// administrator and does not contain OUIs.
+/// See http://standards.ieee.org/regauth/groupmac/tutorial.html
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct ether_addr {
-    #[doc = " < Addr bytes in tx order"]
+    /// < Addr bytes in tx order
     pub addr_bytes: [u8; 6usize],
 }
 #[test]
@@ -40,17 +48,17 @@ fn bindgen_test_layout_ether_addr() {
         )
     );
 }
-#[doc = " ARP header IPv4 payload."]
+/// ARP header IPv4 payload.
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct arp_ipv4 {
-    #[doc = " < sender hardware address"]
+    /// < sender hardware address
     pub arp_sha: ether_addr,
-    #[doc = " < sender IP address"]
+    /// < sender IP address
     pub arp_sip: u32,
-    #[doc = " < target hardware address"]
+    /// < target hardware address
     pub arp_tha: ether_addr,
-    #[doc = " < target IP address"]
+    /// < target IP address
     pub arp_tip: u32,
 }
 #[test]
@@ -106,7 +114,7 @@ fn bindgen_test_layout_arp_ipv4() {
         )
     );
 }
-#[doc = " ARP header."]
+/// ARP header.
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct arp_hdr {

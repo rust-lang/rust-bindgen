@@ -38,7 +38,14 @@ pub mod attributes {
     }
 
     pub fn doc(comment: String) -> quote::Tokens {
-        quote!(#[doc=#comment])
+        // Doc comments are already preprocessed into nice `///` formats by the
+        // time they get here. Just make sure that we have newlines around it so
+        // that nothing else gets wrapped into the comment.
+        let mut tokens = quote! {};
+        tokens.append(Term::new("\n", Span::call_site()));
+        tokens.append(Term::new(&comment, Span::call_site()));
+        tokens.append(Term::new("\n", Span::call_site()));
+        tokens
     }
 
     pub fn link_name(name: &str) -> quote::Tokens {

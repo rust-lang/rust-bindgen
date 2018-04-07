@@ -10,18 +10,18 @@ pub struct rte_kni_mbuf {
     pub buf_addr: *mut ::std::os::raw::c_void,
     pub buf_physaddr: u64,
     pub pad0: [::std::os::raw::c_char; 2usize],
-    #[doc = " < Start address of data in segment buffer."]
+    /// < Start address of data in segment buffer.
     pub data_off: u16,
     pub pad1: [::std::os::raw::c_char; 2usize],
-    #[doc = " < Number of segments."]
+    /// < Number of segments.
     pub nb_segs: u8,
     pub pad4: [::std::os::raw::c_char; 1usize],
-    #[doc = " < Offload features."]
+    /// < Offload features.
     pub ol_flags: u64,
     pub pad2: [::std::os::raw::c_char; 4usize],
-    #[doc = " < Total pkt len: sum of all segment data_len."]
+    /// < Total pkt len: sum of all segment data_len.
     pub pkt_len: u32,
-    #[doc = " < Amount of data in segment buffer."]
+    /// < Amount of data in segment buffer.
     pub data_len: u16,
     pub __bindgen_padding_0: [u8; 22usize],
     pub pad3: [::std::os::raw::c_char; 8usize],

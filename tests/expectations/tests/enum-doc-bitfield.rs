@@ -2,17 +2,20 @@
 
 #![allow(dead_code, non_snake_case, non_camel_case_types, non_upper_case_globals)]
 
-#[doc = " Document field with three slashes"]
+/// Document field with three slashes
 pub const B_VAR_A: B = B(0);
-#[doc = " Document field with preceeding star"]
+/// Document field with preceeding star
 pub const B_VAR_B: B = B(1);
-#[doc = " Document field with preceeding exclamation"]
+/// Document field with preceeding exclamation
 pub const B_VAR_C: B = B(2);
-#[doc = " < Document field with following star"]
+/// < Document field with following star
 pub const B_VAR_D: B = B(3);
-#[doc = " < Document field with following exclamation"]
+/// < Document field with following exclamation
 pub const B_VAR_E: B = B(4);
-#[doc = " Document field with preceeding star, with a loong long multiline\n comment.\n\n Very interesting documentation, definitely."]
+/// Document field with preceeding star, with a loong long multiline
+/// comment.
+///
+/// Very interesting documentation, definitely.
 pub const B_VAR_F: B = B(5);
 impl ::std::ops::BitOr<B> for B {
     type Output = Self;
@@ -41,6 +44,6 @@ impl ::std::ops::BitAndAssign for B {
     }
 }
 #[repr(C)]
-#[doc = " Document enum"]
+/// Document enum
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct B(pub u32);

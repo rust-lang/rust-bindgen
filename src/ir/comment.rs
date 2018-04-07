@@ -54,7 +54,7 @@ fn preprocess_single_lines(comment: &str, indent: usize) -> String {
             let indent = if is_first { "" } else { &*indent };
             is_first = false;
             let maybe_space = if l.is_empty() { "" } else { " " };
-            format!("{}{}{}", indent, maybe_space, l)
+            format!("{}///{}{}", indent, maybe_space, l)
         })
         .collect();
     lines.join("\n")
@@ -79,7 +79,7 @@ fn preprocess_multi_line(comment: &str, indent: usize) -> String {
             let indent = if is_first { "" } else { &*indent };
             is_first = false;
             let maybe_space = if line.is_empty() { "" } else { " " };
-            format!("{}{}{}", indent, maybe_space, line)
+            format!("{}///{}{}", indent, maybe_space, line)
         })
         .collect();
 
@@ -105,20 +105,20 @@ mod test {
 
     #[test]
     fn processes_single_lines_correctly() {
-        assert_eq!(preprocess("/// hello", 0), " hello");
-        assert_eq!(preprocess("// hello", 0), " hello");
+        assert_eq!(preprocess("/// hello", 0), "/// hello");
+        assert_eq!(preprocess("// hello", 0), "/// hello");
     }
 
     #[test]
     fn processes_multi_lines_correctly() {
         assert_eq!(
             preprocess("/** hello \n * world \n * foo \n */", 0),
-            " hello\n world\n foo"
+            "/// hello\n/// world\n/// foo"
         );
 
         assert_eq!(
             preprocess("/**\nhello\n*world\n*foo\n*/", 0),
-            " hello\n world\n foo"
+            "/// hello\n/// world\n/// foo"
         );
     }
 }

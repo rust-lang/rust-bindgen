@@ -13,6 +13,6 @@ pub enum nsCSSPropertyID {
     eCSSProperty_b = 1,
     eCSSPropertyAlias_aa = 2,
     eCSSPropertyAlias_bb = 3,
-    #[doc = " < <div rustbindgen constant></div>"]
+    /// < <div rustbindgen constant></div>
     eCSSProperty_COUNT_unexistingVariantValue = 4,
 }

@@ -171,43 +171,43 @@ pub enum JSValueShiftedTag {
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum JSWhyMagic {
-    #[doc = " a hole in a native object\'s elements"]
+    /// a hole in a native object's elements
     JS_ELEMENTS_HOLE = 0,
-    #[doc = " there is not a pending iterator value"]
+    /// there is not a pending iterator value
     JS_NO_ITER_VALUE = 1,
-    #[doc = " exception value thrown when closing a generator"]
+    /// exception value thrown when closing a generator
     JS_GENERATOR_CLOSING = 2,
-    #[doc = " compiler sentinel value"]
+    /// compiler sentinel value
     JS_NO_CONSTANT = 3,
-    #[doc = " used in debug builds to catch tracing errors"]
+    /// used in debug builds to catch tracing errors
     JS_THIS_POISON = 4,
-    #[doc = " used in debug builds to catch tracing errors"]
+    /// used in debug builds to catch tracing errors
     JS_ARG_POISON = 5,
-    #[doc = " an empty subnode in the AST serializer"]
+    /// an empty subnode in the AST serializer
     JS_SERIALIZE_NO_NODE = 6,
-    #[doc = " lazy arguments value on the stack"]
+    /// lazy arguments value on the stack
     JS_LAZY_ARGUMENTS = 7,
-    #[doc = " optimized-away \'arguments\' value"]
+    /// optimized-away 'arguments' value
     JS_OPTIMIZED_ARGUMENTS = 8,
-    #[doc = " magic value passed to natives to indicate construction"]
+    /// magic value passed to natives to indicate construction
     JS_IS_CONSTRUCTING = 9,
-    #[doc = " arguments.callee has been overwritten"]
+    /// arguments.callee has been overwritten
     JS_OVERWRITTEN_CALLEE = 10,
-    #[doc = " value of static block object slot"]
+    /// value of static block object slot
     JS_BLOCK_NEEDS_CLONE = 11,
-    #[doc = " see class js::HashableValue"]
+    /// see class js::HashableValue
     JS_HASH_KEY_EMPTY = 12,
-    #[doc = " error while running Ion code"]
+    /// error while running Ion code
     JS_ION_ERROR = 13,
-    #[doc = " missing recover instruction result"]
+    /// missing recover instruction result
     JS_ION_BAILOUT = 14,
-    #[doc = " optimized out slot"]
+    /// optimized out slot
     JS_OPTIMIZED_OUT = 15,
-    #[doc = " uninitialized lexical bindings that produce ReferenceError on touch."]
+    /// uninitialized lexical bindings that produce ReferenceError on touch.
     JS_UNINITIALIZED_LEXICAL = 16,
-    #[doc = " for local use"]
+    /// for local use
     JS_GENERIC_MAGIC = 17,
-    #[doc = " for local use"]
+    /// for local use
     JS_WHY_MAGIC_COUNT = 18,
 }
 #[repr(C)]

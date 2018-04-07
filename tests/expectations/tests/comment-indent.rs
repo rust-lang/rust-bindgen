@@ -6,13 +6,17 @@
 pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
-    #[doc = " This is a multi-line doc comment.\n    \n     This class is really really interesting, look!"]
+    /// This is a multi-line doc comment.
+    ///
+    /// This class is really really interesting, look!
     #[repr(C)]
     #[derive(Debug, Default, Copy, Clone)]
     pub struct Foo {
         pub _address: u8,
     }
-    #[doc = " This nested class is also a multi-line doc comment.\n    \n     This class is not so interesting, but worth a bit of docs too!"]
+    /// This nested class is also a multi-line doc comment.
+    ///
+    /// This class is not so interesting, but worth a bit of docs too!
     #[repr(C)]
     #[derive(Debug, Default, Copy, Clone)]
     pub struct Foo_Bar {
@@ -47,11 +51,18 @@ pub mod root {
     pub mod test {
         #[allow(unused_imports)]
         use self::super::super::root;
-        #[doc = " I\'m in a namespace, and thus I may be on a rust module, most of the time.\n         My documentation is pretty extensive, I guess."]
+        /// I'm in a namespace, and thus I may be on a rust module, most of the time.
+        /// My documentation is pretty extensive, I guess.
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
         pub struct Baz {
-            #[doc = " This member is plain awesome, just amazing.\n            \n             It also has super-extensive docs, with even a nice ascii-art diagram.\n            \n             +------+          +-------+\n             | foo  |   ---->  | bar   |\n             +------+          +-------+"]
+            /// This member is plain awesome, just amazing.
+            ///
+            /// It also has super-extensive docs, with even a nice ascii-art diagram.
+            ///
+            /// +------+          +-------+
+            /// | foo  |   ---->  | bar   |
+            /// +------+          +-------+
             pub member: ::std::os::raw::c_int,
         }
         #[test]
@@ -77,7 +88,9 @@ pub mod root {
                 )
             );
         }
-        #[doc = " I\'m in an inline namespace, and as such I shouldn\'t get generated inside\n         a rust module, except when the relevant option is specified. Also, this\n         comment shouldn\'t be misaligned."]
+        /// I'm in an inline namespace, and as such I shouldn't get generated inside
+        /// a rust module, except when the relevant option is specified. Also, this
+        /// comment shouldn't be misaligned.
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
         pub struct InInlineNS {
@@ -96,7 +109,7 @@ pub mod root {
                 concat!("Alignment of ", stringify!(InInlineNS))
             );
         }
-        #[doc = ""]
+
         #[repr(C)]
         #[derive(Debug, Default, Copy, Clone)]
         pub struct Bazz {
