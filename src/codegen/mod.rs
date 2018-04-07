@@ -2247,6 +2247,7 @@ impl<'a> EnumBuilder<'a> {
         mangling_prefix: Option<&str>,
         rust_ty: quote::Tokens,
         result: &mut CodegenResult<'b>,
+        is_ty_named: bool,
     ) -> Self {
         let variant_name = ctx.rust_mangle(variant.name());
         let expr = match variant.val() {
@@ -2279,7 +2280,7 @@ impl<'a> EnumBuilder<'a> {
             }
 
             EnumBuilder::Bitfield { canonical_name, .. } => {
-                if ctx.options().rust_features().associated_const {
+                if ctx.options().rust_features().associated_const && is_ty_named {
                     let enum_ident = ctx.rust_ident(canonical_name);
                     let variant_ident = ctx.rust_ident(variant_name);
                     result.push(quote! {
@@ -2634,6 +2635,7 @@ impl CodeGenerator for Enum {
                             constant_mangling_prefix,
                             enum_rust_ty.clone(),
                             result,
+                            enum_ty.name().is_some(),
                         );
                     }
                 }
@@ -2644,6 +2646,7 @@ impl CodeGenerator for Enum {
                         constant_mangling_prefix,
                         enum_rust_ty.clone(),
                         result,
+                        enum_ty.name().is_some(),
                     );
 
                     let variant_name = ctx.rust_ident(variant.name());

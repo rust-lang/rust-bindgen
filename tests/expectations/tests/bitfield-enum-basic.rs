@@ -84,12 +84,8 @@ impl ::std::ops::BitAndAssign for Buz {
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Buz(pub i8);
-impl _bindgen_ty_1 {
-    pub const NS_FOO: _bindgen_ty_1 = _bindgen_ty_1(1);
-}
-impl _bindgen_ty_1 {
-    pub const NS_BAR: _bindgen_ty_1 = _bindgen_ty_1(2);
-}
+pub const NS_FOO: _bindgen_ty_1 = _bindgen_ty_1(1);
+pub const NS_BAR: _bindgen_ty_1 = _bindgen_ty_1(2);
 impl ::std::ops::BitOr<_bindgen_ty_1> for _bindgen_ty_1 {
     type Output = Self;
     #[inline]
@@ -124,12 +120,8 @@ pub struct _bindgen_ty_1(pub u32);
 pub struct Dummy {
     pub _address: u8,
 }
-impl Dummy__bindgen_ty_1 {
-    pub const DUMMY_FOO: Dummy__bindgen_ty_1 = Dummy__bindgen_ty_1(1);
-}
-impl Dummy__bindgen_ty_1 {
-    pub const DUMMY_BAR: Dummy__bindgen_ty_1 = Dummy__bindgen_ty_1(2);
-}
+pub const Dummy_DUMMY_FOO: Dummy__bindgen_ty_1 = Dummy__bindgen_ty_1(1);
+pub const Dummy_DUMMY_BAR: Dummy__bindgen_ty_1 = Dummy__bindgen_ty_1(2);
 impl ::std::ops::BitOr<Dummy__bindgen_ty_1> for Dummy__bindgen_ty_1 {
     type Output = Self;
     #[inline]
