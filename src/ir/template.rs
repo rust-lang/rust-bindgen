@@ -81,12 +81,12 @@ use parse::ClangItemParser;
 /// +------+----------------------+--------------------------+------------------------+----
 /// |Decl. | self_template_params | num_self_template_params | all_template_parameters| ...
 /// +------+----------------------+--------------------------+------------------------+----
-/// |Foo   | Some([T, U])         | Some(2)                  | Some([T, U])           | ...
-/// |Bar   | Some([V])            | Some(1)                  | Some([T, U, V])        | ...
-/// |Inner | None                 | None                     | Some([T, U])           | ...
-/// |Lol   | Some([W])            | Some(1)                  | Some([T, U, W])        | ...
-/// |Wtf   | Some([X])            | Some(1)                  | Some([T, U, X])        | ...
-/// |Qux   | None                 | None                     | None                   | ...
+/// |Foo   | [T, U]               | Some(2)                  | Some([T, U])           | ...
+/// |Bar   | [V]                  | Some(1)                  | Some([T, U, V])        | ...
+/// |Inner | []                   | None                     | Some([T, U])           | ...
+/// |Lol   | [W]                  | Some(1)                  | Some([T, U, W])        | ...
+/// |Wtf   | [X]                  | Some(1)                  | Some([T, U, X])        | ...
+/// |Qux   | []                   | None                     | None                   | ...
 /// +------+----------------------+--------------------------+------------------------+----
 ///
 /// ----+------+-----+----------------------+
@@ -109,7 +109,7 @@ pub trait TemplateParameters {
     /// anything but types, so we must treat them as opaque, and avoid
     /// instantiating them.
     fn self_template_params(&self, ctx: &BindgenContext)
-        -> Option<Vec<TypeId>>;
+        -> Vec<TypeId>;
 
     /// Get the number of free template parameters this template declaration
     /// has.
@@ -119,7 +119,12 @@ pub trait TemplateParameters {
     /// partial information about the template declaration, such as when we are
     /// in the middle of parsing it.
     fn num_self_template_params(&self, ctx: &BindgenContext) -> Option<usize> {
-        self.self_template_params(ctx).map(|params| params.len())
+        let len = self.self_template_params(ctx).len();
+        if len > 0 {
+            Some(len)
+        } else {
+            None
+        }
     }
 
     /// Get the complete set of template parameters that can affect this
@@ -140,19 +145,14 @@ pub trait TemplateParameters {
     where
         Self: ItemAncestors,
     {
-        let each_self_params: Vec<Vec<_>> = self.ancestors(ctx)
-            .filter_map(|id| id.self_template_params(ctx))
-            .collect();
-        if each_self_params.is_empty() {
-            None
+        let ancestors: Vec<_> = self.ancestors(ctx).collect();
+        let all_template_params: Vec<_> = ancestors.into_iter().rev().flat_map(|id| {
+            id.self_template_params(ctx).into_iter()
+        }).collect();
+        if all_template_params.len() > 0 {
+            Some(all_template_params)
         } else {
-            Some(
-                each_self_params
-                    .into_iter()
-                    .rev()
-                    .flat_map(|params| params)
-                    .collect(),
-            )
+            None
         }
     }
 

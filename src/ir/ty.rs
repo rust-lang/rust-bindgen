@@ -540,7 +540,7 @@ impl TemplateParameters for Type {
     fn self_template_params(
         &self,
         ctx: &BindgenContext,
-    ) -> Option<Vec<TypeId>> {
+    ) -> Vec<TypeId> {
         self.kind.self_template_params(ctx)
     }
 }
@@ -549,13 +549,13 @@ impl TemplateParameters for TypeKind {
     fn self_template_params(
         &self,
         ctx: &BindgenContext,
-    ) -> Option<Vec<TypeId>> {
+    ) -> Vec<TypeId> {
         match *self {
             TypeKind::ResolvedTypeRef(id) => {
                 ctx.resolve_type(id).self_template_params(ctx)
             }
             TypeKind::Comp(ref comp) => comp.self_template_params(ctx),
-            TypeKind::TemplateAlias(_, ref args) => Some(args.clone()),
+            TypeKind::TemplateAlias(_, ref args) => args.clone(),
 
             TypeKind::Opaque |
             TypeKind::TemplateInstantiation(..) |
@@ -575,7 +575,7 @@ impl TemplateParameters for TypeKind {
             TypeKind::Alias(_) |
             TypeKind::ObjCId |
             TypeKind::ObjCSel |
-            TypeKind::ObjCInterface(_) => None,
+            TypeKind::ObjCInterface(_) => vec![],
         }
     }
 }

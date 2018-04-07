@@ -246,7 +246,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveCopy<'ctx> {
                     }
 
                     // https://github.com/rust-lang/rust/issues/36640
-                    if info.self_template_params(self.ctx).is_some() ||
+                    if !info.self_template_params(self.ctx).is_empty() ||
                         item.used_template_params(self.ctx).is_some()
                     {
                         trace!(

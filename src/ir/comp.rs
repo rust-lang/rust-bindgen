@@ -1669,12 +1669,8 @@ impl TemplateParameters for CompInfo {
     fn self_template_params(
         &self,
         _ctx: &BindgenContext,
-    ) -> Option<Vec<TypeId>> {
-        if self.template_params.is_empty() {
-            None
-        } else {
-            Some(self.template_params.clone())
-        }
+    ) -> Vec<TypeId> {
+        self.template_params.clone()
     }
 }
 

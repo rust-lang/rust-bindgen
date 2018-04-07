@@ -3138,18 +3138,16 @@ impl TryToRustTy for TemplateInstantiation {
         let def_path = def.namespace_aware_canonical_path(ctx);
         ty.append_separated(def_path.into_iter().map(|p| ctx.rust_ident(p)), Term::new("::", Span::call_site()));
 
-        let def_params = match def.self_template_params(ctx) {
-            Some(params) => params,
-            None => {
-                // This can happen if we generated an opaque type for a partial
-                // template specialization, and we've hit an instantiation of
-                // that partial specialization.
-                extra_assert!(
-                    def.is_opaque(ctx, &())
-                );
-                return Err(error::Error::InstantiationOfOpaqueType);
-            }
-        };
+        let def_params = def.self_template_params(ctx);
+        if def_params.is_empty() {
+            // This can happen if we generated an opaque type for a partial
+            // template specialization, and we've hit an instantiation of
+            // that partial specialization.
+            extra_assert!(
+                def.is_opaque(ctx, &())
+            );
+            return Err(error::Error::InstantiationOfOpaqueType);
+        }
 
         // TODO: If the definition type is a template class/struct
         // definition's member template definition, it could rely on
