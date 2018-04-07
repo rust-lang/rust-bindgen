@@ -2126,7 +2126,7 @@ impl EnumVariation {
 
     fn is_bitfield(&self) -> bool {
         match *self {
-            EnumVariation::Bitfield => true,
+            EnumVariation::Bitfield {..} => true,
             _ => false
         }
     }
@@ -2247,6 +2247,7 @@ impl<'a> EnumBuilder<'a> {
         mangling_prefix: Option<&str>,
         rust_ty: quote::Tokens,
         result: &mut CodegenResult<'b>,
+        is_ty_named: bool,
     ) -> Self {
         let variant_name = ctx.rust_mangle(variant.name());
         let expr = match variant.val() {
@@ -2278,19 +2279,28 @@ impl<'a> EnumBuilder<'a> {
                 }
             }
 
-            EnumBuilder::Bitfield { .. } => {
-                let constant_name = match mangling_prefix {
-                    Some(prefix) => {
-                        Cow::Owned(format!("{}_{}", prefix, variant_name))
-                    }
-                    None => variant_name,
-                };
-
-                let ident = ctx.rust_ident(constant_name);
-                result.push(quote! {
-                    #doc
-                    pub const #ident : #rust_ty = #rust_ty ( #expr );
-                });
+            EnumBuilder::Bitfield { canonical_name, .. } => {
+                if ctx.options().rust_features().associated_const && is_ty_named {
+                    let enum_ident = ctx.rust_ident(canonical_name);
+                    let variant_ident = ctx.rust_ident(variant_name);
+                    result.push(quote! {
+                        impl #enum_ident {
+                            #doc
+                            pub const #variant_ident : #rust_ty = #rust_ty ( #expr );
+                        }
+                    });
+                } else {
+                    let ident = ctx.rust_ident(match mangling_prefix {
+                        Some(prefix) => {
+                            Cow::Owned(format!("{}_{}", prefix, variant_name))
+                        }
+                        None => variant_name,
+                    });
+                    result.push(quote! {
+                        #doc
+                        pub const #ident : #rust_ty = #rust_ty ( #expr );
+                    });
+                }
 
                 self
             }
@@ -2625,6 +2635,7 @@ impl CodeGenerator for Enum {
                             constant_mangling_prefix,
                             enum_rust_ty.clone(),
                             result,
+                            enum_ty.name().is_some(),
                         );
                     }
                 }
@@ -2635,6 +2646,7 @@ impl CodeGenerator for Enum {
                         constant_mangling_prefix,
                         enum_rust_ty.clone(),
                         result,
+                        enum_ty.name().is_some(),
                     );
 
                     let variant_name = ctx.rust_ident(variant.name());

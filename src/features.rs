@@ -90,6 +90,8 @@ macro_rules! rust_target_base {
             => Stable_1_0 => 1.0;
             /// Rust stable 1.19
             => Stable_1_19 => 1.19;
+            /// Rust stable 1.20
+            => Stable_1_20 => 1.20;
             /// Rust stable 1.21
             => Stable_1_21 => 1.21;
             /// Rust stable 1.25
@@ -142,6 +144,8 @@ rust_feature_def!(
     => builtin_clone_impls;
     /// repr(align) https://github.com/rust-lang/rust/pull/47006
     => repr_align;
+    /// associated constants https://github.com/rust-lang/rust/issues/29646
+    => associated_const;
 );
 
 impl From<RustTarget> for RustFeatures {
@@ -150,6 +154,10 @@ impl From<RustTarget> for RustFeatures {
 
         if rust_target >= RustTarget::Stable_1_19 {
             features.untagged_union = true;
+        }
+
+        if rust_target >= RustTarget::Stable_1_20 {
+            features.associated_const = true;
         }
 
         if rust_target >= RustTarget::Stable_1_21 {
