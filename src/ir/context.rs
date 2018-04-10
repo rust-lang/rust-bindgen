@@ -1366,10 +1366,7 @@ impl BindgenContext {
             let mut used_params = HashMap::new();
             for &id in self.whitelisted_items() {
                 used_params.entry(id).or_insert(
-                    id.self_template_params(self).map_or(
-                        Default::default(),
-                        |params| params.into_iter().map(|p| p.into()).collect(),
-                    ),
+                    id.self_template_params(self).into_iter().map(|p| p.into()).collect()
                 );
             }
             self.used_template_parameters = Some(used_params);
@@ -1552,15 +1549,16 @@ impl BindgenContext {
             .and_then(|canon_decl| {
                 self.get_resolved_type(&canon_decl).and_then(
                     |template_decl_id| {
-                        template_decl_id.num_self_template_params(self).map(
-                            |num_params| {
-                                (
-                                    *canon_decl.cursor(),
-                                    template_decl_id.into(),
-                                    num_params,
-                                )
-                            },
-                        )
+                        let num_params = template_decl_id.num_self_template_params(self);
+                        if num_params == 0 {
+                            None
+                        } else {
+                            Some((
+                                *canon_decl.cursor(),
+                                template_decl_id.into(),
+                                num_params,
+                            ))
+                        }
                     },
                 )
             })
@@ -1581,15 +1579,16 @@ impl BindgenContext {
                             .cloned()
                     })
                     .and_then(|template_decl| {
-                        template_decl.num_self_template_params(self).map(
-                            |num_template_params| {
-                                (
-                                    *template_decl.decl(),
-                                    template_decl.id(),
-                                    num_template_params,
-                                )
-                            },
-                        )
+                        let num_template_params = template_decl.num_self_template_params(self);
+                        if num_template_params == 0 {
+                            None
+                        } else {
+                            Some((
+                                *template_decl.decl(),
+                                template_decl.id(),
+                                num_template_params,
+                            ))
+                        }
                     })
             })
     }
@@ -1636,17 +1635,14 @@ impl BindgenContext {
     ) -> Option<TypeId> {
         use clang_sys;
 
-        let num_expected_args = match self.resolve_type(template)
-            .num_self_template_params(self) {
-            Some(n) => n,
-            None => {
-                warn!(
-                    "Tried to instantiate a template for which we could not \
-                       determine any template parameters"
-                );
-                return None;
-            }
-        };
+        let num_expected_args = self.resolve_type(template).num_self_template_params(self);
+        if num_expected_args == 0 {
+            warn!(
+                "Tried to instantiate a template for which we could not \
+                   determine any template parameters"
+            );
+            return None;
+        }
 
         let mut args = vec![];
         let mut found_const_arg = false;
@@ -2647,13 +2643,13 @@ impl TemplateParameters for PartialType {
     fn self_template_params(
         &self,
         _ctx: &BindgenContext,
-    ) -> Option<Vec<TypeId>> {
+    ) -> Vec<TypeId> {
         // Maybe at some point we will eagerly parse named types, but for now we
         // don't and this information is unavailable.
-        None
+        vec![]
     }
 
-    fn num_self_template_params(&self, _ctx: &BindgenContext) -> Option<usize> {
+    fn num_self_template_params(&self, _ctx: &BindgenContext) -> usize {
         // Wouldn't it be nice if libclang would reliably give us this
         // information‽
         match self.decl().kind() {
@@ -2672,9 +2668,9 @@ impl TemplateParameters for PartialType {
                     };
                     clang_sys::CXChildVisit_Continue
                 });
-                Some(num_params)
+                num_params
             }
-            _ => None,
+            _ => 0,
         }
     }
 }

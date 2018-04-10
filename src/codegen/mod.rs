@@ -299,16 +299,11 @@ impl AppendImplicitTemplateParams for quote::Tokens {
             _ => {},
         }
 
-        if let Some(params) = item.used_template_params(ctx) {
-            if params.is_empty() {
-                return;
-            }
-
-            let params = params.into_iter().map(|p| {
-                p.try_to_rust_ty(ctx, &())
-                    .expect("template params cannot fail to be a rust type")
-            });
-
+        let params: Vec<_> = item.used_template_params(ctx).iter().map(|p| {
+            p.try_to_rust_ty(ctx, &())
+                .expect("template params cannot fail to be a rust type")
+        }).collect();
+        if !params.is_empty() {
             self.append_all(quote! {
                 < #( #params ),* >
             });
@@ -479,11 +474,8 @@ impl CodeGenerator for Var {
         // We can't generate bindings to static variables of templates. The
         // number of actual variables for a single declaration are open ended
         // and we don't know what instantiations do or don't exist.
-        let type_params = item.all_template_params(ctx);
-        if let Some(params) = type_params {
-            if !params.is_empty() {
-                return;
-            }
+        if !item.all_template_params(ctx).is_empty() {
+            return;
         }
 
         let ty = self.ty().to_rust_ty_or_opaque(ctx, &());
@@ -636,15 +628,10 @@ impl CodeGenerator for Type {
                     return;
                 }
 
-                let mut outer_params = item.used_template_params(ctx)
-                    .and_then(|ps| if ps.is_empty() {
-                        None
-                    } else {
-                        Some(ps)
-                    });
+                let mut outer_params = item.used_template_params(ctx);
 
                 let inner_rust_type = if item.is_opaque(ctx, &()) {
-                    outer_params = None;
+                    outer_params = vec![];
                     self.to_opaque(ctx, item)
                 } else {
                     // Its possible that we have better layout information than
@@ -699,7 +686,7 @@ impl CodeGenerator for Type {
                         'A'...'Z' | 'a'...'z' | '0'...'9' | ':' | '_' | ' ' => true,
                         _ => false,
                     }) &&
-                    outer_params.is_none() &&
+                    outer_params.is_empty() &&
                     inner_item.expect_type().canonical_type(ctx).is_enum()
                 {
                     tokens.append_all(quote! {
@@ -718,25 +705,23 @@ impl CodeGenerator for Type {
                     pub type #rust_name
                 });
 
-                if let Some(params) = outer_params {
-                    let params: Vec<_> = params.into_iter()
-                        .filter_map(|p| p.as_template_param(ctx, &()))
-                        .collect();
-                    if params.iter().any(|p| ctx.resolve_type(*p).is_invalid_type_param()) {
-                        warn!(
-                            "Item contained invalid template \
-                             parameter: {:?}",
-                            item
-                        );
-                        return;
-                    }
+                let params: Vec<_> = outer_params.into_iter()
+                    .filter_map(|p| p.as_template_param(ctx, &()))
+                    .collect();
+                if params.iter().any(|p| ctx.resolve_type(*p).is_invalid_type_param()) {
+                    warn!(
+                        "Item contained invalid template \
+                         parameter: {:?}",
+                        item
+                    );
+                    return;
+                }
+                let params: Vec<_> = params.iter().map(|p| {
+                    p.try_to_rust_ty(ctx, &())
+                        .expect("type parameters can always convert to rust ty OK")
+                }).collect();
 
-                    let params = params.iter()
-                        .map(|p| {
-                            p.try_to_rust_ty(ctx, &())
-                                .expect("type parameters can always convert to rust ty OK")
-                        });
-
+                if !params.is_empty() {
                     tokens.append_all(quote! {
                         < #( #params ),* >
                     });
@@ -1418,8 +1403,6 @@ impl CodeGenerator for CompInfo {
             return;
         }
 
-        let used_template_params = item.used_template_params(ctx);
-
         let ty = item.expect_type();
         let layout = ty.layout(ctx);
         let mut packed = self.is_packed(ctx, &layout);
@@ -1601,21 +1584,19 @@ impl CodeGenerator for CompInfo {
 
         let mut generic_param_names = vec![];
 
-        if let Some(ref params) = used_template_params {
-            for (idx, ty) in params.iter().enumerate() {
-                let param = ctx.resolve_type(*ty);
-                let name = param.name().unwrap();
-                let ident = ctx.rust_ident(name);
-                generic_param_names.push(ident.clone());
+        for (idx, ty) in item.used_template_params(ctx).iter().enumerate() {
+            let param = ctx.resolve_type(*ty);
+            let name = param.name().unwrap();
+            let ident = ctx.rust_ident(name);
+            generic_param_names.push(ident.clone());
 
-                let prefix = ctx.trait_prefix();
-                let field_name = ctx.rust_ident(format!("_phantom_{}", idx));
-                fields.push(quote! {
-                    pub #field_name : ::#prefix::marker::PhantomData<
-                        ::#prefix::cell::UnsafeCell<#ident>
-                    > ,
-                });
-            }
+            let prefix = ctx.trait_prefix();
+            let field_name = ctx.rust_ident(format!("_phantom_{}", idx));
+            fields.push(quote! {
+                pub #field_name : ::#prefix::marker::PhantomData<
+                    ::#prefix::cell::UnsafeCell<#ident>
+                > ,
+            });
         }
 
         let generics = if !generic_param_names.is_empty() {
@@ -1668,11 +1649,13 @@ impl CodeGenerator for CompInfo {
                 ctx.options().derive_default && !self.is_forward_declaration();
         }
 
+        let all_template_params = item.all_template_params(ctx);
+
         if item.can_derive_copy(ctx) && !item.annotations().disallow_copy() {
             derives.push("Copy");
 
             if ctx.options().rust_features().builtin_clone_impls ||
-                used_template_params.is_some()
+                !all_template_params.is_empty()
             {
                 // FIXME: This requires extra logic if you have a big array in a
                 // templated struct. The reason for this is that the magic:
@@ -1754,7 +1737,7 @@ impl CodeGenerator for CompInfo {
             );
         }
 
-        if used_template_params.is_none() {
+        if all_template_params.is_empty() {
             if !is_opaque {
                 for var in self.inner_vars() {
                     ctx.resolve_item(*var).codegen(ctx, result, &());
@@ -3023,7 +3006,6 @@ impl TryToRustTy for Type {
             TypeKind::TemplateAlias(..) |
             TypeKind::Alias(..) => {
                 let template_params = item.used_template_params(ctx)
-                    .unwrap_or(vec![])
                     .into_iter()
                     .filter(|param| param.is_template_param(ctx, &()))
                     .collect::<Vec<_>>();
@@ -3042,9 +3024,9 @@ impl TryToRustTy for Type {
                 }
             }
             TypeKind::Comp(ref info) => {
-                let template_params = item.used_template_params(ctx);
+                let template_params = item.all_template_params(ctx);
                 if info.has_non_type_template_params() ||
-                    (item.is_opaque(ctx, &()) && template_params.is_some())
+                    (item.is_opaque(ctx, &()) && !template_params.is_empty())
                 {
                     return self.try_to_opaque(ctx, item);
                 }
@@ -3138,18 +3120,16 @@ impl TryToRustTy for TemplateInstantiation {
         let def_path = def.namespace_aware_canonical_path(ctx);
         ty.append_separated(def_path.into_iter().map(|p| ctx.rust_ident(p)), Term::new("::", Span::call_site()));
 
-        let def_params = match def.self_template_params(ctx) {
-            Some(params) => params,
-            None => {
-                // This can happen if we generated an opaque type for a partial
-                // template specialization, and we've hit an instantiation of
-                // that partial specialization.
-                extra_assert!(
-                    def.is_opaque(ctx, &())
-                );
-                return Err(error::Error::InstantiationOfOpaqueType);
-            }
-        };
+        let def_params = def.self_template_params(ctx);
+        if def_params.is_empty() {
+            // This can happen if we generated an opaque type for a partial
+            // template specialization, and we've hit an instantiation of
+            // that partial specialization.
+            extra_assert!(
+                def.is_opaque(ctx, &())
+            );
+            return Err(error::Error::InstantiationOfOpaqueType);
+        }
 
         // TODO: If the definition type is a template class/struct
         // definition's member template definition, it could rely on
@@ -3242,11 +3222,8 @@ impl CodeGenerator for Function {
         // generate bindings to template functions, because the set of
         // instantiations is open ended and we have no way of knowing which
         // monomorphizations actually exist.
-        let type_params = item.all_template_params(ctx);
-        if let Some(params) = type_params {
-            if !params.is_empty() {
-                return;
-            }
+        if !item.all_template_params(ctx).is_empty() {
+            return;
         }
 
         let name = self.name();
