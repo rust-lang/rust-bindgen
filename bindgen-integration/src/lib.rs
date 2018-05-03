@@ -8,6 +8,9 @@ use std::ffi::CStr;
 use std::os::raw::c_int;
 use std::mem;
 
+#[allow(unused)]
+use bindings::testing::Bar; // This type is generated from module_raw_line.
+
 #[test]
 fn test_static_array() {
     let mut test = unsafe { bindings::Test_COUNTDOWN.as_ptr() };

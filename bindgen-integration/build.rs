@@ -38,6 +38,7 @@ fn main() {
         .enable_cxx_namespaces()
         .rustified_enum(".*")
         .raw_line("pub use self::root::*;")
+        .module_raw_line("root::testing", "pub type Bar = i32;")
         .header("cpp/Test.h")
         .clang_args(&["-x", "c++", "-std=c++11"])
         .parse_callbacks(Box::new(MacroCallback {macros: macros.clone()}))

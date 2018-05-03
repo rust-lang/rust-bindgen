@@ -85,6 +85,7 @@ use parse::{ClangItemParser, ParseError};
 use regex_set::RegexSet;
 
 use std::borrow::Cow;
+use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
 use std::io::{self, Write};
 use std::iter;
@@ -766,8 +767,37 @@ impl Builder {
 
     /// Add a string to prepend to the generated bindings. The string is passed
     /// through without any modification.
-    pub fn raw_line<T: Into<String>>(mut self, arg: T) -> Builder {
+    pub fn raw_line<T: Into<String>>(mut self, arg: T) -> Self {
         self.options.raw_lines.push(arg.into());
+        self
+    }
+
+    /// Add a given line to the beginning of module `mod`.
+    pub fn module_raw_line<T, U>(mut self, mod_: T, line: U) -> Self
+    where
+        T: Into<String>,
+        U: Into<String>,
+    {
+        self.options
+            .module_lines
+            .entry(mod_.into())
+            .or_insert_with(Vec::new)
+            .push(line.into());
+        self
+    }
+
+    /// Add a given set of lines to the beginning of module `mod`.
+    pub fn module_raw_lines<T, I>(mut self, mod_: T, lines: I) -> Self
+    where
+        T: Into<String>,
+        I: IntoIterator,
+        I::Item: Into<String>,
+    {
+        self.options
+            .module_lines
+            .entry(mod_.into())
+            .or_insert_with(Vec::new)
+            .extend(lines.into_iter().map(Into::into));
         self
     }
 
@@ -1300,8 +1330,14 @@ struct BindgenOptions {
     /// Whether we should convert float types to f32/f64 types.
     convert_floats: bool,
 
-    /// The set of raw lines to prepend to the generated Rust code.
+    /// The set of raw lines to prepend to the top-level module of generated
+    /// Rust code.
     raw_lines: Vec<String>,
+
+    /// The set of raw lines to prepend to each of the modules.
+    ///
+    /// This only makes sense if the `enable_cxx_namespaces` option is set.
+    module_lines: HashMap<String, Vec<String>>,
 
     /// The set of arguments to pass straight through to Clang.
     clang_args: Vec<String>,
@@ -1448,6 +1484,7 @@ impl Default for BindgenOptions {
             msvc_mangling: false,
             convert_floats: true,
             raw_lines: vec![],
+            module_lines: HashMap::default(),
             clang_args: vec![],
             input_header: None,
             input_unsaved_files: vec![],
