@@ -786,6 +786,21 @@ impl Builder {
         self
     }
 
+    /// Add a given set of lines to the beginning of module `mod`.
+    pub fn module_raw_lines<T, I>(mut self, mod_: T, lines: I) -> Self
+    where
+        T: Into<String>,
+        I: IntoIterator,
+        I::Item: Into<String>,
+    {
+        self.options
+            .module_lines
+            .entry(mod_.into())
+            .or_insert_with(Vec::new)
+            .extend(lines.into_iter().map(Into::into));
+        self
+    }
+
     /// Add an argument to be passed straight through to clang.
     pub fn clang_arg<T: Into<String>>(mut self, arg: T) -> Builder {
         self.options.clang_args.push(arg.into());
