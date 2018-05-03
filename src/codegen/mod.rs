@@ -422,6 +422,18 @@ impl CodeGenerator for Module {
         let mut found_any = false;
         let inner_items = result.inner(|result| {
             result.push(root_import(ctx, item));
+
+            let path = item.namespace_aware_canonical_path(ctx).join("::");
+            if let Some(raw_lines) = ctx.options().module_lines.get(&path) {
+                for raw_line in raw_lines {
+                    found_any = true;
+                    // FIXME(emilio): The use of `Term` is an abuse, but we abuse it
+                    // in a bunch more places.
+                    let line = Term::new(raw_line, Span::call_site());
+                    result.push(quote! { #line });
+                }
+            }
+
             codegen_self(result, &mut found_any);
         });
 
@@ -431,16 +443,15 @@ impl CodeGenerator for Module {
         }
 
         let name = item.canonical_name(ctx);
-
-        result.push(if name == "root" {
+        let ident = ctx.rust_ident(name);
+        result.push(if item.id() == ctx.root_module() {
             quote! {
                 #[allow(non_snake_case, non_camel_case_types, non_upper_case_globals)]
-                pub mod root {
+                pub mod #ident {
                     #( #inner_items )*
                 }
             }
         } else {
-            let ident = ctx.rust_ident(name);
             quote! {
                 pub mod #ident {
                     #( #inner_items )*
