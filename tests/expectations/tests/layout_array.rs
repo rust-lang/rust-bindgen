@@ -27,7 +27,7 @@ pub type rte_mempool_free_t = ::std::option::Option<unsafe extern "C" fn(mp: *mu
 pub type rte_mempool_enqueue_t = ::std::option::Option<
     unsafe extern "C" fn(
         mp: *mut rte_mempool,
-        obj_table: *const *const ::std::os::raw::c_void,
+        obj_table: *const *mut ::std::os::raw::c_void,
         n: ::std::os::raw::c_uint,
     ) -> ::std::os::raw::c_int,
 >;
