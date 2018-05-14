@@ -1926,8 +1926,43 @@ impl BindgenContext {
         parent_id: Option<ItemId>,
         ty: &clang::Type,
     ) -> TypeId {
+        self.build_wrapper(
+            with_id,
+            wrapped_id,
+            parent_id,
+            ty,
+            ty.is_const(),
+        )
+    }
+
+    /// A wrapper over a type that adds a const qualifier explicitly.
+    ///
+    /// Needed to handle const methods in C++, wrapping the type .
+    pub fn build_const_wrapper(
+        &mut self,
+        with_id: ItemId,
+        wrapped_id: TypeId,
+        parent_id: Option<ItemId>,
+        ty: &clang::Type,
+    ) -> TypeId {
+        self.build_wrapper(
+            with_id,
+            wrapped_id,
+            parent_id,
+            ty,
+            /* is_const = */ true,
+        )
+    }
+
+    fn build_wrapper(
+        &mut self,
+        with_id: ItemId,
+        wrapped_id: TypeId,
+        parent_id: Option<ItemId>,
+        ty: &clang::Type,
+        is_const: bool,
+    ) -> TypeId {
         let spelling = ty.spelling();
-        let is_const = ty.is_const();
         let layout = ty.fallible_layout().ok();
         let type_kind = TypeKind::ResolvedTypeRef(wrapped_id);
         let ty = Type::new(Some(spelling), layout, type_kind, is_const);
