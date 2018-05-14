@@ -88,7 +88,8 @@ impl Opaque {
     pub fn from_clang_ty(ty: &clang::Type) -> Type {
         let layout = Layout::new(ty.size(), ty.align());
         let ty_kind = TypeKind::Opaque;
-        Type::new(None, Some(layout), ty_kind, false)
+        let is_const = ty.is_const();
+        Type::new(None, Some(layout), ty_kind, is_const)
     }
 
     /// Return the known rust type we should use to create a correctly-aligned
