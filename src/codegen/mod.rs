@@ -3054,7 +3054,7 @@ impl TryToRustTy for Type {
             }
             TypeKind::Pointer(inner) |
             TypeKind::Reference(inner) => {
-                let is_const = self.is_const() || ctx.resolve_type(inner).is_const();
+                let is_const = ctx.resolve_type(inner).is_const();
 
                 let inner = inner.into_resolver().through_type_refs().resolve(ctx);
                 let inner_ty = inner.expect_type();
