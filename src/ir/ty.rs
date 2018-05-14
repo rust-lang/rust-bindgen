@@ -1194,7 +1194,23 @@ impl Type {
         };
 
         let name = if name.is_empty() { None } else { Some(name) };
-        let is_const = ty.is_const();
+
+        // Just using ty.is_const() is wrong here, because when we declare an
+        // argument like 'int* const arg0', arg0 is considered
+        // const but the pointer itself points to mutable data.
+        //
+        // Without canonicalizing the type to the pointer type, we'll get the
+        // following mapping:
+        //
+        // arg0: *const c_int
+        //
+        // So by canonicalizing the type first, we can check constness by
+        // calling is_const() on the pointer type.
+        let is_const = if let Some(pty) = ty.pointee_type() {
+            pty.is_const()
+        } else {
+            ty.is_const()
+        };
 
         let ty = Type::new(name, layout, kind, is_const);
         // TODO: maybe declaration.canonical()?
