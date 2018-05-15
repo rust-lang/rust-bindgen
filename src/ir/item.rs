@@ -1449,8 +1449,8 @@ impl ClangItemParser for Item {
                 return Ok(Item::new_opaque_type(id, ty, ctx));
             }
 
-            if let Some(id) = Item::type_param(Some(id), location, ctx) {
-                return Ok(id);
+            if let Some(param_id) = Item::type_param(None, location, ctx) {
+                return Ok(ctx.build_ty_wrapper(id, param_id, None, ty));
             }
         }
 
