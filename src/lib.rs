@@ -1578,7 +1578,7 @@ fn ensure_libclang_is_loaded() {
 #[derive(Debug)]
 pub struct Bindings {
     options: BindgenOptions,
-    module: quote::Tokens,
+    module: proc_macro2::TokenStream,
 }
 
 impl Bindings {

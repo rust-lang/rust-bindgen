@@ -24,7 +24,7 @@ use cexpr;
 use clang::{self, Cursor};
 use clang_sys;
 use parse::ClangItemParser;
-use proc_macro2::{Term, Span};
+use proc_macro2::{Ident, Span};
 use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::{HashMap, HashSet, hash_map};
@@ -905,7 +905,7 @@ impl BindgenContext {
     }
 
     /// Returns a mangled name as a rust identifier.
-    pub fn rust_ident<S>(&self, name: S) -> Term
+    pub fn rust_ident<S>(&self, name: S) -> Ident
     where
         S: AsRef<str>
     {
@@ -913,11 +913,11 @@ impl BindgenContext {
     }
 
     /// Returns a mangled name as a rust identifier.
-    pub fn rust_ident_raw<T>(&self, name: T) -> Term
+    pub fn rust_ident_raw<T>(&self, name: T) -> Ident
     where
         T: AsRef<str>
     {
-        Term::new(name.as_ref(), Span::call_site())
+        Ident::new(name.as_ref(), Span::call_site())
     }
 
     /// Iterate over all items that have been defined.
@@ -2376,7 +2376,7 @@ impl BindgenContext {
 
     /// Convenient method for getting the prefix to use for most traits in
     /// codegen depending on the `use_core` option.
-    pub fn trait_prefix(&self) -> Term {
+    pub fn trait_prefix(&self) -> Ident {
         if self.options().use_core {
             self.rust_ident_raw("core")
         } else {
