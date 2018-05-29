@@ -16,19 +16,19 @@ pub const RTE_HEAP_NUM_FREELISTS: u32 = 13;
 pub struct rte_mempool {
     _unused: [u8; 0],
 }
-/// Prototype for implementation specific data provisioning function.
-///
-/// The function should provide the implementation specific memory for
-/// for use by the other mempool ops functions in a given mempool ops struct.
-/// E.g. the default ops provides an instance of the rte_ring for this purpose.
-/// it will most likely point to a different type of data structure, and
-/// will be transparent to the application programmer.
-/// This function should set mp->pool_data.
+#[doc = " Prototype for implementation specific data provisioning function."]
+#[doc = ""]
+#[doc = " The function should provide the implementation specific memory for"]
+#[doc = " for use by the other mempool ops functions in a given mempool ops struct."]
+#[doc = " E.g. the default ops provides an instance of the rte_ring for this purpose."]
+#[doc = " it will most likely point to a different type of data structure, and"]
+#[doc = " will be transparent to the application programmer."]
+#[doc = " This function should set mp->pool_data."]
 pub type rte_mempool_alloc_t =
     ::std::option::Option<unsafe extern "C" fn(mp: *mut rte_mempool) -> ::std::os::raw::c_int>;
-/// Free the opaque private data pointed to by mp->pool_data pointer.
+#[doc = " Free the opaque private data pointed to by mp->pool_data pointer."]
 pub type rte_mempool_free_t = ::std::option::Option<unsafe extern "C" fn(mp: *mut rte_mempool)>;
-/// Enqueue an object into the external pool.
+#[doc = " Enqueue an object into the external pool."]
 pub type rte_mempool_enqueue_t = ::std::option::Option<
     unsafe extern "C" fn(
         mp: *mut rte_mempool,
@@ -36,7 +36,7 @@ pub type rte_mempool_enqueue_t = ::std::option::Option<
         n: ::std::os::raw::c_uint,
     ) -> ::std::os::raw::c_int,
 >;
-/// Dequeue an object from the external pool.
+#[doc = " Dequeue an object from the external pool."]
 pub type rte_mempool_dequeue_t = ::std::option::Option<
     unsafe extern "C" fn(
         mp: *mut rte_mempool,
@@ -44,24 +44,24 @@ pub type rte_mempool_dequeue_t = ::std::option::Option<
         n: ::std::os::raw::c_uint,
     ) -> ::std::os::raw::c_int,
 >;
-/// Return the number of available objects in the external pool.
+#[doc = " Return the number of available objects in the external pool."]
 pub type rte_mempool_get_count =
     ::std::option::Option<unsafe extern "C" fn(mp: *const rte_mempool) -> ::std::os::raw::c_uint>;
-/// Structure defining mempool operations structure
+#[doc = " Structure defining mempool operations structure"]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct rte_mempool_ops {
-    ///< Name of mempool ops struct.
+    #[doc = "< Name of mempool ops struct."]
     pub name: [::std::os::raw::c_char; 32usize],
-    ///< Allocate private data.
+    #[doc = "< Allocate private data."]
     pub alloc: rte_mempool_alloc_t,
-    ///< Free the external pool.
+    #[doc = "< Free the external pool."]
     pub free: rte_mempool_free_t,
-    ///< Enqueue an object.
+    #[doc = "< Enqueue an object."]
     pub enqueue: rte_mempool_enqueue_t,
-    ///< Dequeue an object.
+    #[doc = "< Dequeue an object."]
     pub dequeue: rte_mempool_dequeue_t,
-    ///< Get qty of available objs.
+    #[doc = "< Get qty of available objs."]
     pub get_count: rte_mempool_get_count,
     pub __bindgen_padding_0: [u64; 7usize],
 }
@@ -148,11 +148,11 @@ impl ::std::cmp::PartialEq for rte_mempool_ops {
             && self.get_count == other.get_count
     }
 }
-/// The rte_spinlock_t type.
+#[doc = " The rte_spinlock_t type."]
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_spinlock_t {
-    ///< lock status 0 = unlocked, 1 = locked
+    #[doc = "< lock status 0 = unlocked, 1 = locked"]
     pub locked: ::std::os::raw::c_int,
 }
 #[test]
@@ -178,22 +178,22 @@ fn bindgen_test_layout_rte_spinlock_t() {
         )
     );
 }
-/// Structure storing the table of registered ops structs, each of which contain
-/// the function pointers for the mempool ops functions.
-/// Each process has its own storage for this ops struct array so that
-/// the mempools can be shared across primary and secondary processes.
-/// The indices used to access the array are valid across processes, whereas
-/// any function pointers stored directly in the mempool struct would not be.
-/// This results in us simply having "ops_index" in the mempool struct.
+#[doc = " Structure storing the table of registered ops structs, each of which contain"]
+#[doc = " the function pointers for the mempool ops functions."]
+#[doc = " Each process has its own storage for this ops struct array so that"]
+#[doc = " the mempools can be shared across primary and secondary processes."]
+#[doc = " The indices used to access the array are valid across processes, whereas"]
+#[doc = " any function pointers stored directly in the mempool struct would not be."]
+#[doc = " This results in us simply having \"ops_index\" in the mempool struct."]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct rte_mempool_ops_table {
-    ///< Spinlock for add/delete.
+    #[doc = "< Spinlock for add/delete."]
     pub sl: rte_spinlock_t,
-    ///< Number of used ops structs in the table.
+    #[doc = "< Number of used ops structs in the table."]
     pub num_ops: u32,
     pub __bindgen_padding_0: [u64; 7usize],
-    /// Storage for all possible ops structs.
+    #[doc = " Storage for all possible ops structs."]
     pub ops: [rte_mempool_ops; 16usize],
 }
 #[test]
@@ -239,7 +239,7 @@ impl Default for rte_mempool_ops_table {
         unsafe { ::std::mem::zeroed() }
     }
 }
-/// Structure to hold malloc heap
+#[doc = " Structure to hold malloc heap"]
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct malloc_heap {

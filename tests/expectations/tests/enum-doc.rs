@@ -7,20 +7,20 @@
     non_upper_case_globals
 )]
 
-/// Document field with three slashes
+#[doc = " Document field with three slashes"]
 pub const B_VAR_A: B = 0;
-/// Document field with preceeding star
+#[doc = " Document field with preceeding star"]
 pub const B_VAR_B: B = 1;
-/// Document field with preceeding exclamation
+#[doc = " Document field with preceeding exclamation"]
 pub const B_VAR_C: B = 2;
-///< Document field with following star
+#[doc = "< Document field with following star"]
 pub const B_VAR_D: B = 3;
-///< Document field with following exclamation
+#[doc = "< Document field with following exclamation"]
 pub const B_VAR_E: B = 4;
-/// Document field with preceeding star, with a loong long multiline
-/// comment.
-///
-/// Very interesting documentation, definitely.
+#[doc = " Document field with preceeding star, with a loong long multiline"]
+#[doc = " comment."]
+#[doc = ""]
+#[doc = " Very interesting documentation, definitely."]
 pub const B_VAR_F: B = 5;
-/// Document enum
+#[doc = " Document enum"]
 pub type B = u32;
