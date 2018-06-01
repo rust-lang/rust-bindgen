@@ -1853,13 +1853,13 @@ fn parse(context: &mut BindgenContext) -> Result<(), ()> {
 /// Extracted Clang version data
 #[derive(Debug)]
 pub struct ClangVersion {
-    /// Major and minor semvar, if parsing was successful
+    /// Major and minor semver, if parsing was successful
     pub parsed: Option<(u32, u32)>,
     /// full version string
     pub full: String,
 }
 
-/// Get the major and the minor semvar numbers of Clang's version
+/// Get the major and the minor semver numbers of Clang's version
 pub fn clang_version() -> ClangVersion {
     if !clang_sys::is_loaded() {
         // TODO(emilio): Return meaningful error (breaking).
