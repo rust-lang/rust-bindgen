@@ -84,6 +84,10 @@ reducing.add_argument(
     dest="rustc",
     help="Do not attempt to compile the emitted bindings with `rustc`.")
 reducing.add_argument(
+    "--extra-compile-file",
+    type=str,
+    help="Append the content of this extra file to the end of the emitted bindings just before compiling it.")
+reducing.add_argument(
     "--expect-compile-fail",
     action="store_true",
     help="Exit non-zero if `rustc` successfully compiles the emitted bindings.")
@@ -221,6 +225,10 @@ def run_bindgen(args, bindings):
                 raise ExitOne()
 
 def run_rustc(args, bindings, test_exe):
+    if args.extra_compile_file:
+        with open(bindings, mode="a") as outfile:
+            with open(args.extra_compile_file, mode="r") as infile:
+                outfile.write(infile.read())
     child = run(
         ["rustc", "--crate-type", "lib", "--test", "-o", test_exe, bindings],
         stdout=subprocess.PIPE,
