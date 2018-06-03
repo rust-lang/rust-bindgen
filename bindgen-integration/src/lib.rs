@@ -214,6 +214,34 @@ fn test_bitfields_seventh() {
 }
 
 #[test]
+fn test_bitfields_eight() {
+    let mut s: bindings::bitfields::Eight = unsafe { mem::zeroed() };
+    assert!(unsafe { s.assert(0, 0) });
+
+    s.a = 10;
+    s.set_b(1);
+
+    assert!(unsafe { s.assert(10, 1) });
+
+    assert_eq!(s.a, 10);
+    assert_eq!(s.b(), 1);
+}
+
+#[test]
+fn test_bitfields_ninth() {
+    let mut s: bindings::bitfields::Ninth = unsafe { mem::zeroed() };
+    assert!(unsafe { s.assert(0, 0) });
+
+    s.a = 10;
+    s.set_b(656);
+
+    assert!(unsafe { s.assert(10, 656) });
+
+    assert_eq!(s.a, 10);
+    assert_eq!(s.b(), 656);
+}
+
+#[test]
 fn test_bitfield_constructors() {
     use std::mem;
     let mut first = bindings::bitfields::First {

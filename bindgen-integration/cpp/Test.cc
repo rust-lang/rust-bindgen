@@ -1,5 +1,7 @@
 #include "Test.h"
 
+#include <stdio.h>
+
 const int Test::COUNTDOWN[] = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 };
 const int* Test::COUNTDOWN_PTR = Test::COUNTDOWN;
 
@@ -129,5 +131,18 @@ Seventh::assert(bool first,
       this->sixth_one_bit == sixth &&
       this->seventh_thirty_bits == seventh;
 };
+
+bool
+Eight::assert(char a, unsigned b) const
+{
+  printf("{ a: %u, b: %u }\n", this->a, this->b);
+  return this->a == a && this->b == b;
+}
+
+bool
+Ninth::assert(char a, unsigned short b) const
+{
+  return this->a == a && this->b == b;
+}
 
 } // namespace bitfields

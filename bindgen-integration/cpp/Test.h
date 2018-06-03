@@ -163,6 +163,22 @@ struct Seventh {
                 int seventh);
 };
 
+struct Eight {
+    unsigned char a;
+    unsigned b : 15;
+
+    /// Returns true if the bitfields match the arguments, false otherwise.
+    bool assert(char a, unsigned b) const;
+};
+
+struct Ninth {
+    unsigned char a;
+    unsigned short b : 15;
+
+    /// Returns true if the bitfields match the arguments, false otherwise.
+    bool assert(char a, unsigned short b) const;
+};
+
 } // namespace bitfields
 
 struct AutoRestoreBool {
