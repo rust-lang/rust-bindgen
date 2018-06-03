@@ -86,7 +86,7 @@ reducing.add_argument(
 reducing.add_argument(
     "--extra-compile-file",
     type=str,
-    help="")
+    help="Append the content of this extra file to the end of the emitted bindings just before compiling it.")
 reducing.add_argument(
     "--expect-compile-fail",
     action="store_true",
