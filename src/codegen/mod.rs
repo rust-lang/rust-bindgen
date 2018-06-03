@@ -40,6 +40,7 @@ use ir::var::Var;
 use quote;
 use proc_macro2::{self, Term, Span};
 
+use std;
 use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::{HashSet, VecDeque};
@@ -2103,11 +2104,15 @@ impl MethodCodegen for Method {
 }
 
 /// A helper type that represents different enum variations.
-#[derive(Copy, Clone)]
-enum EnumVariation {
+#[derive(Copy, Clone, PartialEq, Debug)]
+pub enum EnumVariation {
+    /// The code for this enum will use a Rust enum
     Rust,
+    /// The code for this enum will use a bitfield
     Bitfield,
+    /// The code for this enum will use consts
     Consts,
+    /// The code for this enum will use a module containing consts
     ModuleConsts
 }
 
@@ -2135,6 +2140,31 @@ impl EnumVariation {
         }
     }
 }
+
+impl Default for EnumVariation {
+    fn default() -> EnumVariation {
+        EnumVariation::Consts
+    }
+}
+
+impl std::str::FromStr for EnumVariation {
+    type Err = std::io::Error;
+
+    /// Create a `EnumVariation` from a string.
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.as_ref() {
+            "rust" => Ok(EnumVariation::Rust),
+            "bitfield" => Ok(EnumVariation::Bitfield),
+            "consts" => Ok(EnumVariation::Consts),
+            "moduleconsts" => Ok(EnumVariation::ModuleConsts),
+            _ => Err(std::io::Error::new(std::io::ErrorKind::InvalidInput,
+                                         concat!("Got an invalid EnumVariation. Accepted values ",
+                                                 "are 'rust', 'bitfield', 'consts', and ",
+                                                 "'moduleconsts'."))),
+        }
+    }
+}
+
 
 /// A helper type to construct different enum variations.
 enum EnumBuilder<'a> {
@@ -2491,8 +2521,7 @@ impl CodeGenerator for Enum {
         } else if self.is_rustified_enum(ctx, item) {
             EnumVariation::Rust
         } else {
-            // We generate consts by default
-            EnumVariation::Consts
+            ctx.options().default_enum_variant
         };
 
         let mut attrs = vec![];

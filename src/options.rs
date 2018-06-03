@@ -1,4 +1,4 @@
-use bindgen::{Builder, CodegenConfig, RUST_TARGET_STRINGS, RustTarget, builder};
+use bindgen::{Builder, CodegenConfig, RUST_TARGET_STRINGS, RustTarget, builder, EnumVariation};
 use clap::{App, Arg};
 use std::fs::File;
 use std::io::{self, Error, ErrorKind, Write, stderr};
@@ -26,6 +26,13 @@ where
             Arg::with_name("header")
                 .help("C or C++ header file")
                 .required(true),
+            Arg::with_name("default-enum-variant")
+                .long("default-enum-variant")
+                .help("choose one")
+                .value_name("variant")
+                .default_value("consts")
+                .possible_values(&["consts", "moduleconsts", "bitfield", "rust"])
+                .multiple(false),
             Arg::with_name("bitfield-enum")
                 .long("bitfield-enum")
                 .help("Mark any enum whose name matches <regex> as a set of \
@@ -301,6 +308,10 @@ where
 
     if let Some(rust_target) = matches.value_of("rust-target") {
         builder = builder.rust_target(RustTarget::from_str(rust_target)?);
+    }
+
+    if let Some(variant) = matches.value_of("default-enum-variant") {
+        builder = builder.default_enum_variant(EnumVariation::from_str(variant)?)
     }
 
     if let Some(bitfields) = matches.values_of("bitfield-enum") {
