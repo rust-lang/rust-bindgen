@@ -604,6 +604,7 @@ where
         let bitfield_size = bitfield_layout.size;
         let bitfield_align = bitfield_layout.align;
 
+        debug!("{:?}, {:?}", bitfield, bitfield_layout);
         let mut offset = unit_size_in_bits;
         if is_ms_struct {
             if unit_size_in_bits != 0 &&
@@ -627,10 +628,9 @@ where
                 unit_align = 0;
             }
         } else {
-            if offset != 0 &&
-                (bitfield_width == 0 ||
+            if bitfield_width == 0 ||
                      (offset & (bitfield_align * 8 - 1)) + bitfield_width >
-                         bitfield_size * 8)
+                         bitfield_size * 8
             {
                 offset = align_to(offset, bitfield_align * 8);
             }
