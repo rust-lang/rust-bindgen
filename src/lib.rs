@@ -83,6 +83,7 @@ use ir::context::{BindgenContext, ItemId};
 use ir::item::Item;
 use parse::{ClangItemParser, ParseError};
 use regex_set::RegexSet;
+pub use codegen::EnumVariation;
 
 use std::borrow::Cow;
 use std::collections::HashMap;
@@ -202,6 +203,16 @@ impl Builder {
 
         output_vector.push("--rust-target".into());
         output_vector.push(self.options.rust_target.into());
+
+        if self.options.default_enum_style != Default::default() {
+            output_vector.push("--default-enum-variant=".into());
+            output_vector.push(match self.options.default_enum_style {
+                codegen::EnumVariation::Rust => "rust",
+                codegen::EnumVariation::Bitfield => "bitfield",
+                codegen::EnumVariation::Consts => "consts",
+                codegen::EnumVariation::ModuleConsts => "moduleconsts",
+            }.into())
+        }
 
         self.options
             .bitfield_enums
@@ -729,6 +740,11 @@ impl Builder {
         self.whitelist_var(arg)
     }
 
+    /// Set the default style of code to generate for enums
+    pub fn default_enum_style(mut self, arg: codegen::EnumVariation) -> Builder {
+        self.options.default_enum_style = arg;
+        self
+    }
 
     /// Mark the given enum (or set of enums, if using a pattern) as being
     /// bitfield-like. Regular expressions are supported.
@@ -1240,6 +1256,9 @@ struct BindgenOptions {
     /// Whitelisted variables. See docs for `whitelisted_types` for more.
     whitelisted_vars: RegexSet,
 
+    /// The default style of code to generate for enums
+    default_enum_style: codegen::EnumVariation,
+
     /// The enum patterns to mark an enum as bitfield.
     bitfield_enums: RegexSet,
 
@@ -1458,6 +1477,7 @@ impl Default for BindgenOptions {
             whitelisted_types: Default::default(),
             whitelisted_functions: Default::default(),
             whitelisted_vars: Default::default(),
+            default_enum_style: Default::default(),
             bitfield_enums: Default::default(),
             rustified_enums: Default::default(),
             constified_enum_modules: Default::default(),
