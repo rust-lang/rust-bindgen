@@ -2152,7 +2152,7 @@ impl std::str::FromStr for EnumVariation {
 
     /// Create a `EnumVariation` from a string.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.as_ref() {
+        match s {
             "rust" => Ok(EnumVariation::Rust),
             "bitfield" => Ok(EnumVariation::Bitfield),
             "consts" => Ok(EnumVariation::Consts),
