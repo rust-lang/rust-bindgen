@@ -2521,7 +2521,7 @@ impl CodeGenerator for Enum {
         } else if self.is_rustified_enum(ctx, item) {
             EnumVariation::Rust
         } else {
-            ctx.options().default_enum_variant
+            ctx.options().default_enum_style
         };
 
         let mut attrs = vec![];

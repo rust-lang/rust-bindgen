@@ -1,4 +1,4 @@
-// bindgen-flags: --default-enum-variant=rust --constified-enum-module=Neg
+// bindgen-flags: --default-enum-style=rust --constified-enum-module=Neg
 
 enum Foo {
     Bar = 0,

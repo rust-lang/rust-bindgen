@@ -1,4 +1,4 @@
-// bindgen-flags: --default-enum-variant=moduleconsts --constified-enum-module=Neg
+// bindgen-flags: --default-enum-style=moduleconsts --constified-enum-module=Neg
 
 enum Foo {
     Bar = 0,

@@ -26,9 +26,9 @@ where
             Arg::with_name("header")
                 .help("C or C++ header file")
                 .required(true),
-            Arg::with_name("default-enum-variant")
-                .long("default-enum-variant")
-                .help("choose one")
+            Arg::with_name("default-enum-style")
+                .long("default-enum-style")
+                .help("The default style of code used to generate enums.")
                 .value_name("variant")
                 .default_value("consts")
                 .possible_values(&["consts", "moduleconsts", "bitfield", "rust"])
@@ -310,8 +310,8 @@ where
         builder = builder.rust_target(RustTarget::from_str(rust_target)?);
     }
 
-    if let Some(variant) = matches.value_of("default-enum-variant") {
-        builder = builder.default_enum_variant(EnumVariation::from_str(variant)?)
+    if let Some(variant) = matches.value_of("default-enum-style") {
+        builder = builder.default_enum_style(EnumVariation::from_str(variant)?)
     }
 
     if let Some(bitfields) = matches.values_of("bitfield-enum") {
