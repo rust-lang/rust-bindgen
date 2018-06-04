@@ -36,15 +36,22 @@ where
             Arg::with_name("bitfield-enum")
                 .long("bitfield-enum")
                 .help("Mark any enum whose name matches <regex> as a set of \
-                       bitfield flags instead of an enumeration.")
+                       bitfield flags.")
                 .value_name("regex")
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
             Arg::with_name("rustified-enum")
                 .long("rustified-enum")
-                .help("Mark any enum whose name matches <regex> as a Rust enum \
-                       instead of a set of constants.")
+                .help("Mark any enum whose name matches <regex> as a Rust enum.")
+                .value_name("regex")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
+            Arg::with_name("constified-enum")
+                .long("constified-enum")
+                .help("Mark any enum whose name matches <regex> as a series of \
+                       constants.")
                 .value_name("regex")
                 .takes_value(true)
                 .multiple(true)
@@ -52,7 +59,7 @@ where
             Arg::with_name("constified-enum-module")
                 .long("constified-enum-module")
                 .help("Mark any enum whose name matches <regex> as a module of \
-                       constants instead of just constants.")
+                       constants.")
                 .value_name("regex")
                 .takes_value(true)
                 .multiple(true)
@@ -323,6 +330,12 @@ where
     if let Some(rustifieds) = matches.values_of("rustified-enum") {
         for regex in rustifieds {
             builder = builder.rustified_enum(regex);
+        }
+    }
+
+    if let Some(bitfields) = matches.values_of("constified-enum") {
+        for regex in bitfields {
+            builder = builder.constified_enum(regex);
         }
     }
 

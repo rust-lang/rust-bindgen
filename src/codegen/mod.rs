@@ -2520,6 +2520,8 @@ impl CodeGenerator for Enum {
             EnumVariation::Bitfield
         } else if self.is_rustified_enum(ctx, item) {
             EnumVariation::Rust
+        } else if self.is_constified_enum(ctx, item) {
+            EnumVariation::Consts
         } else {
             ctx.options().default_enum_style
         };

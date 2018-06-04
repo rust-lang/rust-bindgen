@@ -257,6 +257,20 @@ impl Builder {
             .count();
 
         self.options
+            .constified_enums
+            .get_items()
+            .iter()
+            .map(|item| {
+                output_vector.push("--constified-enum".into());
+                output_vector.push(
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
+                );
+            })
+            .count();
+
+        self.options
             .blacklisted_types
             .get_items()
             .iter()
@@ -772,6 +786,13 @@ impl Builder {
     }
 
     /// Mark the given enum (or set of enums, if using a pattern) as a set of
+    /// constants that are not to be put into a module.
+    pub fn constified_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.constified_enums.insert(arg);
+        self
+    }
+
+    /// Mark the given enum (or set of enums, if using a pattern) as a set of
     /// constants that should be put into a module.
     ///
     /// This makes bindgen generate modules containing constants instead of
@@ -1268,6 +1289,9 @@ struct BindgenOptions {
     /// The enum patterns to mark an enum as a module of constants.
     constified_enum_modules: RegexSet,
 
+    /// The enum patterns to mark an enum as a set of constants.
+    constified_enums: RegexSet,
+
     /// Whether we should generate builtins or not.
     builtins: bool,
 
@@ -1443,6 +1467,7 @@ impl BindgenOptions {
         self.blacklisted_types.build();
         self.opaque_types.build();
         self.bitfield_enums.build();
+        self.constified_enums.build();
         self.constified_enum_modules.build();
         self.rustified_enums.build();
         self.no_partialeq_types.build();
@@ -1480,6 +1505,7 @@ impl Default for BindgenOptions {
             default_enum_style: Default::default(),
             bitfield_enums: Default::default(),
             rustified_enums: Default::default(),
+            constified_enums: Default::default(),
             constified_enum_modules: Default::default(),
             builtins: false,
             emit_ast: false,
