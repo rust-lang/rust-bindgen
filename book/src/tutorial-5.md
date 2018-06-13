@@ -109,7 +109,7 @@ mod tests {
 }
 ```
 
-Now let's run `cargo test` again and verify that everying is linking and binding
+Now let's run `cargo test` again and verify that everything is linking and binding
 properly!
 
 ```bash

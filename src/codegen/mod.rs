@@ -400,7 +400,7 @@ impl CodeGenerator for Module {
                 if result.saw_incomplete_array {
                     utils::prepend_incomplete_array_types(ctx, &mut *result);
                 }
-                if ctx.need_bindegen_complex_type() {
+                if ctx.need_bindgen_complex_type() {
                     utils::prepend_complex_type(&mut *result);
                 }
                 if result.saw_objc {
@@ -3007,7 +3007,7 @@ impl TryToRustTy for Type {
             TypeKind::Complex(fk) => {
                 let float_path = float_kind_rust_type(ctx, fk);
 
-                ctx.generated_bindegen_complex();
+                ctx.generated_bindgen_complex();
                 Ok(if ctx.options().enable_cxx_namespaces {
                     quote! {
                         root::__BindgenComplex<#float_path>

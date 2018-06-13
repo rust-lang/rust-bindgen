@@ -982,7 +982,7 @@ impl Type {
         }
     }
 
-    /// Get the canonical version of this type. This sees through `typdef`s and
+    /// Get the canonical version of this type. This sees through `typedef`s and
     /// aliases to get the underlying, canonical type.
     pub fn canonical_type(&self) -> Type {
         unsafe {

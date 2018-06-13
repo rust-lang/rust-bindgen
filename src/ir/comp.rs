@@ -1356,7 +1356,7 @@ impl CompInfo {
                     // to be inserted in the map two times.
                     //
                     // I couldn't make a reduced test case, but anyway...
-                    // Methods of template functions not only use to be inlined,
+                    // Methods of template functions not only used to be inlined,
                     // but also instantiated, and we wouldn't be able to call
                     // them, so just bail out.
                     if !ci.template_params.is_empty() {
