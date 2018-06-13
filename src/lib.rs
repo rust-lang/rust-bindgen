@@ -656,7 +656,7 @@ impl Builder {
     ///
     /// **Disabling this feature will almost certainly cause `bindgen` to emit
     /// bindings that will not compile!** If you disable this feature, then it
-    /// is *your* responsiblity to provide definitions for every type that is
+    /// is *your* responsibility to provide definitions for every type that is
     /// referenced from an explicitly whitelisted item. One way to provide the
     /// definitions is by using the [`Builder::raw_line`](#method.raw_line)
     /// method, another would be to define them in Rust and then `include!(...)`
@@ -1319,7 +1319,7 @@ struct BindgenOptions {
     impl_debug: bool,
 
     /// True if we should implement the PartialEq trait for C/C++ structures and types
-    /// that do not support autoamically deriving PartialEq.
+    /// that do not support automatically deriving PartialEq.
     impl_partialeq: bool,
 
     /// True if we should derive Copy trait implementations for C/C++ structures
@@ -1404,17 +1404,17 @@ struct BindgenOptions {
     /// See the builder method description for more details.
     conservative_inline_namespaces: bool,
 
-    /// Wether to keep documentation comments in the generated output. See the
+    /// Whether to keep documentation comments in the generated output. See the
     /// documentation for more details.
     generate_comments: bool,
 
     /// Whether to generate inline functions. Defaults to false.
     generate_inline_functions: bool,
 
-    /// Wether to whitelist types recursively. Defaults to true.
+    /// Whether to whitelist types recursively. Defaults to true.
     whitelist_recursively: bool,
 
-    /// Intead of emitting 'use objc;' to files generated from objective c files,
+    /// Instead of emitting 'use objc;' to files generated from objective c files,
     /// generate '#[macro_use] extern crate objc;'
     objc_extern_crate: bool,
 

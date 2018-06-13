@@ -373,7 +373,7 @@ pub struct BindgenContext {
     options: BindgenOptions,
 
     /// Whether a bindgen complex was generated
-    generated_bindegen_complex: Cell<bool>,
+    generated_bindgen_complex: Cell<bool>,
 
     /// The set of `ItemId`s that are whitelisted. This the very first thing
     /// computed after parsing our IR, and before running any of our analyses.
@@ -597,7 +597,7 @@ impl BindgenContext {
             translation_unit,
             target_info,
             options,
-            generated_bindegen_complex: Cell::new(false),
+            generated_bindgen_complex: Cell::new(false),
             whitelisted: None,
             codegen_items: None,
             used_template_parameters: None,
@@ -1538,7 +1538,7 @@ impl BindgenContext {
     ///
     /// Note that `declaration_id` is not guaranteed to be in the context's item
     /// set! It is possible that it is a partial type that we are still in the
-    /// middle of parsign.
+    /// middle of parsing.
     fn get_declaration_info_for_template_instantiation(
         &self,
         instantiation: &Cursor,
@@ -1914,7 +1914,7 @@ impl BindgenContext {
     /// Make a new item that is a resolved type reference to the `wrapped_id`.
     ///
     /// This is unfortunately a lot of bloat, but is needed to properly track
-    /// constness et. al.
+    /// constness et al.
     ///
     /// We should probably make the constness tracking separate, so it doesn't
     /// bloat that much, but hey, we already bloat the heck out of builtin
@@ -2384,14 +2384,14 @@ impl BindgenContext {
         }
     }
 
-    /// Call if a binden complex is generated
-    pub fn generated_bindegen_complex(&self) {
-        self.generated_bindegen_complex.set(true)
+    /// Call if a bindgen complex is generated
+    pub fn generated_bindgen_complex(&self) {
+        self.generated_bindgen_complex.set(true)
     }
 
-    /// Whether we need to generate the binden complex type
-    pub fn need_bindegen_complex_type(&self) -> bool {
-        self.generated_bindegen_complex.get()
+    /// Whether we need to generate the bindgen complex type
+    pub fn need_bindgen_complex_type(&self) -> bool {
+        self.generated_bindgen_complex.get()
     }
 
     /// Compute whether we can derive debug.
@@ -2563,7 +2563,7 @@ impl BindgenContext {
         self.options().no_copy_types.matches(&name)
     }
 
-    /// Chech if `--no-hash` flag is enabled for this item.
+    /// Check if `--no-hash` flag is enabled for this item.
     pub fn no_hash_by_name(&self, item: &Item) -> bool {
         let name = item.canonical_path(self)[1..].join("::");
         self.options().no_hash_types.matches(&name)
