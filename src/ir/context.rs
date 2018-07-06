@@ -2002,7 +2002,12 @@ impl BindgenContext {
             CXType_UChar => TypeKind::Int(IntKind::UChar),
             CXType_Short => TypeKind::Int(IntKind::Short),
             CXType_UShort => TypeKind::Int(IntKind::UShort),
-            CXType_WChar | CXType_Char16 => TypeKind::Int(IntKind::U16),
+            CXType_WChar => {
+                TypeKind::Int(IntKind::WChar {
+                    size: ty.fallible_size().expect("Couldn't compute size of wchar_t?"),
+                })
+            },
+            CXType_Char16 => TypeKind::Int(IntKind::U16),
             CXType_Char32 => TypeKind::Int(IntKind::U32),
             CXType_Long => TypeKind::Int(IntKind::Long),
             CXType_ULong => TypeKind::Int(IntKind::ULong),

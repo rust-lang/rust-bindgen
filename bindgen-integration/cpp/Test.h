@@ -2,6 +2,8 @@
 
 #define TESTMACRO
 
+#include <cwchar>
+
 enum {
   MY_ANNOYING_MACRO =
 #define MY_ANNOYING_MACRO 1
@@ -171,4 +173,8 @@ struct AutoRestoreBool {
 
   AutoRestoreBool(bool*);
   ~AutoRestoreBool();
+};
+
+struct WithWChar {
+  wchar_t foo[30];
 };
