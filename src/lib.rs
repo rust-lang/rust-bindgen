@@ -94,6 +94,12 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::sync::Arc;
 
+fn args_are_cpp(clang_args: &[String]) -> bool {
+    return clang_args
+        .windows(2)
+        .any(|w| w[0] == "-x=c++" || w[1] == "-x=c++" || w == &["-x", "c++"]);
+}
+
 /// A type used to indicate which kind of items do we have to generate.
 ///
 /// TODO(emilio): Use `bitflags!`
@@ -1160,9 +1166,7 @@ impl Builder {
         let mut wrapper_contents = String::new();
 
         // Whether we are working with C or C++ inputs.
-        let mut is_cpp = self.options.clang_args.windows(2).any(|w| {
-            w[0] == "-x=c++" || w[1] == "-x=c++" || w == &["-x", "c++"]
-        });
+        let mut is_cpp = args_are_cpp(&self.options.clang_args);
 
         // For each input header, add `#include "$header"`.
         for header in &self.input_headers {
@@ -1633,8 +1637,17 @@ impl Bindings {
             if !has_target_arg {
                 // TODO: distinguish C and C++ paths? C++'s should be enough, I
                 // guess.
-                if let Some(cpp_search_paths) = clang.cpp_search_paths {
-                    for path in cpp_search_paths.into_iter() {
+
+                // Whether we are working with C or C++ inputs.
+                let is_cpp = args_are_cpp(&options.clang_args);
+                let search_paths = if is_cpp {
+                  clang.cpp_search_paths
+                } else {
+                  clang.c_search_paths
+                };
+
+                if let Some(search_paths) = search_paths {
+                    for path in search_paths.into_iter() {
                         if let Ok(path) = path.into_os_string().into_string() {
                             options.clang_args.push("-isystem".to_owned());
                             options.clang_args.push(path);
