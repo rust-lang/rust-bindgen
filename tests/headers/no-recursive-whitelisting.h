@@ -1,4 +1,4 @@
-// bindgen-flags: --no-recursive-whitelist --whitelist-type "Foo" --raw-line "pub enum Bar {}" --rustified-enum .*
+// bindgen-flags: --no-recursive-whitelist --whitelist-type "Foo" --raw-line "pub enum Bar {}" --rustified-enum ".*"
 
 struct Bar;
 

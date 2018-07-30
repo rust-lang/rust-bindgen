@@ -1,4 +1,4 @@
-// bindgen-flags: --constified-enum-module .*
+// bindgen-flags: --constified-enum-module ".*"
 
 typedef enum foo {
   THIS,

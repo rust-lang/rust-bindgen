@@ -1,4 +1,4 @@
-// bindgen-flags: --rustified-enum .*
+// bindgen-flags: --rustified-enum ".*"
 
 enum nsCSSPropertyID {
   eCSSProperty_a,
