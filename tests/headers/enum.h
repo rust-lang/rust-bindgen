@@ -1,4 +1,4 @@
-// bindgen-flags: --rustified-enum .*
+// bindgen-flags: --rustified-enum ".*"
 
 enum Foo {
     Bar = 0,

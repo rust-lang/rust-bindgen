@@ -1,4 +1,4 @@
-// bindgen-flags: --whitelist-var NODE_.* --rustified-enum .*
+// bindgen-flags: --whitelist-var "NODE_.*" --rustified-enum ".*"
 
 enum {
   NODE_FLAG_FOO,

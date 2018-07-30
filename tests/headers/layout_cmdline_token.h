@@ -1,4 +1,4 @@
-// bindgen-flags: --rustified-enum .*
+// bindgen-flags: --rustified-enum ".*"
 
 /**
  * Stores a pointer to the ops struct, and the offset: the place to

@@ -1,4 +1,4 @@
-// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq --rustified-enum .*
+// bindgen-flags: --with-derive-hash --with-derive-partialeq --with-derive-eq --rustified-enum ".*"
 struct Test {
   int foo;
   float bar;
