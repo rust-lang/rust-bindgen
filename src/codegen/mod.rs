@@ -2645,15 +2645,31 @@ impl CodeGenerator for Enum {
                             };
 
                         let existing_variant_name = entry.get();
-                        add_constant(
-                            ctx,
-                            enum_ty,
-                            &ident,
-                            &*mangled_name,
-                            existing_variant_name,
-                            enum_rust_ty.clone(),
-                            result,
-                        );
+                        // Use associated constants for named enums
+                        if enum_ty.name().is_some() &&
+                        ctx.options().rust_features().associated_const {
+                            let enum_rust_ty_ = enum_rust_ty.clone();
+                            let enum_canonical_name = &ident;
+                            let variant_name = &*mangled_name;
+                            let constant_name: String = variant_name.into();
+                            let constant_name = ctx.rust_ident(constant_name);
+                            result.push(quote! {
+                                impl #enum_rust_ty_ {
+                                    pub const #constant_name : #enum_rust_ty_ =
+                                    #enum_canonical_name :: #existing_variant_name ;
+                                }
+                            });
+                        } else {
+                            add_constant(
+                                ctx,
+                                enum_ty,
+                                &ident,
+                                &*mangled_name,
+                                existing_variant_name,
+                                enum_rust_ty.clone(),
+                                result,
+                            );
+                        }
                     } else {
                         builder = builder.with_variant(
                             ctx,
