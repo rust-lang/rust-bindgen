@@ -562,7 +562,12 @@ impl BindgenContext {
                 &clang_args,
                 &options.input_unsaved_files,
                 parse_options,
-            ).expect("TranslationUnit::parse failed")
+            ).expect("libclang error; possible causes include:
+- Invalid flag syntax
+- Unrecognized flags
+- Invalid flag arguments
+- File I/O errors
+If you encounter an error missing from this list, please file an issue or a PR!")
         };
 
         let target_info = clang::TargetInfo::new(&translation_unit);
