@@ -1156,7 +1156,7 @@ impl Builder {
                 || name_file.ends_with(".hh")
                 || name_file.ends_with(".h++")
         }
-        
+
         let clang = clang_sys::support::Clang::find(None, &[]).ok_or_else(|| {
             io::Error::new(io::ErrorKind::Other, "Cannot find clang executable")
         })?;
@@ -1625,8 +1625,7 @@ impl Bindings {
         if let Some(clang) = clang_sys::support::Clang::find(
             None,
             &clang_args_for_clang_sys,
-        )
-        {
+        ) {
             // If --target is specified, assume caller knows what they're doing
             // and don't mess with include paths for them
             let has_target_arg = options
@@ -1635,9 +1634,6 @@ impl Bindings {
                 .rposition(|arg| arg.starts_with("--target"))
                 .is_some();
             if !has_target_arg {
-                // TODO: distinguish C and C++ paths? C++'s should be enough, I
-                // guess.
-
                 // Whether we are working with C or C++ inputs.
                 let is_cpp = args_are_cpp(&options.clang_args);
                 let search_paths = if is_cpp {
