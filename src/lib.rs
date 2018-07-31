@@ -846,7 +846,9 @@ impl Builder {
 
     /// Add an argument to be passed straight through to clang.
     pub fn clang_arg<T: Into<String>>(mut self, arg: T) -> Builder {
-        self.options.clang_args.push(arg.into());
+        for arg in arg.into().split_whitespace() {
+            self.options.clang_args.push(arg.to_string());
+        }
         self
     }
 
