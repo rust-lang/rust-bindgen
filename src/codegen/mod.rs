@@ -3658,16 +3658,22 @@ mod utils {
         let incomplete_array_decl = quote! {
             #[repr(C)]
             #[derive(Default)]
-            pub struct __IncompleteArrayField<T>(
-                ::#prefix::marker::PhantomData<T>);
+            pub struct __IncompleteArrayField<T> {
+                _alignment: [T; 0],
+                _marker: ::#prefix::marker::PhantomData<T>,
+            }
         };
 
         let incomplete_array_impl = quote! {
             impl<T> __IncompleteArrayField<T> {
                 #[inline]
                 pub fn new() -> Self {
-                    __IncompleteArrayField(::#prefix::marker::PhantomData)
+                    __IncompleteArrayField {
+                        _marker: ::#prefix::marker::PhantomData,
+                        _alignment: Default::default(),
+                    }
                 }
+
 
                 #[inline]
                 pub unsafe fn as_ptr(&self) -> *const T {
@@ -3709,15 +3715,10 @@ mod utils {
             }
         };
 
-        let incomplete_array_copy_impl = quote! {
-            impl<T> ::#prefix::marker::Copy for __IncompleteArrayField<T> {}
-        };
-
         let items = vec![incomplete_array_decl,
                          incomplete_array_impl,
                          incomplete_array_debug_impl,
-                         incomplete_array_clone_impl,
-                         incomplete_array_copy_impl];
+                         incomplete_array_clone_impl];
 
         let old_items = mem::replace(result, items);
         result.extend(old_items.into_iter());
