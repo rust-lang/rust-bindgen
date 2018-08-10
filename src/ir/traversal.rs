@@ -1,5 +1,6 @@
 //! Traversal of the graph of IR items and types.
 
+use super::super::CodegenConfig;
 use super::context::{BindgenContext, ItemId};
 use super::item::ItemSet;
 use std::collections::{BTreeMap, VecDeque};
@@ -223,20 +224,20 @@ pub fn codegen_edges(ctx: &BindgenContext, edge: Edge) -> bool {
         // We statically know the kind of item that non-generic edges can point
         // to, so we don't need to actually resolve the item and check
         // `Item::is_enabled_for_codegen`.
-        EdgeKind::TemplateParameterDefinition |
-        EdgeKind::TemplateArgument |
-        EdgeKind::TemplateDeclaration |
-        EdgeKind::BaseMember |
-        EdgeKind::Field |
-        EdgeKind::InnerType |
-        EdgeKind::FunctionReturn |
-        EdgeKind::FunctionParameter |
-        EdgeKind::VarType |
-        EdgeKind::TypeReference => cc.types,
-        EdgeKind::InnerVar => cc.vars,
-        EdgeKind::Method => cc.methods,
-        EdgeKind::Constructor => cc.constructors,
-        EdgeKind::Destructor => cc.destructors,
+        EdgeKind::TemplateParameterDefinition
+        | EdgeKind::TemplateArgument
+        | EdgeKind::TemplateDeclaration
+        | EdgeKind::BaseMember
+        | EdgeKind::Field
+        | EdgeKind::InnerType
+        | EdgeKind::FunctionReturn
+        | EdgeKind::FunctionParameter
+        | EdgeKind::VarType
+        | EdgeKind::TypeReference => cc.contains(CodegenConfig::TYPES),
+        EdgeKind::InnerVar => cc.contains(CodegenConfig::VARS),
+        EdgeKind::Method => cc.contains(CodegenConfig::METHODS),
+        EdgeKind::Constructor => cc.contains(CodegenConfig::CONSTRUCTORS),
+        EdgeKind::Destructor => cc.contains(CodegenConfig::DESTRUCTORS),
     }
 }
 

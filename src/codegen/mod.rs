@@ -14,6 +14,7 @@ use self::helpers::attributes;
 use self::struct_layout::StructLayoutTracker;
 
 use super::BindgenOptions;
+use super::CodegenConfig;
 
 use ir::analysis::{HasVtable, Sizedness};
 use ir::annotations::FieldAccessorKind;
@@ -1842,7 +1843,11 @@ impl CodeGenerator for CompInfo {
             }
 
             let mut method_names = Default::default();
-            if ctx.options().codegen_config.methods {
+            if ctx
+                .options()
+                .codegen_config
+                .contains(CodegenConfig::METHODS)
+            {
                 for method in self.methods() {
                     assert!(method.kind() != MethodKind::Constructor);
                     method.codegen_method(
@@ -1855,7 +1860,11 @@ impl CodeGenerator for CompInfo {
                 }
             }
 
-            if ctx.options().codegen_config.constructors {
+            if ctx
+                .options()
+                .codegen_config
+                .contains(CodegenConfig::CONSTRUCTORS)
+            {
                 for sig in self.constructors() {
                     Method::new(
                         MethodKind::Constructor,
@@ -1872,7 +1881,11 @@ impl CodeGenerator for CompInfo {
                 }
             }
 
-            if ctx.options().codegen_config.destructors {
+            if ctx
+                .options()
+                .codegen_config
+                .contains(CodegenConfig::DESTRUCTORS)
+            {
                 if let Some((kind, destructor)) = self.destructor() {
                     debug_assert!(kind.is_destructor());
                     Method::new(kind, destructor, false).codegen_method(
@@ -1978,11 +1991,20 @@ impl MethodCodegen for Method {
         assert!({
             let cc = &ctx.options().codegen_config;
             match self.kind() {
-                MethodKind::Constructor => cc.constructors,
-                MethodKind::Destructor => cc.destructors,
-                MethodKind::VirtualDestructor { .. } => cc.destructors,
-                MethodKind::Static | MethodKind::Normal |
-                MethodKind::Virtual { .. } => cc.methods,
+                MethodKind::Constructor => {
+                    cc.contains(CodegenConfig::CONSTRUCTORS)
+                }
+                MethodKind::Destructor => {
+                    cc.contains(CodegenConfig::DESTRUCTORS)
+                }
+                MethodKind::VirtualDestructor { .. } => {
+                    cc.contains(CodegenConfig::DESTRUCTORS)
+                }
+                MethodKind::Static
+                | MethodKind::Normal
+                | MethodKind::Virtual { .. } => {
+                    cc.contains(CodegenConfig::METHODS)
+                }
             }
         });
 
