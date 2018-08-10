@@ -16,6 +16,8 @@
 // `quote!` nests quite deeply.
 #![recursion_limit="128"]
 
+#[macro_use]
+extern crate bitflags;
 extern crate cexpr;
 #[macro_use]
 #[allow(unused_extern_crates)]
@@ -100,48 +102,21 @@ fn args_are_cpp(clang_args: &[String]) -> bool {
         .any(|w| w[0] == "-x=c++" || w[1] == "-x=c++" || w == &["-x", "c++"]);
 }
 
-/// A type used to indicate which kind of items do we have to generate.
-///
-/// TODO(emilio): Use `bitflags!`
-#[derive(Debug, Clone)]
-pub struct CodegenConfig {
-    /// Whether to generate functions.
-    pub functions: bool,
-    /// Whether to generate types.
-    pub types: bool,
-    /// Whether to generate constants.
-    pub vars: bool,
-    /// Whether to generate methods.
-    pub methods: bool,
-    /// Whether to generate constructors.
-    pub constructors: bool,
-    /// Whether to generate destructors.
-    pub destructors: bool,
-}
-
-impl CodegenConfig {
-    /// Generate all kinds of items.
-    pub fn all() -> Self {
-        CodegenConfig {
-            functions: true,
-            types: true,
-            vars: true,
-            methods: true,
-            constructors: true,
-            destructors: true,
-        }
-    }
-
-    /// Generate nothing.
-    pub fn nothing() -> Self {
-        CodegenConfig {
-            functions: false,
-            types: false,
-            vars: false,
-            methods: false,
-            constructors: false,
-            destructors: false,
-        }
+bitflags! {
+    /// A type used to indicate which kind of items we have to generate.
+    pub struct CodegenConfig: u32 {
+        /// Whether to generate functions.
+        const FUNCTIONS = 0b1 << 0;
+        /// Whether to generate types.
+        const TYPES = 0b1 << 1;
+        /// Whether to generate constants.
+        const VARS = 0b1 << 2;
+        /// Whether to generate methods.
+        const METHODS = 0b1 << 3;
+        /// Whether to generate constructors
+        const CONSTRUCTORS = 0b1 << 4;
+        /// Whether to generate destructors.
+        const DESTRUCTORS = 0b1 << 5;
     }
 }
 
@@ -393,7 +368,11 @@ impl Builder {
             output_vector.push("--disable-name-namespacing".into());
         }
 
-        if !self.options.codegen_config.functions {
+        if !self
+            .options
+            .codegen_config
+            .contains(CodegenConfig::FUNCTIONS)
+        {
             output_vector.push("--ignore-functions".into());
         }
 
@@ -401,28 +380,40 @@ impl Builder {
 
         //Temporary placeholder for below 4 options
         let mut options: Vec<String> = Vec::new();
-        if self.options.codegen_config.functions {
+        if self
+            .options
+            .codegen_config
+            .contains(CodegenConfig::FUNCTIONS)
+        {
             options.push("function".into());
         }
-        if self.options.codegen_config.types {
+        if self.options.codegen_config.contains(CodegenConfig::TYPES) {
             options.push("types".into());
         }
-        if self.options.codegen_config.vars {
+        if self.options.codegen_config.contains(CodegenConfig::VARS) {
             options.push("vars".into());
         }
-        if self.options.codegen_config.methods {
+        if self.options.codegen_config.contains(CodegenConfig::METHODS) {
             options.push("methods".into());
         }
-        if self.options.codegen_config.constructors {
+        if self
+            .options
+            .codegen_config
+            .contains(CodegenConfig::CONSTRUCTORS)
+        {
             options.push("constructors".into());
         }
-        if self.options.codegen_config.destructors {
+        if self
+            .options
+            .codegen_config
+            .contains(CodegenConfig::DESTRUCTORS)
+        {
             options.push("destructors".into());
         }
 
         output_vector.push(options.join(","));
 
-        if !self.options.codegen_config.methods {
+        if !self.options.codegen_config.contains(CodegenConfig::METHODS) {
             output_vector.push("--ignore-methods".into());
         }
 
@@ -1070,13 +1061,13 @@ impl Builder {
 
     /// Ignore functions.
     pub fn ignore_functions(mut self) -> Builder {
-        self.options.codegen_config.functions = false;
+        self.options.codegen_config.remove(CodegenConfig::FUNCTIONS);
         self
     }
 
     /// Ignore methods.
     pub fn ignore_methods(mut self) -> Builder {
-        self.options.codegen_config.methods = false;
+        self.options.codegen_config.remove(CodegenConfig::METHODS);
         self
     }
 

@@ -13,6 +13,7 @@ use super::function::{Function, FunctionKind};
 use super::item_kind::ItemKind;
 use super::layout::Opaque;
 use super::module::Module;
+use super::super::CodegenConfig;
 use super::super::codegen::CONSTIFIED_ENUM_MODULE_REPR_NAME;
 use super::template::{AsTemplateParam, TemplateParameters};
 use super::traversal::{EdgeKind, Trace, Tracer};
@@ -951,23 +952,23 @@ impl Item {
         let cc = &ctx.options().codegen_config;
         match *self.kind() {
             ItemKind::Module(..) => true,
-            ItemKind::Var(_) => cc.vars,
-            ItemKind::Type(_) => cc.types,
-            ItemKind::Function(ref f) => {
-                match f.kind() {
-                    FunctionKind::Function => cc.functions,
-                    FunctionKind::Method(MethodKind::Constructor) => {
-                        cc.constructors
-                    }
-                    FunctionKind::Method(MethodKind::Destructor) |
-                    FunctionKind::Method(MethodKind::VirtualDestructor { .. }) => {
-                        cc.destructors
-                    }
-                    FunctionKind::Method(MethodKind::Static) |
-                    FunctionKind::Method(MethodKind::Normal) |
-                    FunctionKind::Method(MethodKind::Virtual { .. }) => cc.methods,
+            ItemKind::Var(_) => cc.contains(CodegenConfig::VARS),
+            ItemKind::Type(_) => cc.contains(CodegenConfig::TYPES),
+            ItemKind::Function(ref f) => match f.kind() {
+                FunctionKind::Function => cc.contains(CodegenConfig::FUNCTIONS),
+                FunctionKind::Method(MethodKind::Constructor) => {
+                    cc.contains(CodegenConfig::CONSTRUCTORS)
                 }
-            }
+                FunctionKind::Method(MethodKind::Destructor)
+                | FunctionKind::Method(MethodKind::VirtualDestructor {
+                    ..
+                }) => cc.contains(CodegenConfig::DESTRUCTORS),
+                FunctionKind::Method(MethodKind::Static)
+                | FunctionKind::Method(MethodKind::Normal)
+                | FunctionKind::Method(MethodKind::Virtual { .. }) => {
+                    cc.contains(CodegenConfig::METHODS)
+                }
+            },
         }
     }
 }
