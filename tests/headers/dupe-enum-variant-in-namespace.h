@@ -1,4 +1,4 @@
-// bindgen-flags: --rustified-enum ".*" --enable-cxx-namespaces -- -x c++
+// bindgen-flags: --rustified-enum ".*" --enable-cxx-namespaces -- -x c++ -std=c++11
 
 namespace foo {
   enum class Bar : unsigned {
