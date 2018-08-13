@@ -631,8 +631,24 @@ impl Item {
             ctx.in_codegen_phase(),
             "You're not supposed to call this yet"
         );
-        self.annotations.hide() ||
-            ctx.blacklisted_by_name(&self.canonical_path(ctx), self.id)
+        if self.annotations.hide() {
+            return true;
+        }
+
+        let path = self.canonical_path(ctx);
+        let name = path[1..].join("::");
+        match self.kind {
+            ItemKind::Type(..) => {
+                ctx.options().blacklisted_types.matches(&name) ||
+                    ctx.is_replaced_type(&path, self.id)
+            }
+            ItemKind::Function(..) => {
+                ctx.options().blacklisted_functions.matches(&name)
+            }
+            // TODO: Add constant / namespace blacklisting?
+            ItemKind::Var(..) |
+            ItemKind::Module(..) => false,
+        }
     }
 
     /// Is this a reference to another type?

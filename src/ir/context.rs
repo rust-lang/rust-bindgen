@@ -2113,21 +2113,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         }
     }
 
-    /// Is the item with the given `name` blacklisted? Or is the item with the given
-    /// `name` and `id` replaced by another type, and effectively blacklisted?
-    pub fn blacklisted_by_name<Id: Into<ItemId>>(&self, path: &[String], id: Id) -> bool {
-        let id = id.into();
-        debug_assert!(
-            self.in_codegen_phase(),
-            "You're not supposed to call this yet"
-        );
-        self.options.blacklisted_types.matches(&path[1..].join("::")) ||
-            self.is_replaced_type(path, id)
-    }
-
     /// Has the item with the given `name` and `id` been replaced by another
     /// type?
-    fn is_replaced_type<Id: Into<ItemId>>(&self, path: &[String], id: Id) -> bool {
+    pub fn is_replaced_type<Id: Into<ItemId>>(&self, path: &[String], id: Id) -> bool {
         let id = id.into();
         match self.replacements.get(path) {
             Some(replaced_by) if *replaced_by != id => true,
