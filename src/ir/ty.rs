@@ -630,8 +630,8 @@ pub enum TypeKind {
     /// template parameters.
     TemplateAlias(TypeId, Vec<TypeId>),
 
-    /// A packed vector type: element type, number of elements, vector alignment.
-    Vector(TypeId, usize, usize),
+    /// A packed vector type: element type, number of elements
+    Vector(TypeId, usize),
 
     /// An array of a type and a length.
     Array(TypeId, usize),
@@ -1161,7 +1161,7 @@ impl Type {
                         None,
                         ctx,
                     ).expect("Not able to resolve vector element?");
-                    TypeKind::Vector(inner, ty.num_elements().unwrap(), ty.align())
+                    TypeKind::Vector(inner, ty.num_elements().unwrap())
                 }
                 CXType_ConstantArray => {
                     let inner = Item::from_ty(
@@ -1223,7 +1223,7 @@ impl Trace for Type {
             TypeKind::Pointer(inner) |
             TypeKind::Reference(inner) |
             TypeKind::Array(inner, _) |
-            TypeKind::Vector(inner, _, _) |
+            TypeKind::Vector(inner, _) |
             TypeKind::Alias(inner) |
             TypeKind::ResolvedTypeRef(inner) => {
                 tracer.visit_kind(inner.into(), EdgeKind::TypeReference);

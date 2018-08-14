@@ -3050,13 +3050,7 @@ impl TryToRustTy for Type {
                     ::#prefix::option::Option<#ty>
                 })
             }
-            TypeKind::Array(item, len) => {
-                let ty = item.try_to_rust_ty(ctx, &())?;
-                Ok(quote! {
-                    [ #ty ; #len ]
-                })
-            }
-            TypeKind::Vector(item, len, _) => {
+            TypeKind::Array(item, len) | TypeKind::Vector(item, len) => {
                 let ty = item.try_to_rust_ty(ctx, &())?;
                 Ok(quote! {
                     [ #ty ; #len ]

@@ -200,11 +200,10 @@ impl<'ctx> CannotDerivePartialEqOrPartialOrd<'ctx> {
                 }
             }
             TypeKind::Vector(..) => {
-                // FIXME: vectors always can derive PartialEq, but they can
-                // never derive PartialOrd. 
-                trace!(
-                    "    vectors cannot derive `PartialEq`/`PartialOrd`"
-                );
+                // FIXME: vectors always can derive PartialEq, but they should
+                // not derive PartialOrd:
+                // https://github.com/rust-lang-nursery/packed_simd/issues/48
+                trace!("    vectors cannot derive `PartialEq`/`PartialOrd`");
                 return CanDerive::No;
             }
 

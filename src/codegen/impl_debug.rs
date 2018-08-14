@@ -197,7 +197,7 @@ impl<'a> ImplDebug<'a> for Item {
                     ))
                 }
             }
-            TypeKind::Vector(_, len, _) => {
+            TypeKind::Vector(_, len) => {
                 let self_ids = 0..len;
                 Some((
                     format!("{}({{}})", name),

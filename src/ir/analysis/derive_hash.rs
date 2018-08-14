@@ -202,7 +202,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
                     self.insert(id)
                 }
             }
-            TypeKind::Vector(t, len, _) => {
+            TypeKind::Vector(t, len) => {
                 if self.cannot_derive_hash.contains(&t.into()) {
                     trace!(
                         "    vectors of T for which we cannot derive Hash \
@@ -210,7 +210,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
                     );
                     return self.insert(id);
                 }
-                assert!(len != 0);
+                assert_ne!(len, 0, "vectors cannot have zero length");
                 trace!("    vector can derive Hash");
                 ConstrainResult::Same
             }
