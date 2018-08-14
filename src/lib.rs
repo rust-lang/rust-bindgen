@@ -400,11 +400,7 @@ impl Builder {
             output_vector.push("--disable-name-namespacing".into());
         }
 
-        if !self
-            .options
-            .codegen_config
-            .contains(CodegenConfig::FUNCTIONS)
-        {
+        if !self.options.codegen_config.functions() {
             output_vector.push("--ignore-functions".into());
         }
 
@@ -412,40 +408,28 @@ impl Builder {
 
         //Temporary placeholder for below 4 options
         let mut options: Vec<String> = Vec::new();
-        if self
-            .options
-            .codegen_config
-            .contains(CodegenConfig::FUNCTIONS)
-        {
+        if self.options.codegen_config.functions() {
             options.push("function".into());
         }
-        if self.options.codegen_config.contains(CodegenConfig::TYPES) {
+        if self.options.codegen_config.types() {
             options.push("types".into());
         }
-        if self.options.codegen_config.contains(CodegenConfig::VARS) {
+        if self.options.codegen_config.vars() {
             options.push("vars".into());
         }
-        if self.options.codegen_config.contains(CodegenConfig::METHODS) {
+        if self.options.codegen_config.methods() {
             options.push("methods".into());
         }
-        if self
-            .options
-            .codegen_config
-            .contains(CodegenConfig::CONSTRUCTORS)
-        {
+        if self.options.codegen_config.constructors() {
             options.push("constructors".into());
         }
-        if self
-            .options
-            .codegen_config
-            .contains(CodegenConfig::DESTRUCTORS)
-        {
+        if self.options.codegen_config.destructors() {
             options.push("destructors".into());
         }
 
         output_vector.push(options.join(","));
 
-        if !self.options.codegen_config.contains(CodegenConfig::METHODS) {
+        if !self.options.codegen_config.methods() {
             output_vector.push("--ignore-methods".into());
         }
 

@@ -1978,20 +1978,12 @@ impl MethodCodegen for Method {
         assert!({
             let cc = &ctx.options().codegen_config;
             match self.kind() {
-                MethodKind::Constructor => {
-                    cc.constructors()
-                }
-                MethodKind::Destructor => {
-                    cc.destructors()
-                }
-                MethodKind::VirtualDestructor { .. } => {
-                    cc.destructors()
-                }
-                MethodKind::Static
-                | MethodKind::Normal
-                | MethodKind::Virtual { .. } => {
-                    cc.methods()
-                }
+                MethodKind::Constructor => cc.constructors(),
+                MethodKind::Destructor => cc.destructors(),
+                MethodKind::VirtualDestructor { .. } => cc.destructors(),
+                MethodKind::Static |
+                MethodKind::Normal |
+                MethodKind::Virtual { .. } => cc.methods(),
             }
         });
 
