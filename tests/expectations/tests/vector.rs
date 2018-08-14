@@ -40,5 +40,5 @@ pub type __m128d = [f64; 2usize];
 pub type __m128i = [::std::os::raw::c_longlong; 2usize];
 extern "C" {
     #[link_name = "\u{1}_Z3fooDv2_xDv2_d"]
-    pub fn foo(arg1: *mut ::std::os::raw::c_longlong, arg2: *mut f64) -> __m128;
+    pub fn foo(arg1: __m128i, arg2: __m128d) -> __m128;
 }

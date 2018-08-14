@@ -595,6 +595,7 @@ impl CodeGenerator for Type {
             TypeKind::Float(..) |
             TypeKind::Complex(..) |
             TypeKind::Array(..) |
+            TypeKind::Vector(..) |
             TypeKind::Pointer(..) |
             TypeKind::BlockPointer |
             TypeKind::Reference(..) |
@@ -3050,6 +3051,12 @@ impl TryToRustTy for Type {
                 })
             }
             TypeKind::Array(item, len) => {
+                let ty = item.try_to_rust_ty(ctx, &())?;
+                Ok(quote! {
+                    [ #ty ; #len ]
+                })
+            }
+            TypeKind::Vector(item, len, _) => {
                 let ty = item.try_to_rust_ty(ctx, &())?;
                 Ok(quote! {
                     [ #ty ; #len ]
