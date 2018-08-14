@@ -106,17 +106,49 @@ bitflags! {
     /// A type used to indicate which kind of items we have to generate.
     pub struct CodegenConfig: u32 {
         /// Whether to generate functions.
-        const FUNCTIONS = 0b1 << 0;
+        const FUNCTIONS = 1 << 0;
         /// Whether to generate types.
-        const TYPES = 0b1 << 1;
+        const TYPES = 1 << 1;
         /// Whether to generate constants.
-        const VARS = 0b1 << 2;
+        const VARS = 1 << 2;
         /// Whether to generate methods.
-        const METHODS = 0b1 << 3;
+        const METHODS = 1 << 3;
         /// Whether to generate constructors
-        const CONSTRUCTORS = 0b1 << 4;
+        const CONSTRUCTORS = 1 << 4;
         /// Whether to generate destructors.
-        const DESTRUCTORS = 0b1 << 5;
+        const DESTRUCTORS = 1 << 5;
+    }
+}
+
+impl CodegenConfig {
+    /// Returns true if functions should be generated.
+    pub fn functions(self) -> bool {
+        self.contains(CodegenConfig::FUNCTIONS)
+    }
+
+    /// Returns true if types should be generated.
+    pub fn types(self) -> bool {
+        self.contains(CodegenConfig::TYPES)
+    }
+
+    /// Returns true if constants should be generated.
+    pub fn vars(self) -> bool {
+        self.contains(CodegenConfig::VARS)
+    }
+
+    /// Returns true if methds should be generated.
+    pub fn methods(self) -> bool {
+        self.contains(CodegenConfig::METHODS)
+    }
+
+    /// Returns true if constructors should be generated.
+    pub fn constructors(self) -> bool {
+        self.contains(CodegenConfig::CONSTRUCTORS)
+    }
+
+    /// Returns true if destructors should be generated.
+    pub fn destructors(self) -> bool {
+        self.contains(CodegenConfig::DESTRUCTORS)
     }
 }
 
