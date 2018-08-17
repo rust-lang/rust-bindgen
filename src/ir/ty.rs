@@ -216,6 +216,14 @@ impl Type {
         }
     }
 
+    /// Is this an unresolved reference?
+    pub fn is_unresolved_ref(&self) -> bool {
+        match self.kind {
+            TypeKind::UnresolvedTypeRef(_, _, _) => true,
+            _ => false,
+        }
+    }
+
     /// Is this a incomplete array type?
     pub fn is_incomplete_array(&self, ctx: &BindgenContext) -> Option<ItemId> {
         match self.kind {
