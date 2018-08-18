@@ -1409,7 +1409,7 @@ impl ClangItemParser for Item {
                 parent_id.unwrap_or(current_module.into()),
                 ItemKind::Type(Type::new(None, None, kind, is_const)),
             ),
-            Some(clang::Cursor::null()),
+            None,
             None,
         );
         potential_id.as_type_id_unchecked()
