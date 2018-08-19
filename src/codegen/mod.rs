@@ -3338,6 +3338,10 @@ impl CodeGenerator for Function {
                 warn!("Skipping function with thiscall ABI that isn't supported by the configured Rust target");
                 return;
             }
+            Abi::Win64 if signature.is_variadic() => {
+                warn!("Skipping variadic function with Win64 ABI that isn't supported");
+                return;
+            }
             Abi::Unknown(unknown_abi) => {
                 panic!(
                     "Invalid or unknown abi {:?} for function {:?} ({:?})",
