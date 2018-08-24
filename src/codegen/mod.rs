@@ -1918,8 +1918,10 @@ impl CodeGenerator for CompInfo {
                 self.kind(),
             );
 
+            let prefix = ctx.trait_prefix();
+
             result.push(quote! {
-                impl #generics ::std::fmt::Debug for #ty_for_impl {
+                impl #generics ::#prefix::fmt::Debug for #ty_for_impl {
                     #impl_
                 }
             });
