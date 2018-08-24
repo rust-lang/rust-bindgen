@@ -1555,10 +1555,12 @@ impl CodeGenerator for CompInfo {
                         packed = true;
                     } else {
                         explicit_align = Some(layout.align);
-                        let ty = helpers::blob(Layout::new(0, layout.align));
-                        fields.push(quote! {
-                            pub __bindgen_align: #ty ,
-                        });
+                        if !ctx.options().rust_features.repr_align {
+                            let ty = helpers::blob(Layout::new(0, layout.align));
+                            fields.push(quote! {
+                                pub __bindgen_align: #ty ,
+                            });
+                        }
                     }
                 }
             }
