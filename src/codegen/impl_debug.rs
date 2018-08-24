@@ -42,8 +42,10 @@ pub fn gen_debug_impl(
     format_string.push_str(" }}");
     tokens.insert(0, quote! { #format_string });
 
+    let prefix = ctx.trait_prefix();
+
     quote! {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        fn fmt(&self, f: &mut ::#prefix::fmt::Formatter) -> ::#prefix ::fmt::Result {
             write!(f, #( #tokens ),*)
         }
     }
