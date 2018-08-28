@@ -150,6 +150,7 @@ where
                 .help("Time the different bindgen phases and print to stderr"),
             // All positional arguments after the end of options marker, `--`
             Arg::with_name("clang-args")
+                .last(true)
                 .multiple(true),
             Arg::with_name("emit-clang-ast")
                 .long("emit-clang-ast")
