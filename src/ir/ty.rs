@@ -155,7 +155,6 @@ impl Type {
             TypeKind::Array(..) |
             TypeKind::Reference(..) |
             TypeKind::Pointer(..) |
-            TypeKind::BlockPointer |
             TypeKind::Int(..) |
             TypeKind::Float(..) |
             TypeKind::TypeParam => true,
@@ -244,8 +243,7 @@ impl Type {
                 TypeKind::Comp(ref ci) => ci.layout(ctx),
                 // FIXME(emilio): This is a hack for anonymous union templates.
                 // Use the actual pointer size!
-                TypeKind::Pointer(..) |
-                TypeKind::BlockPointer => {
+                TypeKind::Pointer(..) => {
                     Some(Layout::new(
                         ctx.target_pointer_size(),
                         ctx.target_pointer_size(),
@@ -339,7 +337,6 @@ impl Type {
             TypeKind::Reference(..) |
             TypeKind::Void |
             TypeKind::NullPtr |
-            TypeKind::BlockPointer |
             TypeKind::Pointer(..) |
             TypeKind::ObjCId |
             TypeKind::ObjCSel |
@@ -347,6 +344,7 @@ impl Type {
 
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(inner) |
+            TypeKind::BlockPointer(inner) |
             TypeKind::TemplateAlias(inner, _) => {
                 ctx.resolve_type(inner).safe_canonical_type(ctx)
             }
@@ -485,7 +483,7 @@ impl TypeKind {
             TypeKind::Function(..) => "Function",
             TypeKind::Enum(..) => "Enum",
             TypeKind::Pointer(..) => "Pointer",
-            TypeKind::BlockPointer => "BlockPointer",
+            TypeKind::BlockPointer(..) => "BlockPointer",
             TypeKind::Reference(..) => "Reference",
             TypeKind::TemplateInstantiation(..) => "TemplateInstantiation",
             TypeKind::UnresolvedTypeRef(..) => "UnresolvedTypeRef",
@@ -579,7 +577,7 @@ impl TemplateParameters for TypeKind {
             TypeKind::Function(_) |
             TypeKind::Enum(_) |
             TypeKind::Pointer(_) |
-            TypeKind::BlockPointer |
+            TypeKind::BlockPointer(_) |
             TypeKind::Reference(_) |
             TypeKind::UnresolvedTypeRef(..) |
             TypeKind::TypeParam |
@@ -655,7 +653,7 @@ pub enum TypeKind {
     Pointer(TypeId),
 
     /// A pointer to an Apple block.
-    BlockPointer,
+    BlockPointer(TypeId),
 
     /// A reference to a type, as in: int& foo().
     Reference(TypeId),
@@ -1086,7 +1084,12 @@ impl Type {
                         Item::from_ty_or_ref(pointee, location, None, ctx);
                     TypeKind::Pointer(inner)
                 }
-                CXType_BlockPointer => TypeKind::BlockPointer,
+                CXType_BlockPointer => {
+                    let pointee = ty.pointee_type().expect("Not valid Type?");
+                    let inner =
+                        Item::from_ty_or_ref(pointee, location, None, ctx);
+                    TypeKind::BlockPointer(inner)
+                },
                 // XXX: RValueReference is most likely wrong, but I don't think we
                 // can even add bindings for that, so huh.
                 CXType_RValueReference |
@@ -1232,6 +1235,7 @@ impl Trace for Type {
             TypeKind::Reference(inner) |
             TypeKind::Array(inner, _) |
             TypeKind::Vector(inner, _) |
+            TypeKind::BlockPointer(inner) |
             TypeKind::Alias(inner) |
             TypeKind::ResolvedTypeRef(inner) => {
                 tracer.visit_kind(inner.into(), EdgeKind::TypeReference);
@@ -1273,8 +1277,7 @@ impl Trace for Type {
             TypeKind::Float(_) |
             TypeKind::Complex(_) |
             TypeKind::ObjCId |
-            TypeKind::ObjCSel |
-            TypeKind::BlockPointer => {}
+            TypeKind::ObjCSel => {}
         }
     }
 }

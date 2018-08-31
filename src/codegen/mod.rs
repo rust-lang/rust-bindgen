@@ -103,6 +103,9 @@ struct CodegenResult<'a> {
     /// Whether Objective C types have been seen at least once.
     saw_objc: bool,
 
+    /// Whether Apple block types have been seen at least once.
+    saw_block: bool,
+
     /// Whether a bitfield allocation unit has been seen at least once.
     saw_bitfield_unit: bool,
 
@@ -140,6 +143,7 @@ impl<'a> CodegenResult<'a> {
             saw_bindgen_union: false,
             saw_incomplete_array: false,
             saw_objc: false,
+            saw_block: false,
             saw_bitfield_unit: false,
             codegen_id: codegen_id,
             items_seen: Default::default(),
@@ -164,6 +168,10 @@ impl<'a> CodegenResult<'a> {
 
     fn saw_objc(&mut self) {
         self.saw_objc = true;
+    }
+
+    fn saw_block(&mut self) {
+        self.saw_block = true;
     }
 
     fn saw_bitfield_unit(&mut self) {
@@ -215,6 +223,7 @@ impl<'a> CodegenResult<'a> {
         self.saw_union |= new.saw_union;
         self.saw_incomplete_array |= new.saw_incomplete_array;
         self.saw_objc |= new.saw_objc;
+        self.saw_block |= new.saw_block;
         self.saw_bitfield_unit |= new.saw_bitfield_unit;
 
         new.items
@@ -293,7 +302,6 @@ impl AppendImplicitTemplateParams for quote::Tokens {
             TypeKind::Opaque |
             TypeKind::Function(..) |
             TypeKind::Enum(..) |
-            TypeKind::BlockPointer |
             TypeKind::ObjCId |
             TypeKind::ObjCSel |
             TypeKind::TemplateInstantiation(..) => return,
@@ -394,6 +402,9 @@ impl CodeGenerator for Module {
             }
 
             if item.id() == ctx.root_module() {
+                if result.saw_block {
+                    utils::prepend_block_header(ctx, &mut *result);
+                }
                 if result.saw_bindgen_union {
                     utils::prepend_union_types(ctx, &mut *result);
                 }
@@ -597,7 +608,6 @@ impl CodeGenerator for Type {
             TypeKind::Array(..) |
             TypeKind::Vector(..) |
             TypeKind::Pointer(..) |
-            TypeKind::BlockPointer |
             TypeKind::Reference(..) |
             TypeKind::Function(..) |
             TypeKind::ResolvedTypeRef(..) |
@@ -609,6 +619,35 @@ impl CodeGenerator for Type {
             }
             TypeKind::TemplateInstantiation(ref inst) => {
                 inst.codegen(ctx, result, item)
+            }
+            TypeKind::BlockPointer(inner) => {
+                let inner_item = inner.into_resolver()
+                    .through_type_refs()
+                    .resolve(ctx);
+                let name = item.canonical_name(ctx);
+
+                let inner_rust_type = {
+                    if let TypeKind::Function(fnsig) = inner_item.kind().expect_type().kind() {
+                        utils::fnsig_block(ctx, fnsig)
+                    } else {
+                        panic!("invalid block typedef: {:?}", inner_item)
+                    }
+                };
+
+                let rust_name = ctx.rust_ident(&name);
+
+                let mut tokens = if let Some(comment) = item.comment(ctx) {
+                    attributes::doc(comment)
+                } else {
+                    quote! {}
+                };
+
+                tokens.append_all(quote! {
+                    pub type #rust_name = #inner_rust_type ;
+                });
+
+                result.push(tokens);
+                result.saw_block();
             }
             TypeKind::Comp(ref ci) => ci.codegen(ctx, result, item),
             TypeKind::TemplateAlias(inner, _) |
@@ -3071,20 +3110,16 @@ impl TryToRustTy for Type {
             }
             TypeKind::ResolvedTypeRef(inner) => inner.try_to_rust_ty(ctx, &()),
             TypeKind::TemplateAlias(..) |
-            TypeKind::Alias(..) => {
+            TypeKind::Alias(..) |
+            TypeKind::BlockPointer(..) => {
                 let template_params = item.used_template_params(ctx)
                     .into_iter()
                     .filter(|param| param.is_template_param(ctx, &()))
                     .collect::<Vec<_>>();
 
-                let spelling = self.name().expect("Unnamed alias?");
                 if item.is_opaque(ctx, &()) && !template_params.is_empty() {
                     self.try_to_opaque(ctx, item)
-                } else if let Some(ty) = utils::type_from_named(
-                    ctx,
-                    spelling,
-                )
-                {
+                } else if let Some(ty) = self.name().and_then(|name| utils::type_from_named(ctx, name)) {
                     Ok(ty)
                 } else {
                     utils::build_path(item, ctx)
@@ -3101,13 +3136,6 @@ impl TryToRustTy for Type {
                 utils::build_path(item, ctx)
             }
             TypeKind::Opaque => self.try_to_opaque(ctx, item),
-            TypeKind::BlockPointer => {
-                let void = raw_type(ctx, "c_void");
-                Ok(void.to_ptr(
-                    /* is_const = */
-                    false
-                ))
-            }
             TypeKind::Pointer(inner) |
             TypeKind::Reference(inner) => {
                 let is_const = ctx.resolve_type(inner).is_const();
@@ -3560,6 +3588,25 @@ mod utils {
         result.extend(old_items.into_iter());
     }
 
+    pub fn prepend_block_header(
+        ctx: &BindgenContext,
+        result: &mut Vec<quote::Tokens>,
+    ) {
+        let use_block = if ctx.options().block_extern_crate {
+            quote! {
+                extern crate block;
+            }
+        } else {
+            quote! {
+                use block;
+            }
+        };
+
+        let items = vec![use_block];
+        let old_items = mem::replace(result, items);
+        result.extend(old_items.into_iter());
+    }
+
     pub fn prepend_union_types(
         ctx: &BindgenContext,
         result: &mut Vec<quote::Tokens>,
@@ -3870,5 +3917,27 @@ mod utils {
         }
 
         args
+    }
+
+    pub fn fnsig_block(
+        ctx: &BindgenContext,
+        sig: &FunctionSig,
+    ) -> quote::Tokens {
+        let args = sig.argument_types().iter().map(|&(_, ty)| {
+            let arg_item = ctx.resolve_item(ty);
+
+            arg_item.to_rust_ty_or_opaque(ctx, &())
+        });
+
+        let return_item = ctx.resolve_item(sig.return_type());
+        let ret_ty = if let TypeKind::Void = *return_item.kind().expect_type().kind() {
+            quote! { () }
+        } else {
+            return_item.to_rust_ty_or_opaque(ctx, &())
+        };
+
+        quote! {
+            *const ::block::Block<(#(#args),*), #ret_ty>
+        }
     }
 }

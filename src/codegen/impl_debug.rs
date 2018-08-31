@@ -156,7 +156,6 @@ impl<'a> ImplDebug<'a> for Item {
             TypeKind::Function(..) |
             TypeKind::Enum(..) |
             TypeKind::Reference(..) |
-            TypeKind::BlockPointer |
             TypeKind::UnresolvedTypeRef(..) |
             TypeKind::ObjCInterface(..) |
             TypeKind::ObjCId |
@@ -227,7 +226,8 @@ impl<'a> ImplDebug<'a> for Item {
 
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
-            TypeKind::Alias(t) => {
+            TypeKind::Alias(t) |
+            TypeKind::BlockPointer(t) => {
                 // We follow the aliases
                 ctx.resolve_item(t).impl_debug(ctx, name)
             }

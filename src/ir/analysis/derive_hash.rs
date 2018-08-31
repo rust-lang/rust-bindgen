@@ -167,7 +167,6 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
             TypeKind::Enum(..) |
             TypeKind::TypeParam |
             TypeKind::UnresolvedTypeRef(..) |
-            TypeKind::BlockPointer |
             TypeKind::Reference(..) |
             TypeKind::ObjCInterface(..) |
             TypeKind::ObjCId |
@@ -241,7 +240,8 @@ impl<'ctx> MonotoneFramework for CannotDeriveHash<'ctx> {
 
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
-            TypeKind::Alias(t) => {
+            TypeKind::Alias(t) |
+            TypeKind::BlockPointer(t) => {
                 if self.cannot_derive_hash.contains(&t.into()) {
                     trace!(
                         "    aliases and type refs to T which cannot derive \

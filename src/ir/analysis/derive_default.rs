@@ -215,7 +215,6 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
             TypeKind::Reference(..) |
             TypeKind::NullPtr |
             TypeKind::Pointer(..) |
-            TypeKind::BlockPointer |
             TypeKind::ObjCId |
             TypeKind::ObjCSel |
             TypeKind::ObjCInterface(..) |
@@ -244,7 +243,8 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
 
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
-            TypeKind::Alias(t) => {
+            TypeKind::Alias(t) |
+            TypeKind::BlockPointer(t) => {
                 if self.is_not_default(t) {
                     trace!(
                         "    aliases and type refs to T which cannot derive \
