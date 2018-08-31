@@ -132,6 +132,9 @@ where
             Arg::with_name("objc-extern-crate")
                 .long("objc-extern-crate")
                 .help("Use extern crate instead of use for objc."),
+            Arg::with_name("block-extern-crate")
+                .long("block-extern-crate")
+                .help("Use extern crate instead of use for block."),
             Arg::with_name("distrust-clang-mangling")
                 .long("distrust-clang-mangling")
                 .help("Do not trust the libclang-provided mangling"),
@@ -491,6 +494,10 @@ where
 
     if matches.is_present("objc-extern-crate") {
         builder = builder.objc_extern_crate(true);
+    }
+
+    if matches.is_present("block-extern-crate") {
+        builder = builder.block_extern_crate(true);
     }
 
     if let Some(opaque_types) = matches.values_of("opaque-type") {

@@ -183,7 +183,6 @@ impl<'ctx> MonotoneFramework for CannotDeriveDebug<'ctx> {
             TypeKind::Enum(..) |
             TypeKind::Reference(..) |
             TypeKind::Vector(..) |
-            TypeKind::BlockPointer |
             TypeKind::TypeParam |
             TypeKind::UnresolvedTypeRef(..) |
             TypeKind::ObjCInterface(..) |
@@ -213,7 +212,8 @@ impl<'ctx> MonotoneFramework for CannotDeriveDebug<'ctx> {
 
             TypeKind::ResolvedTypeRef(t) |
             TypeKind::TemplateAlias(t, _) |
-            TypeKind::Alias(t) => {
+            TypeKind::Alias(t) |
+            TypeKind::BlockPointer(t) => {
                 if self.is_not_debug(t) {
                     trace!(
                         "    aliases and type refs to T which cannot derive \
