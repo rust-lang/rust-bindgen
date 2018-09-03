@@ -16,6 +16,10 @@ extern "C" {
     pub static mut k_expr: EasyToOverflow;
 }
 extern "C" {
+    #[link_name = "\u{1}wow"]
+    pub static mut wow: EasyToOverflow;
+}
+extern "C" {
     #[link_name = "\u{1}BAZ"]
     pub static mut BAZ: ::std::os::raw::c_longlong;
 }

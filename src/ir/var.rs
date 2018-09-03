@@ -265,8 +265,7 @@ impl ClangSubItemParser for Var {
 
                     let mut val = cursor
                         .evaluate()
-                        .and_then(|v| v.as_int())
-                        .map(|val| val as i64);
+                        .and_then(|v| v.as_int());
                     if val.is_none() || !kind.signedness_matches(val.unwrap()) {
                         let tu = ctx.translation_unit();
                         val = get_integer_literal_from_cursor(&cursor, tu);
