@@ -10,6 +10,7 @@ typedef unsigned long long EasyToOverflow;
 const EasyToOverflow k = 0x80000000;
 
 const EasyToOverflow k_expr = 1ULL << 60;
+const EasyToOverflow wow = 1ULL << 31;
 
 const long long BAZ = (1 << foo) | bar;
 const double fuzz = (1 + 50.0f);
