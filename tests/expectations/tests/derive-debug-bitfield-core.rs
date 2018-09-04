@@ -7,6 +7,8 @@
     non_upper_case_globals
 )]
 
+extern crate core;
+
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct __BindgenBitfieldUnit<Storage, Align>

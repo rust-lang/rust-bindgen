@@ -1,4 +1,4 @@
-// bindgen-flags: --impl-debug --use-core
+// bindgen-flags: --impl-debug --use-core --raw-line "extern crate core;"
 
 class C {
   bool a: 1;
