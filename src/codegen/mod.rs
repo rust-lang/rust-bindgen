@@ -1786,7 +1786,7 @@ impl CodeGenerator for CompInfo {
         // all the tests to shit when parsing things like max_align_t.
         if self.found_unknown_attr() {
             warn!(
-                "Type {} has an unkown attribute that may affect layout",
+                "Type {} has an unknown attribute that may affect layout",
                 canonical_ident.as_str()
             );
         }
