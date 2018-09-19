@@ -8,6 +8,7 @@
 )]
 
 #[repr(C)]
+#[repr(align(16))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct foo {
     pub bar: u128,
