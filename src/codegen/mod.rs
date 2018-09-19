@@ -3059,11 +3059,21 @@ impl TryToRustTy for Type {
                             #ident
                         })
                     }
-                    // FIXME: This doesn't generate the proper alignment, but we
-                    // can't do better right now. We should be able to use
-                    // i128/u128 when they're available.
-                    IntKind::U128 | IntKind::I128 => {
-                        Ok(quote! { [u64; 2] })
+                    IntKind::U128 => {
+                        Ok(if ctx.options().rust_features.i128_and_u128 {
+                            quote! { u128 }
+                        } else {
+                            // Best effort thing, but wrong alignment
+                            // unfortunately.
+                            quote! { [u64; 2] }
+                        })
+                    }
+                    IntKind::I128 => {
+                        Ok(if ctx.options().rust_features.i128_and_u128 {
+                            quote! { i128 }
+                        } else {
+                            quote! { [u64; 2] }
+                        })
                     }
                 }
             }
