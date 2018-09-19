@@ -306,7 +306,7 @@ impl<'a> StructLayoutTracker<'a> {
     }
 
     fn padding_field(&mut self, layout: Layout) -> quote::Tokens {
-        let ty = helpers::blob(layout);
+        let ty = helpers::blob(self.ctx, layout);
         let padding_count = self.padding_count;
 
         self.padding_count += 1;

@@ -1185,7 +1185,7 @@ impl Bitfield {
         let bitfield_ty_layout = bitfield_ty.layout(ctx).expect(
             "Bitfield without layout? Gah!",
         );
-        let bitfield_int_ty = helpers::blob(bitfield_ty_layout);
+        let bitfield_int_ty = helpers::blob(ctx, bitfield_ty_layout);
 
         let offset = self.offset_into_unit();
         let width = self.width() as u8;
@@ -1367,7 +1367,7 @@ impl<'a> FieldCodegen<'a> for Bitfield {
         let bitfield_ty_layout = bitfield_ty.layout(ctx).expect(
             "Bitfield without layout? Gah!",
         );
-        let bitfield_int_ty = match helpers::integer_type(bitfield_ty_layout) {
+        let bitfield_int_ty = match helpers::integer_type(ctx, bitfield_ty_layout) {
             Some(int_ty) => {
                 *bitfield_representable_as_int = true;
                 int_ty
@@ -1547,7 +1547,7 @@ impl CodeGenerator for CompInfo {
             }
 
             let layout = layout.expect("Unable to get layout information?");
-            let ty = helpers::blob(layout);
+            let ty = helpers::blob(ctx, layout);
 
             fields.push(if self.can_be_rust_union(ctx) {
                 quote! {
@@ -1572,7 +1572,7 @@ impl CodeGenerator for CompInfo {
                 Some(l) => {
                     explicit_align = Some(l.align);
 
-                    let ty = helpers::blob(l);
+                    let ty = helpers::blob(ctx, l);
                     fields.push(quote! {
                         pub _bindgen_opaque_blob: #ty ,
                     });
@@ -1595,7 +1595,7 @@ impl CodeGenerator for CompInfo {
                     } else {
                         explicit_align = Some(layout.align);
                         if !ctx.options().rust_features.repr_align {
-                            let ty = helpers::blob(Layout::new(0, layout.align));
+                            let ty = helpers::blob(ctx, Layout::new(0, layout.align));
                             fields.push(quote! {
                                 pub __bindgen_align: #ty ,
                             });
@@ -1629,7 +1629,7 @@ impl CodeGenerator for CompInfo {
             };
 
             if has_address {
-                let ty = helpers::blob(Layout::new(1, 1));
+                let ty = helpers::blob(ctx, Layout::new(1, 1));
                 fields.push(quote! {
                     pub _address: #ty,
                 });
@@ -2800,7 +2800,7 @@ trait TryToOpaque {
         extra: &Self::Extra,
     ) -> error::Result<quote::Tokens> {
         self.try_get_layout(ctx, extra).map(|layout| {
-            helpers::blob(layout)
+            helpers::blob(ctx, layout)
         })
     }
 }
@@ -2827,7 +2827,7 @@ trait ToOpaque: TryToOpaque {
         extra: &Self::Extra,
     ) -> quote::Tokens {
         let layout = self.get_layout(ctx, extra);
-        helpers::blob(layout)
+        helpers::blob(ctx, layout)
     }
 }
 
@@ -2885,7 +2885,7 @@ where
             |_| if let Ok(layout) =
                 self.try_get_layout(ctx, extra)
             {
-                Ok(helpers::blob(layout))
+                Ok(helpers::blob(ctx, layout))
             } else {
                 Err(error::Error::NoLayoutForOpaqueBlob)
             },
@@ -3037,7 +3037,7 @@ impl TryToRustTy for Type {
                     IntKind::LongLong => Ok(raw_type(ctx, "c_longlong")),
                     IntKind::ULongLong => Ok(raw_type(ctx, "c_ulonglong")),
                     IntKind::WChar { size } => {
-                        let ty = Layout::known_type_for_size(size)
+                        let ty = Layout::known_type_for_size(ctx, size)
                             .expect("Non-representable wchar_t?");
                         let ident = ctx.rust_ident_raw(ty);
                         Ok(quote! { #ident })

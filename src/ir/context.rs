@@ -226,7 +226,7 @@ where
     }
 }
 
-impl<'a, T> CanDeriveCopy<'a> for T
+impl<T> CanDeriveCopy for T
 where
     T: Copy + Into<ItemId>
 {

@@ -59,14 +59,14 @@ pub mod attributes {
 
 /// Generates a proper type for a field or type with a given `Layout`, that is,
 /// a type with the correct size and alignment restrictions.
-pub fn blob(layout: Layout) -> quote::Tokens {
+pub fn blob(ctx: &BindgenContext, layout: Layout) -> quote::Tokens {
     let opaque = layout.opaque();
 
     // FIXME(emilio, #412): We fall back to byte alignment, but there are
     // some things that legitimately are more than 8-byte aligned.
     //
     // Eventually we should be able to `unwrap` here, but...
-    let ty_name = match opaque.known_rust_type_for_array() {
+    let ty_name = match opaque.known_rust_type_for_array(ctx) {
         Some(ty) => ty,
         None => {
             warn!("Found unknown alignment on code generation!");
@@ -76,7 +76,7 @@ pub fn blob(layout: Layout) -> quote::Tokens {
 
     let ty_name = Term::new(ty_name, Span::call_site());
 
-    let data_len = opaque.array_size().unwrap_or(layout.size);
+    let data_len = opaque.array_size(ctx).unwrap_or(layout.size);
 
     if data_len == 1 {
         quote! {
@@ -90,8 +90,8 @@ pub fn blob(layout: Layout) -> quote::Tokens {
 }
 
 /// Integer type of the same size as the given `Layout`.
-pub fn integer_type(layout: Layout) -> Option<quote::Tokens> {
-    let name = Layout::known_type_for_size(layout.size)?;
+pub fn integer_type(ctx: &BindgenContext, layout: Layout) -> Option<quote::Tokens> {
+    let name = Layout::known_type_for_size(ctx, layout.size)?;
     let name = Term::new(name, Span::call_site());
     Some(quote! { #name })
 }

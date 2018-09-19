@@ -149,7 +149,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveCopy<'ctx> {
 
         if item.is_opaque(self.ctx, &()) {
             let layout_can_derive = ty.layout(self.ctx).map_or(true, |l| {
-                l.opaque().can_trivially_derive_copy()
+                l.opaque().can_trivially_derive_copy(self.ctx)
             });
             return if layout_can_derive {
                 trace!("    we can trivially derive Copy for the layout");
