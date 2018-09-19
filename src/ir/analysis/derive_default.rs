@@ -173,7 +173,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
 
         if item.is_opaque(self.ctx, &()) {
             let layout_can_derive = ty.layout(self.ctx).map_or(true, |l| {
-                l.opaque().can_trivially_derive_default()
+                l.opaque().can_trivially_derive_default(self.ctx)
             });
             return if layout_can_derive &&
                       !(ty.is_union() &&
@@ -278,7 +278,7 @@ impl<'ctx> MonotoneFramework for CannotDeriveDefault<'ctx> {
                     }
 
                     if ty.layout(self.ctx).map_or(true, |l| {
-                        l.opaque().can_trivially_derive_default()
+                        l.opaque().can_trivially_derive_default(self.ctx)
                     })
                     {
                         trace!("    union layout can trivially derive Default");

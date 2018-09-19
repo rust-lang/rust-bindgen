@@ -581,26 +581,23 @@ impl Trace for FunctionSig {
 }
 
 impl CanTriviallyDeriveDebug for FunctionSig {
-    fn can_trivially_derive_debug(&self) -> bool {
+    fn can_trivially_derive_debug(&self, _: &BindgenContext) -> bool {
         self.function_pointers_can_derive()
     }
 }
 
 impl CanTriviallyDeriveHash for FunctionSig {
-    fn can_trivially_derive_hash(&self) -> bool {
+    fn can_trivially_derive_hash(&self, _: &BindgenContext) -> bool {
         self.function_pointers_can_derive()
     }
 }
 
 impl CanTriviallyDerivePartialEqOrPartialOrd for FunctionSig {
-    fn can_trivially_derive_partialeq_or_partialord(&self) -> CanDerive {
-        if self.argument_types.len() > RUST_DERIVE_FUNPTR_LIMIT {
-            return CanDerive::No;
-        }
-
-        match self.abi {
-            Abi::C | Abi::Unknown(..) => CanDerive::Yes,
-            _ => CanDerive::No,
+    fn can_trivially_derive_partialeq_or_partialord(&self, _: &BindgenContext) -> CanDerive {
+        if self.function_pointers_can_derive() {
+            CanDerive::Yes
+        } else {
+            CanDerive::No
         }
     }
 }
