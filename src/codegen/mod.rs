@@ -3077,9 +3077,9 @@ impl TryToRustTy for Type {
                     }
                 }
             }
-            TypeKind::Float(fk) => Ok(float_kind_rust_type(ctx, fk)),
+            TypeKind::Float(fk) => Ok(float_kind_rust_type(ctx, fk, self.layout(ctx))),
             TypeKind::Complex(fk) => {
-                let float_path = float_kind_rust_type(ctx, fk);
+                let float_path = float_kind_rust_type(ctx, fk, self.layout(ctx));
 
                 ctx.generated_bindgen_complex();
                 Ok(if ctx.options().enable_cxx_namespaces {

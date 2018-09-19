@@ -122,6 +122,7 @@ pub fn bitfield_unit(ctx: &BindgenContext, layout: Layout) -> quote::Tokens {
 pub mod ast_ty {
     use ir::context::BindgenContext;
     use ir::function::FunctionSig;
+    use ir::layout::Layout;
     use ir::ty::FloatKind;
     use quote;
     use proc_macro2;
@@ -144,22 +145,44 @@ pub mod ast_ty {
     pub fn float_kind_rust_type(
         ctx: &BindgenContext,
         fk: FloatKind,
+        layout: Option<Layout>,
     ) -> quote::Tokens {
-        // TODO: we probably should just take the type layout into
-        // account?
+        // TODO: we probably should take the type layout into account more
+        // often?
         //
         // Also, maybe this one shouldn't be the default?
-        //
-        // FIXME: `c_longdouble` doesn't seem to be defined in some
-        // systems, so we use `c_double` directly.
         match (fk, ctx.options().convert_floats) {
             (FloatKind::Float, true) => quote! { f32 },
-            (FloatKind::Double, true) |
-            (FloatKind::LongDouble, true) => quote! { f64 },
+            (FloatKind::Double, true) => quote! { f64 },
             (FloatKind::Float, false) => raw_type(ctx, "c_float"),
-            (FloatKind::Double, false) |
-            (FloatKind::LongDouble, false) => raw_type(ctx, "c_double"),
-            (FloatKind::Float128, _) => quote! { [u8; 16] },
+            (FloatKind::Double, false) => raw_type(ctx, "c_double"),
+            (FloatKind::LongDouble, _) => {
+                match layout {
+                    Some(layout) => {
+                        match layout.size {
+                            4 => quote! { f32 },
+                            8 => quote! { f64 },
+                            // TODO(emilio): If rust ever gains f128 we should
+                            // use it here and below.
+                            _ => super::integer_type(ctx, layout).unwrap_or(quote! { f64 }),
+                        }
+                    }
+                    None => {
+                        debug_assert!(
+                            false,
+                            "How didn't we know the layout for a primitive type?"
+                        );
+                        quote! { f64 }
+                    }
+                }
+            }
+            (FloatKind::Float128, _) => {
+                if ctx.options().rust_features.i128_and_u128 {
+                    quote! { u128 }
+                } else {
+                    quote! { [u64; 2] }
+                }
+            }
         }
     }
 
