@@ -1540,27 +1540,6 @@ impl CodeGenerator for CompInfo {
 
         let is_union = self.kind() == CompKind::Union;
         let layout = item.kind().expect_type().layout(ctx);
-        if is_union && !is_opaque && !self.is_forward_declaration() {
-            result.saw_union();
-            if !self.can_be_rust_union(ctx) {
-                result.saw_bindgen_union();
-            }
-
-            let layout = layout.expect("Unable to get layout information?");
-            let ty = helpers::blob(ctx, layout);
-
-            fields.push(if self.can_be_rust_union(ctx) {
-                quote! {
-                    _bindgen_union_align: #ty ,
-                }
-            } else {
-                struct_layout.saw_union(layout);
-
-                quote! {
-                    pub bindgen_union_field: #ty ,
-                }
-            });
-        }
 
         let mut explicit_align = None;
         if is_opaque {
@@ -1603,6 +1582,32 @@ impl CodeGenerator for CompInfo {
                     }
                 }
             }
+        } else if is_union && !self.is_forward_declaration() {
+            result.saw_union();
+            if !self.can_be_rust_union(ctx) {
+                result.saw_bindgen_union();
+            }
+
+            // TODO(emilio): It'd be nice to unify this with the struct path
+            // above somehow.
+            let layout = layout.expect("Unable to get layout information?");
+
+            if struct_layout.requires_explicit_align(layout) {
+                explicit_align = Some(layout.align);
+            }
+
+            let ty = helpers::blob(ctx, layout);
+            fields.push(if self.can_be_rust_union(ctx) {
+                quote! {
+                    _bindgen_union_align: #ty ,
+                }
+            } else {
+                struct_layout.saw_union(layout);
+
+                quote! {
+                    pub bindgen_union_field: #ty ,
+                }
+            });
         }
 
         // C++ requires every struct to be addressable, so what C++ compilers do
