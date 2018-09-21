@@ -2585,9 +2585,17 @@ impl CodeGenerator for Enum {
         }
 
         if !variation.is_const() {
-            attrs.push(attributes::derives(
-                &["Debug", "Copy", "Clone", "PartialEq", "Eq", "Hash"],
-            ));
+            let mut derives = vec!["Debug", "Copy", "Clone", "PartialEq", "Eq", "Hash"];
+
+            if item.can_derive_partialord(ctx) {
+                derives.push("PartialOrd");
+            }
+
+            if item.can_derive_ord(ctx) {
+                derives.push("Ord");
+            }
+
+            attrs.push(attributes::derives(&derives));
         }
 
         fn add_constant<'a>(
