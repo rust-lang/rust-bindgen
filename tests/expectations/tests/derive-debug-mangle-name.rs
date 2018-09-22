@@ -57,7 +57,7 @@ impl Default for perf_event_attr__bindgen_ty_1 {
     }
 }
 impl ::std::fmt::Debug for perf_event_attr__bindgen_ty_1 {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         write!(f, "perf_event_attr__bindgen_ty_1 {{ union }}")
     }
 }
@@ -100,7 +100,7 @@ impl Default for perf_event_attr {
     }
 }
 impl ::std::fmt::Debug for perf_event_attr {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         write!(
             f,
             "perf_event_attr {{ type: {:?}, a: {:?}, __bindgen_anon_1: {:?} }}",

@@ -27,7 +27,7 @@ impl Default for Opaque {
     }
 }
 impl ::std::fmt::Debug for Opaque {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         write!(f, "Opaque {{ opaque }}")
     }
 }
@@ -64,7 +64,7 @@ impl Default for OpaqueUser {
     }
 }
 impl ::std::fmt::Debug for OpaqueUser {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         write!(f, "OpaqueUser {{ opaque: {:?} }}", self.opaque)
     }
 }

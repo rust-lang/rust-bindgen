@@ -15,7 +15,7 @@ impl<T> Default for Generic<T> {
     }
 }
 impl<T> ::std::fmt::Debug for Generic<T> {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
         write!(f, "Generic {{ t: Array with length 40 }}")
     }
 }
