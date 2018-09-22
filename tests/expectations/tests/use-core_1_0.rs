@@ -35,7 +35,7 @@ impl<T> ::core::clone::Clone for __BindgenUnionField<T> {
 }
 impl<T> ::core::marker::Copy for __BindgenUnionField<T> {}
 impl<T> ::core::fmt::Debug for __BindgenUnionField<T> {
-    fn fmt(&self, fmt: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+    fn fmt(&self, fmt: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         fmt.write_str("__BindgenUnionField")
     }
 }

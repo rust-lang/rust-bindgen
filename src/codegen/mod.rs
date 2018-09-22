@@ -3678,7 +3678,7 @@ mod utils {
 
         let union_field_debug_impl = quote! {
             impl<T> ::#prefix::fmt::Debug for __BindgenUnionField<T> {
-                fn fmt(&self, fmt: &mut ::#prefix::fmt::Formatter)
+                fn fmt(&self, fmt: &mut ::#prefix::fmt::Formatter<'_>)
                        -> ::#prefix::fmt::Result {
                     fmt.write_str("__BindgenUnionField")
                 }
@@ -3765,7 +3765,7 @@ mod utils {
 
         let incomplete_array_debug_impl = quote! {
             impl<T> ::#prefix::fmt::Debug for __IncompleteArrayField<T> {
-                fn fmt(&self, fmt: &mut ::#prefix::fmt::Formatter)
+                fn fmt(&self, fmt: &mut ::#prefix::fmt::Formatter<'_>)
                        -> ::#prefix::fmt::Result {
                     fmt.write_str("__IncompleteArrayField")
                 }

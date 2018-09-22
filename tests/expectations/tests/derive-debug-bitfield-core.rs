@@ -142,7 +142,7 @@ impl Default for C {
     }
 }
 impl ::core::fmt::Debug for C {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
         write!(
             f,
             "C {{ a : {:?}, b : {:?}, large_array: [...] }}",

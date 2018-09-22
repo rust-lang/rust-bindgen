@@ -196,7 +196,7 @@ impl Arbitrary for DeclarationC {
 
 /// Enables to string and format for DeclarationC types.
 impl fmt::Display for DeclarationC {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
             DeclarationC::FunctionPtrDecl(ref d) => write!(f, "{}", d),
             DeclarationC::StructDecl(ref d) => write!(f, "{}", d),
@@ -219,7 +219,7 @@ impl Arbitrary for DeclarationListC {
 
 /// Enables to string and format for DeclarationListC types.
 impl fmt::Display for DeclarationListC {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut display = String::new();
         for decl in &self.decls {
             display += &format!("{}", decl);
@@ -274,7 +274,7 @@ impl Arbitrary for BaseTypeC {
 
 /// Enables to string and format for BaseTypeC types,
 impl fmt::Display for BaseTypeC {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.def)
     }
 }
@@ -292,7 +292,7 @@ impl Arbitrary for TypeQualifierC {
 
 /// Enables to string and format for TypeQualifierC types.
 impl fmt::Display for TypeQualifierC {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.def)
     }
 }
@@ -310,7 +310,7 @@ impl Arbitrary for PointerLevelC {
 
 /// Enables to string and format for PointerLevelC types.
 impl fmt::Display for PointerLevelC {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.def)
     }
 }
@@ -340,7 +340,7 @@ impl Arbitrary for ArrayDimensionC {
 
 /// Enables to string and format for ArrayDimensionC types.
 impl fmt::Display for ArrayDimensionC {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.def)
     }
 }
@@ -369,7 +369,7 @@ impl Arbitrary for BasicTypeDeclarationC {
 
 /// Enables to string and format for BasicTypeDeclarationC types.
 impl fmt::Display for BasicTypeDeclarationC {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
             "{} {} {} ident_{}{};",
@@ -421,7 +421,7 @@ impl Arbitrary for StructDeclarationC {
 
 /// Enables to string and format for StructDeclarationC types.
 impl fmt::Display for StructDeclarationC {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
             "struct {{ {} }} struct_{}{};",
@@ -471,7 +471,7 @@ impl Arbitrary for UnionDeclarationC {
 
 /// Enables to string and format for UnionDeclarationC types.
 impl fmt::Display for UnionDeclarationC {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
             "union {{ {} }} union_{}{};",
@@ -506,7 +506,7 @@ impl Arbitrary for FunctionPointerDeclarationC {
 
 /// Enables to string and format for FunctionPointerDeclarationC types.
 impl fmt::Display for FunctionPointerDeclarationC {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
             "{} {} {} (*func_ptr_{})({});",
@@ -543,7 +543,7 @@ impl Arbitrary for FunctionPrototypeC {
 
 /// Enables to string and format for FunctionPrototypeC types.
 impl fmt::Display for FunctionPrototypeC {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
             "{} {} {} func_{}({});",
@@ -570,7 +570,7 @@ impl Arbitrary for ParameterC {
 
 /// Enables to string and format for ParameterC types.
 impl fmt::Display for ParameterC {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
             "{} {} {}",
@@ -593,7 +593,7 @@ impl Arbitrary for ParameterListC {
 
 /// Enables to string and format for ParameterListC types.
 impl fmt::Display for ParameterListC {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut display = String::new();
         for (i, p) in self.params.iter().enumerate() {
             match i {
@@ -619,7 +619,7 @@ impl Arbitrary for HeaderC {
 
 /// Enables to string and format for HeaderC types.
 impl fmt::Display for HeaderC {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut display = String::new();
         for decl in &self.def.decls {
             display += &format!("{}", decl);
@@ -631,7 +631,7 @@ impl fmt::Display for HeaderC {
 /// Use Display trait for Debug so that any failing property tests report
 /// generated C code rather than the data structures that contain it.
 impl fmt::Debug for HeaderC {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self)
     }
 }

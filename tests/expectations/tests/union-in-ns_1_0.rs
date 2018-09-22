@@ -36,7 +36,7 @@ pub mod root {
     }
     impl<T> ::std::marker::Copy for __BindgenUnionField<T> {}
     impl<T> ::std::fmt::Debug for __BindgenUnionField<T> {
-        fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        fn fmt(&self, fmt: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             fmt.write_str("__BindgenUnionField")
         }
     }

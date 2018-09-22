@@ -45,7 +45,7 @@ pub fn gen_debug_impl(
     let prefix = ctx.trait_prefix();
 
     quote! {
-        fn fmt(&self, f: &mut ::#prefix::fmt::Formatter) -> ::#prefix ::fmt::Result {
+        fn fmt(&self, f: &mut ::#prefix::fmt::Formatter<'_>) -> ::#prefix ::fmt::Result {
             write!(f, #( #tokens ),*)
         }
     }
