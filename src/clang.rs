@@ -23,7 +23,7 @@ pub struct Cursor {
 }
 
 impl fmt::Debug for Cursor {
-    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         write!(
             fmt,
             "Cursor({} kind: {}, loc: {}, usr: {:?})",
@@ -746,7 +746,7 @@ impl PartialEq for Type {
 impl Eq for Type {}
 
 impl fmt::Debug for Type {
-    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         write!(
             fmt,
             "Type({}, kind: {}, cconv: {}, decl: {:?}, canon: {:?})",
@@ -1153,7 +1153,7 @@ impl SourceLocation {
 }
 
 impl fmt::Display for SourceLocation {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let (file, line, col, _) = self.location();
         if let Some(name) = file.name() {
             write!(f, "{}:{}:{}", name, line, col)
@@ -1314,7 +1314,7 @@ impl Index {
 }
 
 impl fmt::Debug for Index {
-    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         write!(fmt, "Index {{ }}")
     }
 }
@@ -1342,7 +1342,7 @@ pub struct TranslationUnit {
 }
 
 impl fmt::Debug for TranslationUnit {
-    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         write!(fmt, "TranslationUnit {{ }}")
     }
 }
@@ -1482,7 +1482,7 @@ impl UnsavedFile {
 }
 
 impl fmt::Debug for UnsavedFile {
-    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         write!(
             fmt,
             "UnsavedFile(name: {:?}, contents: {:?})",
