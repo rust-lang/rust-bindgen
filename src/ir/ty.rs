@@ -1054,32 +1054,7 @@ impl Type {
                 CXType_ObjCObjectPointer |
                 CXType_MemberPointer |
                 CXType_Pointer => {
-                    // Fun fact: the canonical type of a pointer type may sometimes
-                    // contain information we need but isn't present in the concrete
-                    // type (yeah, I'm equally wat'd).
-                    //
-                    // Yet we still have trouble if we unconditionally trust the
-                    // canonical type, like too-much desugaring (sigh).
-                    //
-                    // See tests/headers/call-conv-field.h for an example.
-                    //
-                    // Since for now the only identifier cause of breakage is the
-                    // ABI for function pointers, and different ABI mixed with
-                    // problematic stuff like that one is _extremely_ unlikely and
-                    // can be bypassed via blacklisting, we do the check explicitly
-                    // (as hacky as it is).
-                    //
-                    // Yet we should probably (somehow) get the best of both worlds,
-                    // presumably special-casing function pointers as a whole, yet
-                    // someone is going to need to care about typedef'd function
-                    // pointers, etc, which isn't trivial given function pointers
-                    // are mostly unexposed. I don't have the time for it right now.
-                    let mut pointee = ty.pointee_type().unwrap();
-                    let canonical_pointee =
-                        canonical_ty.pointee_type().unwrap();
-                    if pointee.call_conv() != canonical_pointee.call_conv() {
-                        pointee = canonical_pointee;
-                    }
+                    let pointee = ty.pointee_type().unwrap();
                     let inner =
                         Item::from_ty_or_ref(pointee, location, None, ctx);
                     TypeKind::Pointer(inner)
