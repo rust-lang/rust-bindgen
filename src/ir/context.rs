@@ -514,11 +514,18 @@ const HOST_TARGET: &'static str =
 fn find_effective_target(clang_args: &[String]) -> (String, bool) {
     use std::env;
 
-    for opt in clang_args {
+    let mut args = clang_args.iter();
+    while let Some(opt) = args.next() {
         if opt.starts_with("--target=") {
             let mut split = opt.split('=');
             split.next();
             return (split.next().unwrap().to_owned(), true);
+        }
+
+        if opt == "-target" {
+            if let Some(target) = args.next() {
+                return (target.clone(), true);
+            }
         }
     }
 
@@ -576,7 +583,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         {
             if let Some(ref ti) = target_info {
                 if effective_target == HOST_TARGET {
-                    assert_eq!(ti.pointer_width / 8, mem::size_of::<*mut ()>());
+                    assert_eq!(
+                        ti.pointer_width / 8, mem::size_of::<*mut ()>(),
+                        "{:?} {:?}", effective_target, HOST_TARGET
+                    );
                 }
             }
         }
