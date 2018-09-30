@@ -99,7 +99,7 @@ use std::sync::Arc;
 fn args_are_cpp(clang_args: &[String]) -> bool {
     return clang_args
         .windows(2)
-        .any(|w| w[0] == "-x=c++" || w[1] == "-x=c++" || w == &["-x", "c++"]);
+        .any(|w| w[0] == "-xc++" || w[1] == "-xc++" || w == &["-x", "c++"]);
 }
 
 bitflags! {
