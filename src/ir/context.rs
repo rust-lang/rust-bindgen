@@ -856,6 +856,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 "abstract" |
  	            "alignof" |
  	            "as" |
+ 	            "async" |
  	            "become" |
  	            "box" |
                 "break" |
