@@ -854,58 +854,58 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             name.contains("$") ||
             match name {
                 "abstract" |
- 	            "alignof" |
- 	            "as" |
- 	            "async" |
- 	            "become" |
- 	            "box" |
+                "alignof" |
+                "as" |
+                "async" |
+                "become" |
+                "box" |
                 "break" |
- 	            "const" |
- 	            "continue" |
- 	            "crate" |
- 	            "do" |
+                "const" |
+                "continue" |
+                "crate" |
+                "do" |
                 "else" |
- 	            "enum" |
- 	            "extern" |
- 	            "false" |
- 	            "final" |
+                "enum" |
+                "extern" |
+                "false" |
+                "final" |
                 "fn" |
- 	            "for" |
- 	            "if" |
- 	            "impl" |
- 	            "in" |
+                "for" |
+                "if" |
+                "impl" |
+                "in" |
                 "let" |
- 	            "loop" |
- 	            "macro" |
- 	            "match" |
- 	            "mod" |
+                "loop" |
+                "macro" |
+                "match" |
+                "mod" |
                 "move" |
- 	            "mut" |
- 	            "offsetof" |
- 	            "override" |
- 	            "priv" |
+                "mut" |
+                "offsetof" |
+                "override" |
+                "priv" |
                 "proc" |
- 	            "pub" |
- 	            "pure" |
- 	            "ref" |
- 	            "return" |
+                "pub" |
+                "pure" |
+                "ref" |
+                "return" |
                 "Self" |
- 	            "self" |
- 	            "sizeof" |
- 	            "static" |
- 	            "struct" |
+                "self" |
+                "sizeof" |
+                "static" |
+                "struct" |
                 "super" |
- 	            "trait" |
- 	            "true" |
- 	            "type" |
- 	            "typeof" |
+                "trait" |
+                "true" |
+                "type" |
+                "typeof" |
                 "unsafe" |
- 	            "unsized" |
- 	            "use" |
- 	            "virtual" |
- 	            "where" |
+                "unsized" |
+                "use" |
+                "virtual" |
+                "where" |
                 "while" |
- 	            "yield" |
+                "yield" |
                 "bool" |
                 "_" => true,
                 _ => false,
