@@ -373,6 +373,10 @@ impl Builder {
             output_vector.push("--objc-extern-crate".into());
         }
 
+        if self.options.generate_block {
+            output_vector.push("--generate-block".into());
+        }
+
         if self.options.block_extern_crate {
             output_vector.push("--block-extern-crate".into());
         }
@@ -701,6 +705,12 @@ impl Builder {
     /// in the prologue of the files generated from objective-c files
     pub fn objc_extern_crate(mut self, doit: bool) -> Self {
         self.options.objc_extern_crate = doit;
+        self
+    }
+
+    /// Generate proper block signatures instead of void pointers.
+    pub fn generate_block(mut self, doit: bool) -> Self {
+        self.options.generate_block = doit;
         self
     }
 
@@ -1467,6 +1477,10 @@ struct BindgenOptions {
 
     /// Instead of emitting 'use block;' to files generated from objective c files,
     /// generate '#[macro_use] extern crate block;'
+    generate_block: bool,
+
+    /// Instead of emitting 'use block;' to files generated from objective c files,
+    /// generate '#[macro_use] extern crate block;'
     block_extern_crate: bool,
 
     /// Whether to use the clang-provided name mangling. This is true and
@@ -1593,6 +1607,7 @@ impl Default for BindgenOptions {
             generate_comments: true,
             generate_inline_functions: false,
             whitelist_recursively: true,
+            generate_block: false,
             objc_extern_crate: false,
             block_extern_crate: false,
             enable_mangling: true,

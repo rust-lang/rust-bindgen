@@ -8,13 +8,17 @@
 )]
 #![cfg(target_os = "macos")]
 
+extern crate block;
 extern "C" {
     #[link_name = "\u{1}_Z8atexit_bU13block_pointerFvvE"]
-    pub fn atexit_b(arg1: *mut ::std::os::raw::c_void);
+    pub fn atexit_b(arg1: _bindgen_ty_id_20);
 }
 pub type dispatch_data_t = *mut ::std::os::raw::c_void;
-pub type dispatch_data_applier_t = *mut ::std::os::raw::c_void;
+pub type dispatch_data_applier_t = _bindgen_ty_id_27;
 extern "C" {
     #[link_name = "\u{1}_Z19dispatch_data_applyPvU13block_pointerFbS_yPKvyE"]
     pub fn dispatch_data_apply(data: dispatch_data_t, applier: dispatch_data_applier_t) -> bool;
 }
+pub type _bindgen_ty_id_20 = *const ::block::Block<(), ()>;
+pub type _bindgen_ty_id_27 =
+    *const ::block::Block<(dispatch_data_t, usize, *const ::std::os::raw::c_void, usize), bool>;
