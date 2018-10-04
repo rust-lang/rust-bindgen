@@ -90,6 +90,14 @@ impl Type {
         self.name.as_ref().map(|name| &**name)
     }
 
+    /// Whether this is a block pointer type.
+    pub fn is_block_pointer(&self) -> bool {
+        match self.kind {
+            TypeKind::BlockPointer(..) => true,
+            _ => false,
+        }
+    }
+
     /// Is this a compound type?
     pub fn is_comp(&self) -> bool {
         match self.kind {

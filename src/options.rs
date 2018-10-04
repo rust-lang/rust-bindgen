@@ -132,6 +132,9 @@ where
             Arg::with_name("objc-extern-crate")
                 .long("objc-extern-crate")
                 .help("Use extern crate instead of use for objc."),
+            Arg::with_name("generate-block")
+                .long("generate-block")
+                .help("Generate block signatures instead of void pointers."),
             Arg::with_name("block-extern-crate")
                 .long("block-extern-crate")
                 .help("Use extern crate instead of use for block."),
@@ -494,6 +497,10 @@ where
 
     if matches.is_present("objc-extern-crate") {
         builder = builder.objc_extern_crate(true);
+    }
+
+    if matches.is_present("generate-block") {
+        builder = builder.generate_block(true);
     }
 
     if matches.is_present("block-extern-crate") {

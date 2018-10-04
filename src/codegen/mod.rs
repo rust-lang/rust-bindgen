@@ -621,6 +621,10 @@ impl CodeGenerator for Type {
                 inst.codegen(ctx, result, item)
             }
             TypeKind::BlockPointer(inner) => {
+                if !ctx.options().generate_block {
+                    return;
+                }
+
                 let inner_item = inner.into_resolver()
                     .through_type_refs()
                     .resolve(ctx);
@@ -3135,6 +3139,10 @@ impl TryToRustTy for Type {
             TypeKind::TemplateAlias(..) |
             TypeKind::Alias(..) |
             TypeKind::BlockPointer(..) => {
+                if self.is_block_pointer() && !ctx.options().generate_block {
+                    let void = raw_type(ctx, "c_void");
+                    return Ok(void.to_ptr(/* is_const = */ false));
+                }
                 let template_params = item.used_template_params(ctx)
                     .into_iter()
                     .filter(|param| param.is_template_param(ctx, &()))
