@@ -7,7 +7,7 @@ pub mod struct_layout;
 #[cfg(test)]
 #[allow(warnings)]
 pub(crate) mod bitfield_unit;
-#[cfg(test)]
+#[cfg(all(test, target_endian = "little"))]
 mod bitfield_unit_tests;
 
 use self::helpers::attributes;
