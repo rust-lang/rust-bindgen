@@ -13,7 +13,7 @@ use super::function::{Function, FunctionKind};
 use super::item_kind::ItemKind;
 use super::layout::Opaque;
 use super::module::Module;
-use super::super::codegen::CONSTIFIED_ENUM_MODULE_REPR_NAME;
+use super::super::codegen::{CONSTIFIED_ENUM_MODULE_REPR_NAME, EnumVariation};
 use super::template::{AsTemplateParam, TemplateParameters};
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::{Type, TypeKind};
@@ -928,7 +928,7 @@ impl Item {
 
         match *type_.kind() {
             TypeKind::Enum(ref enum_) => {
-                enum_.is_constified_enum_module(ctx, self)
+                enum_.computed_enum_variation(ctx, self) == EnumVariation::ModuleConsts
             }
             TypeKind::Alias(inner_id) => {
                 // TODO(emilio): Make this "hop through type aliases that aren't
