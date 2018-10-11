@@ -2,6 +2,7 @@
 
 use super::context::{BindgenContext, TypeId};
 use super::item::Item;
+use super::super::codegen::EnumVariation;
 use super::ty::TypeKind;
 use clang;
 use ir::annotations::Annotations;
@@ -150,24 +151,42 @@ impl Enum {
         path_matches || (enum_is_anon && a_variant_matches)
     }
 
-    /// Whether the enum should be a bitfield
-    pub fn is_bitfield(&self, ctx: &BindgenContext, item: &Item) -> bool {
+    /// Whether the enum was explicitly specified to be a bitfield.
+    fn is_bitfield(&self, ctx: &BindgenContext, item: &Item) -> bool {
         self.is_matching_enum(ctx, &ctx.options().bitfield_enums, item)
     }
 
-    /// Whether the enum should be an constified enum module
-    pub fn is_constified_enum_module(&self, ctx: &BindgenContext, item: &Item) -> bool {
+    /// Whether the enum was explicitly specified to be an constified enum
+    /// module.
+    fn is_constified_enum_module(&self, ctx: &BindgenContext, item: &Item) -> bool {
         self.is_matching_enum(ctx, &ctx.options().constified_enum_modules, item)
     }
 
-    /// Whether the enum should be an set of constants
-    pub fn is_constified_enum(&self, ctx: &BindgenContext, item: &Item) -> bool {
+    /// Whether the enum was explicitly specified to be an set of constants.
+    fn is_constified_enum(&self, ctx: &BindgenContext, item: &Item) -> bool {
         self.is_matching_enum(ctx, &ctx.options().constified_enums, item)
     }
 
-    /// Whether the enum should be a Rust enum
-    pub fn is_rustified_enum(&self, ctx: &BindgenContext, item: &Item) -> bool {
+    /// Whether the enum was explicitly specified to be a Rust enum.
+    fn is_rustified_enum(&self, ctx: &BindgenContext, item: &Item) -> bool {
         self.is_matching_enum(ctx, &ctx.options().rustified_enums, item)
+    }
+
+    /// Returns the final representation of the enum.
+    pub fn computed_enum_variation(&self, ctx: &BindgenContext, item: &Item) -> EnumVariation {
+        // ModuleConsts has higher precedence before Rust in order to avoid
+        // problems with overlapping match patterns.
+        if self.is_constified_enum_module(ctx, item) {
+            EnumVariation::ModuleConsts
+        } else if self.is_bitfield(ctx, item) {
+            EnumVariation::Bitfield
+        } else if self.is_rustified_enum(ctx, item) {
+            EnumVariation::Rust
+        } else if self.is_constified_enum(ctx, item) {
+            EnumVariation::Consts
+        } else {
+            ctx.options().default_enum_style
+        }
     }
 }
 
