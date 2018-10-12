@@ -78,6 +78,13 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("blacklist-identifier")
+                .long("blacklist-identifier")
+                .help("Mark <identifier> as hidden.")
+                .value_name("identifier")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
             Arg::with_name("no-layout-tests")
                 .long("no-layout-tests")
                 .help("Avoid generating layout tests for any type."),
@@ -367,6 +374,12 @@ where
     if let Some(hidden_functions) = matches.values_of("blacklist-function") {
         for fun in hidden_functions {
             builder = builder.blacklist_function(fun);
+        }
+    }
+
+    if let Some(hidden_identifiers) = matches.values_of("blacklist-identifier") {
+        for id in hidden_identifiers {
+            builder = builder.blacklist_identifier(id);
         }
     }
 
