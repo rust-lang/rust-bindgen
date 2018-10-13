@@ -1,4 +1,4 @@
-// bindgen-flags: --blacklist-item "SomeFunction" --blacklist-item "SOME_DEFUN" --blacklist-item "someVar" --blacklist-item "ExternFunction" --blacklist-item "foo::NamespacedFunction" --blacklist-item "someClass" --enable-cxx-namespaces
+// bindgen-flags: --blacklist-item "SomeFunction" --blacklist-item "SOME_DEFUN" --blacklist-item "someVar" --blacklist-item "ExternFunction" --blacklist-item "foo::NamespacedFunction" --blacklist-item "someClass.*" --enable-cxx-namespaces
 
 void SomeFunction();
 extern int someVar;

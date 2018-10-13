@@ -11,10 +11,6 @@
 pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
-    extern "C" {
-        #[link_name = "\u{1}_ZN9someClass16somePublicMethodEi"]
-        pub fn someClass_somePublicMethod(this: *mut root::someClass, foo: ::std::os::raw::c_int);
-    }
     pub mod foo {
         #[allow(unused_imports)]
         use self::super::super::root;
