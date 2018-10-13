@@ -637,7 +637,7 @@ impl Item {
 
         let path = self.canonical_path(ctx);
         let name = path[1..].join("::");
-        ctx.options().blacklisted_identifiers.matches(&name) ||
+        ctx.options().blacklisted_items.matches(&name) ||
         match self.kind {
             ItemKind::Type(..) => {
                 ctx.options().blacklisted_types.matches(&name) ||

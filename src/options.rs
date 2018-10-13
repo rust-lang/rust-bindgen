@@ -78,10 +78,10 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
-            Arg::with_name("blacklist-identifier")
-                .long("blacklist-identifier")
-                .help("Mark <identifier> as hidden.")
-                .value_name("identifier")
+            Arg::with_name("blacklist-item")
+                .long("blacklist-item")
+                .help("Mark <item> as hidden.")
+                .value_name("item")
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
@@ -377,9 +377,9 @@ where
         }
     }
 
-    if let Some(hidden_identifiers) = matches.values_of("blacklist-identifier") {
+    if let Some(hidden_identifiers) = matches.values_of("blacklist-item") {
         for id in hidden_identifiers {
-            builder = builder.blacklist_identifier(id);
+            builder = builder.blacklist_item(id);
         }
     }
 
