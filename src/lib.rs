@@ -311,6 +311,20 @@ impl Builder {
             })
             .count();
 
+        self.options
+            .blacklisted_items
+            .get_items()
+            .iter()
+            .map(|item| {
+                output_vector.push("--blacklist-item".into());
+                output_vector.push(
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
+                );
+            })
+            .count();
+
         if !self.options.layout_tests {
             output_vector.push("--no-layout-tests".into());
         }
@@ -751,6 +765,14 @@ impl Builder {
     /// are supported.
     pub fn blacklist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.blacklisted_functions.insert(arg);
+        self
+    }
+
+    /// Hide the given item from the generated bindings, regardless of
+    /// whether it's a type, function, module, etc. Regular
+    /// expressions are supported.
+    pub fn blacklist_item<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.blacklisted_items.insert(arg);
         self
     }
 
@@ -1313,6 +1335,10 @@ struct BindgenOptions {
     /// in the generated code.
     blacklisted_functions: RegexSet,
 
+    /// The set of items, regardless of item-type, that have been
+    /// blacklisted and should not appear in the generated code.
+    blacklisted_items: RegexSet,
+
     /// The set of types that should be treated as opaque structures in the
     /// generated code.
     opaque_types: RegexSet,
@@ -1531,6 +1557,7 @@ impl BindgenOptions {
         self.whitelisted_functions.build();
         self.blacklisted_types.build();
         self.blacklisted_functions.build();
+        self.blacklisted_items.build();
         self.opaque_types.build();
         self.bitfield_enums.build();
         self.constified_enums.build();
@@ -1564,6 +1591,7 @@ impl Default for BindgenOptions {
             rust_features: rust_target.into(),
             blacklisted_types: Default::default(),
             blacklisted_functions: Default::default(),
+            blacklisted_items: Default::default(),
             opaque_types: Default::default(),
             rustfmt_path: Default::default(),
             whitelisted_types: Default::default(),
