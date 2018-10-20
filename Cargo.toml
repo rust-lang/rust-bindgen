@@ -14,7 +14,7 @@ readme = "README.md"
 repository = "https://github.com/rust-lang-nursery/rust-bindgen"
 documentation = "https://docs.rs/bindgen"
 homepage = "https://rust-lang-nursery.github.io/rust-bindgen/"
-version = "0.42.3"
+version = "0.43.0"
 build = "build.rs"
 
 include = [
@@ -44,7 +44,7 @@ shlex = "0.1"
 
 [dependencies]
 bitflags = "1.0.3"
-cexpr = "0.3"
+cexpr = "0.3.3"
 cfg-if = "0.1.0"
 # This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
 clap = "2"
