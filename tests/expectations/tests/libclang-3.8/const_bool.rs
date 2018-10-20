@@ -6,7 +6,7 @@
 
 extern "C" {
     #[link_name = "\u{1}_ZL1k"]
-    pub static mut k: bool;
+    pub static k: bool;
 }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -15,7 +15,7 @@ pub struct A {
 }
 extern "C" {
     #[link_name = "\u{1}_ZN1A1kE"]
-    pub static mut A_k: bool;
+    pub static A_k: bool;
 }
 #[test]
 fn bindgen_test_layout_A() {
@@ -33,5 +33,5 @@ fn bindgen_test_layout_A() {
 pub type foo = bool;
 extern "C" {
     #[link_name = "\u{1}_ZL2k2"]
-    pub static mut k2: foo;
+    pub static k2: foo;
 }
