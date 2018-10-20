@@ -17,7 +17,7 @@ pub const k: EasyToOverflow = 2147483648;
 pub const k_expr: EasyToOverflow = 0;
 extern "C" {
     #[link_name = "\u{1}wow"]
-    pub static mut wow: EasyToOverflow;
+    pub static wow: EasyToOverflow;
 }
 pub const BAZ: ::std::os::raw::c_longlong = 24;
 pub const fuzz: f64 = 51.0;

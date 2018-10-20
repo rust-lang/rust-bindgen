@@ -575,10 +575,16 @@ impl CodeGenerator for Var {
                 attrs.push(attributes::link_name(self.name()));
             }
 
+            let maybe_mut = if self.is_const() {
+                quote! { }
+            } else {
+                quote! { mut }
+            };
+
             let mut tokens = quote!(
                 extern "C" {
                     #(#attrs)*
-                    pub static mut #canonical_ident: #ty;
+                    pub static #maybe_mut #canonical_ident: #ty;
                 }
             );
 

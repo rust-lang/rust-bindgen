@@ -11,7 +11,7 @@ pub struct Foo {
 }
 extern "C" {
     #[link_name = "\u{1}_ZN3Foo4kFooE"]
-    pub static mut Foo_kFoo: bool;
+    pub static Foo_kFoo: bool;
 }
 #[test]
 fn bindgen_test_layout_Foo() {
