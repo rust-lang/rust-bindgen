@@ -1044,6 +1044,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
         let field_item = self.ty().into_resolver().through_type_refs().resolve(ctx);
         let field_ty = field_item.expect_type();
         let mut ty = self.ty().to_rust_ty_or_opaque(ctx, &());
+        ty.append_implicit_template_params(ctx, field_item);
 
         // NB: If supported, we use proper `union` types.
         let ty = if parent.is_union() && !parent.can_be_rust_union(ctx) {
@@ -1071,7 +1072,6 @@ impl<'a> FieldCodegen<'a> for FieldData {
                 }
             }
         } else {
-            ty.append_implicit_template_params(ctx, field_item);
             ty
         };
 
