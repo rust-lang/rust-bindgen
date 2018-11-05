@@ -3377,17 +3377,19 @@ impl CodeGenerator for Function {
             attributes.push(attributes::doc(comment));
         }
 
-        if let Some(mangled) = mangled_name {
-            attributes.push(attributes::link_name(mangled));
-        } else if name != canonical_name {
-            attributes.push(attributes::link_name(name));
-        }
-
         // Handle overloaded functions by giving each overload its own unique
         // suffix.
         let times_seen = result.overload_number(&canonical_name);
         if times_seen > 0 {
             write!(&mut canonical_name, "{}", times_seen).unwrap();
+        }
+
+        if let Some(mangled) = mangled_name {
+            if canonical_name != mangled {
+                attributes.push(attributes::link_name(mangled));
+            }
+        } else if name != canonical_name {
+            attributes.push(attributes::link_name(name));
         }
 
         let abi = match signature.abi() {
