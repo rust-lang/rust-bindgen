@@ -7,7 +7,7 @@
     non_upper_case_globals
 )]
 
-#[doc = " <div rustbindgen=\"true\" replaces=\"whatever\"></div>"]
+/// <div rustbindgen="true" replaces="whatever"></div>
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct whatever {

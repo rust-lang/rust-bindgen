@@ -7,13 +7,13 @@
     non_upper_case_globals
 )]
 
-#[doc = " <div rustbindgen replaces=\"PASS\"></div>"]
-#[doc = ""]
-#[doc = " Should see PASS below."]
+/// <div rustbindgen replaces="PASS"></div>
+///
+/// Should see PASS below.
 pub const OGRErr_PASS: OGRErr = 0;
-#[doc = " <div rustbindgen replaces=\"OGRERR_NONE\"></div>"]
-#[doc = ""]
-#[doc = " Should see OGRERR_NONE instead of CUSTOM_OGRERR_NONE below."]
+/// <div rustbindgen replaces="OGRERR_NONE"></div>
+///
+/// Should see OGRERR_NONE instead of CUSTOM_OGRERR_NONE below.
 pub const OGRErr_OGRERR_NONE: OGRErr = 1;
-#[doc = " <div rustbindgen replaces=\"OGRErr\"></div>"]
+/// <div rustbindgen replaces="OGRErr"></div>
 pub type OGRErr = u32;

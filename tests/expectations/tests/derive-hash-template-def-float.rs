@@ -7,7 +7,7 @@
     non_upper_case_globals
 )]
 
-#[doc = " Template definition containing a float, which cannot derive Hash/Eq/Ord but can derive PartialEq/PartialOrd."]
+/// Template definition containing a float, which cannot derive Hash/Eq/Ord but can derive PartialEq/PartialOrd.
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialOrd, PartialEq)]
 pub struct foo<T> {

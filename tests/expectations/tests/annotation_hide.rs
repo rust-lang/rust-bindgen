@@ -7,7 +7,7 @@
     non_upper_case_globals
 )]
 
-#[doc = " <div rustbindgen opaque></div>"]
+/// <div rustbindgen opaque></div>
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct D {

@@ -7,12 +7,12 @@
     non_upper_case_globals
 )]
 
-#[doc = " This is intended to replace another type, but won\'t if we treat this include"]
-#[doc = " as a system include, because clang doesn\'t parse comments there."]
-#[doc = ""]
-#[doc = " See #848."]
-#[doc = ""]
-#[doc = " <div rustbindgen replaces=\"nsTArray\"></div>"]
+/// This is intended to replace another type, but won't if we treat this include
+/// as a system include, because clang doesn't parse comments there.
+///
+/// See #848.
+///
+/// <div rustbindgen replaces="nsTArray"></div>
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct nsTArray<T> {

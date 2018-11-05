@@ -7,9 +7,9 @@
     non_upper_case_globals
 )]
 
-#[doc = " But the replacement type does use T!"]
-#[doc = ""]
-#[doc = " <div rustbindgen replaces=\"JS::detail::MaybeWrapped\" />"]
+/// But the replacement type does use T!
+///
+/// <div rustbindgen replaces="JS::detail::MaybeWrapped" />
 pub type JS_detail_MaybeWrapped<T> = T;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

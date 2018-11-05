@@ -7,8 +7,8 @@
     non_upper_case_globals
 )]
 
-#[doc = " Since builtin `Clone` impls were introduced in Rust 1.21 this struct"]
-#[doc = " should impl `Clone` \"manually\"."]
+/// Since builtin `Clone` impls were introduced in Rust 1.21 this struct
+/// should impl `Clone` "manually".
 #[repr(C)]
 #[derive(Copy)]
 pub struct ShouldImplClone {

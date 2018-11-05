@@ -9,8 +9,8 @@
 
 pub struct BlacklistMe(u8);
 
-#[doc = " Because this type contains a blacklisted type, it should not derive"]
-#[doc = " PartialEq."]
+/// Because this type contains a blacklisted type, it should not derive
+/// PartialEq.
 #[repr(C)]
 pub struct ShouldNotDerivePartialEq {
     pub a: BlacklistMe,

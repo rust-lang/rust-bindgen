@@ -7,5 +7,5 @@
     non_upper_case_globals
 )]
 
-#[doc = " <div rustbindgen replaces=\"c\"></div>"]
+/// <div rustbindgen replaces="c"></div>
 pub type c<a> = a;

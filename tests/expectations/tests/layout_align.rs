@@ -129,15 +129,15 @@ impl<T> ::std::marker::Copy for __IncompleteArrayField<T> {}
 #[repr(C)]
 #[derive(Debug)]
 pub struct rte_kni_fifo {
-    #[doc = "< Next position to be written"]
+    /// < Next position to be written
     pub write: ::std::os::raw::c_uint,
-    #[doc = "< Next position to be read"]
+    /// < Next position to be read
     pub read: ::std::os::raw::c_uint,
-    #[doc = "< Circular buffer length"]
+    /// < Circular buffer length
     pub len: ::std::os::raw::c_uint,
-    #[doc = "< Pointer size - for 32/64 bit OS"]
+    /// < Pointer size - for 32/64 bit OS
     pub elem_size: ::std::os::raw::c_uint,
-    #[doc = "< The buffer contains mbuf pointers"]
+    /// < The buffer contains mbuf pointers
     pub buffer: __IncompleteArrayField<*mut ::std::os::raw::c_void>,
     pub __bindgen_align: [u64; 0usize],
 }
@@ -162,7 +162,7 @@ impl Default for rte_kni_fifo {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct rte_eth_link {
-    #[doc = "< ETH_SPEED_NUM_"]
+    /// < ETH_SPEED_NUM_
     pub link_speed: u32,
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize], u8>,
     pub __bindgen_padding_0: [u8; 3usize],

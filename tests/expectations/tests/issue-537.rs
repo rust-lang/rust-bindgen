@@ -7,8 +7,8 @@
     non_upper_case_globals
 )]
 
-#[doc = " This should not be opaque; we can see the attributes and can pack the"]
-#[doc = " struct."]
+/// This should not be opaque; we can see the attributes and can pack the
+/// struct.
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct AlignedToOne {
@@ -37,8 +37,8 @@ fn bindgen_test_layout_AlignedToOne() {
         )
     );
 }
-#[doc = " This should be opaque because although we can see the attributes, Rust"]
-#[doc = " doesn\'t have `#[repr(packed = \"N\")]` yet."]
+/// This should be opaque because although we can see the attributes, Rust
+/// doesn't have `#[repr(packed = "N")]` yet.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct AlignedToTwo {
@@ -57,9 +57,9 @@ fn bindgen_test_layout_AlignedToTwo() {
         concat!("Alignment of ", stringify!(AlignedToTwo))
     );
 }
-#[doc = " This should not be opaque because although `libclang` doesn\'t give us the"]
-#[doc = " `#pragma pack(1)`, we can detect that alignment is 1 and add"]
-#[doc = " `#[repr(packed)]` to the struct ourselves."]
+/// This should not be opaque because although `libclang` doesn't give us the
+/// `#pragma pack(1)`, we can detect that alignment is 1 and add
+/// `#[repr(packed)]` to the struct ourselves.
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct PackedToOne {
@@ -99,9 +99,9 @@ fn bindgen_test_layout_PackedToOne() {
         )
     );
 }
-#[doc = " In this case, even if we can detect the weird alignment triggered by"]
-#[doc = " `#pragma pack(2)`, we can\'t do anything about it because Rust doesn\'t have"]
-#[doc = " `#[repr(packed = \"N\")]`. Therefore, we must make it opaque."]
+/// In this case, even if we can detect the weird alignment triggered by
+/// `#pragma pack(2)`, we can't do anything about it because Rust doesn't have
+/// `#[repr(packed = "N")]`. Therefore, we must make it opaque.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct PackedToTwo {

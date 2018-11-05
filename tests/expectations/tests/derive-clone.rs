@@ -7,7 +7,7 @@
     non_upper_case_globals
 )]
 
-#[doc = " This struct should derive `Clone`."]
+/// This struct should derive `Clone`.
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct ShouldDeriveClone {

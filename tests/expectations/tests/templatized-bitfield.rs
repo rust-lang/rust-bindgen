@@ -7,9 +7,9 @@
     non_upper_case_globals
 )]
 
-#[doc = " We don\'t get a layout for this bitfield, since we don\'t know what `T` will"]
-#[doc = " be, so we cannot allocate bitfield units. The best thing we can do is make"]
-#[doc = " the struct opaque."]
+/// We don't get a layout for this bitfield, since we don't know what `T` will
+/// be, so we cannot allocate bitfield units. The best thing we can do is make
+/// the struct opaque.
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct TemplatizedBitfield {

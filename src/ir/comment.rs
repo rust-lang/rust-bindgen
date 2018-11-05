@@ -38,6 +38,19 @@ fn make_indent(indent: usize) -> String {
     iter::repeat(' ').take(indent * RUST_INDENTATION).collect()
 }
 
+/// For a comment like `/// foo`, proc_macro2 will turn it into
+/// `#[doc = " foo"]`, and rustfmt into `///  foo`, so prevent this by removing
+/// the first space of the comment if present.
+///
+/// This is a bit hacky.
+fn format_line(line: &str) -> &str {
+    if line.starts_with(" ") {
+        &line[1..]
+    } else {
+        line
+    }
+}
+
 /// Preprocesses multiple single line comments.
 ///
 /// Handles lines starting with both `//` and `///`.
@@ -52,7 +65,7 @@ fn preprocess_single_lines(comment: &str, indent: usize) -> String {
         .map(|l| {
             let indent = if is_first { "" } else { &*indent };
             is_first = false;
-            format!("{}///{}", indent, l)
+            format!("{}///{}", indent, format_line(l))
         })
         .collect();
     lines.join("\n")
@@ -73,7 +86,7 @@ fn preprocess_multi_line(comment: &str, indent: usize) -> String {
         .map(|line| {
             let indent = if is_first { "" } else { &*indent };
             is_first = false;
-            format!("{}///{}", indent, line)
+            format!("{}///{}", indent, format_line(line))
         })
         .collect();
 
@@ -97,16 +110,16 @@ mod test {
 
     #[test]
     fn processes_single_lines_correctly() {
-        assert_eq!(preprocess("/// hello", 0), "/// hello");
-        assert_eq!(preprocess("// hello", 0), "/// hello");
-        assert_eq!(preprocess("//    hello", 0), "///    hello");
+        assert_eq!(preprocess("/// hello", 0), "///hello");
+        assert_eq!(preprocess("// hello", 0), "///hello");
+        assert_eq!(preprocess("//    hello", 0), "///   hello");
     }
 
     #[test]
     fn processes_multi_lines_correctly() {
         assert_eq!(
             preprocess("/** hello \n * world \n * foo \n */", 0),
-            "/// hello\n/// world\n/// foo"
+            "///hello\n///world\n///foo"
         );
 
         assert_eq!(

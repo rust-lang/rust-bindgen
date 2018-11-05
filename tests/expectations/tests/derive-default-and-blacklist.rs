@@ -9,8 +9,8 @@
 
 pub struct BlacklistMe(u8);
 
-#[doc = " Because this type contains a blacklisted type, it should not derive"]
-#[doc = " Default. Instead, we should emit a `mem::zeroed` implementation."]
+/// Because this type contains a blacklisted type, it should not derive
+/// Default. Instead, we should emit a `mem::zeroed` implementation.
 #[repr(C)]
 pub struct ShouldNotDeriveDefault {
     pub a: BlacklistMe,

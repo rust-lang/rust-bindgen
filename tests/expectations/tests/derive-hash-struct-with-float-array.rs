@@ -7,7 +7,7 @@
     non_upper_case_globals
 )]
 
-#[doc = " A struct containing an array of floats that cannot derive Hash/Eq/Ord but can derive PartialEq/PartialOrd"]
+/// A struct containing an array of floats that cannot derive Hash/Eq/Ord but can derive PartialEq/PartialOrd
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, PartialOrd, PartialEq)]
 pub struct foo {

@@ -9,7 +9,7 @@
 
 #[repr(C)]
 pub struct BaseWithVtable__bindgen_vtable(::std::os::raw::c_void);
-#[doc = " This should have an explicit vtable."]
+/// This should have an explicit vtable.
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct BaseWithVtable<T> {
@@ -22,7 +22,7 @@ impl<T> Default for BaseWithVtable<T> {
         unsafe { ::std::mem::zeroed() }
     }
 }
-#[doc = " This should not have an explicit vtable."]
+/// This should not have an explicit vtable.
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct DerivedWithNoVirtualMethods {
@@ -46,7 +46,7 @@ impl Default for DerivedWithNoVirtualMethods {
         unsafe { ::std::mem::zeroed() }
     }
 }
-#[doc = " This should not have an explicit vtable."]
+/// This should not have an explicit vtable.
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct DerivedWithVirtualMethods {
@@ -70,7 +70,7 @@ impl Default for DerivedWithVirtualMethods {
         unsafe { ::std::mem::zeroed() }
     }
 }
-#[doc = " This should not have any vtable."]
+/// This should not have any vtable.
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct BaseWithoutVtable<U> {
@@ -84,7 +84,7 @@ impl<U> Default for BaseWithoutVtable<U> {
 }
 #[repr(C)]
 pub struct DerivedWithVtable__bindgen_vtable(::std::os::raw::c_void);
-#[doc = " This should have an explicit vtable."]
+/// This should have an explicit vtable.
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct DerivedWithVtable {
@@ -109,7 +109,7 @@ impl Default for DerivedWithVtable {
         unsafe { ::std::mem::zeroed() }
     }
 }
-#[doc = " This should not have any vtable."]
+/// This should not have any vtable.
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct DerivedWithoutVtable {

@@ -7,7 +7,7 @@
     non_upper_case_globals
 )]
 
-#[doc = " Template definition that doesn\'t contain float can derive Hash/PartialOrd/Ord/PartialEq/Eq"]
+/// Template definition that doesn't contain float can derive Hash/PartialOrd/Ord/PartialEq/Eq
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct foo<T> {
@@ -19,7 +19,7 @@ impl<T> Default for foo<T> {
         unsafe { ::std::mem::zeroed() }
     }
 }
-#[doc = " Can derive Hash/PartialOrd/Ord/PartialEq/Eq when instantiated with int"]
+/// Can derive Hash/PartialOrd/Ord/PartialEq/Eq when instantiated with int
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialOrd, Ord, PartialEq, Eq)]
 pub struct IntStr {
@@ -48,7 +48,7 @@ impl Default for IntStr {
         unsafe { ::std::mem::zeroed() }
     }
 }
-#[doc = " Cannot derive Hash/Eq/Ord when instantiated with float but can derive PartialEq/PartialOrd"]
+/// Cannot derive Hash/Eq/Ord when instantiated with float but can derive PartialEq/PartialOrd
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialOrd, PartialEq)]
 pub struct FloatStr {

@@ -7,7 +7,7 @@
     non_upper_case_globals
 )]
 
-#[doc = " Deriving PartialEq for rust unions is not supported."]
+/// Deriving PartialEq for rust unions is not supported.
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union ShouldNotDerivePartialEq {

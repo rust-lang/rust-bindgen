@@ -7,10 +7,10 @@
     non_upper_case_globals
 )]
 
-#[doc = " We emit a `[u8; 63usize]` padding field for this struct, which cannot derive"]
-#[doc = " Debug/Hash because 63 is over the hard coded limit. (Yes, this struct doesn\'t end"]
-#[doc = " up with the reight alignment, we\'re waiting on `#[repr(align=\"N\")]` to land"]
-#[doc = " in rustc)."]
+/// We emit a `[u8; 63usize]` padding field for this struct, which cannot derive
+/// Debug/Hash because 63 is over the hard coded limit. (Yes, this struct doesn't end
+/// up with the reight alignment, we're waiting on `#[repr(align="N")]` to land
+/// in rustc).
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct NoDebug {
@@ -45,10 +45,10 @@ impl ::std::cmp::PartialEq for NoDebug {
         self.c == other.c
     }
 }
-#[doc = " This should derive Debug/Hash/PartialEq/Eq because the padding size is less than the max derive"]
-#[doc = " Debug/Hash/PartialEq/Eq impl for arrays. However, we conservatively don\'t derive Debug/Hash because"]
-#[doc = " we determine Debug derive-ability before we compute padding, which happens at"]
-#[doc = " codegen. (Again, we expect to get the alignment wrong for similar reasons.)"]
+/// This should derive Debug/Hash/PartialEq/Eq because the padding size is less than the max derive
+/// Debug/Hash/PartialEq/Eq impl for arrays. However, we conservatively don't derive Debug/Hash because
+/// we determine Debug derive-ability before we compute padding, which happens at
+/// codegen. (Again, we expect to get the alignment wrong for similar reasons.)
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct ShouldDeriveDebugButDoesNot {
