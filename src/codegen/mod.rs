@@ -666,6 +666,7 @@ impl CodeGenerator for Type {
                     .through_type_refs()
                     .resolve(ctx);
                 let name = item.canonical_name(ctx);
+                let path = item.canonical_path(ctx);
 
                 {
                     let through_type_aliases = inner.into_resolver()
@@ -678,7 +679,7 @@ impl CodeGenerator for Type {
                     // typedef struct foo { ... } foo;
                     //
                     // here, and also other more complex cases like #946.
-                    if through_type_aliases.canonical_name(ctx) == name {
+                    if through_type_aliases.canonical_path(ctx) == path {
                         return;
                     }
                 }
