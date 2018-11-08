@@ -313,7 +313,6 @@ Unsure who to ask for review? Ask any of:
 
 * `@emilio`
 * `@fitzgen`
-* `@pepyakin`
 
 More resources:
 
