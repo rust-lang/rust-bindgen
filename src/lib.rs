@@ -431,7 +431,7 @@ impl Builder {
         //Temporary placeholder for below 4 options
         let mut options: Vec<String> = Vec::new();
         if self.options.codegen_config.functions() {
-            options.push("function".into());
+            options.push("functions".into());
         }
         if self.options.codegen_config.types() {
             options.push("types".into());
