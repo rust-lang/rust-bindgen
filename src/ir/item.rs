@@ -875,6 +875,11 @@ impl Item {
 
         let name = names.join("_");
 
+        let name = ctx
+            .parse_callbacks()
+            .and_then(|callbacks| callbacks.item_name(&name))
+            .unwrap_or(name);
+
         ctx.rust_mangle(&name).into_owned()
     }
 
