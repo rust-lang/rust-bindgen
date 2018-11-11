@@ -179,6 +179,15 @@ struct WithWChar {
   wchar_t foo[30];
 };
 
+// The names of the following items are unprefixed by the parse callbacks.
 const int MY_PREFIXED_CONST_VALUE = 3;
 
 int my_prefixed_function_name();
+
+struct my_prefixed_bar {
+    int foo;
+};
+
+struct my_prefixed_foo {
+   my_prefixed_bar member;
+};

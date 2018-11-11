@@ -286,5 +286,9 @@ fn test_virtual_dtor() {
 #[test]
 fn test_item_rename() {
     assert_eq!(bindings::CONST_VALUE, 3);
-    assert_eq!(bindings::function_name(), 4);
+    assert_eq!(unsafe{ bindings::function_name() }, 4);
+
+    let _foo = bindings::foo{
+        member: bindings::bar{foo: 2}
+    };
 }
