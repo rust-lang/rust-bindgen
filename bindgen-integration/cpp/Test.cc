@@ -131,3 +131,7 @@ Seventh::assert(bool first,
 };
 
 } // namespace bitfields
+
+int my_prefixed_function_name() {
+  return 4;
+}
