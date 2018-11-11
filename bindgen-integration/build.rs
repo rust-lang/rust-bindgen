@@ -23,6 +23,16 @@ impl ParseCallbacks for MacroCallback {
 
         MacroParsingBehavior::Default
     }
+
+    fn item_name(&self, original_item_name: &str) -> Option<String> {
+        if original_item_name.starts_with("my_prefixed_") {
+            Some(original_item_name.trim_start_matches("my_prefixed_").to_string())
+        } else if original_item_name.starts_with("MY_PREFIXED_") {
+            Some(original_item_name.trim_start_matches("MY_PREFIXED_").to_string())
+        } else {
+            None
+        }
+    }
 }
 
 fn main() {

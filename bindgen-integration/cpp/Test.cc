@@ -130,4 +130,8 @@ Seventh::assert(bool first,
       this->seventh_thirty_bits == seventh;
 };
 
+int my_prefixed_function_name() {
+  return 4;
+}
+
 } // namespace bitfields

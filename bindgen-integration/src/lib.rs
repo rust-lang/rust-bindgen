@@ -282,3 +282,9 @@ fn test_virtual_dtor() {
         assert_eq!(bindings::VirtualDestructor_sDestructorCount, 1);
     }
 }
+
+#[test]
+fn test_item_rename() {
+    assert_eq!(bindings::CONST_VALUE, 3);
+    assert_eq!(bindings::function_name(), 4);
+}

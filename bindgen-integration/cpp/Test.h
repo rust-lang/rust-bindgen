@@ -178,3 +178,7 @@ struct AutoRestoreBool {
 struct WithWChar {
   wchar_t foo[30];
 };
+
+const int MY_PREFIXED_CONST_VALUE = 3;
+
+int my_prefixed_function_name();
