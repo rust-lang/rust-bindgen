@@ -40,3 +40,12 @@ namespace w {
 
     C<float> barr(); // <- This is the problematic one
 }
+
+#define NAMESPACE foobar
+namespace NAMESPACE {
+    void foo();
+}
+
+#include "namespace/nsbegin.h"
+void bar();
+#include "namespace/nsend.h"
