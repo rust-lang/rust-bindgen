@@ -1319,7 +1319,8 @@ impl ClangItemParser for Item {
                 CXCursor_UsingDeclaration |
                 CXCursor_UsingDirective |
                 CXCursor_StaticAssert |
-                CXCursor_InclusionDirective => {
+                CXCursor_InclusionDirective |
+                CXCursor_FunctionTemplate => {
                     debug!(
                         "Unhandled cursor kind {:?}: {:?}",
                         cursor.kind(),
