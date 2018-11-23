@@ -130,6 +130,9 @@ where
                 .long("no-doc-comments")
                 .help("Avoid including doc comments in the output, see: \
                       https://github.com/rust-lang-nursery/rust-bindgen/issues/426"),
+            Arg::with_name("disable-untagged-union")
+                .long("disable-untagged-union")
+                .help("Do not use untagged unions in generated bindings"),
             Arg::with_name("no-recursive-whitelist")
                 .long("no-recursive-whitelist")
                 .help("Disable whitelisting types recursively. This will cause \
@@ -521,6 +524,10 @@ where
 
     if matches.is_present("no-doc-comments") {
         builder = builder.generate_comments(false);
+    }
+
+    if matches.is_present("disable-untagged-union") {
+        builder = builder.disable_untagged_union();
     }
 
     if matches.is_present("no-recursive-whitelist") {
