@@ -1,7 +1,5 @@
 # `bindgen`
 
-[`impl period`](https://blog.rust-lang.org/2017/09/18/impl-future-for-rust.html) has been started! Join us at [Gitter.im](https://gitter.im/rust-impl-period/WG-dev-tools-bindgen).
-
 **`bindgen` automatically generates Rust FFI bindings to C (and some C++) libraries.**
 
 For example, given the C header `doggo.h`:
