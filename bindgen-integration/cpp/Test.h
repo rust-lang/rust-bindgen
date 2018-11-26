@@ -2,6 +2,10 @@
 
 #define TESTMACRO
 
+#define TESTMACRO_INTEGER 42
+#define TESTMACRO_STRING "Hello Preprocessor!"
+#define TESTMACRO_STRING_EXPANDED TESTMACRO_STRING
+
 #include <cwchar>
 
 enum {

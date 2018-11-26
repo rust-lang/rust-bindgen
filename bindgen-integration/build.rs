@@ -4,13 +4,14 @@ extern crate gcc;
 use std::collections::HashSet;
 use std::env;
 use std::path::PathBuf;
-use std::sync::{Arc, RwLock};
+use std::sync::{Arc, RwLock, Mutex};
 use bindgen::Builder;
 use bindgen::callbacks::{MacroParsingBehavior, ParseCallbacks};
 
 #[derive(Debug)]
 struct MacroCallback {
     macros: Arc<RwLock<HashSet<String>>>,
+    seen_hellos: Mutex<u32>,
 }
 
 impl ParseCallbacks for MacroCallback {
@@ -33,6 +34,26 @@ impl ParseCallbacks for MacroCallback {
             None
         }
     }
+
+    fn str_macro(&self, name: &str, value: &[u8]) {
+        match &name {
+            &"TESTMACRO_STRING_EXPANDED" |
+            &"TESTMACRO_STRING" |
+            &"TESTMACRO_INTEGER" => {
+                // The integer test macro is, actually, not expected to show up here at all -- but
+                // should produce an error if it does.
+                assert_eq!(value, b"Hello Preprocessor!", "str_macro handle received unexpected value");
+                *self.seen_hellos.lock().unwrap() += 1;
+            },
+            _ => {}
+        }
+    }
+}
+
+impl Drop for MacroCallback {
+    fn drop(&mut self) {
+        assert_eq!(*self.seen_hellos.lock().unwrap(), 2, "str_macro handle was not called once for all relevant macros")
+    }
 }
 
 fn main() {
@@ -51,7 +72,7 @@ fn main() {
         .module_raw_line("root::testing", "pub type Bar = i32;")
         .header("cpp/Test.h")
         .clang_args(&["-x", "c++", "-std=c++11"])
-        .parse_callbacks(Box::new(MacroCallback {macros: macros.clone()}))
+        .parse_callbacks(Box::new(MacroCallback {macros: macros.clone(), seen_hellos: Mutex::new(0)}))
         .generate()
         .expect("Unable to generate bindings");
 
