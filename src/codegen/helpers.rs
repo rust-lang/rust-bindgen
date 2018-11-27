@@ -36,6 +36,12 @@ pub mod attributes {
         }
     }
 
+    pub fn must_use() -> quote::Tokens {
+        quote! {
+            #[must_use]
+        }
+    }
+
     pub fn doc(comment: String) -> quote::Tokens {
         // Doc comments are already preprocessed into nice `///` formats by the
         // time they get here. Just make sure that we have newlines around it so
