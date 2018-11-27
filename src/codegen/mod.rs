@@ -2154,9 +2154,13 @@ impl MethodCodegen for Method {
         let mut attrs = vec![];
         attrs.push(attributes::inline());
 
+        if signature.must_use() && ctx.options().rust_features().must_use_function {
+            attrs.push(attributes::must_use());
+        }
+
         let name = ctx.rust_ident(&name);
         methods.push(quote! {
-            #[inline]
+            #(#attrs)*
             pub unsafe fn #name ( #( #args ),* ) #ret {
                 #block
             }
@@ -3373,6 +3377,10 @@ impl CodeGenerator for Function {
         let ret = utils::fnsig_return_ty(ctx, signature);
 
         let mut attributes = vec![];
+
+        if signature.must_use() && ctx.options().rust_features().must_use_function {
+            attributes.push(attributes::must_use());
+        }
 
         if let Some(comment) = item.comment(ctx) {
             attributes.push(attributes::doc(comment));

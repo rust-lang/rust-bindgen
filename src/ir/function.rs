@@ -221,6 +221,9 @@ pub struct FunctionSig {
     /// Whether this function is variadic.
     is_variadic: bool,
 
+    /// Whether this function's return value must be used.
+    must_use: bool,
+
     /// The ABI of this function.
     abi: Abi,
 }
@@ -308,14 +311,16 @@ impl FunctionSig {
     /// Construct a new function signature.
     pub fn new(
         return_type: TypeId,
-        arguments: Vec<(Option<String>, TypeId)>,
+        argument_types: Vec<(Option<String>, TypeId)>,
         is_variadic: bool,
+        must_use: bool,
         abi: Abi,
     ) -> Self {
         FunctionSig {
-            return_type: return_type,
-            argument_types: arguments,
-            is_variadic: is_variadic,
+            return_type,
+            argument_types,
+            is_variadic,
+            must_use,
             abi: abi,
         }
     }
@@ -387,6 +392,7 @@ impl FunctionSig {
             }
         };
 
+        let must_use = cursor.has_simple_attr("warn_unused_result");
         let is_method = cursor.kind() == CXCursor_CXXMethod;
         let is_constructor = cursor.kind() == CXCursor_Constructor;
         let is_destructor = cursor.kind() == CXCursor_Destructor;
@@ -458,7 +464,7 @@ impl FunctionSig {
             warn!("Unknown calling convention: {:?}", call_conv);
         }
 
-        Ok(Self::new(ret.into(), args, ty.is_variadic(), abi))
+        Ok(Self::new(ret.into(), args, ty.is_variadic(), must_use, abi))
     }
 
     /// Get this function signature's return type.
@@ -482,6 +488,11 @@ impl FunctionSig {
         // variadic. We do the argument check because rust doesn't codegen well
         // variadic functions without an initial argument.
         self.is_variadic && !self.argument_types.is_empty()
+    }
+
+    /// Must this function's return value be used?
+    pub fn must_use(&self) -> bool {
+        self.must_use
     }
 
     /// Are function pointers with this signature able to derive Rust traits?
