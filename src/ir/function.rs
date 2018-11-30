@@ -12,6 +12,8 @@ use ir::derive::{CanTriviallyDeriveDebug, CanTriviallyDeriveHash,
                  CanTriviallyDerivePartialEqOrPartialOrd, CanDerive};
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use quote;
+use quote::TokenStreamExt;
+use proc_macro2;
 use std::io;
 
 const RUST_DERIVE_FUNPTR_LIMIT: usize = 12;
@@ -192,7 +194,7 @@ impl Abi {
 }
 
 impl quote::ToTokens for Abi {
-    fn to_tokens(&self, tokens: &mut quote::Tokens) {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
         tokens.append_all(match *self {
             Abi::C => quote! { "C" },
             Abi::Stdcall => quote! { "stdcall" },
