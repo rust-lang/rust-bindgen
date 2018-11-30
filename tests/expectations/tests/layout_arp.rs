@@ -27,7 +27,7 @@ pub const ARP_OP_INVREPLY: u32 = 9;
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct ether_addr {
-    /// < Addr bytes in tx order
+    ///< Addr bytes in tx order
     pub addr_bytes: [u8; 6usize],
 }
 #[test]
@@ -57,13 +57,13 @@ fn bindgen_test_layout_ether_addr() {
 #[repr(C, packed)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct arp_ipv4 {
-    /// < sender hardware address
+    ///< sender hardware address
     pub arp_sha: ether_addr,
-    /// < sender IP address
+    ///< sender IP address
     pub arp_sip: u32,
-    /// < target hardware address
+    ///< target hardware address
     pub arp_tha: ether_addr,
-    /// < target IP address
+    ///< target IP address
     pub arp_tip: u32,
 }
 #[test]

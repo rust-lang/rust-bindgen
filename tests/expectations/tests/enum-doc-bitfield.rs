@@ -20,11 +20,11 @@ impl B {
     pub const VAR_C: B = B(2);
 }
 impl B {
-    /// < Document field with following star
+    ///< Document field with following star
     pub const VAR_D: B = B(3);
 }
 impl B {
-    /// < Document field with following exclamation
+    ///< Document field with following exclamation
     pub const VAR_E: B = B(4);
 }
 impl B {

@@ -16,11 +16,11 @@ pub const IP_MAX_FRAG_NUM: _bindgen_ty_1 = _bindgen_ty_1::IP_MAX_FRAG_NUM;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum _bindgen_ty_1 {
-    /// < index of last fragment
+    ///< index of last fragment
     IP_LAST_FRAG_IDX = 0,
-    /// < index of first fragment
+    ///< index of first fragment
     IP_FIRST_FRAG_IDX = 1,
-    /// < minimum number of fragments
+    ///< minimum number of fragments
     IP_MIN_FRAG_NUM = 2,
     IP_MAX_FRAG_NUM = 4,
 }
@@ -28,11 +28,11 @@ pub enum _bindgen_ty_1 {
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct ip_frag {
-    /// < offset into the packet
+    ///< offset into the packet
     pub ofs: u16,
-    /// < length of fragment
+    ///< length of fragment
     pub len: u16,
-    /// < fragment mbuf
+    ///< fragment mbuf
     pub mb: *mut rte_mbuf,
 }
 #[test]
@@ -87,11 +87,11 @@ impl Default for ip_frag {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct ip_frag_key {
-    /// < src address, first 8 bytes used for IPv4
+    ///< src address, first 8 bytes used for IPv4
     pub src_dst: [u64; 4usize],
-    /// < dst address
+    ///< dst address
     pub id: u32,
-    /// < src/dst key length
+    ///< src/dst key length
     pub key_len: u32,
 }
 #[test]
@@ -142,19 +142,19 @@ fn bindgen_test_layout_ip_frag_key() {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct ip_frag_pkt {
-    /// < LRU list
+    ///< LRU list
     pub lru: ip_frag_pkt__bindgen_ty_1,
-    /// < fragmentation key
+    ///< fragmentation key
     pub key: ip_frag_key,
-    /// < creation timestamp
+    ///< creation timestamp
     pub start: u64,
-    /// < expected reassembled size
+    ///< expected reassembled size
     pub total_size: u32,
-    /// < size of fragments received
+    ///< size of fragments received
     pub frag_size: u32,
-    /// < index of next entry to fill
+    ///< index of next entry to fill
     pub last_idx: u32,
-    /// < fragments
+    ///< fragments
     pub frags: [ip_frag; 4usize],
     pub __bindgen_padding_0: [u64; 6usize],
 }
@@ -300,7 +300,7 @@ impl ::std::cmp::PartialEq for ip_frag_pkt {
             && self.frags == other.frags
     }
 }
-/// < fragment mbuf
+///< fragment mbuf
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mbuf {

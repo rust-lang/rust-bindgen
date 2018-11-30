@@ -12,11 +12,11 @@ pub type mbedtls_mpi_uint = ::std::os::raw::c_uint;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct mbedtls_mpi {
-    /// <  integer sign
+    ///<  integer sign
     pub s: ::std::os::raw::c_int,
-    /// <  total # of limbs
+    ///<  total # of limbs
     pub n: ::std::os::raw::c_ulong,
-    /// <  pointer to limbs
+    ///<  pointer to limbs
     pub p: *mut mbedtls_mpi_uint,
 }
 #[test]

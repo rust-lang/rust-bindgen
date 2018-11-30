@@ -13,9 +13,9 @@ pub const B_VAR_A: B = 0;
 pub const B_VAR_B: B = 1;
 /// Document field with preceeding exclamation
 pub const B_VAR_C: B = 2;
-/// < Document field with following star
+///< Document field with following star
 pub const B_VAR_D: B = 3;
-/// < Document field with following exclamation
+///< Document field with following exclamation
 pub const B_VAR_E: B = 4;
 /// Document field with preceeding star, with a loong long multiline
 /// comment.

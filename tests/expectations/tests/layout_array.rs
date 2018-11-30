@@ -51,17 +51,17 @@ pub type rte_mempool_get_count =
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct rte_mempool_ops {
-    /// < Name of mempool ops struct.
+    ///< Name of mempool ops struct.
     pub name: [::std::os::raw::c_char; 32usize],
-    /// < Allocate private data.
+    ///< Allocate private data.
     pub alloc: rte_mempool_alloc_t,
-    /// < Free the external pool.
+    ///< Free the external pool.
     pub free: rte_mempool_free_t,
-    /// < Enqueue an object.
+    ///< Enqueue an object.
     pub enqueue: rte_mempool_enqueue_t,
-    /// < Dequeue an object.
+    ///< Dequeue an object.
     pub dequeue: rte_mempool_dequeue_t,
-    /// < Get qty of available objs.
+    ///< Get qty of available objs.
     pub get_count: rte_mempool_get_count,
     pub __bindgen_padding_0: [u64; 7usize],
 }
@@ -152,7 +152,7 @@ impl ::std::cmp::PartialEq for rte_mempool_ops {
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_spinlock_t {
-    /// < lock status 0 = unlocked, 1 = locked
+    ///< lock status 0 = unlocked, 1 = locked
     pub locked: ::std::os::raw::c_int,
 }
 #[test]
@@ -188,9 +188,9 @@ fn bindgen_test_layout_rte_spinlock_t() {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct rte_mempool_ops_table {
-    /// < Spinlock for add/delete.
+    ///< Spinlock for add/delete.
     pub sl: rte_spinlock_t,
-    /// < Number of used ops structs in the table.
+    ///< Number of used ops structs in the table.
     pub num_ops: u32,
     pub __bindgen_padding_0: [u64; 7usize],
     /// Storage for all possible ops structs.

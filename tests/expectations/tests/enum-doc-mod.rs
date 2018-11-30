@@ -16,9 +16,9 @@ pub mod B {
     pub const VAR_B: Type = 1;
     /// Document field with preceeding exclamation
     pub const VAR_C: Type = 2;
-    /// < Document field with following star
+    ///< Document field with following star
     pub const VAR_D: Type = 3;
-    /// < Document field with following exclamation
+    ///< Document field with following exclamation
     pub const VAR_E: Type = 4;
     /// Document field with preceeding star, with a loong long multiline
     /// comment.
