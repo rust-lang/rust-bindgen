@@ -5,8 +5,8 @@ mod bindings {
 }
 
 use std::ffi::CStr;
-use std::os::raw::c_int;
 use std::mem;
+use std::os::raw::c_int;
 
 #[allow(unused)]
 use bindings::testing::Bar; // This type is generated from module_raw_line.
@@ -14,7 +14,7 @@ use bindings::testing::Bar; // This type is generated from module_raw_line.
 #[test]
 fn test_static_array() {
     let mut test = unsafe { bindings::Test_COUNTDOWN.as_ptr() };
-    let expected = unsafe { bindings::Test_countdown()};
+    let expected = unsafe { bindings::Test_countdown() };
     let also_expected = unsafe { bindings::Test_COUNTDOWN_PTR };
     assert!(!test.is_null());
     assert_eq!(also_expected, expected);
@@ -56,63 +56,41 @@ fn test_overload() {
 
 #[test]
 fn test_bitfields_first() {
-    let mut first: bindings::bitfields::First = unsafe {
-        mem::zeroed()
-    };
-    assert!(unsafe {
-        first.assert(0, 0, 0)
-    });
+    let mut first: bindings::bitfields::First = unsafe { mem::zeroed() };
+    assert!(unsafe { first.assert(0, 0, 0) });
     first.set_three_bits_byte_one(2);
     first.set_six_bits_byte_two(42);
     first.set_two_bits_byte_two(1);
-    assert!(unsafe {
-        first.assert(2, 42, 1)
-    });
+    assert!(unsafe { first.assert(2, 42, 1) });
 }
 
 #[test]
 fn test_bitfields_second() {
-    let mut second: bindings::bitfields::Second = unsafe {
-        mem::zeroed()
-    };
-    assert!(unsafe {
-        second.assert(0, false)
-    });
+    let mut second: bindings::bitfields::Second = unsafe { mem::zeroed() };
+    assert!(unsafe { second.assert(0, false) });
     second.set_thirty_one_bits(1337);
     second.set_one_bit(true);
-    assert!(unsafe {
-        second.assert(1337, true)
-    });
+    assert!(unsafe { second.assert(1337, true) });
 }
 
 #[test]
 fn test_bitfields_third() {
-    let mut third: bindings::bitfields::Third = unsafe {
-        mem::zeroed()
-    };
+    let mut third: bindings::bitfields::Third = unsafe { mem::zeroed() };
     assert!(unsafe {
-        third.assert(0,
-                     false,
-                     bindings::bitfields::ItemKind::ITEM_KIND_UNO)
+        third.assert(0, false, bindings::bitfields::ItemKind::ITEM_KIND_UNO)
     });
     third.set_flags(12345);
     third.set_is_whatever(true);
     third.set_kind(bindings::bitfields::ItemKind::ITEM_KIND_TRES);
     assert!(unsafe {
-        third.assert(12345,
-                     true,
-                     bindings::bitfields::ItemKind::ITEM_KIND_TRES)
+        third.assert(12345, true, bindings::bitfields::ItemKind::ITEM_KIND_TRES)
     });
 }
 
 #[test]
 fn test_bitfields_fourth() {
-    let mut fourth: bindings::bitfields::Fourth = unsafe {
-        mem::zeroed()
-    };
-    assert!(unsafe {
-        fourth.assert(bindings::bitfields::MyEnum::ONE, 0)
-    });
+    let mut fourth: bindings::bitfields::Fourth = unsafe { mem::zeroed() };
+    assert!(unsafe { fourth.assert(bindings::bitfields::MyEnum::ONE, 0) });
 
     fourth.set_tag(bindings::bitfields::MyEnum::THREE);
     fourth.set_ptr(0xdeadbeef);
@@ -123,32 +101,22 @@ fn test_bitfields_fourth() {
 
 #[test]
 fn test_bitfields_date2() {
-    let mut date: bindings::bitfields::Date2 = unsafe {
-        mem::zeroed()
-    };
-    assert!(unsafe {
-        date.assert(0, 0, 0, 0, 0)
-    });
+    let mut date: bindings::bitfields::Date2 = unsafe { mem::zeroed() };
+    assert!(unsafe { date.assert(0, 0, 0, 0, 0) });
 
     date.set_nWeekDay(6); // saturdays are the best
     date.set_nMonthDay(20);
     date.set_nMonth(11);
     date.set_nYear(95);
     date.set_byte(255);
-    assert!(unsafe {
-        date.assert(6, 20, 11, 95, 255)
-    });
+    assert!(unsafe { date.assert(6, 20, 11, 95, 255) });
 }
 
 #[test]
 fn test_bitfields_fifth() {
-    let mut date: bindings::bitfields::Fifth = unsafe {
-        mem::zeroed()
-    };
+    let mut date: bindings::bitfields::Fifth = unsafe { mem::zeroed() };
 
-    assert!(unsafe {
-        date.assert(0, 0, 0, 0, 0)
-    });
+    assert!(unsafe { date.assert(0, 0, 0, 0, 0) });
 
     date.byte = 255; // Set this first, to ensure we don't override it.
 
@@ -157,40 +125,28 @@ fn test_bitfields_fifth() {
     date.set_nMonth(11);
     date.set_nYear(95);
 
-    assert!(unsafe {
-        date.assert(6, 20, 11, 95, 255)
-    });
+    assert!(unsafe { date.assert(6, 20, 11, 95, 255) });
 }
 
 #[test]
 fn test_bitfields_sixth() {
-    let mut date: bindings::bitfields::Sixth = unsafe {
-        mem::zeroed()
-    };
+    let mut date: bindings::bitfields::Sixth = unsafe { mem::zeroed() };
 
-    assert!(unsafe {
-        date.assert(0, 0, 0, 0)
-    });
+    assert!(unsafe { date.assert(0, 0, 0, 0) });
 
     date.byte = 255;
     date.set_nWeekDay(6); // saturdays are the best
     date.set_nMonthDay(20);
     date.set_nMonth(11);
 
-    assert!(unsafe {
-        date.assert(255, 6, 11, 20)
-    });
+    assert!(unsafe { date.assert(255, 6, 11, 20) });
 }
 
 #[test]
 fn test_bitfields_seventh() {
-    let mut large: bindings::bitfields::Seventh = unsafe {
-        mem::zeroed()
-    };
+    let mut large: bindings::bitfields::Seventh = unsafe { mem::zeroed() };
 
-    assert!(unsafe {
-        large.assert(false, 0, 0, 0, 0, false, 0)
-    });
+    assert!(unsafe { large.assert(false, 0, 0, 0, 0, false, 0) });
 
     large.set_first_one_bit(true);
     large.set_second_thirty_bits(375028802);
@@ -217,32 +173,26 @@ fn test_bitfields_seventh() {
 fn test_bitfield_constructors() {
     use std::mem;
     let mut first = bindings::bitfields::First {
-        _bitfield_1: bindings::bitfields::First::new_bitfield_1(1, 2, 3)
+        _bitfield_1: bindings::bitfields::First::new_bitfield_1(1, 2, 3),
     };
-    assert!(unsafe {
-        first.assert(1, 2, 3)
-    });
+    assert!(unsafe { first.assert(1, 2, 3) });
 
     let mut second = bindings::bitfields::Second {
         _bitfield_1: bindings::bitfields::Second::new_bitfield_1(1337, true),
         __bindgen_align: [],
     };
-    assert!(unsafe {
-        second.assert(1337, true)
-    });
+    assert!(unsafe { second.assert(1337, true) });
 
     let mut third = bindings::bitfields::Third {
         _bitfield_1: bindings::bitfields::Third::new_bitfield_1(
             42,
             false,
-            bindings::bitfields::ItemKind::ITEM_KIND_TRES
+            bindings::bitfields::ItemKind::ITEM_KIND_TRES,
         ),
         __bindgen_align: [],
     };
     assert!(unsafe {
-        third.assert(42,
-                     false,
-                     bindings::bitfields::ItemKind::ITEM_KIND_TRES)
+        third.assert(42, false, bindings::bitfields::ItemKind::ITEM_KIND_TRES)
     });
 }
 
@@ -266,7 +216,9 @@ fn test_destructors() {
 
 impl Drop for bindings::InheritsFromVirtualDestructor {
     fn drop(&mut self) {
-        unsafe { bindings::InheritsFromVirtualDestructor_InheritsFromVirtualDestructor_destructor(self) }
+        unsafe {
+            bindings::InheritsFromVirtualDestructor_InheritsFromVirtualDestructor_destructor(self)
+        }
     }
 }
 
@@ -286,9 +238,9 @@ fn test_virtual_dtor() {
 #[test]
 fn test_item_rename() {
     assert_eq!(bindings::CONST_VALUE, 3);
-    assert_eq!(unsafe{ bindings::function_name() }, 4);
+    assert_eq!(unsafe { bindings::function_name() }, 4);
 
-    let _foo = bindings::foo{
-        member: bindings::bar{foo: 2}
+    let _foo = bindings::foo {
+        member: bindings::bar { foo: 2 },
     };
 }

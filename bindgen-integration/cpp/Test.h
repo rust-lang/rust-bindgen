@@ -195,3 +195,5 @@ struct my_prefixed_bar {
 struct my_prefixed_foo {
    my_prefixed_bar member;
 };
+
+void my_prefixed_function_to_remove();
