@@ -1,12 +1,12 @@
 extern crate bindgen;
 extern crate gcc;
 
+use bindgen::callbacks::{MacroParsingBehavior, ParseCallbacks};
+use bindgen::Builder;
 use std::collections::HashSet;
 use std::env;
 use std::path::PathBuf;
-use std::sync::{Arc, RwLock, Mutex};
-use bindgen::Builder;
-use bindgen::callbacks::{MacroParsingBehavior, ParseCallbacks};
+use std::sync::{Arc, Mutex, RwLock};
 
 #[derive(Debug)]
 struct MacroCallback {
@@ -19,7 +19,7 @@ impl ParseCallbacks for MacroCallback {
         self.macros.write().unwrap().insert(name.into());
 
         if name == "MY_ANNOYING_MACRO" {
-            return MacroParsingBehavior::Ignore
+            return MacroParsingBehavior::Ignore;
         }
 
         MacroParsingBehavior::Default
@@ -27,9 +27,17 @@ impl ParseCallbacks for MacroCallback {
 
     fn item_name(&self, original_item_name: &str) -> Option<String> {
         if original_item_name.starts_with("my_prefixed_") {
-            Some(original_item_name.trim_start_matches("my_prefixed_").to_string())
+            Some(
+                original_item_name
+                    .trim_start_matches("my_prefixed_")
+                    .to_string(),
+            )
         } else if original_item_name.starts_with("MY_PREFIXED_") {
-            Some(original_item_name.trim_start_matches("MY_PREFIXED_").to_string())
+            Some(
+                original_item_name
+                    .trim_start_matches("MY_PREFIXED_")
+                    .to_string(),
+            )
         } else {
             None
         }
@@ -37,14 +45,17 @@ impl ParseCallbacks for MacroCallback {
 
     fn str_macro(&self, name: &str, value: &[u8]) {
         match &name {
-            &"TESTMACRO_STRING_EXPANDED" |
-            &"TESTMACRO_STRING" |
-            &"TESTMACRO_INTEGER" => {
+            &"TESTMACRO_STRING_EXPANDED"
+            | &"TESTMACRO_STRING"
+            | &"TESTMACRO_INTEGER" => {
                 // The integer test macro is, actually, not expected to show up here at all -- but
                 // should produce an error if it does.
-                assert_eq!(value, b"Hello Preprocessor!", "str_macro handle received unexpected value");
+                assert_eq!(
+                    value, b"Hello Preprocessor!",
+                    "str_macro handle received unexpected value"
+                );
                 *self.seen_hellos.lock().unwrap() += 1;
-            },
+            }
             _ => {}
         }
     }
@@ -52,7 +63,11 @@ impl ParseCallbacks for MacroCallback {
 
 impl Drop for MacroCallback {
     fn drop(&mut self) {
-        assert_eq!(*self.seen_hellos.lock().unwrap(), 2, "str_macro handle was not called once for all relevant macros")
+        assert_eq!(
+            *self.seen_hellos.lock().unwrap(),
+            2,
+            "str_macro handle was not called once for all relevant macros"
+        )
     }
 }
 
