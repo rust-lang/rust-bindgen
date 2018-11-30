@@ -1,5 +1,5 @@
 extern crate bindgen;
-extern crate gcc;
+extern crate cc;
 
 use bindgen::callbacks::{MacroParsingBehavior, ParseCallbacks};
 use bindgen::Builder;
@@ -72,7 +72,7 @@ impl Drop for MacroCallback {
 }
 
 fn main() {
-    gcc::Build::new()
+    cc::Build::new()
         .cpp(true)
         .file("cpp/Test.cc")
         .compile("libtest.a");
