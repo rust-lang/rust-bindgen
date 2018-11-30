@@ -1764,6 +1764,8 @@ impl CodeGenerator for CompInfo {
             derives.push("Eq");
         }
 
+        derives.extend(item.annotations().derives().iter().map(String::as_str));
+
         if !derives.is_empty() {
             attributes.push(attributes::derives(&derives))
         }
