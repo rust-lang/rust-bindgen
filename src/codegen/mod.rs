@@ -95,9 +95,6 @@ struct CodegenResult<'a> {
     /// Whether a bindgen union has been generated at least once.
     saw_bindgen_union: bool,
 
-    /// Whether an union has been generated at least once.
-    saw_union: bool,
-
     /// Whether an incomplete array has been generated at least once.
     saw_incomplete_array: bool,
 
@@ -140,7 +137,6 @@ impl<'a> CodegenResult<'a> {
     fn new(codegen_id: &'a Cell<usize>) -> Self {
         CodegenResult {
             items: vec![],
-            saw_union: false,
             saw_bindgen_union: false,
             saw_incomplete_array: false,
             saw_objc: false,
@@ -154,12 +150,7 @@ impl<'a> CodegenResult<'a> {
         }
     }
 
-    fn saw_union(&mut self) {
-        self.saw_union = true;
-    }
-
     fn saw_bindgen_union(&mut self) {
-        self.saw_union();
         self.saw_bindgen_union = true;
     }
 
@@ -221,11 +212,11 @@ impl<'a> CodegenResult<'a> {
 
         cb(&mut new);
 
-        self.saw_union |= new.saw_union;
         self.saw_incomplete_array |= new.saw_incomplete_array;
         self.saw_objc |= new.saw_objc;
         self.saw_block |= new.saw_block;
         self.saw_bitfield_unit |= new.saw_bitfield_unit;
+        self.saw_bindgen_union |= new.saw_bindgen_union;
 
         new.items
     }
@@ -1047,6 +1038,7 @@ impl<'a> FieldCodegen<'a> for FieldData {
 
         // NB: If supported, we use proper `union` types.
         let ty = if parent.is_union() && !parent.can_be_rust_union(ctx) {
+            result.saw_bindgen_union();
             if ctx.options().enable_cxx_namespaces {
                 quote! {
                     root::__BindgenUnionField<#ty>
@@ -1241,6 +1233,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         let field_ty = {
             let ty = helpers::bitfield_unit(ctx, self.layout());
             if parent.is_union() && !parent.can_be_rust_union(ctx) {
+                result.saw_bindgen_union();
                 if ctx.options().enable_cxx_namespaces {
                     quote! {
                         root::__BindgenUnionField<#ty>
@@ -1592,11 +1585,6 @@ impl CodeGenerator for CompInfo {
                 }
             }
         } else if is_union && !self.is_forward_declaration() {
-            result.saw_union();
-            if !self.can_be_rust_union(ctx) {
-                result.saw_bindgen_union();
-            }
-
             // TODO(emilio): It'd be nice to unify this with the struct path
             // above somehow.
             let layout = layout.expect("Unable to get layout information?");
