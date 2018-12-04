@@ -1527,6 +1527,18 @@ pub fn type_to_str(x: CXTypeKind) -> String {
     unsafe { cxstring_into_string(clang_getTypeKindSpelling(x)) }
 }
 
+/// Convert a linkage kind to a static string.
+pub fn linkage_to_str(x: CXLinkageKind) -> &'static str {
+     match x {
+        CXLinkage_Invalid => "invalid",
+        CXLinkage_NoLinkage => "non-extern",
+        CXLinkage_Internal => "internal",
+        CXLinkage_UniqueExternal => "unique-external",
+        CXLinkage_External =>"external",
+        _ => unreachable!(),
+    }
+}
+
 /// Dump the Clang AST to stdout for debugging purposes.
 pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
     fn print_indent<S: AsRef<str>>(depth: isize, s: S) {
@@ -1545,6 +1557,10 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
         print_indent(
             depth,
             format!(" {}spelling = \"{}\"", prefix, c.spelling()),
+        );
+        print_indent(
+            depth,
+            format!(" {}linkage = {}", prefix, linkage_to_str(c.linkage())),
         );
         print_indent(depth, format!(" {}location = {}", prefix, c.location()));
         print_indent(

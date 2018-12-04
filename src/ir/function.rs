@@ -92,6 +92,9 @@ pub struct Function {
 
     /// The linkage of the function.
     linkage: Linkage,
+
+    /// The function is inlined.
+    inlined: bool,
 }
 
 impl Function {
@@ -102,7 +105,8 @@ impl Function {
         signature: TypeId,
         comment: Option<String>,
         kind: FunctionKind,
-        linkage: Linkage
+        linkage: Linkage,
+        inlined: bool,
     ) -> Self {
         Function {
             name,
@@ -111,6 +115,7 @@ impl Function {
             comment,
             kind,
             linkage,
+            inlined,
         }
     }
 
@@ -139,6 +144,10 @@ impl Function {
         self.linkage
     }
 
+    /// Whether this function is inline.
+    pub fn is_inlined(&self) -> bool {
+        self.inlined
+    }
 }
 
 impl DotAttributes for Function {
@@ -546,6 +555,7 @@ impl ClangSubItemParser for Function {
         {
             return Err(ParseError::Continue);
         }
+        let inlined = cursor.is_inlined_function();
 
         let linkage = cursor.linkage();
         let linkage = match linkage {
@@ -578,7 +588,7 @@ impl ClangSubItemParser for Function {
         let mangled_name = cursor_mangling(context, &cursor);
         let comment = cursor.raw_comment();
 
-        let function = Self::new(name, mangled_name, sig, comment, kind, linkage);
+        let function = Self::new(name, mangled_name, sig, comment, kind, linkage, inlined);
         Ok(ParseResult::New(function, Some(cursor)))
     }
 }

@@ -102,6 +102,12 @@ fn args_are_cpp(clang_args: &[String]) -> bool {
         .any(|w| w[0] == "-xc++" || w[1] == "-xc++" || w == &["-x", "c++"]);
 }
 
+fn header_is_cpp(name_file: &str) -> bool {
+    name_file.ends_with(".hpp") || name_file.ends_with(".hxx")
+        || name_file.ends_with(".hh")
+        || name_file.ends_with(".h++")
+}
+
 bitflags! {
     /// A type used to indicate which kind of items we have to generate.
     pub struct CodegenConfig: u32 {
@@ -1222,12 +1228,6 @@ impl Builder {
     /// issues. The resulting file will be named something like `__bindgen.i` or
     /// `__bindgen.ii`
     pub fn dump_preprocessed_input(&self) -> io::Result<()> {
-        fn check_is_cpp(name_file: &str) -> bool {
-            name_file.ends_with(".hpp") || name_file.ends_with(".hxx")
-                || name_file.ends_with(".hh")
-                || name_file.ends_with(".h++")
-        }
-
         let clang = clang_sys::support::Clang::find(None, &[]).ok_or_else(|| {
             io::Error::new(io::ErrorKind::Other, "Cannot find clang executable")
         })?;
@@ -1241,7 +1241,7 @@ impl Builder {
 
         // For each input header, add `#include "$header"`.
         for header in &self.input_headers {
-            is_cpp |= check_is_cpp(header);
+            is_cpp |= header_is_cpp(header);
 
             wrapper_contents.push_str("#include \"");
             wrapper_contents.push_str(header);
@@ -1251,7 +1251,7 @@ impl Builder {
         // For each input header content, add a prefix line of `#line 0 "$name"`
         // followed by the contents.
         for &(ref name, ref contents) in &self.input_header_contents {
-            is_cpp |= check_is_cpp(name);
+            is_cpp |= header_is_cpp(name);
 
             wrapper_contents.push_str("#line 0 \"");
             wrapper_contents.push_str(name);
@@ -1579,6 +1579,17 @@ impl BindgenOptions {
     /// Get features supported by target Rust version
     pub fn rust_features(&self) -> RustFeatures {
         self.rust_features
+    }
+
+    /// Get the input header file.
+    pub fn input_header(&self) -> Option<&str> {
+        self.input_header.as_ref().map(|s| s.as_str())
+    }
+
+    /// Whether the header is c++ mode.
+    pub fn is_cpp(&self) -> bool {
+        args_are_cpp(&self.clang_args) ||
+            self.input_header.as_ref().map(|filename| header_is_cpp(filename)).unwrap_or(false)
     }
 }
 

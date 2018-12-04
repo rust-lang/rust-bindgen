@@ -107,6 +107,9 @@ struct CodegenResult<'a> {
     /// Whether a bitfield allocation unit has been seen at least once.
     saw_bitfield_unit: bool,
 
+    /// Whether a static inlined function have been seen at least once.
+    saw_static_inlined_function: bool,
+
     items_seen: HashSet<ItemId>,
     /// The set of generated function/var names, needed because in C/C++ is
     /// legal to do something like:
@@ -142,6 +145,7 @@ impl<'a> CodegenResult<'a> {
             saw_objc: false,
             saw_block: false,
             saw_bitfield_unit: false,
+            saw_static_inlined_function: false,
             codegen_id: codegen_id,
             items_seen: Default::default(),
             functions_seen: Default::default(),
@@ -168,6 +172,10 @@ impl<'a> CodegenResult<'a> {
 
     fn saw_bitfield_unit(&mut self) {
         self.saw_bitfield_unit = true;
+    }
+
+    fn saw_static_inlined_function(&mut self) {
+        self.saw_static_inlined_function = true;
     }
 
     fn seen<Id: Into<ItemId>>(&self, item: Id) -> bool {
@@ -217,6 +225,7 @@ impl<'a> CodegenResult<'a> {
         self.saw_block |= new.saw_block;
         self.saw_bitfield_unit |= new.saw_bitfield_unit;
         self.saw_bindgen_union |= new.saw_bindgen_union;
+        self.saw_static_inlined_function |= new.saw_static_inlined_function;
 
         new.items
     }
@@ -411,6 +420,9 @@ impl CodeGenerator for Module {
                 }
                 if result.saw_bitfield_unit {
                     utils::prepend_bitfield_unit_type(&mut *result);
+                }
+                if result.saw_static_inlined_function {
+                    utils::prepend_c_include(ctx, &mut *result);
                 }
             }
         };
@@ -3315,12 +3327,16 @@ impl CodeGenerator for Function {
         debug!("<Function as CodeGenerator>::codegen: item = {:?}", item);
         debug_assert!(item.is_enabled_for_codegen(ctx));
 
-        // We can't currently do anything with Internal functions so just
+        // We can't currently do anything with Internal non-inlined functions so just
         // avoid generating anything for them.
-        match self.linkage() {
-            Linkage::Internal => return,
-            Linkage::External => {}
-        }
+        let is_static_inlined_function = match self.linkage() {
+            Linkage::Internal if self.kind() == FunctionKind::Function && self.is_inlined() => {
+                result.saw_static_inlined_function();
+                true
+            },
+            Linkage::External => { false }
+            _ => { return }
+        };
 
         // Pure virtual methods have no actual symbol, so we can't generate
         // something meaningful for them.
@@ -3381,13 +3397,31 @@ impl CodeGenerator for Function {
             write!(&mut canonical_name, "{}", times_seen).unwrap();
         }
 
-        if let Some(mangled) = mangled_name {
+        let cfunc_name = if let Some(mangled) = mangled_name {
             if canonical_name != mangled {
                 attributes.push(attributes::link_name(mangled));
+                Some(mangled.to_owned())
+            } else {
+                None
             }
         } else if name != canonical_name {
             attributes.push(attributes::link_name(name));
-        }
+            Some(name.to_owned())
+        } else {
+            None
+        }.unwrap_or_else(|| {
+            if is_static_inlined_function {
+                let mut cfunc_name = format!("_{}", canonical_name);
+                let times_seen = result.overload_number(&cfunc_name);
+                if times_seen > 0 {
+                    write!(&mut cfunc_name, "{}", times_seen).unwrap();
+                }
+                attributes.push(attributes::link_name(&cfunc_name));
+                cfunc_name
+            } else {
+                canonical_name.to_owned()
+            }
+        });
 
         let abi = match signature.abi() {
             Abi::ThisCall if !ctx.options().rust_features().thiscall_abi => {
@@ -3409,12 +3443,41 @@ impl CodeGenerator for Function {
             abi => abi,
         };
 
-        let ident = ctx.rust_ident(canonical_name);
+        let ident = ctx.rust_ident(&canonical_name);
         let tokens = quote!( extern #abi {
             #(#attributes)*
             pub fn #ident ( #( #args ),* ) #ret;
         });
         result.push(tokens);
+        if is_static_inlined_function {
+            let cfunc_name = proc_macro2::TokenStream::from_str(&cfunc_name).unwrap();
+            let ret_ty = ctx.resolve_item(signature.return_type());
+            let ret_stmt = if let TypeKind::Void = *ret_ty.kind().expect_type().kind() {
+                None
+            } else {
+                Some(quote!{ return })
+            };
+            let ret_ty_name = proc_macro2::TokenStream::from_str(ret_ty.name(ctx).get().as_str()).unwrap();
+            let arg_decl = signature.argument_types().iter().map(|&(ref name, ty)| {
+                let arg_ty = ctx.resolve_item(ty).kind().expect_type().name().unwrap();
+                let arg_name = name.as_ref().map(|s| s.as_str()).unwrap();
+
+                proc_macro2::TokenStream::from_str(&format!("{} {}", arg_ty, arg_name)).unwrap()
+            });
+            let args = signature.argument_types().iter().map(|&(ref name, _)| {
+                let arg_name = name.as_ref().map(|s| s.as_str()).unwrap();
+
+                proc_macro2::TokenStream::from_str(arg_name).unwrap()
+            });
+            let macro_name = proc_macro2::TokenStream::from_str(if ctx.options().is_cpp() { "cpp" } else { "c" }).unwrap();
+
+            let tokens = quote!( #macro_name ! {
+                #ret_ty_name #cfunc_name ( #( #arg_decl ),* ) {
+                    #ret_stmt #ident ( #( #args ),* );
+                }
+            });
+            result.push(tokens);
+        }
     }
 }
 
@@ -3576,6 +3639,7 @@ mod utils {
     use ir::ty::TypeKind;
     use proc_macro2;
     use std::mem;
+    use std::path::Path;
     use std::str::FromStr;
 
     pub fn prepend_bitfield_unit_type(result: &mut Vec<proc_macro2::TokenStream>) {
@@ -3585,6 +3649,19 @@ mod utils {
         let items = vec![bitfield_unit_type];
         let old_items = mem::replace(result, items);
         result.extend(old_items);
+    }
+
+    pub fn prepend_c_include(
+        ctx: &BindgenContext,
+        result: &mut Vec<proc_macro2::TokenStream>,
+    ) {
+        if let Some(ref header_file) = ctx.options().input_header() {
+            let macro_name = proc_macro2::TokenStream::from_str(if ctx.options().is_cpp() { "cpp" } else { "c" }).unwrap();
+            let include = proc_macro2::TokenStream::from_str("#include").unwrap();
+            let header_file = Path::new(header_file).file_name().unwrap().to_str().unwrap();
+
+            result.insert(0, quote!( #macro_name ! { #include #header_file }))
+        }
     }
 
     pub fn prepend_objc_header(
