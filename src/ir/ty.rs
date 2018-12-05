@@ -32,6 +32,8 @@ pub struct Type {
     kind: TypeKind,
     /// Whether this type is const-qualified.
     is_const: bool,
+    /// Whether this type is volatile-qualified.
+    is_volatile: bool,
 }
 
 /// The maximum number of items in an array for which Rust implements common
@@ -66,12 +68,14 @@ impl Type {
         layout: Option<Layout>,
         kind: TypeKind,
         is_const: bool,
+        is_volatile: bool,
     ) -> Self {
         Type {
             name,
             layout,
             kind,
             is_const,
+            is_volatile,
         }
     }
 
@@ -173,7 +177,7 @@ impl Type {
     /// Creates a new named type, with name `name`.
     pub fn named(name: String) -> Self {
         let name = if name.is_empty() { None } else { Some(name) };
-        Self::new(name, None, TypeKind::TypeParam, false)
+        Self::new(name, None, TypeKind::TypeParam, false, false)
     }
 
     /// Is this a floating point type?
@@ -209,9 +213,22 @@ impl Type {
         }
     }
 
+    /// Is this a void type?
+    pub fn is_void(&self) -> bool {
+        match self.kind {
+            TypeKind::Void => true,
+            _ => false,
+        }
+    }
+
     /// Is this a `const` qualified type?
     pub fn is_const(&self) -> bool {
         self.is_const
+    }
+
+    /// Is this a `is_volatile` qualified type?
+    pub fn is_volatile(&self) -> bool {
+        self.is_volatile
     }
 
     /// Is this a reference to another type?
@@ -309,6 +326,29 @@ impl Type {
                 .map(|name| format!("{}_{}", prefix, name).into())
         } else {
             self.name().map(Self::sanitize_name)
+        }
+    }
+
+    pub fn c_name(&self, ctx: &BindgenContext) -> Option<String> {
+        match *self.kind() {
+            TypeKind::ResolvedTypeRef(inner) => {
+                ctx.resolve_type(inner).c_name(ctx)
+            },
+            TypeKind::Pointer(inner) => {
+                ctx.resolve_type(inner).c_name(ctx).map(|inner_ty_name| {
+                    let mut name = String::new();
+
+                    if self.is_const() {
+                        name.push_str("const ");
+                    }
+                    if self.is_volatile() {
+                        name.push_str("volatile ");
+                    }
+
+                    name + &inner_ty_name + " *"
+                })
+            },
+            _ => self.name().map(|s| s.to_owned()),
         }
     }
 
@@ -506,7 +546,7 @@ impl TypeKind {
 
 #[test]
 fn is_invalid_type_param_valid() {
-    let ty = Type::new(Some("foo".into()), None, TypeKind::TypeParam, false);
+    let ty = Type::new(Some("foo".into()), None, TypeKind::TypeParam, false, false);
     assert!(!ty.is_invalid_type_param())
 }
 
@@ -517,38 +557,39 @@ fn is_invalid_type_param_valid_underscore_and_numbers() {
         None,
         TypeKind::TypeParam,
         false,
+        false,
     );
     assert!(!ty.is_invalid_type_param())
 }
 
 #[test]
 fn is_invalid_type_param_valid_unnamed_kind() {
-    let ty = Type::new(Some("foo".into()), None, TypeKind::Void, false);
+    let ty = Type::new(Some("foo".into()), None, TypeKind::Void, false, false);
     assert!(!ty.is_invalid_type_param())
 }
 
 #[test]
 fn is_invalid_type_param_invalid_start() {
-    let ty = Type::new(Some("1foo".into()), None, TypeKind::TypeParam, false);
+    let ty = Type::new(Some("1foo".into()), None, TypeKind::TypeParam, false, false);
     assert!(ty.is_invalid_type_param())
 }
 
 #[test]
 fn is_invalid_type_param_invalid_remaing() {
-    let ty = Type::new(Some("foo-".into()), None, TypeKind::TypeParam, false);
+    let ty = Type::new(Some("foo-".into()), None, TypeKind::TypeParam, false, false);
     assert!(ty.is_invalid_type_param())
 }
 
 #[test]
 #[should_panic]
 fn is_invalid_type_param_unnamed() {
-    let ty = Type::new(None, None, TypeKind::TypeParam, false);
+    let ty = Type::new(None, None, TypeKind::TypeParam, false, false);
     assert!(ty.is_invalid_type_param())
 }
 
 #[test]
 fn is_invalid_type_param_empty_name() {
-    let ty = Type::new(Some("".into()), None, TypeKind::TypeParam, false);
+    let ty = Type::new(Some("".into()), None, TypeKind::TypeParam, false, false);
     assert!(ty.is_invalid_type_param())
 }
 
@@ -1202,8 +1243,9 @@ impl Type {
         let name = if name.is_empty() { None } else { Some(name) };
 
         let is_const = ty.is_const();
+        let is_volatile = ty.is_volatile();
 
-        let ty = Type::new(name, layout, kind, is_const);
+        let ty = Type::new(name, layout, kind, is_const, is_volatile);
         // TODO: maybe declaration.canonical()?
         Ok(ParseResult::New(ty, Some(cursor.canonical())))
     }

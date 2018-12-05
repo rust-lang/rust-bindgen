@@ -104,7 +104,8 @@ impl Opaque {
         let layout = Layout::new(ty.size(), ty.align());
         let ty_kind = TypeKind::Opaque;
         let is_const = ty.is_const();
-        Type::new(None, Some(layout), ty_kind, is_const)
+        let is_volatile = ty.is_volatile();
+        Type::new(None, Some(layout), ty_kind, is_const, is_volatile)
     }
 
     /// Return the known rust type we should use to create a correctly-aligned

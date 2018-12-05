@@ -3450,30 +3450,28 @@ impl CodeGenerator for Function {
         });
         result.push(tokens);
         if is_static_inlined_function {
-            let cfunc_name = proc_macro2::TokenStream::from_str(&cfunc_name).unwrap();
-            let ret_ty = ctx.resolve_item(signature.return_type());
-            let ret_stmt = if let TypeKind::Void = *ret_ty.kind().expect_type().kind() {
-                None
-            } else {
-                Some(quote!{ return })
-            };
-            let ret_ty_name = proc_macro2::TokenStream::from_str(ret_ty.name(ctx).get().as_str()).unwrap();
-            let arg_decl = signature.argument_types().iter().map(|&(ref name, ty)| {
-                let arg_ty = ctx.resolve_item(ty).kind().expect_type().name().unwrap();
+            let ret_ty = ctx.resolve_type(signature.return_type());
+            let ret_stmt = if ret_ty.is_void() { None } else { Some(quote!{ return }) };
+            let ret_ty_name = ret_ty.c_name(ctx).unwrap_or("__TYPE__".to_owned()).parse::<proc_macro2::TokenStream>().unwrap();
+            let arg_decls = signature.argument_types().iter().map(|&(ref name, ty)| {
+                let arg_ty = ctx.resolve_type(ty).c_name(ctx).unwrap_or("__TYPE__".to_owned());
+                let arg_name = name.as_ref().map(|s| s.as_str()).unwrap_or("__NAME__");
+
+                format!("{} {}", arg_ty, arg_name).parse::<proc_macro2::TokenStream>().unwrap()
+            });
+            let arg_names = signature.argument_types().iter().map(|&(ref name, _)| {
                 let arg_name = name.as_ref().map(|s| s.as_str()).unwrap();
 
-                proc_macro2::TokenStream::from_str(&format!("{} {}", arg_ty, arg_name)).unwrap()
+                arg_name.parse::<proc_macro2::TokenStream>().unwrap()
             });
-            let args = signature.argument_types().iter().map(|&(ref name, _)| {
-                let arg_name = name.as_ref().map(|s| s.as_str()).unwrap();
+            let macro_name = if ctx.options().is_cpp() { "cpp" } else { "c" };
+            let macro_name = macro_name.parse::<proc_macro2::TokenStream>().unwrap();
 
-                proc_macro2::TokenStream::from_str(arg_name).unwrap()
-            });
-            let macro_name = proc_macro2::TokenStream::from_str(if ctx.options().is_cpp() { "cpp" } else { "c" }).unwrap();
+            let cfunc_name = cfunc_name.parse::<proc_macro2::TokenStream>().unwrap();
 
             let tokens = quote!( #macro_name ! {
-                #ret_ty_name #cfunc_name ( #( #arg_decl ),* ) {
-                    #ret_stmt #ident ( #( #args ),* );
+                #ret_ty_name #cfunc_name ( #( #arg_decls ),* ) {
+                    #ret_stmt #ident ( #( #arg_names ),* );
                 }
             });
             result.push(tokens);

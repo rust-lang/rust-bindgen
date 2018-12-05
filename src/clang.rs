@@ -877,6 +877,11 @@ impl Type {
         unsafe { clang_isConstQualifiedType(self.x) != 0 }
     }
 
+    /// Is this type volatile qualified?
+    pub fn is_volatile(&self) -> bool {
+        unsafe { clang_isVolatileQualifiedType(self.x) != 0 }
+    }
+
     /// What is the size of this type? Paper over invalid types by returning `0`
     /// for them.
     pub fn size(&self) -> usize {

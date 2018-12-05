@@ -97,6 +97,7 @@ pub trait ClangItemParser: Sized {
     fn builtin_type(
         kind: TypeKind,
         is_const: bool,
+        is_volatile: bool,
         context: &mut BindgenContext,
     ) -> TypeId;
 }
