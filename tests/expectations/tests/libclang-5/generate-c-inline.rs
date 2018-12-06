@@ -7,14 +7,15 @@
     non_upper_case_globals
 )]
 
+macro_rules ! c { ( ) => { } ; ( # include $ filename : tt $ ( $ rest : tt ) * ) => { c ! { $ ( $ rest ) * } } ; ( { $ ( $ code : tt ) * } $ ( $ rest : tt ) * ) => { c ! { $ ( $ rest ) * } } ; }
 c! { # include "generate-c-inline.h" }
 extern "C" {
     #[link_name = "\u{1}_foo"]
     pub fn foo(x: ::std::os::raw::c_int, y: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
 }
-c! { int _foo ( const int x , const int y ) { return foo ( x , y ) ; } }
+c! { { int _foo ( const int x , const int y ) { return foo ( x , y ) ; } } }
 extern "C" {
     #[link_name = "\u{1}_nop"]
     pub fn nop();
 }
-c! { void _nop ( ) { nop ( ) ; } }
+c! { { void _nop ( ) { nop ( ) ; } } }

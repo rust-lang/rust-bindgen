@@ -7,6 +7,7 @@
     non_upper_case_globals
 )]
 
+macro_rules ! cpp { ( ) => { } ; ( # include $ filename : tt $ ( $ rest : tt ) * ) => { cpp ! { $ ( $ rest ) * } } ; ( { $ ( $ code : tt ) * } $ ( $ rest : tt ) * ) => { cpp ! { $ ( $ rest ) * } } ; }
 cpp! { # include "generate-inline.hpp" }
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
@@ -44,4 +45,4 @@ extern "C" {
     #[link_name = "\u{1}_ZL3barii"]
     pub fn bar(x: ::std::os::raw::c_int, y: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
 }
-cpp! { int _ZL3barii ( const int x , const int y ) { return bar ( x , y ) ; } }
+cpp! { { int _ZL3barii ( const int x , const int y ) { return bar ( x , y ) ; } } }
