@@ -251,6 +251,9 @@ where
             Arg::with_name("generate-inline-functions")
                 .long("generate-inline-functions")
                 .help("Generate inline functions."),
+            Arg::with_name("generate-tls-vars")
+                .long("generate-tls-vars")
+                .help("Generate tls variables."),
             Arg::with_name("whitelist-type")
                 .long("whitelist-type")
                 .help("Only generate types matching <regex>. Other non-whitelisted types will \
@@ -546,6 +549,10 @@ where
 
     if matches.is_present("generate-inline-functions") {
         builder = builder.generate_inline_functions(true);
+    }
+
+    if matches.is_present("generate-tls-vars") {
+        builder = builder.generate_tls_vars(true);
     }
 
     if let Some(whitelist) = matches.values_of("whitelist-function") {

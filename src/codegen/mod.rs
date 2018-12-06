@@ -110,6 +110,9 @@ struct CodegenResult<'a> {
     /// Whether a static inlined function have been seen at least once.
     saw_static_inlined_function: bool,
 
+    /// Whether a thread-local storage (TLS) variable have been seen at least once.
+    saw_tls_vars: bool,
+
     items_seen: HashSet<ItemId>,
     /// The set of generated function/var names, needed because in C/C++ is
     /// legal to do something like:
@@ -146,6 +149,7 @@ impl<'a> CodegenResult<'a> {
             saw_block: false,
             saw_bitfield_unit: false,
             saw_static_inlined_function: false,
+            saw_tls_vars: false,
             codegen_id: codegen_id,
             items_seen: Default::default(),
             functions_seen: Default::default(),
@@ -176,6 +180,10 @@ impl<'a> CodegenResult<'a> {
 
     fn saw_static_inlined_function(&mut self) {
         self.saw_static_inlined_function = true;
+    }
+
+    fn saw_tls_vars(&mut self) {
+        self.saw_tls_vars = true;
     }
 
     fn seen<Id: Into<ItemId>>(&self, item: Id) -> bool {
@@ -421,7 +429,7 @@ impl CodeGenerator for Module {
                 if result.saw_bitfield_unit {
                     utils::prepend_bitfield_unit_type(&mut *result);
                 }
-                if result.saw_static_inlined_function {
+                if result.saw_static_inlined_function || result.saw_tls_vars {
                     utils::prepend_c_include(ctx, &mut *result);
                 }
             }
@@ -504,7 +512,30 @@ impl CodeGenerator for Var {
 
         let ty = self.ty().to_rust_ty_or_opaque(ctx, &());
 
-        if let Some(val) = self.val() {
+        if let Some(_) = self.tls() {
+            result.saw_tls_vars();
+
+            let ty_name = ctx.resolve_type(self.ty())
+                .c_name(ctx)
+                .unwrap_or("__TYPE__".to_owned())
+                .parse::<proc_macro2::TokenStream>()
+                .unwrap();
+            let macro_name = if ctx.options().is_cpp() { "cpp" } else { "c" };
+            let macro_name = macro_name.parse::<proc_macro2::TokenStream>().unwrap();
+            let getter = &canonical_ident;
+            let setter = ctx.rust_ident(&format!("set_{}", canonical_name));
+
+            let tokens = quote! {
+                extern "C" {
+                    pub fn #getter() -> #ty;
+                    pub fn #setter(v: #ty);
+                }
+
+                #macro_name ! {{ #ty_name #getter () { return #canonical_ident; } }}
+                #macro_name ! {{ void #setter (#ty_name v) { #canonical_ident = v; } }}
+            };
+            result.push(tokens);
+        } else if let Some(val) = self.val() {
             match *val {
                 VarType::Bool(val) => {
                     result.push(quote! {

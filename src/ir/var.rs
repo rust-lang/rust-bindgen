@@ -28,6 +28,15 @@ pub enum VarType {
     String(Vec<u8>),
 }
 
+/// The thread-local storage (TLS) kind.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum Tls {
+    /// dynamic TLS mode.
+    Dynamic,
+    /// static TLS mode.
+    Static,
+}
+
 /// A `Var` is our intermediate representation of a variable.
 #[derive(Debug)]
 pub struct Var {
@@ -41,6 +50,8 @@ pub struct Var {
     val: Option<VarType>,
     /// Whether this variable is const.
     is_const: bool,
+    /// Whether this variable is in thread-local storage (TLS) mode.
+    tls: Option<Tls>,
 }
 
 impl Var {
@@ -51,6 +62,7 @@ impl Var {
         ty: TypeId,
         val: Option<VarType>,
         is_const: bool,
+        tls: Option<Tls>,
     ) -> Var {
         assert!(!name.is_empty());
         Var {
@@ -59,6 +71,7 @@ impl Var {
             ty,
             val,
             is_const,
+            tls,
         }
     }
 
@@ -70,6 +83,11 @@ impl Var {
     /// The value of this constant variable, if any.
     pub fn val(&self) -> Option<&VarType> {
         self.val.as_ref()
+    }
+
+    /// Whether this variable is in thread-local storage (TLS) mode.
+    pub fn tls(&self) -> Option<Tls> {
+        self.tls
     }
 
     /// Get this variable's type.
@@ -217,7 +235,7 @@ impl ClangSubItemParser for Var {
                 let ty = Item::builtin_type(type_kind, true, false, ctx);
 
                 Ok(ParseResult::New(
-                    Var::new(name, None, ty, Some(val), true),
+                    Var::new(name, None, ty, Some(val), true, None),
                     Some(cursor),
                 ))
             }
@@ -229,6 +247,15 @@ impl ClangSubItemParser for Var {
                 }
 
                 let ty = cursor.cur_type();
+                let tls = match cursor.tls() {
+                    CXTLS_Dynamic => Some(Tls::Dynamic),
+                    CXTLS_Static => Some(Tls::Static),
+                    _ => None,
+                };
+
+                if !ctx.options().generate_tls_vars && tls.is_some() {
+                    return Err(ParseError::Continue);
+                }
 
                 // XXX this is redundant, remove!
                 let is_const = ty.is_const();
@@ -291,7 +318,7 @@ impl ClangSubItemParser for Var {
                 };
 
                 let mangling = cursor_mangling(ctx, &cursor);
-                let var = Var::new(name, mangling, ty, value, is_const);
+                let var = Var::new(name, mangling, ty, value, is_const, tls);
 
                 Ok(ParseResult::New(var, Some(cursor)))
             }

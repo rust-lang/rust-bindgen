@@ -1124,6 +1124,12 @@ impl Builder {
         self
     }
 
+    /// Whether TLS variables should be generated or not.
+    pub fn generate_tls_vars(mut self, doit: bool) -> Self {
+        self.options.generate_tls_vars = doit;
+        self
+    }
+
     /// Ignore functions.
     pub fn ignore_functions(mut self) -> Builder {
         self.options.codegen_config.remove(CodegenConfig::FUNCTIONS);
@@ -1494,6 +1500,9 @@ struct BindgenOptions {
     /// Whether to generate inline functions. Defaults to false.
     generate_inline_functions: bool,
 
+    /// Whether to generate TLS variables. Defaults to false.
+    generate_tls_vars: bool,
+
     /// Whether to whitelist types recursively. Defaults to true.
     whitelist_recursively: bool,
 
@@ -1645,6 +1654,7 @@ impl Default for BindgenOptions {
             conservative_inline_namespaces: false,
             generate_comments: true,
             generate_inline_functions: false,
+            generate_tls_vars: false,
             whitelist_recursively: true,
             generate_block: false,
             objc_extern_crate: false,

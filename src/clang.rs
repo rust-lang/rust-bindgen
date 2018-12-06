@@ -453,6 +453,11 @@ impl Cursor {
             unsafe { clang_Cursor_isFunctionInlined(self.x) != 0 }
     }
 
+    /// Determine the "thread-local storage (TLS) kind" of the declaration.
+    pub fn tls(&self) -> CXTLSKind {
+        unsafe { clang_getCursorTLSKind(self.x) }
+    }
+
     /// Get the width of this cursor's referent bit field, or `None` if the
     /// referent is not a bit field.
     pub fn bit_width(&self) -> Option<u32> {
@@ -1564,6 +1569,16 @@ pub fn availability_to_str(x: CXAvailabilityKind) -> &'static str {
     }
 }
 
+/// Convert a TLS kind into a static string.
+pub fn tls_to_str(x: CXTLSKind) -> &'static str {
+    match x {
+        CXTLS_None => "none",
+        CXTLS_Dynamic => "dynamic",
+        CXTLS_Static => "static",
+        _ => unreachable!(),
+    }
+}
+
 /// Dump the Clang AST to stdout for debugging purposes.
 pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
     fn print_indent<S: AsRef<str>>(depth: isize, s: S) {
@@ -1591,6 +1606,7 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
             depth,
             format!(" {}availability = {}", prefix, availability_to_str(c.availability())),
         );
+        print_indent(depth, format!(" {}tls-kind = {}", prefix, tls_to_str(c.tls())));
         print_indent(depth, format!(" {}location = {}", prefix, c.location()));
         print_indent(
             depth,
