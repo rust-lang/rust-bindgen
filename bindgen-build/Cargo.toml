@@ -1,0 +1,10 @@
+[package]
+name = "bindgen-build"
+description = "A package to link C/C++ inline functions"
+version = "0.1.0"
+authors = ["Flier Lu <flier.lu@gmail.com>"]
+
+[dependencies]
+failure = "0.1"
+syn = { version = "0.15", features = ["full"] }
+cc = "1.0"

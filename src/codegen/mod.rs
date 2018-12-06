@@ -26,7 +26,7 @@ use ir::derive::{CanDeriveCopy, CanDeriveDebug, CanDeriveDefault,
                  CanDerivePartialEq, CanDeriveEq, CanDerive};
 use ir::dot;
 use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
-use ir::function::{Abi, Function, FunctionKind, FunctionSig, Linkage};
+use ir::function::{Abi, Function, FunctionKind, FunctionSig, Linkage, Availability};
 use ir::int::IntKind;
 use ir::item::{IsOpaque, Item, ItemCanonicalName, ItemCanonicalPath};
 use ir::item_kind::ItemKind;
@@ -3397,6 +3397,10 @@ impl CodeGenerator for Function {
             write!(&mut canonical_name, "{}", times_seen).unwrap();
         }
 
+        if self.availability() == Availability::Deprecated {
+            // TODO extract the deprecated message from the function attribute
+            attributes.push(attributes::deprecated(None));
+        }
         let cfunc_name = if let Some(mangled) = mangled_name {
             if canonical_name != mangled {
                 attributes.push(attributes::link_name(mangled));
@@ -3469,11 +3473,11 @@ impl CodeGenerator for Function {
 
             let cfunc_name = cfunc_name.parse::<proc_macro2::TokenStream>().unwrap();
 
-            let tokens = quote!( #macro_name ! {
+            let tokens = quote!( #macro_name ! {{
                 #ret_ty_name #cfunc_name ( #( #arg_decls ),* ) {
                     #ret_stmt #ident ( #( #arg_names ),* );
                 }
-            });
+            }});
             result.push(tokens);
         }
     }
@@ -3658,7 +3662,14 @@ mod utils {
             let include = proc_macro2::TokenStream::from_str("#include").unwrap();
             let header_file = Path::new(header_file).file_name().unwrap().to_str().unwrap();
 
-            result.insert(0, quote!( #macro_name ! { #include #header_file }))
+            result.insert(0, quote! {
+                macro_rules! #macro_name {
+                    () => {};
+                    (#include $filename:tt $($rest:tt)*) => { #macro_name!{ $($rest)* } };
+                    ({ $($code:tt)* } $($rest:tt)*) => { #macro_name!{ $($rest)* } };
+                }
+            });
+            result.insert(1, quote!( #macro_name! { #include #header_file }))
         }
     }
 

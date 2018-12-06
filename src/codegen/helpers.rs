@@ -57,6 +57,18 @@ pub mod attributes {
             #[link_name = #name]
         }
     }
+
+    pub fn deprecated(note: Option<&str>) -> proc_macro2::TokenStream {
+        if let Some(note) = note {
+            quote! {
+                #[deprecated(note = #note)]
+            }
+        } else {
+            quote! {
+                #[deprecated]
+            }
+        }
+    }
 }
 
 /// Generates a proper type for a field or type with a given `Layout`, that is,

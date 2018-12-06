@@ -550,6 +550,15 @@ impl Cursor {
         }
     }
 
+    /// Get the availability of the cursor's referent.
+    pub fn availability(&self) -> CXAvailabilityKind {
+        if clang_getCursorAvailability::is_loaded() {
+            unsafe { clang_getCursorAvailability(self.x) }
+        } else {
+            CXAvailability_Available
+        }
+    }
+
     /// Given that this cursor's referent is a function, return cursors to its
     /// parameters.
     pub fn args(&self) -> Option<Vec<Cursor>> {
@@ -1544,6 +1553,17 @@ pub fn linkage_to_str(x: CXLinkageKind) -> &'static str {
     }
 }
 
+/// Convert a availability kind to a static string.
+pub fn availability_to_str(x: CXAvailabilityKind) -> &'static str {
+    match x {
+        CXAvailability_Available => "available",
+        CXAvailability_Deprecated => "deprecated",
+        CXAvailability_NotAvailable => "not available",
+        CXAvailability_NotAccessible => "not accessible",
+        _ => unreachable!(),
+    }
+}
+
 /// Dump the Clang AST to stdout for debugging purposes.
 pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
     fn print_indent<S: AsRef<str>>(depth: isize, s: S) {
@@ -1566,6 +1586,10 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
         print_indent(
             depth,
             format!(" {}linkage = {}", prefix, linkage_to_str(c.linkage())),
+        );
+        print_indent(
+            depth,
+            format!(" {}availability = {}", prefix, availability_to_str(c.availability())),
         );
         print_indent(depth, format!(" {}location = {}", prefix, c.location()));
         print_indent(

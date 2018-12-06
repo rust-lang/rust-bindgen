@@ -1,6 +1,6 @@
 //! Everything related to types in our intermediate representation.
 
-use super::comp::CompInfo;
+use super::comp::{CompInfo, CompKind};
 use super::context::{BindgenContext, ItemId, TypeId};
 use super::dot::DotAttributes;
 use super::enum_ty::Enum;
@@ -336,16 +336,47 @@ impl Type {
             },
             TypeKind::Pointer(inner) => {
                 ctx.resolve_type(inner).c_name(ctx).map(|inner_ty_name| {
+                    let mut name = inner_ty_name.to_owned();
+
+                    if self.is_const() {
+                        name.push_str(" const");
+                    }
+                    if self.is_volatile() {
+                        name.push_str(" volatile");
+                    }
+
+                    name + " *"
+                })
+            },
+            TypeKind::Comp(ref comp) => {
+                self.name().map(|s| {
                     let mut name = String::new();
 
                     if self.is_const() {
                         name.push_str("const ");
                     }
-                    if self.is_volatile() {
-                        name.push_str("volatile ");
+                    match comp.kind() {
+                        CompKind::Struct => {
+                            name.push_str("struct ");
+                        }
+                        CompKind::Union => {
+                            name.push_str("union ");
+                        }
                     }
 
-                    name + &inner_ty_name + " *"
+                    name + s
+                })
+            },
+            TypeKind::Enum(_) => {
+                self.name().map(|s| {
+                    let mut name = String::new();
+
+                    if self.is_const() {
+                        name.push_str("const ");
+                    }
+
+                    name.push_str("enum ");
+                    name + s
                 })
             },
             _ => self.name().map(|s| s.to_owned()),

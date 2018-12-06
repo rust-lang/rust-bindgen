@@ -61,12 +61,27 @@ impl FunctionKind {
 }
 
 /// The style of linkage
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Linkage {
     /// Externally visible and can be linked against
     External,
     /// Not exposed externally. 'static inline' functions will have this kind of linkage
     Internal
+}
+
+/// Describes the availability of a particular entity,
+/// which indicates whether the use of this entity will result in a warning or error
+/// due to it being deprecated or unavailable.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum Availability {
+    /// The entity is available.
+    Available,
+    /// The entity is available, but has been deprecated (and its use is not recommended).
+    Deprecated,
+    /// The entity is not available; any use of it will be an error.
+    NotAvailable,
+    /// The entity is available, but not accessible; any use of it will be an error.
+    NotAccessible
 }
 
 /// A function declaration, with a signature, arguments, and argument names.
@@ -93,6 +108,9 @@ pub struct Function {
     /// The linkage of the function.
     linkage: Linkage,
 
+    /// The availability of the function.
+    availability: Availability,
+
     /// The function is inlined.
     inlined: bool,
 }
@@ -106,6 +124,7 @@ impl Function {
         comment: Option<String>,
         kind: FunctionKind,
         linkage: Linkage,
+        availability: Availability,
         inlined: bool,
     ) -> Self {
         Function {
@@ -115,6 +134,7 @@ impl Function {
             comment,
             kind,
             linkage,
+            availability,
             inlined,
         }
     }
@@ -142,6 +162,11 @@ impl Function {
     /// Get this function's linkage.
     pub fn linkage(&self) -> Linkage {
         self.linkage
+    }
+
+    /// Get this function's availability.
+    pub fn availability(&self) -> Availability {
+        self.availability
     }
 
     /// Whether this function is inline.
@@ -564,6 +589,15 @@ impl ClangSubItemParser for Function {
             _ => return Err(ParseError::Continue)
         };
 
+        let availability = cursor.availability();
+        let availability = match availability {
+            CXAvailability_Available => Availability::Available,
+            CXAvailability_Deprecated => Availability::Deprecated,
+            CXAvailability_NotAvailable => Availability::NotAvailable,
+            CXAvailability_NotAccessible => Availability::NotAccessible,
+            _ => return Err(ParseError::Continue)
+        };
+
         // Grab the signature using Item::from_ty.
         let sig =
             Item::from_ty(&cursor.cur_type(), cursor, None, context)?;
@@ -588,7 +622,7 @@ impl ClangSubItemParser for Function {
         let mangled_name = cursor_mangling(context, &cursor);
         let comment = cursor.raw_comment();
 
-        let function = Self::new(name, mangled_name, sig, comment, kind, linkage, inlined);
+        let function = Self::new(name, mangled_name, sig, comment, kind, linkage, availability, inlined);
         Ok(ParseResult::New(function, Some(cursor)))
     }
 }
