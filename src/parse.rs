@@ -98,6 +98,7 @@ pub trait ClangItemParser: Sized {
         kind: TypeKind,
         is_const: bool,
         is_volatile: bool,
+        is_typedef: bool,
         context: &mut BindgenContext,
     ) -> TypeId;
 }

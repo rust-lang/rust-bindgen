@@ -7,6 +7,7 @@
     non_upper_case_globals
 )]
 
+#[doc(hidden)]
 macro_rules ! cpp { ( ) => { } ; ( # include $ filename : tt $ ( $ rest : tt ) * ) => { cpp ! { $ ( $ rest ) * } } ; ( { $ ( $ code : tt ) * } $ ( $ rest : tt ) * ) => { cpp ! { $ ( $ rest ) * } } ; }
 cpp! { # include "generate-inline.hpp" }
 #[repr(C)]

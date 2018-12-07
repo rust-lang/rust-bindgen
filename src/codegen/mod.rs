@@ -522,8 +522,8 @@ impl CodeGenerator for Var {
                 .unwrap();
             let macro_name = if ctx.options().is_cpp() { "cpp" } else { "c" };
             let macro_name = macro_name.parse::<proc_macro2::TokenStream>().unwrap();
-            let getter = &canonical_ident;
-            let setter = ctx.rust_ident(&format!("set_{}", canonical_name));
+            let getter = ctx.rust_ident(&format!("__thread_{}", canonical_name));
+            let setter = ctx.rust_ident(&format!("__thread_set_{}", canonical_name));
 
             let tokens = quote! {
                 extern "C" {
@@ -3446,7 +3446,7 @@ impl CodeGenerator for Function {
             None
         }.unwrap_or_else(|| {
             if is_static_inlined_function {
-                let mut cfunc_name = format!("_{}", canonical_name);
+                let mut cfunc_name = format!("__inlined_{}", canonical_name);
                 let times_seen = result.overload_number(&cfunc_name);
                 if times_seen > 0 {
                     write!(&mut cfunc_name, "{}", times_seen).unwrap();
@@ -3501,7 +3501,6 @@ impl CodeGenerator for Function {
             });
             let macro_name = if ctx.options().is_cpp() { "cpp" } else { "c" };
             let macro_name = macro_name.parse::<proc_macro2::TokenStream>().unwrap();
-
             let cfunc_name = cfunc_name.parse::<proc_macro2::TokenStream>().unwrap();
 
             let tokens = quote!( #macro_name ! {{
@@ -3694,6 +3693,7 @@ mod utils {
             let header_file = Path::new(header_file).file_name().unwrap().to_str().unwrap();
 
             result.insert(0, quote! {
+                #[doc(hidden)]
                 macro_rules! #macro_name {
                     () => {};
                     (#include $filename:tt $($rest:tt)*) => { #macro_name!{ $($rest)* } };

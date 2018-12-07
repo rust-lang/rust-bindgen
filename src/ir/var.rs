@@ -216,6 +216,7 @@ impl ClangSubItemParser for Var {
                             TypeKind::Int(IntKind::U8),
                             true,
                             false,
+                            false,
                             ctx,
                         );
                         if let Some(callbacks) = ctx.parse_callbacks() {
@@ -232,7 +233,7 @@ impl ClangSubItemParser for Var {
                     }
                 };
 
-                let ty = Item::builtin_type(type_kind, true, false, ctx);
+                let ty = Item::builtin_type(type_kind, true, false, false, ctx);
 
                 Ok(ParseResult::New(
                     Var::new(name, None, ty, Some(val), true, None),

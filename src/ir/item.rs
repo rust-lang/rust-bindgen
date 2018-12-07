@@ -1235,6 +1235,7 @@ impl ClangItemParser for Item {
         kind: TypeKind,
         is_const: bool,
         is_volatile: bool,
+        is_typedef: bool,
         ctx: &mut BindgenContext,
     ) -> TypeId {
         // Feel free to add more here, I'm just lazy.
@@ -1246,7 +1247,7 @@ impl ClangItemParser for Item {
             _ => panic!("Unsupported builtin type"),
         }
 
-        let ty = Type::new(None, None, kind, is_const, is_volatile);
+        let ty = Type::new(None, None, kind, is_const, is_volatile, is_typedef);
         let id = ctx.next_item_id();
         let module = ctx.root_module().into();
         ctx.add_item(
@@ -1449,6 +1450,7 @@ impl ClangItemParser for Item {
 
         let is_const = ty.is_const();
         let is_volatile = ty.is_volatile();
+        let is_typedef = ty.is_typedef();
         let kind = TypeKind::UnresolvedTypeRef(ty, location, parent_id);
         let current_module = ctx.current_module();
         ctx.add_item(
@@ -1457,7 +1459,7 @@ impl ClangItemParser for Item {
                 None,
                 None,
                 parent_id.unwrap_or(current_module.into()),
-                ItemKind::Type(Type::new(None, None, kind, is_const, is_volatile)),
+                ItemKind::Type(Type::new(None, None, kind, is_const, is_volatile, is_typedef)),
             ),
             None,
             None,

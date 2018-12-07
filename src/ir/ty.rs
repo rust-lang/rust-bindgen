@@ -34,6 +34,8 @@ pub struct Type {
     is_const: bool,
     /// Whether this type is volatile-qualified.
     is_volatile: bool,
+    /// Whether this type is typedef.
+    is_typedef: bool,
 }
 
 /// The maximum number of items in an array for which Rust implements common
@@ -69,6 +71,7 @@ impl Type {
         kind: TypeKind,
         is_const: bool,
         is_volatile: bool,
+        is_typedef: bool,
     ) -> Self {
         Type {
             name,
@@ -76,6 +79,7 @@ impl Type {
             kind,
             is_const,
             is_volatile,
+            is_typedef,
         }
     }
 
@@ -177,7 +181,7 @@ impl Type {
     /// Creates a new named type, with name `name`.
     pub fn named(name: String) -> Self {
         let name = if name.is_empty() { None } else { Some(name) };
-        Self::new(name, None, TypeKind::TypeParam, false, false)
+        Self::new(name, None, TypeKind::TypeParam, false, false, false)
     }
 
     /// Is this a floating point type?
@@ -226,9 +230,14 @@ impl Type {
         self.is_const
     }
 
-    /// Is this a `is_volatile` qualified type?
+    /// Is this a `volatile` qualified type?
     pub fn is_volatile(&self) -> bool {
         self.is_volatile
+    }
+
+    /// Is this a typedef type?
+    pub fn is_typedef(&self) -> bool {
+        self.is_typedef
     }
 
     /// Is this a reference to another type?
@@ -330,56 +339,65 @@ impl Type {
     }
 
     pub fn c_name(&self, ctx: &BindgenContext) -> Option<String> {
-        match *self.kind() {
-            TypeKind::ResolvedTypeRef(inner) => {
-                ctx.resolve_type(inner).c_name(ctx)
-            },
-            TypeKind::Pointer(inner) => {
-                ctx.resolve_type(inner).c_name(ctx).map(|inner_ty_name| {
-                    let mut name = inner_ty_name.to_owned();
+        if self.is_typedef() {
+            self.name().map(|s| s.to_owned())
+        } else {
+            match *self.kind() {
+                TypeKind::ResolvedTypeRef(inner) |
+                TypeKind::Alias(inner) |
+                TypeKind::BlockPointer(inner) |
+                TypeKind::TemplateAlias(inner, _) => {
+                    ctx.resolve_type(inner).c_name(ctx)
+                },
+                TypeKind::Pointer(inner) => {
+                    ctx.resolve_type(inner).c_name(ctx).map(|inner_ty_name| {
+                        let mut name = inner_ty_name.to_owned();
 
-                    if self.is_const() {
-                        name.push_str(" const");
-                    }
-                    if self.is_volatile() {
-                        name.push_str(" volatile");
-                    }
+                        name.push_str(" *");
 
-                    name + " *"
-                })
-            },
-            TypeKind::Comp(ref comp) => {
-                self.name().map(|s| {
-                    let mut name = String::new();
-
-                    if self.is_const() {
-                        name.push_str("const ");
-                    }
-                    match comp.kind() {
-                        CompKind::Struct => {
-                            name.push_str("struct ");
+                        if self.is_const() {
+                            name.push_str(" const");
                         }
-                        CompKind::Union => {
-                            name.push_str("union ");
+                        if self.is_volatile() {
+                            name.push_str(" volatile");
                         }
-                    }
 
-                    name + s
-                })
-            },
-            TypeKind::Enum(_) => {
-                self.name().map(|s| {
-                    let mut name = String::new();
+                        name
+                    })
+                },
+                TypeKind::Comp(ref comp) => {
+                    self.name().map(|s| {
+                        let mut name = String::new();
 
-                    if self.is_const() {
-                        name.push_str("const ");
-                    }
+                        if self.is_const() {
+                            name.push_str("const ");
+                        }
+                        match comp.kind() {
+                            CompKind::Struct => {
+                                name.push_str("struct ");
+                            }
+                            CompKind::Union => {
+                                name.push_str("union ");
+                            }
+                        }
 
-                    name.push_str("enum ");
-                    name + s
-                })
-            },
-            _ => self.name().map(|s| s.to_owned()),
+                        name + s
+                    })
+                },
+                TypeKind::Enum(_) => {
+                    self.name().map(|s| {
+                        let mut name = String::new();
+
+                        if self.is_const() {
+                            name.push_str("const ");
+                        }
+                        name.push_str("enum ");
+
+                        name + s
+                    })
+                },
+                _ => self.name().map(|s| s.to_owned()),
+            }
         }
     }
 
@@ -577,7 +595,7 @@ impl TypeKind {
 
 #[test]
 fn is_invalid_type_param_valid() {
-    let ty = Type::new(Some("foo".into()), None, TypeKind::TypeParam, false, false);
+    let ty = Type::new(Some("foo".into()), None, TypeKind::TypeParam, false, false, false);
     assert!(!ty.is_invalid_type_param())
 }
 
@@ -589,38 +607,39 @@ fn is_invalid_type_param_valid_underscore_and_numbers() {
         TypeKind::TypeParam,
         false,
         false,
+        false,
     );
     assert!(!ty.is_invalid_type_param())
 }
 
 #[test]
 fn is_invalid_type_param_valid_unnamed_kind() {
-    let ty = Type::new(Some("foo".into()), None, TypeKind::Void, false, false);
+    let ty = Type::new(Some("foo".into()), None, TypeKind::Void, false, false, false);
     assert!(!ty.is_invalid_type_param())
 }
 
 #[test]
 fn is_invalid_type_param_invalid_start() {
-    let ty = Type::new(Some("1foo".into()), None, TypeKind::TypeParam, false, false);
+    let ty = Type::new(Some("1foo".into()), None, TypeKind::TypeParam, false, false, false);
     assert!(ty.is_invalid_type_param())
 }
 
 #[test]
 fn is_invalid_type_param_invalid_remaing() {
-    let ty = Type::new(Some("foo-".into()), None, TypeKind::TypeParam, false, false);
+    let ty = Type::new(Some("foo-".into()), None, TypeKind::TypeParam, false, false, false);
     assert!(ty.is_invalid_type_param())
 }
 
 #[test]
 #[should_panic]
 fn is_invalid_type_param_unnamed() {
-    let ty = Type::new(None, None, TypeKind::TypeParam, false, false);
+    let ty = Type::new(None, None, TypeKind::TypeParam, false, false, false);
     assert!(ty.is_invalid_type_param())
 }
 
 #[test]
 fn is_invalid_type_param_empty_name() {
-    let ty = Type::new(Some("".into()), None, TypeKind::TypeParam, false, false);
+    let ty = Type::new(Some("".into()), None, TypeKind::TypeParam, false, false, false);
     assert!(ty.is_invalid_type_param())
 }
 
@@ -823,6 +842,8 @@ impl Type {
             CXCursor_ObjCCategoryDecl => ty_kind = CXType_ObjCInterface,
             _ => {}
         }
+
+        let is_typedef = ty.is_typedef();
 
         // Objective C template type parameter
         // FIXME: This is probably wrong, we are attempting to find the
@@ -1276,7 +1297,7 @@ impl Type {
         let is_const = ty.is_const();
         let is_volatile = ty.is_volatile();
 
-        let ty = Type::new(name, layout, kind, is_const, is_volatile);
+        let ty = Type::new(name, layout, kind, is_const, is_volatile, is_typedef);
         // TODO: maybe declaration.canonical()?
         Ok(ParseResult::New(ty, Some(cursor.canonical())))
     }

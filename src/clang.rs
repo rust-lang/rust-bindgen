@@ -896,6 +896,11 @@ impl Type {
         unsafe { clang_isVolatileQualifiedType(self.x) != 0 }
     }
 
+    /// Is this type is typedef?
+    pub fn is_typedef(&self) -> bool {
+        self.x.kind == CXType_Typedef
+    }
+
     /// What is the size of this type? Paper over invalid types by returning `0`
     /// for them.
     pub fn size(&self) -> usize {
