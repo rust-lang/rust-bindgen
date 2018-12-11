@@ -455,7 +455,11 @@ impl Cursor {
 
     /// Determine the "thread-local storage (TLS) kind" of the declaration.
     pub fn tls(&self) -> CXTLSKind {
-        unsafe { clang_getCursorTLSKind(self.x) }
+        if clang_getCursorTLSKind::is_loaded() {
+            unsafe { clang_getCursorTLSKind(self.x) }
+        } else {
+            CXTLS_None
+        }
     }
 
     /// Get the width of this cursor's referent bit field, or `None` if the
