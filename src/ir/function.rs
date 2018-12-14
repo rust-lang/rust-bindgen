@@ -394,7 +394,9 @@ impl FunctionSig {
             }
         };
 
-        let must_use = cursor.has_simple_attr("warn_unused_result");
+        let must_use =
+            ctx.options().enable_function_attribute_detection &&
+            cursor.has_simple_attr("warn_unused_result");
         let is_method = cursor.kind() == CXCursor_CXXMethod;
         let is_constructor = cursor.kind() == CXCursor_Constructor;
         let is_destructor = cursor.kind() == CXCursor_Destructor;

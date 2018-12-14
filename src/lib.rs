@@ -418,6 +418,9 @@ impl Builder {
         if self.options.enable_cxx_namespaces {
             output_vector.push("--enable-cxx-namespaces".into());
         }
+        if self.options.enable_function_attribute_detection {
+            output_vector.push("--enable-function-attribute-detection".into());
+        }
         if self.options.disable_name_namespacing {
             output_vector.push("--disable-name-namespacing".into());
         }
@@ -1057,6 +1060,18 @@ impl Builder {
         self
     }
 
+    /// Enable detecting must_use attributes on C functions.
+    ///
+    /// This is quite slow in some cases (see #1465), so it's disabled by
+    /// default.
+    ///
+    /// Note that for this to do something meaningful for now at least, the rust
+    /// target version has to have support for `#[must_use]`.
+    pub fn enable_function_attribute_detection(mut self) -> Self {
+        self.options.enable_function_attribute_detection = true;
+        self
+    }
+
     /// Disable name auto-namespacing.
     ///
     /// By default, bindgen mangles names like `foo::bar::Baz` to look like
@@ -1391,6 +1406,10 @@ struct BindgenOptions {
     /// generated bindings.
     enable_cxx_namespaces: bool,
 
+    /// True if we should try to find unexposed attributes in functions, in
+    /// order to be able to generate #[must_use] attributes in Rust.
+    enable_function_attribute_detection: bool,
+
     /// True if we should avoid mangling names with namespaces.
     disable_name_namespacing: bool,
 
@@ -1618,6 +1637,7 @@ impl Default for BindgenOptions {
             derive_partialeq: false,
             derive_eq: false,
             enable_cxx_namespaces: false,
+            enable_function_attribute_detection: false,
             disable_name_namespacing: false,
             use_core: false,
             ctypes_prefix: None,

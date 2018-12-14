@@ -315,6 +315,10 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("enable-function-attribute-detection")
+                .long("enable-function-attribute-detection")
+                .help("Enables detecting unexposed attributes in functions (slow).
+                       Used to generate #[must_use] annotations."),
         ]) // .args()
         .get_matches_from(args);
 
@@ -482,6 +486,10 @@ where
 
     if matches.is_present("enable-cxx-namespaces") {
         builder = builder.enable_cxx_namespaces();
+    }
+
+    if matches.is_present("enable-function-attribute-detection") {
+        builder = builder.enable_function_attribute_detection();
     }
 
     if matches.is_present("disable-name-namespacing") {
