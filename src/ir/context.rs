@@ -2163,21 +2163,17 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         let mut module_name = None;
         let spelling = cursor.spelling();
-        if !spelling.is_empty()
-        {
+        if !spelling.is_empty() {
             module_name = Some(spelling)
         }
 
-        let tokens = match cursor.tokens() {
-            Some(tokens) => tokens,
-            None => return (module_name, ModuleKind::Normal),
-        };
+        let tokens = cursor.tokens();
         let mut iter = tokens.iter();
         let mut kind = ModuleKind::Normal;
         let mut found_namespace_keyword = false;
         while let Some(token) = iter.next() {
-            match &*token.spelling {
-                "inline" => {
+            match token.spelling() {
+                b"inline" => {
                     assert!(!found_namespace_keyword);
                     assert!(kind != ModuleKind::Inline);
                     kind = ModuleKind::Inline;
@@ -2192,16 +2188,16 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 //
                 // Fortunately enough, inline nested namespace specifiers aren't
                 // a thing, and are invalid C++ :)
-                "namespace" | "::" => {
+                b"namespace" | b"::" => {
                     found_namespace_keyword = true;
                 }
-                "{" => {
+                b"{" => {
                     assert!(found_namespace_keyword);
                     break;
                 }
                 name if found_namespace_keyword => {
                     if module_name.is_none() {
-                        module_name = Some(name.to_owned());
+                        module_name = Some(String::from_utf8_lossy(name).into_owned());
                     }
                     break;
                 }
