@@ -309,7 +309,7 @@ fn parse_macro(
 ) -> Option<(Vec<u8>, cexpr::expr::EvalResult)> {
     use cexpr::expr;
 
-    let mut cexpr_tokens = cursor.cexpr_tokens()?;
+    let mut cexpr_tokens = cursor.cexpr_tokens();
 
     let parser = expr::IdentifierParser::new(ctx.parsed_macros());
 
@@ -338,7 +338,7 @@ fn parse_int_literal_tokens(cursor: &clang::Cursor) -> Option<i64> {
     use cexpr::expr;
     use cexpr::expr::EvalResult;
 
-    let cexpr_tokens = cursor.cexpr_tokens()?;
+    let cexpr_tokens = cursor.cexpr_tokens();
 
     // TODO(emilio): We can try to parse other kinds of literals.
     match expr::expr(&cexpr_tokens) {
