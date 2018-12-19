@@ -20,7 +20,7 @@ impl RegexSet {
     where
         S: AsRef<str>,
     {
-        self.items.push(format!("^{}$", string.as_ref()));
+        self.items.push(string.as_ref().to_owned());
         self.set = None;
     }
 
@@ -34,7 +34,8 @@ impl RegexSet {
     /// Must be called before calling `matches()`, or it will always return
     /// false.
     pub fn build(&mut self) {
-        self.set = match RxSet::new(&self.items) {
+        let items = self.items.iter().map(|item| format!("^{}$", item));
+        self.set = match RxSet::new(items) {
             Ok(x) => Some(x),
             Err(e) => {
                 error!("Invalid regex in {:?}: {:?}", self.items, e);

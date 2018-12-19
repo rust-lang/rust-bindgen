@@ -233,11 +233,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--bitfield-enum".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
+                output_vector.push(item.to_owned());
             })
             .count();
 
@@ -247,11 +243,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--rustified-enum".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
+                output_vector.push(item.to_owned());
             })
             .count();
 
@@ -261,11 +253,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--constified-enum-module".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
+                output_vector.push(item.to_owned());
             })
             .count();
 
@@ -275,11 +263,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--constified-enum".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
+                output_vector.push(item.to_owned());
             })
             .count();
 
@@ -289,11 +273,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--blacklist-type".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
+                output_vector.push(item.to_owned());
             })
             .count();
 
@@ -303,11 +283,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--blacklist-function".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
+                output_vector.push(item.to_owned());
             })
             .count();
 
@@ -317,11 +293,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--blacklist-item".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
+                output_vector.push(item.to_owned());
             })
             .count();
 
@@ -472,11 +444,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--opaque-type".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
+                output_vector.push(item.to_owned());
             })
             .count();
 
@@ -485,11 +453,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--raw-line".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
+                output_vector.push(item.to_owned());
             })
             .count();
 
@@ -507,11 +471,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--whitelist-function".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
+                output_vector.push(item.to_owned());
             })
             .count();
 
@@ -521,11 +481,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--whitelist-type".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
+                output_vector.push(item.to_owned());
             })
             .count();
 
@@ -535,11 +491,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--whitelist-var".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
+                output_vector.push(item.to_owned());
             })
             .count();
 
@@ -576,11 +528,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--no-partialeq".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
+                output_vector.push(item.to_owned());
             })
             .count();
 
@@ -590,11 +538,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--no-copy".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
+                output_vector.push(item.to_owned());
             })
             .count();
 
@@ -604,11 +548,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--no-hash".into());
-                output_vector.push(
-                    item.trim_left_matches("^")
-                        .trim_right_matches("$")
-                        .into(),
-                );
+                output_vector.push(item.to_owned());
             })
             .count();
 
