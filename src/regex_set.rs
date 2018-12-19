@@ -1,11 +1,13 @@
 //! A type that represents the union of a set of regular expressions.
 
 use regex::RegexSet as RxSet;
+use std::cell::Cell;
 
 /// A dynamic set of regular expressions.
 #[derive(Debug)]
 pub struct RegexSet {
     items: Vec<String>,
+    matched: Vec<Cell<bool>>,
     set: Option<RxSet>,
 }
 
@@ -21,12 +23,24 @@ impl RegexSet {
         S: AsRef<str>,
     {
         self.items.push(string.as_ref().to_owned());
+        self.matched.push(Cell::new(false));
         self.set = None;
     }
 
     /// Returns slice of String from its field 'items'
     pub fn get_items(&self) -> &[String] {
         &self.items[..]
+    }
+
+    /// Returns regexes in the set which didn't match any strings yet
+    pub fn unmatched_items(&self) -> Vec<String> {
+        let mut items = vec![];
+        for (i, item) in self.items.iter().enumerate() {
+            if !self.matched[i].get() {
+                items.push(item.clone());
+            }
+        }
+        items
     }
 
     /// Construct a RegexSet from the set of entries we've accumulated.
@@ -50,9 +64,16 @@ impl RegexSet {
         S: AsRef<str>,
     {
         let s = string.as_ref();
-        self.set.as_ref().map(|set| set.is_match(s)).unwrap_or(
-            false,
-        )
+        if let Some(set) = self.set.as_ref() {
+            let matches = set.matches(s);
+            if matches.matched_any() {
+                for i in matches.iter() {
+                    self.matched[i].set(true);
+                }
+                return true;
+            }
+        }
+        false
     }
 }
 
@@ -60,6 +81,7 @@ impl Default for RegexSet {
     fn default() -> Self {
         RegexSet {
             items: vec![],
+            matched: vec![],
             set: None,
         }
     }

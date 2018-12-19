@@ -2385,6 +2385,18 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         self.whitelisted = Some(whitelisted);
         self.codegen_items = Some(codegen_items);
+
+        for item in self.options().whitelisted_functions.unmatched_items() {
+            error!("unused option: --whitelist-function {}", item);
+        }
+
+        for item in self.options().whitelisted_vars.unmatched_items() {
+            error!("unused option: --whitelist-var {}", item);
+        }
+
+        for item in self.options().whitelisted_types.unmatched_items() {
+            error!("unused option: --whitelist-type {}", item);
+        }
     }
 
     /// Convenient method for getting the prefix to use for most traits in
