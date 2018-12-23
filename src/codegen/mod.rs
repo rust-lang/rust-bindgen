@@ -3546,11 +3546,12 @@ pub(crate) fn codegen(context: BindgenContext) -> (Vec<proc_macro2::TokenStream>
 
         debug!("codegen: {:?}", context.options());
 
-        let codegen_items = context.codegen_items();
         if context.options().emit_ir {
-            for &id in codegen_items {
-                let item = context.resolve_item(id);
-                println!("ir: {:?} = {:#?}", id, item);
+            let codegen_items = context.codegen_items();
+            for (id, item) in context.items() {
+                if codegen_items.contains(&id) {
+                    println!("ir: {:?} = {:#?}", id, item);
+                }
             }
         }
 
