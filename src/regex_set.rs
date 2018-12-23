@@ -32,15 +32,16 @@ impl RegexSet {
         &self.items[..]
     }
 
-    /// Returns regexes in the set which didn't match any strings yet
-    pub fn unmatched_items(&self) -> Vec<String> {
-        let mut items = vec![];
-        for (i, item) in self.items.iter().enumerate() {
-            if !self.matched[i].get() {
-                items.push(item.clone());
+    /// Returns an iterator over regexes in the set which didn't match any
+    /// strings yet.
+    pub fn unmatched_items(&self) -> impl Iterator<Item = &String> {
+        self.items.iter().enumerate().filter_map(move |(i, item)| {
+            if self.matched[i].get() {
+                return None;
             }
-        }
-        items
+
+            Some(item)
+        })
     }
 
     /// Construct a RegexSet from the set of entries we've accumulated.
