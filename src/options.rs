@@ -277,6 +277,10 @@ where
                        Useful when debugging bindgen, using C-Reduce, or when \
                        filing issues. The resulting file will be named \
                        something like `__bindgen.i` or `__bindgen.ii`."),
+            Arg::with_name("no-record-matches")
+                .long("no-record-matches")
+                .help("Do not record matching items in the regex sets. \
+                      This disables reporting of unused items."),
             Arg::with_name("no-rustfmt-bindings")
                 .long("no-rustfmt-bindings")
                 .help("Do not format the generated bindings with rustfmt."),
@@ -589,6 +593,10 @@ where
 
     if matches.is_present("dump-preprocessed-input") {
         builder.dump_preprocessed_input()?;
+    }
+
+    if matches.is_present("no-record-matches") {
+        builder = builder.record_matches(false);
     }
 
     let no_rustfmt_bindings = matches.is_present("no-rustfmt-bindings");
