@@ -44,12 +44,11 @@ use std;
 use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::VecDeque;
-use std::collections::hash_map::Entry;
 use std::fmt::Write;
 use std::iter;
 use std::ops;
 use std::str::FromStr;
-use {HashMap, HashSet};
+use {HashMap, HashSet, Entry};
 
 // Name of type defined in constified enum module
 pub static CONSTIFIED_ENUM_MODULE_REPR_NAME: &'static str = "Type";
