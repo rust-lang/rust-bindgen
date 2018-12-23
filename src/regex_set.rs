@@ -4,7 +4,7 @@ use regex::RegexSet as RxSet;
 use std::cell::Cell;
 
 /// A dynamic set of regular expressions.
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct RegexSet {
     items: Vec<String>,
     matched: Vec<Cell<bool>>,
@@ -74,15 +74,5 @@ impl RegexSet {
             }
         }
         false
-    }
-}
-
-impl Default for RegexSet {
-    fn default() -> Self {
-        RegexSet {
-            items: vec![],
-            matched: vec![],
-            set: None,
-        }
     }
 }
