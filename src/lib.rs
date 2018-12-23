@@ -509,6 +509,10 @@ impl Builder {
             );
         }
 
+        if !self.options.record_matches {
+            output_vector.push("--no-record-matches".into());
+        }
+
         if !self.options.rustfmt_bindings {
             output_vector.push("--no-rustfmt-bindings".into());
         }
@@ -1137,6 +1141,12 @@ impl Builder {
         self
     }
 
+    /// Set whether we should record matched items in our regex sets.
+    pub fn record_matches(mut self, doit: bool) -> Self {
+        self.options.record_matches = doit;
+        self
+    }
+
     /// Set the absolute path to the rustfmt configuration file, if None, the standard rustfmt
     /// options are used.
     pub fn rustfmt_configuration_file(mut self, path: Option<PathBuf>) -> Self {
@@ -1486,6 +1496,12 @@ struct BindgenOptions {
     /// Features to enable, derived from `rust_target`
     rust_features: RustFeatures,
 
+    /// Whether we should record which items in the regex sets ever matched.
+    ///
+    /// This may be a bit slower, but will enable reporting of unused whitelist
+    /// items via the `error!` log.
+    record_matches: bool,
+
     /// Whether rustfmt should format the generated bindings.
     rustfmt_bindings: bool,
 
@@ -1511,20 +1527,26 @@ impl ::std::panic::UnwindSafe for BindgenOptions {}
 
 impl BindgenOptions {
     fn build(&mut self) {
-        self.whitelisted_vars.build();
-        self.whitelisted_types.build();
-        self.whitelisted_functions.build();
-        self.blacklisted_types.build();
-        self.blacklisted_functions.build();
-        self.blacklisted_items.build();
-        self.opaque_types.build();
-        self.bitfield_enums.build();
-        self.constified_enums.build();
-        self.constified_enum_modules.build();
-        self.rustified_enums.build();
-        self.no_partialeq_types.build();
-        self.no_copy_types.build();
-        self.no_hash_types.build();
+        let mut regex_sets = [
+            &mut self.whitelisted_vars,
+            &mut self.whitelisted_types,
+            &mut self.whitelisted_functions,
+            &mut self.blacklisted_types,
+            &mut self.blacklisted_functions,
+            &mut self.blacklisted_items,
+            &mut self.opaque_types,
+            &mut self.bitfield_enums,
+            &mut self.constified_enums,
+            &mut self.constified_enum_modules,
+            &mut self.rustified_enums,
+            &mut self.no_partialeq_types,
+            &mut self.no_copy_types,
+            &mut self.no_hash_types,
+        ];
+        let record_matches = self.record_matches;
+        for regex_set in &mut regex_sets {
+            regex_set.build(record_matches);
+        }
     }
 
     /// Update rust target version
@@ -1601,6 +1623,7 @@ impl Default for BindgenOptions {
             enable_mangling: true,
             prepend_enum_name: true,
             time_phases: false,
+            record_matches: true,
             rustfmt_bindings: true,
             rustfmt_configuration_file: None,
             no_partialeq_types: Default::default(),

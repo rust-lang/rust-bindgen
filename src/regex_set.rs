@@ -7,8 +7,12 @@ use std::cell::Cell;
 #[derive(Debug, Default)]
 pub struct RegexSet {
     items: Vec<String>,
+    /// Whether any of the items in the set was ever matched. The length of this
+    /// vector is exactly the length of `items`.
     matched: Vec<Cell<bool>>,
     set: Option<RxSet>,
+    /// Whether we should record matching items in the `matched` vector or not.
+    record_matches: bool,
 }
 
 impl RegexSet {
@@ -36,7 +40,7 @@ impl RegexSet {
     /// strings yet.
     pub fn unmatched_items(&self) -> impl Iterator<Item = &String> {
         self.items.iter().enumerate().filter_map(move |(i, item)| {
-            if self.matched[i].get() {
+            if !self.record_matches || self.matched[i].get() {
                 return None;
             }
 
@@ -48,8 +52,9 @@ impl RegexSet {
     ///
     /// Must be called before calling `matches()`, or it will always return
     /// false.
-    pub fn build(&mut self) {
+    pub fn build(&mut self, record_matches: bool) {
         let items = self.items.iter().map(|item| format!("^{}$", item));
+        self.record_matches = record_matches;
         self.set = match RxSet::new(items) {
             Ok(x) => Some(x),
             Err(e) => {
@@ -65,15 +70,23 @@ impl RegexSet {
         S: AsRef<str>,
     {
         let s = string.as_ref();
-        if let Some(set) = self.set.as_ref() {
-            let matches = set.matches(s);
-            if matches.matched_any() {
-                for i in matches.iter() {
-                    self.matched[i].set(true);
-                }
-                return true;
-            }
+        let set = match self.set {
+            Some(ref set) => set,
+            None => return false,
+        };
+
+        if !self.record_matches {
+            return set.is_match(s);
         }
-        false
+
+        let matches = set.matches(s);
+        if !matches.matched_any() {
+            return false;
+        }
+        for i in matches.iter() {
+            self.matched[i].set(true);
+        }
+
+        true
     }
 }
