@@ -27,10 +27,11 @@ use parse::ClangItemParser;
 use proc_macro2::{Ident, Span};
 use std::borrow::Cow;
 use std::cell::Cell;
-use std::collections::{HashMap, HashSet, hash_map};
 use std::collections::btree_map::{self, BTreeMap};
 use std::iter::IntoIterator;
 use std::mem;
+use std::collections::HashMap as StdHashMap;
+use {HashMap, HashSet, Entry};
 
 /// An identifier for some kind of IR item.
 #[derive(Debug, Copy, Clone, Eq, PartialOrd, Ord, Hash)]
@@ -348,10 +349,12 @@ pub struct BindgenContext {
     /// potentially break that assumption.
     currently_parsed_types: Vec<PartialType>,
 
-    /// A HashSet with all the already parsed macro names. This is done to avoid
+    /// A map with all the already parsed macro names. This is done to avoid
     /// hard errors while parsing duplicated macros, as well to allow macro
     /// expression parsing.
-    parsed_macros: HashMap<Vec<u8>, cexpr::expr::EvalResult>,
+    ///
+    /// This needs to be an std::HashMap because the cexpr API requires it.
+    parsed_macros: StdHashMap<Vec<u8>, cexpr::expr::EvalResult>,
 
     /// The active replacements collected from replaces="xxx" annotations.
     replacements: HashMap<Vec<String>, ItemId>,
@@ -1380,7 +1383,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         } else {
             // If you aren't recursively whitelisting, then we can't really make
             // any sense of template parameter usage, and you're on your own.
-            let mut used_params = HashMap::new();
+            let mut used_params = HashMap::default();
             for &id in self.whitelisted_items() {
                 used_params.entry(id).or_insert(
                     id.self_template_params(self).into_iter().map(|p| p.into()).collect()
@@ -2079,7 +2082,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     }
 
     /// Get the currently parsed macros.
-    pub fn parsed_macros(&self) -> &HashMap<Vec<u8>, cexpr::expr::EvalResult> {
+    pub fn parsed_macros(&self) -> &StdHashMap<Vec<u8>, cexpr::expr::EvalResult> {
         debug_assert!(!self.in_codegen_phase());
         &self.parsed_macros
     }
@@ -2105,7 +2108,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// and implies that the original type is hidden.
     pub fn replace(&mut self, name: &[String], potential_ty: ItemId) {
         match self.replacements.entry(name.into()) {
-            hash_map::Entry::Vacant(entry) => {
+            Entry::Vacant(entry) => {
                 debug!(
                     "Defining replacement for {:?} as {:?}",
                     name,
@@ -2113,7 +2116,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 );
                 entry.insert(potential_ty);
             }
-            hash_map::Entry::Occupied(occupied) => {
+            Entry::Occupied(occupied) => {
                 warn!(
                     "Replacement for {:?} already defined as {:?}; \
                        ignoring duplicate replacement definition as {:?}",

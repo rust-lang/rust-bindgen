@@ -23,6 +23,7 @@ extern crate cexpr;
 #[allow(unused_extern_crates)]
 extern crate cfg_if;
 extern crate clang_sys;
+extern crate fxhash;
 #[macro_use]
 extern crate lazy_static;
 extern crate peeking_take_while;
@@ -88,13 +89,17 @@ use regex_set::RegexSet;
 pub use codegen::EnumVariation;
 
 use std::borrow::Cow;
-use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
 use std::io::{self, Write};
 use std::iter;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::sync::Arc;
+
+// Some convenient typedefs for a fast hash map and hash set.
+type HashMap<K, V> = ::fxhash::FxHashMap<K, V>;
+type HashSet<K> = ::fxhash::FxHashSet<K>;
+pub(crate) use ::std::collections::hash_map::Entry;
 
 fn args_are_cpp(clang_args: &[String]) -> bool {
     return clang_args
