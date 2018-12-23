@@ -27,7 +27,6 @@ use parse::ClangItemParser;
 use proc_macro2::{Ident, Span};
 use std::borrow::Cow;
 use std::cell::Cell;
-use std::collections::btree_map::{self, BTreeMap};
 use std::iter::IntoIterator;
 use std::mem;
 use std::collections::HashMap as StdHashMap;
@@ -302,14 +301,8 @@ enum TypeKey {
 /// A context used during parsing and generation of structs.
 #[derive(Debug)]
 pub struct BindgenContext {
-    /// The map of all the items parsed so far.
-    ///
-    /// It's a BTreeMap because we want the keys to be sorted to have consistent
-    /// output.
-    items: BTreeMap<ItemId, Item>,
-
-    /// The next item id to use during this bindings regeneration.
-    next_item_id: ItemId,
+    /// The map of all the items parsed so far, keyed off ItemId.
+    items: Vec<Option<Item>>,
 
     /// Clang USR to type map. This is needed to be able to associate types with
     /// item ids during parsing.
@@ -597,12 +590,11 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let root_module = Self::build_root_module(ItemId(0));
         let root_module_id = root_module.id().as_module_id_unchecked();
 
-        let mut me = BindgenContext {
-            items: Default::default(),
+        BindgenContext {
+            items: vec![Some(root_module)],
             types: Default::default(),
             type_params: Default::default(),
             modules: Default::default(),
-            next_item_id: ItemId(1),
             root_module: root_module_id,
             current_module: root_module_id,
             semantic_parents: Default::default(),
@@ -631,11 +623,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             have_destructor: None,
             has_type_param_in_array: None,
             has_float: None,
-        };
-
-        me.add_item(root_module, None, None);
-
-        me
+        }
     }
 
     /// Creates a timer for the current bindgen phase. If time_phases is `true`,
@@ -718,7 +706,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             self.need_bitfield_allocation.push(id);
         }
 
-        let old_item = self.items.insert(id, item);
+        let old_item = mem::replace(&mut self.items[id.0], Some(item));
         assert!(
             old_item.is_none(),
             "should not have already associated an item with the given id"
@@ -746,7 +734,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 debug!(
                     "Invalid declaration {:?} found for type {:?}",
                     declaration,
-                    self.items.get(&id).unwrap().kind().expect_type()
+                    self.resolve_item_fallible(id).unwrap().kind().expect_type()
                 );
                 return;
             }
@@ -775,9 +763,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// details.
     fn add_item_to_module(&mut self, item: &Item) {
         assert!(item.id() != self.root_module);
-        assert!(!self.items.contains_key(&item.id()));
+        assert!(self.resolve_item_fallible(item.id()).is_none());
 
-        if let Some(parent) = self.items.get_mut(&item.parent_id()) {
+        if let Some(ref mut parent) = self.items[item.parent_id().0] {
             if let Some(module) = parent.as_module_mut() {
                 debug!(
                     "add_item_to_module: adding {:?} as child of parent module {:?}",
@@ -796,8 +784,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             self.current_module
         );
 
-        self.items
-            .get_mut(&self.current_module.into())
+        self.items[(self.current_module.0).0]
+            .as_mut()
             .expect("Should always have an item for self.current_module")
             .as_module_mut()
             .expect("self.current_module should always be a module")
@@ -825,7 +813,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.add_item_to_module(&item);
 
         let id = item.id();
-        let old_item = self.items.insert(id, item);
+        let old_item = mem::replace(&mut self.items[id.0], Some(item));
         assert!(
             old_item.is_none(),
             "should not have already associated an item with the given id"
@@ -941,8 +929,14 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     }
 
     /// Iterate over all items that have been defined.
-    pub fn items<'a>(&'a self) -> btree_map::Iter<'a, ItemId, Item> {
-        self.items.iter()
+    pub fn items(&self) -> impl Iterator<Item = (ItemId, &Item)> {
+        self.items
+            .iter()
+            .enumerate()
+            .filter_map(|(index, item)| {
+                let item = item.as_ref()?;
+                Some((ItemId(index), item))
+            })
     }
 
     /// Have we collected all unresolved type references yet?
@@ -957,7 +951,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         debug_assert!(!self.collected_typerefs);
         self.collected_typerefs = true;
         let mut typerefs = vec![];
-        for (id, ref mut item) in &mut self.items {
+
+        for (id, item) in self.items() {
             let kind = item.kind();
             let ty = match kind.as_type() {
                 Some(ty) => ty,
@@ -966,7 +961,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
             match *ty.kind() {
                 TypeKind::UnresolvedTypeRef(ref ty, loc, parent_id) => {
-                    typerefs.push((*id, ty.clone(), loc, parent_id));
+                    typerefs.push((id, ty.clone(), loc, parent_id));
                 }
                 _ => {}
             };
@@ -987,7 +982,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                         Item::new_opaque_type(self.next_item_id(), &ty, self)
                     });
 
-                let item = self.items.get_mut(&id).unwrap();
+                let item = self.items[id.0].as_mut().unwrap();
                 *item.kind_mut().as_type_mut().unwrap().kind_mut() =
                     TypeKind::ResolvedTypeRef(resolved);
                 resolved
@@ -1018,11 +1013,11 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     where
         F: (FnOnce(&BindgenContext, &mut Item) -> T)
     {
-        let mut item = self.items.remove(&id).unwrap();
+        let mut item = self.items[id.0].take().unwrap();
 
         let result = f(self, &mut item);
 
-        let existing = self.items.insert(id, item);
+        let existing = mem::replace(&mut self.items[id.0], Some(item));
         assert!(existing.is_none());
 
         result
@@ -1051,15 +1046,13 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     fn deanonymize_fields(&mut self) {
         let _t = self.timer("deanonymize_fields");
 
-        let comp_item_ids: Vec<ItemId> = self.items
-            .iter()
+        let comp_item_ids: Vec<ItemId> = self.items()
             .filter_map(|(id, item)| {
                 if item.kind().as_type()?.is_comp() {
                     return Some(id);
                 }
                 None
             })
-            .cloned()
             .collect();
 
         for id in comp_item_ids {
@@ -1090,7 +1083,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         let mut replacements = vec![];
 
-        for (id, item) in self.items.iter() {
+        for (id, item) in self.items() {
             if item.annotations().use_instead_of().is_some() {
                 continue;
             }
@@ -1114,10 +1107,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             let replacement = self.replacements.get(&path[1..]);
 
             if let Some(replacement) = replacement {
-                if replacement != id {
+                if *replacement != id {
                     // We set this just after parsing the annotation. It's
                     // very unlikely, but this can happen.
-                    if self.items.get(replacement).is_some() {
+                    if self.resolve_item_fallible(*replacement).is_some() {
                         replacements.push((id.expect_type_id(self), replacement.expect_type_id(self)));
                     }
                 }
@@ -1126,9 +1119,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         for (id, replacement_id) in replacements {
             debug!("Replacing {:?} with {:?}", id, replacement_id);
-
             let new_parent = {
-                let item = self.items.get_mut(&id.into()).unwrap();
+                let item_id: ItemId = id.into();
+                let item = self.items[item_id.0].as_mut().unwrap();
                 *item.kind_mut().as_type_mut().unwrap().kind_mut() =
                     TypeKind::ResolvedTypeRef(replacement_id);
                 item.parent_id()
@@ -1146,8 +1139,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 continue;
             }
 
-            self.items
-                .get_mut(&replacement_id.into())
+            let replacement_item_id: ItemId = replacement_id.into();
+            self.items[replacement_item_id.0]
+                .as_mut()
                 .unwrap()
                 .set_parent_for_replacement(new_parent);
 
@@ -1183,16 +1177,16 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                 continue;
             }
 
-            self.items
-                .get_mut(&old_module)
+            self.items[old_module.0]
+                .as_mut()
                 .unwrap()
                 .as_module_mut()
                 .unwrap()
                 .children_mut()
                 .remove(&replacement_id.into());
 
-            self.items
-                .get_mut(&new_module)
+            self.items[new_module.0]
+                .as_mut()
                 .unwrap()
                 .as_module_mut()
                 .unwrap()
@@ -1260,7 +1254,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         assert!(self.in_codegen_phase());
         assert!(self.current_module == self.root_module);
 
-        let roots = self.items().map(|(&id, _)| id);
+        let roots = self.items().map(|(id, _)| id);
         traversal::AssertNoDanglingItemsTraversal::new(
             self,
             roots,
@@ -1276,7 +1270,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             assert!(self.in_codegen_phase());
             assert!(self.current_module == self.root_module);
 
-            for (&id, _item) in self.items() {
+            for (id, _item) in self.items() {
                 if id == self.root_module {
                     continue;
                 }
@@ -1467,7 +1461,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         debug_assert!(item.kind().is_type());
         self.add_item_to_module(&item);
         let id = item.id();
-        let old_item = self.items.insert(id, item);
+        let old_item = mem::replace(&mut self.items[id.0], Some(item));
         assert!(old_item.is_none(), "Inserted type twice?");
     }
 
@@ -1502,13 +1496,13 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     ///
     /// Panics if the id resolves to an item that is not a type.
     pub fn safe_resolve_type(&self, type_id: TypeId) -> Option<&Type> {
-        self.items.get(&type_id.into()).map(|t| t.kind().expect_type())
+        self.resolve_item_fallible(type_id).map(|t| t.kind().expect_type())
     }
 
     /// Resolve the given `ItemId` into an `Item`, or `None` if no such item
     /// exists.
     pub fn resolve_item_fallible<Id: Into<ItemId>>(&self, id: Id) -> Option<&Item> {
-        self.items.get(&id.into())
+        self.items.get(id.into().0)?.as_ref()
     }
 
     /// Resolve the given `ItemId` into an `Item`.
@@ -1516,7 +1510,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Panics if the given id does not resolve to any item.
     pub fn resolve_item<Id: Into<ItemId>>(&self, item_id: Id) -> &Item {
         let item_id = item_id.into();
-        match self.items.get(&item_id) {
+        match self.resolve_item_fallible(item_id) {
             Some(item) => item,
             None => panic!("Not an item: {:?}", item_id),
         }
@@ -1782,8 +1776,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                             sub_item
                         );
                         self.add_item_to_module(&sub_item);
-                        debug_assert!(sub_id == sub_item.id());
-                        self.items.insert(sub_id, sub_item);
+                        debug_assert_eq!(sub_id, sub_item.id());
+                        self.items[sub_id.0] = Some(sub_item);
                         args.push(sub_id.as_type_id_unchecked());
                     }
                 }
@@ -1842,8 +1836,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         // Bypass all the validations in add_item explicitly.
         debug!("instantiate_template: inserting item: {:?}", item);
         self.add_item_to_module(&item);
-        debug_assert!(with_id == item.id());
-        self.items.insert(with_id, item);
+        debug_assert_eq!(with_id, item.id());
+        self.items[with_id.0] = Some(item);
         Some(with_id.as_type_id_unchecked())
     }
 
@@ -1999,8 +1993,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     /// Returns the next item id to be used for an item.
     pub fn next_item_id(&mut self) -> ItemId {
-        let ret = self.next_item_id;
-        self.next_item_id = ItemId(self.next_item_id.0 + 1);
+        let ret = ItemId(self.items.len());
+        self.items.push(None);
         ret
     }
 
@@ -2349,7 +2343,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                         }
                     }
                 })
-                .map(|(&id, _)| id)
+                .map(|(id, _)| id)
                 .collect::<Vec<_>>();
 
             // The reversal preserves the expected ordering of traversal,

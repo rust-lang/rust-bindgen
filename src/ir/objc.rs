@@ -131,10 +131,9 @@ impl ObjCInterface {
                                     if protocol.is_protocol
                                     {
                                         debug!("Checking protocol {}, ty.name {:?}", protocol.name, ty.name());
-                                        if Some(needle.as_ref()) == ty.name()
-                                        {
+                                        if Some(needle.as_ref()) == ty.name() {
                                             debug!("Found conforming protocol {:?}", item);
-                                            interface.conforms_to.push(*id);
+                                            interface.conforms_to.push(id);
                                             break;
                                         }
                                     }
