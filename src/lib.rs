@@ -1734,11 +1734,15 @@ impl Bindings {
             }).cloned().collect::<Vec<_>>()
         };
 
+        debug!("Trying to find clang with flags: {:?}", clang_args_for_clang_sys);
+
         // TODO: Make this path fixup configurable?
         if let Some(clang) = clang_sys::support::Clang::find(
             None,
             &clang_args_for_clang_sys,
         ) {
+            debug!("Found clang: {:?}", clang);
+
             // If --target is specified, assume caller knows what they're doing
             // and don't mess with include paths for them
             let has_target_arg = options
@@ -1797,6 +1801,8 @@ impl Bindings {
         for f in options.input_unsaved_files.iter() {
             options.clang_args.push(f.name.to_str().unwrap().to_owned())
         }
+
+        debug!("Fixed-up options: {:?}", options);
 
         let time_phases = options.time_phases;
         let mut context = BindgenContext::new(options);
