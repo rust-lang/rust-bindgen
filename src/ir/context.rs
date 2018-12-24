@@ -2315,31 +2315,36 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                                 return true;
                             }
 
+                            // Unnamed top-level enums are special and we
+                            // whitelist them via the `whitelisted_vars` filter,
+                            // since they're effectively top-level constants,
+                            // and there's no way for them to be referenced
+                            // consistently.
                             let parent = self.resolve_item(item.parent_id());
-                            if parent.is_module() {
-                                let mut prefix_path = parent.path_for_whitelisting(self);
-
-                                // Unnamed top-level enums are special and we
-                                // whitelist them via the `whitelisted_vars` filter,
-                                // since they're effectively top-level constants,
-                                // and there's no way for them to be referenced
-                                // consistently.
-                                if let TypeKind::Enum(ref enum_) = *ty.kind() {
-                                    if ty.name().is_none() &&
-                                        enum_.variants().iter().any(|variant| {
-                                            prefix_path.push(variant.name().into());
-                                            let name = prefix_path[1..].join("::");
-                                            prefix_path.pop().unwrap();
-                                            self.options()
-                                                .whitelisted_vars
-                                                .matches(&name)
-                                        }) {
-                                            return true;
-                                        }
-                                }
+                            if !parent.is_module() {
+                                return false;
                             }
 
-                            false
+
+                            let enum_ = match *ty.kind() {
+                                TypeKind::Enum(ref e) => e,
+                                _ => return false,
+                            };
+
+                            if ty.name().is_some() {
+                                return false;
+                            }
+
+                            let mut prefix_path =
+                                parent.path_for_whitelisting(self);
+                            enum_.variants().iter().any(|variant| {
+                                prefix_path.push(variant.name().into());
+                                let name = prefix_path[1..].join("::");
+                                prefix_path.pop().unwrap();
+                                self.options()
+                                    .whitelisted_vars
+                                    .matches(&name)
+                            })
                         }
                     }
                 })
