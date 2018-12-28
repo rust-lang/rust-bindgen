@@ -2,54 +2,54 @@
 
 use ir::context::BindgenContext;
 use ir::layout::Layout;
-use proc_macro2::{self, Ident, Span};
+use proc_macro2::{Ident, Span, TokenStream};
 use quote::TokenStreamExt;
 
 pub mod attributes {
-    use proc_macro2::{self, Ident, Span};
+    use proc_macro2::{Ident, Span, TokenStream};
 
-    pub fn repr(which: &str) -> proc_macro2::TokenStream {
+    pub fn repr(which: &str) -> TokenStream {
         let which = Ident::new(which, Span::call_site());
         quote! {
             #[repr( #which )]
         }
     }
 
-    pub fn repr_list(which_ones: &[&str]) -> proc_macro2::TokenStream {
+    pub fn repr_list(which_ones: &[&str]) -> TokenStream {
         let which_ones = which_ones.iter().cloned().map(|one| Ident::new(one, Span::call_site()));
         quote! {
             #[repr( #( #which_ones ),* )]
         }
     }
 
-    pub fn derives(which_ones: &[&str]) -> proc_macro2::TokenStream {
+    pub fn derives(which_ones: &[&str]) -> TokenStream {
         let which_ones = which_ones.iter().cloned().map(|one| Ident::new(one, Span::call_site()));
         quote! {
             #[derive( #( #which_ones ),* )]
         }
     }
 
-    pub fn inline() -> proc_macro2::TokenStream {
+    pub fn inline() -> TokenStream {
         quote! {
             #[inline]
         }
     }
 
-    pub fn must_use() -> proc_macro2::TokenStream {
+    pub fn must_use() -> TokenStream {
         quote! {
             #[must_use]
         }
     }
 
-    pub fn doc(comment: String) -> proc_macro2::TokenStream {
+    pub fn doc(comment: String) -> TokenStream {
         use std::str::FromStr;
 
         // NOTE(emilio): By this point comments are already preprocessed and in
         // `///` form. Quote turns them into `#[doc]` comments, but oh well.
-        proc_macro2::TokenStream::from_str(&comment).unwrap()
+        TokenStream::from_str(&comment).unwrap()
     }
 
-    pub fn link_name(name: &str) -> proc_macro2::TokenStream {
+    pub fn link_name(name: &str) -> TokenStream {
         // LLVM mangles the name by default but it's already mangled.
         // Prefixing the name with \u{1} should tell LLVM to not mangle it.
         let name = format!("\u{1}{}", name);
@@ -61,7 +61,7 @@ pub mod attributes {
 
 /// Generates a proper type for a field or type with a given `Layout`, that is,
 /// a type with the correct size and alignment restrictions.
-pub fn blob(ctx: &BindgenContext, layout: Layout) -> proc_macro2::TokenStream {
+pub fn blob(ctx: &BindgenContext, layout: Layout) -> TokenStream {
     let opaque = layout.opaque();
 
     // FIXME(emilio, #412): We fall back to byte alignment, but there are
@@ -92,14 +92,14 @@ pub fn blob(ctx: &BindgenContext, layout: Layout) -> proc_macro2::TokenStream {
 }
 
 /// Integer type of the same size as the given `Layout`.
-pub fn integer_type(ctx: &BindgenContext, layout: Layout) -> Option<proc_macro2::TokenStream> {
+pub fn integer_type(ctx: &BindgenContext, layout: Layout) -> Option<TokenStream> {
     let name = Layout::known_type_for_size(ctx, layout.size)?;
     let name = Ident::new(name, Span::call_site());
     Some(quote! { #name })
 }
 
 /// Generates a bitfield allocation unit type for a type with the given `Layout`.
-pub fn bitfield_unit(ctx: &BindgenContext, layout: Layout) -> proc_macro2::TokenStream {
+pub fn bitfield_unit(ctx: &BindgenContext, layout: Layout) -> TokenStream {
     let mut tokens = quote! {};
 
     if ctx.options().enable_cxx_namespaces {
@@ -126,13 +126,14 @@ pub mod ast_ty {
     use ir::function::FunctionSig;
     use ir::layout::Layout;
     use ir::ty::FloatKind;
-    use proc_macro2;
+    use std::str::FromStr;
+    use proc_macro2::{self, TokenStream};
 
-    pub fn raw_type(ctx: &BindgenContext, name: &str) -> proc_macro2::TokenStream {
+    pub fn raw_type(ctx: &BindgenContext, name: &str) -> TokenStream {
         let ident = ctx.rust_ident_raw(name);
         match ctx.options().ctypes_prefix {
             Some(ref prefix) => {
-                let prefix = ctx.rust_ident_raw(prefix.as_str());
+                let prefix = TokenStream::from_str(prefix.as_str()).unwrap();
                 quote! {
                     #prefix::#ident
                 }
@@ -147,7 +148,7 @@ pub mod ast_ty {
         ctx: &BindgenContext,
         fk: FloatKind,
         layout: Option<Layout>,
-    ) -> proc_macro2::TokenStream {
+    ) -> TokenStream {
         // TODO: we probably should take the type layout into account more
         // often?
         //
@@ -187,25 +188,25 @@ pub mod ast_ty {
         }
     }
 
-    pub fn int_expr(val: i64) -> proc_macro2::TokenStream {
+    pub fn int_expr(val: i64) -> TokenStream {
         // Don't use quote! { #val } because that adds the type suffix.
         let val = proc_macro2::Literal::i64_unsuffixed(val);
         quote!(#val)
     }
 
-    pub fn uint_expr(val: u64) -> proc_macro2::TokenStream {
+    pub fn uint_expr(val: u64) -> TokenStream {
         // Don't use quote! { #val } because that adds the type suffix.
         let val = proc_macro2::Literal::u64_unsuffixed(val);
         quote!(#val)
     }
 
-    pub fn byte_array_expr(bytes: &[u8]) -> proc_macro2::TokenStream {
+    pub fn byte_array_expr(bytes: &[u8]) -> TokenStream {
         let mut bytes: Vec<_> = bytes.iter().cloned().collect();
         bytes.push(0);
         quote! { [ #(#bytes),* ] }
     }
 
-    pub fn cstr_expr(mut string: String) -> proc_macro2::TokenStream {
+    pub fn cstr_expr(mut string: String) -> TokenStream {
         string.push('\0');
         let b = proc_macro2::Literal::byte_string(&string.as_bytes());
         quote! {
@@ -216,7 +217,7 @@ pub mod ast_ty {
     pub fn float_expr(
         ctx: &BindgenContext,
         f: f64,
-    ) -> Result<proc_macro2::TokenStream, ()> {
+    ) -> Result<TokenStream, ()> {
         if f.is_finite() {
             let val = proc_macro2::Literal::f64_unsuffixed(f);
 
@@ -250,7 +251,7 @@ pub mod ast_ty {
     pub fn arguments_from_signature(
         signature: &FunctionSig,
         ctx: &BindgenContext,
-    ) -> Vec<proc_macro2::TokenStream> {
+    ) -> Vec<TokenStream> {
         let mut unnamed_arguments = 0;
         signature
             .argument_types()
