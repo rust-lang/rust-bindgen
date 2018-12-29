@@ -91,11 +91,11 @@ where
 }
 #[repr(C)]
 #[derive(Default)]
-pub struct __IncompleteArrayField<T>(::std::marker::PhantomData<T>);
+pub struct __IncompleteArrayField<T>(::std::marker::PhantomData<T>, [T; 0]);
 impl<T> __IncompleteArrayField<T> {
     #[inline]
     pub fn new() -> Self {
-        __IncompleteArrayField(::std::marker::PhantomData)
+        __IncompleteArrayField(::std::marker::PhantomData, [])
     }
     #[inline]
     pub unsafe fn as_ptr(&self) -> *const T {
@@ -125,7 +125,6 @@ impl<T> ::std::clone::Clone for __IncompleteArrayField<T> {
         Self::new()
     }
 }
-impl<T> ::std::marker::Copy for __IncompleteArrayField<T> {}
 #[repr(C)]
 #[derive(Debug)]
 pub struct rte_kni_fifo {

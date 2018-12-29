@@ -9,11 +9,11 @@
 
 #[repr(C)]
 #[derive(Default)]
-pub struct __IncompleteArrayField<T>(::std::marker::PhantomData<T>);
+pub struct __IncompleteArrayField<T>(::std::marker::PhantomData<T>, [T; 0]);
 impl<T> __IncompleteArrayField<T> {
     #[inline]
     pub fn new() -> Self {
-        __IncompleteArrayField(::std::marker::PhantomData)
+        __IncompleteArrayField(::std::marker::PhantomData, [])
     }
     #[inline]
     pub unsafe fn as_ptr(&self) -> *const T {
@@ -43,7 +43,6 @@ impl<T> ::std::clone::Clone for __IncompleteArrayField<T> {
         Self::new()
     }
 }
-impl<T> ::std::marker::Copy for __IncompleteArrayField<T> {}
 pub const RTE_CACHE_LINE_SIZE: u32 = 64;
 pub const RTE_LIBRTE_IP_FRAG_MAX_FRAG: u32 = 4;
 pub const IP_LAST_FRAG_IDX: _bindgen_ty_1 = _bindgen_ty_1::IP_LAST_FRAG_IDX;
