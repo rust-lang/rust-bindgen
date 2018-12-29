@@ -43,12 +43,12 @@ use proc_macro2::{self, Ident, Span};
 use std;
 use std::borrow::Cow;
 use std::cell::Cell;
-use std::collections::{HashSet, VecDeque};
-use std::collections::hash_map::{Entry, HashMap};
+use std::collections::VecDeque;
 use std::fmt::Write;
 use std::iter;
 use std::ops;
 use std::str::FromStr;
+use {HashMap, HashSet, Entry};
 
 // Name of type defined in constified enum module
 pub static CONSTIFIED_ENUM_MODULE_REPR_NAME: &'static str = "Type";
@@ -2638,7 +2638,7 @@ impl CodeGenerator for Enum {
         );
 
         // A map where we keep a value -> variant relation.
-        let mut seen_values = HashMap::<_, Ident>::new();
+        let mut seen_values = HashMap::<_, Ident>::default();
         let enum_rust_ty = item.to_rust_ty_or_opaque(ctx, &());
         let is_toplevel = item.is_toplevel(ctx);
 
@@ -3546,11 +3546,12 @@ pub(crate) fn codegen(context: BindgenContext) -> (Vec<proc_macro2::TokenStream>
 
         debug!("codegen: {:?}", context.options());
 
-        let codegen_items = context.codegen_items();
         if context.options().emit_ir {
-            for &id in codegen_items {
-                let item = context.resolve_item(id);
-                println!("ir: {:?} = {:#?}", id, item);
+            let codegen_items = context.codegen_items();
+            for (id, item) in context.items() {
+                if codegen_items.contains(&id) {
+                    println!("ir: {:?} = {:#?}", id, item);
+                }
             }
         }
 
