@@ -2573,7 +2573,11 @@ impl CodeGenerator for Enum {
         if variation.is_rust() {
             attrs.push(attributes::repr(repr_name));
         } else if variation.is_bitfield() {
-            attrs.push(attributes::repr("C"));
+            if ctx.options().rust_features.repr_transparent {
+                attrs.push(attributes::repr("transparent"));
+            } else {
+                attrs.push(attributes::repr("C"));
+            }
         }
 
         if let Some(comment) = item.comment(ctx) {
