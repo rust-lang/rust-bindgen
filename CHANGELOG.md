@@ -56,7 +56,10 @@ Released YYYY/MM/DD
 
 ## Changed
 
-* TODO (or remove section if none)
+* Bitfield enums now use `#[repr(transparent)]` instead of `#[repr(C)]` when targeting Rust 1.28+. [#1474][]
+
+[#1474]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1474
+
 
 ## Deprecated
 
