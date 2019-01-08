@@ -1673,7 +1673,10 @@ impl CodeGenerator for CompInfo {
             attributes.push(attributes::doc(comment));
         }
         if packed && !is_opaque {
-            attributes.push(attributes::repr_list(&["C", "packed"]));
+            let n = layout.map_or(1, |l| l.align);
+            assert!(ctx.options().rust_features().repr_packed_n || n == 1);
+            let packed_repr = if n == 1 { "packed".to_string() } else { format!("packed({})", n) };
+            attributes.push(attributes::repr_list(&["C", &packed_repr]));
         } else {
             attributes.push(attributes::repr("C"));
         }

@@ -102,6 +102,8 @@ macro_rules! rust_target_base {
             => Stable_1_27 => 1.27;
             /// Rust stable 1.28
             => Stable_1_28 => 1.28;
+            /// Rust stable 1.33
+            => Stable_1_33 => 1.33;
             /// Nightly rust
             => Nightly => nightly;
         );
@@ -189,6 +191,10 @@ rust_feature_def!(
     Stable_1_28 {
         /// repr(transparent) ([PR](https://github.com/rust-lang/rust/pull/51562))
         => repr_transparent;
+    }
+    Stable_1_33 {
+        /// repr(packed(N)) ([PR](https://github.com/rust-lang/rust/pull/57049))
+        => repr_packed_n;
     }
     Nightly {
         /// `thiscall` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/42202))

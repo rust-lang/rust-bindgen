@@ -1,11 +1,12 @@
+// bindgen-flags: --raw-line '#![cfg(feature = "nightly")]' --rust-target 1.33
+
 /// This should not be opaque; we can see the attributes and can pack the
 /// struct.
 struct AlignedToOne {
     int i;
 } __attribute__ ((packed,aligned(1)));
 
-/// This should be opaque because although we can see the attributes, Rust before
-/// 1.33 doesn't have `#[repr(packed(N))]`.
+/// This should be be packed because Rust 1.33 has `#[repr(packed(N))]`.
 struct AlignedToTwo {
     int i;
 } __attribute__ ((packed,aligned(2)));
@@ -24,9 +25,7 @@ struct PackedToOne {
 
 #pragma pack(2)
 
-/// In this case, even if we can detect the weird alignment triggered by
-/// `#pragma pack(2)`, we can't do anything about it because Rust before 1.33
-/// doesn't have `#[repr(packed(N))]`. Therefore, we must make it opaque.
+/// This should be be packed because Rust 1.33 has `#[repr(packed(N))]`.
 struct PackedToTwo {
     int x;
     int y;
