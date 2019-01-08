@@ -4,6 +4,7 @@ extern crate bindgen;
 extern crate shlex;
 
 use bindgen::{Builder, builder, clang_version};
+use std::env;
 use std::fs;
 use std::io::{self, BufRead, BufReader, Error, ErrorKind, Read, Write};
 use std::path::PathBuf;
@@ -13,6 +14,9 @@ use std::sync::{Once, ONCE_INIT};
 #[path = "../src/options.rs"]
 mod options;
 use options::builder_from_flags;
+
+/// The environment variable that determines if test expectations are overwritten.
+static OVERWRITE_ENV_VAR: &str = "BINDGEN_OVERWRITE_EXPECTED";
 
 // Run `rustfmt` on the given source string and return a tuple of the formatted
 // bindings, and rustfmt's stderr.
@@ -197,8 +201,8 @@ fn compare_generated_header(
         }
     }
 
-    // Override the diff.
-    {
+    // Overwrite the expectation with actual output.
+    if env::var_os(OVERWRITE_ENV_VAR).is_some() {
         let mut expectation_file = fs::File::create(&expectation)?;
         expectation_file.write_all(actual.as_bytes())?;
     }
