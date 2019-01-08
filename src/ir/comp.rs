@@ -1649,16 +1649,19 @@ impl IsOpaque for CompInfo {
             return true;
         }
 
-        // We don't have `#[repr(packed = "N")]` in Rust yet, so the best we can
-        // do is make this struct opaque.
-        //
-        // See https://github.com/rust-lang-nursery/rust-bindgen/issues/537 and
-        // https://github.com/rust-lang/rust/issues/33158
-        if self.is_packed(ctx, layout) && layout.map_or(false, |l| l.align > 1) {
-            warn!("Found a type that is both packed and aligned to greater than \
-                   1; Rust doesn't have `#[repr(packed = \"N\")]` yet, so we \
-                   are treating it as opaque");
-            return true;
+        if !ctx.options().rust_features().repr_packed_n {
+            // If we don't have `#[repr(packed(N)]`, the best we can
+            // do is make this struct opaque.
+            //
+            // See https://github.com/rust-lang-nursery/rust-bindgen/issues/537 and
+            // https://github.com/rust-lang/rust/issues/33158
+            if self.is_packed(ctx, layout) && layout.map_or(false, |l| l.align > 1) {
+                warn!("Found a type that is both packed and aligned to greater than \
+                       1; Rust before version 1.33 doesn't have `#[repr(packed(N))]`, so we \
+                       are treating it as opaque. You may wish to set bindgen's rust target \
+                       version to 1.33 or later to enable `#[repr(packed(N))]` support.");
+                return true;
+            }
         }
 
         false

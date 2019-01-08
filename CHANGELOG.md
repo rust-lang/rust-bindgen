@@ -56,10 +56,13 @@ Released YYYY/MM/DD
 
 ## Changed
 
+- `#pragma pack(n)` is now translated to `#[repr(C, packed(n))]` when targeting Rust 1.33+. [#537][]
+
+[#537]: https://github.com/rust-lang-nursery/rust-bindgen/issues/537
+
 * Bitfield enums now use `#[repr(transparent)]` instead of `#[repr(C)]` when targeting Rust 1.28+. [#1474][]
 
 [#1474]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1474
-
 
 ## Deprecated
 

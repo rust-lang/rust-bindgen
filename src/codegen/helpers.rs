@@ -7,6 +7,7 @@ use quote::TokenStreamExt;
 
 pub mod attributes {
     use proc_macro2::{Ident, Span, TokenStream};
+    use std::str::FromStr;
 
     pub fn repr(which: &str) -> TokenStream {
         let which = Ident::new(which, Span::call_site());
@@ -16,7 +17,7 @@ pub mod attributes {
     }
 
     pub fn repr_list(which_ones: &[&str]) -> TokenStream {
-        let which_ones = which_ones.iter().cloned().map(|one| Ident::new(one, Span::call_site()));
+        let which_ones = which_ones.iter().cloned().map(|one| TokenStream::from_str(one).expect("repr to be valid"));
         quote! {
             #[repr( #( #which_ones ),* )]
         }
