@@ -586,8 +586,8 @@ impl Builder {
     ///     .generate()
     ///     .unwrap();
     /// ```
-    pub fn header<T: Into<String>>(mut self, header: T) -> Builder {
-        self.input_headers.push(header.into());
+    pub fn header<T: AsRef<Path>>(mut self, header: T) -> Builder {
+        self.input_headers.push(header.as_ref().to_string_lossy().into());
         self
     }
 
@@ -616,8 +616,8 @@ impl Builder {
     }
 
     /// Set the output graphviz file.
-    pub fn emit_ir_graphviz<T: Into<String>>(mut self, path: T) -> Builder {
-        let path = path.into();
+    pub fn emit_ir_graphviz<T: AsRef<Path>>(mut self, path: T) -> Builder {
+        let path = path.as_ref().to_string_lossy().into();
         self.options.emit_ir_graphviz = Some(path);
         self
     }
