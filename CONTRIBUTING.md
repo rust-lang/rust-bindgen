@@ -118,6 +118,13 @@ $ cargo test
 As long as you aren't making any changes to `bindgen`'s output, running this
 should be sufficient to test your local modifications.
 
+You may set the `BINDGEN_OVERWRITE_EXPECTED` environment variable to overwrite
+the expected bindings with `bindgen`'s current output:
+
+```
+$BINDGEN_OVERWRITE_EXPECTED=1 cargo test
+```
+
 ### Testing Generated Bindings
 
 If your local changes are introducing expected modifications in the
