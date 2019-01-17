@@ -753,10 +753,6 @@ impl CodeGenerator for Type {
                     return;
                 }
 
-                tokens.append_all(quote! {
-                    pub type #rust_name
-                });
-
                 let params: Vec<_> = outer_params.into_iter()
                     .filter_map(|p| p.as_template_param(ctx, &()))
                     .collect();
@@ -773,15 +769,24 @@ impl CodeGenerator for Type {
                         .expect("type parameters can always convert to rust ty OK")
                 }).collect();
 
-                if !params.is_empty() {
+                if params.is_empty() && ctx.options().rust_features.repr_transparent {
                     tokens.append_all(quote! {
-                        < #( #params ),* >
+                        #[repr(transparent)]
+                        pub struct #rust_name(#inner_rust_type);
+                    });
+                } else {
+                    tokens.append_all(quote! {
+                        pub type #rust_name
+                    });
+                    if !params.is_empty() {
+                        tokens.append_all(quote! {
+                            < #( #params ),* >
+                        });
+                    }
+                    tokens.append_all(quote! {
+                        = #inner_rust_type ;
                     });
                 }
-
-                tokens.append_all(quote! {
-                    = #inner_rust_type ;
-                });
 
                 result.push(tokens);
             }

@@ -64,6 +64,11 @@ Released YYYY/MM/DD
 
 [#1474]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1474
 
+* Simple `typedefs` now use unit structs with `#[repr(transparent)]` instead of type aliases when
+  targeting Rust 1.28+. [#1488][]
+
+[#1488]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1488
+
 ## Deprecated
 
 * TODO (or remove section if none)
