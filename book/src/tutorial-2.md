@@ -14,7 +14,7 @@ Here is our `wrapper.h`:
 #include <bzlib.h>
 ```
 
-This is also where we would add any [replacement types](./replacing-types.html),
+This is also where we would add any [replacement types](./replacing-types.md),
 if we were using some.
 
 [spidermonkey]: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/How_to_embed_the_JavaScript_engine
