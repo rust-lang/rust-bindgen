@@ -11,14 +11,14 @@ it ends in `.hpp`. If it doesn't, adding `-x c++` clang args can be used to
 force C++ mode. You probably also want to use `-std=c++14` or similar clang args
 as well.
 
-You pretty much **must** use [whitelisting](./whitelisting.html) when working
+You pretty much **must** use [whitelisting](./whitelisting.md) when working
 with C++ to avoid pulling in all of the `std::*` types, many of which `bindgen`
 cannot handle. Additionally, you may want to mark other types as
-[opaque](./opaque.html) that `bindgen` stumbles on. It is recommended to mark
+[opaque](./opaque.md) that `bindgen` stumbles on. It is recommended to mark
 all of `std::*` opaque, and to whitelist only precisely the functions and types
 you intend to use.
 
-You should read up on the [FAQs](./faq.html) as well.
+You should read up on the [FAQs](./faq.md) as well.
 
 ## Supported Features
 
@@ -50,7 +50,7 @@ Without further ado, here are C++ features that `bindgen` does not support or
 cannot translate into Rust:
 
 * Inline functions and methods: see
-["Why isn't `bindgen` generating bindings to inline functions?"](./faq.html#why-isnt-bindgen-generating-bindings-to-inline-functions)
+["Why isn't `bindgen` generating bindings to inline functions?"](./faq.md#why-isnt-bindgen-generating-bindings-to-inline-functions)
 
 * Template functions, methods of template classes and structs. We don't know
   which monomorphizations exist, and can't create new ones because we aren't a
