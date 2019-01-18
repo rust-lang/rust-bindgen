@@ -1517,6 +1517,10 @@ impl CompInfo {
             }) {
                 info!("Found a struct that was defined within `#pragma packed(...)`");
                 return true;
+            } else if self.has_own_virtual_method {
+                if parent_layout.align == 1 {
+                    return true;
+                }
             }
         }
 
