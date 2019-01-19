@@ -9,38 +9,46 @@
   - [Removed](#removed)
   - [Fixed](#fixed)
   - [Security](#security)
-- [0.33.1](#0331)
-  - [Fixed](#fixed-1)
-- [0.33.0](#0330)
-  - [Added](#added-1)
+- [0.47.0](#0470)
   - [Changed](#changed-1)
-  - [Deprecated](#deprecated-1)
+  - [Fixed](#fixed-1)
+- [0.33.1 .. 0.46.0](#0331--0460)
+  - [Added](#added-1)
   - [Removed](#removed-1)
+  - [Changed](#changed-2)
   - [Fixed](#fixed-2)
+- [0.33.1](#0331)
+  - [Fixed](#fixed-3)
+- [0.33.0](#0330)
+  - [Added](#added-2)
+  - [Changed](#changed-3)
+  - [Deprecated](#deprecated-1)
+  - [Removed](#removed-2)
+  - [Fixed](#fixed-4)
   - [Security](#security-1)
 - [0.32.2](#0322)
-  - [Fixed](#fixed-3)
-- [0.32.1](#0321)
-  - [Fixed](#fixed-4)
-- [0.32.0](#0320)
-  - [Added](#added-2)
-  - [Changed](#changed-2)
   - [Fixed](#fixed-5)
-- [0.31.0](#0310)
-  - [Added](#added-3)
-  - [Changed](#changed-3)
-  - [Deprecated](#deprecated-2)
-  - [Removed](#removed-2)
+- [0.32.1](#0321)
   - [Fixed](#fixed-6)
-- [0.30.0](#0300)
-  - [Added](#added-4)
+- [0.32.0](#0320)
+  - [Added](#added-3)
   - [Changed](#changed-4)
-  - [Deprecated](#deprecated-3)
   - [Fixed](#fixed-7)
-- [0.29.0](#0290)
-  - [Added](#added-5)
+- [0.31.0](#0310)
+  - [Added](#added-4)
   - [Changed](#changed-5)
+  - [Deprecated](#deprecated-2)
+  - [Removed](#removed-3)
   - [Fixed](#fixed-8)
+- [0.30.0](#0300)
+  - [Added](#added-5)
+  - [Changed](#changed-6)
+  - [Deprecated](#deprecated-3)
+  - [Fixed](#fixed-9)
+- [0.29.0](#0290)
+  - [Added](#added-6)
+  - [Changed](#changed-7)
+  - [Fixed](#fixed-10)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -56,13 +64,7 @@ Released YYYY/MM/DD
 
 ## Changed
 
-- `#pragma pack(n)` is now translated to `#[repr(C, packed(n))]` when targeting Rust 1.33+. [#537][]
-
-[#537]: https://github.com/rust-lang-nursery/rust-bindgen/issues/537
-
-* Bitfield enums now use `#[repr(transparent)]` instead of `#[repr(C)]` when targeting Rust 1.28+. [#1474][]
-
-[#1474]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1474
+* TODO (or remove section if none)
 
 ## Deprecated
 
@@ -79,6 +81,91 @@ Released YYYY/MM/DD
 ## Security
 
 * TODO (or remove section if none)
+
+--------------------------------------------------------------------------------
+
+# 0.47.0
+
+Released 2019/01/19
+
+## Changed
+
+- `#pragma pack(n)` is now translated to `#[repr(C, packed(n))]` when targeting Rust 1.33+. [#537][]
+
+[#537]: https://github.com/rust-lang-nursery/rust-bindgen/issues/537
+
+* Bitfield enums now use `#[repr(transparent)]` instead of `#[repr(C)]` when targeting Rust 1.28+. [#1474][]
+
+[#1474]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1474
+
+## Fixed
+
+* `#[repr(packed)]` is now properly added if the struct only contains a vtable.
+  [#1495][]
+
+[#1495]: https://github.com/rust-lang/rust-bindgen/pull/1495
+
+* `clang-sys` should now more accurately find libclang versions when multiple
+  of them are available. [#1489][]
+
+[#1489]: https://github.com/rust-lang/rust-bindgen/pull/1489
+
+--------------------------------------------------------------------------------
+
+# 0.33.1 .. 0.46.0
+
+https://github.com/rust-lang/rust-bindgen/compare/v0.32.2...v0.46.0
+
+(Just a sneak peek, since a lot of stuff has changed :D)
+
+## Added
+
+* APIs to add lines to specific rust modules / C++ namespaces exist now.
+  [#1307][]
+
+[#1307]: https://github.com/rust-lang/rust-bindgen/issues/1307
+
+## Removed
+
+* The link options (`link`, `link_framework`, `link_static`) have been removed.
+  They did nothing already, see [#104][]
+
+[#104]: https://github.com/rust-lang/rust-bindgen/issues/104
+
+## Changed
+
+* Associated constants are used now for bitfield enums when available. [#1166][]
+
+[#1166]: https://github.com/rust-lang/rust-bindgen/issues/1166
+
+* New versions of a bunch of dependencies (syn / quote / etc.).
+
+## Fixed
+
+* Better target information from clang to properly generate types when
+  cross-compiling [#1289][].
+
+[#1289]: https://github.com/rust-lang/rust-bindgen/issues/1289
+
+* Pointer constness was fixed in a bunch of cases when using `int const*` and
+  such. [#1311][] [#1312][].
+
+[#1311]: https://github.com/rust-lang/rust-bindgen/issues/1311
+[#1312]: https://github.com/rust-lang/rust-bindgen/issues/1312
+
+* Bitfields now work properly on big-endian machines. [#1340][]
+
+[#1340]: https://github.com/rust-lang/rust-bindgen/issues/1340
+
+* `wchar_t` layout works properly now. [#1345][]
+
+[#1345]: https://github.com/rust-lang/rust-bindgen/issues/1345
+
+* Functions can be blacklisted now. [#1364][]
+
+[#1364]: https://github.com/rust-lang/rust-bindgen/issues/1364
+
+* ... Lot's more!
 
 --------------------------------------------------------------------------------
 
