@@ -6,6 +6,8 @@
 
 use std::io;
 use std::str::FromStr;
+use std::ffi::OsStr;
+use std::ffi::OsString;
 
 /// Define RustTarget struct definition, Default impl, and conversions
 /// between RustTarget and String.
@@ -58,11 +60,11 @@ macro_rules! rust_target_def {
             }
         }
 
-        impl From<RustTarget> for String {
+        impl From<RustTarget> for OsString {
             fn from(target: RustTarget) -> Self {
                 match target {
                     $(
-                        RustTarget::$release => stringify!($value),
+                        RustTarget::$release => OsStr::new(stringify!($value)).to_os_string(),
                     )*
                 }.into()
             }
@@ -243,7 +245,7 @@ mod test {
     }
 
     fn test_target(target_str: &str, target: RustTarget) {
-        let target_string: String = target.into();
+        let target_string: OsString = target.into();
         assert_eq!(target_str, target_string);
         assert_eq!(target, RustTarget::from_str(target_str).unwrap());
     }

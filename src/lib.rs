@@ -89,6 +89,7 @@ use regex_set::RegexSet;
 pub use codegen::EnumVariation;
 
 use std::borrow::Cow;
+use std::ffi::OsString;
 use std::fs::{File, OpenOptions};
 use std::io::{self, Write};
 use std::iter;
@@ -102,9 +103,9 @@ type HashSet<K> = ::hashbrown::HashSet<K>;
 pub(crate) use ::hashbrown::hash_map::Entry;
 
 fn args_are_cpp(clang_args: &[String]) -> bool {
-    return clang_args
+    clang_args
         .windows(2)
-        .any(|w| w[0] == "-xc++" || w[1] == "-xc++" || w == &["-x", "c++"]);
+        .any(|w| w[0] == "-xc++" || w[1] == "-xc++" || w == &["-x", "c++"])
 }
 
 bitflags! {
@@ -199,9 +200,9 @@ impl Default for CodegenConfig {
 #[derive(Debug, Default)]
 pub struct Builder {
     options: BindgenOptions,
-    input_headers: Vec<String>,
+    input_headers: Vec<PathBuf>,
     // Tuples of unsaved file contents of the form (name, contents).
-    input_header_contents: Vec<(String, String)>,
+    input_header_contents: Vec<(PathBuf, String)>,
 }
 
 /// Construct a new [`Builder`](./struct.Builder.html).
@@ -211,12 +212,12 @@ pub fn builder() -> Builder {
 
 impl Builder {
     /// Generates the command line flags use for creating `Builder`.
-    pub fn command_line_flags(&self) -> Vec<String> {
-        let mut output_vector: Vec<String> = Vec::new();
+    pub fn command_line_flags(&self) -> Vec<OsString> {
+        let mut output_vector: Vec<OsString> = Vec::new();
 
         if let Some(header) = self.input_headers.last().cloned() {
             // Positional argument 'header'
-            output_vector.push(header);
+            output_vector.push(header.into());
         }
 
         output_vector.push("--rust-target".into());
@@ -238,7 +239,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--bitfield-enum".into());
-                output_vector.push(item.to_owned());
+                output_vector.push(item.into());
             })
             .count();
 
@@ -248,7 +249,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--rustified-enum".into());
-                output_vector.push(item.to_owned());
+                output_vector.push(item.into());
             })
             .count();
 
@@ -258,7 +259,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--constified-enum-module".into());
-                output_vector.push(item.to_owned());
+                output_vector.push(item.into());
             })
             .count();
 
@@ -268,7 +269,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--constified-enum".into());
-                output_vector.push(item.to_owned());
+                output_vector.push(item.into());
             })
             .count();
 
@@ -278,7 +279,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--blacklist-type".into());
-                output_vector.push(item.to_owned());
+                output_vector.push(item.into());
             })
             .count();
 
@@ -288,7 +289,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--blacklist-function".into());
-                output_vector.push(item.to_owned());
+                output_vector.push(item.into());
             })
             .count();
 
@@ -298,7 +299,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--blacklist-item".into());
-                output_vector.push(item.to_owned());
+                output_vector.push(item.into());
             })
             .count();
 
@@ -378,7 +379,7 @@ impl Builder {
 
         if let Some(ref prefix) = self.options.ctypes_prefix {
             output_vector.push("--ctypes-prefix".into());
-            output_vector.push(prefix.clone());
+            output_vector.push(prefix.into());
         }
 
         if self.options.emit_ast {
@@ -390,7 +391,7 @@ impl Builder {
         }
         if let Some(ref graph) = self.options.emit_ir_graphviz {
             output_vector.push("--emit-ir-graphviz".into());
-            output_vector.push(graph.clone())
+            output_vector.push(graph.into())
         }
         if self.options.enable_cxx_namespaces {
             output_vector.push("--enable-cxx-namespaces".into());
@@ -429,7 +430,7 @@ impl Builder {
             options.push("destructors".into());
         }
 
-        output_vector.push(options.join(","));
+        output_vector.push(options.join(",").into());
 
         if !self.options.codegen_config.methods() {
             output_vector.push("--ignore-methods".into());
@@ -449,7 +450,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--opaque-type".into());
-                output_vector.push(item.to_owned());
+                output_vector.push(item.into());
             })
             .count();
 
@@ -458,7 +459,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--raw-line".into());
-                output_vector.push(item.to_owned());
+                output_vector.push(item.into());
             })
             .count();
 
@@ -476,7 +477,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--whitelist-function".into());
-                output_vector.push(item.to_owned());
+                output_vector.push(item.into());
             })
             .count();
 
@@ -486,7 +487,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--whitelist-type".into());
-                output_vector.push(item.to_owned());
+                output_vector.push(item.into());
             })
             .count();
 
@@ -496,21 +497,21 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--whitelist-var".into());
-                output_vector.push(item.to_owned());
+                output_vector.push(item.into());
             })
             .count();
 
         output_vector.push("--".into());
 
         if !self.options.clang_args.is_empty() {
-            output_vector.extend(self.options.clang_args.iter().cloned());
+            output_vector.extend(self.options.clang_args.iter().map(|arg| arg.into()));
         }
 
         if self.input_headers.len() > 1 {
             output_vector.extend(
                 self.input_headers[..self.input_headers.len() - 1]
                     .iter()
-                    .cloned(),
+                    .map(|arg| arg.into()),
             );
         }
 
@@ -537,7 +538,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--no-partialeq".into());
-                output_vector.push(item.to_owned());
+                output_vector.push(item.into());
             })
             .count();
 
@@ -547,7 +548,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--no-copy".into());
-                output_vector.push(item.to_owned());
+                output_vector.push(item.into());
             })
             .count();
 
@@ -557,7 +558,7 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--no-hash".into());
-                output_vector.push(item.to_owned());
+                output_vector.push(item.into());
             })
             .count();
 
@@ -587,7 +588,7 @@ impl Builder {
     ///     .unwrap();
     /// ```
     pub fn header<T: AsRef<Path>>(mut self, header: T) -> Builder {
-        self.input_headers.push(header.as_ref().to_string_lossy().into());
+        self.input_headers.push(header.as_ref().to_path_buf());
         self
     }
 
@@ -617,7 +618,7 @@ impl Builder {
 
     /// Set the output graphviz file.
     pub fn emit_ir_graphviz<T: AsRef<Path>>(mut self, path: T) -> Builder {
-        let path = path.as_ref().to_string_lossy().into();
+        let path = path.as_ref().to_path_buf();
         self.options.emit_ir_graphviz = Some(path);
         self
     }
@@ -1173,7 +1174,8 @@ impl Builder {
             self.input_headers
                 .drain(..)
                 .flat_map(|header| {
-                    iter::once("-include".into()).chain(iter::once(header))
+                    let header = header.to_string_lossy();
+                    iter::once("-include".into()).chain(iter::once(header.into()))
                 }),
         );
 
@@ -1192,7 +1194,7 @@ impl Builder {
     /// issues. The resulting file will be named something like `__bindgen.i` or
     /// `__bindgen.ii`
     pub fn dump_preprocessed_input(&self) -> io::Result<()> {
-        fn check_is_cpp(name_file: &str) -> bool {
+        fn check_is_cpp(name_file: &Path) -> bool {
             name_file.ends_with(".hpp") || name_file.ends_with(".hxx")
                 || name_file.ends_with(".hh")
                 || name_file.ends_with(".h++")
@@ -1214,7 +1216,7 @@ impl Builder {
             is_cpp |= check_is_cpp(header);
 
             wrapper_contents.push_str("#include \"");
-            wrapper_contents.push_str(header);
+            wrapper_contents.push_str(&header.to_string_lossy());
             wrapper_contents.push_str("\"\n");
         }
 
@@ -1224,7 +1226,7 @@ impl Builder {
             is_cpp |= check_is_cpp(name);
 
             wrapper_contents.push_str("#line 0 \"");
-            wrapper_contents.push_str(name);
+            wrapper_contents.push_str(&name.to_string_lossy());
             wrapper_contents.push_str("\"\n");
             wrapper_contents.push_str(contents);
         }
@@ -1355,7 +1357,7 @@ struct BindgenOptions {
     emit_ir: bool,
 
     /// Output graphviz dot file.
-    emit_ir_graphviz: Option<String>,
+    emit_ir_graphviz: Option<PathBuf>,
 
     /// True if we should emulate C++ namespaces with Rust modules in the
     /// generated bindings.
@@ -1443,7 +1445,7 @@ struct BindgenOptions {
     clang_args: Vec<String>,
 
     /// The input header file.
-    input_header: Option<String>,
+    input_header: Option<PathBuf>,
 
     /// Unsaved files for input.
     input_unsaved_files: Vec<clang::UnsavedFile>,
@@ -1754,16 +1756,16 @@ impl Bindings {
         if let Some(h) = options.input_header.as_ref() {
             if let Ok(md) = std::fs::metadata(h) {
                 if md.is_dir() {
-                    eprintln!("error: '{}' is a folder", h);
+                    eprintln!("error: '{}' is a folder", h.display());
                     return Err(());
                 }
                 if !can_read(&md.permissions()) {
-                    eprintln!("error: insufficient permissions to read '{}'", h);
+                    eprintln!("error: insufficient permissions to read '{}'", h.display());
                     return Err(());
                 }
-                options.clang_args.push(h.clone())
+                options.clang_args.push(h.to_string_lossy().into())
             } else {
-                eprintln!("error: header '{}' does not exist.", h);
+                eprintln!("error: header '{}' does not exist.", h.display());
                 return Err(());
             }
         }
@@ -2052,7 +2054,7 @@ fn commandline_flag_unit_test_function() {
         "functions,types,vars,methods,constructors,destructors",
     ].iter()
         .map(|&x| x.into())
-        .collect::<Vec<String>>();
+        .collect::<Vec<OsString>>();
 
     assert!(test_cases.iter().all(
         |ref x| command_line_flags.contains(x),
@@ -2077,7 +2079,7 @@ fn commandline_flag_unit_test_function() {
         "safe_function",
     ].iter()
         .map(|&x| x.into())
-        .collect::<Vec<String>>();
+        .collect::<Vec<OsString>>();
     println!("{:?}", command_line_flags);
 
     assert!(test_cases.iter().all(

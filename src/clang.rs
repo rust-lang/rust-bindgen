@@ -13,6 +13,7 @@ use std::fmt;
 use std::hash::Hash;
 use std::hash::Hasher;
 use std::os::raw::{c_char, c_int, c_uint, c_ulong, c_longlong, c_ulonglong};
+use std::path::Path;
 
 /// A cursor into the Clang AST, pointing to an AST node.
 ///
@@ -1550,8 +1551,8 @@ pub struct UnsavedFile {
 
 impl UnsavedFile {
     /// Construct a new unsaved file with the given `name` and `contents`.
-    pub fn new(name: &str, contents: &str) -> UnsavedFile {
-        let name = CString::new(name).unwrap();
+    pub fn new(name: &Path, contents: &str) -> UnsavedFile {
+        let name = CString::new(name.to_string_lossy().as_ref()).unwrap();
         let contents = CString::new(contents).unwrap();
         let x = CXUnsavedFile {
             Filename: name.as_ptr(),

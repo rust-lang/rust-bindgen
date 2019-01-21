@@ -3564,7 +3564,7 @@ pub(crate) fn codegen(context: BindgenContext) -> (Vec<proc_macro2::TokenStream>
 
         if let Some(path) = context.options().emit_ir_graphviz.as_ref() {
             match dot::write_dot_file(context, path) {
-                Ok(()) => info!("Your dot file was generated successfully into: {}", path),
+                Ok(()) => info!("Your dot file was generated successfully into: {}", path.display()),
                 Err(e) => error!("{}", e),
             }
         }

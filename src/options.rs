@@ -1,5 +1,6 @@
 use bindgen::{Builder, CodegenConfig, RUST_TARGET_STRINGS, RustTarget, builder, EnumVariation};
 use clap::{App, Arg};
+use std::ffi::OsString;
 use std::fs::File;
 use std::io::{self, Error, ErrorKind, Write, stderr};
 use std::path::PathBuf;
@@ -15,7 +16,7 @@ where
     let rust_target_help = format!(
         "Version of the Rust compiler to target. Valid options are: {:?}. Defaults to {:?}.",
         RUST_TARGET_STRINGS,
-        String::from(RustTarget::default())
+        OsString::from(RustTarget::default())
     );
 
     let matches = App::new("bindgen")
