@@ -1835,7 +1835,7 @@ impl Bindings {
                 writer.write(rustfmt_bindings.as_bytes())?;
             },
             Err(err) => {
-                eprintln!("{:?}", err);
+                eprintln!("Failed to run rustfmt: {} (non-fatal, continuing)", err);
                 writer.write(bindings.as_bytes())?;
             },
         }
