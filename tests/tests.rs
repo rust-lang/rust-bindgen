@@ -207,7 +207,7 @@ fn compare_generated_header(
         expectation_file.write_all(actual.as_bytes())?;
     }
 
-    Err(Error::new(ErrorKind::Other, "Header and binding differ!"))
+    Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation."))
 }
 
 fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {

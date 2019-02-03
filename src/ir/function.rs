@@ -337,7 +337,8 @@ impl FunctionSig {
         debug!("FunctionSig::from_ty {:?} {:?}", ty, cursor);
 
         // Skip function templates
-        if cursor.kind() == CXCursor_FunctionTemplate {
+        let kind = cursor.kind();
+        if kind == CXCursor_FunctionTemplate {
             return Err(ParseError::Continue);
         }
 
@@ -347,13 +348,22 @@ impl FunctionSig {
             return Err(ParseError::Continue);
         }
 
+        // Constructors of non-type template parameter classes for some reason
+        // include the template parameter in their name. Just skip them, since
+        // we don't handle well non-type template parameters anyway.
+        if (kind == CXCursor_Constructor || kind == CXCursor_Destructor) &&
+            spelling.contains('<')
+        {
+            return Err(ParseError::Continue);
+        }
+
         let cursor = if cursor.is_valid() {
             *cursor
         } else {
             ty.declaration()
         };
 
-        let mut args: Vec<_> = match cursor.kind() {
+        let mut args: Vec<_> = match kind {
             CXCursor_FunctionDecl |
             CXCursor_Constructor |
             CXCursor_CXXMethod |
@@ -397,9 +407,9 @@ impl FunctionSig {
         let must_use =
             ctx.options().enable_function_attribute_detection &&
             cursor.has_simple_attr("warn_unused_result");
-        let is_method = cursor.kind() == CXCursor_CXXMethod;
-        let is_constructor = cursor.kind() == CXCursor_Constructor;
-        let is_destructor = cursor.kind() == CXCursor_Destructor;
+        let is_method = kind == CXCursor_CXXMethod;
+        let is_constructor = kind == CXCursor_Constructor;
+        let is_destructor = kind == CXCursor_Destructor;
         if (is_constructor || is_destructor || is_method) &&
             cursor.lexical_parent() != cursor.semantic_parent()
         {
@@ -442,8 +452,8 @@ impl FunctionSig {
             }
         }
 
-        let ty_ret_type = if cursor.kind() == CXCursor_ObjCInstanceMethodDecl ||
-            cursor.kind() == CXCursor_ObjCClassMethodDecl
+        let ty_ret_type = if kind == CXCursor_ObjCInstanceMethodDecl ||
+            kind == CXCursor_ObjCClassMethodDecl
         {
             ty.ret_type().or_else(|| cursor.ret_type()).ok_or(
                 ParseError::Continue,
