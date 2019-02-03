@@ -550,33 +550,27 @@ impl Cursor {
 
     /// Given that this cursor's referent is a function, return cursors to its
     /// parameters.
+    ///
+    /// Returns None if the cursor's referent is not a function/method call or
+    /// declaration.
     pub fn args(&self) -> Option<Vec<Cursor>> {
-        // XXX: We might want to use and keep num_args
         // match self.kind() {
         // CXCursor_FunctionDecl |
         // CXCursor_CXXMethod => {
-        unsafe {
-            let w = clang_Cursor_getNumArguments(self.x);
-            if w == -1 {
-                None
-            } else {
-                let num = w as u32;
-
-                let mut args = vec![];
-                for i in 0..num {
-                    args.push(Cursor {
-                        x: clang_Cursor_getArgument(self.x, i as c_uint),
-                    });
+        self.num_args().ok().map(|num| {
+            (0..num).map(|i| {
+                Cursor {
+                    x: unsafe { clang_Cursor_getArgument(self.x, i as c_uint) },
                 }
-                Some(args)
-            }
-        }
+            })
+            .collect()
+        })
     }
 
     /// Given that this cursor's referent is a function/method call or
     /// declaration, return the number of arguments it takes.
     ///
-    /// Returns -1 if the cursor's referent is not a function/method call or
+    /// Returns Err if the cursor's referent is not a function/method call or
     /// declaration.
     pub fn num_args(&self) -> Result<u32, ()> {
         unsafe {
@@ -1016,6 +1010,31 @@ impl Type {
             }
         })
     }
+
+    /// Given that this type is a function prototype, return the types of its parameters.
+    ///
+    /// Returns None if the type is not a function prototype.
+    pub fn args(&self) -> Option<Vec<Type>> {
+        self.num_args().ok().map(|num| {
+            (0..num).map(|i| {
+                Type {
+                    x: unsafe { clang_getArgType(self.x, i as c_uint) },
+                }
+            })
+            .collect()
+        })
+    }
+
+    /// Given that this type is a function prototype, return the number of arguments it takes.
+    ///
+    /// Returns Err if the type is not a function prototype.
+    pub fn num_args(&self) -> Result<u32, ()> {
+        unsafe {
+            let w = clang_getNumArgTypes(self.x);
+            if w == -1 { Err(()) } else { Ok(w as u32) }
+        }
+    }
+
 
     /// Given that this type is a pointer type, return the type that it points
     /// to.

@@ -309,6 +309,31 @@ pub fn cursor_mangling(
     Some(mangling)
 }
 
+fn args_from_ty_and_cursor(
+    ty: &clang::Type,
+    cursor: &clang::Cursor,
+    ctx: &mut BindgenContext,
+) -> Vec<(Option<String>, TypeId)> {
+    match (cursor.args(), ty.args()) {
+        (Some(cursor_args), Some(ty_args)) => {
+            ty_args.iter().enumerate().map(|(i, ty)| {
+                let name = cursor_args.get(i)
+                    .map(|c| c.spelling())
+                    .and_then(|name| if name.is_empty() { None } else { Some(name) });
+                (name, Item::from_ty_or_ref(*ty, *cursor, None, ctx))
+            }).collect()
+        }
+        (Some(cursor_args), None) => {
+            cursor_args.iter().map(|cursor| {
+                let name = cursor.spelling();
+                let name = if name.is_empty() { None } else { Some(name) };
+                (name, Item::from_ty_or_ref(cursor.cur_type(), *cursor, None, ctx))
+            }).collect()
+        }
+        _ => panic!()
+    }
+}
+
 impl FunctionSig {
     /// Construct a new function signature.
     pub fn new(
@@ -363,28 +388,14 @@ impl FunctionSig {
             ty.declaration()
         };
 
-        let mut args: Vec<_> = match kind {
+        let mut args = match kind {
             CXCursor_FunctionDecl |
             CXCursor_Constructor |
             CXCursor_CXXMethod |
             CXCursor_ObjCInstanceMethodDecl |
             CXCursor_ObjCClassMethodDecl => {
-                // For CXCursor_FunctionDecl, cursor.args() is the reliable way
-                // to get parameter names and types.
-                cursor
-                    .args()
-                    .unwrap()
-                    .iter()
-                    .map(|arg| {
-                        let arg_ty = arg.cur_type();
-                        let name = arg.spelling();
-                        let name =
-                            if name.is_empty() { None } else { Some(name) };
-                        let ty = Item::from_ty_or_ref(arg_ty, *arg, None, ctx);
-                        (name, ty)
-                    })
-                    .collect()
-            }
+                args_from_ty_and_cursor(&ty, &cursor, ctx)
+            },
             _ => {
                 // For non-CXCursor_FunctionDecl, visiting the cursor's children
                 // is the only reliable way to get parameter names.

@@ -1449,6 +1449,7 @@ impl ClangItemParser for Item {
         let is_const = ty.is_const();
         let kind = TypeKind::UnresolvedTypeRef(ty, location, parent_id);
         let current_module = ctx.current_module();
+
         ctx.add_item(
             Item::new(
                 potential_id,
