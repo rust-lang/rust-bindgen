@@ -66,6 +66,10 @@ equivalent-but-smaller test cases that exhibit the same bug with `creduce`.
 reducing = parser.add_argument_group("reducing arguments", REDUCING_DESC.strip())
 
 reducing.add_argument(
+    "--release",
+    action="store_true",
+    help="Use a release instead of a debug build.")
+reducing.add_argument(
     "--expect-bindgen-fail",
     action="store_true",
     help="Exit non-zero if `bindgen` successfully emits bindings.")
@@ -194,13 +198,13 @@ def run_bindgen(args, bindings):
     manifest_path = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]),
                                                  "..",
                                                  "Cargo.toml"))
-    child = run(
-        ["cargo", "run",
-         "--manifest-path", manifest_path,
-         "--",
-         args.input, "-o", bindings] + shlex.split(args.bindgen_args),
-        stderr=subprocess.PIPE,
-        stdout=subprocess.PIPE)
+    command = ["cargo", "run", "--manifest-path", manifest_path]
+    if args.release:
+        command += ["--release"]
+    command += ["--", args.input, "-o", bindings]
+    command += shlex.split(args.bindgen_args)
+
+    child = run(command, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 
     if args.bindgen_grep:
         pattern = regexp(args.bindgen_grep)
