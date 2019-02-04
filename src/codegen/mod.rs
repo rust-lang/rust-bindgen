@@ -1504,14 +1504,15 @@ impl CodeGenerator for CompInfo {
                     continue;
                 }
 
-                let inner = base.ty.to_rust_ty_or_opaque(ctx, &());
+                let inner_item = ctx.resolve_item(base.ty);
+                let mut inner = inner_item.to_rust_ty_or_opaque(ctx, &());
+                inner.append_implicit_template_params(ctx, &inner_item);
                 let field_name = ctx.rust_ident(&base.field_name);
 
-                let base_ty = ctx.resolve_type(base.ty);
-                struct_layout.saw_base(base_ty);
+                struct_layout.saw_base(inner_item.expect_type());
 
                 fields.push(quote! {
-                    pub #field_name : #inner ,
+                    pub #field_name: #inner,
                 });
             }
         }
