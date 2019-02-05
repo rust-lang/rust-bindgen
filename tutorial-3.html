@@ -141,7 +141,7 @@
                 <div id="content" class="content">
                     <main>
                         <a class="header" href="#create-a-buildrs-file" id="create-a-buildrs-file"><h1>Create a <code>build.rs</code> File</h1></a>
-<p>We create a <code>build.rs</code> file in our crate's root. Cargo will pick up on the existence of this file and compile and executed it before the rest of the crate is built.
+<p>We create a <code>build.rs</code> file in our crate's root. Cargo will pick up on the existence of this file, then compile and execute it before the rest of the crate is built.
 This can be used to generate code at compile time.
 And of course in our case, we will be generating Rust FFI
 bindings to <code>bzip2</code> at compile time. The resulting bindings will be written to
