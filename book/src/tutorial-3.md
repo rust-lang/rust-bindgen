@@ -1,6 +1,6 @@
 # Create a `build.rs` File
 
-We create a `build.rs` file in our crate's root. Cargo will pick up on the existence of this file and compile and executed it before the rest of the crate is built.
+We create a `build.rs` file in our crate's root. Cargo will pick up on the existence of this file, then compile and execute it before the rest of the crate is built.
 This can be used to generate code at compile time.
 And of course in our case, we will be generating Rust FFI
 bindings to `bzip2` at compile time. The resulting bindings will be written to
