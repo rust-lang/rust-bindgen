@@ -18,3 +18,7 @@ extern "C" {
     #[link_name = "\u{1}_Z19dispatch_data_applyPvU13block_pointerFbS_yPKvyE"]
     pub fn dispatch_data_apply(data: dispatch_data_t, applier: dispatch_data_applier_t) -> bool;
 }
+extern "C" {
+    #[link_name = "\u{1}_Z3fooU13block_pointerFvyE"]
+    pub fn foo(arg1: *mut ::std::os::raw::c_void) -> bool;
+}
