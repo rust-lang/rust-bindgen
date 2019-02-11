@@ -3961,7 +3961,7 @@ mod utils {
         };
 
         quote! {
-            *const ::block::Block<(#(#args),*), #ret_ty>
+            *const ::block::Block<(#(#args,)*), #ret_ty>
         }
     }
 }
