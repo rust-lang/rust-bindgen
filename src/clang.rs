@@ -931,18 +931,37 @@ impl Type {
         unsafe { clang_isConstQualifiedType(self.x) != 0 }
     }
 
+    #[inline]
+    fn is_non_deductible_auto_type(&self) -> bool {
+        self.kind() == CXType_Auto && self.canonical_type() == *self
+    }
+
+    #[inline]
+    fn clang_size_of(&self) -> c_longlong {
+        if self.is_non_deductible_auto_type() {
+            return -6; // Work-around https://bugs.llvm.org/show_bug.cgi?id=40813
+        }
+        unsafe { clang_Type_getSizeOf(self.x) }
+    }
+
+    #[inline]
+    fn clang_align_of(&self) -> c_longlong {
+        if self.is_non_deductible_auto_type() {
+            return -6; // Work-around https://bugs.llvm.org/show_bug.cgi?id=40813
+        }
+        unsafe { clang_Type_getAlignOf(self.x) }
+    }
+
     /// What is the size of this type? Paper over invalid types by returning `0`
     /// for them.
     pub fn size(&self) -> usize {
-        unsafe {
-            let val = clang_Type_getSizeOf(self.x);
-            if val < 0 { 0 } else { val as usize }
-        }
+        let val = self.clang_size_of();
+        if val < 0 { 0 } else { val as usize }
     }
 
     /// What is the size of this type?
     pub fn fallible_size(&self) -> Result<usize, LayoutError> {
-        let val = unsafe { clang_Type_getSizeOf(self.x) };
+        let val = self.clang_size_of();
         if val < 0 {
             Err(LayoutError::from(val as i32))
         } else {
@@ -953,21 +972,17 @@ impl Type {
     /// What is the alignment of this type? Paper over invalid types by
     /// returning `0`.
     pub fn align(&self) -> usize {
-        unsafe {
-            let val = clang_Type_getAlignOf(self.x);
-            if val < 0 { 0 } else { val as usize }
-        }
+        let val = self.clang_align_of();
+        if val < 0 { 0 } else { val as usize }
     }
 
     /// What is the alignment of this type?
     pub fn fallible_align(&self) -> Result<usize, LayoutError> {
-        unsafe {
-            let val = clang_Type_getAlignOf(self.x);
-            if val < 0 {
-                Err(LayoutError::from(val as i32))
-            } else {
-                Ok(val as usize)
-            }
+        let val = self.clang_align_of();
+        if val < 0 {
+            Err(LayoutError::from(val as i32))
+        } else {
+            Ok(val as usize)
         }
     }
 
