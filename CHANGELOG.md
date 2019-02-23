@@ -9,46 +9,51 @@
   - [Removed](#removed)
   - [Fixed](#fixed)
   - [Security](#security)
-- [0.47.0](#0470)
-  - [Changed](#changed-1)
+- [0.47.2](#0472)
   - [Fixed](#fixed-1)
+- [0.47.1](#0471)
+  - [Changed](#changed-1)
+  - [Fixed](#fixed-2)
+- [0.47.0](#0470)
+  - [Changed](#changed-2)
+  - [Fixed](#fixed-3)
 - [0.33.1 .. 0.46.0](#0331--0460)
   - [Added](#added-1)
   - [Removed](#removed-1)
-  - [Changed](#changed-2)
-  - [Fixed](#fixed-2)
+  - [Changed](#changed-3)
+  - [Fixed](#fixed-4)
 - [0.33.1](#0331)
-  - [Fixed](#fixed-3)
+  - [Fixed](#fixed-5)
 - [0.33.0](#0330)
   - [Added](#added-2)
-  - [Changed](#changed-3)
+  - [Changed](#changed-4)
   - [Deprecated](#deprecated-1)
   - [Removed](#removed-2)
-  - [Fixed](#fixed-4)
+  - [Fixed](#fixed-6)
   - [Security](#security-1)
 - [0.32.2](#0322)
-  - [Fixed](#fixed-5)
+  - [Fixed](#fixed-7)
 - [0.32.1](#0321)
-  - [Fixed](#fixed-6)
+  - [Fixed](#fixed-8)
 - [0.32.0](#0320)
   - [Added](#added-3)
-  - [Changed](#changed-4)
-  - [Fixed](#fixed-7)
+  - [Changed](#changed-5)
+  - [Fixed](#fixed-9)
 - [0.31.0](#0310)
   - [Added](#added-4)
-  - [Changed](#changed-5)
+  - [Changed](#changed-6)
   - [Deprecated](#deprecated-2)
   - [Removed](#removed-3)
-  - [Fixed](#fixed-8)
+  - [Fixed](#fixed-10)
 - [0.30.0](#0300)
   - [Added](#added-5)
-  - [Changed](#changed-6)
+  - [Changed](#changed-7)
   - [Deprecated](#deprecated-3)
-  - [Fixed](#fixed-9)
+  - [Fixed](#fixed-11)
 - [0.29.0](#0290)
   - [Added](#added-6)
-  - [Changed](#changed-7)
-  - [Fixed](#fixed-10)
+  - [Changed](#changed-8)
+  - [Fixed](#fixed-12)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -81,6 +86,43 @@ Released YYYY/MM/DD
 ## Security
 
 * TODO (or remove section if none)
+
+--------------------------------------------------------------------------------
+
+# 0.47.2
+
+Released 2019/02/22
+
+## Fixed
+
+* @flowbish fixed code generation for nested function prototypes. [#1508][]
+* Some complex C++ constructs no longer panic on code generation [#1513][]
+* Implicit template parameters are now appended to base classes [#1515][]
+* @flier fixed single-argument block pointers [#1519][]
+* Bindgen won't panic when parsing an undeduced auto type [#1525][]
+
+[#1508]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1508
+[#1513]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1513
+[#1515]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1515
+[#1519]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1519
+[#1525]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1525
+
+--------------------------------------------------------------------------------
+
+# 0.47.1
+
+Released 2019/02/02
+
+## Changed
+
+* @luser improved the error message when rustfmt cannot be found [#1501][]
+
+## Fixed
+
+* Reverted `clang-sys` update for regressions [#1505][]
+
+[#1505]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1505
+[#1501]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1501
 
 --------------------------------------------------------------------------------
 
