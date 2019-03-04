@@ -127,6 +127,7 @@ fn bindgen_test_layout_rte_atomic16_t() {
 }
 /// The generic rte_mbuf, containing a packet mbuf.
 #[repr(C)]
+#[repr(align(64))]
 pub struct rte_mbuf {
     pub cacheline0: MARKER,
     ///< Virtual address of segment buffer.
@@ -236,10 +237,10 @@ pub union rte_mbuf__bindgen_ty_2 {
     _bindgen_union_align: u32,
 }
 #[repr(C)]
+#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_2__bindgen_ty_1 {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize], u8>,
-    pub __bindgen_align: [u32; 0usize],
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_2__bindgen_ty_1() {
@@ -722,10 +723,10 @@ pub union rte_mbuf__bindgen_ty_5 {
     _bindgen_union_align: u64,
 }
 #[repr(C)]
+#[repr(align(8))]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct rte_mbuf__bindgen_ty_5__bindgen_ty_1 {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize], u16>,
-    pub __bindgen_align: [u64; 0usize],
 }
 #[test]
 fn bindgen_test_layout_rte_mbuf__bindgen_ty_5__bindgen_ty_1() {
@@ -887,6 +888,11 @@ fn bindgen_test_layout_rte_mbuf() {
         ::std::mem::size_of::<rte_mbuf>(),
         128usize,
         concat!("Size of: ", stringify!(rte_mbuf))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_mbuf>(),
+        64usize,
+        concat!("Alignment of ", stringify!(rte_mbuf))
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<rte_mbuf>())).cacheline0 as *const _ as usize },

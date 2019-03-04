@@ -45,7 +45,7 @@ impl ::std::ops::BitAndAssign for Foo {
         self.0 &= rhs.0;
     }
 }
-#[repr(C)]
+#[repr(transparent)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Foo(pub i32);
 impl Buz {
@@ -86,7 +86,7 @@ impl ::std::ops::BitAndAssign for Buz {
         self.0 &= rhs.0;
     }
 }
-#[repr(C)]
+#[repr(transparent)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Buz(pub i8);
 pub const NS_FOO: _bindgen_ty_1 = _bindgen_ty_1(1);
@@ -117,7 +117,7 @@ impl ::std::ops::BitAndAssign for _bindgen_ty_1 {
         self.0 &= rhs.0;
     }
 }
-#[repr(C)]
+#[repr(transparent)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct _bindgen_ty_1(pub u32);
 #[repr(C)]
@@ -153,7 +153,7 @@ impl ::std::ops::BitAndAssign for Dummy__bindgen_ty_1 {
         self.0 &= rhs.0;
     }
 }
-#[repr(C)]
+#[repr(transparent)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Dummy__bindgen_ty_1(pub u32);
 #[test]

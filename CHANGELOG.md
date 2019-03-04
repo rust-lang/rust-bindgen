@@ -9,53 +9,56 @@
   - [Removed](#removed)
   - [Fixed](#fixed)
   - [Security](#security)
-- [0.47.3](#0473)
+- [0.48.0](#0480)
   - [Changed](#changed-1)
-- [0.47.2](#0472)
   - [Fixed](#fixed-1)
-- [0.47.1](#0471)
+- [0.47.3](#0473)
   - [Changed](#changed-2)
+- [0.47.2](#0472)
   - [Fixed](#fixed-2)
-- [0.47.0](#0470)
+- [0.47.1](#0471)
   - [Changed](#changed-3)
   - [Fixed](#fixed-3)
+- [0.47.0](#0470)
+  - [Changed](#changed-4)
+  - [Fixed](#fixed-4)
 - [0.33.1 .. 0.46.0](#0331--0460)
   - [Added](#added-1)
   - [Removed](#removed-1)
-  - [Changed](#changed-4)
-  - [Fixed](#fixed-4)
-- [0.33.1](#0331)
+  - [Changed](#changed-5)
   - [Fixed](#fixed-5)
+- [0.33.1](#0331)
+  - [Fixed](#fixed-6)
 - [0.33.0](#0330)
   - [Added](#added-2)
-  - [Changed](#changed-5)
+  - [Changed](#changed-6)
   - [Deprecated](#deprecated-1)
   - [Removed](#removed-2)
-  - [Fixed](#fixed-6)
+  - [Fixed](#fixed-7)
   - [Security](#security-1)
 - [0.32.2](#0322)
-  - [Fixed](#fixed-7)
-- [0.32.1](#0321)
   - [Fixed](#fixed-8)
+- [0.32.1](#0321)
+  - [Fixed](#fixed-9)
 - [0.32.0](#0320)
   - [Added](#added-3)
-  - [Changed](#changed-6)
-  - [Fixed](#fixed-9)
+  - [Changed](#changed-7)
+  - [Fixed](#fixed-10)
 - [0.31.0](#0310)
   - [Added](#added-4)
-  - [Changed](#changed-7)
+  - [Changed](#changed-8)
   - [Deprecated](#deprecated-2)
   - [Removed](#removed-3)
-  - [Fixed](#fixed-10)
+  - [Fixed](#fixed-11)
 - [0.30.0](#0300)
   - [Added](#added-5)
-  - [Changed](#changed-8)
+  - [Changed](#changed-9)
   - [Deprecated](#deprecated-3)
-  - [Fixed](#fixed-11)
+  - [Fixed](#fixed-12)
 - [0.29.0](#0290)
   - [Added](#added-6)
-  - [Changed](#changed-9)
-  - [Fixed](#fixed-12)
+  - [Changed](#changed-10)
+  - [Fixed](#fixed-13)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -88,6 +91,25 @@ Released YYYY/MM/DD
 ## Security
 
 * TODO (or remove section if none)
+
+
+--------------------------------------------------------------------------------
+
+# 0.48.0
+
+Released 2019/03/04
+
+## Changed
+
+* Default rust target was changed to 1.33, which means that bindgen can get much
+  more often the layout of structs right. [#1529][]
+
+## Fixed
+
+* Bindgen will output repr(align) just when needed for unions. [#1498][]
+
+[#1529]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1529
+[#1498]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1498
 
 --------------------------------------------------------------------------------
 

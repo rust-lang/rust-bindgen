@@ -85,9 +85,9 @@ impl<'a> StructLayoutTracker<'a> {
         name: &'a str,
     ) -> Self {
         StructLayoutTracker {
-            name: name,
-            ctx: ctx,
-            comp: comp,
+            name,
+            ctx,
+            comp,
             is_packed: comp.is_packed(ctx, &ty.layout(ctx)),
             latest_offset: 0,
             padding_count: 0,

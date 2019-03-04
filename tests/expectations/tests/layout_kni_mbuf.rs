@@ -10,6 +10,7 @@
 pub const RTE_CACHE_LINE_MIN_SIZE: u32 = 64;
 pub const RTE_CACHE_LINE_SIZE: u32 = 64;
 #[repr(C)]
+#[repr(align(64))]
 #[derive(Copy, Clone)]
 pub struct rte_kni_mbuf {
     pub buf_addr: *mut ::std::os::raw::c_void,
@@ -40,6 +41,11 @@ fn bindgen_test_layout_rte_kni_mbuf() {
         ::std::mem::size_of::<rte_kni_mbuf>(),
         128usize,
         concat!("Size of: ", stringify!(rte_kni_mbuf))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_kni_mbuf>(),
+        64usize,
+        concat!("Alignment of ", stringify!(rte_kni_mbuf))
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<rte_kni_mbuf>())).buf_addr as *const _ as usize },

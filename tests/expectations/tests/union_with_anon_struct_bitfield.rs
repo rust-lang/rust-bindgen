@@ -97,10 +97,10 @@ pub union foo {
     _bindgen_union_align: u32,
 }
 #[repr(C)]
+#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct foo__bindgen_ty_1 {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize], u32>,
-    pub __bindgen_align: [u32; 0usize],
 }
 #[test]
 fn bindgen_test_layout_foo__bindgen_ty_1() {

@@ -90,10 +90,10 @@ where
     }
 }
 #[repr(C)]
+#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct mach_msg_type_descriptor_t {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize], u32>,
-    pub __bindgen_align: [u32; 0usize],
 }
 #[test]
 fn bindgen_test_layout_mach_msg_type_descriptor_t() {

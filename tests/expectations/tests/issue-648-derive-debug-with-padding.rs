@@ -12,6 +12,7 @@
 /// up with the reight alignment, we're waiting on `#[repr(align="N")]` to land
 /// in rustc).
 #[repr(C)]
+#[repr(align(64))]
 #[derive(Copy, Clone)]
 pub struct NoDebug {
     pub c: ::std::os::raw::c_char,
@@ -23,6 +24,11 @@ fn bindgen_test_layout_NoDebug() {
         ::std::mem::size_of::<NoDebug>(),
         64usize,
         concat!("Size of: ", stringify!(NoDebug))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<NoDebug>(),
+        64usize,
+        concat!("Alignment of ", stringify!(NoDebug))
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<NoDebug>())).c as *const _ as usize },
@@ -50,6 +56,7 @@ impl ::std::cmp::PartialEq for NoDebug {
 /// we determine Debug derive-ability before we compute padding, which happens at
 /// codegen. (Again, we expect to get the alignment wrong for similar reasons.)
 #[repr(C)]
+#[repr(align(64))]
 #[derive(Copy, Clone)]
 pub struct ShouldDeriveDebugButDoesNot {
     pub c: [::std::os::raw::c_char; 32usize],
@@ -62,6 +69,11 @@ fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
         ::std::mem::size_of::<ShouldDeriveDebugButDoesNot>(),
         64usize,
         concat!("Size of: ", stringify!(ShouldDeriveDebugButDoesNot))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ShouldDeriveDebugButDoesNot>(),
+        64usize,
+        concat!("Alignment of ", stringify!(ShouldDeriveDebugButDoesNot))
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<ShouldDeriveDebugButDoesNot>())).c as *const _ as usize },

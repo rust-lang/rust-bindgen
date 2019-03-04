@@ -90,6 +90,7 @@ where
     }
 }
 #[repr(C)]
+#[repr(align(16))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct HasBigBitfield {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize], u64>,
@@ -101,8 +102,37 @@ fn bindgen_test_layout_HasBigBitfield() {
         16usize,
         concat!("Size of: ", stringify!(HasBigBitfield))
     );
+    assert_eq!(
+        ::std::mem::align_of::<HasBigBitfield>(),
+        16usize,
+        concat!("Alignment of ", stringify!(HasBigBitfield))
+    );
+}
+impl HasBigBitfield {
+    #[inline]
+    pub fn x(&self) -> i128 {
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 128u8) as u128) }
+    }
+    #[inline]
+    pub fn set_x(&mut self, val: i128) {
+        unsafe {
+            let val: u128 = ::std::mem::transmute(val);
+            self._bitfield_1.set(0usize, 128u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(x: i128) -> __BindgenBitfieldUnit<[u8; 16usize], u64> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize], u64> =
+            Default::default();
+        __bindgen_bitfield_unit.set(0usize, 128u8, {
+            let x: u128 = unsafe { ::std::mem::transmute(x) };
+            x as u64
+        });
+        __bindgen_bitfield_unit
+    }
 }
 #[repr(C)]
+#[repr(align(16))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct HasTwoBigBitfields {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize], u64>,
@@ -114,4 +144,47 @@ fn bindgen_test_layout_HasTwoBigBitfields() {
         16usize,
         concat!("Size of: ", stringify!(HasTwoBigBitfields))
     );
+    assert_eq!(
+        ::std::mem::align_of::<HasTwoBigBitfields>(),
+        16usize,
+        concat!("Alignment of ", stringify!(HasTwoBigBitfields))
+    );
+}
+impl HasTwoBigBitfields {
+    #[inline]
+    pub fn x(&self) -> i128 {
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 80u8) as u128) }
+    }
+    #[inline]
+    pub fn set_x(&mut self, val: i128) {
+        unsafe {
+            let val: u128 = ::std::mem::transmute(val);
+            self._bitfield_1.set(0usize, 80u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn y(&self) -> i128 {
+        unsafe { ::std::mem::transmute(self._bitfield_1.get(80usize, 48u8) as u128) }
+    }
+    #[inline]
+    pub fn set_y(&mut self, val: i128) {
+        unsafe {
+            let val: u128 = ::std::mem::transmute(val);
+            self._bitfield_1.set(80usize, 48u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(x: i128, y: i128) -> __BindgenBitfieldUnit<[u8; 16usize], u64> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 16usize], u64> =
+            Default::default();
+        __bindgen_bitfield_unit.set(0usize, 80u8, {
+            let x: u128 = unsafe { ::std::mem::transmute(x) };
+            x as u64
+        });
+        __bindgen_bitfield_unit.set(80usize, 48u8, {
+            let y: u128 = unsafe { ::std::mem::transmute(y) };
+            y as u64
+        });
+        __bindgen_bitfield_unit
+    }
 }

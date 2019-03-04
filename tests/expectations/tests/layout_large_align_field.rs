@@ -176,6 +176,7 @@ fn bindgen_test_layout_ip_frag_key() {
 /// @internal Fragmented packet to reassemble.
 /// First two entries in the frags[] array are for the last and first fragments.
 #[repr(C)]
+#[repr(align(64))]
 #[derive(Copy, Clone)]
 pub struct ip_frag_pkt {
     ///< LRU list
@@ -248,6 +249,11 @@ fn bindgen_test_layout_ip_frag_pkt() {
         ::std::mem::size_of::<ip_frag_pkt>(),
         192usize,
         concat!("Size of: ", stringify!(ip_frag_pkt))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ip_frag_pkt>(),
+        64usize,
+        concat!("Alignment of ", stringify!(ip_frag_pkt))
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<ip_frag_pkt>())).lru as *const _ as usize },
@@ -371,6 +377,7 @@ impl Default for ip_pkt_list {
 }
 /// fragmentation table statistics
 #[repr(C)]
+#[repr(align(64))]
 #[derive(Copy, Clone)]
 pub struct ip_frag_tbl_stat {
     ///< total # of find/insert attempts.
@@ -393,6 +400,11 @@ fn bindgen_test_layout_ip_frag_tbl_stat() {
         ::std::mem::size_of::<ip_frag_tbl_stat>(),
         64usize,
         concat!("Size of: ", stringify!(ip_frag_tbl_stat))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ip_frag_tbl_stat>(),
+        64usize,
+        concat!("Alignment of ", stringify!(ip_frag_tbl_stat))
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<ip_frag_tbl_stat>())).find_num as *const _ as usize },
@@ -462,6 +474,7 @@ impl Default for ip_frag_tbl_stat {
 }
 /// fragmentation table
 #[repr(C)]
+#[repr(align(64))]
 pub struct rte_ip_frag_tbl {
     ///< ttl for table entries.
     pub max_cycles: u64,
@@ -493,6 +506,11 @@ fn bindgen_test_layout_rte_ip_frag_tbl() {
         ::std::mem::size_of::<rte_ip_frag_tbl>(),
         128usize,
         concat!("Size of: ", stringify!(rte_ip_frag_tbl))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_ip_frag_tbl>(),
+        64usize,
+        concat!("Alignment of ", stringify!(rte_ip_frag_tbl))
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<rte_ip_frag_tbl>())).max_cycles as *const _ as usize },
