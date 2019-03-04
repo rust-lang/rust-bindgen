@@ -179,7 +179,6 @@ fn test_bitfield_constructors() {
 
     let mut second = bindings::bitfields::Second {
         _bitfield_1: bindings::bitfields::Second::new_bitfield_1(1337, true),
-        __bindgen_align: [],
     };
     assert!(unsafe { second.assert(1337, true) });
 
@@ -189,7 +188,6 @@ fn test_bitfield_constructors() {
             false,
             bindings::bitfields::ItemKind::ITEM_KIND_TRES,
         ),
-        __bindgen_align: [],
     };
     assert!(unsafe {
         third.assert(42, false, bindings::bitfields::ItemKind::ITEM_KIND_TRES)
