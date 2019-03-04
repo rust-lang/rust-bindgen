@@ -140,6 +140,7 @@ fn bindgen_test_layout_ip_frag_key() {
 /// @internal Fragmented packet to reassemble.
 /// First two entries in the frags[] array are for the last and first fragments.
 #[repr(C)]
+#[repr(align(64))]
 #[derive(Copy, Clone)]
 pub struct ip_frag_pkt {
     ///< LRU list
@@ -212,6 +213,11 @@ fn bindgen_test_layout_ip_frag_pkt() {
         ::std::mem::size_of::<ip_frag_pkt>(),
         192usize,
         concat!("Size of: ", stringify!(ip_frag_pkt))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<ip_frag_pkt>(),
+        64usize,
+        concat!("Alignment of ", stringify!(ip_frag_pkt))
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<ip_frag_pkt>())).lru as *const _ as usize },

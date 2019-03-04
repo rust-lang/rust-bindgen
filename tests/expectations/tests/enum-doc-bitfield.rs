@@ -60,7 +60,7 @@ impl ::std::ops::BitAndAssign for B {
         self.0 &= rhs.0;
     }
 }
-#[repr(C)]
+#[repr(transparent)]
 /// Document enum
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct B(pub u32);

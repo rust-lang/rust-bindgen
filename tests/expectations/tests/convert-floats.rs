@@ -19,7 +19,7 @@ pub struct foo {
     pub bar: ::std::os::raw::c_float,
     pub baz: ::std::os::raw::c_float,
     pub bazz: ::std::os::raw::c_double,
-    pub bazzz: *mut f64,
+    pub bazzz: *mut u128,
     pub complexFloat: __BindgenComplex<::std::os::raw::c_float>,
     pub complexDouble: __BindgenComplex<::std::os::raw::c_double>,
 }

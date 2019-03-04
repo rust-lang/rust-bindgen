@@ -9,6 +9,7 @@
 
 /// <div rustbindgen opaque></div>
 #[repr(C)]
+#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct OtherOpaque {
     pub _bindgen_opaque_blob: u32,

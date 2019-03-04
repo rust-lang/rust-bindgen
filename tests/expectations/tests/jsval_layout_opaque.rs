@@ -176,6 +176,7 @@ pub enum JSWhyMagic {
     JS_WHY_MAGIC_COUNT = 18,
 }
 #[repr(C)]
+#[repr(align(8))]
 #[derive(Copy, Clone)]
 pub union jsval_layout {
     pub asBits: u64,
@@ -188,10 +189,10 @@ pub union jsval_layout {
     _bindgen_union_align: u64,
 }
 #[repr(C)]
+#[repr(align(8))]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct jsval_layout__bindgen_ty_1 {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize], u64>,
-    pub __bindgen_align: [u64; 0usize],
 }
 #[test]
 fn bindgen_test_layout_jsval_layout__bindgen_ty_1() {
@@ -258,6 +259,7 @@ pub struct jsval_layout__bindgen_ty_2 {
     pub payload: jsval_layout__bindgen_ty_2__bindgen_ty_1,
 }
 #[repr(C)]
+#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union jsval_layout__bindgen_ty_2__bindgen_ty_1 {
     pub i32: i32,

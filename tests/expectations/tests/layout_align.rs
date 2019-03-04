@@ -126,6 +126,7 @@ impl<T> ::std::clone::Clone for __IncompleteArrayField<T> {
     }
 }
 #[repr(C)]
+#[repr(align(8))]
 #[derive(Debug)]
 pub struct rte_kni_fifo {
     ///< Next position to be written
@@ -138,7 +139,6 @@ pub struct rte_kni_fifo {
     pub elem_size: ::std::os::raw::c_uint,
     ///< The buffer contains mbuf pointers
     pub buffer: __IncompleteArrayField<*mut ::std::os::raw::c_void>,
-    pub __bindgen_align: [u64; 0usize],
 }
 #[test]
 fn bindgen_test_layout_rte_kni_fifo() {
@@ -159,13 +159,13 @@ impl Default for rte_kni_fifo {
     }
 }
 #[repr(C)]
+#[repr(align(8))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct rte_eth_link {
     ///< ETH_SPEED_NUM_
     pub link_speed: u32,
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize], u8>,
     pub __bindgen_padding_0: [u8; 3usize],
-    pub __bindgen_align: [u64; 0usize],
 }
 #[test]
 fn bindgen_test_layout_rte_eth_link() {

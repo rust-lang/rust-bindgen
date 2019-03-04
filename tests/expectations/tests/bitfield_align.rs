@@ -90,12 +90,12 @@ where
     }
 }
 #[repr(C)]
+#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct A {
     pub x: ::std::os::raw::c_uchar,
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize], u8>,
     pub y: ::std::os::raw::c_uchar,
-    pub __bindgen_align: [u32; 0usize],
 }
 #[test]
 fn bindgen_test_layout_A() {
@@ -290,10 +290,10 @@ impl A {
     }
 }
 #[repr(C)]
+#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct B {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize], u32>,
-    pub __bindgen_align: [u32; 0usize],
 }
 #[test]
 fn bindgen_test_layout_B() {
@@ -421,11 +421,11 @@ impl C {
     }
 }
 #[repr(C)]
+#[repr(align(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Date1 {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 3usize], u8>,
     pub __bindgen_padding_0: u8,
-    pub __bindgen_align: [u16; 0usize],
 }
 #[test]
 fn bindgen_test_layout_Date1() {
@@ -514,10 +514,10 @@ impl Date1 {
     }
 }
 #[repr(C)]
+#[repr(align(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Date2 {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize], u8>,
-    pub __bindgen_align: [u16; 0usize],
 }
 #[test]
 fn bindgen_test_layout_Date2() {
@@ -622,11 +622,11 @@ impl Date2 {
     }
 }
 #[repr(C)]
+#[repr(align(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Date3 {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 3usize], u8>,
     pub byte: ::std::os::raw::c_uchar,
-    pub __bindgen_align: [u16; 0usize],
 }
 #[test]
 fn bindgen_test_layout_Date3() {

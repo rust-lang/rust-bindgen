@@ -39,10 +39,10 @@ fn bindgen_test_layout_AlignedToOne() {
 }
 /// This should be opaque because although we can see the attributes, Rust before
 /// 1.33 doesn't have `#[repr(packed(N))]`.
-#[repr(C)]
+#[repr(C, packed(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct AlignedToTwo {
-    pub _bindgen_opaque_blob: [u16; 2usize],
+    pub i: ::std::os::raw::c_int,
 }
 #[test]
 fn bindgen_test_layout_AlignedToTwo() {
@@ -55,6 +55,16 @@ fn bindgen_test_layout_AlignedToTwo() {
         ::std::mem::align_of::<AlignedToTwo>(),
         2usize,
         concat!("Alignment of ", stringify!(AlignedToTwo))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<AlignedToTwo>())).i as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(AlignedToTwo),
+            "::",
+            stringify!(i)
+        )
     );
 }
 /// This should not be opaque because although `libclang` doesn't give us the
@@ -102,10 +112,11 @@ fn bindgen_test_layout_PackedToOne() {
 /// In this case, even if we can detect the weird alignment triggered by
 /// `#pragma pack(2)`, we can't do anything about it because Rust before 1.33
 /// doesn't have `#[repr(packed(N))]`. Therefore, we must make it opaque.
-#[repr(C)]
+#[repr(C, packed(2))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct PackedToTwo {
-    pub _bindgen_opaque_blob: [u16; 4usize],
+    pub x: ::std::os::raw::c_int,
+    pub y: ::std::os::raw::c_int,
 }
 #[test]
 fn bindgen_test_layout_PackedToTwo() {
@@ -118,5 +129,25 @@ fn bindgen_test_layout_PackedToTwo() {
         ::std::mem::align_of::<PackedToTwo>(),
         2usize,
         concat!("Alignment of ", stringify!(PackedToTwo))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<PackedToTwo>())).x as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(PackedToTwo),
+            "::",
+            stringify!(x)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<PackedToTwo>())).y as *const _ as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(PackedToTwo),
+            "::",
+            stringify!(y)
+        )
     );
 }

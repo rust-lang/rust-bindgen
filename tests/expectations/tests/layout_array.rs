@@ -49,6 +49,7 @@ pub type rte_mempool_get_count =
     ::std::option::Option<unsafe extern "C" fn(mp: *const rte_mempool) -> ::std::os::raw::c_uint>;
 /// Structure defining mempool operations structure
 #[repr(C)]
+#[repr(align(64))]
 #[derive(Copy, Clone)]
 pub struct rte_mempool_ops {
     ///< Name of mempool ops struct.
@@ -71,6 +72,11 @@ fn bindgen_test_layout_rte_mempool_ops() {
         ::std::mem::size_of::<rte_mempool_ops>(),
         128usize,
         concat!("Size of: ", stringify!(rte_mempool_ops))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_mempool_ops>(),
+        64usize,
+        concat!("Alignment of ", stringify!(rte_mempool_ops))
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<rte_mempool_ops>())).name as *const _ as usize },
@@ -186,6 +192,7 @@ fn bindgen_test_layout_rte_spinlock_t() {
 /// any function pointers stored directly in the mempool struct would not be.
 /// This results in us simply having "ops_index" in the mempool struct.
 #[repr(C)]
+#[repr(align(64))]
 #[derive(Copy, Clone)]
 pub struct rte_mempool_ops_table {
     ///< Spinlock for add/delete.
@@ -202,6 +209,11 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         ::std::mem::size_of::<rte_mempool_ops_table>(),
         2112usize,
         concat!("Size of: ", stringify!(rte_mempool_ops_table))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rte_mempool_ops_table>(),
+        64usize,
+        concat!("Alignment of ", stringify!(rte_mempool_ops_table))
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<rte_mempool_ops_table>())).sl as *const _ as usize },
@@ -241,6 +253,7 @@ impl Default for rte_mempool_ops_table {
 }
 /// Structure to hold malloc heap
 #[repr(C)]
+#[repr(align(64))]
 #[derive(Copy, Clone)]
 pub struct malloc_heap {
     pub lock: rte_spinlock_t,
@@ -289,6 +302,11 @@ fn bindgen_test_layout_malloc_heap() {
         ::std::mem::size_of::<malloc_heap>(),
         128usize,
         concat!("Size of: ", stringify!(malloc_heap))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<malloc_heap>(),
+        64usize,
+        concat!("Alignment of ", stringify!(malloc_heap))
     );
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<malloc_heap>())).lock as *const _ as usize },

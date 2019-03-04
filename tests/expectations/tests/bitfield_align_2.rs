@@ -98,10 +98,10 @@ pub enum MyEnum {
     FOUR = 3,
 }
 #[repr(C)]
+#[repr(align(8))]
 #[derive(Debug, Copy, Clone)]
 pub struct TaggedPtr {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize], u64>,
-    pub __bindgen_align: [u64; 0usize],
 }
 #[test]
 fn bindgen_test_layout_TaggedPtr() {

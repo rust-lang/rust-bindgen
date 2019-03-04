@@ -89,6 +89,20 @@ Released YYYY/MM/DD
 
 * TODO (or remove section if none)
 
+
+--------------------------------------------------------------------------------
+
+# 0.48.0
+
+Released 2019/03/04
+
+## Changed
+
+* Default rust target was changed to 1.33, which means that bindgen can get much
+  more often the layout of structs right. [#1529][]
+
+[#1529]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1529
+
 --------------------------------------------------------------------------------
 
 # 0.47.3

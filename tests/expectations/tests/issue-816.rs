@@ -90,10 +90,10 @@ where
     }
 }
 #[repr(C)]
+#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct capabilities {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 16usize], u8>,
-    pub __bindgen_align: [u32; 0usize],
 }
 #[test]
 fn bindgen_test_layout_capabilities() {

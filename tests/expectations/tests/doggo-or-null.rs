@@ -55,6 +55,7 @@ fn bindgen_test_layout_Null() {
 /// probably emit an opaque struct for opaque unions... but until then, we have
 /// this test to make sure that opaque unions don't derive and still compile.
 #[repr(C)]
+#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union DoggoOrNull {
     pub _bindgen_opaque_blob: u32,

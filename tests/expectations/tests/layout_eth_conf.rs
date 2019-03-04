@@ -1830,6 +1830,7 @@ impl Default for rte_eth_conf__bindgen_ty_1 {
     }
 }
 #[repr(C)]
+#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union rte_eth_conf__bindgen_ty_2 {
     pub vmdq_dcb_tx_conf: rte_eth_vmdq_dcb_tx_conf,

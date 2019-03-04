@@ -9,6 +9,7 @@
 
 /// Deriving PartialEq for rust unions is not supported.
 #[repr(C)]
+#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union ShouldNotDerivePartialEq {
     pub a: ::std::os::raw::c_char,

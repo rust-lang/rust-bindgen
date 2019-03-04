@@ -1,3 +1,7 @@
+// bindgen-flags: --rust-target 1.21
+//
+// FIXME: https://github.com/rust-lang/rust-bindgen/issues/1498
+
 struct header
 {
     char proto;
