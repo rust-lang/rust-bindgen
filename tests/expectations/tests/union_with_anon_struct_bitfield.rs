@@ -90,7 +90,6 @@ where
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union foo {
     pub a: ::std::os::raw::c_int,

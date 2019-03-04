@@ -180,7 +180,6 @@ pub struct rte_mbuf {
 /// or non-atomic) is controlled by the CONFIG_RTE_MBUF_REFCNT_ATOMIC
 /// config option.
 #[repr(C)]
-#[repr(align(2))]
 #[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_1 {
     ///< Atomically accessed refcnt
@@ -230,7 +229,6 @@ impl Default for rte_mbuf__bindgen_ty_1 {
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_2 {
     ///< L2/L3/L4 and tunnel information.
@@ -415,7 +413,6 @@ impl Default for rte_mbuf__bindgen_ty_2 {
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_3 {
     ///< RSS hash result if RSS enabled
@@ -435,7 +432,6 @@ pub struct rte_mbuf__bindgen_ty_3__bindgen_ty_1 {
     pub hi: u32,
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1 {
     pub __bindgen_anon_1: rte_mbuf__bindgen_ty_3__bindgen_ty_1__bindgen_ty_1__bindgen_ty_1,
@@ -672,7 +668,6 @@ impl Default for rte_mbuf__bindgen_ty_3 {
     }
 }
 #[repr(C)]
-#[repr(align(8))]
 #[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_4 {
     ///< Can be used for external metadata
@@ -720,7 +715,6 @@ impl Default for rte_mbuf__bindgen_ty_4 {
     }
 }
 #[repr(C)]
-#[repr(align(8))]
 #[derive(Copy, Clone)]
 pub union rte_mbuf__bindgen_ty_5 {
     ///< combined for easy fetch

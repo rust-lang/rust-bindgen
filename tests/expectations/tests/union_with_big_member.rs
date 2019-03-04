@@ -8,7 +8,6 @@
 )]
 
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union WithBigArray {
     pub a: ::std::os::raw::c_int,
@@ -54,7 +53,6 @@ impl Default for WithBigArray {
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union WithBigArray2 {
     pub a: ::std::os::raw::c_int,
@@ -100,7 +98,6 @@ impl Default for WithBigArray2 {
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union WithBigMember {
     pub a: ::std::os::raw::c_int,

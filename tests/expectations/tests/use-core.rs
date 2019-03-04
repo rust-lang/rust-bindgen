@@ -50,7 +50,6 @@ impl Default for foo {
     }
 }
 #[repr(C)]
-#[repr(align(8))]
 #[derive(Copy, Clone)]
 pub union _bindgen_ty_1 {
     pub bar: ::std::os::raw::c_int,

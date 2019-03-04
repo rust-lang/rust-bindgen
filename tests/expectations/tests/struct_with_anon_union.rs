@@ -13,7 +13,6 @@ pub struct foo {
     pub bar: foo__bindgen_ty_1,
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union foo__bindgen_ty_1 {
     pub a: ::std::os::raw::c_uint,

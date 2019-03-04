@@ -335,7 +335,6 @@ impl Default for IncompleteArrayNonCopiable {
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union Union {
     pub d: f32,

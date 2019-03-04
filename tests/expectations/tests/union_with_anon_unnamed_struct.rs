@@ -8,7 +8,6 @@
 )]
 
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union pixel {
     pub rgba: ::std::os::raw::c_uint,

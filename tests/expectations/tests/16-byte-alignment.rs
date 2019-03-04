@@ -15,7 +15,6 @@ pub struct rte_ipv4_tuple {
     pub __bindgen_anon_1: rte_ipv4_tuple__bindgen_ty_1,
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union rte_ipv4_tuple__bindgen_ty_1 {
     pub __bindgen_anon_1: rte_ipv4_tuple__bindgen_ty_1__bindgen_ty_1,
@@ -149,7 +148,6 @@ pub struct rte_ipv6_tuple {
     pub __bindgen_anon_1: rte_ipv6_tuple__bindgen_ty_1,
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union rte_ipv6_tuple__bindgen_ty_1 {
     pub __bindgen_anon_1: rte_ipv6_tuple__bindgen_ty_1__bindgen_ty_1,

@@ -8,7 +8,6 @@
 )]
 
 #[repr(C)]
-#[repr(align(8))]
 pub union UnionWithDtor {
     pub mFoo: ::std::os::raw::c_int,
     pub mBar: *mut ::std::os::raw::c_void,

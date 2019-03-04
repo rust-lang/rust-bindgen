@@ -41,7 +41,6 @@ pub struct c {
     pub __bindgen_anon_1: c__bindgen_ty_1,
 }
 #[repr(C)]
-#[repr(align(1))]
 #[derive(Copy, Clone)]
 pub union c__bindgen_ty_1 {
     _bindgen_union_align: u8,

@@ -8,7 +8,6 @@
 )]
 
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union foo {
     pub bar: foo__bindgen_ty_1,

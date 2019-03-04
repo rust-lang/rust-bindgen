@@ -12,7 +12,6 @@ pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
     #[repr(C)]
-    #[repr(align(4))]
     #[derive(Copy, Clone)]
     pub union bar {
         pub baz: ::std::os::raw::c_int,

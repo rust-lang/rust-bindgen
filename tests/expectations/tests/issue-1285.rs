@@ -12,7 +12,6 @@ pub struct foo {
     pub bar: foo__bindgen_ty_1,
 }
 #[repr(C)]
-#[repr(align(4))]
 pub union foo__bindgen_ty_1 {
     pub a: ::std::os::raw::c_uint,
     pub b: ::std::os::raw::c_ushort,

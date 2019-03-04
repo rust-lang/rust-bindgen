@@ -83,7 +83,6 @@ pub struct basic_string___short {
     pub __data_: *mut basic_string_value_type,
 }
 #[repr(C)]
-#[repr(align(1))]
 pub union basic_string___short__bindgen_ty_1 {
     pub __size_: ::std::os::raw::c_uchar,
     pub __lx: basic_string_value_type,

@@ -54,7 +54,6 @@ fn bindgen_test_layout_A_Segment() {
     );
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union A__bindgen_ty_1 {
     pub f: ::std::os::raw::c_int,
@@ -89,7 +88,6 @@ impl Default for A__bindgen_ty_1 {
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union A__bindgen_ty_2 {
     pub d: ::std::os::raw::c_int,
@@ -233,7 +231,6 @@ pub struct C {
     pub __bindgen_anon_1: C__bindgen_ty_1,
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union C__bindgen_ty_1 {
     pub mFunc: C__bindgen_ty_1__bindgen_ty_1,

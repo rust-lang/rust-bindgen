@@ -8,7 +8,6 @@
 )]
 
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union foo {
     pub a: ::std::os::raw::c_uint,
@@ -16,7 +15,6 @@ pub union foo {
     _bindgen_union_align: u32,
 }
 #[repr(C)]
-#[repr(align(2))]
 #[derive(Copy, Clone)]
 pub union foo__bindgen_ty_1 {
     pub b: ::std::os::raw::c_ushort,

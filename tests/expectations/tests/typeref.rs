@@ -60,7 +60,6 @@ pub struct mozilla_StyleShapeSource {
     pub __bindgen_anon_1: mozilla_StyleShapeSource__bindgen_ty_1,
 }
 #[repr(C)]
-#[repr(align(8))]
 pub union mozilla_StyleShapeSource__bindgen_ty_1 {
     pub mPosition: *mut mozilla_Position,
     pub mFragmentOrURL: *mut mozilla_FragmentOrURL,

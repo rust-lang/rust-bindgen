@@ -15,7 +15,6 @@ pub struct perf_event_attr {
     pub __bindgen_anon_1: perf_event_attr__bindgen_ty_1,
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union perf_event_attr__bindgen_ty_1 {
     pub b: ::std::os::raw::c_int,

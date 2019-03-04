@@ -8,7 +8,6 @@
 )]
 
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union foo {
     pub a: ::std::os::raw::c_uint,
@@ -22,7 +21,6 @@ pub struct foo__bindgen_ty_1 {
     pub __bindgen_anon_2: foo__bindgen_ty_1__bindgen_ty_2,
 }
 #[repr(C)]
-#[repr(align(2))]
 #[derive(Copy, Clone)]
 pub union foo__bindgen_ty_1__bindgen_ty_1 {
     pub b1: ::std::os::raw::c_ushort,
@@ -72,7 +70,6 @@ impl Default for foo__bindgen_ty_1__bindgen_ty_1 {
     }
 }
 #[repr(C)]
-#[repr(align(2))]
 #[derive(Copy, Clone)]
 pub union foo__bindgen_ty_1__bindgen_ty_2 {
     pub c1: ::std::os::raw::c_ushort,

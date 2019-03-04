@@ -13,7 +13,6 @@ pub struct s {
     pub u: s__bindgen_ty_1,
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union s__bindgen_ty_1 {
     pub field: s__bindgen_ty_1_inner,

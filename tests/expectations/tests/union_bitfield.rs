@@ -90,7 +90,6 @@ where
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union U4 {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 1usize], u8>,
@@ -138,7 +137,6 @@ impl U4 {
     }
 }
 #[repr(C)]
-#[repr(align(4))]
 #[derive(Copy, Clone)]
 pub union B {
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize], u32>,

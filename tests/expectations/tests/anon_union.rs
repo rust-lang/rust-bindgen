@@ -33,7 +33,6 @@ pub struct TErrorResult_DOMExceptionInfo {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[repr(align(8))]
 pub union TErrorResult__bindgen_ty_1 {
     pub mMessage: *mut TErrorResult_Message,
     pub mDOMExceptionInfo: *mut TErrorResult_DOMExceptionInfo,

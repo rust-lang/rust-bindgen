@@ -8,7 +8,6 @@
 )]
 
 #[repr(C)]
-#[repr(align(8))]
 #[derive(Copy, Clone)]
 pub union nsStyleUnion {
     pub mInt: ::std::os::raw::c_int,

@@ -1589,6 +1589,7 @@ impl CodeGenerator for CompInfo {
             // TODO(emilio): It'd be nice to unify this with the struct path
             // above somehow.
             let layout = layout.expect("Unable to get layout information?");
+            struct_layout.saw_union(layout);
 
             if struct_layout.requires_explicit_align(layout) {
                 explicit_align = Some(layout.align);
@@ -1600,8 +1601,6 @@ impl CodeGenerator for CompInfo {
                     _bindgen_union_align: #ty ,
                 }
             } else {
-                struct_layout.saw_union(layout);
-
                 quote! {
                     pub bindgen_union_field: #ty ,
                 }
