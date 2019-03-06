@@ -7,6 +7,7 @@
 use cexpr;
 use clang_sys::*;
 use regex;
+use ir::context::BindgenContext;
 use std::{mem, ptr, slice};
 use std::ffi::{CStr, CString};
 use std::fmt;
@@ -933,35 +934,44 @@ impl Type {
 
     #[inline]
     fn is_non_deductible_auto_type(&self) -> bool {
-        self.kind() == CXType_Auto && self.canonical_type() == *self
+        debug_assert_eq!(self.kind(), CXType_Auto);
+        self.canonical_type() == *self
     }
 
     #[inline]
-    fn clang_size_of(&self) -> c_longlong {
-        if self.is_non_deductible_auto_type() {
-            return -6; // Work-around https://bugs.llvm.org/show_bug.cgi?id=40813
+    fn clang_size_of(&self, ctx: &BindgenContext) -> c_longlong {
+        match self.kind() {
+            // Work-around https://bugs.llvm.org/show_bug.cgi?id=40975
+            CXType_RValueReference |
+            CXType_LValueReference => ctx.target_pointer_size() as c_longlong,
+            // Work-around https://bugs.llvm.org/show_bug.cgi?id=40813
+            CXType_Auto if self.is_non_deductible_auto_type() => return -6,
+            _ => unsafe { clang_Type_getSizeOf(self.x) },
         }
-        unsafe { clang_Type_getSizeOf(self.x) }
     }
 
     #[inline]
-    fn clang_align_of(&self) -> c_longlong {
-        if self.is_non_deductible_auto_type() {
-            return -6; // Work-around https://bugs.llvm.org/show_bug.cgi?id=40813
+    fn clang_align_of(&self, ctx: &BindgenContext) -> c_longlong {
+        match self.kind() {
+            // Work-around https://bugs.llvm.org/show_bug.cgi?id=40975
+            CXType_RValueReference |
+            CXType_LValueReference => ctx.target_pointer_size() as c_longlong,
+            // Work-around https://bugs.llvm.org/show_bug.cgi?id=40813
+            CXType_Auto if self.is_non_deductible_auto_type() => return -6,
+            _ => unsafe { clang_Type_getAlignOf(self.x) },
         }
-        unsafe { clang_Type_getAlignOf(self.x) }
     }
 
     /// What is the size of this type? Paper over invalid types by returning `0`
     /// for them.
-    pub fn size(&self) -> usize {
-        let val = self.clang_size_of();
+    pub fn size(&self, ctx: &BindgenContext) -> usize {
+        let val = self.clang_size_of(ctx);
         if val < 0 { 0 } else { val as usize }
     }
 
     /// What is the size of this type?
-    pub fn fallible_size(&self) -> Result<usize, LayoutError> {
-        let val = self.clang_size_of();
+    pub fn fallible_size(&self, ctx: &BindgenContext) -> Result<usize, LayoutError> {
+        let val = self.clang_size_of(ctx);
         if val < 0 {
             Err(LayoutError::from(val as i32))
         } else {
@@ -971,14 +981,14 @@ impl Type {
 
     /// What is the alignment of this type? Paper over invalid types by
     /// returning `0`.
-    pub fn align(&self) -> usize {
-        let val = self.clang_align_of();
+    pub fn align(&self, ctx: &BindgenContext) -> usize {
+        let val = self.clang_align_of(ctx);
         if val < 0 { 0 } else { val as usize }
     }
 
     /// What is the alignment of this type?
-    pub fn fallible_align(&self) -> Result<usize, LayoutError> {
-        let val = self.clang_align_of();
+    pub fn fallible_align(&self, ctx: &BindgenContext) -> Result<usize, LayoutError> {
+        let val = self.clang_align_of(ctx);
         if val < 0 {
             Err(LayoutError::from(val as i32))
         } else {
@@ -988,10 +998,10 @@ impl Type {
 
     /// Get the layout for this type, or an error describing why it does not
     /// have a valid layout.
-    pub fn fallible_layout(&self) -> Result<::ir::layout::Layout, LayoutError> {
+    pub fn fallible_layout(&self, ctx: &BindgenContext) -> Result<::ir::layout::Layout, LayoutError> {
         use ir::layout::Layout;
-        let size = self.fallible_size()?;
-        let align = self.fallible_align()?;
+        let size = self.fallible_size(ctx)?;
+        let align = self.fallible_align(ctx)?;
         Ok(Layout::new(size, align))
     }
 
