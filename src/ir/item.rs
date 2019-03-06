@@ -454,7 +454,7 @@ impl Item {
         ty: &clang::Type,
         ctx: &mut BindgenContext,
     ) -> TypeId {
-        let ty = Opaque::from_clang_ty(ty);
+        let ty = Opaque::from_clang_ty(ty, ctx);
         let kind = ItemKind::Type(ty);
         let parent = ctx.root_module().into();
         ctx.add_item(Item::new(with_id, None, None, parent, kind), None, None);

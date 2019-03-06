@@ -92,6 +92,17 @@ Released YYYY/MM/DD
 
 * TODO (or remove section if none)
 
+--------------------------------------------------------------------------------
+
+# 0.48.1
+
+Released 2019/03/06
+
+## Fixed
+
+* Bindgen will properly lay out types that use reference members. [#1531][]
+
+[#1531]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1531
 
 --------------------------------------------------------------------------------
 

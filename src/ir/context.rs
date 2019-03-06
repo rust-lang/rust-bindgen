@@ -1755,7 +1755,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                             sub_name,
                             template_decl_cursor
                                 .cur_type()
-                                .fallible_layout()
+                                .fallible_layout(self)
                                 .ok(),
                             sub_kind,
                             false,
@@ -1821,7 +1821,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let name = if name.is_empty() { None } else { Some(name) };
         let ty = Type::new(
             name,
-            ty.fallible_layout().ok(),
+            ty.fallible_layout(self).ok(),
             type_kind,
             ty.is_const(),
         );
@@ -1977,7 +1977,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         is_const: bool,
     ) -> TypeId {
         let spelling = ty.spelling();
-        let layout = ty.fallible_layout().ok();
+        let layout = ty.fallible_layout(self).ok();
         let type_kind = TypeKind::ResolvedTypeRef(wrapped_id);
         let ty = Type::new(Some(spelling), layout, type_kind, is_const);
         let item = Item::new(
@@ -2018,7 +2018,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             CXType_UShort => TypeKind::Int(IntKind::UShort),
             CXType_WChar => {
                 TypeKind::Int(IntKind::WChar {
-                    size: ty.fallible_size().expect("Couldn't compute size of wchar_t?"),
+                    size: ty.fallible_size(self).expect("Couldn't compute size of wchar_t?"),
                 })
             },
             CXType_Char16 => TypeKind::Int(IntKind::U16),
@@ -2056,7 +2056,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         let spelling = ty.spelling();
         let is_const = ty.is_const();
-        let layout = ty.fallible_layout().ok();
+        let layout = ty.fallible_layout(self).ok();
         let ty = Type::new(Some(spelling), layout, type_kind, is_const);
         let id = self.next_item_id();
         let item =
