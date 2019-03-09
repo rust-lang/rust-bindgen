@@ -314,24 +314,37 @@ fn args_from_ty_and_cursor(
     cursor: &clang::Cursor,
     ctx: &mut BindgenContext,
 ) -> Vec<(Option<String>, TypeId)> {
-    match (cursor.args(), ty.args()) {
-        (Some(cursor_args), Some(ty_args)) => {
-            ty_args.iter().enumerate().map(|(i, ty)| {
-                let name = cursor_args.get(i)
-                    .map(|c| c.spelling())
-                    .and_then(|name| if name.is_empty() { None } else { Some(name) });
-                (name, Item::from_ty_or_ref(*ty, *cursor, None, ctx))
-            }).collect()
-        }
-        (Some(cursor_args), None) => {
-            cursor_args.iter().map(|cursor| {
-                let name = cursor.spelling();
-                let name = if name.is_empty() { None } else { Some(name) };
-                (name, Item::from_ty_or_ref(cursor.cur_type(), *cursor, None, ctx))
-            }).collect()
-        }
-        _ => panic!()
-    }
+    let cursor_args = cursor.args().unwrap().into_iter();
+    let type_args = ty.args().unwrap_or_default().into_iter();
+
+    // Argument types can be found in either the cursor or the type, but argument names may only be
+    // found on the cursor. We often have access to both a type and a cursor for each argument, but
+    // in some cases we may only have one.
+    //
+    // Prefer using the type as the source of truth for the argument's type, but fall back to
+    // inspecting the cursor (this happens for Objective C interfaces).
+    //
+    // Prefer using the cursor for the argument's type, but fall back to using the parent's cursor
+    // (this happens for function pointer return types).
+    cursor_args
+        .map(Some)
+        .chain(std::iter::repeat(None))
+        .zip(
+            type_args
+            .map(Some)
+            .chain(std::iter::repeat(None))
+        )
+        .take_while(|(cur, ty)| cur.is_some() || ty.is_some())
+        .map(|(arg_cur, arg_ty)| {
+            let name = arg_cur
+                .map(|a| a.spelling())
+                .and_then(|name| if name.is_empty() { None} else { Some(name) });
+
+            let cursor = arg_cur.unwrap_or(*cursor);
+            let ty = arg_ty.unwrap_or(cursor.cur_type());
+            (name, Item::from_ty_or_ref(ty, cursor, None, ctx))
+        })
+        .collect()
 }
 
 impl FunctionSig {
