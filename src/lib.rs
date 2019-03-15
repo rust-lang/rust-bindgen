@@ -31,6 +31,7 @@ extern crate peeking_take_while;
 extern crate quote;
 extern crate proc_macro2;
 extern crate regex;
+extern crate shlex;
 extern crate which;
 
 #[cfg(feature = "logging")]
@@ -1168,6 +1169,17 @@ impl Builder {
 
     /// Generate the Rust bindings using the options built up thus far.
     pub fn generate(mut self) -> Result<Bindings, ()> {
+        // Add any extra arguments from the environment to the clang command line.
+        if let Some(extra_clang_args) = std::env::var("BINDGEN_EXTRA_CLANG_ARGS").ok() {
+            // Try to parse it with shell quoting. If we fail, make it one single big argument.
+            if let Some(strings) = shlex::split(&extra_clang_args) {
+                self.options.clang_args.extend(strings);
+            } else {
+                self.options.clang_args.push(extra_clang_args);
+            };
+        }
+
+        // Transform input headers to arguments on the clang command line.
         self.options.input_header = self.input_headers.pop();
         self.options.clang_args.extend(
             self.input_headers
