@@ -8,8 +8,6 @@ use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::TypeKind;
 use clang;
 use clang_sys::{self, CXCallingConv};
-use ir::derive::{CanTriviallyDeriveDebug, CanTriviallyDeriveHash,
-                 CanTriviallyDerivePartialEqOrPartialOrd, CanDerive};
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use quote;
 use quote::TokenStreamExt;
@@ -630,28 +628,6 @@ impl Trace for FunctionSig {
 
         for &(_, ty) in self.argument_types() {
             tracer.visit_kind(ty.into(), EdgeKind::FunctionParameter);
-        }
-    }
-}
-
-impl CanTriviallyDeriveDebug for FunctionSig {
-    fn can_trivially_derive_debug(&self, _: &BindgenContext) -> bool {
-        self.function_pointers_can_derive()
-    }
-}
-
-impl CanTriviallyDeriveHash for FunctionSig {
-    fn can_trivially_derive_hash(&self, _: &BindgenContext) -> bool {
-        self.function_pointers_can_derive()
-    }
-}
-
-impl CanTriviallyDerivePartialEqOrPartialOrd for FunctionSig {
-    fn can_trivially_derive_partialeq_or_partialord(&self, _: &BindgenContext) -> CanDerive {
-        if self.function_pointers_can_derive() {
-            CanDerive::Yes
-        } else {
-            CanDerive::No
         }
     }
 }

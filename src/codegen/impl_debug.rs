@@ -1,6 +1,5 @@
 use ir::comp::{BitfieldUnit, CompKind, Field, FieldData, FieldMethods};
 use ir::context::BindgenContext;
-use ir::derive::CanTriviallyDeriveDebug;
 use ir::item::{HasTypeParamInArray, IsOpaque, Item, ItemCanonicalName};
 use ir::ty::{RUST_DERIVE_IN_ARRAY_LIMIT, TypeKind};
 use proc_macro2;
@@ -236,7 +235,7 @@ impl<'a> ImplDebug<'a> for Item {
                 let inner_type = ctx.resolve_type(inner).canonical_type(ctx);
                 match *inner_type.kind() {
                     TypeKind::Function(ref sig)
-                        if !sig.can_trivially_derive_debug(ctx) => {
+                        if !sig.function_pointers_can_derive() => {
                             Some((format!("{}: FunctionPointer", name), vec![]))
                     }
                     _ => debug_print(name, quote! { #name_ident }),
