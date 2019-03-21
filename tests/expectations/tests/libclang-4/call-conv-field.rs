@@ -6,7 +6,7 @@
 
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Default, Copy, Clone)]
 pub struct JNINativeInterface_ {
     pub GetVersion: ::std::option::Option<
         unsafe extern "stdcall" fn(env: *mut ::std::os::raw::c_void)
@@ -46,11 +46,6 @@ fn bindgen_test_layout_JNINativeInterface_() {
             stringify!(__hack)
         )
     );
-}
-impl Default for JNINativeInterface_ {
-    fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
-    }
 }
 extern "stdcall" {
     #[link_name = "\u{1}_bar@0"]

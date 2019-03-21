@@ -194,11 +194,7 @@ impl<'ctx> CannotDerive<'ctx> {
                 let inner_type =
                     self.ctx.resolve_type(inner).canonical_type(self.ctx);
                 if let TypeKind::Function(ref sig) = *inner_type.kind() {
-                    if let DeriveTrait::Default = self.derive_trait {
-                        return CanDerive::No
-                    } else {
-                        return self.derive_trait.can_derive_fnptr(sig)
-                    }
+                    return self.derive_trait.can_derive_fnptr(sig)
                 } else {
                     return self.derive_trait.can_derive_pointer();
                 }
