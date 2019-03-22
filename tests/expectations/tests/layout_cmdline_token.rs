@@ -72,7 +72,7 @@ pub type cmdline_parse_token_hdr_t = cmdline_token_hdr;
 /// get_help() fills the dstbuf with the help for the token. It returns
 /// -1 on error and 0 on success.
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct cmdline_token_ops {
     /// parse(token ptr, buf, res pts, buf len)
     pub parse: ::std::option::Option<
@@ -161,11 +161,6 @@ fn bindgen_test_layout_cmdline_token_ops() {
             stringify!(get_help)
         )
     );
-}
-impl Default for cmdline_token_ops {
-    fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
-    }
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]

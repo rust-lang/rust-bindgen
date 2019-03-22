@@ -1,7 +1,6 @@
 //! Common context that is passed around during parsing and codegen.
 
-use super::analysis::{CannotDeriveCopy, CannotDeriveDebug, CannotDeriveDefault,
-                      CannotDeriveHash, CannotDerivePartialEqOrPartialOrd,
+use super::analysis::{CannotDerive, DeriveTrait, as_cannot_derive_set,
                       HasTypeParameterInArray, HasVtableAnalysis,
                       HasVtableResult, HasDestructorAnalysis,
                       UsedTemplateParameters, HasFloat, SizednessAnalysis,
@@ -2426,7 +2425,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let _t = self.timer("compute_cannot_derive_debug");
         assert!(self.cannot_derive_debug.is_none());
         if self.options.derive_debug {
-            self.cannot_derive_debug = Some(analyze::<CannotDeriveDebug>(self));
+            self.cannot_derive_debug = Some(as_cannot_derive_set(analyze::<CannotDerive>((self, DeriveTrait::Debug))));
         }
     }
 
@@ -2450,7 +2449,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         assert!(self.cannot_derive_default.is_none());
         if self.options.derive_default {
             self.cannot_derive_default =
-                Some(analyze::<CannotDeriveDefault>(self));
+                Some(as_cannot_derive_set(analyze::<CannotDerive>((self, DeriveTrait::Default))));
         }
     }
 
@@ -2472,7 +2471,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     fn compute_cannot_derive_copy(&mut self) {
         let _t = self.timer("compute_cannot_derive_copy");
         assert!(self.cannot_derive_copy.is_none());
-        self.cannot_derive_copy = Some(analyze::<CannotDeriveCopy>(self));
+        self.cannot_derive_copy = Some(as_cannot_derive_set(analyze::<CannotDerive>((self, DeriveTrait::Copy))));
     }
 
     /// Compute whether we can derive hash.
@@ -2480,7 +2479,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let _t = self.timer("compute_cannot_derive_hash");
         assert!(self.cannot_derive_hash.is_none());
         if self.options.derive_hash {
-            self.cannot_derive_hash = Some(analyze::<CannotDeriveHash>(self));
+            self.cannot_derive_hash = Some(as_cannot_derive_set(analyze::<CannotDerive>((self, DeriveTrait::Hash))));
         }
     }
 
@@ -2503,7 +2502,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let _t = self.timer("compute_cannot_derive_partialord_partialeq_or_eq");
         assert!(self.cannot_derive_partialeq_or_partialord.is_none());
         if self.options.derive_partialord || self.options.derive_partialeq || self.options.derive_eq {
-            self.cannot_derive_partialeq_or_partialord = Some(analyze::<CannotDerivePartialEqOrPartialOrd>(self));
+            self.cannot_derive_partialeq_or_partialord = Some(analyze::<CannotDerive>((self, DeriveTrait::PartialEqOrPartialOrd)));
         }
     }
 

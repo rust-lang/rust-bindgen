@@ -1746,7 +1746,7 @@ impl CodeGenerator for CompInfo {
             needs_partialeq_impl =
                 ctx.options().derive_partialeq &&
                 ctx.options().impl_partialeq &&
-                ctx.lookup_can_derive_partialeq_or_partialord(item.id()) == CanDerive::ArrayTooLarge;
+                ctx.lookup_can_derive_partialeq_or_partialord(item.id()) == CanDerive::Manually;
         }
 
         if item.can_derive_eq(ctx) {

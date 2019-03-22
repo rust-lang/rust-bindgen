@@ -40,22 +40,14 @@
 // Re-export individual analyses.
 mod template_params;
 pub use self::template_params::UsedTemplateParameters;
-mod derive_debug;
-pub use self::derive_debug::CannotDeriveDebug;
+mod derive;
+pub use self::derive::{CannotDerive, DeriveTrait, as_cannot_derive_set};
 mod has_vtable;
 pub use self::has_vtable::{HasVtable, HasVtableAnalysis, HasVtableResult};
 mod has_destructor;
 pub use self::has_destructor::HasDestructorAnalysis;
-mod derive_default;
-pub use self::derive_default::CannotDeriveDefault;
-mod derive_copy;
-pub use self::derive_copy::CannotDeriveCopy;
 mod has_type_param_in_array;
 pub use self::has_type_param_in_array::HasTypeParameterInArray;
-mod derive_hash;
-pub use self::derive_hash::CannotDeriveHash;
-mod derive_partialeq_or_partialord;
-pub use self::derive_partialeq_or_partialord::CannotDerivePartialEqOrPartialOrd;
 mod has_float;
 pub use self::has_float::HasFloat;
 mod sizedness;

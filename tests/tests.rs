@@ -1,9 +1,11 @@
+#[cfg(feature = "logging")]
+extern crate env_logger;
 extern crate clap;
 extern crate diff;
 extern crate bindgen;
 extern crate shlex;
 
-use bindgen::{Builder, builder, clang_version};
+use bindgen::{Builder, clang_version};
 use std::env;
 use std::fs;
 use std::io::{self, BufRead, BufReader, Error, ErrorKind, Read, Write};
@@ -210,7 +212,17 @@ fn compare_generated_header(
     Err(Error::new(ErrorKind::Other, "Header and binding differ! Run with BINDGEN_OVERWRITE_EXPECTED=1 in the environment to automatically overwrite the expectation."))
 }
 
+fn builder() -> Builder {
+    #[cfg(feature = "logging")]
+    let _ = env_logger::try_init();
+
+    bindgen::builder()
+}
+
 fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
+    #[cfg(feature = "logging")]
+    let _ = env_logger::try_init();
+
     let source = fs::File::open(header)?;
     let reader = BufReader::new(source);
 
