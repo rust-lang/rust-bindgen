@@ -2314,6 +2314,28 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                                 return true;
                             }
 
+                            // Auto-whitelist types that don't need code
+                            // generation if not whitelisting recursively, to
+                            // make the #[derive] analysis not be lame.
+                            if !self.options().whitelist_recursively {
+                                match *ty.kind() {
+                                    TypeKind::Void |
+                                    TypeKind::NullPtr |
+                                    TypeKind::Int(..) |
+                                    TypeKind::Float(..) |
+                                    TypeKind::Complex(..) |
+                                    TypeKind::Array(..) |
+                                    TypeKind::Vector(..) |
+                                    TypeKind::Pointer(..) |
+                                    TypeKind::Reference(..) |
+                                    TypeKind::Function(..) |
+                                    TypeKind::ResolvedTypeRef(..) |
+                                    TypeKind::Opaque |
+                                    TypeKind::TypeParam => return true,
+                                    _ => {},
+                                };
+                            }
+
                             // Unnamed top-level enums are special and we
                             // whitelist them via the `whitelisted_vars` filter,
                             // since they're effectively top-level constants,

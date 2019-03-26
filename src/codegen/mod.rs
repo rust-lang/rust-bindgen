@@ -610,6 +610,8 @@ impl CodeGenerator for Type {
             TypeKind::TypeParam => {
                 // These items don't need code generation, they only need to be
                 // converted to rust types in fields, arguments, and such.
+                // NOTE(emilio): If you add to this list, make sure to also add
+                // it to BindgenContext::compute_whitelisted_and_codegen_items.
                 return;
             }
             TypeKind::TemplateInstantiation(ref inst) => {
