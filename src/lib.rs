@@ -1135,6 +1135,12 @@ impl Builder {
         self
     }
 
+    /// Whether to detect include paths using clang_sys.
+    pub fn detect_include_paths(mut self, doit: bool) -> Self {
+        self.options.detect_include_paths = doit;
+        self
+    }
+
     /// Prepend the enum name to constant or bitfield variants.
     pub fn prepend_enum_name(mut self, doit: bool) -> Self {
         self.options.prepend_enum_name = doit;
@@ -1504,6 +1510,9 @@ struct BindgenOptions {
     /// [1]: https://github.com/rust-lang-nursery/rust-bindgen/issues/528
     enable_mangling: bool,
 
+    /// Whether to detect include paths using clang_sys.
+    detect_include_paths: bool,
+
     /// Whether to prepend the enum name to bitfield or constant variants.
     prepend_enum_name: bool,
 
@@ -1638,6 +1647,7 @@ impl Default for BindgenOptions {
             objc_extern_crate: false,
             block_extern_crate: false,
             enable_mangling: true,
+            detect_include_paths: true,
             prepend_enum_name: true,
             time_phases: false,
             record_matches: true,
@@ -1689,68 +1699,66 @@ impl Bindings {
 
         options.build();
 
-        // Filter out include paths and similar stuff, so we don't incorrectly
-        // promote them to `-isystem`.
-        let clang_args_for_clang_sys = {
-            let mut last_was_include_prefix = false;
-            options.clang_args.iter().filter(|arg| {
-                if last_was_include_prefix {
-                    last_was_include_prefix = false;
-                    return false;
-                }
+        fn detect_include_paths(options: &mut BindgenOptions) {
+            if !options.detect_include_paths {
+                return;
+            }
 
-                let arg = &**arg;
+            // Filter out include paths and similar stuff, so we don't incorrectly
+            // promote them to `-isystem`.
+            let clang_args_for_clang_sys = {
+                let mut last_was_include_prefix = false;
+                options.clang_args.iter().filter(|arg| {
+                    if last_was_include_prefix {
+                        last_was_include_prefix = false;
+                        return false;
+                    }
 
-                // https://clang.llvm.org/docs/ClangCommandLineReference.html
-                // -isystem and -isystem-after are harmless.
-                if arg == "-I" || arg == "--include-directory" {
-                    last_was_include_prefix = true;
-                    return false;
-                }
+                    let arg = &**arg;
 
-                if arg.starts_with("-I") || arg.starts_with("--include-directory=") {
-                    return false;
-                }
+                    // https://clang.llvm.org/docs/ClangCommandLineReference.html
+                    // -isystem and -isystem-after are harmless.
+                    if arg == "-I" || arg == "--include-directory" {
+                        last_was_include_prefix = true;
+                        return false;
+                    }
 
-                true
-            }).cloned().collect::<Vec<_>>()
-        };
+                    if arg.starts_with("-I") || arg.starts_with("--include-directory=") {
+                        return false;
+                    }
 
-        debug!("Trying to find clang with flags: {:?}", clang_args_for_clang_sys);
+                    true
+                }).cloned().collect::<Vec<_>>()
+            };
 
-        // TODO: Make this path fixup configurable?
-        if let Some(clang) = clang_sys::support::Clang::find(
-            None,
-            &clang_args_for_clang_sys,
-        ) {
+            debug!("Trying to find clang with flags: {:?}", clang_args_for_clang_sys);
+
+            let clang = match clang_sys::support::Clang::find(None, &clang_args_for_clang_sys) {
+                None => return,
+                Some(clang) => clang,
+            };
+
             debug!("Found clang: {:?}", clang);
 
-            // If --target is specified, assume caller knows what they're doing
-            // and don't mess with include paths for them
-            let has_target_arg = options
-                .clang_args
-                .iter()
-                .rposition(|arg| arg.starts_with("--target"))
-                .is_some();
-            if !has_target_arg {
-                // Whether we are working with C or C++ inputs.
-                let is_cpp = args_are_cpp(&options.clang_args);
-                let search_paths = if is_cpp {
-                  clang.cpp_search_paths
-                } else {
-                  clang.c_search_paths
-                };
+            // Whether we are working with C or C++ inputs.
+            let is_cpp = args_are_cpp(&options.clang_args);
+            let search_paths = if is_cpp {
+              clang.cpp_search_paths
+            } else {
+              clang.c_search_paths
+            };
 
-                if let Some(search_paths) = search_paths {
-                    for path in search_paths.into_iter() {
-                        if let Ok(path) = path.into_os_string().into_string() {
-                            options.clang_args.push("-isystem".to_owned());
-                            options.clang_args.push(path);
-                        }
+            if let Some(search_paths) = search_paths {
+                for path in search_paths.into_iter() {
+                    if let Ok(path) = path.into_os_string().into_string() {
+                        options.clang_args.push("-isystem".to_owned());
+                        options.clang_args.push(path);
                     }
                 }
             }
         }
+
+        detect_include_paths(&mut options);
 
         #[cfg(unix)]
         fn can_read(perms: &std::fs::Permissions) -> bool {
