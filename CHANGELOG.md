@@ -9,56 +9,62 @@
   - [Removed](#removed)
   - [Fixed](#fixed)
   - [Security](#security)
-- [0.48.0](#0480)
-  - [Changed](#changed-1)
-  - [Fixed](#fixed-1)
-- [0.47.3](#0473)
-  - [Changed](#changed-2)
-- [0.47.2](#0472)
-  - [Fixed](#fixed-2)
-- [0.47.1](#0471)
-  - [Changed](#changed-3)
-  - [Fixed](#fixed-3)
-- [0.47.0](#0470)
-  - [Changed](#changed-4)
-  - [Fixed](#fixed-4)
-- [0.33.1 .. 0.46.0](#0331--0460)
+- [0.49.0](#0490)
   - [Added](#added-1)
-  - [Removed](#removed-1)
-  - [Changed](#changed-5)
+  - [Fixed](#fixed-1)
+  - [Changed](#changed-1)
+- [0.48.1](#0481)
+  - [Fixed](#fixed-2)
+- [0.48.0](#0480)
+  - [Changed](#changed-2)
+  - [Fixed](#fixed-3)
+- [0.47.3](#0473)
+  - [Changed](#changed-3)
+- [0.47.2](#0472)
+  - [Fixed](#fixed-4)
+- [0.47.1](#0471)
+  - [Changed](#changed-4)
   - [Fixed](#fixed-5)
-- [0.33.1](#0331)
+- [0.47.0](#0470)
+  - [Changed](#changed-5)
   - [Fixed](#fixed-6)
-- [0.33.0](#0330)
+- [0.33.1 .. 0.46.0](#0331--0460)
   - [Added](#added-2)
+  - [Removed](#removed-1)
   - [Changed](#changed-6)
-  - [Deprecated](#deprecated-1)
-  - [Removed](#removed-2)
   - [Fixed](#fixed-7)
-  - [Security](#security-1)
-- [0.32.2](#0322)
+- [0.33.1](#0331)
   - [Fixed](#fixed-8)
-- [0.32.1](#0321)
-  - [Fixed](#fixed-9)
-- [0.32.0](#0320)
+- [0.33.0](#0330)
   - [Added](#added-3)
   - [Changed](#changed-7)
+  - [Deprecated](#deprecated-1)
+  - [Removed](#removed-2)
+  - [Fixed](#fixed-9)
+  - [Security](#security-1)
+- [0.32.2](#0322)
   - [Fixed](#fixed-10)
-- [0.31.0](#0310)
+- [0.32.1](#0321)
+  - [Fixed](#fixed-11)
+- [0.32.0](#0320)
   - [Added](#added-4)
   - [Changed](#changed-8)
-  - [Deprecated](#deprecated-2)
-  - [Removed](#removed-3)
-  - [Fixed](#fixed-11)
-- [0.30.0](#0300)
+  - [Fixed](#fixed-12)
+- [0.31.0](#0310)
   - [Added](#added-5)
   - [Changed](#changed-9)
-  - [Deprecated](#deprecated-3)
-  - [Fixed](#fixed-12)
-- [0.29.0](#0290)
+  - [Deprecated](#deprecated-2)
+  - [Removed](#removed-3)
+  - [Fixed](#fixed-13)
+- [0.30.0](#0300)
   - [Added](#added-6)
   - [Changed](#changed-10)
-  - [Fixed](#fixed-13)
+  - [Deprecated](#deprecated-3)
+  - [Fixed](#fixed-14)
+- [0.29.0](#0290)
+  - [Added](#added-7)
+  - [Changed](#changed-11)
+  - [Fixed](#fixed-15)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -93,6 +99,33 @@ Released YYYY/MM/DD
 * TODO (or remove section if none)
 
 --------------------------------------------------------------------------------
+
+# 0.49.0
+
+Released 2019/03/27
+
+## Added
+
+* BINDGEN_EXTRA_CLANG_ARGS environment variable was added (thanks @jhwgh1968!). [#1537][]
+
+## Fixed
+
+* Bindgen will properly name parameters inside nested function pointer
+  declarations (thanks @flowbish!). [#1535][]
+
+## Changed
+
+* Derive code was greatly improved by @jethrogb. [#1540][]
+* Derive analysis now handles trivial types more gracefully. [#1492][]
+* clang-sys was updated by @eclipseo. [#1539][]
+* bindgen should now get include paths correctly even when `--target` is
+  specified. The `detect_include_paths` option can be used to opt-out of this
+  behavior.
+
+[#1535]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1535
+[#1537]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1537
+[#1540]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1540
+[#1492]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1492
 
 # 0.48.1
 
