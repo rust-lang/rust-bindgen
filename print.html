@@ -191,6 +191,10 @@ greater.</p>
 <a class="header" href="#windows" id="windows"><h4>Windows</h4></a>
 <p>Download and install the official pre-built binary from
 <a href="http://releases.llvm.org/download.html">LLVM download page</a>.</p>
+<p>You will also need to set <code>LIBCLANG_PATH</code> as an <a href="https://www.techjunkie.com/environment-variables-windows-10/">environment
+variable</a> pointing
+to the <code>bin</code> directory of your LLVM install. For example, if you installed LLVM
+to <code>D:\programs\LLVM</code>, then you'd set the value to be <code>D:\programs\LLVM\bin</code></p>
 <a class="header" href="#macos" id="macos"><h4>macOS</h4></a>
 <p>If you use Homebrew:</p>
 <pre><code class="language-bash">$ brew install llvm
@@ -241,10 +245,15 @@ as a library inside <code>build.rs</code>.</p>
 systems) on-the-fly.</p>
 <p><a href="https://github.com/fitzgen/bindgen-tutorial-bzip2-sys"><strong>TL;DR?</strong> The full tutorial code is available here.</a></p>
 <a class="header" href="#add-bindgen-as-a-build-dependency" id="add-bindgen-as-a-build-dependency"><h1>Add <code>bindgen</code> as a Build Dependency</h1></a>
-<p>Declare a build-time dependency on <code>bindgen</code> by adding it to the
-<code>[build-dependencies]</code> section of our crate's <code>Cargo.toml</code> metadata file:</p>
+<p>First we need to declare a build-time dependency on <code>bindgen</code> by adding it to
+the <code>[build-dependencies]</code> section of our crate's <code>Cargo.toml</code> file.</p>
+<p>Please always use the latest version of <code>bindgen</code>, it has the most fixes and
+best compatibility. At the time of writing the latest bindgen is <code>0.49.0</code>, but
+you can always check <a href="https://crates.io/crates/bindgen">the bindgen page of
+crates.io</a> to verify the latest version if
+you're unsure.</p>
 <pre><code class="language-toml">[build-dependencies]
-bindgen = &quot;0.42.2&quot;
+bindgen = &quot;0.49.0&quot;
 </code></pre>
 <a class="header" href="#create-a-wrapperh-header" id="create-a-wrapperh-header"><h1>Create a <code>wrapper.h</code> Header</h1></a>
 <p>The <code>wrapper.h</code> file will include all the various headers containing
