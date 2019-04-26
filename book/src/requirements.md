@@ -23,6 +23,11 @@ greater.
 Download and install the official pre-built binary from
 [LLVM download page](http://releases.llvm.org/download.html).
 
+You will also need to set `LIBCLANG_PATH` as an [environment
+variable](https://www.techjunkie.com/environment-variables-windows-10/) pointing
+to the `bin` directory of your LLVM install. For example, if you installed LLVM
+to `D:\programs\LLVM`, then you'd set the value to be `D:\programs\LLVM\bin`
+
 #### macOS
 
 If you use Homebrew:
