@@ -570,7 +570,7 @@ impl CodeGenerator for Var {
                 quote! { mut }
             };
 
-            let mut tokens = quote!(
+            let tokens = quote!(
                 extern "C" {
                     #(#attrs)*
                     pub static #maybe_mut #canonical_ident: #ty;
