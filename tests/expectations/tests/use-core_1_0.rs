@@ -139,7 +139,6 @@ impl Clone for _bindgen_ty_1 {
     }
 }
 extern "C" {
-    #[link_name = "\u{1}bazz"]
     pub static mut bazz: _bindgen_ty_1;
 }
 pub type fooFunction = ::core::option::Option<unsafe extern "C" fn(bar: ::std::os::raw::c_int)>;

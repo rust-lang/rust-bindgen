@@ -41,6 +41,5 @@ impl Default for nsFoo {
     }
 }
 extern "C" {
-    #[link_name = "\u{1}gDetails"]
     pub static gDetails: nsFoo;
 }

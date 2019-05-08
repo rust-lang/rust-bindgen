@@ -51,6 +51,5 @@ fn bindgen_test_layout_JNINativeInterface_() {
     );
 }
 extern "stdcall" {
-    #[link_name = "\u{1}_bar@0"]
     pub fn bar();
 }

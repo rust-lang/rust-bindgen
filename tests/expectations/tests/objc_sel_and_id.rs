@@ -9,11 +9,9 @@ extern crate objc;
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
 extern "C" {
-    #[link_name = "\u{1}object"]
     pub static mut object: id;
 }
 extern "C" {
-    #[link_name = "\u{1}selector"]
     pub static mut selector: objc::runtime::Sel;
 }
 extern "C" {

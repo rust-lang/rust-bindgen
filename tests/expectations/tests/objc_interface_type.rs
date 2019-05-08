@@ -47,6 +47,5 @@ extern "C" {
     pub fn fooFunc(foo: id);
 }
 extern "C" {
-    #[link_name = "\u{1}kFoo"]
     pub static mut kFoo: *const id;
 }
