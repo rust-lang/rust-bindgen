@@ -16,7 +16,6 @@ pub type EasyToOverflow = ::std::os::raw::c_ulonglong;
 pub const k: EasyToOverflow = 2147483648;
 pub const k_expr: EasyToOverflow = 0;
 extern "C" {
-    #[link_name = "\u{1}wow"]
     pub static wow: EasyToOverflow;
 }
 pub const BAZ: ::std::os::raw::c_longlong = 24;

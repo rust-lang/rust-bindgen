@@ -8,18 +8,14 @@
 )]
 
 extern "C" {
-    #[link_name = "\u{1}a"]
     pub static mut a: *mut ::std::os::raw::c_char;
 }
 extern "C" {
-    #[link_name = "\u{1}b"]
     pub static mut b: *const ::std::os::raw::c_char;
 }
 extern "C" {
-    #[link_name = "\u{1}c"]
     pub static c: *mut ::std::os::raw::c_char;
 }
 extern "C" {
-    #[link_name = "\u{1}d"]
     pub static d: *const ::std::os::raw::c_char;
 }

@@ -27,6 +27,5 @@ fn bindgen_test_layout__bindgen_ty_1() {
     );
 }
 extern "C" {
-    #[link_name = "\u{1}a"]
     pub static mut a: _bindgen_ty_1;
 }
