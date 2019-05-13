@@ -29,3 +29,23 @@ fn bindgen_test_layout_Foo() {
         concat!("Alignment of ", stringify!(Foo))
     );
 }
+extern "fastcall" {
+    pub fn fast_call_func_no_args() -> ::std::os::raw::c_int;
+}
+extern "fastcall" {
+    pub fn fast_call_func_many_args(
+        arg1: ::std::os::raw::c_int,
+        arg2: ::std::os::raw::c_int,
+        arg3: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+}
+extern "stdcall" {
+    pub fn std_call_func_no_args() -> ::std::os::raw::c_int;
+}
+extern "stdcall" {
+    pub fn std_call_func_many_args(
+        arg1: ::std::os::raw::c_int,
+        arg2: ::std::os::raw::c_int,
+        arg3: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+}
