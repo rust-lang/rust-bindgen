@@ -9,62 +9,65 @@
   - [Removed](#removed)
   - [Fixed](#fixed)
   - [Security](#security)
-- [0.49.0](#0490)
-  - [Added](#added-1)
+- [0.49.1](#0491)
   - [Fixed](#fixed-1)
   - [Changed](#changed-1)
-- [0.48.1](#0481)
+- [0.49.0](#0490)
+  - [Added](#added-1)
   - [Fixed](#fixed-2)
-- [0.48.0](#0480)
   - [Changed](#changed-2)
+- [0.48.1](#0481)
   - [Fixed](#fixed-3)
-- [0.47.3](#0473)
+- [0.48.0](#0480)
   - [Changed](#changed-3)
-- [0.47.2](#0472)
   - [Fixed](#fixed-4)
-- [0.47.1](#0471)
+- [0.47.3](#0473)
   - [Changed](#changed-4)
+- [0.47.2](#0472)
   - [Fixed](#fixed-5)
-- [0.47.0](#0470)
+- [0.47.1](#0471)
   - [Changed](#changed-5)
   - [Fixed](#fixed-6)
+- [0.47.0](#0470)
+  - [Changed](#changed-6)
+  - [Fixed](#fixed-7)
 - [0.33.1 .. 0.46.0](#0331--0460)
   - [Added](#added-2)
   - [Removed](#removed-1)
-  - [Changed](#changed-6)
-  - [Fixed](#fixed-7)
-- [0.33.1](#0331)
+  - [Changed](#changed-7)
   - [Fixed](#fixed-8)
+- [0.33.1](#0331)
+  - [Fixed](#fixed-9)
 - [0.33.0](#0330)
   - [Added](#added-3)
-  - [Changed](#changed-7)
+  - [Changed](#changed-8)
   - [Deprecated](#deprecated-1)
   - [Removed](#removed-2)
-  - [Fixed](#fixed-9)
+  - [Fixed](#fixed-10)
   - [Security](#security-1)
 - [0.32.2](#0322)
-  - [Fixed](#fixed-10)
-- [0.32.1](#0321)
   - [Fixed](#fixed-11)
+- [0.32.1](#0321)
+  - [Fixed](#fixed-12)
 - [0.32.0](#0320)
   - [Added](#added-4)
-  - [Changed](#changed-8)
-  - [Fixed](#fixed-12)
+  - [Changed](#changed-9)
+  - [Fixed](#fixed-13)
 - [0.31.0](#0310)
   - [Added](#added-5)
-  - [Changed](#changed-9)
+  - [Changed](#changed-10)
   - [Deprecated](#deprecated-2)
   - [Removed](#removed-3)
-  - [Fixed](#fixed-13)
+  - [Fixed](#fixed-14)
 - [0.30.0](#0300)
   - [Added](#added-6)
-  - [Changed](#changed-10)
+  - [Changed](#changed-11)
   - [Deprecated](#deprecated-3)
-  - [Fixed](#fixed-14)
+  - [Fixed](#fixed-15)
 - [0.29.0](#0290)
   - [Added](#added-7)
-  - [Changed](#changed-11)
-  - [Fixed](#fixed-15)
+  - [Changed](#changed-12)
+  - [Fixed](#fixed-16)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -99,6 +102,25 @@ Released YYYY/MM/DD
 * TODO (or remove section if none)
 
 --------------------------------------------------------------------------------
+
+# 0.49.1
+
+Released 2019/05/16
+
+## Fixed
+
+* Bindgen will not emit `#[link_name]` attributes in win32 and macos for
+  C functions and constants where it can detect it's not needed (thanks
+  @michaelwoerister!). [#1558][]
+
+## Changed
+
+* Bindgen will no longer use `hashbrown` internally, and will use fxhash
+  and `std::HashMap`. This is equivalent for newer `rustc`s since `hashbrown`
+  was merged in libstd, and the performance difference should be close to zero
+  for older rustcs.
+
+[#1558]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1558
 
 # 0.49.0
 
