@@ -3908,9 +3908,13 @@ mod utils {
             // [1]: http://c0x.coding-guidelines.com/6.7.5.3.html
             let arg_ty = match *arg_ty.canonical_type(ctx).kind() {
                 TypeKind::Array(t, _) => {
-                    t.to_rust_ty_or_opaque(ctx, &())
-                        .to_ptr(ctx.resolve_type(t).is_const())
-                },
+                    let stream = if ctx.options().array_pointers_in_arguments {
+                        (*arg_ty).to_rust_ty_or_opaque(ctx, &arg_item)
+                    } else {
+                        t.to_rust_ty_or_opaque(ctx, &())
+                    };
+                    stream.to_ptr(ctx.resolve_type(t).is_const())
+                }
                 TypeKind::Pointer(inner) => {
                     let inner = ctx.resolve_item(inner);
                     let inner_ty = inner.expect_type();
