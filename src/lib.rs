@@ -1310,6 +1310,12 @@ impl Builder {
         self.options.no_hash_types.insert(arg.into());
         self
     }
+
+    /// Set whether `arr[size]` should be treated as `*mut T` or `*mut [T; size]` (same for mut)
+    pub fn array_pointers_in_arguments(mut self, doit: bool) -> Self {
+        self.options.array_pointers_in_arguments = doit;
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -1544,6 +1550,9 @@ struct BindgenOptions {
 
     /// The set of types that we should not derive `Hash` for.
     no_hash_types: RegexSet,
+
+    /// Decide if C arrays should be regular pointers in rust or array pointers
+    array_pointers_in_arguments: bool,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -1656,6 +1665,7 @@ impl Default for BindgenOptions {
             no_partialeq_types: Default::default(),
             no_copy_types: Default::default(),
             no_hash_types: Default::default(),
+            array_pointers_in_arguments: false,
         }
     }
 }
