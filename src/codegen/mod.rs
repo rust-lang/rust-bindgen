@@ -3909,7 +3909,7 @@ mod utils {
             let arg_ty = match *arg_ty.canonical_type(ctx).kind() {
                 TypeKind::Array(t, _) => {
                     let stream = if ctx.options().array_pointers_in_arguments {
-                        (*arg_ty).to_rust_ty_or_opaque(ctx, &arg_item)
+                        arg_ty.to_rust_ty_or_opaque(ctx, &arg_item)
                     } else {
                         t.to_rust_ty_or_opaque(ctx, &())
                     };
