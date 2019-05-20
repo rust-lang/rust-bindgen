@@ -444,6 +444,10 @@ impl Builder {
             output_vector.push("--no-prepend-enum-name".into());
         }
 
+        if self.options.array_pointers_in_arguments {
+            output_vector.push("--use-array-pointers-in-arguments".into());
+        }
+
         self.options
             .opaque_types
             .get_items()

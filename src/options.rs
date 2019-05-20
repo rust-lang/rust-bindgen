@@ -326,6 +326,9 @@ where
                 .long("enable-function-attribute-detection")
                 .help("Enables detecting unexposed attributes in functions (slow).
                        Used to generate #[must_use] annotations."),
+            Arg::with_name("use-array-pointers-in-arguments")
+                .long("use-array-pointers-in-arguments")
+                .help("Use `*const [T; size]` instead of `*const T` for C arrays"),
         ]) // .args()
         .get_matches_from(args);
 
@@ -456,6 +459,10 @@ where
 
     if matches.is_present("time-phases") {
         builder = builder.time_phases(true);
+    }
+
+    if matches.is_present("use-array-pointers-in-arguments") {
+        builder = builder.array_pointers_in_arguments(true);
     }
 
     if let Some(prefix) = matches.value_of("ctypes-prefix") {
