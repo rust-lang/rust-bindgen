@@ -144,10 +144,10 @@ Released 2019/03/27
   specified. The `detect_include_paths` option can be used to opt-out of this
   behavior.
 
-[#1535]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1535
-[#1537]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1537
-[#1540]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1540
-[#1492]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1492
+[#1535]: https://github.com/rust-lang/rust-bindgen/issues/1535
+[#1537]: https://github.com/rust-lang/rust-bindgen/issues/1537
+[#1540]: https://github.com/rust-lang/rust-bindgen/issues/1540
+[#1492]: https://github.com/rust-lang/rust-bindgen/issues/1492
 
 # 0.48.1
 
@@ -157,7 +157,7 @@ Released 2019/03/06
 
 * Bindgen will properly lay out types that use reference members. [#1531][]
 
-[#1531]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1531
+[#1531]: https://github.com/rust-lang/rust-bindgen/issues/1531
 
 --------------------------------------------------------------------------------
 
@@ -174,8 +174,8 @@ Released 2019/03/04
 
 * Bindgen will output repr(align) just when needed for unions. [#1498][]
 
-[#1529]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1529
-[#1498]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1498
+[#1529]: https://github.com/rust-lang/rust-bindgen/issues/1529
+[#1498]: https://github.com/rust-lang/rust-bindgen/issues/1498
 
 --------------------------------------------------------------------------------
 
@@ -201,11 +201,11 @@ Released 2019/02/22
 * @flier fixed single-argument block pointers [#1519][]
 * Bindgen won't panic when parsing an undeduced auto type [#1525][]
 
-[#1508]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1508
-[#1513]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1513
-[#1515]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1515
-[#1519]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1519
-[#1525]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1525
+[#1508]: https://github.com/rust-lang/rust-bindgen/issues/1508
+[#1513]: https://github.com/rust-lang/rust-bindgen/issues/1513
+[#1515]: https://github.com/rust-lang/rust-bindgen/issues/1515
+[#1519]: https://github.com/rust-lang/rust-bindgen/issues/1519
+[#1525]: https://github.com/rust-lang/rust-bindgen/issues/1525
 
 --------------------------------------------------------------------------------
 
@@ -221,8 +221,8 @@ Released 2019/02/02
 
 * Reverted `clang-sys` update for regressions [#1505][]
 
-[#1505]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1505
-[#1501]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1501
+[#1505]: https://github.com/rust-lang/rust-bindgen/issues/1505
+[#1501]: https://github.com/rust-lang/rust-bindgen/issues/1501
 
 --------------------------------------------------------------------------------
 
@@ -234,11 +234,11 @@ Released 2019/01/19
 
 - `#pragma pack(n)` is now translated to `#[repr(C, packed(n))]` when targeting Rust 1.33+. [#537][]
 
-[#537]: https://github.com/rust-lang-nursery/rust-bindgen/issues/537
+[#537]: https://github.com/rust-lang/rust-bindgen/issues/537
 
 * Bitfield enums now use `#[repr(transparent)]` instead of `#[repr(C)]` when targeting Rust 1.28+. [#1474][]
 
-[#1474]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1474
+[#1474]: https://github.com/rust-lang/rust-bindgen/issues/1474
 
 ## Fixed
 
@@ -322,7 +322,7 @@ Released 2018/02/14
   libraries, which means that CLIs which use it must be run under `rustup`,
   which is not acceptable for `bindgen`. [#1248][]
 
-[#1248]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1248
+[#1248]: https://github.com/rust-lang/rust-bindgen/issues/1248
 
 --------------------------------------------------------------------------------
 
@@ -369,12 +369,12 @@ Released 2018/01/22
 * Constified code generation for enums with an explicit type of `bool`. [#1145][]
 * Bindgen will now call `rustfmt` directly instead of via `rustup`. [#1184][]
 
-[#1197]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1197
-[#1087]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1087
-[#1216]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1216
-[#1224]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1224
-[#1145]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1145
-[#1184]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1184
+[#1197]: https://github.com/rust-lang/rust-bindgen/issues/1197
+[#1087]: https://github.com/rust-lang/rust-bindgen/issues/1087
+[#1216]: https://github.com/rust-lang/rust-bindgen/issues/1216
+[#1224]: https://github.com/rust-lang/rust-bindgen/issues/1224
+[#1145]: https://github.com/rust-lang/rust-bindgen/issues/1145
+[#1184]: https://github.com/rust-lang/rust-bindgen/issues/1184
 
 # 0.32.1
 
@@ -385,7 +385,7 @@ Released 2017/12/18
 * When translating C/C++ `enum`s into Rust `enum`s using `rustified_enum` /
   `--rustified-enum`, properly add `#[repr(C)]` to the emitted `enum`. [#1183][]
 
-[#1183]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1183
+[#1183]: https://github.com/rust-lang/rust-bindgen/issues/1183
 
 --------------------------------------------------------------------------------
 
@@ -460,18 +460,18 @@ Released 2017/12/08
 * In some cases, generated bit-field getters and setters could access memory
   beyond `self`. This is now fixed. [#954][]
 
-[#1162]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1162
-[#1113]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1113
-[#1112]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1112
-[#1123]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1123
-[#1127]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1127
-[#1136]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1136
-[#1137]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1137
-[#1140]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1140
-[#1146]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1146
-[#1118]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1118
-[#1076]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1076
-[#1158]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1158
+[#1162]: https://github.com/rust-lang/rust-bindgen/issues/1162
+[#1113]: https://github.com/rust-lang/rust-bindgen/issues/1113
+[#1112]: https://github.com/rust-lang/rust-bindgen/issues/1112
+[#1123]: https://github.com/rust-lang/rust-bindgen/issues/1123
+[#1127]: https://github.com/rust-lang/rust-bindgen/issues/1127
+[#1136]: https://github.com/rust-lang/rust-bindgen/issues/1136
+[#1137]: https://github.com/rust-lang/rust-bindgen/issues/1137
+[#1140]: https://github.com/rust-lang/rust-bindgen/issues/1140
+[#1146]: https://github.com/rust-lang/rust-bindgen/issues/1146
+[#1118]: https://github.com/rust-lang/rust-bindgen/issues/1118
+[#1076]: https://github.com/rust-lang/rust-bindgen/issues/1076
+[#1158]: https://github.com/rust-lang/rust-bindgen/issues/1158
 
 --------------------------------------------------------------------------------
 
@@ -526,7 +526,7 @@ Released 2017/10/27
   programs, we feed those into `bindgen` as headers to generate bindings to,
   then test that the generated bindings compile and that their layout tests
   pass. This infrastructure landed in
-  [many small bits](https://github.com/rust-lang-nursery/rust-bindgen/issues?utf8=%E2%9C%93&q=label%3AA-csmith%20is%3Aclosed).
+  [many small bits](https://github.com/rust-lang/rust-bindgen/issues?utf8=%E2%9C%93&q=label%3AA-csmith%20is%3Aclosed).
 
   We <3 folks who [help us find and fix issues via fuzzing][fuzzing]! *hint
   hint*
@@ -634,38 +634,38 @@ Released 2017/10/27
   arrays requires program-specific knowledge that `bindgen` cannot
   have. [#1094][]
 
-[faq]: https://rust-lang-nursery.github.io/rust-bindgen/faq.html
-[fuzzing]: https://github.com/rust-lang-nursery/rust-bindgen/blob/master/csmith-fuzzing/README.md
+[faq]: https://rust-lang.github.io/rust-bindgen/faq.html
+[fuzzing]: https://github.com/rust-lang/rust-bindgen/blob/master/csmith-fuzzing/README.md
 
-[#938]: https://github.com/rust-lang-nursery/rust-bindgen/issues/938
-[#888]: https://github.com/rust-lang-nursery/rust-bindgen/issues/888
-[#944]: https://github.com/rust-lang-nursery/rust-bindgen/issues/944
-[#942]: https://github.com/rust-lang-nursery/rust-bindgen/issues/942
-[#947]: https://github.com/rust-lang-nursery/rust-bindgen/issues/947
-[#953]: https://github.com/rust-lang-nursery/rust-bindgen/issues/953
-[#948]: https://github.com/rust-lang-nursery/rust-bindgen/issues/948
-[#925]: https://github.com/rust-lang-nursery/rust-bindgen/issues/925
-[#758]: https://github.com/rust-lang-nursery/rust-bindgen/issues/758
-[#988]: https://github.com/rust-lang-nursery/rust-bindgen/issues/988
-[#987]: https://github.com/rust-lang-nursery/rust-bindgen/issues/987
-[#985]: https://github.com/rust-lang-nursery/rust-bindgen/issues/985
-[#989]: https://github.com/rust-lang-nursery/rust-bindgen/issues/989
-[#1000]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1000
-[#882]: https://github.com/rust-lang-nursery/rust-bindgen/issues/882
-[#884]: https://github.com/rust-lang-nursery/rust-bindgen/issues/884
-[#996]: https://github.com/rust-lang-nursery/rust-bindgen/issues/996
-[#982]: https://github.com/rust-lang-nursery/rust-bindgen/issues/982
-[#1008]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1008
-[#1022]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1022
-[#1048]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1048
-[#1012]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1012
-[#744]: https://github.com/rust-lang-nursery/rust-bindgen/issues/744
-[#1065]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1065
-[#1040]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1040
-[#1029]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1029
-[#1094]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1094
-[#1099]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1099
-[#1105]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1105
+[#938]: https://github.com/rust-lang/rust-bindgen/issues/938
+[#888]: https://github.com/rust-lang/rust-bindgen/issues/888
+[#944]: https://github.com/rust-lang/rust-bindgen/issues/944
+[#942]: https://github.com/rust-lang/rust-bindgen/issues/942
+[#947]: https://github.com/rust-lang/rust-bindgen/issues/947
+[#953]: https://github.com/rust-lang/rust-bindgen/issues/953
+[#948]: https://github.com/rust-lang/rust-bindgen/issues/948
+[#925]: https://github.com/rust-lang/rust-bindgen/issues/925
+[#758]: https://github.com/rust-lang/rust-bindgen/issues/758
+[#988]: https://github.com/rust-lang/rust-bindgen/issues/988
+[#987]: https://github.com/rust-lang/rust-bindgen/issues/987
+[#985]: https://github.com/rust-lang/rust-bindgen/issues/985
+[#989]: https://github.com/rust-lang/rust-bindgen/issues/989
+[#1000]: https://github.com/rust-lang/rust-bindgen/issues/1000
+[#882]: https://github.com/rust-lang/rust-bindgen/issues/882
+[#884]: https://github.com/rust-lang/rust-bindgen/issues/884
+[#996]: https://github.com/rust-lang/rust-bindgen/issues/996
+[#982]: https://github.com/rust-lang/rust-bindgen/issues/982
+[#1008]: https://github.com/rust-lang/rust-bindgen/issues/1008
+[#1022]: https://github.com/rust-lang/rust-bindgen/issues/1022
+[#1048]: https://github.com/rust-lang/rust-bindgen/issues/1048
+[#1012]: https://github.com/rust-lang/rust-bindgen/issues/1012
+[#744]: https://github.com/rust-lang/rust-bindgen/issues/744
+[#1065]: https://github.com/rust-lang/rust-bindgen/issues/1065
+[#1040]: https://github.com/rust-lang/rust-bindgen/issues/1040
+[#1029]: https://github.com/rust-lang/rust-bindgen/issues/1029
+[#1094]: https://github.com/rust-lang/rust-bindgen/issues/1094
+[#1099]: https://github.com/rust-lang/rust-bindgen/issues/1099
+[#1105]: https://github.com/rust-lang/rust-bindgen/issues/1105
 
 --------------------------------------------------------------------------------
 
@@ -753,18 +753,18 @@ $ bindgen --rust-target 1.19
 * Fixed a regression where template instantiation layout `#[test]`s were being
   generated with invalid Rust identifiers. [#906][]
 
-[#832]: https://github.com/rust-lang-nursery/rust-bindgen/issues/832
-[#871]: https://github.com/rust-lang-nursery/rust-bindgen/issues/871
-[#874]: https://github.com/rust-lang-nursery/rust-bindgen/pull/874
-[#889]: https://github.com/rust-lang-nursery/rust-bindgen/pull/874
-[#766]: https://github.com/rust-lang-nursery/rust-bindgen/issues/766
-[#876]: https://github.com/rust-lang-nursery/rust-bindgen/issues/876
-[#875]: https://github.com/rust-lang-nursery/rust-bindgen/issues/875
-[#906]: https://github.com/rust-lang-nursery/rust-bindgen/pull/906
-[#900]: https://github.com/rust-lang-nursery/rust-bindgen/issues/900
-[#878]: https://github.com/rust-lang-nursery/rust-bindgen/issues/878
-[#880]: https://github.com/rust-lang-nursery/rust-bindgen/issues/880
-[#927]: https://github.com/rust-lang-nursery/rust-bindgen/issues/927
+[#832]: https://github.com/rust-lang/rust-bindgen/issues/832
+[#871]: https://github.com/rust-lang/rust-bindgen/issues/871
+[#874]: https://github.com/rust-lang/rust-bindgen/pull/874
+[#889]: https://github.com/rust-lang/rust-bindgen/pull/874
+[#766]: https://github.com/rust-lang/rust-bindgen/issues/766
+[#876]: https://github.com/rust-lang/rust-bindgen/issues/876
+[#875]: https://github.com/rust-lang/rust-bindgen/issues/875
+[#906]: https://github.com/rust-lang/rust-bindgen/pull/906
+[#900]: https://github.com/rust-lang/rust-bindgen/issues/900
+[#878]: https://github.com/rust-lang/rust-bindgen/issues/878
+[#880]: https://github.com/rust-lang/rust-bindgen/issues/880
+[#927]: https://github.com/rust-lang/rust-bindgen/issues/927
 
 --------------------------------------------------------------------------------
 
@@ -774,7 +774,7 @@ Released 2017/07/31
 
 ## Added
 
-* ["Constified enum modules"](https://github.com/rust-lang-nursery/rust-bindgen/pull/741)
+* ["Constified enum modules"](https://github.com/rust-lang/rust-bindgen/pull/741)
   translating C/C++ `enum`s into constants within a module for namespacing,
   rather than mangling the name of the generated constants.
 
@@ -820,7 +820,7 @@ Released 2017/07/31
   Use `bindgen::Builder::constified_enum_module` or `--constified-enum-module`.
 
 * You can now
-  [mark particular template instantiations as "opaque"](https://github.com/rust-lang-nursery/rust-bindgen/pull/773),
+  [mark particular template instantiations as "opaque"](https://github.com/rust-lang/rust-bindgen/pull/773),
   so that `bindgen` emits a blob of bytes with the correct size and alignment
   rather than creating generic Rust types. This is useful as a workaround for
   when a template has a specialization for the given type arguments, which
@@ -830,7 +830,7 @@ Released 2017/07/31
   "SomeTemplate<Foo, Bar>"`.
 
 * Added the ability to
-  [preprocess and dump](https://github.com/rust-lang-nursery/rust-bindgen/pull/812)
+  [preprocess and dump](https://github.com/rust-lang/rust-bindgen/pull/812)
   the input headers given to `bindgen` to a file. This should make creating
   reproducible, system independent, standalone test cases much easier! Bring on
   the new issues! Use `bindgen::Builder::dump_preprocessed_input` or
@@ -841,8 +841,8 @@ Released 2017/07/31
   were using an ad-hoc algorithm that had at various times suffered from things
   like going into infinite loops when coming across cycles. Hopefully those
   kinds of bugs are a thing of the past!
-  [#767](https://github.com/rust-lang-nursery/rust-bindgen/issues/767)
-  [#765](https://github.com/rust-lang-nursery/rust-bindgen/issues/765)
+  [#767](https://github.com/rust-lang/rust-bindgen/issues/767)
+  [#765](https://github.com/rust-lang/rust-bindgen/issues/765)
 
 ## Changed
 
@@ -853,35 +853,35 @@ Released 2017/07/31
 
 * No longer generating layout tests for template instantiations using type
   arguments that we didn't generate bindings for (which then caused compilation
-  errors). [#679](https://github.com/rust-lang-nursery/rust-bindgen/issues/769)
+  errors). [#679](https://github.com/rust-lang/rust-bindgen/issues/769)
 
 * Fixed function name mangling when cross compiling bindings for
-  iOS. [#776](https://github.com/rust-lang-nursery/rust-bindgen/pull/776)
+  iOS. [#776](https://github.com/rust-lang/rust-bindgen/pull/776)
 
 * Don't include parent `inline namespace`s' names in types' names. Names of
   types from some STLs were showing up like `std___cxx11_basic_string` when they
   should have been
-  `std_basic_string`. [#789](https://github.com/rust-lang-nursery/rust-bindgen/issues/789)
+  `std_basic_string`. [#789](https://github.com/rust-lang/rust-bindgen/issues/789)
 
 * Fixed a bug where we wouldn't generate type definitions for some types
   referenced by an opaque type's methods, causing compilation
-  errors. [#807](https://github.com/rust-lang-nursery/rust-bindgen/issues/807)
+  errors. [#807](https://github.com/rust-lang/rust-bindgen/issues/807)
 
 * Fixed function name mangling issues for win32
-  targets. [#819](https://github.com/rust-lang-nursery/rust-bindgen/issues/819)
+  targets. [#819](https://github.com/rust-lang/rust-bindgen/issues/819)
 
 * Fixed a bug where `bindgen` was generating a generic type alias that didn't
   use its type parameter, which is illegal Rust code and caused compilation
-  errors. [#820](https://github.com/rust-lang-nursery/rust-bindgen/issues/820)
+  errors. [#820](https://github.com/rust-lang/rust-bindgen/issues/820)
 
 * The generated size, alignment, and field offset unit tests now have stable
   names rather than sometimes including an internal identifier which is
   inherently unstable. This was causing unnecessary diffs when folks were
   checking in new versions of bindings into their VCS.
-  [#394](https://github.com/rust-lang-nursery/rust-bindgen/issues/394)
+  [#394](https://github.com/rust-lang/rust-bindgen/issues/394)
 
 * Fixed a bug where we would try and `derive(Debug, Default)` on structs that
   had padding like `[u8; 33]`, which is larger than the largest array length for
   which Rust will derive traits. This would cause compilation errors when
   compiling the emitted bindings.
-  [#648](https://github.com/rust-lang-nursery/rust-bindgen/issues/648)
+  [#648](https://github.com/rust-lang/rust-bindgen/issues/648)
