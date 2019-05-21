@@ -52,10 +52,10 @@ issue, provide us with:
 
 ## Looking to Start Contributing to `bindgen`?
 
-* [Issues labeled "easy"](https://github.com/rust-lang-nursery/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-easy)
-* [Issues labeled "less easy"](https://github.com/rust-lang-nursery/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-less-easy)
-* [Issues labeled "help wanted"](https://github.com/rust-lang-nursery/rust-bindgen/labels/help%20wanted)
-* Still can't find something to work on? [Drop a comment here](https://github.com/rust-lang-nursery/rust-bindgen/issues/747)
+* [Issues labeled "easy"](https://github.com/rust-lang/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-easy)
+* [Issues labeled "less easy"](https://github.com/rust-lang/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-less-easy)
+* [Issues labeled "help wanted"](https://github.com/rust-lang/rust-bindgen/labels/help%20wanted)
+* Still can't find something to work on? [Drop a comment here](https://github.com/rust-lang/rust-bindgen/issues/747)
 
 ## Building
 

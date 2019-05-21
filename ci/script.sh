@@ -34,7 +34,7 @@ case "$BINDGEN_JOB" in
         ./ci/test-book.sh
         ./ci/no-includes.sh
         # `rustfmt` isn't reaching a fixed point on bindgen
-        # code... https://github.com/rust-lang-nursery/rustfmt/issues/1376
+        # code... https://github.com/rust-lang/rustfmt/issues/1376
         # ./ci/assert-rustfmt.sh
         ;;
 

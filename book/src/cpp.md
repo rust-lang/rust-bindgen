@@ -23,7 +23,7 @@ You should read up on the [FAQs](./faq.md) as well.
 ## Supported Features
 
 * Inheritance (for the most part; there are
-  [some outstanding bugs](https://github.com/rust-lang-nursery/rust-bindgen/issues/380))
+  [some outstanding bugs](https://github.com/rust-lang/rust-bindgen/issues/380))
 
 * Methods
 
@@ -69,5 +69,5 @@ cannot translate into Rust:
 * Exceptions: if a function called through a `bindgen`-generated interface
   raises an exception that is not caught by the function itself, this will
   generate undefined behaviour. See
-  [the tracking issue for exceptions](https://github.com/rust-lang-nursery/rust-bindgen/issues/1208)
+  [the tracking issue for exceptions](https://github.com/rust-lang/rust-bindgen/issues/1208)
   for more details.

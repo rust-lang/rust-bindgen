@@ -62,4 +62,4 @@ related to fuzzing with `csmith`, by looking up
 
 [csmith]: https://github.com/csmith-project/csmith
 [creducing]: ../CONTRIBUTING.md#using-creduce-to-minimize-test-cases
-[csmith-issues]: https://github.com/rust-lang-nursery/rust-bindgen/issues?q=label%3AA-csmith
+[csmith-issues]: https://github.com/rust-lang/rust-bindgen/issues?q=label%3AA-csmith
