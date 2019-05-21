@@ -120,7 +120,7 @@ Released 2019/05/16
   was merged in libstd, and the performance difference should be close to zero
   for older rustcs.
 
-[#1558]: https://github.com/rust-lang-nursery/rust-bindgen/issues/1558
+[#1558]: https://github.com/rust-lang/rust-bindgen/issues/1558
 
 # 0.49.0
 

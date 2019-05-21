@@ -232,9 +232,9 @@ def print_issue_template(args, failing_test_case, predicate_command, result):
 
     print("""
 
-! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
-! File this issue at https://github.com/rust-lang-nursery/rust-bindgen/issues/new !
-! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+! File this issue at https://github.com/rust-lang/rust-bindgen/issues/new !
+! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
 
    --------------- 8< --------------- 8< --------------- 8< ---------------
 

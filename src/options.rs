@@ -129,7 +129,7 @@ where
             Arg::with_name("no-doc-comments")
                 .long("no-doc-comments")
                 .help("Avoid including doc comments in the output, see: \
-                      https://github.com/rust-lang-nursery/rust-bindgen/issues/426"),
+                      https://github.com/rust-lang/rust-bindgen/issues/426"),
             Arg::with_name("no-recursive-whitelist")
                 .long("no-recursive-whitelist")
                 .help("Disable whitelisting types recursively. This will cause \

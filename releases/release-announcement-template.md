@@ -37,13 +37,13 @@ Want to help improve our documentation?
 
 Found a bug with `bindgen`? [File an issue here.][file-issue]
 
-[GitHub]: https://github.com/rust-lang-nursery/rust-bindgen
+[GitHub]: https://github.com/rust-lang/rust-bindgen
 [crates.io]: https://crates.io/crates/bindgen
-[guide]: https://rust-lang-nursery.github.io/rust-bindgen
+[guide]: https://rust-lang.github.io/rust-bindgen
 [docs]: https://docs.rs/bindgen
-[contributing]: https://github.com/rust-lang-nursery/rust-bindgen/blob/master/CONTRIBUTING.md
-[easy]: https://github.com/rust-lang-nursery/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-easy
-[less-easy]: https://github.com/rust-lang-nursery/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-less-easy
-[looking]: https://github.com/rust-lang-nursery/rust-bindgen/issues/747
-[docs-issues]: https://github.com/rust-lang-nursery/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AI-needs-docs
-[file-issue]: https://github.com/rust-lang-nursery/rust-bindgen/issues/new
+[contributing]: https://github.com/rust-lang/rust-bindgen/blob/master/CONTRIBUTING.md
+[easy]: https://github.com/rust-lang/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-easy
+[less-easy]: https://github.com/rust-lang/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AE-less-easy
+[looking]: https://github.com/rust-lang/rust-bindgen/issues/747
+[docs-issues]: https://github.com/rust-lang/rust-bindgen/issues?q=is%3Aopen+is%3Aissue+label%3AI-needs-docs
+[file-issue]: https://github.com/rust-lang/rust-bindgen/issues/new
