@@ -224,7 +224,7 @@ impl Builder {
         output_vector.push(self.options.rust_target.into());
 
         if self.options.default_enum_style != Default::default() {
-            output_vector.push("--default-enum-variant=".into());
+            output_vector.push("--default-enum-style=".into());
             output_vector.push(match self.options.default_enum_style {
                 codegen::EnumVariation::Rust => "rust",
                 codegen::EnumVariation::Bitfield => "bitfield",
