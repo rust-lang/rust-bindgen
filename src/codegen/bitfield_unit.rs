@@ -9,7 +9,7 @@ pub struct __BindgenBitfieldUnit<Storage, Align>
 impl<Storage, Align> __BindgenBitfieldUnit<Storage, Align>
 {
     #[inline]
-    pub fn new(storage: Storage) -> Self {
+    pub const fn new(storage: Storage) -> Self {
         Self {
             storage,
             align: [],
