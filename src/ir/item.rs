@@ -20,10 +20,10 @@ use super::ty::{Type, TypeKind};
 use clang;
 use clang_sys;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
+use std::borrow::Cow;
 use regex;
 use std::cell::{Cell, RefCell};
 use std::collections::BTreeSet;
-use std::fmt::Write;
 use std::io;
 use std::iter;
 
@@ -735,41 +735,20 @@ impl Item {
         }
     }
 
-    /// Get this function item's name, or `None` if this item is not a function.
-    fn func_name(&self) -> Option<&str> {
-        match *self.kind() {
-            ItemKind::Function(ref func) => Some(func.name()),
-            _ => None,
-        }
-    }
-
-    /// Get the overload index for this method. If this is not a method, return
-    /// `None`.
-    fn overload_index(&self, ctx: &BindgenContext) -> Option<usize> {
-        self.func_name().and_then(|func_name| {
-            let parent = ctx.resolve_item(self.parent_id());
-            if let ItemKind::Type(ref ty) = *parent.kind() {
-                if let TypeKind::Comp(ref ci) = *ty.kind() {
-                    // All the constructors have the same name, so no need to
-                    // resolve and check.
-                    return ci.constructors()
-                        .iter()
-                        .position(|c| *c == self.id())
-                        .or_else(|| {
-                            ci.methods()
-                                .iter()
-                                .filter(|m| {
-                                    let item = ctx.resolve_item(m.signature());
-                                    let func = item.expect_function();
-                                    func.name() == func_name
-                                })
-                                .position(|m| m.signature() == self.id())
-                        });
-                }
+    /// Append some suffix to the `base_name` such that the result is unique
+    /// for calling this method with the same `base_name` across all functions
+    /// which overload with this item.
+    ///
+    /// If this item isn't a function, or it represents a function which isn't
+    /// overloaded, the `base_name` is returned as-is.
+    pub fn overload_mangled<'a>(&self, ctx: &BindgenContext, base_name: &'a str) -> Cow<'a, str> {
+        match self.id().as_function_id(ctx) {
+            Some(fn_id) => {
+                let suffix = ctx.lookup_overload_suffix(fn_id);
+                format!("{}{}", base_name, suffix).into()
             }
-
-            None
-        })
+            None => base_name.into(),
+        }
     }
 
     /// Get this item's base name (aka non-namespaced name).
@@ -791,15 +770,7 @@ impl Item {
                 })
             }
             ItemKind::Function(ref fun) => {
-                let mut name = fun.name().to_owned();
-
-                if let Some(idx) = self.overload_index(ctx) {
-                    if idx > 0 {
-                        write!(&mut name, "{}", idx).unwrap();
-                    }
-                }
-
-                name
+                fun.name().to_owned()
             }
         }
     }
@@ -876,9 +847,10 @@ impl Item {
         let name = names.join("_");
 
         let name = if opt.user_mangled == UserMangled::Yes {
+            let name = self.overload_mangled(ctx, &name);
             ctx.parse_callbacks()
                 .and_then(|callbacks| callbacks.item_name(&name))
-                .unwrap_or(name)
+                .unwrap_or_else(|| name.into_owned())
         } else {
             name
         };

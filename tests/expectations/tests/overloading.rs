@@ -10,7 +10,38 @@ extern "C" {
 }
 extern "C" {
     #[link_name = "\u{1}_Z8Evaluateii"]
-    pub fn Evaluate1(x: ::std::os::raw::c_int, y: ::std::os::raw::c_int) -> bool;
+    pub fn Evaluate_int_int(x: ::std::os::raw::c_int, y: ::std::os::raw::c_int) -> bool;
+}
+extern "C" {
+    #[link_name = "\u{1}_Z13CanonicalLastc"]
+    pub fn CanonicalLast_char(r: ::std::os::raw::c_char);
+}
+extern "C" {
+    #[link_name = "\u{1}_Z13CanonicalLastv"]
+    pub fn CanonicalLast();
+}
+extern "C" {
+    #[link_name = "\u{1}_Z6CommonPii"]
+    pub fn Common(arg1: *mut ::std::os::raw::c_int, y: ::std::os::raw::c_int) -> f32;
+}
+extern "C" {
+    #[link_name = "\u{1}_Z6CommonPiPb"]
+    pub fn Common_ptr_bool(arg1: *mut ::std::os::raw::c_int, y: *mut bool) -> f32;
+}
+extern "C" {
+    #[link_name = "\u{1}_Z6CommonPiPKc"]
+    pub fn Common_ptr_const_char(
+        arg1: *mut ::std::os::raw::c_int,
+        y: *const ::std::os::raw::c_char,
+    ) -> f32;
+}
+extern "C" {
+    #[link_name = "\u{1}_Z23CanonicalLastWithCommonPii"]
+    pub fn CanonicalLastWithCommon_int(arg1: *mut ::std::os::raw::c_int, y: ::std::os::raw::c_int);
+}
+extern "C" {
+    #[link_name = "\u{1}_Z23CanonicalLastWithCommonPi"]
+    pub fn CanonicalLastWithCommon(arg1: *mut ::std::os::raw::c_int);
 }
 extern "C" {
     #[link_name = "\u{1}_ZN3foo10MyFunctionEv"]

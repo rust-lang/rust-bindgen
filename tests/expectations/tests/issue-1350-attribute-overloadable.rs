@@ -13,5 +13,5 @@ extern "C" {
 }
 extern "C" {
     #[link_name = "\u{1}_Z11my_functionPKc"]
-    pub fn my_function1(a: *const ::std::os::raw::c_char);
+    pub fn my_function_ptr_const_char(a: *const ::std::os::raw::c_char);
 }

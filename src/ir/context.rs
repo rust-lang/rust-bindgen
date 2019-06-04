@@ -26,6 +26,7 @@ use parse::ClangItemParser;
 use proc_macro2::{Ident, Span};
 use std::borrow::Cow;
 use std::cell::Cell;
+use std::fmt::Write;
 use std::iter::IntoIterator;
 use std::mem;
 use std::collections::HashMap as StdHashMap;
@@ -455,6 +456,14 @@ pub struct BindgenContext {
     /// Populated when we enter codegen by `compute_has_float`; always `None`
     /// before that and `Some` after.
     has_float: Option<HashSet<ItemId>>,
+
+    /// Maps a `FunctionId` to a string which uniquely identifies it amongst
+    /// the set of all its overloads. Used to give each overload a unique name
+    /// in the Rust bindings.
+    ///
+    /// Populated when we enter codegen by `compute_overload_suffixes`; always `None`
+    /// before that and `Some` after.
+    overload_suffixes: Option<HashMap<FunctionId, String>>,
 }
 
 /// A traversal of whitelisted items.
@@ -620,6 +629,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             have_destructor: None,
             has_type_param_in_array: None,
             has_float: None,
+            overload_suffixes: None,
         }
     }
 
@@ -1229,6 +1239,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.compute_has_float();
         self.compute_cannot_derive_hash();
         self.compute_cannot_derive_partialord_partialeq_or_eq();
+        self.compute_overload_suffixes();
 
         let ret = cb(&self);
         (ret, self.options)
@@ -2593,6 +2604,117 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         // Look up the computed value for whether the item with `id` has
         // float or not.
         self.has_float.as_ref().unwrap().contains(&id.into())
+    }
+
+    /// Compute suffixes to apply to item names in order to disambiguate
+    /// function overloads
+    fn compute_overload_suffixes(&mut self) {
+        fn process_overload_set<I>(
+            ctx: &BindgenContext,
+            overload_suffixes: &mut HashMap<FunctionId, String>,
+            overloads: I) where I: Iterator<Item=(FunctionId, TypeId, bool)>
+        {
+            // Give each overload within this set a string
+            // which uniquely identifies it apart from its other overloads.
+            // To do that we remove the arguments (starting from the left) which
+            // are common to all overloads in the set, and then mangle the
+            // remaining arguments, and consider if the method is_const.
+
+            // Expand each overload's argument type names into strings
+            let overloads: Vec<(FunctionId, Vec<_>, bool)> =
+                overloads.map(|(fn_id, sig_id, is_const)|
+            {
+                let sig = ctx.resolve_type(sig_id).canonical_type(ctx).as_function().unwrap();
+                let args = sig.argument_types();
+                let arg_names: Vec<_> = args.iter().filter_map(|(_arg_name, arg_type_id)| {
+                    ctx.resolve_type(*arg_type_id)
+                        .canonical_type(ctx)
+                        .sanitized_name(ctx)
+                }).collect();
+                (fn_id, arg_names, is_const)
+            }).collect();
+
+            // Skip over all the arguments which are the same for each overload.
+            let mut common_prefix = 0;
+            let first_overload_args = &overloads[0].1;
+            while common_prefix < first_overload_args.len() &&
+                overloads.iter().all(|(_, arg_names, _)| {
+                    arg_names.get(common_prefix) == first_overload_args.get(common_prefix)
+                })
+            {
+                common_prefix += 1;
+            }
+
+            // Perform mangling for each overload based on the typenames of its
+            // arguments (skipping the first `common_prefix` arguments).
+            let mut overloads: Vec<(FunctionId, String)> = overloads.iter()
+                .map(|(fn_id, arg_names, is_const)| {
+                let mut overload_suffix = String::new();
+                for arg_name in &arg_names[common_prefix..] {
+                    write!(&mut overload_suffix, "_{}", arg_name).unwrap();
+                }
+                let is_overloaded_by_const = *is_const && overloads.iter()
+                    .any(|(_, other_args, other_const)| {
+                        (other_args, other_const) == (arg_names, &false)
+                    });
+                if is_overloaded_by_const {
+                    write!(&mut overload_suffix, "_const").unwrap();
+                }
+                (*fn_id, overload_suffix)
+            }).collect();
+            if overloads[1..].iter().all(|(_, mangle)| mangle != "") {
+                // So long as it wouldn't conflict with any other overloads,
+                // prefer to not rename the first overload.
+                overloads[0].1 = "".to_owned();
+            }
+            overload_suffixes.extend(overloads);
+        }
+
+        // Partition all functions into namespaces with other functions with
+        // which they're eligible for overloading.
+        // Also figure out whether each function might be a const method, which
+        // could affect its overload suffix.
+        let mut namespaces: HashMap<ItemId, Vec<_>> = HashMap::default();
+        for (id, item) in self.items() {
+            if let Some(fun_id) = id.as_function_id(self) {
+                let is_const = self.resolve_item(item.parent_id())
+                    .as_type()
+                    .and_then(|ty| ty.as_comp())
+                    .map(|comp| {
+                        comp.methods().iter().any(|m| m.signature() == fun_id && m.is_const())
+                    }).unwrap_or(false);
+
+                namespaces
+                    .entry(item.parent_id())
+                    .or_default()
+                    .push((fun_id, is_const))
+            }
+        }
+
+        // Break each namespace into one or more overload sets each containing
+        // functions which for sure are overloads of eachother.
+        // Then generate suffixes for each function in the set.
+        let mut overload_suffixes: HashMap<FunctionId, String> = Default::default();
+        for (_, functions) in namespaces {
+            let mut working_set: HashMap<&str, Vec<_>> = Default::default();
+            for (id, is_const) in functions {
+                let func = self.resolve_func(id);
+                working_set.entry(func.name())
+                    .or_default()
+                    .push((id, func.signature(), is_const));
+            }
+            for (_name, overload_set) in working_set {
+                process_overload_set(self, &mut overload_suffixes, overload_set.into_iter());
+            }
+        }
+
+        self.overload_suffixes = Some(overload_suffixes);
+    }
+
+    /// Look up a string which uniquely identifies this function amongst all of
+    /// its overloads (returns "" if the function isn't overloaded).
+    pub fn lookup_overload_suffix(&self, fun: FunctionId) -> &str {
+        self.overload_suffixes.as_ref().unwrap()[&fun].as_ref()
     }
 
     /// Check if `--no-partialeq` flag is enabled for this item.

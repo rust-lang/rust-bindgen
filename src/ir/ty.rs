@@ -146,6 +146,15 @@ impl Type {
         }
     }
 
+    /// Cast this type to a function kind, or `None` if it is not a function
+    /// type.
+    pub fn as_function(&self) -> Option<&FunctionSig> {
+        match self.kind {
+            TypeKind::Function(ref fn_kind) => Some(&fn_kind),
+            _ => None,
+        }
+    }
+
     /// Is this an enum type?
     pub fn is_enum(&self) -> bool {
         match self.kind {

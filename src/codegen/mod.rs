@@ -2057,9 +2057,9 @@ impl MethodCodegen for Method {
         let function = function_item.expect_function();
         let signature_item = ctx.resolve_item(function.signature());
         let mut name = match self.kind() {
-            MethodKind::Constructor => "new".into(),
-            MethodKind::Destructor => "destruct".into(),
-            _ => function.name().to_owned(),
+            MethodKind::Constructor => function_item.overload_mangled(ctx, "new").into_owned(),
+            MethodKind::Destructor => function_item.overload_mangled(ctx, "destruct").into_owned(),
+            _ => function_item.overload_mangled(ctx, function.name()).into_owned(),
         };
 
         let signature = match *signature_item.expect_type().kind() {

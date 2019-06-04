@@ -28,7 +28,7 @@ extern "C" {
 }
 extern "C" {
     #[link_name = "\u{1}_ZN12TestOverloadC1Ed"]
-    pub fn TestOverload_TestOverload1(this: *mut TestOverload, arg1: f64);
+    pub fn TestOverload_TestOverload_double(this: *mut TestOverload, arg1: f64);
 }
 impl TestOverload {
     #[inline]
@@ -38,9 +38,9 @@ impl TestOverload {
         __bindgen_tmp
     }
     #[inline]
-    pub unsafe fn new1(arg1: f64) -> Self {
+    pub unsafe fn new_double(arg1: f64) -> Self {
         let mut __bindgen_tmp = ::std::mem::uninitialized();
-        TestOverload_TestOverload1(&mut __bindgen_tmp, arg1);
+        TestOverload_TestOverload_double(&mut __bindgen_tmp, arg1);
         __bindgen_tmp
     }
 }

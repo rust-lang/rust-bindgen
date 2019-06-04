@@ -478,15 +478,17 @@ fn bindgen_test_layout_RealAbstractionWithTonsOfMethods() {
 }
 extern "C" {
     #[link_name = "\u{1}_ZNK32RealAbstractionWithTonsOfMethods3barEv"]
-    pub fn RealAbstractionWithTonsOfMethods_bar(this: *const RealAbstractionWithTonsOfMethods);
+    pub fn RealAbstractionWithTonsOfMethods_bar_const(
+        this: *const RealAbstractionWithTonsOfMethods,
+    );
 }
 extern "C" {
     #[link_name = "\u{1}_ZN32RealAbstractionWithTonsOfMethods3barEv"]
-    pub fn RealAbstractionWithTonsOfMethods_bar1(this: *mut RealAbstractionWithTonsOfMethods);
+    pub fn RealAbstractionWithTonsOfMethods_bar(this: *mut RealAbstractionWithTonsOfMethods);
 }
 extern "C" {
     #[link_name = "\u{1}_ZN32RealAbstractionWithTonsOfMethods3barEi"]
-    pub fn RealAbstractionWithTonsOfMethods_bar2(
+    pub fn RealAbstractionWithTonsOfMethods_bar_int(
         this: *mut RealAbstractionWithTonsOfMethods,
         foo: ::std::os::raw::c_int,
     );
@@ -502,16 +504,16 @@ impl Clone for RealAbstractionWithTonsOfMethods {
 }
 impl RealAbstractionWithTonsOfMethods {
     #[inline]
-    pub unsafe fn bar(&self) {
+    pub unsafe fn bar_const(&self) {
+        RealAbstractionWithTonsOfMethods_bar_const(self)
+    }
+    #[inline]
+    pub unsafe fn bar(&mut self) {
         RealAbstractionWithTonsOfMethods_bar(self)
     }
     #[inline]
-    pub unsafe fn bar1(&mut self) {
-        RealAbstractionWithTonsOfMethods_bar1(self)
-    }
-    #[inline]
-    pub unsafe fn bar2(&mut self, foo: ::std::os::raw::c_int) {
-        RealAbstractionWithTonsOfMethods_bar2(self, foo)
+    pub unsafe fn bar_int(&mut self, foo: ::std::os::raw::c_int) {
+        RealAbstractionWithTonsOfMethods_bar_int(self, foo)
     }
     #[inline]
     pub unsafe fn sta() {

@@ -35,5 +35,5 @@ extern "C" {
 }
 extern "C" {
     #[link_name = "\u{1}_ZN1C8do_thingEi"]
-    pub fn C_do_thing1(this: *mut ::std::os::raw::c_void, arg1: ::std::os::raw::c_int);
+    pub fn C_do_thing_int(this: *mut ::std::os::raw::c_void, arg1: ::std::os::raw::c_int);
 }
