@@ -3770,6 +3770,14 @@ mod utils {
     ) {
         let prefix = ctx.trait_prefix();
 
+        // If the target supports `const fn`, declare eligible functions
+        // as `const fn` else just `fn`.
+        let const_fn = if ctx.options().rust_features().min_const_fn {
+            quote!{ const fn }
+        } else {
+            quote!{ fn }
+        };
+
         let incomplete_array_decl = quote! {
             #[repr(C)]
             #[derive(Default)]
@@ -3780,7 +3788,7 @@ mod utils {
         let incomplete_array_impl = quote! {
             impl<T> __IncompleteArrayField<T> {
                 #[inline]
-                pub fn new() -> Self {
+                pub #const_fn new() -> Self {
                     __IncompleteArrayField(::#prefix::marker::PhantomData, [])
                 }
 
