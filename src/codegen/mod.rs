@@ -410,7 +410,7 @@ impl CodeGenerator for Module {
                     utils::prepend_objc_header(ctx, &mut *result);
                 }
                 if result.saw_bitfield_unit {
-                    utils::prepend_bitfield_unit_type(&mut *result);
+                    utils::prepend_bitfield_unit_type(ctx, &mut *result);
                 }
             }
         };
@@ -3591,11 +3591,21 @@ mod utils {
     use ir::item::{Item, ItemCanonicalPath};
     use ir::ty::TypeKind;
     use proc_macro2;
+    use std::borrow::Cow;
     use std::mem;
     use std::str::FromStr;
 
-    pub fn prepend_bitfield_unit_type(result: &mut Vec<proc_macro2::TokenStream>) {
-        let bitfield_unit_type = proc_macro2::TokenStream::from_str(include_str!("./bitfield_unit.rs")).unwrap();
+    pub fn prepend_bitfield_unit_type(
+        ctx: &BindgenContext,
+        result: &mut Vec<proc_macro2::TokenStream>
+    ) {
+        let bitfield_unit_src = include_str!("./bitfield_unit.rs");
+        let bitfield_unit_src = if ctx.options().rust_features().min_const_fn {
+            Cow::Borrowed(bitfield_unit_src)
+        } else {
+            Cow::Owned(bitfield_unit_src.replace("const fn ", "fn "))
+        };
+        let bitfield_unit_type = proc_macro2::TokenStream::from_str(&bitfield_unit_src).unwrap();
         let bitfield_unit_type = quote!(#bitfield_unit_type);
 
         let items = vec![bitfield_unit_type];
