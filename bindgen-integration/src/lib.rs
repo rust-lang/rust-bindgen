@@ -49,7 +49,7 @@ fn test_constructor() {
 
 #[test]
 fn test_overload() {
-    let test = unsafe { bindings::Test::new1(5.0) };
+    let test = unsafe { bindings::Test::new_double(5.0) };
     assert_eq!(test.m_int, 0);
     assert_eq!(test.m_double, 5.0);
 }
