@@ -11,7 +11,7 @@
 pub struct __BindgenUnionField<T>(::std::marker::PhantomData<T>);
 impl<T> __BindgenUnionField<T> {
     #[inline]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         __BindgenUnionField(::std::marker::PhantomData)
     }
     #[inline]

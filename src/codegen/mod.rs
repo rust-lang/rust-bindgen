@@ -3663,6 +3663,14 @@ mod utils {
     ) {
         let prefix = ctx.trait_prefix();
 
+        // If the target supports `const fn`, declare eligible functions
+        // as `const fn` else just `fn`.
+        let const_fn = if ctx.options().rust_features().min_const_fn {
+            quote!{ const fn }
+        } else {
+            quote!{ fn }
+        };
+
         // TODO(emilio): The fmt::Debug impl could be way nicer with
         // std::intrinsics::type_name, but...
         let union_field_decl = quote! {
@@ -3673,7 +3681,7 @@ mod utils {
         let union_field_impl = quote! {
             impl<T> __BindgenUnionField<T> {
                 #[inline]
-                pub fn new() -> Self {
+                pub #const_fn new() -> Self {
                     __BindgenUnionField(::#prefix::marker::PhantomData)
                 }
 
