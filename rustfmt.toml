@@ -1,6 +1,5 @@
 max_width = 80
-fn_brace_style = "SameLineWhere"
-item_brace_style = "SameLineWhere"
-struct_lit_multiline_style = "ForceMulti"
+brace_style = "SameLineWhere"
+struct_lit_single_line = false
 where_trailing_comma = true
 normalize_comments = false
