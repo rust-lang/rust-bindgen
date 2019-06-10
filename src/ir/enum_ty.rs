@@ -164,7 +164,9 @@ impl Enum {
         } else if self.is_matching_enum(ctx, &ctx.options().bitfield_enums, item) {
             EnumVariation::Bitfield
         } else if self.is_matching_enum(ctx, &ctx.options().rustified_enums, item) {
-            EnumVariation::Rust
+            EnumVariation::Rust(false)
+        } else if self.is_matching_enum(ctx, &ctx.options().rustified_enums_non_exhaustive, item) {
+            EnumVariation::Rust(true)
         } else if self.is_matching_enum(ctx, &ctx.options().constified_enums, item) {
             EnumVariation::Consts
         } else {

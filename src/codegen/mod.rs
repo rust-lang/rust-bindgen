@@ -2170,7 +2170,10 @@ impl MethodCodegen for Method {
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum EnumVariation {
     /// The code for this enum will use a Rust enum
-    Rust,
+    ///
+    /// When the boolean parameter on this variant is set to true,
+    /// the generated enum should be non_exhaustive.
+    Rust(bool),
     /// The code for this enum will use a bitfield
     Bitfield,
     /// The code for this enum will use consts
@@ -2182,14 +2185,7 @@ pub enum EnumVariation {
 impl EnumVariation {
     fn is_rust(&self) -> bool {
         match *self {
-            EnumVariation::Rust => true,
-            _ => false
-        }
-    }
-
-    fn is_bitfield(&self) -> bool {
-        match *self {
-            EnumVariation::Bitfield {..} => true,
+            EnumVariation::Rust(_) => true,
             _ => false
         }
     }
@@ -2216,13 +2212,14 @@ impl std::str::FromStr for EnumVariation {
     /// Create a `EnumVariation` from a string.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "rust" => Ok(EnumVariation::Rust),
+            "rust" => Ok(EnumVariation::Rust(false)),
+            "rust_non_exhaustive" => Ok(EnumVariation::Rust(true)),
             "bitfield" => Ok(EnumVariation::Bitfield),
             "consts" => Ok(EnumVariation::Consts),
             "moduleconsts" => Ok(EnumVariation::ModuleConsts),
             _ => Err(std::io::Error::new(std::io::ErrorKind::InvalidInput,
                                          concat!("Got an invalid EnumVariation. Accepted values ",
-                                                 "are 'rust', 'bitfield', 'consts', and ",
+                                                 "are 'rust', 'rust_non_exhaustive', 'bitfield', 'consts', and ",
                                                  "'moduleconsts'."))),
         }
     }
@@ -2288,7 +2285,7 @@ impl<'a> EnumBuilder<'a> {
                 }
             }
 
-            EnumVariation::Rust => {
+            EnumVariation::Rust(_) => {
                 let tokens = quote!();
                 EnumBuilder::Rust {
                     codegen_depth: enum_codegen_depth + 1,
@@ -2580,15 +2577,22 @@ impl CodeGenerator for Enum {
         let variation = self.computed_enum_variation(ctx, item);
 
         // TODO(emilio): Delegate this to the builders?
-        if variation.is_rust() {
-            attrs.push(attributes::repr(repr_name));
-        } else if variation.is_bitfield() {
-            if ctx.options().rust_features.repr_transparent {
-                attrs.push(attributes::repr("transparent"));
-            } else {
-                attrs.push(attributes::repr("C"));
-            }
-        }
+        match variation {
+            EnumVariation::Rust(non_exhaustive) => {
+                attrs.push(attributes::repr(repr_name));
+                if non_exhaustive {
+                    attrs.push(attributes::non_exhaustive());
+                }
+            },
+            EnumVariation::Bitfield => {
+                if ctx.options().rust_features.repr_transparent {
+                    attrs.push(attributes::repr("transparent"));
+                } else {
+                    attrs.push(attributes::repr("C"));
+                }
+            },
+            _ => {},
+        };
 
         if let Some(comment) = item.comment(ctx) {
             attrs.push(attributes::doc(comment));
