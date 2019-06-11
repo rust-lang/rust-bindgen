@@ -2580,8 +2580,10 @@ impl CodeGenerator for Enum {
         match variation {
             EnumVariation::Rust { non_exhaustive: nh } => {
                 attrs.push(attributes::repr(repr_name));
-                if nh {
+                if nh && ctx.options().rust_features().non_exhaustive {
                     attrs.push(attributes::non_exhaustive());
+                } else if nh && !ctx.options().rust_features().non_exhaustive {
+                    panic!("The rust target you're using doesn't seem to support non_exhaustive enums");
                 }
             },
             EnumVariation::Bitfield => {
