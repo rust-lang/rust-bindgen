@@ -2170,10 +2170,10 @@ impl MethodCodegen for Method {
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum EnumVariation {
     /// The code for this enum will use a Rust enum
-    ///
-    /// When the boolean parameter on this variant is set to true,
-    /// the generated enum should be non_exhaustive.
-    Rust(bool),
+    Rust {
+        /// Indicates whether the generated struct should be #[non_exhaustive]
+        non_exhaustive: bool
+    },
     /// The code for this enum will use a bitfield
     Bitfield,
     /// The code for this enum will use consts
@@ -2185,7 +2185,7 @@ pub enum EnumVariation {
 impl EnumVariation {
     fn is_rust(&self) -> bool {
         match *self {
-            EnumVariation::Rust(_) => true,
+            EnumVariation::Rust{ non_exhaustive: _ } => true,
             _ => false
         }
     }
@@ -2212,8 +2212,8 @@ impl std::str::FromStr for EnumVariation {
     /// Create a `EnumVariation` from a string.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "rust" => Ok(EnumVariation::Rust(false)),
-            "rust_non_exhaustive" => Ok(EnumVariation::Rust(true)),
+            "rust" => Ok(EnumVariation::Rust{ non_exhaustive: false }),
+            "rust_non_exhaustive" => Ok(EnumVariation::Rust{ non_exhaustive: true }),
             "bitfield" => Ok(EnumVariation::Bitfield),
             "consts" => Ok(EnumVariation::Consts),
             "moduleconsts" => Ok(EnumVariation::ModuleConsts),
@@ -2285,7 +2285,7 @@ impl<'a> EnumBuilder<'a> {
                 }
             }
 
-            EnumVariation::Rust(_) => {
+            EnumVariation::Rust { non_exhaustive: _ } => {
                 let tokens = quote!();
                 EnumBuilder::Rust {
                     codegen_depth: enum_codegen_depth + 1,
@@ -2578,9 +2578,9 @@ impl CodeGenerator for Enum {
 
         // TODO(emilio): Delegate this to the builders?
         match variation {
-            EnumVariation::Rust(non_exhaustive) => {
+            EnumVariation::Rust { non_exhaustive: nh } => {
                 attrs.push(attributes::repr(repr_name));
-                if non_exhaustive {
+                if nh {
                     attrs.push(attributes::non_exhaustive());
                 }
             },
