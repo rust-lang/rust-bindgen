@@ -6,6 +6,9 @@
     non_camel_case_types,
     non_upper_case_globals
 )]
+#![cfg(feature = "nightly")]
+#![feature(non_exhaustive)]
+
 
 #[repr(u32)]
 #[non_exhaustive]
