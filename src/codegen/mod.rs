@@ -2185,7 +2185,7 @@ pub enum EnumVariation {
 impl EnumVariation {
     fn is_rust(&self) -> bool {
         match *self {
-            EnumVariation::Rust{ non_exhaustive: _ } => true,
+            EnumVariation::Rust{ .. } => true,
             _ => false
         }
     }
@@ -2285,7 +2285,7 @@ impl<'a> EnumBuilder<'a> {
                 }
             }
 
-            EnumVariation::Rust { non_exhaustive: _ } => {
+            EnumVariation::Rust { .. } => {
                 let tokens = quote!();
                 EnumBuilder::Rust {
                     codegen_depth: enum_codegen_depth + 1,
@@ -2578,11 +2578,11 @@ impl CodeGenerator for Enum {
 
         // TODO(emilio): Delegate this to the builders?
         match variation {
-            EnumVariation::Rust { non_exhaustive: nh } => {
+            EnumVariation::Rust { non_exhaustive } => {
                 attrs.push(attributes::repr(repr_name));
-                if nh && ctx.options().rust_features().non_exhaustive {
+                if non_exhaustive && ctx.options().rust_features().non_exhaustive {
                     attrs.push(attributes::non_exhaustive());
-                } else if nh && !ctx.options().rust_features().non_exhaustive {
+                } else if non_exhaustive && !ctx.options().rust_features().non_exhaustive {
                     panic!("The rust target you're using doesn't seem to support non_exhaustive enums");
                 }
             },
