@@ -206,6 +206,8 @@ rust_feature_def!(
     Nightly {
         /// `thiscall` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/42202))
         => thiscall_abi;
+        /// `non_exhaustive` enums/structs ([Tracking issue](https://github.com/rust-lang/rust/issues/44109))
+        => non_exhaustive;
     }
 );
 
