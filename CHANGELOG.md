@@ -105,6 +105,25 @@ Released YYYY/MM/DD
 
 --------------------------------------------------------------------------------
 
+# 0.49.3
+
+Released 2019/06/25
+
+## Added
+
+* Various bindgen auto-generated types are now constructible in `const fn`
+  contexts [#1571][]
+
+* It is possible to generate `#[non_exhaustive]` enums for rust nightly targets.
+  [#1575][]
+
+* It is possible to avoid building clap now if you're using bindgen as
+  a library. [#1581][].
+
+[#1571]: https://github.com/rust-lang/rust-bindgen/issues/1571
+[#1575]: https://github.com/rust-lang/rust-bindgen/issues/1575
+[#1581]: https://github.com/rust-lang/rust-bindgen/issues/1581
+
 # 0.49.2
 
 Released 2019/05/22
