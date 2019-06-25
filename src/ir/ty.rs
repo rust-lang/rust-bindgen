@@ -346,13 +346,13 @@ impl Type {
             TypeKind::Void |
             TypeKind::NullPtr |
             TypeKind::Pointer(..) |
+            TypeKind::BlockPointer(..) |
             TypeKind::ObjCId |
             TypeKind::ObjCSel |
             TypeKind::ObjCInterface(..) => Some(self),
 
             TypeKind::ResolvedTypeRef(inner) |
             TypeKind::Alias(inner) |
-            TypeKind::BlockPointer(inner) |
             TypeKind::TemplateAlias(inner, _) => {
                 ctx.resolve_type(inner).safe_canonical_type(ctx)
             }
