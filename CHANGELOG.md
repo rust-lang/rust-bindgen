@@ -9,13 +9,17 @@
   - [Removed](#removed)
   - [Fixed](#fixed)
   - [Security](#security)
+- [0.50.0](#0500)
+  - [Added](#added-1)
+- [0.49.3](#0493)
+  - [Added](#added-2)
 - [0.49.2](#0492)
   - [Changed](#changed-1)
 - [0.49.1](#0491)
   - [Fixed](#fixed-1)
   - [Changed](#changed-2)
 - [0.49.0](#0490)
-  - [Added](#added-1)
+  - [Added](#added-3)
   - [Fixed](#fixed-2)
   - [Changed](#changed-3)
 - [0.48.1](#0481)
@@ -34,14 +38,14 @@
   - [Changed](#changed-7)
   - [Fixed](#fixed-7)
 - [0.33.1 .. 0.46.0](#0331--0460)
-  - [Added](#added-2)
+  - [Added](#added-4)
   - [Removed](#removed-1)
   - [Changed](#changed-8)
   - [Fixed](#fixed-8)
 - [0.33.1](#0331)
   - [Fixed](#fixed-9)
 - [0.33.0](#0330)
-  - [Added](#added-3)
+  - [Added](#added-5)
   - [Changed](#changed-9)
   - [Deprecated](#deprecated-1)
   - [Removed](#removed-2)
@@ -52,22 +56,22 @@
 - [0.32.1](#0321)
   - [Fixed](#fixed-12)
 - [0.32.0](#0320)
-  - [Added](#added-4)
+  - [Added](#added-6)
   - [Changed](#changed-10)
   - [Fixed](#fixed-13)
 - [0.31.0](#0310)
-  - [Added](#added-5)
+  - [Added](#added-7)
   - [Changed](#changed-11)
   - [Deprecated](#deprecated-2)
   - [Removed](#removed-3)
   - [Fixed](#fixed-14)
 - [0.30.0](#0300)
-  - [Added](#added-6)
+  - [Added](#added-8)
   - [Changed](#changed-12)
   - [Deprecated](#deprecated-3)
   - [Fixed](#fixed-15)
 - [0.29.0](#0290)
-  - [Added](#added-7)
+  - [Added](#added-9)
   - [Changed](#changed-13)
   - [Fixed](#fixed-16)
 
@@ -105,9 +109,31 @@ Released YYYY/MM/DD
 
 --------------------------------------------------------------------------------
 
+# 0.50.0
+
+Released 2019/07/01.
+
+## Added
+
+* Fixed pointers to Objective C blocks [#1582][].
+
+* Various bindgen auto-generated types are now constructible in `const fn`
+  contexts [#1571][]
+
+* It is possible to generate `#[non_exhaustive]` enums for rust nightly targets.
+  [#1575][]
+
+* It is possible to avoid building clap now if you're using bindgen as
+  a library. [#1581][].
+
+[#1571]: https://github.com/rust-lang/rust-bindgen/issues/1571
+[#1575]: https://github.com/rust-lang/rust-bindgen/issues/1575
+[#1581]: https://github.com/rust-lang/rust-bindgen/issues/1581
+[#1582]: https://github.com/rust-lang/rust-bindgen/issues/1582
+
 # 0.49.3
 
-Released 2019/06/25
+Released 2019/06/25. **YANKED**
 
 ## Added
 
