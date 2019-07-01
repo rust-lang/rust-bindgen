@@ -248,12 +248,12 @@ systems) on-the-fly.</p>
 <p>First we need to declare a build-time dependency on <code>bindgen</code> by adding it to
 the <code>[build-dependencies]</code> section of our crate's <code>Cargo.toml</code> file.</p>
 <p>Please always use the latest version of <code>bindgen</code>, it has the most fixes and
-best compatibility. At the time of writing the latest bindgen is <code>0.49.2</code>, but
+best compatibility. At the time of writing the latest bindgen is <code>0.50.0</code>, but
 you can always check <a href="https://crates.io/crates/bindgen">the bindgen page of
 crates.io</a> to verify the latest version if
 you're unsure.</p>
 <pre><code class="language-toml">[build-dependencies]
-bindgen = &quot;0.49.2&quot;
+bindgen = &quot;0.50&quot;
 </code></pre>
 <a class="header" href="#create-a-wrapperh-header" id="create-a-wrapperh-header"><h1>Create a <code>wrapper.h</code> Header</h1></a>
 <p>The <code>wrapper.h</code> file will include all the various headers containing
