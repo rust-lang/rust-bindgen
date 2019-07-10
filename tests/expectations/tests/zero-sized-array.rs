@@ -122,7 +122,7 @@ fn bindgen_test_layout_InheritsZeroSizedArray() {
     );
 }
 /// And this should not get an `_address` field either.
-#[repr(C, packed)]
+#[repr(C)]
 #[derive(Debug, Default)]
 pub struct DynamicallySizedArray {
     pub arr: __IncompleteArrayField<::std::os::raw::c_char>,
