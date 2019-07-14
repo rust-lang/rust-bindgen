@@ -68,3 +68,8 @@ fn bindgen_test_layout_b() {
         concat!("Offset of field: ", stringify!(b), "::", stringify!(c))
     );
 }
+#[repr(C)]
+pub struct std_a {
+    pub _bindgen_opaque_blob: [u8; 0usize],
+    _unused: [u8; 0],
+}

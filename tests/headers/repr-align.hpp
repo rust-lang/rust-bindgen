@@ -1,4 +1,4 @@
-// bindgen-flags: --raw-line '#![cfg(feature = "nightly")]' --rust-target 1.25 -- -std=c++11
+// bindgen-flags: --raw-line '#![cfg(feature = "nightly")]' --rust-target 1.25 --opaque-type "std::.*" -- -std=c++11
 
 struct alignas(8) a {
   int b;
@@ -9,3 +9,7 @@ struct alignas(double) b {
   int b;
   int c;
 };
+
+namespace std {
+union a;
+}

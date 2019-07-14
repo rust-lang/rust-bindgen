@@ -1690,12 +1690,15 @@ impl CodeGenerator for CompInfo {
 
         if ctx.options().rust_features().repr_align {
             if let Some(explicit) = explicit_align {
-                // Ensure that the struct has the correct alignment even in
-                // presence of alignas.
-                let explicit = helpers::ast_ty::int_expr(explicit as i64);
-                attributes.push(quote! {
-                    #[repr(align(#explicit))]
-                });
+                // don't emit #[repr(align(0))]
+                if explicit > 0 {
+                    // Ensure that the struct has the correct alignment even in
+                    // presence of alignas.
+                    let explicit = helpers::ast_ty::int_expr(explicit as i64);
+                    attributes.push(quote! {
+                        #[repr(align(#explicit))]
+                    });
+                }
             }
         }
 
