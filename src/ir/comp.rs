@@ -1072,6 +1072,12 @@ impl CompInfo {
             return None;
         }
 
+        // By definition, we don't have the right layout information here if
+        // we're a forward declaration.
+        if self.is_forward_declaration() {
+            return None;
+        }
+
         let mut max_size = 0;
         let mut max_align = 0;
         for field in self.fields() {
