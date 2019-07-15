@@ -9,3 +9,4 @@ struct alignas(double) b {
   int b;
   int c;
 };
+
