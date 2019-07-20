@@ -63,7 +63,7 @@ impl<T> Default for StylePoint<T> {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct StyleFoo<T> {
     pub __bindgen_anon_1: __BindgenUnionField<StyleFoo__bindgen_ty_1>,
     pub foo: __BindgenUnionField<StyleFoo_Foo_Body<T>>,
@@ -125,13 +125,8 @@ impl Default for StyleFoo__bindgen_ty_1 {
         unsafe { ::std::mem::zeroed() }
     }
 }
-impl<T> Default for StyleFoo<T> {
-    fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
-    }
-}
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct StyleBar<T> {
     pub tag: StyleBar_Tag,
     pub __bindgen_anon_1: StyleBar__bindgen_ty_1<T>,
@@ -178,18 +173,13 @@ impl<T> Default for StyleBar_StyleBar3_Body<T> {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct StyleBar__bindgen_ty_1<T> {
     pub bar1: __BindgenUnionField<StyleBar_StyleBar1_Body<T>>,
     pub bar2: __BindgenUnionField<StyleBar_StyleBar2_Body<T>>,
     pub bar3: __BindgenUnionField<StyleBar_StyleBar3_Body<T>>,
     pub bindgen_union_field: [u8; 0usize],
     pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
-}
-impl<T> Default for StyleBar__bindgen_ty_1<T> {
-    fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
-    }
 }
 impl<T> Default for StyleBar<T> {
     fn default() -> Self {

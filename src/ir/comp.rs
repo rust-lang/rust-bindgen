@@ -1078,8 +1078,13 @@ impl CompInfo {
             return None;
         }
 
+        if self.kind == CompKind::Union && self.fields().len() == 0 {
+            return None;
+        }
+
         let mut max_size = 0;
-        let mut max_align = 0;
+        // Don't allow align(0)
+        let mut max_align = 1;
         for field in self.fields() {
             let field_layout = field.layout(ctx);
 
