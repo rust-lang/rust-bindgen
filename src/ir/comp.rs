@@ -1078,7 +1078,8 @@ impl CompInfo {
             return None;
         }
 
-        if self.kind == CompKind::Union && self.fields().len() == 0 {
+        // empty union case
+        if self.fields().is_empty() {
             return None;
         }
 
