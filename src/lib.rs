@@ -92,7 +92,7 @@ pub use codegen::EnumVariation;
 use std::borrow::Cow;
 use std::fs::{File, OpenOptions};
 use std::io::{self, Write};
-use std::iter;
+use std::{env, iter};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::sync::Arc;
@@ -1200,7 +1200,7 @@ impl Builder {
     /// Generate the Rust bindings using the options built up thus far.
     pub fn generate(mut self) -> Result<Bindings, ()> {
         // Add any extra arguments from the environment to the clang command line.
-        if let Some(extra_clang_args) = std::env::var("BINDGEN_EXTRA_CLANG_ARGS").ok() {
+        if let Some(extra_clang_args) = env::var("BINDGEN_EXTRA_CLANG_ARGS").ok() {
             // Try to parse it with shell quoting. If we fail, make it one single big argument.
             if let Some(strings) = shlex::split(&extra_clang_args) {
                 self.options.clang_args.extend(strings);
@@ -1899,6 +1899,21 @@ impl Bindings {
         Ok(())
     }
 
+    /// Gets the rustfmt path to rustfmt the generated bindings.
+    fn rustfmt_path<'a>(&'a self) -> io::Result<Cow<'a, PathBuf>> {
+        debug_assert!(self.options.rustfmt_bindings);
+        if let Some(ref p) = self.options.rustfmt_path {
+            return Ok(Cow::Borrowed(p));
+        }
+        if let Ok(rustfmt) = env::var("RUSTFMT") {
+            return Ok(Cow::Owned(rustfmt.into()));
+        }
+        match which::which("rustfmt") {
+            Ok(p) => Ok(Cow::Owned(p)),
+            Err(e) => Err(io::Error::new(io::ErrorKind::Other, format!("{}", e))),
+        }
+    }
+
     /// Checks if rustfmt_bindings is set and runs rustfmt on the string
     fn rustfmt_generated_string<'a>(
         &self,
@@ -1911,18 +1926,7 @@ impl Bindings {
             return Ok(Cow::Borrowed(source));
         }
 
-        let rustfmt = match self.options.rustfmt_path {
-            Some(ref p) => Cow::Borrowed(p),
-            None => {
-                let path = which::which("rustfmt")
-                    .map_err(|e| {
-                        io::Error::new(io::ErrorKind::Other, format!("{}", e))
-                    })?;
-
-                Cow::Owned(path)
-            }
-        };
-
+        let rustfmt = self.rustfmt_path()?;
         let mut cmd = Command::new(&*rustfmt);
 
         cmd
