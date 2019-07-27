@@ -742,7 +742,7 @@ impl CodeGenerator for Type {
                     .all(|c| match c {
                         // These are the only characters allowed in simple
                         // paths, eg `good::dogs::Bront`.
-                        'A'...'Z' | 'a'...'z' | '0'...'9' | ':' | '_' | ' ' => true,
+                        'A'..='Z' | 'a'..='z' | '0'..='9' | ':' | '_' | ' ' => true,
                         _ => false,
                     }) &&
                     outer_params.is_empty() &&
