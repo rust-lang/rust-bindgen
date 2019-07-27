@@ -661,7 +661,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     }
 
     /// Get the user-provided callbacks by reference, if any.
-    pub fn parse_callbacks(&self) -> Option<&ParseCallbacks> {
+    pub fn parse_callbacks(&self) -> Option<&dyn ParseCallbacks> {
         self.options().parse_callbacks.as_ref().map(|t| &**t)
     }
 

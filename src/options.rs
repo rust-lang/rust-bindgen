@@ -8,7 +8,7 @@ use std::str::FromStr;
 /// Construct a new [`Builder`](./struct.Builder.html) from command line flags.
 pub fn builder_from_flags<I>(
     args: I,
-) -> Result<(Builder, Box<io::Write>, bool), io::Error>
+) -> Result<(Builder, Box<dyn io::Write>, bool), io::Error>
 where
     I: Iterator<Item = String>,
 {
@@ -600,9 +600,9 @@ where
 
     let output = if let Some(path) = matches.value_of("output") {
         let file = File::create(path)?;
-        Box::new(io::BufWriter::new(file)) as Box<io::Write>
+        Box::new(io::BufWriter::new(file)) as Box<dyn io::Write>
     } else {
-        Box::new(io::BufWriter::new(io::stdout())) as Box<io::Write>
+        Box::new(io::BufWriter::new(io::stdout())) as Box<dyn io::Write>
     };
 
     if matches.is_present("dump-preprocessed-input") {
