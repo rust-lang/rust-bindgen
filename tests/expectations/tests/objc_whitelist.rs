@@ -17,7 +17,7 @@ impl protocol_SomeProtocol for id {
     }
     unsafe fn protocolClassMethod() {
         msg_send!(
-            objc::runtime::Class::get("SomeProtocol").expect("Couldn\'t find SomeProtocol"),
+            objc::runtime::Class::get("SomeProtocol").expect("Couldn't find SomeProtocol"),
             protocolClassMethod
         )
     }
@@ -32,7 +32,7 @@ impl WhitelistMe for id {
     }
     unsafe fn classMethod() {
         msg_send!(
-            objc::runtime::Class::get("WhitelistMe").expect("Couldn\'t find WhitelistMe"),
+            objc::runtime::Class::get("WhitelistMe").expect("Couldn't find WhitelistMe"),
             classMethod
         )
     }
