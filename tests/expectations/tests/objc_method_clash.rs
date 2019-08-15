@@ -17,7 +17,7 @@ impl Foo for id {
     }
     unsafe fn class_foo() {
         msg_send!(
-            objc::runtime::Class::get("Foo").expect("Couldn't find Foo"),
+            objc::runtime::Class::get("Foo").expect("Couldn\'t find Foo"),
             foo
         )
     }
