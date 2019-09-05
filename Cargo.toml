@@ -54,7 +54,7 @@ lazy_static = "1"
 peeking_take_while = "0.1.2"
 quote = { version = "1", default-features = false }
 regex = "1.0"
-which = ">=1.0, <3.0"
+which = { version = ">=1.0, <3.0", optional = true }
 shlex = "0.1"
 fxhash = "0.2"
 # New validation in 0.3.6 breaks bindgen-integration:
@@ -70,9 +70,11 @@ optional = true
 version = "0.4"
 
 [features]
-default = ["logging", "clap"]
+default = ["logging", "clap", "which-rustfmt"]
 logging = ["env_logger", "log"]
 static = []
+# Dynamically discover a `rustfmt` binary using the `which` crate
+which-rustfmt = ["which"]
 
 # These features only exist for CI testing -- don't use them if you're not hacking
 # on bindgen!
