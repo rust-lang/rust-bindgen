@@ -49,7 +49,7 @@ cexpr = "0.3.3"
 cfg-if = "0.1.0"
 # This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
 clap = { version = "2", optional = true }
-clang-sys = { version = "0.28.0", features = ["runtime", "clang_6_0"] }
+clang-sys = { version = "0.28.0", features = ["clang_6_0"] }
 lazycell = "1"
 lazy_static = "1"
 peeking_take_while = "0.1.2"
@@ -71,9 +71,10 @@ optional = true
 version = "0.4"
 
 [features]
-default = ["logging", "clap", "which-rustfmt"]
+default = ["logging", "clap", "runtime", "which-rustfmt"]
 logging = ["env_logger", "log"]
-static = []
+static = ["clang-sys/static"]
+runtime = ["clang-sys/runtime"]
 # Dynamically discover a `rustfmt` binary using the `which` crate
 which-rustfmt = ["which"]
 
