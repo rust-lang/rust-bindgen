@@ -14,6 +14,7 @@ case "$BINDGEN_JOB" in
         # Need rustfmt to compare the test expectations.
         rustup update nightly
         rustup component add rustfmt
+        rustup component add --toolchain nightly rustfmt
         RUSTFMT="$(rustup which rustfmt)"
         export RUSTFMT
         cargo test "$BINDGEN_PROFILE" --features "$BINDGEN_FEATURES"
@@ -28,6 +29,7 @@ case "$BINDGEN_JOB" in
     "nofeatures")
         rustup update nightly
         rustup component add rustfmt
+        rustup component add --toolchain nightly rustfmt
         RUSTFMT="$(rustup which rustfmt)"
         export RUSTFMT
         cargo test "$BINDGEN_PROFILE" --no-default-features
