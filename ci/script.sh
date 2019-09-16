@@ -14,19 +14,25 @@ case "$BINDGEN_JOB" in
         # Need rustfmt to compare the test expectations.
         rustup update nightly
         rustup component add rustfmt
-	export RUSTFMT="$(rustup which rustfmt)"
-        cargo test $BINDGEN_PROFILE --features "$BINDGEN_FEATURES"
+        RUSTFMT="$(rustup which rustfmt)"
+        export RUSTFMT
+        cargo test "$BINDGEN_PROFILE" --features "$BINDGEN_FEATURES"
         ./ci/assert-no-diff.sh
         ;;
 
     "integration")
         cd ./bindgen-integration
-        cargo test $BINDGEN_PROFILE --features "$BINDGEN_FEATURES"
+        cargo test "$BINDGEN_PROFILE" --features "$BINDGEN_FEATURES"
+        ;;
+
+    "nofeatures")
+        cargo test "$BINDGEN_PROFILE" --no-default-features
+        ./ci/assert-no-diff.sh
         ;;
 
     "expectations")
         cd ./tests/expectations
-        cargo test $BINDGEN_PROFILE
+        cargo test "$BINDGEN_PROFILE"
         ;;
 
     "misc")
@@ -43,10 +49,7 @@ case "$BINDGEN_JOB" in
         # TODO: Actually run quickchecks once `bindgen` is reliable enough.
         cargo test
         ;;
-    "nofeatures")
-        cargo test $BINDGEN_PROFILE --no-default-features
-        ./ci/assert-no-diff.sh
-        ;;
+
     *)
         echo "Error! Unknown \$BINDGEN_JOB: '$BINDGEN_JOB'"
         exit 1
