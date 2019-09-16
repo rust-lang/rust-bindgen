@@ -43,6 +43,10 @@ case "$BINDGEN_JOB" in
         # TODO: Actually run quickchecks once `bindgen` is reliable enough.
         cargo test
         ;;
+    "nofeatures")
+        cargo test $BINDGEN_PROFILE --no-default-features
+        ./ci/assert-no-diff.sh
+        ;;
     *)
         echo "Error! Unknown \$BINDGEN_JOB: '$BINDGEN_JOB'"
         exit 1
