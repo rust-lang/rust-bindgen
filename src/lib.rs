@@ -96,7 +96,6 @@ use std::fs::{File, OpenOptions};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
-use std::sync::Arc;
 use std::{env, iter};
 
 // Some convenient typedefs for a fast hash map and hash set.
@@ -1720,6 +1719,7 @@ impl Default for BindgenOptions {
     }
 }
 
+#[cfg(feature = "runtime")]
 fn ensure_libclang_is_loaded() {
     if clang_sys::is_loaded() {
         return;
@@ -1730,7 +1730,7 @@ fn ensure_libclang_is_loaded() {
     // across different threads.
 
     lazy_static! {
-        static ref LIBCLANG: Arc<clang_sys::SharedLibrary> = {
+        static ref LIBCLANG: std::sync::Arc<clang_sys::SharedLibrary> = {
             clang_sys::load().expect("Unable to find libclang");
             clang_sys::get_library().expect(
                 "We just loaded libclang and it had better still be \
@@ -1740,6 +1740,10 @@ fn ensure_libclang_is_loaded() {
     }
 
     clang_sys::set_library(Some(LIBCLANG.clone()));
+}
+
+#[cfg(not(feature = "runtime"))]
+fn ensure_libclang_is_loaded() {
 }
 
 /// Generated Rust bindings.
@@ -1756,10 +1760,13 @@ impl Bindings {
     ) -> Result<Bindings, ()> {
         ensure_libclang_is_loaded();
 
+        #[cfg(feature = "runtime")]
         debug!(
             "Generating bindings, libclang at {}",
             clang_sys::get_library().unwrap().path().display()
         );
+        #[cfg(not(feature = "runtime"))]
+        debug!("Generating bindings, libclang linked");
 
         options.build();
 
@@ -2115,10 +2122,7 @@ pub struct ClangVersion {
 
 /// Get the major and the minor semver numbers of Clang's version
 pub fn clang_version() -> ClangVersion {
-    if !clang_sys::is_loaded() {
-        // TODO(emilio): Return meaningful error (breaking).
-        clang_sys::load().expect("Unable to find libclang");
-    }
+    ensure_libclang_is_loaded();
 
     let raw_v: String = clang::extract_clang_version();
     let split_v: Option<Vec<&str>> = raw_v
