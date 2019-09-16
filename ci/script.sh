@@ -26,6 +26,10 @@ case "$BINDGEN_JOB" in
         ;;
 
     "nofeatures")
+        rustup update nightly
+        rustup component add rustfmt
+        RUSTFMT="$(rustup which rustfmt)"
+        export RUSTFMT
         cargo test "$BINDGEN_PROFILE" --no-default-features
         ./ci/assert-no-diff.sh
         ;;
