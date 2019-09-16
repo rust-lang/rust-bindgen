@@ -1901,21 +1901,21 @@ impl Bindings {
     }
 
     /// Gets the rustfmt path to rustfmt the generated bindings.
-    fn rustfmt_path<'a>(&'a self) -> io::Result<Option<Cow<'a, PathBuf>>> {
+    fn rustfmt_path<'a>(&'a self) -> io::Result<Cow<'a, PathBuf>> {
         debug_assert!(self.options.rustfmt_bindings);
         if let Some(ref p) = self.options.rustfmt_path {
-            return Ok(Some(Cow::Borrowed(p)));
+            return Ok(Cow::Borrowed(p));
         }
         if let Ok(rustfmt) = env::var("RUSTFMT") {
-            return Ok(Some(Cow::Owned(rustfmt.into())));
+            return Ok(Cow::Owned(rustfmt.into()));
         }
         #[cfg(feature = "which-rustfmt")]
         match which::which("rustfmt") {
-            Ok(p) => Ok(Some(Cow::Owned(p))),
+            Ok(p) => Ok(Cow::Owned(p)),
             Err(e) => Err(io::Error::new(io::ErrorKind::Other, format!("{}", e))),
         }
         #[cfg(not(feature = "which-rustfmt"))]
-        Ok(None)
+        Err(io::Error::new(io::ErrorKind::Other, "which wasn't enabled, and no rustfmt binary specified"))
     }
 
     /// Checks if rustfmt_bindings is set and runs rustfmt on the string
@@ -1930,11 +1930,7 @@ impl Bindings {
             return Ok(Cow::Borrowed(source));
         }
 
-        let rustfmt = if let Some(rustfmt) = self.rustfmt_path()? {
-            rustfmt
-        } else {
-            return Ok(Cow::Borrowed(source));
-        };
+        let rustfmt = self.rustfmt_path()?;
         let mut cmd = Command::new(&*rustfmt);
 
         cmd
