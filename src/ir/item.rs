@@ -793,6 +793,15 @@ impl Item {
         }
     }
 
+    fn is_anon(&self) -> bool {
+        match self.kind() {
+            ItemKind::Module(module) => module.name().is_none(),
+            ItemKind::Type(ty) => ty.name().is_none(),
+            ItemKind::Function(_) => false,
+            ItemKind::Var(_) => false,
+        }
+    }
+
     /// Get the canonical name without taking into account the replaces
     /// annotation.
     ///
@@ -804,6 +813,10 @@ impl Item {
     ///
     /// This name should be derived from the immutable state contained in the
     /// type and the parent chain, since it should be consistent.
+    ///
+    /// If `BindgenOptions::disable_nested_struct_naming` is true then returned
+    /// name is the inner most non-anonymous name plus all the anonymous base names
+    /// that follows.
     pub fn real_canonical_name(
         &self,
         ctx: &BindgenContext,
@@ -827,8 +840,8 @@ impl Item {
             return base_name;
         }
 
-        // Concatenate this item's ancestors' names together.
-        let mut names: Vec<_> = target
+        // Ancestors' id iter
+        let mut ids_iter = target
             .parent_id()
             .ancestors(ctx)
             .filter(|id| *id != ctx.root_module())
@@ -847,7 +860,30 @@ impl Item {
                 }
 
                 true
-            })
+            });
+
+        let ids: Vec<_> = if ctx.options().disable_nested_struct_naming {
+            let mut ids = Vec::new();
+
+            // If target is anonymous we need find its first named ancestor.
+            if target.is_anon() {
+                while let Some(id) = ids_iter.next() {
+                    ids.push(id);
+
+                    if !ctx.resolve_item(id).is_anon() {
+                        break;
+                    }
+                }
+            }
+
+            ids
+        } else {
+            ids_iter.collect()
+        };
+
+        // Concatenate this item's ancestors' names together.
+        let mut names: Vec<_> = ids
+            .into_iter()
             .map(|id| {
                 let item = ctx.resolve_item(id);
                 let target = ctx.resolve_item(item.name_target(ctx));

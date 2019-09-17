@@ -206,6 +206,13 @@ where
                      generate names like \"Baz\" instead of \"foo_bar_Baz\" \
                      for an input name \"foo::bar::Baz\".",
                 ),
+            Arg::with_name("disable-nested-struct-naming")
+                .long("disable-nested-struct-naming")
+                .help(
+                    "Disable nested struct naming, causing bindgen to generate \
+                     names like \"bar\" instead of \"foo_bar\" for a nested \
+                     definition \"struct foo { struct bar { } b; };\"."
+                ),
             Arg::with_name("ignore-functions")
                 .long("ignore-functions")
                 .help(
@@ -557,6 +564,10 @@ where
 
     if matches.is_present("disable-name-namespacing") {
         builder = builder.disable_name_namespacing();
+    }
+
+    if matches.is_present("disable-nested-struct-naming") {
+        builder = builder.disable_nested_struct_naming();
     }
 
     if matches.is_present("ignore-functions") {
