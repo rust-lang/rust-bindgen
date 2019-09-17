@@ -1958,7 +1958,10 @@ impl Bindings {
             }
         }
         #[cfg(not(feature = "which-rustfmt"))]
-        Err(io::Error::new(io::ErrorKind::Other, "which wasn't enabled, and no rustfmt binary specified"))
+        Err(io::Error::new(
+            io::ErrorKind::Other,
+            "which wasn't enabled, and no rustfmt binary specified",
+        ))
     }
 
     /// Checks if rustfmt_bindings is set and runs rustfmt on the string
