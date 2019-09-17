@@ -1,5 +1,2 @@
 max_width = 80
-brace_style = "SameLineWhere"
-struct_lit_single_line = false
-where_trailing_comma = true
-normalize_comments = false
+binop_separator = "back"

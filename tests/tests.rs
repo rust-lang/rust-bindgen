@@ -1,11 +1,11 @@
-#[cfg(feature = "logging")]
-extern crate env_logger;
+extern crate bindgen;
 extern crate clap;
 extern crate diff;
-extern crate bindgen;
+#[cfg(feature = "logging")]
+extern crate env_logger;
 extern crate shlex;
 
-use bindgen::{Builder, clang_version};
+use bindgen::{clang_version, Builder};
 use std::env;
 use std::fs;
 use std::io::{self, BufRead, BufReader, Error, ErrorKind, Read, Write};
@@ -35,13 +35,15 @@ fn rustfmt(source: String) -> (String, String) {
             .map_or(false, |status| status.success());
 
         if !have_working_rustfmt {
-            panic!("
+            panic!(
+                "
 The latest `rustfmt` is required to run the `bindgen` test suite. Install
 `rustfmt` with:
 
     $ rustup update nightly
     $ rustup run nightly cargo install -f rustfmt-nightly
-");
+"
+            );
         }
     });
 
@@ -51,7 +53,7 @@ The latest `rustfmt` is required to run the `bindgen` test suite. Install
             "nightly",
             "rustfmt",
             "--config-path",
-            concat!(env!("CARGO_MANIFEST_DIR"), "/tests/rustfmt.toml")
+            concat!(env!("CARGO_MANIFEST_DIR"), "/tests/rustfmt.toml"),
         ])
         .stdin(process::Stdio::piped())
         .stdout(process::Stdio::piped())
@@ -66,43 +68,37 @@ The latest `rustfmt` is required to run the `bindgen` test suite. Install
     // Write to stdin in a new thread, so that we can read from stdout on this
     // thread. This keeps the child from blocking on writing to its stdout which
     // might block us from writing to its stdin.
-    let stdin_handle = ::std::thread::spawn(move || {
-        stdin.write_all(source.as_bytes())
-    });
+    let stdin_handle = ::std::thread::spawn(move || stdin.write_all(source.as_bytes()));
 
     // Read stderr on a new thread for similar reasons.
     let stderr_handle = ::std::thread::spawn(move || {
         let mut output = vec![];
-        io::copy(&mut stderr, &mut output)
-            .map(|_| String::from_utf8_lossy(&output).to_string())
+        io::copy(&mut stderr, &mut output).map(|_| String::from_utf8_lossy(&output).to_string())
     });
 
     let mut output = vec![];
-    io::copy(&mut stdout, &mut output)
-        .expect("Should copy stdout into vec OK");
+    io::copy(&mut stdout, &mut output).expect("Should copy stdout into vec OK");
 
     // Ignore actual rustfmt status because it is often non-zero for trivial
     // things.
     let _ = child.wait().expect("should wait on rustfmt child OK");
 
-    stdin_handle.join()
+    stdin_handle
+        .join()
         .expect("writer thread should not have panicked")
         .expect("should have written to child rustfmt's stdin OK");
 
-    let bindings = String::from_utf8(output)
-        .expect("rustfmt should only emit valid utf-8");
+    let bindings = String::from_utf8(output).expect("rustfmt should only emit valid utf-8");
 
-    let stderr = stderr_handle.join()
+    let stderr = stderr_handle
+        .join()
         .expect("stderr reader thread should not have panicked")
         .expect("should have read child rustfmt's stderr OK");
 
     (bindings, stderr)
 }
 
-fn compare_generated_header(
-    header: &PathBuf,
-    builder: Builder,
-) -> Result<(), Error> {
+fn compare_generated_header(header: &PathBuf, builder: Builder) -> Result<(), Error> {
     let file_name = header.file_name().ok_or(Error::new(
         ErrorKind::Other,
         "compare_generated_header expects a file",
@@ -152,7 +148,7 @@ fn compare_generated_header(
         if !expectation.is_file() {
             panic!(
                 "missing test expectation file and/or 'testing_only_libclang_$VERSION' \
-                    feature for header '{}'; looking for expectation file at '{}'",
+                 feature for header '{}'; looking for expectation file at '{}'",
                 header.display(),
                 expectation.display()
             );
@@ -236,7 +232,8 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
         }
 
         if line.contains("bindgen-flags: ") {
-            let extra_flags = line.split("bindgen-flags: ")
+            let extra_flags = line
+                .split("bindgen-flags: ")
                 .last()
                 .and_then(shlex::split)
                 .unwrap();
@@ -248,8 +245,8 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
                 .map(ToString::to_string)
                 .chain(flags)
                 .collect();
-        } else if line.contains("bindgen-generate-bindings-on-linux-only") &&
-                   !cfg!(target_os = "linux")
+        } else if line.contains("bindgen-generate-bindings-on-linux-only")
+            && !cfg!(target_os = "linux")
         {
             return Ok(None);
         }
@@ -269,10 +266,9 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
     // - add header filename as 1st element
     // - prepend raw lines so they're in the right order for expected output
     // - append the test header's bindgen flags
-    let header_str = header.to_str().ok_or(Error::new(
-        ErrorKind::Other,
-        "Invalid header file name",
-    ))?;
+    let header_str = header
+        .to_str()
+        .ok_or(Error::new(ErrorKind::Other, "Invalid header file name"))?;
 
     let prepend = [
         "bindgen",
@@ -289,33 +285,32 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
         "",
     ];
 
-    let args = prepend.into_iter().map(ToString::to_string).chain(
-        flags
-            .into_iter(),
-    );
+    let args = prepend
+        .into_iter()
+        .map(ToString::to_string)
+        .chain(flags.into_iter());
 
     builder_from_flags(args).map(|(builder, _, _)| Some(builder))
 }
 
 macro_rules! test_header {
-    ($function:ident, $header:expr) => (
+    ($function:ident, $header:expr) => {
         #[test]
         fn $function() {
             let header = PathBuf::from($header);
-            let result = create_bindgen_builder(&header)
-                .and_then(|builder| {
-                    if let Some(builder) = builder {
-                        compare_generated_header(&header, builder)
-                    } else {
-                        Ok(())
-                    }
-                });
+            let result = create_bindgen_builder(&header).and_then(|builder| {
+                if let Some(builder) = builder {
+                    compare_generated_header(&header, builder)
+                } else {
+                    Ok(())
+                }
+            });
 
             if let Err(err) = result {
                 panic!("{}", err);
             }
         }
-    )
+    };
 }
 
 // This file is generated by build.rs
@@ -323,12 +318,17 @@ include!(concat!(env!("OUT_DIR"), "/tests.rs"));
 
 #[test]
 fn test_clang_env_args() {
-    std::env::set_var("BINDGEN_EXTRA_CLANG_ARGS", "-D_ENV_ONE=1 -D_ENV_TWO=\"2 -DNOT_THREE=1\"");
+    std::env::set_var(
+        "BINDGEN_EXTRA_CLANG_ARGS",
+        "-D_ENV_ONE=1 -D_ENV_TWO=\"2 -DNOT_THREE=1\"",
+    );
     let actual = builder()
-        .header_contents("test.hpp",
-                         "#ifdef _ENV_ONE\nextern const int x[] = { 42 };\n#endif\n\
-                          #ifdef _ENV_TWO\nextern const int y[] = { 42 };\n#endif\n\
-                          #ifdef NOT_THREE\nextern const int z[] = { 42 };\n#endif\n")
+        .header_contents(
+            "test.hpp",
+            "#ifdef _ENV_ONE\nextern const int x[] = { 42 };\n#endif\n\
+             #ifdef _ENV_TWO\nextern const int y[] = { 42 };\n#endif\n\
+             #ifdef NOT_THREE\nextern const int z[] = { 42 };\n#endif\n",
+        )
         .generate()
         .unwrap()
         .to_string();
@@ -336,7 +336,8 @@ fn test_clang_env_args() {
     let (actual, stderr) = rustfmt(actual);
     println!("{}", stderr);
 
-    let (expected, _) = rustfmt("/* automatically generated by rust-bindgen */
+    let (expected, _) = rustfmt(
+        "/* automatically generated by rust-bindgen */
 
 extern \"C\" {
     pub static mut x: [::std::os::raw::c_int; 1usize];
@@ -344,12 +345,11 @@ extern \"C\" {
 extern \"C\" {
     pub static mut y: [::std::os::raw::c_int; 1usize];
 }
-".to_string());
-
-    assert_eq!(
-        expected,
-        actual
+"
+        .to_string(),
     );
+
+    assert_eq!(expected, actual);
 }
 
 #[test]
@@ -364,17 +364,17 @@ fn test_header_contents() {
     let (actual, stderr) = rustfmt(actual);
     println!("{}", stderr);
 
-    let (expected, _) = rustfmt("/* automatically generated by rust-bindgen */
+    let (expected, _) = rustfmt(
+        "/* automatically generated by rust-bindgen */
 
 extern \"C\" {
     pub fn foo(a: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
 }
-".to_string());
-
-    assert_eq!(
-        expected,
-        actual
+"
+        .to_string(),
     );
+
+    assert_eq!(expected, actual);
 }
 
 #[test]
@@ -420,21 +420,18 @@ fn test_multiple_header_calls_in_builder() {
 #[cfg(not(target_os = "windows"))]
 fn no_system_header_includes() {
     use std::process::Command;
-    assert!(
-        Command::new("./ci/no-includes.sh")
-            .current_dir(env!("CARGO_MANIFEST_DIR"))
-            .spawn()
-            .expect("should spawn ./ci/no-includes.sh OK")
-            .wait()
-            .expect("should wait for ./ci/no-includes OK")
-            .success()
-    );
+    assert!(Command::new("./ci/no-includes.sh")
+        .current_dir(env!("CARGO_MANIFEST_DIR"))
+        .spawn()
+        .expect("should spawn ./ci/no-includes.sh OK")
+        .wait()
+        .expect("should wait for ./ci/no-includes OK")
+        .success());
 }
 
 #[test]
 fn dump_preprocessed_input() {
-    let arg_keyword =
-        concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/arg_keyword.hpp");
+    let arg_keyword = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/arg_keyword.hpp");
     let empty_layout = concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/tests/headers/cpp-empty-layout.hpp"
