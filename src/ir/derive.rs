@@ -123,7 +123,7 @@ impl cmp::PartialOrd for CanDerive {
             (_, No) => cmp::Ordering::Less,
             (Manually, _) => cmp::Ordering::Greater,
             (_, Manually) => cmp::Ordering::Less,
-            _ => unreachable!()
+            _ => unreachable!(),
         };
         Some(ordering)
     }
