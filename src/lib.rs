@@ -421,6 +421,9 @@ impl Builder {
         if self.options.disable_name_namespacing {
             output_vector.push("--disable-name-namespacing".into());
         }
+        if self.options.disable_nested_struct_naming {
+            output_vector.push("--disable-nested-struct-naming".into());
+        }
 
         if !self.options.codegen_config.functions() {
             output_vector.push("--ignore-functions".into());
@@ -1078,6 +1081,29 @@ impl Builder {
         self
     }
 
+    /// Disable nested struct naming.
+    ///
+    /// The following structs have different names for C and C++. In case of C
+    /// they are visible as `foo` and `bar`. In case of C++ they are visible as
+    /// `foo` and `foo::bar`.
+    ///
+    /// ```c
+    /// struct foo {
+    ///     struct bar {
+    ///     } b;
+    /// };
+    /// ```
+    ///
+    /// Bindgen wants to avoid duplicate names by default so it follows C++ naming
+    /// and it generates `foo`/`foo_bar` instead of just `foo`/`bar`.
+    ///
+    /// This method disables this behavior and it is indented to be used only
+    /// for headers that were written for C.
+    pub fn disable_nested_struct_naming(mut self) -> Builder {
+        self.options.disable_nested_struct_naming = true;
+        self
+    }
+
     /// Treat inline namespaces conservatively.
     ///
     /// This is tricky, because in C++ is technically legal to override an item
@@ -1440,6 +1466,9 @@ struct BindgenOptions {
     /// True if we should avoid mangling names with namespaces.
     disable_name_namespacing: bool,
 
+    /// True if we should avoid generating nested struct names.
+    disable_nested_struct_naming: bool,
+
     /// True if we should generate layout tests for generated structures.
     layout_tests: bool,
 
@@ -1685,6 +1714,7 @@ impl Default for BindgenOptions {
             enable_cxx_namespaces: false,
             enable_function_attribute_detection: false,
             disable_name_namespacing: false,
+            disable_nested_struct_naming: false,
             use_core: false,
             ctypes_prefix: None,
             namespaced_constants: true,
