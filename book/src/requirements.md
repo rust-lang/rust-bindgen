@@ -39,13 +39,13 @@ $ brew install llvm
 If you use MacPorts:
 
 ```bash
-$ port install clang-3.9
+$ port install clang
 ```
 
 #### Debian-based Linuxes
 
 ```bash
-# apt-get install llvm-3.9-dev libclang-3.9-dev clang-3.9
+# apt install llvm-dev libclang-dev clang
 ```
 
 Ubuntu 16.10 provides the necessary packages directly. If you are using older
