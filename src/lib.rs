@@ -23,7 +23,7 @@ extern crate cexpr;
 #[allow(unused_extern_crates)]
 extern crate cfg_if;
 extern crate clang_sys;
-extern crate fxhash;
+extern crate rustc_hash;
 #[macro_use]
 extern crate lazy_static;
 extern crate peeking_take_while;
@@ -99,8 +99,8 @@ use std::sync::Arc;
 use std::{env, iter};
 
 // Some convenient typedefs for a fast hash map and hash set.
-type HashMap<K, V> = ::fxhash::FxHashMap<K, V>;
-type HashSet<K> = ::fxhash::FxHashSet<K>;
+type HashMap<K, V> = ::rustc_hash::FxHashMap<K, V>;
+type HashSet<K> = ::rustc_hash::FxHashSet<K>;
 pub(crate) use std::collections::hash_map::Entry;
 
 fn args_are_cpp(clang_args: &[String]) -> bool {
