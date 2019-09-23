@@ -137,12 +137,12 @@ Released 2019/09/23.
 
  * `fxhash` dependency was switched to `rustc-hash`. [#1626][]
 
-[#1627][]: https://github.com/rust-lang/rust-bindgen/issues/1627
-[#1611][]: https://github.com/rust-lang/rust-bindgen/issues/1611
-[#1615][]: https://github.com/rust-lang/rust-bindgen/issues/1615
-[#1625][]: https://github.com/rust-lang/rust-bindgen/issues/1625
-[#1626][]: https://github.com/rust-lang/rust-bindgen/issues/1626
-[#1627][]: https://github.com/rust-lang/rust-bindgen/issues/1627
+[#1627]: https://github.com/rust-lang/rust-bindgen/issues/1627
+[#1611]: https://github.com/rust-lang/rust-bindgen/issues/1611
+[#1615]: https://github.com/rust-lang/rust-bindgen/issues/1615
+[#1625]: https://github.com/rust-lang/rust-bindgen/issues/1625
+[#1626]: https://github.com/rust-lang/rust-bindgen/issues/1626
+[#1627]: https://github.com/rust-lang/rust-bindgen/issues/1627
 
 # 0.51.0
 
@@ -169,12 +169,12 @@ Released 2019/07/26.
  * Bindgen now reads `RUSTFMT` in the environment to try to find a suitable
    `rustfmt` binary. [#1602][]
 
-[#1591][]: https://github.com/rust-lang/rust-bindgen/issues/1591
-[#1592][]: https://github.com/rust-lang/rust-bindgen/issues/1592
-[#1593][]: https://github.com/rust-lang/rust-bindgen/issues/1593
-[#1595][]: https://github.com/rust-lang/rust-bindgen/issues/1595
-[#1596][]: https://github.com/rust-lang/rust-bindgen/issues/1596
-[#1602][]: https://github.com/rust-lang/rust-bindgen/issues/1602
+[#1591]: https://github.com/rust-lang/rust-bindgen/issues/1591
+[#1592]: https://github.com/rust-lang/rust-bindgen/issues/1592
+[#1593]: https://github.com/rust-lang/rust-bindgen/issues/1593
+[#1595]: https://github.com/rust-lang/rust-bindgen/issues/1595
+[#1596]: https://github.com/rust-lang/rust-bindgen/issues/1596
+[#1602]: https://github.com/rust-lang/rust-bindgen/issues/1602
 
 # 0.50.0
 
