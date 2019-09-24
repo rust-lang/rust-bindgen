@@ -124,7 +124,8 @@ Released 2019/09/23.
 
  * Mismatched `Ord` and `PartialOrd` implementations were fixed, which regresses
    bindgen in funny ways when using rustc nightly. Dot releases for a few of the
-   previous versions of bindgen will be created with this fix. [#1627][]
+   previous versions of bindgen will be created with this fix. Also,
+   a `v0.51.1-oldsyn` version was uploaded without the syn update. [#1627][]
 
 ## Changed
 
