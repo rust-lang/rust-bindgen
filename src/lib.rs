@@ -1958,10 +1958,9 @@ impl Bindings {
             }
         }
         #[cfg(not(feature = "which-rustfmt"))]
-        Err(io::Error::new(
-            io::ErrorKind::Other,
-            "which wasn't enabled, and no rustfmt binary specified",
-        ))
+        // No rustfmt binary was specified, so assume that the binary is called
+        // "rustfmt" and that it is in the user's PATH.
+        Ok(Cow::Owned("rustfmt".into()))
     }
 
     /// Checks if rustfmt_bindings is set and runs rustfmt on the string
