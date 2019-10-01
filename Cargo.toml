@@ -63,7 +63,7 @@ proc-macro2 = { version = "1", default-features = false }
 
 [dependencies.env_logger]
 optional = true
-version = "0.6"
+version = "0.7"
 
 [dependencies.log]
 optional = true
