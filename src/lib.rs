@@ -24,6 +24,7 @@ extern crate cexpr;
 extern crate cfg_if;
 extern crate clang_sys;
 extern crate rustc_hash;
+extern crate lazycell;
 #[macro_use]
 extern crate lazy_static;
 extern crate peeking_take_while;

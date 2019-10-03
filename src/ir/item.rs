@@ -20,6 +20,7 @@ use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::{Type, TypeKind};
 use clang;
 use clang_sys;
+use lazycell::LazyCell;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use regex;
 use std::cell::{Cell, RefCell};
@@ -398,6 +399,10 @@ pub struct Item {
     /// considerably faster in those cases.
     canonical_name_cache: RefCell<Option<String>>,
 
+    /// The path to use for whitelisting and other name-based checks, as
+    /// returned by `path_for_whitelisting`, lazily constructed.
+    path_for_whitelisting: LazyCell<Vec<String>>,
+
     /// A doc comment over the item, if any.
     comment: Option<String>,
     /// Annotations extracted from the doc comment, or the default ones
@@ -434,6 +439,7 @@ impl Item {
             local_id: Cell::new(None),
             next_child_local_id: Cell::new(1),
             canonical_name_cache: RefCell::new(None),
+            path_for_whitelisting: LazyCell::new(),
             parent_id: parent_id,
             comment: comment,
             annotations: annotations.unwrap_or_default(),
@@ -972,8 +978,9 @@ impl Item {
 
     /// Returns the path we should use for whitelisting / blacklisting, which
     /// doesn't include user-mangling.
-    pub fn path_for_whitelisting(&self, ctx: &BindgenContext) -> Vec<String> {
-        self.compute_path(ctx, UserMangled::No)
+    pub fn path_for_whitelisting(&self, ctx: &BindgenContext) -> &Vec<String> {
+        self.path_for_whitelisting
+            .borrow_with(|| self.compute_path(ctx, UserMangled::No))
     }
 
     fn compute_path(
