@@ -2327,7 +2327,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                             }
 
                             let mut prefix_path =
-                                parent.path_for_whitelisting(self);
+                                parent.path_for_whitelisting(self).clone();
                             enum_.variants().iter().any(|variant| {
                                 prefix_path.push(variant.name().into());
                                 let name = prefix_path[1..].join("::");
