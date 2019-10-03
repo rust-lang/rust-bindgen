@@ -861,7 +861,7 @@ impl<'a> CodeGenerator for Vtable<'a> {
         // For now, generate an empty struct, later we should generate function
         // pointers and whatnot.
         let name = ctx.rust_ident(&self.canonical_name(ctx));
-        let void = helpers::ast_ty::raw_type(ctx, "c_void");
+        let void = helpers::ast_ty::c_void(ctx);
         result.push(quote! {
             #[repr(C)]
             pub struct #name ( #void );
@@ -3076,10 +3076,10 @@ impl TryToRustTy for Type {
         use self::helpers::ast_ty::*;
 
         match *self.kind() {
-            TypeKind::Void => Ok(raw_type(ctx, "c_void")),
+            TypeKind::Void => Ok(c_void(ctx)),
             // TODO: we should do something smart with nullptr, or maybe *const
             // c_void is enough?
-            TypeKind::NullPtr => Ok(raw_type(ctx, "c_void").to_ptr(true)),
+            TypeKind::NullPtr => Ok(c_void(ctx).to_ptr(true)),
             TypeKind::Int(ik) => {
                 match ik {
                     IntKind::Bool => Ok(quote! { bool }),
@@ -3186,7 +3186,7 @@ impl TryToRustTy for Type {
             TypeKind::Alias(..) |
             TypeKind::BlockPointer(..) => {
                 if self.is_block_pointer() && !ctx.options().generate_block {
-                    let void = raw_type(ctx, "c_void");
+                    let void = c_void(ctx);
                     return Ok(void.to_ptr(/* is_const = */ false));
                 }
                 let template_params = item

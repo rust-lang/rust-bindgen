@@ -14,7 +14,7 @@ extern crate core;
 pub struct foo {
     pub a: ::std::os::raw::c_int,
     pub b: ::std::os::raw::c_int,
-    pub bar: *mut ::std::os::raw::c_void,
+    pub bar: *mut ::core::ffi::c_void,
 }
 #[test]
 fn bindgen_test_layout_foo() {
