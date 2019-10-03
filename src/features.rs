@@ -88,6 +88,8 @@ macro_rules! rust_target_base {
         $x_macro!(
             /// Rust stable 1.0
             => Stable_1_0 => 1.0;
+            /// Rust stable 1.1
+            => Stable_1_1 => 1.1;
             /// Rust stable 1.19
             => Stable_1_19 => 1.19;
             /// Rust stable 1.20
@@ -166,6 +168,10 @@ macro_rules! rust_feature_def {
 }
 
 rust_feature_def!(
+    Stable_1_1 {
+        /// [c_void available in core](https://doc.rust-lang.org/core/ffi/enum.c_void.html)
+        => core_ffi_c_void;
+    }
     Stable_1_19 {
         /// Untagged unions ([RFC 1444](https://github.com/rust-lang/rfcs/blob/master/text/1444-union.md))
         => untagged_union;
@@ -227,7 +233,8 @@ mod test {
     fn target_features() {
         let f_1_0 = RustFeatures::from(RustTarget::Stable_1_0);
         assert!(
-            !f_1_0.untagged_union &&
+            !f_1_0.core_ffi_c_void &&
+                !f_1_0.untagged_union &&
                 !f_1_0.associated_const &&
                 !f_1_0.builtin_clone_impls &&
                 !f_1_0.repr_align &&
@@ -235,7 +242,8 @@ mod test {
         );
         let f_1_21 = RustFeatures::from(RustTarget::Stable_1_21);
         assert!(
-            f_1_21.untagged_union &&
+            f_1_21.core_ffi_c_void &&
+                f_1_21.untagged_union &&
                 f_1_21.associated_const &&
                 f_1_21.builtin_clone_impls &&
                 !f_1_21.repr_align &&
@@ -243,7 +251,8 @@ mod test {
         );
         let f_nightly = RustFeatures::from(RustTarget::Nightly);
         assert!(
-            f_nightly.untagged_union &&
+            f_nightly.core_ffi_c_void &&
+                f_nightly.untagged_union &&
                 f_nightly.associated_const &&
                 f_nightly.builtin_clone_impls &&
                 f_nightly.repr_align &&
