@@ -1408,6 +1408,7 @@ struct BindgenOptions {
     /// The enum patterns to mark an enum as a Rust enum.
     rustified_enums: RegexSet,
 
+    /// The enum patterns to mark an enum as a non-exhaustive Rust enum.
     rustified_non_exhaustive_enums: RegexSet,
 
     /// The enum patterns to mark an enum as a module of constants.
@@ -1620,6 +1621,7 @@ impl BindgenOptions {
             &mut self.constified_enums,
             &mut self.constified_enum_modules,
             &mut self.rustified_enums,
+            &mut self.rustified_non_exhaustive_enums,
             &mut self.no_partialeq_types,
             &mut self.no_copy_types,
             &mut self.no_hash_types,
