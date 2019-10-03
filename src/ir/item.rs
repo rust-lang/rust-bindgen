@@ -23,7 +23,7 @@ use clang_sys;
 use lazycell::LazyCell;
 use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use regex;
-use std::cell::{Cell, RefCell};
+use std::cell::Cell;
 use std::collections::BTreeSet;
 use std::fmt::Write;
 use std::io;
@@ -388,7 +388,7 @@ pub struct Item {
     ///
     /// Note that only structs, unions, and enums get a local type id. In any
     /// case this is an implementation detail.
-    local_id: Cell<Option<usize>>,
+    local_id: LazyCell<usize>,
 
     /// The next local id to use for a child or template instantiation.
     next_child_local_id: Cell<usize>,
@@ -397,7 +397,7 @@ pub struct Item {
     ///
     /// This is a fairly used operation during codegen so this makes bindgen
     /// considerably faster in those cases.
-    canonical_name_cache: RefCell<Option<String>>,
+    canonical_name_cache: LazyCell<String>,
 
     /// The path to use for whitelisting and other name-based checks, as
     /// returned by `path_for_whitelisting`, lazily constructed.
@@ -436,9 +436,9 @@ impl Item {
         debug_assert!(id != parent_id || kind.is_module());
         Item {
             id: id,
-            local_id: Cell::new(None),
+            local_id: LazyCell::new(),
             next_child_local_id: Cell::new(1),
-            canonical_name_cache: RefCell::new(None),
+            canonical_name_cache: LazyCell::new(),
             path_for_whitelisting: LazyCell::new(),
             parent_id: parent_id,
             comment: comment,
@@ -526,11 +526,11 @@ impl Item {
     /// below this item's lexical scope, meaning that this can be useful for
     /// generating relatively stable identifiers within a scope.
     pub fn local_id(&self, ctx: &BindgenContext) -> usize {
-        if self.local_id.get().is_none() {
-            let parent = ctx.resolve_item(self.parent_id);
-            self.local_id.set(Some(parent.next_child_local_id()));
-        }
-        self.local_id.get().unwrap()
+        *self.local_id
+            .borrow_with(|| {
+                let parent = ctx.resolve_item(self.parent_id);
+                parent.next_child_local_id()
+            })
     }
 
     /// Get an identifier that differentiates a child of this item of other
@@ -1834,17 +1834,18 @@ impl ItemCanonicalName for Item {
             ctx.in_codegen_phase(),
             "You're not supposed to call this yet"
         );
-        if self.canonical_name_cache.borrow().is_none() {
-            let in_namespace = ctx.options().enable_cxx_namespaces ||
-                ctx.options().disable_name_namespacing;
+        self.canonical_name_cache
+            .borrow_with(|| {
+                let in_namespace = ctx.options().enable_cxx_namespaces ||
+                    ctx.options().disable_name_namespacing;
 
-            *self.canonical_name_cache.borrow_mut() = if in_namespace {
-                Some(self.name(ctx).within_namespaces().get())
-            } else {
-                Some(self.name(ctx).get())
-            };
-        }
-        return self.canonical_name_cache.borrow().as_ref().unwrap().clone();
+                if in_namespace {
+                    self.name(ctx).within_namespaces().get()
+                } else {
+                    self.name(ctx).get()
+                }
+            })
+            .clone()
     }
 }
 
