@@ -553,6 +553,7 @@ impl BindgenContext {
             clang_sys::CXTranslationUnit_DetailedPreprocessingRecord;
 
         let translation_unit = {
+            let _t = Timer::new("translation_unit");
             let clang_args = if explicit_target {
                 Cow::Borrowed(&options.clang_args)
             } else {
@@ -931,6 +932,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
     /// Collect all of our unresolved type references and resolve them.
     fn resolve_typerefs(&mut self) {
+        let _t = self.timer("resolve_typerefs");
+
         let typerefs = self.collect_typerefs();
 
         for (id, ty, loc, parent_id) in typerefs {
@@ -987,6 +990,8 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Compute the bitfield allocation units for all `TypeKind::Comp` items we
     /// parsed.
     fn compute_bitfield_units(&mut self) {
+        let _t = self.timer("compute_bitfield_units");
+
         assert!(self.collected_typerefs());
 
         let need_bitfield_allocation =
