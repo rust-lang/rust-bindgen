@@ -397,7 +397,7 @@ pub struct Item {
     ///
     /// This is a fairly used operation during codegen so this makes bindgen
     /// considerably faster in those cases.
-    canonical_name_cache: LazyCell<String>,
+    canonical_name: LazyCell<String>,
 
     /// The path to use for whitelisting and other name-based checks, as
     /// returned by `path_for_whitelisting`, lazily constructed.
@@ -438,7 +438,7 @@ impl Item {
             id: id,
             local_id: LazyCell::new(),
             next_child_local_id: Cell::new(1),
-            canonical_name_cache: LazyCell::new(),
+            canonical_name: LazyCell::new(),
             path_for_whitelisting: LazyCell::new(),
             parent_id: parent_id,
             comment: comment,
@@ -1819,7 +1819,7 @@ impl ItemCanonicalName for Item {
             ctx.in_codegen_phase(),
             "You're not supposed to call this yet"
         );
-        self.canonical_name_cache
+        self.canonical_name
             .borrow_with(|| {
                 let in_namespace = ctx.options().enable_cxx_namespaces ||
                     ctx.options().disable_name_namespacing;
