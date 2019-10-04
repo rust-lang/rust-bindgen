@@ -1357,13 +1357,28 @@ impl ClangItemParser for Item {
                 CXCursor_UsingDeclaration |
                 CXCursor_UsingDirective |
                 CXCursor_StaticAssert |
-                CXCursor_InclusionDirective |
                 CXCursor_FunctionTemplate => {
                     debug!(
                         "Unhandled cursor kind {:?}: {:?}",
                         cursor.kind(),
                         cursor
                     );
+                }
+                CXCursor_InclusionDirective => {
+                    let file = cursor.get_included_file_name();
+                    match file {
+                        None => {
+                            warn!(
+                                "Inclusion of a nameless file in {:?}",
+                                cursor
+                            );
+                        }
+                        Some(filename) => {
+                            if let Some(cb) = ctx.parse_callbacks() {
+                                cb.include_file(&filename)
+                            }
+                        }
+                    }
                 }
                 _ => {
                     // ignore toplevel operator overloads

@@ -64,4 +64,24 @@ pub trait ParseCallbacks: fmt::Debug + UnwindSafe {
     fn item_name(&self, _original_item_name: &str) -> Option<String> {
         None
     }
+
+    /// This will be called on every file inclusion, with the full path of the included file.
+    fn include_file(&self, _filename: &str) {}
+}
+
+/// A ParseCallbacks implementation that will act on file includes by echoing a rerun-if-changed
+/// line
+///
+/// When running in side a `build.rs` script, this can be used to make cargo re-run the binding
+/// generation whenever any of the included header files change:
+/// ```
+/// builder.parse_callbacks(Box::new(bindgen::callbacks::CargoCallbacks()));
+/// ```
+#[derive(Debug)]
+pub struct CargoCallbacks();
+
+impl ParseCallbacks for CargoCallbacks {
+    fn include_file(&self, filename: &str) {
+        println!("cargo:rerun-if-changed={}", filename);
+    }
 }
