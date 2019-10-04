@@ -717,6 +717,18 @@ impl Cursor {
             })
             .collect()
     }
+
+    /// Obtain the real path name of a cursor of InclusionDirective kind.
+    ///
+    /// Returns None if the cursor does not include a file, otherwise the file's full name
+    pub fn get_included_file_name(&self) -> Option<String> {
+        let file = unsafe { clang_sys::clang_getIncludedFile(self.x) };
+        if file.is_null() {
+            None
+        } else {
+            Some(unsafe { cxstring_into_string(clang_sys::clang_getFileName(file)) })
+        }
+    }
 }
 
 /// A struct that owns the tokenizer result from a given cursor.
