@@ -2151,8 +2151,8 @@ pub fn clang_version() -> ClangVersion {
 /// A ParseCallbacks implementation that will act on file includes by echoing a rerun-if-changed
 /// line
 ///
-/// When running in side a `build.rs` script, this can be used to make cargo re-run the binding
-/// generation whenever any of the included header files change:
+/// When running in side a `build.rs` script, this can be used to make cargo invalidate the
+/// generated bindings whenever any of the files included from the header change:
 /// ```
 /// use bindgen::builder;
 /// let bindings = builder()
