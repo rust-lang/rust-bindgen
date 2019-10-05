@@ -75,7 +75,11 @@ pub trait ParseCallbacks: fmt::Debug + UnwindSafe {
 /// When running in side a `build.rs` script, this can be used to make cargo re-run the binding
 /// generation whenever any of the included header files change:
 /// ```
-/// builder.parse_callbacks(Box::new(bindgen::callbacks::CargoCallbacks()));
+/// use bindgen::builder;
+/// let bindings = builder()
+///     .header("path/to/input/header")
+///     .parse_callbacks(Box::new(bindgen::callbacks::CargoCallbacks()))
+///     .generate();
 /// ```
 #[derive(Debug)]
 pub struct CargoCallbacks();
