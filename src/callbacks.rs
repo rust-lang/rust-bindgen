@@ -2,6 +2,9 @@
 
 pub use ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
 pub use ir::int::IntKind;
+
+use proc_macro2::TokenStream;
+
 use std::fmt;
 use std::panic::UnwindSafe;
 
@@ -64,4 +67,7 @@ pub trait ParseCallbacks: fmt::Debug + UnwindSafe {
     fn item_name(&self, _original_item_name: &str) -> Option<String> {
         None
     }
+
+    /// Allows to modify the generated code items as tokenstreams. 
+    fn items(&self, _items: &mut Vec<TokenStream>) {}
 }

@@ -1881,7 +1881,11 @@ impl Bindings {
             parse(&mut context)?;
         }
 
-        let (items, options) = codegen::codegen(context);
+        let (mut items, options) = codegen::codegen(context);
+
+        if let Some(ref callbacks) = options.parse_callbacks {
+            callbacks.items(&mut items)
+        }
 
         Ok(Bindings {
             options: options,
