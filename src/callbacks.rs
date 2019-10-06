@@ -2,7 +2,6 @@
 
 pub use ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
 pub use ir::int::IntKind;
-
 use std::fmt;
 use std::panic::UnwindSafe;
 
