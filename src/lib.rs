@@ -2157,11 +2157,11 @@ pub fn clang_version() -> ClangVersion {
 /// use bindgen::builder;
 /// let bindings = builder()
 ///     .header("path/to/input/header")
-///     .parse_callbacks(Box::new(bindgen::CargoCallbacks()))
+///     .parse_callbacks(Box::new(bindgen::CargoCallbacks))
 ///     .generate();
 /// ```
 #[derive(Debug)]
-pub struct CargoCallbacks();
+pub struct CargoCallbacks;
 
 impl callbacks::ParseCallbacks for CargoCallbacks {
     fn include_file(&self, filename: &str) {
