@@ -1200,12 +1200,8 @@ impl BitfieldUnit {
 
 impl Bitfield {
     /// Extend an under construction bitfield unit constructor with this
-    /// bitfield. This involves two things:
-    ///
-    /// 1. Adding a parameter with this bitfield's name and its type.
-    ///
-    /// 2. Setting the relevant bits on the `__bindgen_bitfield_unit` variable
-    ///    that's being constructed.
+    /// bitfield. This sets the relevant bits on the `__bindgen_bitfield_unit`
+    /// variable that's being constructed.
     fn extend_ctor_impl(
         &self,
         ctx: &BindgenContext,
@@ -1216,7 +1212,9 @@ impl Bitfield {
         let bitfield_ty_layout = bitfield_ty
             .layout(ctx)
             .expect("Bitfield without layout? Gah!");
-        let bitfield_int_ty = helpers::blob(ctx, bitfield_ty_layout);
+        let bitfield_int_ty = helpers::integer_type(ctx, bitfield_ty_layout)
+            .expect("Should already have verified that the bitfield is \
+                     representable as an int");
 
         let offset = self.offset_into_unit();
         let width = self.width() as u8;
