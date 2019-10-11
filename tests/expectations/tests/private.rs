@@ -27,7 +27,10 @@ fn bindgen_test_layout_HasPrivate() {
         concat!("Alignment of ", stringify!(HasPrivate))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<HasPrivate>())).mNotPrivate as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<HasPrivate>())).mNotPrivate as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -37,7 +40,10 @@ fn bindgen_test_layout_HasPrivate() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<HasPrivate>())).mIsPrivate as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<HasPrivate>())).mIsPrivate as *const _
+                as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -67,7 +73,10 @@ fn bindgen_test_layout_VeryPrivate() {
         concat!("Alignment of ", stringify!(VeryPrivate))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<VeryPrivate>())).mIsPrivate as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<VeryPrivate>())).mIsPrivate as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -77,7 +86,10 @@ fn bindgen_test_layout_VeryPrivate() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<VeryPrivate>())).mIsAlsoPrivate as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<VeryPrivate>())).mIsAlsoPrivate as *const _
+                as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -108,7 +120,10 @@ fn bindgen_test_layout_ContradictPrivate() {
         concat!("Alignment of ", stringify!(ContradictPrivate))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ContradictPrivate>())).mNotPrivate as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ContradictPrivate>())).mNotPrivate
+                as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -118,7 +133,10 @@ fn bindgen_test_layout_ContradictPrivate() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ContradictPrivate>())).mIsPrivate as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ContradictPrivate>())).mIsPrivate as *const _
+                as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",

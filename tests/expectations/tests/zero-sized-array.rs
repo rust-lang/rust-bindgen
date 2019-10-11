@@ -62,7 +62,9 @@ fn bindgen_test_layout_ZeroSizedArray() {
         concat!("Alignment of ", stringify!(ZeroSizedArray))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ZeroSizedArray>())).arr as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ZeroSizedArray>())).arr as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -91,7 +93,10 @@ fn bindgen_test_layout_ContainsZeroSizedArray() {
         concat!("Alignment of ", stringify!(ContainsZeroSizedArray))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ContainsZeroSizedArray>())).zsa as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ContainsZeroSizedArray>())).zsa as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",

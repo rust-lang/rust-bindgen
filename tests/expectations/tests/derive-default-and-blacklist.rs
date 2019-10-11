@@ -28,7 +28,10 @@ fn bindgen_test_layout_ShouldNotDeriveDefault() {
         concat!("Alignment of ", stringify!(ShouldNotDeriveDefault))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ShouldNotDeriveDefault>())).a as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ShouldNotDeriveDefault>())).a as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",

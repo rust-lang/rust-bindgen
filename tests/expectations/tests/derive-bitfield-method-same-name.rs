@@ -57,7 +57,10 @@ where
     pub fn get(&self, bit_offset: usize, bit_width: u8) -> u64 {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
-        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <=
+                self.storage.as_ref().len()
+        );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
             if self.get_bit(i + bit_offset) {
@@ -75,7 +78,10 @@ where
     pub fn set(&mut self, bit_offset: usize, bit_width: u8, val: u64) {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
-        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <=
+                self.storage.as_ref().len()
+        );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
             let val_bit_is_set = val & mask == mask;
@@ -146,7 +152,11 @@ impl ::std::fmt::Debug for Foo {
             self.large
                 .iter()
                 .enumerate()
-                .map(|(i, v)| format!("{}{:?}", if i > 0 { ", " } else { "" }, v))
+                .map(|(i, v)| format!(
+                    "{}{:?}",
+                    if i > 0 { ", " } else { "" },
+                    v
+                ))
                 .collect::<String>(),
             self.type__bindgen_bitfield()
         )
@@ -154,14 +164,16 @@ impl ::std::fmt::Debug for Foo {
 }
 impl ::std::cmp::PartialEq for Foo {
     fn eq(&self, other: &Foo) -> bool {
-        &self.large[..] == &other.large[..]
-            && self.type__bindgen_bitfield() == other.type__bindgen_bitfield()
+        &self.large[..] == &other.large[..] &&
+            self.type__bindgen_bitfield() == other.type__bindgen_bitfield()
     }
 }
 impl Foo {
     #[inline]
     pub fn type__bindgen_bitfield(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 3u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(0usize, 3u8) as u8)
+        }
     }
     #[inline]
     pub fn set_type__bindgen_bitfield(&mut self, val: ::std::os::raw::c_char) {
@@ -174,8 +186,10 @@ impl Foo {
     pub fn new_bitfield_1(
         type__bindgen_bitfield: ::std::os::raw::c_char,
     ) -> __BindgenBitfieldUnit<[u8; 2usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize], u8> =
-            Default::default();
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
+            [u8; 2usize],
+            u8,
+        > = Default::default();
         __bindgen_bitfield_unit.set(0usize, 3u8, {
             let type__bindgen_bitfield: u8 =
                 unsafe { ::std::mem::transmute(type__bindgen_bitfield) };

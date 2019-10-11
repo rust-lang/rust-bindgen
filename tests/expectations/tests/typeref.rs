@@ -26,7 +26,8 @@ fn bindgen_test_layout_mozilla_FragmentOrURL() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<mozilla_FragmentOrURL>())).mIsLocalRef as *const _ as usize
+            &(*(::std::ptr::null::<mozilla_FragmentOrURL>())).mIsLocalRef
+                as *const _ as usize
         },
         0usize,
         concat!(
@@ -136,7 +137,8 @@ impl Default for nsFoo {
     }
 }
 #[test]
-fn __bindgen_test_layout_mozilla_StyleShapeSource_open0_int_close0_instantiation() {
+fn __bindgen_test_layout_mozilla_StyleShapeSource_open0_int_close0_instantiation(
+) {
     assert_eq!(
         ::std::mem::size_of::<mozilla_StyleShapeSource>(),
         8usize,

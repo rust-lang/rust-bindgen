@@ -15,4 +15,3 @@ extern "C" {
         ) -> ::std::os::raw::c_int,
     >;
 }
-

@@ -57,7 +57,10 @@ where
     pub fn get(&self, bit_offset: usize, bit_width: u8) -> u64 {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
-        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <=
+                self.storage.as_ref().len()
+        );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
             if self.get_bit(i + bit_offset) {
@@ -75,7 +78,10 @@ where
     pub fn set(&mut self, bit_offset: usize, bit_width: u8, val: u64) {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
-        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <=
+                self.storage.as_ref().len()
+        );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
             let val_bit_is_set = val & mask == mask;
@@ -127,7 +133,10 @@ fn bindgen_test_layout_Weird() {
         concat!("Alignment of ", stringify!(Weird))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Weird>())).mStrokeDasharrayLength as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<Weird>())).mStrokeDasharrayLength as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -137,7 +146,9 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Weird>())).mClipRule as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<Weird>())).mClipRule as *const _ as usize
+        },
         8usize,
         concat!(
             "Offset of field: ",
@@ -147,7 +158,10 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Weird>())).mColorInterpolation as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<Weird>())).mColorInterpolation as *const _
+                as usize
+        },
         9usize,
         concat!(
             "Offset of field: ",
@@ -158,7 +172,8 @@ fn bindgen_test_layout_Weird() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Weird>())).mColorInterpolationFilters as *const _ as usize
+            &(*(::std::ptr::null::<Weird>())).mColorInterpolationFilters
+                as *const _ as usize
         },
         10usize,
         concat!(
@@ -169,7 +184,9 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Weird>())).mFillRule as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<Weird>())).mFillRule as *const _ as usize
+        },
         11usize,
         concat!(
             "Offset of field: ",
@@ -179,7 +196,10 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Weird>())).mImageRendering as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<Weird>())).mImageRendering as *const _
+                as usize
+        },
         12usize,
         concat!(
             "Offset of field: ",
@@ -189,7 +209,9 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Weird>())).mPaintOrder as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<Weird>())).mPaintOrder as *const _ as usize
+        },
         13usize,
         concat!(
             "Offset of field: ",
@@ -199,7 +221,10 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Weird>())).mShapeRendering as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<Weird>())).mShapeRendering as *const _
+                as usize
+        },
         14usize,
         concat!(
             "Offset of field: ",
@@ -209,7 +234,10 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Weird>())).mStrokeLinecap as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<Weird>())).mStrokeLinecap as *const _
+                as usize
+        },
         15usize,
         concat!(
             "Offset of field: ",
@@ -219,7 +247,10 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Weird>())).mStrokeLinejoin as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<Weird>())).mStrokeLinejoin as *const _
+                as usize
+        },
         16usize,
         concat!(
             "Offset of field: ",
@@ -229,7 +260,9 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Weird>())).mTextAnchor as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<Weird>())).mTextAnchor as *const _ as usize
+        },
         17usize,
         concat!(
             "Offset of field: ",
@@ -239,7 +272,10 @@ fn bindgen_test_layout_Weird() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Weird>())).mTextRendering as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<Weird>())).mTextRendering as *const _
+                as usize
+        },
         18usize,
         concat!(
             "Offset of field: ",
@@ -257,7 +293,9 @@ impl Default for Weird {
 impl Weird {
     #[inline]
     pub fn bitTest(&self) -> ::std::os::raw::c_uint {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 16u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(0usize, 16u8) as u32)
+        }
     }
     #[inline]
     pub fn set_bitTest(&mut self, val: ::std::os::raw::c_uint) {
@@ -268,7 +306,9 @@ impl Weird {
     }
     #[inline]
     pub fn bitTest2(&self) -> ::std::os::raw::c_uint {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(16usize, 15u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(16usize, 15u8) as u32)
+        }
     }
     #[inline]
     pub fn set_bitTest2(&mut self, val: ::std::os::raw::c_uint) {
@@ -282,8 +322,10 @@ impl Weird {
         bitTest: ::std::os::raw::c_uint,
         bitTest2: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 4usize], u16> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize], u16> =
-            Default::default();
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
+            [u8; 4usize],
+            u16,
+        > = Default::default();
         __bindgen_bitfield_unit.set(0usize, 16u8, {
             let bitTest: u32 = unsafe { ::std::mem::transmute(bitTest) };
             bitTest as u64
@@ -296,7 +338,9 @@ impl Weird {
     }
     #[inline]
     pub fn mFillOpacitySource(&self) -> nsStyleSVGOpacitySource {
-        unsafe { ::std::mem::transmute(self._bitfield_2.get(0usize, 3u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_2.get(0usize, 3u8) as u32)
+        }
     }
     #[inline]
     pub fn set_mFillOpacitySource(&mut self, val: nsStyleSVGOpacitySource) {
@@ -307,7 +351,9 @@ impl Weird {
     }
     #[inline]
     pub fn mStrokeOpacitySource(&self) -> nsStyleSVGOpacitySource {
-        unsafe { ::std::mem::transmute(self._bitfield_2.get(3usize, 3u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_2.get(3usize, 3u8) as u32)
+        }
     }
     #[inline]
     pub fn set_mStrokeOpacitySource(&mut self, val: nsStyleSVGOpacitySource) {
@@ -318,7 +364,9 @@ impl Weird {
     }
     #[inline]
     pub fn mStrokeDasharrayFromObject(&self) -> bool {
-        unsafe { ::std::mem::transmute(self._bitfield_2.get(6usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_2.get(6usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_mStrokeDasharrayFromObject(&mut self, val: bool) {
@@ -329,7 +377,9 @@ impl Weird {
     }
     #[inline]
     pub fn mStrokeDashoffsetFromObject(&self) -> bool {
-        unsafe { ::std::mem::transmute(self._bitfield_2.get(7usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_2.get(7usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_mStrokeDashoffsetFromObject(&mut self, val: bool) {
@@ -340,7 +390,9 @@ impl Weird {
     }
     #[inline]
     pub fn mStrokeWidthFromObject(&self) -> bool {
-        unsafe { ::std::mem::transmute(self._bitfield_2.get(8usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_2.get(8usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_mStrokeWidthFromObject(&mut self, val: bool) {
@@ -357,14 +409,18 @@ impl Weird {
         mStrokeDashoffsetFromObject: bool,
         mStrokeWidthFromObject: bool,
     ) -> __BindgenBitfieldUnit<[u8; 2usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize], u8> =
-            Default::default();
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
+            [u8; 2usize],
+            u8,
+        > = Default::default();
         __bindgen_bitfield_unit.set(0usize, 3u8, {
-            let mFillOpacitySource: u32 = unsafe { ::std::mem::transmute(mFillOpacitySource) };
+            let mFillOpacitySource: u32 =
+                unsafe { ::std::mem::transmute(mFillOpacitySource) };
             mFillOpacitySource as u64
         });
         __bindgen_bitfield_unit.set(3usize, 3u8, {
-            let mStrokeOpacitySource: u32 = unsafe { ::std::mem::transmute(mStrokeOpacitySource) };
+            let mStrokeOpacitySource: u32 =
+                unsafe { ::std::mem::transmute(mStrokeOpacitySource) };
             mStrokeOpacitySource as u64
         });
         __bindgen_bitfield_unit.set(6usize, 1u8, {

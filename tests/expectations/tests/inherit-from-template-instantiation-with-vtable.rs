@@ -153,7 +153,8 @@ fn __bindgen_test_layout_BaseWithVtable_open0_ptr_char_close0_instantiation() {
     );
 }
 #[test]
-fn __bindgen_test_layout_BaseWithVtable_open0_ptr_char_close0_instantiation_1() {
+fn __bindgen_test_layout_BaseWithVtable_open0_ptr_char_close0_instantiation_1()
+{
     assert_eq!(
         ::std::mem::size_of::<BaseWithVtable<*mut ::std::os::raw::c_char>>(),
         16usize,
@@ -172,7 +173,8 @@ fn __bindgen_test_layout_BaseWithVtable_open0_ptr_char_close0_instantiation_1() 
     );
 }
 #[test]
-fn __bindgen_test_layout_BaseWithoutVtable_open0_ptr_char_close0_instantiation() {
+fn __bindgen_test_layout_BaseWithoutVtable_open0_ptr_char_close0_instantiation()
+{
     assert_eq!(
         ::std::mem::size_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>(),
         8usize,
@@ -182,7 +184,8 @@ fn __bindgen_test_layout_BaseWithoutVtable_open0_ptr_char_close0_instantiation()
         )
     );
     assert_eq!(
-        ::std::mem::align_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>(),
+        ::std::mem::align_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>(
+        ),
         8usize,
         concat!(
             "Alignment of template specialization: ",
@@ -191,7 +194,8 @@ fn __bindgen_test_layout_BaseWithoutVtable_open0_ptr_char_close0_instantiation()
     );
 }
 #[test]
-fn __bindgen_test_layout_BaseWithoutVtable_open0_ptr_char_close0_instantiation_1() {
+fn __bindgen_test_layout_BaseWithoutVtable_open0_ptr_char_close0_instantiation_1(
+) {
     assert_eq!(
         ::std::mem::size_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>(),
         8usize,
@@ -201,7 +205,8 @@ fn __bindgen_test_layout_BaseWithoutVtable_open0_ptr_char_close0_instantiation_1
         )
     );
     assert_eq!(
-        ::std::mem::align_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>(),
+        ::std::mem::align_of::<BaseWithoutVtable<*mut ::std::os::raw::c_char>>(
+        ),
         8usize,
         concat!(
             "Alignment of template specialization: ",

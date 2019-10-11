@@ -59,7 +59,10 @@ where
     pub fn get(&self, bit_offset: usize, bit_width: u8) -> u64 {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
-        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <=
+                self.storage.as_ref().len()
+        );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
             if self.get_bit(i + bit_offset) {
@@ -77,7 +80,10 @@ where
     pub fn set(&mut self, bit_offset: usize, bit_width: u8, val: u64) {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
-        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <=
+                self.storage.as_ref().len()
+        );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
             let val_bit_is_set = val & mask == mask;
@@ -109,7 +115,9 @@ fn bindgen_test_layout_C() {
         concat!("Alignment of ", stringify!(C))
     );
     assert_eq!(
-        unsafe { &(*(::core::ptr::null::<C>())).large_array as *const _ as usize },
+        unsafe {
+            &(*(::core::ptr::null::<C>())).large_array as *const _ as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -137,7 +145,9 @@ impl ::core::fmt::Debug for C {
 impl C {
     #[inline]
     pub fn a(&self) -> bool {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
+        unsafe {
+            ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_a(&mut self, val: bool) {
@@ -148,7 +158,9 @@ impl C {
     }
     #[inline]
     pub fn b(&self) -> bool {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 7u8) as u8) }
+        unsafe {
+            ::core::mem::transmute(self._bitfield_1.get(1usize, 7u8) as u8)
+        }
     }
     #[inline]
     pub fn set_b(&mut self, val: bool) {
@@ -158,9 +170,14 @@ impl C {
         }
     }
     #[inline]
-    pub fn new_bitfield_1(a: bool, b: bool) -> __BindgenBitfieldUnit<[u8; 1usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 1usize], u8> =
-            Default::default();
+    pub fn new_bitfield_1(
+        a: bool,
+        b: bool,
+    ) -> __BindgenBitfieldUnit<[u8; 1usize], u8> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
+            [u8; 1usize],
+            u8,
+        > = Default::default();
         __bindgen_bitfield_unit.set(0usize, 1u8, {
             let a: u8 = unsafe { ::core::mem::transmute(a) };
             a as u64

@@ -9,7 +9,6 @@
 #![cfg(feature = "nightly")]
 #![feature(non_exhaustive)]
 
-
 #[repr(u32)]
 #[non_exhaustive]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]

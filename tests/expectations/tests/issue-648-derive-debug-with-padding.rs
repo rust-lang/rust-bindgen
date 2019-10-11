@@ -76,7 +76,10 @@ fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
         concat!("Alignment of ", stringify!(ShouldDeriveDebugButDoesNot))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ShouldDeriveDebugButDoesNot>())).c as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ShouldDeriveDebugButDoesNot>())).c
+                as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -86,7 +89,10 @@ fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ShouldDeriveDebugButDoesNot>())).d as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ShouldDeriveDebugButDoesNot>())).d
+                as *const _ as usize
+        },
         32usize,
         concat!(
             "Offset of field: ",

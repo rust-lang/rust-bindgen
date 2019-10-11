@@ -24,7 +24,9 @@ pub trait Foo {
     >;
     unsafe fn setFunc_(
         self,
-        func: ::std::option::Option<unsafe extern "C" fn() -> ::std::os::raw::c_int>,
+        func: ::std::option::Option<
+            unsafe extern "C" fn() -> ::std::os::raw::c_int,
+        >,
     );
 }
 impl Foo for id {
@@ -41,7 +43,9 @@ impl Foo for id {
     }
     unsafe fn setFunc_(
         self,
-        func: ::std::option::Option<unsafe extern "C" fn() -> ::std::os::raw::c_int>,
+        func: ::std::option::Option<
+            unsafe extern "C" fn() -> ::std::os::raw::c_int,
+        >,
     ) {
         msg_send!(self, setFunc: func)
     }

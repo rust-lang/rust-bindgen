@@ -7,10 +7,12 @@
     non_upper_case_globals
 )]
 
-pub const nsCSSPropertyID_eCSSProperty_COUNT_unexistingVariantValue: nsCSSPropertyID =
+pub const nsCSSPropertyID_eCSSProperty_COUNT_unexistingVariantValue:
+    nsCSSPropertyID =
     nsCSSPropertyID::eCSSProperty_COUNT_unexistingVariantValue;
 impl nsCSSPropertyID {
-    pub const eCSSProperty_COUNT: nsCSSPropertyID = nsCSSPropertyID::eCSSPropertyAlias_aa;
+    pub const eCSSProperty_COUNT: nsCSSPropertyID =
+        nsCSSPropertyID::eCSSPropertyAlias_aa;
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]

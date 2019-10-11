@@ -16,7 +16,10 @@ pub enum baz {
 #[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
 pub struct Foo {
     pub bar: ::std::option::Option<
-        unsafe extern "C" fn(x: ::std::os::raw::c_int, y: ::std::os::raw::c_int) -> baz,
+        unsafe extern "C" fn(
+            x: ::std::os::raw::c_int,
+            y: ::std::os::raw::c_int,
+        ) -> baz,
     >,
 }
 #[test]

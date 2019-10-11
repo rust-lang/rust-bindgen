@@ -61,7 +61,9 @@ fn bindgen_test_layout_foo() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<foo>())).complexFloat as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<foo>())).complexFloat as *const _ as usize
+        },
         24usize,
         concat!(
             "Offset of field: ",
@@ -71,7 +73,9 @@ fn bindgen_test_layout_foo() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<foo>())).complexDouble as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<foo>())).complexDouble as *const _ as usize
+        },
         32usize,
         concat!(
             "Offset of field: ",

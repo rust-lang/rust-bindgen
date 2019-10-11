@@ -15,7 +15,8 @@ pub struct TErrorResult {
     pub mUnionState: TErrorResult_UnionState,
 }
 impl TErrorResult_UnionState {
-    pub const HasException: TErrorResult_UnionState = TErrorResult_UnionState::HasMessage;
+    pub const HasException: TErrorResult_UnionState =
+        TErrorResult_UnionState::HasMessage;
 }
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]

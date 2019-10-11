@@ -57,7 +57,10 @@ where
     pub fn get(&self, bit_offset: usize, bit_width: u8) -> u64 {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
-        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <=
+                self.storage.as_ref().len()
+        );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
             if self.get_bit(i + bit_offset) {
@@ -75,7 +78,10 @@ where
     pub fn set(&mut self, bit_offset: usize, bit_width: u8, val: u64) {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
-        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <=
+                self.storage.as_ref().len()
+        );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
             let val_bit_is_set = val & mask == mask;
@@ -110,7 +116,9 @@ fn bindgen_test_layout_mach_msg_type_descriptor_t() {
 impl mach_msg_type_descriptor_t {
     #[inline]
     pub fn pad3(&self) -> ::std::os::raw::c_uint {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 24u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(0usize, 24u8) as u32)
+        }
     }
     #[inline]
     pub fn set_pad3(&mut self, val: ::std::os::raw::c_uint) {
@@ -121,7 +129,9 @@ impl mach_msg_type_descriptor_t {
     }
     #[inline]
     pub fn type_(&self) -> ::std::os::raw::c_uint {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(24usize, 8u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(24usize, 8u8) as u32)
+        }
     }
     #[inline]
     pub fn set_type(&mut self, val: ::std::os::raw::c_uint) {
@@ -135,8 +145,10 @@ impl mach_msg_type_descriptor_t {
         pad3: ::std::os::raw::c_uint,
         type_: ::std::os::raw::c_uint,
     ) -> __BindgenBitfieldUnit<[u8; 4usize], u32> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize], u32> =
-            Default::default();
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
+            [u8; 4usize],
+            u32,
+        > = Default::default();
         __bindgen_bitfield_unit.set(0usize, 24u8, {
             let pad3: u32 = unsafe { ::std::mem::transmute(pad3) };
             pad3 as u64

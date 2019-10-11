@@ -28,7 +28,10 @@ fn bindgen_test_layout_cmdline_token_hdr() {
         concat!("Alignment of ", stringify!(cmdline_token_hdr))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cmdline_token_hdr>())).ops as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<cmdline_token_hdr>())).ops as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -38,7 +41,10 @@ fn bindgen_test_layout_cmdline_token_hdr() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cmdline_token_hdr>())).offset as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<cmdline_token_hdr>())).offset as *const _
+                as usize
+        },
         8usize,
         concat!(
             "Offset of field: ",
@@ -85,7 +91,9 @@ pub struct cmdline_token_ops {
     >,
     /// return the num of possible choices for this token
     pub complete_get_nb: ::std::option::Option<
-        unsafe extern "C" fn(arg1: *mut cmdline_parse_token_hdr_t) -> ::std::os::raw::c_int,
+        unsafe extern "C" fn(
+            arg1: *mut cmdline_parse_token_hdr_t,
+        ) -> ::std::os::raw::c_int,
     >,
     /// return the elt x for this token (token, idx, dstbuf, size)
     pub complete_get_elt: ::std::option::Option<
@@ -118,7 +126,10 @@ fn bindgen_test_layout_cmdline_token_ops() {
         concat!("Alignment of ", stringify!(cmdline_token_ops))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cmdline_token_ops>())).parse as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<cmdline_token_ops>())).parse as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -129,7 +140,8 @@ fn bindgen_test_layout_cmdline_token_ops() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_ops>())).complete_get_nb as *const _ as usize
+            &(*(::std::ptr::null::<cmdline_token_ops>())).complete_get_nb
+                as *const _ as usize
         },
         8usize,
         concat!(
@@ -141,7 +153,8 @@ fn bindgen_test_layout_cmdline_token_ops() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<cmdline_token_ops>())).complete_get_elt as *const _ as usize
+            &(*(::std::ptr::null::<cmdline_token_ops>())).complete_get_elt
+                as *const _ as usize
         },
         16usize,
         concat!(
@@ -152,7 +165,10 @@ fn bindgen_test_layout_cmdline_token_ops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cmdline_token_ops>())).get_help as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<cmdline_token_ops>())).get_help as *const _
+                as usize
+        },
         24usize,
         concat!(
             "Offset of field: ",
@@ -192,7 +208,10 @@ fn bindgen_test_layout_cmdline_token_num_data() {
         concat!("Alignment of ", stringify!(cmdline_token_num_data))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cmdline_token_num_data>())).type_ as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<cmdline_token_num_data>())).type_ as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -226,7 +245,10 @@ fn bindgen_test_layout_cmdline_token_num() {
         concat!("Alignment of ", stringify!(cmdline_token_num))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cmdline_token_num>())).hdr as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<cmdline_token_num>())).hdr as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -236,7 +258,10 @@ fn bindgen_test_layout_cmdline_token_num() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<cmdline_token_num>())).num_data as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<cmdline_token_num>())).num_data as *const _
+                as usize
+        },
         16usize,
         concat!(
             "Offset of field: ",

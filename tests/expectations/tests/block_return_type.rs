@@ -12,5 +12,7 @@ extern crate block;
 extern "C" {
     pub fn func() -> _bindgen_ty_id_4;
 }
-pub type _bindgen_ty_id_4 =
-    *const ::block::Block<(::std::os::raw::c_int, ::std::os::raw::c_int), ::std::os::raw::c_int>;
+pub type _bindgen_ty_id_4 = *const ::block::Block<
+    (::std::os::raw::c_int, ::std::os::raw::c_int),
+    ::std::os::raw::c_int,
+>;

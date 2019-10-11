@@ -28,7 +28,10 @@ fn bindgen_test_layout_ShouldNotDerivePartialEq() {
         concat!("Alignment of ", stringify!(ShouldNotDerivePartialEq))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ShouldNotDerivePartialEq>())).a as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ShouldNotDerivePartialEq>())).a as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -38,7 +41,10 @@ fn bindgen_test_layout_ShouldNotDerivePartialEq() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ShouldNotDerivePartialEq>())).b as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ShouldNotDerivePartialEq>())).b as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",

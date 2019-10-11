@@ -16,7 +16,10 @@ pub type dispatch_data_t = *mut ::std::os::raw::c_void;
 pub type dispatch_data_applier_t = *mut ::std::os::raw::c_void;
 extern "C" {
     #[link_name = "\u{1}_Z19dispatch_data_applyPvU13block_pointerFbS_yPKvyE"]
-    pub fn dispatch_data_apply(data: dispatch_data_t, applier: dispatch_data_applier_t) -> bool;
+    pub fn dispatch_data_apply(
+        data: dispatch_data_t,
+        applier: dispatch_data_applier_t,
+    ) -> bool;
 }
 extern "C" {
     #[link_name = "\u{1}_Z3fooU13block_pointerFvyE"]
@@ -45,7 +48,10 @@ fn bindgen_test_layout_contains_block_pointers() {
         concat!("Alignment of ", stringify!(contains_block_pointers))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<contains_block_pointers>())).val as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<contains_block_pointers>())).val as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -55,7 +61,10 @@ fn bindgen_test_layout_contains_block_pointers() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<contains_block_pointers>())).ptr_val as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<contains_block_pointers>())).ptr_val
+                as *const _ as usize
+        },
         8usize,
         concat!(
             "Offset of field: ",

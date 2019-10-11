@@ -122,7 +122,10 @@ fn bindgen_test_layout_Whitelisted() {
         concat!("Alignment of ", stringify!(Whitelisted))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<Whitelisted>())).some_member as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<Whitelisted>())).some_member as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
