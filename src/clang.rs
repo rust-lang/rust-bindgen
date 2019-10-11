@@ -527,25 +527,32 @@ impl Cursor {
         }
     }
 
-    /// Does this cursor have the given simple attribute?
+    /// Whether this cursor has the `warn_unused_result` attribute.
+    pub fn has_warn_unused_result_attr(&self) -> bool {
+        // FIXME(emilio): clang-sys doesn't expose this (from clang 9).
+        const CXCursor_WarnUnusedResultAttr: CXCursorKind = 440;
+        self.has_attr("warn_unused_result", Some(CXCursor_WarnUnusedResultAttr))
+    }
+
+    /// Does this cursor have the given attribute?
     ///
-    /// Note that this will only work for attributes that don't have an existing libclang
-    /// CursorKind, e.g. pure, const, etc.
-    pub fn has_simple_attr(&self, attr: &str) -> bool {
+    /// `name` is checked against unexposed attributes.
+    fn has_attr(&self, name: &str, clang_kind: Option<CXCursorKind>) -> bool {
         let mut found_attr = false;
         self.visit(|cur| {
-            if cur.kind() == CXCursor_UnexposedAttr {
-                found_attr = cur.tokens().iter().any(|t| {
+            let kind = cur.kind();
+            found_attr = clang_kind.map_or(false, |k| k == kind) ||
+                (kind == CXCursor_UnexposedAttr &&
+                 cur.tokens().iter().any(|t| {
                     t.kind == CXToken_Identifier &&
-                        t.spelling() == attr.as_bytes()
-                });
+                        t.spelling() == name.as_bytes()
+                 }));
 
-                if found_attr {
-                    return CXChildVisit_Break;
-                }
+            if found_attr {
+                CXChildVisit_Break
+            } else {
+                CXChildVisit_Continue
             }
-
-            CXChildVisit_Continue
         });
 
         found_attr
