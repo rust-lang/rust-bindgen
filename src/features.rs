@@ -168,10 +168,6 @@ macro_rules! rust_feature_def {
 }
 
 rust_feature_def!(
-    Stable_1_1 {
-        /// [c_void available in core](https://doc.rust-lang.org/core/ffi/enum.c_void.html)
-        => core_ffi_c_void;
-    }
     Stable_1_19 {
         /// Untagged unions ([RFC 1444](https://github.com/rust-lang/rfcs/blob/master/text/1444-union.md))
         => untagged_union;
@@ -204,6 +200,8 @@ rust_feature_def!(
         /// `const fn` support for limited cases
         /// ([PR](https://github.com/rust-lang/rust/pull/54835/)
         => min_const_fn;
+        /// [c_void available in core](https://doc.rust-lang.org/core/ffi/enum.c_void.html)
+        => core_ffi_c_void;
     }
     Stable_1_33 {
         /// repr(packed(N)) ([PR](https://github.com/rust-lang/rust/pull/57049))
@@ -242,7 +240,7 @@ mod test {
         );
         let f_1_21 = RustFeatures::from(RustTarget::Stable_1_21);
         assert!(
-            f_1_21.core_ffi_c_void &&
+            !f_1_21.core_ffi_c_void &&
                 f_1_21.untagged_union &&
                 f_1_21.associated_const &&
                 f_1_21.builtin_clone_impls &&
