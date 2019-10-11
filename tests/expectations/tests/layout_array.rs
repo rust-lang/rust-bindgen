@@ -24,10 +24,12 @@ pub struct rte_mempool {
 /// it will most likely point to a different type of data structure, and
 /// will be transparent to the application programmer.
 /// This function should set mp->pool_data.
-pub type rte_mempool_alloc_t =
-    ::std::option::Option<unsafe extern "C" fn(mp: *mut rte_mempool) -> ::std::os::raw::c_int>;
+pub type rte_mempool_alloc_t = ::std::option::Option<
+    unsafe extern "C" fn(mp: *mut rte_mempool) -> ::std::os::raw::c_int,
+>;
 /// Free the opaque private data pointed to by mp->pool_data pointer.
-pub type rte_mempool_free_t = ::std::option::Option<unsafe extern "C" fn(mp: *mut rte_mempool)>;
+pub type rte_mempool_free_t =
+    ::std::option::Option<unsafe extern "C" fn(mp: *mut rte_mempool)>;
 /// Enqueue an object into the external pool.
 pub type rte_mempool_enqueue_t = ::std::option::Option<
     unsafe extern "C" fn(
@@ -45,8 +47,9 @@ pub type rte_mempool_dequeue_t = ::std::option::Option<
     ) -> ::std::os::raw::c_int,
 >;
 /// Return the number of available objects in the external pool.
-pub type rte_mempool_get_count =
-    ::std::option::Option<unsafe extern "C" fn(mp: *const rte_mempool) -> ::std::os::raw::c_uint>;
+pub type rte_mempool_get_count = ::std::option::Option<
+    unsafe extern "C" fn(mp: *const rte_mempool) -> ::std::os::raw::c_uint,
+>;
 /// Structure defining mempool operations structure
 #[repr(C)]
 #[repr(align(64))]
@@ -79,7 +82,10 @@ fn bindgen_test_layout_rte_mempool_ops() {
         concat!("Alignment of ", stringify!(rte_mempool_ops))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<rte_mempool_ops>())).name as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_mempool_ops>())).name as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -89,7 +95,10 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<rte_mempool_ops>())).alloc as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_mempool_ops>())).alloc as *const _
+                as usize
+        },
         32usize,
         concat!(
             "Offset of field: ",
@@ -99,7 +108,10 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<rte_mempool_ops>())).free as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_mempool_ops>())).free as *const _
+                as usize
+        },
         40usize,
         concat!(
             "Offset of field: ",
@@ -109,7 +121,10 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<rte_mempool_ops>())).enqueue as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_mempool_ops>())).enqueue as *const _
+                as usize
+        },
         48usize,
         concat!(
             "Offset of field: ",
@@ -119,7 +134,10 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<rte_mempool_ops>())).dequeue as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_mempool_ops>())).dequeue as *const _
+                as usize
+        },
         56usize,
         concat!(
             "Offset of field: ",
@@ -129,7 +147,10 @@ fn bindgen_test_layout_rte_mempool_ops() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<rte_mempool_ops>())).get_count as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_mempool_ops>())).get_count as *const _
+                as usize
+        },
         64usize,
         concat!(
             "Offset of field: ",
@@ -146,12 +167,12 @@ impl Default for rte_mempool_ops {
 }
 impl ::std::cmp::PartialEq for rte_mempool_ops {
     fn eq(&self, other: &rte_mempool_ops) -> bool {
-        self.name == other.name
-            && self.alloc == other.alloc
-            && self.free == other.free
-            && self.enqueue == other.enqueue
-            && self.dequeue == other.dequeue
-            && self.get_count == other.get_count
+        self.name == other.name &&
+            self.alloc == other.alloc &&
+            self.free == other.free &&
+            self.enqueue == other.enqueue &&
+            self.dequeue == other.dequeue &&
+            self.get_count == other.get_count
     }
 }
 /// The rte_spinlock_t type.
@@ -174,7 +195,10 @@ fn bindgen_test_layout_rte_spinlock_t() {
         concat!("Alignment of ", stringify!(rte_spinlock_t))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<rte_spinlock_t>())).locked as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_spinlock_t>())).locked as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -216,7 +240,10 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         concat!("Alignment of ", stringify!(rte_mempool_ops_table))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<rte_mempool_ops_table>())).sl as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_mempool_ops_table>())).sl as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -226,7 +253,10 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<rte_mempool_ops_table>())).num_ops as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_mempool_ops_table>())).num_ops
+                as *const _ as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -236,7 +266,10 @@ fn bindgen_test_layout_rte_mempool_ops_table() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<rte_mempool_ops_table>())).ops as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_mempool_ops_table>())).ops as *const _
+                as usize
+        },
         64usize,
         concat!(
             "Offset of field: ",
@@ -280,7 +313,8 @@ fn bindgen_test_layout_malloc_heap__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<malloc_heap__bindgen_ty_1>())).lh_first as *const _ as usize
+            &(*(::std::ptr::null::<malloc_heap__bindgen_ty_1>())).lh_first
+                as *const _ as usize
         },
         0usize,
         concat!(
@@ -309,7 +343,9 @@ fn bindgen_test_layout_malloc_heap() {
         concat!("Alignment of ", stringify!(malloc_heap))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<malloc_heap>())).lock as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<malloc_heap>())).lock as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -319,7 +355,10 @@ fn bindgen_test_layout_malloc_heap() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<malloc_heap>())).free_head as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<malloc_heap>())).free_head as *const _
+                as usize
+        },
         8usize,
         concat!(
             "Offset of field: ",
@@ -329,7 +368,10 @@ fn bindgen_test_layout_malloc_heap() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<malloc_heap>())).alloc_count as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<malloc_heap>())).alloc_count as *const _
+                as usize
+        },
         112usize,
         concat!(
             "Offset of field: ",
@@ -339,7 +381,10 @@ fn bindgen_test_layout_malloc_heap() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<malloc_heap>())).total_size as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<malloc_heap>())).total_size as *const _
+                as usize
+        },
         120usize,
         concat!(
             "Offset of field: ",
@@ -356,10 +401,10 @@ impl Default for malloc_heap {
 }
 impl ::std::cmp::PartialEq for malloc_heap {
     fn eq(&self, other: &malloc_heap) -> bool {
-        self.lock == other.lock
-            && self.free_head == other.free_head
-            && self.alloc_count == other.alloc_count
-            && self.total_size == other.total_size
+        self.lock == other.lock &&
+            self.free_head == other.free_head &&
+            self.alloc_count == other.alloc_count &&
+            self.total_size == other.total_size
     }
 }
 #[repr(C)]

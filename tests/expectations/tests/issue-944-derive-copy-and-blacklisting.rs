@@ -27,7 +27,9 @@ fn bindgen_test_layout_ShouldNotBeCopy() {
         concat!("Alignment of ", stringify!(ShouldNotBeCopy))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<ShouldNotBeCopy>())).a as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<ShouldNotBeCopy>())).a as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",

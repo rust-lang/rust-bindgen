@@ -27,7 +27,9 @@ fn bindgen_test_layout_AlignedToOne() {
         concat!("Alignment of ", stringify!(AlignedToOne))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<AlignedToOne>())).i as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<AlignedToOne>())).i as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -57,7 +59,9 @@ fn bindgen_test_layout_AlignedToTwo() {
         concat!("Alignment of ", stringify!(AlignedToTwo))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<AlignedToTwo>())).i as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<AlignedToTwo>())).i as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -89,7 +93,9 @@ fn bindgen_test_layout_PackedToOne() {
         concat!("Alignment of ", stringify!(PackedToOne))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<PackedToOne>())).x as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<PackedToOne>())).x as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -99,7 +105,9 @@ fn bindgen_test_layout_PackedToOne() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<PackedToOne>())).y as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<PackedToOne>())).y as *const _ as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -131,7 +139,9 @@ fn bindgen_test_layout_PackedToTwo() {
         concat!("Alignment of ", stringify!(PackedToTwo))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<PackedToTwo>())).x as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<PackedToTwo>())).x as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -141,7 +151,9 @@ fn bindgen_test_layout_PackedToTwo() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<PackedToTwo>())).y as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<PackedToTwo>())).y as *const _ as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",

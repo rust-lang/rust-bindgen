@@ -57,7 +57,10 @@ where
     pub fn get(&self, bit_offset: usize, bit_width: u8) -> u64 {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
-        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <=
+                self.storage.as_ref().len()
+        );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
             if self.get_bit(i + bit_offset) {
@@ -75,7 +78,10 @@ where
     pub fn set(&mut self, bit_offset: usize, bit_width: u8, val: u64) {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
-        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <=
+                self.storage.as_ref().len()
+        );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
             let val_bit_is_set = val & mask == mask;
@@ -261,7 +267,9 @@ impl Default for jsval_layout__bindgen_ty_1 {
 impl jsval_layout__bindgen_ty_1 {
     #[inline]
     pub fn payload47(&self) -> u64 {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 47u8) as u64) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(0usize, 47u8) as u64)
+        }
     }
     #[inline]
     pub fn set_payload47(&mut self, val: u64) {
@@ -272,7 +280,9 @@ impl jsval_layout__bindgen_ty_1 {
     }
     #[inline]
     pub fn tag(&self) -> JSValueTag {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(47usize, 17u8) as u32) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(47usize, 17u8) as u32)
+        }
     }
     #[inline]
     pub fn set_tag(&mut self, val: JSValueTag) {
@@ -286,8 +296,10 @@ impl jsval_layout__bindgen_ty_1 {
         payload47: u64,
         tag: JSValueTag,
     ) -> __BindgenBitfieldUnit<[u8; 8usize], u64> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize], u64> =
-            Default::default();
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
+            [u8; 8usize],
+            u64,
+        > = Default::default();
         __bindgen_bitfield_unit.set(0usize, 47u8, {
             let payload47: u64 = unsafe { ::std::mem::transmute(payload47) };
             payload47 as u64
@@ -332,8 +344,8 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>())).i32 as *const _
-                as usize
+            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()))
+                .i32 as *const _ as usize
         },
         0usize,
         concat!(
@@ -345,8 +357,8 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>())).u32 as *const _
-                as usize
+            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()))
+                .u32 as *const _ as usize
         },
         0usize,
         concat!(
@@ -358,8 +370,8 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>())).why as *const _
-                as usize
+            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2__bindgen_ty_1>()))
+                .why as *const _ as usize
         },
         0usize,
         concat!(
@@ -389,7 +401,8 @@ fn bindgen_test_layout_jsval_layout__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2>())).payload as *const _ as usize
+            &(*(::std::ptr::null::<jsval_layout__bindgen_ty_2>())).payload
+                as *const _ as usize
         },
         0usize,
         concat!(
@@ -418,7 +431,9 @@ fn bindgen_test_layout_jsval_layout() {
         concat!("Alignment of ", stringify!(jsval_layout))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<jsval_layout>())).asBits as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<jsval_layout>())).asBits as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -428,7 +443,10 @@ fn bindgen_test_layout_jsval_layout() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<jsval_layout>())).debugView as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<jsval_layout>())).debugView as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -438,7 +456,9 @@ fn bindgen_test_layout_jsval_layout() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<jsval_layout>())).s as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<jsval_layout>())).s as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -448,7 +468,10 @@ fn bindgen_test_layout_jsval_layout() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<jsval_layout>())).asDouble as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<jsval_layout>())).asDouble as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -458,7 +481,9 @@ fn bindgen_test_layout_jsval_layout() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<jsval_layout>())).asPtr as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<jsval_layout>())).asPtr as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -468,7 +493,9 @@ fn bindgen_test_layout_jsval_layout() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<jsval_layout>())).asWord as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<jsval_layout>())).asWord as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -478,7 +505,10 @@ fn bindgen_test_layout_jsval_layout() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<jsval_layout>())).asUIntPtr as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<jsval_layout>())).asUIntPtr as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",

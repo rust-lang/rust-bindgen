@@ -51,7 +51,9 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<RTCRay>())).align0 as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<RTCRay>())).align0 as *const _ as usize
+        },
         12usize,
         concat!(
             "Offset of field: ",
@@ -71,7 +73,9 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<RTCRay>())).align1 as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<RTCRay>())).align1 as *const _ as usize
+        },
         28usize,
         concat!(
             "Offset of field: ",
@@ -81,7 +85,9 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<RTCRay>())).tnear as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<RTCRay>())).tnear as *const _ as usize
+        },
         32usize,
         concat!(
             "Offset of field: ",
@@ -131,7 +137,9 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<RTCRay>())).align2 as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<RTCRay>())).align2 as *const _ as usize
+        },
         60usize,
         concat!(
             "Offset of field: ",
@@ -151,7 +159,9 @@ fn bindgen_test_layout_RTCRay() {
         concat!("Offset of field: ", stringify!(RTCRay), "::", stringify!(v))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<RTCRay>())).geomID as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<RTCRay>())).geomID as *const _ as usize
+        },
         72usize,
         concat!(
             "Offset of field: ",
@@ -161,7 +171,9 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<RTCRay>())).primID as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<RTCRay>())).primID as *const _ as usize
+        },
         76usize,
         concat!(
             "Offset of field: ",
@@ -171,7 +183,9 @@ fn bindgen_test_layout_RTCRay() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<RTCRay>())).instID as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<RTCRay>())).instID as *const _ as usize
+        },
         80usize,
         concat!(
             "Offset of field: ",

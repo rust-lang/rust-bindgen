@@ -41,7 +41,8 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_1>())).b1 as *const _ as usize
+            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_1>())).b1
+                as *const _ as usize
         },
         0usize,
         concat!(
@@ -53,7 +54,8 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_1>())).b2 as *const _ as usize
+            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_1>())).b2
+                as *const _ as usize
         },
         0usize,
         concat!(
@@ -90,7 +92,8 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_2>())).c1 as *const _ as usize
+            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_2>())).c1
+                as *const _ as usize
         },
         0usize,
         concat!(
@@ -102,7 +105,8 @@ fn bindgen_test_layout_foo__bindgen_ty_1__bindgen_ty_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_2>())).c2 as *const _ as usize
+            &(*(::std::ptr::null::<foo__bindgen_ty_1__bindgen_ty_2>())).c2
+                as *const _ as usize
         },
         0usize,
         concat!(

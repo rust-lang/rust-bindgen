@@ -28,12 +28,18 @@ fn bindgen_test_layout_Foo() {
 extern "C" {
     #[must_use]
     #[link_name = "\u{1}_ZN3Foo3fooEi"]
-    pub fn Foo_foo(this: *mut Foo, arg1: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
+    pub fn Foo_foo(
+        this: *mut Foo,
+        arg1: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
 }
 impl Foo {
     #[inline]
     #[must_use]
-    pub unsafe fn foo(&mut self, arg1: ::std::os::raw::c_int) -> ::std::os::raw::c_int {
+    pub unsafe fn foo(
+        &mut self,
+        arg1: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int {
         Foo_foo(self, arg1)
     }
 }

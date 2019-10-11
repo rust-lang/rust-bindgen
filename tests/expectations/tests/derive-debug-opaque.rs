@@ -52,7 +52,9 @@ fn bindgen_test_layout_OpaqueUser() {
         concat!("Alignment of ", stringify!(OpaqueUser))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<OpaqueUser>())).opaque as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<OpaqueUser>())).opaque as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",

@@ -47,7 +47,12 @@ pub mod root {
             assert_eq!(
                 unsafe { &(*(::std::ptr::null::<A>())).b as *const _ as usize },
                 0usize,
-                concat!("Offset of field: ", stringify!(A), "::", stringify!(b))
+                concat!(
+                    "Offset of field: ",
+                    stringify!(A),
+                    "::",
+                    stringify!(b)
+                )
             );
         }
     }
@@ -73,7 +78,8 @@ pub mod root {
         #[derive(Debug)]
         pub struct D<T> {
             pub m_c: root::C<T>,
-            pub _phantom_0: ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
+            pub _phantom_0:
+                ::std::marker::PhantomData<::std::cell::UnsafeCell<T>>,
         }
         impl<T> Default for D<T> {
             fn default() -> Self {

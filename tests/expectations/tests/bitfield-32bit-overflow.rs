@@ -57,7 +57,10 @@ where
     pub fn get(&self, bit_offset: usize, bit_width: u8) -> u64 {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
-        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <=
+                self.storage.as_ref().len()
+        );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
             if self.get_bit(i + bit_offset) {
@@ -75,7 +78,10 @@ where
     pub fn set(&mut self, bit_offset: usize, bit_width: u8, val: u64) {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
-        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <=
+                self.storage.as_ref().len()
+        );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
             let val_bit_is_set = val & mask == mask;
@@ -109,7 +115,9 @@ fn bindgen_test_layout_MuchBitfield() {
 impl MuchBitfield {
     #[inline]
     pub fn m0(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m0(&mut self, val: ::std::os::raw::c_char) {
@@ -120,7 +128,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m1(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m1(&mut self, val: ::std::os::raw::c_char) {
@@ -131,7 +141,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m2(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m2(&mut self, val: ::std::os::raw::c_char) {
@@ -142,7 +154,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m3(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(3usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(3usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m3(&mut self, val: ::std::os::raw::c_char) {
@@ -153,7 +167,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m4(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(4usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(4usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m4(&mut self, val: ::std::os::raw::c_char) {
@@ -164,7 +180,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m5(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(5usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(5usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m5(&mut self, val: ::std::os::raw::c_char) {
@@ -175,7 +193,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m6(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(6usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(6usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m6(&mut self, val: ::std::os::raw::c_char) {
@@ -186,7 +206,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m7(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(7usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(7usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m7(&mut self, val: ::std::os::raw::c_char) {
@@ -197,7 +219,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m8(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(8usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(8usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m8(&mut self, val: ::std::os::raw::c_char) {
@@ -208,7 +232,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m9(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(9usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(9usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m9(&mut self, val: ::std::os::raw::c_char) {
@@ -219,7 +245,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m10(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(10usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(10usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m10(&mut self, val: ::std::os::raw::c_char) {
@@ -230,7 +258,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m11(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(11usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(11usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m11(&mut self, val: ::std::os::raw::c_char) {
@@ -241,7 +271,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m12(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(12usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(12usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m12(&mut self, val: ::std::os::raw::c_char) {
@@ -252,7 +284,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m13(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(13usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(13usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m13(&mut self, val: ::std::os::raw::c_char) {
@@ -263,7 +297,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m14(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(14usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(14usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m14(&mut self, val: ::std::os::raw::c_char) {
@@ -274,7 +310,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m15(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(15usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(15usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m15(&mut self, val: ::std::os::raw::c_char) {
@@ -285,7 +323,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m16(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(16usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(16usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m16(&mut self, val: ::std::os::raw::c_char) {
@@ -296,7 +336,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m17(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(17usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(17usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m17(&mut self, val: ::std::os::raw::c_char) {
@@ -307,7 +349,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m18(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(18usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(18usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m18(&mut self, val: ::std::os::raw::c_char) {
@@ -318,7 +362,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m19(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(19usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(19usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m19(&mut self, val: ::std::os::raw::c_char) {
@@ -329,7 +375,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m20(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(20usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(20usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m20(&mut self, val: ::std::os::raw::c_char) {
@@ -340,7 +388,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m21(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(21usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(21usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m21(&mut self, val: ::std::os::raw::c_char) {
@@ -351,7 +401,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m22(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(22usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(22usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m22(&mut self, val: ::std::os::raw::c_char) {
@@ -362,7 +414,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m23(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(23usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(23usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m23(&mut self, val: ::std::os::raw::c_char) {
@@ -373,7 +427,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m24(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(24usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(24usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m24(&mut self, val: ::std::os::raw::c_char) {
@@ -384,7 +440,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m25(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(25usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(25usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m25(&mut self, val: ::std::os::raw::c_char) {
@@ -395,7 +453,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m26(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(26usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(26usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m26(&mut self, val: ::std::os::raw::c_char) {
@@ -406,7 +466,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m27(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(27usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(27usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m27(&mut self, val: ::std::os::raw::c_char) {
@@ -417,7 +479,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m28(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(28usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(28usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m28(&mut self, val: ::std::os::raw::c_char) {
@@ -428,7 +492,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m29(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(29usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(29usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m29(&mut self, val: ::std::os::raw::c_char) {
@@ -439,7 +505,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m30(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(30usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(30usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m30(&mut self, val: ::std::os::raw::c_char) {
@@ -450,7 +518,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m31(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(31usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(31usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m31(&mut self, val: ::std::os::raw::c_char) {
@@ -461,7 +531,9 @@ impl MuchBitfield {
     }
     #[inline]
     pub fn m32(&self) -> ::std::os::raw::c_char {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(32usize, 1u8) as u8) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(32usize, 1u8) as u8)
+        }
     }
     #[inline]
     pub fn set_m32(&mut self, val: ::std::os::raw::c_char) {
@@ -506,8 +578,10 @@ impl MuchBitfield {
         m31: ::std::os::raw::c_char,
         m32: ::std::os::raw::c_char,
     ) -> __BindgenBitfieldUnit<[u8; 5usize], u8> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 5usize], u8> =
-            Default::default();
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
+            [u8; 5usize],
+            u8,
+        > = Default::default();
         __bindgen_bitfield_unit.set(0usize, 1u8, {
             let m0: u8 = unsafe { ::std::mem::transmute(m0) };
             m0 as u64

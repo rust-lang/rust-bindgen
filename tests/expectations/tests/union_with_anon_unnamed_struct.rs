@@ -35,7 +35,10 @@ fn bindgen_test_layout_pixel__bindgen_ty_1() {
         concat!("Alignment of ", stringify!(pixel__bindgen_ty_1))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pixel__bindgen_ty_1>())).r as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<pixel__bindgen_ty_1>())).r as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -45,7 +48,10 @@ fn bindgen_test_layout_pixel__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pixel__bindgen_ty_1>())).g as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<pixel__bindgen_ty_1>())).g as *const _
+                as usize
+        },
         1usize,
         concat!(
             "Offset of field: ",
@@ -55,7 +61,10 @@ fn bindgen_test_layout_pixel__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pixel__bindgen_ty_1>())).b as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<pixel__bindgen_ty_1>())).b as *const _
+                as usize
+        },
         2usize,
         concat!(
             "Offset of field: ",
@@ -65,7 +74,10 @@ fn bindgen_test_layout_pixel__bindgen_ty_1() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<pixel__bindgen_ty_1>())).a as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<pixel__bindgen_ty_1>())).a as *const _
+                as usize
+        },
         3usize,
         concat!(
             "Offset of field: ",

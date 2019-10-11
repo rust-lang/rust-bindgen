@@ -39,7 +39,10 @@ pub mod root {
     }
     impl<T> ::std::marker::Copy for __BindgenUnionField<T> {}
     impl<T> ::std::fmt::Debug for __BindgenUnionField<T> {
-        fn fmt(&self, fmt: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        fn fmt(
+            &self,
+            fmt: &mut ::std::fmt::Formatter<'_>,
+        ) -> ::std::fmt::Result {
             fmt.write_str("__BindgenUnionField")
         }
     }
@@ -77,14 +80,28 @@ pub mod root {
                 concat!("Alignment of ", stringify!(Bar))
             );
             assert_eq!(
-                unsafe { &(*(::std::ptr::null::<Bar>())).foo as *const _ as usize },
+                unsafe {
+                    &(*(::std::ptr::null::<Bar>())).foo as *const _ as usize
+                },
                 0usize,
-                concat!("Offset of field: ", stringify!(Bar), "::", stringify!(foo))
+                concat!(
+                    "Offset of field: ",
+                    stringify!(Bar),
+                    "::",
+                    stringify!(foo)
+                )
             );
             assert_eq!(
-                unsafe { &(*(::std::ptr::null::<Bar>())).bar as *const _ as usize },
+                unsafe {
+                    &(*(::std::ptr::null::<Bar>())).bar as *const _ as usize
+                },
                 0usize,
-                concat!("Offset of field: ", stringify!(Bar), "::", stringify!(bar))
+                concat!(
+                    "Offset of field: ",
+                    stringify!(Bar),
+                    "::",
+                    stringify!(bar)
+                )
             );
         }
         impl Clone for Bar {

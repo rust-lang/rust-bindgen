@@ -13,10 +13,16 @@ extern "C" {
 extern "C" {
     pub fn bar(
         one: ::std::option::Option<
-            unsafe extern "C" fn(a: ::std::os::raw::c_int, b: ::std::os::raw::c_int),
+            unsafe extern "C" fn(
+                a: ::std::os::raw::c_int,
+                b: ::std::os::raw::c_int,
+            ),
         >,
         two: ::std::option::Option<
-            unsafe extern "C" fn(c: ::std::os::raw::c_int, d: ::std::os::raw::c_int),
+            unsafe extern "C" fn(
+                c: ::std::os::raw::c_int,
+                d: ::std::os::raw::c_int,
+            ),
         >,
     );
 }

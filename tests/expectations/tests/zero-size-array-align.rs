@@ -63,7 +63,9 @@ fn bindgen_test_layout_dm_deps() {
         concat!("Alignment of ", stringify!(dm_deps))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<dm_deps>())).count as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<dm_deps>())).count as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -73,7 +75,9 @@ fn bindgen_test_layout_dm_deps() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<dm_deps>())).filler as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<dm_deps>())).filler as *const _ as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -83,7 +87,9 @@ fn bindgen_test_layout_dm_deps() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<dm_deps>())).device as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<dm_deps>())).device as *const _ as usize
+        },
         8usize,
         concat!(
             "Offset of field: ",
