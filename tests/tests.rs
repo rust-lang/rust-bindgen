@@ -68,12 +68,14 @@ The latest `rustfmt` is required to run the `bindgen` test suite. Install
     // Write to stdin in a new thread, so that we can read from stdout on this
     // thread. This keeps the child from blocking on writing to its stdout which
     // might block us from writing to its stdin.
-    let stdin_handle = ::std::thread::spawn(move || stdin.write_all(source.as_bytes()));
+    let stdin_handle =
+        ::std::thread::spawn(move || stdin.write_all(source.as_bytes()));
 
     // Read stderr on a new thread for similar reasons.
     let stderr_handle = ::std::thread::spawn(move || {
         let mut output = vec![];
-        io::copy(&mut stderr, &mut output).map(|_| String::from_utf8_lossy(&output).to_string())
+        io::copy(&mut stderr, &mut output)
+            .map(|_| String::from_utf8_lossy(&output).to_string())
     });
 
     let mut output = vec![];
@@ -88,7 +90,8 @@ The latest `rustfmt` is required to run the `bindgen` test suite. Install
         .expect("writer thread should not have panicked")
         .expect("should have written to child rustfmt's stdin OK");
 
-    let bindings = String::from_utf8(output).expect("rustfmt should only emit valid utf-8");
+    let bindings = String::from_utf8(output)
+        .expect("rustfmt should only emit valid utf-8");
 
     let stderr = stderr_handle
         .join()
@@ -98,7 +101,10 @@ The latest `rustfmt` is required to run the `bindgen` test suite. Install
     (bindings, stderr)
 }
 
-fn compare_generated_header(header: &PathBuf, builder: Builder) -> Result<(), Error> {
+fn compare_generated_header(
+    header: &PathBuf,
+    builder: Builder,
+) -> Result<(), Error> {
     let file_name = header.file_name().ok_or(Error::new(
         ErrorKind::Other,
         "compare_generated_header expects a file",
@@ -256,8 +262,8 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
                 .map(ToString::to_string)
                 .chain(flags)
                 .collect();
-        } else if line.contains("bindgen-generate-bindings-on-linux-only")
-            && !cfg!(target_os = "linux")
+        } else if line.contains("bindgen-generate-bindings-on-linux-only") &&
+            !cfg!(target_os = "linux")
         {
             return Ok(None);
         }
@@ -442,7 +448,8 @@ fn no_system_header_includes() {
 
 #[test]
 fn dump_preprocessed_input() {
-    let arg_keyword = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/arg_keyword.hpp");
+    let arg_keyword =
+        concat!(env!("CARGO_MANIFEST_DIR"), "/tests/headers/arg_keyword.hpp");
     let empty_layout = concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/tests/headers/cpp-empty-layout.hpp"

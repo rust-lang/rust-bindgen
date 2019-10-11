@@ -543,10 +543,10 @@ impl Cursor {
             let kind = cur.kind();
             found_attr = clang_kind.map_or(false, |k| k == kind) ||
                 (kind == CXCursor_UnexposedAttr &&
-                 cur.tokens().iter().any(|t| {
-                    t.kind == CXToken_Identifier &&
-                        t.spelling() == name.as_bytes()
-                 }));
+                    cur.tokens().iter().any(|t| {
+                        t.kind == CXToken_Identifier &&
+                            t.spelling() == name.as_bytes()
+                    }));
 
             if found_attr {
                 CXChildVisit_Break
@@ -733,7 +733,9 @@ impl Cursor {
         if file.is_null() {
             None
         } else {
-            Some(unsafe { cxstring_into_string(clang_sys::clang_getFileName(file)) })
+            Some(unsafe {
+                cxstring_into_string(clang_sys::clang_getFileName(file))
+            })
         }
     }
 }

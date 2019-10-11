@@ -553,8 +553,8 @@ impl BindgenContext {
             clang_sys::CXTranslationUnit_DetailedPreprocessingRecord;
 
         let translation_unit = {
-            let _t = Timer::new("translation_unit")
-                .with_output(options.time_phases);
+            let _t =
+                Timer::new("translation_unit").with_output(options.time_phases);
             let clang_args = if explicit_target {
                 Cow::Borrowed(&options.clang_args)
             } else {
