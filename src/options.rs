@@ -1,4 +1,7 @@
-use bindgen::{builder, Builder, CodegenConfig, EnumVariation, RustTarget, RUST_TARGET_STRINGS};
+use bindgen::{
+    builder, Builder, CodegenConfig, EnumVariation, RustTarget,
+    RUST_TARGET_STRINGS,
+};
 use clap::{App, Arg};
 use std::fs::File;
 use std::io::{self, stderr, Error, ErrorKind, Write};
@@ -6,7 +9,9 @@ use std::path::PathBuf;
 use std::str::FromStr;
 
 /// Construct a new [`Builder`](./struct.Builder.html) from command line flags.
-pub fn builder_from_flags<I>(args: I) -> Result<(Builder, Box<dyn io::Write>, bool), io::Error>
+pub fn builder_from_flags<I>(
+    args: I,
+) -> Result<(Builder, Box<dyn io::Write>, bool), io::Error>
 where
     I: Iterator<Item = String>,
 {

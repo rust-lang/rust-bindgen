@@ -38,7 +38,10 @@ pub fn main() {
         None
     };
 
-    info!("Clang Version: {}, parsed: {:?}", version.full, version.parsed);
+    info!(
+        "Clang Version: {}, parsed: {:?}",
+        version.full, version.parsed
+    );
 
     if expected_version.is_some() {
         assert_eq!(version.parsed, version.parsed);
