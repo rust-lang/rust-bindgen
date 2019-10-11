@@ -21,7 +21,9 @@ extern crate bindgen;
 )))]
 #[cfg(any(
     feature = "testing_only_libclang_3_9",
-    feature = "testing_only_libclang_4"
+    feature = "testing_only_libclang_4",
+    feature = "testing_only_libclang_5",
+    feature = "testing_only_libclang_9"
 ))]
 fn sanity_check_can_generate_stylo_bindings() {
     use std::time::Instant;

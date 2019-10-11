@@ -24,23 +24,24 @@ pub fn main() {
     let bind_args: Vec<_> = env::args().collect();
 
     let version = clang_version();
-    let expected_version = if cfg!(feature = "testing_only_libclang_4") {
-        (4, 0)
+    let expected_version = if cfg!(feature = "testing_only_libclang_9") {
+        Some((9, 0))
+    } else if cfg!(feature = "testing_only_libclang_5") {
+        Some((5, 0))
+    } else if cfg!(feature = "testing_only_libclang_4") {
+        Some((4, 0))
+    } else if cfg!(feature = "testing_only_libclang_3_9") {
+        Some((3, 9))
     } else if cfg!(feature = "testing_only_libclang_3_8") {
-        (3, 8)
+        Some((3, 8))
     } else {
-        // Default to 3.9.
-        (3, 9)
+        None
     };
 
-    info!("Clang Version: {}", version.full);
+    info!("Clang Version: {}, parsed: {:?}", version.full, version.parsed);
 
-    match version.parsed {
-        None => warn!("Couldn't parse libclang version"),
-        Some(version) if version != expected_version => {
-            warn!("Using clang {:?}, expected {:?}", version, expected_version);
-        }
-        _ => {}
+    if expected_version.is_some() {
+        assert_eq!(version.parsed, version.parsed);
     }
 
     match builder_from_flags(bind_args.into_iter()) {

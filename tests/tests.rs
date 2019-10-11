@@ -117,10 +117,12 @@ fn compare_generated_header(header: &PathBuf, builder: Builder) -> Result<(), Er
     {
         let mut expectation = expectation.clone();
 
-        if cfg!(feature = "testing_only_libclang_4") {
-            expectation.push("libclang-4");
+        if cfg!(feature = "testing_only_libclang_9") {
+            expectation.push("libclang-9");
         } else if cfg!(feature = "testing_only_libclang_5") {
             expectation.push("libclang-5");
+        } else if cfg!(feature = "testing_only_libclang_4") {
+            expectation.push("libclang-4");
         } else if cfg!(feature = "testing_only_libclang_3_9") {
             expectation.push("libclang-3.9");
         } else if cfg!(feature = "testing_only_libclang_3_8") {
@@ -134,7 +136,7 @@ fn compare_generated_header(header: &PathBuf, builder: Builder) -> Result<(), Er
                         "9".to_owned()
                     } else if maj >= 5 {
                         "5".to_owned()
-                    } else if maj == 4 {
+                    } else if maj >= 4 {
                         "4".to_owned()
                     } else {
                         format!("{}.{}", maj, min)

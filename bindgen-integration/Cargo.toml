@@ -11,6 +11,7 @@ bindgen = { path = ".." }
 cc = "1.0"
 
 [features]
+testing_only_libclang_9 = ["bindgen/testing_only_libclang_9"]
 testing_only_libclang_5 = ["bindgen/testing_only_libclang_5"]
 testing_only_libclang_4 = ["bindgen/testing_only_libclang_4"]
 testing_only_libclang_3_9 = ["bindgen/testing_only_libclang_3_9"]
