@@ -8,9 +8,12 @@ environment:
   - TARGET: gnu
     LLVM_VERSION: 4.0.0-1
     BINDGEN_FEATURES: testing_only_libclang_4
-  - TARGET: msvc
+  - TARGET: gnu
     LLVM_VERSION: 5.0.0-1
     BINDGEN_FEATURES: testing_only_libclang_5
+  - TARGET: gnu
+    LLVM_VERSION: 9.0.0-1
+    BINDGEN_FEATURES: testing_only_libclang_9
   - TARGET: msvc
     LLVM_VERSION: 3.9.0
     BINDGEN_FEATURES: testing_only_libclang_3_9
@@ -20,6 +23,9 @@ environment:
   - TARGET: msvc
     LLVM_VERSION: 5.0.0
     BINDGEN_FEATURES: testing_only_libclang_5
+  - TARGET: msvc
+    LLVM_VERSION: 9.0.0
+    BINDGEN_FEATURES: testing_only_libclang_9
 
 configuration:
 - stable

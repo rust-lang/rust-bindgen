@@ -30,21 +30,27 @@ env:
     - LLVM_VERSION="4.0" BINDGEN_JOB="nofeatures"   BINDGEN_PROFILE="--release"
     - LLVM_VERSION="5.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=
     - LLVM_VERSION="5.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="5.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=            BINDGEN_FEATURES="testing_only_extra_assertions"
-    - LLVM_VERSION="5.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release" BINDGEN_FEATURES="testing_only_extra_assertions"
     - LLVM_VERSION="5.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
     - LLVM_VERSION="5.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
     - LLVM_VERSION="5.0" BINDGEN_JOB="nofeatures"   BINDGEN_PROFILE=
     - LLVM_VERSION="5.0" BINDGEN_JOB="nofeatures"   BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="5.0" BINDGEN_JOB="expectations" BINDGEN_PROFILE=
-    - LLVM_VERSION="5.0" BINDGEN_JOB="expectations" BINDGEN_PROFILE="--release"
-    - LLVM_VERSION="5.0" BINDGEN_JOB="misc"
-    - LLVM_VERSION="5.0" BINDGEN_JOB="quickchecking"
+    - LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=
+    - LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release"
+    - LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE=            BINDGEN_FEATURES="testing_only_extra_assertions"
+    - LLVM_VERSION="9.0" BINDGEN_JOB="test"         BINDGEN_PROFILE="--release" BINDGEN_FEATURES="testing_only_extra_assertions"
+    - LLVM_VERSION="9.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE=
+    - LLVM_VERSION="9.0" BINDGEN_JOB="integration"  BINDGEN_PROFILE="--release"
+    - LLVM_VERSION="9.0" BINDGEN_JOB="nofeatures"   BINDGEN_PROFILE=
+    - LLVM_VERSION="9.0" BINDGEN_JOB="nofeatures"   BINDGEN_PROFILE="--release"
+    - LLVM_VERSION="9.0" BINDGEN_JOB="expectations" BINDGEN_PROFILE=
+    - LLVM_VERSION="9.0" BINDGEN_JOB="expectations" BINDGEN_PROFILE="--release"
+    - LLVM_VERSION="9.0" BINDGEN_JOB="misc"
+    - LLVM_VERSION="9.0" BINDGEN_JOB="quickchecking"
 
 matrix:
   fast_finish: true
   allow_failures:
-    - env: LLVM_VERSION=5.0 BINDGEN_JOB=rustfmt
+    - env: LLVM_VERSION=9.0 BINDGEN_JOB=rustfmt
 
 cache:
   directories:
