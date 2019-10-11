@@ -11,7 +11,7 @@ use std::fs;
 use std::io::{self, BufRead, BufReader, Error, ErrorKind, Read, Write};
 use std::path::PathBuf;
 use std::process;
-use std::sync::{Once, ONCE_INIT};
+use std::sync::Once;
 
 #[path = "../src/options.rs"]
 mod options;
@@ -23,7 +23,7 @@ static OVERWRITE_ENV_VAR: &str = "BINDGEN_OVERWRITE_EXPECTED";
 // Run `rustfmt` on the given source string and return a tuple of the formatted
 // bindings, and rustfmt's stderr.
 fn rustfmt(source: String) -> (String, String) {
-    static CHECK_RUSTFMT: Once = ONCE_INIT;
+    static CHECK_RUSTFMT: Once = Once::new();
 
     CHECK_RUSTFMT.call_once(|| {
         let have_working_rustfmt = process::Command::new("rustup")
