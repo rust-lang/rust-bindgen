@@ -44,10 +44,10 @@ impl ParseCallbacks for MacroCallback {
     }
 
     fn str_macro(&self, name: &str, value: &[u8]) {
-        match &name {
-            &"TESTMACRO_STRING_EXPANDED"
-            | &"TESTMACRO_STRING"
-            | &"TESTMACRO_INTEGER" => {
+        match name {
+            "TESTMACRO_STRING_EXPANDED" |
+            "TESTMACRO_STRING" |
+            "TESTMACRO_INTEGER" => {
                 // The integer test macro is, actually, not expected to show up here at all -- but
                 // should produce an error if it does.
                 assert_eq!(
