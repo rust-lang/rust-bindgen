@@ -262,10 +262,6 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
                 .map(ToString::to_string)
                 .chain(flags)
                 .collect();
-        } else if line.contains("bindgen-generate-bindings-on-linux-only") &&
-            !cfg!(target_os = "linux")
-        {
-            return Ok(None);
         }
     }
 
