@@ -45,8 +45,7 @@ case "$BINDGEN_JOB" in
         ./ci/assert-docs.sh
         ./ci/test-book.sh
         ./ci/no-includes.sh
-        # Disabled because https://github.com/rust-lang/rustfmt/issues/3799.
-        # ./ci/assert-rustfmt.sh
+        ./ci/assert-rustfmt.sh
         ;;
 
     "quickchecking")
