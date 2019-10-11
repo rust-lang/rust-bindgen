@@ -1,1 +1,3 @@
 normalize_doc_attributes = true
+max_width = 80
+binop_separator = "back"
