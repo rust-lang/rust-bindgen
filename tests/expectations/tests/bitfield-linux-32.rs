@@ -57,7 +57,10 @@ where
     pub fn get(&self, bit_offset: usize, bit_width: u8) -> u64 {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
-        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <=
+                self.storage.as_ref().len()
+        );
         let mut val = 0;
         for i in 0..(bit_width as usize) {
             if self.get_bit(i + bit_offset) {
@@ -75,7 +78,10 @@ where
     pub fn set(&mut self, bit_offset: usize, bit_width: u8, val: u64) {
         debug_assert!(bit_width <= 64);
         debug_assert!(bit_offset / 8 < self.storage.as_ref().len());
-        debug_assert!((bit_offset + (bit_width as usize)) / 8 <= self.storage.as_ref().len());
+        debug_assert!(
+            (bit_offset + (bit_width as usize)) / 8 <=
+                self.storage.as_ref().len()
+        );
         for i in 0..(bit_width as usize) {
             let mask = 1 << i;
             let val_bit_is_set = val & mask == mask;
@@ -89,16 +95,16 @@ where
     }
 }
 #[repr(C, packed(4))]
-#[repr(align(4))]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Test {
+    pub foo: u64,
     pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize], u64>,
 }
 #[test]
 fn bindgen_test_layout_Test() {
     assert_eq!(
         ::std::mem::size_of::<Test>(),
-        8usize,
+        16usize,
         concat!("Size of: ", stringify!(Test))
     );
     assert_eq!(
@@ -106,11 +112,18 @@ fn bindgen_test_layout_Test() {
         4usize,
         concat!("Alignment of ", stringify!(Test))
     );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<Test>())).foo as *const _ as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(Test), "::", stringify!(foo))
+    );
 }
 impl Test {
     #[inline]
     pub fn x(&self) -> u64 {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 56u8) as u64) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(0usize, 56u8) as u64)
+        }
     }
     #[inline]
     pub fn set_x(&mut self, val: u64) {
@@ -121,7 +134,9 @@ impl Test {
     }
     #[inline]
     pub fn y(&self) -> u64 {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(56usize, 8u8) as u64) }
+        unsafe {
+            ::std::mem::transmute(self._bitfield_1.get(56usize, 8u8) as u64)
+        }
     }
     #[inline]
     pub fn set_y(&mut self, val: u64) {
@@ -131,9 +146,14 @@ impl Test {
         }
     }
     #[inline]
-    pub fn new_bitfield_1(x: u64, y: u64) -> __BindgenBitfieldUnit<[u8; 8usize], u64> {
-        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize], u64> =
-            Default::default();
+    pub fn new_bitfield_1(
+        x: u64,
+        y: u64,
+    ) -> __BindgenBitfieldUnit<[u8; 8usize], u64> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<
+            [u8; 8usize],
+            u64,
+        > = Default::default();
         __bindgen_bitfield_unit.set(0usize, 56u8, {
             let x: u64 = unsafe { ::std::mem::transmute(x) };
             x as u64
