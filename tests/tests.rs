@@ -130,7 +130,9 @@ fn compare_generated_header(header: &PathBuf, builder: Builder) -> Result<(), Er
                 None => {}
                 Some(version) => {
                     let (maj, min) = version;
-                    let version_str = if maj >= 5 {
+                    let version_str = if maj >= 9 {
+                        "9".to_owned()
+                    } else if maj >= 5 {
                         "5".to_owned()
                     } else if maj == 4 {
                         "4".to_owned()
