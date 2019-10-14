@@ -1213,8 +1213,10 @@ impl Bitfield {
             .layout(ctx)
             .expect("Bitfield without layout? Gah!");
         let bitfield_int_ty = helpers::integer_type(ctx, bitfield_ty_layout)
-            .expect("Should already have verified that the bitfield is \
-                     representable as an int");
+            .expect(
+                "Should already have verified that the bitfield is \
+                 representable as an int",
+            );
 
         let offset = self.offset_into_unit();
         let width = self.width() as u8;

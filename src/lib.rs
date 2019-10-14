@@ -23,8 +23,8 @@ extern crate cexpr;
 #[allow(unused_extern_crates)]
 extern crate cfg_if;
 extern crate clang_sys;
-extern crate rustc_hash;
 extern crate lazycell;
+extern crate rustc_hash;
 #[macro_use]
 extern crate lazy_static;
 extern crate peeking_take_while;

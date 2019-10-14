@@ -526,11 +526,10 @@ impl Item {
     /// below this item's lexical scope, meaning that this can be useful for
     /// generating relatively stable identifiers within a scope.
     pub fn local_id(&self, ctx: &BindgenContext) -> usize {
-        *self.local_id
-            .borrow_with(|| {
-                let parent = ctx.resolve_item(self.parent_id);
-                parent.next_child_local_id()
-            })
+        *self.local_id.borrow_with(|| {
+            let parent = ctx.resolve_item(self.parent_id);
+            parent.next_child_local_id()
+        })
     }
 
     /// Get an identifier that differentiates a child of this item of other
