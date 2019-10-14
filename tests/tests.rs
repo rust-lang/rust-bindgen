@@ -109,14 +109,13 @@ fn compare_generated_header(header: &PathBuf, builder: Builder) -> Result<(), Er
     expectation.pop();
     expectation.push("expectations");
     expectation.push("tests");
-    expectation.push(file_name);
-    expectation.set_extension("rs");
 
-    // If the expectation file doesn't exist, see if we have different test
-    // expectations for different libclang versions.
-    if !expectation.is_file() {
-        let file_name = expectation.file_name().unwrap().to_owned();
-        expectation.pop();
+    let mut looked_at = vec![];
+    let mut expectation_file;
+
+    // Try more specific expectations first.
+    {
+        let mut expectation = expectation.clone();
 
         if cfg!(feature = "testing_only_libclang_4") {
             expectation.push("libclang-4");
@@ -144,16 +143,31 @@ fn compare_generated_header(header: &PathBuf, builder: Builder) -> Result<(), Er
         }
 
         expectation.push(file_name);
-
-        if !expectation.is_file() {
-            panic!(
-                "missing test expectation file and/or 'testing_only_libclang_$VERSION' \
-                 feature for header '{}'; looking for expectation file at '{}'",
-                header.display(),
-                expectation.display()
-            );
-        }
+        expectation.set_extension("rs");
+        expectation_file = fs::File::open(&expectation).ok();
+        looked_at.push(expectation);
     }
+
+    // Try the default path otherwise.
+    if expectation_file.is_none() {
+        expectation.push(file_name);
+        expectation.set_extension("rs");
+        expectation_file = fs::File::open(&expectation).ok();
+        looked_at.push(expectation);
+    }
+
+    let mut expected = String::new();
+    match expectation_file {
+        Some(f) => {
+            BufReader::new(f).read_to_string(&mut expected)?;
+        }
+        None => panic!(
+            "missing test expectation file and/or 'testing_only_libclang_$VERSION' \
+             feature for header '{}'; looking for expectation file at '{:?}'",
+            header.display(),
+            looked_at,
+        ),
+    };
 
     // We skip the generate() error here so we get a full diff below
     let (actual, rustfmt_stderr) = match builder.generate() {
@@ -164,13 +178,6 @@ fn compare_generated_header(header: &PathBuf, builder: Builder) -> Result<(), Er
         Err(()) => ("<error generating bindings>".to_string(), "".to_string()),
     };
     println!("{}", rustfmt_stderr);
-
-    let mut expected = String::new();
-    {
-        if let Ok(expectation_file) = fs::File::open(&expectation) {
-            BufReader::new(expectation_file).read_to_string(&mut expected)?;
-        }
-    }
 
     let (expected, rustfmt_stderr) = rustfmt(expected);
     println!("{}", rustfmt_stderr);
@@ -188,7 +195,7 @@ fn compare_generated_header(header: &PathBuf, builder: Builder) -> Result<(), Er
     println!("{}", rustfmt_stderr);
 
     println!("diff expected generated");
-    println!("--- expected: {:?}", expectation);
+    println!("--- expected: {:?}", looked_at.last().unwrap());
     println!("+++ generated from: {:?}", header);
 
     for diff in diff::lines(&expected, &actual) {
@@ -201,7 +208,7 @@ fn compare_generated_header(header: &PathBuf, builder: Builder) -> Result<(), Er
 
     // Overwrite the expectation with actual output.
     if env::var_os(OVERWRITE_ENV_VAR).is_some() {
-        let mut expectation_file = fs::File::create(&expectation)?;
+        let mut expectation_file = fs::File::create(looked_at.last().unwrap())?;
         expectation_file.write_all(actual.as_bytes())?;
     }
 
