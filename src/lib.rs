@@ -1743,8 +1743,7 @@ fn ensure_libclang_is_loaded() {
 }
 
 #[cfg(not(feature = "runtime"))]
-fn ensure_libclang_is_loaded() {
-}
+fn ensure_libclang_is_loaded() {}
 
 /// Generated Rust bindings.
 #[derive(Debug)]
