@@ -9,6 +9,11 @@ cd "$(dirname "$0")/.."
 
 export RUST_BACKTRACE=1
 
+NO_DEFAULT_FEATURES=""
+if [ ! -z $BINDGEN_NO_DEFAULT_FEATURES ]; then
+  NO_DEFAULT_FEATURES=--no-default-features
+fi
+
 case "$BINDGEN_JOB" in
     "test")
         # Need rustfmt to compare the test expectations.
@@ -17,23 +22,13 @@ case "$BINDGEN_JOB" in
         rustup component add --toolchain nightly rustfmt
         RUSTFMT="$(rustup which rustfmt)"
         export RUSTFMT
-        cargo test "$BINDGEN_PROFILE" --features "$BINDGEN_FEATURES"
+        cargo test "$BINDGEN_PROFILE" $NO_DEFAULT_FEATURES --features "$BINDGEN_FEATURES"
         ./ci/assert-no-diff.sh
         ;;
 
     "integration")
         cd ./bindgen-integration
-        cargo test "$BINDGEN_PROFILE" --features "$BINDGEN_FEATURES"
-        ;;
-
-    "nofeatures")
-        rustup update nightly
-        rustup component add rustfmt
-        rustup component add --toolchain nightly rustfmt
-        RUSTFMT="$(rustup which rustfmt)"
-        export RUSTFMT
-        cargo test "$BINDGEN_PROFILE" --no-default-features
-        ./ci/assert-no-diff.sh
+        cargo test "$BINDGEN_PROFILE" $NO_DEFAULT_FEATURES --features "$BINDGEN_FEATURES"
         ;;
 
     "expectations")
