@@ -7,7 +7,7 @@ keywords = ["bindings", "ffi", "code-generation"]
 license = "BSD-3-Clause"
 name = "bindgen"
 readme = "README.md"
-version = "0.19.1"
+version = "0.19.2"
 repository = "https://github.com/Yamakaky/rust-bindgen"
 
 [[bin]]
@@ -24,7 +24,7 @@ libc = "~0.2.11"
 log = "~0.3.6"
 # only for main, see https://github.com/rust-lang/cargo/issues/1982
 rustc-serialize = "~0.3.19"
-syntex_syntax = "~0.38.0"
+syntex_syntax = "~0.40.0"
 cexpr = "0.2.0"
 
 [dependencies.clippy]
