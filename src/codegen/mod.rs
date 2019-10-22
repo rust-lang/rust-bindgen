@@ -703,7 +703,8 @@ impl CodeGenerator for Type {
 
                 let mut outer_params = item.used_template_params(ctx);
 
-                let inner_rust_type = if item.is_opaque(ctx, &()) {
+                let is_opaque = item.is_opaque(ctx, &());
+                let inner_rust_type = if is_opaque {
                     outer_params = vec![];
                     self.to_opaque(ctx, item)
                 } else {
@@ -756,6 +757,7 @@ impl CodeGenerator for Type {
                     'A'..='Z' | 'a'..='z' | '0'..='9' | ':' | '_' | ' ' => true,
                     _ => false,
                 }) && outer_params.is_empty() &&
+                    !is_opaque &&
                     inner_item.expect_type().canonical_type(ctx).is_enum()
                 {
                     tokens.append_all(quote! {
