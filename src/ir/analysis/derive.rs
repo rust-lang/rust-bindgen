@@ -454,6 +454,7 @@ impl DeriveTrait {
     fn not_by_name(&self, ctx: &BindgenContext, item: &Item) -> bool {
         match self {
             DeriveTrait::Copy => ctx.no_copy_by_name(item),
+            DeriveTrait::Default => ctx.no_default_by_name(item),
             DeriveTrait::Hash => ctx.no_hash_by_name(item),
             DeriveTrait::PartialEqOrPartialOrd => {
                 ctx.no_partialeq_by_name(item)

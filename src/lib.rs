@@ -648,6 +648,16 @@ impl Builder {
             })
             .count();
 
+        self.options
+            .no_default_types
+            .get_items()
+            .iter()
+            .map(|item| {
+                output_vector.push("--no-default".into());
+                output_vector.push(item.to_owned());
+            })
+            .count();
+
         output_vector
     }
 
@@ -1507,6 +1517,13 @@ impl Builder {
         self.options.wasm_import_module_name = Some(import_name.into());
         self
     }
+
+    /// Don't derive `Default` for a given type. Regular
+    /// expressions are supported.
+    pub fn no_default<T: Into<String>>(mut self, arg: T) -> Builder {
+        self.options.no_default_types.insert(arg.into());
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -1769,6 +1786,9 @@ struct BindgenOptions {
 
     /// Wasm import module name.
     wasm_import_module_name: Option<String>,
+
+    /// The set of types that we should not derive `Default` for.
+    no_default_types: RegexSet,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -1798,6 +1818,7 @@ impl BindgenOptions {
             &mut self.no_partialeq_types,
             &mut self.no_copy_types,
             &mut self.no_hash_types,
+            &mut self.no_default_types,
         ];
         let record_matches = self.record_matches;
         for regex_set in &mut regex_sets {
@@ -1895,6 +1916,7 @@ impl Default for BindgenOptions {
             no_hash_types: Default::default(),
             array_pointers_in_arguments: false,
             wasm_import_module_name: None,
+            no_default_types: Default::default(),
         }
     }
 }

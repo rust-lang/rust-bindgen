@@ -438,7 +438,14 @@ where
                 .long("wasm-import-module-name")
                 .value_name("name")
                 .takes_value(true)
-                .help("The name to be used in a #[link(wasm_import_module = ...)] statement")
+                .help("The name to be used in a #[link(wasm_import_module = ...)] statement"),
+            Arg::with_name("no-default")
+                .long("no-default")
+                .help("Avoids deriving Default for types matching <regex>.")
+                .value_name("regex")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
         ]) // .args()
         .get_matches_from(args);
 
@@ -810,6 +817,12 @@ where
     if let Some(no_hash) = matches.values_of("no-hash") {
         for regex in no_hash {
             builder = builder.no_hash(regex);
+        }
+    }
+
+    if let Some(no_default) = matches.values_of("no-default") {
+        for regex in no_default {
+            builder = builder.no_default(regex);
         }
     }
 

@@ -2644,6 +2644,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         let name = item.path_for_whitelisting(self)[1..].join("::");
         self.options().no_hash_types.matches(&name)
     }
+
+    /// Check if `--no-default` flag is enabled for this item.
+    pub fn no_default_by_name(&self, item: &Item) -> bool {
+        let name = item.path_for_whitelisting(self)[1..].join("::");
+        self.options().no_default_types.matches(&name)
+    }
 }
 
 /// A builder struct for configuring item resolution options.
