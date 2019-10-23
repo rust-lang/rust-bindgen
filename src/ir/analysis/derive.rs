@@ -140,10 +140,10 @@ impl<'ctx> CannotDerive<'ctx> {
     fn constrain_type(&mut self, item: &Item, ty: &Type) -> CanDerive {
         if !self.ctx.whitelisted_items().contains(&item.id()) {
             trace!(
-                "    cannot derive {} for blacklisted type",
+                "    cannot derive {} for blacklisted type, but it can be implemented",
                 self.derive_trait
             );
-            return CanDerive::No;
+            return CanDerive::Manually;
         }
 
         if self.derive_trait.not_by_name(self.ctx, &item) {
@@ -156,15 +156,18 @@ impl<'ctx> CannotDerive<'ctx> {
 
         trace!("ty: {:?}", ty);
         if item.is_opaque(self.ctx, &()) {
-            if !self.derive_trait.can_derive_union() &&
-                ty.is_union() &&
+            if ty.is_union() &&
                 self.ctx.options().rust_features().untagged_union
             {
-                trace!(
-                    "    cannot derive {} for Rust unions",
-                    self.derive_trait
-                );
-                return CanDerive::No;
+                let can_derive = self.derive_trait.can_derive_union();
+                if can_derive != CanDerive::Yes {
+                    trace!(
+                        "    cannot derive {} for Rust unions ({:?})",
+                        self.derive_trait,
+                        can_derive,
+                    );
+                    return can_derive;
+                }
             }
 
             let layout_can_derive =
@@ -179,7 +182,13 @@ impl<'ctx> CannotDerive<'ctx> {
                         self.derive_trait
                     );
                 }
-                _ => {
+                CanDerive::Manually => {
+                    trace!(
+                        "    we cannot derive {} for the layout, but it can be implemented",
+                        self.derive_trait
+                    );
+                }
+                CanDerive::No => {
                     trace!(
                         "    we cannot derive {} for the layout",
                         self.derive_trait
@@ -226,11 +235,12 @@ impl<'ctx> CannotDerive<'ctx> {
                 if inner_type != CanDerive::Yes {
                     trace!(
                         "    arrays of T for which we cannot derive {} \
-                         also cannot derive {}",
+                         also cannot derive {}, ({:?})",
                         self.derive_trait,
-                        self.derive_trait
+                        self.derive_trait,
+                        inner_type
                     );
-                    return CanDerive::No;
+                    return inner_type;
                 }
 
                 if len == 0 && !self.derive_trait.can_derive_incomplete_array()
@@ -308,62 +318,74 @@ impl<'ctx> CannotDerive<'ctx> {
                 }
 
                 if info.kind() == CompKind::Union {
-                    if self.derive_trait.can_derive_union() {
-                        if self.ctx.options().rust_features().untagged_union &&
-                           // https://github.com/rust-lang/rust/issues/36640
-                           (!info.self_template_params(self.ctx).is_empty() ||
-                            !item.all_template_params(self.ctx).is_empty())
-                        {
-                            trace!(
-                                "    cannot derive {} for Rust union because issue 36640", self.derive_trait
-                            );
-                            return CanDerive::No;
+                    match self.derive_trait.can_derive_union() {
+                        CanDerive::Yes => {
+                            if self.ctx.options().rust_features().untagged_union &&
+                               // https://github.com/rust-lang/rust/issues/36640
+                               (!info.self_template_params(self.ctx).is_empty() ||
+                                !item.all_template_params(self.ctx).is_empty())
+                            {
+                                trace!(
+                                    "    cannot derive {} for Rust union because issue 36640", self.derive_trait
+                                );
+                                return CanDerive::No;
+                            }
+                            // fall through to be same as non-union handling
                         }
-                    // fall through to be same as non-union handling
-                    } else {
-                        if self.ctx.options().rust_features().untagged_union {
-                            trace!(
-                                "    cannot derive {} for Rust unions",
-                                self.derive_trait
-                            );
-                            return CanDerive::No;
-                        }
+                        trait_can_derive => {
+                            if self.ctx.options().rust_features().untagged_union
+                            {
+                                trace!(
+                                        "    cannot derive {} for Rust unions ({:?})",
+                                        self.derive_trait,
+                                        trait_can_derive,
+                                        );
+                                return trait_can_derive;
+                            }
 
-                        let layout_can_derive =
-                            ty.layout(self.ctx).map_or(CanDerive::Yes, |l| {
-                                l.opaque()
-                                    .array_size_within_derive_limit(self.ctx)
-                            });
-                        match layout_can_derive {
-                            CanDerive::Yes => {
-                                trace!(
-                                    "    union layout can trivially derive {}",
-                                    self.derive_trait
-                                );
-                            }
-                            _ => {
-                                trace!(
-                                    "    union layout cannot derive {}",
-                                    self.derive_trait
-                                );
-                            }
-                        };
-                        return layout_can_derive;
+                            let layout_can_derive = ty.layout(self.ctx).map_or(
+                                CanDerive::Yes,
+                                |l| {
+                                    l.opaque().array_size_within_derive_limit(
+                                        self.ctx,
+                                    )
+                                },
+                            );
+                            match layout_can_derive {
+                                CanDerive::Yes => {
+                                    trace!(
+                                        "    union layout can trivially derive {}",
+                                        self.derive_trait
+                                    );
+                                }
+                                _ => {
+                                    trace!(
+                                        "    union layout cannot derive {}, ({:?})",
+                                        self.derive_trait,
+                                        layout_can_derive,
+                                    );
+                                }
+                            };
+                            return layout_can_derive;
+                        }
                     }
                 }
 
-                if !self.derive_trait.can_derive_compound_with_vtable() &&
-                    item.has_vtable(self.ctx)
-                {
-                    trace!(
-                        "    cannot derive {} for comp with vtable",
-                        self.derive_trait
-                    );
-                    return CanDerive::No;
+                if item.has_vtable(self.ctx) {
+                    let can_derive =
+                        self.derive_trait.can_derive_compound_with_vtable();
+                    if can_derive != CanDerive::Yes {
+                        trace!(
+                            "    cannot derive {} for comp with vtable ({:?})",
+                            self.derive_trait,
+                            can_derive,
+                        );
+                        return can_derive;
+                    }
                 }
 
                 let pred = self.derive_trait.consider_edge_comp();
-                return self.constrain_join(item, pred);
+                self.constrain_join(item, pred)
             }
 
             TypeKind::ResolvedTypeRef(..) |
@@ -476,10 +498,11 @@ impl DeriveTrait {
         }
     }
 
-    fn can_derive_union(&self) -> bool {
+    fn can_derive_union(&self) -> CanDerive {
         match self {
-            DeriveTrait::Copy => true,
-            _ => false,
+            DeriveTrait::Copy => CanDerive::Yes,
+            DeriveTrait::Default => CanDerive::Manually,
+            _ => CanDerive::No,
         }
     }
 
@@ -490,10 +513,10 @@ impl DeriveTrait {
         }
     }
 
-    fn can_derive_compound_with_vtable(&self) -> bool {
+    fn can_derive_compound_with_vtable(&self) -> CanDerive {
         match self {
-            DeriveTrait::Default => false,
-            _ => true,
+            DeriveTrait::Default => CanDerive::Manually,
+            _ => CanDerive::Yes,
         }
     }
 
@@ -549,8 +572,8 @@ impl DeriveTrait {
     fn can_derive_pointer(&self) -> CanDerive {
         match self {
             DeriveTrait::Default => {
-                trace!("    pointer cannot derive Default");
-                CanDerive::No
+                trace!("    pointer cannot derive Default, but it may be implemented");
+                CanDerive::Manually
             }
             _ => {
                 trace!("    pointer can derive {}", self);
@@ -570,8 +593,8 @@ impl DeriveTrait {
             (DeriveTrait::Default, TypeKind::ObjCInterface(..)) |
             (DeriveTrait::Default, TypeKind::ObjCId) |
             (DeriveTrait::Default, TypeKind::ObjCSel) => {
-                trace!("    types that always cannot derive Default");
-                CanDerive::No
+                trace!("    types that always cannot derive Default, but may implement it manually");
+                CanDerive::Manually
             }
             (DeriveTrait::Default, TypeKind::UnresolvedTypeRef(..)) => {
                 unreachable!(

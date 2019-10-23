@@ -284,6 +284,13 @@ impl Default for rte_mempool_ops_table {
         unsafe { ::std::mem::zeroed() }
     }
 }
+impl ::std::cmp::PartialEq for rte_mempool_ops_table {
+    fn eq(&self, other: &rte_mempool_ops_table) -> bool {
+        self.sl == other.sl &&
+            self.num_ops == other.num_ops &&
+            self.ops == other.ops
+    }
+}
 /// Structure to hold malloc heap
 #[repr(C)]
 #[repr(align(64))]

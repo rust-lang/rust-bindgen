@@ -1790,8 +1790,10 @@ impl CodeGenerator for CompInfo {
         if item.can_derive_default(ctx) {
             derives.push("Default");
         } else {
-            needs_default_impl =
-                ctx.options().derive_default && !self.is_forward_declaration();
+            needs_default_impl = ctx.options().derive_default &&
+                !self.is_forward_declaration() &&
+                ctx.lookup_can_derive_default(item.id()) ==
+                    CanDerive::Manually;
         }
 
         let all_template_params = item.all_template_params(ctx);
