@@ -4,12 +4,12 @@ First we need to declare a build-time dependency on `bindgen` by adding it to
 the `[build-dependencies]` section of our crate's `Cargo.toml` file.
 
 Please always use the latest version of `bindgen`, it has the most fixes and
-best compatibility. At the time of writing the latest bindgen is `0.50.0`, but
+best compatibility. At the time of writing the latest bindgen is `0.51.1`, but
 you can always check [the bindgen page of
 crates.io](https://crates.io/crates/bindgen) to verify the latest version if
 you're unsure.
 
 ```toml
 [build-dependencies]
-bindgen = "0.50"
+bindgen = "0.51.1"
 ```
