@@ -749,6 +749,16 @@ impl CodeGenerator for Type {
                     quote! {}
                 };
 
+                let alias_style = if ctx.options().type_alias.matches(&name) {
+                    AliasVariation::TypeAlias
+                } else if ctx.options().new_type_alias.matches(&name) {
+                    AliasVariation::NewType
+                } else if ctx.options().new_type_alias_deref.matches(&name) {
+                    AliasVariation::NewTypeDeref
+                } else {
+                    ctx.options().default_alias_style
+                };
+
                 // We prefer using `pub use` over `pub type` because of:
                 // https://github.com/rust-lang/rust/issues/26264
                 if inner_rust_type.to_string().chars().all(|c| match c {
@@ -758,6 +768,7 @@ impl CodeGenerator for Type {
                     _ => false,
                 }) && outer_params.is_empty() &&
                     !is_opaque &&
+                    alias_style == AliasVariation::TypeAlias &&
                     inner_item.expect_type().canonical_type(ctx).is_enum()
                 {
                     tokens.append_all(quote! {
@@ -772,8 +783,21 @@ impl CodeGenerator for Type {
                     return;
                 }
 
-                tokens.append_all(quote! {
-                    pub type #rust_name
+                tokens.append_all(match alias_style {
+                    AliasVariation::TypeAlias => quote! {
+                        pub type #rust_name
+                    },
+                    AliasVariation::NewType | AliasVariation::NewTypeDeref => {
+                        assert!(
+                            ctx.options().rust_features().repr_transparent,
+                            "repr_transparent feature is required to use {:?}",
+                            alias_style
+                        );
+                        quote! {
+                            #[repr(transparent)]
+                            pub struct #rust_name
+                        }
+                    }
                 });
 
                 let params: Vec<_> = outer_params
@@ -806,9 +830,35 @@ impl CodeGenerator for Type {
                     });
                 }
 
-                tokens.append_all(quote! {
-                    = #inner_rust_type ;
+                tokens.append_all(match alias_style {
+                    AliasVariation::TypeAlias => quote! {
+                        = #inner_rust_type ;
+                    },
+                    AliasVariation::NewType | AliasVariation::NewTypeDeref => {
+                        quote! {
+                            (pub #inner_rust_type) ;
+                        }
+                    }
                 });
+
+                if alias_style == AliasVariation::NewTypeDeref {
+                    let prefix = ctx.trait_prefix();
+                    tokens.append_all(quote! {
+                        impl ::#prefix::ops::Deref for #rust_name {
+                            type Target = #inner_rust_type;
+                            #[inline]
+                            fn deref(&self) -> &Self::Target {
+                                &self.0
+                            }
+                        }
+                        impl ::#prefix::ops::DerefMut for #rust_name {
+                            #[inline]
+                            fn deref_mut(&mut self) -> &mut Self::Target {
+                                &mut self.0
+                            }
+                        }
+                    });
+                }
 
                 result.push(tokens);
             }
@@ -2848,6 +2898,54 @@ impl CodeGenerator for Enum {
 
         let item = builder.build(ctx, enum_rust_ty, result);
         result.push(item);
+    }
+}
+
+/// Enum for how aliases should be translated.
+#[derive(Copy, Clone, PartialEq, Debug)]
+pub enum AliasVariation {
+    /// Convert to regular Rust alias
+    TypeAlias,
+    /// Create a new type by wrapping the old type in a struct and using #[repr(transparent)]
+    NewType,
+    /// Same as NewStruct but also impl Deref to be able to use the methods of the wrapped type
+    NewTypeDeref,
+}
+
+impl AliasVariation {
+    /// Convert an `AliasVariation` to its str representation.
+    pub fn as_str(&self) -> &str {
+        match self {
+            AliasVariation::TypeAlias => "type_alias",
+            AliasVariation::NewType => "new_type",
+            AliasVariation::NewTypeDeref => "new_type_deref",
+        }
+    }
+}
+
+impl Default for AliasVariation {
+    fn default() -> AliasVariation {
+        AliasVariation::TypeAlias
+    }
+}
+
+impl std::str::FromStr for AliasVariation {
+    type Err = std::io::Error;
+
+    /// Create an `AliasVariation` from a string.
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "type_alias" => Ok(AliasVariation::TypeAlias),
+            "new_type" => Ok(AliasVariation::NewType),
+            "new_type_deref" => Ok(AliasVariation::NewTypeDeref),
+            _ => Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                concat!(
+                    "Got an invalid AliasVariation. Accepted values ",
+                    "are 'type_alias', 'new_type', and 'new_type_deref'"
+                ),
+            )),
+        }
     }
 }
 

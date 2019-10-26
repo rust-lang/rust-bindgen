@@ -83,7 +83,7 @@ doc_mod!(ir, ir_docs);
 doc_mod!(parse, parse_docs);
 doc_mod!(regex_set, regex_set_docs);
 
-pub use codegen::EnumVariation;
+pub use codegen::{AliasVariation, EnumVariation};
 use features::RustFeatures;
 pub use features::{RustTarget, LATEST_STABLE_RUST, RUST_TARGET_STRINGS};
 use ir::context::{BindgenContext, ItemId};
@@ -288,6 +288,42 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--constified-enum".into());
+                output_vector.push(item.to_owned());
+            })
+            .count();
+
+        if self.options.default_alias_style != Default::default() {
+            output_vector.push("--default-alias-style=".into());
+            output_vector
+                .push(self.options.default_alias_style.as_str().into());
+        }
+
+        self.options
+            .type_alias
+            .get_items()
+            .iter()
+            .map(|item| {
+                output_vector.push("--type-alias".into());
+                output_vector.push(item.to_owned());
+            })
+            .count();
+
+        self.options
+            .new_type_alias
+            .get_items()
+            .iter()
+            .map(|item| {
+                output_vector.push("--new-type-alias".into());
+                output_vector.push(item.to_owned());
+            })
+            .count();
+
+        self.options
+            .new_type_alias_deref
+            .get_items()
+            .iter()
+            .map(|item| {
+                output_vector.push("--new-type-alias-deref".into());
                 output_vector.push(item.to_owned());
             })
             .count();
@@ -873,6 +909,45 @@ impl Builder {
         self
     }
 
+    /// Set the default style of code to generate for typedefs
+    pub fn default_alias_style(
+        mut self,
+        arg: codegen::AliasVariation,
+    ) -> Builder {
+        self.options.default_alias_style = arg;
+        self
+    }
+
+    /// Mark the given typedef alias (or set of aliases, if using a pattern) to
+    /// use regular Rust type aliasing.
+    ///
+    /// This is the default behavior and should be used if `default_alias_style`
+    /// was set to NewType or NewTypeDeref and you want to override it for a
+    /// set of typedefs.
+    pub fn type_alias<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.type_alias.insert(arg);
+        self
+    }
+
+    /// Mark the given typedef alias (or set of aliases, if using a pattern) to
+    /// be generated as a new type by having the aliased type be wrapped in a
+    /// #[repr(transparent)] struct.
+    ///
+    /// Used to enforce stricter type checking.
+    pub fn new_type_alias<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.new_type_alias.insert(arg);
+        self
+    }
+
+    /// Mark the given typedef alias (or set of aliases, if using a pattern) to
+    /// be generated as a new type by having the aliased type be wrapped in a
+    /// #[repr(transparent)] struct and also have an automatically generated
+    /// impl's of `Deref` and `DerefMut` to their aliased type.
+    pub fn new_type_alias_deref<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.new_type_alias_deref.insert(arg);
+        self
+    }
+
     /// Add a string to prepend to the generated bindings. The string is passed
     /// through without any modification.
     pub fn raw_line<T: Into<String>>(mut self, arg: T) -> Self {
@@ -1443,6 +1518,19 @@ struct BindgenOptions {
     /// The enum patterns to mark an enum as a set of constants.
     constified_enums: RegexSet,
 
+    /// The default style of code to generate for typedefs.
+    default_alias_style: codegen::AliasVariation,
+
+    /// Typedef patterns that will use regular type aliasing.
+    type_alias: RegexSet,
+
+    /// Typedef patterns that will be aliased by creating a new struct.
+    new_type_alias: RegexSet,
+
+    /// Typedef patterns that will be wrapped in a new struct and have
+    /// Deref and Deref to their aliased type.
+    new_type_alias_deref: RegexSet,
+
     /// Whether we should generate builtins or not.
     builtins: bool,
 
@@ -1651,6 +1739,9 @@ impl BindgenOptions {
             &mut self.constified_enum_modules,
             &mut self.rustified_enums,
             &mut self.rustified_non_exhaustive_enums,
+            &mut self.type_alias,
+            &mut self.new_type_alias,
+            &mut self.new_type_alias_deref,
             &mut self.no_partialeq_types,
             &mut self.no_copy_types,
             &mut self.no_hash_types,
@@ -1696,6 +1787,10 @@ impl Default for BindgenOptions {
             rustified_non_exhaustive_enums: Default::default(),
             constified_enums: Default::default(),
             constified_enum_modules: Default::default(),
+            default_alias_style: Default::default(),
+            type_alias: Default::default(),
+            new_type_alias: Default::default(),
+            new_type_alias_deref: Default::default(),
             builtins: false,
             emit_ast: false,
             emit_ir: false,
