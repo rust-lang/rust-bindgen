@@ -1,5 +1,5 @@
 use bindgen::{
-    builder, Builder, CodegenConfig, EnumVariation, RustTarget,
+    builder, AliasVariation, Builder, CodegenConfig, EnumVariation, RustTarget,
     RUST_TARGET_STRINGS,
 };
 use clap::{App, Arg};
@@ -74,6 +74,47 @@ where
                 .help(
                     "Mark any enum whose name matches <regex> as a module of \
                      constants.",
+                )
+                .value_name("regex")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
+            Arg::with_name("default-alias-style")
+                .long("default-alias-style")
+                .help("The default style of code used to generate typedefs.")
+                .value_name("variant")
+                .default_value("type_alias")
+                .possible_values(&[
+                    "type_alias",
+                    "new_type",
+                    "new_type_deref",
+                ])
+                .multiple(false),
+            Arg::with_name("normal-alias")
+                .long("normal-alias")
+                .help(
+                    "Mark any typedef alias whose name matches <regex> to use \
+                     normal type aliasing.",
+                )
+                .value_name("regex")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
+             Arg::with_name("new-type-alias")
+                .long("new-type-alias")
+                .help(
+                    "Mark any typedef alias whose name matches <regex> to have \
+                     a new type generated for it.",
+                )
+                .value_name("regex")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
+             Arg::with_name("new-type-alias-deref")
+                .long("new-type-alias-deref")
+                .help(
+                    "Mark any typedef alias whose name matches <regex> to have \
+                     a new type with Deref and DerefMut to the inner type.",
                 )
                 .value_name("regex")
                 .takes_value(true)
@@ -436,6 +477,30 @@ where
             builder = builder.constified_enum_module(regex);
         }
     }
+
+    if let Some(variant) = matches.value_of("default-alias-style") {
+        builder =
+            builder.default_alias_style(AliasVariation::from_str(variant)?);
+    }
+
+    if let Some(type_alias) = matches.values_of("normal-alias") {
+        for regex in type_alias {
+            builder = builder.type_alias(regex);
+        }
+    }
+
+    if let Some(new_type) = matches.values_of("new-type-alias") {
+        for regex in new_type {
+            builder = builder.new_type_alias(regex);
+        }
+    }
+
+    if let Some(new_type_deref) = matches.values_of("new-type-alias-deref") {
+        for regex in new_type_deref {
+            builder = builder.new_type_alias_deref(regex);
+        }
+    }
+
     if let Some(hidden_types) = matches.values_of("blacklist-type") {
         for ty in hidden_types {
             builder = builder.blacklist_type(ty);
