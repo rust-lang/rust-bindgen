@@ -91,24 +91,36 @@ macro_rules! rust_target_base {
             /// Rust stable 1.1
             => Stable_1_1 => 1.1;
             /// Rust stable 1.19
+            ///  * Untagged unions ([RFC 1444](https://github.com/rust-lang/rfcs/blob/master/text/1444-union.md))
             => Stable_1_19 => 1.19;
             /// Rust stable 1.20
+            ///  * Associated constants ([PR](https://github.com/rust-lang/rust/pull/42809))
             => Stable_1_20 => 1.20;
             /// Rust stable 1.21
+            ///  * Builtin impls for `Clone` ([PR](https://github.com/rust-lang/rust/pull/43690))
             => Stable_1_21 => 1.21;
             /// Rust stable 1.25
+            ///  * `repr(align)` ([PR](https://github.com/rust-lang/rust/pull/47006))
             => Stable_1_25 => 1.25;
             /// Rust stable 1.26
+            ///  * [i128 / u128 support](https://doc.rust-lang.org/std/primitive.i128.html)
             => Stable_1_26 => 1.26;
             /// Rust stable 1.27
+            ///  * `must_use` attribute on functions ([PR](https://github.com/rust-lang/rust/pull/48925))
             => Stable_1_27 => 1.27;
             /// Rust stable 1.28
+            ///  * `repr(transparent)` ([PR](https://github.com/rust-lang/rust/pull/51562))
             => Stable_1_28 => 1.28;
             /// Rust stable 1.30
+            ///  * `const fn` support for limited cases ([PR](https://github.com/rust-lang/rust/pull/54835/)
+            /// *  [c_void available in core](https://doc.rust-lang.org/core/ffi/enum.c_void.html)
             => Stable_1_30 => 1.30;
             /// Rust stable 1.33
+            ///  * repr(packed(N)) ([PR](https://github.com/rust-lang/rust/pull/57049))
             => Stable_1_33 => 1.33;
             /// Nightly rust
+            ///  * `thiscall` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/42202))
+            ///  * `non_exhaustive` enums/structs ([Tracking issue](https://github.com/rust-lang/rust/issues/44109))
             => Nightly => nightly;
         );
     }
@@ -129,7 +141,8 @@ macro_rules! rust_feature_def {
     ) => {
         /// Features supported by a rust target
         #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
-        pub struct RustFeatures {
+        #[allow(missing_docs)] // Documentation should go into the relevant variants.
+        pub(crate) struct RustFeatures {
             $( $(
                 $(
                     #[$attr]
@@ -167,50 +180,40 @@ macro_rules! rust_feature_def {
     }
 }
 
+// NOTE(emilio): When adding or removing features here, make sure to update the
+// documentation for the relevant variant in the rust_target_base macro
+// definition.
 rust_feature_def!(
     Stable_1_19 {
-        /// Untagged unions ([RFC 1444](https://github.com/rust-lang/rfcs/blob/master/text/1444-union.md))
         => untagged_union;
     }
     Stable_1_20 {
-        /// associated constants ([PR](https://github.com/rust-lang/rust/pull/42809))
         => associated_const;
     }
     Stable_1_21 {
-        /// builtin impls for `Clone` ([PR](https://github.com/rust-lang/rust/pull/43690))
         => builtin_clone_impls;
     }
     Stable_1_25 {
-        /// repr(align) ([PR](https://github.com/rust-lang/rust/pull/47006))
         => repr_align;
     }
     Stable_1_26 {
-        /// [i128 / u128 support](https://doc.rust-lang.org/std/primitive.i128.html)
         => i128_and_u128;
     }
     Stable_1_27 {
-        /// `must_use` attribute on functions ([PR](https://github.com/rust-lang/rust/pull/48925))
         => must_use_function;
     }
     Stable_1_28 {
-        /// repr(transparent) ([PR](https://github.com/rust-lang/rust/pull/51562))
         => repr_transparent;
     }
     Stable_1_30 {
-        /// `const fn` support for limited cases
-        /// ([PR](https://github.com/rust-lang/rust/pull/54835/)
         => min_const_fn;
-        /// [c_void available in core](https://doc.rust-lang.org/core/ffi/enum.c_void.html)
         => core_ffi_c_void;
     }
     Stable_1_33 {
-        /// repr(packed(N)) ([PR](https://github.com/rust-lang/rust/pull/57049))
         => repr_packed_n;
     }
     Nightly {
-        /// `thiscall` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/42202))
         => thiscall_abi;
-        /// `non_exhaustive` enums/structs ([Tracking issue](https://github.com/rust-lang/rust/issues/44109))
         => non_exhaustive;
     }
 );
