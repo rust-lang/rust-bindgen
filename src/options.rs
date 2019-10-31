@@ -234,6 +234,14 @@ where
                 )
                 .value_name("prefix")
                 .takes_value(true),
+            Arg::with_name("anon-fields-prefix")
+                .long("anon-fields-prefix")
+                .help(
+                    "Use the given prefix for the anon fields instead of \
+                     __bindgen_anon_.",
+                )
+                .value_name("prefix")
+                .takes_value(true),
             Arg::with_name("time-phases")
                 .long("time-phases")
                 .help("Time the different bindgen phases and print to stderr"),
@@ -632,6 +640,10 @@ where
 
     if let Some(prefix) = matches.value_of("ctypes-prefix") {
         builder = builder.ctypes_prefix(prefix);
+    }
+
+    if let Some(prefix) = matches.value_of("anon-fields-prefix") {
+        builder = builder.anon_fields_prefix(prefix);
     }
 
     if let Some(what_to_generate) = matches.value_of("generate") {
