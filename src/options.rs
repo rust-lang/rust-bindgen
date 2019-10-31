@@ -234,6 +234,14 @@ where
                 )
                 .value_name("prefix")
                 .takes_value(true),
+            Arg::with_name("union-fields-prefix")
+                .long("union-fields-prefix")
+                .help(
+                    "Use the given prefix for union fields name instead of \
+                     __bindgen_anon_.",
+                )
+                .value_name("prefix")
+                .takes_value(true),
             Arg::with_name("time-phases")
                 .long("time-phases")
                 .help("Time the different bindgen phases and print to stderr"),

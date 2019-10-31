@@ -453,6 +453,11 @@ impl Builder {
             output_vector.push(prefix.clone());
         }
 
+        if let Some(ref prefix) = self.options.union_fields_prefix {
+            output_vector.push("--union-fields-prefix".into());
+            output_vector.push(prefix.clone());
+        }
+
         if self.options.emit_ast {
             output_vector.push("--emit-clang-ast".into());
         }
@@ -1325,6 +1330,12 @@ impl Builder {
         self
     }
 
+    /// Set prefix of the union type fields name.
+    pub fn union_fields_prefix<T: Into<String>>(mut self, prefix: T) -> Builder {
+        self.options.union_fields_prefix = Some(prefix.into());
+        self
+    }
+
     /// Allows configuring types in different situations, see the
     /// [`ParseCallbacks`](./callbacks/trait.ParseCallbacks.html) documentation.
     pub fn parse_callbacks(
@@ -1693,6 +1704,9 @@ struct BindgenOptions {
     /// An optional prefix for the "raw" types, like `c_int`, `c_void`...
     ctypes_prefix: Option<String>,
 
+    /// The prefix of the union fields name.
+    union_fields_prefix: Option<String>,
+
     /// Whether to time the bindgen phases.
     time_phases: bool,
 
@@ -1907,6 +1921,7 @@ impl Default for BindgenOptions {
             disable_nested_struct_naming: false,
             use_core: false,
             ctypes_prefix: None,
+            union_fields_prefix: None,
             namespaced_constants: true,
             msvc_mangling: false,
             convert_floats: true,
