@@ -808,8 +808,11 @@ impl CompFields {
                     }
 
                     anon_field_counter += 1;
+                    let default_prefix = "__bindgen_anon_".to_string();
+                    let prefix =
+                        ctx.options().union_fields_prefix.as_ref().unwrap_or(&default_prefix);
                     let generated_name =
-                        format!("__bindgen_anon_{}", anon_field_counter);
+                        format!("{}{}", prefix, anon_field_counter);
                     *name = Some(generated_name);
                 }
                 Field::Bitfields(ref mut bu) => {
