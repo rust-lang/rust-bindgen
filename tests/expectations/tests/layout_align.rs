@@ -124,12 +124,6 @@ impl<T> ::std::fmt::Debug for __IncompleteArrayField<T> {
         fmt.write_str("__IncompleteArrayField")
     }
 }
-impl<T> ::std::clone::Clone for __IncompleteArrayField<T> {
-    #[inline]
-    fn clone(&self) -> Self {
-        Self::new()
-    }
-}
 #[repr(C)]
 #[derive(Debug)]
 pub struct rte_kni_fifo {
