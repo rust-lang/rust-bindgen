@@ -3883,20 +3883,10 @@ mod utils {
             }
         };
 
-        let incomplete_array_clone_impl = quote! {
-            impl<T> ::#prefix::clone::Clone for __IncompleteArrayField<T> {
-                #[inline]
-                fn clone(&self) -> Self {
-                    Self::new()
-                }
-            }
-        };
-
         let items = vec![
             incomplete_array_decl,
             incomplete_array_impl,
             incomplete_array_debug_impl,
-            incomplete_array_clone_impl,
         ];
 
         let old_items = mem::replace(result, items);
