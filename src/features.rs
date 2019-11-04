@@ -118,6 +118,9 @@ macro_rules! rust_target_base {
             /// Rust stable 1.33
             ///  * repr(packed(N)) ([PR](https://github.com/rust-lang/rust/pull/57049))
             => Stable_1_33 => 1.33;
+            /// Rust stable 1.36
+            ///  * `MaybeUninit` instead of `mem::uninitialized()` ([PR](https://github.com/rust-lang/rust/pull/60445))
+            => Stable_1_36 => 1.36;
             /// Nightly rust
             ///  * `thiscall` calling convention ([Tracking issue](https://github.com/rust-lang/rust/issues/42202))
             ///  * `non_exhaustive` enums/structs ([Tracking issue](https://github.com/rust-lang/rust/issues/44109))
@@ -130,7 +133,7 @@ rust_target_base!(rust_target_def);
 rust_target_base!(rust_target_values_def);
 
 /// Latest stable release of Rust
-pub const LATEST_STABLE_RUST: RustTarget = RustTarget::Stable_1_33;
+pub const LATEST_STABLE_RUST: RustTarget = RustTarget::Stable_1_36;
 
 /// Create RustFeatures struct definition, new(), and a getter for each field
 macro_rules! rust_feature_def {
@@ -212,6 +215,9 @@ rust_feature_def!(
     Stable_1_33 {
         => repr_packed_n;
     }
+    Stable_1_36 {
+        => maybe_uninit;
+    }
     Nightly {
         => thiscall_abi;
         => non_exhaustive;
@@ -256,6 +262,7 @@ mod test {
                 f_nightly.untagged_union &&
                 f_nightly.associated_const &&
                 f_nightly.builtin_clone_impls &&
+                f_nightly.maybe_uninit &&
                 f_nightly.repr_align &&
                 f_nightly.thiscall_abi
         );
