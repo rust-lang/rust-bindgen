@@ -2156,13 +2156,26 @@ impl MethodCodegen for Method {
         // variable called `__bindgen_tmp` we're going to create.
         if self.is_constructor() {
             let prefix = ctx.trait_prefix();
-            let tmp_variable_decl = quote! {
-                let mut __bindgen_tmp = ::#prefix::mem::uninitialized()
+            let tmp_variable_decl = if ctx
+                .options()
+                .rust_features()
+                .maybe_uninit
+            {
+                exprs[0] = quote! {
+                    __bindgen_tmp.as_mut_ptr()
+                };
+                quote! {
+                    let mut __bindgen_tmp = ::#prefix::mem::MaybeUninit::uninit()
+                }
+            } else {
+                exprs[0] = quote! {
+                    &mut __bindgen_tmp
+                };
+                quote! {
+                    let mut __bindgen_tmp = ::#prefix::mem::uninitialized()
+                }
             };
             stmts.push(tmp_variable_decl);
-            exprs[0] = quote! {
-                &mut __bindgen_tmp
-            };
         } else if !self.is_static() {
             assert!(!exprs.is_empty());
             exprs[0] = quote! {
@@ -2177,9 +2190,15 @@ impl MethodCodegen for Method {
         stmts.push(call);
 
         if self.is_constructor() {
-            stmts.push(quote! {
-                __bindgen_tmp
-            });
+            stmts.push(if ctx.options().rust_features().maybe_uninit {
+                quote! {
+                    __bindgen_tmp.assume_init()
+                }
+            } else {
+                quote! {
+                    __bindgen_tmp
+                }
+            })
         }
 
         let block = quote! {
