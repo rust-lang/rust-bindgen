@@ -43,8 +43,8 @@ extern "C" {
 impl Usage {
     #[inline]
     pub unsafe fn new() -> Self {
-        let mut __bindgen_tmp = ::std::mem::uninitialized();
-        Usage_Usage(&mut __bindgen_tmp);
-        __bindgen_tmp
+        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+        Usage_Usage(__bindgen_tmp.as_mut_ptr());
+        __bindgen_tmp.assume_init()
     }
 }
