@@ -95,9 +95,9 @@ impl Opaque {
     }
     #[inline]
     pub unsafe fn new(pup: Pupper) -> Self {
-        let mut __bindgen_tmp = ::std::mem::uninitialized();
-        Opaque_Opaque(&mut __bindgen_tmp, pup);
-        __bindgen_tmp
+        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+        Opaque_Opaque(__bindgen_tmp.as_mut_ptr(), pup);
+        __bindgen_tmp.assume_init()
     }
 }
 extern "C" {

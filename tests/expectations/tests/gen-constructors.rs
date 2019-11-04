@@ -32,8 +32,8 @@ extern "C" {
 impl Foo {
     #[inline]
     pub unsafe fn new(a: ::std::os::raw::c_int) -> Self {
-        let mut __bindgen_tmp = ::std::mem::uninitialized();
-        Foo_Foo(&mut __bindgen_tmp, a);
-        __bindgen_tmp
+        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
+        Foo_Foo(__bindgen_tmp.as_mut_ptr(), a);
+        __bindgen_tmp.assume_init()
     }
 }
