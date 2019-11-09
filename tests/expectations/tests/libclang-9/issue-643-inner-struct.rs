@@ -16,12 +16,12 @@ impl<T> __IncompleteArrayField<T> {
         __IncompleteArrayField(::std::marker::PhantomData, [])
     }
     #[inline]
-    pub unsafe fn as_ptr(&self) -> *const T {
-        ::std::mem::transmute(self)
+    pub fn as_ptr(&self) -> *const T {
+        self as *const _ as *const T
     }
     #[inline]
-    pub unsafe fn as_mut_ptr(&mut self) -> *mut T {
-        ::std::mem::transmute(self)
+    pub fn as_mut_ptr(&mut self) -> *mut T {
+        self as *mut _ as *mut T
     }
     #[inline]
     pub unsafe fn as_slice(&self, len: usize) -> &[T] {
@@ -63,7 +63,10 @@ fn bindgen_test_layout_rte_ring_prod() {
         concat!("Alignment of ", stringify!(rte_ring_prod))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<rte_ring_prod>())).watermark as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_ring_prod>())).watermark as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -91,7 +94,10 @@ fn bindgen_test_layout_rte_ring_cons() {
         concat!("Alignment of ", stringify!(rte_ring_cons))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<rte_ring_cons>())).sc_dequeue as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_ring_cons>())).sc_dequeue as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -114,7 +120,9 @@ fn bindgen_test_layout_rte_ring() {
         concat!("Alignment of ", stringify!(rte_ring))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<rte_ring>())).memzone as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_ring>())).memzone as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -124,7 +132,9 @@ fn bindgen_test_layout_rte_ring() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<rte_ring>())).prod as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_ring>())).prod as *const _ as usize
+        },
         8usize,
         concat!(
             "Offset of field: ",
@@ -134,7 +144,9 @@ fn bindgen_test_layout_rte_ring() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<rte_ring>())).cons as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_ring>())).cons as *const _ as usize
+        },
         12usize,
         concat!(
             "Offset of field: ",
@@ -144,7 +156,9 @@ fn bindgen_test_layout_rte_ring() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<rte_ring>())).ring as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<rte_ring>())).ring as *const _ as usize
+        },
         16usize,
         concat!(
             "Offset of field: ",

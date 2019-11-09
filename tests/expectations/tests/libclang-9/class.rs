@@ -16,12 +16,12 @@ impl<T> __IncompleteArrayField<T> {
         __IncompleteArrayField(::std::marker::PhantomData, [])
     }
     #[inline]
-    pub unsafe fn as_ptr(&self) -> *const T {
-        ::std::mem::transmute(self)
+    pub fn as_ptr(&self) -> *const T {
+        self as *const _ as *const T
     }
     #[inline]
-    pub unsafe fn as_mut_ptr(&mut self) -> *mut T {
-        ::std::mem::transmute(self)
+    pub fn as_mut_ptr(&mut self) -> *mut T {
+        self as *mut _ as *mut T
     }
     #[inline]
     pub unsafe fn as_slice(&self, len: usize) -> &[T] {
@@ -95,7 +95,10 @@ fn bindgen_test_layout_C_with_zero_length_array() {
         concat!("Alignment of ", stringify!(C_with_zero_length_array))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<C_with_zero_length_array>())).a as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<C_with_zero_length_array>())).a as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -106,7 +109,8 @@ fn bindgen_test_layout_C_with_zero_length_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_zero_length_array>())).big_array as *const _ as usize
+            &(*(::std::ptr::null::<C_with_zero_length_array>())).big_array
+                as *const _ as usize
         },
         4usize,
         concat!(
@@ -118,8 +122,8 @@ fn bindgen_test_layout_C_with_zero_length_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_zero_length_array>())).zero_length_array as *const _
-                as usize
+            &(*(::std::ptr::null::<C_with_zero_length_array>()))
+                .zero_length_array as *const _ as usize
         },
         37usize,
         concat!(
@@ -154,7 +158,10 @@ fn bindgen_test_layout_C_with_zero_length_array_2() {
         concat!("Alignment of ", stringify!(C_with_zero_length_array_2))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<C_with_zero_length_array_2>())).a as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<C_with_zero_length_array_2>())).a as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -165,8 +172,8 @@ fn bindgen_test_layout_C_with_zero_length_array_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_zero_length_array_2>())).zero_length_array as *const _
-                as usize
+            &(*(::std::ptr::null::<C_with_zero_length_array_2>()))
+                .zero_length_array as *const _ as usize
         },
         4usize,
         concat!(
@@ -196,7 +203,10 @@ fn bindgen_test_layout_C_with_incomplete_array() {
         concat!("Alignment of ", stringify!(C_with_incomplete_array))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<C_with_incomplete_array>())).a as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<C_with_incomplete_array>())).a as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -207,7 +217,8 @@ fn bindgen_test_layout_C_with_incomplete_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_incomplete_array>())).big_array as *const _ as usize
+            &(*(::std::ptr::null::<C_with_incomplete_array>())).big_array
+                as *const _ as usize
         },
         4usize,
         concat!(
@@ -219,8 +230,8 @@ fn bindgen_test_layout_C_with_incomplete_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_incomplete_array>())).incomplete_array as *const _
-                as usize
+            &(*(::std::ptr::null::<C_with_incomplete_array>())).incomplete_array
+                as *const _ as usize
         },
         37usize,
         concat!(
@@ -255,7 +266,10 @@ fn bindgen_test_layout_C_with_incomplete_array_2() {
         concat!("Alignment of ", stringify!(C_with_incomplete_array_2))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<C_with_incomplete_array_2>())).a as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<C_with_incomplete_array_2>())).a as *const _
+                as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -266,8 +280,8 @@ fn bindgen_test_layout_C_with_incomplete_array_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_incomplete_array_2>())).incomplete_array as *const _
-                as usize
+            &(*(::std::ptr::null::<C_with_incomplete_array_2>()))
+                .incomplete_array as *const _ as usize
         },
         4usize,
         concat!(
@@ -305,8 +319,10 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_zero_length_array_and_incomplete_array>())).a as *const _
-                as usize
+            &(*(::std::ptr::null::<
+                C_with_zero_length_array_and_incomplete_array,
+            >()))
+            .a as *const _ as usize
         },
         0usize,
         concat!(
@@ -318,8 +334,10 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_zero_length_array_and_incomplete_array>())).big_array
-                as *const _ as usize
+            &(*(::std::ptr::null::<
+                C_with_zero_length_array_and_incomplete_array,
+            >()))
+            .big_array as *const _ as usize
         },
         4usize,
         concat!(
@@ -331,8 +349,10 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_zero_length_array_and_incomplete_array>()))
-                .zero_length_array as *const _ as usize
+            &(*(::std::ptr::null::<
+                C_with_zero_length_array_and_incomplete_array,
+            >()))
+            .zero_length_array as *const _ as usize
         },
         37usize,
         concat!(
@@ -344,8 +364,10 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_zero_length_array_and_incomplete_array>()))
-                .incomplete_array as *const _ as usize
+            &(*(::std::ptr::null::<
+                C_with_zero_length_array_and_incomplete_array,
+            >()))
+            .incomplete_array as *const _ as usize
         },
         37usize,
         concat!(
@@ -371,7 +393,8 @@ pub struct C_with_zero_length_array_and_incomplete_array_2 {
 #[test]
 fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array_2() {
     assert_eq!(
-        ::std::mem::size_of::<C_with_zero_length_array_and_incomplete_array_2>(),
+        ::std::mem::size_of::<C_with_zero_length_array_and_incomplete_array_2>(
+        ),
         4usize,
         concat!(
             "Size of: ",
@@ -379,7 +402,8 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array_2() {
         )
     );
     assert_eq!(
-        ::std::mem::align_of::<C_with_zero_length_array_and_incomplete_array_2>(),
+        ::std::mem::align_of::<C_with_zero_length_array_and_incomplete_array_2>(
+        ),
         4usize,
         concat!(
             "Alignment of ",
@@ -388,8 +412,10 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_zero_length_array_and_incomplete_array_2>())).a
-                as *const _ as usize
+            &(*(::std::ptr::null::<
+                C_with_zero_length_array_and_incomplete_array_2,
+            >()))
+            .a as *const _ as usize
         },
         0usize,
         concat!(
@@ -401,8 +427,10 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_zero_length_array_and_incomplete_array_2>()))
-                .zero_length_array as *const _ as usize
+            &(*(::std::ptr::null::<
+                C_with_zero_length_array_and_incomplete_array_2,
+            >()))
+            .zero_length_array as *const _ as usize
         },
         4usize,
         concat!(
@@ -414,8 +442,10 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array_2() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<C_with_zero_length_array_and_incomplete_array_2>()))
-                .incomplete_array as *const _ as usize
+            &(*(::std::ptr::null::<
+                C_with_zero_length_array_and_incomplete_array_2,
+            >()))
+            .incomplete_array as *const _ as usize
         },
         4usize,
         concat!(
@@ -473,7 +503,8 @@ fn bindgen_test_layout_IncompleteArrayNonCopiable() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<IncompleteArrayNonCopiable>())).whatever as *const _ as usize
+            &(*(::std::ptr::null::<IncompleteArrayNonCopiable>())).whatever
+                as *const _ as usize
         },
         0usize,
         concat!(
@@ -485,8 +516,8 @@ fn bindgen_test_layout_IncompleteArrayNonCopiable() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<IncompleteArrayNonCopiable>())).incomplete_array as *const _
-                as usize
+            &(*(::std::ptr::null::<IncompleteArrayNonCopiable>()))
+                .incomplete_array as *const _ as usize
         },
         8usize,
         concat!(
@@ -555,7 +586,9 @@ fn bindgen_test_layout_WithUnion() {
         concat!("Alignment of ", stringify!(WithUnion))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<WithUnion>())).data as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<WithUnion>())).data as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -593,11 +626,15 @@ fn bindgen_test_layout_RealAbstractionWithTonsOfMethods() {
 }
 extern "C" {
     #[link_name = "\u{1}_ZNK32RealAbstractionWithTonsOfMethods3barEv"]
-    pub fn RealAbstractionWithTonsOfMethods_bar(this: *const RealAbstractionWithTonsOfMethods);
+    pub fn RealAbstractionWithTonsOfMethods_bar(
+        this: *const RealAbstractionWithTonsOfMethods,
+    );
 }
 extern "C" {
     #[link_name = "\u{1}_ZN32RealAbstractionWithTonsOfMethods3barEv"]
-    pub fn RealAbstractionWithTonsOfMethods_bar1(this: *mut RealAbstractionWithTonsOfMethods);
+    pub fn RealAbstractionWithTonsOfMethods_bar1(
+        this: *mut RealAbstractionWithTonsOfMethods,
+    );
 }
 extern "C" {
     #[link_name = "\u{1}_ZN32RealAbstractionWithTonsOfMethods3barEi"]
