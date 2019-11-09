@@ -11,7 +11,7 @@
 /// be, so we cannot allocate bitfield units. The best thing we can do is make
 /// the struct opaque.
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Default)]
 pub struct TemplatizedBitfield {
     pub _address: u8,
 }

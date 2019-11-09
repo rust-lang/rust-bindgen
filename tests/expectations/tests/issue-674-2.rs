@@ -15,14 +15,14 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Default)]
         pub struct Rooted {
             pub _address: u8,
         }
         pub type Rooted_ElementType<T> = T;
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Default)]
     pub struct c {
         pub b: u8,
     }
@@ -45,7 +45,7 @@ pub mod root {
         );
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Default)]
     pub struct B {
         pub a: root::c,
     }

@@ -56,7 +56,7 @@ fn bindgen_test_layout_Null() {
 /// this test to make sure that opaque unions don't derive and still compile.
 #[repr(C)]
 #[repr(align(4))]
-#[derive(Copy, Clone)]
+#[derive(Default)]
 pub union DoggoOrNull {
     pub _bindgen_opaque_blob: u32,
 }
@@ -72,9 +72,4 @@ fn bindgen_test_layout_DoggoOrNull() {
         4usize,
         concat!("Alignment of ", stringify!(DoggoOrNull))
     );
-}
-impl Default for DoggoOrNull {
-    fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
-    }
 }

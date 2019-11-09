@@ -358,12 +358,12 @@ impl Default for PODButContainsDtor {
 }
 /// <div rustbindgen opaque>
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Default)]
 pub struct Opaque {
     pub _address: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Default)]
 pub struct POD {
     pub opaque_member: u32,
 }

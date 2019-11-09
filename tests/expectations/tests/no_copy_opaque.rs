@@ -9,7 +9,7 @@
 
 #[repr(C)]
 #[repr(align(4))]
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub struct NoCopy {
     pub _bindgen_opaque_blob: u32,
 }

@@ -63,7 +63,7 @@ fn bindgen_test_layout_SuchWow() {
 }
 #[repr(C)]
 #[repr(align(1))]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Default)]
 pub struct Opaque {
     pub _bindgen_opaque_blob: u8,
 }
@@ -105,7 +105,7 @@ extern "C" {
     pub static mut Opaque_MAJESTIC_AF: Doggo;
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Default)]
 pub struct Whitelisted {
     pub some_member: Opaque,
 }

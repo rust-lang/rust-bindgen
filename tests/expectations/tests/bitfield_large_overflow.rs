@@ -9,7 +9,7 @@
 
 #[repr(C)]
 #[repr(align(8))]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Default)]
 pub struct _bindgen_ty_1 {
     pub _bindgen_opaque_blob: [u64; 10usize],
 }

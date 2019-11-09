@@ -8,7 +8,7 @@
 )]
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Default)]
 pub struct OpaqueTemplate {
     pub _address: u8,
 }
@@ -63,11 +63,6 @@ impl Default for ContainsOpaqueTemplate {
         unsafe { ::std::mem::zeroed() }
     }
 }
-impl ::std::cmp::PartialEq for ContainsOpaqueTemplate {
-    fn eq(&self, other: &ContainsOpaqueTemplate) -> bool {
-        &self.mBlah[..] == &other.mBlah[..] && self.mBaz == other.mBaz
-    }
-}
 /// This should not end up deriving Debug/Hash either, for similar reasons, although
 /// we're exercising base member edges now.
 #[repr(C)]
@@ -104,10 +99,5 @@ fn bindgen_test_layout_InheritsOpaqueTemplate() {
 impl Default for InheritsOpaqueTemplate {
     fn default() -> Self {
         unsafe { ::std::mem::zeroed() }
-    }
-}
-impl ::std::cmp::PartialEq for InheritsOpaqueTemplate {
-    fn eq(&self, other: &InheritsOpaqueTemplate) -> bool {
-        &self._base[..] == &other._base[..] && self.wow == other.wow
     }
 }

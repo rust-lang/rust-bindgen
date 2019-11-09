@@ -15,14 +15,14 @@ pub mod root {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
-        #[derive(Debug, Default, Copy, Clone)]
+        #[derive(Default)]
         pub struct Maybe {
             pub _address: u8,
         }
         pub type Maybe_ValueType<T> = T;
     }
     #[repr(C)]
-    #[derive(Debug, Default, Copy, Clone)]
+    #[derive(Default)]
     pub struct CapturingContentInfo {
         pub a: u8,
     }

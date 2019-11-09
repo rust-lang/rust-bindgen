@@ -8,12 +8,7 @@
 )]
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Default)]
 pub union a__bindgen_ty_1 {
     pub _address: u8,
-}
-impl Default for a__bindgen_ty_1 {
-    fn default() -> Self {
-        unsafe { ::std::mem::zeroed() }
-    }
 }

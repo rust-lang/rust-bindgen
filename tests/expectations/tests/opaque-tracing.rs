@@ -13,7 +13,7 @@ extern "C" {
 }
 #[repr(C)]
 #[repr(align(4))]
-#[derive(Debug, Default, Copy, Clone, Hash, PartialEq, Eq)]
+#[derive(Default)]
 pub struct Container {
     pub _bindgen_opaque_blob: [u32; 2usize],
 }

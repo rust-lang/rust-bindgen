@@ -10,7 +10,7 @@
 pub type Array16 = u8;
 pub type ArrayInt4 = [u32; 4usize];
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Default)]
 pub struct UsesArray {
     pub array_char_16: [u8; 16usize],
     pub array_bool_8: [u8; 8usize],

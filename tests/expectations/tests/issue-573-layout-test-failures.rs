@@ -8,12 +8,12 @@
 )]
 
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Default)]
 pub struct Outer {
     pub i: u8,
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Default)]
 pub struct AutoIdVector {
     pub ar: Outer,
 }

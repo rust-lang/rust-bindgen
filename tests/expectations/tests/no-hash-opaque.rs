@@ -9,7 +9,7 @@
 
 #[repr(C)]
 #[repr(align(4))]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Default)]
 pub struct NoHash {
     pub _bindgen_opaque_blob: u32,
 }

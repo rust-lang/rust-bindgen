@@ -8,12 +8,12 @@
 )]
 
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Default)]
 pub struct a {
     _unused: [u8; 0],
 }
 #[repr(C)]
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Default)]
 pub struct b {
     _unused: [u8; 0],
 }
