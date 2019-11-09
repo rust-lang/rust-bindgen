@@ -156,37 +156,14 @@ impl<'ctx> CannotDerive<'ctx> {
 
         trace!("ty: {:?}", ty);
         if item.is_opaque(self.ctx, &()) {
-            if !self.derive_trait.can_derive_union() &&
-                ty.is_union() &&
-                self.ctx.options().rust_features().untagged_union
-            {
-                trace!(
-                    "    cannot derive {} for Rust unions",
-                    self.derive_trait
-                );
-                return CanDerive::No;
-            }
-
-            let layout_can_derive =
-                ty.layout(self.ctx).map_or(CanDerive::Yes, |l| {
+            let can_derive_opaque = self.derive_trait.can_derive_opaque();
+            if can_derive_opaque == CanDerive::Yes {
+                return ty.layout(self.ctx).map_or(can_derive_opaque, |l| {
                     l.opaque().array_size_within_derive_limit(self.ctx)
                 });
-
-            match layout_can_derive {
-                CanDerive::Yes => {
-                    trace!(
-                        "    we can trivially derive {} for the layout",
-                        self.derive_trait
-                    );
-                }
-                _ => {
-                    trace!(
-                        "    we cannot derive {} for the layout",
-                        self.derive_trait
-                    );
-                }
-            };
-            return layout_can_derive;
+            } else {
+                return can_derive_opaque;
+            }
         }
 
         match *ty.kind() {
@@ -510,6 +487,16 @@ impl DeriveTrait {
             DeriveTrait::Hash |
             DeriveTrait::PartialEqOrPartialOrd => false,
             _ => true,
+        }
+    }
+
+    fn can_derive_opaque(&self) -> CanDerive {
+        match self {
+            DeriveTrait::Copy |
+            DeriveTrait::Hash |
+            DeriveTrait::PartialEqOrPartialOrd => CanDerive::No,
+            DeriveTrait::Default => CanDerive::Yes,
+            DeriveTrait::Debug => CanDerive::Manually,
         }
     }
 

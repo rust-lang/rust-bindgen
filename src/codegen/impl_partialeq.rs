@@ -12,13 +12,13 @@ pub fn gen_partialeq_impl(
     item: &Item,
     ty_for_impl: &proc_macro2::TokenStream,
 ) -> Option<proc_macro2::TokenStream> {
+    debug_assert!(
+        !item.is_opaque(ctx, &()),
+        "You're not supposed to call this on an opaque type"
+    );
     let mut tokens = vec![];
 
-    if item.is_opaque(ctx, &()) {
-        tokens.push(quote! {
-            &self._bindgen_opaque_blob[..] == &other._bindgen_opaque_blob[..]
-        });
-    } else if comp_info.kind() == CompKind::Union {
+    if comp_info.kind() == CompKind::Union {
         assert!(!ctx.options().rust_features().untagged_union);
         tokens.push(quote! {
             &self.bindgen_union_field[..] == &other.bindgen_union_field[..]
