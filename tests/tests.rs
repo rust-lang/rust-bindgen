@@ -16,9 +16,65 @@ use std::sync::Once;
 #[path = "../src/options.rs"]
 mod options;
 use options::builder_from_flags;
+use std::ffi::{OsStr, OsString};
 
 /// The environment variable that determines if test expectations are overwritten.
 static OVERWRITE_ENV_VAR: &str = "BINDGEN_OVERWRITE_EXPECTED";
+
+
+fn spawn_stdout_stderr<S: AsRef<OsStr>>(command: &str, args: &[S], input: Option<Vec<u8>>) -> (String, String) {
+    let mut child = process::Command::new(command)
+        .args(args)
+        .stdin(process::Stdio::piped())
+        .stdout(process::Stdio::piped())
+        .stderr(process::Stdio::piped())
+        .spawn()
+        .expect(&format!("should spawn `{}`", command));
+
+    let mut stdin = child.stdin.take().unwrap();
+    let mut stdout = child.stdout.take().unwrap();
+    let mut stderr = child.stderr.take().unwrap();
+
+    // Write to stdin in a new thread, so that we can read from stdout on this
+    // thread. This keeps the child from blocking on writing to its stdout which
+    // might block us from writing to its stdin.
+    let stdin_handle = if let Some(bytes) = input {
+        Some(::std::thread::spawn(move || stdin.write_all(&bytes)))
+    } else {
+        None
+    };
+
+    // Read stderr on a new thread for similar reasons.
+    let stderr_handle = ::std::thread::spawn(move || {
+        let mut output = vec![];
+        io::copy(&mut stderr, &mut output)
+            .map(|_| String::from_utf8_lossy(&output).to_string())
+    });
+
+    let mut output = vec![];
+    io::copy(&mut stdout, &mut output).expect("Should copy stdout into vec OK");
+
+    // Ignore actual child status because for rustfmt it is often non-zero for trivial
+    // things.
+    let _ = child.wait().expect("should wait on rustfmt child OK");
+
+    if let Some(handle) = stdin_handle {
+        handle
+            .join()
+            .expect("writer thread should not have panicked")
+            .expect("should have written to child stdin OK");
+    }
+
+    let stdout = String::from_utf8(output)
+        .expect(&format!("{} emitted non-valid utf-8", command));
+
+    let stderr = stderr_handle
+        .join()
+        .expect("stderr reader thread should not have panicked")
+        .expect("should have read child's stderr OK");
+
+    (stdout, stderr)
+}
 
 // Run `rustfmt` on the given source string and return a tuple of the formatted
 // bindings, and rustfmt's stderr.
@@ -47,64 +103,36 @@ The latest `rustfmt` is required to run the `bindgen` test suite. Install
         }
     });
 
-    let mut child = process::Command::new("rustup")
-        .args(&[
-            "run",
-            "nightly",
-            "rustfmt",
-            "--config-path",
-            concat!(env!("CARGO_MANIFEST_DIR"), "/tests/rustfmt.toml"),
-        ])
-        .stdin(process::Stdio::piped())
-        .stdout(process::Stdio::piped())
-        .stderr(process::Stdio::piped())
-        .spawn()
-        .expect("should spawn `rustup run nightly rustfmt`");
+    spawn_stdout_stderr("rustup", &[
+        "run",
+        "nightly",
+        "rustfmt",
+        "--config-path",
+        concat!(env!("CARGO_MANIFEST_DIR"), "/tests/rustfmt.toml"),
+        ], Some(source.into_bytes()))
+}
 
-    let mut stdin = child.stdin.take().unwrap();
-    let mut stdout = child.stdout.take().unwrap();
-    let mut stderr = child.stderr.take().unwrap();
+fn check_if_compiles(file: &PathBuf) -> (String, String) {
+    static mut RUSTC: String = String::new();
+    static mut OUT_DIR: String = String::new();
 
-    // Write to stdin in a new thread, so that we can read from stdout on this
-    // thread. This keeps the child from blocking on writing to its stdout which
-    // might block us from writing to its stdin.
-    let stdin_handle =
-        ::std::thread::spawn(move || stdin.write_all(source.as_bytes()));
-
-    // Read stderr on a new thread for similar reasons.
-    let stderr_handle = ::std::thread::spawn(move || {
-        let mut output = vec![];
-        io::copy(&mut stderr, &mut output)
-            .map(|_| String::from_utf8_lossy(&output).to_string())
+    static GET_ENV: Once = Once::new();
+    GET_ENV.call_once(|| unsafe {
+        RUSTC = env::var("RUSTC").unwrap_or("rustc".to_string());
+        OUT_DIR = env::var("OUT_DIR").unwrap();
     });
-
-    let mut output = vec![];
-    io::copy(&mut stdout, &mut output).expect("Should copy stdout into vec OK");
-
-    // Ignore actual rustfmt status because it is often non-zero for trivial
-    // things.
-    let _ = child.wait().expect("should wait on rustfmt child OK");
-
-    stdin_handle
-        .join()
-        .expect("writer thread should not have panicked")
-        .expect("should have written to child rustfmt's stdin OK");
-
-    let bindings = String::from_utf8(output)
-        .expect("rustfmt should only emit valid utf-8");
-
-    let stderr = stderr_handle
-        .join()
-        .expect("stderr reader thread should not have panicked")
-        .expect("should have read child rustfmt's stderr OK");
-
-    (bindings, stderr)
+    spawn_stdout_stderr(unsafe { &RUSTC }, &[
+        file.as_os_str(),
+        OsStr::new("--crate-type=lib"),
+        &OsString::from(format!("--out-dir={}", unsafe { &OUT_DIR })),
+        OsStr::new("-Awarnings"), // We shouldn't fail a program because of a warning.
+    ], None)
 }
 
 fn compare_generated_header(
     header: &PathBuf,
     builder: Builder,
-) -> Result<(), Error> {
+) -> Result<PathBuf, Error> {
     let file_name = header.file_name().ok_or(Error::new(
         ErrorKind::Other,
         "compare_generated_header expects a file",
@@ -194,7 +222,7 @@ fn compare_generated_header(
 
     if actual == expected {
         if !actual.is_empty() {
-            return Ok(());
+            return Ok(looked_at.last().unwrap().clone());
         }
         return Err(Error::new(
             ErrorKind::Other,
@@ -232,7 +260,7 @@ fn builder() -> Builder {
     bindgen::builder()
 }
 
-fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
+fn create_bindgen_builder(header: &PathBuf) -> Result<Builder, Error> {
     #[cfg(feature = "logging")]
     let _ = env_logger::try_init();
 
@@ -303,7 +331,7 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
         .map(ToString::to_string)
         .chain(flags.into_iter());
 
-    builder_from_flags(args).map(|(builder, _, _)| Some(builder))
+    builder_from_flags(args).map(|(builder, _, _)| builder)
 }
 
 macro_rules! test_header {
@@ -312,15 +340,16 @@ macro_rules! test_header {
         fn $function() {
             let header = PathBuf::from($header);
             let result = create_bindgen_builder(&header).and_then(|builder| {
-                if let Some(builder) = builder {
-                    compare_generated_header(&header, builder)
-                } else {
-                    Ok(())
-                }
+                compare_generated_header(&header, builder)
             });
-
-            if let Err(err) = result {
-                panic!("{}", err);
+            match result {
+                Err(err) => panic!("{}", err),
+                Ok(path) => {
+                    let (_stdout, stderr) = check_if_compiles(&path);
+                    if !stderr.is_empty() {
+                        panic!("{}", stderr)
+                    }
+                }
             }
         }
     };
