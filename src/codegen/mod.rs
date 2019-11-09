@@ -3970,13 +3970,13 @@ mod utils {
                 }
 
                 #[inline]
-                pub unsafe fn as_ptr(&self) -> *const T {
-                    ::#prefix::mem::transmute(self)
+                pub fn as_ptr(&self) -> *const T {
+                    self as *const _ as *const T
                 }
 
                 #[inline]
-                pub unsafe fn as_mut_ptr(&mut self) -> *mut T {
-                    ::#prefix::mem::transmute(self)
+                pub fn as_mut_ptr(&mut self) -> *mut T {
+                    self as *mut _ as *mut T
                 }
 
                 #[inline]
