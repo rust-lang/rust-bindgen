@@ -16,12 +16,12 @@ impl<T> __IncompleteArrayField<T> {
         __IncompleteArrayField(::std::marker::PhantomData, [])
     }
     #[inline]
-    pub unsafe fn as_ptr(&self) -> *const T {
-        ::std::mem::transmute(self)
+    pub fn as_ptr(&self) -> *const T {
+        self as *const _ as *const T
     }
     #[inline]
-    pub unsafe fn as_mut_ptr(&mut self) -> *mut T {
-        ::std::mem::transmute(self)
+    pub fn as_mut_ptr(&mut self) -> *mut T {
+        self as *mut _ as *mut T
     }
     #[inline]
     pub unsafe fn as_slice(&self, len: usize) -> &[T] {
@@ -61,7 +61,10 @@ fn bindgen_test_layout_test() {
         concat!("Offset of field: ", stringify!(test), "::", stringify!(a))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<test>())).zero_length_array as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<test>())).zero_length_array as *const _
+                as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -95,7 +98,10 @@ fn bindgen_test_layout_test2() {
         concat!("Offset of field: ", stringify!(test2), "::", stringify!(a))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<test2>())).incomplete_array as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<test2>())).incomplete_array as *const _
+                as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -130,7 +136,10 @@ fn bindgen_test_layout_test3() {
         concat!("Offset of field: ", stringify!(test3), "::", stringify!(a))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<test3>())).zero_length_array as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<test3>())).zero_length_array as *const _
+                as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
@@ -140,7 +149,10 @@ fn bindgen_test_layout_test3() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<test3>())).incomplete_array as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<test3>())).incomplete_array as *const _
+                as usize
+        },
         4usize,
         concat!(
             "Offset of field: ",
