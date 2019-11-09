@@ -21,8 +21,11 @@ use std::ffi::{OsStr, OsString};
 /// The environment variable that determines if test expectations are overwritten.
 static OVERWRITE_ENV_VAR: &str = "BINDGEN_OVERWRITE_EXPECTED";
 
-
-fn spawn_stdout_stderr<S: AsRef<OsStr>>(command: &str, args: &[S], input: Option<Vec<u8>>) -> (String, String) {
+fn spawn_stdout_stderr<S: AsRef<OsStr>>(
+    command: &str,
+    args: &[S],
+    input: Option<Vec<u8>>,
+) -> (String, String) {
     let mut child = process::Command::new(command)
         .args(args)
         .stdin(process::Stdio::piped())
@@ -103,13 +106,17 @@ The latest `rustfmt` is required to run the `bindgen` test suite. Install
         }
     });
 
-    spawn_stdout_stderr("rustup", &[
-        "run",
-        "nightly",
-        "rustfmt",
-        "--config-path",
-        concat!(env!("CARGO_MANIFEST_DIR"), "/tests/rustfmt.toml"),
-        ], Some(source.into_bytes()))
+    spawn_stdout_stderr(
+        "rustup",
+        &[
+            "run",
+            "nightly",
+            "rustfmt",
+            "--config-path",
+            concat!(env!("CARGO_MANIFEST_DIR"), "/tests/rustfmt.toml"),
+        ],
+        Some(source.into_bytes()),
+    )
 }
 
 fn check_if_compiles(file: &PathBuf) -> (String, String) {
@@ -121,12 +128,16 @@ fn check_if_compiles(file: &PathBuf) -> (String, String) {
         RUSTC = env::var("RUSTC").unwrap_or("rustc".to_string());
         OUT_DIR = env::var("OUT_DIR").unwrap();
     });
-    spawn_stdout_stderr(unsafe { &RUSTC }, &[
-        file.as_os_str(),
-        OsStr::new("--crate-type=lib"),
-        &OsString::from(format!("--out-dir={}", unsafe { &OUT_DIR })),
-        OsStr::new("-Awarnings"), // We shouldn't fail a program because of a warning.
-    ], None)
+    spawn_stdout_stderr(
+        unsafe { &RUSTC },
+        &[
+            file.as_os_str(),
+            OsStr::new("--crate-type=lib"),
+            &OsString::from(format!("--out-dir={}", unsafe { &OUT_DIR })),
+            OsStr::new("-Awarnings"), // We shouldn't fail a program because of a warning.
+        ],
+        None,
+    )
 }
 
 fn compare_generated_header(
@@ -339,9 +350,8 @@ macro_rules! test_header {
         #[test]
         fn $function() {
             let header = PathBuf::from($header);
-            let result = create_bindgen_builder(&header).and_then(|builder| {
-                compare_generated_header(&header, builder)
-            });
+            let result = create_bindgen_builder(&header)
+                .and_then(|builder| compare_generated_header(&header, builder));
             match result {
                 Err(err) => panic!("{}", err),
                 Ok(path) => {
