@@ -184,11 +184,8 @@ impl Enum {
             item,
         ) {
             EnumVariation::NewType { is_bitfield: true }
-        } else if self.is_matching_enum(
-            ctx,
-            &ctx.options().newtype_enums,
-            item,
-        ) {
+        } else if self.is_matching_enum(ctx, &ctx.options().newtype_enums, item)
+        {
             EnumVariation::NewType { is_bitfield: false }
         } else if self.is_matching_enum(
             ctx,

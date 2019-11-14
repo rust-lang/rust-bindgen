@@ -2323,16 +2323,24 @@ impl std::str::FromStr for EnumVariation {
     /// Create a `EnumVariation` from a string.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "rust" => Ok(EnumVariation::Rust{ non_exhaustive: false }),
-            "rust_non_exhaustive" => Ok(EnumVariation::Rust{ non_exhaustive: true }),
+            "rust" => Ok(EnumVariation::Rust {
+                non_exhaustive: false,
+            }),
+            "rust_non_exhaustive" => Ok(EnumVariation::Rust {
+                non_exhaustive: true,
+            }),
             "bitfield" => Ok(EnumVariation::NewType { is_bitfield: true }),
             "consts" => Ok(EnumVariation::Consts),
             "moduleconsts" => Ok(EnumVariation::ModuleConsts),
             "newtype" => Ok(EnumVariation::NewType { is_bitfield: false }),
-            _ => Err(std::io::Error::new(std::io::ErrorKind::InvalidInput,
-                                         concat!("Got an invalid EnumVariation. Accepted values ",
-                                                 "are 'rust', 'rust_non_exhaustive', 'bitfield', 'consts',",
-                                                 "'moduleconsts', and 'newtype'."))),
+            _ => Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                concat!(
+                    "Got an invalid EnumVariation. Accepted values ",
+                    "are 'rust', 'rust_non_exhaustive', 'bitfield', 'consts',",
+                    "'moduleconsts', and 'newtype'."
+                ),
+            )),
         }
     }
 }

@@ -236,12 +236,12 @@ impl Builder {
                     codegen::EnumVariation::Rust {
                         non_exhaustive: true,
                     } => "rust_non_exhaustive",
-                    codegen::EnumVariation::NewType {
-                        is_bitfield: true,
-                    } => "bitfield",
-                    codegen::EnumVariation::NewType {
-                        is_bitfield: false,
-                    } => "newtype",
+                    codegen::EnumVariation::NewType { is_bitfield: true } => {
+                        "bitfield"
+                    }
+                    codegen::EnumVariation::NewType { is_bitfield: false } => {
+                        "newtype"
+                    }
                     codegen::EnumVariation::Consts => "consts",
                     codegen::EnumVariation::ModuleConsts => "moduleconsts",
                 }
