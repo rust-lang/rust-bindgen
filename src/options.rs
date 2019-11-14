@@ -38,6 +38,7 @@ where
                     "consts",
                     "moduleconsts",
                     "bitfield",
+                    "newtype",
                     "rust",
                     "rust_non_exhaustive",
                 ])
@@ -48,6 +49,13 @@ where
                     "Mark any enum whose name matches <regex> as a set of \
                      bitfield flags.",
                 )
+                .value_name("regex")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
+            Arg::with_name("newtype-enum")
+                .long("newtype-enum")
+                .help("Mark any enum whose name matches <regex> as a newtype.")
                 .value_name("regex")
                 .takes_value(true)
                 .multiple(true)
@@ -281,7 +289,7 @@ where
                 .help("Do not automatically convert floats to f32/f64."),
             Arg::with_name("no-prepend-enum-name")
                 .long("no-prepend-enum-name")
-                .help("Do not prepend the enum name to bitfield or constant variants."),
+                .help("Do not prepend the enum name to constant or newtype variants."),
             Arg::with_name("no-include-path-detection")
                 .long("no-include-path-detection")
                 .help("Do not try to detect default include paths"),
@@ -460,14 +468,20 @@ where
         }
     }
 
+    if let Some(newtypes) = matches.values_of("newtype-enum") {
+        for regex in newtypes {
+            builder = builder.newtype_enum(regex);
+        }
+    }
+
     if let Some(rustifieds) = matches.values_of("rustified-enum") {
         for regex in rustifieds {
             builder = builder.rustified_enum(regex);
         }
     }
 
-    if let Some(bitfields) = matches.values_of("constified-enum") {
-        for regex in bitfields {
+    if let Some(const_enums) = matches.values_of("constified-enum") {
+        for regex in const_enums {
             builder = builder.constified_enum(regex);
         }
     }

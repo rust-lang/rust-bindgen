@@ -2282,8 +2282,11 @@ pub enum EnumVariation {
         /// Indicates whether the generated struct should be #[non_exhaustive]
         non_exhaustive: bool,
     },
-    /// The code for this enum will use a bitfield
-    Bitfield,
+    /// The code for this enum will use a newtype
+    NewType {
+        /// Indicates whether the newtype will have bitwise operators
+        is_bitfield: bool,
+    },
     /// The code for this enum will use consts
     Consts,
     /// The code for this enum will use a module containing consts
@@ -2322,13 +2325,14 @@ impl std::str::FromStr for EnumVariation {
         match s {
             "rust" => Ok(EnumVariation::Rust{ non_exhaustive: false }),
             "rust_non_exhaustive" => Ok(EnumVariation::Rust{ non_exhaustive: true }),
-            "bitfield" => Ok(EnumVariation::Bitfield),
+            "bitfield" => Ok(EnumVariation::NewType { is_bitfield: true }),
             "consts" => Ok(EnumVariation::Consts),
             "moduleconsts" => Ok(EnumVariation::ModuleConsts),
+            "newtype" => Ok(EnumVariation::NewType { is_bitfield: false }),
             _ => Err(std::io::Error::new(std::io::ErrorKind::InvalidInput,
                                          concat!("Got an invalid EnumVariation. Accepted values ",
-                                                 "are 'rust', 'rust_non_exhaustive', 'bitfield', 'consts', and ",
-                                                 "'moduleconsts'."))),
+                                                 "are 'rust', 'rust_non_exhaustive', 'bitfield', 'consts',",
+                                                 "'moduleconsts', and 'newtype'."))),
         }
     }
 }
@@ -2342,10 +2346,11 @@ enum EnumBuilder<'a> {
         tokens: proc_macro2::TokenStream,
         emitted_any_variants: bool,
     },
-    Bitfield {
+    NewType {
         codegen_depth: usize,
         canonical_name: &'a str,
         tokens: proc_macro2::TokenStream,
+        is_bitfield: bool,
     },
     Consts {
         variants: Vec<proc_macro2::TokenStream>,
@@ -2363,7 +2368,7 @@ impl<'a> EnumBuilder<'a> {
     fn codegen_depth(&self) -> usize {
         match *self {
             EnumBuilder::Rust { codegen_depth, .. } |
-            EnumBuilder::Bitfield { codegen_depth, .. } |
+            EnumBuilder::NewType { codegen_depth, .. } |
             EnumBuilder::ModuleConsts { codegen_depth, .. } |
             EnumBuilder::Consts { codegen_depth, .. } => codegen_depth,
         }
@@ -2381,13 +2386,14 @@ impl<'a> EnumBuilder<'a> {
         let ident = Ident::new(name, Span::call_site());
 
         match enum_variation {
-            EnumVariation::Bitfield => EnumBuilder::Bitfield {
+            EnumVariation::NewType { is_bitfield } => EnumBuilder::NewType {
                 codegen_depth: enum_codegen_depth,
                 canonical_name: name,
                 tokens: quote! {
                     #( #attrs )*
                     pub struct #ident (pub #repr);
                 },
+                is_bitfield,
             },
 
             EnumVariation::Rust { .. } => {
@@ -2475,7 +2481,7 @@ impl<'a> EnumBuilder<'a> {
                 }
             }
 
-            EnumBuilder::Bitfield { canonical_name, .. } => {
+            EnumBuilder::NewType { canonical_name, .. } => {
                 if ctx.options().rust_features().associated_const && is_ty_named
                 {
                     let enum_ident = ctx.rust_ident(canonical_name);
@@ -2566,11 +2572,16 @@ impl<'a> EnumBuilder<'a> {
                     }
                 }
             }
-            EnumBuilder::Bitfield {
+            EnumBuilder::NewType {
                 canonical_name,
                 tokens,
+                is_bitfield,
                 ..
             } => {
+                if !is_bitfield {
+                    return tokens;
+                }
+
                 let rust_ty_name = ctx.rust_ident_raw(canonical_name);
                 let prefix = ctx.trait_prefix();
 
@@ -2704,7 +2715,7 @@ impl CodeGenerator for Enum {
                     panic!("The rust target you're using doesn't seem to support non_exhaustive enums");
                 }
             }
-            EnumVariation::Bitfield => {
+            EnumVariation::NewType { .. } => {
                 if ctx.options().rust_features.repr_transparent {
                     attrs.push(attributes::repr("transparent"));
                 } else {
