@@ -189,13 +189,15 @@ impl Default for CodegenConfig {
 ///
 /// 1. [`constified_enum_module()`](#method.constified_enum_module)
 /// 2. [`bitfield_enum()`](#method.bitfield_enum)
-/// 3. [`rustified_enum()`](#method.rustified_enum)
+/// 3. [`newtype_enum()`](#method.newtype_enum)
+/// 4. [`rustified_enum()`](#method.rustified_enum)
 ///
 /// For each C enum, bindgen tries to match the pattern in the following order:
 ///
 /// 1. Constified enum module
 /// 2. Bitfield enum
-/// 3. Rustified enum
+/// 3. Newtype enum
+/// 4. Rustified enum
 ///
 /// If none of the above patterns match, then bindgen will generate a set of Rust constants.
 #[derive(Debug, Default)]
@@ -234,7 +236,12 @@ impl Builder {
                     codegen::EnumVariation::Rust {
                         non_exhaustive: true,
                     } => "rust_non_exhaustive",
-                    codegen::EnumVariation::Bitfield => "bitfield",
+                    codegen::EnumVariation::NewType {
+                        is_bitfield: true,
+                    } => "bitfield",
+                    codegen::EnumVariation::NewType {
+                        is_bitfield: false,
+                    } => "newtype",
                     codegen::EnumVariation::Consts => "consts",
                     codegen::EnumVariation::ModuleConsts => "moduleconsts",
                 }
@@ -248,6 +255,16 @@ impl Builder {
             .iter()
             .map(|item| {
                 output_vector.push("--bitfield-enum".into());
+                output_vector.push(item.to_owned());
+            })
+            .count();
+
+        self.options
+            .newtype_enums
+            .get_items()
+            .iter()
+            .map(|item| {
+                output_vector.push("--newtype-enum".into());
                 output_vector.push(item.to_owned());
             })
             .count();
@@ -860,8 +877,21 @@ impl Builder {
     ///
     /// This makes bindgen generate a type that isn't a rust `enum`. Regular
     /// expressions are supported.
+    ///
+    /// This is similar to the newtype enum style, but with the bitwise
+    /// operators implemented.
     pub fn bitfield_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.bitfield_enums.insert(arg);
+        self
+    }
+
+    /// Mark the given enum (or set of enums, if using a pattern) as a newtype.
+    /// Regular expressions are supported.
+    ///
+    /// This makes bindgen generate a type that isn't a Rust `enum`. Regular
+    /// expressions are supported.
+    pub fn newtype_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
+        self.options.newtype_enums.insert(arg);
         self
     }
 
@@ -1280,7 +1310,7 @@ impl Builder {
         self
     }
 
-    /// Prepend the enum name to constant or bitfield variants.
+    /// Prepend the enum name to constant or newtype variants.
     pub fn prepend_enum_name(mut self, doit: bool) -> Self {
         self.options.prepend_enum_name = doit;
         self
@@ -1503,8 +1533,12 @@ struct BindgenOptions {
     /// The default style of code to generate for enums
     default_enum_style: codegen::EnumVariation,
 
-    /// The enum patterns to mark an enum as bitfield.
+    /// The enum patterns to mark an enum as a bitfield
+    /// (newtype with bitwise operations).
     bitfield_enums: RegexSet,
+
+    /// The enum patterns to mark an enum as a newtype.
+    newtype_enums: RegexSet,
 
     /// The enum patterns to mark an enum as a Rust enum.
     rustified_enums: RegexSet,
@@ -1684,7 +1718,7 @@ struct BindgenOptions {
     /// Whether to detect include paths using clang_sys.
     detect_include_paths: bool,
 
-    /// Whether to prepend the enum name to bitfield or constant variants.
+    /// Whether to prepend the enum name to constant or newtype variants.
     prepend_enum_name: bool,
 
     /// Version of the Rust compiler to target
@@ -1737,6 +1771,7 @@ impl BindgenOptions {
             &mut self.bitfield_enums,
             &mut self.constified_enums,
             &mut self.constified_enum_modules,
+            &mut self.newtype_enums,
             &mut self.rustified_enums,
             &mut self.rustified_non_exhaustive_enums,
             &mut self.type_alias,
@@ -1783,6 +1818,7 @@ impl Default for BindgenOptions {
             whitelisted_vars: Default::default(),
             default_enum_style: Default::default(),
             bitfield_enums: Default::default(),
+            newtype_enums: Default::default(),
             rustified_enums: Default::default(),
             rustified_non_exhaustive_enums: Default::default(),
             constified_enums: Default::default(),
