@@ -116,6 +116,31 @@ Released YYYY/MM/DD
 
 --------------------------------------------------------------------------------
 
+# 0.52.0
+
+Released 2019/11/19.
+
+## Added
+
+ * Added `newtype` enum style, much like `bitfield` but without the bitwise ops
+   (#1677).
+ * Added support for `MaybeUninit` rather than `mem::uninitialized()` (#1666).
+ * Allowed static linking (#1620).
+
+## Changed
+
+ * Use c_void from core when --use-core is specified and available (#1634).
+ * Various dependencies and features are non-default now (like `regex` unicode
+   features).
+
+## Fixed
+
+ * Fixed crash when unknown keywords are used before a namespace (#1678).
+ * Do not generate implementation for clone for flexible array members (#1664).
+ * Fixed `#[must_use]` support for libclang 9+ (#1646).
+ * Fixed `BitfieldUnit` constructor to handle 64 bit wide bitfields on 32 bit (#1640).
+ * Added a `ParseCallbacks` handler for included files. (#1637).
+
 # 0.51.1
 
 Released 2019/09/23.
