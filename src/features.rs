@@ -1,7 +1,6 @@
 //! Contains code for selecting features
 
 #![deny(missing_docs)]
-#![deny(warnings)]
 #![deny(unused_extern_crates)]
 
 use std::io;

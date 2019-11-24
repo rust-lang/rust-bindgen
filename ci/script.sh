@@ -38,6 +38,7 @@ case "$BINDGEN_JOB" in
 
     "misc")
         ./ci/assert-docs.sh
+        ./ci/assert-warnings.sh
         ./ci/test-book.sh
         ./ci/no-includes.sh
         ./ci/assert-rustfmt.sh
