@@ -909,7 +909,7 @@ impl Builder {
     }
 
     /// Mark the given enum (or set of enums, if using a pattern) as a Rust
-    /// enum with the #[non_exhaustive] attribute.
+    /// enum with the `#[non_exhaustive]` attribute.
     ///
     /// This makes bindgen generate enums instead of constants. Regular
     /// expressions are supported.
