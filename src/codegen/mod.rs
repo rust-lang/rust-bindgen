@@ -2279,7 +2279,7 @@ impl MethodCodegen for Method {
 pub enum EnumVariation {
     /// The code for this enum will use a Rust enum
     Rust {
-        /// Indicates whether the generated struct should be #[non_exhaustive]
+        /// Indicates whether the generated struct should be `#[non_exhaustive]`
         non_exhaustive: bool,
     },
     /// The code for this enum will use a newtype
