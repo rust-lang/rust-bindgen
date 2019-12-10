@@ -522,6 +522,13 @@ impl Builder {
             output_vector.push("--use-array-pointers-in-arguments".into());
         }
 
+        if let Some(ref wasm_import_module_name) =
+            self.options.wasm_import_module_name
+        {
+            output_vector.push("--wasm-import-module-name".into());
+            output_vector.push(wasm_import_module_name.clone());
+        }
+
         self.options
             .opaque_types
             .get_items()
@@ -1491,6 +1498,15 @@ impl Builder {
         self.options.array_pointers_in_arguments = doit;
         self
     }
+
+    /// Set the wasm import module name
+    pub fn wasm_import_module_name<T: Into<String>>(
+        mut self,
+        import_name: T,
+    ) -> Self {
+        self.options.wasm_import_module_name = Some(import_name.into());
+        self
+    }
 }
 
 /// Configuration options for generated bindings.
@@ -1750,6 +1766,9 @@ struct BindgenOptions {
 
     /// Decide if C arrays should be regular pointers in rust or array pointers
     array_pointers_in_arguments: bool,
+
+    /// Wasm import module name.
+    wasm_import_module_name: Option<String>,
 }
 
 /// TODO(emilio): This is sort of a lie (see the error message that results from
@@ -1875,6 +1894,7 @@ impl Default for BindgenOptions {
             no_copy_types: Default::default(),
             no_hash_types: Default::default(),
             array_pointers_in_arguments: false,
+            wasm_import_module_name: None,
         }
     }
 }

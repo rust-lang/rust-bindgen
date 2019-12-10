@@ -434,6 +434,11 @@ where
             Arg::with_name("use-array-pointers-in-arguments")
                 .long("use-array-pointers-in-arguments")
                 .help("Use `*const [T; size]` instead of `*const T` for C arrays"),
+            Arg::with_name("wasm-import-module-name")
+                .long("wasm-import-module-name")
+                .value_name("name")
+                .takes_value(true)
+                .help("The name to be used in a #[link(wasm_import_module = ...)] statement")
         ]) // .args()
         .get_matches_from(args);
 
@@ -599,6 +604,11 @@ where
 
     if matches.is_present("use-array-pointers-in-arguments") {
         builder = builder.array_pointers_in_arguments(true);
+    }
+
+    if let Some(wasm_import_name) = matches.value_of("wasm-import-module-name")
+    {
+        builder = builder.wasm_import_module_name(wasm_import_name);
     }
 
     if let Some(prefix) = matches.value_of("ctypes-prefix") {
