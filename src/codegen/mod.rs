@@ -3611,10 +3611,22 @@ impl CodeGenerator for Function {
             attributes.push(attributes::link_name(link_name));
         }
 
+        // Unfortunately this can't piggyback on the `attributes` list because
+        // the #[link(wasm_import_module)] needs to happen before the `extern "C"` block.
+        // it doesn't get picked up properly otherwise
+        let wasm_link_attribute =
+            ctx.options().wasm_import_module_name.as_ref().map(|name| {
+                quote! {
+                    #[link(wasm_import_module = #name)]
+                }
+            });
+
         let ident = ctx.rust_ident(canonical_name);
-        let tokens = quote!( extern #abi {
-            #(#attributes)*
-            pub fn #ident ( #( #args ),* ) #ret;
+        let tokens = quote!(
+            #wasm_link_attribute
+            extern #abi {
+                #(#attributes)*
+                pub fn #ident ( #( #args ),* ) #ret;
         });
         result.push(tokens);
     }
