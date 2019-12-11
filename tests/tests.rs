@@ -258,7 +258,7 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
         } else if line.contains("bindgen-osx-only") {
             let prepend_flags = ["--raw-line", "#![cfg(target_os=\"macos\")]"];
             flags = prepend_flags
-                .into_iter()
+                .iter()
                 .map(ToString::to_string)
                 .chain(flags)
                 .collect();
@@ -299,7 +299,7 @@ fn create_bindgen_builder(header: &PathBuf) -> Result<Option<Builder>, Error> {
     ];
 
     let args = prepend
-        .into_iter()
+        .iter()
         .map(ToString::to_string)
         .chain(flags.into_iter());
 
