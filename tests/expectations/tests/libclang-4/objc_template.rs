@@ -9,10 +9,20 @@
 extern crate objc;
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
-pub trait Foo {
+pub trait Foo<ObjectType> {
     unsafe fn get(self)
     -> *mut ObjectType;
 }
-impl Foo for id {
+impl<ObjectType: 'static> Foo<ObjectType> for id {
     unsafe fn get(self) -> *mut ObjectType { msg_send!(self , get) }
+}
+pub trait FooMultiGeneric<KeyType, ObjectType> {
+    unsafe fn objectForKey_(self, key: *mut KeyType) -> *mut ObjectType;
+}
+impl<KeyType: 'static, ObjectType: 'static> FooMultiGeneric<KeyType, ObjectType>
+    for id
+{
+    unsafe fn objectForKey_(self, key: *mut KeyType) -> *mut ObjectType {
+        msg_send!(self, objectForKey: key)
+    }
 }

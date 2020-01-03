@@ -3728,18 +3728,36 @@ impl CodeGenerator for ObjCInterface {
 
         let trait_name = ctx.rust_ident(self.rust_name());
 
-        let trait_block = quote! {
-            pub trait #trait_name {
-                #( #trait_items )*
+        let trait_block = if self.is_template() {
+            let template_names : Vec<Ident> = self.template_names.iter().map(|g| ctx.rust_ident(g)).collect();
+            quote! {
+                pub trait #trait_name <#(#template_names),*>{
+                    #( #trait_items )*
+                }
+            }
+        } else {
+            quote! {
+                pub trait #trait_name {
+                    #( #trait_items )*
+                }
             }
         };
 
         let ty_for_impl = quote! {
             id
         };
-        let impl_block = quote! {
-            impl #trait_name for #ty_for_impl {
-                #( #impl_items )*
+        let impl_block = if self.is_template() {
+            let template_names : Vec<Ident> = self.template_names.iter().map(|g| ctx.rust_ident(g)).collect();
+            quote! {
+                impl <#(#template_names :'static),*> #trait_name <#(#template_names),*> for #ty_for_impl {
+                    #( #impl_items )*
+                }
+            }
+        } else {
+            quote! {
+                impl #trait_name for #ty_for_impl {
+                    #( #impl_items )*
+                }
             }
         };
 
