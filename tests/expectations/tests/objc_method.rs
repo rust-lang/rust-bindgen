@@ -24,6 +24,13 @@ pub trait Foo {
         ptr: *mut ::std::os::raw::c_char,
         floatvalue: f32,
     );
+    unsafe fn methodWithAndWithoutKeywords_arg2Name__arg4Name_(
+        self,
+        arg1: ::std::os::raw::c_int,
+        arg2: f32,
+        arg3: f32,
+        arg4: ::std::os::raw::c_int,
+    ) -> instancetype;
 }
 impl Foo for id {
     unsafe fn method(self) {
@@ -49,4 +56,14 @@ impl Foo for id {
     ) {
         msg_send ! ( self , methodWithArg1 : intvalue andArg2 : ptr andArg3 : floatvalue )
     }
+    unsafe fn methodWithAndWithoutKeywords_arg2Name__arg4Name_(
+        self,
+        arg1: ::std::os::raw::c_int,
+        arg2: f32,
+        arg3: f32,
+        arg4: ::std::os::raw::c_int,
+    ) -> instancetype {
+        msg_send ! ( self , methodWithAndWithoutKeywords : arg1 arg2Name : arg2 arg3 : arg3 arg4Name : arg4 )
+    }
 }
+pub type instancetype = id;

@@ -212,11 +212,16 @@ impl ObjCMethod {
 
     /// Formats the method call
     pub fn format_method_call(&self, args: &[TokenStream]) -> TokenStream {
-        let split_name: Vec<_> = self
+        let split_name: Vec<Option<Ident>> = self
             .name
             .split(':')
-            .filter(|p| !p.is_empty())
-            .map(|name| Ident::new(name, Span::call_site()))
+            .map(|name| {
+                if name.is_empty() {
+                    None
+                } else {
+                    Some(Ident::new(name, Span::call_site()))
+                }
+            })
             .collect();
 
         // No arguments
@@ -228,11 +233,11 @@ impl ObjCMethod {
         }
 
         // Check right amount of arguments
-        if args.len() != split_name.len() {
+        if args.len() != split_name.len() - 1 {
             panic!(
                 "Incorrect method name or arguments for objc method, {:?} vs {:?}",
                 args,
-                split_name
+                split_name,
             );
         }
 
@@ -245,10 +250,15 @@ impl ObjCMethod {
             args_without_types.push(Ident::new(name, Span::call_site()))
         }
 
-        let args = split_name
-            .into_iter()
-            .zip(args_without_types)
-            .map(|(arg, arg_val)| quote! { #arg : #arg_val });
+        let args = split_name.into_iter().zip(args_without_types).map(
+            |(arg, arg_val)| {
+                if let Some(arg) = arg {
+                    quote! { #arg: #arg_val }
+                } else {
+                    quote! { #arg_val: #arg_val }
+                }
+            },
+        );
 
         quote! {
             #( #args )*
