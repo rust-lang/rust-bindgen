@@ -12,6 +12,7 @@ use clang_sys::CXCursor_ObjCClassRef;
 use clang_sys::CXCursor_ObjCInstanceMethodDecl;
 use clang_sys::CXCursor_ObjCProtocolDecl;
 use clang_sys::CXCursor_ObjCProtocolRef;
+use clang_sys::CXCursor_TemplateTypeParameter;
 use proc_macro2::{Ident, Span, TokenStream};
 
 /// Objective C interface as used in TypeKind
@@ -26,6 +27,9 @@ pub struct ObjCInterface {
     category: Option<String>,
 
     is_protocol: bool,
+
+    /// The list of template names almost always, ObjectType or KeyType
+    pub template_names: Vec<String>,
 
     conforms_to: Vec<ItemId>,
 
@@ -58,6 +62,7 @@ impl ObjCInterface {
             name: name.to_owned(),
             category: None,
             is_protocol: false,
+            template_names: Vec::new(),
             conforms_to: Vec::new(),
             methods: Vec::new(),
             class_methods: Vec::new(),
@@ -83,6 +88,11 @@ impl ObjCInterface {
                 self.name().to_owned()
             }
         }
+    }
+
+    /// Is this a template interface?
+    pub fn is_template(&self) -> bool {
+        !self.template_names.is_empty()
     }
 
     /// List of the methods defined in this interface
@@ -154,6 +164,10 @@ impl ObjCInterface {
                     let method = ObjCMethod::new(&name, signature, is_class_method);
                     interface.add_method(method);
                 }
+                CXCursor_TemplateTypeParameter => {
+                    let name = c.spelling();
+                    interface.template_names.push(name);
+                }
                 _ => {}
             }
             CXChildVisit_Continue
@@ -183,8 +197,8 @@ impl ObjCMethod {
         ObjCMethod {
             name: name.to_owned(),
             rust_name: rust_name.to_owned(),
-            signature: signature,
-            is_class_method: is_class_method,
+            signature,
+            is_class_method,
         }
     }
 
