@@ -258,6 +258,11 @@ impl<'a> StructLayoutTracker<'a> {
         }
 
         let padding_bytes = layout.size - self.latest_offset;
+        if padding_bytes == 0 {
+            return None;
+        }
+
+        let repr_align = self.ctx.options().rust_features().repr_align;
 
         // We always pad to get to the correct size if the struct is one of
         // those we can't align properly.
@@ -265,12 +270,10 @@ impl<'a> StructLayoutTracker<'a> {
         // Note that if the last field we saw was a bitfield, we may need to pad
         // regardless, because bitfields don't respect alignment as strictly as
         // other fields.
-        if padding_bytes > 0 &&
-            (padding_bytes >= layout.align ||
-                (self.last_field_was_bitfield &&
-                    padding_bytes >=
-                        self.latest_field_layout.unwrap().align) ||
-                layout.align > self.ctx.target_pointer_size())
+        if padding_bytes >= layout.align ||
+             (self.last_field_was_bitfield &&
+              padding_bytes >= self.latest_field_layout.unwrap().align) ||
+             (!repr_align && layout.align > self.ctx.target_pointer_size())
         {
             let layout = if self.is_packed {
                 Layout::new(padding_bytes, 1)

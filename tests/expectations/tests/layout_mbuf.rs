@@ -178,7 +178,6 @@ pub struct rte_mbuf {
     pub priv_size: u16,
     /// Timesync flags for use with IEEE1588.
     pub timesync: u16,
-    pub __bindgen_padding_0: [u32; 7usize],
 }
 /// 16-bit Reference counter.
 /// It should only be accessed using the following functions:

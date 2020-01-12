@@ -33,7 +33,6 @@ pub struct rte_kni_mbuf {
     pub pad3: [::std::os::raw::c_char; 8usize],
     pub pool: *mut ::std::os::raw::c_void,
     pub next: *mut ::std::os::raw::c_void,
-    pub __bindgen_padding_1: [u64; 5usize],
 }
 #[test]
 fn bindgen_test_layout_rte_kni_mbuf() {
