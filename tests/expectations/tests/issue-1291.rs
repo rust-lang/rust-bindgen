@@ -26,7 +26,6 @@ pub struct RTCRay {
     pub geomID: ::std::os::raw::c_uint,
     pub primID: ::std::os::raw::c_uint,
     pub instID: ::std::os::raw::c_uint,
-    pub __bindgen_padding_0: [u32; 3usize],
 }
 #[test]
 fn bindgen_test_layout_RTCRay() {

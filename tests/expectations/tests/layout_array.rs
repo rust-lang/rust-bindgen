@@ -68,7 +68,6 @@ pub struct rte_mempool_ops {
     pub dequeue: rte_mempool_dequeue_t,
     ///< Get qty of available objs.
     pub get_count: rte_mempool_get_count,
-    pub __bindgen_padding_0: [u64; 7usize],
 }
 #[test]
 fn bindgen_test_layout_rte_mempool_ops() {

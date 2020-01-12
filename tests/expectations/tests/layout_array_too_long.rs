@@ -163,7 +163,6 @@ pub struct ip_frag_pkt {
     pub last_idx: u32,
     ///< fragments
     pub frags: [ip_frag; 4usize],
-    pub __bindgen_padding_0: [u64; 6usize],
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]

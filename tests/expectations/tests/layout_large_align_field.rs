@@ -193,7 +193,6 @@ pub struct ip_frag_pkt {
     pub last_idx: u32,
     ///< fragments
     pub frags: [ip_frag; 4usize],
-    pub __bindgen_padding_0: [u64; 6usize],
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -417,7 +416,6 @@ pub struct ip_frag_tbl_stat {
     pub fail_total: u64,
     ///< # of 'no space' add failures.
     pub fail_nospace: u64,
-    pub __bindgen_padding_0: [u64; 2usize],
 }
 #[test]
 fn bindgen_test_layout_ip_frag_tbl_stat() {

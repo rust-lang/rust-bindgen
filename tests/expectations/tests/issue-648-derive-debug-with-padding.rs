@@ -16,7 +16,6 @@
 #[derive(Copy, Clone)]
 pub struct NoDebug {
     pub c: ::std::os::raw::c_char,
-    pub __bindgen_padding_0: [u8; 63usize],
 }
 #[test]
 fn bindgen_test_layout_NoDebug() {
@@ -61,7 +60,6 @@ impl ::std::cmp::PartialEq for NoDebug {
 pub struct ShouldDeriveDebugButDoesNot {
     pub c: [::std::os::raw::c_char; 32usize],
     pub d: ::std::os::raw::c_char,
-    pub __bindgen_padding_0: [u8; 31usize],
 }
 #[test]
 fn bindgen_test_layout_ShouldDeriveDebugButDoesNot() {
