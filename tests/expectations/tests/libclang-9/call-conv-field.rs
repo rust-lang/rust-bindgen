@@ -12,9 +12,10 @@
 #[derive(Default, Copy, Clone)]
 pub struct JNINativeInterface_ {
     pub GetVersion: ::std::option::Option<
-        unsafe extern "stdcall" fn(env: *mut ::std::os::raw::c_void) -> ::std::os::raw::c_int,
+        unsafe extern "stdcall" fn(
+            env: *mut ::std::os::raw::c_void,
+        ) -> ::std::os::raw::c_int,
     >,
-    pub __bindgen_padding_0: u32,
     pub __hack: ::std::os::raw::c_ulonglong,
 }
 #[test]
@@ -30,7 +31,10 @@ fn bindgen_test_layout_JNINativeInterface_() {
         concat!("Alignment of ", stringify!(JNINativeInterface_))
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<JNINativeInterface_>())).GetVersion as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<JNINativeInterface_>())).GetVersion
+                as *const _ as usize
+        },
         0usize,
         concat!(
             "Offset of field: ",
@@ -40,7 +44,10 @@ fn bindgen_test_layout_JNINativeInterface_() {
         )
     );
     assert_eq!(
-        unsafe { &(*(::std::ptr::null::<JNINativeInterface_>())).__hack as *const _ as usize },
+        unsafe {
+            &(*(::std::ptr::null::<JNINativeInterface_>())).__hack as *const _
+                as usize
+        },
         8usize,
         concat!(
             "Offset of field: ",
