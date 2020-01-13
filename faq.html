@@ -190,6 +190,29 @@ STL. That ties our hands when it comes to linking: <a href="#why-isnt-bindgen-ge
 transitively contain STL things. We generally recommend marking <code>std::.*</code> as
 opaque, and then whitelisting only the specific things you need from the library
 you're binding to that is pulling in STL headers.</p>
+<a class="header" href="#how-to-deal-with-bindgen-generated-padding-fields" id="how-to-deal-with-bindgen-generated-padding-fields"><h3>How to deal with bindgen generated padding fields?</h3></a>
+<p>Depending the architecture, toolchain versions and source struct, it is
+possible that bindgen will generate padding fields named <code>__bindgen_padding_N</code>.
+As these fields might be present when compiling for one architecture but not
+for an other, you should not initialize these fields manually when initializing
+the struct. Instead, use the <code>Default</code> trait. You can either enable this when
+constructing the <code>Builder</code> using the <code>derive_default</code> method, or you can
+implement this per struct using:</p>
+<pre><code class="language-rust ignore">impl Default for SRC_DATA {
+    fn default() -&gt; Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+</code></pre>
+<p>This makes it possible to initialize <code>SRC_DATA</code> by:</p>
+<pre><code class="language-rust ignore">SRC_DATA {
+    field_a: &quot;foo&quot;,
+    field_b: &quot;bar&quot;,
+    ..Default::default()
+}
+</code></pre>
+<p>In the case bindgen generates a padding field, then this field will
+be automatically initialized by <code>..Default::default()</code>.</p>
 
                     </main>
 
