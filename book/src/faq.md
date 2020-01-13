@@ -64,3 +64,34 @@ As far as generating opaque blobs of bytes with the correct size and alignment,
 transitively contain STL things. We generally recommend marking `std::.*` as
 opaque, and then whitelisting only the specific things you need from the library
 you're binding to that is pulling in STL headers.
+
+### How to deal with bindgen generated padding fields?
+
+Depending the architecture, toolchain versions and source struct, it is
+possible that bindgen will generate padding fields named `__bindgen_padding_N`. 
+As these fields might be present when compiling for one architecture but not
+for an other, you should not initialize these fields manually when initializing
+the struct. Instead, use the `Default` trait. You can either enable this when
+constructing the `Builder` using the `derive_default` method, or you can
+implement this per struct using:
+
+```rust
+impl Default for SRC_DATA {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+```
+
+This makes it possible to initialize `SRC_DATA` by:
+
+```rust
+SRC_DATA {
+    field_a: "foo",
+    field_b: "bar",
+    ..Default::default()
+}
+```
+
+In the case bindgen generates a padding field, then this field will
+be automatically initialized by `..Default::default()`.
