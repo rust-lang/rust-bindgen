@@ -75,7 +75,7 @@ the struct. Instead, use the `Default` trait. You can either enable this when
 constructing the `Builder` using the `derive_default` method, or you can
 implement this per struct using:
 
-```rust
+```rust,ignore
 impl Default for SRC_DATA {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
@@ -85,7 +85,7 @@ impl Default for SRC_DATA {
 
 This makes it possible to initialize `SRC_DATA` by:
 
-```rust
+```rust,ignore
 SRC_DATA {
     field_a: "foo",
     field_b: "bar",
