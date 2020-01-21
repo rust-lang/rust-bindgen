@@ -794,6 +794,10 @@ impl Builder {
 
     /// Hide the given type from the generated bindings. Regular expressions are
     /// supported.
+    ///
+    /// To blacklist types prefixed with "mylib" use `"mylib_.*"`.
+    /// For more complicated expressions check
+    /// [regex](https://docs.rs/regex/*/regex/) docs
     pub fn blacklist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.blacklisted_types.insert(arg);
         self
@@ -801,6 +805,10 @@ impl Builder {
 
     /// Hide the given function from the generated bindings. Regular expressions
     /// are supported.
+    ///
+    /// To blacklist functions prefixed with "mylib" use `"mylib_.*"`.
+    /// For more complicated expressions check
+    /// [regex](https://docs.rs/regex/*/regex/) docs
     pub fn blacklist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.blacklisted_functions.insert(arg);
         self
@@ -809,6 +817,10 @@ impl Builder {
     /// Hide the given item from the generated bindings, regardless of
     /// whether it's a type, function, module, etc. Regular
     /// expressions are supported.
+    ///
+    /// To blacklist items prefixed with "mylib" use `"mylib_.*"`.
+    /// For more complicated expressions check
+    /// [regex](https://docs.rs/regex/*/regex/) docs
     pub fn blacklist_item<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.blacklisted_items.insert(arg);
         self
@@ -816,6 +828,10 @@ impl Builder {
 
     /// Treat the given type as opaque in the generated bindings. Regular
     /// expressions are supported.
+    ///
+    /// To change types prefixed with "mylib" into opaque, use `"mylib_.*"`.
+    /// For more complicated expressions check
+    /// [regex](https://docs.rs/regex/*/regex/) docs
     pub fn opaque_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.opaque_types.insert(arg);
         self
@@ -832,6 +848,10 @@ impl Builder {
     /// Whitelist the given type so that it (and all types that it transitively
     /// refers to) appears in the generated bindings. Regular expressions are
     /// supported.
+    ///
+    /// To whitelist types prefixed with "mylib" use `"mylib_.*"`.
+    /// For more complicated expressions check
+    /// [regex](https://docs.rs/regex/*/regex/) docs
     pub fn whitelist_type<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.whitelisted_types.insert(arg);
         self
@@ -840,6 +860,10 @@ impl Builder {
     /// Whitelist the given function so that it (and all types that it
     /// transitively refers to) appears in the generated bindings. Regular
     /// expressions are supported.
+    ///
+    /// To whitelist functions prefixed with "mylib" use `"mylib_.*"`.
+    /// For more complicated expressions check
+    /// [regex](https://docs.rs/regex/*/regex/) docs
     pub fn whitelist_function<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.whitelisted_functions.insert(arg);
         self
@@ -856,6 +880,10 @@ impl Builder {
     /// Whitelist the given variable so that it (and all types that it
     /// transitively refers to) appears in the generated bindings. Regular
     /// expressions are supported.
+    ///
+    /// To whitelist variables prefixed with "mylib" use `"mylib_.*"`.
+    /// For more complicated expressions check
+    /// [regex](https://docs.rs/regex/*/regex/) docs
     pub fn whitelist_var<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.whitelisted_vars.insert(arg);
         self
