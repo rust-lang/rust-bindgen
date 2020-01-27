@@ -12,7 +12,21 @@
 extern crate objc;
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
-pub trait Foo {}
-impl Foo for id {}
-pub trait protocol_bar {}
-impl protocol_bar for id {}
+#[repr(transparent)]
+#[derive(Clone, Copy)]
+pub struct Foo(pub id);
+impl std::ops::Deref for Foo {
+    type Target = objc::runtime::Object;
+    fn deref(&self) -> &Self::Target {
+        unsafe { &*self.0 }
+    }
+}
+unsafe impl objc::Message for Foo {}
+impl Foo {
+    pub fn alloc() -> Self {
+        Self(unsafe { msg_send!(objc::class!(Foo), alloc) })
+    }
+}
+impl IFoo for Foo {}
+pub trait IFoo: Sized + std::ops::Deref {}
+pub trait Pbar: Sized + std::ops::Deref {}

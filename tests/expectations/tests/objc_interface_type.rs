@@ -12,12 +12,27 @@
 extern crate objc;
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
-pub trait Foo {}
-impl Foo for id {}
+#[repr(transparent)]
+#[derive(Clone, Copy)]
+pub struct Foo(pub id);
+impl std::ops::Deref for Foo {
+    type Target = objc::runtime::Object;
+    fn deref(&self) -> &Self::Target {
+        unsafe { &*self.0 }
+    }
+}
+unsafe impl objc::Message for Foo {}
+impl Foo {
+    pub fn alloc() -> Self {
+        Self(unsafe { msg_send!(objc::class!(Foo), alloc) })
+    }
+}
+impl IFoo for Foo {}
+pub trait IFoo: Sized + std::ops::Deref {}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct FooStruct {
-    pub foo: *mut id,
+    pub foo: *mut objc::runtime::Object,
 }
 #[test]
 fn bindgen_test_layout_FooStruct() {
@@ -53,5 +68,5 @@ extern "C" {
     pub fn fooFunc(foo: id);
 }
 extern "C" {
-    pub static mut kFoo: *const id;
+    pub static mut kFoo: *const objc::runtime::Object;
 }
