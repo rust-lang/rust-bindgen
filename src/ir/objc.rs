@@ -31,7 +31,8 @@ pub struct ObjCInterface {
     /// The list of template names almost always, ObjectType or KeyType
     pub template_names: Vec<String>,
 
-    conforms_to: Vec<ItemId>,
+    /// The list of protocols that this interface conforms to.
+    pub conforms_to: Vec<ItemId>,
 
     /// List of the methods defined in this interfae
     methods: Vec<ObjCMethod>,
@@ -77,15 +78,15 @@ impl ObjCInterface {
 
     /// Formats the name for rust
     /// Can be like NSObject, but with categories might be like NSObject_NSCoderMethods
-    /// and protocols are like protocol_NSObject
+    /// and protocols are like PNSObject
     pub fn rust_name(&self) -> String {
         if let Some(ref cat) = self.category {
             format!("{}_{}", self.name(), cat)
         } else {
             if self.is_protocol {
-                format!("protocol_{}", self.name())
+                format!("P{}", self.name())
             } else {
-                self.name().to_owned()
+                format!("I{}", self.name().to_owned())
             }
         }
     }
@@ -98,6 +99,16 @@ impl ObjCInterface {
     /// List of the methods defined in this interface
     pub fn methods(&self) -> &Vec<ObjCMethod> {
         &self.methods
+    }
+
+    /// Is this a protocol?
+    pub fn is_protocol(&self) -> bool {
+        self.is_protocol
+    }
+
+    /// Is this a category?
+    pub fn is_category(&self) -> bool {
+        self.category.is_some()
     }
 
     /// List of the class methods defined in this interface
@@ -129,7 +140,7 @@ impl ObjCInterface {
                 }
                 CXCursor_ObjCProtocolRef => {
                     // Gather protocols this interface conforms to
-                    let needle = format!("protocol_{}", c.spelling());
+                    let needle = format!("P{}", c.spelling());
                     let items_map = ctx.items();
                     debug!("Interface {} conforms to {}, find the item", interface.name, needle);
 

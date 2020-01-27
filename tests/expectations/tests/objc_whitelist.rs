@@ -12,37 +12,5 @@
 extern crate objc;
 #[allow(non_camel_case_types)]
 pub type id = *mut objc::runtime::Object;
-pub trait protocol_SomeProtocol {
-    unsafe fn protocolMethod(self);
-    unsafe fn protocolClassMethod();
-}
-impl protocol_SomeProtocol for id {
-    unsafe fn protocolMethod(self) {
-        msg_send!(self, protocolMethod)
-    }
-    unsafe fn protocolClassMethod() {
-        msg_send!(
-            objc::runtime::Class::get("SomeProtocol")
-                .expect("Couldn't find SomeProtocol"),
-            protocolClassMethod
-        )
-    }
-}
-pub trait WhitelistMe {
-    unsafe fn method(self);
-    unsafe fn classMethod();
-}
-impl WhitelistMe for id {
-    unsafe fn method(self) {
-        msg_send!(self, method)
-    }
-    unsafe fn classMethod() {
-        msg_send!(
-            objc::runtime::Class::get("WhitelistMe")
-                .expect("Couldn't find WhitelistMe"),
-            classMethod
-        )
-    }
-}
-pub trait WhitelistMe_InterestingCategory {}
-impl WhitelistMe_InterestingCategory for id {}
+impl WhitelistMe_InterestingCategory for WhitelistMe {}
+pub trait WhitelistMe_InterestingCategory: Sized + std::ops::Deref {}
