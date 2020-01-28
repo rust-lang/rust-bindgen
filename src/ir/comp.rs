@@ -496,6 +496,7 @@ impl FieldMethods for RawField {
 fn raw_fields_to_fields_and_bitfield_units<I>(
     ctx: &BindgenContext,
     raw_fields: I,
+    packed: bool,
 ) -> Result<Vec<Field>, ()>
 where
     I: IntoIterator<Item = RawField>,
@@ -533,6 +534,7 @@ where
             &mut bitfield_unit_count,
             &mut fields,
             bitfields,
+            packed,
         )?;
     }
 
@@ -551,6 +553,7 @@ fn bitfields_to_allocation_units<E, I>(
     bitfield_unit_count: &mut usize,
     fields: &mut E,
     raw_bitfields: I,
+    packed: bool,
 ) -> Result<(), ()>
 where
     E: Extend<Field>,
@@ -575,17 +578,22 @@ where
         unit_size_in_bits: usize,
         unit_align_in_bits: usize,
         bitfields: Vec<Bitfield>,
+        packed: bool,
     ) where
         E: Extend<Field>,
     {
         *bitfield_unit_count += 1;
-        let align = bytes_from_bits_pow2(unit_align_in_bits);
+        let align = if packed {
+            1
+        } else {
+            bytes_from_bits_pow2(unit_align_in_bits)
+        };
         let size = align_to(unit_size_in_bits, align * 8) / 8;
         let layout = Layout::new(size, align);
         fields.extend(Some(Field::Bitfields(BitfieldUnit {
             nth: *bitfield_unit_count,
-            layout: layout,
-            bitfields: bitfields,
+            layout,
+            bitfields,
         })));
     }
 
@@ -607,34 +615,39 @@ where
         let bitfield_align = bitfield_layout.align;
 
         let mut offset = unit_size_in_bits;
-        if is_ms_struct {
-            if unit_size_in_bits != 0 &&
-                (bitfield_width == 0 ||
-                    bitfield_width > unfilled_bits_in_unit)
-            {
-                // We've reached the end of this allocation unit, so flush it
-                // and its bitfields.
-                unit_size_in_bits = align_to(unit_size_in_bits, unit_align * 8);
-                flush_allocation_unit(
-                    fields,
-                    bitfield_unit_count,
-                    unit_size_in_bits,
-                    unit_align,
-                    mem::replace(&mut bitfields_in_unit, vec![]),
-                );
+        if !packed {
+            if is_ms_struct {
+                if unit_size_in_bits != 0 &&
+                    (bitfield_width == 0 ||
+                        bitfield_width > unfilled_bits_in_unit)
+                {
+                    // We've reached the end of this allocation unit, so flush it
+                    // and its bitfields.
+                    unit_size_in_bits =
+                        align_to(unit_size_in_bits, unit_align * 8);
+                    flush_allocation_unit(
+                        fields,
+                        bitfield_unit_count,
+                        unit_size_in_bits,
+                        unit_align,
+                        mem::replace(&mut bitfields_in_unit, vec![]),
+                        packed,
+                    );
 
-                // Now we're working on a fresh bitfield allocation unit, so reset
-                // the current unit size and alignment.
-                offset = 0;
-                unit_align = 0;
-            }
-        } else {
-            if offset != 0 &&
-                (bitfield_width == 0 ||
-                    (offset & (bitfield_align * 8 - 1)) + bitfield_width >
-                        bitfield_size * 8)
-            {
-                offset = align_to(offset, bitfield_align * 8);
+                    // Now we're working on a fresh bitfield allocation unit, so reset
+                    // the current unit size and alignment.
+                    offset = 0;
+                    unit_align = 0;
+                }
+            } else {
+                if offset != 0 &&
+                    (bitfield_width == 0 ||
+                        (offset & (bitfield_align * 8 - 1)) +
+                            bitfield_width >
+                            bitfield_size * 8)
+                {
+                    offset = align_to(offset, bitfield_align * 8);
+                }
             }
         }
 
@@ -677,6 +690,7 @@ where
             unit_size_in_bits,
             unit_align,
             bitfields_in_unit,
+            packed,
         );
     }
 
@@ -717,7 +731,7 @@ impl CompFields {
         }
     }
 
-    fn compute_bitfield_units(&mut self, ctx: &BindgenContext) {
+    fn compute_bitfield_units(&mut self, ctx: &BindgenContext, packed: bool) {
         let raws = match *self {
             CompFields::BeforeComputingBitfieldUnits(ref mut raws) => {
                 mem::replace(raws, vec![])
@@ -727,7 +741,7 @@ impl CompFields {
             }
         };
 
-        let result = raw_fields_to_fields_and_bitfield_units(ctx, raws);
+        let result = raw_fields_to_fields_and_bitfield_units(ctx, raws, packed);
 
         match result {
             Ok(fields_and_units) => {
@@ -1126,7 +1140,7 @@ impl CompInfo {
     /// Do we see a virtual function during parsing?
     /// Get the has_own_virtual_method boolean.
     pub fn has_own_virtual_method(&self) -> bool {
-        return self.has_own_virtual_method;
+        self.has_own_virtual_method
     }
 
     /// Did we see a destructor when parsing this type?
@@ -1566,7 +1580,9 @@ impl CompInfo {
 
     /// Compute this compound structure's bitfield allocation units.
     pub fn compute_bitfield_units(&mut self, ctx: &BindgenContext) {
-        self.fields.compute_bitfield_units(ctx);
+        // TODO(emilio): If we could detect #pragma packed here we'd fix layout
+        // tests in divide-by-zero-in-struct-layout.rs
+        self.fields.compute_bitfield_units(ctx, self.packed_attr)
     }
 
     /// Assign for each anonymous field a generated name.
