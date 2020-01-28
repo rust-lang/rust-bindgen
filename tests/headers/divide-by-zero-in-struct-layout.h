@@ -1,7 +1,7 @@
 // bindgen-flags: --no-layout-tests
 //
-// Unfortunately, we aren't translating the second and third structs correctly
-// yet. But we definitely shouldn't divide-by-zero when we see it...
+// Unfortunately, we aren't translating the third struct correctly yet. But we
+// definitely shouldn't divide-by-zero when we see it...
 //
 // Once we fix #981 we should remove the `--no-layout-tests`.
 
