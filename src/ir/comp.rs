@@ -6,9 +6,9 @@ use super::context::{BindgenContext, FunctionId, ItemId, TypeId, VarId};
 use super::dot::DotAttributes;
 use super::item::{IsOpaque, Item};
 use super::layout::Layout;
-// use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
 use super::template::TemplateParameters;
 use super::traversal::{EdgeKind, Trace, Tracer};
+use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
 use clang;
 use codegen::struct_layout::{align_to, bytes_from_bits_pow2};
 use ir::derive::CanDeriveCopy;
@@ -497,7 +497,7 @@ fn raw_fields_to_fields_and_bitfield_units<I>(
     ctx: &BindgenContext,
     raw_fields: I,
     packed: bool,
-) -> Result<Vec<Field>, ()>
+) -> Result<(Vec<Field>, bool), ()>
 where
     I: IntoIterator<Item = RawField>,
 {
@@ -543,7 +543,7 @@ where
         "The above loop should consume all items in `raw_fields`"
     );
 
-    Ok(fields)
+    Ok((fields, bitfield_unit_count != 0))
 }
 
 /// Given a set of contiguous raw bitfields, group and allocate them into
@@ -707,7 +707,10 @@ where
 #[derive(Debug)]
 enum CompFields {
     BeforeComputingBitfieldUnits(Vec<RawField>),
-    AfterComputingBitfieldUnits(Vec<Field>),
+    AfterComputingBitfieldUnits {
+        fields: Vec<Field>,
+        has_bitfield_units: bool,
+    },
     ErrorComputingBitfieldUnits,
 }
 
@@ -744,10 +747,13 @@ impl CompFields {
         let result = raw_fields_to_fields_and_bitfield_units(ctx, raws, packed);
 
         match result {
-            Ok(fields_and_units) => {
+            Ok((fields, has_bitfield_units)) => {
                 mem::replace(
                     self,
-                    CompFields::AfterComputingBitfieldUnits(fields_and_units),
+                    CompFields::AfterComputingBitfieldUnits {
+                        fields,
+                        has_bitfield_units,
+                    },
                 );
             }
             Err(()) => {
@@ -758,11 +764,11 @@ impl CompFields {
 
     fn deanonymize_fields(&mut self, ctx: &BindgenContext, methods: &[Method]) {
         let fields = match *self {
-            CompFields::AfterComputingBitfieldUnits(ref mut fields) => fields,
-            CompFields::ErrorComputingBitfieldUnits => {
-                // Nothing to do here.
-                return;
-            }
+            CompFields::AfterComputingBitfieldUnits {
+                ref mut fields, ..
+            } => fields,
+            // Nothing to do here.
+            CompFields::ErrorComputingBitfieldUnits => return,
             CompFields::BeforeComputingBitfieldUnits(_) => {
                 panic!("Not yet computed bitfield units.");
             }
@@ -859,7 +865,7 @@ impl Trace for CompFields {
                     tracer.visit_kind(f.ty().into(), EdgeKind::Field);
                 }
             }
-            CompFields::AfterComputingBitfieldUnits(ref fields) => {
+            CompFields::AfterComputingBitfieldUnits { ref fields, .. } => {
                 for f in fields {
                     f.trace(context, tracer, &());
                 }
@@ -1061,7 +1067,7 @@ impl CompInfo {
     /// Construct a new compound type.
     pub fn new(kind: CompKind) -> Self {
         CompInfo {
-            kind: kind,
+            kind,
             fields: CompFields::default(),
             template_params: vec![],
             methods: vec![],
@@ -1124,11 +1130,41 @@ impl CompInfo {
     pub fn fields(&self) -> &[Field] {
         match self.fields {
             CompFields::ErrorComputingBitfieldUnits => &[],
-            CompFields::AfterComputingBitfieldUnits(ref fields) => fields,
+            CompFields::AfterComputingBitfieldUnits { ref fields, .. } => {
+                fields
+            }
             CompFields::BeforeComputingBitfieldUnits(_) => {
                 panic!("Should always have computed bitfield units first");
             }
         }
+    }
+
+    fn has_bitfields(&self) -> bool {
+        match self.fields {
+            CompFields::ErrorComputingBitfieldUnits => false,
+            CompFields::AfterComputingBitfieldUnits {
+                has_bitfield_units,
+                ..
+            } => has_bitfield_units,
+            CompFields::BeforeComputingBitfieldUnits(_) => {
+                panic!("Should always have computed bitfield units first");
+            }
+        }
+    }
+
+    /// Returns whether we have a too large bitfield unit, in which case we may
+    /// not be able to derive some of the things we should be able to normally
+    /// derive.
+    pub fn has_too_large_bitfield_unit(&self) -> bool {
+        if !self.has_bitfields() {
+            return false;
+        }
+        self.fields().iter().any(|field| match *field {
+            Field::DataMember(..) => false,
+            Field::Bitfields(ref unit) => {
+                unit.layout.size > RUST_DERIVE_IN_ARRAY_LIMIT
+            }
+        })
     }
 
     /// Does this type have any template parameters that aren't types
