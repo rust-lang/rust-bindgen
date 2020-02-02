@@ -1310,23 +1310,26 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         F: Extend<proc_macro2::TokenStream>,
         M: Extend<proc_macro2::TokenStream>,
     {
+        use ir::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
+
         result.saw_bitfield_unit();
 
+        let layout = self.layout();
+        let unit_field_ty = helpers::bitfield_unit(ctx, layout);
         let field_ty = {
-            let ty = helpers::bitfield_unit(ctx, self.layout());
             if parent.is_union() && !parent.can_be_rust_union(ctx) {
                 result.saw_bindgen_union();
                 if ctx.options().enable_cxx_namespaces {
                     quote! {
-                        root::__BindgenUnionField<#ty>
+                        root::__BindgenUnionField<#unit_field_ty>
                     }
                 } else {
                     quote! {
-                        __BindgenUnionField<#ty>
+                        __BindgenUnionField<#unit_field_ty>
                     }
                 }
             } else {
-                ty
+                unit_field_ty.clone()
             }
         };
 
@@ -1338,16 +1341,21 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         };
         fields.extend(Some(field));
 
-        let unit_field_ty = helpers::bitfield_unit(ctx, self.layout());
-
         let ctor_name = self.ctor_name();
         let mut ctor_params = vec![];
         let mut ctor_impl = quote! {};
-        let mut generate_ctor = true;
+
+        // We cannot generate any constructor if the underlying storage can't
+        // implement AsRef<[u8]> / AsMut<[u8]> / etc.
+        let mut generate_ctor = layout.size <= RUST_DERIVE_IN_ARRAY_LIMIT;
 
         for bf in self.bitfields() {
             // Codegen not allowed for anonymous bitfields
             if bf.name().is_none() {
+                continue;
+            }
+
+            if layout.size > RUST_DERIVE_IN_ARRAY_LIMIT {
                 continue;
             }
 
@@ -1395,7 +1403,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
             }));
         }
 
-        struct_layout.saw_bitfield_unit(self.layout());
+        struct_layout.saw_bitfield_unit(layout);
     }
 }
 

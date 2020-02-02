@@ -361,6 +361,20 @@ impl<'ctx> CannotDerive<'ctx> {
                     return CanDerive::No;
                 }
 
+                // Bitfield units are always represented as arrays of u8, but
+                // they're not traced as arrays, so we need to check here
+                // instead.
+                if !self.derive_trait.can_derive_large_array() &&
+                    info.has_too_large_bitfield_unit() &&
+                    !item.is_opaque(self.ctx, &())
+                {
+                    trace!(
+                        "    cannot derive {} for comp with too large bitfield unit",
+                        self.derive_trait
+                    );
+                    return CanDerive::No;
+                }
+
                 let pred = self.derive_trait.consider_edge_comp();
                 return self.constrain_join(item, pred);
             }
