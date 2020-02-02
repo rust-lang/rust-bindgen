@@ -9,78 +9,86 @@
   - [Removed](#removed)
   - [Fixed](#fixed)
   - [Security](#security)
-- [0.51.1](#0511)
-  - [Fixed](#fixed-1)
-  - [Changed](#changed-1)
-- [0.51.0](#0510)
-  - [Fixed](#fixed-2)
-  - [Changed](#changed-2)
+- [0.53.0](#0530)
   - [Added](#added-1)
-- [0.50.0](#0500)
+  - [Changed](#changed-1)
+  - [Fixed](#fixed-1)
+- [0.52.0](#0520)
   - [Added](#added-2)
-- [0.49.3](#0493)
-  - [Added](#added-3)
-- [0.49.2](#0492)
-  - [Changed](#changed-3)
-- [0.49.1](#0491)
+  - [Changed](#changed-2)
+  - [Fixed](#fixed-2)
+- [0.51.1](#0511)
   - [Fixed](#fixed-3)
-  - [Changed](#changed-4)
-- [0.49.0](#0490)
-  - [Added](#added-4)
+  - [Changed](#changed-3)
+- [0.51.0](#0510)
   - [Fixed](#fixed-4)
+  - [Changed](#changed-4)
+  - [Added](#added-3)
+- [0.50.0](#0500)
+  - [Added](#added-4)
+- [0.49.3](#0493)
+  - [Added](#added-5)
+- [0.49.2](#0492)
   - [Changed](#changed-5)
-- [0.48.1](#0481)
+- [0.49.1](#0491)
   - [Fixed](#fixed-5)
-- [0.48.0](#0480)
   - [Changed](#changed-6)
+- [0.49.0](#0490)
+  - [Added](#added-6)
   - [Fixed](#fixed-6)
-- [0.47.3](#0473)
   - [Changed](#changed-7)
-- [0.47.2](#0472)
+- [0.48.1](#0481)
   - [Fixed](#fixed-7)
-- [0.47.1](#0471)
+- [0.48.0](#0480)
   - [Changed](#changed-8)
   - [Fixed](#fixed-8)
-- [0.47.0](#0470)
+- [0.47.3](#0473)
   - [Changed](#changed-9)
+- [0.47.2](#0472)
   - [Fixed](#fixed-9)
-- [0.33.1 .. 0.46.0](#0331--0460)
-  - [Added](#added-5)
-  - [Removed](#removed-1)
+- [0.47.1](#0471)
   - [Changed](#changed-10)
   - [Fixed](#fixed-10)
-- [0.33.1](#0331)
-  - [Fixed](#fixed-11)
-- [0.33.0](#0330)
-  - [Added](#added-6)
+- [0.47.0](#0470)
   - [Changed](#changed-11)
-  - [Deprecated](#deprecated-1)
-  - [Removed](#removed-2)
-  - [Fixed](#fixed-12)
-  - [Security](#security-1)
-- [0.32.2](#0322)
-  - [Fixed](#fixed-13)
-- [0.32.1](#0321)
-  - [Fixed](#fixed-14)
-- [0.32.0](#0320)
+  - [Fixed](#fixed-11)
+- [0.33.1 .. 0.46.0](#0331--0460)
   - [Added](#added-7)
+  - [Removed](#removed-1)
   - [Changed](#changed-12)
-  - [Fixed](#fixed-15)
-- [0.31.0](#0310)
+  - [Fixed](#fixed-12)
+- [0.33.1](#0331)
+  - [Fixed](#fixed-13)
+- [0.33.0](#0330)
   - [Added](#added-8)
   - [Changed](#changed-13)
-  - [Deprecated](#deprecated-2)
-  - [Removed](#removed-3)
+  - [Deprecated](#deprecated-1)
+  - [Removed](#removed-2)
+  - [Fixed](#fixed-14)
+  - [Security](#security-1)
+- [0.32.2](#0322)
+  - [Fixed](#fixed-15)
+- [0.32.1](#0321)
   - [Fixed](#fixed-16)
-- [0.30.0](#0300)
+- [0.32.0](#0320)
   - [Added](#added-9)
   - [Changed](#changed-14)
-  - [Deprecated](#deprecated-3)
   - [Fixed](#fixed-17)
-- [0.29.0](#0290)
+- [0.31.0](#0310)
   - [Added](#added-10)
   - [Changed](#changed-15)
+  - [Deprecated](#deprecated-2)
+  - [Removed](#removed-3)
   - [Fixed](#fixed-18)
+- [0.30.0](#0300)
+  - [Added](#added-11)
+  - [Changed](#changed-16)
+  - [Deprecated](#deprecated-3)
+  - [Fixed](#fixed-19)
+- [0.29.0](#0290)
+  - [Added](#added-12)
+  - [Changed](#changed-17)
+  - [Fixed](#fixed-20)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -113,6 +121,28 @@ Released YYYY/MM/DD
 ## Security
 
 * TODO (or remove section if none)
+
+--------------------------------------------------------------------------------
+
+# 0.53.0
+
+Released 2020/02/02.
+
+## Added
+
+ * Support for wasm_import_module. (#1691).
+ * non_exhaustive feature is now stable (#1698).
+ * Various objective-C improvements (#1702).
+
+## Changed
+
+ * Removed size_t to usize conversion rule (#1688).
+
+## Fixed
+
+ * Various unneeded padding fields shouldn't be generated anymore (#1710).
+ * Bitfields on packed structs should generate correct layout (#1717).
+ * Too large bitfield blocks now generate compiling code (#1719).
 
 --------------------------------------------------------------------------------
 
