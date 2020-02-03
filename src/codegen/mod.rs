@@ -4126,8 +4126,14 @@ mod utils {
             "int64_t" => primitive_ty(ctx, "i64"),
             "uint64_t" => primitive_ty(ctx, "u64"),
 
+            "size_t" if ctx.options().size_t_is_usize => {
+                primitive_ty(ctx, "usize")
+            }
             "uintptr_t" => primitive_ty(ctx, "usize"),
 
+            "ssize_t" if ctx.options().size_t_is_usize => {
+                primitive_ty(ctx, "isize")
+            }
             "intptr_t" | "ptrdiff_t" => primitive_ty(ctx, "isize"),
             _ => return None,
         })
