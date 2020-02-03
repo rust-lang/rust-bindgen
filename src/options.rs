@@ -383,6 +383,9 @@ where
                     "Do not record matching items in the regex sets. \
                      This disables reporting of unused items.",
                 ),
+            Arg::with_name("size_t-is-usize")
+                .long("size_t-is-usize")
+                .help("Translate size_t to usize."),
             Arg::with_name("no-rustfmt-bindings")
                 .long("no-rustfmt-bindings")
                 .help("Do not format the generated bindings with rustfmt."),
@@ -761,6 +764,10 @@ where
 
     if matches.is_present("no-record-matches") {
         builder = builder.record_matches(false);
+    }
+
+    if matches.is_present("size_t-is-usize") {
+        builder = builder.size_t_is_usize(true);
     }
 
     let no_rustfmt_bindings = matches.is_present("no-rustfmt-bindings");

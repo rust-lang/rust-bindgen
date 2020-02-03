@@ -604,6 +604,10 @@ impl Builder {
             output_vector.push("--no-record-matches".into());
         }
 
+        if self.options.size_t_is_usize {
+            output_vector.push("--size_t-is-usize".into());
+        }
+
         if !self.options.rustfmt_bindings {
             output_vector.push("--no-rustfmt-bindings".into());
         }
@@ -1350,6 +1354,12 @@ impl Builder {
         self
     }
 
+    /// Set whether `size_t` should be translated to `usize` automatically.
+    pub fn size_t_is_usize(mut self, is: bool) -> Self {
+        self.options.size_t_is_usize = is;
+        self
+    }
+
     /// Set whether rustfmt should format the generated bindings.
     pub fn rustfmt_bindings(mut self, doit: bool) -> Self {
         self.options.rustfmt_bindings = doit;
@@ -1776,6 +1786,9 @@ struct BindgenOptions {
     /// items via the `error!` log.
     record_matches: bool,
 
+    /// Whether `size_t` should be translated to `usize` automatically.
+    size_t_is_usize: bool,
+
     /// Whether rustfmt should format the generated bindings.
     rustfmt_bindings: bool,
 
@@ -1917,6 +1930,7 @@ impl Default for BindgenOptions {
             time_phases: false,
             record_matches: true,
             rustfmt_bindings: true,
+            size_t_is_usize: false,
             rustfmt_configuration_file: None,
             no_partialeq_types: Default::default(),
             no_copy_types: Default::default(),
