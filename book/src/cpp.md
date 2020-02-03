@@ -1,6 +1,6 @@
 # Generating Bindings to C++
 
-`bindgen` can handle a some C++ features, but not all of them. To set
+`bindgen` can handle some C++ features, but not all of them. To set
 expectations: `bindgen` will give you the type definitions and FFI declarations
 you need to build an API to the C++ library, but using those types in Rust will
 be nowhere near as nice as using them in C++. You will have to manually call
