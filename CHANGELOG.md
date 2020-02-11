@@ -167,7 +167,9 @@ Released 2019/11/19.
  * Added `newtype` enum style, much like `bitfield` but without the bitwise ops
    (#1677).
  * Added support for `MaybeUninit` rather than `mem::uninitialized()` (#1666).
- * Allowed static linking (#1620).
+ * Allowed static linking (#1620) behind a feature. Note that **if you're using
+   `default-features = false`, you probably want to use the `"runtime"` feature
+   to get the same behavior as before**.
 
 ## Changed
 
