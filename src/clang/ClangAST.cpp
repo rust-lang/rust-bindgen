@@ -490,6 +490,8 @@ const Decl *Decl_getReferenced(const Decl *D) {
 }
 
 const Decl *Decl_getCanonical(const Decl *D) {
+  if (!D)
+    return nullptr;
   return D->getCanonicalDecl();
 }
 
