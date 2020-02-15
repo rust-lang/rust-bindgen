@@ -1173,9 +1173,14 @@ where
     Visitor: FnMut(Cursor) -> CXChildVisitResult,
 {
     let func: &mut Visitor = mem::transmute(data);
-    let node = match node.kind {
-        CXCursor_StructDecl => ASTNode::Decl(node.ptr.decl),
-        _ => ASTNode::Invalid,
+    let node = if (node.kind >= CXCursor_FirstDecl && node.kind <= CXCursor_LastDecl)
+        || (node.kind >= CXCursor_FirstExtraDecl && node.kind <= CXCursor_LastExtraDecl)
+    {
+        ASTNode::Decl(node.ptr.decl)
+    } else if node.kind >= CXCursor_FirstExpr && node.kind <= CXCursor_LastExpr {
+        ASTNode::Expr(node.ptr.expr)
+    } else {
+        return CXChildVisit_Recurse;
     };
     let child = Cursor {
         node,
