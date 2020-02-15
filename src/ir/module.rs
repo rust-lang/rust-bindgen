@@ -77,7 +77,7 @@ impl ClangSubItemParser for Module {
         cursor: clang::Cursor,
         ctx: &mut BindgenContext,
     ) -> Result<ParseResult<Self>, ParseError> {
-        use clang_sys::*;
+        use clang::*;
         match cursor.kind() {
             CXCursor_Namespace => {
                 let module_id = ctx.module(cursor);

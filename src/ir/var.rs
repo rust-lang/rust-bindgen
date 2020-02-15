@@ -157,7 +157,7 @@ fn handle_function_macro(
 ) {
     let is_closing_paren = |t: &ClangToken| {
         // Test cheap token kind before comparing exact spellings.
-        t.kind == clang_sys::CXToken_Punctuation && t.spelling() == b")"
+        t.kind == clang::CXToken_Punctuation && t.spelling() == b")"
     };
     let tokens: Vec<_> = cursor.tokens().iter().collect();
     if let Some(boundary) = tokens.iter().position(is_closing_paren) {
@@ -179,7 +179,7 @@ impl ClangSubItemParser for Var {
     ) -> Result<ParseResult<Self>, ParseError> {
         use cexpr::expr::EvalResult;
         use cexpr::literal::CChar;
-        use clang_sys::*;
+        use clang::*;
         match cursor.kind() {
             CXCursor_MacroDefinition => {
                 if let Some(callbacks) = ctx.parse_callbacks() {
@@ -395,7 +395,7 @@ fn get_integer_literal_from_cursor(
     cursor: &clang::Cursor,
     unit: &clang::TranslationUnit,
 ) -> Option<i64> {
-    use clang_sys::*;
+    use clang::*;
     let mut value = None;
     cursor.visit(|c| {
         match c.kind() {

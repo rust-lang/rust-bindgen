@@ -7,15 +7,15 @@ use super::traversal::{Trace, Tracer};
 use super::ty::TypeKind;
 use crate::clang;
 use crate::parse::ClangItemParser;
-use clang_sys::CXChildVisit_Continue;
-use clang_sys::CXCursor_ObjCCategoryDecl;
-use clang_sys::CXCursor_ObjCClassMethodDecl;
-use clang_sys::CXCursor_ObjCClassRef;
-use clang_sys::CXCursor_ObjCInstanceMethodDecl;
-use clang_sys::CXCursor_ObjCProtocolDecl;
-use clang_sys::CXCursor_ObjCProtocolRef;
-use clang_sys::CXCursor_ObjCSuperClassRef;
-use clang_sys::CXCursor_TemplateTypeParameter;
+use crate::clang::CXChildVisit_Continue;
+use crate::clang::CXCursor_ObjCCategoryDecl;
+use crate::clang::CXCursor_ObjCClassMethodDecl;
+use crate::clang::CXCursor_ObjCClassRef;
+use crate::clang::CXCursor_ObjCInstanceMethodDecl;
+use crate::clang::CXCursor_ObjCProtocolDecl;
+use crate::clang::CXCursor_ObjCProtocolRef;
+use crate::clang::CXCursor_ObjCSuperClassRef;
+use crate::clang::CXCursor_TemplateTypeParameter;
 use proc_macro2::{Ident, Span, TokenStream};
 
 /// Objective C interface as used in TypeKind

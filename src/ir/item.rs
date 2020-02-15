@@ -22,7 +22,6 @@ use crate::clang;
 use crate::parse::{
     ClangItemParser, ClangSubItemParser, ParseError, ParseResult,
 };
-use clang_sys;
 use lazycell::LazyCell;
 use regex;
 use std::cell::Cell;
@@ -1290,8 +1289,8 @@ fn visit_child(
     parent_id: Option<ItemId>,
     ctx: &mut BindgenContext,
     result: &mut Result<TypeId, ParseError>,
-) -> clang_sys::CXChildVisitResult {
-    use clang_sys::*;
+) -> clang::CXChildVisitResult {
+    use clang::*;
     if result.is_ok() {
         return CXChildVisit_Break;
     }
@@ -1340,7 +1339,7 @@ impl ClangItemParser for Item {
         ctx: &mut BindgenContext,
     ) -> Result<ItemId, ParseError> {
         use crate::ir::var::Var;
-        use clang_sys::*;
+        use clang::*;
 
         if !cursor.is_valid() {
             return Err(ParseError::Continue);
@@ -1580,8 +1579,6 @@ impl ClangItemParser for Item {
         parent_id: Option<ItemId>,
         ctx: &mut BindgenContext,
     ) -> Result<TypeId, ParseError> {
-        use clang_sys::*;
-
         debug!(
             "Item::from_ty_with_id: {:?}\n\
              \tty = {:?},\n\
@@ -1589,8 +1586,8 @@ impl ClangItemParser for Item {
             id, ty, location
         );
 
-        if ty.kind() == clang_sys::CXType_Unexposed ||
-            location.cur_type().kind() == clang_sys::CXType_Unexposed
+        if ty.kind() == clang::CXType_Unexposed ||
+            location.cur_type().kind() == clang::CXType_Unexposed
         {
             if ty.is_associated_type() ||
                 location.cur_type().is_associated_type()
@@ -1637,10 +1634,10 @@ impl ClangItemParser for Item {
         }
 
         // First, check we're not recursing.
-        let mut valid_decl = decl.kind() != CXCursor_NoDeclFound;
+        let mut valid_decl = decl.kind() != clang::CXCursor_NoDeclFound;
         let declaration_to_look_for = if valid_decl {
             decl.canonical()
-        } else if location.kind() == CXCursor_ClassTemplate {
+        } else if location.kind() == clang::CXCursor_ClassTemplate {
             valid_decl = true;
             location
         } else {
@@ -1761,7 +1758,7 @@ impl ClangItemParser for Item {
             location
         );
 
-        if ty.kind() != clang_sys::CXType_Unexposed {
+        if ty.kind() != clang::CXType_Unexposed {
             // If the given cursor's type's kind is not Unexposed, then we
             // aren't looking at a template parameter. This check may need to be
             // updated in the future if they start properly exposing template
@@ -1825,7 +1822,7 @@ impl ClangItemParser for Item {
                     regex::Regex::new(r"^type\-parameter\-\d+\-\d+$").unwrap();
             }
 
-            if refd.kind() != clang_sys::CXCursor_TemplateTypeParameter {
+            if refd.kind() != clang::CXCursor_TemplateTypeParameter {
                 return false;
             }
 
@@ -1838,7 +1835,7 @@ impl ClangItemParser for Item {
         let definition = if is_template_with_spelling(&location, &ty_spelling) {
             // Situation (1)
             location
-        } else if location.kind() == clang_sys::CXCursor_TypeRef {
+        } else if location.kind() == clang::CXCursor_TypeRef {
             // Situation (2)
             match location.referenced() {
                 Some(refd)
@@ -1854,7 +1851,7 @@ impl ClangItemParser for Item {
 
             location.visit(|child| {
                 let child_ty = child.cur_type();
-                if child_ty.kind() == clang_sys::CXCursor_TypeRef &&
+                if child_ty.kind() == clang::CXCursor_TypeRef &&
                     child_ty.spelling() == ty_spelling
                 {
                     match child.referenced() {
@@ -1865,13 +1862,13 @@ impl ClangItemParser for Item {
                             ) =>
                         {
                             definition = Some(refd);
-                            return clang_sys::CXChildVisit_Break;
+                            return clang::CXChildVisit_Break;
                         }
                         _ => {}
                     }
                 }
 
-                clang_sys::CXChildVisit_Continue
+                clang::CXChildVisit_Continue
             });
 
             definition?

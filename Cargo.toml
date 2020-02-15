@@ -47,6 +47,9 @@ clap = "3"
 shlex = "1"
 tempfile = "3"
 
+[build-dependencies]
+cmake = "0.1"
+
 [dependencies]
 bitflags = "1.0.3"
 cexpr = "0.6"

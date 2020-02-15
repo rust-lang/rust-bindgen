@@ -10,7 +10,6 @@ use crate::clang;
 use crate::parse::{
     ClangItemParser, ClangSubItemParser, ParseError, ParseResult,
 };
-use clang_sys::{self, CXCallingConv};
 use proc_macro2;
 use quote;
 use quote::TokenStreamExt;
@@ -33,11 +32,11 @@ impl FunctionKind {
     pub fn from_cursor(cursor: &clang::Cursor) -> Option<FunctionKind> {
         // FIXME(emilio): Deduplicate logic with `ir::comp`.
         Some(match cursor.kind() {
-            clang_sys::CXCursor_FunctionDecl => FunctionKind::Function,
-            clang_sys::CXCursor_Constructor => {
+            clang::CXCursor_FunctionDecl => FunctionKind::Function,
+            clang::CXCursor_Constructor => {
                 FunctionKind::Method(MethodKind::Constructor)
             }
-            clang_sys::CXCursor_Destructor => {
+            clang::CXCursor_Destructor => {
                 FunctionKind::Method(if cursor.method_is_virtual() {
                     MethodKind::VirtualDestructor {
                         pure_virtual: cursor.method_is_pure_virtual(),
@@ -46,7 +45,7 @@ impl FunctionKind {
                     MethodKind::Destructor
                 })
             }
-            clang_sys::CXCursor_CXXMethod => {
+            clang::CXCursor_CXXMethod => {
                 if cursor.method_is_virtual() {
                     FunctionKind::Method(MethodKind::Virtual {
                         pure_virtual: cursor.method_is_pure_virtual(),
@@ -188,7 +187,7 @@ pub enum Abi {
     /// The "win64" ABI.
     Win64,
     /// An unknown or invalid ABI.
-    Unknown(CXCallingConv),
+    Unknown(clang::CXCallingConv),
 }
 
 impl Abi {
@@ -236,8 +235,8 @@ pub struct FunctionSig {
     abi: Abi,
 }
 
-fn get_abi(cc: CXCallingConv) -> Abi {
-    use clang_sys::*;
+fn get_abi(cc: clang::CXCallingConv) -> Abi {
+    use clang::*;
     match cc {
         CXCallingConv_Default => Abi::C,
         CXCallingConv_C => Abi::C,
@@ -267,7 +266,7 @@ pub fn cursor_mangling(
         return None;
     }
 
-    let is_destructor = cursor.kind() == clang_sys::CXCursor_Destructor;
+    let is_destructor = cursor.kind() == clang::CXCursor_Destructor;
     if let Ok(mut manglings) = cursor.cxx_manglings() {
         while let Some(m) = manglings.pop() {
             // Only generate the destructor group 1, see below.
@@ -376,7 +375,7 @@ impl FunctionSig {
         cursor: &clang::Cursor,
         ctx: &mut BindgenContext,
     ) -> Result<Self, ParseError> {
-        use clang_sys::*;
+        use clang::*;
         debug!("FunctionSig::from_ty {:?} {:?}", ty, cursor);
 
         // Skip function templates
@@ -582,7 +581,7 @@ impl ClangSubItemParser for Function {
         cursor: clang::Cursor,
         context: &mut BindgenContext,
     ) -> Result<ParseResult<Self>, ParseError> {
-        use clang_sys::*;
+        use clang::*;
 
         let kind = match FunctionKind::from_cursor(&cursor) {
             None => return Err(ParseError::Continue),

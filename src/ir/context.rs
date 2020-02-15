@@ -25,7 +25,6 @@ use crate::parse::ClangItemParser;
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
 use cexpr;
-use clang_sys;
 use proc_macro2::{Ident, Span};
 use std::borrow::Cow;
 use std::cell::{Cell, RefCell};
@@ -511,17 +510,20 @@ impl BindgenContext {
         // TODO(emilio): Use the CXTargetInfo here when available.
         //
         // see: https://reviews.llvm.org/D32389
-        let index = clang::Index::new(false, true);
+        let (effective_target, explicit_target) =
+            crate::find_effective_target(&options.clang_args);
+
+        // let index = clang::Index::new(false, true);
 
         let parse_options =
-            clang_sys::CXTranslationUnit_DetailedPreprocessingRecord;
+            clang::CXTranslationUnit_DetailedPreprocessingRecord;
 
         let translation_unit = {
             let _t =
                 Timer::new("translation_unit").with_output(options.time_phases);
 
             clang::TranslationUnit::parse(
-                &index,
+                // &index,
                 "",
                 &options.clang_args,
                 &options.input_unsaved_files,
@@ -780,7 +782,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         );
         assert_eq!(
             definition.kind(),
-            clang_sys::CXCursor_TemplateTypeParameter
+            clang::CXCursor_TemplateTypeParameter
         );
 
         self.add_item_to_module(&item);
@@ -806,7 +808,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     pub fn get_type_param(&self, definition: &clang::Cursor) -> Option<TypeId> {
         assert_eq!(
             definition.kind(),
-            clang_sys::CXCursor_TemplateTypeParameter
+            clang::CXCursor_TemplateTypeParameter
         );
         self.type_params.get(definition).cloned()
     }
@@ -1618,12 +1620,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
             // on accident.
             let idx = children
                 .iter()
-                .position(|c| c.kind() == clang_sys::CXCursor_TemplateRef);
+                .position(|c| c.kind() == clang::CXCursor_TemplateRef);
             if let Some(idx) = idx {
                 if children
                     .iter()
                     .take(idx)
-                    .all(|c| c.kind() == clang_sys::CXCursor_NamespaceRef)
+                    .all(|c| c.kind() == clang::CXCursor_NamespaceRef)
                 {
                     children = children.into_iter().skip(idx + 1).collect();
                 }
@@ -1632,9 +1634,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
 
         for child in children.iter().rev() {
             match child.kind() {
-                clang_sys::CXCursor_TypeRef |
-                clang_sys::CXCursor_TypedefDecl |
-                clang_sys::CXCursor_TypeAliasDecl => {
+                clang::CXCursor_TypeRef |
+                clang::CXCursor_TypedefDecl |
+                clang::CXCursor_TypeAliasDecl => {
                     // The `with_id` id will potentially end up unused if we give up
                     // on this type (for example, because it has const value
                     // template args), so if we pass `with_id` as the parent, it is
@@ -1649,7 +1651,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
                     );
                     args.push(ty);
                 }
-                clang_sys::CXCursor_TemplateRef => {
+                clang::CXCursor_TemplateRef => {
                     let (
                         template_decl_cursor,
                         template_decl_id,
@@ -1817,7 +1819,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         ty: &clang::Type,
         location: Option<clang::Cursor>,
     ) -> Option<TypeId> {
-        use clang_sys::{CXCursor_TypeAliasTemplateDecl, CXCursor_TypeRef};
+        use clang::{CXCursor_TypeAliasTemplateDecl, CXCursor_TypeRef};
         debug!(
             "builtin_or_resolved_ty: {:?}, {:?}, {:?}, {:?}",
             ty, location, with_id, parent_id
@@ -1938,40 +1940,39 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     }
 
     fn build_builtin_ty(&mut self, ty: &clang::Type) -> Option<TypeId> {
-        use clang_sys::*;
         let type_kind = match ty.kind() {
-            CXType_NullPtr => TypeKind::NullPtr,
-            CXType_Void => TypeKind::Void,
-            CXType_Bool => TypeKind::Int(IntKind::Bool),
-            CXType_Int => TypeKind::Int(IntKind::Int),
-            CXType_UInt => TypeKind::Int(IntKind::UInt),
-            CXType_Char_S => TypeKind::Int(IntKind::Char { is_signed: true }),
-            CXType_Char_U => TypeKind::Int(IntKind::Char { is_signed: false }),
-            CXType_SChar => TypeKind::Int(IntKind::SChar),
-            CXType_UChar => TypeKind::Int(IntKind::UChar),
-            CXType_Short => TypeKind::Int(IntKind::Short),
-            CXType_UShort => TypeKind::Int(IntKind::UShort),
-            CXType_WChar => TypeKind::Int(IntKind::WChar),
-            CXType_Char16 => TypeKind::Int(IntKind::U16),
-            CXType_Char32 => TypeKind::Int(IntKind::U32),
-            CXType_Long => TypeKind::Int(IntKind::Long),
-            CXType_ULong => TypeKind::Int(IntKind::ULong),
-            CXType_LongLong => TypeKind::Int(IntKind::LongLong),
-            CXType_ULongLong => TypeKind::Int(IntKind::ULongLong),
-            CXType_Int128 => TypeKind::Int(IntKind::I128),
-            CXType_UInt128 => TypeKind::Int(IntKind::U128),
-            CXType_Float => TypeKind::Float(FloatKind::Float),
-            CXType_Double => TypeKind::Float(FloatKind::Double),
-            CXType_LongDouble => TypeKind::Float(FloatKind::LongDouble),
-            CXType_Float128 => TypeKind::Float(FloatKind::Float128),
-            CXType_Complex => {
+            clang::CXType_NullPtr => TypeKind::NullPtr,
+            clang::CXType_Void => TypeKind::Void,
+            clang::CXType_Bool => TypeKind::Int(IntKind::Bool),
+            clang::CXType_Int => TypeKind::Int(IntKind::Int),
+            clang::CXType_UInt => TypeKind::Int(IntKind::UInt),
+            clang::CXType_Char_S => TypeKind::Int(IntKind::Char { is_signed: true }),
+            clang::CXType_Char_U => TypeKind::Int(IntKind::Char { is_signed: false }),
+            clang::CXType_SChar => TypeKind::Int(IntKind::SChar),
+            clang::CXType_UChar => TypeKind::Int(IntKind::UChar),
+            clang::CXType_Short => TypeKind::Int(IntKind::Short),
+            clang::CXType_UShort => TypeKind::Int(IntKind::UShort),
+            clang::CXType_WChar => TypeKind::Int(IntKind::WChar),
+            clang::CXType_Char16 => TypeKind::Int(IntKind::U16),
+            clang::CXType_Char32 => TypeKind::Int(IntKind::U32),
+            clang::CXType_Long => TypeKind::Int(IntKind::Long),
+            clang::CXType_ULong => TypeKind::Int(IntKind::ULong),
+            clang::CXType_LongLong => TypeKind::Int(IntKind::LongLong),
+            clang::CXType_ULongLong => TypeKind::Int(IntKind::ULongLong),
+            clang::CXType_Int128 => TypeKind::Int(IntKind::I128),
+            clang::CXType_UInt128 => TypeKind::Int(IntKind::U128),
+            clang::CXType_Float => TypeKind::Float(FloatKind::Float),
+            clang::CXType_Double => TypeKind::Float(FloatKind::Double),
+            clang::CXType_LongDouble => TypeKind::Float(FloatKind::LongDouble),
+            clang::CXType_Float128 => TypeKind::Float(FloatKind::Float128),
+            clang::CXType_Complex => {
                 let float_type =
                     ty.elem_type().expect("Not able to resolve complex type?");
                 let float_kind = match float_type.kind() {
-                    CXType_Float => FloatKind::Float,
-                    CXType_Double => FloatKind::Double,
-                    CXType_LongDouble => FloatKind::LongDouble,
-                    CXType_Float128 => FloatKind::Float128,
+                    clang::CXType_Float => FloatKind::Float,
+                    clang::CXType_Double => FloatKind::Double,
+                    clang::CXType_LongDouble => FloatKind::LongDouble,
+                    clang::CXType_Float128 => FloatKind::Float128,
                     _ => panic!(
                         "Non floating-type complex? {:?}, {:?}",
                         ty, float_type,
@@ -2091,7 +2092,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     ) -> (Option<String>, ModuleKind) {
         assert_eq!(
             cursor.kind(),
-            ::clang_sys::CXCursor_Namespace,
+            clang::CXCursor_Namespace,
             "Be a nice person"
         );
 
@@ -2166,7 +2167,7 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Given a CXCursor_Namespace cursor, return the item id of the
     /// corresponding module, or create one on the fly.
     pub fn module(&mut self, cursor: clang::Cursor) -> ModuleId {
-        use clang_sys::*;
+        use clang::*;
         assert_eq!(cursor.kind(), CXCursor_Namespace, "Be a nice person");
         let cursor = cursor.canonical();
         if let Some(id) = self.modules.get(&cursor) {
@@ -2813,20 +2814,20 @@ impl TemplateParameters for PartialType {
         // Wouldn't it be nice if libclang would reliably give us this
         // information‽
         match self.decl().kind() {
-            clang_sys::CXCursor_ClassTemplate |
-            clang_sys::CXCursor_FunctionTemplate |
-            clang_sys::CXCursor_TypeAliasTemplateDecl => {
+            clang::CXCursor_ClassTemplate |
+            clang::CXCursor_FunctionTemplate |
+            clang::CXCursor_TypeAliasTemplateDecl => {
                 let mut num_params = 0;
                 self.decl().visit(|c| {
                     match c.kind() {
-                        clang_sys::CXCursor_TemplateTypeParameter |
-                        clang_sys::CXCursor_TemplateTemplateParameter |
-                        clang_sys::CXCursor_NonTypeTemplateParameter => {
+                        clang::CXCursor_TemplateTypeParameter |
+                        clang::CXCursor_TemplateTemplateParameter |
+                        clang::CXCursor_NonTypeTemplateParameter => {
                             num_params += 1;
                         }
                         _ => {}
                     };
-                    clang_sys::CXChildVisit_Continue
+                    clang::CXChildVisit_Continue
                 });
                 num_params
             }

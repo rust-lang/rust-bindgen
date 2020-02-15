@@ -10,6 +10,7 @@ use super::template::TemplateParameters;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
 use crate::clang;
+use crate::clang::*;
 use crate::codegen::struct_layout::{align_to, bytes_from_bits_pow2};
 use crate::ir::derive::CanDeriveCopy;
 use crate::parse::{ClangItemParser, ParseError};
@@ -1245,7 +1246,6 @@ impl CompInfo {
         location: Option<clang::Cursor>,
         ctx: &mut BindgenContext,
     ) -> Result<Self, ParseError> {
-        use clang_sys::*;
         assert!(
             ty.template_args().is_none(),
             "We handle template instantiations elsewhere"
@@ -1445,8 +1445,7 @@ impl CompInfo {
                         ty: type_id,
                         kind,
                         field_name,
-                        is_pub: cur.access_specifier() ==
-                            clang_sys::CX_CXXPublic,
+                        is_pub: cur.access_specifier() == clang::CX_CXXPublic,
                     });
                 }
                 CXCursor_Constructor | CXCursor_Destructor |
@@ -1574,7 +1573,6 @@ impl CompInfo {
     fn kind_from_cursor(
         cursor: &clang::Cursor,
     ) -> Result<CompKind, ParseError> {
-        use clang_sys::*;
         Ok(match cursor.kind() {
             CXCursor_UnionDecl => CompKind::Union,
             CXCursor_ClassDecl | CXCursor_StructDecl => CompKind::Struct,

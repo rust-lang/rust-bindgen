@@ -3,7 +3,7 @@
 use super::super::codegen::EnumVariation;
 use super::context::{BindgenContext, TypeId};
 use super::item::Item;
-use super::ty::{Type, TypeKind};
+use super::ty::TypeKind;
 use crate::clang;
 use crate::ir::annotations::Annotations;
 use crate::parse::{ClangItemParser, ParseError};
@@ -55,7 +55,7 @@ impl Enum {
         ty: &clang::Type,
         ctx: &mut BindgenContext,
     ) -> Result<Self, ParseError> {
-        use clang_sys::*;
+        use clang::*;
         debug!("Enum::from_ty {:?}", ty);
 
         if ty.kind() != CXType_Enum {
@@ -70,7 +70,7 @@ impl Enum {
 
         let variant_ty =
             repr.and_then(|r| ctx.resolve_type(r).safe_canonical_type(ctx));
-        let is_bool = variant_ty.map_or(false, Type::is_bool);
+        let is_bool = variant_ty.map_or(false, super::ty::Type::is_bool);
 
         // Assume signedness since the default type by the C standard is an int.
         let is_signed = variant_ty.map_or(true, |ty| match *ty.kind() {
