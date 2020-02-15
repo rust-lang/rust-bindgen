@@ -9,7 +9,7 @@ use super::layout::Layout;
 use super::template::TemplateParameters;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
-use clang;
+use clang::{self, *};
 use codegen::struct_layout::{align_to, bytes_from_bits_pow2};
 use ir::derive::CanDeriveCopy;
 use parse::{ClangItemParser, ParseError};
@@ -1221,7 +1221,6 @@ impl CompInfo {
         location: Option<clang::Cursor>,
         ctx: &mut BindgenContext,
     ) -> Result<Self, ParseError> {
-        use clang_sys::*;
         assert!(
             ty.template_args().is_none(),
             "We handle template instantiations elsewhere"
@@ -1539,7 +1538,6 @@ impl CompInfo {
     fn kind_from_cursor(
         cursor: &clang::Cursor,
     ) -> Result<CompKind, ParseError> {
-        use clang_sys::*;
         Ok(match cursor.kind() {
             CXCursor_UnionDecl => CompKind::Union,
             CXCursor_ClassDecl | CXCursor_StructDecl => CompKind::Struct,

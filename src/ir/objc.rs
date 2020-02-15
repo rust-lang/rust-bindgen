@@ -5,14 +5,14 @@ use super::function::FunctionSig;
 use super::traversal::{Trace, Tracer};
 use super::ty::TypeKind;
 use clang;
-use clang_sys::CXChildVisit_Continue;
-use clang_sys::CXCursor_ObjCCategoryDecl;
-use clang_sys::CXCursor_ObjCClassMethodDecl;
-use clang_sys::CXCursor_ObjCClassRef;
-use clang_sys::CXCursor_ObjCInstanceMethodDecl;
-use clang_sys::CXCursor_ObjCProtocolDecl;
-use clang_sys::CXCursor_ObjCProtocolRef;
-use clang_sys::CXCursor_TemplateTypeParameter;
+use clang::CXChildVisit_Continue;
+use clang::CXCursor_ObjCCategoryDecl;
+use clang::CXCursor_ObjCClassMethodDecl;
+use clang::CXCursor_ObjCClassRef;
+use clang::CXCursor_ObjCInstanceMethodDecl;
+use clang::CXCursor_ObjCProtocolDecl;
+use clang::CXCursor_ObjCProtocolRef;
+use clang::CXCursor_TemplateTypeParameter;
 use proc_macro2::{Ident, Span, TokenStream};
 
 /// Objective C interface as used in TypeKind

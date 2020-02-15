@@ -2275,12 +2275,12 @@ fn parse_one(
     ctx: &mut BindgenContext,
     cursor: clang::Cursor,
     parent: Option<ItemId>,
-) -> clang_sys::CXChildVisitResult {
+) -> clang::CXChildVisitResult {
     if !filter_builtins(ctx, &cursor) {
         return CXChildVisit_Continue;
     }
 
-    use clang_sys::CXChildVisit_Continue;
+    use clang::CXChildVisit_Continue;
     match Item::parse(cursor, parent, ctx) {
         Ok(..) => {}
         Err(ParseError::Continue) => {}
@@ -2293,12 +2293,10 @@ fn parse_one(
 
 /// Parse the Clang AST into our `Item` internal representation.
 fn parse(context: &mut BindgenContext) -> Result<(), ()> {
-    use clang_sys::*;
-
     let mut any_error = false;
     for d in context.translation_unit().diags().iter() {
         let msg = d.format();
-        let is_err = d.severity() >= CXDiagnostic_Error;
+        let is_err = d.severity() >= clang::CXDiagnostic_Error;
         eprintln!("{}, err: {}", msg, is_err);
         any_error |= is_err;
     }
@@ -2310,11 +2308,11 @@ fn parse(context: &mut BindgenContext) -> Result<(), ()> {
     let cursor = context.translation_unit().cursor();
 
     if context.options().emit_ast {
-        fn dump_if_not_builtin(cur: &clang::Cursor) -> CXChildVisitResult {
+        fn dump_if_not_builtin(cur: &clang::Cursor) -> clang::CXChildVisitResult {
             if !cur.is_builtin() {
                 clang::ast_dump(&cur, 0)
             } else {
-                CXChildVisit_Continue
+                clang::CXChildVisit_Continue
             }
         }
         cursor.visit(|cur| dump_if_not_builtin(&cur));

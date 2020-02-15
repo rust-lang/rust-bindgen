@@ -135,7 +135,7 @@ impl ClangSubItemParser for Var {
     ) -> Result<ParseResult<Self>, ParseError> {
         use cexpr::expr::EvalResult;
         use cexpr::literal::CChar;
-        use clang_sys::*;
+        use clang::*;
         match cursor.kind() {
             CXCursor_MacroDefinition => {
                 if let Some(callbacks) = ctx.parse_callbacks() {
@@ -356,7 +356,7 @@ fn get_integer_literal_from_cursor(
     cursor: &clang::Cursor,
     unit: &clang::TranslationUnit,
 ) -> Option<i64> {
-    use clang_sys::*;
+    use clang::*;
     let mut value = None;
     cursor.visit(|c| {
         match c.kind() {

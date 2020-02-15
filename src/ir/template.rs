@@ -222,7 +222,7 @@ impl TemplateInstantiation {
         ty: &clang::Type,
         ctx: &mut BindgenContext,
     ) -> Option<TemplateInstantiation> {
-        use clang_sys::*;
+        use clang::*;
 
         let template_args = ty.template_args().map_or(vec![], |args| match ty
             .canonical_type()

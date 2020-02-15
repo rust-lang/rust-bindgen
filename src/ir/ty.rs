@@ -721,7 +721,6 @@ impl Type {
         parent_id: Option<ItemId>,
         ctx: &mut BindgenContext,
     ) -> Result<ParseResult<Self>, ParseError> {
-        use clang_sys::*;
         {
             let already_resolved = ctx.builtin_or_resolved_ty(
                 potential_id,
@@ -750,8 +749,8 @@ impl Type {
         // Parse objc protocols as if they were interfaces
         let mut ty_kind = ty.kind();
         match location.kind() {
-            CXCursor_ObjCProtocolDecl | CXCursor_ObjCCategoryDecl => {
-                ty_kind = CXType_ObjCInterface
+            clang::CXCursor_ObjCProtocolDecl | clang::CXCursor_ObjCCategoryDecl => {
+                ty_kind = clang::CXType_ObjCInterface
             }
             _ => {}
         }
@@ -761,11 +760,11 @@ impl Type {
         //        objc template params, which seem to manifest as a typedef.
         //        We are rewriting them as id to suppress multiple conflicting
         //        typedefs at root level
-        if ty_kind == CXType_Typedef {
+        if ty_kind == clang::CXType_Typedef {
             let is_template_type_param =
-                ty.declaration().kind() == CXCursor_TemplateTypeParameter;
+                ty.declaration().kind() == clang::CXCursor_TemplateTypeParameter;
             let is_canonical_objcpointer =
-                canonical_ty.kind() == CXType_ObjCObjectPointer;
+                canonical_ty.kind() == clang::CXType_ObjCObjectPointer;
 
             // We have found a template type for objc interface
             if is_canonical_objcpointer && is_template_type_param {
@@ -775,7 +774,7 @@ impl Type {
             }
         }
 
-        if location.kind() == CXCursor_ClassTemplatePartialSpecialization {
+        if location.kind() == clang::CXCursor_ClassTemplatePartialSpecialization {
             // Sorry! (Not sorry)
             warn!(
                 "Found a partial template specialization; bindgen does not \
@@ -788,8 +787,8 @@ impl Type {
             ));
         }
 
-        let kind = if location.kind() == CXCursor_TemplateRef ||
-            (ty.template_args().is_some() && ty_kind != CXType_Typedef)
+        let kind = if location.kind() == clang::CXCursor_TemplateRef ||
+            (ty.template_args().is_some() && ty_kind != clang::CXType_Typedef)
         {
             // This is a template instantiation.
             match TemplateInstantiation::from_ty(&ty, ctx) {
@@ -798,9 +797,9 @@ impl Type {
             }
         } else {
             match ty_kind {
-                CXType_Unexposed
+                clang::CXType_Unexposed
                     if *ty != canonical_ty &&
-                                    canonical_ty.kind() != CXType_Invalid &&
+                                    canonical_ty.kind() != clang::CXType_Invalid &&
                                     ty.ret_type().is_none() &&
                                     // Sometime clang desugars some types more than
                                     // what we need, specially with function
@@ -825,7 +824,7 @@ impl Type {
                         ctx,
                     );
                 }
-                CXType_Unexposed | CXType_Invalid => {
+                clang::CXType_Unexposed | clang::CXType_Invalid => {
                     // For some reason Clang doesn't give us any hint in some
                     // situations where we should generate a function pointer (see
                     // tests/headers/func_ptr_in_struct.h), so we do a guess here
@@ -851,9 +850,9 @@ impl Type {
                         TypeKind::Comp(complex)
                     } else {
                         match location.kind() {
-                            CXCursor_CXXBaseSpecifier |
-                            CXCursor_ClassTemplate => {
-                                if location.kind() == CXCursor_CXXBaseSpecifier
+                            clang::CXCursor_CXXBaseSpecifier |
+                            clang::CXCursor_ClassTemplate => {
+                                if location.kind() == clang::CXCursor_CXXBaseSpecifier
                                 {
                                     // In the case we're parsing a base specifier
                                     // inside an unexposed or invalid type, it means
@@ -925,7 +924,7 @@ impl Type {
                                     }
                                 }
                             }
-                            CXCursor_TypeAliasTemplateDecl => {
+                            clang::CXCursor_TypeAliasTemplateDecl => {
                                 debug!("TypeAliasTemplateDecl");
 
                                 // We need to manually unwind this one.
@@ -934,12 +933,12 @@ impl Type {
 
                                 location.visit(|cur| {
                                     match cur.kind() {
-                                        CXCursor_TypeAliasDecl => {
+                                        clang::CXCursor_TypeAliasDecl => {
                                             let current = cur.cur_type();
 
                                             debug_assert_eq!(
                                                 current.kind(),
-                                                CXType_Typedef
+                                                clang::CXType_Typedef
                                             );
 
                                             name = current.spelling();
@@ -954,7 +953,7 @@ impl Type {
                                                 ctx,
                                             ));
                                         }
-                                        CXCursor_TemplateTypeParameter => {
+                                        clang::CXCursor_TemplateTypeParameter => {
                                             let param = Item::type_param(
                                                 None, cur, ctx,
                                             )
@@ -967,7 +966,7 @@ impl Type {
                                         }
                                         _ => {}
                                     }
-                                    CXChildVisit_Continue
+                                    clang::CXChildVisit_Continue
                                 });
 
                                 let inner_type = match inner {
@@ -984,7 +983,7 @@ impl Type {
 
                                 TypeKind::TemplateAlias(inner_type, args)
                             }
-                            CXCursor_TemplateRef => {
+                            clang::CXCursor_TemplateRef => {
                                 let referenced = location.referenced().unwrap();
                                 let referenced_ty = referenced.cur_type();
 
@@ -1004,7 +1003,7 @@ impl Type {
                                     ctx,
                                 );
                             }
-                            CXCursor_TypeRef => {
+                            clang::CXCursor_TypeRef => {
                                 let referenced = location.referenced().unwrap();
                                 let referenced_ty = referenced.cur_type();
                                 let declaration = referenced_ty.declaration();
@@ -1026,11 +1025,11 @@ impl Type {
                                     id.into(),
                                 ));
                             }
-                            CXCursor_NamespaceRef => {
+                            clang::CXCursor_NamespaceRef => {
                                 return Err(ParseError::Continue);
                             }
                             _ => {
-                                if ty.kind() == CXType_Unexposed {
+                                if ty.kind() == clang::CXType_Unexposed {
                                     warn!(
                                         "Unexposed type {:?}, recursing inside, \
                                           loc: {:?}",
@@ -1046,7 +1045,7 @@ impl Type {
                         }
                     }
                 }
-                CXType_Auto => {
+                clang::CXType_Auto => {
                     if canonical_ty == *ty {
                         debug!("Couldn't find deduced type: {:?}", ty);
                         return Err(ParseError::Continue);
@@ -1067,15 +1066,15 @@ impl Type {
                 //
                 // We might need to, though, if the context is already in the
                 // process of resolving them.
-                CXType_ObjCObjectPointer |
-                CXType_MemberPointer |
-                CXType_Pointer => {
+                clang::CXType_ObjCObjectPointer |
+                clang::CXType_MemberPointer |
+                clang::CXType_Pointer => {
                     let pointee = ty.pointee_type().unwrap();
                     let inner =
                         Item::from_ty_or_ref(pointee, location, None, ctx);
                     TypeKind::Pointer(inner)
                 }
-                CXType_BlockPointer => {
+                clang::CXType_BlockPointer => {
                     let pointee = ty.pointee_type().expect("Not valid Type?");
                     let inner =
                         Item::from_ty_or_ref(pointee, location, None, ctx);
@@ -1083,7 +1082,7 @@ impl Type {
                 }
                 // XXX: RValueReference is most likely wrong, but I don't think we
                 // can even add bindings for that, so huh.
-                CXType_RValueReference | CXType_LValueReference => {
+                clang::CXType_RValueReference | clang::CXType_LValueReference => {
                     let inner = Item::from_ty_or_ref(
                         ty.pointee_type().unwrap(),
                         location,
@@ -1093,7 +1092,7 @@ impl Type {
                     TypeKind::Reference(inner)
                 }
                 // XXX DependentSizedArray is wrong
-                CXType_VariableArray | CXType_DependentSizedArray => {
+                clang::CXType_VariableArray | clang::CXType_DependentSizedArray => {
                     let inner = Item::from_ty(
                         ty.elem_type().as_ref().unwrap(),
                         location,
@@ -1103,7 +1102,7 @@ impl Type {
                     .expect("Not able to resolve array element?");
                     TypeKind::Pointer(inner)
                 }
-                CXType_IncompleteArray => {
+                clang::CXType_IncompleteArray => {
                     let inner = Item::from_ty(
                         ty.elem_type().as_ref().unwrap(),
                         location,
@@ -1113,17 +1112,17 @@ impl Type {
                     .expect("Not able to resolve array element?");
                     TypeKind::Array(inner, 0)
                 }
-                CXType_FunctionNoProto | CXType_FunctionProto => {
+                clang::CXType_FunctionNoProto | clang::CXType_FunctionProto => {
                     let signature = FunctionSig::from_ty(ty, &location, ctx)?;
                     TypeKind::Function(signature)
                 }
-                CXType_Typedef => {
+                clang::CXType_Typedef => {
                     let inner = cursor.typedef_type().expect("Not valid Type?");
                     let inner =
                         Item::from_ty_or_ref(inner, location, None, ctx);
                     TypeKind::Alias(inner)
                 }
-                CXType_Enum => {
+                clang::CXType_Enum => {
                     let enum_ = Enum::from_ty(ty, ctx).expect("Not an enum?");
 
                     if name.is_empty() {
@@ -1135,7 +1134,7 @@ impl Type {
 
                     TypeKind::Enum(enum_)
                 }
-                CXType_Record => {
+                clang::CXType_Record => {
                     let complex = CompInfo::from_ty(
                         potential_id,
                         ty,
@@ -1155,7 +1154,7 @@ impl Type {
 
                     TypeKind::Comp(complex)
                 }
-                CXType_Vector => {
+                clang::CXType_Vector => {
                     let inner = Item::from_ty(
                         ty.elem_type().as_ref().unwrap(),
                         location,
@@ -1165,7 +1164,7 @@ impl Type {
                     .expect("Not able to resolve vector element?");
                     TypeKind::Vector(inner, ty.num_elements().unwrap())
                 }
-                CXType_ConstantArray => {
+                clang::CXType_ConstantArray => {
                     let inner = Item::from_ty(
                         ty.elem_type().as_ref().unwrap(),
                         location,
@@ -1175,7 +1174,7 @@ impl Type {
                     .expect("Not able to resolve array element?");
                     TypeKind::Array(inner, ty.num_elements().unwrap())
                 }
-                CXType_Elaborated => {
+                clang::CXType_Elaborated => {
                     return Self::from_clang_ty(
                         potential_id,
                         &ty.named(),
@@ -1184,15 +1183,15 @@ impl Type {
                         ctx,
                     );
                 }
-                CXType_ObjCId => TypeKind::ObjCId,
-                CXType_ObjCSel => TypeKind::ObjCSel,
-                CXType_ObjCClass | CXType_ObjCInterface => {
+                clang::CXType_ObjCId => TypeKind::ObjCId,
+                clang::CXType_ObjCSel => TypeKind::ObjCSel,
+                clang::CXType_ObjCClass | clang::CXType_ObjCInterface => {
                     let interface = ObjCInterface::from_ty(&location, ctx)
                         .expect("Not a valid objc interface?");
                     name = interface.rust_name();
                     TypeKind::ObjCInterface(interface)
                 }
-                CXType_Dependent => {
+                clang::CXType_Dependent => {
                     return Err(ParseError::Continue);
                 }
                 _ => {

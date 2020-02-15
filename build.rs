@@ -1,3 +1,5 @@
+extern crate cmake;
+
 mod target {
     use std::env;
     use std::fs::File;
@@ -68,7 +70,274 @@ mod testgen {
     }
 }
 
+mod clang_ast {
+    use std::env;
+    use std::ffi::OsStr;
+    use std::path::{Path, PathBuf};
+    use std::process::{Command, Stdio};
+
+    pub fn main() {
+        let llvm_info = LLVMInfo::new();
+        build_native(&llvm_info);
+    }
+
+    /// Call out to CMake, build the clang ast library, and tell cargo where to look
+    /// for it.  Note that `CMAKE_BUILD_TYPE` gets implicitly determined by the
+    /// cmake crate according to the following:
+    ///
+    ///   - if `opt-level=0`                              then `CMAKE_BUILD_TYPE=Debug`
+    ///   - if `opt-level={1,2,3}` and not `debug=false`, then `CMAKE_BUILD_TYPE=RelWithDebInfo`
+    fn build_native(llvm_info: &LLVMInfo) {
+        // Find where the (already built) LLVM lib dir is
+        let llvm_lib_dir = &llvm_info.lib_dir;
+
+        println!("cargo:rerun-if-changed=src/clang/ClangAST.cpp");
+        println!("cargo:rerun-if-changed=src/clang/ClangAST.hpp");
+        // Build libclangAst.a with cmake
+        let dst = cmake::Config::new("src/clang")
+        // Where to find LLVM/Clang CMake files
+            .define("LLVM_DIR", &format!("{}/cmake/llvm", llvm_lib_dir))
+            .define("Clang_DIR", &format!("{}/cmake/clang", llvm_lib_dir))
+        // What to build
+            .build_target("clangAst")
+            .build();
+
+        let out_dir = dst.display();
+
+        // Set up search path for newly built libclangAst.a
+        println!("cargo:rustc-link-search=native={}/build/lib", out_dir);
+        println!("cargo:rustc-link-search=native={}/build", out_dir);
+
+        // Statically link against 'clangAst'
+        println!("cargo:rustc-link-lib=static=clangAst");
+
+        // Link against these Clang libs. The ordering here is important! Libraries
+        // must be listed before their dependencies when statically linking.
+        println!("cargo:rustc-link-search=native={}", llvm_lib_dir);
+        for lib in &[
+            "clangIndex",
+            "clangTooling",
+            "clangFrontend",
+            "clangASTMatchers",
+            "clangParse",
+            "clangSerialization",
+            "clangSema",
+            "clangEdit",
+            "clangAnalysis",
+            "clangDriver",
+            "clangFormat",
+            "clangToolingCore",
+            "clangAST",
+            "clangRewrite",
+            "clangLex",
+            "clangBasic",
+        ] {
+            println!("cargo:rustc-link-lib={}", lib);
+        }
+
+        for lib in &llvm_info.libs {
+            // IMPORTANT: We cannot specify static= or dylib= here because rustc
+            // will reorder those libs before the clang libs above which don't have
+            // static or dylib.
+            println!("cargo:rustc-link-lib={}", lib);
+        }
+
+        // Link against the C++ std library.
+        if cfg!(target_os = "macos") {
+            println!("cargo:rustc-link-lib=c++");
+        } else {
+            println!("cargo:rustc-link-lib=stdc++");
+        }
+    }
+
+    /// Holds information about LLVM paths we have found
+    struct LLVMInfo {
+        /// LLVM lib dir containing libclang* and libLLVM* libraries
+        pub lib_dir: String,
+
+        /// List of libs we need to link against
+        pub libs: Vec<String>,
+    }
+
+    impl LLVMInfo {
+        fn new() -> Self {
+            fn find_llvm_config() -> Option<String> {
+                // Explicitly provided path in LLVM_CONFIG_PATH
+                env::var("LLVM_CONFIG_PATH")
+                    .ok()
+                // Relative to LLVM_LIB_DIR
+                    .or(env::var("LLVM_LIB_DIR").ok().map(|d| {
+                        String::from(
+                            Path::new(&d)
+                                .join("../bin/llvm-config")
+                                .canonicalize()
+                                .unwrap()
+                                .to_string_lossy(),
+                        )
+                    }))
+                // In PATH
+                    .or([
+                        "llvm-config-7.0",
+                        "llvm-config-6.1",
+                        "llvm-config-6.0",
+                        "llvm-config",
+                        // Homebrew install location on MacOS
+                        "/usr/local/opt/llvm/bin/llvm-config",
+                    ]
+                        .iter()
+                        .find_map(|c| {
+                            if Command::new(c)
+                                .stdout(Stdio::null())
+                                .stderr(Stdio::null())
+                                .spawn()
+                                .is_ok()
+                            {
+                                Some(String::from(*c))
+                            } else {
+                                None
+                            }
+                        }))
+            }
+
+            /// Invoke given `command`, if any, with the specified arguments.
+            fn invoke_command<I, S>(command: Option<&String>, args: I) -> Option<String>
+                where
+                I: IntoIterator<Item = S>,
+                S: AsRef<OsStr>,
+            {
+                command.and_then(|c| {
+                    Command::new(c).args(args).output().ok().and_then(|output| {
+                        if output.status.success() {
+                            Some(String::from_utf8_lossy(&output.stdout).trim().to_string())
+                        } else {
+                            None
+                        }
+                    })
+                })
+            }
+
+            let llvm_config = find_llvm_config();
+            let lib_dir = {
+                let path_str = env::var("LLVM_LIB_DIR")
+                    .ok()
+                    .or(invoke_command(llvm_config.as_ref(), &["--libdir"]))
+                    .expect(
+                        "
+Couldn't find LLVM lib dir. Try setting the `LLVM_LIB_DIR` environment
+variable or make sure `llvm-config` is on $PATH then re-build. For example:
+
+  $ export LLVM_LIB_DIR=/usr/local/opt/llvm/lib
+",
+                    );
+                String::from(
+                    Path::new(&path_str)
+                        .canonicalize()
+                        .unwrap()
+                        .to_string_lossy(),
+                )
+            };
+
+            let llvm_shared_libs = invoke_command(llvm_config.as_ref(), &["--libs", "--link-shared"]);
+
+            // <sysroot>/lib/rustlib/<target>/lib/ contains a libLLVM DSO for the
+            // rust compiler. On MacOS, this lib is named libLLVM.dylib, which will
+            // always conflict with the dylib we are trying to link against. On
+            // Linux we generally will not hit this issue because the prebuilt lib
+            // includes the `svn` suffix. This would conflict with a source build
+            // from master, however.
+            //
+            // We check here if the lib we want to link against will conflict with
+            // the rustlib version. If so we can't dynamically link against libLLVM.
+            let conflicts_with_rustlib_llvm = {
+                if let Some(llvm_shared_libs) = llvm_shared_libs.as_ref() {
+                    let dylib_suffix = {
+                        if cfg!(target_os = "macos") {
+                            ".dylib"
+                        } else {
+                            ".so"
+                        } // Windows is not supported
+                    };
+                    let mut dylib_file = String::from("lib");
+                    dylib_file.push_str(llvm_shared_libs.trim_start_matches("-l"));
+                    dylib_file.push_str(dylib_suffix);
+                    let sysroot =
+                        invoke_command(env::var("RUSTC").ok().as_ref(), &["--print=sysroot"]).unwrap();
+
+                    // Does <sysroot>/lib/rustlib/<target>/lib/<dylib_file> exist?
+                    let mut libllvm_path = PathBuf::new();
+                    libllvm_path.push(sysroot);
+                    libllvm_path.push("lib/rustlib");
+                    libllvm_path.push(env::var("TARGET").unwrap());
+                    libllvm_path.push("lib");
+                    libllvm_path.push(dylib_file);
+
+                    libllvm_path.as_path().exists()
+                } else {
+                    false
+                }
+            };
+
+            let link_statically = cfg!(feature = "llvm-static") || {
+                let args = if conflicts_with_rustlib_llvm {
+                    vec!["--shared-mode", "--ignore-libllvm"]
+                } else {
+                    vec!["--shared-mode"]
+                };
+                invoke_command(llvm_config.as_ref(), &args).map_or(false, |c| c == "static")
+            };
+
+            let link_mode = if link_statically {
+                "--link-static"
+            } else {
+                "--link-shared"
+            };
+
+            // Construct the list of libs we need to link against
+            let mut libs: Vec<String> = invoke_command(
+                llvm_config.as_ref(),
+                &[
+                    "--libs",
+                    link_mode,
+                    "MC",
+                    "MCParser",
+                    "Support",
+                    "Option",
+                    "BitReader",
+                    "ProfileData",
+                    "BinaryFormat",
+                    "Core",
+                ],
+            )
+                .unwrap_or("-lLLVM".to_string())
+                .split_whitespace()
+                .map(|lib| String::from(lib.trim_start_matches("-l")))
+                .collect();
+
+            libs.extend(
+                env::var("LLVM_SYSTEM_LIBS")
+                    .ok()
+                    .or(invoke_command(
+                        llvm_config.as_ref(),
+                        &[
+                            "--system-libs",
+                            link_mode,
+                        ],
+                    ))
+                    .unwrap_or(String::new())
+                    .split_whitespace()
+                    .map(|lib| String::from(lib.trim_start_matches("-l")))
+            );
+
+            Self {
+                lib_dir,
+                libs,
+            }
+        }
+    }
+}
+
 fn main() {
     target::main();
     testgen::main();
+    clang_ast::main()
 }

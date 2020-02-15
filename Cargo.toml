@@ -43,6 +43,9 @@ diff = "0.1"
 clap = "2"
 shlex = "0.1"
 
+[build-dependencies]
+cmake = "0.1"
+
 [dependencies]
 bitflags = "1.0.3"
 cexpr = "0.3.6"
