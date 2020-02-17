@@ -1640,6 +1640,8 @@ bool Type_isConstQualifiedType(QualType T) {
 }
 
 long long Type_getSizeOf(QualType QT, ASTContext *Context) {
+  if (QT.isNull())
+    return CXTypeLayoutError_Invalid;
   // [expr.sizeof] p2: if reference type, return size of referenced type
   if (QT->isReferenceType())
     QT = QT.getNonReferenceType();
@@ -1710,6 +1712,8 @@ static unsigned GetTemplateArgumentArraySize(ArrayRef<TemplateArgument> TA) {
 }
 
 int Type_getNumTemplateArguments(QualType T) {
+  if (T.isNull())
+    return -1;
   auto TA = GetTemplateArguments(T);
   if (!TA)
     return -1;
