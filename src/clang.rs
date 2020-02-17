@@ -10,7 +10,7 @@ use regex;
 use std::ffi::{CStr, CString};
 use std::fmt;
 use std::hash::Hash;
-// use std::hash::Hasher;
+use std::hash::Hasher;
 use std::os::raw::{c_char, c_int, c_longlong, c_uint, c_ulong, c_ulonglong};
 use std::{mem, ptr, slice};
 
@@ -75,12 +75,46 @@ pub struct Cursor {
     unit: *mut clangtool::clang_ASTUnit,
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Copy, Clone)]
 pub enum ASTNode {
     Invalid,
     Decl(*const clangtool::clang_Decl),
     Expr(*const clangtool::clang_Expr),
     CXXBaseSpecifier(*const clangtool::clang_CXXBaseSpecifier),
+}
+
+impl PartialEq for ASTNode {
+    fn eq(&self, other: &ASTNode) -> bool {
+        match (*self, *other) {
+            (ASTNode::Invalid, ASTNode::Invalid) => true,
+            (ASTNode::Decl(d1), ASTNode::Decl(d2)) => ptr::eq(d1, d2),
+            (ASTNode::Expr(e1), ASTNode::Expr(e2)) => ptr::eq(e1, e2),
+            (ASTNode::CXXBaseSpecifier(base1), ASTNode::CXXBaseSpecifier(base2)) => ptr::eq(base1, base2),
+            _ => false,
+        }
+    }
+}
+
+impl Eq for ASTNode {}
+
+impl Hash for ASTNode {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        match *self {
+            ASTNode::Invalid => state.write_u8(1),
+            ASTNode::Decl(d) => {
+                state.write_u8(2);
+                ptr::hash(d, state);
+            }
+            ASTNode::Expr(e) => {
+                state.write_u8(3);
+                ptr::hash(e, state);
+            }
+            ASTNode::CXXBaseSpecifier(b) => {
+                state.write_u8(4);
+                ptr::hash(b, state);
+            }
+        }
+    }
 }
 
 impl ASTNode {
@@ -1141,20 +1175,6 @@ where
 
     (*func)(child)
 }
-
-// impl PartialEq for Cursor {
-//     fn eq(&self, other: &Cursor) -> bool {
-//         unsafe { clang_equalCursors(self.x, other.x) == 1 }
-//     }
-// }
-
-// impl Eq for Cursor {}
-
-// impl Hash for Cursor {
-//     fn hash<H: Hasher>(&self, state: &mut H) {
-//         unsafe { clang_hashCursor(self.x) }.hash(state)
-//     }
-// }
 
 /// The type of a node in clang's AST.
 #[derive(Clone, Copy, PartialEq, Eq)]
