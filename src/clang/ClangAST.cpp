@@ -676,21 +676,37 @@ comments::Comment *Decl_getParsedComment(const Decl *D, ASTContext *Ctx) {
 }
 
 QualType Decl_getType(const Decl *D, ASTContext *Ctx) {
+  auto ty = QualType();
   if (!D)
-    return QualType();
+    return ty;
+
   if (auto *TD = dyn_cast<TypeDecl>(&*D))
-    return Ctx->getTypeDeclType(TD);
+    ty = Ctx->getTypeDeclType(TD);
   if (auto *ID = dyn_cast<ObjCInterfaceDecl>(&*D))
-    return Ctx->getObjCInterfaceType(ID);
+    ty = Ctx->getObjCInterfaceType(ID);
   if (auto *DD = dyn_cast<DeclaratorDecl>(&*D))
-    return DD->getType();
+    ty = DD->getType();
   if (auto *VD = dyn_cast<ValueDecl>(&*D))
-    return VD->getType();
+    ty = VD->getType();
   if (auto *PD = dyn_cast<ObjCPropertyDecl>(&*D))
-    return PD->getType();
+    ty = PD->getType();
   if (auto *FTD = dyn_cast<FunctionTemplateDecl>(&*D))
-    return FTD->getTemplatedDecl()->getType();
-  return QualType();
+    ty = FTD->getTemplatedDecl()->getType();
+
+  if (ty.isNull())
+    return ty;
+
+  // libclang does not return AttributedTypes if
+  // CXTranslationUnit_IncludeAttributedTypes is not set, and bindgen assumes it
+  // is not set.
+  if (auto *ATT = ty->getAs<AttributedType>())
+    return ATT->getEquivalentType();
+
+  // libclang does not return ParenTypes
+  if (auto *PTT = ty->getAs<ParenType>())
+    return PTT->getInnerType();
+
+  return ty;
 }
 
 bool Decl_isFunctionInlined(const Decl *D) {
