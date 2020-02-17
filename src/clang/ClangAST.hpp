@@ -196,9 +196,9 @@ struct Node {
   Node(const Expr *expr) : kind(Expr_getCXCursorKind(expr)) {
     ptr.expr = expr;
   }
-  // Node(Type *T) : kind(Type_getCXCursorKind(T)) {
-  //   ptr.expr = expr;
-  // }
+  operator bool() const {
+    return kind != CXCursor_NotImplemented;
+  }
 };
 
 typedef CXChildVisitResult (*Visitor)(Node N, Node parent,

@@ -1343,41 +1343,42 @@ public:
   explicit BindgenVisitor(ASTUnit &AST, Visitor V, CXClientData data) : AST(AST), VisitFn(V), Data(data) {}
 
   bool TraverseDecl(Decl *D) {
-    switch (VisitFn(Node(D), Parent, &AST, Data)) {
-    case CXChildVisit_Break:
-      return false;
-    case CXChildVisit_Continue:
-      return true;
-    case CXChildVisit_Recurse:
-      auto OldParent = Parent;
-      Parent = Node(D);
-      bool res = RecursiveASTVisitor<BindgenVisitor>::TraverseDecl(D);
-      Parent = OldParent;
-      return res;
+    if (Parent) {
+      switch (VisitFn(Node(D), Parent, &AST, Data)) {
+      case CXChildVisit_Break:
+        return false;
+      case CXChildVisit_Continue:
+        return true;
+      case CXChildVisit_Recurse:
+        break;
+      }
     }
 
-    llvm_unreachable("Visitor return invalid CXChildVisitResult");
+    auto OldParent = Parent;
+    Parent = Node(D);
+    bool res = RecursiveASTVisitor<BindgenVisitor>::TraverseDecl(D);
+    Parent = OldParent;
+    return res;
   }
 
   bool TraverseStmt(Stmt *S) {
-    switch (VisitFn(Node(cast<Expr>(S)), Parent, &AST, Data)) {
-    case CXChildVisit_Break:
-      return false;
-    case CXChildVisit_Continue:
-      return true;
-    case CXChildVisit_Recurse:
-      auto OldParent = Parent;
-      Parent = Node(cast<Expr>(S));
-      bool res = RecursiveASTVisitor<BindgenVisitor>::TraverseStmt(S);
-      Parent = OldParent;
-      return res;
+    if (Parent) {
+      switch (VisitFn(Node(cast<Expr>(S)), Parent, &AST, Data)) {
+      case CXChildVisit_Break:
+        return false;
+      case CXChildVisit_Continue:
+        return true;
+      case CXChildVisit_Recurse:
+        break;
+      }
     }
-  }
 
-  // bool TraverseType(Type *T) {
-  //   Parent = Node(T);
-  //   return RecursiveASTVisitor<BindgenVisitor>::TraverseStmt(E);
-  // }
+    auto OldParent = Parent;
+    Parent = Node(cast<Expr>(S));
+    bool res = RecursiveASTVisitor<BindgenVisitor>::TraverseStmt(S);
+    Parent = OldParent;
+    return res;
+  }
 };
 
 void Decl_visitChildren(const Decl *Parent, Visitor V, ASTUnit *Unit, CXClientData data) {
