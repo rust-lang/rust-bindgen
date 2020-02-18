@@ -59,7 +59,7 @@ cannot translate into Rust:
 * Anything related to template specialization:
   * Partial template specialization
   * Traits templates
-  * Specialization Failure Is Not An Error (SFINAE)
+  * Substitution Failure Is Not An Error (SFINAE)
 
 * Cross language inheritance, for example inheriting from a Rust struct in C++.
 
