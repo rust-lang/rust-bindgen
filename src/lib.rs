@@ -173,8 +173,8 @@ impl Default for CodegenConfig {
 ///
 /// // Configure and generate bindings.
 /// let bindings = builder().header("path/to/input/header")
-///     .whitelisted_type("SomeCoolClass")
-///     .whitelisted_function("do_some_cool_thing")
+///     .whitelist_type("SomeCoolClass")
+///     .whitelist_function("do_some_cool_thing")
 ///     .generate()?;
 ///
 /// // Write the generated bindings to an output file.
