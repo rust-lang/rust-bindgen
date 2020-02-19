@@ -6847,7 +6847,7 @@ pub struct Node {
 pub union Node__bindgen_ty_1 {
     pub decl: *const clang_Decl,
     pub expr: *const clang_Expr,
-    pub type_: *mut clang_Type,
+    pub base: *const clang_CXXBaseSpecifier,
     _bindgen_union_align: u64,
 }
 #[test]
@@ -6890,7 +6890,7 @@ fn bindgen_test_layout_Node__bindgen_ty_1() {
     );
     assert_eq!(
         unsafe {
-            &(*(::std::ptr::null::<Node__bindgen_ty_1>())).type_ as *const _
+            &(*(::std::ptr::null::<Node__bindgen_ty_1>())).base as *const _
                 as usize
         },
         0usize,
@@ -6898,7 +6898,7 @@ fn bindgen_test_layout_Node__bindgen_ty_1() {
             "Offset of field: ",
             stringify!(Node__bindgen_ty_1),
             "::",
-            stringify!(type_)
+            stringify!(base)
         )
     );
 }
@@ -7152,6 +7152,12 @@ extern "C" {
     pub fn CXXBaseSpecifier_isVirtualBase(
         arg1: *const clang_CXXBaseSpecifier,
     ) -> bool;
+}
+extern "C" {
+    #[link_name = "\u{1}_Z24CXXBaseSpecifier_getTypePKN5clang16CXXBaseSpecifierE"]
+    pub fn CXXBaseSpecifier_getType(
+        arg1: *const clang_CXXBaseSpecifier,
+    ) -> clang_QualType;
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

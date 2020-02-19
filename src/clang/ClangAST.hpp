@@ -186,6 +186,7 @@ struct Node {
   union {
     const Decl *decl;
     const Expr *expr;
+    const CXXBaseSpecifier *base;
   } ptr;
 
   Node() : kind(CXCursor_NotImplemented) {}
@@ -194,6 +195,9 @@ struct Node {
   }
   Node(const Expr *expr) : kind(Expr_getCXCursorKind(expr)) {
     ptr.expr = expr;
+  }
+  Node(const CXXBaseSpecifier *base) : kind(CXCursor_CXXBaseSpecifier) {
+    ptr.base = base;
   }
   operator bool() const {
     return kind != CXCursor_NotImplemented;
@@ -250,3 +254,4 @@ BindgenStringRef FileEntry_getName(FileEntry *);
 BindgenStringRef getClangVersion();
 
 bool CXXBaseSpecifier_isVirtualBase(const CXXBaseSpecifier *);
+QualType CXXBaseSpecifier_getType(const CXXBaseSpecifier *);
