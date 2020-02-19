@@ -639,7 +639,10 @@ int Decl_getNumTemplateArguments(const Decl *D) {
 }
 
 CXCursorKind Decl_getCXCursorKind(const Decl *D) {
-  return getCursorKindForDecl(&*D);
+  if (!D)
+    return CXCursor_NoDeclFound;
+  else
+    return getCursorKindForDecl(&*D);
 }
 
 bool Decl_isDefinition(const Decl *D) {
@@ -1378,6 +1381,9 @@ public:
   }
 
   bool TraverseStmt(Stmt *S) {
+    if (!S)
+      return true;
+
     if (Parent) {
       switch (VisitFn(Node(cast<Expr>(S)), Parent, &AST, Data)) {
       case CXChildVisit_Break:
@@ -1669,6 +1675,8 @@ long long Type_getSizeOf(QualType QT, ASTContext *Context) {
 }
 
 long long Type_getAlignOf(QualType QT, ASTContext *Context) {
+  if (QT.isNull())
+    return CXTypeLayoutError_Invalid;
   // [expr.alignof] p1: return size_t value for complete object type, reference
   //                    or array.
   // [expr.alignof] p3: if reference type, return size of referenced type
