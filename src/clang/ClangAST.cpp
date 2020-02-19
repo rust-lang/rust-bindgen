@@ -1460,6 +1460,24 @@ public:
     Parent = OldParent;
     return res;
   }
+
+  bool TraverseTypeLoc(TypeLoc TL) {
+    if (!TL)
+      return false;
+
+    if (auto DT = TL.getAs<DecltypeTypeLoc>()) {
+      if (Expr *E = DT.getUnderlyingExpr()) {
+        if (!TraverseStmt(E))
+          return false;
+      }
+    } else if (auto DT = TL.getAs<TemplateTypeParmTypeLoc>()) {
+      if (!TraverseDecl(DT.getDecl()))
+        return false;
+    }
+
+    bool res = RecursiveASTVisitor<BindgenVisitor>::TraverseTypeLoc(TL);
+    return res;
+  }
 };
 
 void Decl_visitChildren(const Decl *Parent, Visitor V, ASTUnit *Unit, CXClientData data) {
