@@ -1465,13 +1465,32 @@ public:
     if (!TL)
       return false;
 
-    if (auto DT = TL.getAs<DecltypeTypeLoc>()) {
-      if (Expr *E = DT.getUnderlyingExpr()) {
-        if (!TraverseStmt(E))
-          return false;
-      }
-    } else if (auto DT = TL.getAs<TemplateTypeParmTypeLoc>()) {
-      if (!TraverseDecl(DT.getDecl()))
+    if (auto T = TL.getAs<DecltypeTypeLoc>()) {
+      if (!TraverseStmt(T.getUnderlyingExpr()))
+        return false;
+    } else if (auto T = TL.getAs<TypeOfExprTypeLoc>()) {
+      if (!TraverseStmt(T.getUnderlyingExpr()))
+        return false;
+    } else if (auto T = TL.getAs<TypedefTypeLoc>()) {
+      if (!TraverseDecl(T.getTypedefNameDecl()))
+        return false;
+    } else if (auto T = TL.getAs<InjectedClassNameTypeLoc>()) {
+      if (!TraverseDecl(T.getDecl()))
+        return false;
+    } else if (auto T = TL.getAs<UnresolvedUsingTypeLoc>()) {
+      if (!TraverseDecl(T.getDecl()))
+        return false;
+    } else if (auto T = TL.getAs<TagTypeLoc>()) {
+      if (!TraverseDecl(T.getDecl()))
+        return false;
+    } else if (auto T = TL.getAs<RecordTypeLoc>()) {
+      if (!TraverseDecl(T.getDecl()))
+        return false;
+    } else if (auto T = TL.getAs<EnumTypeLoc>()) {
+      if (!TraverseDecl(T.getDecl()))
+        return false;
+    } else if (auto T = TL.getAs<TemplateTypeParmTypeLoc>()) {
+      if (!TraverseDecl(T.getDecl()))
         return false;
     }
 
