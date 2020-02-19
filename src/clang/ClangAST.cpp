@@ -685,19 +685,18 @@ QualType Decl_getType(const Decl *D, ASTContext *Ctx) {
 
   if (auto *TD = dyn_cast<TypeDecl>(&*D))
     ty = Ctx->getTypeDeclType(TD);
-  if (auto *ID = dyn_cast<ObjCInterfaceDecl>(&*D))
+  else if (auto *ID = dyn_cast<ObjCInterfaceDecl>(&*D))
     ty = Ctx->getObjCInterfaceType(ID);
-  if (auto *DD = dyn_cast<DeclaratorDecl>(&*D))
+  else if (auto *DD = dyn_cast<DeclaratorDecl>(&*D))
     ty = DD->getType();
-  if (auto *VD = dyn_cast<ValueDecl>(&*D))
+  else if (auto *VD = dyn_cast<ValueDecl>(&*D))
     ty = VD->getType();
-  if (auto *PD = dyn_cast<ObjCPropertyDecl>(&*D))
+  else if (auto *PD = dyn_cast<ObjCPropertyDecl>(&*D))
     ty = PD->getType();
-  if (auto *FTD = dyn_cast<FunctionTemplateDecl>(&*D))
+  else if (auto *FTD = dyn_cast<FunctionTemplateDecl>(&*D))
     ty = FTD->getTemplatedDecl()->getType();
-
-  if (ty.isNull())
-    return ty;
+  else
+    return QualType();
 
   // libclang does not return AttributedTypes if
   // CXTranslationUnit_IncludeAttributedTypes is not set, and bindgen assumes it
