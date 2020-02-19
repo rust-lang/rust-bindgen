@@ -1408,7 +1408,9 @@ public:
   }
 
   bool TraverseDecl(Decl *D) {
-    if (!D || D->isImplicit())
+    if (!D)
+      return false;
+    if (D->isImplicit())
       return true;
 
     bool skip = !Parent;
@@ -1438,7 +1440,8 @@ public:
 
   bool TraverseStmt(Stmt *S) {
     if (!S)
-      return true;
+      return false;
+
 
     if (Parent) {
       switch (VisitFn(Node(cast<Expr>(S)), Parent, &AST, Data)) {
