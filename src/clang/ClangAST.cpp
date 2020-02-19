@@ -2072,8 +2072,52 @@ void getSpellingLocation(ASTUnit *AST, const SourceLocation *location, FileEntry
     *offset = FileOffset;
 }
 
-CXCommentKind Comment_getKind(const comments::Comment *) {
-  return CXComment_FullComment;
+CXCommentKind Comment_getKind(const comments::Comment *C) {
+  using namespace comments;
+  if (!C)
+    return CXComment_Null;
+
+  switch (C->getCommentKind()) {
+  case Comment::NoCommentKind:
+    return CXComment_Null;
+
+  case Comment::TextCommentKind:
+    return CXComment_Text;
+
+  case Comment::InlineCommandCommentKind:
+    return CXComment_InlineCommand;
+
+  case Comment::HTMLStartTagCommentKind:
+    return CXComment_HTMLStartTag;
+
+  case Comment::HTMLEndTagCommentKind:
+    return CXComment_HTMLEndTag;
+
+  case Comment::ParagraphCommentKind:
+    return CXComment_Paragraph;
+
+  case Comment::BlockCommandCommentKind:
+    return CXComment_BlockCommand;
+
+  case Comment::ParamCommandCommentKind:
+    return CXComment_ParamCommand;
+
+  case Comment::TParamCommandCommentKind:
+    return CXComment_TParamCommand;
+
+  case Comment::VerbatimBlockCommentKind:
+    return CXComment_VerbatimBlockCommand;
+
+  case Comment::VerbatimBlockLineCommentKind:
+    return CXComment_VerbatimBlockLine;
+
+  case Comment::VerbatimLineCommentKind:
+    return CXComment_VerbatimLine;
+
+  case Comment::FullCommentKind:
+    return CXComment_FullComment;
+  }
+  llvm_unreachable("unknown CommentKind");
 }
 
 unsigned Comment_getNumChildren(const comments::Comment *C) {
