@@ -186,7 +186,6 @@ struct Node {
   union {
     const Decl *decl;
     const Expr *expr;
-    Type *type;
   } ptr;
 
   Node() : kind(CXCursor_NotImplemented) {}
