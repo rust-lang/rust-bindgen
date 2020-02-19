@@ -747,11 +747,46 @@ uint64_t Decl_getEnumConstantUnsignedValue(const Decl *D) {
     return ULLONG_MAX;
 }
 
+static bool isTypeIncompleteForLayout(QualType QT) {
+  return QT->isIncompleteType() && !QT->isIncompleteArrayType();
+}
+
+static long long visitRecordForValidation(const RecordDecl *RD) {
+  for (const auto *I : RD->fields()){
+    QualType FQT = I->getType();
+    if (isTypeIncompleteForLayout(FQT))
+      return CXTypeLayoutError_Incomplete;
+    if (FQT->isDependentType())
+      return CXTypeLayoutError_Dependent;
+    // recurse
+    if (const RecordType *ChildType = I->getType()->getAs<RecordType>()) {
+      if (const RecordDecl *Child = ChildType->getDecl()) {
+        long long ret = visitRecordForValidation(Child);
+        if (ret < 0)
+          return ret;
+      }
+    }
+    // else try next field
+  }
+  return 0;
+}
+
 long long Decl_getOffsetOfField(const Decl *D, ASTContext *Ctx) {
+  auto *RD = dyn_cast_or_null<RecordDecl>(D->getDeclContext());
+  if (!RD)
+    return -1;
+  RD = RD->getDefinition();
+  if (!RD || RD->isInvalidDecl() || !RD->isCompleteDefinition())
+    return -1;
+  auto Err = visitRecordForValidation(RD);
+  if (Err < 0)
+    return Err;
+
   if (auto *FD = dyn_cast_or_null<FieldDecl>(&*D))
     return Ctx->getFieldOffset(FD);
   if (auto *IFD = dyn_cast_or_null<IndirectFieldDecl>(&*D))
     return Ctx->getFieldOffset(IFD);
+
   return -1;
 }
 
