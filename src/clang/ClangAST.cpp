@@ -1395,8 +1395,22 @@ class BindgenVisitor : public RecursiveASTVisitor<BindgenVisitor> {
 public:
   explicit BindgenVisitor(ASTUnit &AST, Visitor V, CXClientData data) : AST(AST), VisitFn(V), Data(data) {}
 
+  bool shouldVisitImplicitCode() {
+    return false;
+  }
+
   bool TraverseDecl(Decl *D) {
-    if (Parent) {
+    if (!D || D->isImplicit())
+      return true;
+
+    bool skip = !Parent;
+
+    // libclang doesn't visit the CXXRecordDecl inside ClassTemplateDecl nodes
+    if (Parent.kind == CXCursor_ClassTemplate
+        && isa<CXXRecordDecl>(D))
+      skip = true;
+
+    if (!skip) {
       switch (VisitFn(Node(D), Parent, &AST, Data)) {
       case CXChildVisit_Break:
         return false;
