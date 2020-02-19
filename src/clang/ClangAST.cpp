@@ -320,6 +320,14 @@ const Decl *Decl_getSemanticParent(const Decl *D) {
   if (!DC)
     return nullptr;
 
+  // We replace CXXRecordDecl's inside ClassTemplateDecls with just the
+  // ClassTemplateDecl because we never expose the inner CXXRecordDecl to Rust.
+  if (auto *RD = dyn_cast<CXXRecordDecl>(DC)) {
+    auto *ClassTemplate = RD->getDescribedClassTemplate();
+    if (ClassTemplate)
+      return ClassTemplate;
+  }
+
   return cast<Decl>(DC);
 }
 
