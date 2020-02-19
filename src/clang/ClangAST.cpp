@@ -1497,6 +1497,25 @@ public:
     bool res = RecursiveASTVisitor<BindgenVisitor>::TraverseTypeLoc(TL);
     return res;
   }
+
+  bool TraverseCXXBaseSpecifier(const CXXBaseSpecifier &Base) {
+    if (Parent) {
+      switch (VisitFn(Node(&Base), Parent, &AST, Data)) {
+      case CXChildVisit_Break:
+        return false;
+      case CXChildVisit_Continue:
+        return true;
+      case CXChildVisit_Recurse:
+        break;
+      }
+    }
+
+    auto OldParent = Parent;
+    Parent = Node(&Base);
+    bool res = RecursiveASTVisitor<BindgenVisitor>::TraverseCXXBaseSpecifier(Base);
+    Parent = OldParent;
+    return res;
+  }
 };
 
 void Decl_visitChildren(const Decl *Parent, Visitor V, ASTUnit *Unit, CXClientData data) {
@@ -2761,4 +2780,10 @@ BindgenStringRef getClangVersion() {
 
 bool CXXBaseSpecifier_isVirtualBase(const CXXBaseSpecifier *B) {
   return B && B->isVirtual();
+}
+
+QualType CXXBaseSpecifier_getType(const CXXBaseSpecifier *B) {
+  if (!B)
+    return QualType();
+  return B->getType();
 }

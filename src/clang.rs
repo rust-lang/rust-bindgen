@@ -459,7 +459,8 @@ impl Cursor {
             let x = match self.node {
                 ASTNode::Decl(d) => clangtool::Decl_getType(d, self.context()),
                 ASTNode::Expr(e) => clangtool::Expr_getType(e),
-                _ => mem::zeroed(),
+                ASTNode::CXXBaseSpecifier(base) => clangtool::CXXBaseSpecifier_getType(base),
+                ASTNode::Invalid => mem::zeroed(),
             };
             Type { x, unit: self.unit }
         }
@@ -1112,6 +1113,8 @@ where
         ASTNode::Decl(node.ptr.decl)
     } else if node.kind >= CXCursor_FirstExpr && node.kind <= CXCursor_LastExpr {
         ASTNode::Expr(node.ptr.expr)
+    } else if node.kind == CXCursor_CXXBaseSpecifier {
+        ASTNode::CXXBaseSpecifier(node.ptr.base)
     } else {
         return CXChildVisit_Recurse;
     };
