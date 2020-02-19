@@ -75,46 +75,12 @@ pub struct Cursor {
     unit: *mut clangtool::clang_ASTUnit,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub enum ASTNode {
     Invalid,
     Decl(*const clangtool::clang_Decl),
     Expr(*const clangtool::clang_Expr),
     CXXBaseSpecifier(*const clangtool::clang_CXXBaseSpecifier),
-}
-
-impl PartialEq for ASTNode {
-    fn eq(&self, other: &ASTNode) -> bool {
-        match (*self, *other) {
-            (ASTNode::Invalid, ASTNode::Invalid) => true,
-            (ASTNode::Decl(d1), ASTNode::Decl(d2)) => ptr::eq(d1, d2),
-            (ASTNode::Expr(e1), ASTNode::Expr(e2)) => ptr::eq(e1, e2),
-            (ASTNode::CXXBaseSpecifier(base1), ASTNode::CXXBaseSpecifier(base2)) => ptr::eq(base1, base2),
-            _ => false,
-        }
-    }
-}
-
-impl Eq for ASTNode {}
-
-impl Hash for ASTNode {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        match *self {
-            ASTNode::Invalid => state.write_u8(1),
-            ASTNode::Decl(d) => {
-                state.write_u8(2);
-                ptr::hash(d, state);
-            }
-            ASTNode::Expr(e) => {
-                state.write_u8(3);
-                ptr::hash(e, state);
-            }
-            ASTNode::CXXBaseSpecifier(b) => {
-                state.write_u8(4);
-                ptr::hash(b, state);
-            }
-        }
-    }
 }
 
 impl ASTNode {
@@ -135,25 +101,6 @@ impl ASTNode {
     }
 
 }
-
-// impl<T> PartialEq for clangtool::BindgenNode<T> {
-//     fn eq(&self, other: &Self) -> bool {
-//         ptr::eq(self.node, other.node)
-//             && ptr::eq(self.context, other.context)
-//     }
-// }
-
-// impl<T> Eq for clangtool::BindgenNode<T> {
-// }
-
-// impl<T> Hash for clangtool::BindgenNode<T> {
-//     fn hash<H>(&self, state: &mut H)
-//         where H: Hasher
-//     {
-//         self.node.hash(state);
-//         self.context.hash(state);
-//     }
-// }
 
 impl fmt::Debug for Cursor {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
