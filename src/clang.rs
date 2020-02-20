@@ -51,7 +51,7 @@ trait ToCString {
 impl ToCString for clangtool::BindgenStringRef {
     fn to_cstring(&self) -> CString {
         if !self.s.is_null() {
-            unsafe { CString::from_raw(clangtool::cString(*self)) }
+            unsafe { CStr::from_ptr(self.s).into() }
         } else {
             return CString::new("").unwrap();
         }
