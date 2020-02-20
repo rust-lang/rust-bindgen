@@ -6276,6 +6276,11 @@ pub struct clang_Attr {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
+pub struct clang_PreprocessedEntity {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
 pub struct clang_comments_Comment {
     _unused: [u8; 0],
 }
@@ -6858,6 +6863,7 @@ pub union Node__bindgen_ty_1 {
     pub expr: *const clang_Expr,
     pub base: *const clang_CXXBaseSpecifier,
     pub attr: *const clang_Attr,
+    pub ppe: *const clang_PreprocessedEntity,
     _bindgen_union_align: u64,
 }
 #[test]
@@ -6922,6 +6928,19 @@ fn bindgen_test_layout_Node__bindgen_ty_1() {
             stringify!(Node__bindgen_ty_1),
             "::",
             stringify!(attr)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<Node__bindgen_ty_1>())).ppe as *const _
+                as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(Node__bindgen_ty_1),
+            "::",
+            stringify!(ppe)
         )
     );
 }
@@ -7207,6 +7226,12 @@ extern "C" {
     #[link_name = "\u{1}_Z16Attr_getLocationPKN5clang4AttrE"]
     pub fn Attr_getLocation(
         arg1: *const clang_Attr,
+    ) -> *mut clang_SourceLocation;
+}
+extern "C" {
+    #[link_name = "\u{1}_Z30PreprocessedEntity_getLocationPKN5clang18PreprocessedEntityE"]
+    pub fn PreprocessedEntity_getLocation(
+        arg1: *const clang_PreprocessedEntity,
     ) -> *mut clang_SourceLocation;
 }
 #[repr(C)]

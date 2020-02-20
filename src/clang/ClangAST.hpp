@@ -21,6 +21,7 @@ struct CXXBaseSpecifier;
 struct ASTContext;
 struct SourceRange;
 struct Attr;
+struct PreprocessedEntity;
 
 namespace comments {
 struct Comment;
@@ -162,6 +163,7 @@ struct Node {
     const Expr *expr;
     const CXXBaseSpecifier *base;
     const Attr *attr;
+    const PreprocessedEntity *ppe;
   } ptr;
 
   Node() : kind(CXCursor_NotImplemented) {}
@@ -176,6 +178,9 @@ struct Node {
   }
   Node(const Attr *attr) : kind(Attr_getCXCursorKind(attr)) {
     ptr.attr = attr;
+  }
+  Node(const PreprocessedEntity *ppe, CXCursorKind kind) : kind(kind) {
+    ptr.ppe = ppe;
   }
   operator bool() const {
     return kind != CXCursor_NotImplemented;
@@ -238,3 +243,4 @@ QualType CXXBaseSpecifier_getType(const CXXBaseSpecifier *);
 BindgenStringRef CXXBaseSpecifier_getSpelling(const CXXBaseSpecifier *);
 SourceLocation *CXXBaseSpecifier_getLocation(const CXXBaseSpecifier *);
 SourceLocation *Attr_getLocation(const Attr *);
+SourceLocation *PreprocessedEntity_getLocation(const PreprocessedEntity *);

@@ -14,7 +14,9 @@
 #include "clang/Basic/Version.h"
 #include "clang/Frontend/ASTUnit.h"
 #include "clang/Frontend/CompilerInstance.h"
+#include "clang/Frontend/CompilerInvocation.h"
 #include "clang/Index/USRGeneration.h"
+#include "clang/Lex/PreprocessorOptions.h"
 #include "clang-c/Documentation.h"
 #include "clang-c/Index.h"
 
@@ -151,6 +153,13 @@ ASTUnit *parseTranslationUnit(const char *source_filename,
   auto Invoc = createInvocationFromCommandLine(Args, Diags);
   if (!Invoc)
     return nullptr;
+
+  auto &PPOpts = Invoc->getPreprocessorOpts();
+
+  if (options & CXTranslationUnit_DetailedPreprocessingRecord) {
+    // Tell the preprocessor to save a detailed preprocessing record
+    PPOpts.DetailedRecord = true;
+  }
 
   return ASTUnit::LoadFromCompilerInvocationAction(
     std::move(Invoc), std::make_shared<PCHContainerOperations>(), Diags);
@@ -1558,6 +1567,49 @@ public:
       VisitFn(Node(A), Parent, &AST, Data);
     return true;
   }
+
+  bool VisitTranslationUnitDecl(TranslationUnitDecl *TU) {
+    if (!AST.getPreprocessor().getPreprocessingRecord())
+      return true;
+
+    PreprocessingRecord &PPRec =
+        *AST.getPreprocessor().getPreprocessingRecord();
+    SourceManager &SM = AST.getSourceManager();
+
+    bool OnlyLocalDecls = !AST.isMainFileAST() && AST.getOnlyLocalDecls();
+
+    if (OnlyLocalDecls)
+      return visitPreprocessedEntities(PPRec.local_begin(), PPRec.local_end(),
+                                       PPRec);
+
+    return visitPreprocessedEntities(PPRec.begin(), PPRec.end(), PPRec);
+  }
+
+private:
+  template <typename InputIterator>
+  bool visitPreprocessedEntities(InputIterator First, InputIterator Last,
+                                 PreprocessingRecord &PPRec) {
+    for (; First != Last; ++First) {
+      PreprocessedEntity *PPE = *First;
+      if (!PPE)
+        continue;
+
+      Node node;
+      if (isa<MacroExpansion>(PPE)) {
+        node = Node(PPE, CXCursor_MacroExpansion);
+      } else if (isa<MacroDefinitionRecord>(PPE)) {
+        node = Node(PPE, CXCursor_MacroDefinition);
+      } else if (isa<InclusionDirective>(PPE)) {
+        node = Node(PPE, CXCursor_InclusionDirective);
+      }
+      if (node) {
+        if (VisitFn(node, Parent, &AST, Data) == CXChildVisit_Break)
+          return false;
+      }
+    }
+
+    return true;
+  }
 };
 
 void Decl_visitChildren(const Decl *Parent, Visitor V, ASTUnit *Unit, CXClientData data) {
@@ -2894,4 +2946,8 @@ SourceLocation *CXXBaseSpecifier_getLocation(const CXXBaseSpecifier *B) {
 
 SourceLocation *Attr_getLocation(const Attr *A) {
   return new SourceLocation(A->getLocation());
+}
+
+SourceLocation *PreprocessedEntity_getLocation(const PreprocessedEntity *PPE) {
+  return new SourceLocation(PPE->getSourceRange().getBegin());
 }
