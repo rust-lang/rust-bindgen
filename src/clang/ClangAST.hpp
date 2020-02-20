@@ -60,6 +60,9 @@ struct BindgenSourceRange {
   SourceLocation *E;
 
   BindgenSourceRange(const SourceRange &range);
+  operator bool() const {
+    return B && E;
+  }
 };
 
 

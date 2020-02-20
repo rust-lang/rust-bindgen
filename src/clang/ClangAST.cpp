@@ -1627,7 +1627,7 @@ void CXXBaseSpecifier_visitChildren(const CXXBaseSpecifier *Parent, Visitor V, A
 
 void tokenize(ASTUnit *TU, BindgenSourceRange Range, CXToken **Tokens,
               unsigned *NumTokens) {
-  if (!Tokens || !NumTokens)
+  if (!Tokens || !NumTokens || !Range)
     return;
 
   SmallVector<CXToken, 32> CXTokens;
