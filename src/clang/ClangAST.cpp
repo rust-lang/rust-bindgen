@@ -1706,12 +1706,27 @@ void tokenize(ASTUnit *TU, BindgenSourceRange Range, CXToken **Tokens,
   if (!Tokens || !NumTokens || !Range)
     return;
 
-  SmallVector<CXToken, 32> CXTokens;
+  // Translate the Range end location to after the last token, instead of
+  // the beginning of the last token.
   SourceManager &SourceMgr = TU->getSourceManager();
+  SourceLocation EndLoc = *Range.E;
+  bool IsTokenRange = true;
+  if (EndLoc.isValid() && EndLoc.isMacroID() && !SourceMgr.isMacroArgExpansion(EndLoc)) {
+    CharSourceRange Expansion = SourceMgr.getExpansionRange(EndLoc);
+    EndLoc = Expansion.getEnd();
+    IsTokenRange = Expansion.isTokenRange();
+  }
+  if (IsTokenRange && EndLoc.isValid()) {
+    unsigned Length = Lexer::MeasureTokenLength(SourceMgr.getSpellingLoc(EndLoc),
+                                                SourceMgr, TU->getLangOpts());
+    EndLoc = EndLoc.getLocWithOffset(Length);
+  }
+
+  SmallVector<CXToken, 32> CXTokens;
   std::pair<FileID, unsigned> BeginLocInfo =
       SourceMgr.getDecomposedSpellingLoc(*Range.B);
   std::pair<FileID, unsigned> EndLocInfo =
-      SourceMgr.getDecomposedSpellingLoc(*Range.E);
+      SourceMgr.getDecomposedSpellingLoc(EndLoc);
 
   // Cannot tokenize across files.
   if (BeginLocInfo.first != EndLocInfo.first)
