@@ -1531,13 +1531,13 @@ public:
     return TraverseDeclTyped(D, Decl_getCXCursorKind(D));
   }
 
-  bool TraverseStmtTyped(Stmt *S, CXCursorKind kind) {
-    if (!S)
-      return false;
+  bool TraverseExprTyped(Expr *E, CXCursorKind kind) {
+    if (!E)
+      return true;
 
-    Node node(cast<Expr>(S), kind);
+    Node node(E, kind);
     if (Parent) {
-      // S->dump();
+      // E->dump();
       switch (VisitFn(node, Parent, &AST, Data)) {
       case CXChildVisit_Break:
         return false;
@@ -1550,20 +1550,22 @@ public:
 
     auto OldParent = Parent;
     Parent = node;
-    bool res = RecursiveASTVisitor<BindgenVisitor>::TraverseStmt(S);
+    bool res = RecursiveASTVisitor<BindgenVisitor>::TraverseStmt(E);
     Parent = OldParent;
     return res;
   }
 
   bool TraverseStmt(Stmt *S) {
     if (!S)
-      return false;
-    return TraverseStmtTyped(S, Expr_getCXCursorKind(cast<Expr>(S)));
+      return true;
+    if (auto *E = dyn_cast<Expr>(S))
+      return TraverseExprTyped(E, Expr_getCXCursorKind(E));
+    return RecursiveASTVisitor<BindgenVisitor>::TraverseStmt(S);
   }
 
   bool TraverseTypeLoc(TypeLoc TL) {
     if (!TL)
-      return false;
+      return true;
 
     // TL.getType().dump();
 
