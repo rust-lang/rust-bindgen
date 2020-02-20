@@ -6271,6 +6271,11 @@ pub struct clang_SourceRange {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
+pub struct clang_Attr {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
 pub struct clang_comments_Comment {
     _unused: [u8; 0],
 }
@@ -6836,6 +6841,10 @@ extern "C" {
     #[link_name = "\u{1}_Z19Type_getDeclarationN5clang8QualTypeE"]
     pub fn Type_getDeclaration(arg1: clang_QualType) -> *const clang_Decl;
 }
+extern "C" {
+    #[link_name = "\u{1}_Z20Attr_getCXCursorKindPKN5clang4AttrE"]
+    pub fn Attr_getCXCursorKind(arg1: *const clang_Attr) -> CXCursorKind::Type;
+}
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Node {
@@ -6848,6 +6857,7 @@ pub union Node__bindgen_ty_1 {
     pub decl: *const clang_Decl,
     pub expr: *const clang_Expr,
     pub base: *const clang_CXXBaseSpecifier,
+    pub attr: *const clang_Attr,
     _bindgen_union_align: u64,
 }
 #[test]
@@ -6901,6 +6911,19 @@ fn bindgen_test_layout_Node__bindgen_ty_1() {
             stringify!(base)
         )
     );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<Node__bindgen_ty_1>())).attr as *const _
+                as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(Node__bindgen_ty_1),
+            "::",
+            stringify!(attr)
+        )
+    );
 }
 #[test]
 fn bindgen_test_layout_Node() {
@@ -6951,6 +6974,15 @@ extern "C" {
     #[link_name = "\u{1}_Z18Expr_visitChildrenPKN5clang4ExprEPF18CXChildVisitResult4NodeS4_PNS_7ASTUnitEPvES6_S7_"]
     pub fn Expr_visitChildren(
         Parent: *const clang_Expr,
+        V: Visitor,
+        Unit: *mut clang_ASTUnit,
+        data: CXClientData,
+    );
+}
+extern "C" {
+    #[link_name = "\u{1}_Z30CXXBaseSpecifier_visitChildrenPKN5clang16CXXBaseSpecifierEPF18CXChildVisitResult4NodeS4_PNS_7ASTUnitEPvES6_S7_"]
+    pub fn CXXBaseSpecifier_visitChildren(
+        Parent: *const clang_CXXBaseSpecifier,
         V: Visitor,
         Unit: *mut clang_ASTUnit,
         data: CXClientData,
@@ -7158,6 +7190,24 @@ extern "C" {
     pub fn CXXBaseSpecifier_getType(
         arg1: *const clang_CXXBaseSpecifier,
     ) -> clang_QualType;
+}
+extern "C" {
+    #[link_name = "\u{1}_Z28CXXBaseSpecifier_getSpellingPKN5clang16CXXBaseSpecifierE"]
+    pub fn CXXBaseSpecifier_getSpelling(
+        arg1: *const clang_CXXBaseSpecifier,
+    ) -> BindgenStringRef;
+}
+extern "C" {
+    #[link_name = "\u{1}_Z28CXXBaseSpecifier_getLocationPKN5clang16CXXBaseSpecifierE"]
+    pub fn CXXBaseSpecifier_getLocation(
+        arg1: *const clang_CXXBaseSpecifier,
+    ) -> *mut clang_SourceLocation;
+}
+extern "C" {
+    #[link_name = "\u{1}_Z16Attr_getLocationPKN5clang4AttrE"]
+    pub fn Attr_getLocation(
+        arg1: *const clang_Attr,
+    ) -> *mut clang_SourceLocation;
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

@@ -20,6 +20,7 @@ struct SourceLocation;
 struct CXXBaseSpecifier;
 struct ASTContext;
 struct SourceRange;
+struct Attr;
 
 namespace comments {
 struct Comment;
@@ -31,35 +32,6 @@ struct FullComment;
 struct EvalResult;
 
 using namespace clang;
-
-// template<typename T>
-// struct BindgenNode {
-//   const T *node;
-//   ASTUnit *unit;
-
-//   BindgenNode() = default;
-//   BindgenNode(const T *node, ASTUnit *unit) : node(node), unit(unit) {}
-
-//   BindgenNode<Decl> makeDeclNode(const Decl *newNode) {
-//     return BindgenNode<Decl>(newNode, unit);
-//   }
-
-//   BindgenNode<Expr> makeExprNode(const Expr *newNode) {
-//     return BindgenNode<Expr>(newNode, unit);
-//   }
-
-//   operator bool() const {
-//     return node != nullptr;
-//   }
-
-//   const T *operator->() const {
-//     return node;
-//   }
-
-//   const T &operator*() const {
-//     return *node;
-//   }
-// };
 
 struct BindgenStringRef {
   char *s;
@@ -180,6 +152,8 @@ BindgenSourceRange Expr_getSourceRange(const Expr *E);
 
 const Decl *Type_getDeclaration(QualType);
 
+CXCursorKind Attr_getCXCursorKind(const Attr *);
+
 struct Node {
   CXCursorKind kind;
 
@@ -187,17 +161,21 @@ struct Node {
     const Decl *decl;
     const Expr *expr;
     const CXXBaseSpecifier *base;
+    const Attr *attr;
   } ptr;
 
   Node() : kind(CXCursor_NotImplemented) {}
-  Node(const Decl *decl) : kind(Decl_getCXCursorKind(decl)) {
+  Node(const Decl *decl, CXCursorKind kind) : kind(kind) {
     ptr.decl = decl;
   }
-  Node(const Expr *expr) : kind(Expr_getCXCursorKind(expr)) {
+  Node(const Expr *expr, CXCursorKind kind) : kind(kind) {
     ptr.expr = expr;
   }
   Node(const CXXBaseSpecifier *base) : kind(CXCursor_CXXBaseSpecifier) {
     ptr.base = base;
+  }
+  Node(const Attr *attr) : kind(Attr_getCXCursorKind(attr)) {
+    ptr.attr = attr;
   }
   operator bool() const {
     return kind != CXCursor_NotImplemented;
@@ -210,6 +188,8 @@ typedef CXChildVisitResult (*Visitor)(Node N, Node parent,
 
 void Decl_visitChildren(const Decl *Parent, Visitor V, ASTUnit *Unit, CXClientData data);
 void Expr_visitChildren(const Expr *Parent, Visitor V, ASTUnit *Unit, CXClientData data);
+void CXXBaseSpecifier_visitChildren(const CXXBaseSpecifier *Parent, Visitor V,
+                                    ASTUnit *Unit, CXClientData data);
 
 void tokenize(ASTUnit *TU, BindgenSourceRange Range, CXToken **Tokens,
               unsigned *NumTokens);
@@ -255,3 +235,6 @@ BindgenStringRef getClangVersion();
 
 bool CXXBaseSpecifier_isVirtualBase(const CXXBaseSpecifier *);
 QualType CXXBaseSpecifier_getType(const CXXBaseSpecifier *);
+BindgenStringRef CXXBaseSpecifier_getSpelling(const CXXBaseSpecifier *);
+SourceLocation *CXXBaseSpecifier_getLocation(const CXXBaseSpecifier *);
+SourceLocation *Attr_getLocation(const Attr *);
