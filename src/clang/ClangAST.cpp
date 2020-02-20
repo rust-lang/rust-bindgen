@@ -211,7 +211,7 @@ struct EvalResult {
 };
 
 EvalResult *Expr_Evaluate(const Expr *E, ASTContext *Ctx) {
-  if (!E)
+  if (!E || E->isValueDependent())
     return nullptr;
 
   Expr::EvalResult res;
