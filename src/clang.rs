@@ -427,6 +427,11 @@ impl Cursor {
     }
 
     /// Get the source location range for the referent.
+    ///
+    /// Warning: This range goes from the start of the first token to the start
+    /// of the last token, unlike the ranges provided by libclang, which are
+    /// half-open ranges of characters (end is past the last character in the
+    /// last token).
     pub fn extent(&self) -> clangtool::BindgenSourceRange {
         unsafe {
             match self.node {
