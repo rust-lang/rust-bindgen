@@ -1563,48 +1563,61 @@ public:
     return RecursiveASTVisitor<BindgenVisitor>::TraverseStmt(S);
   }
 
-  bool TraverseTypeLoc(TypeLoc TL) {
+  bool VisitDecltypeTypeLoc(DecltypeTypeLoc TL) {
     if (!TL)
       return true;
+    return TraverseStmt(TL.getUnderlyingExpr());
+  }
 
-    // TL.getType().dump();
+  bool VisitTypeOfExprTypeLoc(TypeOfExprTypeLoc TL) {
+    if (!TL)
+      return true;
+    return TraverseStmt(TL.getUnderlyingExpr());
+  }
 
-    if (auto T = TL.getAs<DecltypeTypeLoc>()) {
-      if (!TraverseStmt(T.getUnderlyingExpr()))
-        return false;
-    } else if (auto T = TL.getAs<TypeOfExprTypeLoc>()) {
-      if (!TraverseStmt(T.getUnderlyingExpr()))
-        return false;
-    } else if (auto T = TL.getAs<TypedefTypeLoc>()) {
-      if (!TraverseDeclTyped(T.getTypedefNameDecl(), CXCursor_TypeRef))
-        return false;
-    } else if (auto T = TL.getAs<InjectedClassNameTypeLoc>()) {
-      if (!TraverseDeclTyped(T.getDecl(), CXCursor_TypeRef))
-        return false;
-    } else if (auto T = TL.getAs<UnresolvedUsingTypeLoc>()) {
-      if (!TraverseDeclTyped(T.getDecl(), CXCursor_TypeRef))
-        return false;
-    } else if (auto T = TL.getAs<TagTypeLoc>()) {
-      if (T.isDefinition()) {
-        if (!TraverseDecl(T.getDecl()))
-          return false;
-      } else {
-        if (!TraverseDeclTyped(T.getDecl(), CXCursor_TypeRef))
-          return false;
-      }
-    } else if (auto T = TL.getAs<RecordTypeLoc>()) {
-      if (!TraverseDeclTyped(T.getDecl(), CXCursor_TypeRef))
-        return false;
-    } else if (auto T = TL.getAs<EnumTypeLoc>()) {
-      if (!TraverseDeclTyped(T.getDecl(), CXCursor_TypeRef))
-        return false;
-    } else if (auto T = TL.getAs<TemplateTypeParmTypeLoc>()) {
-      if (!TraverseDeclTyped(T.getDecl(), CXCursor_TypeRef))
-        return false;
-    }
+  bool VisitTypedefTypeLoc(TypedefTypeLoc TL) {
+    if (!TL)
+      return true;
+    return TraverseDeclTyped(TL.getTypedefNameDecl(), CXCursor_TypeRef);
+  }
 
-    bool res = RecursiveASTVisitor<BindgenVisitor>::TraverseTypeLoc(TL);
-    return res;
+  bool VisitInjectedClassNameTypeLoc(InjectedClassNameTypeLoc TL) {
+    if (!TL)
+      return true;
+    return TraverseDeclTyped(TL.getDecl(), CXCursor_TypeRef);
+  }
+
+  bool VisitUnresolvedUsingTypeLoc(UnresolvedUsingTypeLoc TL) {
+    if (!TL)
+      return true;
+    return TraverseDeclTyped(TL.getDecl(), CXCursor_TypeRef);
+  }
+
+  bool VisitTagTypeLoc(TagTypeLoc TL) {
+    if (!TL)
+      return true;
+    if (TL.isDefinition())
+      return TraverseDecl(TL.getDecl());
+    else
+      return TraverseDeclTyped(TL.getDecl(), CXCursor_TypeRef);
+  }
+
+  bool VisitRecordTypeLoc(RecordTypeLoc TL) {
+    if (!TL)
+      return true;
+    return TraverseDeclTyped(TL.getDecl(), CXCursor_TypeRef);
+  }
+
+  bool VisitEnumTypeLoc(EnumTypeLoc TL) {
+    if (!TL)
+      return true;
+    return TraverseDeclTyped(TL.getDecl(), CXCursor_TypeRef);
+  }
+
+  bool VisitTemplateTypeParmTypeLoc(TemplateTypeParmTypeLoc TL) {
+    if (!TL)
+      return true;
+    return TraverseDeclTyped(TL.getDecl(), CXCursor_TypeRef);
   }
 
   bool TraverseCXXBaseSpecifier(const CXXBaseSpecifier &Base) {
