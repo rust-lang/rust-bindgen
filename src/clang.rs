@@ -70,6 +70,7 @@ impl fmt::Display for clangtool::BindgenStringRef {
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Cursor {
     node: ASTNode,
+    kind: CXCursorKind,
     unit: *mut clangtool::clang_ASTUnit,
 }
 
@@ -79,6 +80,7 @@ pub enum ASTNode {
     Decl(*const clangtool::clang_Decl),
     Expr(*const clangtool::clang_Expr),
     CXXBaseSpecifier(*const clangtool::clang_CXXBaseSpecifier),
+    Attr(*const clangtool::clang_Attr),
 }
 
 impl ASTNode {
@@ -92,8 +94,9 @@ impl ASTNode {
             match *self {
                 ASTNode::Decl(d) => clangtool::Decl_getCXCursorKind(d),
                 ASTNode::Expr(e) => clangtool::Expr_getCXCursorKind(e),
-                ASTNode::Invalid => CXCursor_InvalidFile,
                 ASTNode::CXXBaseSpecifier(_) => CXCursor_CXXBaseSpecifier,
+                ASTNode::Attr(a) => clangtool::Attr_getCXCursorKind(a),
+                ASTNode::Invalid => CXCursor_InvalidFile,
             }
         }
     }
@@ -113,6 +116,18 @@ impl fmt::Debug for Cursor {
 }
 
 impl Cursor {
+    fn new(node: ASTNode, unit: *mut clangtool::clang_ASTUnit) -> Self {
+        Self {
+            node,
+            kind: node.kind(),
+            unit,
+        }
+    }
+
+    fn with_node(&self, node: ASTNode) -> Self {
+        Self::new(node, self.unit)
+    }
+
     fn context(&self) -> *mut clangtool::clang_ASTContext {
         unsafe { clangtool::ASTUnit_getContext(self.unit) }
     }
@@ -150,6 +165,8 @@ impl Cursor {
             match self.node {
                 ASTNode::Decl(d) => clangtool::Decl_getSpelling(d).to_string(),
                 ASTNode::Expr(e) => clangtool::Expr_getSpelling(e).to_string(),
+                ASTNode::CXXBaseSpecifier(b) => clangtool::CXXBaseSpecifier_getSpelling(b)
+                    .to_string(),
                 _ => String::new(),
             }
         }
@@ -229,10 +246,7 @@ impl Cursor {
             },
             _ => ASTNode::Invalid,
         };
-        Cursor {
-            node,
-            unit: self.unit,
-        }
+        self.with_node(node)
     }
 
     /// Get the referent's semantic parent, if one is available.
@@ -250,10 +264,7 @@ impl Cursor {
         if node == self.node || !node.is_valid() {
             return None;
         }
-        Some(Cursor {
-            node,
-            unit: self.unit,
-        })
+        Some(self.with_node(node))
     }
 
     /// Get the referent's semantic parent.
@@ -327,12 +338,9 @@ impl Cursor {
                 semantic_parent.unwrap().fallible_semantic_parent();
         }
 
-        let tu = Cursor {
-            node: ASTNode::Decl(unsafe {
-                clangtool::getTranslationUnitDecl(self.unit)
-            }),
-            unit: self.unit,
-        };
+        let tu = self.with_node(ASTNode::Decl(unsafe {
+            clangtool::getTranslationUnitDecl(self.unit)
+        }));
         // Yes, this can happen with, e.g., macro definitions.
         semantic_parent == tu.fallible_semantic_parent()
     }
@@ -356,7 +364,7 @@ impl Cursor {
 
     /// Get the kind of referent this cursor is pointing to.
     pub fn kind(&self) -> CXCursorKind {
-        self.node.kind()
+        self.kind
     }
 
     /// Returns true if the cursor is a definition
@@ -412,7 +420,9 @@ impl Cursor {
             let x = match self.node {
                 ASTNode::Decl(d) => clangtool::Decl_getLocation(d),
                 ASTNode::Expr(e) => clangtool::Expr_getLocation(e),
-                _ => ptr::null(),
+                ASTNode::CXXBaseSpecifier(b) => clangtool::CXXBaseSpecifier_getLocation(b),
+                ASTNode::Attr(b) => clangtool::Attr_getLocation(b),
+                ASTNode::Invalid => ptr::null(),
             };
             SourceLocation { x, unit: self.unit }
         }
@@ -462,7 +472,7 @@ impl Cursor {
                 ASTNode::Decl(d) => clangtool::Decl_getType(d, self.context()),
                 ASTNode::Expr(e) => clangtool::Expr_getType(e),
                 ASTNode::CXXBaseSpecifier(base) => clangtool::CXXBaseSpecifier_getType(base),
-                ASTNode::Invalid => mem::zeroed(),
+                _ => mem::zeroed(),
             };
             Type { x, unit: self.unit }
         }
@@ -481,10 +491,7 @@ impl Cursor {
         if def.is_null() {
             None
         } else {
-            Some(Cursor {
-                node: ASTNode::Decl(def),
-                unit: self.unit,
-            })
+            Some(self.with_node(ASTNode::Decl(def)))
         }
     }
 
@@ -497,10 +504,7 @@ impl Cursor {
                 if ptr.is_null() {
                     None
                 } else {
-                    Some(Cursor {
-                        node: ASTNode::Decl(ptr),
-                        unit: self.unit,
-                    })
+                    Some(self.with_node(ASTNode::Decl(ptr)))
                 }
             },
             _ => return None,
@@ -519,10 +523,7 @@ impl Cursor {
             },
             _ => ASTNode::Invalid,
         };
-        Cursor {
-            node,
-            unit: self.unit,
-        }
+        self.with_node(node)
     }
 
     /// Given that this cursor points to either a template specialization or a
@@ -535,10 +536,7 @@ impl Cursor {
                 if ptr.is_null() {
                     None
                 } else {
-                    Some(Cursor {
-                        node: ASTNode::Decl(ptr),
-                        unit: self.unit,
-                    })
+                    Some(self.with_node(ASTNode::Decl(ptr)))
                 }
             },
             _ => None,
@@ -580,7 +578,15 @@ impl Cursor {
                     mem::transmute(&mut visitor),
                 );
             }
-            _ => {}
+            ASTNode::CXXBaseSpecifier(b) => unsafe {
+                clangtool::CXXBaseSpecifier_visitChildren(
+                    b,
+                    Some(visit_children::<Visitor>),
+                    self.unit,
+                    mem::transmute(&mut visitor),
+                );
+            }
+            _ => panic!("Tried to visit: {:?}", self),
         }
     }
 
@@ -813,10 +819,7 @@ impl Cursor {
                         },
                         _ => ASTNode::Invalid,
                     };
-                    Cursor {
-                        node,
-                        unit: self.unit,
-                    }
+                    self.with_node(node)
                 })
                 .collect()
         })
@@ -1144,7 +1147,7 @@ pub fn is_valid_identifier(name: &str) -> bool {
 }
 
 unsafe extern "C" fn visit_children<Visitor>(
-    node: clangtool::Node,
+    raw_node: clangtool::Node,
     _parent: clangtool::Node,
     unit: *mut clangtool::clang_ASTUnit,
     data: clangtool::CXClientData,
@@ -1153,19 +1156,23 @@ where
     Visitor: FnMut(Cursor) -> CXChildVisitResult,
 {
     let func: &mut Visitor = mem::transmute(data);
-    let node = if (node.kind >= CXCursor_FirstDecl && node.kind <= CXCursor_LastDecl)
-        || (node.kind >= CXCursor_FirstExtraDecl && node.kind <= CXCursor_LastExtraDecl)
+    let node = if (raw_node.kind >= CXCursor_FirstDecl && raw_node.kind <= CXCursor_LastDecl)
+        || (raw_node.kind >= CXCursor_FirstExtraDecl && raw_node.kind <= CXCursor_LastExtraDecl)
+        || raw_node.kind == CXCursor_TypeRef
     {
-        ASTNode::Decl(node.ptr.decl)
-    } else if node.kind >= CXCursor_FirstExpr && node.kind <= CXCursor_LastExpr {
-        ASTNode::Expr(node.ptr.expr)
-    } else if node.kind == CXCursor_CXXBaseSpecifier {
-        ASTNode::CXXBaseSpecifier(node.ptr.base)
+        ASTNode::Decl(raw_node.ptr.decl)
+    } else if raw_node.kind >= CXCursor_FirstExpr && raw_node.kind <= CXCursor_LastExpr {
+        ASTNode::Expr(raw_node.ptr.expr)
+    } else if raw_node.kind == CXCursor_CXXBaseSpecifier {
+        ASTNode::CXXBaseSpecifier(raw_node.ptr.base)
+    } else if raw_node.kind >= CXCursor_FirstAttr && raw_node.kind <= CXCursor_LastAttr {
+        ASTNode::Attr(raw_node.ptr.attr)
     } else {
         return CXChildVisit_Recurse;
     };
     let child = Cursor {
         node,
+        kind: raw_node.kind,
         unit,
     };
 
@@ -1248,10 +1255,10 @@ impl Type {
     /// Get a cursor pointing to this type's declaration.
     pub fn declaration(&self) -> Cursor {
         unsafe {
-            Cursor {
-                node: ASTNode::Decl(clangtool::Type_getDeclaration(self.x)),
-                unit: self.unit,
-            }
+            Cursor::new(
+                ASTNode::Decl(clangtool::Type_getDeclaration(self.x)),
+                self.unit,
+            )
         }
     }
 
@@ -1915,10 +1922,10 @@ impl TranslationUnit {
     /// Get a cursor pointing to the root of this translation unit's AST.
     pub fn cursor(&self) -> Cursor {
         unsafe {
-            Cursor {
-                node: ASTNode::Decl(clangtool::getTranslationUnitDecl(self.x)),
-                unit: self.x,
-            }
+            Cursor::new(
+                ASTNode::Decl(clangtool::getTranslationUnitDecl(self.x)),
+                self.x,
+            )
         }
     }
 

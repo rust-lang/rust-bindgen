@@ -124,8 +124,9 @@ ASTUnit *parseTranslationUnit(const char *source_filename,
                               const char *const *command_line_args,
                               int num_command_line_args,
                               int options) {
-
-  ArrayRef<const char *> Args(command_line_args, num_command_line_args);
+  SmallVector<const char *, 10> Args;
+  Args.push_back("clang");
+  Args.append(command_line_args, command_line_args + num_command_line_args);
 
   // Configure the diagnostics.
   IntrusiveRefCntPtr<DiagnosticsEngine>
@@ -231,6 +232,8 @@ EvalResult *Decl_Evaluate(const Decl *D, ASTContext *Ctx) {
 }
 
 CXEvalResultKind EvalResult_getKind(EvalResult *ER) {
+  if (!ER)
+    return CXEval_UnExposed;
   return ER->EvalType;
 }
 
@@ -686,6 +689,20 @@ comments::Comment *Decl_getParsedComment(const Decl *D, ASTContext *Ctx) {
   return Ctx->getCommentForDecl(&*D, /*PP=*/nullptr);
 }
 
+static QualType make_type_compatible(QualType QT) {
+  // libclang does not return AttributedTypes if
+  // CXTranslationUnit_IncludeAttributedTypes is not set, and bindgen assumes it
+  // is not set.
+  if (auto *ATT = QT->getAs<AttributedType>())
+    return ATT->getEquivalentType();
+
+  // libclang does not return ParenTypes
+  if (auto *PTT = QT->getAs<ParenType>())
+    return PTT->getInnerType();
+
+  return QT;
+}
+
 QualType Decl_getType(const Decl *D, ASTContext *Ctx) {
   auto ty = QualType();
   if (!D)
@@ -706,17 +723,7 @@ QualType Decl_getType(const Decl *D, ASTContext *Ctx) {
   else
     return QualType();
 
-  // libclang does not return AttributedTypes if
-  // CXTranslationUnit_IncludeAttributedTypes is not set, and bindgen assumes it
-  // is not set.
-  if (auto *ATT = ty->getAs<AttributedType>())
-    return ATT->getEquivalentType();
-
-  // libclang does not return ParenTypes
-  if (auto *PTT = ty->getAs<ParenType>())
-    return PTT->getInnerType();
-
-  return ty;
+  return make_type_compatible(ty);
 }
 
 bool Decl_isFunctionInlined(const Decl *D) {
@@ -736,7 +743,7 @@ int Decl_getFieldDeclBitWidth(const Decl *D, ASTContext *Ctx) {
 
 QualType Decl_getEnumDeclIntegerType(const Decl *D) {
   if (auto *TD = dyn_cast_or_null<EnumDecl>(&*D))
-    return TD->getIntegerType();
+    return make_type_compatible(TD->getIntegerType());
   else
     return QualType();
 }
@@ -804,7 +811,7 @@ BindgenSourceRange Decl_getSourceRange(const Decl *D) {
 
 QualType Decl_getTypedefDeclUnderlyingType(const Decl *D) {
   if (auto *TD = dyn_cast_or_null<TypedefNameDecl>(&*D))
-    return TD->getUnderlyingType();
+    return make_type_compatible(TD->getUnderlyingType());
   else
     return QualType();
 }
@@ -890,7 +897,7 @@ bool CXXMethod_isPureVirtual(const Decl *D) {
 
 QualType Decl_getResultType(const Decl *D, ASTContext *Ctx) {
   if (auto *FT = Decl_getType(D, Ctx)->getAs<FunctionType>())
-    return FT->getReturnType();
+    return make_type_compatible(FT->getReturnType());
   else
     return QualType();
 }
@@ -1330,7 +1337,7 @@ SourceLocation *Expr_getLocation(const Expr *E) {
   return new SourceLocation(E->getBeginLoc());
 }
 
-QualType Expr_getType(const Expr *E) { return E->getType(); }
+QualType Expr_getType(const Expr *E) { return make_type_compatible(E->getType()); }
 
 BindgenSourceRange Expr_getSourceRange(const Expr *E) {
   return BindgenSourceRange(E->getSourceRange());
@@ -1407,7 +1414,7 @@ public:
     return false;
   }
 
-  bool TraverseDecl(Decl *D) {
+  bool TraverseDeclTyped(Decl *D, CXCursorKind kind) {
     if (!D)
       return false;
     if (D->isImplicit())
@@ -1420,8 +1427,10 @@ public:
         && isa<CXXRecordDecl>(D))
       skip = true;
 
+    // D->dump();
+    Node node(D, kind);
     if (!skip) {
-      switch (VisitFn(Node(D), Parent, &AST, Data)) {
+      switch (VisitFn(node, Parent, &AST, Data)) {
       case CXChildVisit_Break:
         return false;
       case CXChildVisit_Continue:
@@ -1432,8 +1441,36 @@ public:
     }
 
     auto OldParent = Parent;
-    Parent = Node(D);
+    Parent = node;
     bool res = RecursiveASTVisitor<BindgenVisitor>::TraverseDecl(D);
+    Parent = OldParent;
+    return res;
+  }
+
+  bool TraverseDecl(Decl *D) {
+    return TraverseDeclTyped(D, Decl_getCXCursorKind(D));
+  }
+
+  bool TraverseStmtTyped(Stmt *S, CXCursorKind kind) {
+    if (!S)
+      return false;
+
+    Node node(cast<Expr>(S), kind);
+    if (Parent) {
+      // S->dump();
+      switch (VisitFn(node, Parent, &AST, Data)) {
+      case CXChildVisit_Break:
+        return false;
+      case CXChildVisit_Continue:
+        return true;
+      case CXChildVisit_Recurse:
+        break;
+      }
+    }
+
+    auto OldParent = Parent;
+    Parent = node;
+    bool res = RecursiveASTVisitor<BindgenVisitor>::TraverseStmt(S);
     Parent = OldParent;
     return res;
   }
@@ -1441,29 +1478,14 @@ public:
   bool TraverseStmt(Stmt *S) {
     if (!S)
       return false;
-
-
-    if (Parent) {
-      switch (VisitFn(Node(cast<Expr>(S)), Parent, &AST, Data)) {
-      case CXChildVisit_Break:
-        return false;
-      case CXChildVisit_Continue:
-        return true;
-      case CXChildVisit_Recurse:
-        break;
-      }
-    }
-
-    auto OldParent = Parent;
-    Parent = Node(cast<Expr>(S));
-    bool res = RecursiveASTVisitor<BindgenVisitor>::TraverseStmt(S);
-    Parent = OldParent;
-    return res;
+    return TraverseStmtTyped(S, Expr_getCXCursorKind(cast<Expr>(S)));
   }
 
   bool TraverseTypeLoc(TypeLoc TL) {
     if (!TL)
       return false;
+
+    // TL.getType().dump();
 
     if (auto T = TL.getAs<DecltypeTypeLoc>()) {
       if (!TraverseStmt(T.getUnderlyingExpr()))
@@ -1472,25 +1494,30 @@ public:
       if (!TraverseStmt(T.getUnderlyingExpr()))
         return false;
     } else if (auto T = TL.getAs<TypedefTypeLoc>()) {
-      if (!TraverseDecl(T.getTypedefNameDecl()))
+      if (!TraverseDeclTyped(T.getTypedefNameDecl(), CXCursor_TypeRef))
         return false;
     } else if (auto T = TL.getAs<InjectedClassNameTypeLoc>()) {
-      if (!TraverseDecl(T.getDecl()))
+      if (!TraverseDeclTyped(T.getDecl(), CXCursor_TypeRef))
         return false;
     } else if (auto T = TL.getAs<UnresolvedUsingTypeLoc>()) {
-      if (!TraverseDecl(T.getDecl()))
+      if (!TraverseDeclTyped(T.getDecl(), CXCursor_TypeRef))
         return false;
     } else if (auto T = TL.getAs<TagTypeLoc>()) {
-      if (!TraverseDecl(T.getDecl()))
-        return false;
+      if (T.isDefinition()) {
+        if (!TraverseDecl(T.getDecl()))
+          return false;
+      } else {
+        if (!TraverseDeclTyped(T.getDecl(), CXCursor_TypeRef))
+          return false;
+      }
     } else if (auto T = TL.getAs<RecordTypeLoc>()) {
-      if (!TraverseDecl(T.getDecl()))
+      if (!TraverseDeclTyped(T.getDecl(), CXCursor_TypeRef))
         return false;
     } else if (auto T = TL.getAs<EnumTypeLoc>()) {
-      if (!TraverseDecl(T.getDecl()))
+      if (!TraverseDeclTyped(T.getDecl(), CXCursor_TypeRef))
         return false;
     } else if (auto T = TL.getAs<TemplateTypeParmTypeLoc>()) {
-      if (!TraverseDecl(T.getDecl()))
+      if (!TraverseDeclTyped(T.getDecl(), CXCursor_TypeRef))
         return false;
     }
 
@@ -1516,6 +1543,12 @@ public:
     Parent = OldParent;
     return res;
   }
+
+  bool VisitAttr(Attr *A) {
+    if (Parent)
+      VisitFn(Node(A), Parent, &AST, Data);
+    return true;
+  }
 };
 
 void Decl_visitChildren(const Decl *Parent, Visitor V, ASTUnit *Unit, CXClientData data) {
@@ -1525,6 +1558,10 @@ void Decl_visitChildren(const Decl *Parent, Visitor V, ASTUnit *Unit, CXClientDa
 void Expr_visitChildren(const Expr *Parent, Visitor V, ASTUnit *Unit, CXClientData data) {
   BindgenVisitor visitor(*Unit, V, data);
   visitor.TraverseStmt(const_cast<Expr*>(&*Parent));
+}
+void CXXBaseSpecifier_visitChildren(const CXXBaseSpecifier *Parent, Visitor V, ASTUnit *Unit, CXClientData data) {
+  BindgenVisitor visitor(*Unit, V, data);
+  visitor.TraverseCXXBaseSpecifier(*Parent);
 }
 
 void tokenize(ASTUnit *TU, BindgenSourceRange Range, CXToken **Tokens,
@@ -1853,7 +1890,7 @@ QualType Type_getArgType(QualType T, unsigned i) {
     if (i >= numParams)
       return QualType();
 
-    return FD->getParamType(i);
+    return make_type_compatible(FD->getParamType(i));
   }
   
   return QualType();
@@ -1908,7 +1945,7 @@ try_again:
       T = QualType();
       break;
   }
-  return T;
+  return make_type_compatible(T);
 }
 
 QualType Type_getElementType(QualType T) {
@@ -1942,7 +1979,7 @@ QualType Type_getElementType(QualType T) {
       break;
     }
   }
-  return ET;
+  return make_type_compatible(ET);
 }
 
 int Type_getNumElements(QualType T) {
@@ -1971,7 +2008,7 @@ QualType Type_getCanonicalType(QualType T, ASTContext *Context) {
   if (T.isNull())
     return QualType();
 
-  return Context->getCanonicalType(T);
+  return make_type_compatible(Context->getCanonicalType(T));
 }
 
 bool Type_isFunctionTypeVariadic(QualType T) {
@@ -1992,7 +2029,7 @@ QualType Type_getResultType(QualType T) {
     return QualType();
   
   if (const FunctionType *FD = T->getAs<FunctionType>())
-    return FD->getReturnType();
+    return make_type_compatible(FD->getReturnType());
 
   return QualType();
 }
@@ -2034,7 +2071,7 @@ QualType Type_getNamedType(QualType T) {
   const Type *TP = T.getTypePtrOrNull();
 
   if (TP && TP->getTypeClass() == Type::Elaborated)
-    return cast<ElaboratedType>(TP)->getNamedType();
+    return make_type_compatible(cast<ElaboratedType>(TP)->getNamedType());
 
   return QualType();
 }
@@ -2071,7 +2108,7 @@ QualType Type_getTemplateArgumentAsType(QualType T, unsigned index) {
     return QualType();
 
   Optional<QualType> QT = FindTemplateArgumentTypeAt(TA.getValue(), index);
-  return QT.getValueOr(QualType());
+  return make_type_compatible(QT.getValueOr(QualType()));
 }
 
 static void createNullLocation(FileEntry **file, int *line,
@@ -2785,5 +2822,67 @@ bool CXXBaseSpecifier_isVirtualBase(const CXXBaseSpecifier *B) {
 QualType CXXBaseSpecifier_getType(const CXXBaseSpecifier *B) {
   if (!B)
     return QualType();
-  return B->getType();
+  return make_type_compatible(B->getType());
+}
+
+CXCursorKind Attr_getCXCursorKind(const Attr *A) {
+  assert(A && "Invalid arguments!");
+  switch (A->getKind()) {
+    default: break;
+    case attr::IBAction: return CXCursor_IBActionAttr;
+    case attr::IBOutlet: return CXCursor_IBOutletAttr;
+    case attr::IBOutletCollection: return CXCursor_IBOutletCollectionAttr;
+    case attr::Final: return CXCursor_CXXFinalAttr;
+    case attr::Override: return CXCursor_CXXOverrideAttr;
+    case attr::Annotate: return CXCursor_AnnotateAttr;
+    case attr::AsmLabel: return CXCursor_AsmLabelAttr;
+    case attr::Packed: return CXCursor_PackedAttr;
+    case attr::Pure: return CXCursor_PureAttr;
+    case attr::Const: return CXCursor_ConstAttr;
+    case attr::NoDuplicate: return CXCursor_NoDuplicateAttr;
+    case attr::CUDAConstant: return CXCursor_CUDAConstantAttr;
+    case attr::CUDADevice: return CXCursor_CUDADeviceAttr;
+    case attr::CUDAGlobal: return CXCursor_CUDAGlobalAttr;
+    case attr::CUDAHost: return CXCursor_CUDAHostAttr;
+    case attr::CUDAShared: return CXCursor_CUDASharedAttr;
+    case attr::Visibility: return CXCursor_VisibilityAttr;
+    case attr::DLLExport: return CXCursor_DLLExport;
+    case attr::DLLImport: return CXCursor_DLLImport;
+    case attr::NSReturnsRetained: return CXCursor_NSReturnsRetained;
+    case attr::NSReturnsNotRetained: return CXCursor_NSReturnsNotRetained;
+    case attr::NSReturnsAutoreleased: return CXCursor_NSReturnsAutoreleased;
+    case attr::NSConsumesSelf: return CXCursor_NSConsumesSelf;
+    case attr::NSConsumed: return CXCursor_NSConsumed;
+    case attr::ObjCException: return CXCursor_ObjCException;
+    case attr::ObjCNSObject: return CXCursor_ObjCNSObject;
+    case attr::ObjCIndependentClass: return CXCursor_ObjCIndependentClass;
+    case attr::ObjCPreciseLifetime: return CXCursor_ObjCPreciseLifetime;
+    case attr::ObjCReturnsInnerPointer: return CXCursor_ObjCReturnsInnerPointer;
+    case attr::ObjCRequiresSuper: return CXCursor_ObjCRequiresSuper;
+    case attr::ObjCRootClass: return CXCursor_ObjCRootClass;
+    case attr::ObjCSubclassingRestricted: return CXCursor_ObjCSubclassingRestricted;
+    case attr::ObjCExplicitProtocolImpl: return CXCursor_ObjCExplicitProtocolImpl;
+    case attr::ObjCDesignatedInitializer: return CXCursor_ObjCDesignatedInitializer;
+    case attr::ObjCRuntimeVisible: return CXCursor_ObjCRuntimeVisible;
+    case attr::ObjCBoxable: return CXCursor_ObjCBoxable;
+    case attr::FlagEnum: return CXCursor_FlagEnum;
+    case attr::Convergent: return CXCursor_ConvergentAttr;
+    case attr::WarnUnused: return CXCursor_WarnUnusedAttr;
+    case attr::WarnUnusedResult: return CXCursor_WarnUnusedResultAttr;
+    case attr::Aligned: return CXCursor_AlignedAttr;
+  }
+
+  return CXCursor_UnexposedAttr;
+}
+
+BindgenStringRef CXXBaseSpecifier_getSpelling(const CXXBaseSpecifier *B) {
+  return stringref(B->getType().getAsString());
+}
+
+SourceLocation *CXXBaseSpecifier_getLocation(const CXXBaseSpecifier *B) {
+  return new SourceLocation(B->getBaseTypeLoc());
+}
+
+SourceLocation *Attr_getLocation(const Attr *A) {
+  return new SourceLocation(A->getLocation());
 }
