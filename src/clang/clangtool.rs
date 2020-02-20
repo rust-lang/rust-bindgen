@@ -7237,6 +7237,22 @@ extern "C" {
         arg1: *const clang_PreprocessedEntity,
     ) -> *mut clang_SourceLocation;
 }
+extern "C" {
+    #[link_name = "\u{1}_Z31CXXBaseSpecifier_getSourceRangePKN5clang16CXXBaseSpecifierE"]
+    pub fn CXXBaseSpecifier_getSourceRange(
+        arg1: *const clang_CXXBaseSpecifier,
+    ) -> BindgenSourceRange;
+}
+extern "C" {
+    #[link_name = "\u{1}_Z19Attr_getSourceRangePKN5clang4AttrE"]
+    pub fn Attr_getSourceRange(arg1: *const clang_Attr) -> BindgenSourceRange;
+}
+extern "C" {
+    #[link_name = "\u{1}_Z33PreprocessedEntity_getSourceRangePKN5clang18PreprocessedEntityE"]
+    pub fn PreprocessedEntity_getSourceRange(
+        arg1: *const clang_PreprocessedEntity,
+    ) -> BindgenSourceRange;
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct __locale_data {
