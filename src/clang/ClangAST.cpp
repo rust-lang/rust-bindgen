@@ -836,6 +836,11 @@ static bool isTypeIncompleteForLayout(QualType QT) {
 }
 
 static long long visitRecordForValidation(const RecordDecl *RD) {
+  if (!RD)
+    return -1;
+  RD = RD->getDefinition();
+  if (!RD || RD->isInvalidDecl() || !RD->isCompleteDefinition())
+    return -1;
   for (const auto *I : RD->fields()){
     QualType FQT = I->getType();
     if (isTypeIncompleteForLayout(FQT))
@@ -852,16 +857,19 @@ static long long visitRecordForValidation(const RecordDecl *RD) {
     }
     // else try next field
   }
+  if (auto *Class = dyn_cast<CXXRecordDecl>(RD)) {
+    for (const CXXBaseSpecifier &Base : Class->bases()) {
+      auto *baseDecl = Base.getType()->getAsCXXRecordDecl();
+      long long ret = visitRecordForValidation(baseDecl);
+      if (ret < 0)
+        return ret;
+    }
+  }
   return 0;
 }
 
 long long Decl_getOffsetOfField(const Decl *D, ASTContext *Ctx) {
   auto *RD = dyn_cast_or_null<RecordDecl>(D->getDeclContext());
-  if (!RD)
-    return -1;
-  RD = RD->getDefinition();
-  if (!RD || RD->isInvalidDecl() || !RD->isCompleteDefinition())
-    return -1;
   auto Err = visitRecordForValidation(RD);
   if (Err < 0)
     return Err;
@@ -1485,9 +1493,7 @@ public:
   }
 
   bool TraverseDeclTyped(Decl *D, CXCursorKind kind) {
-    if (!D)
-      return false;
-    if (D->isImplicit())
+    if (!D || D->isImplicit())
       return true;
 
     bool skip = !Parent;
