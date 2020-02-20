@@ -81,6 +81,7 @@ pub enum ASTNode {
     Expr(*const clangtool::clang_Expr),
     CXXBaseSpecifier(*const clangtool::clang_CXXBaseSpecifier),
     Attr(*const clangtool::clang_Attr),
+    PreprocessedEntity(*const clangtool::clang_PreprocessedEntity),
 }
 
 impl ASTNode {
@@ -96,7 +97,7 @@ impl ASTNode {
                 ASTNode::Expr(e) => clangtool::Expr_getCXCursorKind(e),
                 ASTNode::CXXBaseSpecifier(_) => CXCursor_CXXBaseSpecifier,
                 ASTNode::Attr(a) => clangtool::Attr_getCXCursorKind(a),
-                ASTNode::Invalid => CXCursor_InvalidFile,
+                _ => CXCursor_InvalidFile,
             }
         }
     }
@@ -422,6 +423,7 @@ impl Cursor {
                 ASTNode::Expr(e) => clangtool::Expr_getLocation(e),
                 ASTNode::CXXBaseSpecifier(b) => clangtool::CXXBaseSpecifier_getLocation(b),
                 ASTNode::Attr(b) => clangtool::Attr_getLocation(b),
+                ASTNode::PreprocessedEntity(p) => clangtool::PreprocessedEntity_getLocation(p),
                 ASTNode::Invalid => ptr::null(),
             };
             SourceLocation { x, unit: self.unit }
@@ -1167,6 +1169,8 @@ where
         ASTNode::CXXBaseSpecifier(raw_node.ptr.base)
     } else if raw_node.kind >= CXCursor_FirstAttr && raw_node.kind <= CXCursor_LastAttr {
         ASTNode::Attr(raw_node.ptr.attr)
+    } else if raw_node.kind >= CXCursor_FirstPreprocessing && raw_node.kind <= CXCursor_LastPreprocessing {
+        ASTNode::PreprocessedEntity(raw_node.ptr.ppe)
     } else {
         return CXChildVisit_Recurse;
     };
