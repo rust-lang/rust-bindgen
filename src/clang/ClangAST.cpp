@@ -487,13 +487,61 @@ const Decl *Decl_getDefinition(const Decl *D, bool isReference) {
     return Decl_getDefinition(
       cast<UsingShadowDecl>(&*D)->getTargetDecl(), isReference);
 
-  case Decl::ObjCMethod:
+  case Decl::ObjCMethod: {
+    const ObjCMethodDecl *Method = cast<ObjCMethodDecl>(D);
+    if (Method->isThisDeclarationADefinition())
+      return D;
+
+    // Dig out the method definition in the associated
+    // @implementation, if we have it.
+    // FIXME: The ASTs should make finding the definition easier.
+    if (const ObjCInterfaceDecl *Class
+                       = dyn_cast<ObjCInterfaceDecl>(Method->getDeclContext()))
+      if (ObjCImplementationDecl *ClassImpl = Class->getImplementation())
+        if (ObjCMethodDecl *Def = ClassImpl->getMethod(Method->getSelector(),
+                                                  Method->isInstanceMethod()))
+          if (Def->isThisDeclarationADefinition())
+            return Def;
+
+    break;
+  }
+
   case Decl::ObjCCategory:
+    if (ObjCCategoryImplDecl *Impl = cast<ObjCCategoryDecl>(D)->getImplementation())
+      return Impl;
+    break;
+
   case Decl::ObjCProtocol:
-  case Decl::ObjCInterface:
+    if (const ObjCProtocolDecl *Def = cast<ObjCProtocolDecl>(D)->getDefinition())
+      return Def;
+    break;
+
+  case Decl::ObjCInterface: {
+    // There are two notions of a "definition" for an Objective-C
+    // class: the interface and its implementation. When we resolved a
+    // reference to an Objective-C class, produce the @interface as
+    // the definition; when we were provided with the interface,
+    // produce the @implementation as the definition.
+    const ObjCInterfaceDecl *IFace = cast<ObjCInterfaceDecl>(D);
+    if (isReference) {
+      if (const ObjCInterfaceDecl *Def = IFace->getDefinition())
+        return Def;
+    } else if (ObjCImplementationDecl *Impl = IFace->getImplementation())
+      return Impl;
+    break;
+  }
+
   case Decl::ObjCProperty:
+    // FIXME: We don't really know where to find the
+    // ObjCPropertyImplDecls that implement this property.
+    break;
+
   case Decl::ObjCCompatibleAlias:
-    llvm_unreachable("Objective-C not implemented");
+    if (const ObjCInterfaceDecl *Class
+          = cast<ObjCCompatibleAliasDecl>(D)->getClassInterface())
+      if (const ObjCInterfaceDecl *Def = Class->getDefinition())
+        return Def;
+
     break;
 
   case Decl::Friend:
