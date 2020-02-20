@@ -3027,3 +3027,15 @@ SourceLocation *Attr_getLocation(const Attr *A) {
 SourceLocation *PreprocessedEntity_getLocation(const PreprocessedEntity *PPE) {
   return new SourceLocation(PPE->getSourceRange().getBegin());
 }
+
+BindgenSourceRange CXXBaseSpecifier_getSourceRange(const CXXBaseSpecifier *B) {
+  return BindgenSourceRange(B->getSourceRange());
+}
+
+BindgenSourceRange Attr_getSourceRange(const Attr *A) {
+  return BindgenSourceRange(A->getRange());
+}
+
+BindgenSourceRange PreprocessedEntity_getSourceRange(const PreprocessedEntity *PPE) {
+  return BindgenSourceRange(PPE->getSourceRange());
+}

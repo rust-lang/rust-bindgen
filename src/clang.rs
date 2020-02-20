@@ -432,6 +432,9 @@ impl Cursor {
             match self.node {
                 ASTNode::Decl(d) => clangtool::Decl_getSourceRange(d),
                 ASTNode::Expr(e) => clangtool::Expr_getSourceRange(e),
+                ASTNode::CXXBaseSpecifier(b) => clangtool::CXXBaseSpecifier_getSourceRange(b),
+                ASTNode::Attr(b) => clangtool::Attr_getSourceRange(b),
+                ASTNode::PreprocessedEntity(b) => clangtool::PreprocessedEntity_getSourceRange(b),
                 _ => clangtool::BindgenSourceRange::null(),
             }
         }
