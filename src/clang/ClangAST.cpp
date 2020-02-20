@@ -226,9 +226,8 @@ EvalResult *Expr_Evaluate(const Expr *E, ASTContext *Ctx) {
     } else if (E->getStmtClass() == Stmt::StringLiteralClass) {
       auto StrE = cast<StringLiteral>(&*E);
       return new EvalResult(StrE->getString().str());
-    } else {
-      return new EvalResult(res.Val);
     }
+    return new EvalResult(res.Val);
   }
 
   return nullptr;
