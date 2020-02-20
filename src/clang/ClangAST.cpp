@@ -43,6 +43,15 @@ BindgenStringRef stringref(const std::string &s) {
   return stringref(s.c_str());
 }
 
+BindgenStringRef stringref(llvm::StringRef S) {
+  BindgenStringRef ref;
+  ref.len = S.size();
+  ref.s = new char[ref.len + 1];
+  strncpy(ref.s, S.data(), ref.len);
+  ref.s[ref.len] = '\0';
+  return ref;
+}
+
 // From libclang/CIndex.cpp
 static const Decl *getDeclFromExpr(const Stmt *E) {
   if (const ImplicitCastExpr *CE = dyn_cast<ImplicitCastExpr>(E))
