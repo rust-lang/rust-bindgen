@@ -306,6 +306,7 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
                     "ProfileData",
                     "BinaryFormat",
                     "Core",
+                    "FrontendOpenMP",
                 ],
             )
                 .unwrap_or("-lLLVM".to_string())
@@ -325,7 +326,22 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
                     ))
                     .unwrap_or(String::new())
                     .split_whitespace()
-                    .map(|lib| String::from(lib.trim_start_matches("-l")))
+                    .map(|lib| {
+                        if lib.starts_with("-l") {
+                            lib[2..].to_string()
+                        } else {
+                            // Sometimes llvm-config gives us an absolute path
+                            // to the library, and I can't figure out a way to
+                            // give an absolute path of a library to rustc.
+                            Path::new(lib)
+                                .file_stem()
+                                .unwrap()
+                                .to_str()
+                                .unwrap()
+                                .trim_start_matches("lib")
+                                .into()
+                        }
+                    })
             );
 
             Self {

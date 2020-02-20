@@ -9,7 +9,6 @@ if( PROJECT_NAME STREQUAL "LLVM" )
   # We are building in-tree, we can use LLVM cmake functions
 
   add_definitions(-DCLANG_BIN_PATH="${CMAKE_INSTALL_PREFIX}/bin")
-  add_definitions(-DCLANG_VERSION_STRING="${PACKAGE_VERSION}")
 
   add_clang_library(clangAst ${SRCS} DEPENDS clang-headers)
 
@@ -34,7 +33,6 @@ else()
   else()
     message(FATAL_ERROR "Cannot find path to clang binary")
   endif()
-  add_definitions(-DCLANG_VERSION_STRING="${LLVM_PACKAGE_VERSION}")
 
   set(LLVM_LINK_COMPONENTS support)
 
@@ -48,7 +46,7 @@ endif()
 add_definitions(-DCLANG_LIBDIR_SUFFIX="${LLVM_LIBDIR_SUFFIX}")
 
 set_target_properties(clangAst PROPERTIES
-  CXX_STANDARD 11
+  CXX_STANDARD 14
   CXX_EXTENSIONS OFF
   )
 
