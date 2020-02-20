@@ -408,7 +408,7 @@ impl Cursor {
 
     /// Is this cursor pointing a valid referent?
     pub fn is_valid(&self) -> bool {
-        self.node.is_valid()
+        unsafe { !clangtool::CursorKind_isInvalid(self.kind) }
     }
 
     /// Get the source location for the referent.
