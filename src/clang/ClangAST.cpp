@@ -756,6 +756,9 @@ comments::Comment *Decl_getParsedComment(const Decl *D, ASTContext *Ctx) {
 }
 
 static QualType make_type_compatible(QualType QT) {
+  if (QT.isNull())
+    return QT;
+
   // libclang does not return AttributedTypes if
   // CXTranslationUnit_IncludeAttributedTypes is not set, and bindgen assumes it
   // is not set.
@@ -962,10 +965,11 @@ bool CXXMethod_isPureVirtual(const Decl *D) {
 }
 
 QualType Decl_getResultType(const Decl *D, ASTContext *Ctx) {
-  if (auto *FT = Decl_getType(D, Ctx)->getAs<FunctionType>())
-    return make_type_compatible(FT->getReturnType());
-  else
-    return QualType();
+  auto Ty = Decl_getType(D, Ctx);
+  if (!Ty.isNull())
+    if (auto *FT = Ty->getAs<FunctionType>())
+      return make_type_compatible(FT->getReturnType());
+  return QualType();
 }
 
 // const Decl *Expr_getSemanticParent(const Expr *E) {
