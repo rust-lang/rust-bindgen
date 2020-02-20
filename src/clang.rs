@@ -480,9 +480,10 @@ impl Cursor {
     /// a declaration, get the cursor pointing to the referenced type or type of
     /// the declared thing.
     pub fn definition(&self) -> Option<Cursor> {
+        let is_reference = self.kind == CXCursor_TypeRef;
         let def = match self.node {
             ASTNode::Decl(d) => unsafe {
-                clangtool::Decl_getDefinition(d)
+                clangtool::Decl_getDefinition(d, is_reference)
             },
             _ => return None,
         };

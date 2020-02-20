@@ -359,7 +359,7 @@ const Decl *Decl_getSemanticParent(const Decl *D) {
 //   return D.unit;
 // }
 
-const Decl *Decl_getDefinition(const Decl *D) {
+const Decl *Decl_getDefinition(const Decl *D, bool isReference) {
   if (!D)
     return nullptr;
 
@@ -485,7 +485,7 @@ const Decl *Decl_getDefinition(const Decl *D) {
   case Decl::UsingShadow:
   case Decl::ConstructorUsingShadow:
     return Decl_getDefinition(
-      cast<UsingShadowDecl>(&*D)->getTargetDecl());
+      cast<UsingShadowDecl>(&*D)->getTargetDecl(), isReference);
 
   case Decl::ObjCMethod:
   case Decl::ObjCCategory:
@@ -498,12 +498,12 @@ const Decl *Decl_getDefinition(const Decl *D) {
 
   case Decl::Friend:
     if (NamedDecl *Friend = cast<FriendDecl>(&*D)->getFriendDecl())
-      return Decl_getDefinition(Friend);
+      return Decl_getDefinition(Friend, isReference);
     break;
 
   case Decl::FriendTemplate:
     if (NamedDecl *Friend = cast<FriendTemplateDecl>(&*D)->getFriendDecl())
-      return Decl_getDefinition(Friend);
+      return Decl_getDefinition(Friend, isReference);
     break;
   }
 
@@ -1457,6 +1457,10 @@ public:
         break;
       }
     }
+
+    // Do not recurse through references
+    if (kind >= CXCursor_FirstRef && kind <= CXCursor_LastRef)
+      return true;
 
     auto OldParent = Parent;
     Parent = node;
