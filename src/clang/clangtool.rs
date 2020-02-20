@@ -6607,8 +6607,11 @@ extern "C" {
     pub fn Decl_getSemanticParent(D: *const clang_Decl) -> *const clang_Decl;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z18Decl_getDefinitionPKN5clang4DeclE"]
-    pub fn Decl_getDefinition(D: *const clang_Decl) -> *const clang_Decl;
+    #[link_name = "\u{1}_Z18Decl_getDefinitionPKN5clang4DeclEb"]
+    pub fn Decl_getDefinition(
+        D: *const clang_Decl,
+        isReference: bool,
+    ) -> *const clang_Decl;
 }
 extern "C" {
     #[link_name = "\u{1}_Z18Decl_getReferencedPKN5clang4DeclE"]
