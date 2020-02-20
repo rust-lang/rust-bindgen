@@ -10,7 +10,6 @@ use regex;
 use std::ffi::{CStr, CString};
 use std::fmt;
 use std::hash::Hash;
-use std::hash::Hasher;
 use std::os::raw::{c_char, c_int, c_longlong, c_uint, c_ulong, c_ulonglong};
 use std::{mem, ptr, slice};
 
@@ -99,7 +98,6 @@ impl ASTNode {
             }
         }
     }
-
 }
 
 impl fmt::Debug for Cursor {
