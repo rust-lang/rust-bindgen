@@ -1683,6 +1683,36 @@ public:
     return TraverseDeclTyped(TL.getDecl(), CXCursor_TypeRef);
   }
 
+  bool VisitBuiltinTypeLoc(BuiltinTypeLoc TL) {
+    if (!TL)
+      return true;
+
+    ASTContext &Context = AST.getASTContext();
+    QualType Ty;
+    switch (TL.getTypePtr()->getKind()) {
+    case BuiltinType::ObjCId:
+      Ty = Context.getObjCIdType();
+      break;
+    case BuiltinType::ObjCClass:
+      Ty = Context.getObjCClassType();
+      break;
+    case BuiltinType::ObjCSel:
+      Ty = Context.getObjCSelType();
+      break;
+    default:
+      break;
+    }
+
+    if (!Ty.isNull()) {
+      if (auto *TD = Ty->getAs<TypedefType>()) {
+        Node node(TD->getDecl(), CXCursor_TypeRef);
+        return VisitFn(node, Parent, &AST, Data) == CXChildVisit_Break;
+      }
+    }
+
+    return true;
+  }
+
   bool TraverseTemplateName(TemplateName Name) {
     Node node;
     switch (Name.getKind()) {
@@ -2036,10 +2066,22 @@ static CXTypeKind GetBuiltinTypeKind(const BuiltinType *BT) {
 #undef BTCASE
 }
 
-CXTypeKind Type_kind(QualType T) {
+CXTypeKind Type_kind(QualType T, ASTContext *Context) {
   const Type *TP = T.getTypePtrOrNull();
   if (!TP)
     return CXType_Invalid;
+
+  // libclang checks for these builtin types specially and matches on things
+  // that appear to be correct
+  if (Context->getLangOpts().ObjC) {
+    QualType UT = T.getUnqualifiedType();
+    if (Context->isObjCIdType(UT))
+      return CXType_ObjCId;
+    if (Context->isObjCClassType(UT))
+      return CXType_ObjCClass;
+    if (Context->isObjCSelType(UT))
+      return CXType_ObjCSel;
+  }
 
 #define TKCASE(K) case Type::K: return CXType_##K
   switch (TP->getTypeClass()) {
