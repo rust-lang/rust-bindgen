@@ -1706,7 +1706,7 @@ public:
     if (!Ty.isNull()) {
       if (auto *TD = Ty->getAs<TypedefType>()) {
         Node node(TD->getDecl(), CXCursor_TypeRef);
-        return VisitFn(node, Parent, &AST, Data) == CXChildVisit_Break;
+        return VisitFn(node, Parent, &AST, Data) != CXChildVisit_Break;
       }
     }
 
