@@ -1,5 +1,6 @@
 #include <string>
 
+#include "llvm/Support/CrashRecoveryContext.h"
 #include "clang/AST/Comment.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclFriend.h"
@@ -133,11 +134,24 @@ ASTContext *ASTUnit_getContext(ASTUnit *Unit) {
 
 ASTUnit *parseTranslationUnit(const char *source_filename,
                               const char *const *command_line_args,
-                              int num_command_line_args,
-                              int options) {
+                              int num_command_line_args, int options,
+                              struct CXUnsavedFile *unsaved_files,
+                              unsigned num_unsaved_files) {
   SmallVector<const char *, 10> Args;
   Args.push_back("clang");
   Args.append(command_line_args, command_line_args + num_command_line_args);
+
+  std::unique_ptr<std::vector<ASTUnit::RemappedFile>> RemappedFiles(
+      new std::vector<ASTUnit::RemappedFile>());
+  // Recover resources if we crash before exiting this function.
+  llvm::CrashRecoveryContextCleanupRegistrar<
+    std::vector<ASTUnit::RemappedFile> > RemappedCleanup(RemappedFiles.get());
+
+  for (auto &UF : llvm::makeArrayRef(unsaved_files, num_unsaved_files)) {
+    std::unique_ptr<llvm::MemoryBuffer> MB =
+      llvm::MemoryBuffer::getMemBufferCopy(StringRef(UF.Contents, UF.Length), UF.Filename);
+    RemappedFiles->push_back(std::make_pair(UF.Filename, MB.release()));
+  }
 
   // Configure the diagnostics.
   IntrusiveRefCntPtr<DiagnosticsEngine>
@@ -161,8 +175,11 @@ ASTUnit *parseTranslationUnit(const char *source_filename,
     PPOpts.DetailedRecord = true;
   }
 
-  return ASTUnit::LoadFromCompilerInvocationAction(
-    std::move(Invoc), std::make_shared<PCHContainerOperations>(), Diags);
+  return ASTUnit::LoadFromCommandLine(
+      Args.data(), Args.data() + Args.size(),
+      std::make_shared<PCHContainerOperations>(), Diags, StringRef(),
+      /*OnlyLocalDecls*/ false, CaptureDiagnostics, *RemappedFiles.get(),
+      /*RemappedFilesKeepOriginalName*/ true);
 }
 
 void disposeASTUnit(ASTUnit *AU) {
@@ -800,6 +817,10 @@ static QualType make_type_compatible(QualType QT) {
   // libclang does not return ParenTypes
   if (auto *PTT = QT->getAs<ParenType>())
     return make_type_compatible(PTT->getInnerType());
+
+  // Decayed types should be passed as their original type
+  if (auto *DT = QT->getAs<DecayedType>())
+    return make_type_compatible(DT->getOriginalType());
 
   return QT;
 }
@@ -2317,7 +2338,7 @@ QualType Type_getArgType(QualType T, unsigned i) {
     unsigned numParams = FD->getNumParams();
     if (i >= numParams)
       return QualType();
-
+    // FD->getParamType(i)->dump();
     return make_type_compatible(FD->getParamType(i));
   }
   
