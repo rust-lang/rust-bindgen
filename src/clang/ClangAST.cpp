@@ -670,8 +670,33 @@ BindgenStringRef Decl_getUSR(const Decl *D) {
 }
 
 BindgenStringRef Decl_getSpelling(const Decl *D) {
+  if (!D)
+    return stringref();
+
   const NamedDecl *ND = dyn_cast_or_null<NamedDecl>(&*D);
-  if (!ND)
+  if (!ND) {
+    if (const ObjCPropertyImplDecl *PropImpl =
+            dyn_cast<ObjCPropertyImplDecl>(D))
+      if (ObjCPropertyDecl *Property = PropImpl->getPropertyDecl())
+        return stringref(Property->getIdentifier()->getName());
+
+    if (const ImportDecl *ImportD = dyn_cast<ImportDecl>(D))
+      if (Module *Mod = ImportD->getImportedModule())
+        return stringref(Mod->getFullModuleName());
+
+    return stringref();
+  }
+
+  if (const ObjCMethodDecl *OMD = dyn_cast<ObjCMethodDecl>(ND))
+    return stringref(OMD->getSelector().getAsString());
+
+  if (const ObjCCategoryImplDecl *CIMP = dyn_cast<ObjCCategoryImplDecl>(ND))
+    // No, this isn't the same as the code below. getIdentifier() is non-virtual
+    // and returns different names. NamedDecl returns the class name and
+    // ObjCCategoryImplDecl returns the category name.
+    return stringref(CIMP->getIdentifier()->getNameStart());
+
+  if (isa<UsingDirectiveDecl>(D))
     return stringref();
 
   SmallString<1024> S;
