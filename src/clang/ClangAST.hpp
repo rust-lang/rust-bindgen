@@ -209,7 +209,7 @@ void disposeTokens(const ASTUnit *TU, CXToken *Tokens, unsigned NumTokens);
 CXTokenKind getTokenKind(CXToken token);
 BindgenStringRef getTokenSpelling(ASTUnit *TU, CXToken token);
 
-CXTypeKind Type_kind(QualType);
+CXTypeKind Type_kind(QualType, ASTContext *);
 BindgenStringRef Type_getTypeSpelling(QualType, ASTContext *);
 bool Type_isConstQualifiedType(QualType);
 long long Type_getSizeOf(QualType, ASTContext *);

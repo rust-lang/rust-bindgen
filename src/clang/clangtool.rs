@@ -7042,8 +7042,11 @@ extern "C" {
     ) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z9Type_kindN5clang8QualTypeE"]
-    pub fn Type_kind(arg1: clang_QualType) -> CXTypeKind::Type;
+    #[link_name = "\u{1}_Z9Type_kindN5clang8QualTypeEPNS_10ASTContextE"]
+    pub fn Type_kind(
+        arg1: clang_QualType,
+        arg2: *mut clang_ASTContext,
+    ) -> CXTypeKind::Type;
 }
 extern "C" {
     #[link_name = "\u{1}_Z20Type_getTypeSpellingN5clang8QualTypeEPNS_10ASTContextE"]

@@ -1221,7 +1221,7 @@ impl Type {
 
     /// Get this type's kind.
     pub fn kind(&self) -> CXTypeKind {
-        unsafe { clangtool::Type_kind(self.x) }
+        unsafe { clangtool::Type_kind(self.x, self.context()) }
     }
 
     /// Get a cursor pointing to this type's declaration.
