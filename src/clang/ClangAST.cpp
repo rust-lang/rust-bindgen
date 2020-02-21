@@ -568,6 +568,14 @@ const Decl *Decl_getReferenced(const Decl *D) {
 const Decl *Decl_getCanonical(const Decl *D) {
   if (!D)
     return nullptr;
+  if (const ObjCCategoryImplDecl *CatImplD = dyn_cast<ObjCCategoryImplDecl>(D))
+    if (ObjCCategoryDecl *CatD = CatImplD->getCategoryDecl())
+      return CatD;
+
+  if (const ObjCImplDecl *ImplD = dyn_cast<ObjCImplDecl>(D))
+    if (const ObjCInterfaceDecl *IFD = ImplD->getClassInterface())
+      return IFD;
+
   return D->getCanonicalDecl();
 }
 
@@ -1526,6 +1534,17 @@ public:
         && isa<CXXRecordDecl>(D))
       skip = true;
 
+    // libclang exposes forward class and protocol declarations as references
+    if (kind == CXCursor_ObjCInterfaceDecl) {
+      auto *ID = cast<ObjCInterfaceDecl>(D);
+      if (!ID->isThisDeclarationADefinition())
+        kind = CXCursor_ObjCClassRef;
+    } else if (kind == CXCursor_ObjCProtocolDecl) {
+      auto *PD = cast<ObjCProtocolDecl>(D);
+      if (!PD->isThisDeclarationADefinition())
+        kind = CXCursor_ObjCProtocolRef;
+    }
+
     // D->dump();
     Node node(D, kind);
     if (!skip) {
@@ -1599,6 +1618,11 @@ public:
       Node parent(E, Expr_getCXCursorKind(E));
       return VisitFn(node, parent, &AST, Data) != CXChildVisit_Break;
     }
+    return true;
+  }
+
+  bool VisitTypeLoc(TypeLoc TL) {
+    // if (TL) TL.getTypePtr()->dump();
     return true;
   }
 
@@ -1745,6 +1769,32 @@ public:
                                        PPRec);
 
     return visitPreprocessedEntities(PPRec.begin(), PPRec.end(), PPRec);
+  }
+
+  bool VisitObjCCategoryDecl(ObjCCategoryDecl *ND) {
+    Node interfaceNode(ND->getClassInterface(), CXCursor_ObjCClassRef);
+    if (VisitFn(interfaceNode, Parent, &AST, Data) == CXChildVisit_Break)
+      return false;
+
+    // TypeParamList is visited in RecursiveASTvisitor
+
+    for (auto I : ND->protocols())
+      if (VisitFn(Node(&*I, CXCursor_ObjCProtocolRef), Parent, &AST, Data) == CXChildVisit_Break)
+        return false;
+
+    // We may need to do the weird hacky thing that the libclang visitor does in
+    // VisitObjCContainerDecl, but I hope not...
+    return true;
+  }
+
+  bool VisitObjCProtocolDecl(ObjCProtocolDecl *PD) {
+    for (auto I : PD->protocols())
+      if (VisitFn(Node(&*I, CXCursor_ObjCProtocolRef), Parent, &AST, Data) == CXChildVisit_Break)
+        return false;
+
+    // We may need to do the weird hacky thing that the libclang visitor does in
+    // VisitObjCContainerDecl, but I hope not...
+    return true;
   }
 
 private:
