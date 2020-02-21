@@ -575,6 +575,7 @@ impl BindgenContext {
 - Unrecognized flags
 - Invalid flag arguments
 - File I/O errors
+- Host vs. target architecture mismatch
 If you encounter an error missing from this list, please file an issue or a PR!")
         };
 
