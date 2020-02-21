@@ -1915,6 +1915,12 @@ public:
     return true;
   }
 
+  bool VisitObjCTypeParamDecl(ObjCTypeParamDecl *D) {
+    if (!D)
+      return true;
+    return TraverseDecl(D) != CXChildVisit_Break;
+  }
+
 private:
   template <typename InputIterator>
   bool visitPreprocessedEntities(InputIterator First, InputIterator Last,
