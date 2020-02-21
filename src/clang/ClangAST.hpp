@@ -194,10 +194,13 @@ typedef CXChildVisitResult (*Visitor)(Node N, Node parent,
                                       ASTUnit *unit,
                                       CXClientData client_data);
 
-void Decl_visitChildren(const Decl *Parent, Visitor V, ASTUnit *Unit, CXClientData data);
-void Expr_visitChildren(const Expr *Parent, Visitor V, ASTUnit *Unit, CXClientData data);
-void CXXBaseSpecifier_visitChildren(const CXXBaseSpecifier *Parent, Visitor V,
-                                    ASTUnit *Unit, CXClientData data);
+void Decl_visitChildren(const Decl *Parent, CXCursorKind kind, Visitor V,
+                        ASTUnit *Unit, CXClientData data);
+void Expr_visitChildren(const Expr *Parent, CXCursorKind kind, Visitor V,
+                        ASTUnit *Unit, CXClientData data);
+void CXXBaseSpecifier_visitChildren(const CXXBaseSpecifier *Parent,
+                                    CXCursorKind kind, Visitor V, ASTUnit *Unit,
+                                    CXClientData data);
 
 void tokenize(ASTUnit *TU, BindgenSourceRange Range, CXToken **Tokens,
               unsigned *NumTokens);
