@@ -1563,6 +1563,21 @@ public:
     return RecursiveASTVisitor<BindgenVisitor>::TraverseStmt(S);
   }
 
+  bool VisitSizeOfPackExpr(SizeOfPackExpr *E) {
+    NamedDecl *Pack = E->getPack();
+    if (isa<TemplateTypeParmDecl>(Pack)) {
+      Node node(Pack, CXCursor_TypeRef);
+      Node parent(E, Expr_getCXCursorKind(E));
+      return VisitFn(node, parent, &AST, Data) != CXChildVisit_Break;
+    }
+    if (isa<TemplateTemplateParmDecl>(Pack)) {
+      Node node(Pack, CXCursor_TemplateRef);
+      Node parent(E, Expr_getCXCursorKind(E));
+      return VisitFn(node, parent, &AST, Data) != CXChildVisit_Break;
+    }
+    return true;
+  }
+
   bool VisitDecltypeTypeLoc(DecltypeTypeLoc TL) {
     if (!TL)
       return true;
