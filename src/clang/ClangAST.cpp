@@ -164,20 +164,16 @@ ASTUnit *parseTranslationUnit(const char *source_filename,
   if (options & CXTranslationUnit_IgnoreNonErrorsFromIncludedFiles)
     CaptureDiagnostics = CaptureDiagsKind::AllWithoutNonErrorsFromIncludes;
 
-  auto Invoc = createInvocationFromCommandLine(Args, Diags);
-  if (!Invoc)
-    return nullptr;
-
-  auto &PPOpts = Invoc->getPreprocessorOpts();
-
   if (options & CXTranslationUnit_DetailedPreprocessingRecord) {
     // Tell the preprocessor to save a detailed preprocessing record
-    PPOpts.DetailedRecord = true;
+    Args.push_back("-Xclang");
+    Args.push_back("-detailed-preprocessing-record");
   }
 
   return ASTUnit::LoadFromCommandLine(
       Args.data(), Args.data() + Args.size(),
-      std::make_shared<PCHContainerOperations>(), Diags, StringRef(),
+      std::make_shared<PCHContainerOperations>(), Diags,
+      /*ResourceFilePath*/ StringRef(),
       /*OnlyLocalDecls*/ false, CaptureDiagnostics, *RemappedFiles.get(),
       /*RemappedFilesKeepOriginalName*/ true);
 }
