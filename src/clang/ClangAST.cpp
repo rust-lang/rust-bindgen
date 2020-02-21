@@ -997,11 +997,10 @@ bool CXXMethod_isPureVirtual(const Decl *D) {
 }
 
 QualType Decl_getResultType(const Decl *D, ASTContext *Ctx) {
-  auto Ty = Decl_getType(D, Ctx);
-  if (!Ty.isNull())
-    if (auto *FT = Ty->getAs<FunctionType>())
-      return make_type_compatible(FT->getReturnType());
-  return QualType();
+  if (auto *MD = dyn_cast_or_null<ObjCMethodDecl>(D))
+    return MD->getReturnType();
+
+  return Type_getResultType(Decl_getType(D, Ctx));
 }
 
 // const Decl *Expr_getSemanticParent(const Expr *E) {
