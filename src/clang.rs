@@ -259,7 +259,7 @@ impl Cursor {
             ASTNode::Decl(d) => unsafe {
                 ASTNode::Decl(clangtool::Decl_getSemanticParent(d))
             },
-            ASTNode::Expr(e) => panic!("Unimplemented for Expr"),
+            ASTNode::Expr(_) => panic!("Unimplemented for Expr"),
             _ => return None,
         };
         if node == self.node || !node.is_valid() {
