@@ -1524,7 +1524,7 @@ public:
   }
 
   bool TraverseDeclTyped(Decl *D, CXCursorKind kind) {
-    if (!D || D->isImplicit())
+    if (!D || (D->isImplicit() && !isa<ObjCMethodDecl>(D)))
       return true;
 
     bool skip = !Parent;
@@ -1713,6 +1713,40 @@ public:
     return true;
   }
 
+  bool VisitObjCInterfaceTypeLoc(ObjCInterfaceTypeLoc TL) {
+    if (!TL)
+      return true;
+
+    return TraverseDeclTyped(TL.getIFaceDecl(), CXCursor_ObjCClassRef);
+  }
+
+  bool VisitObjCTypeParamTypeLoc(ObjCTypeParamTypeLoc TL) {
+    if (!TL)
+      return true;
+    Node node(TL.getDecl(), CXCursor_TypeRef);
+    if (VisitFn(node, Parent, &AST, Data) == CXChildVisit_Break)
+      return false;
+    for (unsigned I = 0, N = TL.getNumProtocols(); I != N; ++I) {
+      Node node(TL.getProtocol(I), CXCursor_ObjCProtocolRef);
+      if (VisitFn(node, Parent, &AST, Data) == CXChildVisit_Break)
+        return false;
+    }
+    return true;
+  }
+
+  bool VisitObjCObjectTypeLoc(ObjCObjectTypeLoc TL) {
+    if (!TL)
+      return true;
+
+    for (unsigned I = 0, N = TL.getNumProtocols(); I != N; ++I) {
+      Node node(TL.getProtocol(I), CXCursor_ObjCProtocolRef);
+      if (VisitFn(node, Parent, &AST, Data) == CXChildVisit_Break)
+        return false;
+    }
+
+    return true;
+  }
+
   bool TraverseTemplateName(TemplateName Name) {
     Node node;
     switch (Name.getKind()) {
@@ -1801,6 +1835,22 @@ public:
     return visitPreprocessedEntities(PPRec.begin(), PPRec.end(), PPRec);
   }
 
+  bool VisitObjCInterfaceDecl(ObjCInterfaceDecl *D) {
+    // We handle forward declarations in TraverseDecl
+    if (!D || !D->isThisDeclarationADefinition())
+      return true;
+
+    if (D->getSuperClass()
+        && VisitFn(Node(D->getSuperClass(), CXCursor_ObjCSuperClassRef), Parent, &AST, Data) == CXChildVisit_Break)
+      return false;
+
+    for (auto I : D->protocols())
+      if (VisitFn(Node(&*I, CXCursor_ObjCProtocolRef), Parent, &AST, Data) == CXChildVisit_Break)
+        return false;
+
+    return true;
+  }
+
   bool VisitObjCCategoryDecl(ObjCCategoryDecl *ND) {
     Node interfaceNode(ND->getClassInterface(), CXCursor_ObjCClassRef);
     if (VisitFn(interfaceNode, Parent, &AST, Data) == CXChildVisit_Break)
@@ -1824,6 +1874,44 @@ public:
 
     // We may need to do the weird hacky thing that the libclang visitor does in
     // VisitObjCContainerDecl, but I hope not...
+    return true;
+  }
+
+  bool VisitObjCPropertyDecl(ObjCPropertyDecl *PD) {
+    if (!PD)
+      return true;
+
+    // FIXME: This implements a workaround with @property declarations also
+    // being
+    // installed in the DeclContext for the @interface.  Eventually this code
+    // should be removed.
+    ObjCCategoryDecl *CDecl = dyn_cast<ObjCCategoryDecl>(PD->getDeclContext());
+    if (!CDecl || !CDecl->IsClassExtension())
+      return true;
+
+    ObjCInterfaceDecl *ID = CDecl->getClassInterface();
+    if (!ID)
+      return true;
+
+    IdentifierInfo *PropertyId = PD->getIdentifier();
+    ObjCPropertyDecl *prevDecl = ObjCPropertyDecl::findPropertyDecl(
+        cast<DeclContext>(ID), PropertyId, PD->getQueryKind());
+
+    if (!prevDecl)
+      return true;
+
+    // Visit synthesized methods since they will be skipped when visiting
+    // the @interface.
+    if (ObjCMethodDecl *MD = prevDecl->getGetterMethodDecl())
+      if (MD->isPropertyAccessor() && MD->getLexicalDeclContext() == CDecl)
+        if (!TraverseDecl(MD))
+          return false;
+
+    if (ObjCMethodDecl *MD = prevDecl->getSetterMethodDecl())
+      if (MD->isPropertyAccessor() && MD->getLexicalDeclContext() == CDecl)
+        if (!TraverseDecl(MD))
+          return false;
+
     return true;
   }
 
