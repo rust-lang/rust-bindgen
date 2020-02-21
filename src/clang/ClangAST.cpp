@@ -1635,6 +1635,52 @@ public:
     return TraverseDeclTyped(TL.getDecl(), CXCursor_TypeRef);
   }
 
+  bool TraverseTemplateName(TemplateName Name) {
+    Node node;
+    switch (Name.getKind()) {
+    case TemplateName::Template:
+      node = Node(Name.getAsTemplateDecl(), CXCursor_TemplateRef);
+      break;
+
+    case TemplateName::OverloadedTemplate:
+      // libclang visits this, but we don't need it for bindgen
+      return true;
+
+    case TemplateName::AssumedTemplate:
+      return true;
+
+    case TemplateName::DependentTemplate:
+      return true;
+
+    case TemplateName::QualifiedTemplate:
+      node = Node(Name.getAsQualifiedTemplateName()->getDecl(), CXCursor_TemplateRef);
+      break;
+
+    case TemplateName::SubstTemplateTemplateParm:
+      node = Node(Name.getAsSubstTemplateTemplateParm()->getParameter(), CXCursor_TemplateRef);
+      break;
+
+    case TemplateName::SubstTemplateTemplateParmPack:
+      node = Node(Name.getAsSubstTemplateTemplateParmPack()->getParameterPack(), CXCursor_TemplateRef);
+      break;
+    }
+
+    switch (VisitFn(node, Parent, &AST, Data)) {
+    case CXChildVisit_Break:
+      return false;
+    case CXChildVisit_Continue:
+      return true;
+    case CXChildVisit_Recurse:
+      break;
+    }
+
+    auto OldParent = Parent;
+    Parent = node;
+    bool res = RecursiveASTVisitor<BindgenVisitor>::TraverseTemplateName(Name);
+    Parent = OldParent;
+    return res;
+  }
+
   bool TraverseCXXBaseSpecifier(const CXXBaseSpecifier &Base) {
     if (Parent) {
       switch (VisitFn(Node(&Base), Parent, &AST, Data)) {
