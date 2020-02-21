@@ -795,11 +795,11 @@ static QualType make_type_compatible(QualType QT) {
   // CXTranslationUnit_IncludeAttributedTypes is not set, and bindgen assumes it
   // is not set.
   if (auto *ATT = QT->getAs<AttributedType>())
-    return ATT->getEquivalentType();
+    return make_type_compatible(ATT->getEquivalentType());
 
   // libclang does not return ParenTypes
   if (auto *PTT = QT->getAs<ParenType>())
-    return PTT->getInnerType();
+    return make_type_compatible(PTT->getInnerType());
 
   return QT;
 }
@@ -1006,7 +1006,7 @@ bool CXXMethod_isPureVirtual(const Decl *D) {
 
 QualType Decl_getResultType(const Decl *D, ASTContext *Ctx) {
   if (auto *MD = dyn_cast_or_null<ObjCMethodDecl>(D))
-    return MD->getReturnType();
+    return make_type_compatible(MD->getReturnType());
 
   return Type_getResultType(Decl_getType(D, Ctx));
 }
