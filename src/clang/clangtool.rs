@@ -6491,12 +6491,14 @@ extern "C" {
     ) -> *mut clang_ASTContext;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z20parseTranslationUnitPKcPKS0_ii"]
+    #[link_name = "\u{1}_Z20parseTranslationUnitPKcPKS0_iiP13CXUnsavedFilej"]
     pub fn parseTranslationUnit(
         source_filename: *const ::std::os::raw::c_char,
         command_line_args: *const *const ::std::os::raw::c_char,
         num_command_line_args: ::std::os::raw::c_int,
         options: ::std::os::raw::c_int,
+        unsaved_files: *mut CXUnsavedFile,
+        num_unsaved_files: ::std::os::raw::c_uint,
     ) -> *mut clang_ASTUnit;
 }
 extern "C" {

@@ -1915,6 +1915,8 @@ impl TranslationUnit {
                 c_args.as_ptr(),
                 c_args.len() as c_int,
                 opts,
+                c_unsaved.as_mut_ptr(),
+                c_unsaved.len() as c_uint,
             )
         };
         if tu.is_null() {
