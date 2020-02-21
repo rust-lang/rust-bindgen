@@ -6984,27 +6984,30 @@ pub type Visitor = ::std::option::Option<
     ) -> CXChildVisitResult::Type,
 >;
 extern "C" {
-    #[link_name = "\u{1}_Z18Decl_visitChildrenPKN5clang4DeclEPF18CXChildVisitResult4NodeS4_PNS_7ASTUnitEPvES6_S7_"]
+    #[link_name = "\u{1}_Z18Decl_visitChildrenPKN5clang4DeclE12CXCursorKindPF18CXChildVisitResult4NodeS5_PNS_7ASTUnitEPvES7_S8_"]
     pub fn Decl_visitChildren(
         Parent: *const clang_Decl,
+        kind: CXCursorKind::Type,
         V: Visitor,
         Unit: *mut clang_ASTUnit,
         data: CXClientData,
     );
 }
 extern "C" {
-    #[link_name = "\u{1}_Z18Expr_visitChildrenPKN5clang4ExprEPF18CXChildVisitResult4NodeS4_PNS_7ASTUnitEPvES6_S7_"]
+    #[link_name = "\u{1}_Z18Expr_visitChildrenPKN5clang4ExprE12CXCursorKindPF18CXChildVisitResult4NodeS5_PNS_7ASTUnitEPvES7_S8_"]
     pub fn Expr_visitChildren(
         Parent: *const clang_Expr,
+        kind: CXCursorKind::Type,
         V: Visitor,
         Unit: *mut clang_ASTUnit,
         data: CXClientData,
     );
 }
 extern "C" {
-    #[link_name = "\u{1}_Z30CXXBaseSpecifier_visitChildrenPKN5clang16CXXBaseSpecifierEPF18CXChildVisitResult4NodeS4_PNS_7ASTUnitEPvES6_S7_"]
+    #[link_name = "\u{1}_Z30CXXBaseSpecifier_visitChildrenPKN5clang16CXXBaseSpecifierE12CXCursorKindPF18CXChildVisitResult4NodeS5_PNS_7ASTUnitEPvES7_S8_"]
     pub fn CXXBaseSpecifier_visitChildren(
         Parent: *const clang_CXXBaseSpecifier,
+        kind: CXCursorKind::Type,
         V: Visitor,
         Unit: *mut clang_ASTUnit,
         data: CXClientData,

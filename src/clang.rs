@@ -492,7 +492,7 @@ impl Cursor {
     /// a declaration, get the cursor pointing to the referenced type or type of
     /// the declared thing.
     pub fn definition(&self) -> Option<Cursor> {
-        let is_reference = self.kind == CXCursor_TypeRef;
+        let is_reference = self.kind >= CXCursor_FirstRef && self.kind <= CXCursor_LastRef;
         let def = match self.node {
             ASTNode::Decl(d) => unsafe {
                 clangtool::Decl_getDefinition(d, is_reference)
@@ -576,6 +576,7 @@ impl Cursor {
             ASTNode::Decl(d) => unsafe {
                 clangtool::Decl_visitChildren(
                     d,
+                    self.kind,
                     Some(visit_children::<Visitor>),
                     self.unit,
                     mem::transmute(&mut visitor),
@@ -584,6 +585,7 @@ impl Cursor {
             ASTNode::Expr(e) => unsafe {
                 clangtool::Expr_visitChildren(
                     e,
+                    self.kind,
                     Some(visit_children::<Visitor>),
                     self.unit,
                     mem::transmute(&mut visitor),
@@ -592,6 +594,7 @@ impl Cursor {
             ASTNode::CXXBaseSpecifier(b) => unsafe {
                 clangtool::CXXBaseSpecifier_visitChildren(
                     b,
+                    self.kind,
                     Some(visit_children::<Visitor>),
                     self.unit,
                     mem::transmute(&mut visitor),
@@ -1167,21 +1170,25 @@ where
     Visitor: FnMut(Cursor) -> CXChildVisitResult,
 {
     let func: &mut Visitor = mem::transmute(data);
-    let node = if (raw_node.kind >= CXCursor_FirstDecl && raw_node.kind <= CXCursor_LastDecl)
-        || (raw_node.kind >= CXCursor_FirstExtraDecl && raw_node.kind <= CXCursor_LastExtraDecl)
-        || raw_node.kind == CXCursor_TypeRef
-    {
-        ASTNode::Decl(raw_node.ptr.decl)
-    } else if raw_node.kind >= CXCursor_FirstExpr && raw_node.kind <= CXCursor_LastExpr {
-        ASTNode::Expr(raw_node.ptr.expr)
-    } else if raw_node.kind == CXCursor_CXXBaseSpecifier {
-        ASTNode::CXXBaseSpecifier(raw_node.ptr.base)
-    } else if raw_node.kind >= CXCursor_FirstAttr && raw_node.kind <= CXCursor_LastAttr {
-        ASTNode::Attr(raw_node.ptr.attr)
-    } else if raw_node.kind >= CXCursor_FirstPreprocessing && raw_node.kind <= CXCursor_LastPreprocessing {
-        ASTNode::PreprocessedEntity(raw_node.ptr.ppe)
-    } else {
-        return CXChildVisit_Recurse;
+    let node = {
+        // CXCursor_CXXBaseSpecifier must come before decls, because it is in
+        // the range [FirstRef, LastRef]
+        if raw_node.kind == CXCursor_CXXBaseSpecifier {
+            ASTNode::CXXBaseSpecifier(raw_node.ptr.base)
+        } else if (raw_node.kind >= CXCursor_FirstDecl && raw_node.kind <= CXCursor_LastDecl)
+            || (raw_node.kind >= CXCursor_FirstExtraDecl && raw_node.kind <= CXCursor_LastExtraDecl)
+            || (raw_node.kind >= CXCursor_FirstRef && raw_node.kind <= CXCursor_LastRef)
+        {
+            ASTNode::Decl(raw_node.ptr.decl)
+        } else if raw_node.kind >= CXCursor_FirstExpr && raw_node.kind <= CXCursor_LastExpr {
+            ASTNode::Expr(raw_node.ptr.expr)
+        } else if raw_node.kind >= CXCursor_FirstAttr && raw_node.kind <= CXCursor_LastAttr {
+            ASTNode::Attr(raw_node.ptr.attr)
+        } else if raw_node.kind >= CXCursor_FirstPreprocessing && raw_node.kind <= CXCursor_LastPreprocessing {
+            ASTNode::PreprocessedEntity(raw_node.ptr.ppe)
+        } else {
+            return CXChildVisit_Recurse;
+        }
     };
     let child = Cursor {
         node,

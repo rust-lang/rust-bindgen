@@ -1516,7 +1516,8 @@ public:
     }
 
     // Do not recurse through references
-    if (kind >= CXCursor_FirstRef && kind <= CXCursor_LastRef)
+    if (kind >= CXCursor_FirstRef && kind <= CXCursor_LastRef
+        && kind != CXCursor_CXXBaseSpecifier)
       return true;
 
     auto OldParent = Parent;
@@ -1688,15 +1689,19 @@ private:
   }
 };
 
-void Decl_visitChildren(const Decl *Parent, Visitor V, ASTUnit *Unit, CXClientData data) {
+void Decl_visitChildren(const Decl *Parent, CXCursorKind kind, Visitor V,
+                        ASTUnit *Unit, CXClientData data) {
   BindgenVisitor visitor(*Unit, V, data);
-  visitor.TraverseDecl(const_cast<Decl*>(&*Parent));
+  visitor.TraverseDeclTyped(const_cast<Decl *>(&*Parent), kind);
 }
-void Expr_visitChildren(const Expr *Parent, Visitor V, ASTUnit *Unit, CXClientData data) {
+void Expr_visitChildren(const Expr *Parent, CXCursorKind kind, Visitor V,
+                        ASTUnit *Unit, CXClientData data) {
   BindgenVisitor visitor(*Unit, V, data);
-  visitor.TraverseStmt(const_cast<Expr*>(&*Parent));
+  visitor.TraverseExprTyped(const_cast<Expr *>(&*Parent), kind);
 }
-void CXXBaseSpecifier_visitChildren(const CXXBaseSpecifier *Parent, Visitor V, ASTUnit *Unit, CXClientData data) {
+void CXXBaseSpecifier_visitChildren(const CXXBaseSpecifier *Parent,
+                                    CXCursorKind kind, Visitor V, ASTUnit *Unit,
+                                    CXClientData data) {
   BindgenVisitor visitor(*Unit, V, data);
   visitor.TraverseCXXBaseSpecifier(*Parent);
 }
