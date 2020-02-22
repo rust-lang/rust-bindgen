@@ -10,7 +10,7 @@ if( PROJECT_NAME STREQUAL "LLVM" )
 
   add_definitions(-DCLANG_BIN_PATH="${CMAKE_INSTALL_PREFIX}/bin")
 
-  add_clang_library(clangAst ${SRCS} DEPENDS clang-headers)
+  add_clang_library(bindgenClangAST ${SRCS} DEPENDS clang-headers)
 
   set(LLVM_LINK_COMPONENTS support)
 else()
@@ -40,23 +40,23 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
 
   # The library
-  add_library(clangAst STATIC ${SRCS})
+  add_library(bindgenClangAST STATIC ${SRCS})
 endif()
 
 add_definitions(-DCLANG_LIBDIR_SUFFIX="${LLVM_LIBDIR_SUFFIX}")
 
-set_target_properties(clangAst PROPERTIES
+set_target_properties(bindgenClangAST PROPERTIES
   CXX_STANDARD 14
   CXX_EXTENSIONS OFF
   )
 
 # PRIVATE was added to make clangAst build with LLVM 6.0. Keyword
 # description: https://cmake.org/pipermail/cmake/2016-May/063400.html
-target_link_libraries(clangAst PRIVATE
+target_link_libraries(bindgenClangAST PRIVATE
   clangAST
   clangFrontend
   clangIndex
+  clangSema
   clangTooling
   clangBasic
-  clangASTMatchers
   )
