@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.4.3)
-project(BindgenClangAST)
+project(BindgenClangInterface)
 
 set(SRCS
-  ClangAST.cpp
+  clang_interface.cpp
+  libclang_compat.cpp
   )
 
 if( PROJECT_NAME STREQUAL "LLVM" )
@@ -10,7 +11,7 @@ if( PROJECT_NAME STREQUAL "LLVM" )
 
   add_definitions(-DCLANG_BIN_PATH="${CMAKE_INSTALL_PREFIX}/bin")
 
-  add_clang_library(bindgenClangAST ${SRCS} DEPENDS clang-headers)
+  add_clang_library(BindgenClangInterface ${SRCS} DEPENDS clang-headers)
 
   set(LLVM_LINK_COMPONENTS support)
 else()
@@ -40,19 +41,19 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
 
   # The library
-  add_library(bindgenClangAST STATIC ${SRCS})
+  add_library(BindgenClangInterface STATIC ${SRCS})
 endif()
 
 add_definitions(-DCLANG_LIBDIR_SUFFIX="${LLVM_LIBDIR_SUFFIX}")
 
-set_target_properties(bindgenClangAST PROPERTIES
+set_target_properties(BindgenClangInterface PROPERTIES
   CXX_STANDARD 14
   CXX_EXTENSIONS OFF
   )
 
-# PRIVATE was added to make clangAst build with LLVM 6.0. Keyword
+# PRIVATE was added to make BindgenClangInterface build with LLVM 6.0. Keyword
 # description: https://cmake.org/pipermail/cmake/2016-May/063400.html
-target_link_libraries(bindgenClangAST PRIVATE
+target_link_libraries(BindgenClangInterface PRIVATE
   clangAST
   clangFrontend
   clangIndex
