@@ -8,9 +8,9 @@ fi
 
 function llvm_linux_target_triple() {
     if [ "$1" == "5.0" ]; then
-        echo "linux-x86_64-ubuntu14.04"
+        echo "linux-x86_64-ubuntu16.04"
     else
-        echo "x86_64-linux-gnu-ubuntu-14.04"
+        echo "x86_64-linux-gnu-ubuntu-16.04"
     fi
 }
 
