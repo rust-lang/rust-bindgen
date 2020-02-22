@@ -1,3 +1,6 @@
+#ifndef BINDGEN_CLANG_AST_H
+#define BINDGEN_CLANG_AST_H
+
 #include "clang-c/Documentation.h"
 #include "clang-c/Index.h"
 
@@ -254,3 +257,5 @@ SourceLocation *PreprocessedEntity_getLocation(const PreprocessedEntity *);
 BindgenSourceRange CXXBaseSpecifier_getSourceRange(const CXXBaseSpecifier *);
 BindgenSourceRange Attr_getSourceRange(const Attr *);
 BindgenSourceRange PreprocessedEntity_getSourceRange(const PreprocessedEntity *);
+
+#endif // BINDGEN_CLANG_AST_H

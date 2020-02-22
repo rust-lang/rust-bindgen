@@ -96,23 +96,25 @@ mod clang_ast {
         // Find where the (already built) LLVM lib dir is
         let llvm_lib_dir = &llvm_info.lib_dir;
 
-        println!("cargo:rerun-if-changed=src/clang/ClangAST.cpp");
-        println!("cargo:rerun-if-changed=src/clang/ClangAST.hpp");
-        // Build libbindgenClangAST.a with cmake
+        println!("cargo:rerun-if-changed=src/clang/clang_interface.hpp");
+        println!("cargo:rerun-if-changed=src/clang/clang_interface_impl.hpp");
+        println!("cargo:rerun-if-changed=src/clang/clang_interface.cpp");
+        println!("cargo:rerun-if-changed=src/clang/libclang_compat.cpp");
+        // Build libBindgenClangInterface.a with cmake
         let dst = cmake::Config::new("src/clang")
             .define("LLVM_DIR", &format!("{}/cmake/llvm", llvm_lib_dir))
             .define("Clang_DIR", &format!("{}/cmake/clang", llvm_lib_dir))
-            .build_target("bindgenClangAST")
+            .build_target("BindgenClangInterface")
             .build();
 
         let out_dir = dst.display();
 
-        // Set up search path for newly built libbindgenClangAST.a
+        // Set up search path for newly built libBindgenClangInterface.a
         println!("cargo:rustc-link-search=native={}/build/lib", out_dir);
         println!("cargo:rustc-link-search=native={}/build", out_dir);
 
-        // Statically link against our library, 'bindgenClangAST'
-        println!("cargo:rustc-link-lib=static=bindgenClangAST");
+        // Statically link against our library, 'BindgenClangInterface'
+        println!("cargo:rustc-link-lib=static=BindgenClangInterface");
 
         // Link against these Clang libs. The ordering here is important! Libraries
         // must be listed before their dependencies when statically linking.
