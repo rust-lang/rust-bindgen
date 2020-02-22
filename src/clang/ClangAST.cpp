@@ -2165,8 +2165,10 @@ static CXTypeKind GetBuiltinTypeKind(const BuiltinType *BT) {
 #define IMAGE_TYPE(ImgType, Id, SingletonId, Access, Suffix) BTCASE(Id);
 #include "clang/Basic/OpenCLImageTypes.def"
 #undef IMAGE_TYPE
+#if CLANG_VERSION_MAJOR > 8
 #define EXT_OPAQUE_TYPE(ExtType, Id, Ext) BTCASE(Id);
 #include "clang/Basic/OpenCLExtensionTypes.def"
+#endif // CLANG_VERSION_MAJOR > 8
     BTCASE(OCLSampler);
     BTCASE(OCLEvent);
     BTCASE(OCLQueue);
