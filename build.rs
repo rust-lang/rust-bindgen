@@ -311,6 +311,13 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
                 "Core",
             ];
 
+            // llvmAST requires FrontendOpenMP from version 10 and newer
+            if let Some(version) = llvm_major_version {
+                if version > 9 {
+                    llvm_components.push("FrontendOpenMP");
+                }
+            }
+
             // Construct the list of libs we need to link against
             let mut args = llvm_components;
             args.insert(0, "--libs");
