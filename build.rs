@@ -81,6 +81,11 @@ mod clang_ast {
         build_native(&llvm_info);
     }
 
+    fn build_var(name: &str) -> Option<String> {
+        println!("cargo:rerun-if-env-changed={}", name);
+        env::var(name).ok()
+    }
+
     /// Call out to CMake, build the clang ast library, and tell cargo where to look
     /// for it.  Note that `CMAKE_BUILD_TYPE` gets implicitly determined by the
     /// cmake crate according to the following:
@@ -93,32 +98,28 @@ mod clang_ast {
 
         println!("cargo:rerun-if-changed=src/clang/ClangAST.cpp");
         println!("cargo:rerun-if-changed=src/clang/ClangAST.hpp");
-        // Build libclangAst.a with cmake
+        // Build libbindgenClangAST.a with cmake
         let dst = cmake::Config::new("src/clang")
-        // Where to find LLVM/Clang CMake files
             .define("LLVM_DIR", &format!("{}/cmake/llvm", llvm_lib_dir))
             .define("Clang_DIR", &format!("{}/cmake/clang", llvm_lib_dir))
-        // What to build
-            .build_target("clangAst")
+            .build_target("bindgenClangAST")
             .build();
 
         let out_dir = dst.display();
 
-        // Set up search path for newly built libclangAst.a
+        // Set up search path for newly built libbindgenClangAST.a
         println!("cargo:rustc-link-search=native={}/build/lib", out_dir);
         println!("cargo:rustc-link-search=native={}/build", out_dir);
 
-        // Statically link against 'clangAst'
-        println!("cargo:rustc-link-lib=static=clangAst");
+        // Statically link against our library, 'bindgenClangAST'
+        println!("cargo:rustc-link-lib=static=bindgenClangAST");
 
         // Link against these Clang libs. The ordering here is important! Libraries
         // must be listed before their dependencies when statically linking.
         println!("cargo:rustc-link-search=native={}", llvm_lib_dir);
         for lib in &[
             "clangIndex",
-            "clangTooling",
             "clangFrontend",
-            "clangASTMatchers",
             "clangParse",
             "clangSerialization",
             "clangSema",
@@ -128,7 +129,6 @@ mod clang_ast {
             "clangFormat",
             "clangToolingCore",
             "clangAST",
-            "clangRewrite",
             "clangLex",
             "clangBasic",
         ] {
@@ -163,10 +163,9 @@ mod clang_ast {
         fn new() -> Self {
             fn find_llvm_config() -> Option<String> {
                 // Explicitly provided path in LLVM_CONFIG_PATH
-                env::var("LLVM_CONFIG_PATH")
-                    .ok()
+                build_var("LLVM_CONFIG_PATH")
                 // Relative to LLVM_LIB_DIR
-                    .or(env::var("LLVM_LIB_DIR").ok().map(|d| {
+                    .or(build_var("LLVM_LIB_DIR").map(|d| {
                         String::from(
                             Path::new(&d)
                                 .join("../bin/llvm-config")
@@ -200,10 +199,11 @@ mod clang_ast {
             }
 
             /// Invoke given `command`, if any, with the specified arguments.
-            fn invoke_command<I, S>(command: Option<&String>, args: I) -> Option<String>
+            fn invoke_command<I, S, C>(command: Option<C>, args: I) -> Option<String>
                 where
                 I: IntoIterator<Item = S>,
                 S: AsRef<OsStr>,
+                C: AsRef<OsStr>,
             {
                 command.and_then(|c| {
                     Command::new(c).args(args).output().ok().and_then(|output| {
@@ -218,8 +218,7 @@ mod clang_ast {
 
             let llvm_config = find_llvm_config();
             let lib_dir = {
-                let path_str = env::var("LLVM_LIB_DIR")
-                    .ok()
+                let path_str = build_var("LLVM_LIB_DIR")
                     .or(invoke_command(llvm_config.as_ref(), &["--libdir"]))
                     .expect(
                         "
@@ -292,31 +291,38 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
                 "--link-shared"
             };
 
+            let llvm_version = invoke_command(llvm_config.as_ref(), &["--version"]);
+
+            let llvm_major_version = llvm_version
+                .and_then(|version| {
+                    let major: i32 = version.split(".").next()?.parse().ok()?;
+                    Some(major)
+                });
+
+            // LLVM components that we need to link against for the clang libs
+            let mut llvm_components = vec![
+                "MC",
+                "MCParser",
+                "Support",
+                "Option",
+                "BitReader",
+                "ProfileData",
+                "BinaryFormat",
+                "Core",
+            ];
+
             // Construct the list of libs we need to link against
-            let mut libs: Vec<String> = invoke_command(
-                llvm_config.as_ref(),
-                &[
-                    "--libs",
-                    link_mode,
-                    "MC",
-                    "MCParser",
-                    "Support",
-                    "Option",
-                    "BitReader",
-                    "ProfileData",
-                    "BinaryFormat",
-                    "Core",
-                    "FrontendOpenMP",
-                ],
-            )
+            let mut args = llvm_components;
+            args.insert(0, "--libs");
+            args.insert(1, link_mode);
+            let mut libs: Vec<String> = invoke_command(llvm_config.as_ref(), &args)
                 .unwrap_or("-lLLVM".to_string())
                 .split_whitespace()
                 .map(|lib| String::from(lib.trim_start_matches("-l")))
                 .collect();
 
             libs.extend(
-                env::var("LLVM_SYSTEM_LIBS")
-                    .ok()
+                build_var("LLVM_SYSTEM_LIBS")
                     .or(invoke_command(
                         llvm_config.as_ref(),
                         &[
