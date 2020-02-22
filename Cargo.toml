@@ -87,3 +87,6 @@ testing_only_libclang_5 = []
 testing_only_libclang_4 = []
 testing_only_libclang_3_9 = []
 testing_only_libclang_3_8 = []
+
+[patch.crates-io]
+cexpr = { git = "https://github.com/jonhoo/rust-cexpr.git", branch = "nom5" }
