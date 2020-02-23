@@ -17,12 +17,7 @@ mod log_stubs;
 mod options;
 use options::builder_from_flags;
 
-pub fn main() {
-    #[cfg(feature = "logging")]
-    env_logger::init();
-
-    let bind_args: Vec<_> = env::args().collect();
-
+fn clang_version_check() {
     let version = clang_version();
     let expected_version = if cfg!(feature = "testing_only_libclang_9") {
         Some((9, 0))
@@ -46,9 +41,17 @@ pub fn main() {
     if expected_version.is_some() {
         assert_eq!(version.parsed, version.parsed);
     }
+}
+
+pub fn main() {
+    #[cfg(feature = "logging")]
+    env_logger::init();
+
+    let bind_args: Vec<_> = env::args().collect();
 
     match builder_from_flags(bind_args.into_iter()) {
         Ok((builder, output, verbose)) => {
+            clang_version_check();
             let builder_result = panic::catch_unwind(|| {
                 builder.generate().expect("Unable to generate bindings")
             });
