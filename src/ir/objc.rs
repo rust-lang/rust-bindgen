@@ -2,9 +2,11 @@
 
 use super::context::{BindgenContext, ItemId};
 use super::function::FunctionSig;
+use super::item::Item;
 use super::traversal::{Trace, Tracer};
 use super::ty::TypeKind;
 use crate::clang;
+use crate::parse::ClangItemParser;
 use clang_sys::CXChildVisit_Continue;
 use clang_sys::CXCursor_ObjCCategoryDecl;
 use clang_sys::CXCursor_ObjCClassMethodDecl;
@@ -12,6 +14,7 @@ use clang_sys::CXCursor_ObjCClassRef;
 use clang_sys::CXCursor_ObjCInstanceMethodDecl;
 use clang_sys::CXCursor_ObjCProtocolDecl;
 use clang_sys::CXCursor_ObjCProtocolRef;
+use clang_sys::CXCursor_ObjCSuperClassRef;
 use clang_sys::CXCursor_TemplateTypeParameter;
 use proc_macro2::{Ident, Span, TokenStream};
 
@@ -33,6 +36,9 @@ pub struct ObjCInterface {
 
     /// The list of protocols that this interface conforms to.
     pub conforms_to: Vec<ItemId>,
+
+    /// The direct parent for this interface.
+    pub parent_class: Option<ItemId>,
 
     /// List of the methods defined in this interfae
     methods: Vec<ObjCMethod>,
@@ -64,6 +70,7 @@ impl ObjCInterface {
             category: None,
             is_protocol: false,
             template_names: Vec::new(),
+            parent_class: None,
             conforms_to: Vec::new(),
             methods: Vec::new(),
             class_methods: Vec::new(),
@@ -146,7 +153,7 @@ impl ObjCInterface {
 
                     for (id, item) in items_map
                     {
-                       if let Some(ty) = item.as_type() {
+                        if let Some(ty) = item.as_type() {
                             match *ty.kind() {
                                 TypeKind::ObjCInterface(ref protocol) => {
                                     if protocol.is_protocol
@@ -179,6 +186,10 @@ impl ObjCInterface {
                     let name = c.spelling();
                     interface.template_names.push(name);
                 }
+                CXCursor_ObjCSuperClassRef => {
+                    let item = Item::from_ty_or_ref(c.cur_type(), c, None, ctx);
+                    interface.parent_class = Some(item.into());
+                },
                 _ => {}
             }
             CXChildVisit_Continue

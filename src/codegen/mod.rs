@@ -3791,6 +3791,41 @@ impl CodeGenerator for ObjCInterface {
                 };
                 result.push(impl_trait);
             }
+            let mut parent_class = self.parent_class;
+            while let Some(parent_id) = parent_class {
+                let parent = parent_id
+                    .expect_type_id(ctx)
+                    .into_resolver()
+                    .through_type_refs()
+                    .resolve(ctx)
+                    .expect_type()
+                    .kind();
+
+                parent_class = if let TypeKind::ObjCInterface(ref parent) =
+                    parent
+                {
+                    let parent_name = ctx.rust_ident(parent.rust_name());
+                    let impl_trait = if parent.is_template() {
+                        let template_names: Vec<Ident> = parent
+                            .template_names
+                            .iter()
+                            .map(|g| ctx.rust_ident(g))
+                            .collect();
+                        quote! {
+                            impl <#(#template_names :'static),*> #parent_name <#(#template_names),*> for #class_name {
+                            }
+                        }
+                    } else {
+                        quote! {
+                            impl #parent_name for #class_name { }
+                        }
+                    };
+                    result.push(impl_trait);
+                    parent.parent_class
+                } else {
+                    None
+                };
+            }
         }
 
         if !self.is_protocol() {
