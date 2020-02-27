@@ -308,16 +308,24 @@ BindgenStringRef Decl_getMangling(const Decl *D, ASTContext *Ctx) {
   if (!D || !(isa<FunctionDecl>(&*D) || isa<VarDecl>(&*D)))
     return stringref();
 
-  ASTNameGenerator ASTNameGen(*Ctx);
-  return stringref(ASTNameGen.getName(&*D));
+#if CLANG_VERSION_MAJOR > 8
+  ASTNameGenerator NameGen(*Ctx);
+#else
+  index::CodegenNameGenerator NameGen(*Ctx);
+#endif // CLANG_VERSION_MAJOR > 8
+  return stringref(NameGen.getName(&*D));
 }
 
 BindgenStringRefSet Decl_getCXXManglings(const Decl *D, ASTContext *Ctx) {
   if (!D || !(isa<CXXRecordDecl>(&*D) || isa<CXXMethodDecl>(&*D)))
     return BindgenStringRefSet();
 
-  ASTNameGenerator ASTNameGen(*Ctx);
-  std::vector<std::string> Manglings = ASTNameGen.getAllManglings(&*D);
+#if CLANG_VERSION_MAJOR > 8
+  ASTNameGenerator NameGen(*Ctx);
+#else
+  index::CodegenNameGenerator NameGen(*Ctx);
+#endif // CLANG_VERSION_MAJOR > 8
+  std::vector<std::string> Manglings = NameGen.getAllManglings(&*D);
   return make_stringrefset(Manglings);
 }
 
@@ -480,7 +488,11 @@ bool CXXMethod_isStatic(const Decl *D) {
 bool CXXMethod_isConst(const Decl *D) {
   auto *Method =
       D ? dyn_cast_or_null<CXXMethodDecl>(D->getAsFunction()) : nullptr;
+#if CLANG_VERSION_MAJOR > 8
   return Method && Method->getMethodQualifiers().hasConst();
+#else
+  return Method && Method->getTypeQualifiers().hasConst();
+#endif // CLANG_VERSION_MAJOR > 8
 }
 
 bool CXXMethod_isVirtual(const Decl *D) {
@@ -874,8 +886,10 @@ CXCursorKind Expr_getCXCursorKind(const Expr *E) {
     return CXCursor_OMPTargetTeamsDistributeParallelForSimdDirective;
   case Stmt::OMPTargetTeamsDistributeSimdDirectiveClass:
     return CXCursor_OMPTargetTeamsDistributeSimdDirective;
+#if CLANG_VERSION_MAJOR > 8
   case Stmt::BuiltinBitCastExprClass:
     return CXCursor_BuiltinBitCastExpr;
+#endif // CLANG_VERSION_MAJOR > 8
 
   default:
     return CXCursor_UnexposedExpr;
@@ -1136,8 +1150,10 @@ public:
       // libclang visits this, but we don't need it for bindgen
       return true;
 
+#if CLANG_VERSION_MAJOR > 8
     case TemplateName::AssumedTemplate:
       return true;
+#endif // CLANG_VERSION_MAJOR > 8
 
     case TemplateName::DependentTemplate:
       return true;
