@@ -155,13 +155,13 @@ static CXTypeKind GetBuiltinTypeKind(const BuiltinType *BT) {
     BTCASE(ObjCId);
     BTCASE(ObjCClass);
     BTCASE(ObjCSel);
+#if CLANG_VERSION_MAJOR > 7
+#define EXT_OPAQUE_TYPE(ExtType, Id, Ext) BTCASE(Id);
+#include "clang/Basic/OpenCLExtensionTypes.def"
+#endif // CLANG_VERSION_MAJOR > 7
 #define IMAGE_TYPE(ImgType, Id, SingletonId, Access, Suffix) BTCASE(Id);
 #include "clang/Basic/OpenCLImageTypes.def"
 #undef IMAGE_TYPE
-#if CLANG_VERSION_MAJOR > 8
-#define EXT_OPAQUE_TYPE(ExtType, Id, Ext) BTCASE(Id);
-#include "clang/Basic/OpenCLExtensionTypes.def"
-#endif // CLANG_VERSION_MAJOR > 8
     BTCASE(OCLSampler);
     BTCASE(OCLEvent);
     BTCASE(OCLQueue);
@@ -213,12 +213,14 @@ CXTypeKind Type_kind(QualType T, ASTContext *Context) {
     TKCASE(VariableArray);
     TKCASE(DependentSizedArray);
     TKCASE(Vector);
-    TKCASE(ExtVector);
     TKCASE(MemberPointer);
     TKCASE(Auto);
     TKCASE(Elaborated);
     TKCASE(Pipe);
     TKCASE(Attributed);
+#if CLANG_VERSION_MAJOR > 8
+    TKCASE(ExtVector);
+#endif // CLANG_VERSION_MAJOR > 8
     default:
       return CXType_Unexposed;
   }
@@ -454,8 +456,10 @@ BindgenStringRef CursorKind_getSpelling(CXCursorKind Kind) {
       return stringref("CallExpr");
   case CXCursor_ObjCMessageExpr:
       return stringref("ObjCMessageExpr");
+#if CLANG_VERSION_MAJOR > 8
   case CXCursor_BuiltinBitCastExpr:
     return stringref("BuiltinBitCastExpr");
+#endif // CLANG_VERSION_MAJOR > 8
   case CXCursor_UnexposedStmt:
       return stringref("UnexposedStmt");
   case CXCursor_DeclStmt:
@@ -759,6 +763,7 @@ BindgenStringRef CursorKind_getSpelling(CXCursorKind Kind) {
       return stringref("StaticAssert");
   case CXCursor_FriendDecl:
       return stringref("FriendDecl");
+#if CLANG_VERSION_MAJOR > 8
   case CXCursor_ConvergentAttr:
       return stringref("attribute(convergent)");
   case CXCursor_WarnUnusedAttr:
@@ -767,6 +772,7 @@ BindgenStringRef CursorKind_getSpelling(CXCursorKind Kind) {
       return stringref("attribute(warn_unused_result)");
   case CXCursor_AlignedAttr:
       return stringref("attribute(aligned)");
+#endif // CLANG_VERSION_MAJOR > 8
   }
 
   llvm_unreachable("Unhandled CXCursorKind");
@@ -835,12 +841,14 @@ BindgenStringRef TypeKind_getSpelling(CXTypeKind K) {
     TKIND(VariableArray);
     TKIND(DependentSizedArray);
     TKIND(Vector);
-    TKIND(ExtVector);
     TKIND(MemberPointer);
     TKIND(Auto);
     TKIND(Elaborated);
     TKIND(Pipe);
     TKIND(Attributed);
+#if CLANG_VERSION_MAJOR > 8
+    TKIND(ExtVector);
+#endif // CLANG_VERSION_MAJOR > 8
 #define IMAGE_TYPE(ImgType, Id, SingletonId, Access, Suffix) TKIND(Id);
 #include "clang/Basic/OpenCLImageTypes.def"
 #undef IMAGE_TYPE
@@ -897,10 +905,12 @@ CXCursorKind Attr_getCXCursorKind(const Attr *A) {
     case attr::ObjCRuntimeVisible: return CXCursor_ObjCRuntimeVisible;
     case attr::ObjCBoxable: return CXCursor_ObjCBoxable;
     case attr::FlagEnum: return CXCursor_FlagEnum;
+#if CLANG_VERSION_MAJOR > 8
     case attr::Convergent: return CXCursor_ConvergentAttr;
     case attr::WarnUnused: return CXCursor_WarnUnusedAttr;
     case attr::WarnUnusedResult: return CXCursor_WarnUnusedResultAttr;
     case attr::Aligned: return CXCursor_AlignedAttr;
+#endif // CLANG_VERSION_MAJOR > 8
   }
 
   return CXCursor_UnexposedAttr;
@@ -981,12 +991,19 @@ ASTUnit *parseTranslationUnit(const char *source_filename,
   IntrusiveRefCntPtr<DiagnosticsEngine>
     Diags(CompilerInstance::createDiagnostics(new DiagnosticOptions));
 
-  if (options & CXTranslationUnit_KeepGoing)
+  if (options & CXTranslationUnit_KeepGoing) {
+#if CLANG_VERSION_MAJOR > 8
     Diags->setFatalsAsError(true);
+#else
+    Diags->setSuppressAfterFatalError(false);
+#endif // CLANG_VERSION_MAJOR > 8
+  }
 
+#if CLANG_VERSION_MAJOR > 8
   CaptureDiagsKind CaptureDiagnostics = CaptureDiagsKind::All;
   if (options & CXTranslationUnit_IgnoreNonErrorsFromIncludedFiles)
     CaptureDiagnostics = CaptureDiagsKind::AllWithoutNonErrorsFromIncludes;
+#endif // CLANG_VERSION_MAJOR > 8
 
   if (options & CXTranslationUnit_DetailedPreprocessingRecord) {
     // Tell the preprocessor to save a detailed preprocessing record
@@ -998,7 +1015,13 @@ ASTUnit *parseTranslationUnit(const char *source_filename,
       Args.data(), Args.data() + Args.size(),
       std::make_shared<PCHContainerOperations>(), Diags,
       /*ResourceFilePath*/ StringRef(),
-      /*OnlyLocalDecls*/ false, CaptureDiagnostics, *RemappedFiles.get(),
+      /*OnlyLocalDecls*/ false,
+#if CLANG_VERSION_MAJOR > 8
+      CaptureDiagnostics,
+#else
+      /*CaptureDiagnostics*/true,
+#endif // CLANG_VERSION_MAJOR > 8
+      *RemappedFiles.get(),
       /*RemappedFilesKeepOriginalName*/ true);
 }
 
@@ -1057,16 +1080,18 @@ const Decl *Decl_getDefinition(const Decl *D, bool isReference) {
   case Decl::CXXDeductionGuide:
   case Decl::Import:
   case Decl::OMPThreadPrivate:
+#if CLANG_VERSION_MAJOR > 8
   case Decl::OMPAllocate:
-  case Decl::OMPDeclareReduction:
   case Decl::OMPDeclareMapper:
+  case Decl::Concept:
+#endif // CLANG_VERSION_MAJOR > 8
+  case Decl::OMPDeclareReduction:
   case Decl::OMPRequires:
   case Decl::ObjCTypeParam:
   case Decl::BuiltinTemplate:
   case Decl::PragmaComment:
   case Decl::PragmaDetectMismatch:
   case Decl::UsingPack:
-  case Decl::Concept:
     return D;
 
   // Declaration kinds that don't make any sense here, but are
@@ -1651,9 +1676,11 @@ long long Type_getSizeOf(QualType QT, ASTContext *Context) {
     return CXTypeLayoutError_Dependent;
   if (!QT->isConstantSizeType())
     return CXTypeLayoutError_NotConstantSize;
+#if CLANG_VERSION_MAJOR > 8
   if (const auto *Deduced = dyn_cast<DeducedType>(QT))
     if (Deduced->getDeducedType().isNull())
       return CXTypeLayoutError_Undeduced;
+#endif // CLANG_VERSION_MAJOR > 8
   // [gcc extension] lib/AST/ExprConstant.cpp:1372
   //                 HandleSizeof : {voidtype,functype} == 1
   // not handled by ASTContext.cpp:1313 getTypeInfoImpl
@@ -1675,9 +1702,11 @@ long long Type_getAlignOf(QualType QT, ASTContext *Context) {
     return CXTypeLayoutError_Incomplete;
   if (QT->isDependentType())
     return CXTypeLayoutError_Dependent;
+#if CLANG_VERSION_MAJOR > 8
   if (const auto *Deduced = dyn_cast<DeducedType>(QT))
     if (Deduced->getDeducedType().isNull())
       return CXTypeLayoutError_Undeduced;
+#endif // CLANG_VERSION_MAJOR > 8
   // Exceptions by GCC extension - see ASTContext.cpp:1313 getTypeInfoImpl
   // if (QT->isFunctionType()) return 4; // Bug #15511 - should be 1
   // if (QT->isVoidType()) return 1;
