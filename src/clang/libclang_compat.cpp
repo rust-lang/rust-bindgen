@@ -149,7 +149,9 @@ static CXTypeKind GetBuiltinTypeKind(const BuiltinType *BT) {
     BTCASE(UAccum);
     BTCASE(ULongAccum);
 #endif // CLANG_VERSION_MAJOR > 6
+#if CLANG_VERSION_MAJOR > 5
     BTCASE(Float16);
+#endif // CLANG_VERSION_MAJOR > 5
     BTCASE(Float128);
     BTCASE(NullPtr);
     BTCASE(Overload);
@@ -829,8 +831,9 @@ BindgenStringRef TypeKind_getSpelling(CXTypeKind K) {
     TKIND(UAccum);
     TKIND(ULongAccum);
 #endif // CLANG_VERSION_MAJOR > 6
+#if CLANG_VERSION_MAJOR > 5
     TKIND(Float16);
-    TKIND(Float128);
+#endif // CLANG_VERSION_MAJOR > 5
     TKIND(NullPtr);
     TKIND(Overload);
     TKIND(Dependent);
@@ -856,6 +859,7 @@ BindgenStringRef TypeKind_getSpelling(CXTypeKind K) {
     TKIND(Vector);
     TKIND(MemberPointer);
     TKIND(Auto);
+    TKIND(Float128);
     TKIND(Elaborated);
     TKIND(Pipe);
 #if CLANG_VERSION_MAJOR > 7
