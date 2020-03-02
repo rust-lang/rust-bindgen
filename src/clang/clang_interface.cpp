@@ -95,7 +95,8 @@ const TargetInfo *ASTUnit_getTargetInfo(ASTUnit *Unit) {
 int TargetInfo_getPointerWidth(const TargetInfo *TI) {
   if (!TI)
     return -1;
-  return TI->getMaxPointerWidth();
+  // Address space 0 is the normal address space for all platforms
+  return TI->getPointerWidth(0);
 }
 
 BindgenStringRef TargetInfo_getTriple(const TargetInfo *TI) {
@@ -170,8 +171,13 @@ double EvalResult_getAsDouble(EvalResult *ER) {
     return 0;
   auto apFloat = ER->Val.getFloat();
   bool ignored;
+#if CLANG_VERSION_MAJOR > 3
   apFloat.convert(llvm::APFloat::IEEEdouble(),
                   llvm::APFloat::rmNearestTiesToEven, &ignored);
+#else // CLANG_VERSION_MAJOR <= 3.9
+  apFloat.convert(llvm::APFloat::IEEEdouble,
+                  llvm::APFloat::rmNearestTiesToEven, &ignored);
+#endif
   return apFloat.convertToDouble();
 }
 
@@ -849,6 +855,7 @@ CXCursorKind Expr_getCXCursorKind(const Expr *E) {
     return CXCursor_OMPDistributeSimdDirective;
   case Stmt::OMPTargetParallelForSimdDirectiveClass:
     return CXCursor_OMPTargetParallelForSimdDirective;
+#if CLANG_VERSION_MAJOR > 3
   case Stmt::OMPTargetSimdDirectiveClass:
     return CXCursor_OMPTargetSimdDirective;
   case Stmt::OMPTeamsDistributeDirectiveClass:
@@ -869,6 +876,7 @@ CXCursorKind Expr_getCXCursorKind(const Expr *E) {
     return CXCursor_OMPTargetTeamsDistributeParallelForSimdDirective;
   case Stmt::OMPTargetTeamsDistributeSimdDirectiveClass:
     return CXCursor_OMPTargetTeamsDistributeSimdDirective;
+#endif // CLANG_VERSION_MAJOR > 3
 #if CLANG_VERSION_MAJOR > 8
   case Stmt::BuiltinBitCastExprClass:
     return CXCursor_BuiltinBitCastExpr;
@@ -1100,6 +1108,7 @@ public:
     return TraverseDeclTyped(TL.getIFaceDecl(), CXCursor_ObjCClassRef);
   }
 
+#if CLANG_VERSION_MAJOR > 3
   bool VisitObjCTypeParamTypeLoc(ObjCTypeParamTypeLoc TL) {
     if (!TL)
       return true;
@@ -1113,6 +1122,7 @@ public:
     }
     return true;
   }
+#endif // CLANG_VERSION_MAJOR > 3
 
   bool VisitObjCObjectTypeLoc(ObjCObjectTypeLoc TL) {
     if (!TL)

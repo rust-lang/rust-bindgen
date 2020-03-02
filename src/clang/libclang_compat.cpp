@@ -753,6 +753,7 @@ BindgenStringRef CursorKind_getSpelling(CXCursorKind Kind) {
     return stringref("OMPDistributeSimdDirective");
   case CXCursor_OMPTargetParallelForSimdDirective:
     return stringref("OMPTargetParallelForSimdDirective");
+#if CLANG_VERSION_MAJOR > 3
   case CXCursor_OMPTargetSimdDirective:
     return stringref("OMPTargetSimdDirective");
   case CXCursor_OMPTeamsDistributeDirective:
@@ -774,14 +775,15 @@ BindgenStringRef CursorKind_getSpelling(CXCursorKind Kind) {
         "OMPTargetTeamsDistributeParallelForSimdDirective");
   case CXCursor_OMPTargetTeamsDistributeSimdDirective:
     return stringref("OMPTargetTeamsDistributeSimdDirective");
+  case CXCursor_FriendDecl:
+      return stringref("FriendDecl");
+#endif // CLANG_VERSION_MAJOR > 3
   case CXCursor_OverloadCandidate:
       return stringref("OverloadCandidate");
   case CXCursor_TypeAliasTemplateDecl:
       return stringref("TypeAliasTemplateDecl");
   case CXCursor_StaticAssert:
       return stringref("StaticAssert");
-  case CXCursor_FriendDecl:
-      return stringref("FriendDecl");
 #if CLANG_VERSION_MAJOR > 8
   case CXCursor_ConvergentAttr:
       return stringref("attribute(convergent)");
@@ -1110,6 +1112,11 @@ const Decl *Decl_getDefinition(const Decl *D, bool isReference) {
   case Decl::OMPCapturedExpr:
   case Decl::Label: // FIXME: Is this right??
   case Decl::ClassScopeFunctionSpecialization:
+#if CLANG_VERSION_MAJOR > 3
+  case Decl::Binding:
+  case Decl::Export:
+  case Decl::UsingPack:
+#endif // CLANG_VERSION_MAJOR > 3
 #if CLANG_VERSION_MAJOR > 4
   case Decl::CXXDeductionGuide:
 #endif // CLANG_VERSION_MAJOR > 4
@@ -1172,7 +1179,10 @@ const Decl *Decl_getDefinition(const Decl *D, bool isReference) {
   case Decl::Var:
   case Decl::VarTemplateSpecialization:
   case Decl::VarTemplatePartialSpecialization:
-  case Decl::Decomposition: {
+#if CLANG_VERSION_MAJOR > 3
+  case Decl::Decomposition:
+#endif // CLANG_VERSION_MAJOR > 3
+  {
     // Ask the variable if it has a definition.
     if (const VarDecl *Def = cast<VarDecl>(&*D)->getDefinition())
       return Def;
@@ -1879,7 +1889,9 @@ CXCallingConv Type_getFunctionTypeCallingConv(QualType T) {
       TCALLINGCONV(X86FastCall);
       TCALLINGCONV(X86ThisCall);
       TCALLINGCONV(X86Pascal);
+#if CLANG_VERSION_MAJOR > 3
       TCALLINGCONV(X86RegCall);
+#endif // CLANG_VERSION_MAJOR > 3
       TCALLINGCONV(X86VectorCall);
 #if CLANG_VERSION_MAJOR > 7
       TCALLINGCONV(AArch64VectorCall);
