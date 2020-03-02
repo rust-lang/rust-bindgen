@@ -141,12 +141,14 @@ static CXTypeKind GetBuiltinTypeKind(const BuiltinType *BT) {
     BTCASE(Float);
     BTCASE(Double);
     BTCASE(LongDouble);
+#if CLANG_VERSION_MAJOR > 6
     BTCASE(ShortAccum);
     BTCASE(Accum);
     BTCASE(LongAccum);
     BTCASE(UShortAccum);
     BTCASE(UAccum);
     BTCASE(ULongAccum);
+#endif // CLANG_VERSION_MAJOR > 6
     BTCASE(Float16);
     BTCASE(Float128);
     BTCASE(NullPtr);
@@ -365,8 +367,10 @@ BindgenStringRef CursorKind_getSpelling(CXCursorKind Kind) {
     return stringref("VariableRef");
   case CXCursor_IntegerLiteral:
       return stringref("IntegerLiteral");
+#if CLANG_VERSION_MAJOR > 6
   case CXCursor_FixedPointLiteral:
       return stringref("FixedPointLiteral");
+#endif // CLANG_VERSION_MAJOR > 6
   case CXCursor_FloatingLiteral:
       return stringref("FloatingLiteral");
   case CXCursor_ImaginaryLiteral:
@@ -817,12 +821,14 @@ BindgenStringRef TypeKind_getSpelling(CXTypeKind K) {
     TKIND(Float);
     TKIND(Double);
     TKIND(LongDouble);
+#if CLANG_VERSION_MAJOR > 6
     TKIND(ShortAccum);
     TKIND(Accum);
     TKIND(LongAccum);
     TKIND(UShortAccum);
     TKIND(UAccum);
     TKIND(ULongAccum);
+#endif // CLANG_VERSION_MAJOR > 6
     TKIND(Float16);
     TKIND(Float128);
     TKIND(NullPtr);
@@ -1474,7 +1480,11 @@ SourceLocation *Expr_getLocation(const Expr *E) {
   if (const ObjCPropertyRefExpr *PropRef = dyn_cast<ObjCPropertyRefExpr>(&*E))
     return new SourceLocation(PropRef->getLocation());
 
+#if CLANG_VERSION_MAJOR > 6
   return new SourceLocation(E->getBeginLoc());
+#else
+  return new SourceLocation(E->getLocStart());
+#endif
 }
 
 // Adapted from clang_getTypeDeclaration in CXType.cpp
@@ -1548,9 +1558,13 @@ void tokenize(ASTUnit *TU, BindgenSourceRange Range, CXToken **Tokens,
   SourceLocation EndLoc = *Range.E;
   bool IsTokenRange = true;
   if (EndLoc.isValid() && EndLoc.isMacroID() && !SourceMgr.isMacroArgExpansion(EndLoc)) {
+#if CLANG_VERSION_MAJOR > 6
     CharSourceRange Expansion = SourceMgr.getExpansionRange(EndLoc);
     EndLoc = Expansion.getEnd();
     IsTokenRange = Expansion.isTokenRange();
+#else
+    EndLoc = SourceMgr.getExpansionRange(EndLoc).second;
+#endif
   }
   if (IsTokenRange && EndLoc.isValid()) {
     unsigned Length = Lexer::MeasureTokenLength(SourceMgr.getSpellingLoc(EndLoc),
