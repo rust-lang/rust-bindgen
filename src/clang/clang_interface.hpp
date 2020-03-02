@@ -1,6 +1,7 @@
 #ifndef BINDGEN_CLANG_AST_H
 #define BINDGEN_CLANG_AST_H
 
+#include "clang/Basic/Version.h"
 #include "clang-c/Documentation.h"
 #include "clang-c/Index.h"
 
