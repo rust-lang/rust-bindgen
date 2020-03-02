@@ -321,7 +321,7 @@ bool Decl_isDefinition(const Decl *D) {
   if (auto VD = dyn_cast_or_null<VarDecl>(&*D))
     return VD->getDefinition() == &*D;
   if (auto FD = dyn_cast_or_null<FunctionDecl>(&*D))
-    return FD->getDefinition() == &*D;
+    return FD->isThisDeclarationADefinition();
   if (auto TD = dyn_cast_or_null<TagDecl>(&*D))
     return TD->getDefinition() == &*D;
 
@@ -726,8 +726,10 @@ CXCursorKind Expr_getCXCursorKind(const Expr *E) {
       case Stmt::ObjCBoolLiteralExprClass:
     return CXCursor_ObjCBoolLiteralExpr;
 
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
   case Stmt::ObjCAvailabilityCheckExprClass:
     return CXCursor_ObjCAvailabilityCheckExpr;
+#endif // CLANG_VERSION > 3.8
 
   case Stmt::ObjCBridgedCastExprClass:
     return CXCursor_ObjCBridgedCastExpr;
@@ -767,7 +769,9 @@ CXCursorKind Expr_getCXCursorKind(const Expr *E) {
   case Stmt::CXXMemberCallExprClass:
   case Stmt::CUDAKernelCallExprClass:
   case Stmt::CXXConstructExprClass:  
-  case Stmt::CXXInheritedCtorInitExprClass:  
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
+  case Stmt::CXXInheritedCtorInitExprClass:
+#endif // CLANG_VERSION > 3.8
   case Stmt::CXXTemporaryObjectExprClass:
   case Stmt::CXXUnresolvedConstructExprClass:
   case Stmt::UserDefinedLiteralClass:
@@ -823,6 +827,7 @@ CXCursorKind Expr_getCXCursorKind(const Expr *E) {
     return CXCursor_OMPAtomicDirective;
   case Stmt::OMPTargetDirectiveClass:
     return CXCursor_OMPTargetDirective;
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
   case Stmt::OMPTargetDataDirectiveClass:
     return CXCursor_OMPTargetDataDirective;
   case Stmt::OMPTargetEnterDataDirectiveClass:
@@ -835,6 +840,7 @@ CXCursorKind Expr_getCXCursorKind(const Expr *E) {
     return CXCursor_OMPTargetParallelForDirective;
   case Stmt::OMPTargetUpdateDirectiveClass:
     return CXCursor_OMPTargetUpdateDirective;
+#endif // CLANG_VERSION > 3.8
   case Stmt::OMPTeamsDirectiveClass:
     return CXCursor_OMPTeamsDirective;
   case Stmt::OMPCancellationPointDirectiveClass:
@@ -847,6 +853,7 @@ CXCursorKind Expr_getCXCursorKind(const Expr *E) {
     return CXCursor_OMPTaskLoopSimdDirective;
   case Stmt::OMPDistributeDirectiveClass:
     return CXCursor_OMPDistributeDirective;
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
   case Stmt::OMPDistributeParallelForDirectiveClass:
     return CXCursor_OMPDistributeParallelForDirective;
   case Stmt::OMPDistributeParallelForSimdDirectiveClass:
@@ -855,6 +862,7 @@ CXCursorKind Expr_getCXCursorKind(const Expr *E) {
     return CXCursor_OMPDistributeSimdDirective;
   case Stmt::OMPTargetParallelForSimdDirectiveClass:
     return CXCursor_OMPTargetParallelForSimdDirective;
+#endif // CLANG_VERSION > 3.8
 #if CLANG_VERSION_MAJOR > 3
   case Stmt::OMPTargetSimdDirectiveClass:
     return CXCursor_OMPTargetSimdDirective;
@@ -1361,8 +1369,12 @@ public:
       return true;
 
     IdentifierInfo *PropertyId = PD->getIdentifier();
-    ObjCPropertyDecl *prevDecl = ObjCPropertyDecl::findPropertyDecl(
-        cast<DeclContext>(ID), PropertyId, PD->getQueryKind());
+    ObjCPropertyDecl *prevDecl =
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
+      ObjCPropertyDecl::findPropertyDecl(cast<DeclContext>(ID), PropertyId, PD->getQueryKind());
+#else // CLANG_VERSION <= 3.8
+      ObjCPropertyDecl::findPropertyDecl(cast<DeclContext>(ID), PropertyId);
+#endif
 
     if (!prevDecl)
       return true;

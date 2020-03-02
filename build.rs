@@ -95,6 +95,17 @@ mod clang_ast {
     fn build_native(llvm_info: &LLVMInfo) {
         // Find where the (already built) LLVM lib dir is
         let llvm_lib_dir = &llvm_info.lib_dir;
+        let mut llvm_cmake_dir = format!("{}/cmake/llvm", llvm_lib_dir);
+        let mut clang_cmake_dir = format!("{}/cmake/clang", llvm_lib_dir);
+
+        if let Some((major_version, minor_version)) = llvm_info.version {
+            if (major_version == 3 && minor_version <= 8)
+                || major_version < 3
+            {
+                llvm_cmake_dir = format!("{}/../share/llvm/cmake", llvm_lib_dir);
+                clang_cmake_dir = format!("{}/../share/clang/cmake", llvm_lib_dir);
+            }
+        }
 
         println!("cargo:rerun-if-changed=src/clang/clang_interface.hpp");
         println!("cargo:rerun-if-changed=src/clang/clang_interface_impl.hpp");
@@ -102,8 +113,8 @@ mod clang_ast {
         println!("cargo:rerun-if-changed=src/clang/libclang_compat.cpp");
         // Build libBindgenClangInterface.a with cmake
         let dst = cmake::Config::new("src/clang")
-            .define("LLVM_DIR", &format!("{}/cmake/llvm", llvm_lib_dir))
-            .define("Clang_DIR", &format!("{}/cmake/clang", llvm_lib_dir))
+            .define("LLVM_DIR", &llvm_cmake_dir)
+            .define("Clang_DIR", &clang_cmake_dir)
             .build_target("BindgenClangInterface")
             .build();
 
@@ -170,37 +181,41 @@ mod clang_ast {
                 // Explicitly provided path in LLVM_CONFIG_PATH
                 build_var("LLVM_CONFIG_PATH")
                 // Relative to LLVM_LIB_DIR
-                    .or(build_var("LLVM_LIB_DIR").map(|d| {
-                        String::from(
-                            Path::new(&d)
-                                .join("../bin/llvm-config")
-                                .canonicalize()
-                                .unwrap()
-                                .to_string_lossy(),
-                        )
-                    }))
+                    .or_else(|| {
+                        build_var("LLVM_LIB_DIR").map(|d| {
+                            String::from(
+                                Path::new(&d)
+                                    .join("../bin/llvm-config")
+                                    .canonicalize()
+                                    .unwrap()
+                                    .to_string_lossy(),
+                            )
+                        })
+                    })
                 // In PATH
-                    .or([
-                        "llvm-config-7.0",
-                        "llvm-config-6.1",
-                        "llvm-config-6.0",
-                        "llvm-config",
-                        // Homebrew install location on MacOS
-                        "/usr/local/opt/llvm/bin/llvm-config",
-                    ]
-                        .iter()
-                        .find_map(|c| {
-                            if Command::new(c)
-                                .stdout(Stdio::null())
-                                .stderr(Stdio::null())
-                                .spawn()
-                                .is_ok()
-                            {
-                                Some(String::from(*c))
-                            } else {
-                                None
-                            }
-                        }))
+                    .or_else(|| {
+                        [
+                            "llvm-config-7.0",
+                            "llvm-config-6.1",
+                            "llvm-config-6.0",
+                            "llvm-config",
+                            // Homebrew install location on MacOS
+                            "/usr/local/opt/llvm/bin/llvm-config",
+                        ]
+                            .iter()
+                            .find_map(|c| {
+                                if Command::new(c)
+                                    .stdout(Stdio::null())
+                                    .stderr(Stdio::null())
+                                    .spawn()
+                                    .is_ok()
+                                {
+                                    Some(String::from(*c))
+                                } else {
+                                    None
+                                }
+                            })
+                    })
             }
 
             /// Invoke given `command`, if any, with the specified arguments.
@@ -309,6 +324,13 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
                     Some((major, minor))
                 });
 
+            let mut supports_link_mode = true;
+            if let Some((major_version, minor_version)) = version {
+                if major_version < 3 || (major_version == 3 && minor_version <= 8) {
+                    supports_link_mode = false;
+                }
+            }
+
             // LLVM components that we need to link against for the clang libs
             let mut llvm_components = vec![
                 "MC",
@@ -333,7 +355,9 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
             // Construct the list of libs we need to link against
             let mut args = llvm_components;
             args.insert(0, "--libs");
-            args.insert(1, link_mode);
+            if supports_link_mode {
+                args.insert(1, link_mode);
+            }
             let mut libs: Vec<String> = invoke_command(llvm_config.as_ref(), &args)
                 .unwrap_or("-lLLVM".to_string())
                 .split_whitespace()
@@ -342,13 +366,13 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
 
             libs.extend(
                 build_var("LLVM_SYSTEM_LIBS")
-                    .or(invoke_command(
-                        llvm_config.as_ref(),
-                        &[
-                            "--system-libs",
-                            link_mode,
-                        ],
-                    ))
+                    .or_else(|| {
+                        let mut args = vec!["--system-libs"];
+                        if supports_link_mode {
+                            args.push(link_mode);
+                        }
+                        invoke_command(llvm_config.as_ref(), args)
+                    })
                     .unwrap_or(String::new())
                     .split_whitespace()
                     .map(|lib| {

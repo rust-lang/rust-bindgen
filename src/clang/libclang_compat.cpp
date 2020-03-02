@@ -17,6 +17,11 @@
 #include "clang/Frontend/CompilerInvocation.h"
 #include "clang-c/Documentation.h"
 #include "clang-c/Index.h"
+#if CLANG_VERSION_MAJOR <= 8 &&                                                \
+    (CLANG_VERSION_MAJOR > 3 ||                                                \
+     CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR > 8)
+#include "clang/Index/CodegenNameGenerator.h"
+#endif // CLANG_VERSION_MAJOR <= 8
 
 #include "clang_interface_impl.hpp"
 
@@ -54,10 +59,12 @@ const Decl *getDeclFromExpr(const Stmt *E) {
     return getDeclFromExpr(CE->getCallee());
   if (const CXXConstructExpr *CE = dyn_cast<CXXConstructExpr>(E))
     if (!CE->isElidable())
-    return CE->getConstructor();
+      return CE->getConstructor();
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
   if (const CXXInheritedCtorInitExpr *CE =
           dyn_cast<CXXInheritedCtorInitExpr>(E))
     return CE->getConstructor();
+#endif // CLANG_VERSION > 3.8
   if (const ObjCMessageExpr *OME = dyn_cast<ObjCMessageExpr>(E))
     return OME->getMethodDecl();
 
@@ -151,7 +158,9 @@ static CXTypeKind GetBuiltinTypeKind(const BuiltinType *BT) {
 #if CLANG_VERSION_MAJOR > 5
     BTCASE(Float16);
 #endif // CLANG_VERSION_MAJOR > 5
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
     BTCASE(Float128);
+#endif
     BTCASE(NullPtr);
     BTCASE(Overload);
     BTCASE(Dependent);
@@ -224,7 +233,9 @@ CXTypeKind Type_kind(QualType T, ASTContext *Context) {
     TKCASE(Vector);
     TKCASE(MemberPointer);
     TKCASE(Auto);
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
     TKCASE(Elaborated);
+#endif // CLANG_VERSION > 3.8
 #if CLANG_VERSION_MAJOR > 4
     TKCASE(Pipe);
 #endif // CLANG_VERSION_MAJOR > 4
@@ -246,8 +257,10 @@ CXTypeKind Type_kind(QualType T, ASTContext *Context) {
 Optional<ArrayRef<TemplateArgument>>
 GetTemplateArguments(QualType Type) {
   assert(!Type.isNull());
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
   if (const auto *Specialization = Type->getAs<TemplateSpecializationType>())
     return Specialization->template_arguments();
+#endif
 
   if (const auto *RecordDecl = Type->getAsCXXRecordDecl()) {
     const auto *TemplateDecl =
@@ -443,8 +456,10 @@ BindgenStringRef CursorKind_getSpelling(CXCursorKind Kind) {
       return stringref("ObjCStringLiteral");
   case CXCursor_ObjCBoolLiteralExpr:
       return stringref("ObjCBoolLiteralExpr");
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
   case CXCursor_ObjCAvailabilityCheckExpr:
       return stringref("ObjCAvailabilityCheckExpr");
+#endif
   case CXCursor_ObjCSelfExpr:
       return stringref("ObjCSelfExpr");
   case CXCursor_ObjCEncodeExpr:
@@ -723,6 +738,7 @@ BindgenStringRef CursorKind_getSpelling(CXCursorKind Kind) {
     return stringref("OMPTargetDirective");
   case CXCursor_OMPTargetDataDirective:
     return stringref("OMPTargetDataDirective");
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
   case CXCursor_OMPTargetEnterDataDirective:
     return stringref("OMPTargetEnterDataDirective");
   case CXCursor_OMPTargetExitDataDirective:
@@ -733,6 +749,7 @@ BindgenStringRef CursorKind_getSpelling(CXCursorKind Kind) {
     return stringref("OMPTargetParallelForDirective");
   case CXCursor_OMPTargetUpdateDirective:
     return stringref("OMPTargetUpdateDirective");
+#endif
   case CXCursor_OMPTeamsDirective:
     return stringref("OMPTeamsDirective");
   case CXCursor_OMPCancellationPointDirective:
@@ -745,6 +762,7 @@ BindgenStringRef CursorKind_getSpelling(CXCursorKind Kind) {
     return stringref("OMPTaskLoopSimdDirective");
   case CXCursor_OMPDistributeDirective:
     return stringref("OMPDistributeDirective");
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
   case CXCursor_OMPDistributeParallelForDirective:
     return stringref("OMPDistributeParallelForDirective");
   case CXCursor_OMPDistributeParallelForSimdDirective:
@@ -753,6 +771,7 @@ BindgenStringRef CursorKind_getSpelling(CXCursorKind Kind) {
     return stringref("OMPDistributeSimdDirective");
   case CXCursor_OMPTargetParallelForSimdDirective:
     return stringref("OMPTargetParallelForSimdDirective");
+#endif
 #if CLANG_VERSION_MAJOR > 3
   case CXCursor_OMPTargetSimdDirective:
     return stringref("OMPTargetSimdDirective");
@@ -782,8 +801,10 @@ BindgenStringRef CursorKind_getSpelling(CXCursorKind Kind) {
       return stringref("OverloadCandidate");
   case CXCursor_TypeAliasTemplateDecl:
       return stringref("TypeAliasTemplateDecl");
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
   case CXCursor_StaticAssert:
       return stringref("StaticAssert");
+#endif
 #if CLANG_VERSION_MAJOR > 8
   case CXCursor_ConvergentAttr:
       return stringref("attribute(convergent)");
@@ -825,7 +846,6 @@ BindgenStringRef TypeKind_getSpelling(CXTypeKind K) {
     TKIND(Long);
     TKIND(LongLong);
     TKIND(Int128);
-    TKIND(Half);
     TKIND(Float);
     TKIND(Double);
     TKIND(LongDouble);
@@ -865,9 +885,10 @@ BindgenStringRef TypeKind_getSpelling(CXTypeKind K) {
     TKIND(Vector);
     TKIND(MemberPointer);
     TKIND(Auto);
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
     TKIND(Float128);
     TKIND(Elaborated);
-    TKIND(Pipe);
+#endif
 #if CLANG_VERSION_MAJOR > 7
     TKIND(Attributed);
     TKIND(ObjCObject);
@@ -1024,6 +1045,7 @@ ASTUnit *parseTranslationUnit(const char *source_filename,
   IntrusiveRefCntPtr<DiagnosticsEngine>
     Diags(CompilerInstance::createDiagnostics(new DiagnosticOptions));
 
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
   if (options & CXTranslationUnit_KeepGoing) {
 #if CLANG_VERSION_MAJOR > 8
     Diags->setFatalsAsError(true);
@@ -1033,6 +1055,7 @@ ASTUnit *parseTranslationUnit(const char *source_filename,
     Diags->setFatalsAsError(true);
 #endif
   }
+#endif // CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
 
 #if CLANG_VERSION_MAJOR > 8
   CaptureDiagsKind CaptureDiagnostics = CaptureDiagsKind::All;
@@ -1090,7 +1113,6 @@ const Decl *Decl_getDefinition(const Decl *D, bool isReference) {
   case Decl::TemplateTypeParm:
   case Decl::EnumConstant:
   case Decl::Field:
-  case Decl::Binding:
   case Decl::MSProperty:
   case Decl::IndirectField:
   case Decl::ObjCIvar:
@@ -1103,13 +1125,11 @@ const Decl *Decl_getDefinition(const Decl *D, bool isReference) {
   case Decl::ObjCImplementation:
   case Decl::AccessSpec:
   case Decl::LinkageSpec:
-  case Decl::Export:
   case Decl::ObjCPropertyImpl:
   case Decl::FileScopeAsm:
   case Decl::StaticAssert:
   case Decl::Block:
   case Decl::Captured:
-  case Decl::OMPCapturedExpr:
   case Decl::Label: // FIXME: Is this right??
   case Decl::ClassScopeFunctionSpecialization:
 #if CLANG_VERSION_MAJOR > 3
@@ -1127,15 +1147,17 @@ const Decl *Decl_getDefinition(const Decl *D, bool isReference) {
   case Decl::OMPDeclareMapper:
   case Decl::Concept:
 #endif // CLANG_VERSION_MAJOR > 8
-  case Decl::OMPDeclareReduction:
 #if CLANG_VERSION_MAJOR > 7
   case Decl::OMPRequires:
 #endif // CLANG_VERSION_MAJOR > 7
   case Decl::ObjCTypeParam:
   case Decl::BuiltinTemplate:
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
+  case Decl::OMPCapturedExpr:
+  case Decl::OMPDeclareReduction:
   case Decl::PragmaComment:
   case Decl::PragmaDetectMismatch:
-  case Decl::UsingPack:
+#endif // CLANG_VERSION > 3.8
     return D;
 
   // Declaration kinds that don't make any sense here, but are
@@ -1214,7 +1236,9 @@ const Decl *Decl_getDefinition(const Decl *D, bool isReference) {
     return cast<UsingDecl>(&*D);
 
   case Decl::UsingShadow:
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
   case Decl::ConstructorUsingShadow:
+#endif // CLANG_VERSION > 3.8
     return Decl_getDefinition(
       cast<UsingShadowDecl>(&*D)->getTargetDecl(), isReference);
 
@@ -1905,11 +1929,15 @@ CXCallingConv Type_getFunctionTypeCallingConv(QualType T) {
       TCALLINGCONV(AAPCS);
       TCALLINGCONV(AAPCS_VFP);
       TCALLINGCONV(IntelOclBicc);
+#if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
       TCALLINGCONV(Swift);
       TCALLINGCONV(PreserveMost);
       TCALLINGCONV(PreserveAll);
-    case CC_SpirFunction: return CXCallingConv_Unexposed;
     case CC_OpenCLKernel: return CXCallingConv_Unexposed;
+#else // CLANG_VERSION <= 3.8
+    case CC_SpirKernel: return CXCallingConv_Unexposed;
+#endif // CLANG_VERSION > 3.8
+    case CC_SpirFunction: return CXCallingConv_Unexposed;
       break;
     }
 #undef TCALLINGCONV
@@ -1972,9 +2000,31 @@ BindgenStringRef Decl_getMangling(const Decl *D, ASTContext *Ctx) {
 #if CLANG_VERSION_MAJOR > 8
   ASTNameGenerator NameGen(*Ctx);
   return stringref(NameGen.getName(&*D));
-#else // CLANG_VERSION_MAJOR <= 8
+#elif CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
   index::CodegenNameGenerator NameGen(*Ctx);
   return stringref(NameGen.getName(&*D));
+#else // CLANG_VERSION <= 3.8
+  // First apply frontend mangling.
+  const NamedDecl *ND = cast<NamedDecl>(D);
+  std::unique_ptr<MangleContext> MC(Ctx->createMangleContext());
+
+  std::string FrontendBuf;
+  llvm::raw_string_ostream FrontendBufOS(FrontendBuf);
+  if (MC->shouldMangleDeclName(ND)) {
+    MC->mangleName(ND, FrontendBufOS);
+  } else {
+    ND->printName(FrontendBufOS);
+  }
+
+  // Now apply backend mangling.
+  std::unique_ptr<llvm::DataLayout> DL(
+    new llvm::DataLayout(Ctx->getTargetInfo().getDataLayoutString()));
+
+  std::string FinalBuf;
+  llvm::raw_string_ostream FinalBufOS(FinalBuf);
+  llvm::Mangler::getNameWithPrefix(FinalBufOS, llvm::Twine(FrontendBufOS.str()),
+                                   *DL);
+  return stringref(FinalBuf);
 #endif // CLANG_VERSION_MAJOR > 8
 }
 
@@ -1988,9 +2038,43 @@ BindgenStringRefSet Decl_getCXXManglings(const Decl *D, ASTContext *Ctx) {
 #if CLANG_VERSION_MAJOR > 8
   ASTNameGenerator NameGen(*Ctx);
   Manglings = NameGen.getAllManglings(&*D);
-#else // CLANG_VERSION_MAJOR <= 8
+#elif CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
   index::CodegenNameGenerator NameGen(*Ctx);
   Manglings = NameGen.getAllManglings(&*D);
+#else // CLANG_VERSION <= 3.8
+  const NamedDecl *ND = cast<NamedDecl>(D);
+
+  std::unique_ptr<MangleContext> M(Ctx->createMangleContext());
+  std::unique_ptr<llvm::DataLayout> DL(
+      new llvm::DataLayout(Ctx->getTargetInfo().getDataLayoutString()));
+
+  auto hasDefaultCXXMethodCC = [](ASTContext &C, const CXXMethodDecl *MD) {
+    auto DefaultCC = C.getDefaultCallingConvention(/*IsVariadic=*/false,
+                                                   /*IsCSSMethod=*/true);
+    auto CC = MD->getType()->getAs<FunctionProtoType>()->getCallConv();
+    return CC == DefaultCC;
+  };
+
+  if (const auto *CD = dyn_cast_or_null<CXXConstructorDecl>(ND)) {
+    Manglings.emplace_back(getMangledStructor(M, DL, CD, Ctor_Base));
+
+    if (Ctx->getTargetInfo().getCXXABI().isItaniumFamily())
+      if (!CD->getParent()->isAbstract())
+        Manglings.emplace_back(getMangledStructor(M, DL, CD, Ctor_Complete));
+
+    if (Ctx->getTargetInfo().getCXXABI().isMicrosoft())
+      if (CD->hasAttr<DLLExportAttr>() && CD->isDefaultConstructor())
+        if (!(hasDefaultCXXMethodCC(*Ctx, CD) && CD->getNumParams() == 0))
+          Manglings.emplace_back(getMangledStructor(M, DL, CD,
+                                                    Ctor_DefaultClosure));
+  } else if (const auto *DD = dyn_cast_or_null<CXXDestructorDecl>(ND)) {
+    Manglings.emplace_back(getMangledStructor(M, DL, DD, Dtor_Base));
+    if (Ctx->getTargetInfo().getCXXABI().isItaniumFamily()) {
+      Manglings.emplace_back(getMangledStructor(M, DL, DD, Dtor_Complete));
+      if (DD->isVirtual())
+        Manglings.emplace_back(getMangledStructor(M, DL, DD, Dtor_Deleting));
+    }
+  }
 #endif // CLANG_VERSION_MAJOR > 8
 
   return make_stringrefset(Manglings);
