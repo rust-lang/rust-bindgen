@@ -180,7 +180,12 @@ CXTypeKind Type_kind(QualType T, ASTContext *Context) {
 
   // libclang checks for these builtin types specially and matches on things
   // that appear to be correct
-  if (Context->getLangOpts().ObjC) {
+#if CLANG_VERSION_MAJOR > 7
+  bool isObjc = Context->getLangOpts().ObjC;
+#else
+  bool isObjc = Context->getLangOpts().ObjC1;
+#endif // CLANG_VERSION_MAJOR
+  if (isObjc) {
     QualType UT = T.getUnqualifiedType();
     if (Context->isObjCIdType(UT))
       return CXType_ObjCId;
@@ -203,9 +208,7 @@ CXTypeKind Type_kind(QualType T, ASTContext *Context) {
     TKCASE(Enum);
     TKCASE(Typedef);
     TKCASE(ObjCInterface);
-    TKCASE(ObjCObject);
     TKCASE(ObjCObjectPointer);
-    TKCASE(ObjCTypeParam);
     TKCASE(FunctionNoProto);
     TKCASE(FunctionProto);
     TKCASE(ConstantArray);
@@ -217,7 +220,11 @@ CXTypeKind Type_kind(QualType T, ASTContext *Context) {
     TKCASE(Auto);
     TKCASE(Elaborated);
     TKCASE(Pipe);
+#if CLANG_VERSION_MAJOR > 7
     TKCASE(Attributed);
+    TKCASE(ObjCObject);
+    TKCASE(ObjCTypeParam);
+#endif // CLANG_VERSION_MAJOR > 7
 #if CLANG_VERSION_MAJOR > 8
     TKCASE(ExtVector);
 #endif // CLANG_VERSION_MAJOR > 8
@@ -576,6 +583,7 @@ BindgenStringRef CursorKind_getSpelling(CXCursorKind Kind) {
     return stringref("attribute(dllexport)");
   case CXCursor_DLLImport:
     return stringref("attribute(dllimport)");
+#if CLANG_VERSION_MAJOR > 7
   case CXCursor_NSReturnsRetained:
     return stringref("attribute(ns_returns_retained)");
   case CXCursor_NSReturnsNotRetained:
@@ -612,6 +620,7 @@ BindgenStringRef CursorKind_getSpelling(CXCursorKind Kind) {
     return stringref("attribute(objc_boxable)");
   case CXCursor_FlagEnum:
     return stringref("attribute(flag_enum)");
+#endif // CLANG_VERSION_MAJOR > 7
   case CXCursor_PreprocessingDirective:
     return stringref("preprocessing directive");
   case CXCursor_MacroDefinition:
@@ -831,9 +840,7 @@ BindgenStringRef TypeKind_getSpelling(CXTypeKind K) {
     TKIND(Enum);
     TKIND(Typedef);
     TKIND(ObjCInterface);
-    TKIND(ObjCObject);
     TKIND(ObjCObjectPointer);
-    TKIND(ObjCTypeParam);
     TKIND(FunctionNoProto);
     TKIND(FunctionProto);
     TKIND(ConstantArray);
@@ -845,7 +852,13 @@ BindgenStringRef TypeKind_getSpelling(CXTypeKind K) {
     TKIND(Auto);
     TKIND(Elaborated);
     TKIND(Pipe);
+#if CLANG_VERSION_MAJOR > 7
     TKIND(Attributed);
+    TKIND(ObjCObject);
+    TKIND(ObjCTypeParam);
+#define EXT_OPAQUE_TYPE(ExtTYpe, Id, Ext) TKIND(Id);
+#include "clang/Basic/OpenCLExtensionTypes.def"
+#endif // CLANG_VERSION_MAJOR > 7
 #if CLANG_VERSION_MAJOR > 8
     TKIND(ExtVector);
 #endif // CLANG_VERSION_MAJOR > 8
@@ -887,6 +900,7 @@ CXCursorKind Attr_getCXCursorKind(const Attr *A) {
     case attr::Visibility: return CXCursor_VisibilityAttr;
     case attr::DLLExport: return CXCursor_DLLExport;
     case attr::DLLImport: return CXCursor_DLLImport;
+#if CLANG_VERSION_MAJOR > 7
     case attr::NSReturnsRetained: return CXCursor_NSReturnsRetained;
     case attr::NSReturnsNotRetained: return CXCursor_NSReturnsNotRetained;
     case attr::NSReturnsAutoreleased: return CXCursor_NSReturnsAutoreleased;
@@ -905,6 +919,7 @@ CXCursorKind Attr_getCXCursorKind(const Attr *A) {
     case attr::ObjCRuntimeVisible: return CXCursor_ObjCRuntimeVisible;
     case attr::ObjCBoxable: return CXCursor_ObjCBoxable;
     case attr::FlagEnum: return CXCursor_FlagEnum;
+#endif // CLANG_VERSION_MAJOR > 7
 #if CLANG_VERSION_MAJOR > 8
     case attr::Convergent: return CXCursor_ConvergentAttr;
     case attr::WarnUnused: return CXCursor_WarnUnusedAttr;
@@ -1086,7 +1101,9 @@ const Decl *Decl_getDefinition(const Decl *D, bool isReference) {
   case Decl::Concept:
 #endif // CLANG_VERSION_MAJOR > 8
   case Decl::OMPDeclareReduction:
+#if CLANG_VERSION_MAJOR > 7
   case Decl::OMPRequires:
+#endif // CLANG_VERSION_MAJOR > 7
   case Decl::ObjCTypeParam:
   case Decl::BuiltinTemplate:
   case Decl::PragmaComment:
@@ -1824,7 +1841,9 @@ CXCallingConv Type_getFunctionTypeCallingConv(QualType T) {
       TCALLINGCONV(X86Pascal);
       TCALLINGCONV(X86RegCall);
       TCALLINGCONV(X86VectorCall);
+#if CLANG_VERSION_MAJOR > 7
       TCALLINGCONV(AArch64VectorCall);
+#endif // CLANG_VERSION_MAJOR > 7
       TCALLINGCONV(Win64);
       TCALLINGCONV(X86_64SysV);
       TCALLINGCONV(AAPCS);
