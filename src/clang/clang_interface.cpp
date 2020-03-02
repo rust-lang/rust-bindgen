@@ -488,11 +488,15 @@ bool CXXMethod_isStatic(const Decl *D) {
 bool CXXMethod_isConst(const Decl *D) {
   auto *Method =
       D ? dyn_cast_or_null<CXXMethodDecl>(D->getAsFunction()) : nullptr;
+  if (!Method)
+    return false;
 #if CLANG_VERSION_MAJOR > 8
-  return Method && Method->getMethodQualifiers().hasConst();
+  return Method->getMethodQualifiers().hasConst();
+#elif CLANG_VERSION_MAJOR > 7
+  return Method->getTypeQualifiers().hasConst();
 #else
-  return Method && Method->getTypeQualifiers().hasConst();
-#endif // CLANG_VERSION_MAJOR > 8
+  return Method->getTypeQualifiers() & Qualifiers::Const;
+#endif // CLANG_VERSION_MAJOR
 }
 
 bool CXXMethod_isVirtual(const Decl *D) {
@@ -622,8 +626,10 @@ CXCursorKind Expr_getCXCursorKind(const Expr *E) {
   case Stmt::IntegerLiteralClass:
     return CXCursor_IntegerLiteral;
 
+#if CLANG_VERSION_MAJOR > 7
   case Stmt::FixedPointLiteralClass:
     return CXCursor_FixedPointLiteral;
+#endif // CLANG_VERSION_MAJOR > 7
 
   case Stmt::FloatingLiteralClass:
     return CXCursor_FloatingLiteral;
@@ -637,8 +643,10 @@ CXCursorKind Expr_getCXCursorKind(const Expr *E) {
   case Stmt::CharacterLiteralClass:
     return CXCursor_CharacterLiteral;
 
+#if CLANG_VERSION_MAJOR > 7
   case Stmt::ConstantExprClass:
     return Expr_getCXCursorKind(cast<ConstantExpr>(&*E)->getSubExpr());
+#endif // CLANG_VERSION_MAJOR > 7
 
   case Stmt::ParenExprClass:
     return CXCursor_ParenExpr;
