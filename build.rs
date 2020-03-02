@@ -159,6 +159,9 @@ mod clang_ast {
 
         /// List of libs we need to link against
         pub libs: Vec<String>,
+
+        /// LLVM version in (major, minor) form, if available
+        pub version: Option<(i32, i32)>,
     }
 
     impl LLVMInfo {
@@ -293,12 +296,17 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
                 "--link-shared"
             };
 
-            let llvm_version = invoke_command(llvm_config.as_ref(), &["--version"]);
-
-            let llvm_major_version = llvm_version
+            let version_string = invoke_command(llvm_config.as_ref(), &["--version"])
+                .or_else(|| {
+                    invoke_command(Some(&format!("{}/../bin/clang", lib_dir)), &["--version"])
+                        .and_then(|output| Some(output.split(" ").nth(2)?.to_string()))
+                });
+            let version = version_string
                 .and_then(|version| {
-                    let major: i32 = version.split(".").next()?.parse().ok()?;
-                    Some(major)
+                    let mut split = version.split(".");
+                    let major: i32 = split.next()?.parse().ok()?;
+                    let minor: i32 = split.next()?.parse().ok()?;
+                    Some((major, minor))
                 });
 
             // LLVM components that we need to link against for the clang libs
@@ -309,12 +317,14 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
                 "Option",
                 "BitReader",
                 "ProfileData",
-                "BinaryFormat",
                 "Core",
             ];
 
             // llvmAST requires FrontendOpenMP from version 10 and newer
-            if let Some(version) = llvm_major_version {
+            if let Some((version, _minor_version)) = version {
+                if version > 4 {
+                    llvm_components.push("BinaryFormat");
+                }
                 if version > 9 {
                     llvm_components.push("FrontendOpenMP");
                 }
@@ -362,6 +372,7 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
             Self {
                 lib_dir,
                 libs,
+                version,
             }
         }
     }
