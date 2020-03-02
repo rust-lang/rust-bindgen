@@ -12,11 +12,19 @@
 #include "clang/AST/Expr.h"
 #include "clang/AST/ExprCXX.h"
 #include "clang/AST/ExprObjC.h"
+#include "clang/AST/Mangle.h"
+#include "clang/Basic/TargetInfo.h"
+#include "clang/Basic/Version.h"
 #include "clang/Frontend/ASTUnit.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/CompilerInvocation.h"
+#include "clang/Lex/Lexer.h"
+#include "clang/Lex/Preprocessor.h"
 #include "clang-c/Documentation.h"
 #include "clang-c/Index.h"
+#include "llvm/IR/DataLayout.h"
+#include "llvm/IR/Mangler.h"
+
 #if CLANG_VERSION_MAJOR <= 8 &&                                                \
     (CLANG_VERSION_MAJOR > 3 ||                                                \
      CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR > 8)
