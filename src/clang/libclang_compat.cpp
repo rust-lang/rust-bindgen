@@ -1930,3 +1930,56 @@ void getSpellingLocation(ASTUnit *AST, const SourceLocation *location, FileEntry
   if (offset)
     *offset = FileOffset;
 }
+
+// From CIndex.cpp
+static std::string getMangledStructor(std::unique_ptr<MangleContext> &M,
+                                      std::unique_ptr<llvm::DataLayout> &DL,
+                                      const NamedDecl *ND,
+                                      unsigned StructorType) {
+  std::string FrontendBuf;
+  llvm::raw_string_ostream FOS(FrontendBuf);
+
+  if (const auto *CD = dyn_cast_or_null<CXXConstructorDecl>(ND))
+    M->mangleCXXCtor(CD, static_cast<CXXCtorType>(StructorType), FOS);
+  else if (const auto *DD = dyn_cast_or_null<CXXDestructorDecl>(ND))
+    M->mangleCXXDtor(DD, static_cast<CXXDtorType>(StructorType), FOS);
+
+  std::string BackendBuf;
+  llvm::raw_string_ostream BOS(BackendBuf);
+
+  llvm::Mangler::getNameWithPrefix(BOS, llvm::Twine(FOS.str()), *DL);
+
+  return BOS.str();
+}
+
+// Adapted from clang_Cursor_getMangling in CIndex.cpp
+BindgenStringRef Decl_getMangling(const Decl *D, ASTContext *Ctx) {
+  if (!D || !(isa<FunctionDecl>(&*D) || isa<VarDecl>(&*D)))
+    return stringref();
+
+#if CLANG_VERSION_MAJOR > 8
+  ASTNameGenerator NameGen(*Ctx);
+  return stringref(NameGen.getName(&*D));
+#else // CLANG_VERSION_MAJOR <= 8
+  index::CodegenNameGenerator NameGen(*Ctx);
+  return stringref(NameGen.getName(&*D));
+#endif // CLANG_VERSION_MAJOR > 8
+}
+
+// Adapted from clang_Cursor_getCXXManglings in CIndex.cpp
+BindgenStringRefSet Decl_getCXXManglings(const Decl *D, ASTContext *Ctx) {
+  if (!D || !(isa<CXXRecordDecl>(&*D) || isa<CXXMethodDecl>(&*D)))
+    return BindgenStringRefSet();
+
+  std::vector<std::string> Manglings;
+
+#if CLANG_VERSION_MAJOR > 8
+  ASTNameGenerator NameGen(*Ctx);
+  Manglings = NameGen.getAllManglings(&*D);
+#else // CLANG_VERSION_MAJOR <= 8
+  index::CodegenNameGenerator NameGen(*Ctx);
+  Manglings = NameGen.getAllManglings(&*D);
+#endif // CLANG_VERSION_MAJOR > 8
+
+  return make_stringrefset(Manglings);
+}

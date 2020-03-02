@@ -304,31 +304,6 @@ BindgenStringRef Decl_getUSR(const Decl *D) {
     return stringref(Buf.str());
 }
 
-BindgenStringRef Decl_getMangling(const Decl *D, ASTContext *Ctx) {
-  if (!D || !(isa<FunctionDecl>(&*D) || isa<VarDecl>(&*D)))
-    return stringref();
-
-#if CLANG_VERSION_MAJOR > 8
-  ASTNameGenerator NameGen(*Ctx);
-#else
-  index::CodegenNameGenerator NameGen(*Ctx);
-#endif // CLANG_VERSION_MAJOR > 8
-  return stringref(NameGen.getName(&*D));
-}
-
-BindgenStringRefSet Decl_getCXXManglings(const Decl *D, ASTContext *Ctx) {
-  if (!D || !(isa<CXXRecordDecl>(&*D) || isa<CXXMethodDecl>(&*D)))
-    return BindgenStringRefSet();
-
-#if CLANG_VERSION_MAJOR > 8
-  ASTNameGenerator NameGen(*Ctx);
-#else
-  index::CodegenNameGenerator NameGen(*Ctx);
-#endif // CLANG_VERSION_MAJOR > 8
-  std::vector<std::string> Manglings = NameGen.getAllManglings(&*D);
-  return make_stringrefset(Manglings);
-}
-
 CXCursorKind Decl_getCXCursorKind(const Decl *D) {
   if (!D)
     return CXCursor_NoDeclFound;
