@@ -923,12 +923,17 @@ public:
     return false;
   }
 
+  void setParent(Node n) {
+    Parent = n;
+  }
+
   bool TraverseDeclTyped(Decl *D, CXCursorKind kind) {
     if (!D || (D->isImplicit() && !isa<ObjCMethodDecl>(D)))
       return true;
 
     bool skip = !Parent;
 
+    // D->dump();
     // libclang doesn't visit the CXXRecordDecl inside ClassTemplateDecl nodes
     if (Parent.kind == CXCursor_ClassTemplate
         && isa<CXXRecordDecl>(D))
@@ -1195,6 +1200,8 @@ public:
     return res;
   }
 
+#if CLANG_VERSION_MAJOR > 5
+
   bool TraverseCXXBaseSpecifier(const CXXBaseSpecifier &Base) {
     if (Parent) {
       switch (VisitFn(Node(&Base), Parent, &AST, Data)) {
@@ -1213,6 +1220,79 @@ public:
     Parent = OldParent;
     return res;
   }
+
+#else // CLANG_VERSION_MAJOR <= 5
+
+  // We need to visit the record decl instead of the base specifier here because
+  // clang <= 5 doesn't traverse CXXBaseSpecifiers
+  bool TraverseCXXRecordDecl(CXXRecordDecl *D) {
+    // D->dump();
+    if (D && D->isCompleteDefinition()) {
+      bool recurse = false;
+      for (const auto &I : D->bases()) {
+        switch (VisitFn(Node(&I), Node(D, CXCursor_ClassDecl), &AST, Data)) {
+        case CXChildVisit_Break:
+          return false;
+        case CXChildVisit_Continue:
+          break;
+        case CXChildVisit_Recurse:
+          // Skip siblings and move on to other children of D
+          recurse = true;
+          break;
+        }
+        if (recurse)
+          break;
+        if (!TraverseTypeLoc(I.getTypeSourceInfo()->getTypeLoc()))
+          return false;
+      }
+    }
+
+    auto OldParent = Parent;
+    Parent = Node(D, CXCursor_ClassDecl);
+    bool res = RecursiveASTVisitor<BindgenVisitor>::TraverseCXXRecordDecl(D);
+    Parent = OldParent;
+    return res;
+  }
+
+#endif // CLANG_VERSION_MAJOR > 5
+
+#if CLANG_VERSION_MAJOR < 6
+  bool TraverseClassTemplateDecl(ClassTemplateDecl *D) {
+    auto params = D->getTemplateParameters();
+    if (params) {
+      for (const auto &P : *params) {
+        if (!TraverseDecl(P))
+          return false;
+      }
+    }
+
+    return TraverseCXXRecordDecl(D->getTemplatedDecl());
+  }
+
+  bool TraverseVarTemplateDecl(VarTemplateDecl *D) {
+    auto params = D->getTemplateParameters();
+    if (params) {
+      for (const auto &P : *params) {
+        if (!TraverseDecl(P))
+          return false;
+      }
+    }
+
+    return TraverseVarDecl(D->getTemplatedDecl());
+  }
+
+  bool TraverseFunctionTemplateDecl(FunctionTemplateDecl *D) {
+    auto params = D->getTemplateParameters();
+    if (params) {
+      for (const auto &P : *params) {
+        if (!TraverseDecl(P))
+          return false;
+      }
+    }
+
+    return TraverseFunctionDecl(D->getTemplatedDecl());
+  }
+#endif // CLANG_VERSION_MAJOR < 6
 
   bool VisitAttr(Attr *A) {
     if (Parent)
@@ -1364,7 +1444,13 @@ void CXXBaseSpecifier_visitChildren(const CXXBaseSpecifier *Parent,
                                     CXCursorKind kind, Visitor V, ASTUnit *Unit,
                                     CXClientData data) {
   BindgenVisitor visitor(*Unit, V, data);
+#if CLANG_VERSION_MAJOR > 5
   visitor.TraverseCXXBaseSpecifier(*Parent);
+#else
+  // Clang <= 5 doesn't have RecursiveASTvisitor::TraverseCXXBaseSpecifier
+  visitor.setParent(Node(Parent));
+  visitor.TraverseTypeLoc(Parent->getTypeSourceInfo()->getTypeLoc());
+#endif
 }
 
 void disposeTokens(const ASTUnit *TU, CXToken *Tokens, unsigned NumTokens) {
