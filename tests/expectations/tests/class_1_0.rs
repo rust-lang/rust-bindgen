@@ -255,6 +255,45 @@ fn bindgen_test_layout_C_with_incomplete_array() {
         4usize,
         concat!("Alignment of ", stringify!(C_with_incomplete_array))
     );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<C_with_incomplete_array>())).a as *const _
+                as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_incomplete_array),
+            "::",
+            stringify!(a)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<C_with_incomplete_array>())).big_array
+                as *const _ as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_incomplete_array),
+            "::",
+            stringify!(big_array)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<C_with_incomplete_array>())).incomplete_array
+                as *const _ as usize
+        },
+        37usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_incomplete_array),
+            "::",
+            stringify!(incomplete_array)
+        )
+    );
 }
 impl Default for C_with_incomplete_array {
     fn default() -> Self {
@@ -278,6 +317,32 @@ fn bindgen_test_layout_C_with_incomplete_array_2() {
         ::std::mem::align_of::<C_with_incomplete_array_2>(),
         4usize,
         concat!("Alignment of ", stringify!(C_with_incomplete_array_2))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<C_with_incomplete_array_2>())).a as *const _
+                as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_incomplete_array_2),
+            "::",
+            stringify!(a)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<C_with_incomplete_array_2>()))
+                .incomplete_array as *const _ as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_incomplete_array_2),
+            "::",
+            stringify!(incomplete_array)
+        )
     );
 }
 #[repr(C)]
@@ -303,6 +368,66 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array() {
         concat!(
             "Alignment of ",
             stringify!(C_with_zero_length_array_and_incomplete_array)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<
+                C_with_zero_length_array_and_incomplete_array,
+            >()))
+            .a as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_zero_length_array_and_incomplete_array),
+            "::",
+            stringify!(a)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<
+                C_with_zero_length_array_and_incomplete_array,
+            >()))
+            .big_array as *const _ as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_zero_length_array_and_incomplete_array),
+            "::",
+            stringify!(big_array)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<
+                C_with_zero_length_array_and_incomplete_array,
+            >()))
+            .zero_length_array as *const _ as usize
+        },
+        37usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_zero_length_array_and_incomplete_array),
+            "::",
+            stringify!(zero_length_array)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<
+                C_with_zero_length_array_and_incomplete_array,
+            >()))
+            .incomplete_array as *const _ as usize
+        },
+        37usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_zero_length_array_and_incomplete_array),
+            "::",
+            stringify!(incomplete_array)
         )
     );
 }
@@ -336,6 +461,51 @@ fn bindgen_test_layout_C_with_zero_length_array_and_incomplete_array_2() {
         concat!(
             "Alignment of ",
             stringify!(C_with_zero_length_array_and_incomplete_array_2)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<
+                C_with_zero_length_array_and_incomplete_array_2,
+            >()))
+            .a as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_zero_length_array_and_incomplete_array_2),
+            "::",
+            stringify!(a)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<
+                C_with_zero_length_array_and_incomplete_array_2,
+            >()))
+            .zero_length_array as *const _ as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_zero_length_array_and_incomplete_array_2),
+            "::",
+            stringify!(zero_length_array)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<
+                C_with_zero_length_array_and_incomplete_array_2,
+            >()))
+            .incomplete_array as *const _ as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(C_with_zero_length_array_and_incomplete_array_2),
+            "::",
+            stringify!(incomplete_array)
         )
     );
 }
@@ -383,6 +553,32 @@ fn bindgen_test_layout_IncompleteArrayNonCopiable() {
         ::std::mem::align_of::<IncompleteArrayNonCopiable>(),
         8usize,
         concat!("Alignment of ", stringify!(IncompleteArrayNonCopiable))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<IncompleteArrayNonCopiable>())).whatever
+                as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(IncompleteArrayNonCopiable),
+            "::",
+            stringify!(whatever)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<IncompleteArrayNonCopiable>()))
+                .incomplete_array as *const _ as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(IncompleteArrayNonCopiable),
+            "::",
+            stringify!(incomplete_array)
+        )
     );
 }
 impl Default for IncompleteArrayNonCopiable {

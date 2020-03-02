@@ -92,6 +92,24 @@ fn bindgen_test_layout_test2() {
         4usize,
         concat!("Alignment of ", stringify!(test2))
     );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<test2>())).a as *const _ as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(test2), "::", stringify!(a))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<test2>())).incomplete_array as *const _
+                as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(test2),
+            "::",
+            stringify!(incomplete_array)
+        )
+    );
 }
 #[repr(C)]
 #[derive(Debug, Default)]
@@ -111,5 +129,36 @@ fn bindgen_test_layout_test3() {
         ::std::mem::align_of::<test3>(),
         4usize,
         concat!("Alignment of ", stringify!(test3))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<test3>())).a as *const _ as usize },
+        0usize,
+        concat!("Offset of field: ", stringify!(test3), "::", stringify!(a))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<test3>())).zero_length_array as *const _
+                as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(test3),
+            "::",
+            stringify!(zero_length_array)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<test3>())).incomplete_array as *const _
+                as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(test3),
+            "::",
+            stringify!(incomplete_array)
+        )
     );
 }

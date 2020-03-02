@@ -150,6 +150,67 @@ fn bindgen_test_layout_rte_kni_fifo() {
         8usize,
         concat!("Alignment of ", stringify!(rte_kni_fifo))
     );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<rte_kni_fifo>())).write as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_kni_fifo),
+            "::",
+            stringify!(write)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<rte_kni_fifo>())).read as *const _ as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_kni_fifo),
+            "::",
+            stringify!(read)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<rte_kni_fifo>())).len as *const _ as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_kni_fifo),
+            "::",
+            stringify!(len)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<rte_kni_fifo>())).elem_size as *const _
+                as usize
+        },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_kni_fifo),
+            "::",
+            stringify!(elem_size)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<rte_kni_fifo>())).buffer as *const _ as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_kni_fifo),
+            "::",
+            stringify!(buffer)
+        )
+    );
 }
 impl Default for rte_kni_fifo {
     fn default() -> Self {

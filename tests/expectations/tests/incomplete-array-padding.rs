@@ -142,6 +142,11 @@ fn bindgen_test_layout_foo() {
         8usize,
         concat!("Alignment of ", stringify!(foo))
     );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<foo>())).b as *const _ as usize },
+        8usize,
+        concat!("Offset of field: ", stringify!(foo), "::", stringify!(b))
+    );
 }
 impl Default for foo {
     fn default() -> Self {

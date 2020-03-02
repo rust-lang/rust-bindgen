@@ -119,6 +119,54 @@ fn bindgen_test_layout_rte_ring() {
         8usize,
         concat!("Alignment of ", stringify!(rte_ring))
     );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<rte_ring>())).memzone as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_ring),
+            "::",
+            stringify!(memzone)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<rte_ring>())).prod as *const _ as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_ring),
+            "::",
+            stringify!(prod)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<rte_ring>())).cons as *const _ as usize
+        },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_ring),
+            "::",
+            stringify!(cons)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<rte_ring>())).ring as *const _ as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(rte_ring),
+            "::",
+            stringify!(ring)
+        )
+    );
 }
 impl Default for rte_ring {
     fn default() -> Self {

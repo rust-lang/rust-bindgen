@@ -138,6 +138,19 @@ fn bindgen_test_layout_DynamicallySizedArray() {
         1usize,
         concat!("Alignment of ", stringify!(DynamicallySizedArray))
     );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<DynamicallySizedArray>())).arr as *const _
+                as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(DynamicallySizedArray),
+            "::",
+            stringify!(arr)
+        )
+    );
 }
 /// No `_address` field here either.
 #[repr(C)]
@@ -156,5 +169,18 @@ fn bindgen_test_layout_ContainsDynamicallySizedArray() {
         ::std::mem::align_of::<ContainsDynamicallySizedArray>(),
         1usize,
         concat!("Alignment of ", stringify!(ContainsDynamicallySizedArray))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<ContainsDynamicallySizedArray>())).dsa
+                as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(ContainsDynamicallySizedArray),
+            "::",
+            stringify!(dsa)
+        )
     );
 }
