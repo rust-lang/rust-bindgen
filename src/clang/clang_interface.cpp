@@ -1631,7 +1631,11 @@ BindgenStringRef CXXBaseSpecifier_getSpelling(const CXXBaseSpecifier *B) {
 }
 
 SourceLocation *CXXBaseSpecifier_getLocation(const CXXBaseSpecifier *B) {
+#if CLANG_VERSION_MAJOR > 4
   return new SourceLocation(B->getBaseTypeLoc());
+#else // CLANG_VERSION_MAJOR <= 4
+  return new SourceLocation(B->getLocStart());
+#endif
 }
 
 SourceLocation *Attr_getLocation(const Attr *A) {

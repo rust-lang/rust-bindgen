@@ -137,7 +137,6 @@ static CXTypeKind GetBuiltinTypeKind(const BuiltinType *BT) {
     BTCASE(Long);
     BTCASE(LongLong);
     BTCASE(Int128);
-    BTCASE(Half);
     BTCASE(Float);
     BTCASE(Double);
     BTCASE(LongDouble);
@@ -163,13 +162,16 @@ static CXTypeKind GetBuiltinTypeKind(const BuiltinType *BT) {
 #define EXT_OPAQUE_TYPE(ExtType, Id, Ext) BTCASE(Id);
 #include "clang/Basic/OpenCLExtensionTypes.def"
 #endif // CLANG_VERSION_MAJOR > 7
+#if CLANG_VERSION_MAJOR > 4
 #define IMAGE_TYPE(ImgType, Id, SingletonId, Access, Suffix) BTCASE(Id);
 #include "clang/Basic/OpenCLImageTypes.def"
 #undef IMAGE_TYPE
+    BTCASE(Half);
     BTCASE(OCLSampler);
     BTCASE(OCLEvent);
     BTCASE(OCLQueue);
     BTCASE(OCLReserveID);
+#endif // CLANG_VERSION_MAJOR > 4
   default:
     return CXType_Unexposed;
   }
@@ -223,7 +225,9 @@ CXTypeKind Type_kind(QualType T, ASTContext *Context) {
     TKCASE(MemberPointer);
     TKCASE(Auto);
     TKCASE(Elaborated);
+#if CLANG_VERSION_MAJOR > 4
     TKCASE(Pipe);
+#endif // CLANG_VERSION_MAJOR > 4
 #if CLANG_VERSION_MAJOR > 7
     TKCASE(Attributed);
     TKCASE(ObjCObject);
@@ -872,15 +876,17 @@ BindgenStringRef TypeKind_getSpelling(CXTypeKind K) {
 #if CLANG_VERSION_MAJOR > 8
     TKIND(ExtVector);
 #endif // CLANG_VERSION_MAJOR > 8
+#if CLANG_VERSION_MAJOR > 4
 #define IMAGE_TYPE(ImgType, Id, SingletonId, Access, Suffix) TKIND(Id);
 #include "clang/Basic/OpenCLImageTypes.def"
 #undef IMAGE_TYPE
-#define EXT_OPAQUE_TYPE(ExtTYpe, Id, Ext) TKIND(Id);
-#include "clang/Basic/OpenCLExtensionTypes.def"
+    TKIND(Half);
+    TKIND(Pipe);
     TKIND(OCLSampler);
     TKIND(OCLEvent);
     TKIND(OCLQueue);
     TKIND(OCLReserveID);
+#endif // CLANG_VERSION_MAJOR > 4
   }
 #undef TKIND
   return stringref(s);
@@ -1019,9 +1025,11 @@ ASTUnit *parseTranslationUnit(const char *source_filename,
   if (options & CXTranslationUnit_KeepGoing) {
 #if CLANG_VERSION_MAJOR > 8
     Diags->setFatalsAsError(true);
-#else
+#elif CLANG_VERSION_MAJOR > 4
     Diags->setSuppressAfterFatalError(false);
-#endif // CLANG_VERSION_MAJOR > 8
+#else // CLANG_VERSION_MAJOR <= 4
+    Diags->setFatalsAsError(true);
+#endif
   }
 
 #if CLANG_VERSION_MAJOR > 8
@@ -1102,7 +1110,9 @@ const Decl *Decl_getDefinition(const Decl *D, bool isReference) {
   case Decl::OMPCapturedExpr:
   case Decl::Label: // FIXME: Is this right??
   case Decl::ClassScopeFunctionSpecialization:
+#if CLANG_VERSION_MAJOR > 4
   case Decl::CXXDeductionGuide:
+#endif // CLANG_VERSION_MAJOR > 4
   case Decl::Import:
   case Decl::OMPThreadPrivate:
 #if CLANG_VERSION_MAJOR > 8
@@ -1396,12 +1406,16 @@ CXLinkageKind Decl_getLinkage(const Decl *D) {
     case NoLinkage:
     case VisibleNoLinkage:
       return CXLinkage_NoLinkage;
+#if CLANG_VERSION_MAJOR > 4
     case ModuleInternalLinkage:
+#endif // CLANG_VERSION_MAJOR > 4
     case InternalLinkage:
       return CXLinkage_Internal;
     case UniqueExternalLinkage:
       return CXLinkage_UniqueExternal;
+#if CLANG_VERSION_MAJOR > 4
     case ModuleLinkage:
+#endif // CLANG_VERSION_MAJOR > 4
     case ExternalLinkage:
       return CXLinkage_External;
     };
@@ -1524,8 +1538,12 @@ try_again:
     break;
 
   case Type::Auto:
+#if CLANG_VERSION_MAJOR > 4
   case Type::DeducedTemplateSpecialization:
     TP = cast<DeducedType>(TP)->getDeducedType().getTypePtrOrNull();
+#else // CLANG_VERSION_MAJOR <= 4
+    TP = cast<AutoType>(TP)->getDeducedType().getTypePtrOrNull();
+#endif // CLANG_VERSION_MAJOR > 4
     if (TP)
       goto try_again;
     break;
@@ -1774,8 +1792,12 @@ try_again:
       T = cast<MemberPointerType>(TP)->getPointeeType();
       break;
     case Type::Auto:
+#if CLANG_VERSION_MAJOR > 4
     case Type::DeducedTemplateSpecialization:
       TP = cast<DeducedType>(TP)->getDeducedType().getTypePtrOrNull();
+#else // CLANG_VERSION_MAJOR <= 4
+      TP = cast<AutoType>(TP)->getDeducedType().getTypePtrOrNull();
+#endif // CLANG_VERSION_MAJOR > 4
       if (TP)
         goto try_again;
       break;
@@ -1862,7 +1884,11 @@ CXCallingConv Type_getFunctionTypeCallingConv(QualType T) {
 #if CLANG_VERSION_MAJOR > 7
       TCALLINGCONV(AArch64VectorCall);
 #endif // CLANG_VERSION_MAJOR > 7
+#if CLANG_VERSION_MAJOR > 4
       TCALLINGCONV(Win64);
+#else
+      TCALLINGCONV(X86_64Win64);
+#endif // CLANG_VERSION_MAJOR > 4
       TCALLINGCONV(X86_64SysV);
       TCALLINGCONV(AAPCS);
       TCALLINGCONV(AAPCS_VFP);
