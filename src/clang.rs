@@ -1439,13 +1439,6 @@ impl Type {
     /// Get the number of template arguments this type has, or `None` if it is
     /// not some kind of template.
     pub fn num_template_args(&self) -> Option<u32> {
-        // If an old libclang is loaded, we have no hope of answering this
-        // question correctly. However, that's no reason to panic when
-        // generating bindings for simple C headers with an old libclang.
-        // if !clang_interface::Type_getNumTemplateArguments::is_loaded() {
-        //     return None;
-        // }
-
         let n = unsafe { clang_interface::Type_getNumTemplateArguments(self.x) };
         if n >= 0 {
             Some(n as u32)
@@ -1910,7 +1903,6 @@ impl fmt::Debug for TranslationUnit {
 impl TranslationUnit {
     /// Parse a source file into a translation unit.
     pub fn parse(
-        // ix: &Index,
         file: &str,
         cmd_args: &[String],
         unsaved: &[UnsavedFile],
