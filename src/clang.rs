@@ -168,6 +168,7 @@ impl Cursor {
                 ASTNode::Expr(e) => clang_interface::Expr_getSpelling(e).to_string(),
                 ASTNode::CXXBaseSpecifier(b) => clang_interface::CXXBaseSpecifier_getSpelling(b)
                     .to_string(),
+                ASTNode::PreprocessedEntity(e) => clang_interface::PreprocessedEntity_getSpelling(e).to_string(),
                 _ => String::new(),
             }
         }
