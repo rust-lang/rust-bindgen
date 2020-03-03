@@ -3,11 +3,32 @@
 
 #include "clang/AST/Decl.h"
 #include "clang/AST/Expr.h"
+#include "clang/Basic/Version.h"
 
 #define BINDGEN_IMPLEMENTATION
 #include "clang_interface.hpp"
 
 using namespace clang;
+
+namespace clang {
+
+#if CLANG_VERSION_MAJOR < 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR <= 8)
+// Clang <= 3.8 doesn't include this enum, but we can still expose the same
+// functionality
+typedef enum {
+  CXEval_Int = 1 ,
+  CXEval_Float = 2,
+  CXEval_ObjCStrLiteral = 3,
+  CXEval_StrLiteral = 4,
+  CXEval_CFStr = 5,
+  CXEval_Other = 6,
+
+  CXEval_UnExposed = 0
+
+} CXEvalResultKind ;
+#endif
+
+} // namespace clang
 
 // Utility functions defined in ClangAST.cpp
 BindgenStringRef stringref();
