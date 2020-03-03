@@ -1030,7 +1030,7 @@ CXCommentKind Comment_getKind(const comments::Comment *C) {
 // Adapted from clang_parseTranslationUnit_Impl in CIndex.cpp
 ASTUnit *parseTranslationUnit(const char *source_filename,
                               const char *const *command_line_args,
-                              int num_command_line_args, int options,
+                              int num_command_line_args, unsigned int options,
                               struct CXUnsavedFile *unsaved_files,
                               unsigned num_unsaved_files) {
   SmallVector<const char *, 10> Args;

@@ -546,10 +546,8 @@ impl BindgenContext {
         let (effective_target, explicit_target) =
             find_effective_target(&options.clang_args);
 
-        // let index = clang::Index::new(false, true);
-
         let parse_options =
-            clang_sys::CXTranslationUnit_DetailedPreprocessingRecord;
+            clang::CXTranslationUnit_DetailedPreprocessingRecord;
 
         let translation_unit = {
             let _t =
