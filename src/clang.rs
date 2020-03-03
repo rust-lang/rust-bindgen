@@ -29,6 +29,8 @@ pub use self::clang_interface::CXLinkageKind::Type as CXLinkageKind;
 pub use self::clang_interface::CXLinkageKind::*;
 pub use self::clang_interface::CXTokenKind::Type as CXTokenKind;
 pub use self::clang_interface::CXTokenKind::*;
+pub use self::clang_interface::CXTranslationUnit_Flags::Type as CXTranslationUnit_Flags;
+pub use self::clang_interface::CXTranslationUnit_Flags::*;
 pub use self::clang_interface::CXTypeKind::Type as CXTypeKind;
 pub use self::clang_interface::CXTypeKind::*;
 pub use self::clang_interface::CXVisibilityKind::Type as CXVisibilityKind;
@@ -1987,7 +1989,7 @@ impl TranslationUnit {
         file: &str,
         cmd_args: &[String],
         unsaved: &[UnsavedFile],
-        opts: clang_sys::CXTranslationUnit_Flags,
+        opts: CXTranslationUnit_Flags,
     ) -> Option<TranslationUnit> {
         let fname = CString::new(file).unwrap();
         let _c_args: Vec<CString> = cmd_args

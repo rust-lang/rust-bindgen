@@ -513,8 +513,6 @@ impl BindgenContext {
         let (effective_target, explicit_target) =
             crate::find_effective_target(&options.clang_args);
 
-        // let index = clang::Index::new(false, true);
-
         let parse_options =
             clang::CXTranslationUnit_DetailedPreprocessingRecord;
 

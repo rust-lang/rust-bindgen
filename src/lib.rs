@@ -2157,32 +2157,6 @@ impl Default for BindgenOptions {
     }
 }
 
-#[cfg(feature = "runtime")]
-fn ensure_libclang_is_loaded() {
-    if clang_sys::is_loaded() {
-        return;
-    }
-
-    // XXX (issue #350): Ensure that our dynamically loaded `libclang`
-    // doesn't get dropped prematurely, nor is loaded multiple times
-    // across different threads.
-
-    lazy_static! {
-        static ref LIBCLANG: std::sync::Arc<clang_sys::SharedLibrary> = {
-            clang_sys::load().expect("Unable to find libclang");
-            clang_sys::get_library().expect(
-                "We just loaded libclang and it had better still be \
-                 here!",
-            )
-        };
-    }
-
-    clang_sys::set_library(Some(LIBCLANG.clone()));
-}
-
-#[cfg(not(feature = "runtime"))]
-fn ensure_libclang_is_loaded() {}
-
 /// Error type for rust-bindgen.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 #[non_exhaustive]
@@ -2275,8 +2249,6 @@ impl Bindings {
     pub(crate) fn generate(
         mut options: BindgenOptions,
     ) -> Result<Bindings, BindgenError> {
-        ensure_libclang_is_loaded();
-
         #[cfg(feature = "runtime")]
         debug!(
             "Generating bindings, libclang at {}",
@@ -2626,7 +2598,7 @@ fn parse_one(
 
 /// Parse the Clang AST into our `Item` internal representation.
 fn parse(context: &mut BindgenContext) -> Result<(), BindgenError> {
-    use clang_sys::*;
+    use clang::*;
 
     let mut error = None;
     for d in context.translation_unit().diags().iter() {
@@ -2681,9 +2653,6 @@ pub struct ClangVersion {
 
 /// Get the major and the minor semver numbers of Clang's version
 pub fn clang_version() -> ClangVersion {
-    ensure_libclang_is_loaded();
-
-    //Debian clang version 11.0.1-2
     let raw_v: String = clang::extract_clang_version();
     let split_v: Option<Vec<&str>> = raw_v
         .split_whitespace()

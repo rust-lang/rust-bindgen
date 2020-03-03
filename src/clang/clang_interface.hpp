@@ -76,7 +76,7 @@ char *cString(BindgenStringRef s);
 ASTContext *ASTUnit_getContext(ASTUnit *);
 ASTUnit *parseTranslationUnit(const char *source_filename,
                               const char *const *command_line_args,
-                              int num_command_line_args, int options,
+                              int num_command_line_args, unsigned int options,
                               CXUnsavedFile *unsaved_files,
                               unsigned num_unsaved_files);
 void disposeASTUnit(ASTUnit *AU);
