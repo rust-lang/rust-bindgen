@@ -1669,3 +1669,17 @@ BindgenStringRef PreprocessedEntity_getSpelling(const PreprocessedEntity *PPE) {
       return stringref(ME->getName()->getName());
   return stringref();
 }
+
+CX_CXXAccessSpecifier Decl_getAccess(const Decl *D) {
+  auto spec = AS_none;
+  if (D)
+    spec = D->getAccess();
+  return TranslateCXXAccessSpecifier(spec);
+}
+
+CX_CXXAccessSpecifier CXXBaseSpecifier_getAccess(const CXXBaseSpecifier *B) {
+  auto spec = AS_none;
+  if (B)
+    spec = B->getAccessSpecifier();
+  return TranslateCXXAccessSpecifier(spec);
+}

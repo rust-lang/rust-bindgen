@@ -45,5 +45,6 @@ Optional<ArrayRef<TemplateArgument>> GetTemplateArguments(QualType Type);
 unsigned GetTemplateArgumentArraySize(ArrayRef<TemplateArgument> TA);
 Optional<QualType> FindTemplateArgumentTypeAt(ArrayRef<TemplateArgument> TA,
                                               unsigned index);
+CX_CXXAccessSpecifier TranslateCXXAccessSpecifier(AccessSpecifier spec);
 
 #endif // BINDGEN_CLANG_INTERFACE_IMPL_H

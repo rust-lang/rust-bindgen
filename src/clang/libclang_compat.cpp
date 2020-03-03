@@ -1481,11 +1481,7 @@ CXVisibilityKind Decl_getVisibility(const Decl *D) {
 }
 
 // Adapted from clang_getCXXAccessSpecifier in CIndexCXX.cpp
-CX_CXXAccessSpecifier Decl_getAccess(const Decl *D) {
-  AccessSpecifier spec = AS_none;
-  if (D)
-    spec = D->getAccess();
-
+CX_CXXAccessSpecifier TranslateCXXAccessSpecifier(AccessSpecifier spec) {
   switch (spec) {
     case AS_public: return CX_CXXPublic;
     case AS_protected: return CX_CXXProtected;

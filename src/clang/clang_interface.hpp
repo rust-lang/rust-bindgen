@@ -256,6 +256,7 @@ SourceLocation *CXXBaseSpecifier_getLocation(const CXXBaseSpecifier *);
 SourceLocation *Attr_getLocation(const Attr *);
 SourceLocation *PreprocessedEntity_getLocation(const PreprocessedEntity *);
 BindgenSourceRange CXXBaseSpecifier_getSourceRange(const CXXBaseSpecifier *);
+CX_CXXAccessSpecifier CXXBaseSpecifier_getAccess(const CXXBaseSpecifier *);
 BindgenSourceRange Attr_getSourceRange(const Attr *);
 BindgenSourceRange PreprocessedEntity_getSourceRange(const PreprocessedEntity *);
 
