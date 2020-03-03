@@ -1608,7 +1608,7 @@ BindgenStringRef HTMLStartTag_getAttrValue(const comments::Comment *C, unsigned 
   }
 }
 
-BindgenStringRef FileEntry_getName(FileEntry *F) {
+BindgenStringRef FileEntry_getName(const FileEntry *F) {
   if (!F)
     return stringref();
   return stringref(F->getName());
@@ -1668,6 +1668,12 @@ BindgenStringRef PreprocessedEntity_getSpelling(const PreprocessedEntity *PPE) {
   if (const auto *ME = dyn_cast<MacroExpansion>(PPE))
       return stringref(ME->getName()->getName());
   return stringref();
+}
+
+const FileEntry *PreprocessedEntity_getIncludedFile(const PreprocessedEntity *PPE) {
+  if (const auto *ID = dyn_cast_or_null<InclusionDirective>(PPE))
+    return ID->getFile();
+  return nullptr;
 }
 
 CX_CXXAccessSpecifier Decl_getAccess(const Decl *D) {

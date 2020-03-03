@@ -7208,8 +7208,8 @@ extern "C" {
     ) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z17FileEntry_getNamePN5clang9FileEntryE"]
-    pub fn FileEntry_getName(arg1: *mut clang_FileEntry) -> BindgenStringRef;
+    #[link_name = "\u{1}_Z17FileEntry_getNamePKN5clang9FileEntryE"]
+    pub fn FileEntry_getName(arg1: *const clang_FileEntry) -> BindgenStringRef;
 }
 extern "C" {
     #[link_name = "\u{1}_Z15getClangVersionv"]
@@ -7250,6 +7250,12 @@ extern "C" {
     pub fn PreprocessedEntity_getLocation(
         arg1: *const clang_PreprocessedEntity,
     ) -> *mut clang_SourceLocation;
+}
+extern "C" {
+    #[link_name = "\u{1}_Z34PreprocessedEntity_getIncludedFilePKN5clang18PreprocessedEntityE"]
+    pub fn PreprocessedEntity_getIncludedFile(
+        arg1: *const clang_PreprocessedEntity,
+    ) -> *const clang_FileEntry;
 }
 extern "C" {
     #[link_name = "\u{1}_Z31CXXBaseSpecifier_getSourceRangePKN5clang16CXXBaseSpecifierE"]

@@ -245,7 +245,7 @@ BindgenStringRef CursorKind_getSpelling(CXCursorKind);
 BindgenStringRef TypeKind_getSpelling(CXTypeKind);
 BindgenStringRef PreprocessedEntity_getSpelling(const PreprocessedEntity *);
 
-BindgenStringRef FileEntry_getName(FileEntry *);
+BindgenStringRef FileEntry_getName(const FileEntry *);
 
 BindgenStringRef getClangVersion();
 
@@ -255,6 +255,7 @@ BindgenStringRef CXXBaseSpecifier_getSpelling(const CXXBaseSpecifier *);
 SourceLocation *CXXBaseSpecifier_getLocation(const CXXBaseSpecifier *);
 SourceLocation *Attr_getLocation(const Attr *);
 SourceLocation *PreprocessedEntity_getLocation(const PreprocessedEntity *);
+const FileEntry *PreprocessedEntity_getIncludedFile(const PreprocessedEntity *);
 BindgenSourceRange CXXBaseSpecifier_getSourceRange(const CXXBaseSpecifier *);
 CX_CXXAccessSpecifier CXXBaseSpecifier_getAccess(const CXXBaseSpecifier *);
 BindgenSourceRange Attr_getSourceRange(const Attr *);
