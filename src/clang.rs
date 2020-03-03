@@ -1923,7 +1923,6 @@ impl TranslationUnit {
         let mut c_unsaved: Vec<clang_interface::CXUnsavedFile> =
             unsaved.iter().map(|f| f.x).collect();
         let tu = unsafe {
-            // TODO(sjc): add back in unsaved files and opts
             clang_interface::parseTranslationUnit(
                 fname.as_ptr(),
                 c_args.as_ptr(),
