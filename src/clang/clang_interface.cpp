@@ -65,7 +65,6 @@ BindgenStringRefSet make_stringrefset(std::vector<std::string> &string_vec) {
     set.strings[i] = stringref(string_vec[i]);
   return set;
 }
-  
 
 void freeString(BindgenStringRef s) {
   delete[] s.s;
@@ -228,7 +227,7 @@ bool CursorKind_isInvalid(CXCursorKind kind) {
 const Decl *Decl_getLexicalParent(const Decl *D) {
   if (!D)
     return nullptr;
-  
+
   const DeclContext *DC = D->getLexicalDeclContext();
   if (!DC)
     return nullptr;
@@ -239,7 +238,7 @@ const Decl *Decl_getLexicalParent(const Decl *D) {
 const Decl *Decl_getSemanticParent(const Decl *D) {
   if (!D)
     return nullptr;
-  
+
   const DeclContext *DC = D->getDeclContext();
   if (!DC)
     return nullptr;
@@ -754,22 +753,22 @@ CXCursorKind Expr_getCXCursorKind(const Expr *E) {
   case Stmt::UnresolvedLookupExprClass:
   case Stmt::TypoExprClass: // A typo could actually be a DeclRef or a MemberRef
     return CXCursor_DeclRefExpr;
-      
+
   case Stmt::CXXDependentScopeMemberExprClass:
   case Stmt::CXXPseudoDestructorExprClass:
-  case Stmt::MemberExprClass:            
+  case Stmt::MemberExprClass:
   case Stmt::MSPropertyRefExprClass:
   case Stmt::ObjCIsaExprClass:
-  case Stmt::ObjCIvarRefExprClass:    
-  case Stmt::ObjCPropertyRefExprClass: 
+  case Stmt::ObjCIvarRefExprClass:
+  case Stmt::ObjCPropertyRefExprClass:
   case Stmt::UnresolvedMemberExprClass:
     return CXCursor_MemberRefExpr;
-      
-  case Stmt::CallExprClass:              
+
+  case Stmt::CallExprClass:
   case Stmt::CXXOperatorCallExprClass:
   case Stmt::CXXMemberCallExprClass:
   case Stmt::CUDAKernelCallExprClass:
-  case Stmt::CXXConstructExprClass:  
+  case Stmt::CXXConstructExprClass:
 #if CLANG_VERSION_MAJOR > 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR == 9)
   case Stmt::CXXInheritedCtorInitExprClass:
 #endif // CLANG_VERSION > 3.8
@@ -777,13 +776,13 @@ CXCursorKind Expr_getCXCursorKind(const Expr *E) {
   case Stmt::CXXUnresolvedConstructExprClass:
   case Stmt::UserDefinedLiteralClass:
     return CXCursor_CallExpr;
-      
+
   case Stmt::LambdaExprClass:
     return CXCursor_LambdaExpr;
-      
+
   case Stmt::ObjCMessageExprClass:
     return CXCursor_ObjCMessageExpr;
-      
+
   case Stmt::MSDependentExistsStmtClass:
     return CXCursor_UnexposedStmt;
   case Stmt::OMPParallelDirectiveClass:
@@ -1492,22 +1491,22 @@ QualType Type_getArgType(QualType T, unsigned i) {
       return QualType();
     return make_type_compatible(FD->getParamType(i));
   }
-  
+
   return QualType();
 }
 
 int Type_getNumArgTypes(QualType T) {
   if (T.isNull())
     return -1;
-  
+
   if (const FunctionProtoType *FD = T->getAs<FunctionProtoType>()) {
     return FD->getNumParams();
   }
-  
+
   if (T->getAs<FunctionNoProtoType>()) {
     return 0;
   }
-  
+
   return -1;
 }
 
@@ -1527,14 +1526,14 @@ bool Type_isFunctionTypeVariadic(QualType T) {
 
   if (T->getAs<FunctionNoProtoType>())
     return true;
-  
+
   return false;
 }
 
 QualType Type_getResultType(QualType T) {
   if (T.isNull())
     return QualType();
-  
+
   if (const FunctionType *FD = T->getAs<FunctionType>())
     return make_type_compatible(FD->getReturnType());
 
