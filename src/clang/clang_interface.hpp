@@ -260,6 +260,7 @@ BindgenStringRef HTMLStartTag_getAttrValue(const comments::Comment *, unsigned);
 
 BindgenStringRef CursorKind_getSpelling(CXCursorKind);
 BindgenStringRef TypeKind_getSpelling(CXTypeKind);
+BindgenStringRef PreprocessedEntity_getSpelling(const PreprocessedEntity *);
 
 BindgenStringRef FileEntry_getName(FileEntry *);
 

@@ -7202,6 +7202,12 @@ extern "C" {
     pub fn TypeKind_getSpelling(arg1: CXTypeKind::Type) -> BindgenStringRef;
 }
 extern "C" {
+    #[link_name = "\u{1}_Z30PreprocessedEntity_getSpellingPKN5clang18PreprocessedEntityE"]
+    pub fn PreprocessedEntity_getSpelling(
+        arg1: *const clang_PreprocessedEntity,
+    ) -> BindgenStringRef;
+}
+extern "C" {
     #[link_name = "\u{1}_Z17FileEntry_getNamePN5clang9FileEntryE"]
     pub fn FileEntry_getName(arg1: *mut clang_FileEntry) -> BindgenStringRef;
 }

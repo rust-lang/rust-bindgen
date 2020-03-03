@@ -1655,3 +1655,13 @@ BindgenSourceRange Attr_getSourceRange(const Attr *A) {
 BindgenSourceRange PreprocessedEntity_getSourceRange(const PreprocessedEntity *PPE) {
   return BindgenSourceRange(PPE->getSourceRange());
 }
+
+BindgenStringRef PreprocessedEntity_getSpelling(const PreprocessedEntity *PPE) {
+  if (!PPE)
+    return stringref();
+  if (const auto *MDR = dyn_cast_or_null<MacroDefinitionRecord>(PPE))
+      return stringref(MDR->getName()->getName());
+  if (const auto *ME = dyn_cast<MacroExpansion>(PPE))
+      return stringref(ME->getName()->getName());
+  return stringref();
+}
