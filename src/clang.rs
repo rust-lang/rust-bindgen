@@ -1012,16 +1012,19 @@ impl Cursor {
     ///
     /// Returns None if the cursor does not include a file, otherwise the file's full name
     pub fn get_included_file_name(&self) -> Option<String> {
-        // TODO(sjc): implement
-        None
-        // let file = unsafe { clang_sys::clang_getIncludedFile(self.x) };
-        // if file.is_null() {
-        //     None
-        // } else {
-        //     Some(unsafe {
-        //         cxstring_into_string(clang_sys::clang_getFileName(file))
-        //     })
-        // }
+        let file = match self.node {
+            ASTNode::PreprocessedEntity(e) => unsafe {
+                clang_interface::PreprocessedEntity_getIncludedFile(e)
+            },
+            _ => ptr::null(),
+        };
+        if file.is_null() {
+            None
+        } else {
+            Some(unsafe {
+                clang_interface::FileEntry_getName(file).to_string()
+            })
+        }
     }
 }
 
