@@ -99,11 +99,11 @@ mod clang_ast {
         let mut clang_cmake_dir = format!("{}/cmake/clang", llvm_lib_dir);
 
         if let Some((major_version, minor_version)) = llvm_info.version {
-            if (major_version == 3 && minor_version <= 8)
-                || major_version < 3
-            {
-                llvm_cmake_dir = format!("{}/../share/llvm/cmake", llvm_lib_dir);
-                clang_cmake_dir = format!("{}/../share/clang/cmake", llvm_lib_dir);
+            if (major_version == 3 && minor_version <= 8) || major_version < 3 {
+                llvm_cmake_dir =
+                    format!("{}/../share/llvm/cmake", llvm_lib_dir);
+                clang_cmake_dir =
+                    format!("{}/../share/clang/cmake", llvm_lib_dir);
             }
         }
 
@@ -180,7 +180,7 @@ mod clang_ast {
             fn find_llvm_config() -> Option<String> {
                 // Explicitly provided path in LLVM_CONFIG_PATH
                 build_var("LLVM_CONFIG_PATH")
-                // Relative to LLVM_LIB_DIR
+                    // Relative to LLVM_LIB_DIR
                     .or_else(|| {
                         build_var("LLVM_LIB_DIR").map(|d| {
                             String::from(
@@ -192,7 +192,7 @@ mod clang_ast {
                             )
                         })
                     })
-                // In PATH
+                    // In PATH
                     .or_else(|| {
                         [
                             "llvm-config-7.0",
@@ -202,37 +202,46 @@ mod clang_ast {
                             // Homebrew install location on MacOS
                             "/usr/local/opt/llvm/bin/llvm-config",
                         ]
-                            .iter()
-                            .find_map(|c| {
-                                if Command::new(c)
-                                    .stdout(Stdio::null())
-                                    .stderr(Stdio::null())
-                                    .spawn()
-                                    .is_ok()
-                                {
-                                    Some(String::from(*c))
-                                } else {
-                                    None
-                                }
-                            })
+                        .iter()
+                        .find_map(|c| {
+                            if Command::new(c)
+                                .stdout(Stdio::null())
+                                .stderr(Stdio::null())
+                                .spawn()
+                                .is_ok()
+                            {
+                                Some(String::from(*c))
+                            } else {
+                                None
+                            }
+                        })
                     })
             }
 
             /// Invoke given `command`, if any, with the specified arguments.
-            fn invoke_command<I, S, C>(command: Option<C>, args: I) -> Option<String>
-                where
+            fn invoke_command<I, S, C>(
+                command: Option<C>,
+                args: I,
+            ) -> Option<String>
+            where
                 I: IntoIterator<Item = S>,
                 S: AsRef<OsStr>,
                 C: AsRef<OsStr>,
             {
                 command.and_then(|c| {
-                    Command::new(c).args(args).output().ok().and_then(|output| {
-                        if output.status.success() {
-                            Some(String::from_utf8_lossy(&output.stdout).trim().to_string())
-                        } else {
-                            None
-                        }
-                    })
+                    Command::new(c).args(args).output().ok().and_then(
+                        |output| {
+                            if output.status.success() {
+                                Some(
+                                    String::from_utf8_lossy(&output.stdout)
+                                        .trim()
+                                        .to_string(),
+                                )
+                            } else {
+                                None
+                            }
+                        },
+                    )
                 })
             }
 
@@ -256,7 +265,10 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
                 )
             };
 
-            let llvm_shared_libs = invoke_command(llvm_config.as_ref(), &["--libs", "--link-shared"]);
+            let llvm_shared_libs = invoke_command(
+                llvm_config.as_ref(),
+                &["--libs", "--link-shared"],
+            );
 
             // <sysroot>/lib/rustlib/<target>/lib/ contains a libLLVM DSO for the
             // rust compiler. On MacOS, this lib is named libLLVM.dylib, which will
@@ -277,10 +289,14 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
                         } // Windows is not supported
                     };
                     let mut dylib_file = String::from("lib");
-                    dylib_file.push_str(llvm_shared_libs.trim_start_matches("-l"));
+                    dylib_file
+                        .push_str(llvm_shared_libs.trim_start_matches("-l"));
                     dylib_file.push_str(dylib_suffix);
-                    let sysroot =
-                        invoke_command(env::var("RUSTC").ok().as_ref(), &["--print=sysroot"]).unwrap();
+                    let sysroot = invoke_command(
+                        env::var("RUSTC").ok().as_ref(),
+                        &["--print=sysroot"],
+                    )
+                    .unwrap();
 
                     // Does <sysroot>/lib/rustlib/<target>/lib/<dylib_file> exist?
                     let mut libllvm_path = PathBuf::new();
@@ -302,7 +318,8 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
                 } else {
                     vec!["--shared-mode"]
                 };
-                invoke_command(llvm_config.as_ref(), &args).map_or(false, |c| c == "static")
+                invoke_command(llvm_config.as_ref(), &args)
+                    .map_or(false, |c| c == "static")
             };
 
             let link_mode = if link_statically {
@@ -311,22 +328,29 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
                 "--link-shared"
             };
 
-            let version_string = invoke_command(llvm_config.as_ref(), &["--version"])
-                .or_else(|| {
-                    invoke_command(Some(&format!("{}/../bin/clang", lib_dir)), &["--version"])
-                        .and_then(|output| Some(output.split(" ").nth(2)?.to_string()))
-                });
-            let version = version_string
-                .and_then(|version| {
-                    let mut split = version.split(".");
-                    let major: i32 = split.next()?.parse().ok()?;
-                    let minor: i32 = split.next()?.parse().ok()?;
-                    Some((major, minor))
-                });
+            let version_string = invoke_command(
+                llvm_config.as_ref(),
+                &["--version"],
+            )
+            .or_else(|| {
+                invoke_command(
+                    Some(&format!("{}/../bin/clang", lib_dir)),
+                    &["--version"],
+                )
+                .and_then(|output| Some(output.split(" ").nth(2)?.to_string()))
+            });
+            let version = version_string.and_then(|version| {
+                let mut split = version.split(".");
+                let major: i32 = split.next()?.parse().ok()?;
+                let minor: i32 = split.next()?.parse().ok()?;
+                Some((major, minor))
+            });
 
             let mut supports_link_mode = true;
             if let Some((major_version, minor_version)) = version {
-                if major_version < 3 || (major_version == 3 && minor_version <= 8) {
+                if major_version < 3
+                    || (major_version == 3 && minor_version <= 8)
+                {
                     supports_link_mode = false;
                 }
             }
@@ -358,11 +382,12 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
             if supports_link_mode {
                 args.insert(1, link_mode);
             }
-            let mut libs: Vec<String> = invoke_command(llvm_config.as_ref(), &args)
-                .unwrap_or("-lLLVM".to_string())
-                .split_whitespace()
-                .map(|lib| String::from(lib.trim_start_matches("-l")))
-                .collect();
+            let mut libs: Vec<String> =
+                invoke_command(llvm_config.as_ref(), &args)
+                    .unwrap_or("-lLLVM".to_string())
+                    .split_whitespace()
+                    .map(|lib| String::from(lib.trim_start_matches("-l")))
+                    .collect();
 
             libs.extend(
                 build_var("LLVM_SYSTEM_LIBS")
@@ -390,7 +415,7 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
                                 .trim_start_matches("lib")
                                 .into()
                         }
-                    })
+                    }),
             );
 
             Self {
