@@ -13,7 +13,7 @@ use std::hash::Hash;
 use std::os::raw::{c_char, c_int, c_longlong, c_uint, c_ulong, c_ulonglong};
 use std::{mem, ptr, slice};
 
-#[allow(non_camel_case_types, non_snake_case)]
+#[allow(non_camel_case_types, non_snake_case, missing_docs)]
 mod clang_interface;
 pub use self::clang_interface::CXDiagnosticSeverity::Type as CXDiagnosticSeverity;
 pub use self::clang_interface::CXCallingConv::Type as CXCallingConv;
@@ -71,17 +71,39 @@ impl fmt::Display for clang_interface::BindgenStringRef {
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Cursor {
     node: ASTNode,
+
+    /// Kind of this cursor, may differ from the kind of the node, e.g. TypeRef
+    /// kind referring to a ClassDecl.
     kind: CXCursorKind,
+
+    /// AST unit that this cursor is part of.
+    ///
+    /// Some clang interfaces require access to an ASTUnit, so we keep this
+    /// available.
     unit: *mut clang_interface::clang_ASTUnit,
 }
 
+/// Clang AST nodes.
+///
+/// Each variant wraps a raw pointer to a type of Clang AST node that we handle.
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub enum ASTNode {
+    /// Placeholder for an invalid AST node
     Invalid,
+
+    /// Declaration AST node (const Decl*)
     Decl(*const clang_interface::clang_Decl),
+
+    /// Expression AST node (const Expr*)
     Expr(*const clang_interface::clang_Expr),
+
+    /// C++ base specifier AST node (const CXXBaseSpecifier*)
     CXXBaseSpecifier(*const clang_interface::clang_CXXBaseSpecifier),
+
+    /// Attribute AST node (const Attr*)
     Attr(*const clang_interface::clang_Attr),
+
+    /// Preprocessor entity node (const PreprocessedEntity*)
     PreprocessedEntity(*const clang_interface::clang_PreprocessedEntity),
 }
 
@@ -91,6 +113,8 @@ impl ASTNode {
         unsafe { !clang_interface::CursorKind_isInvalid(self.kind()) }
     }
 
+    /// Kind of the AST node. This is NOT the kind of the cursor itself, and may
+    /// differ from a cursor holding the node.
     fn kind(&self) -> CXCursorKind {
         unsafe {
             match *self {
@@ -118,6 +142,7 @@ impl fmt::Debug for Cursor {
 }
 
 impl Cursor {
+    /// Create a new Cursor from an ASTNode and a clang ASTUnit
     fn new(node: ASTNode, unit: *mut clang_interface::clang_ASTUnit) -> Self {
         Self {
             node,
@@ -126,10 +151,13 @@ impl Cursor {
         }
     }
 
+    /// Create a new Cursor with the given ASTNode in the same clang ASTUnit as
+    /// self.
     fn with_node(&self, node: ASTNode) -> Self {
         Self::new(node, self.unit)
     }
 
+    /// Get the clang ASTContext for this cursor
     fn context(&self) -> *mut clang_interface::clang_ASTContext {
         unsafe { clang_interface::ASTUnit_getContext(self.unit) }
     }
@@ -174,20 +202,6 @@ impl Cursor {
             }
         }
     }
-
-    // /// Get this cursor's referent's display name.
-    // ///
-    // /// This is not necessarily a valid identifier. It includes extra
-    // /// information, such as parameters for a function, etc.
-    // pub fn display_name(&self) -> String {
-    //     unsafe {
-    //         match self.node {
-    //             ASTNode::Decl(d) => clang_interface::Decl_getDisplayName(d).to_string(),
-    //             ASTNode::Expr(e) => clang_interface::Expr_getDisplayName(e).to_string(),
-    //             _ => String::new(),
-    //         }
-    //     }
-    // }
 
     /// Get the mangled name of this cursor's referent.
     pub fn mangling(&self) -> String {
