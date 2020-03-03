@@ -1,7 +1,6 @@
 #ifndef BINDGEN_CLANG_AST_H
 #define BINDGEN_CLANG_AST_H
 
-#include "clang/Basic/Version.h"
 #include "clang-c/Documentation.h"
 #include "clang-c/Index.h"
 
@@ -31,22 +30,6 @@ namespace comments {
 struct Comment;
 struct FullComment;
 } // namespace comments
-
-#if CLANG_VERSION_MAJOR < 3 || (CLANG_VERSION_MAJOR == 3 && CLANG_VERSION_MINOR <= 8)
-// Clang <= 3.8 doesn't include this enum, but we can still expose the same
-// functionality
-typedef enum {
-  CXEval_Int = 1 ,
-  CXEval_Float = 2,
-  CXEval_ObjCStrLiteral = 3,
-  CXEval_StrLiteral = 4,
-  CXEval_CFStr = 5,
-  CXEval_Other = 6,
-
-  CXEval_UnExposed = 0
-
-} CXEvalResultKind ;
-#endif
 
 } // namespace clang
 
