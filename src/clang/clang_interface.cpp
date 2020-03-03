@@ -912,7 +912,7 @@ public:
   explicit BindgenVisitor(ASTUnit &AST, Visitor V, CXClientData data) : AST(AST), VisitFn(V), Data(data) {}
 
   bool shouldVisitImplicitCode() {
-    return false;
+    return true;
   }
 
   void setParent(Node n) {
@@ -920,8 +920,8 @@ public:
   }
 
   bool TraverseDeclTyped(Decl *D, CXCursorKind kind) {
-    if (!D || (D->isImplicit() && !isa<ObjCMethodDecl>(D)))
-      return true;
+    if (!D)
+      return false;
 
     bool skip = !Parent;
 
@@ -945,6 +945,10 @@ public:
     // D->dump();
     Node node(D, kind);
     if (!skip) {
+      // We don't want to visit implicit decls or their children
+      if (D->isImplicit() && !isa<ObjCMethodDecl>(D))
+        return true;
+
       switch (VisitFn(node, Parent, &AST, Data)) {
       case CXChildVisit_Break:
         return false;
