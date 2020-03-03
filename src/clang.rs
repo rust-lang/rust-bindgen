@@ -847,10 +847,10 @@ impl Cursor {
     /// Get the access specifier for this cursor's referent.
     pub fn access_specifier(&self) -> CX_CXXAccessSpecifier {
         match self.node {
-            ASTNode::Decl(d) => unsafe {
-                clang_interface::Decl_getAccess(d)
+            ASTNode::Decl(d) => unsafe { clang_interface::Decl_getAccess(d) },
+            ASTNode::CXXBaseSpecifier(b) => unsafe {
+                clang_interface::CXXBaseSpecifier_getAccess(b)
             },
-            // TODO(sjc): handle CXXBaseSpecifier cursors
             _ => CX_CXXInvalidAccessSpecifier,
         }
     }

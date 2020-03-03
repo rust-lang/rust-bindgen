@@ -7258,6 +7258,12 @@ extern "C" {
     ) -> BindgenSourceRange;
 }
 extern "C" {
+    #[link_name = "\u{1}_Z26CXXBaseSpecifier_getAccessPKN5clang16CXXBaseSpecifierE"]
+    pub fn CXXBaseSpecifier_getAccess(
+        arg1: *const clang_CXXBaseSpecifier,
+    ) -> CX_CXXAccessSpecifier::Type;
+}
+extern "C" {
     #[link_name = "\u{1}_Z19Attr_getSourceRangePKN5clang4AttrE"]
     pub fn Attr_getSourceRange(arg1: *const clang_Attr) -> BindgenSourceRange;
 }
