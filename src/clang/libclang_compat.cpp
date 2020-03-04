@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 #include "llvm/Support/CrashRecoveryContext.h"
+#include "clang/AST/Attr.h"
 #include "clang/AST/Comment.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclFriend.h"
