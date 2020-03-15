@@ -49,6 +49,12 @@ impl clang_interface::BindgenSourceRange {
     }
 }
 
+impl Drop for clang_interface::BindgenSourceRange {
+    fn drop(&mut self) {
+        unsafe { clang_interface::deleteSourceRange(self); }
+    }
+}
+
 trait ToCString {
     fn to_cstring(&self) -> CString;
 }
@@ -67,6 +73,18 @@ impl fmt::Display for clang_interface::BindgenStringRef {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let str = self.to_cstring();
         write!(f, "{}", str.to_str().unwrap())
+    }
+}
+
+impl Drop for clang_interface::BindgenStringRef {
+    fn drop(&mut self) {
+        unsafe { clang_interface::deleteString(self); }
+    }
+}
+
+impl Drop for clang_interface::BindgenStringRefSet {
+    fn drop(&mut self) {
+        unsafe { clang_interface::deleteStringSet(self); }
     }
 }
 
@@ -246,7 +264,6 @@ impl Cursor {
                 let string_ptr = manglings.strings.offset(i as isize);
                 result.push((*string_ptr).to_string());
             }
-            // clang_disposeStringSet(manglings);
             Ok(result)
         }
     }
@@ -457,7 +474,7 @@ impl Cursor {
                 ASTNode::PreprocessedEntity(p) => {
                     clang_interface::PreprocessedEntity_getLocation(p)
                 }
-                ASTNode::Invalid => ptr::null(),
+                ASTNode::Invalid => ptr::null_mut(),
             };
             SourceLocation { x, unit: self.unit }
         }
@@ -1090,11 +1107,11 @@ impl<'a> RawTokens<'a> {
     fn new(cursor: &'a Cursor) -> Self {
         let mut tokens = ptr::null_mut();
         let mut token_count = 0;
-        let range = cursor.extent();
         let tu = cursor.translation_unit();
+        let range = cursor.extent();
         unsafe {
-            clang_interface::tokenize(tu, range, &mut tokens, &mut token_count)
-        };
+            clang_interface::tokenize(tu, range, &mut tokens, &mut token_count);
+        }
         Self {
             cursor,
             tu,
@@ -1718,7 +1735,7 @@ impl ExactSizeIterator for TypeTemplateArgIterator {
 /// A `SourceLocation` is a file, line, column, and byte offset location for
 /// some source text.
 pub struct SourceLocation {
-    x: *const clang_interface::clang_SourceLocation,
+    x: *mut clang_interface::clang_SourceLocation,
     unit: *mut clang_interface::clang_ASTUnit,
 }
 
@@ -1746,6 +1763,14 @@ impl fmt::Display for SourceLocation {
             write!(f, "{}:{}:{}", name, line, col)
         } else {
             "builtin definitions".fmt(f)
+        }
+    }
+}
+
+impl Drop for SourceLocation {
+    fn drop(&mut self) {
+        unsafe {
+            clang_interface::deleteSourceLocation(self.x);
         }
     }
 }
@@ -2327,6 +2352,12 @@ pub struct EvalResult {
     x: *mut clang_interface::EvalResult,
 }
 
+impl Drop for EvalResult {
+    fn drop(&mut self) {
+        unsafe { clang_interface::deleteEvalResult(self.x); }
+    }
+}
+
 impl EvalResult {
     fn kind(&self) -> CXEvalResultKind {
         unsafe { clang_interface::EvalResult_getKind(self.x) }
@@ -2375,11 +2406,8 @@ impl EvalResult {
     pub fn as_literal_string(&self) -> Option<Vec<u8>> {
         match self.kind() {
             CXEval_StrLiteral => {
-                let ret = unsafe {
-                    CStr::from_ptr(clang_interface::cString(
-                        clang_interface::EvalResult_getAsStr(self.x),
-                    ))
-                };
+                let mut stringref = unsafe { clang_interface::EvalResult_getAsStr(self.x) };
+                let ret = unsafe { CStr::from_ptr(clang_interface::cString(&mut stringref)) };
                 Some(ret.to_bytes().to_vec())
             }
             _ => None,

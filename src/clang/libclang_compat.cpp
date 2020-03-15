@@ -1639,6 +1639,11 @@ void tokenize(ASTUnit *TU, BindgenSourceRange Range, CXToken **Tokens,
   std::pair<FileID, unsigned> EndLocInfo =
       SourceMgr.getDecomposedSpellingLoc(EndLoc);
 
+  // BindgenSourceRange elements need to be manually destructed because it is
+  // C-style struct shared with Rust.
+  delete Range.B;
+  delete Range.E;
+
   // Cannot tokenize across files.
   if (BeginLocInfo.first != EndLocInfo.first)
     return;

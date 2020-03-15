@@ -70,8 +70,16 @@ struct BindgenSourceRange {
 
 
 
-void freeString(BindgenStringRef s);
-char *cString(BindgenStringRef s);
+void deleteString(BindgenStringRef *s);
+char *cString(BindgenStringRef *s);
+
+void deleteStringSet(BindgenStringRefSet *s);
+
+void deleteSourceLocation(SourceLocation *s);
+
+void deleteSourceRange(BindgenSourceRange *s);
+
+void deleteEvalResult(EvalResult *e);
 
 ASTContext *ASTUnit_getContext(ASTUnit *);
 ASTUnit *parseTranslationUnit(const char *source_filename,

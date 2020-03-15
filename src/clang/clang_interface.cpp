@@ -66,11 +66,39 @@ BindgenStringRefSet make_stringrefset(std::vector<std::string> &string_vec) {
   return set;
 }
 
-void freeString(BindgenStringRef s) {
-  delete[] s.s;
+void deleteString(BindgenStringRef *s) {
+  if (s)
+    delete[] s->s;
 }
 
-char *cString(BindgenStringRef s) { return s.s; }
+char *cString(BindgenStringRef *s) {
+  return s ? s->s : nullptr;
+}
+
+void deleteStringSet(BindgenStringRefSet *s) {
+  if (s) {
+    for (size_t i = 0; i < s->len; ++i) {
+      delete[] s->strings[i].s;
+    }
+    delete[] s->strings;
+  }
+}
+
+void deleteSourceLocation(SourceLocation *s) {
+  if (s)
+    delete s;
+}
+
+void deleteSourceRange(BindgenSourceRange *s) {
+  if (s) {
+    delete s->B;
+    delete s->E;
+  }
+}
+
+void deleteEvalResult(EvalResult *e) {
+  delete e;
+}
 
 ASTContext *ASTUnit_getContext(ASTUnit *Unit) {
   return &Unit->getASTContext();
