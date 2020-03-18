@@ -96,10 +96,6 @@ void deleteSourceRange(BindgenSourceRange *s) {
   }
 }
 
-void deleteEvalResult(EvalResult *e) {
-  delete e;
-}
-
 ASTContext *ASTUnit_getContext(ASTUnit *Unit) {
   return &Unit->getASTContext();
 }
@@ -149,6 +145,10 @@ struct EvalResult {
   }
   EvalResult(std::string str) : EvalType(CXEval_StrLiteral), stringVal(str) {}
 };
+
+void deleteEvalResult(EvalResult *e) {
+  delete e;
+}
 
 EvalResult *Expr_Evaluate(const Expr *E, ASTContext *Ctx) {
   if (!E || E->isValueDependent())
