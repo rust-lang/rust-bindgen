@@ -1,12 +1,9 @@
 #ifndef BINDGEN_CLANG_AST_H
 #define BINDGEN_CLANG_AST_H
 
+#include <cstdint>
 #include "clang-c/Documentation.h"
 #include "clang-c/Index.h"
-
-typedef unsigned long size_t;
-typedef unsigned long uint64_t;
-typedef long int64_t;
 
 namespace clang {
 struct ASTUnit;
