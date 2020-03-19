@@ -73,6 +73,7 @@ mod testgen {
 mod clang_ast {
     use std::env;
     use std::ffi::OsStr;
+    use std::fs;
     use std::path::{Path, PathBuf};
     use std::process::{Command, Stdio};
 
@@ -122,52 +123,75 @@ mod clang_ast {
         println!("cargo:rerun-if-changed=src/clang/clang_interface.cpp");
         println!("cargo:rerun-if-changed=src/clang/libclang_compat.cpp");
         // Build libBindgenClangInterface.a with cmake
-        let dst = cmake::Config::new("src/clang")
+        let out_dir = cmake::Config::new("src/clang")
             .define("LLVM_DIR", llvm_cmake_dir.as_os_str())
             .define("Clang_DIR", clang_cmake_dir.as_os_str())
             .build();
 
         // Set up search path for newly built libBindgenClangInterface.a
-        let mut out_dir = dst;
-        out_dir.push("lib");
-        println!("cargo:rustc-link-search=native={}", out_dir.display());
+        let lib_dir = out_dir.join("lib");
+        println!("cargo:rustc-link-search=native={}", lib_dir.display());
 
         // Statically link against our library, 'BindgenClangInterface'
         println!("cargo:rustc-link-lib=static=BindgenClangInterface");
 
-        // Link against these Clang libs. The ordering here is important! Libraries
-        // must be listed before their dependencies when statically linking.
+        let deps_filepath = out_dir.join("BindgenClangInterface.deps");
         println!("cargo:rustc-link-search=native={}", llvm_lib_dir);
-        for lib in &[
-            "clangIndex",
-            "clangFrontend",
-            "clangParse",
-            "clangSerialization",
-            "clangSema",
-            "clangEdit",
-            "clangAnalysis",
-            "clangDriver",
-            "clangFormat",
-            "clangToolingCore",
-            "clangAST",
-            "clangLex",
-            "clangBasic",
-        ] {
-            println!("cargo:rustc-link-lib={}", lib);
-        }
+        if deps_filepath.is_file() {
+            // Our CMake script was able to generate a list of dependencies for
+            // us. This should be more accurate than what we build here.
+            let deps_file = fs::read_to_string(deps_filepath)
+                .expect("Could not read deps file");
+            let deps = deps_file
+                .split(";")
+                .filter(|dep| {
+                    // We're skipping any dependencies with delayLoad, because
+                    // rustc doesn't know how to handle these. We don't seem to
+                    // need them anyway.
+                    !dep.starts_with("-delayload")
+                });
+            for lib in deps {
+                println!("cargo:rustc-link-lib={}", lib);
+            }
+        } else {
+            // Link against these Clang libs. The ordering here is important! Libraries
+            // must be listed before their dependencies when statically linking.
+            for lib in &[
+                "clangIndex",
+                "clangFrontend",
+                "clangParse",
+                "clangSerialization",
+                "clangSema",
+                "clangEdit",
+                "clangAnalysis",
+                "clangDriver",
+                "clangFormat",
+                "clangToolingCore",
+                "clangAST",
+                "clangLex",
+                "clangBasic",
+            ] {
+                println!("cargo:rustc-link-lib={}", lib);
+            }
 
-        for lib in &llvm_info.libs {
-            // IMPORTANT: We cannot specify static= or dylib= here because rustc
-            // will reorder those libs before the clang libs above which don't have
-            // static or dylib.
-            println!("cargo:rustc-link-lib={}", lib);
-        }
+            for lib in &llvm_info.libs {
+                // IMPORTANT: We cannot specify static= or dylib= here because rustc
+                // will reorder those libs before the clang libs above which don't have
+                // static or dylib.
+                println!("cargo:rustc-link-lib={}", lib);
+            }
 
-        // Link against the C++ std library.
-        if cfg!(target_os = "macos") {
-            println!("cargo:rustc-link-lib=c++");
-        } else if cfg!(not(target_os = "windows")) {
-            println!("cargo:rustc-link-lib=stdc++");
+            // Link against the C++ std library.
+            if cfg!(target_os = "macos") {
+                println!("cargo:rustc-link-lib=c++");
+            } else if cfg!(not(target_os = "windows")) {
+                println!("cargo:rustc-link-lib=stdc++");
+            }
+
+            // clangDriver links against system version.lib on windows
+            if cfg!(target_os = "windows") {
+                println!("cargo:rustc-link-lib=version")
+            }
         }
     }
 
@@ -410,11 +434,11 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
                 args.insert(1, link_mode);
             }
             let mut libs: Vec<String> =
-            invoke_command(llvm_config.as_ref(), &args)
-                .unwrap_or("-lLLVM".to_string())
-                .split_whitespace()
-                .map(clean_lib_path)
-                .collect();
+                invoke_command(llvm_config.as_ref(), &args)
+                    .unwrap_or("-lLLVM".to_string())
+                    .split_whitespace()
+                    .map(clean_lib_path)
+                    .collect();
 
             libs.extend(
                 build_var("LLVM_SYSTEM_LIBS")
@@ -427,7 +451,7 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
                     })
                     .unwrap_or(String::new())
                     .split_whitespace()
-                    .map(clean_lib_path)
+                    .map(clean_lib_path),
             );
 
             Self {
