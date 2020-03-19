@@ -18,6 +18,7 @@
     - [Replacing One Type with Another](./replacing-types.md)
     - [Preventing the Derivation of `Copy` and `Clone`](./nocopy.md)
 - [Generating Bindings to C++](./cpp.md)
+- [Generating Bindings to Objective-c](./objc.md)
 - [Using Unions](./using-unions.md)
 - [Using Bitfields](./using-bitfields.md)
 - [FAQ](./faq.md)
