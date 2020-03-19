@@ -6821,55 +6821,29 @@ fn bindgen_test_layout_BindgenSourceRange() {
     );
 }
 extern "C" {
-    #[link_name = "\u{1}_ZN18BindgenSourceRangeC1ERKN5clang11SourceRangeE"]
-    pub fn BindgenSourceRange_BindgenSourceRange(
-        this: *mut BindgenSourceRange,
-        range: *const clang_SourceRange,
-    );
-}
-impl BindgenSourceRange {
-    #[inline]
-    pub unsafe fn new(range: *const clang_SourceRange) -> Self {
-        let mut __bindgen_tmp = ::std::mem::MaybeUninit::uninit();
-        BindgenSourceRange_BindgenSourceRange(
-            __bindgen_tmp.as_mut_ptr(),
-            range,
-        );
-        __bindgen_tmp.assume_init()
-    }
-}
-extern "C" {
-    #[link_name = "\u{1}_Z12deleteStringP16BindgenStringRef"]
     pub fn deleteString(s: *mut BindgenStringRef);
 }
 extern "C" {
-    #[link_name = "\u{1}_Z7cStringP16BindgenStringRef"]
     pub fn cString(s: *mut BindgenStringRef) -> *mut ::std::os::raw::c_char;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z15deleteStringSetP19BindgenStringRefSet"]
     pub fn deleteStringSet(s: *mut BindgenStringRefSet);
 }
 extern "C" {
-    #[link_name = "\u{1}_Z20deleteSourceLocationPN5clang14SourceLocationE"]
     pub fn deleteSourceLocation(s: *mut clang_SourceLocation);
 }
 extern "C" {
-    #[link_name = "\u{1}_Z17deleteSourceRangeP18BindgenSourceRange"]
     pub fn deleteSourceRange(s: *mut BindgenSourceRange);
 }
 extern "C" {
-    #[link_name = "\u{1}_Z16deleteEvalResultP10EvalResult"]
     pub fn deleteEvalResult(e: *mut EvalResult);
 }
 extern "C" {
-    #[link_name = "\u{1}_Z18ASTUnit_getContextPN5clang7ASTUnitE"]
     pub fn ASTUnit_getContext(
         arg1: *mut clang_ASTUnit,
     ) -> *mut clang_ASTContext;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z20parseTranslationUnitPKcPKS0_ijP13CXUnsavedFilej"]
     pub fn parseTranslationUnit(
         source_filename: *const ::std::os::raw::c_char,
         command_line_args: *const *const ::std::os::raw::c_char,
@@ -6880,357 +6854,286 @@ extern "C" {
     ) -> *mut clang_ASTUnit;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z14disposeASTUnitPN5clang7ASTUnitE"]
     pub fn disposeASTUnit(AU: *mut clang_ASTUnit);
 }
 extern "C" {
-    #[link_name = "\u{1}_Z25ASTUnit_getNumDiagnosticsPKN5clang7ASTUnitE"]
     pub fn ASTUnit_getNumDiagnostics(
         AU: *const clang_ASTUnit,
     ) -> ::std::os::raw::c_uint;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z21ASTUnit_getDiagnosticPKN5clang7ASTUnitEj"]
     pub fn ASTUnit_getDiagnostic(
         AU: *const clang_ASTUnit,
         i: ::std::os::raw::c_uint,
     ) -> *const clang_StoredDiagnostic;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z21ASTUnit_getTargetInfoPN5clang7ASTUnitE"]
     pub fn ASTUnit_getTargetInfo(
         AU: *mut clang_ASTUnit,
     ) -> *const clang_TargetInfo;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z26TargetInfo_getPointerWidthPKN5clang10TargetInfoE"]
     pub fn TargetInfo_getPointerWidth(
         TI: *const clang_TargetInfo,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z20TargetInfo_getTriplePKN5clang10TargetInfoE"]
     pub fn TargetInfo_getTriple(
         TI: *const clang_TargetInfo,
     ) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z13Expr_EvaluatePKN5clang4ExprEPNS_10ASTContextE"]
     pub fn Expr_Evaluate(
         E: *const clang_Expr,
         Ctx: *mut clang_ASTContext,
     ) -> *mut EvalResult;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z13Decl_EvaluatePKN5clang4DeclEPNS_10ASTContextE"]
     pub fn Decl_Evaluate(
         D: *const clang_Decl,
         Ctx: *mut clang_ASTContext,
     ) -> *mut EvalResult;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z18EvalResult_getKindP10EvalResult"]
     pub fn EvalResult_getKind(arg1: *mut EvalResult) -> CXEvalResultKind::Type;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z22EvalResult_getAsDoubleP10EvalResult"]
     pub fn EvalResult_getAsDouble(arg1: *mut EvalResult) -> f64;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z24EvalResult_isUnsignedIntP10EvalResult"]
     pub fn EvalResult_isUnsignedInt(arg1: *mut EvalResult) -> bool;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z24EvalResult_getAsUnsignedP10EvalResult"]
     pub fn EvalResult_getAsUnsigned(
         arg1: *mut EvalResult,
     ) -> ::std::os::raw::c_ulonglong;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z24EvalResult_getAsLongLongP10EvalResult"]
     pub fn EvalResult_getAsLongLong(
         arg1: *mut EvalResult,
     ) -> ::std::os::raw::c_longlong;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z19EvalResult_getAsStrP10EvalResult"]
     pub fn EvalResult_getAsStr(arg1: *mut EvalResult) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z17Diagnostic_formatPKN5clang16StoredDiagnosticE"]
     pub fn Diagnostic_format(
         arg1: *const clang_StoredDiagnostic,
     ) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z22Diagnostic_getSeverityPKN5clang16StoredDiagnosticE"]
     pub fn Diagnostic_getSeverity(
         arg1: *const clang_StoredDiagnostic,
     ) -> CXDiagnosticSeverity::Type;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z22getTranslationUnitDeclPN5clang7ASTUnitE"]
     pub fn getTranslationUnitDecl(
         arg1: *mut clang_ASTUnit,
     ) -> *const clang_Decl;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z20CursorKind_isInvalid12CXCursorKind"]
     pub fn CursorKind_isInvalid(kind: CXCursorKind::Type) -> bool;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z21Decl_getLexicalParentPKN5clang4DeclE"]
     pub fn Decl_getLexicalParent(D: *const clang_Decl) -> *const clang_Decl;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z22Decl_getSemanticParentPKN5clang4DeclE"]
     pub fn Decl_getSemanticParent(D: *const clang_Decl) -> *const clang_Decl;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z18Decl_getDefinitionPKN5clang4DeclEb"]
     pub fn Decl_getDefinition(
         D: *const clang_Decl,
         isReference: bool,
     ) -> *const clang_Decl;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z18Decl_getReferencedPKN5clang4DeclE"]
     pub fn Decl_getReferenced(D: *const clang_Decl) -> *const clang_Decl;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z17Decl_getCanonicalPKN5clang4DeclE"]
     pub fn Decl_getCanonical(D: *const clang_Decl) -> *const clang_Decl;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z27Decl_getSpecializedTemplatePKN5clang4DeclE"]
     pub fn Decl_getSpecializedTemplate(
         D: *const clang_Decl,
     ) -> *const clang_Decl;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z26Decl_getTemplateCursorKindPKN5clang4DeclE"]
     pub fn Decl_getTemplateCursorKind(
         D: *const clang_Decl,
     ) -> CXCursorKind::Type;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z16Decl_getArgumentPKN5clang4DeclEj"]
     pub fn Decl_getArgument(
         D: *const clang_Decl,
         i: ::std::os::raw::c_uint,
     ) -> *const clang_Decl;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z20Decl_getNumArgumentsPKN5clang4DeclE"]
     pub fn Decl_getNumArguments(D: *const clang_Decl) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z11Decl_getUSRPKN5clang4DeclE"]
     pub fn Decl_getUSR(D: *const clang_Decl) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z16Decl_getSpellingPKN5clang4DeclE"]
     pub fn Decl_getSpelling(D: *const clang_Decl) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z19Decl_getDisplayNamePKN5clang4DeclE"]
     pub fn Decl_getDisplayName(D: *const clang_Decl) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z16Decl_getManglingPKN5clang4DeclEPNS_10ASTContextE"]
     pub fn Decl_getMangling(
         D: *const clang_Decl,
         arg1: *mut clang_ASTContext,
     ) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z20Decl_getCXXManglingsPKN5clang4DeclEPNS_10ASTContextE"]
     pub fn Decl_getCXXManglings(
         D: *const clang_Decl,
         arg1: *mut clang_ASTContext,
     ) -> BindgenStringRefSet;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z28Decl_getNumTemplateArgumentsPKN5clang4DeclE"]
     pub fn Decl_getNumTemplateArguments(
         D: *const clang_Decl,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z20Decl_getCXCursorKindPKN5clang4DeclE"]
     pub fn Decl_getCXCursorKind(D: *const clang_Decl) -> CXCursorKind::Type;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z17Decl_isDefinitionPKN5clang4DeclE"]
     pub fn Decl_isDefinition(D: *const clang_Decl) -> bool;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z16Decl_getLocationPKN5clang4DeclE"]
     pub fn Decl_getLocation(D: *const clang_Decl) -> *mut clang_SourceLocation;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z22Decl_getRawCommentTextPKN5clang4DeclEPNS_10ASTContextE"]
     pub fn Decl_getRawCommentText(
         D: *const clang_Decl,
         arg1: *mut clang_ASTContext,
     ) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z21Decl_getParsedCommentPKN5clang4DeclEPNS_10ASTContextE"]
     pub fn Decl_getParsedComment(
         D: *const clang_Decl,
         arg1: *mut clang_ASTContext,
     ) -> *mut clang_comments_Comment;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z12Decl_getTypePKN5clang4DeclEPNS_10ASTContextE"]
     pub fn Decl_getType(
         D: *const clang_Decl,
         arg1: *mut clang_ASTContext,
     ) -> clang_QualType;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z22Decl_isFunctionInlinedPKN5clang4DeclE"]
     pub fn Decl_isFunctionInlined(D: *const clang_Decl) -> bool;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z25Decl_getFieldDeclBitWidthPKN5clang4DeclEPNS_10ASTContextE"]
     pub fn Decl_getFieldDeclBitWidth(
         D: *const clang_Decl,
         arg1: *mut clang_ASTContext,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z27Decl_getEnumDeclIntegerTypePKN5clang4DeclE"]
     pub fn Decl_getEnumDeclIntegerType(D: *const clang_Decl) -> clang_QualType;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z25Decl_getEnumConstantValuePKN5clang4DeclE"]
     pub fn Decl_getEnumConstantValue(D: *const clang_Decl) -> i64;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z33Decl_getEnumConstantUnsignedValuePKN5clang4DeclE"]
     pub fn Decl_getEnumConstantUnsignedValue(D: *const clang_Decl) -> u64;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z21Decl_getOffsetOfFieldPKN5clang4DeclEPNS_10ASTContextE"]
     pub fn Decl_getOffsetOfField(
         D: *const clang_Decl,
         arg1: *mut clang_ASTContext,
     ) -> ::std::os::raw::c_longlong;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z19Decl_getSourceRangePKN5clang4DeclE"]
     pub fn Decl_getSourceRange(D: *const clang_Decl) -> BindgenSourceRange;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z33Decl_getTypedefDeclUnderlyingTypePKN5clang4DeclE"]
     pub fn Decl_getTypedefDeclUnderlyingType(
         D: *const clang_Decl,
     ) -> clang_QualType;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z15Decl_getLinkagePKN5clang4DeclE"]
     pub fn Decl_getLinkage(D: *const clang_Decl) -> CXLinkageKind::Type;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z18Decl_getVisibilityPKN5clang4DeclE"]
     pub fn Decl_getVisibility(D: *const clang_Decl) -> CXVisibilityKind::Type;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z14Decl_getAccessPKN5clang4DeclE"]
     pub fn Decl_getAccess(D: *const clang_Decl) -> CX_CXXAccessSpecifier::Type;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z18CXXField_isMutablePKN5clang4DeclE"]
     pub fn CXXField_isMutable(D: *const clang_Decl) -> bool;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z18CXXMethod_isStaticPKN5clang4DeclE"]
     pub fn CXXMethod_isStatic(D: *const clang_Decl) -> bool;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z17CXXMethod_isConstPKN5clang4DeclE"]
     pub fn CXXMethod_isConst(D: *const clang_Decl) -> bool;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z19CXXMethod_isVirtualPKN5clang4DeclE"]
     pub fn CXXMethod_isVirtual(D: *const clang_Decl) -> bool;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z23CXXMethod_isPureVirtualPKN5clang4DeclE"]
     pub fn CXXMethod_isPureVirtual(D: *const clang_Decl) -> bool;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z18Decl_getResultTypePKN5clang4DeclEPNS_10ASTContextE"]
     pub fn Decl_getResultType(
         D: *const clang_Decl,
         arg1: *mut clang_ASTContext,
     ) -> clang_QualType;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z16Expr_getArgumentPKN5clang4ExprEj"]
     pub fn Expr_getArgument(
         E: *const clang_Expr,
         i: ::std::os::raw::c_uint,
     ) -> *const clang_Expr;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z20Expr_getNumArgumentsPKN5clang4ExprE"]
     pub fn Expr_getNumArguments(E: *const clang_Expr) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z11Expr_getUSRPKN5clang4ExprE"]
     pub fn Expr_getUSR(E: *const clang_Expr) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z16Expr_getSpellingPKN5clang4ExprE"]
     pub fn Expr_getSpelling(E: *const clang_Expr) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z19Expr_getDisplayNamePKN5clang4ExprE"]
     pub fn Expr_getDisplayName(E: *const clang_Expr) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z16Expr_getManglingPKN5clang4ExprE"]
     pub fn Expr_getMangling(E: *const clang_Expr) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z20Expr_getCXXManglingsPKN5clang4ExprE"]
     pub fn Expr_getCXXManglings(E: *const clang_Expr) -> BindgenStringRefSet;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z20Expr_getCXCursorKindPKN5clang4ExprE"]
     pub fn Expr_getCXCursorKind(E: *const clang_Expr) -> CXCursorKind::Type;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z16Expr_getLocationPKN5clang4ExprE"]
     pub fn Expr_getLocation(E: *const clang_Expr) -> *mut clang_SourceLocation;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z22Expr_getRawCommentTextPKN5clang4ExprE"]
     pub fn Expr_getRawCommentText(E: *const clang_Expr) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z21Expr_getParsedCommentPKN5clang4ExprE"]
     pub fn Expr_getParsedComment(
         E: *const clang_Expr,
     ) -> *mut clang_comments_FullComment;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z12Expr_getTypePKN5clang4ExprE"]
     pub fn Expr_getType(E: *const clang_Expr) -> clang_QualType;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z19Expr_getSourceRangePKN5clang4ExprE"]
     pub fn Expr_getSourceRange(E: *const clang_Expr) -> BindgenSourceRange;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z19Type_getDeclarationN5clang8QualTypeE"]
     pub fn Type_getDeclaration(arg1: clang_QualType) -> *const clang_Decl;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z20Attr_getCXCursorKindPKN5clang4AttrE"]
     pub fn Attr_getCXCursorKind(arg1: *const clang_Attr) -> CXCursorKind::Type;
 }
 #[repr(C)]
@@ -7364,7 +7267,6 @@ pub type Visitor = ::std::option::Option<
     ) -> CXChildVisitResult::Type,
 >;
 extern "C" {
-    #[link_name = "\u{1}_Z18Decl_visitChildrenPKN5clang4DeclE12CXCursorKindPF18CXChildVisitResult4NodeS5_PNS_7ASTUnitEPvES7_S8_"]
     pub fn Decl_visitChildren(
         Parent: *const clang_Decl,
         kind: CXCursorKind::Type,
@@ -7374,7 +7276,6 @@ extern "C" {
     );
 }
 extern "C" {
-    #[link_name = "\u{1}_Z18Expr_visitChildrenPKN5clang4ExprE12CXCursorKindPF18CXChildVisitResult4NodeS5_PNS_7ASTUnitEPvES7_S8_"]
     pub fn Expr_visitChildren(
         Parent: *const clang_Expr,
         kind: CXCursorKind::Type,
@@ -7384,7 +7285,6 @@ extern "C" {
     );
 }
 extern "C" {
-    #[link_name = "\u{1}_Z30CXXBaseSpecifier_visitChildrenPKN5clang16CXXBaseSpecifierE12CXCursorKindPF18CXChildVisitResult4NodeS5_PNS_7ASTUnitEPvES7_S8_"]
     pub fn CXXBaseSpecifier_visitChildren(
         Parent: *const clang_CXXBaseSpecifier,
         kind: CXCursorKind::Type,
@@ -7394,7 +7294,6 @@ extern "C" {
     );
 }
 extern "C" {
-    #[link_name = "\u{1}_Z8tokenizePN5clang7ASTUnitE18BindgenSourceRangePP7CXTokenPj"]
     pub fn tokenize(
         TU: *mut clang_ASTUnit,
         Range: BindgenSourceRange,
@@ -7403,7 +7302,6 @@ extern "C" {
     );
 }
 extern "C" {
-    #[link_name = "\u{1}_Z13disposeTokensPKN5clang7ASTUnitEP7CXTokenj"]
     pub fn disposeTokens(
         TU: *const clang_ASTUnit,
         Tokens: *mut CXToken,
@@ -7411,111 +7309,91 @@ extern "C" {
     );
 }
 extern "C" {
-    #[link_name = "\u{1}_Z12getTokenKind7CXToken"]
     pub fn getTokenKind(token: CXToken) -> CXTokenKind::Type;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z16getTokenSpellingPN5clang7ASTUnitE7CXToken"]
     pub fn getTokenSpelling(
         TU: *mut clang_ASTUnit,
         token: CXToken,
     ) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z9Type_kindN5clang8QualTypeEPNS_10ASTContextE"]
     pub fn Type_kind(
         arg1: clang_QualType,
         arg2: *mut clang_ASTContext,
     ) -> CXTypeKind::Type;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z20Type_getTypeSpellingN5clang8QualTypeEPNS_10ASTContextE"]
     pub fn Type_getTypeSpelling(
         arg1: clang_QualType,
         arg2: *mut clang_ASTContext,
     ) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z25Type_isConstQualifiedTypeN5clang8QualTypeE"]
     pub fn Type_isConstQualifiedType(arg1: clang_QualType) -> bool;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z14Type_getSizeOfN5clang8QualTypeEPNS_10ASTContextE"]
     pub fn Type_getSizeOf(
         arg1: clang_QualType,
         arg2: *mut clang_ASTContext,
     ) -> ::std::os::raw::c_longlong;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z15Type_getAlignOfN5clang8QualTypeEPNS_10ASTContextE"]
     pub fn Type_getAlignOf(
         arg1: clang_QualType,
         arg2: *mut clang_ASTContext,
     ) -> ::std::os::raw::c_longlong;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z28Type_getNumTemplateArgumentsN5clang8QualTypeE"]
     pub fn Type_getNumTemplateArguments(
         arg1: clang_QualType,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z15Type_getArgTypeN5clang8QualTypeEj"]
     pub fn Type_getArgType(
         T: clang_QualType,
         index: ::std::os::raw::c_uint,
     ) -> clang_QualType;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z19Type_getNumArgTypesN5clang8QualTypeE"]
     pub fn Type_getNumArgTypes(arg1: clang_QualType) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z19Type_getPointeeTypeN5clang8QualTypeE"]
     pub fn Type_getPointeeType(arg1: clang_QualType) -> clang_QualType;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z19Type_getElementTypeN5clang8QualTypeE"]
     pub fn Type_getElementType(arg1: clang_QualType) -> clang_QualType;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z19Type_getNumElementsN5clang8QualTypeE"]
     pub fn Type_getNumElements(arg1: clang_QualType) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z21Type_getCanonicalTypeN5clang8QualTypeEPNS_10ASTContextE"]
     pub fn Type_getCanonicalType(
         arg1: clang_QualType,
         arg2: *mut clang_ASTContext,
     ) -> clang_QualType;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z27Type_isFunctionTypeVariadicN5clang8QualTypeE"]
     pub fn Type_isFunctionTypeVariadic(arg1: clang_QualType) -> bool;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z18Type_getResultTypeN5clang8QualTypeE"]
     pub fn Type_getResultType(arg1: clang_QualType) -> clang_QualType;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z31Type_getFunctionTypeCallingConvN5clang8QualTypeE"]
     pub fn Type_getFunctionTypeCallingConv(
         arg1: clang_QualType,
     ) -> CXCallingConv::Type;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z17Type_getNamedTypeN5clang8QualTypeE"]
     pub fn Type_getNamedType(arg1: clang_QualType) -> clang_QualType;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z30Type_getTemplateArgumentAsTypeN5clang8QualTypeEj"]
     pub fn Type_getTemplateArgumentAsType(
         T: clang_QualType,
         index: ::std::os::raw::c_uint,
     ) -> clang_QualType;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z19getSpellingLocationPN5clang7ASTUnitEPKNS_14SourceLocationEPPNS_9FileEntryEPiS8_S8_"]
     pub fn getSpellingLocation(
         AST: *mut clang_ASTUnit,
         T: *const clang_SourceLocation,
@@ -7526,133 +7404,110 @@ extern "C" {
     );
 }
 extern "C" {
-    #[link_name = "\u{1}_Z15Comment_getKindPKN5clang8comments7CommentE"]
     pub fn Comment_getKind(
         arg1: *const clang_comments_Comment,
     ) -> CXCommentKind::Type;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z22Comment_getNumChildrenPKN5clang8comments7CommentE"]
     pub fn Comment_getNumChildren(
         arg1: *const clang_comments_Comment,
     ) -> ::std::os::raw::c_uint;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z16Comment_getChildPKN5clang8comments7CommentEj"]
     pub fn Comment_getChild(
         arg1: *const clang_comments_Comment,
         index: ::std::os::raw::c_uint,
     ) -> *mut clang_comments_Comment;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z25HTMLTagComment_getTagNamePKN5clang8comments7CommentE"]
     pub fn HTMLTagComment_getTagName(
         arg1: *const clang_comments_Comment,
     ) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z24HTMLStartTag_getNumAttrsPKN5clang8comments7CommentE"]
     pub fn HTMLStartTag_getNumAttrs(
         arg1: *const clang_comments_Comment,
     ) -> ::std::os::raw::c_uint;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z24HTMLStartTag_getAttrNamePKN5clang8comments7CommentEj"]
     pub fn HTMLStartTag_getAttrName(
         arg1: *const clang_comments_Comment,
         arg2: ::std::os::raw::c_uint,
     ) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z25HTMLStartTag_getAttrValuePKN5clang8comments7CommentEj"]
     pub fn HTMLStartTag_getAttrValue(
         arg1: *const clang_comments_Comment,
         arg2: ::std::os::raw::c_uint,
     ) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z22CursorKind_getSpelling12CXCursorKind"]
     pub fn CursorKind_getSpelling(arg1: CXCursorKind::Type)
         -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z20TypeKind_getSpelling10CXTypeKind"]
     pub fn TypeKind_getSpelling(arg1: CXTypeKind::Type) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z30PreprocessedEntity_getSpellingPKN5clang18PreprocessedEntityE"]
     pub fn PreprocessedEntity_getSpelling(
         arg1: *const clang_PreprocessedEntity,
     ) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z17FileEntry_getNamePKN5clang9FileEntryE"]
     pub fn FileEntry_getName(arg1: *const clang_FileEntry) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z15getClangVersionv"]
     pub fn getClangVersion() -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z30CXXBaseSpecifier_isVirtualBasePKN5clang16CXXBaseSpecifierE"]
     pub fn CXXBaseSpecifier_isVirtualBase(
         arg1: *const clang_CXXBaseSpecifier,
     ) -> bool;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z24CXXBaseSpecifier_getTypePKN5clang16CXXBaseSpecifierE"]
     pub fn CXXBaseSpecifier_getType(
         arg1: *const clang_CXXBaseSpecifier,
     ) -> clang_QualType;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z28CXXBaseSpecifier_getSpellingPKN5clang16CXXBaseSpecifierE"]
     pub fn CXXBaseSpecifier_getSpelling(
         arg1: *const clang_CXXBaseSpecifier,
     ) -> BindgenStringRef;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z28CXXBaseSpecifier_getLocationPKN5clang16CXXBaseSpecifierE"]
     pub fn CXXBaseSpecifier_getLocation(
         arg1: *const clang_CXXBaseSpecifier,
     ) -> *mut clang_SourceLocation;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z16Attr_getLocationPKN5clang4AttrE"]
     pub fn Attr_getLocation(
         arg1: *const clang_Attr,
     ) -> *mut clang_SourceLocation;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z30PreprocessedEntity_getLocationPKN5clang18PreprocessedEntityE"]
     pub fn PreprocessedEntity_getLocation(
         arg1: *const clang_PreprocessedEntity,
     ) -> *mut clang_SourceLocation;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z34PreprocessedEntity_getIncludedFilePKN5clang18PreprocessedEntityE"]
     pub fn PreprocessedEntity_getIncludedFile(
         arg1: *const clang_PreprocessedEntity,
     ) -> *const clang_FileEntry;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z31CXXBaseSpecifier_getSourceRangePKN5clang16CXXBaseSpecifierE"]
     pub fn CXXBaseSpecifier_getSourceRange(
         arg1: *const clang_CXXBaseSpecifier,
     ) -> BindgenSourceRange;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z26CXXBaseSpecifier_getAccessPKN5clang16CXXBaseSpecifierE"]
     pub fn CXXBaseSpecifier_getAccess(
         arg1: *const clang_CXXBaseSpecifier,
     ) -> CX_CXXAccessSpecifier::Type;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z19Attr_getSourceRangePKN5clang4AttrE"]
     pub fn Attr_getSourceRange(arg1: *const clang_Attr) -> BindgenSourceRange;
 }
 extern "C" {
-    #[link_name = "\u{1}_Z33PreprocessedEntity_getSourceRangePKN5clang18PreprocessedEntityE"]
     pub fn PreprocessedEntity_getSourceRange(
         arg1: *const clang_PreprocessedEntity,
     ) -> BindgenSourceRange;

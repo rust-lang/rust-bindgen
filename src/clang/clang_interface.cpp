@@ -52,9 +52,11 @@ BindgenStringRef stringref(llvm::StringRef S) {
   return ref;
 }
 
-BindgenSourceRange::BindgenSourceRange(const SourceRange &range) {
-  B = new SourceLocation(range.getBegin());
-  E = new SourceLocation(range.getEnd());
+BindgenSourceRange make_sourcerange(const SourceRange &range) {
+  BindgenSourceRange out;
+  out.B = new SourceLocation(range.getBegin());
+  out.E = new SourceLocation(range.getEnd());
+  return out;
 }
 
 BindgenStringRefSet make_stringrefset(std::vector<std::string> &string_vec) {
@@ -471,7 +473,7 @@ long long Decl_getOffsetOfField(const Decl *D, ASTContext *Ctx) {
 }
 
 BindgenSourceRange Decl_getSourceRange(const Decl *D) {
-  return BindgenSourceRange(D->getSourceRange());
+  return make_sourcerange(D->getSourceRange());
 }
 
 QualType Decl_getTypedefDeclUnderlyingType(const Decl *D) {
@@ -926,7 +928,7 @@ CXCursorKind Expr_getCXCursorKind(const Expr *E) {
 QualType Expr_getType(const Expr *E) { return make_type_compatible(E->getType()); }
 
 BindgenSourceRange Expr_getSourceRange(const Expr *E) {
-  return BindgenSourceRange(E->getSourceRange());
+  return make_sourcerange(E->getSourceRange());
 }
 
 class BindgenVisitor : public RecursiveASTVisitor<BindgenVisitor> {
@@ -1676,15 +1678,15 @@ SourceLocation *PreprocessedEntity_getLocation(const PreprocessedEntity *PPE) {
 }
 
 BindgenSourceRange CXXBaseSpecifier_getSourceRange(const CXXBaseSpecifier *B) {
-  return BindgenSourceRange(B->getSourceRange());
+  return make_sourcerange(B->getSourceRange());
 }
 
 BindgenSourceRange Attr_getSourceRange(const Attr *A) {
-  return BindgenSourceRange(A->getRange());
+  return make_sourcerange(A->getRange());
 }
 
 BindgenSourceRange PreprocessedEntity_getSourceRange(const PreprocessedEntity *PPE) {
-  return BindgenSourceRange(PPE->getSourceRange());
+  return make_sourcerange(PPE->getSourceRange());
 }
 
 BindgenStringRef PreprocessedEntity_getSpelling(const PreprocessedEntity *PPE) {
