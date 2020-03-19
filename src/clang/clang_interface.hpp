@@ -47,6 +47,20 @@ struct QualType {
   void *ptr;
 };
 }
+#else
+namespace {
+struct ExpectedQualType {
+  void *ptr;
+};
+
+// We want to return QualType from API functions, but it is incompatible with C
+// linkage. We verify that its size and alignment is correct below.
+#pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
+static_assert(sizeof(struct ExpectedQualType) == sizeof(clang::QualType),
+              "QualType has unexpected size");
+static_assert(alignof(struct ExpectedQualType) == alignof(clang::QualType),
+              "QualType has unexpected alignment");
+}
 #endif
 
 struct BindgenStringRefSet {
