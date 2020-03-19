@@ -30,9 +30,11 @@ struct FullComment;
 
 } // namespace clang
 
-struct EvalResult;
-
 using namespace clang;
+
+extern "C" {
+
+struct EvalResult;
 
 struct BindgenStringRef {
   char *s;
@@ -51,7 +53,7 @@ struct BindgenStringRefSet {
   BindgenStringRef *strings;
   size_t len;
 
-  BindgenStringRefSet() : strings(nullptr), len(0) {}
+  // BindgenStringRefSet() : strings(nullptr), len(0) {}
 };
 
 
@@ -59,10 +61,10 @@ struct BindgenSourceRange {
   SourceLocation *B;
   SourceLocation *E;
 
-  BindgenSourceRange(const SourceRange &range);
-  operator bool() const {
-    return B && E;
-  }
+  // BindgenSourceRange(const SourceRange &range);
+  // operator bool() const {
+  //   return B && E;
+  // }
 };
 
 
@@ -265,5 +267,7 @@ BindgenSourceRange CXXBaseSpecifier_getSourceRange(const CXXBaseSpecifier *);
 CX_CXXAccessSpecifier CXXBaseSpecifier_getAccess(const CXXBaseSpecifier *);
 BindgenSourceRange Attr_getSourceRange(const Attr *);
 BindgenSourceRange PreprocessedEntity_getSourceRange(const PreprocessedEntity *);
+
+} // extern "C"
 
 #endif // BINDGEN_CLANG_AST_H

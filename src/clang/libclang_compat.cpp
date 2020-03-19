@@ -1610,7 +1610,7 @@ try_again:
 // Adapted from getTokens and others in CIndex.cpp
 void tokenize(ASTUnit *TU, BindgenSourceRange Range, CXToken **Tokens,
               unsigned *NumTokens) {
-  if (!Tokens || !NumTokens || !Range)
+  if (!Tokens || !NumTokens || !Range.B || !Range.E)
     return;
 
   // Translate the Range end location to after the last token, instead of
