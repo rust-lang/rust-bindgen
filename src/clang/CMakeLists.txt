@@ -44,9 +44,6 @@ else()
   add_library(BindgenClangInterface STATIC ${SRCS})
 endif()
 
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-
-
 add_definitions(-DCLANG_LIBDIR_SUFFIX="${LLVM_LIBDIR_SUFFIX}")
 
 set_target_properties(BindgenClangInterface PROPERTIES
