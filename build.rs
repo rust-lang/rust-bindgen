@@ -95,15 +95,25 @@ mod clang_ast {
     fn build_native(llvm_info: &LLVMInfo) {
         // Find where the (already built) LLVM lib dir is
         let llvm_lib_dir = &llvm_info.lib_dir;
-        let mut llvm_cmake_dir = format!("{}/cmake/llvm", llvm_lib_dir);
-        let mut clang_cmake_dir = format!("{}/cmake/clang", llvm_lib_dir);
+        let mut llvm_cmake_dir: PathBuf = llvm_lib_dir.into();
+        llvm_cmake_dir.push("cmake");
+        llvm_cmake_dir.push("llvm");
+        let mut clang_cmake_dir: PathBuf = llvm_lib_dir.into();
+        clang_cmake_dir.push("cmake");
+        clang_cmake_dir.push("clang");
 
         if let Some((major_version, minor_version)) = llvm_info.version {
             if (major_version == 3 && minor_version <= 8) || major_version < 3 {
-                llvm_cmake_dir =
-                    format!("{}/../share/llvm/cmake", llvm_lib_dir);
-                clang_cmake_dir =
-                    format!("{}/../share/clang/cmake", llvm_lib_dir);
+                llvm_cmake_dir = PathBuf::from(llvm_lib_dir);
+                llvm_cmake_dir.pop();
+                llvm_cmake_dir.push("share");
+                llvm_cmake_dir.push("llvm");
+                llvm_cmake_dir.push("cmake");
+                clang_cmake_dir = PathBuf::from(llvm_lib_dir);
+                clang_cmake_dir.pop();
+                clang_cmake_dir.push("share");
+                clang_cmake_dir.push("clang");
+                clang_cmake_dir.push("cmake");
             }
         }
 
@@ -113,16 +123,14 @@ mod clang_ast {
         println!("cargo:rerun-if-changed=src/clang/libclang_compat.cpp");
         // Build libBindgenClangInterface.a with cmake
         let dst = cmake::Config::new("src/clang")
-            .define("LLVM_DIR", &llvm_cmake_dir)
-            .define("Clang_DIR", &clang_cmake_dir)
-            .build_target("BindgenClangInterface")
+            .define("LLVM_DIR", llvm_cmake_dir.as_os_str())
+            .define("Clang_DIR", clang_cmake_dir.as_os_str())
             .build();
 
-        let out_dir = dst.display();
-
         // Set up search path for newly built libBindgenClangInterface.a
-        println!("cargo:rustc-link-search=native={}/build/lib", out_dir);
-        println!("cargo:rustc-link-search=native={}/build", out_dir);
+        let mut out_dir = dst;
+        out_dir.push("lib");
+        println!("cargo:rustc-link-search=native={}", out_dir.display());
 
         // Statically link against our library, 'BindgenClangInterface'
         println!("cargo:rustc-link-lib=static=BindgenClangInterface");
@@ -158,7 +166,7 @@ mod clang_ast {
         // Link against the C++ std library.
         if cfg!(target_os = "macos") {
             println!("cargo:rustc-link-lib=c++");
-        } else {
+        } else if cfg!(not(target_os = "windows")) {
             println!("cargo:rustc-link-lib=stdc++");
         }
     }
@@ -243,6 +251,25 @@ mod clang_ast {
                         },
                     )
                 })
+            }
+
+            /// Strip full path from library if provided. rustc expects us to
+            /// pass just the library name in `-l` arguments.
+            fn clean_lib_path(lib: &str) -> String {
+                if lib.starts_with("-l") {
+                    lib[2..].to_string()
+                } else {
+                    // Sometimes llvm-config gives us an absolute path
+                    // to the library, and I can't figure out a way to
+                    // give an absolute path of a library to rustc.
+                    Path::new(lib)
+                        .file_stem()
+                        .unwrap()
+                        .to_str()
+                        .unwrap()
+                        .trim_start_matches("lib")
+                        .into()
+                }
             }
 
             let llvm_config = find_llvm_config();
@@ -383,11 +410,11 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
                 args.insert(1, link_mode);
             }
             let mut libs: Vec<String> =
-                invoke_command(llvm_config.as_ref(), &args)
-                    .unwrap_or("-lLLVM".to_string())
-                    .split_whitespace()
-                    .map(|lib| String::from(lib.trim_start_matches("-l")))
-                    .collect();
+            invoke_command(llvm_config.as_ref(), &args)
+                .unwrap_or("-lLLVM".to_string())
+                .split_whitespace()
+                .map(clean_lib_path)
+                .collect();
 
             libs.extend(
                 build_var("LLVM_SYSTEM_LIBS")
@@ -400,22 +427,7 @@ variable or make sure `llvm-config` is on $PATH then re-build. For example:
                     })
                     .unwrap_or(String::new())
                     .split_whitespace()
-                    .map(|lib| {
-                        if lib.starts_with("-l") {
-                            lib[2..].to_string()
-                        } else {
-                            // Sometimes llvm-config gives us an absolute path
-                            // to the library, and I can't figure out a way to
-                            // give an absolute path of a library to rustc.
-                            Path::new(lib)
-                                .file_stem()
-                                .unwrap()
-                                .to_str()
-                                .unwrap()
-                                .trim_start_matches("lib")
-                                .into()
-                        }
-                    }),
+                    .map(clean_lib_path)
             );
 
             Self {
