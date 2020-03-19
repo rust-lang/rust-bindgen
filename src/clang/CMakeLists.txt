@@ -61,3 +61,8 @@ target_link_libraries(BindgenClangInterface PRIVATE
   clangTooling
   clangBasic
   )
+
+install(TARGETS BindgenClangInterface DESTINATION lib)
+
+# get_target_property(OUT BindgenClangInterface LINK_LIBRARIES)
+# message(STATUS "test:" ${OUT})
