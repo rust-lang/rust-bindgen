@@ -51,8 +51,9 @@ set_target_properties(BindgenClangInterface PROPERTIES
   CXX_EXTENSIONS OFF
   )
 
-# PRIVATE was added to make BindgenClangInterface build with LLVM 6.0. Keyword
-# description: https://cmake.org/pipermail/cmake/2016-May/063400.html
+# Any changes to this list must be kept in sync with ../../build.rs in case
+# cmake cannot find the clang cmake config files to generate a useful dependency
+# list.
 target_link_libraries(BindgenClangInterface PRIVATE
   clangAST
   clangFrontend
@@ -60,7 +61,16 @@ target_link_libraries(BindgenClangInterface PRIVATE
   clangSema
   clangTooling
   clangBasic
+  clangLex
   )
+
+# rustc links with CC, so we need to explicitly include the C++ standard library
+if (APPLE)
+  target_link_libraries(BindgenClangInterface PRIVATE c++)
+elseif(UNIX)
+  target_link_libraries(BindgenClangInterface PRIVATE stdc++)
+endif()
+
 
 install(TARGETS BindgenClangInterface DESTINATION lib)
 
@@ -69,6 +79,10 @@ function(target_link_libs_recursive out_libs target)
   get_target_property(imported ${target} IMPORTED)
   if (imported)
     get_target_property(target_link_libs ${target} INTERFACE_LINK_LIBRARIES)
+    if (NOT target_link_libs)
+      get_target_property(target_config ${target} IMPORTED_CONFIGURATIONS)
+      get_target_property(target_link_libs ${target} IMPORTED_LINK_DEPENDENT_LIBRARIES_${target_config})
+    endif()
   else()
     get_target_property(target_link_libs ${target} LINK_LIBRARIES)
   endif()
@@ -93,12 +107,6 @@ endfunction()
 
 if (Clang_FOUND)
   target_link_libs_recursive(link_libs BindgenClangInterface)
-  foreach(lib IN LISTS link_libs)
-    string(REGEX MATCH "^-delayload" delayload ${lib})
-    if (NOT delayload)
-      message(STATUS "\ncargo:rustc-link-lib=" ${lib})
-    endif()
-  endforeach(lib)
 
   file(WRITE "${CMAKE_INSTALL_PREFIX}/BindgenClangInterface.deps" "${link_libs}")
 else() # we didn't find clang cmake files
