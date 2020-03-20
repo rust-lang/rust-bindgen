@@ -47,7 +47,7 @@ endif()
 add_definitions(-DCLANG_LIBDIR_SUFFIX="${LLVM_LIBDIR_SUFFIX}")
 
 set_target_properties(BindgenClangInterface PROPERTIES
-  CXX_STANDARD 14
+  CXX_STANDARD 11
   CXX_EXTENSIONS OFF
   )
 
