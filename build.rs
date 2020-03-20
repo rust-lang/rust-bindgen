@@ -87,6 +87,25 @@ mod clang_ast {
         env::var(name).ok()
     }
 
+    /// Strip full path from library if provided. rustc expects us to
+    /// pass just the library name in `-l` arguments.
+    fn clean_lib_path(lib: &str) -> String {
+        if lib.starts_with("-l") {
+            lib[2..].to_string()
+        } else {
+            // Sometimes llvm-config gives us an absolute path
+            // to the library, and I can't figure out a way to
+            // give an absolute path of a library to rustc.
+            Path::new(lib)
+                .file_stem()
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .trim_start_matches("lib")
+                .into()
+        }
+    }
+
     /// Call out to CMake, build the clang ast library, and tell cargo where to look
     /// for it.  Note that `CMAKE_BUILD_TYPE` gets implicitly determined by the
     /// cmake crate according to the following:
@@ -149,7 +168,8 @@ mod clang_ast {
                     // rustc doesn't know how to handle these. We don't seem to
                     // need them anyway.
                     !dep.starts_with("-delayload")
-                });
+                })
+                .map(clean_lib_path);
             for lib in deps {
                 println!("cargo:rustc-link-lib={}", lib);
             }
@@ -275,25 +295,6 @@ mod clang_ast {
                         },
                     )
                 })
-            }
-
-            /// Strip full path from library if provided. rustc expects us to
-            /// pass just the library name in `-l` arguments.
-            fn clean_lib_path(lib: &str) -> String {
-                if lib.starts_with("-l") {
-                    lib[2..].to_string()
-                } else {
-                    // Sometimes llvm-config gives us an absolute path
-                    // to the library, and I can't figure out a way to
-                    // give an absolute path of a library to rustc.
-                    Path::new(lib)
-                        .file_stem()
-                        .unwrap()
-                        .to_str()
-                        .unwrap()
-                        .trim_start_matches("lib")
-                        .into()
-                }
             }
 
             let llvm_config = find_llvm_config();
