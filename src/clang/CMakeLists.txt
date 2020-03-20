@@ -51,10 +51,11 @@ set_target_properties(BindgenClangInterface PROPERTIES
   CXX_EXTENSIONS OFF
   )
 
+
 # Any changes to this list must be kept in sync with ../../build.rs in case
-# cmake cannot find the clang cmake config files to generate a useful dependency
-# list.
-target_link_libraries(BindgenClangInterface PRIVATE
+# cmake cannot find the clang cmake config files to generate a useful
+# dependency list.
+set(clang_libs
   clangAST
   clangFrontend
   clangIndex
@@ -63,6 +64,12 @@ target_link_libraries(BindgenClangInterface PRIVATE
   clangBasic
   clangLex
   )
+
+if (TARGET clang-cpp AND TARGET LLVM)
+  target_link_libraries(BindgenClangInterface PRIVATE LLVM clang-cpp)
+else()
+  target_link_libraries(BindgenClangInterface PRIVATE ${clang_libs})
+endif()
 
 # rustc links with CC, so we need to explicitly include the C++ standard library
 if (APPLE)
@@ -92,12 +99,12 @@ function(target_link_libs_recursive out_libs target)
       list(FIND visited_targets ${dep} visited)
       if (${visited} EQUAL -1)
         list(APPEND visited_targets ${dep})
-        list(APPEND libs ${dep})
         if (TARGET ${dep})
           set(dependencies "")
           target_link_libs_recursive(dependencies ${dep})
           list(APPEND libs ${dependencies})
         endif()
+        list(APPEND libs ${dep})
       endif()
     endforeach(dep)
     set(visited_targets ${visited_targets} PARENT_SCOPE)
