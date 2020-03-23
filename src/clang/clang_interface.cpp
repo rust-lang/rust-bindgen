@@ -378,9 +378,9 @@ comments::Comment *Decl_getParsedComment(const Decl *D, ASTContext *Ctx) {
   return Ctx->getCommentForDecl(&*D, nullptr);
 }
 
-QualType make_type_compatible(QualType QT) {
+BindgenQualType make_type_compatible(QualType QT) {
   if (QT.isNull())
-    return QT;
+    return nullptr;
 
   // libclang does not return AttributedTypes if
   // CXTranslationUnit_IncludeAttributedTypes is not set, and bindgen assumes it
@@ -396,13 +396,13 @@ QualType make_type_compatible(QualType QT) {
   if (auto *DT = QT->getAs<DecayedType>())
     return make_type_compatible(DT->getOriginalType());
 
-  return QT;
+  return QT.getAsOpaquePtr();
 }
 
-QualType Decl_getType(const Decl *D, ASTContext *Ctx) {
+BindgenQualType Decl_getType(const Decl *D, ASTContext *Ctx) {
   auto ty = QualType();
   if (!D)
-    return ty;
+    return nullptr;
 
   if (auto *TD = dyn_cast<TypeDecl>(&*D))
     ty = Ctx->getTypeDeclType(TD);
@@ -417,7 +417,7 @@ QualType Decl_getType(const Decl *D, ASTContext *Ctx) {
   else if (auto *FTD = dyn_cast<FunctionTemplateDecl>(&*D))
     ty = FTD->getTemplatedDecl()->getType();
   else
-    return QualType();
+    return nullptr;
 
   return make_type_compatible(ty);
 }
@@ -437,11 +437,11 @@ int Decl_getFieldDeclBitWidth(const Decl *D, ASTContext *Ctx) {
   return -1;
 }
 
-QualType Decl_getEnumDeclIntegerType(const Decl *D) {
+BindgenQualType Decl_getEnumDeclIntegerType(const Decl *D) {
   if (auto *TD = dyn_cast_or_null<EnumDecl>(&*D))
     return make_type_compatible(TD->getIntegerType());
   else
-    return QualType();
+    return nullptr;
 }
 
 int64_t Decl_getEnumConstantValue(const Decl *D) {
@@ -476,11 +476,11 @@ BindgenSourceRange Decl_getSourceRange(const Decl *D) {
   return make_sourcerange(D->getSourceRange());
 }
 
-QualType Decl_getTypedefDeclUnderlyingType(const Decl *D) {
+BindgenQualType Decl_getTypedefDeclUnderlyingType(const Decl *D) {
   if (auto *TD = dyn_cast_or_null<TypedefNameDecl>(&*D))
     return make_type_compatible(TD->getUnderlyingType());
   else
-    return QualType();
+    return nullptr;
 }
 
 bool CXXField_isMutable(const Decl *D) {
@@ -522,7 +522,7 @@ bool CXXMethod_isPureVirtual(const Decl *D) {
   return Method && Method->isVirtual() && Method->isPure();
 }
 
-QualType Decl_getResultType(const Decl *D, ASTContext *Ctx) {
+BindgenQualType Decl_getResultType(const Decl *D, ASTContext *Ctx) {
   if (auto *MD = dyn_cast_or_null<ObjCMethodDecl>(D))
     return make_type_compatible(MD->getReturnType());
 
@@ -925,7 +925,7 @@ CXCursorKind Expr_getCXCursorKind(const Expr *E) {
   }
 }
 
-QualType Expr_getType(const Expr *E) { return make_type_compatible(E->getType()); }
+BindgenQualType Expr_getType(const Expr *E) { return make_type_compatible(E->getType()); }
 
 BindgenSourceRange Expr_getSourceRange(const Expr *E) {
   return make_sourcerange(E->getSourceRange());
@@ -1488,107 +1488,117 @@ void disposeTokens(const ASTUnit *TU, CXToken *Tokens, unsigned NumTokens) {
   delete[] Tokens;
 }
 
-BindgenStringRef Type_getTypeSpelling(QualType T, ASTContext *Context) {
+BindgenStringRef Type_getTypeSpelling(BindgenQualType T, ASTContext *Context) {
+  auto QT = QualType::getFromOpaquePtr(T);
   SmallString<64> Str;
   llvm::raw_svector_ostream OS(Str);
   PrintingPolicy PP(Context->getLangOpts());
 
-  T.print(OS, PP);
+  QT.print(OS, PP);
   return stringref(OS.str());
 }
 
-bool Type_isConstQualifiedType(QualType T) {
-  return T.isLocalConstQualified();
+bool Type_isConstQualifiedType(BindgenQualType T) {
+  auto QT = QualType::getFromOpaquePtr(T);
+  return QT.isLocalConstQualified();
 }
 
-int Type_getNumTemplateArguments(QualType T) {
-  if (T.isNull())
+int Type_getNumTemplateArguments(BindgenQualType T) {
+  auto QT = QualType::getFromOpaquePtr(T);
+  if (QT.isNull())
     return -1;
-  auto TA = GetTemplateArguments(T);
+  auto TA = GetTemplateArguments(QT);
   if (!TA)
     return -1;
 
   return GetTemplateArgumentArraySize(TA.getValue());
 }
 
-QualType Type_getArgType(QualType T, unsigned i) {
-  if (T.isNull())
-    return QualType();
+BindgenQualType Type_getArgType(BindgenQualType T, unsigned i) {
+  auto QT = QualType::getFromOpaquePtr(T);
+  if (QT.isNull())
+    return nullptr;;
 
-  if (const FunctionProtoType *FD = T->getAs<FunctionProtoType>()) {
+  if (const FunctionProtoType *FD = QT->getAs<FunctionProtoType>()) {
     unsigned numParams = FD->getNumParams();
     if (i >= numParams)
-      return QualType();
+      return nullptr;
     return make_type_compatible(FD->getParamType(i));
   }
 
-  return QualType();
+  return nullptr;
 }
 
-int Type_getNumArgTypes(QualType T) {
-  if (T.isNull())
+int Type_getNumArgTypes(BindgenQualType T) {
+  auto QT = QualType::getFromOpaquePtr(T);
+  if (QT.isNull())
     return -1;
 
-  if (const FunctionProtoType *FD = T->getAs<FunctionProtoType>()) {
+  if (const FunctionProtoType *FD = QT->getAs<FunctionProtoType>()) {
     return FD->getNumParams();
   }
 
-  if (T->getAs<FunctionNoProtoType>()) {
+  if (QT->getAs<FunctionNoProtoType>()) {
     return 0;
   }
 
   return -1;
 }
 
-QualType Type_getCanonicalType(QualType T, ASTContext *Context) {
-  if (T.isNull())
-    return QualType();
+BindgenQualType Type_getCanonicalType(BindgenQualType T, ASTContext *Context) {
+  auto QT = QualType::getFromOpaquePtr(T);
+  if (QT.isNull())
+    return nullptr;
 
-  return make_type_compatible(Context->getCanonicalType(T));
+  return make_type_compatible(Context->getCanonicalType(QT));
 }
 
-bool Type_isFunctionTypeVariadic(QualType T) {
-  if (T.isNull())
+bool Type_isFunctionTypeVariadic(BindgenQualType T) {
+  auto QT = QualType::getFromOpaquePtr(T);
+  if (QT.isNull())
     return false;
 
-  if (const FunctionProtoType *FD = T->getAs<FunctionProtoType>())
+  if (const FunctionProtoType *FD = QT->getAs<FunctionProtoType>())
     return (unsigned)FD->isVariadic();
 
-  if (T->getAs<FunctionNoProtoType>())
+  if (QT->getAs<FunctionNoProtoType>())
     return true;
 
   return false;
 }
 
-QualType Type_getResultType(QualType T) {
-  if (T.isNull())
-    return QualType();
+BindgenQualType Type_getResultType(BindgenQualType T) {
+  auto QT = QualType::getFromOpaquePtr(T);
+  if (QT.isNull())
+    return nullptr;
 
-  if (const FunctionType *FD = T->getAs<FunctionType>())
+  if (const FunctionType *FD = QT->getAs<FunctionType>())
     return make_type_compatible(FD->getReturnType());
 
-  return QualType();
+  return nullptr;
 }
 
-QualType Type_getNamedType(QualType T) {
-  const Type *TP = T.getTypePtrOrNull();
+BindgenQualType Type_getNamedType(BindgenQualType T) {
+  auto QT = QualType::getFromOpaquePtr(T);
+  const Type *TP = QT.getTypePtrOrNull();
 
   if (TP && TP->getTypeClass() == Type::Elaborated)
     return make_type_compatible(cast<ElaboratedType>(TP)->getNamedType());
 
-  return QualType();
+  return nullptr;
 }
 
-QualType Type_getTemplateArgumentAsType(QualType T, unsigned index) {
-  if (T.isNull())
-    return QualType();
+BindgenQualType Type_getTemplateArgumentAsType(BindgenQualType T, unsigned index) {
+  auto QT = QualType::getFromOpaquePtr(T);
+  if (QT.isNull())
+    return nullptr;
 
-  auto TA = GetTemplateArguments(T);
+  auto TA = GetTemplateArguments(QT);
   if (!TA)
-    return QualType();
+    return nullptr;
 
-  Optional<QualType> QT = FindTemplateArgumentTypeAt(TA.getValue(), index);
-  return make_type_compatible(QT.getValueOr(QualType()));
+  Optional<QualType> ArgQT = FindTemplateArgumentTypeAt(TA.getValue(), index);
+  return make_type_compatible(ArgQT.getValueOr(QualType()));
 }
 
 unsigned Comment_getNumChildren(const comments::Comment *C) {
@@ -1651,9 +1661,9 @@ bool CXXBaseSpecifier_isVirtualBase(const CXXBaseSpecifier *B) {
   return B && B->isVirtual();
 }
 
-QualType CXXBaseSpecifier_getType(const CXXBaseSpecifier *B) {
+BindgenQualType CXXBaseSpecifier_getType(const CXXBaseSpecifier *B) {
   if (!B)
-    return QualType();
+    return nullptr;
   return make_type_compatible(B->getType());
 }
 

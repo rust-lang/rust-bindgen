@@ -41,27 +41,9 @@ struct BindgenStringRef {
   size_t len;
 };
 
-#ifndef BINDGEN_IMPLEMENTATION
-namespace clang {
-struct QualType {
-  void *ptr;
-};
-}
-#else
-namespace {
-struct ExpectedQualType {
-  void *ptr;
-};
-
-// We want to return QualType from API functions, but it is incompatible with C
-// linkage. We verify that its size and alignment is correct below.
-#pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
-static_assert(sizeof(struct ExpectedQualType) == sizeof(clang::QualType),
-              "QualType has unexpected size");
-static_assert(alignof(struct ExpectedQualType) == alignof(clang::QualType),
-              "QualType has unexpected alignment");
-}
-#endif
+// We export QualTypes back and forth to Rust as opaque pointers because we
+// can't pass a C++ class by value.
+typedef void* BindgenQualType;
 
 struct BindgenStringRefSet {
   BindgenStringRef *strings;
@@ -144,15 +126,15 @@ bool Decl_isDefinition(const Decl *D);
 SourceLocation *Decl_getLocation(const Decl *D);
 BindgenStringRef Decl_getRawCommentText(const Decl *D, ASTContext *);
 comments::Comment *Decl_getParsedComment(const Decl *D, ASTContext *);
-QualType Decl_getType(const Decl *D, ASTContext *);
+BindgenQualType Decl_getType(const Decl *D, ASTContext *);
 bool Decl_isFunctionInlined(const Decl *D);
 int Decl_getFieldDeclBitWidth(const Decl *D, ASTContext *);
-QualType Decl_getEnumDeclIntegerType(const Decl *D);
+BindgenQualType Decl_getEnumDeclIntegerType(const Decl *D);
 int64_t Decl_getEnumConstantValue(const Decl *D);
 uint64_t Decl_getEnumConstantUnsignedValue(const Decl *D);
 long long Decl_getOffsetOfField(const Decl *D, ASTContext *);
 BindgenSourceRange Decl_getSourceRange(const Decl *D);
-QualType Decl_getTypedefDeclUnderlyingType(const Decl *D);
+BindgenQualType Decl_getTypedefDeclUnderlyingType(const Decl *D);
 CXLinkageKind Decl_getLinkage(const Decl *D);
 CXVisibilityKind Decl_getVisibility(const Decl *D);
 CX_CXXAccessSpecifier Decl_getAccess(const Decl *D);
@@ -161,7 +143,7 @@ bool CXXMethod_isStatic(const Decl *D);
 bool CXXMethod_isConst(const Decl *D);
 bool CXXMethod_isVirtual(const Decl *D);
 bool CXXMethod_isPureVirtual(const Decl *D);
-QualType Decl_getResultType(const Decl *D, ASTContext *);
+BindgenQualType Decl_getResultType(const Decl *D, ASTContext *);
 
 
 const Expr *Expr_getArgument(const Expr *E, unsigned i);
@@ -176,10 +158,10 @@ CXCursorKind Expr_getCXCursorKind(const Expr *E);
 SourceLocation *Expr_getLocation(const Expr *E);
 BindgenStringRef Expr_getRawCommentText(const Expr *E);
 comments::FullComment *Expr_getParsedComment(const Expr *E);
-QualType Expr_getType(const Expr *E);
+BindgenQualType Expr_getType(const Expr *E);
 BindgenSourceRange Expr_getSourceRange(const Expr *E);
 
-const Decl *Type_getDeclaration(QualType);
+const Decl *Type_getDeclaration(BindgenQualType);
 
 CXCursorKind Attr_getCXCursorKind(const Attr *);
 
@@ -234,23 +216,23 @@ void disposeTokens(const ASTUnit *TU, CXToken *Tokens, unsigned NumTokens);
 CXTokenKind getTokenKind(CXToken token);
 BindgenStringRef getTokenSpelling(ASTUnit *TU, CXToken token);
 
-CXTypeKind Type_kind(QualType, ASTContext *);
-BindgenStringRef Type_getTypeSpelling(QualType, ASTContext *);
-bool Type_isConstQualifiedType(QualType);
-long long Type_getSizeOf(QualType, ASTContext *);
-long long Type_getAlignOf(QualType, ASTContext *);
-int Type_getNumTemplateArguments(QualType);
-QualType Type_getArgType(QualType T, unsigned index);
-int Type_getNumArgTypes(QualType);
-QualType Type_getPointeeType(QualType);
-QualType Type_getElementType(QualType);
-int Type_getNumElements(QualType);
-QualType Type_getCanonicalType(QualType, ASTContext *);
-bool Type_isFunctionTypeVariadic(QualType);
-QualType Type_getResultType(QualType);
-CXCallingConv Type_getFunctionTypeCallingConv(QualType);
-QualType Type_getNamedType(QualType);
-QualType Type_getTemplateArgumentAsType(QualType T, unsigned index);
+CXTypeKind Type_kind(BindgenQualType, ASTContext *);
+BindgenStringRef Type_getTypeSpelling(BindgenQualType, ASTContext *);
+bool Type_isConstQualifiedType(BindgenQualType);
+long long Type_getSizeOf(BindgenQualType, ASTContext *);
+long long Type_getAlignOf(BindgenQualType, ASTContext *);
+int Type_getNumTemplateArguments(BindgenQualType);
+BindgenQualType Type_getArgType(BindgenQualType T, unsigned index);
+int Type_getNumArgTypes(BindgenQualType);
+BindgenQualType Type_getPointeeType(BindgenQualType);
+BindgenQualType Type_getElementType(BindgenQualType);
+int Type_getNumElements(BindgenQualType);
+BindgenQualType Type_getCanonicalType(BindgenQualType, ASTContext *);
+bool Type_isFunctionTypeVariadic(BindgenQualType);
+BindgenQualType Type_getResultType(BindgenQualType);
+CXCallingConv Type_getFunctionTypeCallingConv(BindgenQualType);
+BindgenQualType Type_getNamedType(BindgenQualType);
+BindgenQualType Type_getTemplateArgumentAsType(BindgenQualType T, unsigned index);
 
 void getSpellingLocation(ASTUnit *AST, const SourceLocation *T, FileEntry **file, int *line, int *col, int *off);
 
@@ -271,7 +253,7 @@ BindgenStringRef FileEntry_getName(const FileEntry *);
 BindgenStringRef getClangVersion();
 
 bool CXXBaseSpecifier_isVirtualBase(const CXXBaseSpecifier *);
-QualType CXXBaseSpecifier_getType(const CXXBaseSpecifier *);
+BindgenQualType CXXBaseSpecifier_getType(const CXXBaseSpecifier *);
 BindgenStringRef CXXBaseSpecifier_getSpelling(const CXXBaseSpecifier *);
 SourceLocation *CXXBaseSpecifier_getLocation(const CXXBaseSpecifier *);
 SourceLocation *Attr_getLocation(const Attr *);

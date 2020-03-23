@@ -197,8 +197,9 @@ static CXTypeKind GetBuiltinTypeKind(const BuiltinType *BT) {
 }
 
 // Adapted from GetTypeKind in CXType.cpp
-CXTypeKind Type_kind(QualType T, ASTContext *Context) {
-  const Type *TP = T.getTypePtrOrNull();
+CXTypeKind Type_kind(BindgenQualType T, ASTContext *Context) {
+  auto QT = QualType::getFromOpaquePtr(T);
+  const Type *TP = QT.getTypePtrOrNull();
   if (!TP)
     return CXType_Invalid;
 
@@ -210,7 +211,7 @@ CXTypeKind Type_kind(QualType T, ASTContext *Context) {
   bool isObjc = Context->getLangOpts().ObjC1;
 #endif // CLANG_VERSION_MAJOR
   if (isObjc) {
-    QualType UT = T.getUnqualifiedType();
+    QualType UT = QT.getUnqualifiedType();
     if (Context->isObjCIdType(UT))
       return CXType_ObjCId;
     if (Context->isObjCClassType(UT))
@@ -1545,8 +1546,9 @@ SourceLocation *Expr_getLocation(const Expr *E) {
 }
 
 // Adapted from clang_getTypeDeclaration in CXType.cpp
-const Decl *Type_getDeclaration(QualType T) {
-  const Type *TP = T.getTypePtrOrNull();
+const Decl *Type_getDeclaration(BindgenQualType T) {
+  auto QT = QualType::getFromOpaquePtr(T);
+  const Type *TP = QT.getTypePtrOrNull();
 
   if (!TP)
     return nullptr;
@@ -1755,7 +1757,8 @@ BindgenStringRef getTokenSpelling(ASTUnit *CXXUnit, CXToken CXTok) {
 }
 
 // Adapted from clang_Type_getSizeOf in CXType.cpp
-long long Type_getSizeOf(QualType QT, ASTContext *Context) {
+long long Type_getSizeOf(BindgenQualType T, ASTContext *Context) {
+  auto QT = QualType::getFromOpaquePtr(T);
   if (QT.isNull())
     return CXTypeLayoutError_Invalid;
   // [expr.sizeof] p2: if reference type, return size of referenced type
@@ -1787,7 +1790,8 @@ long long Type_getSizeOf(QualType QT, ASTContext *Context) {
 }
 
 // Adapted from clang_Type_getAlignOf in CXType.cpp
-long long Type_getAlignOf(QualType QT, ASTContext *Context) {
+long long Type_getAlignOf(BindgenQualType T, ASTContext *Context) {
+  auto QT = QualType::getFromOpaquePtr(T);
   if (QT.isNull())
     return CXTypeLayoutError_Invalid;
   // [expr.alignof] p1: return size_t value for complete object type, reference
@@ -1811,29 +1815,30 @@ long long Type_getAlignOf(QualType QT, ASTContext *Context) {
 }
 
 // Adapted from clang_getPointeeType in CXType.cpp
-QualType Type_getPointeeType(QualType T) {
-  const Type *TP = T.getTypePtrOrNull();
+BindgenQualType Type_getPointeeType(BindgenQualType T) {
+  auto QT = QualType::getFromOpaquePtr(T);
+  const Type *TP = QT.getTypePtrOrNull();
 
   if (!TP)
-    return QualType();
+    return nullptr;
 
 try_again:
   switch (TP->getTypeClass()) {
     case Type::Pointer:
-      T = cast<PointerType>(TP)->getPointeeType();
+      QT = cast<PointerType>(TP)->getPointeeType();
       break;
     case Type::BlockPointer:
-      T = cast<BlockPointerType>(TP)->getPointeeType();
+      QT = cast<BlockPointerType>(TP)->getPointeeType();
       break;
     case Type::LValueReference:
     case Type::RValueReference:
-      T = cast<ReferenceType>(TP)->getPointeeType();
+      QT = cast<ReferenceType>(TP)->getPointeeType();
       break;
     case Type::ObjCObjectPointer:
-      T = cast<ObjCObjectPointerType>(TP)->getPointeeType();
+      QT = cast<ObjCObjectPointerType>(TP)->getPointeeType();
       break;
     case Type::MemberPointer:
-      T = cast<MemberPointerType>(TP)->getPointeeType();
+      QT = cast<MemberPointerType>(TP)->getPointeeType();
       break;
     case Type::Auto:
 #if CLANG_VERSION_MAJOR > 4
@@ -1846,16 +1851,17 @@ try_again:
         goto try_again;
       break;
     default:
-      T = QualType();
+      QT = QualType();
       break;
   }
-  return make_type_compatible(T);
+  return make_type_compatible(QT);
 }
 
 // Adapted from clang_getElementType in CXType.cpp
-QualType Type_getElementType(QualType T) {
+BindgenQualType Type_getElementType(BindgenQualType T) {
+  auto QT = QualType::getFromOpaquePtr(T);
   QualType ET = QualType();
-  const Type *TP = T.getTypePtrOrNull();
+  const Type *TP = QT.getTypePtrOrNull();
 
   if (TP) {
     switch (TP->getTypeClass()) {
@@ -1888,9 +1894,10 @@ QualType Type_getElementType(QualType T) {
 }
 
 // Adapted from clang_getNumElements in CXType.cpp
-int Type_getNumElements(QualType T) {
+int Type_getNumElements(BindgenQualType T) {
+  auto QT = QualType::getFromOpaquePtr(T);
   long long result = -1;
-  const Type *TP = T.getTypePtrOrNull();
+  const Type *TP = QT.getTypePtrOrNull();
 
   if (TP) {
     switch (TP->getTypeClass()) {
@@ -1911,11 +1918,12 @@ int Type_getNumElements(QualType T) {
 }
 
 // Adapted from clang_getFunctionTypeCallingConv in CXType.cpp
-CXCallingConv Type_getFunctionTypeCallingConv(QualType T) {
-  if (T.isNull())
+CXCallingConv Type_getFunctionTypeCallingConv(BindgenQualType T) {
+  auto QT = QualType::getFromOpaquePtr(T);
+  if (QT.isNull())
     return CXCallingConv_Invalid;
   
-  if (const FunctionType *FD = T->getAs<FunctionType>()) {
+  if (const FunctionType *FD = QT->getAs<FunctionType>()) {
 #define TCALLINGCONV(X) case CC_##X: return CXCallingConv_##X
     switch (FD->getCallConv()) {
       TCALLINGCONV(C);

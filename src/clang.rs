@@ -754,7 +754,7 @@ impl Cursor {
                 _ => mem::zeroed(),
             }
         };
-        if x.ptr.is_null() {
+        if x.is_null() {
             None
         } else {
             Some(Type { x, unit: self.unit })
@@ -1251,17 +1251,9 @@ where
 /// The type of a node in clang's AST.
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub struct Type {
-    x: clang_interface::clang_QualType,
+    x: clang_interface::BindgenQualType,
     unit: *mut clang_interface::clang_ASTUnit,
 }
-
-impl PartialEq for clang_interface::clang_QualType {
-    fn eq(&self, other: &Self) -> bool {
-        ptr::eq(self.ptr, other.ptr)
-    }
-}
-
-impl Eq for clang_interface::clang_QualType {}
 
 impl fmt::Debug for Type {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
@@ -1701,7 +1693,7 @@ impl CanonicalTypeDeclaration {
 
 /// An iterator for a type's template arguments.
 pub struct TypeTemplateArgIterator {
-    x: clang_interface::clang_QualType,
+    x: clang_interface::BindgenQualType,
     unit: *mut clang_interface::clang_ASTUnit,
     length: u32,
     index: u32,
