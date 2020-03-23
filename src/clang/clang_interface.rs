@@ -6653,36 +6653,6 @@ pub struct clang_comments_FullComment {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct clang_QualType {
-    pub ptr: *mut ::std::os::raw::c_void,
-}
-#[test]
-fn bindgen_test_layout_clang_QualType() {
-    assert_eq!(
-        ::std::mem::size_of::<clang_QualType>(),
-        8usize,
-        concat!("Size of: ", stringify!(clang_QualType))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<clang_QualType>(),
-        8usize,
-        concat!("Alignment of ", stringify!(clang_QualType))
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<clang_QualType>())).ptr as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(clang_QualType),
-            "::",
-            stringify!(ptr)
-        )
-    );
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct EvalResult {
     _unused: [u8; 0],
 }
@@ -6730,6 +6700,7 @@ fn bindgen_test_layout_BindgenStringRef() {
         )
     );
 }
+pub type BindgenQualType = *mut ::std::os::raw::c_void;
 #[repr(C)]
 #[derive(Debug)]
 pub struct BindgenStringRefSet {
@@ -7022,7 +6993,7 @@ extern "C" {
     pub fn Decl_getType(
         D: *const clang_Decl,
         arg1: *mut clang_ASTContext,
-    ) -> clang_QualType;
+    ) -> BindgenQualType;
 }
 extern "C" {
     pub fn Decl_isFunctionInlined(D: *const clang_Decl) -> bool;
@@ -7034,7 +7005,8 @@ extern "C" {
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn Decl_getEnumDeclIntegerType(D: *const clang_Decl) -> clang_QualType;
+    pub fn Decl_getEnumDeclIntegerType(D: *const clang_Decl)
+        -> BindgenQualType;
 }
 extern "C" {
     pub fn Decl_getEnumConstantValue(D: *const clang_Decl) -> i64;
@@ -7054,7 +7026,7 @@ extern "C" {
 extern "C" {
     pub fn Decl_getTypedefDeclUnderlyingType(
         D: *const clang_Decl,
-    ) -> clang_QualType;
+    ) -> BindgenQualType;
 }
 extern "C" {
     pub fn Decl_getLinkage(D: *const clang_Decl) -> CXLinkageKind::Type;
@@ -7084,7 +7056,7 @@ extern "C" {
     pub fn Decl_getResultType(
         D: *const clang_Decl,
         arg1: *mut clang_ASTContext,
-    ) -> clang_QualType;
+    ) -> BindgenQualType;
 }
 extern "C" {
     pub fn Expr_getArgument(
@@ -7125,13 +7097,13 @@ extern "C" {
     ) -> *mut clang_comments_FullComment;
 }
 extern "C" {
-    pub fn Expr_getType(E: *const clang_Expr) -> clang_QualType;
+    pub fn Expr_getType(E: *const clang_Expr) -> BindgenQualType;
 }
 extern "C" {
     pub fn Expr_getSourceRange(E: *const clang_Expr) -> BindgenSourceRange;
 }
 extern "C" {
-    pub fn Type_getDeclaration(arg1: clang_QualType) -> *const clang_Decl;
+    pub fn Type_getDeclaration(arg1: BindgenQualType) -> *const clang_Decl;
 }
 extern "C" {
     pub fn Attr_getCXCursorKind(arg1: *const clang_Attr) -> CXCursorKind::Type;
@@ -7319,79 +7291,79 @@ extern "C" {
 }
 extern "C" {
     pub fn Type_kind(
-        arg1: clang_QualType,
+        arg1: BindgenQualType,
         arg2: *mut clang_ASTContext,
     ) -> CXTypeKind::Type;
 }
 extern "C" {
     pub fn Type_getTypeSpelling(
-        arg1: clang_QualType,
+        arg1: BindgenQualType,
         arg2: *mut clang_ASTContext,
     ) -> BindgenStringRef;
 }
 extern "C" {
-    pub fn Type_isConstQualifiedType(arg1: clang_QualType) -> bool;
+    pub fn Type_isConstQualifiedType(arg1: BindgenQualType) -> bool;
 }
 extern "C" {
     pub fn Type_getSizeOf(
-        arg1: clang_QualType,
+        arg1: BindgenQualType,
         arg2: *mut clang_ASTContext,
     ) -> ::std::os::raw::c_longlong;
 }
 extern "C" {
     pub fn Type_getAlignOf(
-        arg1: clang_QualType,
+        arg1: BindgenQualType,
         arg2: *mut clang_ASTContext,
     ) -> ::std::os::raw::c_longlong;
 }
 extern "C" {
     pub fn Type_getNumTemplateArguments(
-        arg1: clang_QualType,
+        arg1: BindgenQualType,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn Type_getArgType(
-        T: clang_QualType,
+        T: BindgenQualType,
         index: ::std::os::raw::c_uint,
-    ) -> clang_QualType;
+    ) -> BindgenQualType;
 }
 extern "C" {
-    pub fn Type_getNumArgTypes(arg1: clang_QualType) -> ::std::os::raw::c_int;
+    pub fn Type_getNumArgTypes(arg1: BindgenQualType) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn Type_getPointeeType(arg1: clang_QualType) -> clang_QualType;
+    pub fn Type_getPointeeType(arg1: BindgenQualType) -> BindgenQualType;
 }
 extern "C" {
-    pub fn Type_getElementType(arg1: clang_QualType) -> clang_QualType;
+    pub fn Type_getElementType(arg1: BindgenQualType) -> BindgenQualType;
 }
 extern "C" {
-    pub fn Type_getNumElements(arg1: clang_QualType) -> ::std::os::raw::c_int;
+    pub fn Type_getNumElements(arg1: BindgenQualType) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn Type_getCanonicalType(
-        arg1: clang_QualType,
+        arg1: BindgenQualType,
         arg2: *mut clang_ASTContext,
-    ) -> clang_QualType;
+    ) -> BindgenQualType;
 }
 extern "C" {
-    pub fn Type_isFunctionTypeVariadic(arg1: clang_QualType) -> bool;
+    pub fn Type_isFunctionTypeVariadic(arg1: BindgenQualType) -> bool;
 }
 extern "C" {
-    pub fn Type_getResultType(arg1: clang_QualType) -> clang_QualType;
+    pub fn Type_getResultType(arg1: BindgenQualType) -> BindgenQualType;
 }
 extern "C" {
     pub fn Type_getFunctionTypeCallingConv(
-        arg1: clang_QualType,
+        arg1: BindgenQualType,
     ) -> CXCallingConv::Type;
 }
 extern "C" {
-    pub fn Type_getNamedType(arg1: clang_QualType) -> clang_QualType;
+    pub fn Type_getNamedType(arg1: BindgenQualType) -> BindgenQualType;
 }
 extern "C" {
     pub fn Type_getTemplateArgumentAsType(
-        T: clang_QualType,
+        T: BindgenQualType,
         index: ::std::os::raw::c_uint,
-    ) -> clang_QualType;
+    ) -> BindgenQualType;
 }
 extern "C" {
     pub fn getSpellingLocation(
@@ -7467,7 +7439,7 @@ extern "C" {
 extern "C" {
     pub fn CXXBaseSpecifier_getType(
         arg1: *const clang_CXXBaseSpecifier,
-    ) -> clang_QualType;
+    ) -> BindgenQualType;
 }
 extern "C" {
     pub fn CXXBaseSpecifier_getSpelling(

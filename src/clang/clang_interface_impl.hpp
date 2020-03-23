@@ -36,7 +36,7 @@ BindgenStringRef stringref(const char *newStr);
 BindgenStringRef stringref(const std::string &s);
 BindgenStringRef stringref(llvm::StringRef S);
 BindgenStringRefSet make_stringrefset(std::vector<std::string> &string_vec);
-QualType make_type_compatible(QualType QT);
+BindgenQualType make_type_compatible(QualType QT);
 
 // Functions defined in libclang_compat.cpp
 const Decl *getDeclFromExpr(const Stmt *E);
