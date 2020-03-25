@@ -53,7 +53,7 @@ impl RegexSet {
     /// Must be called before calling `matches()`, or it will always return
     /// false.
     pub fn build(&mut self, record_matches: bool) {
-        let items = self.items.iter().map(|item| format!("^{}$", item));
+        let items = self.items.iter().map(|item| format!("^({})$", item));
         self.record_matches = record_matches;
         self.set = match RxSet::new(items) {
             Ok(x) => Some(x),
