@@ -939,9 +939,9 @@ impl Builder {
     /// This makes bindgen generate enums instead of constants. Regular
     /// expressions are supported.
     ///
-    /// **Use this with caution,** you probably want to use the non_exhaustive
-    /// flavor of rust enums instead of this one. Take a look at
-    /// https://github.com/rust-lang/rust/issues/36927 for more information.
+    /// **Use this with caution**, creating this in unsafe code
+    /// (including FFI) with an invalid value will invoke undefined behaviour.
+    /// You may want to use the newtype enum style instead.
     pub fn rustified_enum<T: AsRef<str>>(mut self, arg: T) -> Builder {
         self.options.rustified_enums.insert(arg);
         self
@@ -952,6 +952,10 @@ impl Builder {
     ///
     /// This makes bindgen generate enums instead of constants. Regular
     /// expressions are supported.
+    ///
+    /// **Use this with caution**, creating this in unsafe code
+    /// (including FFI) with an invalid value will invoke undefined behaviour.
+    /// You may want to use the newtype enum style instead.
     pub fn rustified_non_exhaustive_enum<T: AsRef<str>>(
         mut self,
         arg: T,

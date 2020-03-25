@@ -2285,7 +2285,9 @@ impl MethodCodegen for Method {
 /// A helper type that represents different enum variations.
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum EnumVariation {
-    /// The code for this enum will use a Rust enum
+    /// The code for this enum will use a Rust enum. Note that creating this in unsafe code
+    /// (including FFI) with an invalid value will invoke undefined behaviour, whether or not
+    /// its marked as non_exhaustive.
     Rust {
         /// Indicates whether the generated struct should be `#[non_exhaustive]`
         non_exhaustive: bool,
