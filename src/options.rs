@@ -149,6 +149,11 @@ where
                 .takes_value(true)
                 .multiple(true)
                 .number_of_values(1),
+            Arg::with_name("only-layout-tests")
+                .long("only-layout-tests")
+                .help(
+                    "Only emit layout tests. Allows separating the tests from the bindings."
+                ),
             Arg::with_name("no-layout-tests")
                 .long("no-layout-tests")
                 .help("Avoid generating layout tests for any type."),

@@ -374,8 +374,14 @@ impl Builder {
             })
             .count();
 
-        if !self.options.layout_tests {
-            output_vector.push("--no-layout-tests".into());
+        match self.options.layout_tests {
+            LayoutTests::Emit => {}
+            LayoutTests::EmitNone => {
+                output_vector.push("--no-layout-tests".into())
+            }
+            LayoutTests::EmitOnly => {
+                output_vector.push("--only-layout-tests".into())
+            }
         }
 
         if self.options.impl_debug {
@@ -1088,8 +1094,8 @@ impl Builder {
     }
 
     /// Set whether layout tests should be generated.
-    pub fn layout_tests(mut self, doit: bool) -> Self {
-        self.options.layout_tests = doit;
+    pub fn layout_tests(mut self, doit: impl Into<LayoutTests>) -> Self {
+        self.options.layout_tests = doit.into();
         self
     }
 
@@ -1551,6 +1557,44 @@ impl Builder {
     }
 }
 
+/// Setting for layout test generation.
+#[derive(Debug, Clone, PartialEq)]
+pub enum LayoutTests {
+    /// Include layout tests in the generated bindings. The default.
+    Emit,
+    /// Don't include any layout tests.
+    EmitNone,
+    /// Only emit the layout tests.
+    ///
+    /// The intended use case for this is for separating tests from the
+    /// generated bindings (as the tests are by nature non-portable, even if the
+    /// bindings otherwise would be).
+    ///
+    /// When used in this manner, you're encouraged to provide an an otherwise
+    /// identical set of options (even though many of them are effectively
+    /// ignored when this is set).
+    EmitOnly,
+}
+
+impl LayoutTests {
+    pub(crate) fn needed(&self) -> bool {
+        match self {
+            LayoutTests::Emit | LayoutTests::EmitOnly => true,
+            LayoutTests::EmitNone => false,
+        }
+    }
+}
+
+impl From<bool> for LayoutTests {
+    fn from(value: bool) -> Self {
+        if value {
+            LayoutTests::Emit
+        } else {
+            LayoutTests::EmitNone
+        }
+    }
+}
+
 /// Configuration options for generated bindings.
 #[derive(Debug)]
 struct BindgenOptions {
@@ -1649,7 +1693,7 @@ struct BindgenOptions {
     disable_nested_struct_naming: bool,
 
     /// True if we should generate layout tests for generated structures.
-    layout_tests: bool,
+    layout_tests: LayoutTests,
 
     /// True if we should implement the Debug trait for C/C++ structures and types
     /// that do not support automatically deriving Debug.
@@ -1894,7 +1938,7 @@ impl Default for BindgenOptions {
             emit_ast: false,
             emit_ir: false,
             emit_ir_graphviz: None,
-            layout_tests: true,
+            layout_tests: LayoutTests::Emit,
             impl_debug: false,
             impl_partialeq: false,
             derive_copy: true,
