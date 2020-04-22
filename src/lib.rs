@@ -719,6 +719,14 @@ impl Builder {
     /// implement some processing on comments to work around issues as described
     /// in [rust-bindgen issue
     /// #426](https://github.com/rust-lang/rust-bindgen/issues/426).
+    ///
+    /// Note that clang by default excludes comments from system headers, pass
+    /// `-fretain-comments-from-system-headers` as
+    /// [`clang_arg`][Builder::clang_arg] to include them. It can also be told
+    /// to process all comments (not just documentation ones) using the
+    /// `-fparse-all-comments` flag. See [slides on clang comment parsing](
+    /// https://llvm.org/devmtg/2012-11/Gribenko_CommentParsing.pdf) for
+    /// background and examples.
     pub fn generate_comments(mut self, doit: bool) -> Self {
         self.options.generate_comments = doit;
         self
