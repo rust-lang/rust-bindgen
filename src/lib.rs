@@ -712,8 +712,8 @@ impl Builder {
         self
     }
 
-    /// Whether the generated bindings should contain documentation comments or
-    /// not.
+    /// Whether the generated bindings should contain documentation comments
+    /// (docstrings) or not.
     ///
     /// This ideally will always be true, but it may need to be false until we
     /// implement some processing on comments to work around issues as described
