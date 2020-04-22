@@ -717,9 +717,8 @@ impl Builder {
     ///
     /// This ideally will always be true, but it may need to be false until we
     /// implement some processing on comments to work around issues as described
-    /// in:
-    ///
-    /// https://github.com/rust-lang/rust-bindgen/issues/426
+    /// in [rust-bindgen issue
+    /// #426](https://github.com/rust-lang/rust-bindgen/issues/426).
     pub fn generate_comments(mut self, doit: bool) -> Self {
         self.options.generate_comments = doit;
         self
