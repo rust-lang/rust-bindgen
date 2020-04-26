@@ -1410,8 +1410,8 @@ impl CompInfo {
                         Item::from_ty_or_ref(cur.cur_type(), cur, None, ctx);
                     ci.base_members.push(Base {
                         ty: type_id,
-                        kind: kind,
-                        field_name: field_name,
+                        kind,
+                        field_name,
                     });
                 }
                 CXCursor_Constructor | CXCursor_Destructor |
