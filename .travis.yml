@@ -65,6 +65,7 @@ env:
     # Miscellaneous tests.
     - LLVM_VERSION="9.0" BINDGEN_JOB="misc"
     - LLVM_VERSION="9.0" BINDGEN_JOB="quickchecking"
+    - LLVM_VERSION="9.0" BINDGEN_JOB="msrv"
 
 matrix:
   fast_finish: true

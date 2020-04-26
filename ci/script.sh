@@ -26,6 +26,15 @@ case "$BINDGEN_JOB" in
         ./ci/assert-no-diff.sh
         ;;
 
+    "msrv")
+        # Test that the bindgen library can be built with the minimum supported Rust version
+        # This test should not use Cargo.lock as it's ignored for library builds
+        rm Cargo.lock
+        # The MSRV below is also documented in README.md, please keep in sync
+        rustup install 1.34.0
+        cargo +1.34.0 build --lib $NO_DEFAULT_FEATURES --features "$BINDGEN_FEATURES"
+        ;;
+
     "integration")
         cd ./bindgen-integration
         cargo test "$BINDGEN_PROFILE" $NO_DEFAULT_FEATURES --features "$BINDGEN_FEATURES"
