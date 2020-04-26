@@ -37,6 +37,12 @@ extern "C" {
 
 [📚 Read the `bindgen` users guide here! 📚](https://rust-lang.github.io/rust-bindgen)
 
+## MSRV
+
+The minimum supported Rust version is **1.34**.
+
+No MSRV bump policy has been established yet, so MSRV may increase in any release.
+
 ## API Reference
 
 [API reference documentation is on docs.rs](https://docs.rs/bindgen)
