@@ -15,32 +15,32 @@ use self::struct_layout::StructLayoutTracker;
 
 use super::BindgenOptions;
 
-use ir::analysis::{HasVtable, Sizedness};
-use ir::annotations::FieldAccessorKind;
-use ir::comment;
-use ir::comp::{
+use crate::ir::analysis::{HasVtable, Sizedness};
+use crate::ir::annotations::FieldAccessorKind;
+use crate::ir::comment;
+use crate::ir::comp::{
     Base, Bitfield, BitfieldUnit, CompInfo, CompKind, Field, FieldData,
     FieldMethods, Method, MethodKind,
 };
-use ir::context::{BindgenContext, ItemId};
-use ir::derive::{
+use crate::ir::context::{BindgenContext, ItemId};
+use crate::ir::derive::{
     CanDerive, CanDeriveCopy, CanDeriveDebug, CanDeriveDefault, CanDeriveEq,
     CanDeriveHash, CanDeriveOrd, CanDerivePartialEq, CanDerivePartialOrd,
 };
-use ir::dot;
-use ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
-use ir::function::{Abi, Function, FunctionKind, FunctionSig, Linkage};
-use ir::int::IntKind;
-use ir::item::{IsOpaque, Item, ItemCanonicalName, ItemCanonicalPath};
-use ir::item_kind::ItemKind;
-use ir::layout::Layout;
-use ir::module::Module;
-use ir::objc::{ObjCInterface, ObjCMethod};
-use ir::template::{
+use crate::ir::dot;
+use crate::ir::enum_ty::{Enum, EnumVariant, EnumVariantValue};
+use crate::ir::function::{Abi, Function, FunctionKind, FunctionSig, Linkage};
+use crate::ir::int::IntKind;
+use crate::ir::item::{IsOpaque, Item, ItemCanonicalName, ItemCanonicalPath};
+use crate::ir::item_kind::ItemKind;
+use crate::ir::layout::Layout;
+use crate::ir::module::Module;
+use crate::ir::objc::{ObjCInterface, ObjCMethod};
+use crate::ir::template::{
     AsTemplateParam, TemplateInstantiation, TemplateParameters,
 };
-use ir::ty::{Type, TypeKind};
-use ir::var::Var;
+use crate::ir::ty::{Type, TypeKind};
+use crate::ir::var::Var;
 
 use proc_macro2::{self, Ident, Span};
 use quote::TokenStreamExt;
@@ -53,7 +53,7 @@ use std::fmt::Write;
 use std::iter;
 use std::ops;
 use std::str::FromStr;
-use {Entry, HashMap, HashSet};
+use crate::{Entry, HashMap, HashSet};
 
 // Name of type defined in constified enum module
 pub static CONSTIFIED_ENUM_MODULE_REPR_NAME: &'static str = "Type";
@@ -483,7 +483,7 @@ impl CodeGenerator for Var {
         result: &mut CodegenResult<'a>,
         item: &Item,
     ) {
-        use ir::var::VarType;
+        use crate::ir::var::VarType;
         debug!("<Var as CodeGenerator>::codegen: item = {:?}", item);
         debug_assert!(item.is_enabled_for_codegen(ctx));
 
@@ -1310,7 +1310,7 @@ impl<'a> FieldCodegen<'a> for BitfieldUnit {
         F: Extend<proc_macro2::TokenStream>,
         M: Extend<proc_macro2::TokenStream>,
     {
-        use ir::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
+        use crate::ir::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
 
         result.saw_bitfield_unit();
 
@@ -3855,10 +3855,10 @@ pub(crate) fn codegen(
 
 mod utils {
     use super::{error, ToRustTyOrOpaque};
-    use ir::context::BindgenContext;
-    use ir::function::{Abi, FunctionSig};
-    use ir::item::{Item, ItemCanonicalPath};
-    use ir::ty::TypeKind;
+    use crate::ir::context::BindgenContext;
+    use crate::ir::function::{Abi, FunctionSig};
+    use crate::ir::item::{Item, ItemCanonicalPath};
+    use crate::ir::ty::TypeKind;
     use proc_macro2;
     use std::borrow::Cow;
     use std::mem;

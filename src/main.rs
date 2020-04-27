@@ -15,7 +15,7 @@ use std::panic;
 mod log_stubs;
 
 mod options;
-use options::builder_from_flags;
+use crate::options::builder_from_flags;
 
 fn clang_version_check() {
     let version = clang_version();

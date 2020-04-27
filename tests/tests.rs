@@ -15,7 +15,7 @@ use std::sync::Once;
 
 #[path = "../src/options.rs"]
 mod options;
-use options::builder_from_flags;
+use crate::options::builder_from_flags;
 
 /// The environment variable that determines if test expectations are overwritten.
 static OVERWRITE_ENV_VAR: &str = "BINDGEN_OVERWRITE_EXPECTED";

@@ -9,15 +9,15 @@ use super::layout::Layout;
 use super::template::TemplateParameters;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::RUST_DERIVE_IN_ARRAY_LIMIT;
-use clang;
-use codegen::struct_layout::{align_to, bytes_from_bits_pow2};
-use ir::derive::CanDeriveCopy;
-use parse::{ClangItemParser, ParseError};
+use crate::clang;
+use crate::codegen::struct_layout::{align_to, bytes_from_bits_pow2};
+use crate::ir::derive::CanDeriveCopy;
+use crate::parse::{ClangItemParser, ParseError};
 use peeking_take_while::PeekableExt;
 use std::cmp;
 use std::io;
 use std::mem;
-use HashMap;
+use crate::HashMap;
 
 /// The kind of compound type.
 #[derive(Debug, Copy, Clone, PartialEq)]

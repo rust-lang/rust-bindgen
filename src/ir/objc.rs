@@ -4,7 +4,7 @@ use super::context::{BindgenContext, ItemId};
 use super::function::FunctionSig;
 use super::traversal::{Trace, Tracer};
 use super::ty::TypeKind;
-use clang;
+use crate::clang;
 use clang_sys::CXChildVisit_Continue;
 use clang_sys::CXCursor_ObjCCategoryDecl;
 use clang_sys::CXCursor_ObjCClassMethodDecl;

@@ -4,11 +4,11 @@ use super::super::codegen::EnumVariation;
 use super::context::{BindgenContext, TypeId};
 use super::item::Item;
 use super::ty::TypeKind;
-use clang;
-use ir::annotations::Annotations;
-use ir::item::ItemCanonicalPath;
-use parse::{ClangItemParser, ParseError};
-use regex_set::RegexSet;
+use crate::clang;
+use crate::ir::annotations::Annotations;
+use crate::ir::item::ItemCanonicalPath;
+use crate::parse::{ClangItemParser, ParseError};
+use crate::regex_set::RegexSet;
 
 /// An enum representing custom handling that can be given to a variant.
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
