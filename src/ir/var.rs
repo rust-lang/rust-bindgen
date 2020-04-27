@@ -13,9 +13,9 @@ use crate::clang::ClangToken;
 use crate::parse::{
     ClangItemParser, ClangSubItemParser, ParseError, ParseResult,
 };
-use cexpr;
 use std::io;
-use std::num::Wrapping;
+use std::collections::HashMap;
+use rcc::{InternedStr, Literal};
 
 /// The type for a constant variable.
 #[derive(Debug)]
@@ -188,8 +188,6 @@ impl ClangSubItemParser for Var {
         cursor: clang::Cursor,
         ctx: &mut BindgenContext,
     ) -> Result<ParseResult<Self>, ParseError> {
-        use cexpr::expr::EvalResult;
-        use cexpr::literal::CChar;
         use clang_sys::*;
         match cursor.kind() {
             CXCursor_MacroDefinition => {
@@ -215,70 +213,55 @@ impl ClangSubItemParser for Var {
 
                 assert!(!id.is_empty(), "Empty macro name?");
 
-                let previously_defined = ctx.parsed_macro(&id);
+                let previously_defined = ctx.parsed_macro(id);
 
                 // NB: It's important to "note" the macro even if the result is
-                // not an integer, otherwise we might loose other kind of
+                // not an integer, otherwise we might lose other kind of
                 // derived macros.
-                ctx.note_parsed_macro(id.clone(), value.clone());
+                ctx.note_parsed_macro(id, value.clone());
 
                 if previously_defined {
-                    let name = String::from_utf8(id).unwrap();
-                    warn!("Duplicated macro definition: {}", name);
+                    warn!("Duplicated macro definition: {}", id);
                     return Err(ParseError::Continue);
                 }
 
-                // NOTE: Unwrapping, here and above, is safe, because the
-                // identifier of a token comes straight from clang, and we
-                // enforce utf8 there, so we should have already panicked at
-                // this point.
-                let name = String::from_utf8(id).unwrap();
+                let parse_int = |value| {
+                    let kind = ctx
+                        .parse_callbacks()
+                        .and_then(|c| c.int_macro(rcc::get_str!(id), value))
+                        .unwrap_or_else(|| {
+                            default_macro_constant_type(&ctx, value)
+                        });
+
+                    (TypeKind::Int(kind), VarType::Int(value))
+                };
+
                 let (type_kind, val) = match value {
-                    EvalResult::Invalid => return Err(ParseError::Continue),
-                    EvalResult::Float(f) => {
+                    Literal::Float(f) => {
                         (TypeKind::Float(FloatKind::Double), VarType::Float(f))
                     }
-                    EvalResult::Char(c) => {
-                        let c = match c {
-                            CChar::Char(c) => {
-                                assert_eq!(c.len_utf8(), 1);
-                                c as u8
-                            }
-                            CChar::Raw(c) => {
-                                assert!(c <= ::std::u8::MAX as u64);
-                                c as u8
-                            }
-                        };
-
+                    Literal::Char(c) => {
                         (TypeKind::Int(IntKind::U8), VarType::Char(c))
                     }
-                    EvalResult::Str(val) => {
+                    Literal::Str(val) => {
                         let char_ty = Item::builtin_type(
                             TypeKind::Int(IntKind::U8),
                             true,
                             ctx,
                         );
                         if let Some(callbacks) = ctx.parse_callbacks() {
-                            callbacks.str_macro(&name, &val);
+                            callbacks.str_macro(rcc::get_str!(id), &val);
                         }
                         (TypeKind::Pointer(char_ty), VarType::String(val))
                     }
-                    EvalResult::Int(Wrapping(value)) => {
-                        let kind = ctx
-                            .parse_callbacks()
-                            .and_then(|c| c.int_macro(&name, value))
-                            .unwrap_or_else(|| {
-                                default_macro_constant_type(&ctx, value)
-                            });
-
-                        (TypeKind::Int(kind), VarType::Int(value))
-                    }
+                    Literal::Int(i) => parse_int(i),
+                    Literal::UnsignedInt(u) => parse_int(u as i64),
                 };
 
                 let ty = Item::builtin_type(type_kind, true, ctx);
 
                 Ok(ParseResult::New(
-                    Var::new(name, None, ty, Some(val), true),
+                    Var::new(id.resolve_and_clone(), None, ty, Some(val), true),
                     Some(cursor),
                 ))
             }
@@ -370,25 +353,28 @@ impl ClangSubItemParser for Var {
     }
 }
 
-/// Try and parse a macro using all the macros parsed until now.
+/// Try and parse an object macro using all the macros parsed until now.
+///
+/// The cursor includes the `id` token but not the `#define`.
 fn parse_macro(
     ctx: &BindgenContext,
     tokens: &[ClangToken],
-) -> Option<(Vec<u8>, cexpr::expr::EvalResult)> {
-    use cexpr::expr;
+) -> Option<(InternedStr, Literal)> {
+    use rcc::Token;
 
-    let mut cexpr_tokens: Vec<_> = tokens
-        .iter()
-        .filter_map(ClangToken::as_cexpr_token)
-        .collect();
+    let mut rcc_tokens = tokens.iter().filter_map(ClangToken::as_rcc_token);
+    let ident_str = match rcc_tokens.next()?.data {
+        Token::Id(id) => id,
+        _ => return None,
+    };
+    if ident_str.is_empty() || tokens.len() < 2 {
+        return None;
+    }
+    let parsed_macros = ctx.parsed_macros();
 
-    let parser = expr::IdentifierParser::new(ctx.parsed_macros());
-
-    match parser.macro_definition(&cexpr_tokens) {
-        Ok((_, (id, val))) => {
-            return Some((id.into(), val));
-        }
-        _ => {}
+    // TODO: remove this clone (will need changes in rcc)
+    if let Some(literal) = rcc_expr(rcc_tokens.clone(), &parsed_macros) {
+        return Some((ident_str, literal));
     }
 
     // Try without the last token, to workaround a libclang bug in versions
@@ -397,23 +383,29 @@ fn parse_macro(
     // See:
     //   https://bugs.llvm.org//show_bug.cgi?id=9069
     //   https://reviews.llvm.org/D26446
-    cexpr_tokens.pop()?;
-
-    match parser.macro_definition(&cexpr_tokens) {
-        Ok((_, (id, val))) => Some((id.into(), val)),
-        _ => None,
+    let tokens = tokens[1..tokens.len() - 1].iter().filter_map(ClangToken::as_rcc_token);
+    if let Some(literal) = rcc_expr(tokens, &parsed_macros) {
+        Some((ident_str, literal))
+    } else {
+        None
     }
 }
 
-fn parse_int_literal_tokens(cursor: &clang::Cursor) -> Option<i64> {
-    use cexpr::expr;
-    use cexpr::expr::EvalResult;
+fn rcc_expr(rcc_tokens: impl Iterator<Item = rcc::Locatable<rcc::Token>>, definitions: &HashMap<InternedStr, rcc::Definition>) -> Option<Literal> {
+    use rcc::PreProcessor;
 
-    let cexpr_tokens = cursor.cexpr_tokens();
+    let mut rcc_tokens = rcc_tokens.peekable();
+    let location = rcc_tokens.peek()?.location;
+    PreProcessor::cpp_expr(definitions, rcc_tokens, location).ok()?.const_fold().ok()?.into_literal().ok()
+}
+
+fn parse_int_literal_tokens(cursor: &clang::Cursor) -> Option<i64> {
+    let rcc_tokens = cursor.rcc_tokens().into_iter();
 
     // TODO(emilio): We can try to parse other kinds of literals.
-    match expr::expr(&cexpr_tokens) {
-        Ok((_, EvalResult::Int(Wrapping(val)))) => Some(val),
+    match rcc_expr(rcc_tokens, &HashMap::new()) {
+        Some(Literal::Int(i)) => Some(i),
+        Some(Literal::UnsignedInt(u)) => Some(u as i64),
         _ => None,
     }
 }

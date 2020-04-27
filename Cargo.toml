@@ -46,7 +46,6 @@ shlex = "0.1"
 
 [dependencies]
 bitflags = "1.0.3"
-cexpr = "0.4"
 cfg-if = "0.1.0"
 # This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
 clap = { version = "2", optional = true }
@@ -70,6 +69,11 @@ version = "0.7"
 [dependencies.log]
 optional = true
 version = "0.4"
+
+[dependencies.rcc]
+git = "https://github.com/jyn514/rcc/"
+branch = "bindgen"
+default-features = false
 
 [features]
 default = ["logging", "clap", "runtime", "which-rustfmt"]

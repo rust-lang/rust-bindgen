@@ -24,9 +24,9 @@ use crate::clang::{self, Cursor};
 use crate::parse::ClangItemParser;
 use crate::BindgenOptions;
 use crate::{Entry, HashMap, HashSet};
-use cexpr;
 use clang_sys;
 use proc_macro2::{Ident, Span};
+use rcc::InternedStr;
 use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::HashMap as StdHashMap;
@@ -351,8 +351,8 @@ pub struct BindgenContext {
     /// hard errors while parsing duplicated macros, as well to allow macro
     /// expression parsing.
     ///
-    /// This needs to be an std::HashMap because the cexpr API requires it.
-    parsed_macros: StdHashMap<Vec<u8>, cexpr::expr::EvalResult>,
+    /// This needs to be an std::HashMap because the rcc API requires it.
+    parsed_macros: StdHashMap<InternedStr, rcc::Definition>,
 
     /// The active replacements collected from replaces="xxx" annotations.
     replacements: HashMap<Vec<String>, ItemId>,
@@ -1986,14 +1986,14 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     }
 
     /// Have we parsed the macro named `macro_name` already?
-    pub fn parsed_macro(&self, macro_name: &[u8]) -> bool {
-        self.parsed_macros.contains_key(macro_name)
+    pub fn parsed_macro(&self, macro_name: InternedStr) -> bool {
+        self.parsed_macros.contains_key(&macro_name)
     }
 
     /// Get the currently parsed macros.
     pub fn parsed_macros(
         &self,
-    ) -> &StdHashMap<Vec<u8>, cexpr::expr::EvalResult> {
+    ) -> &StdHashMap<InternedStr, rcc::Definition> {
         debug_assert!(!self.in_codegen_phase());
         &self.parsed_macros
     }
@@ -2001,10 +2001,10 @@ If you encounter an error missing from this list, please file an issue or a PR!"
     /// Mark the macro named `macro_name` as parsed.
     pub fn note_parsed_macro(
         &mut self,
-        id: Vec<u8>,
-        value: cexpr::expr::EvalResult,
+        id: InternedStr,
+        value: rcc::Literal,
     ) {
-        self.parsed_macros.insert(id, value);
+        self.parsed_macros.insert(id, rcc::Definition::Object(vec![rcc::Token::Literal(value)]));
     }
 
     /// Are we in the codegen phase?

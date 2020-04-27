@@ -4,9 +4,7 @@
 #![allow(non_upper_case_globals, dead_code)]
 
 use crate::ir::context::BindgenContext;
-use cexpr;
 use clang_sys::*;
-use regex;
 use std::ffi::{CStr, CString};
 use std::fmt;
 use std::hash::Hash;
@@ -696,11 +694,11 @@ impl Cursor {
         RawTokens::new(self)
     }
 
-    /// Gets the tokens that correspond to that cursor as  `cexpr` tokens.
-    pub fn cexpr_tokens(self) -> Vec<cexpr::token::Token> {
+    /// Gets the tokens that correspond to that cursor as `rcc` tokens.
+    pub fn rcc_tokens(self) -> Vec<rcc::Locatable<rcc::Token>> {
         self.tokens()
             .iter()
-            .filter_map(|token| token.as_cexpr_token())
+            .filter_map(|token| token.as_rcc_token())
             .collect()
     }
 
@@ -795,28 +793,34 @@ impl ClangToken {
         c_str.to_bytes()
     }
 
-    /// Converts a ClangToken to a `cexpr` token if possible.
-    pub fn as_cexpr_token(&self) -> Option<cexpr::token::Token> {
-        use cexpr::token;
+    /// Converts a ClangToken to an `rcc` token if possible.
+    pub fn as_rcc_token(&self) -> Option<rcc::Locatable<rcc::Token>> {
+        use rcc::{Files, Lexer, Literal, Token};
 
-        let kind = match self.kind {
-            CXToken_Punctuation => token::Kind::Punctuation,
-            CXToken_Literal => token::Kind::Literal,
-            CXToken_Identifier => token::Kind::Identifier,
-            CXToken_Keyword => token::Kind::Keyword,
-            // NB: cexpr is not too happy about comments inside
-            // expressions, so we strip them down here.
+        match self.kind {
+            // `rcc` does not have a comment token
             CXToken_Comment => return None,
+            CXToken_Punctuation |
+            CXToken_Literal |
+            CXToken_Identifier |
+            CXToken_Keyword => {
+                let spelling = std::str::from_utf8(self.spelling()).expect("invalid utf8 in token");
+                let mut files = Files::new();
+                let id = files.add("", "".into());
+                let mut lexer = Lexer::new(id, spelling, false);
+                let mut token = lexer.next().unwrap().expect("rcc failed to parse clang token");
+                // rcc generates null-terminated string immediately,
+                // but bindgen only adds the null-terminator during codegen.
+                if let Token::Literal(Literal::Str(ref mut string)) = &mut token.data {
+                    assert_eq!(string.pop(), Some(b'\0'));
+                }
+                Some(token)
+            }
             _ => {
                 warn!("Found unexpected token kind: {:?}", self);
-                return None;
+                None
             }
-        };
-
-        Some(token::Token {
-            kind,
-            raw: self.spelling().to_vec().into_boxed_slice(),
-        })
+        }
     }
 }
 
@@ -836,11 +840,11 @@ impl<'a> Iterator for ClangTokenIterator<'a> {
     type Item = ClangToken;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let raw = self.raw.next()?;
+        let raw = *self.raw.next()?;
         unsafe {
-            let kind = clang_getTokenKind(*raw);
-            let spelling = clang_getTokenSpelling(self.tu, *raw);
-            let extent = clang_getTokenExtent(self.tu, *raw);
+            let kind = clang_getTokenKind(raw);
+            let spelling = clang_getTokenSpelling(self.tu, raw);
+            let extent = clang_getTokenExtent(self.tu, raw);
             Some(ClangToken {
                 kind,
                 extent,
