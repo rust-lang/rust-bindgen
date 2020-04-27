@@ -15,6 +15,7 @@ repository = "https://github.com/rust-lang/rust-bindgen"
 documentation = "https://docs.rs/bindgen"
 homepage = "https://rust-lang.github.io/rust-bindgen/"
 version = "0.53.2"
+edition = "2018"
 build = "build.rs"
 
 include = [

@@ -17,23 +17,13 @@
 
 #[macro_use]
 extern crate bitflags;
-extern crate cexpr;
 #[macro_use]
 #[allow(unused_extern_crates)]
 extern crate cfg_if;
-extern crate clang_sys;
-extern crate lazycell;
-extern crate rustc_hash;
 #[macro_use]
 extern crate lazy_static;
-extern crate peeking_take_while;
 #[macro_use]
 extern crate quote;
-extern crate proc_macro2;
-extern crate regex;
-extern crate shlex;
-#[cfg(feature = "which-rustfmt")]
-extern crate which;
 
 #[cfg(feature = "logging")]
 #[macro_use]
