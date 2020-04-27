@@ -4,9 +4,9 @@ use super::{generate_dependencies, ConstrainResult, MonotoneFramework};
 use crate::ir::context::{BindgenContext, ItemId};
 use crate::ir::traversal::EdgeKind;
 use crate::ir::ty::TypeKind;
+use crate::{Entry, HashMap};
 use std::cmp;
 use std::ops;
-use crate::{Entry, HashMap};
 
 /// The result of the `HasVtableAnalysis` for an individual item.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]

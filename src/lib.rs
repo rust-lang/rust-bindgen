@@ -74,7 +74,9 @@ doc_mod!(regex_set, regex_set_docs);
 
 pub use crate::codegen::{AliasVariation, EnumVariation};
 use crate::features::RustFeatures;
-pub use crate::features::{RustTarget, LATEST_STABLE_RUST, RUST_TARGET_STRINGS};
+pub use crate::features::{
+    RustTarget, LATEST_STABLE_RUST, RUST_TARGET_STRINGS,
+};
 use crate::ir::context::{BindgenContext, ItemId};
 use crate::ir::item::Item;
 use crate::parse::{ClangItemParser, ParseError};

@@ -45,6 +45,7 @@ use crate::ir::var::Var;
 use proc_macro2::{self, Ident, Span};
 use quote::TokenStreamExt;
 
+use crate::{Entry, HashMap, HashSet};
 use std;
 use std::borrow::Cow;
 use std::cell::Cell;
@@ -53,7 +54,6 @@ use std::fmt::Write;
 use std::iter;
 use std::ops;
 use std::str::FromStr;
-use crate::{Entry, HashMap, HashSet};
 
 // Name of type defined in constified enum module
 pub static CONSTIFIED_ENUM_MODULE_REPR_NAME: &'static str = "Type";

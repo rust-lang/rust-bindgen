@@ -7,9 +7,11 @@ use super::int::IntKind;
 use super::item::Item;
 use super::ty::{FloatKind, TypeKind};
 use crate::callbacks::MacroParsingBehavior;
-use cexpr;
 use crate::clang;
-use crate::parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
+use crate::parse::{
+    ClangItemParser, ClangSubItemParser, ParseError, ParseResult,
+};
+use cexpr;
 use std::io;
 use std::num::Wrapping;
 

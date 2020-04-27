@@ -7,8 +7,8 @@ use crate::ir::context::{BindgenContext, TypeId};
 use crate::ir::item::IsOpaque;
 use crate::ir::traversal::EdgeKind;
 use crate::ir::ty::TypeKind;
-use std::{cmp, ops};
 use crate::{Entry, HashMap};
+use std::{cmp, ops};
 
 /// The result of the `Sizedness` analysis for an individual item.
 ///

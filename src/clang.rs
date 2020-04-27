@@ -4,9 +4,9 @@
 #![allow(non_upper_case_globals, dead_code)]
 
 
+use crate::ir::context::BindgenContext;
 use cexpr;
 use clang_sys::*;
-use crate::ir::context::BindgenContext;
 use regex;
 use std::ffi::{CStr, CString};
 use std::fmt;

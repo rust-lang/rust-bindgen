@@ -56,9 +56,9 @@ pub use self::sizedness::{Sizedness, SizednessAnalysis, SizednessResult};
 use crate::ir::context::{BindgenContext, ItemId};
 
 use crate::ir::traversal::{EdgeKind, Trace};
+use crate::HashMap;
 use std::fmt;
 use std::ops;
-use crate::HashMap;
 
 /// An analysis in the monotone framework.
 ///

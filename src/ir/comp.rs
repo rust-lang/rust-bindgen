@@ -13,11 +13,11 @@ use crate::clang;
 use crate::codegen::struct_layout::{align_to, bytes_from_bits_pow2};
 use crate::ir::derive::CanDeriveCopy;
 use crate::parse::{ClangItemParser, ParseError};
+use crate::HashMap;
 use peeking_take_while::PeekableExt;
 use std::cmp;
 use std::io;
 use std::mem;
-use crate::HashMap;
 
 /// The kind of compound type.
 #[derive(Debug, Copy, Clone, PartialEq)]
