@@ -26,7 +26,12 @@ Download and install the official pre-built binary from
 You will also need to set `LIBCLANG_PATH` as an [environment
 variable](https://www.techjunkie.com/environment-variables-windows-10/) pointing
 to the `bin` directory of your LLVM install. For example, if you installed LLVM
-to `D:\programs\LLVM`, then you'd set the value to be `D:\programs\LLVM\bin`
+to `D:\programs\LLVM`, then you'd set the value to be `D:\programs\LLVM\bin`.
+
+Alternatively, for Mingw64, you can install clang via
+```bash
+pacman -S  mingw64/mingw-w64-x86_64-clang
+```
 
 #### macOS
 
