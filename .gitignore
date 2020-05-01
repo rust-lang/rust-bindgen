@@ -1,4 +1,5 @@
 # Cargo
+Cargo.lock
 target/
 *~
 bindgen-integration/Cargo.lock
