@@ -194,7 +194,10 @@ greater.</p>
 <p>You will also need to set <code>LIBCLANG_PATH</code> as an <a href="https://www.techjunkie.com/environment-variables-windows-10/">environment
 variable</a> pointing
 to the <code>bin</code> directory of your LLVM install. For example, if you installed LLVM
-to <code>D:\programs\LLVM</code>, then you'd set the value to be <code>D:\programs\LLVM\bin</code></p>
+to <code>D:\programs\LLVM</code>, then you'd set the value to be <code>D:\programs\LLVM\bin</code>.</p>
+<p>Alternatively, for Mingw64, you can install clang via</p>
+<pre><code class="language-bash">pacman -S  mingw64/mingw-w64-x86_64-clang
+</code></pre>
 <a class="header" href="#macos" id="macos"><h4>macOS</h4></a>
 <p>If you use Homebrew:</p>
 <pre><code class="language-bash">$ brew install llvm
