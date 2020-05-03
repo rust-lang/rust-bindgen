@@ -6,10 +6,12 @@ use super::function::cursor_mangling;
 use super::int::IntKind;
 use super::item::Item;
 use super::ty::{FloatKind, TypeKind};
-use callbacks::MacroParsingBehavior;
+use crate::callbacks::MacroParsingBehavior;
+use crate::clang;
+use crate::parse::{
+    ClangItemParser, ClangSubItemParser, ParseError, ParseResult,
+};
 use cexpr;
-use clang;
-use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use std::io;
 use std::num::Wrapping;
 

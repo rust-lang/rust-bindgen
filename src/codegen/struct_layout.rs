@@ -2,10 +2,10 @@
 
 use super::helpers;
 
-use ir::comp::CompInfo;
-use ir::context::BindgenContext;
-use ir::layout::Layout;
-use ir::ty::{Type, TypeKind};
+use crate::ir::comp::CompInfo;
+use crate::ir::context::BindgenContext;
+use crate::ir::layout::Layout;
+use crate::ir::ty::{Type, TypeKind};
 use proc_macro2::{self, Ident, Span};
 use std::cmp;
 

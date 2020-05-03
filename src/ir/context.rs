@@ -19,19 +19,19 @@ use super::module::{Module, ModuleKind};
 use super::template::{TemplateInstantiation, TemplateParameters};
 use super::traversal::{self, Edge, ItemTraversal};
 use super::ty::{FloatKind, Type, TypeKind};
-use callbacks::ParseCallbacks;
+use crate::callbacks::ParseCallbacks;
+use crate::clang::{self, Cursor};
+use crate::parse::ClangItemParser;
+use crate::BindgenOptions;
+use crate::{Entry, HashMap, HashSet};
 use cexpr;
-use clang::{self, Cursor};
 use clang_sys;
-use parse::ClangItemParser;
 use proc_macro2::{Ident, Span};
 use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::HashMap as StdHashMap;
 use std::iter::IntoIterator;
 use std::mem;
-use BindgenOptions;
-use {Entry, HashMap, HashSet};
 
 /// An identifier for some kind of IR item.
 #[derive(Debug, Copy, Clone, Eq, PartialOrd, Ord, Hash)]

@@ -17,23 +17,13 @@
 
 #[macro_use]
 extern crate bitflags;
-extern crate cexpr;
 #[macro_use]
 #[allow(unused_extern_crates)]
 extern crate cfg_if;
-extern crate clang_sys;
-extern crate lazycell;
-extern crate rustc_hash;
 #[macro_use]
 extern crate lazy_static;
-extern crate peeking_take_while;
 #[macro_use]
 extern crate quote;
-extern crate proc_macro2;
-extern crate regex;
-extern crate shlex;
-#[cfg(feature = "which-rustfmt")]
-extern crate which;
 
 #[cfg(feature = "logging")]
 #[macro_use]
@@ -82,13 +72,15 @@ doc_mod!(ir, ir_docs);
 doc_mod!(parse, parse_docs);
 doc_mod!(regex_set, regex_set_docs);
 
-pub use codegen::{AliasVariation, EnumVariation};
-use features::RustFeatures;
-pub use features::{RustTarget, LATEST_STABLE_RUST, RUST_TARGET_STRINGS};
-use ir::context::{BindgenContext, ItemId};
-use ir::item::Item;
-use parse::{ClangItemParser, ParseError};
-use regex_set::RegexSet;
+pub use crate::codegen::{AliasVariation, EnumVariation};
+use crate::features::RustFeatures;
+pub use crate::features::{
+    RustTarget, LATEST_STABLE_RUST, RUST_TARGET_STRINGS,
+};
+use crate::ir::context::{BindgenContext, ItemId};
+use crate::ir::item::Item;
+use crate::parse::{ClangItemParser, ParseError};
+use crate::regex_set::RegexSet;
 
 use std::borrow::Cow;
 use std::fs::{File, OpenOptions};
@@ -2410,7 +2402,7 @@ impl callbacks::ParseCallbacks for CargoCallbacks {
 #[test]
 fn commandline_flag_unit_test_function() {
     //Test 1
-    let bindings = ::builder();
+    let bindings = crate::builder();
     let command_line_flags = bindings.command_line_flags();
 
     let test_cases = vec![
@@ -2428,7 +2420,7 @@ fn commandline_flag_unit_test_function() {
         .all(|ref x| command_line_flags.contains(x),));
 
     //Test 2
-    let bindings = ::builder()
+    let bindings = crate::builder()
         .header("input_header")
         .whitelist_type("Distinct_Type")
         .whitelist_function("safe_function");

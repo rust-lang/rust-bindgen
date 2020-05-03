@@ -1,7 +1,7 @@
 //! A public API for more fine-grained customization of bindgen behavior.
 
-pub use ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
-pub use ir::int::IntKind;
+pub use crate::ir::enum_ty::{EnumVariantCustomBehavior, EnumVariantValue};
+pub use crate::ir::int::IntKind;
 use std::fmt;
 use std::panic::UnwindSafe;
 

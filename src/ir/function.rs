@@ -6,9 +6,11 @@ use super::dot::DotAttributes;
 use super::item::Item;
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::TypeKind;
-use clang;
+use crate::clang;
+use crate::parse::{
+    ClangItemParser, ClangSubItemParser, ParseError, ParseResult,
+};
 use clang_sys::{self, CXCallingConv};
-use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use proc_macro2;
 use quote;
 use quote::TokenStreamExt;

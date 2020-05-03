@@ -18,10 +18,12 @@ use super::module::Module;
 use super::template::{AsTemplateParam, TemplateParameters};
 use super::traversal::{EdgeKind, Trace, Tracer};
 use super::ty::{Type, TypeKind};
-use clang;
+use crate::clang;
+use crate::parse::{
+    ClangItemParser, ClangSubItemParser, ParseError, ParseResult,
+};
 use clang_sys;
 use lazycell::LazyCell;
-use parse::{ClangItemParser, ClangSubItemParser, ParseError, ParseResult};
 use regex;
 use std::cell::Cell;
 use std::collections::BTreeSet;
@@ -1295,8 +1297,8 @@ impl ClangItemParser for Item {
         parent_id: Option<ItemId>,
         ctx: &mut BindgenContext,
     ) -> Result<ItemId, ParseError> {
+        use crate::ir::var::Var;
         use clang_sys::*;
-        use ir::var::Var;
 
         if !cursor.is_valid() {
             return Err(ParseError::Continue);

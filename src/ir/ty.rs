@@ -13,8 +13,8 @@ use super::template::{
     AsTemplateParam, TemplateInstantiation, TemplateParameters,
 };
 use super::traversal::{EdgeKind, Trace, Tracer};
-use clang::{self, Cursor};
-use parse::{ClangItemParser, ParseError, ParseResult};
+use crate::clang::{self, Cursor};
+use crate::parse::{ClangItemParser, ParseError, ParseResult};
 use std::borrow::Cow;
 use std::io;
 

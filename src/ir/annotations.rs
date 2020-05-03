@@ -4,7 +4,7 @@
 //! replace other types with, mark as opaque, etc. This module deals with all of
 //! that stuff.
 
-use clang;
+use crate::clang;
 
 /// What kind of accessor should we provide for a field?
 #[derive(Copy, PartialEq, Clone, Debug)]

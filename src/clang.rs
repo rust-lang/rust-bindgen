@@ -4,9 +4,9 @@
 #![allow(non_upper_case_globals, dead_code)]
 
 
+use crate::ir::context::BindgenContext;
 use cexpr;
 use clang_sys::*;
-use ir::context::BindgenContext;
 use regex;
 use std::ffi::{CStr, CString};
 use std::fmt;
@@ -1085,8 +1085,8 @@ impl Type {
     pub fn fallible_layout(
         &self,
         ctx: &BindgenContext,
-    ) -> Result<::ir::layout::Layout, LayoutError> {
-        use ir::layout::Layout;
+    ) -> Result<crate::ir::layout::Layout, LayoutError> {
+        use crate::ir::layout::Layout;
         let size = self.fallible_size(ctx)?;
         let align = self.fallible_align(ctx)?;
         Ok(Layout::new(size, align))
