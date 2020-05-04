@@ -2146,6 +2146,10 @@ impl MethodCodegen for Method {
 
         // First of all, output the actual function.
         let function_item = ctx.resolve_item(self.signature());
+        if function_item.is_blacklisted(ctx) {
+            // We shouldn't emit a method declaration if the function is blacklisted
+            return;
+        }
         function_item.codegen(ctx, result, &());
 
         let function = function_item.expect_function();
