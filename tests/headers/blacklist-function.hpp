@@ -1,4 +1,4 @@
-// bindgen-flags: --blacklist-function "ExternFunction" --blacklist-function "foo::NamespacedFunction" --enable-cxx-namespaces
+// bindgen-flags: --blacklist-function "ExternFunction" --blacklist-function "foo::NamespacedFunction" --blacklist-function "C_ClassMethod" --enable-cxx-namespaces
 
 extern "C" void ExternFunction();
 
@@ -9,3 +9,8 @@ namespace foo {
 namespace bar {
   void NamespacedFunction();
 }
+
+class C {
+public:
+  void ClassMethod();
+};
