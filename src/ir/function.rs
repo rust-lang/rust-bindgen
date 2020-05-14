@@ -311,7 +311,7 @@ fn args_from_ty_and_cursor(
     cursor: &clang::Cursor,
     ctx: &mut BindgenContext,
 ) -> Vec<(Option<String>, TypeId)> {
-    let cursor_args = cursor.args().unwrap().into_iter();
+    let cursor_args = cursor.args().unwrap_or_default().into_iter();
     let type_args = ty.args().unwrap_or_default().into_iter();
 
     // Argument types can be found in either the cursor or the type, but argument names may only be
@@ -421,7 +421,16 @@ impl FunctionSig {
                     }
                     CXChildVisit_Continue
                 });
-                args
+
+                if args.is_empty() {
+                    // FIXME(emilio): Sometimes libclang doesn't expose the
+                    // right AST for functions tagged as stdcall and such...
+                    //
+                    // https://bugs.llvm.org/show_bug.cgi?id=45919
+                    args_from_ty_and_cursor(&ty, &cursor, ctx)
+                } else {
+                    args
+                }
             }
         };
 

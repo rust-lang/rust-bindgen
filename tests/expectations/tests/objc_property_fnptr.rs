@@ -46,7 +46,11 @@ pub trait IFoo: Sized + std::ops::Deref {
     unsafe fn setFunc_(
         self,
         func: ::std::option::Option<
-            unsafe extern "C" fn() -> ::std::os::raw::c_int,
+            unsafe extern "C" fn(
+                arg1: ::std::os::raw::c_char,
+                arg2: ::std::os::raw::c_short,
+                arg3: f32,
+            ) -> ::std::os::raw::c_int,
         >,
     ) where
         <Self as std::ops::Deref>::Target: objc::Message + Sized,
