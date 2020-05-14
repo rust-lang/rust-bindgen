@@ -3821,6 +3821,26 @@ impl CodeGenerator for ObjCInterface {
                         }
                     };
                     result.push(impl_trait);
+                    for category in &parent.categories {
+                        let category_name =
+                            ctx.rust_ident(category.rust_name());
+                        let impl_trait = if category.is_template() {
+                            let template_names: Vec<Ident> = parent
+                                .template_names
+                                .iter()
+                                .map(|g| ctx.rust_ident(g))
+                                .collect();
+                            quote! {
+                                impl <#(#template_names :'static),*> #category_name <#(#template_names),*> for #class_name {
+                                }
+                            }
+                        } else {
+                            quote! {
+                                impl #category_name for #class_name { }
+                            }
+                        };
+                        result.push(impl_trait);
+                    }
                     parent.parent_class
                 } else {
                     None

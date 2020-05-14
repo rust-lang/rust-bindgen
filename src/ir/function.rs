@@ -210,7 +210,7 @@ impl quote::ToTokens for Abi {
 }
 
 /// A function signature.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct FunctionSig {
     /// The return type of the function.
     return_type: TypeId,

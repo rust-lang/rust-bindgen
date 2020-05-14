@@ -21,7 +21,7 @@ use proc_macro2::{Ident, Span, TokenStream};
 /// Objective C interface as used in TypeKind
 ///
 /// Also protocols and categories are parsed as this type
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ObjCInterface {
     /// The name
     /// like, NSObject
@@ -37,6 +37,9 @@ pub struct ObjCInterface {
     /// The list of protocols that this interface conforms to.
     pub conforms_to: Vec<ItemId>,
 
+    /// The list of categories that this interface is extended by.
+    pub categories: Vec<ObjCInterface>,
+
     /// The direct parent for this interface.
     pub parent_class: Option<ItemId>,
 
@@ -47,7 +50,7 @@ pub struct ObjCInterface {
 }
 
 /// The objective c methods
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ObjCMethod {
     /// The original method selector name
     /// like, dataWithBytes:length:
@@ -68,6 +71,7 @@ impl ObjCInterface {
         ObjCInterface {
             name: name.to_owned(),
             category: None,
+            categories: Vec::new(),
             is_protocol: false,
             template_names: Vec::new(),
             parent_class: None,
@@ -140,9 +144,11 @@ impl ObjCInterface {
                 CXCursor_ObjCClassRef => {
                     if cursor.kind() == CXCursor_ObjCCategoryDecl {
                         // We are actually a category extension, and we found the reference
-                        // to the original interface, so name this interface approriately
+                        // to the original interface, so name this interface approriately.
+
                         interface.name = c.spelling();
                         interface.category = Some(cursor.spelling());
+
                     }
                 }
                 CXCursor_ObjCProtocolRef => {
@@ -194,6 +200,39 @@ impl ObjCInterface {
             }
             CXChildVisit_Continue
         });
+
+        if interface.is_category() {
+            // If this interface is a category, we need to find the interface that this category
+            // extends.
+            let needle = format!("{}", interface.name());
+            debug!(
+                "Category {} belongs to {}, find the item",
+                interface.rust_name(),
+                needle
+            );
+            for (_, item) in ctx.items_mut() {
+                if let Some(ref mut ty) = item.kind_mut().as_type_mut() {
+                    match ty.kind_mut() {
+                        TypeKind::ObjCInterface(ref mut real_interface) => {
+                            if !real_interface.is_category() {
+                                debug!("Checking interface {}, against needle {:?}", real_interface.name, needle);
+                                if needle == real_interface.name() {
+                                    debug!(
+                                        "Found real interface {:?}",
+                                        real_interface
+                                    );
+                                    real_interface
+                                        .categories
+                                        .push(interface.clone());
+                                    break;
+                                }
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
         Some(interface)
     }
 
