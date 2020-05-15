@@ -2,11 +2,9 @@
 // bindgen-osx-only
 
 @interface Foo
--(void)method;
 @end
 
 @interface Foo (BarCategory)
--(void)categoryMethod;
 @end
 
 @interface Bar: Foo

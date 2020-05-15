@@ -28,23 +28,9 @@ impl Foo {
     }
 }
 impl IFoo for Foo {}
-pub trait IFoo: Sized + std::ops::Deref {
-    unsafe fn method(self)
-    where
-        <Self as std::ops::Deref>::Target: objc::Message + Sized,
-    {
-        msg_send!(self, method)
-    }
-}
+pub trait IFoo: Sized + std::ops::Deref {}
 impl Foo_BarCategory for Foo {}
-pub trait Foo_BarCategory: Sized + std::ops::Deref {
-    unsafe fn categoryMethod(self)
-    where
-        <Self as std::ops::Deref>::Target: objc::Message + Sized,
-    {
-        msg_send!(self, categoryMethod)
-    }
-}
+pub trait Foo_BarCategory: Sized + std::ops::Deref {}
 #[repr(transparent)]
 #[derive(Clone, Copy)]
 pub struct Bar(pub id);

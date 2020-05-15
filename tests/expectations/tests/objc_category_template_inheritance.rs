@@ -28,23 +28,9 @@ impl Foo {
     }
 }
 impl<ObjectType: 'static> IFoo<ObjectType> for Foo {}
-pub trait IFoo<ObjectType>: Sized + std::ops::Deref {
-    unsafe fn get(self) -> u64
-    where
-        <Self as std::ops::Deref>::Target: objc::Message + Sized,
-    {
-        msg_send!(self, get)
-    }
-}
+pub trait IFoo<ObjectType>: Sized + std::ops::Deref {}
 impl<ObjectType: 'static> Foo_Baz<ObjectType> for Foo {}
-pub trait Foo_Baz<ObjectType>: Sized + std::ops::Deref {
-    unsafe fn get(self) -> u64
-    where
-        <Self as std::ops::Deref>::Target: objc::Message + Sized,
-    {
-        msg_send!(self, get)
-    }
-}
+pub trait Foo_Baz<ObjectType>: Sized + std::ops::Deref {}
 #[repr(transparent)]
 #[derive(Clone, Copy)]
 pub struct Bar(pub id);
@@ -63,11 +49,4 @@ impl Bar {
 impl<ObjectType: 'static> IFoo<ObjectType> for Bar {}
 impl<ObjectType: 'static> Foo_Baz<ObjectType> for Bar {}
 impl<ObjectType: 'static> IBar<ObjectType> for Bar {}
-pub trait IBar<ObjectType>: Sized + std::ops::Deref {
-    unsafe fn get(self) -> u64
-    where
-        <Self as std::ops::Deref>::Target: objc::Message + Sized,
-    {
-        msg_send!(self, get)
-    }
-}
+pub trait IBar<ObjectType>: Sized + std::ops::Deref {}
