@@ -21,7 +21,7 @@ use proc_macro2::{Ident, Span, TokenStream};
 /// Objective C interface as used in TypeKind
 ///
 /// Also protocols and categories are parsed as this type
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct ObjCInterface {
     /// The name
     /// like, NSObject
@@ -37,8 +37,8 @@ pub struct ObjCInterface {
     /// The list of protocols that this interface conforms to.
     pub conforms_to: Vec<ItemId>,
 
-    /// The list of categories that this interface is extended by.
-    pub categories: Vec<ObjCInterface>,
+    /// The list of categories (and the template tags) that this interface is extended by.
+    pub categories: Vec<(String, Vec<String>)>,
 
     /// The direct parent for this interface.
     pub parent_class: Option<ItemId>,
@@ -50,7 +50,7 @@ pub struct ObjCInterface {
 }
 
 /// The objective c methods
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct ObjCMethod {
     /// The original method selector name
     /// like, dataWithBytes:length:
@@ -221,9 +221,10 @@ impl ObjCInterface {
                                         "Found real interface {:?}",
                                         real_interface
                                     );
-                                    real_interface
-                                        .categories
-                                        .push(interface.clone());
+                                    real_interface.categories.push((
+                                        interface.rust_name(),
+                                        interface.template_names.clone(),
+                                    ));
                                     break;
                                 }
                             }

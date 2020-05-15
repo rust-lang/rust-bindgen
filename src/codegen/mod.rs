@@ -3821,15 +3821,17 @@ impl CodeGenerator for ObjCInterface {
                         }
                     };
                     result.push(impl_trait);
-                    for category in &parent.categories {
-                        let category_name =
-                            ctx.rust_ident(category.rust_name());
-                        let impl_trait = if category.is_template() {
-                            let template_names: Vec<Ident> = parent
-                                .template_names
-                                .iter()
-                                .map(|g| ctx.rust_ident(g))
-                                .collect();
+                    for (category_name, category_template_names) in
+                        &parent.categories
+                    {
+                        let category_name = ctx.rust_ident(category_name);
+                        let impl_trait = if !category_template_names.is_empty()
+                        {
+                            let template_names: Vec<Ident> =
+                                category_template_names
+                                    .iter()
+                                    .map(|g| ctx.rust_ident(g))
+                                    .collect();
                             quote! {
                                 impl <#(#template_names :'static),*> #category_name <#(#template_names),*> for #class_name {
                                 }
