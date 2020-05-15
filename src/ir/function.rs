@@ -407,26 +407,40 @@ impl FunctionSig {
                 args_from_ty_and_cursor(&ty, &cursor, ctx)
             }
             _ => {
+                fn collect_args(
+                    cursor: clang::Cursor,
+                    args: &mut Vec<(Option<String>, TypeId)>,
+                    ctx: &mut BindgenContext,
+                ) {
+                    cursor.visit(|c| {
+                        let kind = c.kind();
+                        if kind == CXCursor_TypeRef {
+                            collect_args(c.referenced().unwrap(), args, ctx);
+                        } else if kind == CXCursor_ParmDecl {
+                            let ty = Item::from_ty_or_ref(
+                                c.cur_type(),
+                                c,
+                                None,
+                                ctx,
+                            );
+                            let name = c.spelling();
+                            let name =
+                                if name.is_empty() { None } else { Some(name) };
+                            args.push((name, ty));
+                        }
+                        CXChildVisit_Continue
+                    });
+                }
+
                 // For non-CXCursor_FunctionDecl, visiting the cursor's children
                 // is the only reliable way to get parameter names.
                 let mut args = vec![];
-                cursor.visit(|c| {
-                    if c.kind() == CXCursor_ParmDecl {
-                        let ty =
-                            Item::from_ty_or_ref(c.cur_type(), c, None, ctx);
-                        let name = c.spelling();
-                        let name =
-                            if name.is_empty() { None } else { Some(name) };
-                        args.push((name, ty));
-                    }
-                    CXChildVisit_Continue
-                });
+
+                collect_args(cursor, &mut args, ctx);
 
                 if args.is_empty() {
                     // FIXME(emilio): Sometimes libclang doesn't expose the
-                    // right AST for functions tagged as stdcall and such...
-                    //
-                    // https://bugs.llvm.org/show_bug.cgi?id=45919
+                    // right params for some cursors.
                     args_from_ty_and_cursor(&ty, &cursor, ctx)
                 } else {
                     args
