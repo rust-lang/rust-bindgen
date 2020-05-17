@@ -678,8 +678,16 @@ impl Builder {
     ///
     /// The file `name` will be added to the clang arguments.
     pub fn header_contents(mut self, name: &str, contents: &str) -> Builder {
+        // Apparently clang relies on having virtual FS correspondent to
+        // the real one, so we need absolute paths here
+        let absolute_path = env::current_dir()
+            .expect("Cannot retrieve current directory")
+            .join(name)
+            .to_str()
+            .expect("Cannot convert current directory name to string")
+            .to_owned();
         self.input_header_contents
-            .push((name.into(), contents.into()));
+            .push((absolute_path, contents.into()));
         self
     }
 
@@ -2099,7 +2107,10 @@ impl Bindings {
             }
         }
 
-        for f in options.input_unsaved_files.iter() {
+        for (idx, f) in options.input_unsaved_files.iter().enumerate() {
+            if idx != 0 || options.input_header.is_some() {
+                options.clang_args.push("-include".to_owned());
+            }
             options.clang_args.push(f.name.to_str().unwrap().to_owned())
         }
 
