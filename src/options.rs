@@ -267,6 +267,11 @@ where
                      names like \"bar\" instead of \"foo_bar\" for a nested \
                      definition \"struct foo { struct bar { } b; };\"."
                 ),
+            Arg::with_name("disable-untagged-union")
+                .long("disable-untagged-union")
+                .help(
+                    "Disable support for native Rust unions.",
+                ),
             Arg::with_name("ignore-functions")
                 .long("ignore-functions")
                 .help(
@@ -665,6 +670,10 @@ where
 
     if matches.is_present("disable-nested-struct-naming") {
         builder = builder.disable_nested_struct_naming();
+    }
+
+    if matches.is_present("disable-untagged-union") {
+        builder = builder.disable_untagged_union();
     }
 
     if matches.is_present("ignore-functions") {
