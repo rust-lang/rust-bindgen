@@ -17,10 +17,10 @@ fi
 case "$BINDGEN_JOB" in
     "test")
         # Need rustfmt to compare the test expectations.
-        rustup update nightly
-        rustup component add rustfmt
-        rustup component add --toolchain nightly rustfmt
-        RUSTFMT="$(rustup which rustfmt)"
+        TOOLCHAIN="nightly-$(curl https://rust-lang.github.io/rustup-components-history/$(rustup target list --installed | tail -1)/rustfmt)"
+        rustup update "$TOOLCHAIN"
+        rustup component add rustfmt --toolchain "$TOOLCHAIN"
+        RUSTFMT="$(rustup which --toolchain "$TOOLCHAIN" rustfmt)"
         export RUSTFMT
         cargo test "$BINDGEN_PROFILE" $NO_DEFAULT_FEATURES --features "$BINDGEN_FEATURES"
         ./ci/assert-no-diff.sh
