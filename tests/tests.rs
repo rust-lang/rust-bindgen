@@ -26,8 +26,17 @@ fn rustfmt(source: String) -> (String, String) {
     static CHECK_RUSTFMT: Once = Once::new();
 
     CHECK_RUSTFMT.call_once(|| {
-        let have_working_rustfmt = process::Command::new("rustup")
-            .args(&["run", "nightly", "rustfmt", "--version"])
+        if env::var_os("RUSTFMT").is_some() {
+            return;
+        }
+
+        let mut rustfmt = {
+            let mut p = process::Command::new("rustup");
+            p.args(&["run", "nightly", "rustfmt", "--version"]);
+            p
+        };
+
+        let have_working_rustfmt = rustfmt
             .stdout(process::Stdio::null())
             .stderr(process::Stdio::null())
             .status()
@@ -47,11 +56,17 @@ The latest `rustfmt` is required to run the `bindgen` test suite. Install
         }
     });
 
-    let mut child = process::Command::new("rustup")
+    let mut child = match env::var_os("RUSTFMT") {
+        Some(r) => process::Command::new(r),
+        None => {
+            let mut p = process::Command::new("rustup");
+            p.args(&["run", "nightly", "rustfmt"]);
+            p
+        }
+    };
+
+    let mut child = child
         .args(&[
-            "run",
-            "nightly",
-            "rustfmt",
             "--config-path",
             concat!(env!("CARGO_MANIFEST_DIR"), "/tests/rustfmt.toml"),
         ])
