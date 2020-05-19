@@ -902,15 +902,9 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         })
     }
 
-    /// IterMut over all items that have been defined.
-    pub fn items_mut(&mut self) -> impl Iterator<Item = (ItemId, &mut Item)> {
-        self.items
-            .iter_mut()
-            .enumerate()
-            .filter_map(|(index, item)| {
-                let item = item.as_mut()?;
-                Some((ItemId(index), item))
-            })
+    /// Get a mutable reference to a given ItemId.
+    pub fn get_item_mut(&mut self, id: ItemId) -> Option<&mut Item> {
+        self.items.get_mut(id.0)?.as_mut()
     }
 
     /// Have we collected all unresolved type references yet?

@@ -139,6 +139,12 @@ impl ObjCInterface {
             interface.is_protocol = true;
         }
 
+        // This is the ItemId for the real interface to which a category extends.  We must make it
+        // an optional, set it when we visit the ObjCCategoryDecl and then use it after we've
+        // visited the entire tree. We must do it in this order to ensure that this interface has
+        // all the template tags assigned to it.
+        let mut real_interface_id_for_category: Option<ItemId> = None;
+
         cursor.visit(|c| {
             match c.kind() {
                 CXCursor_ObjCClassRef => {
@@ -148,6 +154,7 @@ impl ObjCInterface {
 
                         interface.name = c.spelling();
                         interface.category = Some(cursor.spelling());
+                        real_interface_id_for_category = Some(Item::from_ty_or_ref(c.cur_type(), c, None, ctx).into());
 
                     }
                 }
@@ -210,26 +217,28 @@ impl ObjCInterface {
                 interface.rust_name(),
                 needle
             );
-            for (_, item) in ctx.items_mut() {
-                if let Some(ref mut ty) = item.kind_mut().as_type_mut() {
-                    match ty.kind_mut() {
-                        TypeKind::ObjCInterface(ref mut real_interface) => {
-                            if !real_interface.is_category() {
-                                debug!("Checking interface {}, against needle {:?}", real_interface.name, needle);
-                                if needle == real_interface.name() {
-                                    debug!(
-                                        "Found real interface {:?}",
-                                        real_interface
-                                    );
-                                    real_interface.categories.push((
-                                        interface.rust_name(),
-                                        interface.template_names.clone(),
-                                    ));
-                                    break;
+
+            // This is pretty gross but the better way to do this doesn't yield a muutable
+            // reference.
+            if let Some(real_interface_id) = real_interface_id_for_category {
+                if let Some(real_interface_item) = ctx.get_item_mut(real_interface_id) {
+                    if let Some(ty) = real_interface_item.kind().as_type() {
+                        if let TypeKind::ResolvedTypeRef(item_id) = ty.kind() {
+                            let real_interface_id: ItemId = item_id.into();
+                            let ty = ctx.get_item_mut(real_interface_id).unwrap().kind_mut().as_type_mut().unwrap();
+                            match ty.kind_mut() {
+                                TypeKind::ObjCInterface(ref mut real_interface) => {
+                                    if !real_interface.is_category() {
+
+                                        real_interface.categories.push((
+                                                interface.rust_name(),
+                                                interface.template_names.clone(),
+                                        ));
+                                    }
                                 }
+                                _ => {}
                             }
                         }
-                        _ => {}
                     }
                 }
             }
