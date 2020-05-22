@@ -45,10 +45,8 @@ pub trait ParseCallbacks: fmt::Debug + UnwindSafe {
     ///
     /// The first parameter represents the name and argument list (including the
     /// parentheses) of the function-like macro. The second parameter represents
-    /// the expansion of the macro. It is not guaranteed that the whitespace of
-    /// the original is preserved, but it is guaranteed that tokenization will
-    /// not be changed.
-    fn func_macro(&self, _name: &str, _value: &str) {}
+    /// the expansion of the macro as a sequence of tokens.
+    fn func_macro(&self, _name: &str, _value: &[&[u8]]) {}
 
     /// This function should return whether, given an enum variant
     /// name, and value, this enum variant will forcibly be a constant.

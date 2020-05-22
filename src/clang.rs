@@ -709,30 +709,9 @@ impl Cursor {
 
     /// Gets the tokens that correspond to that cursor as  `cexpr` tokens.
     pub fn cexpr_tokens(self) -> Vec<cexpr::token::Token> {
-        use cexpr::token;
-
         self.tokens()
             .iter()
-            .filter_map(|token| {
-                let kind = match token.kind {
-                    CXToken_Punctuation => token::Kind::Punctuation,
-                    CXToken_Literal => token::Kind::Literal,
-                    CXToken_Identifier => token::Kind::Identifier,
-                    CXToken_Keyword => token::Kind::Keyword,
-                    // NB: cexpr is not too happy about comments inside
-                    // expressions, so we strip them down here.
-                    CXToken_Comment => return None,
-                    _ => {
-                        error!("Found unexpected token kind: {:?}", token);
-                        return None;
-                    }
-                };
-
-                Some(token::Token {
-                    kind,
-                    raw: token.spelling().to_vec().into_boxed_slice(),
-                })
-            })
+            .filter_map(|token| token.as_cexpr_token())
             .collect()
     }
 
@@ -825,6 +804,30 @@ impl ClangToken {
             CStr::from_ptr(clang_getCString(self.spelling) as *const _)
         };
         c_str.to_bytes()
+    }
+
+    /// Converts a ClangToken to a `cexpr` token if possible.
+    pub fn as_cexpr_token(&self) -> Option<cexpr::token::Token> {
+        use cexpr::token;
+
+        let kind = match self.kind {
+            CXToken_Punctuation => token::Kind::Punctuation,
+            CXToken_Literal => token::Kind::Literal,
+            CXToken_Identifier => token::Kind::Identifier,
+            CXToken_Keyword => token::Kind::Keyword,
+            // NB: cexpr is not too happy about comments inside
+            // expressions, so we strip them down here.
+            CXToken_Comment => return None,
+            _ => {
+                error!("Found unexpected token kind: {:?}", self);
+                return None;
+            }
+        };
+
+        Some(token::Token {
+            kind,
+            raw: self.spelling().to_vec().into_boxed_slice(),
+        })
     }
 }
 
