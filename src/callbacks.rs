@@ -35,9 +35,20 @@ pub trait ParseCallbacks: fmt::Debug + UnwindSafe {
         None
     }
 
-    /// This will be run on every string macro. The callback can not influence the further
+    /// This will be run on every string macro. The callback cannot influence the further
     /// treatment of the macro, but may use the value to generate additional code or configuration.
     fn str_macro(&self, _name: &str, _value: &[u8]) {}
+
+    /// This will be run on every function-like macro. The callback cannot
+    /// influence the further treatment of the macro, but may use the value to
+    /// generate additional code or configuration.
+    ///
+    /// The first parameter represents the name and argument list (including the
+    /// parentheses) of the function-like macro. The second parameter represents
+    /// the expansion of the macro. It is not guaranteed that the whitespace of
+    /// the original is preserved, but it is guaranteed that tokenization will
+    /// not be changed.
+    fn func_macro(&self, _name: &str, _value: &str) {}
 
     /// This function should return whether, given an enum variant
     /// name, and value, this enum variant will forcibly be a constant.
