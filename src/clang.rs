@@ -793,13 +793,16 @@ impl<'a> Drop for RawTokens<'a> {
     }
 }
 
-/// A raw clang token, that exposes only the kind and spelling. This is a
+/// A raw clang token, that exposes only kind, spelling, and extent. This is a
 /// slightly more convenient version of `CXToken` which owns the spelling
-/// string.
+/// string and extent.
 #[derive(Debug)]
 pub struct ClangToken {
     spelling: CXString,
-    /// The kind of token, this is the same as the relevant member from
+    /// The extent of the token. This is the same as the relevant member from
+    /// `CXToken`.
+    pub extent: CXSourceRange,
+    /// The kind of the token. This is the same as the relevant member from
     /// `CXToken`.
     pub kind: CXTokenKind,
 }
@@ -834,7 +837,12 @@ impl<'a> Iterator for ClangTokenIterator<'a> {
         unsafe {
             let kind = clang_getTokenKind(*raw);
             let spelling = clang_getTokenSpelling(self.tu, *raw);
-            Some(ClangToken { kind, spelling })
+            let extent = clang_getTokenExtent(self.tu, *raw);
+            Some(ClangToken {
+                kind,
+                extent,
+                spelling,
+            })
         }
     }
 }
