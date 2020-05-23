@@ -12,6 +12,7 @@ use std::sync::{Arc, Mutex, RwLock};
 struct MacroCallback {
     macros: Arc<RwLock<HashSet<String>>>,
     seen_hellos: Mutex<u32>,
+    seen_funcs: Mutex<u32>,
 }
 
 impl ParseCallbacks for MacroCallback {
@@ -45,6 +46,10 @@ impl ParseCallbacks for MacroCallback {
 
     fn str_macro(&self, name: &str, value: &[u8]) {
         match name {
+            "TESTMACRO_STRING_EXPR" => {
+                assert_eq!(value, b"string");
+                *self.seen_hellos.lock().unwrap() += 1;
+            }
             "TESTMACRO_STRING_EXPANDED" |
             "TESTMACRO_STRING" |
             "TESTMACRO_INTEGER" => {
@@ -70,15 +75,64 @@ impl ParseCallbacks for MacroCallback {
             _ => None,
         }
     }
+
+    fn func_macro(&self, name: &str, value: &[&[u8]]) {
+        match name {
+            "TESTMACRO_NONFUNCTIONAL" => {
+                panic!("func_macro was called for a non-functional macro");
+            }
+            "TESTMACRO_FUNCTIONAL_NONEMPTY(TESTMACRO_INTEGER)" => {
+                // Spaces are inserted into the right-hand side of a functional
+                // macro during reconstruction from the tokenization. This might
+                // change in the future, but it is safe by the definition of a
+                // token in C, whereas leaving the spaces out could change
+                // tokenization.
+                assert_eq!(value, &[b"-" as &[u8], b"TESTMACRO_INTEGER"]);
+                *self.seen_funcs.lock().unwrap() += 1;
+            }
+            "TESTMACRO_FUNCTIONAL_EMPTY(TESTMACRO_INTEGER)" => {
+                assert_eq!(value, &[] as &[&[u8]]);
+                *self.seen_funcs.lock().unwrap() += 1;
+            }
+            "TESTMACRO_FUNCTIONAL_TOKENIZED(a,b,c,d,e)" => {
+                assert_eq!(
+                    value,
+                    &[b"a" as &[u8], b"/", b"b", b"c", b"d", b"##", b"e"]
+                );
+                *self.seen_funcs.lock().unwrap() += 1;
+            }
+            "TESTMACRO_FUNCTIONAL_SPLIT(a,b)" => {
+                assert_eq!(value, &[b"b", b",", b"a"]);
+                *self.seen_funcs.lock().unwrap() += 1;
+            }
+            "TESTMACRO_STRING_FUNC_NON_UTF8(x)" => {
+                assert_eq!(
+                    value,
+                    &[b"(" as &[u8], b"x", b"\"\xff\xff\"", b")"]
+                );
+                *self.seen_funcs.lock().unwrap() += 1;
+            }
+            _ => {
+                // The system might provide lots of functional macros.
+                // Ensure we did not miss handling one that we meant to handle.
+                assert!(!name.starts_with("TESTMACRO_"), "name = {}", name);
+            }
+        }
+    }
 }
 
 impl Drop for MacroCallback {
     fn drop(&mut self) {
         assert_eq!(
             *self.seen_hellos.lock().unwrap(),
-            2,
+            3,
             "str_macro handle was not called once for all relevant macros"
-        )
+        );
+        assert_eq!(
+            *self.seen_funcs.lock().unwrap(),
+            5,
+            "func_macro handle was not called once for all relevant macros"
+        );
     }
 }
 
@@ -102,6 +156,7 @@ fn main() {
         .parse_callbacks(Box::new(MacroCallback {
             macros: macros.clone(),
             seen_hellos: Mutex::new(0),
+            seen_funcs: Mutex::new(0),
         }))
         .blacklist_function("my_prefixed_function_to_remove")
         .generate()
