@@ -218,8 +218,7 @@ impl ObjCInterface {
                 needle
             );
 
-            // This is pretty gross but the better way to do this doesn't yield a muutable
-            // reference.
+            // This is pretty gross but using the ItemResolver doesn't yield a mutable reference.
             if let Some(real_interface_id) = real_interface_id_for_category {
                 if let Some(real_interface_item) = ctx.get_item_mut(real_interface_id) {
                     if let Some(ty) = real_interface_item.kind().as_type() {
