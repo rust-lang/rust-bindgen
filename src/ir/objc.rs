@@ -220,18 +220,26 @@ impl ObjCInterface {
 
             // This is pretty gross but using the ItemResolver doesn't yield a mutable reference.
             if let Some(real_interface_id) = real_interface_id_for_category {
-                if let Some(real_interface_item) = ctx.get_item_mut(real_interface_id) {
+                if let Some(real_interface_item) =
+                    ctx.get_item_mut(real_interface_id)
+                {
                     if let Some(ty) = real_interface_item.kind().as_type() {
                         if let TypeKind::ResolvedTypeRef(item_id) = ty.kind() {
                             let real_interface_id: ItemId = item_id.into();
-                            let ty = ctx.get_item_mut(real_interface_id).unwrap().kind_mut().as_type_mut().unwrap();
+                            let ty = ctx
+                                .get_item_mut(real_interface_id)
+                                .unwrap()
+                                .kind_mut()
+                                .as_type_mut()
+                                .unwrap();
                             match ty.kind_mut() {
-                                TypeKind::ObjCInterface(ref mut real_interface) => {
+                                TypeKind::ObjCInterface(
+                                    ref mut real_interface,
+                                ) => {
                                     if !real_interface.is_category() {
-
                                         real_interface.categories.push((
-                                                interface.rust_name(),
-                                                interface.template_names.clone(),
+                                            interface.rust_name(),
+                                            interface.template_names.clone(),
                                         ));
                                     }
                                 }
