@@ -4,7 +4,7 @@ use super::context::{BindgenContext, ItemId};
 use super::function::FunctionSig;
 use super::item::Item;
 use super::traversal::{Trace, Tracer};
-use super::ty::TypeKind;
+use super::ty::{Type, TypeKind};
 use crate::clang;
 use crate::parse::ClangItemParser;
 use clang_sys::CXChildVisit_Continue;
@@ -217,40 +217,43 @@ impl ObjCInterface {
                 interface.rust_name(),
                 needle
             );
-
-            // This is pretty gross but using the ItemResolver doesn't yield a mutable reference.
-            if let Some(real_interface_id) = real_interface_id_for_category {
-                if let Some(real_interface_item) =
-                    ctx.get_item_mut(real_interface_id)
-                {
-                    if let Some(ty) = real_interface_item.kind().as_type() {
-                        if let TypeKind::ResolvedTypeRef(item_id) = ty.kind() {
-                            let real_interface_id: ItemId = item_id.into();
-                            let ty = ctx
-                                .get_item_mut(real_interface_id)
-                                .unwrap()
-                                .kind_mut()
-                                .as_type_mut()
-                                .unwrap();
-                            match ty.kind_mut() {
-                                TypeKind::ObjCInterface(
-                                    ref mut real_interface,
-                                ) => {
-                                    if !real_interface.is_category() {
-                                        real_interface.categories.push((
-                                            interface.rust_name(),
-                                            interface.template_names.clone(),
-                                        ));
-                                    }
-                                }
-                                _ => {}
-                            }
+            if let Some(ref mut ty) =
+                Self::get_parent_ty(ctx, real_interface_id_for_category)
+            {
+                match ty.kind_mut() {
+                    TypeKind::ObjCInterface(ref mut real_interface) => {
+                        if !real_interface.is_category() {
+                            real_interface.categories.push((
+                                interface.rust_name(),
+                                interface.template_names.clone(),
+                            ));
                         }
                     }
+                    _ => {}
                 }
             }
         }
         Some(interface)
+    }
+
+    fn get_parent_ty(
+        ctx: &mut BindgenContext,
+        parent_id: Option<ItemId>,
+    ) -> Option<&mut Type> {
+        // This is pretty gross but using the ItemResolver doesn't yield a mutable reference.
+        let real_interface_item = ctx.get_item_mut(parent_id?)?;
+        let ty = real_interface_item.kind().as_type()?;
+
+        if let TypeKind::ResolvedTypeRef(item_id) = ty.kind() {
+            let real_interface_id: ItemId = item_id.into();
+            let ty = ctx
+                .get_item_mut(real_interface_id)?
+                .kind_mut()
+                .as_type_mut()?;
+            return Some(ty);
+        } else {
+            return None;
+        }
     }
 
     fn add_method(&mut self, method: ObjCMethod) {
