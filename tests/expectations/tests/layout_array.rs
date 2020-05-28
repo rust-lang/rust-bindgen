@@ -6,6 +6,7 @@
 )]
 
 pub const RTE_CACHE_LINE_SIZE: u32 = 64;
+pub const __rte_cache_aligned: u32 = 0;
 pub const RTE_MEMPOOL_OPS_NAMESIZE: u32 = 32;
 pub const RTE_MEMPOOL_MAX_OPS_IDX: u32 = 16;
 pub const RTE_HEAP_NUM_FREELISTS: u32 = 13;

@@ -6,6 +6,7 @@
 )]
 
 pub const RTE_CACHE_LINE_SIZE: u32 = 64;
+pub const __rte_cache_aligned: u32 = 0;
 pub const RTE_LIBRTE_IP_FRAG_MAX_FRAG: u32 = 4;
 pub const IP_LAST_FRAG_IDX: _bindgen_ty_1 = _bindgen_ty_1::IP_LAST_FRAG_IDX;
 pub const IP_FIRST_FRAG_IDX: _bindgen_ty_1 = _bindgen_ty_1::IP_FIRST_FRAG_IDX;

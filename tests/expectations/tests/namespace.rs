@@ -9,6 +9,7 @@
 pub mod root {
     #[allow(unused_imports)]
     use self::super::root;
+    pub const NAMESPACE: u32 = 0;
     extern "C" {
         #[link_name = "\u{1}_Z9top_levelv"]
         pub fn top_level();
@@ -22,7 +23,7 @@ pub mod root {
             pub fn in_whatever();
         }
     }
-    pub mod _bindgen_mod_id_17 {
+    pub mod _bindgen_mod_id_18 {
         #[allow(unused_imports)]
         use self::super::super::root;
         #[repr(C)]
@@ -57,7 +58,7 @@ pub mod root {
     #[repr(C)]
     #[derive(Debug)]
     pub struct C<T> {
-        pub _base: root::_bindgen_mod_id_17::A,
+        pub _base: root::_bindgen_mod_id_18::A,
         pub m_c: T,
         pub m_c_ptr: *mut T,
         pub m_c_arr: [T; 10usize],

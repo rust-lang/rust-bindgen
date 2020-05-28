@@ -94,6 +94,8 @@ where
 }
 pub const RTE_CACHE_LINE_MIN_SIZE: u32 = 64;
 pub const RTE_CACHE_LINE_SIZE: u32 = 64;
+pub const __rte_cache_aligned: u32 = 0;
+pub const __rte_cache_min_aligned: u32 = 0;
 pub type phys_addr_t = u64;
 pub type MARKER = [*mut ::std::os::raw::c_void; 0usize];
 pub type MARKER8 = [u8; 0usize];
