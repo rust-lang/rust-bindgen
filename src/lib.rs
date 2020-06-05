@@ -197,6 +197,21 @@ impl Default for CodegenConfig {
 /// 3. Rustified enum
 ///
 /// If none of the above patterns match, then bindgen will generate a set of Rust constants.
+///
+/// # Clang arguments
+///
+/// Extra arguments can be passed to with clang:
+/// 1. [`clang_arg()`](#method.clang_arg): takes a single argument
+/// 2. [`clang_args()`](#method.clang_args): takes an iterator of arguments
+/// 3. `BINDGEN_EXTRA_CLANG_ARGS` environment variable: whitespace separate
+///    environment variable of arguments
+///
+/// Clang arguments specific to your crate should be added via the
+/// `clang_arg()`/`clang_args()` methods.
+///
+/// End-users of the crate may need to set the `BINDGEN_EXTRA_CLANG_ARGS` environment variable to
+/// add additional arguments. For example, to build against a different sysroot a user could set
+/// `BINDGEN_EXTRA_CLANG_ARGS` to `--sysroot=/path/to/sysroot`.
 #[derive(Debug, Default)]
 pub struct Builder {
     options: BindgenOptions,
