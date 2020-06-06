@@ -21,6 +21,15 @@ impl Default for MacroParsingBehavior {
     }
 }
 
+/// An enum to specifying member type.
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum MemberType {
+    /// A member function.
+    Function,
+    /// A member variable.
+    Variable,
+}
+
 /// A trait to allow configuring different kinds of types in different
 /// situations.
 pub trait ParseCallbacks: fmt::Debug + UnwindSafe {
@@ -62,6 +71,11 @@ pub trait ParseCallbacks: fmt::Debug + UnwindSafe {
 
     /// Allows to rename an item, replacing `_original_item_name`.
     fn item_name(&self, _original_item_name: &str) -> Option<String> {
+        None
+    }
+
+    /// Allows to rename a member name, replacing `_original_member_name`.
+    fn member_name(&self, _original_member_name: &str, _member_type: MemberType) -> Option<String> {
         None
     }
 

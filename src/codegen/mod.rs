@@ -15,6 +15,8 @@ use self::struct_layout::StructLayoutTracker;
 
 use super::BindgenOptions;
 
+use crate::callbacks::MemberType;
+
 use crate::ir::analysis::{HasVtable, Sizedness};
 use crate::ir::annotations::FieldAccessorKind;
 use crate::ir::comment;
@@ -1153,10 +1155,13 @@ impl<'a> FieldCodegen<'a> for FieldData {
             }
         }
 
-        let field_name = self
-            .name()
-            .map(|name| ctx.rust_mangle(name).into_owned())
-            .expect("Each field should have a name in codegen!");
+        let field_name = ctx.rust_mangle({
+            let name = self.name().expect("Each field should have a name in codegen!").to_owned();
+            ctx.parse_callbacks()
+                .and_then(|cb| cb.member_name(&name, MemberType::Variable))
+                .unwrap_or(name)
+                .as_str()
+        }).into_owned();
         let field_ident = ctx.rust_ident_raw(field_name.as_str());
 
         if !parent.is_union() {
@@ -2157,7 +2162,12 @@ impl MethodCodegen for Method {
         let mut name = match self.kind() {
             MethodKind::Constructor => "new".into(),
             MethodKind::Destructor => "destruct".into(),
-            _ => function.name().to_owned(),
+            _ => {
+                let name = function.name().to_owned();
+                ctx.parse_callbacks()
+                    .and_then(|cb| cb.member_name(&name, MemberType::Function))
+                    .unwrap_or(name)
+            }
         };
 
         let signature = match *signature_item.expect_type().kind() {
